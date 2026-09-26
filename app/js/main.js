@@ -4,17 +4,23 @@
 import * as R from "./art/runtime.js";
 import { Ocean, rng } from "./engine/ocean.js";
 import { LineView } from "./engine/line.js";
+import { persist, Store } from "./engine/store.js";
 import { loadAtlas, Sprites } from "./engine/sprites.js";
 import { Stage } from "./engine/stage.js";
 import { Voice } from "./engine/voice.js";
 import { fill, ReadScreen } from "./modules/numberline/screen.js";
 
 const T0 = performance.now();
+// hors ligne : le service worker met toute l'application en cache (pas en file://, ni pendant les tests qui le désactivent)
+if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !location.search.includes("nosw")) navigator.serviceWorker.register("sw.js").catch(() => {});
 const json = async (p) => (await fetch(p)).json();
 
 const stage = new Stage(document.getElementById("stage"));
 const [atlas, module1, textes] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/textes.json")]);
 const sprites = new Sprites(atlas, stage.px);
+// la base locale ; au premier lancement, on demande au navigateur de ne jamais l'effacer de lui-même
+const store = await Store.open();
+if (!(await store.setting("premierLancement"))) { await store.setSetting("premierLancement", new Date().toISOString()); await store.setSetting("stockagePersistant", await persist()); }
 await Promise.all(["fond", "rayons", "pieuvre", "algues", "poissons", "petits", "tortue"].map((s) => sprites.load(s)));
 const ocean = new Ocean(stage, sprites, atlas);
 ocean.paintStatic();
@@ -27,7 +33,7 @@ const rnd = rng(Date.now() & 0xffffffff);
 const mascotte = "Pili"; // le nom choisi au premier lancement (à venir : écran de choix)
 const text = { data: textes, pick: (k, v = {}) => { const e = textes[k]; return fill(Array.isArray(e) ? e[Math.floor(rnd() * e.length)] : e, { mascotte, ...v }); } };
 const voice = new Voice({ rate: 0.9 });
-const app = { stage, sprites, ocean, voice, text, rnd, atlas, line: new LineView(stage) };
+const app = { stage, sprites, ocean, voice, text, rnd, atlas, store, line: new LineView(stage) };
 window.__app = app;
 
 // le premier écran est prêt : on le note pour la mesure du démarrage

@@ -64,10 +64,16 @@ node tools/still.mjs octoSheet --frame 18 --out out/pieuvre.png --scale 2   # pl
 
 Chaque planche est rendue une seconde fois dans une page neuve : l'export échoue si une seule image diffère (empreintes). Les planches sont en WebP sans perte.
 
+## Hors ligne et stockage
+
+- `app/sw.js` met en cache tous les fichiers listés dans `app/sw-files.json`. Cette liste et la version du cache sont produites par `node tools/precache.mjs` ; `npm test` échoue si elle n'est pas à jour. À relancer après chaque changement dans `app/`.
+- `app/js/engine/store.js` : IndexedDB, un magasin par table de la SPEC (séances, réponses, faits, niveaux, bilans, récompenses, réglages). Le schéma évolue par migrations ajoutées à la fin de `MIGRATIONS`, jamais modifiées.
+
 ## Tests
 
 ```bash
 npm test                          # tests unitaires (node --test)
+node tests/e2e/pwa.mjs             # installable et utilisable hors ligne
 node tests/e2e/perf.mjs            # mesures (processeur ralenti ×4, 1280 × 800, densité 2) et captures
 FFMPEG=/chemin/ffmpeg node tests/e2e/video.mjs   # vidéo d'une séance (MP4)
 ```

@@ -106,7 +106,7 @@ export const TILES: Record<string, TileSpec> = {
   draftTooth: { fx: 0.95, oct: 2, seed: 33, k: -1.7, o: 1.95 }, // ruling-pen ink breaking up on the tooth of the sheet
   blueMottle: { fx: 0.0065, oct: 4, seed: 37, gray: true }, // a cyanotype never exposes evenly
 };
-const tile = (env: Env, kind: string): Layer => {
+export const tile = (env: Env, kind: string): Layer => {
   const key = `tile:${kind}:${env.scale}`; let L = env.cache.get(key) as Layer | undefined;
   if (L) return L;
   const sp = TILES[kind], n = Math.round(TILE * env.scale); L = env.canvas(n, n);

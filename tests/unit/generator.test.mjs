@@ -65,3 +65,8 @@ test("les pièges apparaissent aux niveaux où ils ont un sens", () => {
   assert.ok(seen(5).has("E2"));
   assert.ok(seen(6).has("E5") || seen(6).has("E3"));
 });
+
+test("niveau 5 : 0, 50 et 100 écrits, jamais la cible", () => {
+  const r = rng(55);
+  for (let k = 0; k < 200; k++) { const q = makeRead(lvl(5), r); assert.deepEqual(q.labelled, [0, 5, 10]); assert.ok(![0, 50, 100].includes(q.answer)); }
+});

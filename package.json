@@ -4,9 +4,10 @@
   "type": "module",
   "description": "Application d'entraînement aux mathématiques de CE1 (app/) et ses tests (tests/). L'atelier graphique a son propre package dans art/.",
   "scripts": {
-    "test": "node tools/precache.mjs --check && node --test tests/unit/*.test.mjs",
+    "test": "node --test tests/unit/*.test.mjs",
     "serve": "node tests/serve.mjs 8080",
-    "precache": "node tools/precache.mjs"
+    "precache": "node tools/precache.mjs",
+    "verifier": "node tools/precache.mjs --check && node --test tests/unit/*.test.mjs"
   },
   "devDependencies": {
     "fake-indexeddb": "^6.2.5"

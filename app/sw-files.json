@@ -1,5 +1,5 @@
 {
- "version": "3090f9b81e16",
+ "version": "835ae43acb83",
  "files": [
   "./",
   "assets/art/algues@1x.webp",
@@ -37,7 +37,9 @@
   "js/engine/voice.js",
   "js/main.js",
   "js/modules/numberline/generator.js",
+  "js/modules/numberline/runner.js",
   "js/modules/numberline/screen.js",
+  "js/modules/progress.js",
   "manifest.webmanifest"
  ]
 }

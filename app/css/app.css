@@ -25,3 +25,7 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .pop { animation: pop 0.45s ease-out; }
 .shake { animation: shake 0.5s ease-in-out; }
 .dim { opacity: 0.55; transition: opacity 0.4s; }
+
+/* la bande tactile de la ligne (placer, estimer) : toute la hauteur de la ligne et de ses nombres */
+.touchband { position: absolute; top: 380px; height: 230px; display: none; touch-action: none; cursor: pointer; }
+.answer.still { pointer-events: none; }

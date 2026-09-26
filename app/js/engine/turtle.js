@@ -15,7 +15,8 @@ export class Turtle {
     this.path = this.sp.atlas.sprites["tortue.saut"].meta.path;
   }
   // où poser l'ancrage (sous le ventre) sur la graduation i : sur le haut de la bouée, ou sur le trait
-  seat(i) { const [x, y] = tickP(this.spec, i); return [x, y - buoyR(this.spec) * 1.08 + 2 - (this.spec.k >= 1 ? 6 : 0)]; }
+  // (sur la réglette de la ligne d'école, dès qu'elle apparaît, la tortue se pose sur son bord haut)
+  seat(i) { const [x, y] = tickP(this.spec, i); return [x, this.spec.k > 0.3 ? this.spec.y - 29 : y - buoyR(this.spec) * 1.08 + 2]; }
   sitOn(spec, i) { this.spec = spec; this.at = i; this.pos = this.seat(i); this.clip = "tortue.repos"; this.anim = null; this.a.show(true); }
   hide() { this.a.show(false); this.anim = null; }
   tick(t) {

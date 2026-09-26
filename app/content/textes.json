@@ -35,6 +35,11 @@
   "unSaut": "un saut",
   "sauts": "sauts",
   "placer": [
-    "Place le poisson sur le nombre {n}."
+    "Place le poisson sur le nombre {n}.",
+    "Où est le nombre {n} ? Pose le poisson dessus."
+  ],
+  "estimer": [
+    "Où mettrais-tu {n} ? Pose le poisson sur la corde.",
+    "Montre-moi où serait {n}."
   ]
 }

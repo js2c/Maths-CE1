@@ -88,6 +88,9 @@ export function choicesFor(q, count, rnd) {
 
 // le type d'erreur d'une réponse donnée (null si juste ou si l'erreur n'est pas typée)
 export function classify(q, value) {
+  // estimer : juste dans la tolérance ; placé au symétrique (depuis la droite) : E4
+  if (q.format === "estimer") return Math.abs(value - q.answer) <= q.tolerance ? null : Math.abs(value - (q.min + q.max - q.answer)) <= q.tolerance ? "E4" : "autre";
+  if (q.format === "placer") return classifyPlace(q, value);
   if (value === q.answer) return null;
   const c = q.choices?.find((x) => x.value === value);
   if (c?.code) return c.code;
@@ -114,3 +117,31 @@ export function makeJump(cfg, rnd) {
   q.choices = out.sort((x, y) => x.value - y.value);
   return q;
 }
+
+// ---------------------------------------------------------------- une question « placer » (niveaux 2 à 6)
+// « Place le poisson sur le nombre 7. » L'enfant touche ou fait glisser le poisson sur une graduation.
+// Même tirage de cible que « lire » (jamais une graduation numérotée, un quart près d'une extrémité).
+export function makePlace(cfg, rnd, opts = {}) {
+  const q = makeRead(cfg, rnd, { ...opts, choix: 1 });
+  delete q.choices; q.format = "placer";
+  return q;
+}
+// l'erreur d'un placement : symétrique (E4), un pas à côté (E1), chiffres inversés (E5), sinon « autre »
+export function classifyPlace(q, value) {
+  if (value === q.answer) return null;
+  if (value === q.min + q.max - q.answer) return "E4";
+  if (Math.abs(value - q.answer) === q.step) return "E1";
+  if (TRAPS.E5(q) === value) return "E5";
+  return "autre";
+}
+
+// ---------------------------------------------------------------- une question « estimer » (niveau 8)
+// Ligne 0-100 sans graduations, 0 et 100 écrits : « Où mettrais-tu 50 ? ». Juste si l'écart ne dépasse pas
+// la tolérance (±8 au début du niveau, puis ±5 : voir `tolerance`).
+export function makeEstimate(cfg, rnd, opts = {}) {
+  const pool = [10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90].filter((v) => !opts.eviter?.includes(v));
+  const answer = pick(rnd, pool.length ? pool : [50]);
+  return { module: 1, niveau: cfg.niveau, format: "estimer", min: cfg.min, max: cfg.max, step: 1, n: 0, target: null, answer, labelled: [], tolerance: opts.tolerance ?? cfg.tolerances[0] };
+}
+// tolérance du niveau 8 : la première tant que 5 estimations n'ont pas été justes au niveau, puis la seconde
+export const toleranceFor = (cfg, justesAuNiveau) => (justesAuNiveau >= 5 ? cfg.tolerances[1] : cfg.tolerances[0]);

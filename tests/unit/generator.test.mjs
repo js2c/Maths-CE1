@@ -83,3 +83,20 @@ test("sauter (niveau 1) : départ, sauts, cible et pièges cohérents", async ()
     assert.equal(classify(q, q.answer), null);
   }
 });
+
+test("placer : cible jamais écrite, erreurs de placement typées", async () => {
+  const { makePlace, classifyPlace } = await import("../../app/js/modules/numberline/generator.js");
+  const r = rng(21);
+  for (const n of [2, 3, 4, 5, 6]) for (let k = 0; k < 100; k++) { const q = makePlace(lvl(n), r); assert.equal(q.format, "placer"); assert.ok(!q.labelled.includes(q.target)); assert.equal(q.choices, undefined); }
+  const q = { format: "placer", answer: 34, min: 30, max: 40, step: 1 };
+  assert.equal(classifyPlace(q, 34), null); assert.equal(classifyPlace(q, 36), "E4"); assert.equal(classifyPlace(q, 35), "E1"); assert.equal(classifyPlace(q, 38), "autre");
+  assert.equal(classify({ ...q }, 33), "E1");
+});
+
+test("estimer : tolérance ±8 puis ±5", async () => {
+  const { makeEstimate, toleranceFor } = await import("../../app/js/modules/numberline/generator.js");
+  const c = lvl(8), q = makeEstimate(c, rng(1), { tolerance: toleranceFor(c, 0) });
+  assert.equal(q.tolerance, 8); assert.equal(toleranceFor(c, 5), 5);
+  assert.equal(classify(q, q.answer + 8), null); assert.notEqual(classify(q, q.answer + 9), null);
+  const q50 = { ...q, answer: 25, tolerance: 5 }; assert.equal(classify(q50, 76), "E4");
+});

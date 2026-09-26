@@ -33,6 +33,7 @@ export type LineSpec = {
   k: number; // 0 corde, 1 ligne d'école
   mark?: number; // graduation marquée d'un « ? » rouge (format lire)
   lit?: number[]; // graduations allumées (retours, leçons)
+  marks?: { t: number; label?: string; color?: string }[]; // repères posés hors graduation (estimer) : t de 0 à 1
 };
 export const LABEL_DY = 80, LABEL_EM = 36;
 // la corde pend un peu entre ses deux poteaux ; la ligne d'école est droite
@@ -47,17 +48,26 @@ export const drawLine = (ctx: CanvasRenderingContext2D, L: LineSpec) => {
   const g = shim(ctx), k = L.k, pts: P[] = Array.from({ length: 60 }, (_, i) => { const x = L.x0 + ((L.x1 - L.x0) * i) / 59; return [x, lineY(L, x)] as P; });
   // poteaux (la corde) ; ils s'effacent quand la corde devient une ligne d'école
   if (k < 0.75) [[L.x0, L.x0 - 4], [L.x1, L.x1 + 4]].forEach(([xt, xf], i) => { const foot: P = [xf, L.y + 124], top: P = [xt, L.y - 8], s = taper([foot, lerpP(foot, top, 0.5), top], () => 7).outline; fillShape(g, shiftP(s, 10, 6), "#0a3f49", 0.35); cel(g, s, "#b98752", "#7d5431", 4); contour(g, s, 3.6, 30 + i); });
+  // la réglette de la ligne d'école : une planchette claire derrière le trait (bois peint, ombre nette,
+  // contour), qui apparaît pendant que la corde se transforme ; elle donne au trait le contraste du papier
+  if (k > 0.3) {
+    const a = Math.min(1, (k - 0.3) / 0.5), y0 = L.y - 30, y1 = L.y + 34, x0 = L.x0 - 14, x1 = L.x1 + 14;
+    const plank = smooth([[x0 + 8, y0], [x1 - 8, y0 - 1], [x1, y0 + 8], [x1, y1 - 8], [x1 - 8, y1], [x0 + 8, y1 + 1], [x0, y1 - 8], [x0, y0 + 8]], true, 4);
+    fillShape(g, shiftP(plank, 8, 11), "#0a3f49", 0.3 * a);
+    ctx.globalAlpha = a; cel(g, plank, "#fffaf0", "#e3d6bb", 6); ctx.globalAlpha = 1;
+    contour(g, plank, 3.4, 35);
+  }
   // la corde : bande torsadée claire, qui fonce et s'affine vers le trait d'encre
-  const half = 4 - 1.2 * k, band = taper(pts, () => half).outline;
+  const half = 4 - 1.5 * k, band = taper(pts, () => half).outline;
   fillShape(g, shiftP(band, 5, 9), "#0a3f49", 0.3 * (1 - k));
-  cel(g, band, mix("#f0d3a0", "#fffaf0", k), mix("#c89c62", "#dfe6ee", k), 2.5);
+  cel(g, band, mix("#f0d3a0", INK, k), mix("#c89c62", INK, k), 2.5);
   if (k < 0.6) for (let x = L.x0 + 8; x < L.x1; x += 13) { const y = lineY(L, x); ink(g, [[x - 3, y - 3.5], [x + 3, y + 3.5]], "#8a6238", { w: 1.7, shadow: 0, taper: [0.3, 0.3], seed: x }, 1 - k / 0.6); }
   contour(g, band, 2.8 + 0.8 * k, 33);
   // graduations : un trait d'encre (ligne d'école), puis la bouée par-dessus (corde)
   const R = buoyR(L);
   for (let i = 0; i < L.n; i++) {
     const [x, y] = tickP(L, i), lit = L.lit?.includes(i);
-    if (k > 0) { const h = (L.labels[i] ? 20 : 14) * k; ink(g, [[x, y - h], [x, y + h]], INK, { w: 4.2, shadow: 0, taper: [0.15, 0.15], seed: 90 + i }); }
+    if (k > 0) { const h = (L.labels[i] ? 24 : 16) * Math.min(1, k * 1.25); ink(g, [[x, y - h], [x, y + h]], INK, { w: 5, shadow: 0, taper: [0.12, 0.12], seed: 90 + i }); }
     if (k < 1) {
       const r = R, s = blob(x, y, r, r * 1.08, 40 + i, 0.03, 16), bandB = smooth([[x - r, y - r * 0.27], [x + r, y - r * 0.27], [x + r, y + r * 0.27], [x - r, y + r * 0.27]], true, 3);
       fillShape(g, shiftP(s, 7, 10), "#0a3f49", 0.3);
@@ -68,7 +78,25 @@ export const drawLine = (ctx: CanvasRenderingContext2D, L: LineSpec) => {
   }
   // nombres sur le sable, sous leur graduation ; le « ? » rouge sous la graduation demandée
   L.labels.forEach((t, i) => { const x = tickX(L, i), m = i === L.mark; if (t || m) drawNumber(ctx, m ? "?" : t!, x, L.y + LABEL_DY, LABEL_EM, { color: m ? RED : INK, w: 5.2, seed: 200 + i * 5 }); });
-  if (L.ends) L.ends.forEach((t, i) => drawNumber(ctx, t, i ? L.x1 - 40 : L.x0 + 40, L.y + LABEL_DY, LABEL_EM, { w: 5.2, seed: 400 + i * 5 }));
+  if (L.ends) L.ends.forEach((t, i) => { const x = i ? L.x1 - 40 : L.x0 + 40, y = lineY(L, x); ink(g, [[x, y - 24], [x, y + 24]], INK, { w: 5, shadow: 0, taper: [0.12, 0.12], seed: 95 + i }); drawNumber(ctx, t, x, L.y + LABEL_DY, LABEL_EM, { w: 5.2, seed: 400 + i * 5 }); });
+  (L.marks ?? []).forEach((m, i) => { const x = L.x0 + 40 + (L.x1 - L.x0 - 80) * m.t, y = lineY(L, x), c = m.color ?? RED; fillShape(g, blob(x, y, 9, 9, 450 + i, 0.05, 12), "#ffe45c"); ink(g, [[x, y - 28], [x, y + 28]], c, { w: 5.5, shadow: 0, taper: [0.12, 0.12], seed: 460 + i }); if (m.label) drawNumber(ctx, m.label, x, L.y + LABEL_DY, LABEL_EM, { color: c, w: 5.2, seed: 470 + i }); });
+};
+
+// ---------------------------------------------------------------- aides visuelles des retours d'erreur
+// la flèche de croissance (E4) : un grand trait d'encre de gauche à droite au-dessus de la ligne ; p la trace
+export const drawArrow = (ctx: CanvasRenderingContext2D, x0: number, x1: number, y: number, p: number, color = "#ffe45c") => {
+  if (p <= 0) return;
+  const g = shim(ctx), xe = x0 + (x1 - x0) * p, pts: P[] = smooth([[x0, y + 4], [(x0 + xe) / 2, y - 6], [xe, y]], false, 12);
+  ink(g, pts, INK, { w: 11, shadow: 0, taper: [0.1, 0.02], seed: 21 }, 0.35); ink(g, pts, color, { w: 8, shadow: 0, taper: [0.1, 0.02], seed: 21 });
+  if (p >= 1) { const head: P[] = [[xe - 26, y - 16], [xe + 6, y], [xe - 26, y + 16]]; fillShape(g, shiftP(head, 3, 4), INK, 0.35); fillShape(g, head, color); ink(g, head, INK, { w: 3, closed: true, shadow: 0.2, seed: 22 }); }
+};
+// un filet (un paquet de dix) : cadre arrondi à mailles, dans lequel l'application pose dix bulles
+export const drawNet = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, seed = 30) => {
+  const g = shim(ctx), r = 10, box = smooth([[x + r, y], [x + w - r, y], [x + w, y + r], [x + w, y + h - r], [x + w - r, y + h], [x + r, y + h], [x, y + h - r], [x, y + r]], true, 4);
+  fillShape(g, box, "#e8fffb", 0.18);
+  for (let i = 1; i < 5; i++) ink(g, [[x + (w * i) / 5, y + 3], [x + (w * i) / 5, y + h - 3]], "#e8fffb", { w: 1.4, shadow: 0, taper: [0.1, 0.1], seed: seed + i }, 0.6);
+  ink(g, [[x + 3, y + h / 2], [x + w - 3, y + h / 2]], "#e8fffb", { w: 1.4, shadow: 0, taper: [0.1, 0.1], seed: seed + 9 }, 0.6);
+  ink(g, box, "#8a6238", { w: 3.4, closed: true, shadow: 0.3, light: [-0.55, -0.83], seed: seed + 10 });
 };
 
 // ---------------------------------------------------------------- surbrillances (en direct, légères)

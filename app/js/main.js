@@ -8,6 +8,7 @@ import { persist, Store } from "./engine/store.js";
 import { loadAtlas, Sprites } from "./engine/sprites.js";
 import { Stage } from "./engine/stage.js";
 import { Voice } from "./engine/voice.js";
+import { Module1Runner } from "./modules/numberline/runner.js";
 import { fill, ReadScreen } from "./modules/numberline/screen.js";
 
 const T0 = performance.now();
@@ -65,11 +66,15 @@ play.addEventListener("pointerdown", async (e) => {
   e.preventDefault(); voice.unlock(); play.remove();
   ocean.octo.play("saluer");
   await voice.say(text.pick("accueil"));
-  const screen = new ReadScreen(app), level = module1.niveaux[0];
+  // pour les tests et les captures : ?niveau=N&format=lire|sauter|placer|estimer
+  const P = new URLSearchParams(location.search), screen = new ReadScreen(app);
   app.screen = screen;
-  for (let k = 0; ; k++) {
-    const format = level.formats.includes("sauter") && k % 2 ? "sauter" : "lire";
-    const r = await screen.ask(screen.generate(level, rnd, { format }), level);
-    if (r.ok) { stars++; paintStars(); }
+  const runner = await new Module1Runner({ screen, store, content: module1, rnd }).load();
+  if (P.get("niveau")) { runner.st.niveau = Number(P.get("niveau")); runner.save = () => {}; }
+  if (P.get("format")) runner.levels = runner.levels.map((c) => ({ ...c, formats: [P.get("format")] }));
+  app.runner = runner;
+  for (;;) {
+    const { q, cfg } = runner.next(), r = await screen.ask(q, cfg), { etoiles } = await runner.record(r, cfg);
+    stars += etoiles; paintStars();
   }
 }, { once: true });

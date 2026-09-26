@@ -2,6 +2,25 @@
 
 Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail dans une nouvelle session : lire ce fichier, puis `CLAUDE.md`, `docs/SPEC.md` et `docs/ARCHITECTURE.md`.
 
+## Lot 1 bis — ergonomie et voix
+
+Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : `docs/PROMPT-LOT1BIS.md`. Une étape par session.
+
+| Étape | Contenu | État |
+| --- | --- | --- |
+| 1 | Échantillons de voix : Piper installé, voix françaises de `rhasspy/piper-voices` (siwis, upmc Jessica et Pierre, tom), licence de chacune notée, trois phrases (consigne, correction, anecdote) à deux vitesses, dans `docs/voix-echantillons/` avec un tableau (`LISEZMOI.md`) et le script qui les refait | fait ; **en attente du choix du parent (voix et vitesse)** |
+| 2 | Voix générée à l'avance : outil d'inventaire des phrases tiré de `app/content/` (phrases à nombre déclinées pour chaque valeur, les 66 additions sous leurs trois formes), nombres et symboles en toutes lettres, fichiers son compressés dans `app/assets/voix/` avec un index ; le moteur de voix joue les fichiers, synthèse du navigateur en secours, « réécouter » rejoue le fichier ; test de l'inventaire (aucune phrase sans fichier) et du poids (< 15 Mo visé) | à faire |
+| 3 | Ergonomie : bouton « maison » (pause et reprise), frise d'avancement, « passer » dès la deuxième vue d'une leçon ou d'un exemple guidé, « je ne sais pas » (code NSP), lune « à demain » en décor, « Encore ! » et entraînement libre sans étoiles ni coquillages, au moins un coquillage par séance complète, une seule résolution d'images en cache, NSP et leçons passées dans l'historique du parent | à faire |
+| 4 | Bilan : `docs/BILAN-LOT1BIS.md`, mise à jour de `docs/GUIDE-PARENT.md` si l'usage change, pull request vers `main` | à faire |
+
+### Décisions et remarques du lot 1 bis
+
+- Étape 1 : Hugging Face est accessible depuis l'environnement. Voix essayées : les trois modèles français « medium » (siwis, upmc à deux locuteurs, tom) ; `fr_FR-mls-medium` (125 locuteurs d'un corpus de livres audio) et les modèles « low » ont été écartés (qualité moindre ou choix trop large pour un échantillon).
+- Licences relevées (MODEL_CARD) : siwis CC-BY 4.0, upmc CC-BY-SA 4.0, tom AGPLv3. Piper (`piper-tts` 1.8.0) est sous GPL-3.0 et ne sert qu'à fabriquer les sons, hors de l'application. La voix choisie sera créditée (`app/assets/voix/`, étape 2).
+- Vitesse « un peu ralentie » : `length_scale` 1,15 (1,0 = vitesse du modèle).
+- Piper n'est pas déterministe (un peu de hasard dans le rythme) : à l'étape 2, les fichiers son seront fabriqués une fois et versionnés, et l'outil ne refabriquera que les phrases nouvelles ou modifiées. Écart avec la règle « même source, mêmes images » de l'atelier, qui ne vaut ici que pour les images.
+- Format des échantillons : MP3 mono 64 kbit/s (lisible partout pour l'écoute par le parent). Le format de l'application (Opus ou MP3) sera choisi à l'étape 2 selon le poids total.
+
 ## Lot 1
 
 ### Fait

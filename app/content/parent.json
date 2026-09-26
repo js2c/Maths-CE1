@@ -1,0 +1,36 @@
+{
+  "_doc": "Espace parent (docs/SPEC.md, « Espace parent »). appuiLongMs : durée de l'appui sur le logo ; codeChiffres : longueur du code ; rappelExportJours : délai avant le rappel d'export ; dureesSeance : choix proposés pour le plafond d'une séance (minutes, la valeur de seance.json par défaut) ; modules : noms et niveaux tels que le parent les lit ; erreurs : les codes du journal ; reussite : seuils des couleurs du calendrier.",
+  "appuiLongMs": 2000,
+  "codeChiffres": 4,
+  "rappelExportJours": 7,
+  "dureesSeance": [10, 12, 15],
+  "reussite": { "bien": 0.8, "moyen": 0.5 },
+  "modules": {
+    "1": {
+      "nom": "Ligne graduée",
+      "niveaux": {
+        "1": "0 à 10, pas de 1, tous les nombres écrits sauf la cible (lire, sauter)",
+        "2": "0 à 10, seuls 0, 5 et 10 écrits (lire, placer)",
+        "3": "0 à 20, seuls 0, 10 et 20 écrits (lire, placer)",
+        "4": "10 graduations qui ne partent pas de 0, extrémités écrites (lire, placer)",
+        "5": "0 à 100, pas de 10, 0, 50 et 100 écrits (lire, placer)",
+        "6": "segment de 20, pas de 1, dizaines écrites (lire, placer)",
+        "7": "pas à deviner (1 ou 10) à partir de deux graduations voisines (lire)",
+        "8": "0 à 100 sans graduations (estimer)"
+      }
+    },
+    "2": {
+      "nom": "Faits d'addition (échauffement)",
+      "niveaux": { "0": "temps de base (« a + 0 »)", "1": "famille 1 : + 1 et + 2", "2": "famille 2 : doubles jusqu'à 5 + 5" }
+    }
+  },
+  "formes": { "lire": "lire", "sauter": "sauter", "placer": "placer", "estimer": "estimer", "base": "temps de base", "directe": "a + b = ?" },
+  "erreurs": {
+    "E1": "compte les traits au lieu des sauts",
+    "E2": "oublie qu'un saut vaut 10",
+    "E3": "oublie le point de départ",
+    "E4": "compte depuis la droite",
+    "E5": "inverse dizaines et unités",
+    "autre": "autre erreur"
+  }
+}

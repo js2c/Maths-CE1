@@ -78,6 +78,16 @@ Les récompenses (`content/cartes.json`) : `js/session/rewards.js` (le trésor :
 
 Les lettres (noms, plus tard cartes) sont écrites au feutre comme les chiffres : `art/src/canvas-core/sea/letters.ts`, dessinées en direct par `drawWord` (`runtime.js`) ; planche de contrôle `node tools/still.mjs lettersSheet --frame 0 --out out/lettres.png --scale 2`.
 
+## L'espace parent
+
+`js/parent/parent.js` (l'affichage) et `js/parent/data.js` (les calculs, fonctions pures testées par `tests/unit/parent.test.mjs`), réglages dans `content/parent.json`, styles dans `css/parent.css`. C'est la seule partie de l'application faite de pages HTML ordinaires, avec du texte : elle est destinée au parent.
+
+- Accès : un logo (l'icône de l'application) posé sur le sable de l'écran d'accueil ; un appui long de 2 s (un anneau se remplit) ouvre le code ; un toucher bref ne fait rien. Code à 4 chiffres choisi au premier accès (réglage `codeParent`), tapé deux fois ; 30 s d'attente après 5 erreurs ; « code oublié » : une opération (a × b + c) puis un nouveau code, sans perte de données.
+- Pendant la visite des tableaux, la scène est en pause (`stage.paused` : plus aucun dessin) et la voix se tait.
+- Onglets : Calendrier (jours travaillés, durée, réussite, séances interrompues ; toucher un jour montre ses séances), Séances (historique ; chaque séance se déplie sur ses réponses, groupées échauffement / notion du jour), Progression (niveau du module 1 et son historique, faits d'addition par boîte et faits qui résistent, courbes semaine par semaine de la réussite et du temps médian, journal des erreurs, trésor de l'enfant), Données et réglages.
+- Exports : réponses, séances et faits en CSV (point-virgule, virgule décimale, BOM : s'ouvrent directement dans un tableur français) et sauvegarde complète en JSON (`Store.dump`, sans le code parent). Rappel en haut de chaque onglet si la dernière sauvegarde complète date de plus de 7 jours. Restauration d'une sauvegarde JSON (`Store.restore`, en une transaction, le code actuel est gardé).
+- Réglages : nom de la pieuvre (il n'est que dit par la voix, le parent peut en taper un autre), durée maximale d'une séance (`dureeSeanceMin`, 10, 12 ou 15 min, lue au début de chaque séance), code, stockage persistant, tout effacer.
+
 ## Hors ligne et stockage
 
 - `app/sw.js` met en cache tous les fichiers listés dans `app/sw-files.json`. Cette liste et la version du cache sont produites par `node tools/precache.mjs` ; `npm test` échoue si elle n'est pas à jour. À relancer après chaque changement dans `app/`.
@@ -91,6 +101,7 @@ node tests/e2e/pwa.mjs             # installable et utilisable hors ligne
 node tests/e2e/seance.mjs          # une séance complète (nom, échauffement, leçon L1, questions, récompense, « à demain »)
 node tests/e2e/lecons.mjs          # les leçons L1 à L3, avec « phrase précédente » et « rejouer »
 node tests/e2e/recompenses.mjs     # bonus, coquillage qui s'ouvre, carte, récif (et récif complet)
+node tests/e2e/parent.mjs         # espace parent : appui long, code, onglets, exports, code oublié, restauration
 node tests/e2e/perf.mjs            # mesures (processeur ralenti ×4, 1280 × 800, densité 2) et captures
 FFMPEG=/chemin/ffmpeg node tests/e2e/video.mjs   # vidéo d'une séance (MP4)
 ```

@@ -2,7 +2,7 @@
 // cache, même sans réseau. La liste des fichiers et la version viennent de sw-files.json, produit par
 // `node tools/precache.mjs` (la ligne VERSION ci-dessous est réécrite par le même outil : quand un
 // fichier change, ce script change aussi, et le navigateur installe la nouvelle version).
-const VERSION = "445e1f88837d";
+const VERSION = "7bb3829e778a";
 const CACHE = `ocean-${VERSION}`;
 
 self.addEventListener("install", (e) => {

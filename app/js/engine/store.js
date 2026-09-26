@@ -53,6 +53,15 @@ export class Store {
   async dump() { const out = { base: DB_NAME, version: MIGRATIONS.length, exporte: new Date().toISOString() }; for (const s of STORES) out[s] = await this.all(s); return out; }
   // réinitialisation (espace parent)
   async wipe() { for (const s of STORES) await this.clear(s); }
+  // restaure une sauvegarde (le JSON de dump) : tout est remplacé en une seule transaction (rien n'est
+  // effacé si elle échoue) ; `keep` : réglages actuels gardés (le code parent n'est pas dans l'export)
+  async restore(dump, keep = []) {
+    const kept = (await Promise.all(keep.map((k) => this.get("reglages", k)))).filter(Boolean);
+    const t = this.db.transaction(STORES, "readwrite");
+    for (const s of STORES) { const o = t.objectStore(s); o.clear(); for (const v of dump[s] ?? []) o.put(v); }
+    for (const v of kept) t.objectStore("reglages").put(v);
+    await done(t);
+  }
 }
 const done = (t) => new Promise((res, rej) => { t.oncomplete = res; t.onerror = () => rej(t.error); t.onabort = () => rej(t.error); });
 

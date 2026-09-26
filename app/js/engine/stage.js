@@ -36,15 +36,18 @@ export class Stage {
     let last = performance.now();
     const loop = (now) => {
       const dt = Math.min(0.1, (now - last) / 1000); last = now;
+      requestAnimationFrame(loop);
+      // en pause (espace parent ouvert par-dessus) : rien n'est dessiné ni mesuré
+      if (this.paused) { this.resumed = true; return; }
       const t0 = performance.now();
       for (const f of this.ticks) f(now / 1000, dt);
       this.measure(performance.now() - t0, dt * 1000);
-      requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);
   }
   measure(work, gap) {
     const p = this.perf; p.frames++;
+    if (this.resumed) { this.resumed = false; return; } // l'image qui suit une pause ne compte pas
     // les 3 premières secondes (chargement, décodage) et les onglets cachés ne comptent pas
     if (performance.now() < 3000 + (this.t0 ??= performance.now()) || document.hidden) return;
     p.work.push(work); p.gaps.push(gap); if (p.work.length > 120) { p.work.shift(); p.gaps.shift(); }

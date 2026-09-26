@@ -1,5 +1,5 @@
 {
- "version": "445e1f88837d",
+ "version": "7bb3829e778a",
  "files": [
   "./",
   "assets/art/algues@1x.webp",
@@ -27,9 +27,11 @@
   "content/lecons.json",
   "content/module1.json",
   "content/module2.json",
+  "content/parent.json",
   "content/seance.json",
   "content/textes.json",
   "css/app.css",
+  "css/parent.css",
   "icons/icon-192.png",
   "icons/icon-512.png",
   "index.html",
@@ -54,6 +56,8 @@
   "js/modules/numberline/runner.js",
   "js/modules/numberline/screen.js",
   "js/modules/progress.js",
+  "js/parent/data.js",
+  "js/parent/parent.js",
   "js/session/cards.js",
   "js/session/notion.js",
   "js/session/reef.js",

@@ -18,6 +18,7 @@ import { Rewards } from "./session/rewards.js";
 import { chooseName, goodNight, onTap, reward, spriteBox, StarHud } from "./session/screens.js";
 import { doneToday, Session } from "./session/session.js";
 import { Reef } from "./session/reef.js";
+import { ParentSpace, parentLogo } from "./parent/parent.js";
 
 const T0 = performance.now();
 // hors ligne : le service worker met toute l'application en cache (pas en file://, ni pendant les tests qui le désactivent)
@@ -25,7 +26,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !loc
 const json = async (p) => (await fetch(p)).json();
 
 const stage = new Stage(document.getElementById("stage"));
-const [atlas, module1, module2, textes, seance, lecons, cartes] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/module2.json"), json("content/textes.json"), json("content/seance.json"), json("content/lecons.json"), json("content/cartes.json")]);
+const [atlas, module1, module2, textes, seance, lecons, cartes, parentContent] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/module2.json"), json("content/textes.json"), json("content/seance.json"), json("content/lecons.json"), json("content/cartes.json"), json("content/parent.json")]);
 const sprites = new Sprites(atlas, stage.px);
 // la base locale ; au premier lancement, on demande au navigateur de ne jamais l'effacer de lui-même
 const store = await Store.open();
@@ -108,10 +109,15 @@ rewards.onChange((n, raison) => { if (raison !== "séance terminée") hud.fly(n,
 // récif : la visite du récif est toujours libre (docs/SPEC.md, « Séance plafonnée »).
 const reef = new Reef(app);
 app.reef = reef;
+// l'espace parent : appui long sur le logo, puis le code (parent/parent.js) ; après une restauration ou un
+// effacement, l'application repart de zéro
+const parent = new ParentSpace(app, { content: parentContent, seance, module2, cartes });
+app.parent = parent;
+const openParent = async () => { voice.stop(); const r = await parent.open(); if (r?.reload) location.reload(); };
 async function showHome({ done, first = false }) {
   const els = [], y = done ? 420 : 650;
   const reefKey = spriteBox(app, { x: 860 - 90, y: y - 90, w: 180, h: 180, cls: "bubble reefkey", label: "le récif", paint: (ctx) => sprites.draw(ctx, "recif", 0, 90, 90) });
-  els.push(reefKey);
+  els.push(reefKey, parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }));
   onTap(reefKey, async () => { voice.unlock(); voice.stop(); els.forEach((e) => e.remove()); await reef.visit(); showHome({ done: await doneToday(store) }); });
   if (done) { els.push(await goodNight(app, { first })); return; }
   // la séance du jour ; « à demain » quand elle est finie
@@ -121,7 +127,8 @@ async function showHome({ done, first = false }) {
     e.preventDefault(); voice.unlock(); els.forEach((x) => x.remove());
     // pour les captures et les tests : ?lecon=L1 joue seulement cette leçon
     if (P.get("lecon")) { window.__lecon = await lessons.play(P.get("lecon")); return; }
-    const session = new Session({ store, content: seance, handlers, rewards });
+    // la durée maximale d'une séance est un réglage du parent (seance.json donne la valeur par défaut)
+    const session = new Session({ store, content: { ...seance, dureeMaxMin: await store.setting("dureeSeanceMin", seance.dureeMaxMin) }, handlers, rewards });
     app.session = session;
     await session.run();
     showHome({ done: true, first: true });

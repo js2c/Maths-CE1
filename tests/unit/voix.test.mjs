@@ -29,7 +29,7 @@ test("une phrase pour la voix : nombres, symboles, féminin", () => {
   assert.equal(pourLaVoix("? + 4 = 6"), "Combien plus quatre égale six");
   assert.equal(pourLaVoix("6 × 7 − 2"), "six fois sept moins deux");
   assert.equal(pourLaVoix("Ce soir, tu as gagné 21 étoiles de mer."), "Ce soir, tu as gagné vingt et une étoiles de mer.");
-  assert.equal(pourLaVoix("1 dizaines et 1 unités."), "une dizaines et une unités.");
+  assert.equal(pourLaVoix("1 dizaine et 1 unité."), "une dizaine et une unité.");
   assert.equal(pourLaVoix("La tortue est sur 1."), "La tortue est sur un.");
   assert.equal(pourLaVoix("La tortue est sur 7 et fait 2 sauts. Où arrive-t-elle ?"), "La tortue est sur sept et fait deux sauts. Où arrive-t-elle ?");
 });
@@ -44,11 +44,11 @@ test("découpage en phrases", () => {
 
 test("inventaire : les phrases à nombre sont déclinées pour chaque valeur", () => {
   const inv = inventaire();
-  for (const s of ["Place le poisson sur le nombre 37.", "Où est le nombre 0 ?", "Où mettrais-tu 100 ?", "C'était 64.", "0 plus 6 ?", "Combien font 10 plus 0 ?", "La tortue est sur 6 et fait 4 sauts.", "La tortue est sur 9 et fait un saut.", "4 dizaines et 7 unités.", "La ligne commence à 30, pas à zéro.", "La tortue part de 3, pas de zéro.", "Ce soir, tu as gagné 12 étoiles de mer.", "Coucou !", "C'est moi, Plouf.", "C'est l'hippocampe !", "37", "trente…"]) assert.ok(inv.has(s), s);
+  for (const s of ["Place le poisson sur le nombre 37.", "Où est le nombre 0 ?", "Où mettrais-tu 100 ?", "C'était 64.", "0 plus 6 ?", "Combien font 10 plus 0 ?", "La tortue est sur 6 et fait 4 sauts.", "La tortue est sur 9 et fait un saut.", "4 dizaines et 7 unités.", "1 dizaine et 2 unités.", "2 dizaines et 1 unité.", "1 dizaine et 3 unités.", "Cette carte t'attend quelque part dans le lagon !", "Ce n'est pas grave, regardons ensemble.", "La ligne commence à 30, pas à zéro.", "La tortue part de 3, pas de zéro.", "Ce soir, tu as gagné 12 étoiles de mer.", "Coucou !", "C'est moi, Plouf.", "C'est l'hippocampe !", "37", "trente…"]) assert.ok(inv.has(s), s);
   // les 66 additions sous leurs trois formes, et leur correction
   const faits = additions();
   assert.equal(faits.length, 66);
-  for (const f of faits) for (const t of ["{a} plus {b} ?", "{a} plus combien font {n} ?", "Combien plus {b} font {n} ?", "{a} plus {b}, ça fait {n}."]) assert.ok(inv.has(fill(t, f)), fill(t, f));
+  for (const f of faits) for (const t of ["{a} plus {b} ?", "{a} plus combien, ça fait {n} ?", "Combien plus {b}, ça fait {n} ?", "{a} plus {b}, ça fait {n}."]) assert.ok(inv.has(fill(t, f)), fill(t, f));
   // aucune phrase ne garde un gabarit, et toutes se lisent sans chiffre
   for (const s of inv.keys()) { assert.ok(!/[{}]/.test(s), s); assert.ok(!/\d/.test(pourLaVoix(s)), s); }
 });
@@ -59,9 +59,10 @@ test("inventaire : chaque texte du contenu est couvert, un gabarit sans règle e
   const textes = [];
   const walk = (k, v) => (typeof v === "string" ? textes.push([k, v]) : Array.isArray(v) ? v.forEach((x) => walk(k, x)) : Object.entries(v).forEach(([kk, x]) => walk(`${k}.${kk}`, x)));
   Object.entries(C.textes).forEach(([k, v]) => k !== "_doc" && walk(k, v));
-  for (const [k, t] of textes) if (!/\{/.test(t) && !["unSaut", "sauts", "uneEtoile"].includes(k)) for (const s of sentences(t)) assert.ok(inv.has(s), `${k} : ${s}`);
+  for (const [k, t] of textes) if (!/\{/.test(t) && !["unSaut", "sauts", "uneEtoile", "uneDizaine", "uneUnite"].includes(k)) for (const s of sentences(t)) assert.ok(inv.has(s), `${k} : ${s}`);
   for (const [id, L] of Object.entries(C.lecons)) if (id !== "_doc") for (const b of L.phrases.flat()) if (b.dire) for (const s of sentences(b.dire)) assert.ok(inv.has(s), `${id} : ${s}`);
-  for (const c of C.cartes.cartes) for (const s of sentences(c.anecdote)) assert.ok(inv.has(s), c.id);
+  for (const c of C.cartes.cartes.filter((x) => x.anecdote)) for (const s of sentences(c.anecdote)) assert.ok(inv.has(s), c.id);
+  for (const z of C.cartes.zones) for (const t of [z.dosLu, z.fermeeLu].filter(Boolean)) assert.ok(inv.has(t), `${z.id} : ${t}`);
   // un nouveau gabarit à nombre sans domaine : l'inventaire échoue au lieu d'oublier des phrases
   const C2 = { ...C, textes: { ...C.textes, nouveau: "Il y a {n} bulles." } };
   assert.throws(() => inventaire(C2), /pas de règle/);

@@ -5,7 +5,7 @@
 import { rng, type Gfx, type P } from "../core";
 import { blob, clipped, fillShape, ink, mix, smooth } from "../gallery";
 import * as O from "../ocean";
-import { cel, contour, INK, shift, WATER, WATER_D } from "../oceanMarker";
+import { cel, contour, INK, L, shift, WATER, WATER_D } from "../oceanMarker";
 import { drawAnswerBubble, drawBubble } from "./decor";
 
 const SH = "#0a3f49", TAU = Math.PI * 2;
@@ -79,48 +79,69 @@ export const drawRainbowStar = (g: Gfx, cx: number, cy: number, R = 44) => g.gro
 });
 
 // ---------------------------------------------------------------- les cartes
-// Une carte de 300 × 440 : fenêtre d'illustration 3:4 (252 × 336) en haut, plaque du nom en bas.
-export const CARD_W = 300, CARD_H = 440, WIN: [number, number, number, number] = [24, 22, 252, 336], PLATE: [number, number, number, number] = [30, 372, 240, 50];
+// Une carte de 330 × 440 (portrait 3:4, docs/SPEC.md, « La carte et l'album ») : l'illustration générée
+// remplit toute la carte ; l'application pose par-dessus un cadre fin aux coins arrondis dont la matière
+// dit la rareté (nacre, argent, or) et, en bas, un bandeau semi-transparent où elle écrit le nom. Le verso
+// porte l'anecdote (écrite en direct). Le dos d'une carte est l'image de sa zone (générée à part) ; le dos
+// dessiné ici ne sert que si cette image manque.
+export const CARD_W = 330, CARD_H = 440, CARD_R = 20, FRAME = 9, BANNER_H = 64;
 // un rectangle aux coins arrondis : de vrais quarts de cercle, et des côtés découpés en petits pas (le
 // trait du feutre reste régulier, sans à-coup aux angles)
-const rrect = (x: number, y: number, w: number, h: number, r: number): P[] => {
+export const rrect = (x: number, y: number, w: number, h: number, r: number): P[] => {
   const out: P[] = [], side = (a: P, b: P) => { const n = Math.max(2, Math.round(Math.hypot(b[0] - a[0], b[1] - a[1]) / 12)); for (let i = 0; i < n; i++) out.push([a[0] + ((b[0] - a[0]) * i) / n, a[1] + ((b[1] - a[1]) * i) / n]); };
   const corner = (cx: number, cy: number, a0: number) => { for (let i = 0; i < 8; i++) { const a = a0 + (i / 8) * (Math.PI / 2); out.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]); } };
   corner(x + w - r, y + r, -Math.PI / 2); side([x + w, y + r], [x + w, y + h - r]); corner(x + w - r, y + h - r, 0); side([x + w - r, y + h], [x + r, y + h]);
   corner(x + r, y + h - r, Math.PI / 2); side([x, y + h - r], [x, y + r]); corner(x + r, y + r, Math.PI); side([x + r, y], [x + w - r, y]);
   return out;
 };
-const RARITY: Record<string, [string, string, string]> = { commune: ["#37a9b3", "#1f7d88", "#8fd8dc"], rare: ["#f2b43a", "#c07f12", "#ffe08a"], legendaire: ["#b26ae8", "#7a3aaa", "#e0c0ff"] };
-const paper = (g: Gfx, x: number, y: number) => { const c = rrect(x, y, CARD_W, CARD_H, 22); fillShape(g, shift(c, 10, 12), SH, 0.3); cel(g, c, "#fffaf0", "#e8dcc4", 6); contour(g, c, 5, 3200); return c; };
-// le fond provisoire de la fenêtre : l'eau, le sable, deux bulles
-export const drawCardWater = (g: Gfx, x: number, y: number) => g.group("plain", () => {
-  const [wx, wy, ww, wh] = WIN, win = rrect(x + wx, y + wy, ww, wh, 12);
-  fillShape(g, win, WATER_D);
-  clipped(g, win, () => {
-    fillShape(g, blob(x + wx + ww * 0.5, y + wy + wh * 0.4, ww * 0.8, wh * 0.45, 3210, 0.12, 14), WATER);
-    [0.2, 0.55, 0.85].forEach((t, i) => ink(g, smooth([[x + wx + ww * t - 30, y + wy + 40 + i * 50], [x + wx + ww * t, y + wy + 35 + i * 50], [x + wx + ww * t + 28, y + wy + 42 + i * 50]], false, 6), "#37a9b3", { w: 4, shadow: 0, taper: [0.4, 0.4], seed: 3211 + i }, 0.6));
-    const sand = smooth([[x + wx - 4, y + wy + wh - 70], [x + wx + ww * 0.4, y + wy + wh - 82], [x + wx + ww + 4, y + wy + wh - 66], [x + wx + ww + 4, y + wy + wh + 4], [x + wx - 4, y + wy + wh + 4]], true, 6);
-    fillShape(g, sand, "#d8b577"); fillShape(g, shift(sand, 0, 8), "#f1d79f");
-    drawBubble(g, 8, x + wx + 40, y + wy + 60, 1); drawBubble(g, 5, x + wx + 56, y + wy + 36, 2);
+// les trois matières du cadre : [clair, ombre, reflet]
+const MATTER: Record<string, [string, string, string]> = { commune: ["#f7efe9", "#cdbfcc", "#ffffff"], rare: ["#eef3f7", "#8f9eaa", "#ffffff"], legendaire: ["#ffd84a", "#bf7c10", "#fff2a0"] };
+const outer = (x: number, y: number) => rrect(x, y, CARD_W, CARD_H, CARD_R), inner = (x: number, y: number) => rrect(x + FRAME, y + FRAME, CARD_W - 2 * FRAME, CARD_H - 2 * FRAME, CARD_R - FRAME + 2);
+// le cadre : un anneau de matière (le contour extérieur, puis l'intérieur parcouru à rebours : un trou)
+export const drawCardFrame = (g: Gfx, x: number, y: number, rarete: string) => g.group("plain", () => {
+  const [lit, shade, hi] = MATTER[rarete] ?? MATTER.commune, o = outer(x, y), i = inner(x, y), ring = [...o, o[0], ...[...i, i[0]].reverse()];
+  cel(g, ring, lit, shade, 4);
+  clipped(g, ring, () => {
+    // la nacre chatoie (reflets roses, bleus, mauves) ; l'argent et l'or ont un long reflet blanc côté lumière
+    if (rarete === "commune") ["#f6c4d8", "#bfe4f2", "#dccdf4", "#f6c4d8"].forEach((c, k) => ink(g, smooth(o.filter((_, n) => n % 3 === 0).map(([px, py]) => [px + (k % 2 ? 2.5 : -2.5) + (k - 1.5) * 1.2, py + (k - 1.5) * 1.4] as P), true, 4), c, { w: 2.6, closed: true, shadow: 0, seed: 3600 + k }, 0.55));
+    ink(g, smooth([[x + 4, y + CARD_H * 0.55], [x + 4, y + CARD_R + 4], [x + CARD_R + 4, y + 4], [x + CARD_W * 0.6, y + 4]], false, 8), hi, { w: 3, shadow: 0, taper: [0.4, 0.4], seed: 3605 }, 0.9);
+  });
+  ink(g, o, INK, { w: 3, closed: true, light: L, shadow: 0.9, seed: 3606 });
+  ink(g, i, mix(shade, INK, 0.45), { w: 1.8, closed: true, shadow: 0, seed: 3607 });
+  // aux quatre coins, une touche de la rareté : une perle, une étincelle d'argent, une étoile d'or
+  const corners: P[] = [[x + FRAME + 1, y + FRAME + 1], [x + CARD_W - FRAME - 1, y + FRAME + 1], [x + FRAME + 1, y + CARD_H - FRAME - 1], [x + CARD_W - FRAME - 1, y + CARD_H - FRAME - 1]];
+  corners.forEach(([cx, cy], k) => {
+    if (rarete === "commune") { const p = blob(cx, cy, 6.5, 6.5, 3610 + k, 0.01, 12); cel(g, p, "#fffdf8", "#d8cbe8", 2, [blob(cx - 2, cy - 2, 2, 1.6, 3614 + k, 0.05, 8), "#ffffff"]); ink(g, p, INK, { w: 1.6, closed: true, shadow: 0.5, seed: 3618 + k }); }
+    else { const st = O.starShape([cx, cy], rarete === "rare" ? 10 : 12, rarete === "rare" ? 3.6 : 5, rarete === "rare" ? 0 : 0.2); cel(g, st, rarete === "rare" ? "#ffffff" : "#ffe98a", rarete === "rare" ? "#9aa8b3" : "#d08a10", 2); ink(g, st, INK, { w: 1.8, closed: true, shadow: 0.5, seed: 3622 + k }); }
   });
 });
-// le bord de la fenêtre et la plaque du nom, aux couleurs de la rareté (posé par-dessus l'illustration)
-export const drawCardFrame = (g: Gfx, x: number, y: number, rarete: string) => g.group("plain", () => {
-  const [c, cs, cl] = RARITY[rarete] ?? RARITY.commune, [wx, wy, ww, wh] = WIN, win = rrect(x + wx, y + wy, ww, wh, 12);
-  ink(g, win, cs, { w: 12, closed: true, shadow: 0, seed: 3220 }); ink(g, win, c, { w: 8, closed: true, shadow: 0, seed: 3221 }); ink(g, win.map(([px, py]) => [px - 1, py - 1.5] as P), cl, { w: 2, closed: true, shadow: 0, seed: 3222 }, 0.8);
-  ink(g, rrect(x + wx - 6, y + wy - 6, ww + 12, wh + 12, 16), INK, { w: 2.6, closed: true, shadow: 0.4, seed: 3223 });
-  const [px, py, pw, ph] = PLATE, plate = rrect(x + px, y + py, pw, ph, 14);
-  cel(g, plate, mix(cl, "#ffffff", 0.55), mix(c, "#ffffff", 0.2), 3); contour(g, plate, 3, 3224);
-  // la rareté : un coquillage (commune) ou deux étoiles (rare) aux coins de la plaque
-  if (rarete === "rare") [x + px - 2, x + px + pw + 2].forEach((sx, i) => { const st = O.starShape([sx, y + py + ph / 2], 17, 7.5, 0.12); cel(g, st, "#ffd84a", "#d08a10", 2); contour(g, st, 2.6, 3230 + i); });
+// le bandeau du nom, en bas, dans le cadre : de l'eau sombre à demi transparente, un filet de lumière dessus
+export const drawCardBanner = (g: Gfx, x: number, y: number) => g.group("plain", () => {
+  const x0 = x + FRAME, x1 = x + CARD_W - FRAME, y1 = y + CARD_H - FRAME, y0 = y1 - BANNER_H, r = CARD_R - FRAME + 2, pts: P[] = [[x0, y0]];
+  for (let k = 0; k <= 8; k++) { const a = Math.PI + (k / 8) * (Math.PI / 2); pts.push([x0 + r + Math.cos(a) * r, y1 - r - Math.sin(a) * r]); }
+  for (let k = 0; k <= 8; k++) { const a = Math.PI * 1.5 + (k / 8) * (Math.PI / 2); pts.push([x1 - r + Math.cos(a) * r, y1 - r - Math.sin(a) * r]); }
+  pts.push([x1, y0]);
+  fillShape(g, pts, "#0b3a45", 0.58);
+  ink(g, smooth([[x0 + 6, y0 + 1], [x + CARD_W / 2, y0 - 1], [x1 - 6, y0 + 1]], false, 8), "#bff3ee", { w: 2, shadow: 0, taper: [0.2, 0.2], seed: 3630 }, 0.7);
 });
-export const drawCardFront = (g: Gfx, x: number, y: number, rarete: string) => { g.group("plain", () => paper(g, x, y)); drawCardWater(g, x, y); drawCardFrame(g, x, y, rarete); };
-// le dos : bleu nuit, une grande coquille, des vagues
+// le fond d'une carte sans illustration : l'eau, le sable, deux bulles
+export const drawCardWater = (g: Gfx, x: number, y: number) => g.group("plain", () => {
+  const card = outer(x, y), ww = CARD_W, wh = CARD_H;
+  fillShape(g, card, WATER_D);
+  clipped(g, card, () => {
+    fillShape(g, blob(x + ww * 0.5, y + wh * 0.4, ww * 0.8, wh * 0.45, 3210, 0.12, 14), WATER);
+    [0.2, 0.55, 0.85].forEach((t, i) => ink(g, smooth([[x + ww * t - 30, y + 50 + i * 60], [x + ww * t, y + 45 + i * 60], [x + ww * t + 28, y + 52 + i * 60]], false, 6), "#37a9b3", { w: 4, shadow: 0, taper: [0.4, 0.4], seed: 3211 + i }, 0.6));
+    const sand = smooth([[x - 4, y + wh - 110], [x + ww * 0.4, y + wh - 124], [x + ww + 4, y + wh - 104], [x + ww + 4, y + wh + 4], [x - 4, y + wh + 4]], true, 6);
+    fillShape(g, sand, "#d8b577"); fillShape(g, shift(sand, 0, 8), "#f1d79f");
+    drawBubble(g, 8, x + 50, y + 70, 1); drawBubble(g, 5, x + 68, y + 44, 2);
+  });
+});
+// le dos de secours : bleu nuit, une grande coquille dorée, des vagues
 export const drawCardBack = (g: Gfx, x: number, y: number) => g.group("plain", () => {
-  const c = rrect(x, y, CARD_W, CARD_H, 22); fillShape(g, shift(c, 10, 12), SH, 0.3); cel(g, c, "#1f6f8a", "#0f4a60", 6);
+  const c = outer(x, y); fillShape(g, shift(c, 10, 12), SH, 0.3); cel(g, c, "#1f6f8a", "#0f4a60", 6);
   clipped(g, c, () => {
-    for (let r = 0; r < 7; r++) ink(g, smooth(Array.from({ length: 9 }, (_, i) => [x - 10 + i * 42, y + 40 + r * 64 + (i % 2 ? 10 : -6)] as P), false, 6), "#2f8aa8", { w: 5, shadow: 0, taper: [0.1, 0.1], seed: 3240 + r }, 0.7);
-    const inner = rrect(x + 18, y + 18, CARD_W - 36, CARD_H - 36, 14); ink(g, inner, "#ffd84a", { w: 4, closed: true, shadow: 0, seed: 3250 }, 0.9);
+    for (let r = 0; r < 7; r++) ink(g, smooth(Array.from({ length: 10 }, (_, i) => [x - 10 + i * 42, y + 40 + r * 64 + (i % 2 ? 10 : -6)] as P), false, 6), "#2f8aa8", { w: 5, shadow: 0, taper: [0.1, 0.1], seed: 3240 + r }, 0.7);
+    ink(g, rrect(x + 18, y + 18, CARD_W - 36, CARD_H - 36, 14), "#ffd84a", { w: 4, closed: true, shadow: 0, seed: 3250 }, 0.9);
   });
   contour(g, c, 5, 3251);
   const cx = x + CARD_W / 2, cy = y + CARD_H / 2 + 20, hinge: P = [cx, cy + 40], R = 78, fan: P[] = [];
@@ -131,12 +152,12 @@ export const drawCardBack = (g: Gfx, x: number, y: number) => g.group("plain", (
   contour(g, f, 4, 3270);
   const ears = smooth([[hinge[0] - 36, hinge[1] - 12], [hinge[0] + 36, hinge[1] - 12], [hinge[0] + 30, hinge[1] + 8], [hinge[0] - 30, hinge[1] + 8]], true, 3); cel(g, ears, "#ffe08a", "#d08a10", 3); contour(g, ears, 3.4, 3271);
 });
-// le verso de l'anecdote : le papier, un filet de la couleur de la rareté ; le texte est écrit en direct
-export const drawCardVerso = (g: Gfx, x: number, y: number, rarete: string) => g.group("plain", () => {
-  const [c] = RARITY[rarete] ?? RARITY.commune; paper(g, x, y);
-  ink(g, rrect(x + 16, y + 16, CARD_W - 32, CARD_H - 32, 14), c, { w: 5, closed: true, shadow: 0, seed: 3280 }, 0.9);
-  const r = rng(3281); for (let i = 0; i < 4; i++) drawBubble(g, [4, 6, 8, 5][i], x + 40 + r() * 220, y + 390 + r() * 20, 3 + i);
-});
+// le verso de l'anecdote : le papier dans le cadre de la rareté ; le texte est écrit en direct
+export const drawCardVerso = (g: Gfx, x: number, y: number, rarete: string) => {
+  g.group("plain", () => { const c = outer(x, y); fillShape(g, shift(c, 10, 12), SH, 0.3); cel(g, inner(x, y), "#fffaf0", "#e8dcc4", 6); });
+  drawCardFrame(g, x, y, rarete);
+  g.group("plain", () => { const r = rng(3281); for (let i = 0; i < 4; i++) drawBubble(g, [4, 6, 8, 5][i], x + 50 + r() * 230, y + 392 + r() * 20, 3 + i); });
+};
 
 // ---------------------------------------------------------------- boutons : le récif, la maison
 // « récif » : une branche de corail rose et une petite anémone dans la bulle

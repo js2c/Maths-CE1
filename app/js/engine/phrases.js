@@ -14,3 +14,10 @@ export const normalize = (s) => s.replace(/[  \s]+/g, " ").replace(/[’ʼ]/g
 
 // « Bravo ! Ce soir, tu as gagné 3 étoiles de mer. » -> ["Bravo !", "Ce soir, tu as gagné 3 étoiles de mer."]
 export const sentences = (text) => normalize(text).split(/(?<=[.!?…])\s+(?=\S)/).filter(Boolean);
+
+// l'erreur E5 : « 3 dizaines et 7 unités. », accordée au singulier (« 1 dizaine et 1 unité. », décision du
+// parent) ; T : content/textes.json ; renvoie les variables { dizaines, unites } du gabarit erreur.E5
+export const decompose = (T, n) => {
+  const d = Math.floor(n / 10), u = n % 10;
+  return { dizaines: d === 1 ? T.uneDizaine : fill(T.desDizaines, { d }), unites: u === 1 ? T.uneUnite : fill(T.desUnites, { u }) };
+};

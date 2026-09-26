@@ -27,7 +27,8 @@ await cdp.send("Emulation.setCPUThrottlingRate", { rate: RATE });
 
 // ---- démarrage à froid (cache vide), puis à chaud (cache HTTP rempli)
 const startup = async () => { await page.waitForFunction(() => window.__ready !== undefined, null, { timeout: 60000 }); return page.evaluate(() => Math.round(performance.getEntriesByName("app-ready")[0].startTime)); };
-await page.goto(url + opt("--query", "?sans=echauffement")); const cold = await startup();
+// (sans la leçon L1 : avec la voix fabriquée, elle dure plus d'une minute avant la première question)
+await page.goto(url + opt("--query", "?sans=echauffement&sansLecon")); const cold = await startup();
 await page.reload(); const warm = await startup();
 console.log(`démarrage (processeur ÷${RATE}) : à froid ${cold} ms, à chaud ${warm} ms`);
 await page.waitForTimeout(1500);

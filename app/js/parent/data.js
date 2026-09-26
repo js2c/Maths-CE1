@@ -63,6 +63,8 @@ export function answersOf(reponses, seanceId) {
   for (const r of list) { let g = groups.at(-1); if (!g || g.module !== r.module) groups.push((g = { module: r.module, reponses: [] })); g.reponses.push(r); }
   return groups;
 }
+// une leçon d'une séance, telle que le parent la lit : vue jusqu'au bout, passée (bouton « passer »), arrêtée
+export const lessonNote = (l) => (l.vue ? " (vue jusqu'au bout)" : l.passee ? " (passée)" : " (arrêtée)");
 // les étapes d'une séance, lisibles
 export const STEP_NAMES = { accueil: "accueil", echauffement: "échauffement", notion: "notion du jour", defi: "défi record", probleme: "problème du jour", recompense: "récompense" };
 
@@ -125,7 +127,8 @@ export const SESSION_COLUMNS = [
   ["séance", (s) => s.id], ["date", (s) => dayKey(s.debut)], ["début", (s) => dateTime(s.debut)], ["fin", (s) => dateTime(s.fin)], ["durée (s)", (s) => s.dureeS],
   ["terminée", (s) => !!s.terminee], ["module du jour", (s) => s.module], ["questions", (s) => s.questions], ["justes", (s) => s.justes],
   ["taux de réussite (%)", (s) => (s.reussite === null || s.reussite === undefined ? null : Math.round(s.reussite * 100))], ["étoiles", (s) => s.etoiles],
-  ["leçons", (s) => (s.lecons ?? []).map((l) => `${l.id}${l.vue ? "" : " (arrêtée)"}`).join(" ")], ["cartes", (s) => (s.cartes ?? []).join(" ")],
+  ["leçons", (s) => (s.lecons ?? []).map((l) => `${l.id}${l.vue ? "" : l.passee ? " (passée)" : " (arrêtée)"}`).join(" ")], ["cartes", (s) => (s.cartes ?? []).join(" ")],
+  ["entraînement libre", (s) => !!s.libre], ["pauses", (s) => s.pauses ?? 0],
   ["étapes", (s) => (s.etapes ?? []).map((e) => (e.sautee ? `${e.id} (sautée)` : `${e.id} ${e.dureeS ?? ""}s`)).join(" | ")],
 ];
 export const ANSWER_COLUMNS = [
@@ -133,6 +136,7 @@ export const ANSWER_COLUMNS = [
   ["question", (r) => r.question], ["forme", (r) => r.forme], ["réponse donnée", (r) => r.donnee], ["réponse attendue", (r) => r.attendue], ["juste", (r) => !!r.juste],
   ["temps (s)", (r) => (typeof r.tempsMs === "number" ? Math.round(r.tempsMs / 100) / 10 : null)], ["écoutes de la consigne", (r) => r.ecoutes], ["aide utilisée", (r) => !!r.aide],
   ["code d'erreur", (r) => r.erreur], ["question qui revient", (r) => !!r.revient], ["exemple guidé", (r) => !!r.guide],
+  ["exemple passé", (r) => !!r.passe], ["entraînement libre", (r) => !!r.libre],
 ];
 export const FACT_COLUMNS = [
   ["fait", (f) => f.fait.replace("+", " + ")], ["famille", (f) => f.famille], ["boîte", (f) => f.boite], ["prochain passage", (f) => dayKey(f.prochain)],

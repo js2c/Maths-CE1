@@ -8,7 +8,8 @@ import { BUBBLE_R, drawAnswerBubble, drawBackground, drawBubble, drawCheck, draw
 import { IDLE_N, OCTO_CLIPS, OCTO_FPS, octoParts, type Part, RING_Y } from "./octopus";
 import { drawTurtle, TURTLE_CLIPS, TURTLE_FPS } from "./turtle";
 import { CREATURE_FPS, CREATURE_N, CREATURES } from "./creatures";
-import { CARD_H, CARD_W, drawBigShell, drawCardBack, drawCardFrame, drawCardFront, drawCardVerso, drawGlint, drawGoldStar, drawHomeKey, drawRainbowStar, drawReefKey, SHELL_N, WIN } from "./treasure";
+import { CARD_H, CARD_W, drawBigShell, drawCardBack, drawCardBanner, drawCardFrame, drawCardVerso, drawCardWater, drawGlint, drawGoldStar, drawHomeKey, drawRainbowStar, drawReefKey, SHELL_N } from "./treasure";
+import { drawAgainKey, drawAlbumKey, drawDontKnowKey, drawFreeFacts, drawFreeLessons, drawFreeLine, drawMoonDecor, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepShell, STEP_R } from "./ui";
 
 // la tortue dans l'application : longueur ~110 px logiques, assez petite pour tenir sur une bouée
 export const TURTLE_S = 1;
@@ -78,7 +79,6 @@ export const SPECS: Spec[] = [
   { name: "effacer", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawEraseKey(g, 70, 70) },
   { name: "aide", sheet: "petits", W: 150, H: 150, origin: [75, 75], frames: 1, draw: (g) => drawShellKey(g, 75, 75) },
   { name: "valider", sheet: "petits", W: 160, H: 160, origin: [80, 80], frames: 1, draw: (g) => drawCheck(g, 80, 80) },
-  { name: "lune", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawMoon(g, 90, 90) },
   { name: "precedent", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawBackKey(g, 70, 70) },
   { name: "rejouer", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawReplayKey(g, 70, 70) },
   { name: "etoile.doree", sheet: "petits", W: 120, H: 120, origin: [60, 60], frames: 1, draw: (g) => drawGoldStar(g, 60, 60, 44) },
@@ -86,18 +86,28 @@ export const SPECS: Spec[] = [
   { name: "eclat", sheet: "petits", W: 80, H: 80, origin: [40, 40], frames: 1, draw: (g) => drawGlint(g, 40, 40, 30) },
   { name: "recif", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawReefKey(g, 90, 90) },
   { name: "maison", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawHomeKey(g, 70, 70) },
+  // lot 1 bis : « je ne sais pas », « passer », « Encore ! », l'album, la frise, la lune-décor, l'entraînement libre
+  { name: "nsp", sheet: "petits", W: 150, H: 150, origin: [75, 75], frames: 1, draw: (g) => drawDontKnowKey(g, 75, 75) },
+  { name: "passer", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawSkipKey(g, 70, 70) },
+  { name: "encore", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawAgainKey(g, 90, 90) },
+  { name: "album", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawAlbumKey(g, 90, 90) },
+  ...([["accueil", drawStepHello], ["echauffement", drawStepPlus], ["notion", drawStepLine], ["recompense", drawStepShell]] as const).map(([id, f]): Spec => ({ name: `frise.${id}`, sheet: "petits", W: 2 * STEP_R + 24, H: 2 * STEP_R + 24, origin: [STEP_R + 10, STEP_R + 10], frames: 1, draw: (g) => f(g, STEP_R + 10, STEP_R + 10) })),
+  { name: "frise.point", sheet: "petits", W: 30, H: 30, origin: [15, 15], frames: 2, draw: (g, f) => drawProgressDot(g, 15, 15, f === 1) },
+  { name: "lune.decor", sheet: "petits", W: 240, H: 220, origin: [120, 110], frames: 1, draw: (g) => drawMoonDecor(g, 120, 110) },
+  ...([["ligne", drawFreeLine], ["faits", drawFreeFacts], ["lecons", drawFreeLessons]] as const).map(([id, f]): Spec => ({ name: `libre.${id}`, sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => f(g, 90, 90) })),
   { name: "reecouter", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawSpeaker(g, 70, 70) },
   // les créatures du lagon, animées (le récif) : chargées seulement quand on visite le récif
   ...CREATURES.map((c): Spec => ({ name: `creature.${c.id}`, sheet: "recif", W: c.W, H: c.H, origin: c.origin, frames: CREATURE_N, fps: CREATURE_FPS, loop: [0, CREATURE_N], draw: (g, f) => c.draw(g, f / CREATURE_N, c.origin[0], c.origin[1]), meta: { ground: c.ground } })),
-  // les cartes et le coquillage : chargés pour la récompense et quand on regarde une carte dans le récif.
-  // Origine des faces : le coin haut gauche de la carte. Illustrations provisoires : la créature en plus
-  // grand (échelle 1,35), origine au centre de la fenêtre, posée dans la fenêtre par l'application.
+  // les cartes et le coquillage : chargés pour la récompense, l'album et quand on regarde une carte dans le
+  // récif. Origine : le coin haut gauche de la carte. L'illustration (image générée) est posée par
+  // l'application sous le cadre et le bandeau ; « carte.fond » la remplace si elle manque.
   { name: "carte.dos", sheet: "cartes", W: CARD_W + 16, H: CARD_H + 16, origin: [0, 0], frames: 1, draw: (g) => drawCardBack(g, 0, 0) },
-  ...["commune", "rare"].flatMap((r): Spec[] => [
-    { name: `carte.recto.${r}`, sheet: "cartes", W: CARD_W + 16, H: CARD_H + 16, origin: [0, 0], frames: 1, draw: (g) => drawCardFront(g, 0, 0, r) },
-    { name: `carte.bord.${r}`, sheet: "cartes", W: CARD_W + 16, H: CARD_H + 16, origin: [0, 0], frames: 1, draw: (g) => drawCardFrame(g, 0, 0, r) },
+  { name: "carte.fond", sheet: "cartes", W: CARD_W, H: CARD_H, origin: [0, 0], frames: 1, draw: (g) => drawCardWater(g, 0, 0) },
+  { name: "carte.bandeau", sheet: "cartes", W: CARD_W, H: CARD_H, origin: [0, 0], frames: 1, draw: (g) => drawCardBanner(g, 0, 0) },
+  ...["commune", "rare", "legendaire"].flatMap((r): Spec[] => [
+    { name: `carte.cadre.${r}`, sheet: "cartes", W: CARD_W + 4, H: CARD_H + 4, origin: [0, 0], frames: 1, draw: (g) => drawCardFrame(g, 0, 0, r) },
     { name: `carte.verso.${r}`, sheet: "cartes", W: CARD_W + 16, H: CARD_H + 16, origin: [0, 0], frames: 1, draw: (g) => drawCardVerso(g, 0, 0, r) },
   ]),
-  ...CREATURES.map((c): Spec => { const k = 1.35, [, , ww, wh] = WIN; return { name: `carte.illu.${c.id}`, sheet: "cartes", W: ww, H: wh, origin: [ww / 2, wh / 2], frames: 1, draw: (g) => c.draw(g, 0, ww / 2 + (c.origin[0] - c.W / 2) * k, c.ground ? wh - 26 : wh * 0.45, k) }; }),
+  { name: "perle", sheet: "cartes", W: 30, H: 30, origin: [15, 15], frames: 2, draw: (g, f) => drawPearl(g, 15, 15, f === 1) },
   { name: "coquillage", sheet: "cartes", W: 300, H: 280, origin: [150, 150], frames: SHELL_N, fps: 12, draw: (g, f) => drawBigShell(g, 1 - Math.pow(1 - f / (SHELL_N - 1), 2.2), 150, 150) },
 ];

@@ -5,7 +5,7 @@
 // Le domaine de chaque nombre est écrit ici, à côté de la règle du code qui le produit ; un gabarit à
 // nombre ajouté dans textes.json sans règle ici fait échouer l'inventaire (et donc les tests).
 import { readFileSync } from "node:fs";
-import { fill, sentences } from "../../app/js/engine/phrases.js";
+import { decompose, fill, sentences } from "../../app/js/engine/phrases.js";
 
 const CONTENT = new URL("../../app/content/", import.meta.url);
 export const lireContenu = () => Object.fromEntries(["textes", "lecons", "cartes", "module1", "module2", "seance"].map((k) => [k, JSON.parse(readFileSync(new URL(`${k}.json`, CONTENT), "utf8"))]));
@@ -21,7 +21,7 @@ const SAUTS_MAX = 4;
 export const additions = (max = 10) => range(0, max).flatMap((a) => range(0, max - a).map((b) => ({ a, b, n: a + b })));
 
 // les fragments qui ne sont jamais dits seuls : ils remplissent un autre gabarit
-const FRAGMENTS = new Set(["unSaut", "sauts", "uneEtoile", "desEtoiles"]);
+const FRAGMENTS = new Set(["unSaut", "sauts", "uneEtoile", "desEtoiles", "uneDizaine", "desDizaines", "uneUnite", "desUnites"]);
 
 // clé de textes.json -> liste des valeurs de ses {variables}
 function domaines(C) {
@@ -37,10 +37,12 @@ function domaines(C) {
   // les débuts de ligne qui ne sont pas 0 (erreur E3) : départs des niveaux, dizaines du niveau 7 (generator.js, lineFor)
   const departs = new Set([...M1.flatMap((c) => c.departs ?? []), ...M1.filter((c) => c.min > 0).map((c) => c.min), ...(M1.some((c) => c.niveau === 7) ? range(10, 90, 10) : [])]);
   // les nombres dont on peut inverser les chiffres (erreur E5, generator.js, TRAPS.E5)
-  const e5 = range(10, 99).filter((n) => n % 10 !== 0 && n % 10 !== Math.floor(n / 10)).map((n) => ({ d: Math.floor(n / 10), u: n % 10 }));
+  // accord au singulier : « 1 dizaine », « 1 unité » (numberline/screen.js, decompose)
+  const e5 = range(10, 99).filter((n) => n % 10 !== 0 && n % 10 !== Math.floor(n / 10)).map((n) => decompose(T, n));
   const faits = additions(C.module2.sommeMax);
   const milieux = M1.filter((c) => c.formats.includes("estimer")).map((c) => ({ n: (c.min + c.max) / 2 }));
-  const cartes = C.cartes.cartes.map((c) => ({ nom: c.nomLu ?? c.nom }));
+  // seules les cartes qui se gagnent déjà sont dites (celles des zones 2 à 4 attendent leur anecdote, lot 4)
+  const cartes = C.cartes.cartes.filter((c) => c.anecdote).map((c) => ({ nom: c.nomLu ?? c.nom }));
   return {
     accueil: noms.map((mascotte) => ({ mascotte })),
     nomChoisi: noms.map((mascotte) => ({ mascotte })),
@@ -89,8 +91,11 @@ export function inventaire(C = lireContenu()) {
     L.phrases.flat().forEach((temps) => temps.dire && add(temps.dire, `lecons.${id}`));
     for (const k of ["aToi", "aToiDepuisZero"]) if (L[k]) add(L[k], `lecons.${id}.${k}`);
   }
-  // les anecdotes des cartes (dites après « C'est … ! » et dans le récif)
-  for (const c of C.cartes.cartes) add(c.anecdote, `cartes.${c.id}`);
+  // les anecdotes des cartes (dites après « C'est … ! », dans le récif et dans l'album)
+  for (const c of C.cartes.cartes) if (c.anecdote) add(c.anecdote, `cartes.${c.id}`);
+  // l'album : le dos d'une carte pas encore découverte, une zone fermée, le dos doré d'une légendaire
+  for (const z of C.cartes.zones) for (const k of ["dosLu", "fermeeLu"]) if (z[k]) add(z[k], `cartes.zones.${z.id}.${k}`);
+  if (C.cartes.legendaireLu) add(C.cartes.legendaireLu, "cartes.legendaireLu");
   // les sauts comptés à voix haute (tortue, leçons, aide) : un nombre seul, par sauts ou par valeurs
   for (const n of TOUS) add(String(n), "comptage");
   return out;

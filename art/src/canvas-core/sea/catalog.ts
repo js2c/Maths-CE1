@@ -4,7 +4,7 @@
 // image à l'échelle 1 et 2, la recadre au plus juste, et range tout en planches WebP + `atlas.json`.
 // Les positions dans l'atlas sont relatives à l'ancrage : l'application pose un sprite par son ancrage.
 import type { Gfx, P } from "../core";
-import { BUBBLE_R, drawAnswerBubble, drawBackground, drawBubble, drawCheck, drawFish, drawMoon, drawNameTag, drawTally, NAME_H, NAME_W, TALLY_H, TALLY_W, drawRays, drawPlay, drawShimmer, drawSpeaker, drawStar, drawWeed, FISH_KINDS, FISH_N, SHIMMER_N, WEEDS } from "./decor";
+import { BUBBLE_R, drawAnswerBubble, drawBackground, drawBubble, drawCheck, drawFish, drawMoon, drawEraseKey, drawNameTag, drawShellKey, drawSlate, drawTally, SLATE_H, SLATE_W, NAME_H, NAME_W, TALLY_H, TALLY_W, drawRays, drawPlay, drawShimmer, drawSpeaker, drawStar, drawWeed, FISH_KINDS, FISH_N, SHIMMER_N, WEEDS } from "./decor";
 import { IDLE_N, OCTO_CLIPS, OCTO_FPS, octoParts, type Part, RING_Y } from "./octopus";
 import { drawTurtle, TURTLE_CLIPS, TURTLE_FPS } from "./turtle";
 
@@ -72,6 +72,9 @@ export const SPECS: Spec[] = [
   { name: "jouer", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawPlay(g, 90, 90) },
   { name: "nom", sheet: "petits", W: NAME_W + 40, H: NAME_H + 40, origin: [NAME_W / 2 + 20, NAME_H / 2 + 20], frames: 1, draw: (g) => drawNameTag(g, NAME_W / 2 + 20, NAME_H / 2 + 20, 0) },
   { name: "bilan", sheet: "petits", W: TALLY_W + 50, H: TALLY_H + 50, origin: [TALLY_W / 2 + 20, TALLY_H / 2 + 20], frames: 1, draw: (g) => drawTally(g, TALLY_W / 2 + 20, TALLY_H / 2 + 20) },
+  { name: "ardoise", sheet: "petits", W: SLATE_W + 50, H: SLATE_H + 50, origin: [SLATE_W / 2 + 20, SLATE_H / 2 + 20], frames: 1, draw: (g) => drawSlate(g, SLATE_W / 2 + 20, SLATE_H / 2 + 20) },
+  { name: "effacer", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawEraseKey(g, 70, 70) },
+  { name: "aide", sheet: "petits", W: 150, H: 150, origin: [75, 75], frames: 1, draw: (g) => drawShellKey(g, 75, 75) },
   { name: "valider", sheet: "petits", W: 160, H: 160, origin: [80, 80], frames: 1, draw: (g) => drawCheck(g, 80, 80) },
   { name: "lune", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawMoon(g, 90, 90) },
   { name: "reecouter", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawSpeaker(g, 70, 70) },

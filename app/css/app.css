@@ -36,3 +36,7 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .invite { animation: invite 1.6s ease-in-out infinite; }
 .invite.pop { animation: pop 0.45s ease-out; }
 .tally { pointer-events: none; }
+
+/* échauffement : l'ardoise (simple affichage), le pavé numérique, le coquillage d'aide */
+.slate { pointer-events: none; }
+.key { touch-action: manipulation; }

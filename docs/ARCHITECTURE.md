@@ -68,6 +68,8 @@ Chaque planche est rendue une seconde fois dans une page neuve : l'export échou
 
 `js/session/session.js` enchaîne les étapes de `content/seance.json` (accueil, échauffement, notion du jour, défi record, problème du jour, récompense). Chaque étape est jouée par un gestionnaire fourni par `main.js` ; une étape désactivée (`"actif": false`) ou sans gestionnaire est sautée et notée dans l'enregistrement de la séance. Le plafond (12 minutes, moins une minute gardée pour la récompense) et la durée de chaque étape arrêtent les questions. `js/session/notion.js` déroule la notion du jour (leçon ou deux exemples guidés, 8 à 10 questions, fin sur une réussite) quel que soit le module. `js/session/screens.js` : compteur et vol des étoiles, choix du nom de la pieuvre, bilan, « à demain ». `js/session/rewards.js` : le trésor d'étoiles.
 
+L'échauffement (module 2) : `js/modules/facts/facts.js` (catalogue des familles, 5 boîtes, seuil « rapide », plan d'un échauffement, fonctions pures), `warmup.js` (enregistrement, temps de base), `screen.js` (ardoise, pavé numérique, aide du coquillage, `runWarmup`). Paramètres dans `content/module2.json`.
+
 Les lettres (noms, plus tard cartes) sont écrites au feutre comme les chiffres : `art/src/canvas-core/sea/letters.ts`, dessinées en direct par `drawWord` (`runtime.js`) ; planche de contrôle `node tools/still.mjs lettersSheet --frame 0 --out out/lettres.png --scale 2`.
 
 ## Hors ligne et stockage

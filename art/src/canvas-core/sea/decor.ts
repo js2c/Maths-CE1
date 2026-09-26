@@ -125,13 +125,17 @@ export const drawNameTag = (g: Gfx, cx: number, cy: number, i: number) => g.grou
 // le bilan des étoiles (récompense) : un grand galet-bulle et une grosse étoile de mer à gauche ; le
 // nombre gagné est encré en direct à droite de l'étoile
 export const TALLY_W = 380, TALLY_H = 190;
-export const drawTally = (g: Gfx, cx: number, cy: number) => {
+// l'ardoise de l'échauffement (« 5 + 2 = ? ») : le même galet, plus large, sans étoile
+export const SLATE_W = 540, SLATE_H = 170;
+export const drawSlate = (g: Gfx, cx: number, cy: number) => drawTally(g, cx, cy, SLATE_W, SLATE_H, false);
+export const drawTally = (g: Gfx, cx: number, cy: number, W = TALLY_W, H = TALLY_H, star = true) => {
   g.group("plain", () => {
-    const w = TALLY_W / 2, h = TALLY_H / 2, r = h * 0.9, s = smooth([[cx - w + r, cy - h], [cx + w - r, cy - h - 3], [cx + w, cy - 6], [cx + w - r, cy + h], [cx - w + r, cy + h + 2], [cx - w, cy + 4]], true, 12);
+    const w = W / 2, h = H / 2, r = h * 0.9, s = smooth([[cx - w + r, cy - h], [cx + w - r, cy - h - 3], [cx + w, cy - 6], [cx + w - r, cy + h], [cx - w + r, cy + h + 2], [cx - w, cy + 4]], true, 12);
     fillShape(g, shift(s, 10, 13), "#0a3f49", 0.3);
     cel(g, s, "#fffaf0", "#cfe6ea", 12, [smooth([[cx - w + 30, cy - 12], [cx - w + 48, cy - h + 24], [cx - w + 90, cy - h + 13]], false, 4), "#ffffff"]);
     ink(g, smooth([[cx - w + 30, cy - 12], [cx - w + 48, cy - h + 24], [cx - w + 90, cy - h + 13]], false, 6), "#ffffff", { w: 6, shadow: 0, taper: [0.3, 0.4], seed: 395 });
     contour(g, s, 6, 396);
+    if (!star) return;
     const c: P = [cx - w + 105, cy + 4], st = O.starShape(c, 64, 27, 0.12);
     fillShape(g, shift(st, 8, 10), "#8d6f45", 0.3);
     cel(g, st, "#ffc93a", "#e08d1c", 8);
@@ -177,3 +181,25 @@ export const drawMoon = (g: Gfx, cx: number, cy: number) => {
     cel(g, st, "#ffe98a", "#e0a21c", 2); contour(g, st, 2.6, 391);
   });
 };
+// la touche « effacer » du pavé : la bulle, une flèche corail qui revient vers la gauche
+export const drawEraseKey = (g: Gfx, cx: number, cy: number) => {
+  drawAnswerBubble(g, cx, cy, 11, 48);
+  g.group("plain", () => {
+    const a = smooth([[cx - 26, cy], [cx - 26, cy], [cx - 8, cy - 18], [cx - 8, cy - 18], [cx - 8, cy - 8], [cx - 8, cy - 8], [cx + 24, cy - 8], [cx + 24, cy - 8], [cx + 24, cy + 8], [cx + 24, cy + 8], [cx - 8, cy + 8], [cx - 8, cy + 8], [cx - 8, cy + 18], [cx - 8, cy + 18]], true, 3);
+    fillShape(g, shift(a, 3, 4), "#0a3f49", 0.25); cel(g, a, "#ff7a5c", "#c64d3c", 3); contour(g, a, 3.4, 400);
+  });
+};
+// le coquillage d'aide : une coquille Saint-Jacques rose (éventail côtelé, deux oreilles à la charnière)
+export const drawShell = (g: Gfx, cx: number, cy: number, k = 1) => g.group("plain", () => {
+  const hinge: P = [cx, cy + 24 * k], R = 34 * k, a0 = -Math.PI * 0.86, a1 = -Math.PI * 0.14, n = 7, edge: P[] = [];
+  // le bord : une vague par côte
+  for (let i = 0; i <= n * 6; i++) { const t = i / (n * 6), a = a0 + (a1 - a0) * t, r = R * (1 + 0.07 * Math.abs(Math.sin(Math.PI * n * t))); edge.push([hinge[0] + Math.cos(a) * r, hinge[1] - 8 * k + Math.sin(a) * r]); }
+  const fan: P[] = [...edge, [hinge[0] + 9 * k, hinge[1] + 1], [hinge[0] - 9 * k, hinge[1] + 1]];
+  const ears: P[] = smooth([[hinge[0] - 20 * k, hinge[1] - 7 * k], [hinge[0] + 20 * k, hinge[1] - 7 * k], [hinge[0] + 17 * k, hinge[1] + 5 * k], [hinge[0] - 17 * k, hinge[1] + 5 * k]], true, 3);
+  fillShape(g, shift(fan, 4 * k, 5 * k), "#0a3f49", 0.25);
+  cel(g, ears, "#ffc2a6", "#d9785a", 3 * k); contour(g, ears, 3 * k, 410);
+  const f = smooth(fan, true, 2); cel(g, f, "#ffb896", "#dd7a5c", 6 * k);
+  for (let i = 1; i < n; i++) { const a = a0 + ((a1 - a0) * i) / n; ink(g, [[hinge[0] + Math.cos(a) * 7 * k, hinge[1] - 4 * k + Math.sin(a) * 7 * k], [hinge[0] + Math.cos(a) * R * 0.95, hinge[1] - 8 * k + Math.sin(a) * R * 0.95]], "#b8583f", { w: 2.4 * k, shadow: 0, taper: [0.4, 0.2], seed: 411 + i }); }
+  contour(g, f, 3.6 * k, 420);
+});
+export const drawShellKey = (g: Gfx, cx: number, cy: number) => { drawAnswerBubble(g, cx, cy, 12, 52); drawShell(g, cx, cy - 2, 1); };

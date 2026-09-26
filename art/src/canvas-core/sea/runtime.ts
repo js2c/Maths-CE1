@@ -118,7 +118,14 @@ export const drawJumpArc = (ctx: CanvasRenderingContext2D, a: P, b: P, p: number
   for (let i = 0; i <= n; i++) { const t = (i / n) * p, x = a[0] + (b[0] - a[0]) * t, y = a[1] + (b[1] - a[1]) * t - Math.sin(Math.PI * t) * h; pts.push([x, y]); }
   ink(g, pts, INK, { w: 8.5, shadow: 0, taper: [0.05, p < 1 ? 0.02 : 0.2], seed: 11 }, 0.35);
   ink(g, pts, o.color ?? "#ffe45c", { w: 6, shadow: 0, taper: [0.05, p < 1 ? 0.02 : 0.2], seed: 11 });
-  if (o.label && p >= 1) drawNumber(ctx, o.label, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2 - h - 34, 28, { color: o.labelColor ?? "#fffaf0", w: 4.4, seed: 600 });
+  if (o.label && p >= 1) drawWord(ctx, o.label, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2 - h - 34, 28, { color: o.labelColor ?? "#fffaf0", w: 4.4, seed: 600 });
+};
+// un miroir d'eau (aide des doubles) : une ligne claire ondulée entre le poisson et son reflet
+export const drawWave = (ctx: CanvasRenderingContext2D, x0: number, x1: number, y: number) => {
+  const g = shim(ctx), pts: P[] = [];
+  for (let x = x0; x <= x1; x += 8) pts.push([x, y + 4 * Math.sin((x - x0) / 22)]);
+  ink(g, pts, "#0a3f49", { w: 7, shadow: 0, taper: [0.08, 0.08], seed: 57 }, 0.3);
+  ink(g, pts, "#e8fffb", { w: 4.5, shadow: 0, taper: [0.08, 0.08], seed: 58 });
 };
 // un anneau d'encre autour d'une bulle (bonne réponse, surbrillance)
 export const drawRing = (ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number, color = "#ffd23a", w = 7) =>

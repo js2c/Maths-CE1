@@ -16,7 +16,7 @@ const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 }, d
 const page = await ctx.newPage(), cdp = await ctx.newCDPSession(page);
 const frames = [];
 cdp.on("Page.screencastFrame", async (f) => { frames.push({ t: f.metadata.timestamp, data: f.data }); await cdp.send("Page.screencastFrameAck", { sessionId: f.sessionId }).catch(() => {}); });
-await page.goto(url); await page.waitForFunction(() => window.__ready !== undefined); await page.waitForTimeout(800);
+await page.goto(url + "?sans=echauffement"); await page.waitForFunction(() => window.__ready !== undefined); await page.waitForTimeout(800);
 await cdp.send("Page.startScreencast", { format: "jpeg", quality: 92, maxWidth: 1280, maxHeight: 800, everyNthFrame: 1 });
 await page.waitForTimeout(2500);
 await page.tap(".play", { force: true });

@@ -33,7 +33,7 @@ await page.reload(); await page.waitForFunction(() => window.__ready !== undefin
 await page.tap(".play", { force: true });
 // premier lancement : la pieuvre demande son nom (un nom, puis la coche)
 await page.waitForSelector(".name", { timeout: 30000 }); await page.tap('.name[data-value="Pili"]', { force: true }); await page.tap(".check", { force: true });
-await page.waitForSelector(".answer", { timeout: 30000 });
+await page.waitForSelector(".key", { timeout: 30000 }); // la première question : l'échauffement, au pavé
 check(true, "hors ligne : démarrage et première question");
 check(errors.length === 0, `aucune erreur de page${errors.length ? " — " + errors.join(" | ") : ""}`);
 await browser.close(); srv.close();

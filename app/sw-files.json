@@ -1,5 +1,5 @@
 {
- "version": "f792c60c4755",
+ "version": "bedc8d131391",
  "files": [
   "./",
   "assets/art/algues@1x.webp",
@@ -19,6 +19,7 @@
   "assets/art/tortue@1x.webp",
   "assets/art/tortue@2x.webp",
   "content/module1.json",
+  "content/module2.json",
   "content/seance.json",
   "content/textes.json",
   "css/app.css",
@@ -37,6 +38,9 @@
   "js/engine/turtle.js",
   "js/engine/voice.js",
   "js/main.js",
+  "js/modules/facts/facts.js",
+  "js/modules/facts/screen.js",
+  "js/modules/facts/warmup.js",
   "js/modules/numberline/generator.js",
   "js/modules/numberline/runner.js",
   "js/modules/numberline/screen.js",

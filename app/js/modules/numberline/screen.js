@@ -57,6 +57,7 @@ export class NumberLineScreen {
   // allumée) sont préparées ensemble par le Worker : au moment de la réponse, il suffit d'afficher la seconde.
   async show(q, cfg, { guide = false } = {}) {
     const { voice, text, line } = this.app;
+    this.app.starFrom = [640, 690];
     this.q = q; this.cfg = cfg; this.locked = true; this.arcs = []; this.overlay = []; line.fxClear();
     this.spec = lineSpec(q, cfg);
     const fix = q.format === "estimer" ? { ...this.spec, marks: [{ t: (q.answer - q.min) / (q.max - q.min), label: String(q.answer), color: R.INK }] } : { ...this.spec, labels: this.spec.labels.map((l, i) => (i === q.target ? String(q.answer) : l)), mark: undefined, lit: [q.target] };

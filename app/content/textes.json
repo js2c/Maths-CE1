@@ -72,5 +72,17 @@
   "dejaJoue": [
     "Tu as déjà bien travaillé aujourd'hui. On se retrouve demain !",
     "C'est l'heure de se reposer. À demain !"
-  ]
+  ],
+  "echauffement": [
+    "On commence par s'échauffer avec des additions !",
+    "D'abord, un petit échauffement : des additions !"
+  ],
+  "pave": "Tape la réponse, puis touche la coche verte.",
+  "fait": [
+    "{a} plus {b} ?",
+    "Combien font {a} plus {b} ?"
+  ],
+  "faitCorrection": "{a} plus {b}, ça fait {n}.",
+  "aideLigne": "La tortue est sur {a}. Elle fait {sauts}. Compte avec elle !",
+  "aideReflet": "{a} poissons, et dans le reflet, encore {a} poissons."
 }

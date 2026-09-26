@@ -11,6 +11,8 @@ import { Voice } from "./engine/voice.js";
 import { Module1Runner } from "./modules/numberline/runner.js";
 import { fill, ReadScreen } from "./modules/numberline/screen.js";
 import { runNotion } from "./session/notion.js";
+import { FactsScreen, runWarmup } from "./modules/facts/screen.js";
+import { Warmup } from "./modules/facts/warmup.js";
 import { Rewards } from "./session/rewards.js";
 import { chooseName, goodNight, onTap, reward, spriteBox, StarHud } from "./session/screens.js";
 import { doneToday, Session } from "./session/session.js";
@@ -21,7 +23,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !loc
 const json = async (p) => (await fetch(p)).json();
 
 const stage = new Stage(document.getElementById("stage"));
-const [atlas, module1, textes, seance] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/textes.json"), json("content/seance.json")]);
+const [atlas, module1, module2, textes, seance] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/module2.json"), json("content/textes.json"), json("content/seance.json")]);
 const sprites = new Sprites(atlas, stage.px);
 // la base locale ; au premier lancement, on demande au navigateur de ne jamais l'effacer de lui-même
 const store = await Store.open();
@@ -35,12 +37,13 @@ stage.start();
 stage.onResize(() => { if (Math.abs(stage.px - sprites.px) > 0.01) location.reload(); });
 
 const rnd = rng(Date.now() & 0xffffffff);
-// pour les tests et les captures : ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N
+// pour les tests et les captures : ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape
 const P = new URLSearchParams(location.search);
 const text = { data: textes, pick: (k, v = {}) => { const e = textes[k]; return fill(Array.isArray(e) ? e[Math.floor(rnd() * e.length)] : e, { mascotte: app.mascotte, ...v }); } };
 const voice = new Voice({ rate: 0.9, fast: P.get("voix") === "rapide" });
 const rewards = await new Rewards(store).load();
 const app = { stage, sprites, ocean, voice, text, rnd, atlas, store, rewards, line: new LineView(stage), mascotte: await store.setting("mascotte") };
+app.lineScreen = () => (app.screen ??= new ReadScreen(app)); // l'écran de la ligne (aussi pour l'aide des faits + 1, + 2)
 window.__app = app;
 
 // le premier écran est prêt : on le note pour la mesure du démarrage
@@ -54,8 +57,8 @@ const hud = new StarHud(app, rewards);
 app.hud = hud;
 
 // ---------------------------------------------------------------- la séance
-// les étapes que l'application sait jouer (les autres sont sautées : échauffement à l'étape 8, défi et
-// problème du jour désactivés au lot 1) ; les leçons animées arrivent à l'étape 9
+// les étapes que l'application sait jouer (les autres sont sautées : défi et problème du jour sont
+// désactivés au lot 1) ; les leçons animées arrivent à l'étape 9
 const lesson = async () => false;
 const handlers = {
   accueil: async () => {
@@ -65,8 +68,15 @@ const handlers = {
       ocean.octo.play("rejouir"); await voice.say(text.pick("nomChoisi"));
     } else { ocean.octo.play("saluer"); await voice.say(text.pick("accueil")); }
   },
+  // échauffement : faits d'addition dus (familles 1 et 2 au lot 1), précédés des questions du temps de base
+  echauffement: async (ctx) => {
+    const screen = (app.facts ??= new FactsScreen(app, module2)), warmup = await new Warmup({ store, content: module2, rnd, seance: ctx.session.id }).load();
+    const step = { ...ctx.step, ...(P.get("faits") ? { questions: [Number(P.get("faits")), Number(P.get("faits"))] } : {}) };
+    app.warmup = warmup;
+    await runWarmup({ ...ctx, step, warmup, screen, rnd, intro: async () => { await voice.say(text.pick("echauffement")); if (!warmup.base.mesures.length) await voice.say(text.data.pave); } });
+  },
   notion: async (ctx) => {
-    const screen = (app.screen ??= new ReadScreen(app));
+    const screen = app.lineScreen();
     const runner = await new Module1Runner({ screen, store, content: module1, rnd, seance: ctx.session.id }).load();
     if (P.get("niveau")) { runner.st.niveau = Number(P.get("niveau")); runner.save = () => {}; }
     if (P.get("format")) runner.levels = runner.levels.map((c) => ({ ...c, formats: [P.get("format")] }));
@@ -77,9 +87,11 @@ const handlers = {
   },
   recompense: (ctx) => reward(app, { ...ctx, hud }),
 };
+// pour les mesures : ?sans=echauffement (ou une autre étape) la saute
+for (const id of (P.get("sans") ?? "").split(",").filter(Boolean)) delete handlers[id];
 // chaque gain d'étoiles pendant les questions : les étoiles s'envolent des bulles-réponses vers le compteur
 // (le bilan de fin de séance fait voler les siennes lui-même)
-rewards.onChange((n, raison) => { if (raison !== "séance terminée") hud.fly(n, [640, 690], { gap: 140 }); });
+rewards.onChange((n, raison) => { if (raison !== "séance terminée") hud.fly(n, app.starFrom ?? [640, 690], { gap: 140 }); });
 
 // ---------------------------------------------------------------- premier écran
 if (await doneToday(store)) {

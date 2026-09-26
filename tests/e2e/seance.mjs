@@ -88,6 +88,8 @@ check(db.etoiles?.total === se.etoiles && se.etoiles >= 13, `étoiles : ${se.eto
 check(db.reponses.filter((r) => !r.guide).at(-1)?.juste === true, "la séance finit sur une réussite");
 const hudShown = await page.evaluate(() => window.__app.hud.shown); check(hudShown === db.etoiles.total, `le compteur affiche le trésor (${hudShown})`);
 console.log(JSON.stringify({ seance: { ...se, etapes: se.etapes.map((e) => `${e.id}${e.sautee ? ` (sautée : ${e.sautee})` : ` ${e.dureeS} s`}`) } }, null, 1));
+const voix = await page.evaluate(() => ({ manques: [...window.__app.voice.misses], index: !!window.__app.voice.index }));
+check(voix.index && voix.manques.length === 0, `chaque phrase dite a son fichier son${voix.manques.length ? ` ; sans fichier : ${voix.manques.join(" | ")}` : ""}`);
 // relance le même jour : la lune, pas de « jouer »
 await page.reload(); await page.waitForFunction(() => window.__ready !== undefined); await page.waitForTimeout(800);
 check((await page.locator(".play").count()) === 0 && (await page.locator(".moon").count()) === 1, "relance le même jour : la lune au lieu de « jouer »");

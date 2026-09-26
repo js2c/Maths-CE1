@@ -22,6 +22,7 @@ const page = await context.newPage();
 const errors = []; page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
 const shot = (n) => page.screenshot({ path: join(OUT, `${n}.png`) });
 const check = (ok, msg) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${msg}`); if (!ok) process.exitCode = 1; };
+const voixOk = async (quand) => { const m = await page.evaluate(() => [...window.__app.voice.misses]); check(m.length === 0, `${quand} : chaque phrase dite a son fichier son${m.length ? ` ; sans fichier : ${m.join(" | ")}` : ""}`); };
 
 // ---- 1. une séance courte, puis le coquillage
 // la série en est à 2 séances (hier) : celle-ci est la 3e, elle rapporte 5 étoiles ; cinq bonnes réponses
@@ -82,6 +83,8 @@ check(await page.locator(".card").count() === 0, "la coche range la carte");
 await page.tap(".homekey", { force: true }); await page.waitForTimeout(600);
 check((await page.locator(".moon").count()) === 1 && (await page.locator(".creature").count()) === 0 && !(await page.evaluate(() => window.__app.sprites.ready("recif"))), "la maison ramène à la lune ; le récif est libéré");
 
+await voixOk("séance et récompense");
+
 // ---- 3. un récif complet
 await page.evaluate(async (ids) => { const o = {}; ids.forEach((id, i) => { o[id] = { n: id === "hippocampe" ? 4 : 1, premiere: Date.now(), brillante: id === "hippocampe" }; }); await window.__app.store.put("recompenses", { id: "cartes", cartes: o }); }, cartes.cartes.map((c) => c.id));
 await page.reload(); await page.waitForFunction(() => window.__ready !== undefined); await page.waitForTimeout(500);
@@ -90,5 +93,6 @@ await shot("9-recif-complet");
 check((await page.locator(".creature").count()) === 15, "récif complet : 15 créatures");
 await page.tap('.creature[data-id="hippocampe"]', { force: true }); await page.waitForSelector(".card.shiny", { timeout: 20000 }); await page.waitForTimeout(1000);
 await shot("10-carte-brillante");
+await voixOk("récif complet");
 check(errors.length === 0, `aucune erreur dans la page ${errors.join(" | ")}`);
 await browser.close(); srv.close();

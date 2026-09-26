@@ -88,6 +88,23 @@ Les lettres (noms, plus tard cartes) sont écrites au feutre comme les chiffres 
 - Exports : réponses, séances et faits en CSV (point-virgule, virgule décimale, BOM : s'ouvrent directement dans un tableur français) et sauvegarde complète en JSON (`Store.dump`, sans le code parent). Rappel en haut de chaque onglet si la dernière sauvegarde complète date de plus de 7 jours. Restauration d'une sauvegarde JSON (`Store.restore`, en une transaction, le code actuel est gardé).
 - Réglages : nom de la pieuvre (il n'est que dit par la voix, le parent peut en taper un autre), durée maximale d'une séance (`dureeSeanceMin`, 10, 12 ou 15 min, lue au début de chaque séance), code, stockage persistant, tout effacer.
 
+## La voix
+
+Chaque phrase dite par l'application est un **fichier son fabriqué à l'avance** (docs/SPEC.md, « Voix enregistrée à l'avance »), avec le moteur libre Piper et la voix `fr_FR-siwis-medium` choisie par le parent (échantillons : `docs/voix-echantillons/`). La synthèse du navigateur ne sert plus que de secours.
+
+```
+app/content/*.json ─▶ tools/voix/inventaire.mjs ─▶ phrases ─▶ tools/voix/lettres.mjs ─▶ piper_lot.py ─▶ ffmpeg (Opus) ─▶ app/assets/voix/<empreinte>.ogg
+   (gabarits)          (chaque valeur possible)                  (nombres en lettres)       (Piper)                          + index.json
+```
+
+- **Une phrase = un fichier.** Un texte dit par l'application est découpé en phrases après « . », « ! », « ? », « … » (`app/js/engine/phrases.js`, partagé par l'application et l'outil). « Bravo ! Ce soir, tu as gagné 12 étoiles de mer. » joue deux fichiers à la suite. Une phrase n'est jamais recollée en morceaux : « Place le poisson sur le nombre 37. » est un fichier, fabriqué pour chacun des nombres de 0 à 100.
+- **L'inventaire** (`tools/voix/inventaire.mjs`) remplit chaque gabarit de `content/textes.json` avec toutes les valeurs que le code peut lui donner : nombres des niveaux du module 1 (lignes, départs, sauts, pièges E3 et E5), les 66 additions sous leurs trois formes et leur correction, les six noms de la pieuvre, les créatures, le bilan des étoiles (0 à 60), les nombres comptés à voix haute ; plus les phrases des leçons et les anecdotes des cartes. Le domaine de chaque variable est écrit à côté de la règle du code qui la produit. Un gabarit à variable ajouté dans `textes.json` sans règle fait échouer l'inventaire, donc `npm test`.
+- **Les nombres et symboles en lettres** (`tools/voix/lettres.mjs`) : « 0 plus 6 ? » est lu « zéro plus six ? », « 21 étoiles » « vingt et une étoiles », « 3 + ? = 7 » « trois plus combien égale sept ». L'index garde la phrase telle que l'application la produit (avec ses chiffres) ; seul le texte donné à Piper est en lettres.
+- **Fabrication** : `node tools/voix/fabriquer.mjs` (Python, `pip install piper-tts imageio-ffmpeg` ; le modèle est téléchargé dans `tools/voix/modeles/`, non versionné). Piper n'est pas déterministe (un peu de hasard dans le rythme) : une phrase n'est refabriquée que si son texte lu ou les réglages changent (`tools/voix/fabrique.json` garde le texte lu de chaque phrase). Opus mono 24 kbit/s, 60 ms de silence ajoutés en fin de phrase. Chaque fichier est nommé par l'empreinte de son contenu ; les fichiers qui ne servent plus sont supprimés. Environ 1 500 phrases, 9 Mo, 3 à 4 minutes de fabrication pour tout refaire (4 processeurs). Après : `node tools/precache.mjs`.
+- **Dans l'application** (`js/engine/voice.js`) : `index.json` est chargé au démarrage (phrase → [fichier, durée]). `say(texte)` joue les fichiers des phrases l'une après l'autre (tous chargés dès le début, 140 ms entre deux phrases). Si une seule phrase du texte n'a pas de fichier, tout le texte passe par la synthèse du navigateur (jamais deux voix mêlées dans un même texte) et la phrase est notée dans `voice.misses`. C'est le cas d'un nom de pieuvre tapé par le parent, ou d'un bilan de plus de 60 étoiles. La fin d'un fichier est `ended`, ou sa durée plus 1,5 s. « Réécouter » redit la dernière consigne, donc rejoue ses fichiers. `stop()` coupe le fichier en cours et libère aussitôt. `?voix=synthese` : seulement la synthèse (comparaison) ; `?voix=rapide` (tests) : rien n'est joué, on attend 12 % de la durée des fichiers.
+- **Hors ligne** : les fichiers son sont dans la liste du service worker comme le reste de `app/`. Leur nom étant l'empreinte de leur contenu, une nouvelle version de l'application reprend ceux qui sont déjà dans le cache au lieu de les retélécharger.
+- **Vérifications** : `tests/unit/voix.test.mjs` (nombres en lettres, découpage, inventaire, un fichier pour chaque phrase, pas de fichier orphelin, poids sous 15 Mo, moteur), `tests/e2e/voix.mjs` (lecture réelle dans Chromium : décodage, durée, enchaînement, « réécouter », secours, arrêt) ; les parcours `seance`, `lecons` et `recompenses` échouent si une phrase dite n'a pas de fichier.
+
 ## Hors ligne et stockage
 
 - `app/sw.js` met en cache tous les fichiers listés dans `app/sw-files.json`. Cette liste et la version du cache sont produites par `node tools/precache.mjs` ; `npm test` échoue si elle n'est pas à jour. À relancer après chaque changement dans `app/`.
@@ -98,6 +115,8 @@ Les lettres (noms, plus tard cartes) sont écrites au feutre comme les chiffres 
 ```bash
 npm test                          # tests unitaires (node --test)
 node tests/e2e/pwa.mjs             # installable et utilisable hors ligne
+node tests/e2e/voix.mjs            # la voix fabriquée, jouée pour de vrai (décodage, durée, « réécouter », secours)
+node tools/voix/fabriquer.mjs      # fabrique les phrases nouvelles ou modifiées (voir « La voix »)
 node tests/e2e/seance.mjs          # une séance complète (nom, échauffement, leçon L1, questions, récompense, « à demain »)
 node tests/e2e/lecons.mjs          # les leçons L1 à L3, avec « phrase précédente » et « rejouer »
 node tests/e2e/recompenses.mjs     # bonus, coquillage qui s'ouvre, carte, récif (et récif complet)

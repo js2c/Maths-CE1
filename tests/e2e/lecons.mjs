@@ -49,6 +49,8 @@ for (const id of ["L1", "L2", "L3"]) {
   const r = await page.evaluate(() => window.__lecon);
   check(r.vue && r.precedentes === (id === "L1" ? 3 : 1) && r.rejouees === (id === "L1" ? 1 : 0), `${id} vue jusqu'au bout (${JSON.stringify(r)})`);
   check((await page.locator(".lessonkey").count()) === 0, `${id} : les boutons de la leçon disparaissent à la fin`);
+  const manques = await page.evaluate(() => [...window.__app.voice.misses]);
+  check(manques.length === 0, `${id} : chaque phrase dite a son fichier son${manques.length ? ` ; sans fichier : ${manques.join(" | ")}` : ""}`);
   check(errors.length === 0, `${id} : aucune erreur dans la page ${errors.join(" | ")}`);
   await page.context().close();
 }

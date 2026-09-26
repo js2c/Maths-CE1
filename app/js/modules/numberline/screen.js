@@ -8,6 +8,7 @@
 // dit pourquoi, et l'animation propre à l'erreur est jouée (tableau des erreurs E1 à E5 de la SPEC).
 import * as R from "../../art/runtime.js";
 import { Actor } from "../../engine/actor.js";
+import { fill } from "../../engine/phrases.js";
 import { arcHeight, Turtle } from "../../engine/turtle.js";
 import { classify, lineSpec, makeEstimate, makeJump, makePlace, makeRead } from "./generator.js";
 
@@ -198,7 +199,9 @@ export class NumberLineScreen {
       if (q.format !== "sauter") await voice.say(text.pick("bravo"));
       await wait(700);
     } else {
-      await voice.say(code && T[code] ? fill(T[code], { a: q.min, d: Math.floor(n / 10), u: n % 10 }) : T.autre);
+      // au format « sauter », E3 est l'oubli du point de départ (la bouée où la tortue est posée), pas celui du début de la ligne
+      const key = q.format === "sauter" && code === "E3" ? "E3sauter" : code;
+      await voice.say(key && T[key] ? fill(T[key], { a: q.format === "sauter" ? q.min + q.start * q.step : q.min, d: Math.floor(n / 10), u: n % 10 }) : T.autre);
       if (this.input) { const X = this.xOf(n); this.fishGoal = [X, R.lineY(this.spec, X) - 50]; } // le poisson va à la bonne place
       await this.explain(code);
       line.show(this.fix);
@@ -258,4 +261,4 @@ export class NumberLineScreen {
 export { NumberLineScreen as ReadScreen };
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-export const fill = (s, v) => s.replace(/\{(\w+)\}/g, (_, k) => String(v[k] ?? ""));
+export { fill };

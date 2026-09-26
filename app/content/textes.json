@@ -1,5 +1,5 @@
 {
-  "_doc": "Tout ce que la voix lit. {mascotte} : le nom choisi pour la pieuvre ; {n}, {a}, {b} : des nombres ; {nom} : un nom proposé. Plusieurs variantes : l'application en tire une au hasard. Récompenses et récif : {nom} est le nom de la créature avec son article (cartes.json, nomLu).",
+  "_doc": "Tout ce que la voix lit. {mascotte} : le nom choisi pour la pieuvre ; {n}, {a}, {b} : des nombres ; {nom} : un nom proposé. Plusieurs variantes : l'application en tire une au hasard. Récompenses et récif : {nom} est le nom de la créature avec son article (cartes.json, nomLu). erreur.E3sauter : l'erreur E3 au format « sauter » (oublier le point de départ ; {a} : la bouée de départ). faitTrouDroite, faitTrouGauche : les formes à trou des faits (3 + ? = 7, ? + 4 = 6), utilisées à partir du lot 2. Chaque phrase dite a son fichier son (app/assets/voix/, fabriqué par tools/voix/fabriquer.mjs) : après une modification ici, relancer cet outil ; une phrase sans fichier est lue par la synthèse du navigateur.",
   "accueil": [
     "Coucou ! C'est moi, {mascotte}. On va jouer dans l'océan !",
     "Bonsoir ! {mascotte} est contente de te voir. On y va ?"
@@ -24,6 +24,7 @@
     "E1": "On compte les sauts, pas les traits.",
     "E2": "Ici, chaque saut vaut dix !",
     "E3": "La ligne commence à {a}, pas à zéro.",
+    "E3sauter": "La tortue part de {a}, pas de zéro.",
     "E4": "Les nombres grandissent vers la droite.",
     "E5": "{d} dizaines et {u} unités.",
     "autre": "Hmm, regardons ensemble."
@@ -82,6 +83,8 @@
     "{a} plus {b} ?",
     "Combien font {a} plus {b} ?"
   ],
+  "faitTrouDroite": "{a} plus combien font {n} ?",
+  "faitTrouGauche": "Combien plus {b} font {n} ?",
   "faitCorrection": "{a} plus {b}, ça fait {n}.",
   "aideLigne": "La tortue est sur {a}. Elle fait {sauts}. Compte avec elle !",
   "aideReflet": "{a} poissons, et dans le reflet, encore {a} poissons.",

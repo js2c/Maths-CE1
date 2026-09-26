@@ -1,0 +1,11 @@
+Voix de l'application
+
+Chaque phrase est un fichier son (Ogg Opus) fabriqué à l'avance avec le moteur libre Piper
+(https://github.com/OHF-voice/piper1-gpl) et la voix fr_FR-siwis-medium
+(https://huggingface.co/rhasspy/piper-voices, dossier fr/fr_FR/siwis/medium).
+
+Cette voix est entraînée sur le corpus « SIWIS French Speech Synthesis Database »
+(Edinburgh DataShare, https://datashare.is.ed.ac.uk/handle/10283/2353), publié sous licence Creative Commons Attribution 4.0 (CC-BY 4.0).
+
+index.json : phrase -> [fichier, durée en ms]. Ne pas modifier à la main : ces fichiers sont
+produits par tools/voix/fabriquer.mjs (voir docs/ARCHITECTURE.md, « La voix »).

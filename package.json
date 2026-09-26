@@ -1,0 +1,10 @@
+{
+  "name": "maths-ce1",
+  "private": true,
+  "type": "module",
+  "description": "Application d'entraînement aux mathématiques de CE1 (app/) et ses tests (tests/). L'atelier graphique a son propre package dans art/.",
+  "scripts": {
+    "test": "node --test tests/unit/*.test.mjs",
+    "serve": "node tests/serve.mjs 8080"
+  }
+}

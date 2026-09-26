@@ -1,0 +1,19 @@
+{
+  "_doc": "Tout ce que la voix lit. {mascotte} : le nom choisi pour la pieuvre ; {n}, {a}, {b} : des nombres. Plusieurs variantes : l'application en tire une au hasard.",
+  "accueil": ["Coucou ! C'est moi, {mascotte}. On va jouer dans l'océan !", "Bonsoir ! {mascotte} est contente de te voir. On y va ?"],
+  "commencer": "Touche la bulle pour commencer.",
+  "lire": ["Quel nombre se cache sous l'étoile de mer ?", "L'étoile de mer est posée sur une bouée. Quel est ce nombre ?"],
+  "placer": ["Place le poisson sur le nombre {n}."],
+  "sauter": ["La tortue est sur {a} et fait {b} sauts. Où arrive-t-elle ?"],
+  "bravo": ["Bravo !", "Super !", "Oui, c'est ça !", "Bien joué !", "Exactement !"],
+  "erreur": {
+    "E1": "On compte les sauts, pas les traits.",
+    "E2": "Ici, chaque saut vaut dix !",
+    "E3": "La ligne commence à {a}, pas à zéro.",
+    "E4": "Les nombres grandissent vers la droite.",
+    "E5": "{d} dizaines et {u} unités.",
+    "autre": "Hmm, regardons ensemble."
+  },
+  "bonneReponse": "C'était {n}.",
+  "aDemain": ["C'est fini pour aujourd'hui. À demain !"]
+}

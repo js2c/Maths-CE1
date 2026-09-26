@@ -1,0 +1,27 @@
+/* L'application tient dans une scène de 1280 × 800 px logiques, mise à l'échelle de l'écran (stage.js).
+   Pas de texte long, pas de sélection, pas de zoom : tout se fait au doigt. */
+html, body { margin: 0; height: 100%; background: #0b5563; overflow: hidden; }
+body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
+#stage { position: absolute; overflow: hidden; background: #0b5563; }
+#stage > canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+/* la pieuvre : son propre canvas, incliné et déplacé par le compositeur (octopus.js) */
+#stage > #octo { inset: auto; left: 0; top: 0; will-change: transform; }
+#stage > #line { inset: auto; left: 0; width: 100%; } /* bande de la ligne graduée : top et height posés par line.js */
+/* les acteurs : un petit canvas chacun, déplacé par le compositeur (actor.js) */
+.actors { position: absolute; inset: 0; pointer-events: none; }
+.actor { position: absolute; left: 0; top: 0; will-change: transform; pointer-events: none; }
+#ui { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; transform-origin: 0 0; }
+
+/* bulles et boutons : un calque dessiné par l'atelier, sans bord ni fond de navigateur */
+.bubble, .hud { position: absolute; padding: 0; border: 0; background: none; outline: none; cursor: pointer; touch-action: manipulation; }
+.bubble canvas, .hud canvas { width: 100%; height: 100%; display: block; }
+.answer { width: 140px; height: 140px; }
+.play { width: 180px; height: 180px; left: 550px; top: 560px; animation: invite 1.6s ease-in-out infinite; }
+.stars { pointer-events: none; }
+/* retours : jamais d'agrandissement d'une image (on part plus petit et on revient à 1) */
+@keyframes invite { 0%, 100% { transform: scale(1); } 50% { transform: scale(0.93); } }
+@keyframes pop { 0% { transform: scale(0.82); } 60% { transform: scale(1); } 80% { transform: scale(0.95); } 100% { transform: scale(1); } }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-10px); } 40% { transform: translateX(9px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(4px); } }
+.pop { animation: pop 0.45s ease-out; }
+.shake { animation: shake 0.5s ease-in-out; }
+.dim { opacity: 0.55; transition: opacity 0.4s; }

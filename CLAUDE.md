@@ -57,7 +57,7 @@ node tools/still.mjs oceanMarker --frame 0 --out out/look.png --scale 2   # une 
 node tools/render.mjs oceanMarker --out out/loop.mp4                       # la boucle (ffmpeg requis, variable FFMPEG)
 ```
 
-Chromium est préinstallé dans l'environnement de Claude Code (ne pas lancer `playwright install`). Un outil d'export des planches de sprites vers `app/assets/art/` reste à écrire (lot 1) ; il doit produire des boucles sans raccord et vérifier leur reproductibilité.
+Chromium est préinstallé dans l'environnement de Claude Code (ne pas lancer `playwright install`). L'export vers l'application : `node tools/export-app.mjs` (planches, `atlas.json`, `app/js/art/runtime.js`, contrôles de reproductibilité et de raccord) ; voir `docs/ARCHITECTURE.md`.
 
 ## Méthode de travail
 

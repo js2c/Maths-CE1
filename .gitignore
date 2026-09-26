@@ -1,2 +1,5 @@
 node_modules/
 .DS_Store
+art/out/
+art/dist/
+tests/e2e/out/

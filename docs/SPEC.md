@@ -324,7 +324,7 @@ Une séance rapporte environ 35 à 50 étoiles, qu'elle réussisse bien ou moins
 | 3 · Calcul rapide | Dauphin | La vitesse, les sauts de 10 |
 | 4 · Problèmes | Crabe | Personnage des énoncés |
 
-**Illustrations des cartes.** Les 60 illustrations de créatures des cartes sont générées à part (Nano Banana), sans aucun texte dans l'image, au format portrait 3:4, avec l'illustration de référence du style A fournie pour garder l'unité visuelle. L'application ajoute le cadre, la rareté, le nom et l'anecdote. Chaque image est relue (anatomie : nageoires, bras, yeux) avant d'être intégrée.
+**Illustrations des cartes.** Les 60 illustrations de créatures des cartes sont générées à part (Nano Banana), sans aucun texte dans l'image, au format portrait 3:4, dans un style **différent de l'application** : dessin animalier naturaliste réaliste et très détaillé (aquarelle et gouache, finesse de planche scientifique), pour que la carte soit un objet précieux qu'on collectionne. Les cartes validées servent de référence aux suivantes pour garder l'unité de la série. L'application ajoute le cadre, la rareté, le nom et l'anecdote. Chaque image est relue (anatomie : nageoires, bras, yeux) avant d'être intégrée.
 
 ## Espace parent
 

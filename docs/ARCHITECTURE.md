@@ -60,6 +60,8 @@ node tools/export-app.mjs                # tout : planches, atlas, runtime.js, c
 node tools/export-app.mjs --only pieuvre # une partie
 node tools/export-app.mjs --runtime      # seulement app/js/art/runtime.js
 node tools/still.mjs octoSheet --frame 18 --out out/pieuvre.png --scale 2   # planche de modèle de la pieuvre
+node tools/still.mjs creaturesSheet --frame 0 --out out/creatures.png --scale 2   # les 15 créatures du lagon
+node tools/still.mjs treasureSheet --frame 0 --out out/tresor.png --scale 1       # coquillage, étoiles, cartes
 ```
 
 Chaque planche est rendue une seconde fois dans une page neuve : l'export échoue si une seule image diffère (empreintes). Les planches sont en WebP sans perte.
@@ -71,6 +73,8 @@ Chaque planche est rendue une seconde fois dans une page neuve : l'export échou
 Les leçons animées (L1 à L3, `content/lecons.json`) : `js/lessons/script.js` (fonctions pures : l'état de la scène au début de chaque phrase, calculé sans rien jouer, et la vérification du contenu) et `js/lessons/player.js` (le lecteur). Une leçon est une suite de phrases découpées en temps { dire, faire } : la voix dit pendant que les actions se jouent, et le temps suivant attend la fin des deux. « Phrase précédente » et « rejouer » abandonnent la phrase en cours (jeton) et remettent la scène dans l'état exact du début de la phrase demandée. La leçon se joue sur la scène de la ligne (la tortue, l'étoile et le calque d'effets de l'écran du module 1) ; la pieuvre remonte un peu pour dégager le début de la ligne. Nouvelles primitives de l'atelier : `drawLitTick` (une graduation allumée) et `drawLens` (la loupe de L3). Après toute leçon regardée jusqu'au bout : 3 étoiles, puis « À toi ! » et un premier exercice guidé au format « lire », sans démonstration, la tortue attendant au départ de la ligne (`session/notion.js`).
 
 L'échauffement (module 2) : `js/modules/facts/facts.js` (catalogue des familles, 5 boîtes, seuil « rapide », plan d'un échauffement, fonctions pures), `warmup.js` (enregistrement, temps de base), `screen.js` (ardoise, pavé numérique, aide du coquillage, `runWarmup`). Paramètres dans `content/module2.json`.
+
+Les récompenses (`content/cartes.json`) : `js/session/rewards.js` (le trésor : étoiles de mer, dorées, arc-en-ciel, coquillages, collection de cartes, série ; fonctions pures du tirage, des doublons et des bonus), `js/session/screens.js` (la récompense : bilan, bonus, coquillages qui s'ouvrent), `js/session/cards.js` (une carte à l'écran : dos, recto, verso de l'anecdote, retournée par une rotation CSS), `js/session/reef.js` (le récif visitable). Dessins de l'atelier : `sea/creatures.ts` (les 15 créatures du lagon, boucles de 12 images à 8 images/s ; planche spécimen `creaturesSheet`) et `sea/treasure.ts` (le grand coquillage en 12 images d'ouverture, l'éclat, les étoiles dorée et arc-en-ciel, les faces des cartes, les boutons récif et maison ; planche spécimen `treasureSheet`). Deux grandes planches ne sont chargées que le temps de s'en servir, puis libérées (`Sprites.unload`) : « recif » (43 Mo décodés en @2x) pendant la visite du récif, « cartes » (34 Mo) pendant la récompense et quand on regarde une carte. Les illustrations générées des cartes iront dans `app/assets/cards/<id>.webp` (voir `LISEZMOI.txt` dans ce dossier) ; tant qu'une carte n'a pas la sienne, le recto montre le dessin provisoire de l'atelier (`carte.illu.<id>`).
 
 Les lettres (noms, plus tard cartes) sont écrites au feutre comme les chiffres : `art/src/canvas-core/sea/letters.ts`, dessinées en direct par `drawWord` (`runtime.js`) ; planche de contrôle `node tools/still.mjs lettersSheet --frame 0 --out out/lettres.png --scale 2`.
 
@@ -86,6 +90,7 @@ npm test                          # tests unitaires (node --test)
 node tests/e2e/pwa.mjs             # installable et utilisable hors ligne
 node tests/e2e/seance.mjs          # une séance complète (nom, échauffement, leçon L1, questions, récompense, « à demain »)
 node tests/e2e/lecons.mjs          # les leçons L1 à L3, avec « phrase précédente » et « rejouer »
+node tests/e2e/recompenses.mjs     # bonus, coquillage qui s'ouvre, carte, récif (et récif complet)
 node tests/e2e/perf.mjs            # mesures (processeur ralenti ×4, 1280 × 800, densité 2) et captures
 FFMPEG=/chemin/ffmpeg node tests/e2e/video.mjs   # vidéo d'une séance (MP4)
 ```

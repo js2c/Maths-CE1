@@ -1,0 +1,88 @@
+// LE RÉCIF (docs/SPEC.md, « Le récif ») : chaque créature obtenue y vit, animée (boucles fabriquées par
+// l'atelier, planche « recif », chargée seulement pendant la visite puis libérée). On y entre depuis
+// l'écran de départ ou depuis la lune ; la visite est libre et ne rapporte rien. Toucher une créature
+// montre sa carte (recto) et la voix dit son nom et son anecdote ; toucher la carte la retourne (le verso
+// porte l'anecdote écrite) ; la coche verte la range. La maison ramène à l'écran de départ.
+// Au lot 1, seule la première zone (le lagon) est ouverte : c'est le décor de l'océan lui-même.
+import { fill } from "../modules/numberline/screen.js";
+import { CARD, cardElement } from "./cards.js";
+import { onTap, spriteBox } from "./screens.js";
+
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };
+// comment chaque créature bouge dans le récif (le reste de son mouvement est dans sa boucle)
+const MOVES = {
+  "poisson-clown": (t) => [16 * Math.sin(t * 0.7), 8 * Math.sin(t * 1.3)], // reste près de son anémone
+  "poisson-chirurgien": (t) => [60 * Math.sin(t * 0.35), 12 * Math.sin(t * 0.9)],
+  "poisson-ballon": (t) => [20 * Math.sin(t * 0.4), 10 * Math.sin(t * 0.8)],
+  hippocampe: (t) => [0, 8 * Math.sin(t * 1.1)],
+  crevette: (t) => [10 * Math.sin(t * 0.6), 5 * Math.sin(t * 1.4)],
+  "raie-pastenague": (t) => [40 * Math.sin(t * 0.3), 6 * Math.sin(t * 0.6)],
+  crabe: (t) => [34 * Math.sin(t * 0.5), 0], // marche de côté
+  "bernard-l-ermite": (t) => [18 * Math.sin(t * 0.25), 0],
+};
+
+export class Reef {
+  constructor(app) { this.app = app; this.open = false; }
+  // la visite ; la promesse se résout quand l'enfant touche la maison
+  async visit() {
+    const { app } = this, { sprites, ocean, voice, text, rewards } = app;
+    this.open = true; this.els = []; this.beings = [];
+    await sprites.load("recif");
+    for (const c of rewards.collection()) {
+      const a = ocean.spriteActor(ocean.frontEl, `creature.${c.id}`), spec = sprites.atlas.sprites[`creature.${c.id}`], ph = c.id.length * 1.7;
+      const b = { c, a, ph, move: MOVES[c.id] ?? ((t) => [0, spec.meta?.ground ? 0 : 5 * Math.sin(t)]) };
+      // la zone à toucher : toute la créature, et au moins 96 px (des doigts de 7 ans)
+      const q = sprites.frame(`creature.${c.id}`, 0), px = sprites.px, w = Math.max(96, q.w / px), h = Math.max(96, q.h / px);
+      b.hit = document.createElement("button"); b.hit.className = "bubble creature"; b.hit.dataset.id = c.id; b.hit.setAttribute("aria-label", c.nom);
+      b.box = { dx: q.dx / px + q.w / px / 2, dy: q.dy / px + q.h / px / 2, w, h };
+      Object.assign(b.hit.style, { width: `${w}px`, height: `${h}px` }); app.stage.ui.append(b.hit);
+      onTap(b.hit, () => this.showCard(c));
+      if (c.brillante) { b.glint = ocean.spriteActor(ocean.frontEl, "eclat"); b.glint.draw(0); }
+      this.beings.push(b);
+    }
+    this.tick = (t) => this.beings.forEach((b) => {
+      const [dx, dy] = b.move(t + b.ph), x = b.c.recif[0] + dx, y = b.c.recif[1] + dy;
+      b.a.draw(Math.floor(t * 8 + b.ph) % 12); b.a.moveTo(x, y);
+      Object.assign(b.hit.style, { left: `${x + b.box.dx - b.box.w / 2}px`, top: `${y + b.box.dy - b.box.h / 2}px` });
+      if (b.glint) { const u = (t * 0.6 + b.ph) % 1; b.glint.moveTo(x + b.box.dx + 30, y + b.box.dy - 30, 0.3 + 0.7 * Math.sin(Math.PI * u), Math.round(Math.sin(Math.PI * u) * 20) / 20); }
+    });
+    ocean.front.push(this.tick);
+    const home = spriteBox(app, { x: 90 - 70, y: 712 - 70, w: 140, h: 140, cls: "bubble homekey", label: "revenir", paint: (ctx) => sprites.draw(ctx, "maison", 0, 70, 70) });
+    this.els.push(home);
+    ocean.octo.play("saluer");
+    voice.stop(); voice.say(text.data[this.beings.length ? "recifBienvenue" : "recifVide"], { instruction: true });
+    await new Promise((r) => onTap(home, () => { pop(home); r(); }));
+    await this.closeCard();
+    voice.stop(); this.leave();
+  }
+  // la carte d'une créature, au milieu, sur un voile ; toucher la carte la retourne
+  async showCard(c) {
+    const { app } = this, { sprites, voice, text } = app;
+    if (this.card) await this.closeCard();
+    const token = (this.cardTok = (this.cardTok ?? 0) + 1);
+    await sprites.load("cartes");
+    if (token !== this.cardTok || !this.open) return;
+    const veil = document.createElement("div"); veil.className = "veil"; app.stage.ui.append(veil);
+    const el = await cardElement(app, c, { x: 640 - CARD.W / 2, y: 150, front: "recto", back: "verso", brillante: c.brillante });
+    el.classList.add("enter");
+    const ok = spriteBox(app, { x: 1000 - 80, y: 560, w: 160, h: 160, cls: "bubble check", label: "c'est bon", paint: (ctx) => sprites.draw(ctx, "valider", 0, 80, 80) });
+    this.card = { veil, el, ok };
+    const read = () => { voice.stop(); voice.say(`${fill(text.data.recifCarte, { nom: c.nomLu ?? c.nom })} ${c.anecdote}`, { instruction: true }); };
+    onTap(el, () => { el.flip(); read(); });
+    onTap(veil, () => this.closeCard()); onTap(ok, () => this.closeCard());
+    read();
+  }
+  async closeCard() {
+    if (!this.card) return;
+    const { veil, el, ok } = this.card; this.card = null; this.cardTok = (this.cardTok ?? 0) + 1;
+    this.app.voice.stop(); ok.remove(); el.classList.add("leave"); veil.remove(); await wait(400); el.remove();
+  }
+  leave() {
+    const { ocean, sprites } = this.app;
+    ocean.front.splice(ocean.front.indexOf(this.tick), 1);
+    for (const b of this.beings) { b.hit.remove(); for (const a of [b.a, b.glint].filter(Boolean)) { a.remove(); ocean.actors.splice(ocean.actors.indexOf(a), 1); } }
+    this.els.forEach((e) => e.remove()); this.beings = []; this.open = false;
+    sprites.unload("recif"); sprites.unload("cartes");
+  }
+}

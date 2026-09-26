@@ -54,6 +54,8 @@ test("notion du jour : deux exemples guidés, puis 8 à 10 questions ; les exemp
   assert.equal(runner.count, qs); // les exemples guidés ne sont pas comptés dans le taux du module
   const reps = await store.all("reponses"); assert.equal(reps.length, qs + 2); assert.equal(reps.filter((r) => r.guide && r.aide).length, 2); assert.ok(reps.every((r) => r.seance === s.id));
   assert.equal(s.rec.questions, qs + 2); assert.equal(rewards.total, qs + 2);
+  // cinq bonnes réponses rapides : la voie rapide fait franchir un niveau, une étoile arc-en-ciel
+  assert.ok(runner.st.niveau >= 2); assert.equal(s.rec.arcEnCiel, runner.st.niveau - 1); assert.equal(rewards.st.arcEnCiel, runner.st.niveau - 1);
 });
 
 test("notion du jour : la leçon du niveau la première fois (3 étoiles), puis « À toi ! » et un exercice guidé au format lire", async () => {

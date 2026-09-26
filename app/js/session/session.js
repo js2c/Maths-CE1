@@ -37,6 +37,9 @@ export class Session {
   async answered(ok) { this.rec.questions++; if (ok) this.rec.justes++; this.rec.reussite = +(this.rec.justes / this.rec.questions).toFixed(3); this.lastOk = ok; await this.save(); }
   // des étoiles gagnées : aussitôt ajoutées au trésor (on ne perd jamais rien, même si la séance s'arrête)
   async stars(n, raison) { if (!n) return; this.rec.etoiles += n; await this.rewards?.add(n, raison); await this.save(); }
+  // un niveau franchi dans un module : une étoile arc-en-ciel (montrée à la récompense ; elles ouvriront
+  // les zones du récif, lot 4)
+  async levelUp() { this.rec.arcEnCiel = (this.rec.arcEnCiel ?? 0) + 1; await this.rewards?.special("arcEnCiel"); await this.save(); }
   async run() {
     if (!this.rec) await this.start();
     for (const step of this.c.etapes) {

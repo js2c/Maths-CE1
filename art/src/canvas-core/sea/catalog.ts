@@ -7,6 +7,8 @@ import type { Gfx, P } from "../core";
 import { BUBBLE_R, drawAnswerBubble, drawBackground, drawBubble, drawCheck, drawFish, drawMoon, drawEraseKey, drawNameTag, drawShellKey, drawSlate, drawBackKey, drawReplayKey, drawTally, SLATE_H, SLATE_W, NAME_H, NAME_W, TALLY_H, TALLY_W, drawRays, drawPlay, drawShimmer, drawSpeaker, drawStar, drawWeed, FISH_KINDS, FISH_N, SHIMMER_N, WEEDS } from "./decor";
 import { IDLE_N, OCTO_CLIPS, OCTO_FPS, octoParts, type Part, RING_Y } from "./octopus";
 import { drawTurtle, TURTLE_CLIPS, TURTLE_FPS } from "./turtle";
+import { CREATURE_FPS, CREATURE_N, CREATURES } from "./creatures";
+import { CARD_H, CARD_W, drawBigShell, drawCardBack, drawCardFrame, drawCardFront, drawCardVerso, drawGlint, drawGoldStar, drawHomeKey, drawRainbowStar, drawReefKey, SHELL_N, WIN } from "./treasure";
 
 // la tortue dans l'application : longueur ~110 px logiques, assez petite pour tenir sur une bouée
 export const TURTLE_S = 1;
@@ -79,5 +81,23 @@ export const SPECS: Spec[] = [
   { name: "lune", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawMoon(g, 90, 90) },
   { name: "precedent", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawBackKey(g, 70, 70) },
   { name: "rejouer", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawReplayKey(g, 70, 70) },
+  { name: "etoile.doree", sheet: "petits", W: 120, H: 120, origin: [60, 60], frames: 1, draw: (g) => drawGoldStar(g, 60, 60, 44) },
+  { name: "etoile.arc", sheet: "petits", W: 120, H: 120, origin: [60, 60], frames: 1, draw: (g) => drawRainbowStar(g, 60, 60, 44) },
+  { name: "eclat", sheet: "petits", W: 80, H: 80, origin: [40, 40], frames: 1, draw: (g) => drawGlint(g, 40, 40, 30) },
+  { name: "recif", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawReefKey(g, 90, 90) },
+  { name: "maison", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawHomeKey(g, 70, 70) },
   { name: "reecouter", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawSpeaker(g, 70, 70) },
+  // les créatures du lagon, animées (le récif) : chargées seulement quand on visite le récif
+  ...CREATURES.map((c): Spec => ({ name: `creature.${c.id}`, sheet: "recif", W: c.W, H: c.H, origin: c.origin, frames: CREATURE_N, fps: CREATURE_FPS, loop: [0, CREATURE_N], draw: (g, f) => c.draw(g, f / CREATURE_N, c.origin[0], c.origin[1]), meta: { ground: c.ground } })),
+  // les cartes et le coquillage : chargés pour la récompense et quand on regarde une carte dans le récif.
+  // Origine des faces : le coin haut gauche de la carte. Illustrations provisoires : la créature en plus
+  // grand (échelle 1,35), origine au centre de la fenêtre, posée dans la fenêtre par l'application.
+  { name: "carte.dos", sheet: "cartes", W: CARD_W + 16, H: CARD_H + 16, origin: [0, 0], frames: 1, draw: (g) => drawCardBack(g, 0, 0) },
+  ...["commune", "rare"].flatMap((r): Spec[] => [
+    { name: `carte.recto.${r}`, sheet: "cartes", W: CARD_W + 16, H: CARD_H + 16, origin: [0, 0], frames: 1, draw: (g) => drawCardFront(g, 0, 0, r) },
+    { name: `carte.bord.${r}`, sheet: "cartes", W: CARD_W + 16, H: CARD_H + 16, origin: [0, 0], frames: 1, draw: (g) => drawCardFrame(g, 0, 0, r) },
+    { name: `carte.verso.${r}`, sheet: "cartes", W: CARD_W + 16, H: CARD_H + 16, origin: [0, 0], frames: 1, draw: (g) => drawCardVerso(g, 0, 0, r) },
+  ]),
+  ...CREATURES.map((c): Spec => { const k = 1.35, [, , ww, wh] = WIN; return { name: `carte.illu.${c.id}`, sheet: "cartes", W: ww, H: wh, origin: [ww / 2, wh / 2], frames: 1, draw: (g) => c.draw(g, 0, ww / 2 + (c.origin[0] - c.W / 2) * k, c.ground ? wh - 26 : wh * 0.45, k) }; }),
+  { name: "coquillage", sheet: "cartes", W: 300, H: 280, origin: [150, 150], frames: SHELL_N, fps: 12, draw: (g, f) => drawBigShell(g, 1 - Math.pow(1 - f / (SHELL_N - 1), 2.2), 150, 150) },
 ];

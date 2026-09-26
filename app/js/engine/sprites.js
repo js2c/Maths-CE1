@@ -27,6 +27,12 @@ export class Sprites {
     return this.loading.get(key);
   }
   ready(sheet) { return this.pages.has(sheet); }
+  // libère une grande planche dont on n'a plus besoin (récif, cartes) : la mémoire décodée est rendue
+  unload(sheet) {
+    const p = this.pages.get(sheet); if (!p) return;
+    p.pages.forEach((b) => b.close?.()); this.pages.delete(sheet);
+    for (const k of [...this.loading.keys()]) if (k.startsWith(`${sheet}@`)) this.loading.delete(k);
+  }
   // une image : la page, le rectangle source et le décalage depuis l'ancrage, en pixels d'écran
   frame(name, f = 0) {
     const s = this.atlas.sprites[name], sheet = this.pages.get(s.sheet);

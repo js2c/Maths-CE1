@@ -13,6 +13,7 @@ export async function runNotion({ session, step, end, runner, screen, lesson = a
     const { q, cfg } = runner.next({ guide, format: after ? "lire" : null }), r = await screen.ask(q, cfg, { guide, lesson: after }), { etoiles, events } = await runner.record(r, cfg);
     await session.answered(r.ok);
     await session.stars(etoiles, q.revient && r.ok ? "erreur corrigée" : "bonne réponse");
+    for (const e of events) if (e.type === "montee") await session.levelUp();
     for (const e of events) if (e.type === "lecon" && !session.over(end)) await watch(e.id, e.raison);
     return r;
   };

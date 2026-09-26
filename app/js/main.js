@@ -17,6 +17,7 @@ import { Warmup } from "./modules/facts/warmup.js";
 import { Rewards } from "./session/rewards.js";
 import { chooseName, goodNight, onTap, reward, spriteBox, StarHud } from "./session/screens.js";
 import { doneToday, Session } from "./session/session.js";
+import { Reef } from "./session/reef.js";
 
 const T0 = performance.now();
 // hors ligne : le service worker met toute l'application en cache (pas en file://, ni pendant les tests qui le désactivent)
@@ -24,7 +25,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !loc
 const json = async (p) => (await fetch(p)).json();
 
 const stage = new Stage(document.getElementById("stage"));
-const [atlas, module1, module2, textes, seance, lecons] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/module2.json"), json("content/textes.json"), json("content/seance.json"), json("content/lecons.json")]);
+const [atlas, module1, module2, textes, seance, lecons, cartes] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/module2.json"), json("content/textes.json"), json("content/seance.json"), json("content/lecons.json"), json("content/cartes.json")]);
 const sprites = new Sprites(atlas, stage.px);
 // la base locale ; au premier lancement, on demande au navigateur de ne jamais l'effacer de lui-même
 const store = await Store.open();
@@ -38,11 +39,12 @@ stage.start();
 stage.onResize(() => { if (Math.abs(stage.px - sprites.px) > 0.01) location.reload(); });
 
 const rnd = rng(Date.now() & 0xffffffff);
-// pour les tests et les captures : ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape ?sansLecon ?lecon=L1
+// pour les tests et les captures : ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape ?sansLecon ?lecon=L1 ?etoiles=N
 const P = new URLSearchParams(location.search);
 const text = { data: textes, pick: (k, v = {}) => { const e = textes[k]; return fill(Array.isArray(e) ? e[Math.floor(rnd() * e.length)] : e, { mascotte: app.mascotte, ...v }); } };
 const voice = new Voice({ rate: 0.9, fast: P.get("voix") === "rapide" });
-const rewards = await new Rewards(store).load();
+const rewards = await new Rewards(store, cartes).load();
+if (P.get("etoiles")) { rewards.st.total = Number(P.get("etoiles")); await rewards.save(); } // tests : un trésor de départ
 const app = { stage, sprites, ocean, voice, text, rnd, atlas, store, rewards, lecons, line: new LineView(stage), mascotte: await store.setting("mascotte") };
 app.lineScreen = () => (app.screen ??= new ReadScreen(app)); // l'écran de la ligne (aussi pour l'aide des faits + 1, + 2)
 window.__app = app;
@@ -102,17 +104,27 @@ for (const id of (P.get("sans") ?? "").split(",").filter(Boolean)) delete handle
 rewards.onChange((n, raison) => { if (raison !== "séance terminée") hud.fly(n, app.starFrom ?? [640, 690], { gap: 140 }); });
 
 // ---------------------------------------------------------------- premier écran
-if (await doneToday(store)) {
-  // la séance du jour est faite : la lune, et « à demain » quand on la touche (seul le récif restera libre, étape 10)
-  goodNight(app, { first: false });
-} else {
+// L'océan vivant, la bulle « jouer » (ou la lune si la séance du jour est faite) et, à côté, la bulle du
+// récif : la visite du récif est toujours libre (docs/SPEC.md, « Séance plafonnée »).
+const reef = new Reef(app);
+app.reef = reef;
+async function showHome({ done, first = false }) {
+  const els = [], y = done ? 420 : 650;
+  const reefKey = spriteBox(app, { x: 860 - 90, y: y - 90, w: 180, h: 180, cls: "bubble reefkey", label: "le récif", paint: (ctx) => sprites.draw(ctx, "recif", 0, 90, 90) });
+  els.push(reefKey);
+  onTap(reefKey, async () => { voice.unlock(); voice.stop(); els.forEach((e) => e.remove()); await reef.visit(); showHome({ done: await doneToday(store) }); });
+  if (done) { els.push(await goodNight(app, { first })); return; }
+  // la séance du jour ; « à demain » quand elle est finie
   const play = spriteBox(app, { x: 550, y: 560, w: 180, h: 180, cls: "bubble play", label: "jouer", paint: (ctx) => sprites.draw(ctx, "jouer", 0, 90, 90) });
+  els.push(play);
   play.addEventListener("pointerdown", async (e) => {
-    e.preventDefault(); voice.unlock(); play.remove();
+    e.preventDefault(); voice.unlock(); els.forEach((x) => x.remove());
     // pour les captures et les tests : ?lecon=L1 joue seulement cette leçon
     if (P.get("lecon")) { window.__lecon = await lessons.play(P.get("lecon")); return; }
     const session = new Session({ store, content: seance, handlers, rewards });
     app.session = session;
     await session.run();
+    showHome({ done: true, first: true });
   }, { once: true });
 }
+showHome({ done: await doneToday(store) });

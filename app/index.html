@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0b5563">
+<meta name="description" content="Entraînement aux mathématiques de CE1, dans l'océan.">
+<title>L'océan des nombres</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/parent.css">
+<link rel="preload" href="assets/art/atlas.json" as="fetch" crossorigin>
+<link rel="modulepreload" href="js/main.js">
+</head>
+<body>
+<div id="stage">
+  <canvas id="bg"></canvas>
+  <canvas id="line"></canvas>
+  <canvas id="octo"></canvas>
+  <div id="ui"></div>
+</div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+{
+  "_doc": "Récompenses (docs/SPEC.md, « Univers marin et récompenses »). coquillage.prix : étoiles de mer pour un coquillage ; coquillage.parSeance : au plus autant d'ouvertures à la fin d'une séance ; poids : chance relative de tirer une carte selon sa rareté (les légendaires ne se tirent qu'avec les étoiles dorées, lot 4) ; brillante : nombre de doublons d'une même carte qui la rendent brillante ; serie : une séance sur `bonusChaque` de la série rapporte `bonus` étoiles ; semaine : `seances` séances terminées dans la même semaine (lundi à dimanche) rapportent une étoile dorée. zones : les quatre zones du récif, seule la première est ouverte au lot 1. cartes : id (aussi le nom du fichier d'illustration), nomLu (le nom avec son article, tel que la voix le dit : « C'est le crabe ! »), nom écrit sur la carte, zone, rareté, anecdote lue à voix haute (chaque anecdote a été vérifiée avant d'être ajoutée), illustration : chemin de l'image générée à part (app/assets/cards/<id>.webp, portrait 3:4, sans texte) ou null tant qu'elle n'existe pas (l'application montre alors le dessin provisoire de l'atelier), recif : [x, y] place de la créature dans le récif (scène de 1280 × 800).",
+  "coquillage": { "prix": 40, "parSeance": 2 },
+  "poids": { "commune": 3, "rare": 1 },
+  "brillante": 3,
+  "serie": { "bonusChaque": 3, "bonus": 5 },
+  "semaine": { "seances": 5 },
+  "zones": [
+    { "id": "lagon", "nom": "Le lagon", "ouverte": true },
+    { "id": "corail", "nom": "Le récif de corail", "ouverte": false },
+    { "id": "large", "nom": "Le grand large", "ouverte": false },
+    { "id": "abysses", "nom": "Les abysses", "ouverte": false }
+  ],
+  "cartes": [
+    { "id": "poisson-clown", "nomLu": "le poisson-clown", "nom": "Poisson-clown", "zone": "lagon", "rarete": "commune", "anecdote": "Le poisson-clown vit dans une anémone de mer. Elle pique les autres poissons, mais pas lui !", "illustration": null, "recif": [372, 520] },
+    { "id": "etoile-de-mer", "nomLu": "l'étoile de mer", "nom": "Étoile de mer", "zone": "lagon", "rarete": "commune", "anecdote": "Si l'étoile de mer perd un bras, un nouveau bras repousse.", "illustration": null, "recif": [610, 762] },
+    { "id": "crabe", "nomLu": "le crabe", "nom": "Crabe", "zone": "lagon", "rarete": "commune", "anecdote": "Le crabe marche souvent de côté. Il a dix pattes, en comptant ses deux pinces.", "illustration": null, "recif": [830, 666] },
+    { "id": "crevette", "nomLu": "la crevette", "nom": "Crevette", "zone": "lagon", "rarete": "commune", "anecdote": "Quand elle a peur, la crevette file à reculons, d'un grand coup de queue.", "illustration": null, "recif": [1010, 470] },
+    { "id": "bernard-l-ermite", "nomLu": "le bernard-l'ermite", "nom": "Bernard-l'ermite", "zone": "lagon", "rarete": "commune", "anecdote": "Le bernard-l'ermite habite dans une coquille vide. Quand il grandit, il déménage dans une plus grande.", "illustration": null, "recif": [570, 642] },
+    { "id": "moule", "nomLu": "la moule", "nom": "Moule", "zone": "lagon", "rarete": "commune", "anecdote": "La moule s'accroche aux rochers avec des fils très solides, qu'elle fabrique elle-même.", "illustration": null, "recif": [250, 712] },
+    { "id": "oursin", "nomLu": "l'oursin", "nom": "Oursin", "zone": "lagon", "rarete": "commune", "anecdote": "L'oursin a sa bouche sous son corps, avec cinq petites dents.", "illustration": null, "recif": [1205, 734] },
+    { "id": "anemone", "nomLu": "l'anémone de mer", "nom": "Anémone de mer", "zone": "lagon", "rarete": "commune", "anecdote": "L'anémone de mer ressemble à une fleur, mais c'est un animal !", "illustration": null, "recif": [300, 614] },
+    { "id": "concombre-de-mer", "nomLu": "le concombre de mer", "nom": "Concombre de mer", "zone": "lagon", "rarete": "commune", "anecdote": "Le concombre de mer n'est pas un légume : c'est un animal, cousin de l'étoile de mer.", "illustration": null, "recif": [420, 748] },
+    { "id": "coquille-saint-jacques", "nomLu": "la coquille Saint-Jacques", "nom": "Saint-Jacques", "zone": "lagon", "rarete": "commune", "anecdote": "La coquille Saint-Jacques a des dizaines de petits yeux, tout au bord de sa coquille.", "illustration": null, "recif": [975, 752] },
+    { "id": "poisson-chirurgien", "nomLu": "le poisson-chirurgien", "nom": "Poisson-chirurgien", "zone": "lagon", "rarete": "commune", "anecdote": "Le poisson-chirurgien a une petite lame de chaque côté de la queue, comme le couteau d'un chirurgien.", "illustration": null, "recif": [820, 250] },
+    { "id": "hippocampe", "nomLu": "l'hippocampe", "nom": "Hippocampe", "zone": "lagon", "rarete": "rare", "anecdote": "Chez l'hippocampe, c'est le papa qui porte les bébés, dans une poche sur son ventre.", "illustration": null, "recif": [1105, 372] },
+    { "id": "poisson-ballon", "nomLu": "le poisson-ballon", "nom": "Poisson-ballon", "zone": "lagon", "rarete": "rare", "anecdote": "Quand il a peur, le poisson-ballon avale de l'eau et devient tout rond.", "illustration": null, "recif": [560, 362] },
+    { "id": "limace-de-mer", "nomLu": "la limace de mer", "nom": "Limace de mer", "zone": "lagon", "rarete": "rare", "anecdote": "La limace de mer respire avec le petit bouquet de plumes qu'elle porte sur le dos.", "illustration": null, "recif": [1082, 612] },
+    { "id": "raie-pastenague", "nomLu": "la raie pastenague", "nom": "Raie", "zone": "lagon", "rarete": "rare", "anecdote": "La raie a les yeux sur le dessus du corps, et la bouche en dessous.", "illustration": null, "recif": [700, 470] }
+  ]
+}

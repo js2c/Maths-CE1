@@ -28,7 +28,7 @@ export const taper = (spine: P[], r: (t: number) => number): { outline: P[]; r: 
   return { outline: [...L, tip, ...R.reverse()], r: rr, nrm };
 };
 // an arm grows from its root by turning steadily (bend) and then winding up into a curl (curl t^3)
-const armSpine = (base: P, th0: number, bend: number, curl: number, len: number, n = 44): P[] => {
+export const armSpine = (base: P, th0: number, bend: number, curl: number, len: number, n = 44): P[] => {
   const out: P[] = [base]; let p = base;
   for (let i = 1; i <= n; i++) { const t = i / n, th = th0 + bend * t + curl * t * t * t; p = [p[0] + Math.cos(th) * (len / n), p[1] + Math.sin(th) * (len / n)]; out.push(p); }
   return out;
@@ -55,7 +55,7 @@ export const CHEEKS: P[] = [[-64, 38], [62, 36]];
 export const MOUTH: P[] = smooth([[-12, 40], [-5, 47], [4, 47], [11, 40]], false, 6);
 
 // eight arms: four behind (drawn first), four in front. Angles: 0 = right, PI/2 = down (y down).
-const ARM_SPECS: { base: P; th: number; bend: number; curl: number; len: number; r0: number; front: boolean; under: number }[] = [
+export const ARM_SPECS: { base: P; th: number; bend: number; curl: number; len: number; r0: number; front: boolean; under: number }[] = [
   { base: [-34, 60], th: 1.95, bend: 0.55, curl: 2.7, len: 122, r0: 15, front: false, under: 1 },
   { base: [30, 60], th: 1.18, bend: -0.55, curl: -2.7, len: 126, r0: 15, front: false, under: -1 },
   { base: [-12, 66], th: 1.64, bend: -0.7, curl: -2.9, len: 106, r0: 14, front: false, under: -1 },
@@ -67,7 +67,7 @@ const ARM_SPECS: { base: P; th: number; bend: number; curl: number; len: number;
 ];
 // arm motion over the loop: each arm breathes its curl in and out on its own phase; the wave arm
 // swings widest, the pointer barely moves so it keeps pointing. u is the loop position 0..1.
-const AMP = [0.28, 0.28, 0.24, 0.24, 0.3, 0.55, 0.3, 0.1];
+export const AMP = [0.28, 0.28, 0.24, 0.24, 0.3, 0.55, 0.3, 0.1];
 const buildArms = (u: number): Arm[] => ARM_SPECS.map((a, i) => {
   const w = Math.sin(2 * Math.PI * u + i * 0.9), curl = a.curl + AMP[i] * w * (a.curl >= 0 ? 1 : -1), bend = a.bend + AMP[i] * 0.35 * Math.sin(2 * Math.PI * u + i * 0.9 + 1.2);
   const spine = armSpine(a.base, a.th, bend, curl, a.len), t = taper(spine, (v) => 2.4 + (a.r0 - 2.4) * Math.pow(1 - v, 0.85));

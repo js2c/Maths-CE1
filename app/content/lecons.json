@@ -1,0 +1,77 @@
+{
+  "_doc": "Leçons animées (docs/SPEC.md, « Leçons animées »). Une leçon = une ligne (min, max, pas, k : 0 corde à bouées, 1 ligne d'école ; ecrits : les nombres écrits au départ) et une suite de phrases. Le bouton « phrase précédente » revient au début de la phrase d'avant, « rejouer » au début de la leçon. Une phrase = un ou plusieurs temps ; dans un temps, la voix dit « dire » pendant que « faire » se joue (actions l'une après l'autre), et le temps attend la fin des deux. Les nombres des actions sont des VALEURS de la ligne (pas des numéros de graduation). Actions : ligne (la ligne apparaît), allumer (les bouées s'allument une à une puis s'éteignent), tortue v (la tortue arrive et se pose sur v), note texte (un mot écrit au-dessus de la tortue, effacé au premier saut), sauter [v, texte de l'arc], ecrire [v…] (nombres écrits sous la ligne), clignoter « arcs », etoile v (l'étoile de mer sur v, un « ? » dessous), retour v (les arcs s'effacent, la tortue revient sur v), compter { jusqua, arcs : « sauts » ou « valeurs », dire : « sauts » ou « valeurs », ecrire } (la tortue saute jusqu'à la valeur en comptant à voix haute), filet [v…] (un filet de dix poissons sous la corde, de v au saut suivant), compteur n (la bulle du compteur), entourer [v…] (un anneau autour des nombres), arc [numéro de l'arc, texte], loupe v (une loupe montre le nombre en grand), eclairer [v…] (la graduation s'allume). aToi : ce que dit la voix au premier exercice guidé qui suit ; aToiDepuisZero : à la place, si la ligne de l'exercice part de 0 avec un pas de 1.",
+  "L1": {
+    "titre": "On compte les sauts",
+    "ligne": { "min": 0, "max": 10, "pas": 1, "k": 0, "ecrits": [0] },
+    "phrases": [
+      [
+        { "dire": "Regarde cette corde avec ses bouées.", "faire": [{ "ligne": true }] },
+        { "dire": "Chaque bouée a sa place, et elles sont toutes à la même distance.", "faire": [{ "allumer": "toutes" }] }
+      ],
+      [
+        { "dire": "La petite tortue est sur zéro.", "faire": [{ "tortue": 0 }] },
+        { "dire": "Elle n'a pas encore sauté.", "faire": [{ "note": "0 saut" }] }
+      ],
+      [
+        { "dire": "Hop, un saut :", "faire": [{ "sauter": [1, "1"] }] },
+        { "dire": "elle est sur 1.", "faire": [{ "ecrire": [1] }] },
+        { "dire": "Hop, un deuxième saut :", "faire": [{ "sauter": [2, "2"] }] },
+        { "dire": "elle est sur 2.", "faire": [{ "ecrire": [2] }] }
+      ],
+      [
+        { "dire": "Tu vois ? On ne compte pas les bouées, on compte les sauts.", "faire": [{ "clignoter": "arcs" }] }
+      ],
+      [
+        { "dire": "Pour trouver où est l'étoile de mer, compte les sauts depuis zéro.", "faire": [{ "etoile": 6 }] },
+        { "faire": [{ "retour": 0 }, { "compter": { "jusqua": 6, "arcs": "sauts", "dire": "sauts", "ecrire": true } }] }
+      ]
+    ],
+    "aToi": "À toi !",
+    "aToiDepuisZero": "À toi ! Combien de sauts jusqu'à l'étoile ?"
+  },
+  "L2": {
+    "titre": "Un saut peut valoir 10",
+    "ligne": { "min": 0, "max": 100, "pas": 10, "k": 0, "ecrits": [0, 10, 100] },
+    "phrases": [
+      [
+        { "dire": "Sur cette corde-ci, les bouées sont des bouées géantes.", "faire": [{ "ligne": true }, { "allumer": "toutes" }] }
+      ],
+      [
+        { "dire": "Entre deux bouées géantes, il y a un filet de dix poissons.", "faire": [{ "filet": [0] }] }
+      ],
+      [
+        { "dire": "Alors chaque saut vaut dix !", "faire": [{ "tortue": 0 }, { "compteur": 0 }] },
+        { "dire": "On compte :" },
+        { "dire": "dix,", "faire": [{ "sauter": [10, "10"] }, { "compteur": 10 }] },
+        { "dire": "vingt,", "faire": [{ "filet": [10] }, { "sauter": [20, "20"] }, { "ecrire": [20] }, { "compteur": 20 }] },
+        { "dire": "trente…", "faire": [{ "filet": [20] }, { "sauter": [30, "30"] }, { "ecrire": [30] }, { "compteur": 30 }] }
+      ],
+      [
+        { "dire": "Pour savoir comment compter, regarde les nombres écrits :", "faire": [{ "entourer": [0, 10] }] },
+        { "dire": "ils te disent ce que vaut un saut.", "faire": [{ "arc": [0, "+10"] }] }
+      ]
+    ],
+    "aToi": "À toi !"
+  },
+  "L3": {
+    "titre": "La ligne ne commence pas toujours à 0",
+    "ligne": { "min": 30, "max": 40, "pas": 1, "k": 0.8, "ecrits": [30, 40] },
+    "phrases": [
+      [
+        { "dire": "Oh ! Cette corde ne commence pas à zéro.", "faire": [{ "ligne": true }] },
+        { "dire": "Regarde le premier nombre : trente.", "faire": [{ "loupe": 30 }] }
+      ],
+      [
+        { "dire": "La tortue part de trente.", "faire": [{ "tortue": 30 }] },
+        { "dire": "Un saut : trente-et-un.", "faire": [{ "sauter": [31, "1"] }, { "ecrire": [31] }] },
+        { "dire": "Deux sauts : trente-deux.", "faire": [{ "sauter": [32, "2"] }, { "ecrire": [32] }] },
+        { "dire": "Trois sauts : trente-trois.", "faire": [{ "sauter": [33, "3"] }, { "ecrire": [33] }] },
+        { "dire": "Quatre sauts : trente-quatre.", "faire": [{ "sauter": [34, "4"] }, { "ecrire": [34] }] }
+      ],
+      [
+        { "dire": "Toujours commencer par regarder d'où on part.", "faire": [{ "eclairer": [30] }] }
+      ]
+    ],
+    "aToi": "À toi !"
+  }
+}

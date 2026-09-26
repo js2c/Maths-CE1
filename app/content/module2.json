@@ -1,0 +1,15 @@
+{
+  "_doc": "Module 2, faits d'addition (docs/SPEC.md, « Module 2 »). familles : dans l'ordre d'apprentissage ; un fait appartient à la première famille qui le contient. lot 1 : familles 1 et 2, forme directe seulement. boites : jours avant le retour (boîte 1 : à chaque séance). seuil : secondes au-delà du temps de base ; seuilAvance quand la moitié des faits déjà rencontrés sont en boîte 3 ou plus. base : questions triviales (a + 0) posées pour mesurer le temps de réponse (premiere : au premier échauffement ; ensuite : à chaque échauffement) ; on garde la médiane des `garder` dernières mesures.",
+  "familles": [
+    { "id": 1, "nom": "+ 1 et + 2", "regle": "plus1ou2", "aide": "ligne" },
+    { "id": 2, "nom": "doubles jusqu'à 5", "regle": "doubles", "aide": "reflet" }
+  ],
+  "famillesActives": [1, 2],
+  "sommeMax": 10,
+  "boites": [0, 2, 4, 8, 15],
+  "nouveauxMax": 3,
+  "boite1Max": 8,
+  "seuilS": 4,
+  "seuilAvanceS": 3,
+  "base": { "premiere": 3, "ensuite": 1, "garder": 5, "defautS": 3 }
+}

@@ -1,0 +1,9 @@
+Illustrations des cartes (docs/SPEC.md, « Illustrations des cartes »).
+
+Déposer ici une image par carte, au nom de la carte : par exemple poisson-clown.webp (les noms sont
+les « id » de app/content/cartes.json). Format portrait 3:4 (par exemple 600 x 800 pixels), WebP ou
+PNG, sans aucun texte dans l'image. Puis, dans app/content/cartes.json, remplacer "illustration": null
+par "illustration": "assets/cards/poisson-clown.webp", et lancer node tools/precache.mjs.
+
+Tant qu'une carte n'a pas son image, l'application montre le dessin provisoire de l'atelier.
+L'application ajoute elle-même le cadre, la rareté, le nom et l'anecdote.

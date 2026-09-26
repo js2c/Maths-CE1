@@ -2,6 +2,8 @@
 
 Application d'entraînement aux mathématiques pour une élève de CE1 : 10 à 12 minutes par soir sur tablette Android, consignes orales, univers sous-marin animé.
 
+- **Pour le parent** (adresse, installation sur la tablette, espace parent) : [`docs/GUIDE-PARENT.md`](docs/GUIDE-PARENT.md)
+- Application en ligne : https://js2c.github.io/Maths-CE1/
 - Contenu pédagogique : [`docs/SPEC.md`](docs/SPEC.md)
 - Conventions techniques : [`CLAUDE.md`](CLAUDE.md)
 - Maquettes validées : [`docs/maquettes/`](docs/maquettes/)

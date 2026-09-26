@@ -1,0 +1,22 @@
+{
+  "_doc": "Module 1, ligne graduée. Paramètres de génération par niveau (docs/SPEC.md, « Module 1 »). labels : quelles graduations portent leur nombre. k : 0 corde à bouées, 1 ligne d'école. choix : nombre de propositions au format lire.",
+  "niveaux": [
+    { "niveau": 1, "min": 0, "max": 10, "pas": 1, "labels": "tous-sauf-cible", "formats": ["lire", "sauter"], "k": 0, "choix": 3 },
+    { "niveau": 2, "min": 0, "max": 10, "pas": 1, "labels": [0, 5, 10], "formats": ["lire", "placer"], "k": 0, "choix": 3 },
+    { "niveau": 3, "min": 0, "max": 20, "pas": 1, "labels": [0, 10, 20], "formats": ["lire", "placer"], "k": 0.5, "choix": 4 },
+    { "niveau": 4, "etendue": 10, "pas": 1, "departs": [10, 20, 30, 40, 50, 60, 70, 80, 90], "labels": "extremites", "formats": ["lire", "placer"], "k": 0.8, "choix": 4 },
+    { "niveau": 5, "min": 0, "max": 100, "pas": 10, "labels": [0, 50, 100], "formats": ["lire", "placer"], "k": 1, "choix": 4 },
+    { "niveau": 6, "etendue": 20, "pas": 1, "departs": [10, 20, 30, 40, 50, 60, 70, 80], "labels": "dizaines", "formats": ["lire", "placer"], "k": 1, "choix": 4 },
+    { "niveau": 7, "pas": [1, 10], "labels": "deux-voisines", "formats": ["lire"], "k": 1, "choix": 4 },
+    { "niveau": 8, "min": 0, "max": 100, "graduations": false, "labels": "extremites", "formats": ["estimer"], "tolerances": [8, 5], "k": 1 }
+  ],
+  "procheExtremite": 0.25,
+  "reglesAdaptation": {
+    "montee": { "sur": 10, "justes": 8, "aidesMax": 1 },
+    "voieRapide": { "premieres": 5, "tempsMaxS": 6 },
+    "retourErreur": [3, 5],
+    "difficulte": { "sur": 5, "erreurs": 3 },
+    "redescente": { "seances": 2, "sousTaux": 0.5 },
+    "memeErreurLecon": 2
+  }
+}

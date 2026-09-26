@@ -1,0 +1,16 @@
+{
+  "_doc": "Déroulé d'une séance (docs/SPEC.md, « Cadre d'une séance »). etapes : dans l'ordre ; actif false = prévue mais désactivée ; minutes : durée maximale de l'étape ; questions : [min, max] tiré au hasard ; guides : exemples guidés avant les questions de la notion du jour. dureeMaxMin : plafond de la séance ; on ne pose plus de nouvelle question quand il reste reserveRecompenseS secondes (le temps de la récompense). finirSurReussite.essaisMax : questions plus simples ajoutées au plus pour finir sur une réussite.",
+  "dureeMaxMin": 12,
+  "reserveRecompenseS": 60,
+  "etapes": [
+    { "id": "accueil" },
+    { "id": "echauffement", "minutes": 2, "questions": [5, 8] },
+    { "id": "notion", "minutes": 5, "guides": 2, "questions": [8, 10] },
+    { "id": "defi", "actif": false, "minutes": 1, "aPartirDuJour": 8 },
+    { "id": "probleme", "actif": false, "minutes": 2 },
+    { "id": "recompense" }
+  ],
+  "finirSurReussite": { "essaisMax": 2 },
+  "etoiles": { "bonneReponse": 1, "erreurCorrigee": 1, "lecon": 3, "seanceTerminee": 10 },
+  "noms": ["Pili", "Octavie", "Bulle", "Coralie", "Plouf", "Mimosa"]
+}

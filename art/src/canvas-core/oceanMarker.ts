@@ -9,13 +9,13 @@ import type { Film } from "./film";
 import { blob, clipped, fillShape, ink, lerpP, mix, smooth } from "./gallery";
 import * as O from "./ocean";
 
-const INK = "#15122a", L = O.LIGHT;
-const WATER = "#138493", WATER_D = "#0b5563", WATER_L = "#37a9b3", SAND = "#f1d79f", SAND_S = "#d8b577", SAND_L = "#fbe9c0";
-const OCT = "#f2765a", OCT_S = "#c64d3c", OCT_L = "#ff9c7c", SUCK = "#ffe0d2", SUCK_S = "#f0a894";
-const shift = (pts: P[], dx: number, dy: number): P[] => pts.map(([x, y]) => [x + dx, y + dy]);
+export const INK = "#15122a", L = O.LIGHT;
+export const WATER = "#138493", WATER_D = "#0b5563", WATER_L = "#37a9b3", SAND = "#f1d79f", SAND_S = "#d8b577", SAND_L = "#fbe9c0";
+export const OCT = "#f2765a", OCT_S = "#c64d3c", OCT_L = "#ff9c7c", SUCK = "#ffe0d2", SUCK_S = "#f0a894";
+export const shift = (pts: P[], dx: number, dy: number): P[] => pts.map(([x, y]) => [x + dx, y + dy]);
 // a cel: shadow colour, then the lit colour pushed toward the light and clipped to the form
-const cel = (g: Gfx, pts: P[], lit: string, shade: string, k = 10, hi?: [P[], string]) => { fillShape(g, pts, shade); clipped(g, pts, () => { fillShape(g, shift(pts, L[0] * k, L[1] * k), lit); if (hi) fillShape(g, hi[0], hi[1]); }); };
-const contour = (g: Gfx, pts: P[], w: number, seed: number, closed = true) => ink(g, pts, INK, closed ? { w, closed: true, light: L, shadow: 0.9, seed } : { w, light: L, shadow: 0.9, seed, taper: [0.08, 0.08], side: -1, min: 0.3 });
+export const cel = (g: Gfx, pts: P[], lit: string, shade: string, k = 10, hi?: [P[], string]) => { fillShape(g, pts, shade); clipped(g, pts, () => { fillShape(g, shift(pts, L[0] * k, L[1] * k), lit); if (hi) fillShape(g, hi[0], hi[1]); }); };
+export const contour = (g: Gfx, pts: P[], w: number, seed: number, closed = true) => ink(g, pts, INK, closed ? { w, closed: true, light: L, shadow: 0.9, seed } : { w, light: L, shadow: 0.9, seed, taper: [0.08, 0.08], side: -1, min: 0.3 });
 
 const water = (g: Gfx, u: number) => g.group("plain", () => {
   fillShape(g, [[0, 0], [O.W, 0], [O.W, O.H], [0, O.H]], WATER_D);
@@ -79,7 +79,7 @@ const answers = (g: Gfx) => g.group("plain", () => O.ANSWERS.forEach((a, i) => {
   O.numberStrokes(a.text, a.c[0], a.c[1] - 27, 54).strokes.forEach((st, k) => ink(g, st, INK, { w: 7.5, shadow: 0.3, taper: [0.1, 0.12], seed: 330 + i * 3 + k, min: 0.55 }));
 }));
 
-const FISHC: [string, string][] = [["#ff8a1e", "#cf5a0e"], ["#ffb02e", "#d5781a"], ["#ff7040", "#c9481e"]];
+export const FISHC: [string, string][] = [["#ff8a1e", "#cf5a0e"], ["#ffb02e", "#d5781a"], ["#ff7040", "#c9481e"]];
 const fishes = (g: Gfx) => g.group("plain", () => O.FISH.forEach((f, i) => {
   const s = O.fishShape(f), [lit, sh] = FISHC[f.color];
   [s.tail, s.fin].forEach((p, k) => { cel(g, p, lit, sh, 3); contour(g, p, 2.8, 400 + i * 10 + k); });

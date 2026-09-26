@@ -1,0 +1,3 @@
+Source : https://github.com/alexgreensh/anidoodle (licence Apache 2.0, voir LICENSE et NOTICE)
+Commit : 03ddf534328962f8a91eb115e3ae67e03da4de5a
+Copie figée le 26 septembre 2026, sans modification. Ne pas mettre à jour sans décision explicite.

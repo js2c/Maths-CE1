@@ -6,7 +6,7 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 #stage > canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 /* la pieuvre : son propre canvas, incliné et déplacé par le compositeur (octopus.js) */
 #stage > #octo { inset: auto; left: 0; top: 0; will-change: transform; }
-#stage > #line { inset: auto; left: 0; width: 100%; } /* bande de la ligne graduée : top et height posés par line.js */
+#stage > #line, #stage > #fx { inset: auto; left: 0; width: 100%; } /* bande de la ligne graduée : top et height posés par line.js */
 /* les acteurs : un petit canvas chacun, déplacé par le compositeur (actor.js) */
 .actors { position: absolute; inset: 0; pointer-events: none; }
 .actor { position: absolute; left: 0; top: 0; will-change: transform; pointer-events: none; }

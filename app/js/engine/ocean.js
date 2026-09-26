@@ -50,13 +50,14 @@ export class Ocean {
     this.bubbles = this.bubbleCols.flatMap((c) => c.r.map(() => { const a = this.spriteActor(this.backEl, "bulle.12"); a.draw(0); return a; }));
     stage.onResize(() => { this.octo.resize(); this.actors.forEach((a) => a.resize()); this.shimmer.forEach((s) => s.a.draw(0)); this.bubbles.forEach((a) => a.draw(0)); this.paintStatic(); });
   }
-  // un acteur qui montre un sprite : canvas à la taille de sa plus grande image, ancré comme le sprite
-  spriteActor(parent, name) {
-    const sp = this.sp, px = sp.px, n = sp.atlas.sprites[name].frames;
+  // un acteur qui montre un sprite (ou plusieurs, de même ancrage : les boucles d'un personnage) : canvas
+  // à la taille de la plus grande image, ancré comme le sprite
+  spriteActor(parent, name, others = []) {
+    const sp = this.sp, px = sp.px;
     let x0 = 0, y0 = 0, x1 = 0, y1 = 0;
-    for (let f = 0; f < n; f++) { const r = sp.frame(name, f); x0 = Math.min(x0, r.dx); y0 = Math.min(y0, r.dy); x1 = Math.max(x1, r.dx + r.w); y1 = Math.max(y1, r.dy + r.h); }
+    for (const n of [name, ...others]) for (let f = 0; f < sp.atlas.sprites[n].frames; f++) { const r = sp.frame(n, f); x0 = Math.min(x0, r.dx); y0 = Math.min(y0, r.dy); x1 = Math.max(x1, r.dx + r.w); y1 = Math.max(y1, r.dy + r.h); }
     const a = new Actor(this.st, parent, (x1 - x0) / px + 2, (y1 - y0) / px + 2, -x0 / px + 1, -y0 / px + 1);
-    a.draw = (f) => a.paint(`${name}:${f}`, (ctx) => sp.draw(ctx, name, f, a.ax, a.ay));
+    a.draw = (f, n = name) => a.paint(`${n}:${f}`, (ctx) => sp.draw(ctx, n, f, a.ax, a.ay));
     this.actors.push(a); return a;
   }
   // le fond fixe : eau et sable, rayons. Composé hors écran une fois, puis confié au canvas #bg en « bitmaprenderer » : une image

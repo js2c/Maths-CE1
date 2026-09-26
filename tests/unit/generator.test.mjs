@@ -70,3 +70,16 @@ test("niveau 5 : 0, 50 et 100 écrits, jamais la cible", () => {
   const r = rng(55);
   for (let k = 0; k < 200; k++) { const q = makeRead(lvl(5), r); assert.deepEqual(q.labelled, [0, 5, 10]); assert.ok(![0, 50, 100].includes(q.answer)); }
 });
+
+test("sauter (niveau 1) : départ, sauts, cible et pièges cohérents", async () => {
+  const { makeJump } = await import("../../app/js/modules/numberline/generator.js");
+  const r = rng(9);
+  for (let k = 0; k < 300; k++) {
+    const q = makeJump(lvl(1), r);
+    assert.ok(q.jumps >= 1 && q.jumps <= 4); assert.equal(q.target, q.start + q.jumps); assert.ok(q.target <= 10);
+    assert.equal(q.answer, q.target); assert.ok(!q.labelled.includes(q.target));
+    assert.equal(q.choices.length, 3); assert.ok(q.choices.some((c) => c.value === q.answer));
+    const e1 = q.choices.find((c) => c.code === "E1"); if (e1) assert.equal(e1.value, q.answer - 1);
+    assert.equal(classify(q, q.answer), null);
+  }
+});

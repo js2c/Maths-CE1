@@ -72,12 +72,15 @@ export const drawLine = (ctx: CanvasRenderingContext2D, L: LineSpec) => {
 };
 
 // ---------------------------------------------------------------- surbrillances (en direct, légères)
-// un arc de saut entre deux graduations, numéroté (leçons, retours E1) ; `p` de 0 à 1 le trace
-export const drawJumpArc = (ctx: CanvasRenderingContext2D, a: P, b: P, p: number, color = "#ffe45c") => {
+// un arc de saut entre deux graduations, numéroté (leçons, retours E1) ; `p` de 0 à 1 le trace ;
+// `h` : sa hauteur (la même que celle du saut de la tortue) ; `label` : le numéro du saut, au sommet
+export const drawJumpArc = (ctx: CanvasRenderingContext2D, a: P, b: P, p: number, o: { h?: number; color?: string; label?: string; labelColor?: string } = {}) => {
   if (p <= 0) return;
-  const g = shim(ctx), h = Math.min(60, Math.abs(b[0] - a[0]) * 0.55), n = Math.max(2, Math.round(24 * p)), pts: P[] = [];
+  const g = shim(ctx), h = o.h ?? Math.min(60, Math.abs(b[0] - a[0]) * 0.55), n = Math.max(2, Math.round(24 * p)), pts: P[] = [];
   for (let i = 0; i <= n; i++) { const t = (i / n) * p, x = a[0] + (b[0] - a[0]) * t, y = a[1] + (b[1] - a[1]) * t - Math.sin(Math.PI * t) * h; pts.push([x, y]); }
-  ink(g, pts, color, { w: 6, shadow: 0, taper: [0.05, p < 1 ? 0.02 : 0.2], seed: 11 });
+  ink(g, pts, INK, { w: 8.5, shadow: 0, taper: [0.05, p < 1 ? 0.02 : 0.2], seed: 11 }, 0.35);
+  ink(g, pts, o.color ?? "#ffe45c", { w: 6, shadow: 0, taper: [0.05, p < 1 ? 0.02 : 0.2], seed: 11 });
+  if (o.label && p >= 1) drawNumber(ctx, o.label, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2 - h - 34, 28, { color: o.labelColor ?? "#fffaf0", w: 4.4, seed: 600 });
 };
 // un anneau d'encre autour d'une bulle (bonne réponse, surbrillance)
 export const drawRing = (ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number, color = "#ffd23a", w = 7) =>

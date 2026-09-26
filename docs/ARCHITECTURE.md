@@ -42,8 +42,9 @@ De bas en haut, dans une scène logique de 1280 × 800 mise à l'échelle de l'�
 2. `#line` : la ligne graduée de la question, dans une bande de la scène, dessinée par un **Worker** (`js/art/line-worker.js`, qui exécute `runtime.js`) ; la version « question » et la version « correction » sont préparées ensemble.
 3. `#back` : le décor mobile, en **acteurs** (`js/engine/actor.js`) : reflets, algues, poissons, bulles.
 4. `#octo` : la pieuvre.
-5. `#front` : premier plan en acteurs (étoile de mer ; plus tard tortue, surbrillances).
-6. `#ui` : boutons HTML (bulles-réponses, réécouter, jouer), chacun portant un petit canvas dessiné une fois.
+5. `#fx` : calque d'effets de la bande de la ligne (arcs de saut numérotés), dessiné seulement pendant un retour ou une leçon.
+6. `#front` : premier plan en acteurs (étoile de mer, tortue).
+7. `#ui` : boutons HTML (bulles-réponses, réécouter, jouer), chacun portant un petit canvas dessiné une fois.
 
 **Pourquoi des acteurs et pas un grand canvas animé.** Mesuré dans Chromium sans processeur graphique, processeur ralenti ×4 : un canvas modifié est recopié en entier vers le compositeur à chaque image ; un canvas animé plein écran (2560 × 1600) coûtait ~880 ms de copie par seconde, et un canvas 2D fixe plein écran était lui aussi recopié à chaque image (~11 ms). Chaque acteur a donc son petit canvas, redessiné seulement quand son image change (12 à 15 fois par seconde au plus), et ses déplacements, sa réduction (jamais d'agrandissement) et son opacité sont des `transform` CSS. Les algues ondulent en décalant les bandes horizontales du brin au repos, 15 fois par seconde. Sur une tablette avec processeur graphique, ces copies sont presque gratuites ; cette organisation protège surtout les appareils où Chrome dessine sans lui.
 

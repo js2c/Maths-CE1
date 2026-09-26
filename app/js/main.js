@@ -15,7 +15,7 @@ const json = async (p) => (await fetch(p)).json();
 const stage = new Stage(document.getElementById("stage"));
 const [atlas, module1, textes] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/textes.json")]);
 const sprites = new Sprites(atlas, stage.px);
-await Promise.all(["fond", "rayons", "pieuvre", "algues", "poissons", "petits"].map((s) => sprites.load(s)));
+await Promise.all(["fond", "rayons", "pieuvre", "algues", "poissons", "petits", "tortue"].map((s) => sprites.load(s)));
 const ocean = new Ocean(stage, sprites, atlas);
 ocean.paintStatic();
 stage.ticks.add((t, dt) => { ocean.update(t, dt); ocean.render(); });
@@ -61,8 +61,9 @@ play.addEventListener("pointerdown", async (e) => {
   await voice.say(text.pick("accueil"));
   const screen = new ReadScreen(app), level = module1.niveaux[0];
   app.screen = screen;
-  for (;;) {
-    const r = await screen.ask(screen.generate(level, rnd), level);
+  for (let k = 0; ; k++) {
+    const format = level.formats.includes("sauter") && k % 2 ? "sauter" : "lire";
+    const r = await screen.ask(screen.generate(level, rnd, { format }), level);
     if (r.ok) { stars++; paintStars(); }
   }
 }, { once: true });

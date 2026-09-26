@@ -6,6 +6,10 @@
 import type { Gfx, P } from "../core";
 import { BUBBLE_R, drawAnswerBubble, drawBackground, drawBubble, drawFish, drawRays, drawPlay, drawShimmer, drawSpeaker, drawStar, drawWeed, FISH_KINDS, FISH_N, SHIMMER_N, WEEDS } from "./decor";
 import { IDLE_N, OCTO_CLIPS, OCTO_FPS, octoParts, type Part, RING_Y } from "./octopus";
+import { drawTurtle, TURTLE_CLIPS, TURTLE_FPS } from "./turtle";
+
+// la tortue dans l'application : longueur ~110 px logiques, assez petite pour tenir sur une bouée
+export const TURTLE_S = 1;
 
 export type Spec = {
   name: string; sheet: string; W: number; H: number; origin: P; frames: number; fps?: number;
@@ -57,6 +61,12 @@ export const SPECS: Spec[] = [
   }))),
   ...BUBBLE_R.map((r, i): Spec => ({ name: `bulle.${r}`, sheet: "petits", W: 40, H: 40, origin: [20, 20], frames: 1, draw: (g) => drawBubble(g, r, 20, 20, i) })),
   ...Array.from({ length: SHIMMER_N }, (_, i): Spec => ({ name: `reflet.${i}`, sheet: "petits", W: 260, H: 40, origin: [130, 20], frames: 1, draw: (g) => drawShimmer(g, i, 130, 20) })),
+  // la tortue : une boucle par clip ; ancrage = sous son ventre, là où elle se pose sur la bouée.
+  // meta.path (saut) : par image, [avancée 0..1 entre les deux bouées, hauteur 0..1 de l'arc]
+  ...TURTLE_CLIPS.map((c): Spec => ({
+    name: `tortue.${c.name}`, sheet: "tortue", W: 200, H: 170, origin: [80, 115], frames: c.frames, fps: TURTLE_FPS,
+    draw: (g, f) => drawTurtle(g, { ...c.pose(f), s: TURTLE_S }, 80, 115), meta: { loop: c.loop, path: c.path ?? null }, loop: c.loop ? [0, c.frames] : undefined,
+  })),
   { name: "etoile", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawStar(g, 70, 70) },
   { name: "reponse", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawAnswerBubble(g, 70, 70, 0) },
   { name: "jouer", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawPlay(g, 90, 90) },

@@ -82,7 +82,7 @@ atlas.hash = createHash("md5").update(JSON.stringify(atlas.sprites)).digest("hex
 writeFileSync(atlasPath, JSON.stringify(atlas));
 console.log(`atlas    -> ${atlasPath} (${Object.keys(atlas.sprites).length} sprites, empreinte ${atlas.hash})`);
 
-if (check && (!only || only.includes("pieuvre") || only.includes("poisson"))) {
+if (check && (!only || ["pieuvre", "poisson", "tortue"].some((k) => only.includes(k)))) {
   const seams = await pg.evaluate(() => window.EXPORT.seams());
   console.log("raccords (écart moyen 0..255 ; un raccord doit rester sous l'écart maximal entre deux images voisines) :");
   for (const [n, v] of Object.entries(seams)) {

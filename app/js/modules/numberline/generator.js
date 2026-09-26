@@ -98,5 +98,19 @@ export function classify(q, value) {
 // la ligne à dessiner (runtime.js, drawLine) pour une question : positions en px logiques de la scène
 export function lineSpec(q, cfg, { x0 = 150, x1 = 1134, y = 452 } = {}) {
   const labels = Array.from({ length: q.n }, (_, i) => (q.labelled.includes(i) ? String(valueAt(q, i)) : null));
-  return { x0, x1, y, n: q.n, labels, k: cfg.k, mark: q.format === "lire" ? q.target : undefined, ends: q.n === 0 ? [String(q.min), String(q.max)] : undefined };
+  return { x0, x1, y, n: q.n, labels, k: cfg.k, mark: q.format === "lire" ? q.target : undefined, ends: q.n === 0 ? [String(q.min), String(q.max)] : undefined, lit: q.format === "sauter" ? [q.start] : undefined };
+}
+
+// ---------------------------------------------------------------- une question « sauter » (niveau 1)
+// « La tortue est sur a et fait b sauts. Où arrive-t-elle ? » Les nombres écrits sont ceux du niveau
+// (au niveau 1 : tous sauf la cible). Pièges : compter la bouée de départ comme un saut (a + b - 1, la
+// même confusion traits / sauts que E1) ; oublier le point de départ (b, comme E3).
+export function makeJump(cfg, rnd) {
+  const L = lineFor(cfg, rnd), b = 1 + Math.floor(rnd() * 4), a = Math.floor(rnd() * (L.n - b)), target = a + b, answer = valueAt(L, target);
+  const lab = labelledIndices(cfg, L, rnd); if (cfg.labels === "tous-sauf-cible") lab.delete(target);
+  const q = { module: 1, niveau: cfg.niveau, format: "sauter", ...L, start: a, jumps: b, target, answer, labelled: [...lab].sort((x, y) => x - y) };
+  const out = [{ value: answer, code: null }], has = (v) => out.some((c) => c.value === v), count = cfg.choix ?? 3;
+  for (const [v, code] of [[valueAt(L, a + b - 1), "E1"], [b * L.step, "E3"], [answer + L.step, null], [answer - 2 * L.step, null], [answer + 2 * L.step, null]]) if (out.length < count && v >= L.min && v <= L.max && !has(v)) out.push({ value: v, code });
+  q.choices = out.sort((x, y) => x.value - y.value);
+  return q;
 }

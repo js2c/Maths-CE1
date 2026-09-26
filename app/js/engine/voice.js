@@ -7,9 +7,10 @@
 //    appelé dans ce premier toucher ;
 //  - `replay()` relit la dernière consigne (bouton « réécouter ») et compte les écoutes.
 export class Voice {
-  constructor({ rate = 0.9 } = {}) {
+  // `fast` : délai de secours raccourci (tests automatiques, où aucune voix n'est installée)
+  constructor({ rate = 0.9, fast = false } = {}) {
     this.synth = typeof speechSynthesis !== "undefined" ? speechSynthesis : null;
-    this.rate = rate; this.voice = null; this.unlocked = false; this.queue = Promise.resolve();
+    this.rate = rate; this.fast = fast; this.voice = null; this.unlocked = false; this.queue = Promise.resolve();
     this.instruction = null; this.listens = 0; this.speaking = false; this.gen = 0;
     if (this.synth) { this.pick(); this.synth.addEventListener?.("voiceschanged", () => this.pick()); }
   }
@@ -23,7 +24,7 @@ export class Voice {
     const u = new SpeechSynthesisUtterance(" "); u.volume = 0; this.synth.speak(u); this.unlocked = true;
   }
   // durée de secours : environ 70 ms par caractère à débit 1, plus une marge
-  fallbackMs(text) { return 900 + (text.length * 70) / this.rate; }
+  fallbackMs(text) { return (900 + (text.length * 70) / this.rate) * (this.fast ? 0.12 : 1); }
   speakNow(text) {
     return new Promise((resolve) => {
       let done = false; const finish = () => { if (!done) { done = true; this.speaking = false; clearTimeout(timer); resolve(); } };

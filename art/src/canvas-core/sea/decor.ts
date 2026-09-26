@@ -112,3 +112,68 @@ export const drawPlay = (g: Gfx, cx: number, cy: number) => {
   drawAnswerBubble(g, cx, cy, 8, 60);
   g.group("plain", () => { const t = smooth([[cx - 14, cy - 24], [cx - 14, cy - 24], [cx + 26, cy], [cx + 26, cy], [cx - 14, cy + 24], [cx - 14, cy + 24]], true, 3); cel(g, t, "#ff7a5c", "#c64d3c", 4); contour(g, t, 4, 350); });
 };
+// l'étiquette d'un nom (choix du nom de la pieuvre) : la bulle-réponse étirée en galet, sans texte (le
+// nom est encré en direct)
+export const NAME_W = 236, NAME_H = 104;
+export const drawNameTag = (g: Gfx, cx: number, cy: number, i: number) => g.group("plain", () => {
+  const w = NAME_W / 2, h = NAME_H / 2, r = h * 0.92, s = smooth([[cx - w + r, cy - h], [cx + w - r, cy - h - 2], [cx + w, cy - 4], [cx + w - r, cy + h], [cx - w + r, cy + h + 1], [cx - w, cy + 3]], true, 10);
+  fillShape(g, shift(s, 8, 10), "#8d6f45", 0.35);
+  cel(g, s, "#fffaf0", "#cfe6ea", 9, [smooth([[cx - w + 16, cy - 6], [cx - w + 30, cy - h + 12], [cx - w + 58, cy - h + 5]], false, 4), "#ffffff"]);
+  ink(g, smooth([[cx - w + 14, cy - 4], [cx - w + 28, cy - h + 12], [cx - w + 56, cy - h + 4]], false, 6), "#ffffff", { w: 5, shadow: 0, taper: [0.3, 0.4], seed: 360 + i });
+  contour(g, s, 5, 370 + i);
+});
+// le bilan des étoiles (récompense) : un grand galet-bulle et une grosse étoile de mer à gauche ; le
+// nombre gagné est encré en direct à droite de l'étoile
+export const TALLY_W = 380, TALLY_H = 190;
+export const drawTally = (g: Gfx, cx: number, cy: number) => {
+  g.group("plain", () => {
+    const w = TALLY_W / 2, h = TALLY_H / 2, r = h * 0.9, s = smooth([[cx - w + r, cy - h], [cx + w - r, cy - h - 3], [cx + w, cy - 6], [cx + w - r, cy + h], [cx - w + r, cy + h + 2], [cx - w, cy + 4]], true, 12);
+    fillShape(g, shift(s, 10, 13), "#0a3f49", 0.3);
+    cel(g, s, "#fffaf0", "#cfe6ea", 12, [smooth([[cx - w + 30, cy - 12], [cx - w + 48, cy - h + 24], [cx - w + 90, cy - h + 13]], false, 4), "#ffffff"]);
+    ink(g, smooth([[cx - w + 30, cy - 12], [cx - w + 48, cy - h + 24], [cx - w + 90, cy - h + 13]], false, 6), "#ffffff", { w: 6, shadow: 0, taper: [0.3, 0.4], seed: 395 });
+    contour(g, s, 6, 396);
+    const c: P = [cx - w + 105, cy + 4], st = O.starShape(c, 64, 27, 0.12);
+    fillShape(g, shift(st, 8, 10), "#8d6f45", 0.3);
+    cel(g, st, "#ffc93a", "#e08d1c", 8);
+    const rr = rng(17); for (let i = 0; i < 22; i++) { const a = rr() * 6.28, d = 6 + rr() * 34; fillShape(g, blob(c[0] + Math.cos(a) * d, c[1] + Math.sin(a) * d, 3, 3, 397 + i, 0.1, 6), "#fff0b8", 0.95); }
+    contour(g, st, 4.6, 398);
+  });
+};
+// le bouton « c'est bon » : la bulle, une coche verte encrée
+export const drawCheck = (g: Gfx, cx: number, cy: number) => {
+  drawAnswerBubble(g, cx, cy, 9, 56);
+  g.group("plain", () => {
+    const c: P[] = smooth([[cx - 26, cy + 2], [cx - 9, cy + 20], [cx - 9, cy + 20], [cx + 27, cy - 22]], false, 6);
+    ink(g, c.map(([x, y]) => [x + 4, y + 5] as P), "#0a3f49", { w: 19, shadow: 0, taper: [0.25, 0.3], seed: 380 }, 0.3);
+    ink(g, c, INK, { w: 19, shadow: 0, taper: [0.2, 0.25], seed: 383 }); // le contour du feutre
+    ink(g, c, "#2f9e5a", { w: 12, shadow: 0.45, taper: [0.25, 0.3], seed: 381 });
+    ink(g, c.slice(0, Math.ceil(c.length * 0.4)).map(([x, y]) => [x - 1.5, y - 2] as P), "#7fd69a", { w: 3, shadow: 0, taper: [0.3, 0.3], seed: 382 });
+  });
+};
+// « à demain » : la bulle, un croissant de lune jaune et une petite étoile (la séance du jour est faite)
+export const drawMoon = (g: Gfx, cx: number, cy: number) => {
+  drawAnswerBubble(g, cx, cy, 10, 60);
+  g.group("plain", () => {
+    // le croissant : le disque de la lune moins un disque décalé vers le haut à droite. On suit le bord
+    // extérieur hors du second disque, puis le bord du second disque à l'intérieur du premier.
+    const c1: P = [cx - 5, cy + 3], R = 31, c2: P = [cx + 9, cy - 8], r = 27, pts: P[] = [];
+    const inside = (p: P, c: P, rr: number) => Math.hypot(p[0] - c[0], p[1] - c[1]) < rr;
+    const N = 96, on = (c: P, rr: number, a: number): P => [c[0] + rr * Math.cos(a), c[1] + rr * Math.sin(a)];
+    // premier point du bord extérieur qui sort du second disque (en tournant dans le sens horaire)
+    let k0 = 0; while (!(inside(on(c1, R, (2 * Math.PI * k0) / N), c2, r) && !inside(on(c1, R, (2 * Math.PI * (k0 + 1)) / N), c2, r))) k0++;
+    for (let k = 1; k <= N; k++) { const p = on(c1, R, (2 * Math.PI * (k0 + k)) / N); if (inside(p, c2, r)) break; pts.push(p); }
+    const back: P[] = []; for (let k = 0; k < N; k++) { const p = on(c2, r, (2 * Math.PI * k) / N); if (inside(p, c1, R)) back.push(p); }
+    // le bord intérieur, parcouru à rebours de la fin du bord extérieur vers son début
+    const end = pts[pts.length - 1], near = (q: P) => Math.hypot(q[0] - end[0], q[1] - end[1]);
+    let j = back.reduce((bi, q, i) => (near(q) < near(back[bi]) ? i : bi), 0);
+    const inner: P[] = []; for (let n = 0; n < back.length; n++) { inner.push(back[j]); j = (j - 1 + back.length) % back.length; }
+    if (near(inner[inner.length - 1]) < near(inner[0])) inner.reverse();
+    pts.push(...inner);
+    const moon = smooth(pts, true, 1);
+    fillShape(g, shift(moon, 4, 5), "#0a3f49", 0.25);
+    cel(g, moon, "#ffd84a", "#e08d1c", 4);
+    contour(g, moon, 3.6, 390);
+    const st = O.starShape([cx + 22, cy - 18], 11, 5, 0.2);
+    cel(g, st, "#ffe98a", "#e0a21c", 2); contour(g, st, 2.6, 391);
+  });
+};

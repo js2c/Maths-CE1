@@ -29,3 +29,10 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 /* la bande tactile de la ligne (placer, estimer) : toute la hauteur de la ligne et de ses nombres */
 .touchband { position: absolute; top: 380px; height: 230px; display: none; touch-action: none; cursor: pointer; }
 .answer.still { pointer-events: none; }
+
+/* séance : choix du nom, coche, lune, bilan des étoiles */
+.name { transition: opacity 0.3s, filter 0.3s; }
+.name.chosen { filter: drop-shadow(0 0 6px #ffe45c) drop-shadow(0 0 14px #ffd23a); }
+.invite { animation: invite 1.6s ease-in-out infinite; }
+.invite.pop { animation: pop 0.45s ease-out; }
+.tally { pointer-events: none; }

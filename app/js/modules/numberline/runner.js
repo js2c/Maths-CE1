@@ -27,9 +27,10 @@ export class Module1Runner {
   entryLesson() { const l = LESSON_OF_LEVEL[this.st.niveau]; return l && !this.st.lecons.includes(l) ? l : null; }
   async lessonSeen(id) { if (!this.st.lecons.includes(id)) this.st.lecons.push(id); await this.save(); }
   // la question suivante : une question qui revient, sinon une nouvelle
-  next() {
-    this.replays.forEach((r) => r.in--);
-    const due = this.replays.findIndex((r) => r.in <= 0);
+  // `guide` : un exemple guidé (docs/SPEC.md, « Notion du jour ») : jamais une question qui revient
+  next({ guide = false } = {}) {
+    if (!guide) this.replays.forEach((r) => r.in--);
+    const due = guide ? -1 : this.replays.findIndex((r) => r.in <= 0);
     if (due >= 0) { const r = this.replays.splice(due, 1)[0]; return { q: { ...r.q, revient: true }, cfg: r.cfg }; }
     let cfg = this.cfg(), opts = { eviter: this.recent.slice(-3) };
     if (this.simpler) { this.simpler = false; if (this.st.niveau > 1) cfg = this.cfg(this.st.niveau - 1); else opts = { ...opts, eviter: [5, 6, 7, 8, 9, 10] }; }
@@ -37,19 +38,23 @@ export class Module1Runner {
     if (format === "estimer") opts.tolerance = toleranceFor(cfg, this.st.justesNiveau);
     const q = this.screen.generate(cfg, this.rnd, { ...opts, format });
     this.recent.push(q.answer);
+    if (guide) q.guide = true;
     return { q, cfg };
   }
   // enregistre une réponse ; renvoie { etoiles, events } (events : montee, difficulte, lecon)
   async record(r, cfg) {
     const q = r.q, events = [];
+    await this.store?.add("reponses", {
+      t: Date.now(), seance: this.seance, module: 1, niveau: q.niveau, question: describe(q), forme: q.format, donnee: r.value, attendue: q.answer,
+      juste: r.ok, tempsMs: r.ms, ecoutes: r.listens, aide: !!q.guide, erreur: r.code, revient: !!q.revient, guide: !!q.guide,
+    });
+    // un exemple guidé (la méthode vient d'être montrée) : une étoile s'il est réussi, mais il ne compte
+    // ni pour les règles d'adaptation, ni pour le taux de la séance, et ne revient pas
+    if (q.guide) return { etoiles: r.ok ? 1 : 0, events };
     this.count++; if (r.ok) this.ok++;
     let etoiles = r.ok ? 1 : 0;
     if (r.ok && q.revient) etoiles += 1; // erreur corrigée
     if (!r.ok && !q.revient) this.replays.push({ q, cfg, in: 3 + Math.floor(this.rnd() * 3) });
-    await this.store?.add("reponses", {
-      t: Date.now(), seance: this.seance, module: 1, niveau: q.niveau, question: describe(q), forme: q.format, donnee: r.value, attendue: q.answer,
-      juste: r.ok, tempsMs: r.ms, ecoutes: r.listens, aide: false, erreur: r.code, revient: !!q.revient,
-    });
     // les règles d'adaptation ne comptent que les questions du niveau courant (pas les plus simples)
     if (q.niveau === this.st.niveau) {
       const a = afterAnswer(this.st, { juste: r.ok, aide: false, ms: r.ms }, this.rules, this.levels.length);

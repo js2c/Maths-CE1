@@ -8,6 +8,7 @@ import type { Gfx, P } from "../core";
 import { blob, clipped, fillShape, ink, lerpP, mix, smooth } from "../gallery";
 import { numberStrokes, taper } from "../ocean";
 import { cel, contour, INK } from "../oceanMarker";
+import { wordStrokes, wordWidth } from "./letters";
 
 export { INK };
 // les primitives du style n'ont besoin que du contexte courant : un Gfx minimal suffit
@@ -21,6 +22,15 @@ export const drawNumber = (ctx: CanvasRenderingContext2D, text: string, cx: numb
   n.strokes.forEach((s, k) => ink(g, s, color, { w, shadow: 0.3, taper: [0.1, 0.12], seed: seed + k, min: 0.55 }));
   n.dots.forEach((d, k) => fillShape(g, blob(d[0], d[1], w * 0.7, w * 0.7, seed + 60 + k, 0.1, 8), color));
 };
+
+// un mot encré (le nom de la pieuvre, plus tard ceux des cartes), même plume que les nombres ; `em` :
+// hauteur d'une capitale, `top` : le haut des capitales
+export const drawWord = (ctx: CanvasRenderingContext2D, text: string, cx: number, top: number, em: number, o: { color?: string; w?: number; seed?: number } = {}) => {
+  const g = shim(ctx), color = o.color ?? INK, w = o.w ?? em * 0.13, seed = o.seed ?? 700, n = wordStrokes(text, cx, top, em);
+  n.strokes.forEach((s, k) => ink(g, s, color, { w, shadow: 0.3, taper: [0.1, 0.12], seed: seed + k, min: 0.55 }));
+  n.dots.forEach((d, k) => fillShape(g, blob(d[0], d[1], w * 0.7, w * 0.7, seed + 90 + k, 0.1, 8), color));
+};
+export { wordWidth };
 
 // ---------------------------------------------------------------- la ligne graduée
 // `k` fait passer de la corde à bouées (0, niveaux 1 et 2) à la ligne d'école (1) : la corde s'affine

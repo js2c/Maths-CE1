@@ -1,5 +1,5 @@
 {
-  "_doc": "Tout ce que la voix lit. {mascotte} : le nom choisi pour la pieuvre ; {n}, {a}, {b} : des nombres. Plusieurs variantes : l'application en tire une au hasard.",
+  "_doc": "Tout ce que la voix lit. {mascotte} : le nom choisi pour la pieuvre ; {n}, {a}, {b} : des nombres ; {nom} : un nom proposé. Plusieurs variantes : l'application en tire une au hasard.",
   "accueil": [
     "Coucou ! C'est moi, {mascotte}. On va jouer dans l'océan !",
     "Bonsoir ! {mascotte} est contente de te voir. On y va ?"
@@ -30,7 +30,8 @@
   },
   "bonneReponse": "C'était {n}.",
   "aDemain": [
-    "C'est fini pour aujourd'hui. À demain !"
+    "C'est fini pour aujourd'hui. À demain !",
+    "Tu as bien travaillé. À demain !"
   ],
   "unSaut": "un saut",
   "sauts": "sauts",
@@ -41,5 +42,35 @@
   "estimer": [
     "Où mettrais-tu {n} ? Pose le poisson sur la corde.",
     "Montre-moi où serait {n}."
+  ],
+  "nomDemande": "Coucou ! Je suis une petite pieuvre, et je n'ai pas encore de nom. Touche un nom pour l'écouter.",
+  "nomTouche": "{nom} !",
+  "nomValider": "Si tu veux que je m'appelle {nom}, touche la coche verte.",
+  "nomChoisi": "Youpi ! Maintenant, je m'appelle {mascotte}. Merci !",
+  "guide": [
+    "Regarde bien. On va compter les sauts ensemble.",
+    "Regarde d'abord comment on fait."
+  ],
+  "guideDepart": "On part de {a}, et on compte les sauts.",
+  "guideSauter": [
+    "Regarde bien. Compte les sauts avec la tortue.",
+    "Regarde d'abord : la tortue fait ses sauts, compte avec elle."
+  ],
+  "guideEstimer": "Regarde bien. Pour t'aider, cherche le milieu de la corde.",
+  "guideMilieu": "Au milieu, c'est {n}.",
+  "aToi": [
+    "À toi !",
+    "À ton tour !"
+  ],
+  "recompense": [
+    "Bravo ! Ce soir, tu as gagné {etoiles}.",
+    "Regarde tout ce que tu as gagné ce soir : {etoiles} !"
+  ],
+  "uneEtoile": "une étoile de mer",
+  "desEtoiles": "{n} étoiles de mer",
+  "seanceFinie": "Et en plus, dix étoiles parce que tu as fini ta séance !",
+  "dejaJoue": [
+    "Tu as déjà bien travaillé aujourd'hui. On se retrouve demain !",
+    "C'est l'heure de se reposer. À demain !"
   ]
 }

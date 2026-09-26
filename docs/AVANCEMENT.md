@@ -13,13 +13,13 @@ Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail 
 | 3 | Point d'étape validé par le parent (rendu, gestes). Niveau 5 : 0, 50 et 100 toujours écrits. Ce fichier. | `093c0c1` |
 | 4 | Tortue de mer (atelier : repos, saut, nage ; planche spécimen `turtleSheet`), format « sauter » au niveau 1, retour animé E1 (la tortue repart de 0, chaque saut s'allume et se compte), calque d'effets `#fx` | `09a725e` |
 | 5 | Socle : PWA (manifeste, icône dessinée dans l'atelier `appIcon`, service worker, liste `tools/precache.mjs` vérifiée par `npm test`), stockage IndexedDB (7 magasins de la SPEC, migrations versionnées, `persist()` au premier lancement), test `tests/e2e/pwa.mjs` (installable, hors ligne) | `4926fee` |
-| 6 | Module 1 complet : formats lire, sauter, placer (toucher ou glisser le poisson), estimer (tolérance ±8 puis ±5) ; 8 niveaux, la corde devient une réglette d'école (niveaux 3 à 5) ; règles d'adaptation (`modules/progress.js`) ; question qui revient 3 à 5 questions plus loin ; retours animés E1 à E5 ; chaque réponse enregistrée dans la base ; déclencheurs des leçons (utilisés à l'étape 9) | ce commit |
+| 6 | Module 1 complet : formats lire, sauter, placer (toucher ou glisser le poisson), estimer (tolérance ±8 puis ±5) ; 8 niveaux, la corde devient une réglette d'école (niveaux 3 à 5) ; règles d'adaptation (`modules/progress.js`) ; question qui revient 3 à 5 questions plus loin ; retours animés E1 à E5 ; chaque réponse enregistrée dans la base ; déclencheurs des leçons (utilisés à l'étape 9) | `1924bac` |
+| 7 | Déroulé de séance (`js/session/`, `content/seance.json`) : accueil avec choix du nom de la pieuvre au premier lancement (6 noms écrits au feutre, lettres dessinées dans l'atelier `sea/letters.ts`), échauffement (emplacement, rempli à l'étape 8), notion du jour (2 exemples guidés montrés par la tortue puis 8 à 10 questions, fin sur une réussite), défi record et problème du jour prévus mais désactivés, récompense (bilan des étoiles + 10 pour la séance finie, étoiles qui volent vers le compteur), plafond de 12 minutes, « à demain » (lune) et une seule séance terminée par jour ; séance enregistrée dès son début ; test `tests/e2e/seance.mjs` | ce commit |
 
 ### Reste à faire (dans l'ordre prévu)
 
 | Étape | Contenu |
 | --- | --- |
-| 7 | Déroulé de séance : accueil (choix du nom de la pieuvre au premier lancement), échauffement, notion du jour, récompense, plafonnement et « à demain » ; défi record et problème du jour prévus mais désactivés |
 | 8 | Échauffement : faits d'addition familles 1 et 2, révision espacée en 5 boîtes, temps de base, pavé numérique |
 | 9 | Leçons animées L1 à L3 (frise par étapes, rejouer, phrase précédente) |
 | 10 | Récompenses : étoiles de mer, coquillages et ouverture animée, 15 cartes du lagon (anecdotes vérifiées), récif visitable, illustrations provisoires |
@@ -35,11 +35,17 @@ Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail 
 - Module 1 : pas d'aide (coquillage) définie dans la SPEC pour la ligne graduée ; « aide utilisée » est donc toujours faux pour ce module.
 - Placer : l'erreur est typée E4 (symétrique), E1 (un pas à côté), E5 (chiffres inversés), sinon « autre ». Estimer : E4 si placé au symétrique.
 - Difficulté persistante : la question plus simple est prise au niveau inférieur (au niveau 1 : une cible proche de 0).
+- Exemple guidé (module 1), proposition à valider : la tortue montre la méthode avant que l'enfant réponde. Lire et placer : elle part de 0 (cible proche, ligne qui commence à 0) ou du nombre écrit le plus proche à gauche, et compte les sauts jusqu'à la cible (un arc numéroté par saut, la voix compte). Sauter : elle fait les sauts en les comptant puis revient au départ. Estimer : le milieu de la ligne s'allume avec son nombre. Il rapporte une étoile s'il est réussi, compte comme question posée pour la séance, mais pas pour les règles d'adaptation ni pour le taux du module.
+- Finir sur une réussite : si la dernière réponse est fausse, jusqu'à 2 questions plus simples (niveau inférieur, ou au niveau 1 une cible proche de 0).
+- Une seule séance terminée par jour ; une séance interrompue (application fermée) ne compte pas et peut être recommencée le jour même. Une séance est « terminée » dès que la récompense commence.
+- Le compteur d'étoiles montre le trésor total ; chaque étoile gagnée est ajoutée aussitôt (rien n'est perdu si la séance s'arrête).
+- La montée de niveau n'est pas annoncée à l'enfant (la progression se voit dans le récif, étape 10).
 - Les rayons de lumière sont fixes (fondus dans le fond) : leur animation coûtait trop cher sans processeur graphique.
 
 ### Points ouverts
 
 - Retours E2 et E5 : quand la ligne commence à gauche, les arcs numérotés et les filets de bulles passent en partie derrière la pieuvre (à décaler ou faire s'écarter la pieuvre).
-- La séance en cours de l'application est encore provisoire (boucle de questions du module 1) : le vrai déroulé arrive à l'étape 7.
+- Pendant les exemples guidés et les retours animés, la mesure (processeur ÷4, sans processeur graphique) tombe à 30 images/s environ ; l'allègement automatique s'enclenche. Les mesures de cet environnement varient beaucoup d'un passage à l'autre (8 à 34 images lentes sur la même version).
+- La tortue qui part de 0 passe devant les bras de la pieuvre (même cause que les arcs E2/E5).
 - La pieuvre montre toujours vers la droite, quelle que soit la place de l'étoile.
 - Un à-coup d'environ 170 ms (processeur ÷4) à l'apparition de certaines questions, non expliqué.

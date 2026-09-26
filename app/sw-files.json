@@ -1,5 +1,5 @@
 {
- "version": "835ae43acb83",
+ "version": "f792c60c4755",
  "files": [
   "./",
   "assets/art/algues@1x.webp",
@@ -19,6 +19,7 @@
   "assets/art/tortue@1x.webp",
   "assets/art/tortue@2x.webp",
   "content/module1.json",
+  "content/seance.json",
   "content/textes.json",
   "css/app.css",
   "icons/icon-192.png",
@@ -40,6 +41,10 @@
   "js/modules/numberline/runner.js",
   "js/modules/numberline/screen.js",
   "js/modules/progress.js",
+  "js/session/notion.js",
+  "js/session/rewards.js",
+  "js/session/screens.js",
+  "js/session/session.js",
   "manifest.webmanifest"
  ]
 }

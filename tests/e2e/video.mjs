@@ -20,6 +20,8 @@ await page.goto(url); await page.waitForFunction(() => window.__ready !== undefi
 await cdp.send("Page.startScreencast", { format: "jpeg", quality: 92, maxWidth: 1280, maxHeight: 800, everyNthFrame: 1 });
 await page.waitForTimeout(2500);
 await page.tap(".play", { force: true });
+// premier lancement : la pieuvre demande son nom (un nom, puis la coche)
+await page.waitForSelector(".name", { timeout: 30000 }); await page.tap('.name[data-value="Pili"]', { force: true }); await page.tap(".check", { force: true });
 const next = () => page.waitForFunction(() => document.querySelectorAll(".answer").length && !window.__app.screen?.locked, null, { timeout: 30000 });
 const answer = async (right) => { const v = await page.evaluate((r) => { const q = window.__app.screen.q; return r ? q.answer : q.choices.find((c) => c.value !== q.answer).value; }, right); await page.tap(`.answer[data-value="${v}"]`, { force: true }); };
 for (const right of [true, false, true]) { await next(); await page.waitForTimeout(3200); await answer(right); await page.waitForTimeout(right ? 2600 : 4200); }

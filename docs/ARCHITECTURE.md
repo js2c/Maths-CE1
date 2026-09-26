@@ -64,6 +64,12 @@ node tools/still.mjs octoSheet --frame 18 --out out/pieuvre.png --scale 2   # pl
 
 Chaque planche est rendue une seconde fois dans une page neuve : l'export échoue si une seule image diffère (empreintes). Les planches sont en WebP sans perte.
 
+## La séance
+
+`js/session/session.js` enchaîne les étapes de `content/seance.json` (accueil, échauffement, notion du jour, défi record, problème du jour, récompense). Chaque étape est jouée par un gestionnaire fourni par `main.js` ; une étape désactivée (`"actif": false`) ou sans gestionnaire est sautée et notée dans l'enregistrement de la séance. Le plafond (12 minutes, moins une minute gardée pour la récompense) et la durée de chaque étape arrêtent les questions. `js/session/notion.js` déroule la notion du jour (leçon ou deux exemples guidés, 8 à 10 questions, fin sur une réussite) quel que soit le module. `js/session/screens.js` : compteur et vol des étoiles, choix du nom de la pieuvre, bilan, « à demain ». `js/session/rewards.js` : le trésor d'étoiles.
+
+Les lettres (noms, plus tard cartes) sont écrites au feutre comme les chiffres : `art/src/canvas-core/sea/letters.ts`, dessinées en direct par `drawWord` (`runtime.js`) ; planche de contrôle `node tools/still.mjs lettersSheet --frame 0 --out out/lettres.png --scale 2`.
+
 ## Hors ligne et stockage
 
 - `app/sw.js` met en cache tous les fichiers listés dans `app/sw-files.json`. Cette liste et la version du cache sont produites par `node tools/precache.mjs` ; `npm test` échoue si elle n'est pas à jour. À relancer après chaque changement dans `app/`.
@@ -74,6 +80,7 @@ Chaque planche est rendue une seconde fois dans une page neuve : l'export échou
 ```bash
 npm test                          # tests unitaires (node --test)
 node tests/e2e/pwa.mjs             # installable et utilisable hors ligne
+node tests/e2e/seance.mjs          # une séance complète (nom, exemples guidés, questions, récompense, « à demain »)
 node tests/e2e/perf.mjs            # mesures (processeur ralenti ×4, 1280 × 800, densité 2) et captures
 FFMPEG=/chemin/ffmpeg node tests/e2e/video.mjs   # vidéo d'une séance (MP4)
 ```

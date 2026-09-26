@@ -1,7 +1,7 @@
 // DÉMARRAGE. Charge l'atlas et les planches nécessaires au premier écran (fond, pieuvre au repos,
 // décor), lance l'animation, puis charge le reste en arrière-plan (gestes de la pieuvre).
-// Premier écran : l'océan vivant et une grosse bulle « jouer » ; le premier toucher débloque la voix.
-import * as R from "./art/runtime.js";
+// Premier écran : l'océan vivant et une grosse bulle « jouer » (ou la lune si la séance du jour est
+// déjà faite) ; le premier toucher débloque la voix et lance la séance (session/session.js).
 import { Ocean, rng } from "./engine/ocean.js";
 import { LineView } from "./engine/line.js";
 import { persist, Store } from "./engine/store.js";
@@ -10,6 +10,10 @@ import { Stage } from "./engine/stage.js";
 import { Voice } from "./engine/voice.js";
 import { Module1Runner } from "./modules/numberline/runner.js";
 import { fill, ReadScreen } from "./modules/numberline/screen.js";
+import { runNotion } from "./session/notion.js";
+import { Rewards } from "./session/rewards.js";
+import { chooseName, goodNight, onTap, reward, spriteBox, StarHud } from "./session/screens.js";
+import { doneToday, Session } from "./session/session.js";
 
 const T0 = performance.now();
 // hors ligne : le service worker met toute l'application en cache (pas en file://, ni pendant les tests qui le désactivent)
@@ -17,7 +21,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !loc
 const json = async (p) => (await fetch(p)).json();
 
 const stage = new Stage(document.getElementById("stage"));
-const [atlas, module1, textes] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/textes.json")]);
+const [atlas, module1, textes, seance] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/textes.json"), json("content/seance.json")]);
 const sprites = new Sprites(atlas, stage.px);
 // la base locale ; au premier lancement, on demande au navigateur de ne jamais l'effacer de lui-même
 const store = await Store.open();
@@ -31,10 +35,12 @@ stage.start();
 stage.onResize(() => { if (Math.abs(stage.px - sprites.px) > 0.01) location.reload(); });
 
 const rnd = rng(Date.now() & 0xffffffff);
-const mascotte = "Pili"; // le nom choisi au premier lancement (à venir : écran de choix)
-const text = { data: textes, pick: (k, v = {}) => { const e = textes[k]; return fill(Array.isArray(e) ? e[Math.floor(rnd() * e.length)] : e, { mascotte, ...v }); } };
-const voice = new Voice({ rate: 0.9 });
-const app = { stage, sprites, ocean, voice, text, rnd, atlas, store, line: new LineView(stage) };
+// pour les tests et les captures : ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N
+const P = new URLSearchParams(location.search);
+const text = { data: textes, pick: (k, v = {}) => { const e = textes[k]; return fill(Array.isArray(e) ? e[Math.floor(rnd() * e.length)] : e, { mascotte: app.mascotte, ...v }); } };
+const voice = new Voice({ rate: 0.9, fast: P.get("voix") === "rapide" });
+const rewards = await new Rewards(store).load();
+const app = { stage, sprites, ocean, voice, text, rnd, atlas, store, rewards, line: new LineView(stage), mascotte: await store.setting("mascotte") };
 window.__app = app;
 
 // le premier écran est prêt : on le note pour la mesure du démarrage
@@ -42,39 +48,49 @@ requestAnimationFrame(() => requestAnimationFrame(() => { performance.mark("app-
 sprites.load("pieuvre-gestes").then(() => ocean.octo.warm("pieuvre-gestes"));
 
 // ---------------------------------------------------------------- en-tête : réécouter, étoiles de mer
-const hudCanvas = (cls, x, y, w, h) => { const b = document.createElement(cls === "speaker" ? "button" : "div"), c = document.createElement("canvas"); b.className = `hud ${cls}`; Object.assign(b.style, { left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${h}px` }); c.width = Math.round(w * stage.px); c.height = Math.round(h * stage.px); b.append(c); stage.ui.append(b); return [b, c.getContext("2d")]; };
-const [speaker, spk] = hudCanvas("speaker", 1140, 8, 130, 130);
-sprites.draw(spk, "reecouter", 0, 65, 65);
-speaker.setAttribute("aria-label", "réécouter");
-speaker.addEventListener("pointerdown", (e) => { e.preventDefault(); speaker.classList.remove("pop"); void speaker.offsetWidth; speaker.classList.add("pop"); voice.replay(); });
-const [, stc] = hudCanvas("stars", 960, 22, 170, 100);
-let stars = 0;
-const paintStars = () => {
-  stc.setTransform(1, 0, 0, 1, 0, 0); stc.clearRect(0, 0, stc.canvas.width, stc.canvas.height);
-  const q = sprites.frame("etoile", 0), k = 0.62; // l'étoile, réduite (jamais agrandie)
-  stc.drawImage(q.img, q.sx, q.sy, q.w, q.h, 50 * stage.px + q.dx * k, 50 * stage.px + q.dy * k, q.w * k, q.h * k);
-  stc.setTransform(stage.px, 0, 0, stage.px, 0, 0);
-  R.drawNumber(stc, String(stars), 118, 32, 40, { w: 5.6 });
-};
-paintStars();
+const speaker = spriteBox(app, { x: 1140, y: 8, w: 130, h: 130, cls: "hud speaker", label: "réécouter", paint: (ctx) => sprites.draw(ctx, "reecouter", 0, 65, 65) });
+onTap(speaker, () => { speaker.classList.remove("pop"); void speaker.offsetWidth; speaker.classList.add("pop"); voice.replay(); });
+const hud = new StarHud(app, rewards);
+app.hud = hud;
 
-// ---------------------------------------------------------------- premier écran, puis séance (version du point d'étape)
-const play = document.createElement("button"); play.className = "bubble play"; play.setAttribute("aria-label", "jouer");
-{ const c = document.createElement("canvas"); c.width = c.height = Math.round(180 * stage.px); play.append(c); sprites.draw(c.getContext("2d"), "jouer", 0, 90, 90); }
-stage.ui.append(play);
-play.addEventListener("pointerdown", async (e) => {
-  e.preventDefault(); voice.unlock(); play.remove();
-  ocean.octo.play("saluer");
-  await voice.say(text.pick("accueil"));
-  // pour les tests et les captures : ?niveau=N&format=lire|sauter|placer|estimer
-  const P = new URLSearchParams(location.search), screen = new ReadScreen(app);
-  app.screen = screen;
-  const runner = await new Module1Runner({ screen, store, content: module1, rnd }).load();
-  if (P.get("niveau")) { runner.st.niveau = Number(P.get("niveau")); runner.save = () => {}; }
-  if (P.get("format")) runner.levels = runner.levels.map((c) => ({ ...c, formats: [P.get("format")] }));
-  app.runner = runner;
-  for (;;) {
-    const { q, cfg } = runner.next(), r = await screen.ask(q, cfg), { etoiles } = await runner.record(r, cfg);
-    stars += etoiles; paintStars();
-  }
-}, { once: true });
+// ---------------------------------------------------------------- la séance
+// les étapes que l'application sait jouer (les autres sont sautées : échauffement à l'étape 8, défi et
+// problème du jour désactivés au lot 1) ; les leçons animées arrivent à l'étape 9
+const lesson = async () => false;
+const handlers = {
+  accueil: async () => {
+    // premier lancement : l'enfant choisit le nom de la pieuvre ; ensuite, la pieuvre salue
+    if (!app.mascotte) {
+      app.mascotte = await chooseName(app, seance.noms); await store.setSetting("mascotte", app.mascotte);
+      ocean.octo.play("rejouir"); await voice.say(text.pick("nomChoisi"));
+    } else { ocean.octo.play("saluer"); await voice.say(text.pick("accueil")); }
+  },
+  notion: async (ctx) => {
+    const screen = (app.screen ??= new ReadScreen(app));
+    const runner = await new Module1Runner({ screen, store, content: module1, rnd, seance: ctx.session.id }).load();
+    if (P.get("niveau")) { runner.st.niveau = Number(P.get("niveau")); runner.save = () => {}; }
+    if (P.get("format")) runner.levels = runner.levels.map((c) => ({ ...c, formats: [P.get("format")] }));
+    const step = { ...ctx.step, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}), ...(P.get("guides") ? { guides: Number(P.get("guides")) } : {}) };
+    app.runner = runner;
+    await runNotion({ ...ctx, step, runner, screen, lesson, rnd });
+    screen.leave();
+  },
+  recompense: (ctx) => reward(app, { ...ctx, hud }),
+};
+// chaque gain d'étoiles pendant les questions : les étoiles s'envolent des bulles-réponses vers le compteur
+// (le bilan de fin de séance fait voler les siennes lui-même)
+rewards.onChange((n, raison) => { if (raison !== "séance terminée") hud.fly(n, [640, 690], { gap: 140 }); });
+
+// ---------------------------------------------------------------- premier écran
+if (await doneToday(store)) {
+  // la séance du jour est faite : la lune, et « à demain » quand on la touche (seul le récif restera libre, étape 10)
+  goodNight(app, { first: false });
+} else {
+  const play = spriteBox(app, { x: 550, y: 560, w: 180, h: 180, cls: "bubble play", label: "jouer", paint: (ctx) => sprites.draw(ctx, "jouer", 0, 90, 90) });
+  play.addEventListener("pointerdown", async (e) => {
+    e.preventDefault(); voice.unlock(); play.remove();
+    const session = new Session({ store, content: seance, handlers, rewards });
+    app.session = session;
+    await session.run();
+  }, { once: true });
+}

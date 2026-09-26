@@ -7,6 +7,7 @@
 // Retour immédiat : juste -> la pieuvre se réjouit ; faux -> la pieuvre encourage (jamais triste), la voix
 // dit pourquoi, et l'animation propre à l'erreur est jouée (tableau des erreurs E1 à E5 de la SPEC).
 import * as R from "../../art/runtime.js";
+import { Actor } from "../../engine/actor.js";
 import { arcHeight, Turtle } from "../../engine/turtle.js";
 import { classify, lineSpec, makeEstimate, makeJump, makePlace, makeRead } from "./generator.js";
 
@@ -19,9 +20,11 @@ export class NumberLineScreen {
     const o = app.ocean;
     // l'étoile de mer (lire) et le poisson à poser (placer, estimer) : des acteurs du premier plan
     this.star = o.spriteActor(o.frontEl, "etoile"); this.star.draw(0); this.star.show(false);
-    this.fish = o.spriteActor(o.frontEl, "poisson.0.d"); this.fish.show(false); this.fishAt = null; this.fishGoal = null;
+    this.fish = o.spriteActor(o.frontEl, "poisson.0.d"); this.fish.show(false); this.fishAt = null; this.fishGoal = null; this.starLift = 0;
     o.front.push((t) => {
-      this.star.show(!!this.starAt); if (this.starAt) this.star.moveTo(this.starAt[0], this.starAt[1] + 1.5 * Math.sin(t * 2.1));
+      // l'étoile s'élève quand la tortue vient se poser sous elle (exemple guidé, retour E1)
+      this.starLift += ((this.turtle.a.vis && this.starAt && Math.abs(this.turtle.pos[0] - this.starAt[0]) < 40 ? 46 : 0) - this.starLift) * 0.15;
+      this.star.show(!!this.starAt); if (this.starAt) this.star.moveTo(this.starAt[0], this.starAt[1] - this.starLift + 1.5 * Math.sin(t * 2.1));
       this.fish.show(!!this.fishAt);
       if (this.fishAt) {
         const g = this.fishGoal ?? this.fishAt; this.fishAt = [this.fishAt[0] + (g[0] - this.fishAt[0]) * 0.35, this.fishAt[1] + (g[1] - this.fishAt[1]) * 0.35];
@@ -52,7 +55,7 @@ export class NumberLineScreen {
   // ---------------------------------------------------------------- une question
   // Les deux versions de la ligne (la question, puis la correction avec le nombre et la graduation
   // allumée) sont préparées ensemble par le Worker : au moment de la réponse, il suffit d'afficher la seconde.
-  async show(q, cfg) {
+  async show(q, cfg, { guide = false } = {}) {
     const { voice, text, line } = this.app;
     this.q = q; this.cfg = cfg; this.locked = true; this.arcs = []; this.overlay = []; line.fxClear();
     this.spec = lineSpec(q, cfg);
@@ -73,12 +76,39 @@ export class NumberLineScreen {
         this.buttons.push(b);
       });
     } else this.buttons.push(this.bubble(640, ANSWER_Y, String(q.answer), null, true)); // le nombre à placer, en grand
-    this.locked = false;
     voice.stop();
     const v = { n: q.answer, a: q.format === "sauter" ? q.min + q.start * q.step : q.min, sauts: q.jumps === 1 ? text.data.unSaut : `${q.jumps} ${text.data.sauts}` };
     // pendant la consigne, la pieuvre montre la ligne ; elle relâche quand la phrase est finie
     this.app.ocean.octo.hold("montrer");
-    return voice.say(text.pick(q.format, v), { instruction: true }).then(() => this.app.ocean.octo.release());
+    // exemple guidé : on montre d'abord la méthode (les réponses attendent), puis « À toi ! »
+    if (guide) { await this.demo(q); this.t0 = performance.now(); }
+    this.locked = false;
+    return voice.say(`${guide ? `${text.pick("aToi")} ` : ""}${text.pick(q.format, v)}`, { instruction: true }).then(() => this.app.ocean.octo.release());
+  }
+  // EXEMPLE GUIDÉ (docs/SPEC.md, « Notion du jour ») : la tortue montre comment trouver la réponse, puis
+  // l'enfant répond. Lire, placer : elle part de zéro (ou du nombre écrit le plus proche à gauche, quand
+  // la cible est loin ou que la ligne ne commence pas à 0) et compte les sauts jusqu'à la cible, un arc
+  // lumineux numéroté par saut. Sauter : elle fait les sauts en les comptant, puis revient à son départ.
+  // Estimer : le milieu de la ligne s'allume avec son nombre.
+  async demo(q) {
+    const { voice, text } = this.app, T = this.turtle, val = (i) => q.min + i * q.step;
+    await voice.say(text.pick(q.format === "estimer" ? "guideEstimer" : q.format === "sauter" ? "guideSauter" : "guide"));
+    if (q.format === "estimer") {
+      const mid = (q.min + q.max) / 2, x = this.xOf(mid);
+      this.overlay.push((ctx) => { R.drawRing(ctx, x, R.lineY(this.spec, x), 22); R.drawNumber(ctx, String(mid), x, this.spec.y - 96, 34, { color: "#fffaf0", w: 5, seed: 640 }); });
+      this.paintFx(true);
+      return voice.say(fill(text.data.guideMilieu, { n: mid }));
+    }
+    if (q.format === "sauter") {
+      await this.countJumps(q.start, q.target, { label: (k) => String(k) });
+      await wait(500); T.sitOn(this.spec, q.start); return;
+    }
+    const tgt = Math.round((q.answer - q.min) / q.step), near = q.min === 0 && q.step === 1 && tgt <= 12;
+    const from = near ? 0 : Math.max(0, ...q.labelled.filter((i) => i < tgt));
+    await T.swimTo(this.spec, from);
+    await voice.say(fill(text.data.guideDepart, { a: val(from) }));
+    await this.countJumps(from, tgt, { label: (k, i) => String(val(i)) });
+    await wait(300);
   }
   // une bulle-réponse : le sprite de l'atelier + le nombre encré en direct ; `still` : simple affichage
   bubble(cx, cy, label, ring = null, still = false) {
@@ -101,19 +131,32 @@ export class NumberLineScreen {
   clearButtons() { this.buttons.forEach((b) => b.remove()); this.buttons = []; }
   // ---------------------------------------------------------------- effets tracés en direct
   // arcs : { a, b, h, label, p, live, bubbles } ; overlay : fonctions (ctx) => void (flèche, filets, anneaux)
+  // L'arc en train de se tracer (il suit la tortue à chaque image) est dessiné dans un petit acteur à sa
+  // mesure, pas dans le calque d'effets : redessiner ce calque (toute la largeur de la scène) à chaque
+  // image coûtait ~30 ms par image avec le processeur ÷4. Le calque n'est redessiné que quand un arc se
+  // termine ou qu'une surbrillance change.
   paintFx(force = false) {
     const live = this.arcs.find((a) => a.live);
-    if (!live && !force && !this.fxAnimating) return;
-    if (live) live.p = this.turtle.jumpS;
+    if (live) { live.p = this.turtle.jumpS; this.paintLive(live); } else this.liveArc?.show(false);
+    if (!force && !this.fxAnimating) return;
     const line = this.app.line, sp = this.app.sprites; line.fxClear();
     line.fxDraw((ctx) => {
       this.overlay.forEach((f) => f(ctx));
       this.arcs.forEach((a) => {
+        if (a.live) return;
         R.drawJumpArc(ctx, a.a, a.b, a.p, { h: a.h, label: a.p >= 1 ? a.label : undefined });
         // E2 : un paquet de dix bulles au-dessus de chaque saut qui vaut dix
         if (a.bubbles && a.p >= 1) { const cx = (a.a[0] + a.b[0]) / 2, cy = (a.a[1] + a.b[1]) / 2 - a.h - 64; R.drawNet(ctx, cx - 40, cy - 16, 80, 34, 40); for (let i = 0; i < 10; i++) this.bubbleAt(ctx, sp, cx - 32 + (i % 5) * 16, cy - 8 + Math.floor(i / 5) * 16, 6); }
       });
     });
+  }
+  paintLive(arc) {
+    const o = this.app.ocean, AX = 30, AY = 120;
+    if (!this.liveArc) { this.liveArc = new Actor(this.app.stage, o.frontEl, 300, 150, AX, AY); o.frontEl.prepend(this.liveArc.c); o.actors.push(this.liveArc); } // sous la tortue
+    const A = this.liveArc, px = this.app.stage.px, [x0, y0] = arc.a;
+    A.show(true);
+    A.paint(`${arc.a}:${arc.b}:${arc.p.toFixed(3)}`, (ctx) => { ctx.setTransform(px, 0, 0, px, (AX - x0) * px, (AY - y0) * px); R.drawJumpArc(ctx, arc.a, arc.b, arc.p, { h: arc.h }); });
+    A.moveTo(x0, y0);
   }
   bubbleAt(ctx, sp, x, y, r) { const q = sp.frame(`bulle.${r}`, 0), px = sp.px, m = ctx.getTransform(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, Math.round(m.a * x + m.e + q.dx), Math.round(m.d * y + m.f + q.dy), q.w, q.h); ctx.setTransform(m); void px; }
   // la tortue saute de la graduation `from` à `to`, un saut à la fois ; chaque saut laisse un arc lumineux
@@ -136,6 +179,7 @@ export class NumberLineScreen {
     const { voice, ocean, text, line } = this.app, q = this.q, ms = performance.now() - this.t0, ok = classify(q, value) === null, code = classify(q, value);
     voice.stop();
     const result = { q, value, ok, code, ms: Math.round(ms), listens: voice.listens };
+    this.arcs = []; this.overlay = []; this.paintFx(true); // les traces d'un exemple guidé s'effacent
     if (q.choices) {
       const good = this.buttons.find((b) => Number(b.dataset.value) === q.answer);
       this.paintBubble(good.firstChild, String(q.answer), "#ffd23a");
@@ -199,7 +243,7 @@ export class NumberLineScreen {
     }
   }
   // pose la question et attend la réponse ; la promesse se résout après le retour, avec le résultat
-  ask(q, cfg) { return new Promise((resolve) => { this.resolve = resolve; this.show(q, cfg); }); }
+  ask(q, cfg, opts = {}) { return new Promise((resolve) => { this.resolve = resolve; this.show(q, cfg, opts); }); }
   generate(cfg, rnd, opts = {}) {
     const f = opts.format ?? "lire";
     return f === "sauter" ? makeJump(cfg, rnd) : f === "placer" ? makePlace(cfg, rnd, opts) : f === "estimer" ? makeEstimate(cfg, rnd, opts) : makeRead(cfg, rnd, opts);

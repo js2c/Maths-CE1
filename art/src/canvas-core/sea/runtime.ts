@@ -54,6 +54,21 @@ export const tickP = (L: LineSpec, i: number): P => { const x = tickX(L, i); ret
 export const buoyR = (L: LineSpec) => { const gap = L.n > 1 ? (L.x1 - L.x0 - 80) / (L.n - 1) : 90; return Math.min(15, gap * 0.3) * (1 - 0.55 * L.k); };
 
 const shiftP = (pts: P[], dx: number, dy: number): P[] => pts.map(([x, y]) => [x + dx, y + dy]);
+// une bouée de la corde (rouge, ou allumée en jaune), à la graduation i
+const buoy = (g: Gfx, L: LineSpec, i: number, lit: boolean) => {
+  const [x, y] = tickP(L, i), r = buoyR(L), s = blob(x, y, r, r * 1.08, 40 + i, 0.03, 16), bandB = smooth([[x - r, y - r * 0.27], [x + r, y - r * 0.27], [x + r, y + r * 0.27], [x - r, y + r * 0.27]], true, 3);
+  fillShape(g, shiftP(s, 7, 10), "#0a3f49", 0.3);
+  cel(g, s, lit ? "#ffe45c" : "#ff5a45", lit ? "#e0a21c" : "#c0302a", 5);
+  clipped(g, s, () => { fillShape(g, bandB, "#e6ecf0"); fillShape(g, shiftP(bandB, -3, -2), "#ffffff"); fillShape(g, blob(x - 5, y - 7, 4, 2.6, 60 + i, 0.1, 8), "#ffffff", 0.9); });
+  contour(g, s, 3.2, 70 + i);
+};
+// allume une graduation par-dessus la ligne déjà dessinée (leçons) : la bouée devient jaune ; sur la
+// ligne d'école, une pastille jaune sous le trait
+export const drawLitTick = (ctx: CanvasRenderingContext2D, L: LineSpec, i: number) => {
+  const g = shim(ctx), [x, y] = tickP(L, i);
+  if (L.k < 1) buoy(g, L, i, true);
+  else { fillShape(g, blob(x, y, 9, 9, 40 + i, 0.05, 12), "#ffe45c"); ink(g, [[x, y - 24], [x, y + 24]], INK, { w: 5, shadow: 0, taper: [0.12, 0.12], seed: 90 + i }); }
+};
 export const drawLine = (ctx: CanvasRenderingContext2D, L: LineSpec) => {
   const g = shim(ctx), k = L.k, pts: P[] = Array.from({ length: 60 }, (_, i) => { const x = L.x0 + ((L.x1 - L.x0) * i) / 59; return [x, lineY(L, x)] as P; });
   // poteaux (la corde) ; ils s'effacent quand la corde devient une ligne d'école
@@ -78,13 +93,8 @@ export const drawLine = (ctx: CanvasRenderingContext2D, L: LineSpec) => {
   for (let i = 0; i < L.n; i++) {
     const [x, y] = tickP(L, i), lit = L.lit?.includes(i);
     if (k > 0) { const h = (L.labels[i] ? 24 : 16) * Math.min(1, k * 1.25); ink(g, [[x, y - h], [x, y + h]], INK, { w: 5, shadow: 0, taper: [0.12, 0.12], seed: 90 + i }); }
-    if (k < 1) {
-      const r = R, s = blob(x, y, r, r * 1.08, 40 + i, 0.03, 16), bandB = smooth([[x - r, y - r * 0.27], [x + r, y - r * 0.27], [x + r, y + r * 0.27], [x - r, y + r * 0.27]], true, 3);
-      fillShape(g, shiftP(s, 7, 10), "#0a3f49", 0.3);
-      cel(g, s, lit ? "#ffe45c" : "#ff5a45", lit ? "#e0a21c" : "#c0302a", 5);
-      clipped(g, s, () => { fillShape(g, bandB, "#e6ecf0"); fillShape(g, shiftP(bandB, -3, -2), "#ffffff"); fillShape(g, blob(x - 5, y - 7, 4, 2.6, 60 + i, 0.1, 8), "#ffffff", 0.9); });
-      contour(g, s, 3.2, 70 + i);
-    } else if (lit) fillShape(g, blob(x, y, 9, 9, 40 + i, 0.05, 12), "#ffe45c");
+    if (k < 1) buoy(g, L, i, !!lit);
+    else if (lit) fillShape(g, blob(x, y, 9, 9, 40 + i, 0.05, 12), "#ffe45c");
   }
   // nombres sur le sable, sous leur graduation ; le « ? » rouge sous la graduation demandée
   L.labels.forEach((t, i) => { const x = tickX(L, i), m = i === L.mark; if (t || m) drawNumber(ctx, m ? "?" : t!, x, L.y + LABEL_DY, LABEL_EM, { color: m ? RED : INK, w: 5.2, seed: 200 + i * 5 }); });
@@ -126,6 +136,19 @@ export const drawWave = (ctx: CanvasRenderingContext2D, x0: number, x1: number, 
   for (let x = x0; x <= x1; x += 8) pts.push([x, y + 4 * Math.sin((x - x0) / 22)]);
   ink(g, pts, "#0a3f49", { w: 7, shadow: 0, taper: [0.08, 0.08], seed: 57 }, 0.3);
   ink(g, pts, "#e8fffb", { w: 4.5, shadow: 0, taper: [0.08, 0.08], seed: 58 });
+};
+// une loupe (leçon L3, « zoom sur 30 ») : verre clair, cerclage de laiton, manche de bois vers le bas à
+// gauche ; l'application écrit le nombre agrandi dedans. (cx, cy) centre du verre, r son rayon
+export const drawLens = (ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number) => {
+  const g = shim(ctx), a = Math.PI * 0.75, hx = Math.cos(a), hy = Math.sin(a), base: P = [cx + hx * r * 1.05, cy + hy * r * 1.05], tip: P = [cx + hx * r * 1.95, cy + hy * r * 1.95];
+  const handle = taper([base, lerpP(base, tip, 0.5), tip], (u) => r * (0.13 + 0.04 * u)).outline;
+  fillShape(g, shiftP(handle, 6, 8), "#0a3f49", 0.3); cel(g, handle, "#b98752", "#7d5431", 4); contour(g, handle, 3.4, 481);
+  const rim = blob(cx, cy, r * 1.1, r * 1.1, 482, 0.01, 28), glass = blob(cx, cy, r * 0.93, r * 0.93, 483, 0.01, 28);
+  fillShape(g, shiftP(rim, 7, 9), "#0a3f49", 0.3);
+  cel(g, rim, "#f2c14e", "#b9832a", 4);
+  fillShape(g, glass, "#fffaf0", 0.94);
+  clipped(g, glass, () => fillShape(g, blob(cx - r * 0.45, cy - r * 0.5, r * 0.36, r * 0.16, 484, 0.1, 10, -0.6), "#ffffff"));
+  contour(g, rim, 4, 485); ink(g, glass, INK, { w: 2.4, closed: true, shadow: 0, seed: 486 }, 0.8);
 };
 // un anneau d'encre autour d'une bulle (bonne réponse, surbrillance)
 export const drawRing = (ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number, color = "#ffd23a", w = 7) =>

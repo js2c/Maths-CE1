@@ -8,6 +8,7 @@ import { persist, Store } from "./engine/store.js";
 import { loadAtlas, Sprites } from "./engine/sprites.js";
 import { Stage } from "./engine/stage.js";
 import { Voice } from "./engine/voice.js";
+import { LessonPlayer } from "./lessons/player.js";
 import { Module1Runner } from "./modules/numberline/runner.js";
 import { fill, ReadScreen } from "./modules/numberline/screen.js";
 import { runNotion } from "./session/notion.js";
@@ -23,7 +24,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !loc
 const json = async (p) => (await fetch(p)).json();
 
 const stage = new Stage(document.getElementById("stage"));
-const [atlas, module1, module2, textes, seance] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/module2.json"), json("content/textes.json"), json("content/seance.json")]);
+const [atlas, module1, module2, textes, seance, lecons] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/module2.json"), json("content/textes.json"), json("content/seance.json"), json("content/lecons.json")]);
 const sprites = new Sprites(atlas, stage.px);
 // la base locale ; au premier lancement, on demande au navigateur de ne jamais l'effacer de lui-même
 const store = await Store.open();
@@ -37,12 +38,12 @@ stage.start();
 stage.onResize(() => { if (Math.abs(stage.px - sprites.px) > 0.01) location.reload(); });
 
 const rnd = rng(Date.now() & 0xffffffff);
-// pour les tests et les captures : ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape
+// pour les tests et les captures : ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape ?sansLecon ?lecon=L1
 const P = new URLSearchParams(location.search);
 const text = { data: textes, pick: (k, v = {}) => { const e = textes[k]; return fill(Array.isArray(e) ? e[Math.floor(rnd() * e.length)] : e, { mascotte: app.mascotte, ...v }); } };
 const voice = new Voice({ rate: 0.9, fast: P.get("voix") === "rapide" });
 const rewards = await new Rewards(store).load();
-const app = { stage, sprites, ocean, voice, text, rnd, atlas, store, rewards, line: new LineView(stage), mascotte: await store.setting("mascotte") };
+const app = { stage, sprites, ocean, voice, text, rnd, atlas, store, rewards, lecons, line: new LineView(stage), mascotte: await store.setting("mascotte") };
 app.lineScreen = () => (app.screen ??= new ReadScreen(app)); // l'écran de la ligne (aussi pour l'aide des faits + 1, + 2)
 window.__app = app;
 
@@ -58,8 +59,15 @@ app.hud = hud;
 
 // ---------------------------------------------------------------- la séance
 // les étapes que l'application sait jouer (les autres sont sautées : défi et problème du jour sont
-// désactivés au lot 1) ; les leçons animées arrivent à l'étape 9
-const lesson = async () => false;
+// désactivés au lot 1)
+// une leçon animée (L1 à L3) ; notée dans l'enregistrement de la séance (vue, durée, retours en arrière)
+const lessons = new LessonPlayer(app, lecons);
+app.lessons = lessons;
+const lessonIn = (session) => async (id, raison) => {
+  const r = await lessons.play(id);
+  (session.rec.lecons ??= []).push({ id, raison, ...r }); await session.save();
+  return r.vue;
+};
 const handlers = {
   accueil: async () => {
     // premier lancement : l'enfant choisit le nom de la pieuvre ; ensuite, la pieuvre salue
@@ -82,7 +90,7 @@ const handlers = {
     if (P.get("format")) runner.levels = runner.levels.map((c) => ({ ...c, formats: [P.get("format")] }));
     const step = { ...ctx.step, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}), ...(P.get("guides") ? { guides: Number(P.get("guides")) } : {}) };
     app.runner = runner;
-    await runNotion({ ...ctx, step, runner, screen, lesson, rnd });
+    await runNotion({ ...ctx, step, runner, screen, lesson: P.has("sansLecon") ? async () => false : lessonIn(ctx.session), rnd });
     screen.leave();
   },
   recompense: (ctx) => reward(app, { ...ctx, hud }),
@@ -101,6 +109,8 @@ if (await doneToday(store)) {
   const play = spriteBox(app, { x: 550, y: 560, w: 180, h: 180, cls: "bubble play", label: "jouer", paint: (ctx) => sprites.draw(ctx, "jouer", 0, 90, 90) });
   play.addEventListener("pointerdown", async (e) => {
     e.preventDefault(); voice.unlock(); play.remove();
+    // pour les captures et les tests : ?lecon=L1 joue seulement cette leçon
+    if (P.get("lecon")) { window.__lecon = await lessons.play(P.get("lecon")); return; }
     const session = new Session({ store, content: seance, handlers, rewards });
     app.session = session;
     await session.run();

@@ -1,5 +1,5 @@
 {
- "version": "bedc8d131391",
+ "version": "ab7c4349f7a0",
  "files": [
   "./",
   "assets/art/algues@1x.webp",
@@ -18,6 +18,7 @@
   "assets/art/rayons@1x.webp",
   "assets/art/tortue@1x.webp",
   "assets/art/tortue@2x.webp",
+  "content/lecons.json",
   "content/module1.json",
   "content/module2.json",
   "content/seance.json",
@@ -37,6 +38,8 @@
   "js/engine/store.js",
   "js/engine/turtle.js",
   "js/engine/voice.js",
+  "js/lessons/player.js",
+  "js/lessons/script.js",
   "js/main.js",
   "js/modules/facts/facts.js",
   "js/modules/facts/screen.js",

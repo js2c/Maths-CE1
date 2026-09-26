@@ -28,13 +28,14 @@ export class Module1Runner {
   async lessonSeen(id) { if (!this.st.lecons.includes(id)) this.st.lecons.push(id); await this.save(); }
   // la question suivante : une question qui revient, sinon une nouvelle
   // `guide` : un exemple guidé (docs/SPEC.md, « Notion du jour ») : jamais une question qui revient
-  next({ guide = false } = {}) {
+  // `format` : le format voulu s'il existe au niveau (après une leçon : « lire », celui de la leçon)
+  next({ guide = false, format: want = null } = {}) {
     if (!guide) this.replays.forEach((r) => r.in--);
     const due = guide ? -1 : this.replays.findIndex((r) => r.in <= 0);
     if (due >= 0) { const r = this.replays.splice(due, 1)[0]; return { q: { ...r.q, revient: true }, cfg: r.cfg }; }
     let cfg = this.cfg(), opts = { eviter: this.recent.slice(-3) };
     if (this.simpler) { this.simpler = false; if (this.st.niveau > 1) cfg = this.cfg(this.st.niveau - 1); else opts = { ...opts, eviter: [5, 6, 7, 8, 9, 10] }; }
-    const fmts = cfg.formats, format = fmts[this.k++ % fmts.length];
+    const fmts = cfg.formats, format = want && fmts.includes(want) ? want : fmts[this.k++ % fmts.length];
     if (format === "estimer") opts.tolerance = toleranceFor(cfg, this.st.justesNiveau);
     const q = this.screen.generate(cfg, this.rnd, { ...opts, format });
     this.recent.push(q.answer);

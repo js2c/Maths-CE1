@@ -18,7 +18,7 @@ const gen = (cfg, r, o = {}) => (o.format === "sauter" ? makeJump(cfg, r) : o.fo
 const clock = () => { let t = new Date(2026, 8, 26, 18, 0).getTime(); const c = () => t; c.add = (ms) => { t += ms; }; return c; };
 const mk = async () => { const store = await Store.open(new IDBFactory()); return { store, rewards: await new Rewards(store).load() }; };
 // un écran factice : répond juste ou faux selon `answers(q, i)`, et fait passer le temps
-const fakeScreen = (c, answers, msPer = 20000) => { const log = []; return { log, generate: gen, ask: async (q, cfg, o) => { const ok = answers(q, log.length); log.push({ q, guide: !!o?.guide, ok }); c.add(msPer); return { q, value: ok ? q.answer : q.answer + 1, ok, code: ok ? null : "autre", ms: 4000, listens: 1 }; } }; };
+const fakeScreen = (c, answers, msPer = 20000) => { const log = []; return { log, generate: gen, ask: async (q, cfg, o) => { const ok = answers(q, log.length); log.push({ q, guide: !!o?.guide, lesson: o?.lesson ?? null, ok }); c.add(msPer); return { q, value: ok ? q.answer : q.answer + 1, ok, code: ok ? null : "autre", ms: 4000, listens: 1 }; } }; };
 
 test("une séance enchaîne les étapes, saute celles désactivées ou pas encore construites, et s'enregistre", async () => {
   const { store, rewards } = await mk(), c = clock(), seen = [];
@@ -54,6 +54,32 @@ test("notion du jour : deux exemples guidés, puis 8 à 10 questions ; les exemp
   assert.equal(runner.count, qs); // les exemples guidés ne sont pas comptés dans le taux du module
   const reps = await store.all("reponses"); assert.equal(reps.length, qs + 2); assert.equal(reps.filter((r) => r.guide && r.aide).length, 2); assert.ok(reps.every((r) => r.seance === s.id));
   assert.equal(s.rec.questions, qs + 2); assert.equal(rewards.total, qs + 2);
+});
+
+test("notion du jour : la leçon du niveau la première fois (3 étoiles), puis « À toi ! » et un exercice guidé au format lire", async () => {
+  const { store, rewards } = await mk(), c = clock(), played = [];
+  const s = await new Session({ store, content: seance, rewards, clock: c, handlers: {} }).start(), screen = fakeScreen(c, () => true, 10000);
+  const runner = await new Module1Runner({ screen, store, content: module1, rnd: rng(3), seance: s.id }).load();
+  runner.k = 1; // le format suivant aurait été « sauter » : l'exercice qui suit la leçon est quand même « lire »
+  await runNotion({ session: s, step: seance.etapes[2], end: c() + 5 * 60000, runner, screen, rnd: rng(5), lesson: async (id, raison) => { played.push([id, raison]); return true; } });
+  assert.deepEqual(played, [["L1", "niveau"]]);
+  assert.equal(screen.log[0].guide, true); assert.equal(screen.log[0].lesson, "L1"); assert.equal(screen.log[0].q.format, "lire");
+  assert.equal(screen.log.filter((x) => x.guide).length, 1); // pas d'autres exemples guidés après une leçon
+  assert.deepEqual(runner.st.lecons, ["L1"]); assert.equal(runner.entryLesson(), null);
+  const qs = screen.log.length - 1; assert.equal(rewards.total, qs + 1 + seance.etoiles.lecon);
+});
+
+test("notion du jour : la même erreur deux fois relance sa leçon, suivie d'un exercice guidé ; une leçon non finie ne rapporte rien", async () => {
+  const { store, rewards } = await mk(), c = clock(), played = [];
+  const s = await new Session({ store, content: seance, rewards, clock: c, handlers: {} }).start(), log = [];
+  // niveau 4 (ligne 30-40) : l'enfant répond toujours « sans le départ » (E3) sauf aux exercices guidés
+  const screen = { log, generate: gen, ask: async (q, cfg, o) => { const ok = !!o?.guide; log.push({ q, guide: !!o?.guide, lesson: o?.lesson ?? null }); c.add(1000); const v = ok ? q.answer : q.answer - q.min; return { q, value: v, ok, code: ok ? null : "E3", ms: 4000, listens: 1 }; } };
+  const runner = await new Module1Runner({ screen, store, content: module1, rnd: rng(4), seance: s.id }).load();
+  runner.st.niveau = 4; runner.st.lecons = ["L3"]; runner.save = () => {};
+  await runNotion({ session: s, step: { ...seance.etapes[2], guides: 0, questions: [3, 3] }, end: Infinity, runner, screen, rnd: rng(1), lesson: async (id, raison) => { played.push([id, raison]); return false; } });
+  assert.deepEqual(played[0], ["L3", "E3"]);
+  assert.equal(log.filter((x) => x.lesson).length, 0); // leçon pas regardée jusqu'au bout : pas d'exercice guidé, pas d'étoiles
+  assert.equal(rewards.total, log.filter((x) => x.guide).length);
 });
 
 test("notion du jour : la durée de l'étape et le plafond de la séance arrêtent les questions", async () => {

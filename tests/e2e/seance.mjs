@@ -1,6 +1,6 @@
 // PARCOURS D'UNE SÉANCE COMPLÈTE dans Chromium (tablette 1280 × 800, tactile), voix accélérée :
-// premier lancement -> choix du nom de la pieuvre -> accueil -> exemples guidés -> questions (justes et
-// fausses) -> récompense -> « à demain ». Puis vérifie la base (séance terminée, réponses, étoiles, nom)
+// premier lancement -> choix du nom de la pieuvre -> accueil -> échauffement -> leçon L1 (niveau 1, la
+// première fois) et son exercice guidé -> questions (justes et fausses) -> récompense -> « à demain ». Puis vérifie la base (séance terminée, réponses, étoiles, nom)
 // et qu'une relance le même jour affiche la lune au lieu de « jouer ». Captures dans tests/e2e/out/seance.
 //   node tests/e2e/seance.mjs [--out dossier] [--questions 3]
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
@@ -49,14 +49,16 @@ for (const until = Date.now() + 120000; Date.now() < until;) {
 check(sawHelp, "l'aide du coquillage a été montrée");
 
 // répond à chaque question dès qu'elle accepte une réponse : juste, sauf la 2e (fausse)
-let k = 0, sawGuide = false;
+let k = 0, sawLesson = false;
 const deadline = Date.now() + 240000;
 while (Date.now() < deadline) {
-  const st = await page.evaluate(() => { const s = window.__app.screen; return { moon: !!document.querySelector(".moon") || !!document.querySelector(".tally"), q: s?.q && !s.locked && s.resolve ? { guide: !!s.q.guide, format: s.q.format, answer: s.q.answer, wrong: s.q.choices?.find((c) => c.value !== s.q.answer)?.value ?? null } : null, demo: !!(s?.q?.guide && s.locked && s.resolve) }; });
+  const st = await page.evaluate(() => { const s = window.__app.screen; return { moon: !!document.querySelector(".moon") || !!document.querySelector(".tally"), q: s?.q && !s.locked && s.resolve ? { guide: !!s.q.guide, format: s.q.format, answer: s.q.answer, wrong: s.q.choices?.find((c) => c.value !== s.q.answer)?.value ?? null } : null, lesson: !!window.__app.lessons.abort }; });
   if (st.moon) break;
-  if (st.demo && !sawGuide) { sawGuide = true; await page.waitForTimeout(1800); await shot("3-exemple-guide"); }
+  if (st.lesson && !sawLesson) { sawLesson = true; await page.waitForTimeout(3000); await shot("3-lecon-L1"); }
+  if (st.lesson) { await page.waitForTimeout(150); continue; }
   if (!st.q) { await page.waitForTimeout(150); continue; }
   const right = st.q.guide || k !== 1 || st.q.wrong === null;
+  if (st.q.guide) await shot("3b-exercice-guide");
   if (!st.q.guide && k === 0) await shot("4-question");
   await page.tap(`.answer[data-value="${right ? st.q.answer : st.q.wrong}"]`, { force: true });
   if (!st.q.guide) k++;
@@ -68,8 +70,8 @@ await page.waitForSelector(".tally", { timeout: 60000 });
 await page.waitForTimeout(900); await shot("6-recompense");
 await page.waitForSelector(".moon", { timeout: 60000 }); await page.waitForTimeout(800);
 await shot("7-a-demain");
-check(sawGuide, "un exemple guidé a été montré");
-const db = await page.evaluate(async () => { const s = window.__app.store; return { faits: await s.all("faits"), base: await s.setting("tempsDeBase"), seances: await s.all("seances"), reponses: (await s.all("reponses")).filter((r) => r.module === 1), rep2: (await s.all("reponses")).filter((r) => r.module === 2), etoiles: await s.get("recompenses", "etoiles"), nom: await s.setting("mascotte") }; });
+check(sawLesson, "la leçon L1 a été jouée");
+const db = await page.evaluate(async () => { const s = window.__app.store; return { faits: await s.all("faits"), base: await s.setting("tempsDeBase"), seances: await s.all("seances"), reponses: (await s.all("reponses")).filter((r) => r.module === 1), rep2: (await s.all("reponses")).filter((r) => r.module === 2), etoiles: await s.get("recompenses", "etoiles"), nom: await s.setting("mascotte"), niveau: await s.get("niveaux", 1) }; });
 const se = db.seances.at(-1);
 check(db.base?.mesures?.length === 3, `temps de base mesuré (${db.base?.mesures?.map((m) => Math.round(m)).join(", ")} ms)`);
 check(db.faits.length === 3 && db.faits.filter((x) => x.boite === 1).length >= 1, `3 nouveaux faits rangés en boîtes (${db.faits.map((x) => `${x.fait}:${x.boite}`).join(" ")})`);
@@ -77,10 +79,12 @@ check(db.rep2.some((r) => r.aide) && db.rep2.some((r) => r.revient), "échauffem
 check(db.rep2.length >= 3 + 5, `${db.rep2.length} réponses d'échauffement enregistrées`);
 check(db.nom === "Octavie", `nom de la pieuvre enregistré (${db.nom})`);
 check(se?.terminee === true, "séance terminée enregistrée");
-check(db.reponses.filter((r) => r.guide).length === 2, `2 exemples guidés enregistrés (${db.reponses.filter((r) => r.guide).length})`);
+check(db.reponses.filter((r) => r.guide).length === 1 && db.reponses[0].guide && db.reponses[0].forme === "lire", `un exercice guidé « lire » après la leçon (${db.reponses.filter((r) => r.guide).length})`);
+check(se?.lecons?.[0]?.id === "L1" && se.lecons[0].vue && se.lecons[0].raison === "niveau", `leçon L1 notée dans la séance (${JSON.stringify(se?.lecons)})`);
+check(db.niveau?.lecons?.includes("L1"), "L1 vue : elle ne sera pas rejouée à la prochaine séance");
 check(db.reponses.filter((r) => !r.guide).length >= N, `${db.reponses.filter((r) => !r.guide).length} questions enregistrées (au moins ${N})`);
 check(db.reponses.every((r) => r.seance === se.id), "chaque réponse porte le numéro de la séance");
-check(db.etoiles?.total === se.etoiles && se.etoiles >= 10, `étoiles : ${se.etoiles} gagnées, trésor ${db.etoiles?.total}`);
+check(db.etoiles?.total === se.etoiles && se.etoiles >= 13, `étoiles : ${se.etoiles} gagnées, trésor ${db.etoiles?.total}`);
 check(db.reponses.filter((r) => !r.guide).at(-1)?.juste === true, "la séance finit sur une réussite");
 const hudShown = await page.evaluate(() => window.__app.hud.shown); check(hudShown === db.etoiles.total, `le compteur affiche le trésor (${hudShown})`);
 console.log(JSON.stringify({ seance: { ...se, etapes: se.etapes.map((e) => `${e.id}${e.sautee ? ` (sautée : ${e.sautee})` : ` ${e.dureeS} s`}`) } }, null, 1));

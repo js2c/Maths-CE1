@@ -16,12 +16,12 @@ Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail 
 | 6 | Module 1 complet : formats lire, sauter, placer (toucher ou glisser le poisson), estimer (tolérance ±8 puis ±5) ; 8 niveaux, la corde devient une réglette d'école (niveaux 3 à 5) ; règles d'adaptation (`modules/progress.js`) ; question qui revient 3 à 5 questions plus loin ; retours animés E1 à E5 ; chaque réponse enregistrée dans la base ; déclencheurs des leçons (utilisés à l'étape 9) | `1924bac` |
 | 7 | Déroulé de séance (`js/session/`, `content/seance.json`) : accueil avec choix du nom de la pieuvre au premier lancement (6 noms écrits au feutre, lettres dessinées dans l'atelier `sea/letters.ts`), échauffement (emplacement, rempli à l'étape 8), notion du jour (2 exemples guidés montrés par la tortue puis 8 à 10 questions, fin sur une réussite), défi record et problème du jour prévus mais désactivés, récompense (bilan des étoiles + 10 pour la séance finie, étoiles qui volent vers le compteur), plafond de 12 minutes, « à demain » (lune) et une seule séance terminée par jour ; séance enregistrée dès son début ; test `tests/e2e/seance.mjs` | `b7a9ee4` |
 | 8 | Échauffement (module 2, `js/modules/facts/`, `content/module2.json`) : faits des familles 1 (+ 1, + 2 : 30 faits) et 2 (doubles 3+3, 4+4, 5+5), forme directe ; révision espacée en 5 boîtes (magasin « faits ») ; au plus 3 nouveaux faits par séance si la boîte 1 a moins de 8 faits ; temps de base mesuré sur « a + 0 » (médiane des 5 dernières), seuil « rapide » base + 4 s puis + 3 s ; un fait raté revient 3 questions plus loin ; pavé numérique géant (0 à 4 et 5 à 9 en deux rangées, effacer, coche) ; aide du coquillage (la tortue fait 1 ou 2 sauts sur la ligne ; le poisson et son reflet) qui empêche la montée de boîte ; ardoise « a + b = ? » au feutre | `9ee5182` |
+| 9 | Leçons animées L1 à L3 (`js/lessons/`, `content/lecons.json`) : phrases découpées en temps (la voix, puis l'animation attend la fin de la phrase), boutons « phrase précédente » et « rejouer » dessinés dans l'atelier (la scène retombe exactement sur l'état du début de la phrase), corde qui apparaît et bouées qui s'allument, tortue qui saute en laissant des arcs numérotés, nombres qui s'écrivent quand elle atterrit, filets de dix poissons sous la corde (L2), loupe sur 30 (L3) ; déclenchées au niveau 1, 4 et 5 (la première fois), par la même erreur deux fois (E1, E2, E3) ou par une difficulté persistante ; 3 étoiles si regardée jusqu'au bout ; puis « À toi ! » et un exercice guidé ; notée dans l'enregistrement de la séance ; tests `tests/unit/lessons.test.mjs` et `tests/e2e/lecons.mjs` | ce commit |
 
 ### Reste à faire (dans l'ordre prévu)
 
 | Étape | Contenu |
 | --- | --- |
-| 9 | Leçons animées L1 à L3 (frise par étapes, rejouer, phrase précédente) |
 | 10 | Récompenses : étoiles de mer, coquillages et ouverture animée, 15 cartes du lagon (anecdotes vérifiées), récif visitable, illustrations provisoires |
 | 11 | Espace parent : appui long + code à 4 chiffres, calendrier, historique, niveaux, export CSV et JSON |
 | 12 | Déploiement GitHub Pages (GitHub Actions) et explications finales pour le parent |
@@ -48,6 +48,11 @@ Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail 
 - Réponse au pavé : deux chiffres au plus, validée par la coche (pas de validation automatique, pour pouvoir se corriger).
 - Aide du coquillage : proposée dès le lot 1 pour les familles 1 et 2 (tortue sur la ligne ; poissons et leur reflet), absente pour les questions « a + 0 ». Un fait résolu avec l'aide ne monte pas de boîte.
 - Une réponse juste à l'échauffement rapporte une étoile, comme ailleurs (questions « a + 0 » comprises).
+- Leçons, proposition à valider : pendant la leçon, les nombres de la corde s'écrivent au fur et à mesure que la tortue atterrit (au départ, seuls 0, ou 0, 10 et 100 pour L2, ou 30 et 40 pour L3 sont écrits) ; dans L1, la tortue revient à 0 avant de compter jusqu'à l'étoile (6), et le « ? » devient 6. Les phrases de la SPEC sont gardées mot pour mot, découpées pour suivre l'animation ; L3 compte jusqu'à 34 (« trente-trois, trente-quatre » prolongent les points de suspension de la SPEC) ; le « compteur de dizaines » de L2 est une bulle qui montre 10, 20, 30.
+- L2 : le filet de dix poissons est suspendu sous la corde, entre deux bouées ; un filet s'ajoute à chaque saut.
+- L3 : le « zoom sur 30 » est une loupe dessinée (le nombre en grand), pas un agrandissement de l'image (on n'agrandit jamais une image).
+- Après une leçon (celle du niveau ou relancée), l'exercice guidé est une question « lire » du niveau en cours, sans démonstration (la leçon vient de la faire) ; la tortue attend au départ de la ligne. Après L1, si la ligne part de 0 avec un pas de 1, la consigne est celle de la SPEC : « À toi ! Combien de sauts jusqu'à l'étoile ? ». Une leçon arrêtée avant la fin (application fermée) ne rapporte rien et sera rejouée.
+- Pendant une leçon, la pieuvre remonte de 56 px : ses bras ne cachent plus les premiers arcs. Le même déplacement pourrait régler le point ouvert des retours E2/E5 (non fait : la place de la pieuvre dans les exercices a été validée).
 - Les rayons de lumière sont fixes (fondus dans le fond) : leur animation coûtait trop cher sans processeur graphique.
 
 ### Points ouverts
@@ -58,4 +63,5 @@ Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail 
 - Mesure du 26 septembre 2026 après l'étape 8 (processeur ÷4, sans l'échauffement) : démarrage 1,3 à 1,4 s ; intervalle moyen 19 ms, 95e centile 33 ms, allègement au niveau 2 ; 150 Mo de sprites décodés.
 - La tortue qui part de 0 passe devant les bras de la pieuvre (même cause que les arcs E2/E5).
 - La pieuvre montre toujours vers la droite, quelle que soit la place de l'étoile.
+- Mesure du 26 septembre 2026 pendant les leçons (processeur ÷4, densité 2, voix accélérée) : intervalle moyen 18 ms, 95e centile 17 à 33 ms ; deux ou trois images de 100 à 130 ms au toucher qui lance une leçon (préparation de la ligne et des filets ou de la loupe), aucune pendant l'animation.
 - Un à-coup d'environ 170 ms (processeur ÷4) à l'apparition de certaines questions, non expliqué.

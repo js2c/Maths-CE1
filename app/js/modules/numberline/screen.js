@@ -55,7 +55,9 @@ export class NumberLineScreen {
   // ---------------------------------------------------------------- une question
   // Les deux versions de la ligne (la question, puis la correction avec le nombre et la graduation
   // allumée) sont préparées ensemble par le Worker : au moment de la réponse, il suffit d'afficher la seconde.
-  async show(q, cfg, { guide = false } = {}) {
+  // `lesson` : l'identifiant de la leçon qui vient d'être jouée (premier exercice guidé après une leçon :
+  // pas de démonstration, la leçon vient de la faire ; la tortue attend au départ de la ligne)
+  async show(q, cfg, { guide = false, lesson = null } = {}) {
     const { voice, text, line } = this.app;
     this.app.starFrom = [640, 690];
     this.q = q; this.cfg = cfg; this.locked = true; this.arcs = []; this.overlay = []; line.fxClear();
@@ -64,7 +66,7 @@ export class NumberLineScreen {
     const [ask, fixed] = await line.render([this.spec, fix]);
     this.fix = fixed; line.show(ask); this.t0 = performance.now();
     this.starAt = q.format === "lire" ? [R.tickP(this.spec, q.target)[0], R.tickP(this.spec, q.target)[1] - 42] : null;
-    if (q.format === "sauter") this.turtle.sitOn(this.spec, q.start); else this.turtle.hide();
+    if (q.format === "sauter") this.turtle.sitOn(this.spec, q.start); else if (lesson && q.format !== "estimer") this.turtle.sitOn(this.spec, 0); else this.turtle.hide();
     this.input = q.format === "placer" || q.format === "estimer";
     this.fishAt = this.input ? [...FISH_WAIT] : null; this.fishGoal = this.fishAt ? [...FISH_WAIT] : null;
     Object.assign(this.band.style, { display: this.input ? "block" : "none", left: `${this.spec.x0 - 30}px`, width: `${this.spec.x1 - this.spec.x0 + 60}px` });
@@ -82,9 +84,11 @@ export class NumberLineScreen {
     // pendant la consigne, la pieuvre montre la ligne ; elle relâche quand la phrase est finie
     this.app.ocean.octo.hold("montrer");
     // exemple guidé : on montre d'abord la méthode (les réponses attendent), puis « À toi ! »
-    if (guide) { await this.demo(q); this.t0 = performance.now(); }
+    if (guide && !lesson) { await this.demo(q); this.t0 = performance.now(); }
     this.locked = false;
-    return voice.say(`${guide ? `${text.pick("aToi")} ` : ""}${text.pick(q.format, v)}`, { instruction: true }).then(() => this.app.ocean.octo.release());
+    const L = lesson && this.app.lecons?.[lesson];
+    const say = L ? (L.aToiDepuisZero && q.format === "lire" && q.min === 0 && q.step === 1 ? L.aToiDepuisZero : `${L.aToi} ${text.pick(q.format, v)}`) : `${guide ? `${text.pick("aToi")} ` : ""}${text.pick(q.format, v)}`;
+    return voice.say(say, { instruction: true }).then(() => this.app.ocean.octo.release());
   }
   // EXEMPLE GUIDÉ (docs/SPEC.md, « Notion du jour ») : la tortue montre comment trouver la réponse, puis
   // l'enfant répond. Lire, placer : elle part de zéro (ou du nombre écrit le plus proche à gauche, quand

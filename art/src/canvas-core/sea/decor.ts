@@ -203,3 +203,28 @@ export const drawShell = (g: Gfx, cx: number, cy: number, k = 1) => g.group("pla
   contour(g, f, 3.6 * k, 420);
 });
 export const drawShellKey = (g: Gfx, cx: number, cy: number) => { drawAnswerBubble(g, cx, cy, 12, 52); drawShell(g, cx, cy - 2, 1); };
+// les boutons des leçons animées : « phrase précédente » (une flèche jaune qui revient en arrière,
+// butée comprise, comme sur un lecteur) et « rejouer » (une flèche corail qui fait le tour)
+export const drawBackKey = (g: Gfx, cx: number, cy: number) => {
+  drawAnswerBubble(g, cx, cy, 13, 52);
+  g.group("plain", () => {
+    const bar: P[] = [[cx - 24, cy - 19], [cx - 15, cy - 19], [cx - 15, cy + 19], [cx - 24, cy + 19]];
+    const tri: P[] = [[cx + 23, cy - 22], [cx + 23, cy + 22], [cx - 12, cy]];
+    [bar, tri].forEach((s, k) => { fillShape(g, shift(s, 3, 4), "#0a3f49", 0.25); cel(g, s, "#ffd84a", "#e08d1c", 3); contour(g, s, 3.4, 430 + k); });
+  });
+};
+export const drawReplayKey = (g: Gfx, cx: number, cy: number) => {
+  drawAnswerBubble(g, cx, cy, 14, 52);
+  g.group("plain", () => {
+    // un anneau ouvert en haut (de -55° à 215°, dans le sens des aiguilles d'une montre) ; la pointe, au
+    // bout de droite, repart dans l'autre sens : elle court après sa queue
+    const R = 19, w = 5.5, a0 = (-55 * Math.PI) / 180, a1 = (215 * Math.PI) / 180, N = 30, out: P[] = [], inn: P[] = [];
+    for (let i = 0; i <= N; i++) { const a = a0 + ((a1 - a0) * i) / N; out.push([cx + Math.cos(a) * (R + w), cy + 3 + Math.sin(a) * (R + w)]); inn.push([cx + Math.cos(a) * (R - w), cy + 3 + Math.sin(a) * (R - w)]); }
+    const ring = [...out, ...inn.reverse()];
+    const e: P = [cx + Math.cos(a0) * R, cy + 3 + Math.sin(a0) * R], t: P = [Math.sin(a0), -Math.cos(a0)], n: P = [Math.cos(a0), Math.sin(a0)];
+    const head: P[] = [[e[0] + n[0] * 14 + t[0] * 2, e[1] + n[1] * 14 + t[1] * 2], [e[0] + t[0] * 19, e[1] + t[1] * 19], [e[0] - n[0] * 14 + t[0] * 2, e[1] - n[1] * 14 + t[1] * 2]];
+    [ring, head].forEach((s) => fillShape(g, shift(s, 3, 4), "#0a3f49", 0.25));
+    cel(g, ring, "#ff7a5c", "#c64d3c", 3); cel(g, head, "#ff7a5c", "#c64d3c", 3);
+    contour(g, ring, 3.2, 440); contour(g, head, 3.2, 441);
+  });
+};

@@ -289,16 +289,27 @@ Une séance rapporte environ 35 à 50 étoiles, qu'elle réussisse bien ou moins
 
 - Un coquillage coûte 40 étoiles, soit environ un par séance. Son ouverture est animée : il s'entrouvre, une perle brille, puis la carte se retourne.
 - Il y a 60 cartes : 40 communes, 15 rares et 5 légendaires.
-- Les légendaires (baleine bleue, narval, raie manta, cachalot, pieuvre Dumbo) s'obtiennent uniquement avec les étoiles dorées, donc par la régularité.
+- Les légendaires (grand requin blanc, orque, baleine bleue, cachalot, narval) s'obtiennent uniquement avec les étoiles dorées, donc par la régularité. Les créatures les plus spectaculaires arrivent donc en dernier, avec les zones qui s'ouvrent par la progression réelle.
 - **Pas de doublon** tant qu'une zone n'est pas complète. Ensuite, trois doublons d'une même carte la rendent « brillante ».
 - Chaque carte porte le nom de l'animal et une anecdote lue à voix haute (par exemple : « La pieuvre a trois cœurs »). Chaque anecdote doit être vérifiée avant d'être ajoutée.
 
+**La carte et l'album.**
+
+- **La carte** est une illustration pleine page (portrait 3:4). L'application pose par-dessus un cadre fin aux coins arrondis dont la matière indique la rareté (nacre pour une commune, argent pour une rare, or pour une légendaire) et, en bas, un bandeau semi-transparent avec le nom de l'animal. Le dos de la carte porte l'anecdote.
+- **L'album** (bouton coquillage-livre depuis l'accueil et depuis le récif) montre les quatre zones, chacune avec ses **15 emplacements**. Une carte obtenue est visible ; une carte **pas encore découverte montre son dos** ; une zone pas encore ouverte montre ses dos assombris, avec un coquillage fermé. Sous chaque zone, 15 petites perles se remplissent au fil des cartes gagnées (pas de chiffre).
+- Toucher un dos : la voix dit « Cette carte t'attend quelque part dans le lagon ! » ; pour une zone fermée : « Le grand large s'ouvrira quand tu auras gagné une étoile arc-en-ciel. » Les dos des légendaires sont dorés : on sait qu'elles existent, sans savoir lesquelles.
+- **Dos de cartes** : une image par zone (couleurs et motif de la zone) et une image dorée pour les légendaires, générées comme les illustrations, sans texte.
+
 **Le récif.** Chaque créature obtenue apparaît, animée, dans son récif, qu'elle peut visiter librement. Le récif compte quatre zones de 15 créatures, qui s'ouvrent avec les étoiles arc-en-ciel, donc avec les niveaux franchis. C'est le seul endroit où la progression réelle transparaît, et elle y apparaît comme une exploration :
 
-1. **Le lagon** : poisson-clown, étoile de mer, crabe, hippocampe…
-2. **Le récif de corail** : tortue, poisson-perroquet, murène, poulpe…
-3. **Le grand large** : dauphin, méduse, espadon, requin-baleine…
-4. **Les abysses** : poisson-lanterne, calmar géant, baudroie…
+| Zone | Communes | Rares | Légendaires |
+| --- | --- | --- | --- |
+| 1 · **Le lagon** | poisson-clown, étoile de mer, crabe, crevette, bernard-l'ermite, moule, oursin, anémone de mer, concombre de mer, coquille Saint-Jacques, poisson-chirurgien | hippocampe, poisson-ballon, limace de mer, raie pastenague | — |
+| 2 · **Le récif de corail** | tortue verte, poisson-perroquet, murène, poulpe, seiche, poisson-papillon, poisson-lion, poisson-coffre, langouste, bénitier géant, crevette-mante | requin à pointes noires, poisson-mandarin, raie léopard, napoléon | — |
+| 3 · **Le grand large** | dauphin, poisson volant, thon rouge, espadon, méduse à crinière de lion, tortue luth, poisson-lune, otarie, requin bleu | requin-marteau, requin-baleine, raie manta, baleine à bosse | grand requin blanc, orque |
+| 4 · **Les abysses et les mers glacées** | poisson-lanterne, baudroie abyssale, poisson-vipère, isopode géant, pieuvre Dumbo, calmar vampire, requin-lutin, ver tubicole géant, cténophore | béluga, requin du Groenland, calmar géant | baleine bleue, cachalot, narval |
+
+Soit 40 communes, 15 rares et 5 légendaires. La progression va du familier (la plage) au spectaculaire (requins, orques, baleines).
 
 **Règles de protection.**
 
@@ -324,7 +335,7 @@ Une séance rapporte environ 35 à 50 étoiles, qu'elle réussisse bien ou moins
 | 3 · Calcul rapide | Dauphin | La vitesse, les sauts de 10 |
 | 4 · Problèmes | Crabe | Personnage des énoncés |
 
-**Illustrations des cartes.** Les 60 illustrations de créatures des cartes sont générées à part (Nano Banana), sans aucun texte dans l'image, au format portrait 3:4, dans un style **différent de l'application** : dessin animalier naturaliste réaliste et très détaillé (aquarelle et gouache, finesse de planche scientifique), pour que la carte soit un objet précieux qu'on collectionne. Les cartes validées servent de référence aux suivantes pour garder l'unité de la série. L'application ajoute le cadre, la rareté, le nom et l'anecdote. Chaque image est relue (anatomie : nageoires, bras, yeux) avant d'être intégrée.
+**Illustrations des cartes.** Les 60 illustrations de créatures des cartes sont générées à part (Nano Banana), sans aucun texte dans l'image, au format portrait 3:4, **en pleine page** (l'illustration remplit toute la carte ; le quart inférieur reste calme pour le bandeau du nom), dans un style **différent de l'application** : dessin animalier naturaliste réaliste et très détaillé (aquarelle et gouache, finesse de planche scientifique), pour que la carte soit un objet précieux qu'on collectionne. Les cartes validées servent de référence aux suivantes pour garder l'unité de la série. L'application ajoute le cadre, la rareté, le nom et l'anecdote. Chaque image est relue (anatomie : nageoires, bras, yeux) avant d'être intégrée.
 
 ## Espace parent
 

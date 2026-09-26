@@ -365,11 +365,43 @@ Pour l'enfant, c'est une « grande exploration » qui rapporte des étoiles comm
 
 Source des paliers : fiches descriptives des exercices Repères CE1, ministère de l'Éducation nationale — https://www.education.gouv.fr/l-evaluation-des-acquis-des-eleves-en-cp-ce1-ce2-cm1-et-cm2-fiches-descriptives-des-exercices-342046
 
+## Ergonomie et voix (lot 1 bis)
+
+Retours du parent après le premier essai du lot 1 (26 septembre 2026).
+
+**Navigation pendant la séance.**
+
+- Un bouton **« maison »** discret (coin haut gauche, zone tactile de 64 px au moins) ramène à l'accueil. La séance est mise en pause et reprend exactement où elle en était ; elle ne compte comme terminée qu'à la récompense (règle inchangée).
+- Une **frise d'avancement** en haut de l'écran : une bulle par étape de la séance (accueil, échauffement, notion du jour, récompense), et dans l'étape en cours une rangée de petites bulles qui se remplissent à chaque question. Pas de chiffre, pas de chronomètre.
+- On ne choisit **pas** l'activité pendant la séance : la notion du jour reste choisie par l'application (sinon l'enfant évite ce qui est difficile). Le choix libre existe après la séance (voir « Encore ! »).
+
+**Passer une explication.** Un bouton **« passer »** apparaît sur une leçon animée ou un exemple guidé **à partir de la deuxième fois** que l'enfant les voit (la première écoute est obligatoire). Chaque passage est enregistré et visible dans l'espace parent (historique). Une leçon passée ne rapporte pas ses 3 étoiles.
+
+**« Je ne sais pas ».** Sur chaque question, un bouton **« je ne sais pas »** (pictogramme : la pieuvre qui hausse les bras, ou un point d'interrogation dans une bulle). Il compte comme une réponse fausse pour les règles d'adaptation, avec le code d'erreur **NSP** ; il déclenche la même correction animée qu'une erreur et la question revient plus tard comme après une erreur. La voix rassure (« Ce n'est pas grave, regardons ensemble »). Dans l'espace parent, les NSP sont comptés à part des erreurs.
+
+**Fin de séance.**
+
+- La lune « à demain » ne doit pas ressembler à un bouton : c'est un décor (avec la phrase lue « À demain ! »), pas une zone à toucher.
+- Un bouton **« Encore ! »** ouvre l'**entraînement libre** : la liste des activités déjà débloquées (pour le lot 1 : la ligne graduée à son niveau actuel, l'échauffement des faits d'addition, la revue des leçons déjà vues). L'entraînement libre **ne rapporte ni étoiles ni coquillages**. Ses réponses sont enregistrées (marquées « libre » dans l'historique) et comptent pour les règles d'adaptation et la révision espacée. Il n'a pas de limite de durée, mais la voix propose d'arrêter après 10 minutes.
+- Récif vide après une séance : vérifier qu'une séance complète rapporte bien au moins un coquillage dès la première fois (SPEC : « environ un par séance »). Si ce n'est pas le cas, ajuster le prix ou les gains dans `app/content/cartes.json`, sans toucher au moteur.
+
+**Voix enregistrée à l'avance.** La synthèse vocale du navigateur varie d'un appareil à l'autre et coupe ou lit mal certaines phrases (exemple constaté sur PC : « 0 plus 6 ? » lu « plus »). Toutes les phrases de l'application sont donc **générées à l'avance** en fichiers son, avec le moteur libre **Piper** et une voix française choisie par le parent :
+
+- l'inventaire des phrases est tiré automatiquement des fichiers de `app/content/` (consignes, encouragements, corrections, leçons, noms de la pieuvre, cartes et anecdotes) ;
+- les phrases qui contiennent un nombre sont générées **pour chaque valeur possible** (par exemple « Où est 37 ? » pour 0 à 100, les 66 additions sous leurs trois formes), plutôt que collées en morceaux ;
+- les nombres et symboles sont écrits en toutes lettres avant la synthèse (« trente-sept », « plus ») pour maîtriser la prononciation ;
+- format compressé adapté à la voix (Opus ou MP3 mono), budget total visé : moins de 15 Mo ;
+- l'application joue le fichier correspondant ; si un fichier manque, la synthèse du navigateur prend le relais (secours) ;
+- le bouton « réécouter » rejoue le fichier.
+
+**Poids de l'application.** Ne mettre en cache hors ligne que la résolution d'images utile à l'appareil (@1x ou @2x), pas les deux.
+
 ## Découpage en lots
 
 | Lot | Contenu |
 | --- | --- |
 | 1 | Application installable, moteur de voix, enregistrement des données, espace parent (calendrier, historique, export), atelier graphique et fabrication des animations, pieuvre et tortue animées, étoiles, coquillages et premier jeu de cartes (zone lagon, illustrations provisoires si les images générées ne sont pas prêtes), module 1 complet avec les leçons L1 à L3, échauffement sur les familles 1 et 2 des faits d'addition |
+| 1 bis | Ergonomie et voix : bouton maison, frise d'avancement, « passer », « je ne sais pas », entraînement libre sans étoiles, voix générée à l'avance avec Piper, cache d'une seule résolution |
 | 2 | Module 2 complet (familles 3 à 7, formes à trou, grille parent, défi record), leçons L4 à L6, bernard-l'ermite |
 | 3 | Module 3 complet, leçons L7 à L9, dauphin |
 | 4 | Module 4, bilans périodiques, zones 2 à 4 du récif, 60 cartes, crabe |

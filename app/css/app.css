@@ -70,7 +70,7 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 @keyframes drift { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 /* pause : tout ce qui appartient à la séance disparaît, l'océan continue de vivre ; la bulle « continuer »,
    le logo du parent et le compteur d'étoiles restent */
-#stage.paused #line, #stage.paused #fx, #stage.paused #front { visibility: hidden; }
+#stage.paused #line, #stage.paused #fx, #stage.paused #aides, #stage.paused #front { visibility: hidden; }
 #stage.paused #ui > :not(.keep):not(.stars) { visibility: hidden !important; }
 
 /* l'album : un voile sombre, les vignettes des cartes, les onglets des zones */

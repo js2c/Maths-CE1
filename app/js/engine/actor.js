@@ -24,9 +24,10 @@ export class Actor {
     paint(this.ctx); this.key = key;
   }
   // place l'ancrage en (x, y) logiques ; s <= 1 : réduction seulement (jamais agrandir une image)
-  moveTo(x, y, s = 1, opacity = 1) {
+  // `rot` : une légère rotation (degrés) autour de l'ancrage (au plus une couche tournée à la fois : CLAUDE.md)
+  moveTo(x, y, s = 1, opacity = 1, rot = 0) {
     const k = this.st.k, r = (v) => Math.round(v * 100) / 100;
-    const css = `translate(${r((x - this.ax) * k)}px, ${r((y - this.ay) * k)}px)${s !== 1 ? ` scale(${r(Math.min(1, s))})` : ""}`;
+    const css = `translate(${r((x - this.ax) * k)}px, ${r((y - this.ay) * k)}px)${s !== 1 ? ` scale(${r(Math.min(1, s))})` : ""}${rot ? ` rotate(${r(rot)}deg)` : ""}`;
     if (css !== this.css) { this.c.style.transform = css; this.css = css; }
     if (opacity !== this.op) { this.c.style.opacity = String(opacity); this.op = opacity; }
   }

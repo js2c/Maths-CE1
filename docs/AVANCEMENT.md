@@ -14,7 +14,7 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 | 2 | Séance et progression : durées et nombres de questions, défi record activable, places réservées et voie rapide des faits, enchaînement des niveaux, leçon au plus une fois par séance, point de départ du parent, tortue devant la pieuvre, pieuvre qui montre la cible ; option `--delai` de la recette ; sélecteur de difficulté (4 crans) | fait (branche `claude/prompt-lot2-section-9xloz0`, https://github.com/js2c/Maths-CE1/pull/13) |
 | 3 | Son, échantillons (`tools/son/`, `docs/son-echantillons/`) ; arrêt pour le choix du parent | fait (branche `claude/tender-volta-20rhlz`, https://github.com/js2c/Maths-CE1/pull/14) ; choix du parent reçu |
 | 4 | Son, intégration : bruitages, musique, mixage, réglages du parent | fait (branche `claude/loving-tesla-rtv3o5`, https://github.com/js2c/Maths-CE1/pull/16) |
-| 5 | Atelier : bernard-l'ermite, cadre de 10, maison des nombres, double + 1 | à faire |
+| 5 | Atelier : bernard-l'ermite, cadre de 10, maison des nombres, double + 1 | fait (même branche, même demande de fusion) |
 | 6 | Module 2 comme notion du jour : familles 3 à 7, formes à trou, leçons L4 à L6, alternance, module imposé, point de départ étendu | à faire |
 | 7 | Défi record, grille des 66 additions, progression du module 2 dans l'espace parent | à faire |
 | 8 | Nombres jusqu'à 1 000 (`docs/SPEC-COMPLEMENTS.md`, partie A) | à faire |
@@ -24,15 +24,24 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 
 Pour reprendre si la session s'est arrêtée : branche `claude/loving-tesla-rtv3o5` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 2, étapes 4 à 6 (en cours) » (https://github.com/js2c/Maths-CE1/pull/16).
 
-**Étape en cours :** 5 (atelier).
+**Étape en cours :** 6 (module 2 comme notion du jour).
 
 **Fait :**
 
 - Étape 4 (son, intégration) : sons choisis copiés dans `app/assets/son/` (`node tools/son/fabriquer.mjs app`), moteur `app/js/engine/son.js`, mixage `app/content/son.json`, bruitages branchés (réponses, étoiles, coquillage, carte, brillante, bouton, zone), musique tirée à chaque séance et notée (`rec.musique`), baisse sous la voix et en pause, arrêt dans l'espace parent, ligne « Son » des réglages du parent. Tests `tests/unit/son-app.test.mjs` ; parcours `seance.mjs` (son) et `parent.mjs` (réglages).
 
-**Reste :** étapes 5 et 6 ; recette complète à la fin.
+- Étape 5 (atelier) : bernard-l'ermite (`art/src/canvas-core/sea/hermit.ts`, planche de modèle `hermitSheet`, gestes repos, sortir, montrer, se réjouir, changer de coquille ; export en deux calques, planche « ermite » ; `app/js/engine/hermit.js`) ; aides visuelles (`sea/aids.ts`, planche « aides », `aidsSheet` ; `app/js/modules/facts/aids.js`). Tests `tests/unit/ermite.test.mjs`, parcours `tests/e2e/ermite.mjs` (captures regardées).
 
-**Où j'en suis :** étape 4 terminée et poussée ; début de l'étape 5.
+**Reste :** étape 6 ; recette complète à la fin.
+
+**Où j'en suis :** étapes 4 et 5 terminées et poussées ; début de l'étape 6.
+
+**Décisions prises (étape 5) :**
+
+- Bernard-l'ermite : de profil vers la droite, bulot crème rayé de brun (comme la carte du lagon), grands yeux blancs à pupille au bout des pédoncules (comme la pieuvre), joue rose et sourire ; grosse pince devant. Rentré dans sa coquille, sa grosse pince reste à l'ouverture (c'est ainsi qu'un pagure ferme sa maison). « Changer de coquille » : une turbo rose plus grande l'attend à droite ; il sort (on voit son abdomen mou), marche, y entre à reculons, se réjouit ; l'ancienne reste posée.
+- Mémoire : rendu en images entières, le personnage coûtait 139 Mo décodés (@2x) ; en deux calques (coquilles fixes, corps seul) et avec moins d'images (8 images/s), 55 Mo, chargés seulement pendant le module 2.
+- Aides : le cadre de 10 reçoit les poissons de l'application (le petit poisson jaune du décor), la maison des nombres s'empile (un toit Saint-Jacques avec le total, un étage par paire, un seuil), le double + 1 reprend le poisson et son reflet et ajoute une bulle dorée ; les nombres sont écrits en direct avec les chiffres de la scène.
+- Le bernard-l'ermite n'est pas (encore) un visiteur de la surprise de l'accueil : il faudrait charger sa planche (55 Mo) pour quelques secondes.
 
 **Décisions prises (étape 4) :**
 

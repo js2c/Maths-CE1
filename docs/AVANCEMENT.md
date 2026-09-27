@@ -2,6 +2,36 @@
 
 Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail dans une nouvelle session : lire ce fichier, puis `CLAUDE.md`, `docs/SPEC.md` et `docs/ARCHITECTURE.md`.
 
+## Lot 2
+
+Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `docs/PROMPT-LOT2.md`. Une étape = une session = une demande de fusion vers `main`.
+
+| Étape | Contenu | État |
+| --- | --- | --- |
+| 1 | Cartes et rythme : calendrier et quota, doublons, brillantes (20 % et effet), ouverture des zones, zone 2 (anecdotes et voix), étoiles dorées (4 semaines réussies), légendaires et coquillage doré, étoile arc-en-ciel de l'entraînement libre, surprise une séance sur cinq, ligne « Cartes » de l'espace parent ; simulation des cartes sur l'année | en cours (branche `lot2-etape1`) |
+| 2 | Séance et progression : durées et nombres de questions, défi record activable, places réservées et voie rapide des faits, enchaînement des niveaux, leçon au plus une fois par séance, point de départ du parent, tortue devant la pieuvre, pieuvre qui montre la cible ; option `--delai` de la recette | à faire |
+| 3 | Son, échantillons (`tools/son/`, `docs/son-echantillons/`) ; arrêt pour le choix du parent | à faire |
+| 4 | Son, intégration : bruitages, musique, mixage, réglages du parent | à faire |
+| 5 | Atelier : bernard-l'ermite, cadre de 10, maison des nombres, double + 1 | à faire |
+| 6 | Module 2 comme notion du jour : familles 3 à 7, formes à trou, leçons L4 à L6, alternance, module imposé, point de départ étendu | à faire |
+| 7 | Défi record, grille des 66 additions, progression du module 2 dans l'espace parent | à faire |
+| 8 | Nombres jusqu'à 1 000 (`docs/SPEC-COMPLEMENTS.md`, partie A) | à faire |
+| 9 | Bilan : `docs/BILAN-LOT2.md`, guide du parent, recette complète sur l'année | à faire |
+
+### Reprise de l'étape 1
+
+Pour reprendre si la session s'est arrêtée : branche `lot2-etape1`, demande de fusion en brouillon « Lot 2, étape 1 (en cours) ».
+
+**Fait :**
+
+- Branche créée, demande de fusion en brouillon ouverte, étapes du lot 2 inscrites ci-dessus.
+
+**Reste à faire :** tout le contenu de l'étape 1 (voir le tableau).
+
+**Où j'en suis :** lecture du code existant (récompenses, séance, espace parent).
+
+**Décisions prises :** aucune pour l'instant.
+
 ## Lot 1 bis — correctifs du 27 septembre
 
 Demandés par le parent après essai sur la tablette (27 septembre 2026). Une session, branche `claude/ergonomie-lecons-exercices-dsrvra`, demande de fusion vers `main`.

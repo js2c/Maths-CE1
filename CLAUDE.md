@@ -17,7 +17,7 @@ Application d'entraînement aux mathématiques pour une élève de CE1, utilisé
 | `app/content/` | Tout le contenu éditable, en JSON, séparé du code : niveaux et paramètres de génération, textes lus (consignes, retours d'erreur, scripts des leçons), cartes et anecdotes, seuils et réglages. Un changement de contenu ne doit jamais demander de toucher au moteur. |
 | `art/` | L'**atelier graphique** : le moteur anidoodle (TypeScript, esbuild, Playwright) et les modules de dessin de l'application. Il ne tourne jamais sur la tablette ; il fabrique les images de `app/assets/art/`. |
 | `.claude/skills/anidoodle/` | La compétence anidoodle (copie figée, licence Apache 2.0, voir `VENDORED.txt`). La lire avant tout travail graphique. |
-| `docs/` | `SPEC.md` (contenu pédagogique), `SPEC-LOT2.md` (lot 2, prévaut en cas de contradiction), `maquettes/` (références visuelles validées). |
+| `docs/` | `SPEC.md` (contenu pédagogique), `SPEC-LOT2.md` (lot 2), `SPEC-LOT3.md` (lot 3, prévaut sur les précédentes en cas de contradiction), `maquettes/` (références visuelles validées). |
 | `tests/` | Tests unitaires (`node --test`) et parcours Playwright. |
 
 ## Direction graphique (validée)
@@ -38,7 +38,7 @@ Budget à tenir sur la tablette : démarrage en moins de 3 s, animation à 30 im
 
 ## Personnages
 
-La pieuvre (mascotte, présente partout) et un personnage guide par module : tortue de mer (ligne graduée, lot 1), bernard-l'ermite (faits d'addition, lot 2), dauphin (calcul rapide, lot 3), crabe (problèmes, lot 4). Chaque personnage est un module de l'atelier, dessiné une fois et seulement posé ensuite (`references/workflows/character-consistency.md`) ; ses gestes sont des boucles fabriquées.
+La pieuvre (mascotte, présente partout) et un personnage guide par module : tortue de mer (ligne graduée, lot 1), bernard-l'ermite (faits d'addition, lot 2), crabe (problèmes, lot 4) ; pas de dauphin : le calcul rapide (lot 3) se contente de la tortue et du petit poisson du mur de corail (décision du parent, `docs/SPEC-LOT3.md`). Chaque personnage est un module de l'atelier, dessiné une fois et seulement posé ensuite (`references/workflows/character-consistency.md`) ; ses gestes sont des boucles fabriquées.
 
 ## Contraintes techniques de l'application
 

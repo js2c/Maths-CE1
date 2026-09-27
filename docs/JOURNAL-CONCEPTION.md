@@ -1,8 +1,8 @@
 # Journal de conception
 
-Mémoire de la conversation de conception (claude.ai, 26 et 27 septembre 2026, mise à jour le 27 septembre à 17 h), pour la reprendre dans une nouvelle conversation sans rien perdre. À lire en premier par toute nouvelle conversation de conception.
+Mémoire de la conversation de conception (claude.ai, 26 et 27 septembre 2026, mise à jour le 27 septembre à 23 h 30), pour la reprendre dans une nouvelle conversation sans rien perdre. À lire en premier par toute nouvelle conversation de conception.
 
-**Pour reprendre dans une nouvelle conversation** : ajouter le dépôt `js2c/Maths-CE1` à la session, puis lire, dans cet ordre, ce journal, `docs/SPEC-LOT2.md` (prévaut), `docs/SPEC.md`, `docs/AVANCEMENT.md` (tableau du lot 2 et rubriques « Reprise… » : décisions du parent prises en cours d'étape) et `docs/PROMPT-LOT2.md`. Outils de recette : `tests/sim-seances.mjs` (simulation par profil d'enfant), `tests/e2e/recette.mjs --delai 4.5` (séance jouée à vitesse réelle), `tests/e2e/recette-durees.mjs [--passer]` (attentes). Le parent est sous forfait Claude Pro : économiser l'usage (pas de recette sans demande, recettes ciblées, pas de relecteur indépendant sauf enjeu important).
+**Pour reprendre dans une nouvelle conversation** : ajouter le dépôt `js2c/Maths-CE1` à la session, puis lire, dans cet ordre, ce journal, `docs/SPEC-LOT3.md` (prévaut), `docs/SPEC-LOT2.md`, `docs/SPEC.md`, `docs/AVANCEMENT.md` (tableau du lot 2 et rubriques « Reprise… » : décisions du parent prises en cours d'étape) et `docs/PROMPT-LOT3.md`. Outils de recette : `tests/sim-seances.mjs` (simulation par profil d'enfant), `tests/e2e/recette.mjs --delai 4.5` (séance jouée à vitesse réelle), `tests/e2e/recette-durees.mjs [--passer]` (attentes). Le parent est sous forfait Claude Pro : économiser l'usage (pas de recette sans demande, recettes ciblées, pas de relecteur indépendant sauf enjeu important).
 
 ## Qui fait quoi
 
@@ -40,6 +40,7 @@ Mémoire de la conversation de conception (claude.ai, 26 et 27 septembre 2026, m
 | Méthode (27 septembre) | Une demande de fusion par étape, fusionnée dans `main` avant l'étape suivante ; reprise sans perte (branche poussée dès le début, brouillon, commits réguliers, rubrique de reprise) | Tester chaque étape sur la tablette ; ne rien perdre si le quota d'utilisation est atteint |
 | Son, choix du parent (27 septembre) | Bruitages variante « a » ; les **trois** musiques (harpe, marimba, cloches), une tirée au hasard au début de chaque séance et gardée toute la séance ; débit par défaut 64 kbit/s (3,7 Mo) sauf décision contraire du parent | Écoute des échantillons de l'étape 3 |
 | Recettes (27 septembre, soir) | Pour économiser l'usage : Claude Code fait une recette allégée à chaque étape et une recette complète en fin d'enchaînement ; la conversation de conception ne fait de recette que sur demande, ciblée (historique réel de l'enfant, plusieurs soirs, espace parent contre la vérité) ; étapes 4 à 6 enchaînées sur une seule branche | Forfait Pro du parent |
+| Lot 3 (27 septembre, 23 h, après les essais du lot 2) | Choisir l'exercice **et le niveau** dès l'accueil (bulle « choisir » ; tous les niveaux accessibles, même jamais atteints) ; l'exercice choisi est la séance du jour, avec étoiles ; le curseur de difficulté agit **à l'intérieur du niveau** choisi ; échauffement passable (bouton et réglage du parent) ; leçon jouée seulement pour la famille travaillée, 80 % des questions sur elle (suppression de `leconSiPasVue`) ; maison des nombres tronquée corrigée ; sauvegardes de test ; module 3 **sans dauphin** | Le parent dirige lui-même l'exercice de l'enfant ; leçon et exercice sans rapport constatés ; le bernard-l'ermite n'apporte rien de pédagogique |
 | Formulations | Formes à trou : « 3 plus combien, ça fait 7 ? », « Combien plus 4, ça fait 6 ? » ; E5 au singulier (« 1 dizaine ») | Oral naturel pour un enfant de 7 ans |
 | Brillantes (27 septembre, décision du parent) | 20 % de chances pour une carte nouvelle, 5 % pour un doublon ; **suppression de la règle « le 3e doublon rend la carte brillante »** ; réglages séparés dans `cartes.json` (`brillanteNouvelle`, `brillanteDoublon`) ; les cartes déjà brillantes le restent. Appliqué au début de l'étape 7 | À 5 séances par semaine, presque toutes les cartes devenaient brillantes avant l'été ; la brillante doit rester une trouvaille |
 | Cran « plus facile » (27 septembre, décision du parent) | Moteur inchangé : une réussite au cran « plus facile » ne compte toujours pas pour la montée du niveau conseillé. Parade : le réglage existant de l'espace parent (interdire « plus facile »), expliqué dans `docs/GUIDE-PARENT.md` | Garder « plus facile » comme un repos, pas comme un moyen d'avancer ; le parent intervient s'il devient systématique |
@@ -49,24 +50,19 @@ Mémoire de la conversation de conception (claude.ai, 26 et 27 septembre 2026, m
 
 - **Lot 2 terminé** sur la branche de la PR #17 (étapes 7 à 9, avec les quatre corrections de la relecture extérieure) ; bilan dans `docs/BILAN-LOT2.md`. Étapes 1 à 6 fusionnées (PR #11, #13, #14, #16). Reste : fusionner la PR #17, essayer sur la tablette.
 
-## État au 27 septembre 2026, 17 h (historique)
+## État au 27 septembre 2026, 23 h 30
 
-- **Lot 1** et **lot 1 bis** : terminés, en ligne (https://js2c.github.io/Maths-CE1/), correctifs « passer » (PR #9).
-- **Lot 2** (`docs/SPEC-LOT2.md`, `docs/PROMPT-LOT2.md`, 9 étapes, 100 à 150 $ estimés) :
-  - étape 1, cartes et rythme : faite, fusionnée (PR #11) ;
-  - étape 2, séance et progression, sélecteur de difficulté : faite, fusionnée (PR #13) ; première séance mesurée à 8 min 56 s (36 à 44 questions de notion) ;
-  - étape 3, échantillons de son : faite, fusionnée (PR #14), choix du parent reçu ;
-  - **étapes 4 (son, intégration), 5 (atelier : bernard-l'ermite, aides visuelles) et 6 (module 2 en notion du jour) : à lancer ensemble**, prompt « Enchaîner plusieurs étapes » de `docs/PROMPT-LOT2.md` avec N = 4, M = 6 ;
-  - étapes 7 (défi record, grille parent), 8 (nombres jusqu'à 1 000), 9 (bilan) : à faire.
-- **Lot « Compléments »** : la partie A (nombres jusqu'à 1 000) est dans le lot 2 (étape 8) ; B et C restent à faire.
-- La conversation de conception n'a pas fait de recette sur les étapes 1 à 3 (choix du parent) ; Claude Code a fait les siennes (tableaux dans `docs/AVANCEMENT.md`).
+- **Lots 1, 1 bis et 2** : terminés, en ligne (https://js2c.github.io/Maths-CE1/) ; lot 2 fusionné (PR #11, #13, #14, #16, #17), bilan `docs/BILAN-LOT2.md`.
+- **Lot 3** (`docs/SPEC-LOT3.md`, `docs/PROMPT-LOT3.md`, 5 étapes, 55 à 90 $ estimés) : partie A, correctif du lot 2 (étapes 1 et 2 : choisir l'exercice et le niveau, difficulté dans le niveau, échauffement passable, leçons cohérentes, maison des nombres, sauvegardes de test) ; partie B, calcul rapide (étapes 3 à 5). À lancer : partie A d'abord, fusion et essai sur la tablette, puis partie B.
+- **Lot 4** (problèmes, dénombrement, bilans, récif) et **Compléments** B (comparer, doubles et moitiés, pair et impair) et C (heure, monnaie) : à faire.
+- Une sauvegarde de test « un mois d'usage » a été fabriquée en conception le 27 septembre (hors dépôt) ; l'outil pérenne est à l'étape 2 du lot 3.
 
 ## Prochaines étapes
 
-1. Étapes 4 à 6 faites et fusionnées (PR #16).
-2. Étapes 7 à 9 faites sur une seule branche (PR #17), recette complète faite, avec les corrections de la relecture extérieure : à fusionner.
-3. **Contenu des cartes** : illustrations et anecdotes du grand large (zone 3) **avant début février**, des abysses (zone 4) **avant fin avril** ; les descriptions `[CREATURE]` sont à rédiger en conception le moment venu (même méthode que la zone 2, voir « Prompts de référence » ci-dessous).
-4. ~~Décisions à prendre avant l'étape 9~~ : prises le 27 septembre (brillantes : 20 % / 5 %, sans règle du 3e doublon ; cran « plus facile » : moteur inchangé, parade dans l'espace parent).
+1. Lancer le lot 3, partie A : prompt « enchaîner » de `docs/PROMPT-LOT3.md` avec N = 1, M = 2 ; fusion ; essai sur la tablette.
+2. Puis partie B : N = 3, M = 5.
+3. **Contenu des cartes** : illustrations et anecdotes du grand large (zone 3) **avant début février**, des abysses (zone 4) **avant fin avril** ; descriptions `[CREATURE]` à rédiger en conception le moment venu.
+4. À décider : place des **sommes jusqu'à 20** (8 + 5, 7 + 6), prévues par la SPEC « après maîtrise » du module 2 mais dans aucun lot ; ordre des lots 4 et Compléments.
 
 ## Points ouverts
 

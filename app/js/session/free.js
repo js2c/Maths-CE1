@@ -18,11 +18,13 @@ import { FactsScreen } from "../modules/facts/screen.js";
 import { chooseModule, CRANS } from "./session.js";
 import { allowedCrans, chooseCran } from "./selector.js";
 import { choose } from "./choice.js";
+import { Module3Runner } from "../modules/calc/runner.js";
+import { median } from "../modules/facts/facts.js";
 
 const PROPOSE_STOP_MS = 10 * 60000;
 
 export class FreeTraining {
-  constructor(app, { store, module1, module2, rnd, seance = null }) { this.app = app; this.store = store; this.m1 = module1; this.m2 = module2; this.rnd = rnd; this.seance = seance; this.rec = null; this.cran = "conseille"; }
+  constructor(app, { store, module1, module2, module3 = null, rnd, seance = null }) { this.app = app; this.store = store; this.m1 = module1; this.m2 = module2; this.m3 = module3; this.rnd = rnd; this.seance = seance; this.rec = null; this.cran = "conseille"; }
   // le sélecteur, sans étoiles
   async pickCran() {
     const sel = this.seance?.selecteur; if (!sel?.actif) return (this.cran = "conseille");
@@ -50,9 +52,10 @@ export class FreeTraining {
     this.t0 ??= app.clock.now();
     app.voice.stop(); await app.voice.say(`${app.text.data.encore} ${app.text.data.libre}`);
     for (;;) {
-      const c = await choose(app, { stars: false, store: this.store, content: { module1: this.m1, module2: this.m2, seance: this.seance ?? {} } });
+      const c = await choose(app, { stars: false, store: this.store, content: { module1: this.m1, module2: this.m2, module3: this.m3, seance: this.seance ?? {} } });
       if (c.module === 1) return this.line(c.niveau);
       if (c.module === 2) return this.facts(c.famille);
+      if (c.module === 3) return this.calc(c.niveau);
       await this.lesson(c.lecon);
     }
   }
@@ -80,6 +83,20 @@ export class FreeTraining {
     screen.show(true); screen.notion = true;
     for (;;) {
       const { q, cfg } = runner.next(), r = await screen.askNotion(q, cfg);
+      const { events } = await runner.record(r, cfg);
+      for (const e of events) if (e.type === "montee") await app.rewards.arcFromFree();
+      await this.answered(r.ok);
+    }
+  }
+  // lot 3 : le calcul rapide au niveau choisi, sans fin (réponses marquées « libre »)
+  async calc(niveau) {
+    const { app } = this; await this.pickCran(); await app.sprites.load("calcul");
+    const base = median((await this.store.setting("tempsDeBase"))?.mesures ?? []) ?? this.m2.base.defautS * 1000;
+    const runner = await new Module3Runner({ store: this.store, content: this.m3, content2: this.m2, rnd: this.rnd, seance: await this.seanceId(), cran: () => this.cran, choix: niveau, baseMs: base }).load();
+    runner.libre = true; this.runner = runner;
+    const fs = (app.facts ??= new FactsScreen(app, this.m2)); fs.show(true);
+    for (;;) {
+      const { q, cfg } = runner.next(), r = await app.calc.askNotion(q);
       const { events } = await runner.record(r, cfg);
       for (const e of events) if (e.type === "montee") await app.rewards.arcFromFree();
       await this.answered(r.ok);

@@ -1,5 +1,5 @@
 {
-  "_doc": "Tout ce que la voix lit. {mascotte} : le nom choisi pour la pieuvre ; {n}, {a}, {b} : des nombres ; {nom} : un nom proposé. Plusieurs variantes : l'application en tire une au hasard. Récompenses et récif : {nom} est le nom de la créature avec son article (cartes.json, nomLu). erreur.E3sauter : l'erreur E3 au format « sauter » (oublier le point de départ ; {a} : la bouée de départ). faitTrouDroite, faitTrouGauche : les formes à trou des faits (3 + ? = 7, ? + 4 = 6), utilisées à partir du lot 2 (textes validés par le parent). erreur.E5 : {dizaines} et {unites} sont remplis avec uneDizaine ou desDizaines, uneUnite ou desUnites (accord au singulier : « 1 dizaine »). erreur.NSP, faitNSP : après le bouton « je ne sais pas ». reprise : au retour d'une pause (bouton « maison » pendant la séance). encore, libre… : l'entraînement libre après la séance. album : l'album des cartes. Lot 2 : carteBrillanteTirage (une carte qui sort brillante, tirage d'une chance sur cinq), carteAlbum (une carte dont la créature n'est pas encore dans le récif), carteLegendaire (avant le nom d'une légendaire), coquillageDore (le coquillage des étoiles dorées), surpriseVisite et surpriseCadeau (la surprise de l'accueil) ; ce que dit l'ouverture d'une zone est dans cartes.json (zones[].ouvertureLu). Chaque phrase dite a son fichier son (app/assets/voix/, fabriqué par tools/voix/fabriquer.mjs) : après une modification ici, relancer cet outil ; une phrase sans fichier est lue par la synthèse du navigateur. Lot 2, étape 2 : selecteur, selecteurLibre (le sélecteur de difficulté au début de la séance, ou de l'entraînement libre), cran.* et cranLibre.* (dit quand l'enfant touche un cran), cranDescente (la protection redescend d'un cran). Lot 2, étape 6 : notionFaits (la notion du jour sur les additions), aideCadre, aideMaison, aideDoublePlus (l'appui visuel des familles 3 à 6 : aide du coquillage, exemple guidé, correction), aToiFait (après un exemple guidé des additions). Lot 2, étape 7 : defi* (le défi record : consigne du premier défi et des suivants, départ, fin, score {n} (bonnes réponses), record battu, égalé ou non ({n} : le record)). Lot 2, étape 8 (nombres jusqu'à 1 000) : ecrire (la dictée, niveau 12 ; {n} : le nombre dicté), guideEcrire (l'exemple guidé de la dictée), erreur.E6 ({centaines}, {dizaines}, {unites} : centaineUn ou centainesPlus, dizaineUn ou desDizaines, uniteUn ou desUnites ; singulier pour 0 et 1 : « 0 dizaine »), erreur.E7 ({cents} : les centaines rondes, {reste} : le reste, {places} : placesUnites ou placesDizainesUnites). Lot 3 (docs/SPEC-LOT3.md) : choixExercice, choixNiveau, choixLecon (l'écran « choisir » : l'exercice, puis le niveau, la famille ou la leçon ; toucher une bulle dit son nom, la toucher encore ou toucher la coche valide) ; choixNom.* (le nom d'un exercice), choixLigne.1 à 13 (le nom d'un niveau de la ligne graduée), choixFamille.1 à 7 (le nom d'une famille d'additions), choixLeconNom.* (le nom d'une leçon) ; rappelDouble (chaque question des presque-doubles : {a} plus {b}, {d} le petit nombre).",
+  "_doc": "Tout ce que la voix lit. {mascotte} : le nom choisi pour la pieuvre ; {n}, {a}, {b} : des nombres ; {nom} : un nom proposé. Plusieurs variantes : l'application en tire une au hasard. Récompenses et récif : {nom} est le nom de la créature avec son article (cartes.json, nomLu). erreur.E3sauter : l'erreur E3 au format « sauter » (oublier le point de départ ; {a} : la bouée de départ). faitTrouDroite, faitTrouGauche : les formes à trou des faits (3 + ? = 7, ? + 4 = 6), utilisées à partir du lot 2 (textes validés par le parent). erreur.E5 : {dizaines} et {unites} sont remplis avec uneDizaine ou desDizaines, uneUnite ou desUnites (accord au singulier : « 1 dizaine »). erreur.NSP, faitNSP : après le bouton « je ne sais pas ». reprise : au retour d'une pause (bouton « maison » pendant la séance). encore, libre… : l'entraînement libre après la séance. album : l'album des cartes. Lot 2 : carteBrillanteTirage (une carte qui sort brillante, tirage d'une chance sur cinq), carteAlbum (une carte dont la créature n'est pas encore dans le récif), carteLegendaire (avant le nom d'une légendaire), coquillageDore (le coquillage des étoiles dorées), surpriseVisite et surpriseCadeau (la surprise de l'accueil) ; ce que dit l'ouverture d'une zone est dans cartes.json (zones[].ouvertureLu). Chaque phrase dite a son fichier son (app/assets/voix/, fabriqué par tools/voix/fabriquer.mjs) : après une modification ici, relancer cet outil ; une phrase sans fichier est lue par la synthèse du navigateur. Lot 2, étape 2 : selecteur, selecteurLibre (le sélecteur de difficulté au début de la séance, ou de l'entraînement libre), cran.* et cranLibre.* (dit quand l'enfant touche un cran), cranDescente (la protection redescend d'un cran). Lot 2, étape 6 : notionFaits (la notion du jour sur les additions), aideCadre, aideMaison, aideDoublePlus (l'appui visuel des familles 3 à 6 : aide du coquillage, exemple guidé, correction), aToiFait (après un exemple guidé des additions). Lot 2, étape 7 : defi* (le défi record : consigne du premier défi et des suivants, départ, fin, score {n} (bonnes réponses), record battu, égalé ou non ({n} : le record)). Lot 2, étape 8 (nombres jusqu'à 1 000) : ecrire (la dictée, niveau 12 ; {n} : le nombre dicté), guideEcrire (l'exemple guidé de la dictée), erreur.E6 ({centaines}, {dizaines}, {unites} : centaineUn ou centainesPlus, dizaineUn ou desDizaines, uniteUn ou desUnites ; singulier pour 0 et 1 : « 0 dizaine »), erreur.E7 ({cents} : les centaines rondes, {reste} : le reste, {places} : placesUnites ou placesDizainesUnites). Lot 3 (docs/SPEC-LOT3.md) : choixExercice, choixNiveau, choixLecon (l'écran « choisir » : l'exercice, puis le niveau, la famille ou la leçon ; toucher une bulle dit son nom, la toucher encore ou toucher la coche valide) ; choixNom.* (le nom d'un exercice), choixLigne.1 à 13 (le nom d'un niveau de la ligne graduée), choixFamille.1 à 7 (le nom d'une famille d'additions), choixLeconNom.* (le nom d'une leçon) ; rappelDouble (chaque question des presque-doubles : {a} plus {b}, {d} le petit nombre). Lot 3, étape 4 (le calcul rapide, docs/SPEC.md, « Module 3 ») : calcPlus, calcMoins (la consigne : {a} et {b}, les nombres du calcul) ; calcTrouPlus, calcTrouMoins (la forme à trou du cran « très dur » ; {n} : le résultat) ; calcPont.plus, calcPont.moins (un pont du chemin : {k}, le pas) ; calcGuide (les calculs guidés : l'enfant remplit chaque caillou) ; calcLent (C2 : juste mais lent, sans reproche) ; erreurCalc.C1 à C5 (les erreurs types ; C4 : {u} et {b}, les unités et le nombre ajouté ; C5 : {b} et {u}) ; notionCalcul ; choixCalcul.1 à 9 (le nom d'un niveau).",
   "accueil": [
     "Coucou ! C'est moi, {mascotte}. On va jouer dans l'océan !",
     "Bonsoir ! {mascotte} est contente de te voir. On y va ?"
@@ -207,7 +207,43 @@
     "L4": "Les doubles.",
     "L5": "Les amis de dix.",
     "L6": "La maison des nombres.",
-    "L10": "Les centaines."
+    "L10": "Les centaines.",
+    "L7": "Plus dix sur le mur de corail.",
+    "L8": "L'astuce du neuf.",
+    "L9": "Passer la dizaine."
   },
-  "rappelDouble": "{a} plus {b}, c'est {d} plus {d}, et encore 1."
+  "rappelDouble": "{a} plus {b}, c'est {d} plus {d}, et encore 1.",
+  "calcPlus": "{a} plus {b} ?",
+  "calcMoins": "{a} moins {b} ?",
+  "calcTrouPlus": "{a} plus combien ? Ça fait {n}.",
+  "calcTrouMoins": "{a} moins combien ? Ça fait {n}.",
+  "calcPont": {
+    "plus": "Plus {k}.",
+    "moins": "Moins {k}."
+  },
+  "calcGuide": "Suis le chemin : tape le nombre de chaque caillou.",
+  "calcLent": "Bravo ! Regarde le raccourci.",
+  "erreurCalc": {
+    "C1": "Quand on ajoute dix, seules les dizaines changent. On descend d'une rangée.",
+    "C1moins": "Quand on retire dix, seules les dizaines changent. On monte d'une rangée.",
+    "C3": "Plus neuf, c'est plus dix, puis on recule d'un pas.",
+    "C4": "{u} plus {b} dépasse dix : on passe à la dizaine suivante.",
+    "C5": "On ne peut pas retirer {b} de {u} : on casse une dizaine.",
+    "autre": "Regardons le chemin ensemble."
+  },
+  "notionCalcul": [
+    "Maintenant, le calcul rapide, avec le petit poisson du mur de corail !",
+    "Au tour du calcul rapide ! Le petit poisson va t'aider."
+  ],
+  "choixCalcul": {
+    "1": "Plus un, plus deux, moins un, moins deux.",
+    "2": "Plus dix et moins dix, sur le mur de corail.",
+    "3": "Plus vingt, plus trente, moins vingt, moins trente.",
+    "4": "Ajouter sans changer de dizaine.",
+    "5": "Retirer sans changer de dizaine.",
+    "6": "Plus neuf.",
+    "7": "Passer la dizaine en ajoutant.",
+    "8": "Ajouter deux grands nombres.",
+    "9": "Passer la dizaine en retirant."
+  }
 }

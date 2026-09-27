@@ -124,4 +124,5 @@ export function formFor(f, trouDesBoite, rnd, { trouFamille = false, directe = f
   const u = rnd(); return u < 1 / 3 ? "directe" : u < 2 / 3 ? "trouDroite" : "trouGauche";
 }
 // ce que l'enfant doit trouver, selon la forme
-export const expected = (q) => (q.forme === "trouDroite" ? q.b : q.forme === "trouGauche" ? q.a : q.a + q.b);
+// (lot 3 : le calcul rapide, `q.op` « - » : une soustraction ; la forme à trou « 38 + ? = 43 » attend le second nombre)
+export const expected = (q) => (q.forme === "trouDroite" ? q.b : q.forme === "trouGauche" ? q.a : q.op === "-" ? q.a - q.b : q.a + q.b);

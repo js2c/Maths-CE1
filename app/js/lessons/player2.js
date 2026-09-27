@@ -13,17 +13,25 @@
 // filet de plus entre dans le chalut, le compteur montre k × 10) ; chaluts n (le nombre n décomposé : chaluts,
 // filets, poissons seuls et leurs chiffres) ; nombre { v, couleur, clignote } (le nombre écrit en grand, un
 // chiffre en couleur, ou qui clignote : numéros des chiffres depuis la gauche).
+// Lot 3, étape 4 : les leçons L7 à L9 du calcul rapide (`module: 3`, sans le bernard-l'ermite ; planches « calcul » et
+// « aides ») : mur { construire } (le mur de corail, rangée par rangée si `construire`) ; poisson n (le petit poisson jaune
+// se pose sur la case n, ou sur la graduation n de la ligne) ; nager n (il y nage) ; allumer [n…] (les cases allumées) ;
+// couleurs true|false (les dizaines en corail, les unités en bleu) ; ligne { min, max } (une ligne de 1 en 1) ; sauts n
+// (le poisson saute de graduation en graduation jusqu'à n, un arc par saut).
 import * as R from "../art/runtime.js";
 import { onTap, spriteBox } from "../session/screens.js";
 import { skipKey } from "../engine/ui.js";
 import { wait } from "../engine/clock.js";
 import { Hermit } from "../engine/hermit.js";
 import { AidBoard, num, paintHouse, paintHundreds, paintTenFrame, put, putScaled } from "../modules/facts/aids.js";
+import { WallFish } from "../modules/calc/wallfish.js";
 
 const ABORT = Symbol("leçon interrompue");
 const REPLAY_AT = [1180, 712];
 const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };
-const EMPTY = () => ({ miroir: null, cadre: null, maison: null, ecrit: null, filet: false, chalut: null, compteur: null, chaluts: null, nombre: null });
+const EMPTY = () => ({ miroir: null, cadre: null, maison: null, ecrit: null, filet: false, chalut: null, compteur: null, chaluts: null, nombre: null, mur: null, ligne: null, arcs: [] });
+// lot 3 : le mur de corail et la ligne des leçons L7 à L9
+export const LESSON_WALL = { x: 580, y: 150, cell: 42, gap: 3 }, LESSON_LINE = { x0: 330, x1: 1190, y: 610 };
 
 export class Lesson2Player {
   constructor(app, content) { this.app = app; this.c = content; this.tok = 0; this.keys = null; }
@@ -33,7 +41,8 @@ export class Lesson2Player {
     if (!lesson) return { vue: false };
     app.facts?.show(false);
     this.guide = lesson.module === 2; // le bernard-l'ermite est le guide du module 2 seulement
-    await Promise.all(this.guide ? [app.sprites.load("ermite"), app.sprites.load("aides")] : [app.sprites.load("centaines"), app.sprites.load("aides")]);
+    await Promise.all(this.guide ? [app.sprites.load("ermite"), app.sprites.load("aides")] : lesson.module === 3 ? [app.sprites.load("calcul"), app.sprites.load("aides")] : [app.sprites.load("centaines"), app.sprites.load("aides")]);
+    if (lesson.module === 3) this.fish ??= new WallFish(app);
     this.own = false; this.h = null; this.back = null;
     if (this.guide) {
       // le bernard-l'ermite : celui de la notion du jour, sinon le sien (entraînement libre)
@@ -86,8 +95,29 @@ export class Lesson2Player {
       if (v.clignote !== undefined) for (let i = 0; i < 6; i++) { await wait(320); st.nombre.cache = !st.nombre.cache; this.paint(); }
       st.nombre.cache = false; return this.paint();
     }
+    // lot 3 : le mur de corail, la ligne des leçons L7 à L9 et le petit poisson
+    if (name === "mur") {
+      st.mur = { upTo: v.construire ? 0 : 100, lit: [], split: false }; st.ecrit = null; st.ligne = null; this.paint();
+      if (v.construire) for (let r = 1; r <= 10; r++) { st.mur.upTo = r * 10; this.paint(); this.app.sound?.play("bouton"); await wait(300); }
+      return;
+    }
+    if (name === "allumer") { if (st.mur) { st.mur.lit = v; this.paint(); } return; }
+    if (name === "couleurs") { if (st.mur) { st.mur.split = v; this.paint(); } return; }
+    if (name === "ligne") { st.ligne = v; st.arcs = []; st.mur = null; this.paint(); return; }
+    if (name === "poisson" || name === "nager") {
+      const p = this.fishAt(v); if (!p) return;
+      if (name === "poisson" || !this.fish.a.vis) { this.fish.at(...p); this.fishN = v; return; }
+      const from = this.fishN; this.fishN = v;
+      // sur le mur : d'abord les rangées (± 10), puis les cases (± 1)
+      if (st.mur && Math.floor((from - 1) / 10) !== Math.floor((v - 1) / 10) && (from - 1) % 10 !== (v - 1) % 10) { await this.fish.swim(...this.fishAt(from + 10 * (Math.floor((v - 1) / 10) - Math.floor((from - 1) / 10))), 700); }
+      return this.fish.swim(...p, 700);
+    }
+    if (name === "sauts") {
+      while (this.fishN < v) { const a = this.fishN, b = a + 1; st.arcs.push([a, b]); this.paint(); await this.fish.swim(...this.fishAt(b), 420); this.fishN = b; this.app.sound?.play("bouton"); await wait(120); }
+      return;
+    }
     if (name === "attendre") return wait(v);
-    if (name === "effacer") { this.st = EMPTY(); return this.paint(); }
+    if (name === "effacer") { this.st = EMPTY(); this.fish?.a.show(false); return this.paint(); }
     if (name === "miroir") { st.miroir = v; st.cadre = null; st.maison = null; return this.paint(); }
     if (name === "ecrire") { st.ecrit = v; return this.paint(); }
     if (name === "defiler") { for (const [x, y] of v) { st.ecrit = `${x} + ${y} = ${x + y}`; this.paint(); await wait(950); } return; }
@@ -102,7 +132,10 @@ export class Lesson2Player {
       if (st.miroir) paintMirror(ctx, sprites, st.miroir, 700, 470);
       if (st.cadre) paintTenFrame(ctx, sprites, 700 - 228, 400, { n: st.cadre.n, extra: st.cadre.extra ?? 0, glow: st.cadre.lueur ?? [] });
       if (st.maison) paintHouse(ctx, sprites, 700, 400, st.maison.total, st.maison.etages ?? []);
-      if (st.ecrit) { const em = 64; R.drawWord(ctx, st.ecrit, 720, 262 - em / 2, em, { w: 9, seed: 990 }); }
+      // lot 3 : le mur de corail, la ligne de L9 (et ses arcs)
+      if (st.mur) R.drawWall(ctx, { ...LESSON_WALL, lit: st.mur.lit, split: st.mur.split, upTo: st.mur.upTo });
+      if (st.ligne) { const L = this.lineSpec(); R.drawLine(ctx, L); for (const [a, b] of st.arcs) R.drawJumpArc(ctx, R.tickP(L, a - st.ligne.min), R.tickP(L, b - st.ligne.min), 1, { label: "+1" }); }
+      if (st.ecrit) { const em = 64; R.drawWord(ctx, st.ecrit, 720, (st.mur ? 700 : 262) - em / 2, em, { w: 9, seed: 990 }); }
       // L10 (les centaines)
       if (st.filet) putScaled(ctx, sprites, "aide.filet", 560, 330, 1.4);
       if (st.chalut !== null) { putScaled(ctx, sprites, "aide.chalut", 640, 250, 1, st.chalut); if (st.compteur !== null) num(ctx, st.compteur, 960, 400, 84); }
@@ -110,9 +143,18 @@ export class Lesson2Player {
       if (st.nombre) paintBigNumber(ctx, st.nombre, 700, 200);
     });
   }
+  // la ligne de L9 : de 1 en 1, tous les nombres écrits
+  lineSpec() { const { min, max } = this.st.ligne, n = max - min + 1; return { ...LESSON_LINE, n, labels: Array.from({ length: n }, (_, i) => String(min + i)), k: 1 }; }
+  // où se pose le poisson : la case n du mur, ou la graduation n de la ligne (un peu au-dessus)
+  fishAt(n) {
+    if (this.st.mur) return R.wallCell({ ...LESSON_WALL }, n);
+    if (this.st.ligne) { const [x, y] = R.tickP(this.lineSpec(), n - this.st.ligne.min); return [x, y - 30]; }
+    return null;
+  }
   abandon() { if (!this.keys) return; this.tok++; this.abort = null; this.keys.forEach((k) => k.remove()); this.keys = null; this.clear(); }
   clear() {
     this.app.aidBoard?.clear();
+    if (this.fish) { this.fish.remove(); this.fish = null; }
     if (this.own) { this.h?.remove(); this.app.sprites.unload("ermite"); } else if (this.h && this.back) { this.h.left = null; this.h.at(...this.back); } // (l'ancienne coquille reste dans la leçon)
     this.h = null;
   }

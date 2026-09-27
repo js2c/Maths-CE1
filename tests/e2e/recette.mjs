@@ -59,7 +59,7 @@ while (Date.now() < deadline) {
     await page.waitForTimeout(DELAI);
     if (st.inputFacts) {
       // (la minute du défi peut finir pendant l'attente : la question disparaît)
-      const q = await page.evaluate(() => { const f = window.__app.facts.q; return f ? (f.forme === "trouDroite" ? f.b : f.forme === "trouGauche" ? f.a : f.a + f.b) : null; });
+      const q = await page.evaluate(() => { const f = window.__app.facts.q; return f ? (f.forme === "trouDroite" ? f.b : f.forme === "trouGauche" ? f.a : f.n ?? f.a + f.b) : null; }); // (lot 3 : le calcul rapide, soustractions et ponts : q.n)
       if (q === null) { waitStart = Date.now(); continue; }
       nf++;
       if (nf === 3) { note(`additions : « je ne sais pas » (${st.q})`); await tapSel(".facts .nsp, .nsp"); } else await typeIn(nf === 5 ? q + 1 : q);

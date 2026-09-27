@@ -35,7 +35,7 @@ const pick = async (page, sel) => { await page.waitForSelector(sel, { timeout: 1
   taps = 0;
   await tap(page, ".choisir");
   await page.waitForSelector(".choix-ex"); await page.waitForTimeout(400);
-  check((await page.locator(".choix-ex").count()) === 3, "trois exercices (ligne, additions, leçons)");
+  check((await page.locator(".choix-ex").count()) === 4, "quatre exercices (ligne, additions, calcul rapide, leçons)");
   await tap(page, '.choix-ex[aria-label="ligne"]');
   await page.screenshot({ path: join(OUT, "2-exercices.png") });
   await tap(page, '.choix-ex[aria-label="ligne"]');
@@ -118,7 +118,7 @@ const pick = async (page, sel) => { await page.waitForSelector(sel, { timeout: 1
   const { page, context, errors } = await open("", async () => { const n = Date.now(); await window.__app.store.add("seances", { debut: n - 600000, fin: n, terminee: true, module: 1, etapes: [] }); });
   await page.waitForSelector(".again"); await tap(page, ".again");
   await page.waitForSelector(".choix-ex", { timeout: 15000 }); await page.waitForTimeout(400);
-  check((await page.locator(".choix-ex").count()) === 3, "« Encore ! » : le même écran de choix");
+  check((await page.locator(".choix-ex").count()) === 4, "« Encore ! » : le même écran de choix");
   await pick(page, '.choix-ex[aria-label="ligne"]'); await pick(page, '.choix-tuile[data-key="3"]');
   await page.waitForSelector(".cran", { timeout: 15000 });
   check(true, "puis le sélecteur sans étoiles");

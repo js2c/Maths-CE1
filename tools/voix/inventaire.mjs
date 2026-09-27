@@ -8,9 +8,10 @@ import { readFileSync } from "node:fs";
 import { decompose, fill, hundredsWords, sentences } from "../../app/js/engine/phrases.js";
 import { e7Value, levelValues } from "../../app/js/modules/numberline/generator.js";
 import { e7Words } from "../../app/js/modules/numberline/dictation.js";
+import { calcsOf, chemin } from "../../app/js/modules/calc/calc.js";
 
 const CONTENT = new URL("../../app/content/", import.meta.url);
-export const lireContenu = () => Object.fromEntries(["textes", "lecons", "cartes", "module1", "module2", "seance"].map((k) => [k, JSON.parse(readFileSync(new URL(`${k}.json`, CONTENT), "utf8"))]));
+export const lireContenu = () => Object.fromEntries(["textes", "lecons", "cartes", "module1", "module2", "module3", "seance"].map((k) => [k, JSON.parse(readFileSync(new URL(`${k}.json`, CONTENT), "utf8"))]));
 
 const range = (a, b, s = 1) => { const out = []; for (let v = a; v <= b; v += s) out.push(v); return out; };
 const TOUS = range(0, 100); // tout nombre de la ligne graduée (le module 1 va de 0 à 100)
@@ -84,6 +85,20 @@ function domaines(C) {
     aideDoublePlus: range(1, 4).map((d) => ({ d })),
     // lot 3 : chaque question des presque-doubles rappelle le double (facts/runner.js, q.rappel : d, le petit nombre)
     rappelDouble: faits.filter(({ a, b }) => Math.abs(a - b) === 1 && Math.max(a, b) <= 5).map(({ a, b }) => ({ a, b, d: Math.min(a, b) })),
+    // lot 3, étape 4 : le calcul rapide (modules/calc/calc.js : calcsOf, les calculs de chaque niveau de module3.json ; chemin :
+    // les pas des ponts ; la forme à trou aux niveaux où elle a un sens ; C4 et C5 : les unités et le nombre ajouté ou retiré)
+    ...(() => {
+      const M3 = C.module3?.niveaux ?? [], all = M3.flatMap((c) => calcsOf(c).map((x) => ({ ...x, type: c.type, trou: c.trou })));
+      const steps = all.flatMap((x) => chemin(x)), k = (op) => [...new Set([...steps.filter((s) => s.op === op).map((s) => s.k), ...all.filter((x) => x.op === op && x.b < 10).map((x) => x.b)])].sort((a, b) => a - b).map((v) => ({ k: v }));
+      const u = (n) => n % 10;
+      return {
+        calcPlus: all.filter((x) => x.op === "+").map(({ a, b }) => ({ a, b })), calcMoins: all.filter((x) => x.op === "-").map(({ a, b }) => ({ a, b })),
+        calcTrouPlus: all.filter((x) => x.op === "+" && x.trou).map(({ a, n }) => ({ a, n })), calcTrouMoins: all.filter((x) => x.op === "-" && x.trou).map(({ a, n }) => ({ a, n })),
+        "calcPont.plus": k("+"), "calcPont.moins": k("-"),
+        "erreurCalc.C4": all.filter((x) => x.op === "+" && x.b < 10 && u(x.a) + x.b >= 10).map((x) => ({ u: u(x.a), b: x.b })),
+        "erreurCalc.C5": all.filter((x) => x.op === "-" && x.b < 10 && u(x.a) < x.b).map((x) => ({ b: x.b, u: u(x.a) })),
+      };
+    })(),
     // le défi record : « {n} bonnes réponses ! » (2 ou plus ; une seule : defiScoreUn), le record à battre (1 ou plus)
     defiScore: range(2, DEFI_MAX).map((n) => ({ n })),
     defiPasRecord: range(1, DEFI_MAX).map((n) => ({ n })),

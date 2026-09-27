@@ -131,5 +131,64 @@
     ],
     "aToi": "À toi !"
   },
+  "L7": {
+    "module": 3,
+    "scene": "mur",
+    "titre": "+ 10 sur le mur de corail",
+    "phrases": [
+      [
+        {"dire": "Voici le mur de corail : tous les nombres de un à cent, rangés par dix.", "faire": [{"mur": {"construire": true}}]}
+      ],
+      [
+        {"dire": "Le poisson est sur trente-quatre.", "faire": [{"poisson": 34}, {"allumer": [34]}]},
+        {"dire": "Il ajoute dix : il descend d'une rangée, juste en dessous.", "faire": [{"nager": 44}]},
+        {"dire": "Quarante-quatre !", "faire": [{"allumer": [34, 44]}]}
+      ],
+      [
+        {"dire": "Regarde : le quatre des unités ne bouge pas. Seules les dizaines changent.", "faire": [{"couleurs": true}]}
+      ],
+      [
+        {"dire": "Moins dix, il monte d'une rangée.", "faire": [{"couleurs": false}, {"allumer": [44, 34]}, {"nager": 34}]}
+      ]
+    ],
+    "aToi": "À toi !"
+  },
+  "L8": {
+    "module": 3,
+    "scene": "mur",
+    "titre": "L'astuce du 9",
+    "phrases": [
+      [
+        {"dire": "Ajouter neuf, c'est presque ajouter dix.", "faire": [{"ecrire": "+ 9     + 10"}]}
+      ],
+      [
+        {"dire": "Alors on ajoute dix, et on recule d'un pas.", "faire": [{"mur": {}}, {"poisson": 34}, {"allumer": [34]}, {"nager": 44}, {"allumer": [34, 44]}, {"nager": 43}, {"allumer": [34, 44, 43]}]}
+      ],
+      [
+        {"dire": "Trente-quatre plus neuf, ça fait quarante-trois.", "faire": [{"ecrire": "34 + 9 = 43"}]}
+      ]
+    ],
+    "aToi": "À toi !"
+  },
+  "L9": {
+    "module": 3,
+    "scene": "ligne",
+    "titre": "Passer la dizaine",
+    "phrases": [
+      [
+        {"dire": "Trente-huit plus cinq. Le poisson est sur trente-huit, il a envie d'aller jusqu'à quarante.", "faire": [{"ligne": {"min": 35, "max": 45}}, {"poisson": 38}]}
+      ],
+      [
+        {"dire": "Pour aller à quarante, il faut deux. Et deux, c'est l'ami de huit pour faire dix !", "faire": [{"sauts": 40}, {"cadre": {"n": 8, "extra": 2}}]}
+      ],
+      [
+        {"dire": "Cinq, c'est deux et trois. Il a déjà fait deux, il reste trois.", "faire": [{"ecrire": "5 = 2 + 3"}]}
+      ],
+      [
+        {"dire": "Quarante, plus trois : quarante-trois !", "faire": [{"sauts": 43}]}
+      ]
+    ],
+    "aToi": "À toi !"
+  },
   "L10": {"scene":"centaines","titre":"Les centaines","phrases":[[{"dire":"Tu te souviens ? Un filet, c'est dix poissons.","faire":[{"filet":true}]}],[{"dire":"Quand on a dix filets, on les met dans un grand chalut.","faire":[{"chalut":0}]},{"dire":"dix,","faire":[{"remplir":1}]},{"dire":"vingt,","faire":[{"remplir":2}]},{"dire":"trente,","faire":[{"remplir":3}]},{"dire":"quarante,","faire":[{"remplir":4}]},{"dire":"cinquante,","faire":[{"remplir":5}]},{"dire":"soixante,","faire":[{"remplir":6}]},{"dire":"soixante-dix,","faire":[{"remplir":7}]},{"dire":"quatre-vingts,","faire":[{"remplir":8}]},{"dire":"quatre-vingt-dix,","faire":[{"remplir":9}]},{"dire":"cent !","faire":[{"remplir":10}]},{"dire":"Dans un chalut, il y a cent poissons !","faire":[{"nombre":{"v":100}}]}],[{"dire":"Trois chaluts, c'est trois-cents.","faire":[{"effacer":true},{"chaluts":300},{"nombre":{"v":300,"couleur":0}}]}],[{"dire":"Trois chaluts et sept poissons tout seuls : trois-cent-sept.","faire":[{"effacer":true},{"chaluts":307},{"nombre":{"v":307}}]},{"dire":"Il n'y a pas de filet, alors on écrit un zéro au milieu.","faire":[{"nombre":{"v":307,"clignote":1}}]}]],"aToi":"À toi !"}
 }

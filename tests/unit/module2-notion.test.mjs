@@ -34,7 +34,7 @@ test("familles 3 à 7 : règles, ordre d'introduction, 45 faits (a, b de 1 à 9,
   assert.equal(aidFor(7, 3), "cadre"); assert.equal(aidFor(4, 4), "reflet"); assert.equal(aidFor(3, 4), "doublePlus"); assert.equal(aidFor(6, 2), "ligne"); assert.equal(aidFor(5, 3), "maison");
   // réglages dans le contenu, jamais en dur
   assert.deepEqual(c.familles2.ouverture, { part: 0.8, boite: 2 }); assert.deepEqual(c.familles2.trou, { part: 0.5, boite: 3 }); assert.equal(c.notion.memeFaitMax, 3);
-  assert.deepEqual(seance.alternance.modules, [1, 2]);
+  assert.deepEqual(seance.alternance.modules, [1, 2, 3]); // (lot 3 : le calcul rapide rejoint la rotation)
 });
 
 test("ouverture : 80 % des faits introduits en boîte 2 ou plus ; une famille à la fois, au plus une par séance", () => {
@@ -70,6 +70,8 @@ test("famille acquise : 80 % des faits de sa RÈGLE en boîte 3 (les amis de 10 
 });
 
 test("alternance séance après séance ; module imposé par le parent (une séance) ; l'autre module sans rien à proposer", () => {
+  // (les règles du lot 2, à deux modules ; le lot 3 en ajoute un troisième : tests/unit/calcul.test.mjs)
+  const seance = { alternance: { modules: [1, 2] } };
   const s = (module, debut, o = {}) => ({ module, debut, terminee: true, ...o });
   assert.equal(chooseModule(seance, []).module, 1);
   assert.equal(chooseModule(seance, [s(1, 1)]).module, 2);

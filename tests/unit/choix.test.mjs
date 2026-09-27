@@ -20,7 +20,7 @@ import { levelItems, tilePos } from "../../app/js/session/choice.js";
 import { Session } from "../../app/js/session/session.js";
 
 const load = (f) => JSON.parse(readFileSync(new URL(`../../app/content/${f}`, import.meta.url)));
-const m1 = load("module1.json"), m2 = load("module2.json"), seance = load("seance.json"), textes = load("textes.json");
+const m1 = load("module1.json"), m2 = load("module2.json"), m3 = load("module3.json"), seance = load("seance.json"), textes = load("textes.json");
 const NOW = new Date(2026, 9, 1, 18, 0).getTime();
 const open = () => Store.open(new IDBFactory());
 const fact = (k, boite) => { const [a, b] = k.split("+").map(Number); return { fait: k, a, b, boite, prochain: NOW + 30 * DAY, historique: [{ t: NOW - DAY, juste: true, ms: 2000 }] }; };
@@ -42,7 +42,11 @@ test("écran de choix : 13 niveaux, 7 familles, toutes les leçons ; le conseill
   const F = levelItems("additions", { st2: { ...initialFamilies(m2, NOW), ouvertes: [1, 2, 3], acquises: [1, 2] }, module1: m1, module2: m2 });
   assert.equal(F.length, 7); assert.equal(F.find((x) => x.conseille).key, 3); assert.deepEqual(F.filter((x) => x.valide).map((x) => x.key), [1, 2]);
   const S = levelItems("lecons", { st1: { lecons: ["L1"] }, st2: { lecons: ["L4"] }, module1: m1, module2: m2, lecons: seance.choix.lecons });
-  assert.deepEqual(S.map((x) => x.key), ["L1", "L2", "L3", "L4", "L5", "L6", "L10"]); assert.deepEqual(S.filter((x) => x.valide).map((x) => x.key), ["L1", "L4"]);
+  assert.deepEqual(S.map((x) => x.key), ["L1", "L2", "L3", "L4", "L5", "L6", "L10", "L7", "L8", "L9"]); assert.deepEqual(S.filter((x) => x.valide).map((x) => x.key), ["L1", "L4"]);
+  // lot 3, étape 4 : le calcul rapide, 9 niveaux, tous accessibles
+  const C = levelItems("calcul", { st3: { acquis: [1, 2], lecons: ["L7"] }, module1: m1, module2: m2, module3: m3 });
+  assert.equal(C.length, 9); assert.equal(C.find((x) => x.conseille).key, 3); assert.deepEqual(C.filter((x) => x.valide).map((x) => x.key), [1, 2]);
+  for (const x of C) assert.ok(textes.choixCalcul[x.key]);
   // chaque vignette a son nom dit par la voix
   for (const x of L) assert.ok(textes.choixLigne[x.key]); for (const x of F) assert.ok(textes.choixFamille[x.key]); for (const x of S) assert.ok(textes.choixLeconNom[x.key]);
   // les vignettes tiennent dans la scène (1280 × 800), à côté de la pieuvre

@@ -1,0 +1,32 @@
+{
+  "_doc": "Module 3, calcul rapide (docs/SPEC.md, « Module 3 » ; lot 3, docs/SPEC-LOT3.md, section 6). niveaux : la procédure de chaque niveau et les paramètres de génération (tirés au hasard : ils bornent aussi les phrases fabriquées pour la voix) : a : [min, max] du premier nombre ; b : les seconds nombres possibles ; ops : « + » et/ou « - » ; type : la règle qui garde un calcul (petit : ± 1, ± 2 ; dizaine : ± 10 ; dizaines : ± 20, ± 30… ; unitesPlus, unitesMoins : sans changer de dizaine ; plus9 : + 9 ; passerPlus, passerMoins : en passant la dizaine ; deuxNombres : deux nombres à deux chiffres sans retenue) ; support : le mur de corail (« mur ») ou la ligne (« ligne ») pour montrer la procédure ; lecon : la leçon d'entrée (L7 au niveau 2, L8 au 6, L9 au 7) ; debloque : ce qui rend le niveau conseillable (niveaux acquis, familles d'additions en boîte 2 ou 3 et plus) ; trou : la forme à trou (« 38 plus combien, ça fait 43 ? ») a un sens au cran « très dur » (niveaux 1 à 8). deroule : un nouveau niveau, c'est la leçon (s'il y en a une), `guides` calculs guidés où l'enfant remplit chaque pont, `cheminAide` calculs où le chemin apparaît au coquillage, puis des calculs sans aide. melange : part des questions de « jouer » prises dans les niveaux déjà acquis. lenteurS : C2 (juste mais lent) au-delà du temps de base (mesuré à l'échauffement) plus ce nombre de secondes. difficulte, montee, memeErreurLecon : comme le module 1. crans : ce que change le sélecteur à l'intérieur du niveau (facile : le chemin affiché d'emblée, sans promotion ; conseille : le chemin au coquillage ; dur : sans chemin ; tresdur : sans chemin, formes à trou aux niveaux où elles ont un sens). erreurs : C1 à C5, leur leçon (C1 -> L7, C3 -> L8, C4 -> L9).",
+  "niveaux": [
+    { "niveau": 1, "type": "petit", "ops": ["+", "-"], "a": [21, 69], "b": [1, 2], "support": "ligne", "debloque": {}, "trou": true },
+    { "niveau": 2, "type": "dizaine", "ops": ["+", "-"], "a": [11, 99], "b": [10], "support": "mur", "lecon": "L7", "debloque": { "niveaux": [1] }, "trou": true },
+    { "niveau": 3, "type": "dizaines", "ops": ["+", "-"], "a": [11, 59], "b": [20, 30], "support": "mur", "debloque": { "niveaux": [2] }, "trou": true },
+    { "niveau": 4, "type": "unitesPlus", "ops": ["+"], "a": [21, 79], "b": [2, 3, 4, 5, 6, 7], "support": "ligne", "debloque": { "famille": 4, "boite": 2 }, "trou": true },
+    { "niveau": 5, "type": "unitesMoins", "ops": ["-"], "a": [23, 69], "b": [2, 3, 4, 5, 6, 7], "support": "ligne", "debloque": { "niveaux": [4] }, "trou": true },
+    { "niveau": 6, "type": "plus9", "ops": ["+"], "a": [11, 89], "b": [9], "support": "mur", "lecon": "L8", "debloque": { "niveaux": [2] }, "trou": true },
+    { "niveau": 7, "type": "passerPlus", "ops": ["+"], "a": [15, 79], "b": [3, 4, 5, 6, 7, 8], "support": "ligne", "lecon": "L9", "debloque": { "famille": 3, "boite": 3 }, "trou": true },
+    { "niveau": 8, "type": "deuxNombres", "ops": ["+"], "a": [11, 49], "b": [11, 12, 13, 21, 22, 31], "support": "mur", "debloque": { "niveaux": [3, 4] }, "trou": true },
+    { "niveau": 9, "type": "passerMoins", "ops": ["-"], "a": [21, 89], "b": [3, 4, 5, 6, 7, 8], "support": "ligne", "debloque": { "niveaux": [7] }, "trou": false }
+  ],
+  "deroule": { "guides": 3, "cheminAide": 3 },
+  "melange": 0.2,
+  "lenteurS": 8,
+  "debloquePart": 0.8,
+  "reglesAdaptation": {
+    "montee": { "sur": 10, "justes": 8, "aidesMax": 1 },
+    "voieRapide": { "premieres": 5, "tempsMaxS": 6 },
+    "difficulte": { "sur": 5, "erreurs": 3 },
+    "redescente": { "seances": 2, "sousTaux": 0.5 },
+    "memeErreurLecon": 2
+  },
+  "erreurs": { "C1": "L7", "C3": "L8", "C4": "L9" },
+  "crans": {
+    "facile": { "chemin": "emblee" },
+    "conseille": { "chemin": "coquillage" },
+    "dur": { "chemin": "non" },
+    "tresdur": { "chemin": "non", "trou": true }
+  }
+}

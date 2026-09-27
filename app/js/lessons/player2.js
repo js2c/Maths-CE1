@@ -8,17 +8,22 @@
 // poisson devant un miroir, n bulles de chaque côté) ; ecrire « 3 + 3 = 6 » (écrit en grand au feutre) ;
 // defiler [[a, b], …] (les égalités s'écrivent l'une après l'autre) ; cadre { n, extra, lueur } (la boîte à dix
 // places) ; entrer n (les poissons entrent un à un jusqu'à n) ; maison { total, etages } ; effacer ; attendre ms.
+// Lot 2, étape 8 : la leçon L10 (les centaines, `scene: "centaines"`, module 1 : sans le bernard-l'ermite ; planche
+// « centaines ») : filet (un filet de dix poissons) ; chalut k (le chalut avec k filets dedans) ; remplir k (un
+// filet de plus entre dans le chalut, le compteur montre k × 10) ; chaluts n (le nombre n décomposé : chaluts,
+// filets, poissons seuls et leurs chiffres) ; nombre { v, couleur, clignote } (le nombre écrit en grand, un
+// chiffre en couleur, ou qui clignote : numéros des chiffres depuis la gauche).
 import * as R from "../art/runtime.js";
 import { onTap, spriteBox } from "../session/screens.js";
 import { skipKey } from "../engine/ui.js";
 import { wait } from "../engine/clock.js";
 import { Hermit } from "../engine/hermit.js";
-import { AidBoard, num, paintHouse, paintTenFrame, put } from "../modules/facts/aids.js";
+import { AidBoard, num, paintHouse, paintHundreds, paintTenFrame, put, putScaled } from "../modules/facts/aids.js";
 
 const ABORT = Symbol("leçon interrompue");
 const REPLAY_AT = [1180, 712];
 const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };
-const EMPTY = () => ({ miroir: null, cadre: null, maison: null, ecrit: null });
+const EMPTY = () => ({ miroir: null, cadre: null, maison: null, ecrit: null, filet: false, chalut: null, compteur: null, chaluts: null, nombre: null });
 
 export class Lesson2Player {
   constructor(app, content) { this.app = app; this.c = content; this.tok = 0; this.keys = null; }
@@ -27,12 +32,16 @@ export class Lesson2Player {
     const { app } = this, lesson = this.c[id], t0 = Date.now(), stats = { rejouees: 0 };
     if (!lesson) return { vue: false };
     app.facts?.show(false);
-    await Promise.all([app.sprites.load("ermite"), app.sprites.load("aides")]);
-    // le bernard-l'ermite : celui de la notion du jour, sinon le sien (entraînement libre)
-    // pendant la leçon, il vient au milieu du sable, en grand ; il retrouve sa place ensuite
-    this.own = !app.hermit; this.h = app.hermit ?? new Hermit(app.ocean, { x: 150, y: 795, scale: 0.85 }); this.h.show(true);
-    this.back = [this.h.x, this.h.y, this.h.s]; this.h.at(300, 780, 1);
-    if (this.own) this.h.play("sortir");
+    this.guide = lesson.module === 2; // le bernard-l'ermite est le guide du module 2 seulement
+    await Promise.all(this.guide ? [app.sprites.load("ermite"), app.sprites.load("aides")] : [app.sprites.load("centaines"), app.sprites.load("aides")]);
+    this.own = false; this.h = null; this.back = null;
+    if (this.guide) {
+      // le bernard-l'ermite : celui de la notion du jour, sinon le sien (entraînement libre)
+      // pendant la leçon, il vient au milieu du sable, en grand ; il retrouve sa place ensuite
+      this.own = !app.hermit; this.h = app.hermit ?? new Hermit(app.ocean, { x: 150, y: 795, scale: 0.85 }); this.h.show(true);
+      this.back = [this.h.x, this.h.y, this.h.s]; this.h.at(300, 780, 1);
+      if (this.own) this.h.play("sortir");
+    }
     this.p = 0; this.skipped = false; this.abort = null; this.goto = undefined;
     const jump = (to) => { this.goto = to; app.voice.stop(); if (this.abort) this.abort(); else this.p = to; };
     const again = spriteBox(app, { x: REPLAY_AT[0] - 70, y: REPLAY_AT[1] - 70, w: 140, h: 140, cls: "bubble lessonkey rejouer", label: "rejouer la leçon", paint: (ctx) => app.sprites.draw(ctx, "rejouer", 0, 70, 70) });
@@ -50,7 +59,7 @@ export class Lesson2Player {
     }
     this.abort = null; this.tok++;
     this.keys.forEach((k) => k.remove()); this.keys = null;
-    if (!this.skipped) { app.ocean.octo.play("rejouir"); this.h.play("rejouir"); await wait(600); }
+    if (!this.skipped) { app.ocean.octo.play("rejouir"); this.h?.play("rejouir"); await wait(600); }
     this.clear();
     return { vue: !this.skipped, passee: this.skipped, dureeS: Math.round((Date.now() - t0) / 1000), ...stats };
   }
@@ -66,7 +75,17 @@ export class Lesson2Player {
   }
   async act(a) {
     const [[name, v]] = Object.entries(a), st = this.st;
-    if (name === "ermite") { const p = this.h.play(v, { hold: 1800 }); if (v === "changer") await p; return; }
+    if (name === "ermite") { if (!this.h) return; const p = this.h.play(v, { hold: 1800 }); if (v === "changer") await p; return; }
+    // L10, les centaines
+    if (name === "filet") { st.filet = !!v; return this.paint(); }
+    if (name === "chalut") { st.filet = false; st.chalut = v; st.compteur = null; return this.paint(); }
+    if (name === "remplir") { st.filet = false; st.chalut = v; st.compteur = v * 10; this.app.sound?.play("bouton"); return this.paint(); }
+    if (name === "chaluts") { st.filet = false; st.chalut = null; st.compteur = null; st.chaluts = v; return this.paint(); }
+    if (name === "nombre") {
+      st.nombre = { ...v, cache: false }; this.paint();
+      if (v.clignote !== undefined) for (let i = 0; i < 6; i++) { await wait(320); st.nombre.cache = !st.nombre.cache; this.paint(); }
+      st.nombre.cache = false; return this.paint();
+    }
     if (name === "attendre") return wait(v);
     if (name === "effacer") { this.st = EMPTY(); return this.paint(); }
     if (name === "miroir") { st.miroir = v; st.cadre = null; st.maison = null; return this.paint(); }
@@ -84,6 +103,11 @@ export class Lesson2Player {
       if (st.cadre) paintTenFrame(ctx, sprites, 700 - 228, 400, { n: st.cadre.n, extra: st.cadre.extra ?? 0, glow: st.cadre.lueur ?? [] });
       if (st.maison) paintHouse(ctx, sprites, 700, 400, st.maison.total, st.maison.etages ?? []);
       if (st.ecrit) { const em = 64; R.drawWord(ctx, st.ecrit, 720, 262 - em / 2, em, { w: 9, seed: 990 }); }
+      // L10 (les centaines)
+      if (st.filet) putScaled(ctx, sprites, "aide.filet", 560, 330, 1.4);
+      if (st.chalut !== null) { putScaled(ctx, sprites, "aide.chalut", 640, 250, 1, st.chalut); if (st.compteur !== null) num(ctx, st.compteur, 960, 400, 84); }
+      if (st.chaluts !== null) paintHundreds(ctx, sprites, st.chaluts, 700, 300, { lit: st.nombre?.couleur ?? null });
+      if (st.nombre) paintBigNumber(ctx, st.nombre, 700, 200);
     });
   }
   abandon() { if (!this.keys) return; this.tok++; this.abort = null; this.keys.forEach((k) => k.remove()); this.keys = null; this.clear(); }
@@ -92,6 +116,13 @@ export class Lesson2Player {
     if (this.own) { this.h?.remove(); this.app.sprites.unload("ermite"); } else if (this.h && this.back) { this.h.left = null; this.h.at(...this.back); } // (l'ancienne coquille reste dans la leçon)
     this.h = null;
   }
+}
+// un nombre écrit en grand, chiffre par chiffre : `couleur` (numéro du chiffre depuis la gauche) en rouge,
+// `clignote` : ce chiffre caché une fois sur deux (st.cache)
+export function paintBigNumber(ctx, { v, couleur, clignote, cache }, cx, cy, em = 96) {
+  const t = String(v), w = t.split("").map((ch) => R.wordWidth(ch) * em), gap = em * 0.12, total = w.reduce((a, b) => a + b, 0) + gap * (t.length - 1);
+  let x = cx - total / 2;
+  t.split("").forEach((ch, i) => { if (!(cache && i === clignote)) R.drawNumber(ctx, ch, x + w[i] / 2, cy - em / 2, em, { w: em * 0.13, color: i === couleur || i === clignote ? R.RED : undefined, seed: 1000 + i }); x += w[i] + gap; });
 }
 
 // un poisson devant un miroir (une ligne de lumière verticale), son reflet de l'autre côté, n bulles de chaque côté

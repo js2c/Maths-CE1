@@ -302,7 +302,7 @@ export class ParentSpace {
       DS.scores.length ? h("div", { class: "pa-chips" }, DS.scores.slice(-20).reverse().map((x) => h("span", { class: `pa-chip${x.record ? " rec" : ""}` }, `${D.fmtShortDay(x.t)} : ${x.score}${x.record ? " · record" : ""}`))) : null);
     // le journal des erreurs
     const J = D.errorJournal(this.d.reponses), E = this.c.erreurs;
-    const jr = h("div", { class: "pa-card-box" }, h("h2", {}, "Journal des erreurs"), h("p", { class: "pa-note" }, "Pour la ligne graduée, chaque mauvaise réponse révèle souvent une erreur type (E1 à E5) ; l'application la corrige avec une animation, et relance une leçon si elle revient deux fois dans une séance. Le bouton « je ne sais pas » (NSP) a sa propre ligne : ce n'est pas une erreur, mais la question revient comme après une erreur."));
+    const jr = h("div", { class: "pa-card-box" }, h("h2", {}, "Journal des erreurs"), h("p", { class: "pa-note" }, "Pour la ligne graduée, chaque mauvaise réponse révèle souvent une erreur type (E1 à E5 ; avec les nombres jusqu'à 1 000, E6 : dizaines et centaines confondues, et E7 : le nombre écrit comme on l'entend, 3007 pour 307) ; l'application la corrige avec une animation, et relance une leçon si elle revient deux fois dans une séance. Le bouton « je ne sais pas » (NSP) a sa propre ligne : ce n'est pas une erreur, mais la question revient comme après une erreur."));
     if (!J.length) jr.append(h("p", { class: "pa-muted" }, "Aucune erreur enregistrée."));
     for (const w of J.slice(0, 6)) {
       jr.append(h("h3", {}, `Semaine du ${D.fmtDay(w.semaine)}`));

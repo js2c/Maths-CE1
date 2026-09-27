@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { IDBFactory } from "fake-indexeddb";
 import { Store } from "../app/js/engine/store.js";
 import { rng } from "../app/js/engine/ocean.js";
-import { makeEstimate, makeJump, makePlace, makeRead } from "../app/js/modules/numberline/generator.js";
+import { makeEstimate, makeJump, makePlace, makeRead, makeWrite } from "../app/js/modules/numberline/generator.js";
 import { Module1Runner } from "../app/js/modules/numberline/runner.js";
 import { Session } from "../app/js/session/session.js";
 import { runNotion } from "../app/js/session/notion.js";
@@ -20,17 +20,18 @@ const load = (f) => JSON.parse(readFileSync(new URL(`../app/content/${f}`, impor
 const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), cartes0 = load("cartes.json"), calendrier = load("calendrier.json");
 // les zones 3 et 4 « prêtes » (illustrations et anecdotes fictives) pour vérifier le rythme des cartes sur l'année
 const pretes = (c) => ({ ...c, cartes: c.cartes.map((x) => ({ ...x, illustration: x.illustration ?? `fictif/${x.id}.webp`, anecdote: x.anecdote ?? "Anecdote fictive." })) });
-const gen = (cfg, r, o = {}) => (o.format === "sauter" ? makeJump(cfg, r) : o.format === "placer" ? makePlace(cfg, r, o) : o.format === "estimer" ? makeEstimate(cfg, r, o) : makeRead(cfg, r, o));
-const ERR = { 1: "E1", 2: "E1", 3: "E1", 4: "E3", 5: "E2", 6: "E5", 7: "E2", 8: "autre" };
+const gen = (cfg, r, o = {}) => (o.format === "ecrire" ? makeWrite(cfg, r, o) : o.format === "sauter" ? makeJump(cfg, r) : o.format === "placer" ? makePlace(cfg, r, o) : o.format === "estimer" ? makeEstimate(cfg, r, o) : makeRead(cfg, r, o));
+const ERR = { 1: "E1", 2: "E1", 3: "E1", 4: "E3", 5: "E2", 6: "E5", 7: "E2", 8: "autre", 9: "E6", 10: "E6", 11: "E3", 12: "E6", 13: "autre" };
 
 // profils : p(niveau, essais) = probabilité de réussir ; faits : p et temps ; nsp : part des échecs donnés par
 // « je ne sais pas » ; trou : probabilité de réussir un fait sous une forme à trou, relative à la forme directe ;
 // cran : le cran que l'enfant choisit toujours au sélecteur de difficulté (lot 2)
-const reel = { ligne: (n) => [0, 0.95, 0.9, 0.85, 0.55, 0.45, 0.45, 0.4, 0.45][n], apprend: 0.006, fait: 0.9, faitMs: 5000, baseMs: 3500, nsp: 0.3, trou: 0.85 };
+// (lot 2, étape 8 : niveaux 9 à 13, nombres jusqu'à 1 000 : hypothèses du même ordre que les niveaux 5 à 8)
+const reel = { ligne: (n) => [0, 0.95, 0.9, 0.85, 0.55, 0.45, 0.45, 0.4, 0.45, 0.5, 0.45, 0.4, 0.5, 0.45][n], apprend: 0.006, fait: 0.9, faitMs: 5000, baseMs: 3500, nsp: 0.3, trou: 0.85 };
 export const PROFILS = {
   sait: { nom: "sait déjà (rapide)", ligne: (n) => (n <= 5 ? 0.97 : 0.85), apprend: 0.004, fait: 0.97, faitMs: 3500, baseMs: 3000, nsp: 0.2, trou: 0.95 },
   reel: { nom: "profil de l'évaluation (ligne faible au-delà de 20, faits en partie sus)", ...reel },
-  diff: { nom: "en difficulté", ligne: (n) => [0, 0.85, 0.75, 0.7, 0.45, 0.35, 0.35, 0.3, 0.35][n], apprend: 0.004, fait: 0.75, faitMs: 8000, baseMs: 4000, nsp: 0.4, trou: 0.75 },
+  diff: { nom: "en difficulté", ligne: (n) => [0, 0.85, 0.75, 0.7, 0.45, 0.35, 0.35, 0.3, 0.35, 0.4, 0.35, 0.3, 0.4, 0.35][n], apprend: 0.004, fait: 0.75, faitMs: 8000, baseMs: 4000, nsp: 0.4, trou: 0.75 },
   tresdur: { nom: "profil de l'évaluation, choisit toujours « très dur »", ...reel, cran: "tresdur" },
   facile: { nom: "profil de l'évaluation, choisit toujours « plus facile »", ...reel, cran: "facile" },
 };

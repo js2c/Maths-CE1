@@ -20,6 +20,8 @@ import { Warmup } from "./modules/facts/warmup.js";
 import { Module2Runner } from "./modules/facts/runner.js";
 import { Hermit } from "./engine/hermit.js";
 import { runChallenge } from "./modules/facts/challenge.js";
+import { Dictation } from "./modules/numberline/dictation.js";
+import { AidBoard } from "./modules/facts/aids.js";
 import { ChallengeView } from "./modules/facts/challengeView.js";
 import { Rewards } from "./session/rewards.js";
 import { chooseName, goodNight, onTap, reward, spriteBox, StarHud } from "./session/screens.js";
@@ -76,7 +78,10 @@ if (P.get("etoiles")) { rewards.st.total = Number(P.get("etoiles")); await rewar
 const app = { stage, sprites, ocean, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, line: new LineView(stage), mascotte: await store.setting("mascotte") };
 // la vitesse des animations des exemples guidés et des corrections (1 : la vitesse d'origine ; la voix garde son débit)
 app.vitesse = seance.vitesseAnimations ?? 1;
-app.lineScreen = () => (app.screen ??= new ReadScreen(app)); // l'écran de la ligne (aussi pour l'aide des faits + 1, + 2)
+app.lineScreen = () => (app.screen ??= new ReadScreen(app));
+// lot 2, étape 8 : la dictée de nombres (niveau 12) prend le pavé de l'écran des additions ; les chaluts des centaines vont sur le calque des aides
+app.dictation = new Dictation(app, () => (app.facts ??= new FactsScreen(app, module2)));
+app.aidBoard ??= new AidBoard(app); // l'écran de la ligne (aussi pour l'aide des faits + 1, + 2)
 window.__app = app;
 // la musique baisse pendant que la voix parle
 stage.ticks.add(() => sound.duck(voice.speaking));

@@ -10,6 +10,7 @@ import { drawTurtle, TURTLE_CLIPS, TURTLE_FPS } from "./turtle";
 import { CREATURE_FPS, CREATURE_N, CREATURES } from "./creatures";
 import { CARD_H, CARD_W, drawBigShell, drawGift, drawShinySweep, GIFTS, SWEEP_H, SWEEP_W, drawCardBack, drawCardBanner, drawCardFrame, drawCardVerso, drawCardWater, drawGlint, drawGoldStar, drawHomeKey, drawRainbowStar, drawReefKey, SHELL_N } from "./treasure";
 import { CRAN_W, drawCranGlow, drawCranKey, GLOW_CR } from "./selector";
+import { drawFishNet, drawTrawl, NET_H, NET_W, TRAWL } from "./hundreds";
 import { DEFI_N, drawRecordFlag, drawScorePearl, drawStepChallenge, drawTimerBubble, TIMER_W } from "./challenge";
 import { drawHermit, HERMIT_CLIPS, HERMIT_FPS, HERMIT_REST } from "./hermit";
 import { drawBonusBubble, drawCellGlow, drawHouseBase, drawHouseFloor, drawHouseRoof, drawTenFrame, HOUSE, TEN, TEN_H, TEN_W, tenCell } from "./aids";
@@ -145,6 +146,10 @@ export const SPECS: Spec[] = [
   { name: "aide.maison.toit", sheet: "aides", W: HOUSE.w + 70, H: HOUSE.roof + 40, origin: [HOUSE.w / 2 + 30, HOUSE.roof + 14], frames: 1, draw: (g) => drawHouseRoof(g, HOUSE.w / 2 + 30, HOUSE.roof + 14), meta: { ...HOUSE } },
   { name: "aide.maison.etage", sheet: "aides", W: HOUSE.w + 30, H: HOUSE.floor + 20, origin: [HOUSE.w / 2 + 10, 4], frames: 1, draw: (g) => drawHouseFloor(g, HOUSE.w / 2 + 10, 4) },
   { name: "aide.maison.seuil", sheet: "aides", W: HOUSE.w + 50, H: HOUSE.base + 20, origin: [HOUSE.w / 2 + 20, 4], frames: 1, draw: (g) => drawHouseBase(g, HOUSE.w / 2 + 20, 4) },
+  // lot 2, étape 8 : les centaines (leçon L10, retours E6 et E7) : le filet de dix poissons (ancrage : coin haut
+  // gauche) et le chalut, vide puis avec 1 à 10 filets (ancrage : milieu de la ralingue du haut)
+  { name: "aide.filet", sheet: "centaines", W: NET_W + 20, H: NET_H + 20, origin: [6, 6], frames: 1, draw: (g) => drawFishNet(g, 6, 6), meta: { w: NET_W, h: NET_H } },
+  { name: "aide.chalut", sheet: "centaines", W: TRAWL.w + 40, H: TRAWL.h + 60, origin: [TRAWL.w / 2 + 16, 28], frames: 11, draw: (g, f) => drawTrawl(g, TRAWL.w / 2 + 16, 28, f), meta: { ...TRAWL } },
   { name: "aide.bulle.doree", sheet: "aides", W: 100, H: 100, origin: [50, 50], frames: 1, draw: (g) => drawBonusBubble(g, 50, 50) },
   // lot 2, étape 7 : le défi record (planche « defi », chargée le temps du défi) : la bulle-sablier (DEFI_N
   // niveaux d'eau, du plein au vide), la perle d'une bonne réponse, le drapeau du record (ancrage : pied du mât)

@@ -10,9 +10,10 @@
 // à la vitesse `app.vitesse` (content/seance.json, vitesseAnimations), la voix garde son débit.
 import * as R from "../../art/runtime.js";
 import { Actor } from "../../engine/actor.js";
-import { decompose, fill } from "../../engine/phrases.js";
+import { decompose, fill, hundredsWords } from "../../engine/phrases.js";
 import { arcHeight, Turtle } from "../../engine/turtle.js";
-import { classify, lineSpec, makeEstimate, makeJump, makePlace, makeRead } from "./generator.js";
+import { classify, lineSpec, makeEstimate, makeJump, makePlace, makeRead, makeWrite } from "./generator.js";
+import { paintHundreds } from "../facts/aids.js";
 import { clock, wait } from "../../engine/clock.js";
 import { onTap, pop, skipKey, SKIP_AT, spriteBox } from "../../engine/ui.js";
 
@@ -227,12 +228,14 @@ export class NumberLineScreen {
   async countJumps(from, to, { label = (k) => String(k), say = label, bubbles = false, stop = () => false, guard = (p) => p } = {}) {
     const { voice } = this.app, t = this.turtle;
     for (let k = 1; from + k <= to && !stop(); k++) {
-      const i = from + k, a = t.seat(i - 1), b = t.seat(i), arc = { a: [a[0], a[1] + 4], b: [b[0], b[1] + 4], h: arcHeight(Math.abs(b[0] - a[0])) - 4, label: label(k, i), live: true, p: 0, bubbles };
+      // (lot 2, étape 8 : un nombre à trois chiffres ne tient pas entre deux graduations serrées : l'arc n'a pas d'étiquette, la voix compte)
+      const i = from + k, a = t.seat(i - 1), b = t.seat(i), text = label(k, i), room = Math.abs(b[0] - a[0]) >= String(text).length * 17;
+      const arc = { a: [a[0], a[1] + 4], b: [b[0], b[1] + 4], h: arcHeight(Math.abs(b[0] - a[0])) - 4, label: room ? text : null, live: true, p: 0, bubbles };
       this.arcs.push(arc);
       await guard(t.jump(i));
       if (stop()) return;
       arc.live = false; arc.p = 1; this.paintFx(true);
-      await guard(Promise.race([voice.say(say(k, i)), wait(750 / t.speed)]));
+      await guard(Promise.race([voice.say(String(say(k, i))), wait(750 / t.speed)]));
     }
   }
   // une animation d'effet (flèche qui se trace, anneau qui clignote) pendant `ms`
@@ -272,7 +275,7 @@ export class NumberLineScreen {
       try {
         // au format « sauter », E3 est l'oubli du point de départ (la bouée où la tortue est posée), pas celui du début de la ligne
         const key = q.format === "sauter" && code === "E3" ? "E3sauter" : code;
-        await g(voice.say(key && T[key] ? fill(T[key], { a: q.format === "sauter" ? q.min + q.start * q.step : q.min, ...decompose(text.data, n) }) : T.autre));
+        await g(voice.say(key && T[key] ? fill(T[key], { a: q.format === "sauter" ? q.min + q.start * q.step : q.min, n, ...(n >= 100 ? hundredsWords(text.data, n) : decompose(text.data, n)) }) : T.autre));
         if (this.input) { const X = this.xOf(n); this.fishGoal = [X, R.lineY(this.spec, X) - 50]; } // le poisson va à la bonne place
         await this.explain(code, g);
         line.show(this.fix);
@@ -328,6 +331,12 @@ export class NumberLineScreen {
       if (far) { await g(T.swimTo(this.spec, 0)); return this.countJumps(0, tgt, { label: (k, i) => String(q.min + i * q.step), guard: g }); }
       return;
     }
+    if (code === "E6") {
+      // lot 2, étape 8 : le nombre décomposé en chaluts (centaines), filets (dizaines) et poissons seuls (unités)
+      await g(this.app.sprites.load("centaines"));
+      this.app.aidBoard.draw((ctx) => paintHundreds(ctx, this.app.sprites, q.answer, 800, 100, { width: 1600, kMax: 0.4, digits: false }));
+      try { return await g(this.pause(2800)); } finally { this.app.aidBoard.clear(); }
+    }
     if (code === "E5") {
       // le nombre se décompose : des filets de dix bulles et des bulles seules
       const d = Math.floor(q.answer / 10), u = q.answer % 10, NW = 104, NH = 46, x0 = 640 - (d * (NW + 14) + u * 24) / 2, y0 = 318;
@@ -340,10 +349,14 @@ export class NumberLineScreen {
     }
   }
   // pose la question et attend la réponse ; la promesse se résout après le retour, avec le résultat
-  ask(q, cfg, opts = {}) { return new Promise((resolve) => { this.resolve = resolve; this.show(q, cfg, opts); }); }
+  // (lot 2, étape 8 : la dictée, au niveau 12, a son propre écran : modules/numberline/dictation.js)
+  ask(q, cfg, opts = {}) {
+    if (q.format === "ecrire") { this.leave(); return this.app.dictation.ask(q, cfg, opts); }
+    return new Promise((resolve) => { this.resolve = resolve; this.show(q, cfg, opts); });
+  }
   generate(cfg, rnd, opts = {}) {
     const f = opts.format ?? "lire";
-    return f === "sauter" ? makeJump(cfg, rnd) : f === "placer" ? makePlace(cfg, rnd, opts) : f === "estimer" ? makeEstimate(cfg, rnd, opts) : makeRead(cfg, rnd, opts);
+    return f === "ecrire" ? makeWrite(cfg, rnd, opts) : f === "sauter" ? makeJump(cfg, rnd) : f === "placer" ? makePlace(cfg, rnd, opts) : f === "estimer" ? makeEstimate(cfg, rnd, opts) : makeRead(cfg, rnd, opts);
   }
   leave() { this.clearButtons(); this.nsp.style.visibility = "hidden"; this.starAt = null; this.fishAt = null; this.turtle.hide(); this.band.style.display = "none"; this.app.line.clear(); this.app.line.fxClear(); }
 }

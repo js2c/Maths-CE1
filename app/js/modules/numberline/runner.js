@@ -6,8 +6,8 @@
 //    une « erreur corrigée » (une étoile de plus) ;
 //  - difficulté persistante (3 erreurs sur 5) : la leçon du niveau est relancée si elle existe, puis une
 //    question plus simple (niveau inférieur, ou au niveau 1 une cible proche de 0) ;
-//  - la même erreur deux fois dans la séance relance la leçon correspondante (E1 -> L1, E2 -> L2, E3 -> L3) ;
-//  - leçon d'entrée : L1 au niveau 1, L3 au niveau 4, L2 au niveau 5, la première fois ;
+//  - la même erreur deux fois dans la séance relance la leçon correspondante (E1 -> L1, E2 -> L2, E3 -> L3, E6 -> L10) ;
+//  - leçon d'entrée : L1 au niveau 1, L3 au niveau 4, L2 au niveau 5, L10 au niveau 9 (lot 2, étape 8), la première fois ;
 //  - « je ne sais pas » : une erreur de code NSP (elle compte pour l'adaptation et la question revient) ;
 //  - correction passée (bouton « passer ») : notée `correctionPassee`, rien d'autre ne change (pas
 //    d'étoile, la question revient comme après toute erreur) ;
@@ -23,8 +23,9 @@
 import { afterAnswer, afterSession, initialLevelState } from "../progress.js";
 import { toleranceFor } from "./generator.js";
 
-export const LESSON_OF_ERROR = { E1: "L1", E2: "L2", E3: "L3" };
-export const LESSON_OF_LEVEL = { 1: "L1", 4: "L3", 5: "L2" };
+// lot 2, étape 8 : L10 (les centaines) à l'entrée du niveau 9, et quand E6 (dizaines et centaines confondues) revient
+export const LESSON_OF_ERROR = { E1: "L1", E2: "L2", E3: "L3", E6: "L10" };
+export const LESSON_OF_LEVEL = { 1: "L1", 4: "L3", 5: "L2", 9: "L10" };
 
 export class Module1Runner {
   // screen : l'écran (generate) ; store : la base ; content : module1.json ; rnd : hasard
@@ -119,4 +120,4 @@ export class Module1Runner {
   save() { return this.store?.put("niveaux", this.st); }
 }
 // la question telle que le parent la lira dans l'historique
-export const describe = (q) => q.format === "sauter" ? `tortue sur ${q.min + q.start * q.step}, ${q.jumps} saut(s) -> ${q.answer}` : q.format === "estimer" ? `ligne ${q.min}-${q.max} sans graduations, placer ${q.answer} (±${q.tolerance})` : `${q.format} ${q.answer} sur la ligne ${q.min}-${q.max} (pas ${q.step})`;
+export const describe = (q) => q.format === "ecrire" ? `dictée ${q.answer}` : q.format === "sauter" ? `tortue sur ${q.min + q.start * q.step}, ${q.jumps} saut(s) -> ${q.answer}` : q.format === "estimer" ? `ligne ${q.min}-${q.max} sans graduations, placer ${q.answer} (±${q.tolerance})` : `${q.format} ${q.answer} sur la ligne ${q.min}-${q.max} (pas ${q.step})`;

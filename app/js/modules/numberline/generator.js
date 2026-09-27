@@ -11,15 +11,32 @@
 // E3 ignore le point de départ              -> 4 au lieu de 34
 // E4 compte depuis la droite                -> le nombre symétrique
 // E5 inverse dizaines et unités             -> 43 au lieu de 34
+// lot 2, étape 8 (docs/SPEC-COMPLEMENTS.md, partie A), nombres jusqu'à 1 000 :
+// E6 confond dizaines et centaines           -> 70 au lieu de 700, 37 au lieu de 370, 37 ou 370 au lieu de 307,
+//                                               437 au lieu de 347
+// E7 écrit le nombre comme il l'entend        -> 3007 au lieu de 307, 30017 au lieu de 317 (dictée seulement :
+//                                               ces nombres ne tiennent pas sur la ligne de 0 à 1 000)
+export const e6Values = (a) => {
+  if (a < 100 || a > 999) return [];
+  const c = Math.floor(a / 100), d = Math.floor(a / 10) % 10, u = a % 10;
+  if (u === 0) return [a / 10]; // 700 -> 70, 370 -> 37
+  if (d === 0) return [c * 10 + u, c * 100 + u * 10]; // 307 -> 37, 370
+  return d !== c ? [d * 100 + c * 10 + u] : []; // 347 -> 437
+};
+export const e7Value = (a) => (a >= 100 && a <= 999 && a % 100 ? Number(`${Math.floor(a / 100) * 100}${a % 100}`) : null);
 export const TRAPS = {
   E1: (q) => q.answer + q.step,
   E2: (q) => (q.step === 10 && q.answer % 10 === 0 ? q.answer / 10 : null),
   E3: (q) => (q.min !== 0 ? q.answer - q.min : null),
   E4: (q) => q.min + q.max - q.answer,
   E5: (q) => { const a = q.answer, t = Math.floor(a / 10), u = a % 10; return a >= 10 && a < 100 && u !== 0 && u !== t ? u * 10 + t : null; },
+  E6: (q) => e6Values(q.answer)[0] ?? null,
 };
-// ordre de priorité des pièges selon ce que la ligne rend possible
-const PRIORITY = ["E1", "E3", "E2", "E5", "E4"];
+// ordre de priorité des pièges selon ce que la ligne rend possible (au-delà de 100, E6 remplace E2 et E5)
+const PRIORITY = ["E1", "E3", "E2", "E5", "E4"], PRIORITY_1000 = ["E1", "E3", "E6", "E4"];
+const priority = (q) => (q.max > 100 ? PRIORITY_1000 : PRIORITY);
+// le plus grand nombre d'une question (les propositions restent sur la ligne : jusqu'à 100, ou jusqu'à 1 000)
+const top = (q) => (q.max > 100 ? 1000 : 100);
 
 const pick = (rnd, arr) => arr[Math.floor(rnd() * arr.length)];
 const range = (a, b, s = 1) => { const out = []; for (let v = a; v <= b + 1e-9; v += s) out.push(Math.round(v)); return out; };
@@ -77,9 +94,9 @@ export function makeRead(cfg, rnd, opts = {}) {
 // les propositions : la bonne, les pièges possibles par priorité, puis des voisines si besoin ; triées
 export function choicesFor(q, count, rnd) {
   const out = [{ value: q.answer, code: null }], has = (v) => out.some((c) => c.value === v);
-  const ok = (v) => v !== null && Number.isInteger(v) && v >= 0 && v <= 100 && !has(v);
+  const ok = (v) => v !== null && Number.isInteger(v) && v >= 0 && v <= top(q) && !has(v);
   // au niveau 1, les pièges parlants sont E1 et E4 ; l'autre voisine complète
-  const order = q.niveau === 1 ? ["E1", "E4"] : PRIORITY;
+  const order = q.niveau === 1 ? ["E1", "E4"] : priority(q);
   for (const code of order) { if (out.length >= count) break; const v = TRAPS[code](q); if (ok(v)) out.push({ value: v, code }); }
   for (const d of [-1, 2, -2, 3]) { if (out.length >= count) break; const v = q.answer + d * q.step; if (ok(v)) out.push({ value: v, code: null }); }
   void rnd;
@@ -91,17 +108,20 @@ export function classify(q, value) {
   // estimer : juste dans la tolérance ; placé au symétrique (depuis la droite) : E4
   if (q.format === "estimer") return Math.abs(value - q.answer) <= q.tolerance ? null : Math.abs(value - (q.min + q.max - q.answer)) <= q.tolerance ? "E4" : "autre";
   if (q.format === "placer") return classifyPlace(q, value);
+  if (q.format === "ecrire") return classifyWrite(q, value);
   if (value === q.answer) return null;
   const c = q.choices?.find((x) => x.value === value);
   if (c?.code) return c.code;
-  for (const code of PRIORITY) if (TRAPS[code](q) === value) return code;
+  for (const code of priority(q)) if (TRAPS[code](q) === value) return code;
   return "autre";
 }
 
 // la ligne à dessiner (runtime.js, drawLine) pour une question : positions en px logiques de la scène
 export function lineSpec(q, cfg, { x0 = 150, x1 = 1134, y = 452 } = {}) {
   const labels = Array.from({ length: q.n }, (_, i) => (q.labelled.includes(i) ? String(valueAt(q, i)) : null));
-  return { x0, x1, y, n: q.n, labels, k: cfg.k, mark: q.format === "lire" ? q.target : undefined, ends: q.n === 0 ? [String(q.min), String(q.max)] : undefined, lit: q.format === "sauter" ? [q.start] : undefined };
+  // lot 2, étape 8 : un petit chalut au-dessus des graduations de centaines (au-delà de 100)
+  const centaines = q.max > 100 ? Array.from({ length: q.n }, (_, i) => i).filter((i) => { const v = valueAt(q, i); return v > 0 && v % 100 === 0; }) : undefined;
+  return { x0, x1, y, n: q.n, labels, k: cfg.k, centaines, mark: q.format === "lire" ? q.target : undefined, ends: q.n === 0 ? [String(q.min), String(q.max)] : undefined, lit: q.format === "sauter" ? [q.start] : undefined };
 }
 
 // ---------------------------------------------------------------- une question « sauter » (niveau 1)
@@ -132,6 +152,22 @@ export function classifyPlace(q, value) {
   if (value === q.min + q.max - q.answer) return "E4";
   if (Math.abs(value - q.answer) === q.step) return "E1";
   if (TRAPS.E5(q) === value) return "E5";
+  if (e6Values(q.answer).includes(value)) return "E6";
+  return "autre";
+}
+
+// ---------------------------------------------------------------- une question « écrire » (niveau 12, dictée)
+// « Écris le nombre 307. » : la voix dit le nombre, l'enfant le tape au pavé numérique. Les nombres dictés
+// sont ceux de content/module1.json (niveau 12, `nombres`).
+export function makeWrite(cfg, rnd, opts = {}) {
+  const pool = cfg.nombres.filter((v) => !opts.eviter?.includes(v)), answer = pick(rnd, pool.length ? pool : cfg.nombres);
+  return { module: 1, niveau: cfg.niveau, format: "ecrire", min: 0, max: 1000, step: 1, n: 0, target: null, answer, labelled: [] };
+}
+// l'erreur d'une dictée : E6 (37 ou 370 pour 307), E7 (3007 pour 307), sinon « autre »
+export function classifyWrite(q, value) {
+  if (value === q.answer) return null;
+  if (e6Values(q.answer).includes(value)) return "E6";
+  if (value === e7Value(q.answer)) return "E7";
   return "autre";
 }
 
@@ -139,9 +175,22 @@ export function classifyPlace(q, value) {
 // Ligne 0-100 sans graduations, 0 et 100 écrits : « Où mettrais-tu 50 ? ». Juste si l'écart ne dépasse pas
 // la tolérance (±8 au début du niveau, puis ±5 : voir `tolerance`).
 export function makeEstimate(cfg, rnd, opts = {}) {
-  const pool = [10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90].filter((v) => !opts.eviter?.includes(v));
-  const answer = pick(rnd, pool.length ? pool : [50]);
+  const pool = (cfg.cibles ?? [10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90]).filter((v) => !opts.eviter?.includes(v));
+  const answer = pick(rnd, pool.length ? pool : [(cfg.min + cfg.max) / 2]);
   return { module: 1, niveau: cfg.niveau, format: "estimer", min: cfg.min, max: cfg.max, step: 1, n: 0, target: null, answer, labelled: [], tolerance: opts.tolerance ?? cfg.tolerances[0] };
 }
 // tolérance du niveau 8 : la première tant que 5 estimations n'ont pas été justes au niveau, puis la seconde
 export const toleranceFor = (cfg, justesAuNiveau) => (justesAuNiveau >= 5 ? cfg.tolerances[1] : cfg.tolerances[0]);
+
+// ---------------------------------------------------------------- les nombres d'un niveau (pour la voix)
+// tous les nombres qu'un niveau peut montrer, demander ou compter : ceux de ses lignes (graduations,
+// cibles, départs), ses nombres dictés, ses cibles « estimer » et le milieu de sa ligne. L'inventaire de la
+// voix (tools/voix/inventaire.mjs) fabrique une phrase pour chacun, au-delà de 100.
+export function levelValues(cfg) {
+  const out = new Set(), steps = Array.isArray(cfg.pas) ? cfg.pas : [cfg.pas ?? 1];
+  if (cfg.nombres) cfg.nombres.forEach((v) => out.add(v));
+  if (cfg.cibles) { cfg.cibles.forEach((v) => out.add(v)); out.add((cfg.min + cfg.max) / 2); out.add(cfg.min); out.add(cfg.max); }
+  const lines = cfg.etendue ? cfg.departs.map((d) => [d, d + cfg.etendue]) : cfg.min !== undefined && cfg.graduations !== false ? [[cfg.min, cfg.max]] : [];
+  for (const [a, b] of lines) for (const st of steps) for (let v = a; v <= b; v += st) out.add(v);
+  return [...out].sort((x, y) => x - y);
+}

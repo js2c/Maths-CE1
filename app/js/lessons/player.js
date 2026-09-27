@@ -34,7 +34,8 @@ export class LessonPlayer {
   // « passer » (dès la première vue) l'arrête : passee, pas d'étoiles (notion.js).
   async play(id) {
     // les leçons du module 2 (L4 à L6) ont leur propre scène (lessons/player2.js)
-    if (this.c[id]?.module === 2) return (this.p2 ??= new Lesson2Player(this.app, this.c)).play(id);
+    // (lot 2, étape 8 : L10, les centaines, a aussi sa scène : chaluts et filets sur le calque des aides)
+    if (this.c[id]?.module === 2 || this.c[id]?.scene) return (this.p2 ??= new Lesson2Player(this.app, this.c)).play(id);
     const { app } = this, lesson = this.c[id], nl = this.nl, t0 = Date.now(), stats = { rejouees: 0 };
     if (!lesson) return { vue: false };
     nl.leave();

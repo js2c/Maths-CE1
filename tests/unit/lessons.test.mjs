@@ -10,8 +10,17 @@ const lecons = JSON.parse(readFileSync(new URL("../../app/content/lecons.json", 
 
 test("les leçons L1 à L3 existent, sont celles que le module 1 déclenche, et leur contenu est cohérent", () => {
   for (const id of new Set([...Object.values(LESSON_OF_ERROR), ...Object.values(LESSON_OF_LEVEL)])) {
-    assert.ok(lecons[id], id); assert.deepEqual(check(lecons[id]), [], id); assert.ok(lecons[id].aToi.startsWith("À toi"));
+    assert.ok(lecons[id], id); if (!lecons[id].scene) assert.deepEqual(check(lecons[id]), [], id); assert.ok(lecons[id].aToi.startsWith("À toi"));
   }
+});
+
+test("L10 (les centaines, lot 2, étape 8) : sa scène, ses actions connues, le texte de la SPEC", () => {
+  const L = lecons.L10, known = new Set(["filet", "chalut", "remplir", "chaluts", "nombre", "effacer", "attendre"]);
+  assert.equal(L.scene, "centaines"); assert.equal(LESSON_OF_LEVEL[9], "L10"); assert.equal(LESSON_OF_ERROR.E6, "L10");
+  const beats = L.phrases.flat(), said = beats.map((b) => b.dire).join(" ");
+  for (const b of beats) for (const a of b.faire ?? []) assert.ok(known.has(Object.keys(a)[0]), JSON.stringify(a));
+  for (const t of ["Un filet, c'est dix poissons.", "Dans un chalut, il y a cent poissons !", "Trois chaluts, c'est trois-cents.", "trois-cent-sept", "on écrit un zéro au milieu"]) assert.ok(said.includes(t), t);
+  assert.equal(beats.filter((b) => b.faire?.some((a) => a.remplir)).length, 10); // dix filets entrent un à un
 });
 
 test("L1 : scène vide au début ; au début de la phrase 5, la tortue sur 2 après deux sauts, 1 et 2 écrits ; à la fin, six sauts depuis 0", () => {

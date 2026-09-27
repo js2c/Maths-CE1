@@ -96,13 +96,14 @@ export class Module1Runner {
     } else if (q.niveau > this.st.niveau) {
       // au-dessus du conseillé (sélecteur) : une fenêtre à part pour ce niveau ; la réussir valide le niveau
       if (this.up?.niveau !== q.niveau) this.up = { ...initialLevelState(1), niveau: q.niveau, obtenus: [] };
-      const a = afterAnswer(this.up, { juste: r.ok, aide: false, ms: r.ms }, this.rules, this.levels.length);
+      // (maxLevel + 1 : réussir le dernier niveau joué au-dessus le valide aussi ; le conseillé devient alors ce dernier niveau)
+      const a = afterAnswer(this.up, { juste: r.ok, aide: false, ms: r.ms }, this.rules, this.levels.length + 1);
       this.up = a.st;
       const m = a.events.find((e) => e.type === "montee");
       if (m) {
-        const de = this.st.niveau, now = Date.now();
-        this.st = { ...this.st, niveau: m.a, fenetre: [], vus: 0, justesNiveau: 0, obtenus: [...this.st.obtenus, { niveau: m.a, date: now, cran: true }] };
-        events.push({ type: "montee", de, a: m.a, rapide: m.rapide, cran: true }); this.up = null; this.climbed(events);
+        const de = this.st.niveau, now = Date.now(), to = Math.min(this.levels.length, m.a);
+        this.st = { ...this.st, niveau: to, fenetre: [], vus: 0, justesNiveau: 0, obtenus: [...this.st.obtenus, { niveau: to, date: now, cran: true }] };
+        events.push({ type: "montee", de, a: to, rapide: m.rapide, cran: true }); this.up = null; this.climbed(events);
       }
     }
     // la même erreur deux fois dans la séance : la leçon correspondante

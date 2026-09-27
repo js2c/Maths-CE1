@@ -84,7 +84,7 @@ export function roomForNew(c, stored, dejaNouveaux = 0) {
 // manque des questions pour atteindre `min` : d'autres faits nouveaux (mêmes limites), puis des faits déjà
 // rencontrés pas encore dus (révision en avance, sans montée de boîte), enfin un second passage des faits
 // de la boîte 1.
-// o : { nouveaux (false : pas de fait nouveau, cran « plus facile »), enPlus (faits nouveaux de plus),
+// o : { nouveaux (false : pas de place réservée, cran « plus facile »), complementMax, enPlus (faits nouveaux de plus),
 //       dejaNouveaux (déjà introduits dans la séance), familleSuivante }
 export function plan(c, stored, now, n, min, o = {}) {
   const cat = pool(c, o), byKey = new Map(stored.map((f) => [f.fait, f]));
@@ -95,7 +95,9 @@ export function plan(c, stored, now, n, min, o = {}) {
   const out = due.slice(0, n - nNew).map((f) => ({ ...f, nouveau: false }));
   for (const f of fresh.slice(0, nNew)) out.push(newFact(f, now));
   // liste trop courte (peu de faits dus) : d'autres faits nouveaux, dans les mêmes limites, avant de réviser
-  if (o.nouveaux !== false) { const more = Math.min(min - out.length, fresh.length - nNew, roomForNew(c, stored, o.dejaNouveaux ?? 0) - nNew); for (const f of fresh.slice(nNew, nNew + Math.max(0, more))) out.push(newFact(f, now)); }
+  // (cran « plus facile » : pas de place réservée, mais au plus `complementMax` faits nouveaux pour compléter une
+  // liste trop courte, sans quoi une enfant qui choisit toujours « plus facile » n'aurait jamais d'échauffement)
+  { const cap = o.nouveaux === false ? (o.complementMax ?? 0) : Infinity, more = Math.min(min - out.length, fresh.length - nNew, roomForNew(c, stored, o.dejaNouveaux ?? 0) - nNew, cap); for (const f of fresh.slice(nNew, nNew + Math.max(0, more))) out.push(newFact(f, now)); }
   const ahead = known.filter((f) => f.prochain > now).sort((x, y) => x.prochain - y.prochain);
   for (const f of ahead) { if (out.length >= min) break; out.push({ ...f, nouveau: false, anticipe: true }); }
   const again = out.filter((f) => f.boite === 1 && !f.anticipe);

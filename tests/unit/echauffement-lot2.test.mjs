@@ -85,6 +85,10 @@ test("questions triviales (a + 0) : au premier échauffement, puis une séance s
 test("cran « plus facile » : seulement des faits dus, aucun fait nouveau ; « plus dur » : 2 nouveaux de plus et formes à trou dès la boîte 3", () => {
   const cat = catalog(c), stored = cat.slice(0, 4).map((f) => ({ ...f, boite: 3, prochain: NOW - DAY, historique: [{ juste: true }] }));
   const easy = plan(c, stored, NOW, 12, 10, { nouveaux: false }); assert.ok(easy.every((f) => !f.nouveau));
+  // plus facile, sans aucun fait connu : au plus 3 faits nouveaux pour qu'il y ait un échauffement
+  assert.equal(plan(c, [], NOW, 12, 10, { nouveaux: false, complementMax: 3 }).filter((f) => f.nouveau && !f.anticipe).length, 3);
+  const many = cat.slice(0, 14).map((f) => ({ ...f, boite: 2, prochain: NOW - DAY, historique: [{ juste: true }] }));
+  assert.equal(plan(c, many, NOW, 12, 10, { nouveaux: false, complementMax: 3 }).filter((f) => f.nouveau).length, 0, "liste pleine de faits dus : rien de nouveau");
   assert.equal(plan(c, stored, NOW, 12, 10, { enPlus: 2 }).slice(0, 9).filter((f) => f.nouveau).length, 5);
   const r = rng(4), forms = new Set(Array.from({ length: 60 }, () => formFor({ boite: 3 }, 3, r)));
   assert.deepEqual([...forms].sort(), ["directe", "trouDroite", "trouGauche"]);

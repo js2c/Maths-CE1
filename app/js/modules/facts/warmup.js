@@ -30,7 +30,7 @@ export class Warmup {
     // le compteur des séances sans mesure (les triviales reviennent une séance sur `uneSeanceSur`)
     if (!first && !this.libre) { this.base = { ...this.base, depuis: k ? 0 : depuis + 1 }; this.store.setSetting("tempsDeBase", this.base); }
     for (let i = 0; i < k; i++) { const a = 2 + Math.floor(this.rnd() * 7); triv.push(this.rnd() < 0.5 ? { a, b: 0 } : { a: 0, b: a }); }
-    const e = this.effet, facts = plan(this.c, this.facts, this.clock(), n, min, { nouveaux: e.nouveaux, enPlus: e.nouveauxEnPlus ?? 0, dejaNouveaux: this.nouveaux, familleSuivante: !!e.familleSuivante });
+    const e = this.effet, facts = plan(this.c, this.facts, this.clock(), n, min, { nouveaux: e.nouveaux, complementMax: e.complementMax, enPlus: e.nouveauxEnPlus ?? 0, dejaNouveaux: this.nouveaux, familleSuivante: !!e.familleSuivante });
     // les faits nouveaux au-delà des places réservées sans bonus (cran au-dessus) : retirés si le cran redescend
     let base = this.c.placesReservees ?? 3; this.bonus = new Set();
     for (const f of facts) if (f.nouveau && !f.anticipe && base-- <= 0 && e.nouveauxEnPlus) this.bonus.add(f.fait);

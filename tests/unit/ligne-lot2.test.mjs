@@ -67,3 +67,9 @@ test("cran « plus facile » : les questions au niveau inférieur comptent pour 
   for (let i = 0; i < 10; i++) { const n = R.next(); assert.equal(n.q.niveau, 3); await R.record(res(n.q, true, 2000), n.cfg); }
   assert.equal(R.st.niveau, 4); assert.equal((await R.finish()).rate, 1);
 });
+
+test("cran au-dessus au dernier niveau : réussir le niveau 8 fait passer le conseillé de 7 à 8", async () => {
+  const R = await mk({ offset: () => 2 }); R.st.niveau = 7; const ev = [];
+  for (let i = 0; i < 5; i++) { const n = R.next(); assert.equal(n.q.niveau, 8); ev.push(...(await R.record(res(n.q, true, 2000), n.cfg)).events); }
+  assert.equal(R.st.niveau, 8); assert.ok(ev.some((e) => e.type === "montee" && e.a === 8));
+});

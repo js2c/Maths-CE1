@@ -12,7 +12,7 @@ Spécification : `docs/SPEC-LOT3.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LO
 | --- | --- | --- | --- |
 | 1 | A | Accueil « choisir » : exercice et niveau (ligne 1 à 13, familles 1 à 7, leçons), exercice choisi = séance du jour ; échauffement passable et réglage ; leçons cohérentes (suppression de `leconSiPasVue`, 80 % sur la famille) ; maison des nombres ; test des bords des sprites | fait (branche `claude/laughing-ritchie-cp777i`, https://github.com/js2c/Maths-CE1/pull/19) |
 | 2 | A | Difficulté à l'intérieur du niveau (ligne graduée, 13 niveaux × 4 crans ; additions) ; outil de sauvegardes de test ; guide du parent ; recette complète de la partie A | fait (même branche ; recette complète faite avec celle de l'étape 4, les étapes 1 à 4 étant enchaînées) |
-| 3 | B | Atelier : mur de corail, poisson sur le mur, ponts du chemin, pictogramme du calcul rapide pour l'écran de choix | à faire |
+| 3 | B | Atelier : mur de corail, poisson sur le mur, ponts du chemin, pictogramme du calcul rapide pour l'écran de choix | fait (même branche) |
 | 4 | B | Module 3 : niveaux 1 à 9, générateurs, erreurs C1 à C5, déroulé d'un nouveau niveau, leçons L7 à L9, crans, choix du niveau, rotation dans « jouer », espace parent | à faire |
 | 5 | B | Bilan : `docs/BILAN-LOT3.md`, guide du parent, recette complète sur l'année | à faire |
 
@@ -20,7 +20,7 @@ Spécification : `docs/SPEC-LOT3.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LO
 
 Pour reprendre si la session s'est arrêtée : branche `claude/laughing-ritchie-cp777i`, demande de fusion en brouillon « Lot 3, étapes 1 à 4 (en cours) ».
 
-**Étape en cours :** 3 (atelier du calcul rapide).
+**Étape en cours :** 4 (module 3).
 
 **Fait :**
 
@@ -28,7 +28,9 @@ Pour reprendre si la session s'est arrêtée : branche `claude/laughing-ritchie-
 
 - Étape 2 : crans à l'intérieur du niveau choisi (`module1.json`, un bloc `crans` par niveau, `applyCran` ; additions : `module2.json`, `notion.cransChoix`) ; « plus facile » consolide sans faire progresser ; captures des 13 niveaux × 4 crans (`tests/e2e/crans.mjs`) ; voix des nombres nouveaux (niveau 11 très dur : 30 graduations) ; simulation par cran (`--choix`, `--cran`) ; outil `tools/sauvegarde-test.mjs` et contrôle `tests/e2e/sauvegardes.mjs` ; guide du parent (section d bis).
 
-**Reste :** étapes 3 et 4 ; recette complète à la fin de l'étape 4.
+- Étape 3 : le mur de corail, les cailloux et les ponts dessinés en direct (`runtime.ts`), le petit poisson jaune (12 images, boucle sans raccord : écart au raccord 10,5 pour 10,5 entre images voisines), les pictogrammes (écran « choisir », frise) et les neuf plaques de niveaux ; planche spécimen regardée ; export complet reproductible.
+
+**Reste :** étape 4 ; recette complète à la fin de l'étape 4.
 
 **Recette allégée de l'étape 2 :** `npm test` : 189 tests, tous passent. `node tests/e2e/crans.mjs` : 52 captures (13 niveaux × 4 crans) conformes au tableau de la SPEC, additions aux quatre crans (0, 0, 3 et 6 formes à trou sur 6) ; captures regardées (`tests/e2e/out/crans/`). `node tests/e2e/sauvegardes.mjs` : un mois, trois mois, en difficulté restaurés sans erreur, accueil, album, écran « choisir » et espace parent cohérents. Tous les parcours existants (aide-passer, cartes, centaines, defi, ergonomie, frise, lecons, notion2, parent, pause-parent, pwa, recompenses, selecteur, seance, voix) : tout est bon. Simulation, profil « reel », 10 séances en choisissant toujours le même exercice (réussite de la notion du jour, plus facile / conseillé / plus dur / très dur) : ligne niveau 5 : 86 / 81 / 82 / 78 % ; ligne niveau 8 : 87 / 86 / 85 / 78 % ; additions famille 4 : 90 / 84 / 83 / 81 % (hypothèse de l'effet d'un cran sur la ligne : `EFFET_CRAN` de `sim-recette.mjs` ; les protections redescendent le cran 4 à 9 fois en 10 séances aux crans au-dessus).
 

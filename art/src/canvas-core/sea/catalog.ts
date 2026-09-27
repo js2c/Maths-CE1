@@ -14,6 +14,7 @@ import { drawFishNet, drawTrawl, NET_H, NET_W, TRAWL } from "./hundreds";
 import { DEFI_N, drawRecordFlag, drawScorePearl, drawStepChallenge, drawTimerBubble, TIMER_W } from "./challenge";
 import { drawHermit, HERMIT_CLIPS, HERMIT_FPS, HERMIT_REST } from "./hermit";
 import { drawBonusBubble, drawCellGlow, drawHouseBase, drawHouseFloor, drawHouseRoof, drawTenFrame, HOUSE, TEN, TEN_H, TEN_W, tenCell } from "./aids";
+import { drawCalcTile, drawExerciseCalc, drawStepCalc, drawWallFish, WALL_FISH_N } from "./calc";
 import { drawChooseKey, drawExerciseLessons, drawExerciseLine, drawFamilyTile, drawLessonTile, drawLineTile, drawTileGlow, TILE_H, TILE_W } from "./choice";
 import { drawAgainKey, drawAlbumKey, drawDontKnowKey, drawFreeFacts, drawFreeLessons, drawFreeLine, drawMoonDecor, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepGlow, drawStepShell, GLOW_R, STEP_R } from "./ui";
 
@@ -169,6 +170,14 @@ export const SPECS: Spec[] = [
   ...Array.from({ length: 7 }, (_, i): Spec => ({ name: `choix.famille.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawFamilyTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
   { name: "choix.lecon", sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawLessonTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12) },
   { name: "choix.lueur", sheet: "choix", W: TILE_W + 40, H: TILE_H + 40, origin: [TILE_W / 2 + 20, TILE_H / 2 + 20], frames: 1, draw: (g) => drawTileGlow(g, TILE_W / 2 + 20, TILE_H / 2 + 20) },
+  // lot 3, étape 3 : le calcul rapide. Le pictogramme de l'écran « choisir » et les neuf plaques de niveaux (planche
+  // « choix ») ; celui de la frise (« petits », comme les autres étapes) ; le petit poisson jaune du mur de corail,
+  // vers la droite et vers la gauche, sa queue battant en 12 images (planche « calcul », chargée le temps du module 3 ;
+  // ancrage : le centre du poisson, posé au centre d'une case)
+  { name: "choix.ex.calcul", sheet: "choix", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawExerciseCalc(g, 90, 90) },
+  ...Array.from({ length: 9 }, (_, i): Spec => ({ name: `choix.calcul.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawCalcTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
+  { name: "frise.calcul", sheet: "petits", W: 2 * STEP_R + 24, H: 2 * STEP_R + 24, origin: [STEP_R + 10, STEP_R + 10], frames: 1, draw: (g) => drawStepCalc(g, STEP_R + 10, STEP_R + 10) },
+  ...([1, -1] as const).map((dir): Spec => ({ name: `mur.poisson.${dir > 0 ? "d" : "g"}`, sheet: "calcul", W: 80, H: 60, origin: [40, 30], frames: WALL_FISH_N, fps: 12, loop: [0, WALL_FISH_N], draw: (g, f) => drawWallFish(g, f, 40, 30, dir, 40) })),
   // les cadeaux du récif (la surprise) : ancrés au milieu de leur base, posés sur le sable
   ...GIFTS.map((id): Spec => ({ name: `cadeau.${id}`, sheet: "petits", W: 200, H: 180, origin: [100, 160], frames: 1, draw: (g) => drawGift(g, id, 100, 160) })),
 ];

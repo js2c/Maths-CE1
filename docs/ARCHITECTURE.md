@@ -147,6 +147,11 @@ Les lettres (noms, plus tard cartes) sont écrites au feutre comme les chiffres 
 - *Sauvegardes de test* : `node tools/sauvegarde-test.mjs <profil> <séances par semaine> <semaines> [--sortie f.json]` : la simulation (`tests/sim-recette.mjs`, option `horloge` : `Date.now()` suit l'horloge simulée ; `out.store`) jusqu'à la veille, puis `Store.dump` nettoyé (`cleanDump`, sans code parent). Contrôle : `node tests/e2e/sauvegardes.mjs` (un mois, trois mois, en difficulté : restauration, accueil, album, écran « choisir », espace parent).
 - Simulation : `node tests/sim-seances.mjs reel 2 10 --choix 1:5 --cran tresdur` (l'enfant choisit toujours cet exercice ; `EFFET_CRAN`, hypothèse de l'effet d'un cran sur la ligne). Tests : `tests/unit/crans.test.mjs`.
 
+**Atelier du calcul rapide (lot 3, étape 3 ; docs/SPEC-LOT3.md, section 6).**
+
+- *Dessiné en direct* (`sea/runtime.ts`, une fois par question, ou une fois par leçon) : `drawWall` (le mur de corail, 10 rangées de 10, cases creusées dans un bloc de corail ; `split` : les dizaines en corail et les unités en bleu, L7 ; `lit` : cases allumées ; `upTo` : le mur qui se construit), `wallCell` (le centre d'une case), `drawStone` (un caillou du chemin, son nombre ou le « ? » à trouver) et `drawBridge` (un pont de bois et sa plaque « + 2 », qui peut pousser, `p`).
+- *Fabriqué à l'avance* (`sea/calc.ts`) : le petit poisson jaune du mur (`mur.poisson.d|g`, 12 images, planche « calcul », 1 Mo en @2x), le pictogramme du calcul rapide (`choix.ex.calcul`), celui de la frise (`frise.calcul`), les neuf plaques de niveaux (`choix.calcul.1` à `9`, un calcul du niveau à l'ardoise ; le signe « − » est ajouté à l'écriture de `letters.ts`). Planche spécimen : `node tools/still.mjs calcSheet --frame 0 --out out/calcul.png --scale 2`.
+
 ## L'espace parent
 
 `js/parent/parent.js` (l'affichage) et `js/parent/data.js` (les calculs, fonctions pures testées par `tests/unit/parent.test.mjs`), réglages dans `content/parent.json`, styles dans `css/parent.css`. C'est la seule partie de l'application faite de pages HTML ordinaires, avec du texte : elle est destinée au parent.

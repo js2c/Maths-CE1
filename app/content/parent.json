@@ -41,7 +41,7 @@
     "placer": "placer",
     "estimer": "estimer",
     "base": "temps de base",
-    "directe": "a + b = ?"
+    "directe": "a + b = ?", "trouDroite": "a + ? = n", "trouGauche": "? + b = n"
   },
   "erreurs": {
     "E1": "compte les traits au lieu des sauts",

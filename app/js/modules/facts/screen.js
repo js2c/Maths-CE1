@@ -77,6 +77,32 @@ export class FactsScreen {
     voice.stop(); voice.say(this.consigne(q), { instruction: true });
     return p;
   }
+  // ---------------------------------------------------------------- le défi record (lot 2, étape 7)
+  // une question du défi : pas de consigne lue (le temps compte ; l'ardoise suffit), pas d'aide ; la réponse
+  // est rendue dès la coche, avec `after` : la fin du petit retour (bulle claire, ou la bonne réponse montrée
+  // un instant après une erreur, sans correction)
+  askDefi(q, { apresErreurMs = 900 } = {}) {
+    this.defi = { apresErreurMs }; this.q = q; this.typed = ""; this.ring = false; this.aide = false; this.locked = false; this.app.starFrom = SLATE;
+    this.help.style.visibility = "hidden";
+    this.slate.repaint(); pop(this.slate); this.t0 = clock.now();
+    return new Promise((res) => { this.resolve = res; });
+  }
+  // la minute est finie : la question en cours est abandonnée
+  cancel() { this.locked = true; const done = this.resolve; this.resolve = null; done?.({ timeout: true }); }
+  // fin du défi : plus de question, l'ardoise est rangée (les perles et le drapeau restent)
+  blank() { this.locked = true; this.q = null; this.typed = ""; this.slate.repaint(); this.slate.style.visibility = "hidden"; }
+  submitDefi(nsp) {
+    const q = this.q, value = nsp ? null : Number(this.typed), ok = value === expected(q), ms = Math.round(clock.now() - this.t0);
+    this.locked = true; const pauseMs = this.defi.apresErreurMs;
+    if (ok) this.app.sound?.play("bonne"); else if (!nsp) this.app.sound?.play("erreur");
+    const after = (async () => {
+      if (ok) { pop(this.slate); await wait(180); return; }
+      if (!nsp) pop(this.slate, "shake");
+      this.typed = String(expected(q)); this.ring = true; this.slate.repaint();
+      await wait(pauseMs);
+    })();
+    const done = this.resolve; this.resolve = null; done?.({ value, ms, listens: 0, aide: false, nsp, after });
+  }
   // ---------------------------------------------------------------- l'appui visuel de la famille (lot 2, étape 6)
   // cadre de 10, maison des nombres, double + 1, reflet des doubles (la ligne de la famille 1 est la tortue,
   // voir showHelp) ; `solved` : avec la réponse (exemple guidé, correction), sinon avec « ? » et des places vides
@@ -139,6 +165,7 @@ export class FactsScreen {
   // le résultat reste écrit sur l'ardoise environ une seconde, puis le fait suivant ; noté « correction passée ».
   // Ses pauses suivent la vitesse des corrections (content/seance.json, vitesseAnimations).
   async submit({ nsp = false } = {}) {
+    if (this.defi) return this.submitDefi(nsp);
     const { voice, text, ocean } = this.app, q = this.q, value = nsp ? null : Number(this.typed), ok = value === expected(q), ms = Math.round(clock.now() - this.t0), k = this.app.vitesse ?? 1;
     this.locked = true; voice.stop();
     const r = { value, ms, listens: voice.listens, aide: this.aide, nsp };
@@ -191,7 +218,7 @@ export class FactsScreen {
       await wait(solved ? 600 : 1600);
     } finally { nl.turtle.hide(); nl.arcs = []; line.fxClear(); line.clear(); }
   }
-  leave() { this.show(false); this.q = null; this.app.aidBoard?.clear(); }
+  leave() { this.show(false); this.q = null; this.defi = null; this.app.aidBoard?.clear(); }
 }
 
 // l'échauffement dans la séance : n faits (10 à 14), précédés, une séance sur cinq, des questions du temps de

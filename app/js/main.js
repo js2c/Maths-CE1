@@ -19,9 +19,11 @@ import { FactsScreen, runWarmup } from "./modules/facts/screen.js";
 import { Warmup } from "./modules/facts/warmup.js";
 import { Module2Runner } from "./modules/facts/runner.js";
 import { Hermit } from "./engine/hermit.js";
+import { runChallenge } from "./modules/facts/challenge.js";
+import { ChallengeView } from "./modules/facts/challengeView.js";
 import { Rewards } from "./session/rewards.js";
 import { chooseName, goodNight, onTap, reward, spriteBox, StarHud } from "./session/screens.js";
-import { doneToday, Session } from "./session/session.js";
+import { challengeReady, doneToday, Session } from "./session/session.js";
 import { Reef } from "./session/reef.js";
 import { drawSurprise, playSurprise, previousSession } from "./session/surprise.js";
 import { Album } from "./session/album.js";
@@ -132,6 +134,16 @@ const handlers = {
     await runNotion({ ...ctx, step, runner, screen, lesson: P.has("sansLecon") ? async () => false : lessonIn(ctx.session), rnd });
     screen.leave();
   },
+  // lot 2, étape 7 : le défi record (une minute, faits en boîte 3 ou plus, la bulle qui se vide, le record)
+  defi: async (ctx) => {
+    const screen = (app.facts ??= new FactsScreen(app, module2)), warmup = await new Warmup({ store, content: module2, rnd, seance: ctx.session.id, cran: () => "conseille" }).load();
+    warmup.defi = true;
+    await sprites.load("defi");
+    const view = new ChallengeView(app); app.challenge = view;
+    try {
+      await runChallenge({ ...ctx, warmup, screen, view, store, rnd, octo: ocean.octo, stars: seance.etoiles, say: (k, v = {}) => voice.say(text.pick(k, v)) });
+    } finally { view.remove(); app.challenge = null; sprites.unload("defi"); }
+  },
   recompense: (ctx) => reward(app, { ...ctx, hud }),
 };
 // lot 2, étape 6 : la notion du jour sur les additions (docs/SPEC-LOT2.md, section 3) : l'écran des additions, le
@@ -208,6 +220,9 @@ async function showHome({ done, first = false }) {
       // la protection du sélecteur redescend d'un cran : la pieuvre encourage, la voix le dit doucement
       onCranDown: async () => { voice.stop(); ocean.octo.play("encourager"); await voice.say(text.data.cranDescente); } });
     app.session = session; mode = "seance";
+    // la frise ne montre le défi record que s'il aura lieu (à partir de la 5e séance, assez de faits bien sus)
+    const defi = seance.etapes.find((e) => e.id === "defi");
+    frieze.only(defi && handlers.defi && !(await challengeReady(store, defi)) ? ["defi"] : []);
     await session.run();
     mode = null; frieze.show(false); homeKey.style.visibility = "hidden";
     sound.stopMusic();

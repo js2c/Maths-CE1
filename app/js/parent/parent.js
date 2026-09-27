@@ -228,7 +228,8 @@ export class ParentSpace {
     const cartes = (x.cartes ?? []).map((id) => this.cartes.cartes.find((c) => c.id === id)?.nom ?? id);
     det.append(h("div", { class: "pa-facts" },
       h("span", {}, "De ", h("b", {}, D.fmtTime(x.debut)), " à ", h("b", {}, x.fin ? D.fmtTime(x.fin) : "—")),
-      h("span", {}, "Notion du jour : ", h("b", {}, this.c.modules[x.module]?.nom ?? `module ${x.module}`)),
+      h("span", {}, "Notion du jour : ", h("b", {}, `${this.c.modules[x.module]?.nom ?? `module ${x.module}`}${x.module === 2 && x.famille ? ` (famille « ${this.module2.familles.find((f) => f.id === x.famille)?.nom ?? x.famille} »)` : ""}`)),
+      x.defi && h("span", {}, "Défi record : ", h("b", {}, `${plural(x.defi.score, "bonne réponse")} sur ${x.defi.questions}${x.defi.nouveauRecord ? " (nouveau record !)" : x.defi.record ? ` (record : ${x.defi.record})` : ""}`)),
       h("span", {}, "Réponses justes : ", h("b", {}, `${x.justes ?? 0} sur ${x.questions ?? 0}`)),
       steps.length > 0 && h("span", {}, "Étapes : ", h("b", {}, steps.join(", "))),
       (x.lecons ?? []).length > 0 && h("span", {}, "Leçons : ", h("b", {}, x.lecons.map((l) => `${l.id}${D.lessonNote(l)}`).join(", "))),
@@ -240,7 +241,7 @@ export class ParentSpace {
       cartes.length > 0 && h("span", {}, "Cartes gagnées : ", h("b", {}, cartes.join(", ")))));
     const groups = D.answersOf(this.d.reponses, x.id);
     if (!groups.length) det.append(h("p", { class: "pa-muted" }, "Aucune réponse enregistrée pour cette séance."));
-    for (const g of groups) det.append(h("h3", {}, g.module === 2 && !g.notion ? "Échauffement : faits d'addition" : `Notion du jour : ${this.c.modules[g.module]?.nom ?? g.module}`), this.answerTable(g.reponses));
+    for (const g of groups) det.append(h("h3", {}, g.defi ? "Défi record : faits d'addition en une minute" : g.module === 2 && !g.notion ? "Échauffement : faits d'addition" : `Notion du jour : ${this.c.modules[g.module]?.nom ?? g.module}`), this.answerTable(g.reponses));
   }
   answerTable(rs) {
     const E = this.c.erreurs, F = this.c.formes;
@@ -265,17 +266,40 @@ export class ParentSpace {
         (n1.lecons ?? []).length ? h("p", { class: "pa-note" }, `Leçons déjà vues : ${n1.lecons.join(", ")}.`) : null);
     }
     this.weeklyBlock(m1, 1);
-    // module 2 : les faits d'addition
-    const F = D.factsSummary(this.d.faits), cat = catalog(this.module2).filter((f) => this.module2.famillesActives.includes(f.famille));
+    // module 2 : les faits d'addition (lot 2, étape 7 : familles, grille des additions, faits bien sus semaine par semaine)
+    const M2 = this.module2, F = D.factsSummary(this.d.faits), cat = catalog(M2), st2 = this.d.niveaux.find((n) => n.module === 2) ?? null, FS = D.familiesSummary(M2, st2, this.d.faits);
+    const famName = (id) => M2.familles.find((f) => f.id === id)?.nom ?? id;
     const m2 = h("div", { class: "pa-card-box" }, h("h2", {}, `Module 2 · ${this.c.modules[2].nom}`),
       h("p", { class: "pa-big" }, `${F.rencontres} faits rencontrés sur ${cat.length}`),
-      h("p", { class: "pa-note" }, `Familles travaillées : ${this.module2.familles.filter((f) => this.module2.famillesActives.includes(f.id)).map((f) => f.nom).join(" ; ")}. Un fait monte d'une boîte quand il est juste et rapide ; une erreur le renvoie en boîte 1.`),
-      h("div", { class: "pa-boxes" }, F.boites.map((n, i) => h("div", {}, h("b", {}, n), h("span", {}, i === 0 ? "boîte 1 · chaque séance" : `boîte ${i + 1} · tous les ${this.module2.boites[i]} jours`)))),
+      h("p", { class: "pa-note" }, `Famille en cours (celle de la notion du jour sur les additions) : `, h("b", {}, famName(FS.enCours)), `. Un fait monte d'une boîte quand il est juste et rapide (au plus une boîte par séance) ; une erreur le renvoie en boîte 1. Une famille est acquise quand ${Math.round(100 * (M2.familles2?.acquise?.part ?? 0.8))} % des faits de sa règle sont en boîte 3 ou plus.`),
+      h("div", { class: "pa-table-wrap" }, h("table", { class: "pa-table pa-fam" },
+        h("thead", {}, h("tr", {}, ["Famille", "Ouverte", "Faits bien sus", "Acquise", "Formes à trou"].map((t, i) => h("th", { class: i === 2 ? "num" : "" }, t)))),
+        h("tbody", {}, FS.familles.map((f) => h("tr", { class: f.enCours ? "cur" : f.ouverte ? "" : "off" },
+          h("td", {}, `${f.id} · ${f.nom}${f.enCours ? " (en cours)" : ""}`),
+          h("td", {}, f.ouverte ? (f.ouverteLe ? `${D.fmtShortDay(f.ouverteLe)}${f.ouverteParent ? " (parent)" : ""}` : "dès le départ") : "pas encore"),
+          h("td", { class: "num" }, `${f.bienSus} / ${f.total}`),
+          h("td", {}, f.acquise ? `${f.acquiseLe ? D.fmtShortDay(f.acquiseLe) : "oui"}${f.acquiseParent ? " (point de départ)" : ""}` : "—"),
+          h("td", {}, f.trou ? "ouvertes" : "—")))))),
+      h("h3", {}, "Les faits par boîte"),
+      h("div", { class: "pa-boxes" }, F.boites.map((n, i) => h("div", {}, h("b", {}, n), h("span", {}, i === 0 ? "boîte 1 · chaque séance" : `boîte ${i + 1} · tous les ${M2.boites[i]} jours`)))),
       h("p", { class: "pa-note", id: "pa-base" }, ""),
       h("h3", {}, "Les faits qui résistent"),
       F.resistent.length ? h("div", { class: "pa-chips" }, F.resistent.slice(0, 16).map((f) => h("span", { class: "pa-chip" }, `${f.a} + ${f.b} · ${plural(f.erreurs, "erreur")}, boîte ${f.boite}`))) : h("p", { class: "pa-muted" }, "Aucun pour l'instant."));
-    this.store.setting("tempsDeBase").then((b) => { const m = median(b?.mesures ?? []); m2.querySelector("#pa-base").textContent = m ? `Temps de base (réponse à « a + 0 ») : ${D.fmtSeconds(m)}. Un fait est « rapide » s'il est donné en moins de ce temps plus ${this.module2.seuilS} secondes (${this.module2.seuilAvanceS} secondes quand la moitié des faits sont en boîte 3 ou plus).` : "Temps de base : pas encore mesuré."; });
+    this.store.setting("tempsDeBase").then((b) => {
+      const m = median(b?.mesures ?? []);
+      m2.querySelector("#pa-base").textContent = m ? `Temps de base (réponse à « a + 0 ») : ${D.fmtSeconds(m)}. Un fait est « rapide » s'il est donné en moins de ce temps plus ${M2.seuilS} secondes (${M2.seuilAvanceS} secondes quand la moitié des faits sont en boîte 3 ou plus).` : "Temps de base : pas encore mesuré.";
+      m2.querySelector(".pa-grid-host").replaceChildren(this.additionGrid(m));
+    });
+    m2.append(h("h3", {}, "La grille des additions"), h("div", { class: "pa-grid-host" }));
     this.weeklyBlock(m2, 2);
+    const WS = D.weeklySolid(this.d.faits);
+    if (WS.length) { const cap = h("p", { class: "pa-caption" }, "Touchez un point pour voir le détail de la semaine."); m2.append(h("p", { class: "pa-note" }, "Faits bien sus (boîte 3 ou plus) à la fin de chaque semaine"), chart(WS, (w) => w.n, { fmt: (v) => String(Math.round(v)), tell: (w) => { cap.textContent = `Semaine du ${D.fmtDay(w.semaine)} : ${plural(w.n, "fait bien su", "faits bien sus")} sur ${cat.length}.`; } }), cap); }
+    // le défi record
+    const DS = D.challengeSummary(this.d.recompenses.defi, this.d.seances);
+    const df = h("div", { class: "pa-card-box" }, h("h2", {}, "Défi record"),
+      h("p", { class: "pa-note" }, "Une minute de faits d'addition déjà bien sus (boîte 3 ou plus), à partir de la 5e séance et quand au moins 8 faits sont bien sus. L'enfant voit une bulle qui se vide et une perle par bonne réponse ; son score n'est comparé qu'à son propre record (un drapeau rouge), jamais à une norme. Un nouveau record rapporte 5 étoiles de mer."),
+      DS.defis ? h("div", { class: "pa-stats" }, stat(String(DS.record ?? "—"), `bonnes réponses : son record${DS.date ? ` (le ${D.fmtDay(DS.date)})` : ""}`), stat(String(DS.defis), "défis joués")) : h("p", { class: "pa-empty" }, "Pas encore de défi."),
+      DS.scores.length ? h("div", { class: "pa-chips" }, DS.scores.slice(-20).reverse().map((x) => h("span", { class: `pa-chip${x.record ? " rec" : ""}` }, `${D.fmtShortDay(x.t)} : ${x.score}${x.record ? " · record" : ""}`))) : null);
     // le journal des erreurs
     const J = D.errorJournal(this.d.reponses), E = this.c.erreurs;
     const jr = h("div", { class: "pa-card-box" }, h("h2", {}, "Journal des erreurs"), h("p", { class: "pa-note" }, "Pour la ligne graduée, chaque mauvaise réponse révèle souvent une erreur type (E1 à E5) ; l'application la corrige avec une animation, et relance une leçon si elle revient deux fois dans une séance. Le bouton « je ne sais pas » (NSP) a sa propre ligne : ce n'est pas une erreur, mais la question revient comme après une erreur."));
@@ -290,13 +314,34 @@ export class ParentSpace {
     const tr = h("div", { class: "pa-card-box" }, h("h2", {}, "Le trésor de l'enfant"), h("div", { class: "pa-stats" },
       stat(String(et.cumul ?? 0), "étoiles de mer gagnées depuis le début"), stat(String(et.total ?? 0), "étoiles pas encore dépensées"), stat(String(et.coquillages ?? 0), "coquillages ouverts"),
       stat(String(R.serie?.seances ?? 0), "séances dans la série (elle ne retombe jamais à zéro)")));
-    page.append(m1, m2, jr, tr, this.cardsBox());
+    page.append(m1, m2, df, jr, tr, this.cardsBox());
+  }
+  // LA GRILLE DES ADDITIONS (lot 2, étape 7) : a en ligne, b en colonne ; couleur selon la boîte, anneau vert si le
+  // fait est donné vite ; les cases « + 0 » en gris avec le temps de base ; toucher une case montre son historique
+  additionGrid(baseMs) {
+    const G = D.additionGrid(this.d.faits, this.d.reponses, { c: this.module2, baseMs }), info = h("div", { class: "pa-grid-info" }, h("p", { class: "pa-caption" }, "Touchez une case pour voir l'historique de l'addition."));
+    const show = (x) => {
+      if (x.kind === "base") return info.replaceChildren(h("p", {}, h("b", {}, `${x.a} + ${x.b}`), ` : question « + 0 », qui ne sert qu'à mesurer la vitesse de frappe. Temps médian : ${D.fmtSeconds(x.tempsMedian)}.`));
+      const f = this.d.faits.find((y) => y.fait === x.fait), H = D.factHistory(f);
+      info.replaceChildren(h("p", {}, h("b", {}, `${x.a} + ${x.b} = ${x.a + x.b}`), f ? ` : boîte ${f.boite}, ${plural(x.passages, "passage")}, ${plural(x.erreurs, "erreur")}, temps médian ${D.fmtSeconds(f.tempsMedian)}${x.rapide ? " (rapide)" : ""} ; prochain passage le ${D.fmtDay(f.prochain)}.` : " : pas encore rencontrée."),
+        H.length ? h("div", { class: "pa-table-wrap" }, h("table", { class: "pa-table" }, h("thead", {}, h("tr", {}, ["Date", "Résultat", "Temps", "Forme", "Boîte"].map((t, i) => h("th", { class: i === 2 ? "num" : "" }, t)))),
+          h("tbody", {}, H.map((e) => h("tr", { class: e.juste || e.parent ? "" : "faux" }, h("td", {}, `${D.fmtShortDay(e.date)} ${D.fmtTime(e.date)}`),
+            h("td", {}, e.parent ? "point de départ (parent)" : e.juste ? h("span", { class: "pa-yes" }, `✓ juste${e.aide ? " (avec l'aide)" : ""}`) : h("span", { class: "pa-no" }, "✗ faux")), h("td", { class: "num" }, e.parent ? "" : D.fmtSeconds(e.ms)),
+            h("td", {}, this.c.formes[e.forme] ?? e.forme), h("td", {}, e.avant != null && e.apres != null && e.avant !== e.apres ? `${e.avant ?? "—"} → ${e.apres}` : String(e.apres ?? e.avant ?? ""))))))) : null);
+    };
+    const table = h("table", { class: "pa-grid", role: "grid", "aria-label": "grille des additions" },
+      h("thead", {}, h("tr", {}, h("th", { class: "corner" }, "+"), Array.from({ length: 11 }, (_, b) => h("th", {}, b)))),
+      h("tbody", {}, G.map((row, a) => h("tr", {}, h("th", {}, a), row.map((x) => x.kind === "hors" ? h("td", { class: "hors" }) :
+        h("td", { class: x.kind === "base" ? "base" : `b${x.boite}${x.rapide ? " vite" : ""}`, tabindex: "0", title: `${x.a} + ${x.b}`, onpointerdown: (ev) => { table.querySelectorAll(".sel").forEach((e) => e.classList.remove("sel")); ev.currentTarget.classList.add("sel"); show(x); } },
+          x.kind === "base" ? (x.tempsMedian != null ? D.fmtSeconds(x.tempsMedian).replace(" s", "") : "") : x.boite ? String(x.boite) : ""))))));
+    const legend = h("div", { class: "pa-grid-legend" }, h("span", { class: "b0" }, "pas encore vue"), [1, 2, 3, 4, 5].map((b) => h("span", { class: `b${b}` }, `boîte ${b}`)), h("span", { class: "b3 vite" }, "anneau : rapide"), h("span", { class: "base" }, "+ 0 : temps de base (s)"));
+    return h("div", {}, h("p", { class: "pa-note" }, "Chaque case est une addition (le nombre de la ligne plus celui de la colonne). Le chiffre est la boîte de révision (1 : revue à chaque séance, 5 : bien sue) ; un anneau vert : elle est donnée vite, sans compter."), legend, h("div", { class: "pa-table-wrap" }, table), info);
   }
   // les cartes (lot 2) : ce que l'enfant a gagné et ce qui règle le rythme ; pour le parent seulement
   cardsBox() {
     const K = D.cardsSummary(this.d.recompenses, this.cartes, this.calendrier, this.d.seances), pl = (n, w) => plural(n, w, w.split(" ").map((x) => `${x}s`).join(" "));
     const box = h("div", { class: "pa-card-box" }, h("h2", {}, "Cartes"),
-      h("p", { class: "pa-note" }, `Pour que toutes les cartes arrivent d'ici l'été, l'enfant peut gagner ${pl(this.cartes.quota.parSemaine, "carte nouvelle")} par semaine d'école (vacances non comptées). Au-delà, un coquillage donne un doublon d'une carte déjà gagnée. Chaque carte gagnée a une chance sur cinq d'être brillante. L'enfant ne voit aucun de ces nombres.`),
+      h("p", { class: "pa-note" }, `Pour que toutes les cartes arrivent d'ici l'été, l'enfant peut gagner ${pl(this.cartes.quota.parSemaine, "carte nouvelle")} par semaine d'école (vacances non comptées). Au-delà, un coquillage donne un doublon d'une carte déjà gagnée. Une carte nouvelle a une chance sur cinq d'être brillante, un doublon une chance sur vingt. L'enfant ne voit aucun de ces nombres.`),
       h("div", { class: "pa-stats" },
         stat(`${K.cartes} / ${K.total}`, "cartes gagnées"), stat(String(K.brillantes), "cartes brillantes"),
         stat(String(K.gagnables), `cartes nouvelles encore gagnables d'ici dimanche${K.gagnables ? "" : " (quota atteint : de nouvelles lundi, sauf pendant les vacances)"}`),
@@ -377,7 +422,7 @@ export class ParentSpace {
     const seg = h("div", { class: "pa-seg", role: "group", "aria-label": "défi record" }), paint = (v) => { for (const b of seg.children) b.setAttribute("aria-pressed", String((b.dataset.v === "oui") === v)); };
     for (const [v, t] of [["oui", "activé"], ["non", "désactivé"]]) seg.append(h("button", { "data-v": v, onclick: async () => { await this.store.setSetting("defiActif", v === "oui"); paint(v === "oui"); } }, t));
     this.store.setting("defiActif").then((v) => paint(v !== false));
-    return row("Défi record", "Une minute de faits d'addition chronométrés, comparés au record de l'enfant. Il n'a lieu qu'à partir de la 5e séance et quand au moins 8 faits sont bien sus. (Le défi lui-même arrive dans une prochaine version.)", seg);
+    return row("Défi record", "Une minute de faits d'addition déjà bien sus, comparés au record de l'enfant (jamais à une norme), après la notion du jour. Il n'a lieu qu'à partir de la 5e séance et quand au moins 8 faits sont bien sus (onglet Progression, « Défi record »).", seg);
   }
   // le module imposé pour la prochaine séance (lot 2, étape 6) : valable une séance, ensuite l'alternance reprend
   moduleRow(row) {

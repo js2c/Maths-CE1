@@ -88,8 +88,9 @@ export class Session {
   // erreur fait revenir une question, une leçon relancée ajoute son exercice guidé)
   expect(n) { this.progress.prevues = Math.max(this.progress.prevues, n, this.progress.faites); this.onProgress?.(this.progress); }
   // une réponse donnée (les exemples guidés comptent comme des questions posées)
-  async answered(ok) {
-    await this.protect(ok);
+  // (le défi record ne déclenche pas la protection du cran : `protect` false)
+  async answered(ok, { protect = true } = {}) {
+    if (protect) await this.protect(ok);
     this.rec.questions++; if (ok) this.rec.justes++; this.rec.reussite = +(this.rec.justes / this.rec.questions).toFixed(3); this.lastOk = ok;
     this.progress.faites++; this.progress.prevues = Math.max(this.progress.prevues, this.progress.faites); this.onProgress?.(this.progress);
     await this.save();

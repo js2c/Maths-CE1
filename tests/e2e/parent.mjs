@@ -59,6 +59,13 @@ await page.evaluate(async () => {
   await st.put("recompenses", { id: "etoiles", total: 23, cumul: 612, dorees: 2, arcEnCiel: 3, coquillages: 14 });
   await st.put("recompenses", { id: "cartes", cartes: { "poisson-clown": { n: 2, premiere: now - 20 * DAY, brillante: false }, crabe: { n: 1, premiere: now - 9 * DAY }, hippocampe: { n: 1, premiere: now - 2 * DAY } } });
   await st.put("recompenses", { id: "serie", seances: 19, derniere: now - DAY });
+  // lot 2, étape 7 : les familles du module 2, des additions « + 0 » (temps de base) et le défi record
+  await st.put("niveaux", { module: 2, ouvertes: [1, 2, 3], ouvertures: [{ famille: 1, date: now - 27 * DAY }, { famille: 2, date: now - 27 * DAY }, { famille: 3, date: now - 8 * DAY }], acquises: [], obtenus: [], trou: [1], notion: [], lecons: [] });
+  const last = (await st.all("seances")).filter((x) => x.terminee).at(-1);
+  await st.add("reponses", { t: last.debut + 20000, seance: last.id, module: 2, niveau: 0, question: "4 + 0", forme: "base", donnee: 4, attendue: 4, juste: true, tempsMs: 1900, ecoutes: 1, aide: false, erreur: null });
+  for (let i = 0; i < 5; i++) await st.add("reponses", { t: last.fin - 90000 + i * 4000, seance: last.id, module: 2, niveau: 1, question: `${i + 2} + 1`, forme: "directe", donnee: i === 3 ? i + 4 : i + 3, attendue: i + 3, juste: i !== 3, tempsMs: 1600, ecoutes: 0, aide: false, erreur: i === 3 ? "autre" : null, defi: true });
+  last.defi = { score: 4, questions: 5, record: 9, ancien: 9, nouveauRecord: false }; await st.put("seances", last);
+  await st.put("recompenses", { id: "defi", record: 9, date: now - 4 * DAY, scores: [{ t: now - 11 * DAY, score: 6 }, { t: now - 4 * DAY, score: 9 }, { t: last.debut, score: 4 }] });
 });
 await page.reload(); await ready();
 await shot("1-accueil-logo");
@@ -95,6 +102,14 @@ await page.locator(".pa-chart .hit").nth(2).dispatchEvent("pointerdown"); await 
 check((await page.locator(".pa-caption").first().textContent()).startsWith("Semaine du"), "toucher un point de la courbe raconte la semaine");
 await page.locator(".pa-main").evaluate((m) => { m.scrollTop = 420; }); await page.waitForTimeout(150); await shot("9-progression-suite");
 await page.locator(".pa-main").evaluate((m) => { m.scrollTop = m.scrollHeight; }); await page.waitForTimeout(150); await shot("10-progression-fin");
+// lot 2, étape 7 : la grille des additions (toucher une case montre son historique), le défi record
+await page.waitForSelector(".pa-grid");
+check(await page.locator(".pa-grid td:not(.hors)").count() === 66 && await page.locator(".pa-grid td.base").count() === 21, "grille des additions : 66 cases dont 21 « + 0 »");
+await page.locator(".pa-grid td.b5").first().dispatchEvent("pointerdown"); await page.waitForTimeout(150);
+check((await page.locator(".pa-grid-info").textContent()).includes("boîte 5"), "toucher une case de la grille montre son historique");
+await page.locator(".pa-grid").scrollIntoViewIfNeeded(); await page.locator(".pa-main").evaluate((m) => { m.scrollTop -= 120; }); await page.waitForTimeout(150); await shot("9b-grille");
+check((await page.locator(".pa-card-box", { hasText: "Défi record" }).first().textContent()).includes("son record"), "le bloc « Défi record » montre le record");
+check((await page.locator(".pa-fam").textContent()).includes("(en cours)"), "les familles du module 2, avec la famille en cours");
 // données et réglages
 await page.tap('[data-tab="donnees"]'); await page.waitForTimeout(300);
 await shot("11-donnees");

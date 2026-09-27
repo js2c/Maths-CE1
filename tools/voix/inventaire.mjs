@@ -14,6 +14,9 @@ const range = (a, b, s = 1) => { const out = []; for (let v = a; v <= b; v += s)
 const TOUS = range(0, 100); // tout nombre de la ligne graduée (le module 1 va de 0 à 100)
 // au plus autant d'étoiles gagnées dans une séance dites au bilan ; au-delà, la synthèse du navigateur prend le relais
 export const ETOILES_MAX = 60;
+// le score du défi record (lot 2, étape 7, modules/facts/challenge.js) et le record dit quand il n'est pas battu :
+// au plus autant de bonnes réponses en une minute (au-delà, la synthèse du navigateur prend le relais)
+export const DEFI_MAX = 60;
 // les sauts d'une question « sauter » : 1 à 4 (generator.js, makeJump)
 const SAUTS_MAX = 4;
 
@@ -67,6 +70,9 @@ function domaines(C) {
     // lot 2, étape 6 : le cadre de 10 (le nombre de poissons déjà dans la boîte), le double + 1 (le double)
     aideCadre: range(1, 9).map((k) => ({ k })),
     aideDoublePlus: range(1, 4).map((d) => ({ d })),
+    // le défi record : « {n} bonnes réponses ! » (2 ou plus ; une seule : defiScoreUn), le record à battre (1 ou plus)
+    defiScore: range(2, DEFI_MAX).map((n) => ({ n })),
+    defiPasRecord: range(1, DEFI_MAX).map((n) => ({ n })),
     carteNouvelle: cartes, carteDoublon: cartes, recifCarte: cartes,
   };
 }

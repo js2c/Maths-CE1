@@ -7,7 +7,7 @@
 Lis CLAUDE.md, docs/SPEC.md, docs/SPEC-COMPLEMENTS.md et docs/AVANCEMENT.md. Réalise le lot « Compléments » décrit dans docs/SPEC-COMPLEMENTS.md, en réutilisant les mécaniques existantes (générateurs, adaptation, révision espacée, leçons, récompenses) plutôt qu'en les réécrivant.
 
 Découpe le lot en étapes et inscris-les dans docs/AVANCEMENT.md avant de commencer :
-1. A · Nombres jusqu'à 1 000 : niveaux 9 à 13 du module 1 (paramètres dans app/content), format « écrire » (dictée), erreurs E6 et E7, chalut de 100 dans l'atelier, leçon L10.
+1. *(Fait au lot 2, étape 8 : ne pas refaire.)* A · Nombres jusqu'à 1 000 : niveaux 9 à 13 du module 1 (paramètres dans app/content), format « écrire » (dictée), erreurs E6 et E7, chalut de 100 dans l'atelier, leçon L10.
 2. B · Module 5 « Comparer et ranger » : 4 niveaux, signes < > =, rangement par glisser-déposer, erreurs C6 à C8.
 3. B · Doubles et moitiés (familles 8 à 10 du module 2, même révision espacée) et module 5 bis « Pair ou impair », leçons L11 et L12.
 4. C · Module 6 « L'heure » : horloge-hublot dessinée dans l'atelier (style A, aiguilles manipulables), 5 niveaux, erreurs H1 à H4, leçons L13 et L14.

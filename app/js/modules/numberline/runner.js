@@ -11,7 +11,15 @@
 //  - « je ne sais pas » : une erreur de code NSP (elle compte pour l'adaptation et la question revient) ;
 //  - correction passée (bouton « passer ») : notée `correctionPassee`, rien d'autre ne change (pas
 //    d'étoile, la question revient comme après toute erreur) ;
-//    `libre` : entraînement libre (réponses marquées « libre », mêmes règles d'adaptation, pas d'étoiles).
+//    `libre` : entraînement libre (réponses marquées « libre », mêmes règles d'adaptation, pas d'étoiles) ;
+//  - lot 2 (docs/SPEC-LOT2.md, sections 2 et 4) : la voie rapide peut faire franchir plusieurs niveaux dans une
+//    séance (avec la leçon d'entrée de chaque niveau) ; une même leçon au plus une fois par séance : si la
+//    difficulté persiste ensuite, les questions suivantes sont prises au niveau inférieur et la prochaine
+//    erreur est corrigée à vitesse 1 (`lent`) au lieu de relancer la leçon ; sélecteur de difficulté :
+//    `offset()` (écart du cran au conseillé, -1 à 2) décale le niveau joué, borné au premier et au dernier
+//    niveau ; réussir au-dessus du conseillé (règle habituelle, ou voie rapide) valide ce niveau et fait
+//    monter le conseillé au suivant ; échouer au-dessus ne le fait jamais baisser (la protection de la
+//    séance redescend le cran, session.js) et ces questions ne comptent pas dans le taux de la séance.
 import { afterAnswer, afterSession, initialLevelState } from "../progress.js";
 import { toleranceFor } from "./generator.js";
 
@@ -20,15 +28,21 @@ export const LESSON_OF_LEVEL = { 1: "L1", 4: "L3", 5: "L2" };
 
 export class Module1Runner {
   // screen : l'écran (generate) ; store : la base ; content : module1.json ; rnd : hasard
-  constructor({ screen, store, content, rnd, seance = null }) {
-    this.screen = screen; this.store = store; this.content = content; this.rnd = rnd; this.seance = seance;
+  // offset : () => l'écart du cran choisi au conseillé (session.offset)
+  constructor({ screen, store, content, rnd, seance = null, offset = () => 0 }) {
+    this.screen = screen; this.store = store; this.content = content; this.rnd = rnd; this.seance = seance; this.offset = offset;
     this.levels = content.niveaux; this.rules = content.reglesAdaptation;
     this.replays = []; this.recent = []; this.errors = {}; this.count = 0; this.ok = 0; this.k = 0; this.simpler = false;
+    this.played = new Set(); this.lower = false; this.slowNext = false; this.up = null; this.rateN = 0; this.rateOk = 0;
   }
+  // le niveau joué : le conseillé décalé du cran, borné au premier et au dernier niveau
+  eff() { return Math.min(this.levels.length, Math.max(1, this.st.niveau + (this.offset() ?? 0))); }
   async load() { this.st = (await this.store?.get("niveaux", 1)) ?? initialLevelState(1); this.st.justesNiveau ??= 0; return this; }
   cfg(n = this.st.niveau) { return this.levels[Math.min(this.levels.length, Math.max(1, n)) - 1]; }
   // la leçon à jouer avant de commencer, s'il y en a une pour ce niveau et qu'elle n'a jamais été vue
-  entryLesson() { const l = LESSON_OF_LEVEL[this.st.niveau]; return l && !this.st.lecons.includes(l) ? l : null; }
+  entryLesson() { const l = LESSON_OF_LEVEL[this.eff()]; return l && !this.st.lecons.includes(l) && !this.played.has(l) ? l : null; }
+  // une leçon jouée dans cette séance (vue, passée ou arrêtée) : elle ne sera pas relancée
+  lessonPlayed(id) { this.played.add(id); }
   async lessonSeen(id) { if (!this.st.lecons.includes(id)) this.st.lecons.push(id); await this.save(); }
   // la question suivante : une question qui revient, sinon une nouvelle
   // `guide` : un exemple guidé (docs/SPEC.md, « Notion du jour ») : jamais une question qui revient
@@ -37,13 +51,15 @@ export class Module1Runner {
     if (!guide) this.replays.forEach((r) => r.in--);
     const due = guide ? -1 : this.replays.findIndex((r) => r.in <= 0);
     if (due >= 0) { const r = this.replays.splice(due, 1)[0]; return { q: { ...r.q, revient: true }, cfg: r.cfg }; }
-    let cfg = this.cfg(), opts = { eviter: this.recent.slice(-3) };
-    if (this.simpler) { this.simpler = false; if (this.st.niveau > 1) cfg = this.cfg(this.st.niveau - 1); else opts = { ...opts, eviter: [5, 6, 7, 8, 9, 10] }; }
+    // difficulté persistante après la leçon déjà vue dans la séance : le niveau inférieur jusqu'à la fin
+    const lv = this.eff() - (this.lower ? 1 : 0);
+    let cfg = this.cfg(Math.max(1, lv)), opts = { eviter: this.recent.slice(-3), ...(lv < 1 ? { eviter: [5, 6, 7, 8, 9, 10] } : {}) };
+    if (this.simpler) { this.simpler = false; if (lv > 1) cfg = this.cfg(lv - 1); else opts = { ...opts, eviter: [5, 6, 7, 8, 9, 10] }; }
     const fmts = cfg.formats, format = want && fmts.includes(want) ? want : fmts[this.k++ % fmts.length];
     if (format === "estimer") opts.tolerance = toleranceFor(cfg, this.st.justesNiveau);
     const q = this.screen.generate(cfg, this.rnd, { ...opts, format });
     this.recent.push(q.answer);
-    if (guide) q.guide = true;
+    if (guide) q.guide = true; else if (this.slowNext) q.lent = true;
     return { q, cfg };
   }
   // enregistre une réponse ; renvoie { etoiles, events } (events : montee, difficulte, lecon)
@@ -61,21 +77,44 @@ export class Module1Runner {
     let etoiles = r.ok ? 1 : 0;
     if (r.ok && q.revient) etoiles += 1; // erreur corrigée
     if (!r.ok && !q.revient) this.replays.push({ q, cfg, in: 3 + Math.floor(this.rnd() * 3) });
-    // les règles d'adaptation ne comptent que les questions du niveau courant (pas les plus simples)
+    if (!r.ok && q.lent) this.slowNext = false; // l'erreur corrigée lentement : c'est fait
+    // le taux de la séance (redescente) : pas les questions au-dessus du conseillé (échouer au-dessus ne fait jamais baisser)
+    if (q.niveau <= this.st.niveau) { this.rateN++; if (r.ok) this.rateOk++; }
+    // une leçon à relancer ; déjà jouée dans la séance : le niveau inférieur et une correction lente à la place
+    const relaunch = (id, raison) => {
+      if (!this.played.has(id)) { events.push({ type: "lecon", id, raison }); this.played.add(id); return; }
+      if (!this.lower) events.push({ type: "plusBas", id, raison });
+      this.lower = true; this.slowNext = true;
+    };
+    // les règles d'adaptation ne comptent que les questions du niveau conseillé (pas les plus simples)
     if (q.niveau === this.st.niveau) {
       const a = afterAnswer(this.st, { juste: r.ok, aide: false, ms: r.ms }, this.rules, this.levels.length);
       this.st = { ...a.st, justesNiveau: a.events.some((e) => e.type === "montee") ? 0 : (this.st.justesNiveau ?? 0) + (r.ok ? 1 : 0) };
       events.push(...a.events);
-      if (a.events.some((e) => e.type === "difficulte")) { this.simpler = true; const l = LESSON_OF_LEVEL[this.st.niveau] ?? (this.st.niveau <= 3 ? "L1" : null); if (l) events.push({ type: "lecon", id: l, raison: "difficulte" }); }
-      const up = a.events.find((e) => e.type === "montee"); if (up) { this.replays = []; const l = this.entryLesson(); if (l) events.push({ type: "lecon", id: l, raison: "niveau" }); }
+      if (a.events.some((e) => e.type === "difficulte")) { this.simpler = true; const l = LESSON_OF_LEVEL[this.st.niveau] ?? (this.st.niveau <= 3 ? "L1" : null); if (l) relaunch(l, "difficulte"); }
+      const up = a.events.find((e) => e.type === "montee"); if (up) this.climbed(events);
+    } else if (q.niveau > this.st.niveau) {
+      // au-dessus du conseillé (sélecteur) : une fenêtre à part pour ce niveau ; la réussir valide le niveau
+      if (this.up?.niveau !== q.niveau) this.up = { ...initialLevelState(1), niveau: q.niveau, obtenus: [] };
+      const a = afterAnswer(this.up, { juste: r.ok, aide: false, ms: r.ms }, this.rules, this.levels.length);
+      this.up = a.st;
+      const m = a.events.find((e) => e.type === "montee");
+      if (m) {
+        const de = this.st.niveau, now = Date.now();
+        this.st = { ...this.st, niveau: m.a, fenetre: [], vus: 0, justesNiveau: 0, obtenus: [...this.st.obtenus, { niveau: m.a, date: now, cran: true }] };
+        events.push({ type: "montee", de, a: m.a, rapide: m.rapide, cran: true }); this.up = null; this.climbed(events);
+      }
     }
     // la même erreur deux fois dans la séance : la leçon correspondante
-    if (r.code && LESSON_OF_ERROR[r.code]) { this.errors[r.code] = (this.errors[r.code] ?? 0) + 1; if (this.errors[r.code] === this.rules.memeErreurLecon) events.push({ type: "lecon", id: LESSON_OF_ERROR[r.code], raison: r.code }); }
+    if (r.code && LESSON_OF_ERROR[r.code]) { this.errors[r.code] = (this.errors[r.code] ?? 0) + 1; if (this.errors[r.code] === this.rules.memeErreurLecon) relaunch(LESSON_OF_ERROR[r.code], r.code); }
     await this.save();
     return { etoiles, events };
   }
-  // fin de séance : taux de réussite, éventuelle redescente (invisible pour l'enfant)
-  async finish() { const rate = this.count ? this.ok / this.count : null, a = afterSession(this.st, rate, this.rules); this.st = a.st; await this.save(); return { rate, events: a.events }; }
+  // un niveau franchi : les questions en attente de retour sont oubliées, la leçon d'entrée du nouveau niveau
+  // joué (voie rapide : plusieurs niveaux dans la même séance) ; la difficulté d'avant ne compte plus
+  climbed(events) { this.replays = []; this.lower = false; const l = this.entryLesson(); if (l) { events.push({ type: "lecon", id: l, raison: "niveau" }); this.played.add(l); } }
+  // fin de séance : taux de réussite (sans les questions au-dessus du conseillé), éventuelle redescente (invisible pour l'enfant)
+  async finish() { const rate = this.rateN ? this.rateOk / this.rateN : null, a = afterSession(this.st, rate, this.rules); this.st = a.st; await this.save(); return { rate, events: a.events }; }
   save() { return this.store?.put("niveaux", this.st); }
 }
 // la question telle que le parent la lira dans l'historique

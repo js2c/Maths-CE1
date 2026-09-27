@@ -56,7 +56,8 @@ export class NumberLineScreen {
     onTap(this.nsp, () => { if (this.locked) return; pop(this.nsp); this.answer(null, null, { nsp: true }); });
   }
   // la vitesse des animations des exemples guidés et des corrections ; une pause entre deux étapes
-  get pace() { return this.app.vitesse ?? 1; }
+  // (vitesse 1 pour la correction « lente » qui remplace une leçon déjà vue dans la séance, runner.js)
+  get pace() { return this.q?.lent ? 1 : this.app.vitesse ?? 1; }
   pause(ms) { return wait(ms / this.pace); }
   // ---------------------------------------------------------------- géométrie de la ligne
   get a() { return this.spec.x0 + 40; }

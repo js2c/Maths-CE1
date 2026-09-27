@@ -20,6 +20,7 @@ export async function runNotion({ session, step, end, runner, screen, lesson = a
   };
   // une leçon animée ; regardée jusqu'au bout : 3 étoiles, puis « À toi ! » et un premier exercice guidé
   const watch = async (id, raison) => {
+    runner.lessonPlayed?.(id); // une même leçon au plus une fois par séance
     const r = await lesson(id, raison), seen = r === true || !!r?.vue;
     // notée dans l'enregistrement de la séance (historique du parent), vue, passée ou arrêtée
     if (r && typeof r === "object" && session.rec) { (session.rec.lecons ??= []).push({ id, raison, ...r }); await session.save(); }

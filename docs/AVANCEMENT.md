@@ -9,7 +9,7 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 | Étape | Contenu | État |
 | --- | --- | --- |
 | 1 | Cartes et rythme : calendrier et quota, doublons, brillantes (20 % et effet), ouverture des zones, zone 2 (anecdotes et voix), étoiles dorées (4 semaines réussies), légendaires et coquillage doré, étoile arc-en-ciel de l'entraînement libre, surprise une séance sur cinq, ligne « Cartes » de l'espace parent ; simulation des cartes sur l'année | fait (branche `lot2-etape1`, https://github.com/js2c/Maths-CE1/pull/11) |
-| 2 | Séance et progression : durées et nombres de questions, défi record activable, places réservées et voie rapide des faits, enchaînement des niveaux, leçon au plus une fois par séance, point de départ du parent, tortue devant la pieuvre, pieuvre qui montre la cible ; option `--delai` de la recette | à faire |
+| 2 | Séance et progression : durées et nombres de questions, défi record activable, places réservées et voie rapide des faits, enchaînement des niveaux, leçon au plus une fois par séance, point de départ du parent, tortue devant la pieuvre, pieuvre qui montre la cible ; option `--delai` de la recette ; sélecteur de difficulté (4 crans) | en cours (branche `claude/prompt-lot2-section-9xloz0`) |
 | 3 | Son, échantillons (`tools/son/`, `docs/son-echantillons/`) ; arrêt pour le choix du parent | à faire |
 | 4 | Son, intégration : bruitages, musique, mixage, réglages du parent | à faire |
 | 5 | Atelier : bernard-l'ermite, cadre de 10, maison des nombres, double + 1 | à faire |
@@ -17,6 +17,18 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 | 7 | Défi record, grille des 66 additions, progression du module 2 dans l'espace parent | à faire |
 | 8 | Nombres jusqu'à 1 000 (`docs/SPEC-COMPLEMENTS.md`, partie A) | à faire |
 | 9 | Bilan : `docs/BILAN-LOT2.md`, guide du parent, recette complète sur l'année | à faire |
+
+### Reprise de l'étape 2
+
+Pour reprendre si la session s'est arrêtée : branche `claude/prompt-lot2-section-9xloz0` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 2, étape 2 (en cours) ».
+
+**Fait :** branche créée depuis `origin/main` (`5b02963`).
+
+**Reste à faire :** tout le contenu de l'étape 2.
+
+**Où j'en suis :** lecture de la spécification.
+
+**Décisions prises :** —
 
 ### Reprise de l'étape 1
 

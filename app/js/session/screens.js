@@ -5,22 +5,11 @@ import * as R from "../art/runtime.js";
 import { fill } from "../modules/numberline/screen.js";
 import { CARD, cardElement } from "./cards.js";
 import { goldenStar } from "./rewards.js";
+import { wait } from "../engine/clock.js";
+import { onTap, spriteBox } from "../engine/ui.js";
 
-const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+export { onTap, spriteBox };
 const ease = (u) => 1 - Math.pow(1 - u, 3);
-
-// un bouton (ou un simple calque si `still`) : un canvas à la taille de la boîte, `paint(ctx)` en px logiques
-export function spriteBox(app, { x, y, w, h, cls = "bubble", label = "", still = false, paint }) {
-  const { stage } = app, b = document.createElement(still ? "div" : "button"), c = document.createElement("canvas");
-  b.className = cls; Object.assign(b.style, { left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${h}px` });
-  if (label) b.setAttribute("aria-label", label);
-  c.width = Math.round(w * stage.px); c.height = Math.round(h * stage.px); b.append(c); stage.ui.append(b);
-  b.repaint = (f = paint) => { const ctx = c.getContext("2d"); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height); f(ctx, stage.px); };
-  b.repaint();
-  return b;
-}
-// un toucher franc : pointerdown (pas de délai de clic), une seule fois tant que `busy`
-export const onTap = (el, f) => el.addEventListener("pointerdown", (e) => { e.preventDefault(); f(e); });
 const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };
 
 // ---------------------------------------------------------------- le compteur d'étoiles et leur vol
@@ -204,11 +193,12 @@ export async function openShell(app, { session, hud, first = true, C = [640, 640
   ocean.actors.splice(ocean.actors.indexOf(shell), 1); ocean.actors.splice(ocean.actors.indexOf(glint), 1);
   return got;
 }
-// « à demain » : la pieuvre salue, la lune apparaît ; la toucher redit « à demain »
+// « à demain » : la pieuvre salue, la lune se lève. La lune est un décor, pas un bouton (lot 1 bis) :
+// sans bulle, elle flotte doucement au-dessus des bulles de l'écran d'accueil, et rien ne se passe si
+// on la touche. La voix dit « À demain ! » quand la séance vient de finir.
 export async function goodNight(app, { first = true } = {}) {
   const { voice, text, ocean } = app;
-  const moon = spriteBox(app, { x: 550, y: 330, w: 180, h: 180, cls: "bubble moon invite", label: "à demain", paint: (ctx) => app.sprites.draw(ctx, "lune", 0, 90, 90) });
-  onTap(moon, () => { voice.unlock(); pop(moon); ocean.octo.play("saluer"); voice.stop(); voice.say(text.pick("dejaJoue"), { instruction: true }); });
+  const moon = spriteBox(app, { x: 640 - 120, y: 250 - 110, w: 240, h: 220, cls: "hud moon", still: true, paint: (ctx) => app.sprites.draw(ctx, "lune.decor", 0, 120, 110) });
   if (first) { ocean.octo.play("saluer"); await voice.say(text.pick("aDemain"), { instruction: true }); }
   return moon;
 }

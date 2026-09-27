@@ -28,7 +28,9 @@ test("pas de doublon tant que la zone n'est pas complète ; ensuite des doublons
   const first = { commune: 0, rare: 0 }; const r2 = rng(3);
   for (let i = 0; i < 2000; i++) first[pickCard(cartes.cartes, {}, lagon, r2).rarete]++;
   const pc = first.commune / 11, pr = first.rare / 4; assert.ok(pc > 2.3 * pr && pc < 3.8 * pr, JSON.stringify(first));
-  assert.equal(pickCard(cartes.cartes, {}, { zones: ["abysses"], poids: cartes.poids }, r), null);
+  assert.equal(pickCard(cartes.cartes, {}, { zones: ["inconnue"], poids: cartes.poids }, r), null);
+  // les légendaires ne sortent jamais d'un coquillage (elles viendront des étoiles dorées, lot 4)
+  for (let i = 0; i < 200; i++) assert.notEqual(pickCard(cartes.cartes, {}, { zones: ["large", "abysses"], poids: cartes.poids }, r).rarete, "legendaire");
 });
 
 test("une carte devient brillante au troisième doublon", () => {
@@ -55,11 +57,11 @@ test("l'étoile dorée : la 5e séance terminée de la semaine (lundi à dimanch
   assert.equal(goldenStar([...five, day(27) + 1000], day(27), cartes.semaine), false);
 });
 
-test("un coquillage coûte 40 étoiles, donne une carte rangée dans la collection ; tout est enregistré", async () => {
-  const store = await Store.open(new IDBFactory()), rw = await new Rewards(store, cartes).load();
-  await rw.add(39); assert.equal(rw.canOpen(), false); assert.equal(await rw.openShell(rng(1)), null);
+test("un coquillage coûte son prix en étoiles (cartes.json), donne une carte rangée dans la collection ; tout est enregistré", async () => {
+  const store = await Store.open(new IDBFactory()), rw = await new Rewards(store, cartes).load(), P = cartes.coquillage.prix;
+  await rw.add(P - 1); assert.equal(rw.canOpen(), false); assert.equal(await rw.openShell(rng(1)), null);
   await rw.add(45); const o = await rw.openShell(rng(1));
-  assert.ok(o.carte && o.nouvelle); assert.equal(rw.total, 44); assert.equal(rw.st.cumul, 84); assert.equal(rw.st.coquillages, 1);
+  assert.ok(o.carte && o.nouvelle); assert.equal(rw.total, 44); assert.equal(rw.st.cumul, P + 44); assert.equal(rw.st.coquillages, 1);
   await rw.special("arcEnCiel"); await rw.special("dorees");
   const again = await new Rewards(store, cartes).load();
   assert.equal(again.total, 44); assert.equal(again.collection().length, 1); assert.equal(again.collection()[0].id, o.carte.id); assert.equal(again.st.arcEnCiel, 1); assert.equal(again.st.dorees, 1);

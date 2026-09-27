@@ -84,13 +84,16 @@ check(se?.lecons?.[0]?.id === "L1" && se.lecons[0].vue && se.lecons[0].raison ==
 check(db.niveau?.lecons?.includes("L1"), "L1 vue : elle ne sera pas rejouée à la prochaine séance");
 check(db.reponses.filter((r) => !r.guide).length >= N, `${db.reponses.filter((r) => !r.guide).length} questions enregistrées (au moins ${N})`);
 check(db.reponses.every((r) => r.seance === se.id), "chaque réponse porte le numéro de la séance");
-check(db.etoiles?.total === se.etoiles && se.etoiles >= 13, `étoiles : ${se.etoiles} gagnées, trésor ${db.etoiles?.total}`);
+check(db.etoiles?.total === se.etoiles - (se.cartes?.length ?? 0) * 25 && se.etoiles >= 13, `étoiles : ${se.etoiles} gagnées, ${se.cartes?.length ?? 0} coquillage(s) ouvert(s), trésor ${db.etoiles?.total}`);
+check((se.cartes?.length ?? 0) >= 1, `une séance complète rapporte au moins un coquillage (${se.cartes?.length ?? 0})`);
 check(db.reponses.filter((r) => !r.guide).at(-1)?.juste === true, "la séance finit sur une réussite");
 const hudShown = await page.evaluate(() => window.__app.hud.shown); check(hudShown === db.etoiles.total, `le compteur affiche le trésor (${hudShown})`);
 console.log(JSON.stringify({ seance: { ...se, etapes: se.etapes.map((e) => `${e.id}${e.sautee ? ` (sautée : ${e.sautee})` : ` ${e.dureeS} s`}`) } }, null, 1));
+const voix = await page.evaluate(() => ({ manques: [...window.__app.voice.misses], index: !!window.__app.voice.index }));
+check(voix.index && voix.manques.length === 0, `chaque phrase dite a son fichier son${voix.manques.length ? ` ; sans fichier : ${voix.manques.join(" | ")}` : ""}`);
 // relance le même jour : la lune, pas de « jouer »
 await page.reload(); await page.waitForFunction(() => window.__ready !== undefined); await page.waitForTimeout(800);
-check((await page.locator(".play").count()) === 0 && (await page.locator(".moon").count()) === 1, "relance le même jour : la lune au lieu de « jouer »");
+check((await page.locator(".play:not(.again)").count()) === 0 && (await page.locator(".moon").count()) === 1 && (await page.locator(".again").count()) === 1, "relance le même jour : la lune (décor) et « Encore ! » au lieu de « jouer »");
 await shot("8-relance-meme-jour");
 check(errors.length === 0, `aucune erreur dans la page ${errors.join(" | ")}`);
 await browser.close(); srv.close();

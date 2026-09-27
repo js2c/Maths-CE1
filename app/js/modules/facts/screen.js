@@ -6,9 +6,9 @@
 import * as R from "../../art/runtime.js";
 import { onTap, spriteBox } from "../../session/screens.js";
 import { fill } from "../numberline/screen.js";
+import { clock, wait } from "../../engine/clock.js";
 
 const SLATE = [790, 222], KEY = 112, ROWS = [540, 668], COLS = [390, 508, 626, 744, 862], SIDE = 1010;
-const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const pop = (el, cls = "pop") => { el.classList.remove("pop", "shake"); void el.offsetWidth; el.classList.add(cls); };
 
 export class FactsScreen {
@@ -25,12 +25,15 @@ export class FactsScreen {
     }
     const del = key(SIDE, ROWS[0], "effacer", small("effacer", 0.8)); onTap(del, () => { if (this.locked || !this.typed) return; pop(del); this.typed = this.typed.slice(0, -1); this.slate.repaint(); });
     const ok = key(SIDE, ROWS[1], "valider", small("valider", 0.7)); ok.classList.add("check"); onTap(ok, () => { if (this.locked || !this.typed) return; pop(ok); this.submit(); });
+    // « je ne sais pas » (lot 1 bis) : compte comme une erreur (code NSP), montre la réponse, le fait revient
+    this.nsp = spriteBox(app, { x: 1165 - 75, y: 604 - 75, w: 150, h: 150, cls: "bubble nsp", label: "je ne sais pas", paint: (ctx) => sprites.draw(ctx, "nsp", 0, 75, 75) });
+    onTap(this.nsp, () => { if (this.locked) return; pop(this.nsp); this.submit({ nsp: true }); });
     this.help = spriteBox(app, { x: 222 - 75, y: 580 - 75, w: 150, h: 150, cls: "bubble help", label: "aide", paint: (ctx) => sprites.draw(ctx, "aide", 0, 75, 75) });
     onTap(this.help, () => this.showHelp());
     this.show(false);
   }
-  show(v) { for (const e of [this.slate, this.help, ...this.els]) e.style.visibility = v ? "visible" : "hidden"; }
-  keys(v) { for (const e of [this.help, ...this.els]) e.style.visibility = v ? "visible" : "hidden"; }
+  show(v) { for (const e of [this.slate, this.help, this.nsp, ...this.els]) e.style.visibility = v ? "visible" : "hidden"; }
+  keys(v) { for (const e of [this.help, this.nsp, ...this.els]) e.style.visibility = v ? "visible" : "hidden"; }
   // l'ardoise : « a + b = » puis la case réponse (« ? » rouge, les chiffres tapés, ou la correction)
   paintSlate(ctx, px) {
     this.app.sprites.draw(ctx, "ardoise", 0, 295, 110);
@@ -53,18 +56,18 @@ export class FactsScreen {
     this.q = q; this.typed = ""; this.ring = false; this.aide = false; this.locked = false; this.app.starFrom = SLATE;
     this.help.style.visibility = q.base ? "hidden" : "visible"; // pas d'aide pour « 4 + 0 »
     this.slate.repaint(); pop(this.slate);
-    this.t0 = performance.now();
+    this.t0 = clock.now();
     voice.stop(); voice.say(fill(text.pick("fait"), { a: q.a, b: q.b }), { instruction: true });
     return new Promise((res) => { this.resolve = res; });
   }
-  async submit() {
-    const { voice, text, ocean } = this.app, q = this.q, value = Number(this.typed), ok = value === q.a + q.b, ms = Math.round(performance.now() - this.t0);
+  async submit({ nsp = false } = {}) {
+    const { voice, text, ocean } = this.app, q = this.q, value = nsp ? null : Number(this.typed), ok = value === q.a + q.b, ms = Math.round(clock.now() - this.t0);
     this.locked = true; voice.stop();
-    const r = { value, ms, listens: voice.listens, aide: this.aide };
+    const r = { value, ms, listens: voice.listens, aide: this.aide, nsp };
     ocean.octo.play(ok ? "rejouir" : "encourager");
     if (ok) { pop(this.slate); await voice.say(text.pick("bravo")); await wait(250); }
     else {
-      pop(this.slate, "shake"); await wait(500);
+      if (nsp) await voice.say(text.data.faitNSP); else { pop(this.slate, "shake"); await wait(500); }
       this.typed = String(q.a + q.b); this.ring = true; this.slate.repaint();
       await voice.say(fill(text.data.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b }));
       await wait(700);
@@ -111,10 +114,12 @@ export class FactsScreen {
 export async function runWarmup({ session, step, end, warmup, screen, intro, rnd = Math.random }) {
   const [a, b] = step.questions, n = a + Math.floor(rnd() * (b - a + 1)), rest = warmup.questions(n, a);
   screen.show(true); screen.keys(false);
+  session.expect?.(rest.length);
   await intro?.();
   screen.keys(true);
   while (rest.length && !session.over(end)) {
     const q = rest.shift(), r = await screen.ask(q), res = await warmup.record(q, r, rest);
+    session.expect?.(session.progress.faites + 1 + rest.length); // un fait raté revient : une bulle de plus
     await session.answered(res.juste);
     await session.stars(res.etoiles, q.revient && res.juste ? "erreur corrigée" : "bonne réponse");
   }

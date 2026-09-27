@@ -3,8 +3,15 @@
   "appuiLongMs": 2000,
   "codeChiffres": 4,
   "rappelExportJours": 7,
-  "dureesSeance": [10, 12, 15],
-  "reussite": { "bien": 0.8, "moyen": 0.5 },
+  "dureesSeance": [
+    10,
+    12,
+    15
+  ],
+  "reussite": {
+    "bien": 0.8,
+    "moyen": 0.5
+  },
   "modules": {
     "1": {
       "nom": "Ligne graduée",
@@ -21,16 +28,28 @@
     },
     "2": {
       "nom": "Faits d'addition (échauffement)",
-      "niveaux": { "0": "temps de base (« a + 0 »)", "1": "famille 1 : + 1 et + 2", "2": "famille 2 : doubles jusqu'à 5 + 5" }
+      "niveaux": {
+        "0": "temps de base (« a + 0 »)",
+        "1": "famille 1 : + 1 et + 2",
+        "2": "famille 2 : doubles jusqu'à 5 + 5"
+      }
     }
   },
-  "formes": { "lire": "lire", "sauter": "sauter", "placer": "placer", "estimer": "estimer", "base": "temps de base", "directe": "a + b = ?" },
+  "formes": {
+    "lire": "lire",
+    "sauter": "sauter",
+    "placer": "placer",
+    "estimer": "estimer",
+    "base": "temps de base",
+    "directe": "a + b = ?"
+  },
   "erreurs": {
     "E1": "compte les traits au lieu des sauts",
     "E2": "oublie qu'un saut vaut 10",
     "E3": "oublie le point de départ",
     "E4": "compte depuis la droite",
     "E5": "inverse dizaines et unités",
-    "autre": "autre erreur"
+    "autre": "autre erreur",
+    "NSP": "« je ne sais pas » (bouton)"
   }
 }

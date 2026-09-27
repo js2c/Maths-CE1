@@ -13,22 +13,23 @@ import { Actor } from "../engine/actor.js";
 import { arcHeight } from "../engine/turtle.js";
 import { onTap, spriteBox } from "../session/screens.js";
 import { actions, countLabel, lessonLineSpec, settle, stateAt, tickOf } from "./script.js";
+import { wait } from "../engine/clock.js";
 
 const ABORT = Symbol("leçon interrompue");
-const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const ease = (u) => 1 - Math.pow(1 - u, 3);
 // une animation de `ms` millisecondes, f(u) à chaque image, u de 0 à 1
 const tween = (ms, f) => new Promise((res) => { const t0 = performance.now(), step = (now) => { const u = Math.min(1, (now - t0) / ms); f(u); if (u < 1) requestAnimationFrame(step); else res(); }; requestAnimationFrame(step); });
 const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };
-const KEYS = { precedent: [930, 712], rejouer: [1090, 712] }, COUNTER = [700, 172];
+const KEYS = { precedent: [930, 712], rejouer: [1090, 712], passer: [1205, 218] }, COUNTER = [700, 172];
 const NET_W = 62, NET_H = 34;
 
 export class LessonPlayer {
   constructor(app, content) { this.app = app; this.c = content; this.tok = 0; this.nets = new Map(); }
   get nl() { return this.app.lineScreen(); }
 
-  // joue la leçon `id` jusqu'au bout ; renvoie { vue, dureeS, precedentes, rejouees }
-  async play(id) {
+  // joue la leçon `id` jusqu'au bout ; renvoie { vue, passee, dureeS, precedentes, rejouees }.
+  // `skippable` (à partir de la deuxième fois qu'elle est vue) : le bouton « passer » l'arrête (passee).
+  async play(id, { skippable = false } = {}) {
     const { app } = this, lesson = this.c[id], nl = this.nl, t0 = Date.now(), stats = { precedentes: 0, rejouees: 0 };
     if (!lesson) return { vue: false };
     nl.leave();
@@ -54,8 +55,9 @@ export class LessonPlayer {
       return b;
     };
     const back = () => { stats.precedentes++; back.to = Math.max(0, this.p - 1); }, again = () => { stats.rejouees++; again.to = 0; };
-    const keys = [key("precedent", "phrase précédente", back), key("rejouer", "rejouer la leçon", again)];
-    this.p = 0;
+    const skip = () => { skip.to = lesson.phrases.length; this.skipped = true; };
+    const keys = [key("precedent", "phrase précédente", back), key("rejouer", "rejouer la leçon", again), ...(skippable ? [key("passer", "passer la leçon", skip)] : [])];
+    this.p = 0; this.skipped = false; this.keys = keys; this.home = home;
     while (this.p < lesson.phrases.length) {
       const tok = ++this.tok;
       this.abortP = new Promise((_, rej) => { this.abort = () => rej(ABORT); }); this.abortP.catch(() => {});
@@ -64,12 +66,11 @@ export class LessonPlayer {
       catch (e) { if (e !== ABORT) throw e; this.p = this.goto ?? this.p; }
     }
     this.abort = null; this.tok++;
-    keys.forEach((k) => k.remove());
-    app.ocean.octo.play("rejouir");
-    await wait(500);
+    keys.forEach((k) => k.remove()); this.keys = null;
+    if (!this.skipped) { app.ocean.octo.play("rejouir"); await wait(500); }
     this.clear();
     tween(900, (u) => { const e = ease(u); app.ocean.octoAt = [up[0] + (home[0] - up[0]) * e, up[1] + (home[1] - up[1]) * e]; });
-    return { vue: true, dureeS: Math.round((Date.now() - t0) / 1000), ...stats };
+    return { vue: !this.skipped, passee: this.skipped, dureeS: Math.round((Date.now() - t0) / 1000), ...stats };
   }
   // une phrase : ses temps l'un après l'autre ; dans un temps, la voix et les actions ensemble
   async phrase(p, tok) {
@@ -206,6 +207,13 @@ export class LessonPlayer {
     A.paint(`loupe:${text}`, (ctx) => { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawLens(ctx, 150, 110, 66); R.drawNumber(ctx, text, 150, 110 - 32, 64, { w: 9.5, seed: 490 }); });
     A.moveTo(R.tickX(spec, i) + 140, 672); A.show(true);
     return A;
+  }
+  // la leçon est quittée pour de bon (entraînement libre : bouton « maison ») ; le déroulement abandonné
+  // reste figé (engine/clock.js), on range la scène
+  abandon() {
+    if (!this.keys) return;
+    this.tok++; this.abort = null; this.keys.forEach((k) => k.remove()); this.keys = null; this.clear();
+    if (this.home) this.app.ocean.octoAt = [...this.home];
   }
   // fin de leçon : la scène redevient celle des exercices
   clear() {

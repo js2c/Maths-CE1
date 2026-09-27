@@ -1,7 +1,9 @@
 // DÉMARRAGE. Charge l'atlas et les planches nécessaires au premier écran (fond, pieuvre au repos,
 // décor), lance l'animation, puis charge le reste en arrière-plan (gestes de la pieuvre).
-// Premier écran : l'océan vivant et une grosse bulle « jouer » (ou la lune si la séance du jour est
-// déjà faite) ; le premier toucher débloque la voix et lance la séance (session/session.js).
+// Premier écran : l'océan vivant et une grosse bulle « jouer » (ou, si la séance du jour est déjà faite,
+// la lune en décor et la bulle « Encore ! » de l'entraînement libre), le récif et l'album ; le premier
+// toucher débloque la voix et lance la séance (session/session.js). Pendant la séance, la maison (en haut
+// à gauche) la met en pause ; la frise d'avancement montre où l'on en est.
 import { Ocean, rng } from "./engine/ocean.js";
 import { LineView } from "./engine/line.js";
 import { persist, Store } from "./engine/store.js";
@@ -18,15 +20,21 @@ import { Rewards } from "./session/rewards.js";
 import { chooseName, goodNight, onTap, reward, spriteBox, StarHud } from "./session/screens.js";
 import { doneToday, Session } from "./session/session.js";
 import { Reef } from "./session/reef.js";
+import { Album } from "./session/album.js";
+import { Frieze } from "./session/frieze.js";
+import { FreeTraining } from "./session/free.js";
+import { clock } from "./engine/clock.js";
+import { pop } from "./engine/ui.js";
 import { ParentSpace, parentLogo } from "./parent/parent.js";
 
 const T0 = performance.now();
-// hors ligne : le service worker met toute l'application en cache (pas en file://, ni pendant les tests qui le désactivent)
-if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !location.search.includes("nosw")) navigator.serviceWorker.register("sw.js").catch(() => {});
 const json = async (p) => (await fetch(p)).json();
 
 const stage = new Stage(document.getElementById("stage"));
-const [atlas, module1, module2, textes, seance, lecons, cartes, parentContent] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/module2.json"), json("content/textes.json"), json("content/seance.json"), json("content/lecons.json"), json("content/cartes.json"), json("content/parent.json")]);
+// hors ligne : le service worker met toute l'application en cache (pas en file://, ni pendant les tests qui
+// le désactivent), avec une seule résolution des planches d'images : celle que cet écran utilise (sprites.js)
+if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !location.search.includes("nosw")) navigator.serviceWorker.register(`sw.js?r=${stage.px > 1.2 ? 2 : 1}`).catch(() => {});
+const [atlas, module1, module2, textes, seance, lecons, cartes, parentContent, voix] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/module2.json"), json("content/textes.json"), json("content/seance.json"), json("content/lecons.json"), json("content/cartes.json"), json("content/parent.json"), json("assets/voix/index.json").catch(() => null)]);
 const sprites = new Sprites(atlas, stage.px);
 // la base locale ; au premier lancement, on demande au navigateur de ne jamais l'effacer de lui-même
 const store = await Store.open();
@@ -43,10 +51,14 @@ const rnd = rng(Date.now() & 0xffffffff);
 // pour les tests et les captures : ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape ?sansLecon ?lecon=L1 ?etoiles=N
 const P = new URLSearchParams(location.search);
 const text = { data: textes, pick: (k, v = {}) => { const e = textes[k]; return fill(Array.isArray(e) ? e[Math.floor(rnd() * e.length)] : e, { mascotte: app.mascotte, ...v }); } };
-const voice = new Voice({ rate: 0.9, fast: P.get("voix") === "rapide" });
+// les phrases fabriquées à l'avance (assets/voix/) ; ?voix=synthese : seulement la synthèse du navigateur (comparaison)
+const voice = new Voice({ rate: 0.9, fast: P.get("voix") === "rapide" }).setIndex(P.get("voix") === "synthese" ? null : voix);
 const rewards = await new Rewards(store, cartes).load();
 if (P.get("etoiles")) { rewards.st.total = Number(P.get("etoiles")); await rewards.save(); } // tests : un trésor de départ
-const app = { stage, sprites, ocean, voice, text, rnd, atlas, store, rewards, lecons, line: new LineView(stage), mascotte: await store.setting("mascotte") };
+const app = { stage, sprites, ocean, voice, text, rnd, atlas, store, rewards, lecons, cartes, clock, line: new LineView(stage), mascotte: await store.setting("mascotte") };
+// combien de fois l'enfant a vu chaque leçon et chaque exemple guidé : « passer » apparaît à la deuxième fois
+const vues = (await store.setting("vues")) ?? {};
+app.vues = { count: (k) => vues[k] ?? 0, see: async (k) => { const n = vues[k] ?? 0; vues[k] = n + 1; await store.setSetting("vues", vues); return n >= 1; } };
 app.lineScreen = () => (app.screen ??= new ReadScreen(app)); // l'écran de la ligne (aussi pour l'aide des faits + 1, + 2)
 window.__app = app;
 
@@ -67,9 +79,9 @@ app.hud = hud;
 const lessons = new LessonPlayer(app, lecons);
 app.lessons = lessons;
 const lessonIn = (session) => async (id, raison) => {
-  const r = await lessons.play(id);
+  const r = await lessons.play(id, { skippable: await app.vues.see(`lecon.${id}`) });
   (session.rec.lecons ??= []).push({ id, raison, ...r }); await session.save();
-  return r.vue;
+  return r;
 };
 const handlers = {
   accueil: async () => {
@@ -105,33 +117,92 @@ for (const id of (P.get("sans") ?? "").split(",").filter(Boolean)) delete handle
 rewards.onChange((n, raison) => { if (raison !== "séance terminée") hud.fly(n, app.starFrom ?? [640, 690], { gap: 140 }); });
 
 // ---------------------------------------------------------------- premier écran
-// L'océan vivant, la bulle « jouer » (ou la lune si la séance du jour est faite) et, à côté, la bulle du
-// récif : la visite du récif est toujours libre (docs/SPEC.md, « Séance plafonnée »).
+// L'océan vivant, la bulle « jouer » (ou la lune et « Encore ! » si la séance du jour est faite), la bulle
+// du récif et le livre de l'album : la visite du récif et de l'album est toujours libre (docs/SPEC.md,
+// « Séance plafonnée »).
 const reef = new Reef(app);
 app.reef = reef;
+const album = new Album(app);
+app.album = album;
 // l'espace parent : appui long sur le logo, puis le code (parent/parent.js) ; après une restauration ou un
 // effacement, l'application repart de zéro
 const parent = new ParentSpace(app, { content: parentContent, seance, module2, cartes });
 app.parent = parent;
 const openParent = async () => { voice.stop(); const r = await parent.open(); if (r?.reload) location.reload(); };
+const big = (name, cx, cy, label, cls = "bubble") => spriteBox(app, { x: cx - 90, y: cy - 90, w: 180, h: 180, cls, label, paint: (ctx) => sprites.draw(ctx, name, 0, 90, 90) });
+let homeEls = [];
+const clearHome = () => { homeEls.forEach((e) => e.remove()); homeEls = []; };
 async function showHome({ done, first = false }) {
-  const els = [], y = done ? 420 : 650;
-  const reefKey = spriteBox(app, { x: 860 - 90, y: y - 90, w: 180, h: 180, cls: "bubble reefkey", label: "le récif", paint: (ctx) => sprites.draw(ctx, "recif", 0, 90, 90) });
-  els.push(reefKey, parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }));
-  onTap(reefKey, async () => { voice.unlock(); voice.stop(); els.forEach((e) => e.remove()); await reef.visit(); showHome({ done: await doneToday(store) }); });
-  if (done) { els.push(await goodNight(app, { first })); return; }
-  // la séance du jour ; « à demain » quand elle est finie
-  const play = spriteBox(app, { x: 550, y: 560, w: 180, h: 180, cls: "bubble play", label: "jouer", paint: (ctx) => sprites.draw(ctx, "jouer", 0, 90, 90) });
-  els.push(play);
+  clearHome();
+  const reefKey = big("recif", 860, 650, "le récif", "bubble reefkey"), albumKey = big("album", 1080, 650, "l'album", "bubble albumkey");
+  homeEls.push(reefKey, albumKey, parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }));
+  const visit = (place) => async () => { voice.unlock(); voice.stop(); clearHome(); await place.visit(); showHome({ done: await doneToday(store) }); };
+  onTap(reefKey, visit(reef)); onTap(albumKey, visit(album));
+  if (done) {
+    // la séance du jour est faite : la lune (un décor) et « Encore ! », l'entraînement libre
+    const again = big("encore", 640, 650, "encore", "bubble play again");
+    homeEls.push(again);
+    onTap(again, () => { voice.unlock(); clearHome(); freeTraining(); });
+    homeEls.push(await goodNight(app, { first }));
+    return;
+  }
+  // la séance du jour
+  const play = big("jouer", 640, 650, "jouer", "bubble play");
+  homeEls.push(play);
   play.addEventListener("pointerdown", async (e) => {
-    e.preventDefault(); voice.unlock(); els.forEach((x) => x.remove());
+    e.preventDefault(); voice.unlock(); clearHome();
     // pour les captures et les tests : ?lecon=L1 joue seulement cette leçon
-    if (P.get("lecon")) { window.__lecon = await lessons.play(P.get("lecon")); return; }
+    if (P.get("lecon")) { window.__lecon = await lessons.play(P.get("lecon"), { skippable: P.has("passer") }); return; }
     // la durée maximale d'une séance est un réglage du parent (seance.json donne la valeur par défaut)
-    const session = new Session({ store, content: { ...seance, dureeMaxMin: await store.setting("dureeSeanceMin", seance.dureeMaxMin) }, handlers, rewards });
-    app.session = session;
+    const session = new Session({ store, content: { ...seance, dureeMaxMin: await store.setting("dureeSeanceMin", seance.dureeMaxMin) }, handlers, rewards, paused: () => clock.pausedTotal(), onProgress: (p) => progress(p) });
+    app.session = session; mode = "seance";
     await session.run();
+    mode = null; frieze.show(false); homeKey.style.visibility = "hidden";
     showHome({ done: true, first: true });
   }, { once: true });
+}
+
+// ---------------------------------------------------------------- pendant la séance : la frise et la maison
+// La frise montre les étapes et les questions ; la maison (échauffement, notion du jour, entraînement libre)
+// met la séance en pause (elle reprendra exactement où elle en était) ou quitte l'entraînement libre.
+const frieze = new Frieze(app, seance.etapes.filter((e) => e.actif !== false).map((e) => e.id));
+app.frieze = frieze;
+let mode = null; // "seance", "libre" ou null (écran d'accueil)
+const homeKey = spriteBox(app, { x: 14, y: 10, w: 120, h: 120, cls: "bubble homekey session-home keep", label: "maison", paint: (ctx, px) => { const q = sprites.frame("maison", 0), k = 120 / 140; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 60 * px + q.dx * k, 60 * px + q.dy * k, q.w * k, q.h * k); } });
+homeKey.style.visibility = "hidden";
+const progress = (p) => {
+  frieze.set(p); frieze.show(!!p.etape);
+  // la maison pendant les questions et les leçons (pas pendant l'accueil ni la récompense)
+  homeKey.style.visibility = p.etape === "echauffement" || p.etape === "notion" ? "visible" : "hidden";
+};
+// attend-on une réponse de l'enfant (la consigne est finie ou en cours) ?
+const awaiting = () => [app.screen, app.facts].some((s) => s && s.resolve && !s.locked);
+async function pauseSession() {
+  clock.pause(); voice.pause(); stage.root.classList.add("paused"); homeKey.style.visibility = "hidden";
+  await app.session?.notePause();
+  const resume = big("jouer", 640, 650, "continuer", "bubble play keep"), logo = parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs });
+  logo.classList.add("keep");
+  onTap(resume, () => {
+    voice.unlock(); resume.remove(); logo.remove(); stage.root.classList.remove("paused"); homeKey.style.visibility = "visible";
+    clock.resume(); voice.resume();
+    // la séance attendait une réponse : la voix redit la consigne
+    if (!voice.cur && awaiting() && voice.instruction) voice.say(`${text.data.reprise} ${voice.instruction}`);
+  });
+}
+// quitter l'entraînement libre : l'activité en cours est abandonnée (engine/clock.js) et la scène rangée
+function quitFree() {
+  clock.abandon(); voice.abandon();
+  app.screen?.leave(); app.facts?.leave(); lessons.abandon();
+  for (const s of [app.screen, app.facts]) if (s) { s.resolve = null; s.locked = true; }
+  document.querySelectorAll("#ui .free").forEach((e) => e.remove());
+  mode = null; homeKey.style.visibility = "hidden";
+  showHome({ done: true });
+}
+onTap(homeKey, () => { pop(homeKey); if (mode === "seance") pauseSession(); else if (mode === "libre") quitFree(); });
+async function freeTraining() {
+  mode = "libre"; homeKey.style.visibility = "visible";
+  const free = new FreeTraining(app, { store, module1, module2, rnd });
+  app.free = free;
+  await free.menu();
 }
 showHome({ done: await doneToday(store) });

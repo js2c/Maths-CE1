@@ -56,3 +56,24 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .veil { position: absolute; inset: 0; background: rgba(8, 40, 52, 0.45); }
 .special { pointer-events: none; }
 .shelltap { position: absolute; border-radius: 50%; }
+
+/* lot 1 bis : la frise d'avancement, la maison, « je ne sais pas », « passer », « Encore ! » */
+.frieze { pointer-events: none; }
+.moon { pointer-events: none; animation: drift 6s ease-in-out infinite; }
+@keyframes drift { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+/* pause : tout ce qui appartient à la séance disparaît, l'océan continue de vivre ; la bulle « continuer »,
+   le logo du parent et le compteur d'étoiles restent */
+#stage.paused #line, #stage.paused #fx, #stage.paused #front { visibility: hidden; }
+#stage.paused #ui > :not(.keep):not(.stars) { visibility: hidden !important; }
+
+/* l'album : un voile sombre, les vignettes des cartes, les onglets des zones */
+.album-veil { background: rgba(6, 34, 44, 0.84); }
+.album-page { position: absolute; inset: 0; pointer-events: none; }
+.album-page > * { pointer-events: auto; }
+.album-card { border-radius: 8px; filter: drop-shadow(4px 6px 0 rgba(3, 20, 26, 0.45)); }
+.album-card canvas { border-radius: 8px; }
+.album-card.closed { filter: brightness(0.42) saturate(0.55) drop-shadow(4px 6px 0 rgba(3, 20, 26, 0.45)); }
+.album-tab.sel { filter: drop-shadow(0 0 5px #ffe45c) drop-shadow(0 0 12px #ffd23a); }
+.album-tab.closed.sel { filter: brightness(0.6) saturate(0.6) drop-shadow(0 0 5px #ffe45c) drop-shadow(0 0 12px #ffd23a); }
+.album-card.shiny { filter: drop-shadow(0 0 6px #fff6c8) drop-shadow(4px 6px 0 rgba(3, 20, 26, 0.45)); }
+.album-lock, .pearls { pointer-events: none !important; }

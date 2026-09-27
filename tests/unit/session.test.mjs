@@ -110,3 +110,22 @@ test("une séance plafonnée : les étapes à questions sont sautées, la récom
   const rec = await s.run();
   assert.deepEqual(seen, ["accueil", "recompense"]); assert.equal(rec.etapes.find((e) => e.id === "notion").sautee, "temps écoulé"); assert.equal(rec.terminee, true);
 });
+
+test("une première séance complète, une réponse sur deux juste, rapporte au moins un coquillage (lot 1 bis)", async () => {
+  const { runWarmup } = await import("../../app/js/modules/facts/screen.js");
+  const { Warmup } = await import("../../app/js/modules/facts/warmup.js");
+  const cartes = load("cartes.json"), module2 = load("module2.json");
+  const { store, rewards } = await mk(), c = clock();
+  let k = 0; const half = () => k++ % 2 === 0;
+  // l'échauffement et la notion du jour au plus court (le minimum de questions de seance.json)
+  const facts = { show() {}, keys() {}, leave() {}, ask: async (q) => { c.add(8000); const ok = half(); return { value: ok ? q.a + q.b : q.a + q.b + 1, ms: 4000, listens: 1, aide: false }; } };
+  const line = fakeScreen(c, () => half(), 20000);
+  const handlers = {
+    echauffement: async (ctx) => { const warmup = await new Warmup({ store, content: module2, rnd: rng(2), seance: ctx.session.id, clock: c }).load(); await runWarmup({ ...ctx, step: { ...ctx.step, questions: [ctx.step.questions[0], ctx.step.questions[0]] }, warmup, screen: facts, rnd: rng(2) }); },
+    notion: async (ctx) => { const runner = await new Module1Runner({ screen: line, store, content: module1, rnd: rng(4), seance: ctx.session.id }).load(); await runNotion({ ...ctx, step: { ...ctx.step, questions: [ctx.step.questions[0], ctx.step.questions[0]] }, runner, screen: line, lesson: async () => ({ vue: true }), rnd: rng(4) }); },
+    recompense: async ({ session }) => session.stars(seance.etoiles.seanceTerminee, "séance terminée"),
+  };
+  const rec = await new Session({ store, content: seance, rewards, clock: c, handlers }).run();
+  assert.ok(rec.justes >= rec.questions / 2 - 1 && rec.justes <= rec.questions / 2 + 1, `${rec.justes} sur ${rec.questions}`);
+  assert.ok(rewards.total >= cartes.coquillage.prix, `${rewards.total} étoiles pour un coquillage à ${cartes.coquillage.prix}`);
+});

@@ -167,7 +167,8 @@ export class ParentSpace {
 
   // ---------------------------------------------------------------- calendrier
   calendar(page, { year, month, sel } = {}) {
-    const now = new Date(), S = this.d.seances;
+    // l'entraînement libre n'est pas une séance : il reste dans l'historique, pas dans le calendrier
+    const now = new Date(), S = this.d.seances.filter((x) => !x.libre);
     year ??= this.calY ?? now.getFullYear(); month ??= this.calM ?? now.getMonth(); this.calY = year; this.calM = month;
     const days = D.byDay(S), sum = D.monthSummary(S, year, month), first = S.at(-1) ? new Date(S.at(-1).debut) : now;
     const canPrev = year * 12 + month > first.getFullYear() * 12 + first.getMonth(), canNext = year * 12 + month < now.getFullYear() * 12 + now.getMonth();
@@ -212,14 +213,15 @@ export class ParentSpace {
     const lv = D.level(x.reussite, this.c.reussite), det = h("div", { class: "pa-detail" });
     const el = h("div", { class: "pa-session" });
     const head = h("button", { "aria-expanded": "false", onclick: () => { const o = el.classList.toggle("open"); head.setAttribute("aria-expanded", String(o)); det.hidden = !o; if (o && !det.childElementCount) this.sessionDetail(x, det); } },
-      h("span", { class: "t" }, `${D.fmtDay(x.debut)}, ${D.fmtTime(x.debut)}`),
+      h("span", { class: "t" }, `${D.fmtDay(x.debut)}, ${D.fmtTime(x.debut)}${x.libre ? " · entraînement libre" : ""}`),
       h("span", { class: "s" }, `${D.fmtDuration(x.dureeS)} · ${plural(x.questions ?? 0, "question")} · ${plural(x.etoiles ?? 0, "étoile")} de mer`),
-      h("span", { class: "r" }, h("span", { class: `pa-badge ${x.terminee ? lv ?? "neutre" : "neutre"}` }, x.terminee ? (x.questions ? `${D.fmtPct(x.reussite)} de réussite` : "terminée") : "interrompue"), h("span", { class: "chev", "aria-hidden": "true" }, "›")));
+      h("span", { class: "r" }, h("span", { class: `pa-badge ${x.terminee || x.libre ? lv ?? "neutre" : "neutre"}` }, x.libre ? (x.questions ? `${D.fmtPct(x.reussite)} de réussite` : "libre") : x.terminee ? (x.questions ? `${D.fmtPct(x.reussite)} de réussite` : "terminée") : "interrompue"), h("span", { class: "chev", "aria-hidden": "true" }, "›")));
     el.append(head, det); det.hidden = true;
     if (open) head.click();
     return el;
   }
   sessionDetail(x, det) {
+    const mine = this.d.reponses.filter((r) => r.seance === x.id), nsp = mine.filter((r) => r.erreur === "NSP").length, passes = mine.filter((r) => r.passe).length;
     const steps = (x.etapes ?? []).filter((e) => !e.sautee || e.sautee === "temps écoulé").map((e) => `${D.STEP_NAMES[e.id] ?? e.id}${e.sautee ? " (sautée, temps écoulé)" : e.dureeS !== undefined ? ` ${D.fmtDuration(e.dureeS)}` : ""}`);
     const cartes = (x.cartes ?? []).map((id) => this.cartes.cartes.find((c) => c.id === id)?.nom ?? id);
     det.append(h("div", { class: "pa-facts" },
@@ -227,7 +229,10 @@ export class ParentSpace {
       h("span", {}, "Notion du jour : ", h("b", {}, this.c.modules[x.module]?.nom ?? `module ${x.module}`)),
       h("span", {}, "Réponses justes : ", h("b", {}, `${x.justes ?? 0} sur ${x.questions ?? 0}`)),
       steps.length > 0 && h("span", {}, "Étapes : ", h("b", {}, steps.join(", "))),
-      (x.lecons ?? []).length > 0 && h("span", {}, "Leçons : ", h("b", {}, x.lecons.map((l) => `${l.id}${l.vue ? " (vue jusqu'au bout)" : " (arrêtée)"}`).join(", "))),
+      (x.lecons ?? []).length > 0 && h("span", {}, "Leçons : ", h("b", {}, x.lecons.map((l) => `${l.id}${D.lessonNote(l)}`).join(", "))),
+      nsp > 0 && h("span", {}, "« Je ne sais pas » : ", h("b", {}, `${nsp} (comptés à part des erreurs)`)),
+      passes > 0 && h("span", {}, "Exemples guidés passés : ", h("b", {}, String(passes))),
+      x.pauses > 0 && h("span", {}, "Pauses : ", h("b", {}, `${x.pauses}${x.pauseS ? `, ${D.fmtDuration(x.pauseS)} en tout (non comptées dans la durée)` : ""}`)),
       cartes.length > 0 && h("span", {}, "Cartes gagnées : ", h("b", {}, cartes.join(", ")))));
     const groups = D.answersOf(this.d.reponses, x.id);
     if (!groups.length) det.append(h("p", { class: "pa-muted" }, "Aucune réponse enregistrée pour cette séance."));
@@ -235,13 +240,13 @@ export class ParentSpace {
   }
   answerTable(rs) {
     const E = this.c.erreurs, F = this.c.formes;
-    const note = (r) => [r.guide && "exemple guidé", r.revient && "question qui revient", r.aide && !r.guide && "aide utilisée"].filter(Boolean).join(", ");
+    const note = (r) => [r.guide && (r.passe ? "exemple guidé passé" : "exemple guidé"), r.revient && "question qui revient", r.aide && !r.guide && "aide utilisée", r.libre && "entraînement libre"].filter(Boolean).join(", ");
     return h("div", { class: "pa-table-wrap" }, h("table", { class: "pa-table" },
       h("thead", {}, h("tr", {}, ["Heure", "Niveau", "Forme", "Question", "Réponse", "Attendue", "Résultat", "Temps", "Écoutes", "Erreur", "Remarque"].map((t, i) => h("th", { class: [4, 5, 7, 8].includes(i) ? "num" : "" }, t)))),
       h("tbody", {}, rs.map((r) => h("tr", { class: r.juste ? "" : "faux" },
         h("td", {}, D.dateTime(r.t).slice(11)), h("td", { class: "num" }, r.niveau), h("td", {}, F[r.forme] ?? r.forme ?? ""), h("td", { class: "q" }, r.question),
         h("td", { class: "num" }, r.donnee ?? "—"), h("td", { class: "num" }, r.attendue ?? ""), h("td", {}, r.juste ? h("span", { class: "pa-yes" }, "✓ juste") : h("span", { class: "pa-no" }, "✗ faux")),
-        h("td", { class: "num" }, D.fmtSeconds(r.tempsMs)), h("td", { class: "num" }, r.ecoutes ?? ""), h("td", { title: E[r.erreur] ?? "" }, r.juste ? "" : r.erreur && r.erreur !== "autre" ? `${r.erreur} · ${E[r.erreur] ?? ""}` : "autre"), h("td", {}, note(r)))))));
+        h("td", { class: "num" }, D.fmtSeconds(r.tempsMs)), h("td", { class: "num" }, r.ecoutes ?? ""), h("td", { title: E[r.erreur] ?? "" }, r.juste ? "" : r.erreur === "NSP" ? "je ne sais pas" : r.erreur && r.erreur !== "autre" ? `${r.erreur} · ${E[r.erreur] ?? ""}` : "autre"), h("td", {}, note(r)))))));
   }
 
   // ---------------------------------------------------------------- progression
@@ -269,11 +274,11 @@ export class ParentSpace {
     this.weeklyBlock(m2, 2);
     // le journal des erreurs
     const J = D.errorJournal(this.d.reponses), E = this.c.erreurs;
-    const jr = h("div", { class: "pa-card-box" }, h("h2", {}, "Journal des erreurs"), h("p", { class: "pa-note" }, "Pour la ligne graduée, chaque mauvaise réponse révèle souvent une erreur type (E1 à E5) ; l'application la corrige avec une animation, et relance une leçon si elle revient deux fois dans une séance."));
+    const jr = h("div", { class: "pa-card-box" }, h("h2", {}, "Journal des erreurs"), h("p", { class: "pa-note" }, "Pour la ligne graduée, chaque mauvaise réponse révèle souvent une erreur type (E1 à E5) ; l'application la corrige avec une animation, et relance une leçon si elle revient deux fois dans une séance. Le bouton « je ne sais pas » (NSP) a sa propre ligne : ce n'est pas une erreur, mais la question revient comme après une erreur."));
     if (!J.length) jr.append(h("p", { class: "pa-muted" }, "Aucune erreur enregistrée."));
     for (const w of J.slice(0, 6)) {
       jr.append(h("h3", {}, `Semaine du ${D.fmtDay(w.semaine)}`));
-      for (const [code, c] of Object.entries(w.codes).sort((a, b) => b[1].n - a[1].n)) jr.append(h("div", { class: "pa-err" }, h("span", { class: "code" }, code === "autre" ? "—" : code), h("span", {}, E[code] ?? code), h("span", { class: "n" }, `${c.n} fois`),
+      for (const [code, c] of Object.entries(w.codes).sort((a, b) => b[1].n - a[1].n)) jr.append(h("div", { class: "pa-err" }, h("span", { class: "code" }, code === "autre" ? "—" : code === "NSP" ? "?" : code), h("span", {}, E[code] ?? code), h("span", { class: "n" }, `${c.n} fois`),
         h("span", { class: "ex" }, "Exemples : ", c.exemples.map((x) => `${x.question} → réponse ${x.donnee ?? "—"} au lieu de ${x.attendue}`).join(" ; "))));
     }
     // le trésor de l'enfant

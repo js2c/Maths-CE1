@@ -2,14 +2,23 @@
 // cache, même sans réseau. La liste des fichiers et la version viennent de sw-files.json, produit par
 // `node tools/precache.mjs` (la ligne VERSION ci-dessous est réécrite par le même outil : quand un
 // fichier change, ce script change aussi, et le navigateur installe la nouvelle version).
-const VERSION = "7bb3829e778a";
+const VERSION = "a8f3f641a26e";
 const CACHE = `ocean-${VERSION}`;
+// la résolution des planches d'images de cet écran (main.js : sw.js?r=1 ou ?r=2) : on ne met en cache que
+// celle-là (une planche qui n'existe qu'en @1x, comme les rayons, est toujours gardée)
+const RES = new URL(location.href).searchParams.get("r");
+const useful = (f, all) => { const m = /^(assets\/art\/.+)@([12])x\.webp$/.exec(f); return !m || !RES || m[2] === RES || !all.has(`${m[1]}@${RES}x.webp`); };
 
 self.addEventListener("install", (e) => {
   e.waitUntil((async () => {
-    const list = await (await fetch("sw-files.json", { cache: "no-store" })).json();
+    const list = await (await fetch("sw-files.json", { cache: "no-store" })).json(), all = new Set(list.files);
+    list.files = list.files.filter((f) => useful(f, all));
     const cache = await caches.open(CACHE);
-    await cache.addAll(list.files.map((f) => new Request(f, { cache: "reload" })));
+    // les fichiers son sont nommés par l'empreinte de leur contenu : déjà dans le cache d'une version
+    // précédente, ils sont repris tels quels (une mise à jour ne retélécharge pas toute la voix)
+    const immuable = (f) => /^assets\/voix\/[0-9a-f]{12}\.ogg$/.test(f), reseau = [];
+    for (const f of list.files) { const old = immuable(f) && (await caches.match(f)); if (old) await cache.put(f, old); else reseau.push(f); }
+    await cache.addAll(reseau.map((f) => new Request(f, { cache: "reload" })));
     await self.skipWaiting();
   })());
 });

@@ -1,9 +1,13 @@
-Illustrations des cartes (docs/SPEC.md, « Illustrations des cartes »).
+Illustrations des cartes (docs/SPEC.md, « La carte et l'album » et « Illustrations des cartes »).
 
-Déposer ici une image par carte, au nom de la carte : par exemple poisson-clown.webp (les noms sont
-les « id » de app/content/cartes.json). Format portrait 3:4 (par exemple 600 x 800 pixels), WebP ou
-PNG, sans aucun texte dans l'image. Puis, dans app/content/cartes.json, remplacer "illustration": null
-par "illustration": "assets/cards/poisson-clown.webp", et lancer node tools/precache.mjs.
+Une image par carte, au nom de la carte : par exemple poisson-clown.webp (les noms sont les « id » de
+app/content/cartes.json). Portrait 3:4 en pleine page (900 x 1200 pixels pour le lagon), WebP ou PNG,
+sans aucun texte dans l'image ; le quart inférieur reste calme : l'application y pose le bandeau du nom.
+Puis, dans app/content/cartes.json, remplacer "illustration": null par
+"illustration": "assets/cards/poisson-clown.webp", et lancer node tools/precache.mjs.
 
-Tant qu'une carte n'a pas son image, l'application montre le dessin provisoire de l'atelier.
-L'application ajoute elle-même le cadre, la rareté, le nom et l'anecdote.
+Les dos de cartes : dos-lagon, dos-recif, dos-large, dos-abysses (un par zone) et dos-legendaire (le dos
+doré des légendaires), indiqués dans cartes.json (zones[].dos, dosLegendaire).
+
+L'application ajoute elle-même le cadre (nacre, argent ou or selon la rareté), le bandeau et le nom, et
+écrit l'anecdote au verso. Tant qu'une carte n'a pas son image, elle montre un fond d'eau dessiné.

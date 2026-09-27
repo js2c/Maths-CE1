@@ -96,7 +96,7 @@ export class NumberLineScreen {
     this.app.starFrom = [640, 690];
     this.q = q; this.cfg = cfg; this.locked = true; this.arcs = []; this.overlay = []; line.fxClear();
     this.spec = lineSpec(q, cfg);
-    const fix = q.format === "estimer" ? { ...this.spec, marks: [{ t: (q.answer - q.min) / (q.max - q.min), label: String(q.answer), color: R.INK }] } : { ...this.spec, labels: this.spec.labels.map((l, i) => (i === q.target ? String(q.answer) : l)), mark: undefined, lit: [q.target] };
+    const fix = q.format === "estimer" ? { ...this.spec, marks: [...(this.spec.marks ?? []), { t: (q.answer - q.min) / (q.max - q.min), label: String(q.answer), color: R.INK }] } : { ...this.spec, labels: this.spec.labels.map((l, i) => (i === q.target ? String(q.answer) : l)), mark: undefined, lit: [q.target] };
     const [ask, fixed] = await line.render([this.spec, fix]);
     this.fix = fixed; line.show(ask); this.t0 = clock.now();
     this.starAt = q.format === "lire" ? [R.tickP(this.spec, q.target)[0], R.tickP(this.spec, q.target)[1] - 42] : null;
@@ -119,6 +119,8 @@ export class NumberLineScreen {
     this.app.ocean.octo.hold(this.pointAt(q));
     // exemple guidé : on montre d'abord la méthode (les réponses attendent), puis « À toi ! »
     if (guide && !lesson) { await this.demoOrSkip(q); this.t0 = clock.now(); }
+    // lot 3, niveau 1 « plus facile » (module1.json, crans) : la tortue montre le premier saut, depuis zéro
+    else if (q.premierSaut) { this.turtle.sitOn(this.spec, 0); await this.countJumps(0, 1, { label: () => "1" }); this.t0 = clock.now(); }
     this.locked = false; this.nsp.style.visibility = "visible";
     const L = lesson && this.app.lecons?.[lesson];
     const say = L ? (L.aToiDepuisZero && q.format === "lire" && q.min === 0 && q.step === 1 ? L.aToiDepuisZero : `${L.aToi} ${text.pick(q.format, v)}`) : `${guide ? `${text.pick("aToi")} ` : ""}${text.pick(q.format, v)}`;

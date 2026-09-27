@@ -2,6 +2,7 @@
 // le niveau de la ligne, les additions posées, les étoiles et les cartes ; puis le bilan des cartes (lot 2) :
 // dates où chaque zone s'ouvre et se complète, légendaires, brillantes, quota jamais dépassé.
 //   node tests/sim-seances.mjs [sait|reel|diff|tresdur|facile] [séances par semaine : 2|3|5] [nombre de séances, ou « annee » : jusqu'au 2 juillet 2027] [--court]
+//   lot 3 : [--choix 1:5 | 2:4] l'enfant choisit toujours cet exercice (ligne, niveau 5 ; additions, famille 4) ; [--cran facile|conseille|dur|tresdur]
 // Les zones 3 et 4 sont considérées prêtes (contenu fictif). --court : seulement le bilan.
 import { readFileSync } from "node:fs";
 import { simulate, PROFILS } from "./sim-recette.mjs";
@@ -10,9 +11,12 @@ const cal = JSON.parse(readFileSync(new URL("../app/content/calendrier.json", im
 const hol = cal.vacances.map((v) => [new Date(dateOf(v.debut)), new Date(dateOf(v.reprise))]), fin = new Date(dateOf("2027-07-02") + 86400000);
 const days = (perWeek, n) => { const out = []; let d = new Date("2026-09-28T00:00:00"); const wd = perWeek === 2 ? [1, 4] : perWeek === 3 ? [1, 3, 5] : [1, 2, 3, 4, 5];
   while (n === "annee" ? d < fin : out.length < n) { if (!hol.some(([a, b]) => d >= a && d < b) && wd.includes(d.getDay())) out.push(new Date(d)); d = new Date(d.getTime() + 86400000); } return out; };
-const args = process.argv.slice(2).filter((a) => !a.startsWith("--")), court = process.argv.includes("--court");
+const argv = process.argv.slice(2), val = (k) => (argv.includes(k) ? argv[argv.indexOf(k) + 1] : null);
+const args = argv.filter((a, i) => !a.startsWith("--") && !["--choix", "--cran"].includes(argv[i - 1])), court = argv.includes("--court");
+const ch = val("--choix")?.split(":").map(Number), choix = ch ? (ch[0] === 1 ? { module: 1, niveau: ch[1] } : { module: 2, famille: ch[1] }) : null;
 const [profil = "reel", perWeek = "2", n = "30"] = args;
-const res = await simulate({ profil, jours: days(+perWeek, n === "annee" ? "annee" : +n), seed: 7 });
+const res = await simulate({ profil, jours: days(+perWeek, n === "annee" ? "annee" : +n), seed: 7, choix, cran: val("--cran") });
+if (choix) console.log(`# lot 3 : l'enfant choisit toujours ${choix.module === 1 ? `la ligne, niveau ${choix.niveau}` : `les additions, famille ${choix.famille}`}, cran ${val("--cran") ?? PROFILS[profil].cran ?? "conseille"} : réussite de la notion du jour (10 premières séances, exemples guidés exclus) ${(() => { const xs = res.slice(0, 10).flatMap((r) => r.notionOk ?? []); return Math.round((100 * xs.filter(Boolean).length) / Math.max(1, xs.length)); })()} % ; descentes de cran ${res.slice(0, 10).reduce((a, r) => a + r.descentes, 0)}`);
 console.log(`# profil ${PROFILS[profil].nom}, ${perWeek}/sem, ${res.length} séances`);
 if (!court) for (const r of res) console.log(`${r.n}\t${r.date}\t${r.cranDepart}${r.descentes ? `->${r.cran}` : ""}\t${r.module === 2 ? "additions" : `niv ${r.niv0}->${r.niv1}`}\tq=${r.questions} ${Math.round((r.reussite ?? 0) * 100)}% nsp ${r.nsp} nouveaux ${r.nouveaux}\t${r.duree}min\tm${r.module}${r.defi !== undefined ? ` défi ${r.defi}${r.record ? "!" : ""}` : ""}${r.module === 2 ? ` f${r.famille}` : ""}\t★${r.etoiles}\tarc${r.arc}${r.doree ? " DORÉE" : ""}${r.surprise ? ` surprise ${r.surprise}` : ""}\tcartes ${r.nbCartes}/${r.quota} [${r.cartes.join(",")}]${r.zones.length ? ` ZONE ${r.zones.join(",")}` : ""}\tfaits vus ${r.faitsVus} boîtes ${r.boites.join("/")}\tchauffe: ${r.faits.join(" ")}\tligne: ${r.ligne.join(" ")}${r.lecons.length ? " leçons " + r.lecons.join(",") : ""}`);
 // lot 2, étape 2 : faits nouveaux, familles 1 et 2, niveaux, sélecteur de difficulté (docs/SPEC-LOT2.md, section 8)

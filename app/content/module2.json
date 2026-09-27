@@ -27,6 +27,12 @@
       "conseille": {},
       "dur": { "trou": true, "familleSuivante": true },
       "tresdur": { "trou": true, "familleSuivante": true, "melange": true }
+    },
+    "cransChoix": {
+      "facile": { "directe": true, "aideDEmblee": true, "familleSeule": true },
+      "conseille": {},
+      "dur": { "trouPart": 0.5 },
+      "tresdur": { "trouPart": 1 }
     }
   },
   "sommeMax": 10,

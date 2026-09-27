@@ -66,7 +66,7 @@ test("voix : la décomposition dite, accordée (« 0 dizaine », « 1 centaine �
 test("nombres possibles d'un niveau (ce que la voix fabrique) : peu nombreux, et chaque question produite en fait partie", () => {
   const V = Object.fromEntries([9, 10, 11, 12, 13].map((n) => [n, new Set(levelValues(cfg(n)))]));
   assert.deepEqual([V[9].size, V[10].size, V[12].size], [11, 91, cfg(12).nombres.length]);
-  assert.ok(V[11].size <= 12 * 21);
+  assert.ok(V[11].size <= 12 * 31); // (lot 3 : le cran « très dur » du niveau 11 a 30 graduations)
   const r = rng(5);
   for (let i = 0; i < 300; i++) {
     for (const n of [9, 10, 11]) { const q = makeRead(cfg(n), r); assert.ok(V[n].has(q.answer) && V[n].has(q.min) && q.choices.every((c) => c.value < 100 || V[n].has(c.value) || c.code === "E6" || c.code === "E3")); }

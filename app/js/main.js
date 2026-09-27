@@ -226,7 +226,9 @@ async function showHome({ done, first = false }) {
     if (P.get("lecon")) { window.__lecon = await lessons.play(P.get("lecon")); return; }
     // ?module=2 (tests) : la notion du jour imposée pour cette séance
     if (P.get("module")) await store.setSetting("moduleImpose", { module: Number(P.get("module")), t: Date.now() });
-    await runSession();
+    // ?choix=1:8 ou ?choix=2:5 (tests, captures) : l'exercice choisi sans passer par l'écran « choisir »
+    const ch = P.get("choix")?.split(":").map(Number);
+    await runSession(ch ? (ch[0] === 1 ? { module: 1, niveau: ch[1] } : { module: 2, famille: ch[1] }) : null);
   }, { once: true });
   onTap(pickKey, async () => {
     voice.unlock(); clearHome();

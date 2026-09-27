@@ -47,7 +47,8 @@ export class Module2Runner {
   }
   get c() { return this.w.c; }
   get N() { return this.c0.notion ?? { partFamille: 0.8, memeFaitMax: 3, difficulte: { sur: 5, erreurs: 3 }, crans: {} }; }
-  get effet() { return this.N.crans?.[this.cran()] ?? {}; }
+  // (lot 3 : famille choisie, les crans à l'intérieur de la famille, notion.cransChoix)
+  get effet() { return (this.choix != null ? this.N.cransChoix : this.N.crans)?.[this.cran()] ?? {}; }
   get nouveaux() { return this.w.nouveaux; }
   // la leçon de la famille, la première fois qu'elle est la notion du jour (jamais vue, pas encore jouée dans la séance)
   // lot 3 : une famille sans leçon qui reprend la représentation d'une autre (maisons de 8 et 9 : la maison ; presque-
@@ -135,6 +136,8 @@ export class Module2Runner {
     const q = { ...f, a: cat.a, b: cat.b, famille: f.famille ?? cat.famille, fait: f.fait };
     delete q.forme;
     q.forme = guide ? "directe" : formFor(this.stored(f.fait) ?? q, null, this.rnd, { trouFamille: !!e.trou || trouOpenFor(this.c0, this.fam, q.a, q.b), directe: !!e.directe });
+    // lot 3, famille choisie : « plus dur » une question sur deux à trou, « très dur » toutes, même pas encore ouvertes
+    if (!guide && e.trouPart) { this.trouK = (this.trouK ?? 0) + 1; const want = e.trouPart >= 1 || Math.floor(this.trouK * e.trouPart) > Math.floor((this.trouK - 1) * e.trouPart); q.forme = want ? (this.rnd() < 0.5 ? "trouDroite" : "trouGauche") : "directe"; }
     if (guide) q.guide = true;
     if (e.aideDEmblee) q.aideDEmblee = true;
     // lot 3 : les presque-doubles rappellent le double à chaque question (forme directe : sinon il donnerait la réponse)

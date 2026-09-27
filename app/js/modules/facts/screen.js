@@ -28,7 +28,7 @@ export class FactsScreen {
       const b = key(COLS[d % 5], ROWS[Math.floor(d / 5)], String(d), (ctx, px) => { small("reponse", 0.9)(ctx, px); ctx.setTransform(px, 0, 0, px, 0, 0); R.drawNumber(ctx, String(d), KEY / 2, KEY / 2 - 25, 50, { w: 7, seed: 900 + d }); });
       onTap(b, () => this.type(String(d), b));
     }
-    const del = key(SIDE, ROWS[0], "effacer", small("effacer", 0.8)); onTap(del, () => { if (this.locked || !this.typed) return; pop(del); this.typed = this.typed.slice(0, -1); this.slate.repaint(); });
+    const del = key(SIDE, ROWS[0], "effacer", small("effacer", 0.8)); onTap(del, () => { if (this.locked || !this.typed) return; pop(del); this.typed = this.typed.slice(0, -1); this.slate.repaint(); this.onTyped?.(this.typed); });
     const ok = key(SIDE, ROWS[1], "valider", small("valider", 0.7)); ok.classList.add("check"); onTap(ok, () => { if (this.locked || !this.typed) return; pop(ok); this.submit(); });
     // « je ne sais pas » (lot 1 bis) : compte comme une erreur (code NSP), montre la réponse, le fait revient
     this.nsp = spriteBox(app, { x: 1165 - 75, y: 604 - 75, w: 150, h: 150, cls: "bubble nsp", label: "je ne sais pas", paint: (ctx) => sprites.draw(ctx, "nsp", 0, 75, 75) });
@@ -60,6 +60,7 @@ export class FactsScreen {
     const max = this.q?.dictee ? 5 : 2; // deux chiffres au plus (les sommes vont jusqu'à 10) ; la dictée : cinq (3007, 30017 sont des erreurs à reconnaître)
     this.typed = (this.typed.length >= max ? "" : this.typed) + d;
     this.slate.repaint();
+    this.onTyped?.(this.typed); // (lot 3 : le tableau de la dictée)
   }
   // pose la question et attend la réponse ; la promesse se résout après le retour
   ask(q) {

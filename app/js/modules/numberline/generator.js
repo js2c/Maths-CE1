@@ -39,6 +39,33 @@ const priority = (q) => (q.max > 100 ? PRIORITY_1000 : PRIORITY);
 const top = (q) => (q.max > 100 ? 1000 : 100);
 
 const pick = (rnd, arr) => arr[Math.floor(rnd() * arr.length)];
+
+// ---------------------------------------------------------------- lot 3 : la difficulté à l'intérieur du niveau
+// (docs/SPEC-LOT3.md, section 3) : quand l'enfant a choisi son niveau, le cran du sélecteur rend CE niveau plus
+// facile ou plus exigeant. Chaque niveau de content/module1.json a un bloc `crans` (facile, dur, tresdur ; le
+// conseillé est le niveau lui-même) : des paramètres du niveau remplacés (labels, choix, formats, etendue, departs,
+// tolerances, nombres…) et quelques options propres aux crans :
+//   cibleMilieu : la cible dans le tiers du milieu de la ligne (plus d'aide des extrémités) ;
+//   sautsApres [a, b] : niveau 7, la cible a à b sauts après la seconde graduation écrite ;
+//   premierSaut : niveau 1, la tortue montre le premier saut (écran) ;
+//   repere : estimer, le milieu de la ligne est marqué et écrit ;
+//   filtre (dictée) : « sansZero » (347), « zeroUnSurDeux » (un nombre sur deux avec un zéro), « zerosEtDix »
+//   (310, 715, 970) ; tableau : le tableau centaines, dizaines, unités affiché pendant la dictée.
+export function applyCran(cfg, cran) {
+  const o = cran && cran !== "conseille" ? cfg.crans?.[cran] : null;
+  if (!o) return cfg;
+  const { crans, ...base } = cfg; void crans;
+  return { ...base, ...o, cran };
+}
+// les nombres de la dictée selon le filtre du cran (toujours pris dans la liste du niveau : chacun a sa voix)
+const hasZero = (v) => String(v).includes("0"), withTen = (v) => Math.floor(v / 10) % 10 === 1;
+export function dictationPool(cfg, k = 0) {
+  const all = cfg.nombres;
+  if (cfg.filtre === "sansZero") return all.filter((v) => !hasZero(v));
+  if (cfg.filtre === "zerosEtDix") return all.filter((v) => hasZero(v) || withTen(v));
+  if (cfg.filtre === "zeroUnSurDeux") return all.filter((v) => (k % 2 === 0 ? hasZero(v) : !hasZero(v)));
+  return all;
+}
 const range = (a, b, s = 1) => { const out = []; for (let v = a; v <= b + 1e-9; v += s) out.push(Math.round(v)); return out; };
 
 // ---------------------------------------------------------------- la ligne d'un niveau
@@ -62,8 +89,12 @@ function labelledIndices(cfg, L, rnd) {
   switch (cfg.labels) {
     case "tous-sauf-cible": return new Set(all);
     case "extremites": return new Set([0, L.n - 1]);
+    case "extremites-milieu": return new Set([0, Math.round((L.n - 1) / 2), L.n - 1]); // lot 3 : le milieu aussi écrit
     case "dizaines": return new Set(all.filter((i) => valueAt(L, i) % 10 === 0));
+    case "cinq": return new Set(all.filter((i) => valueAt(L, i) % 5 === 0)); // lot 3 : les dizaines et les 5 (35, 45)
     case "deux-voisines": { const j = Math.floor(rnd() * 4); return new Set([j, j + 1]); }
+    case "trois-voisines": { const j = Math.floor(rnd() * 3); return new Set([j, j + 1, j + 2]); } // lot 3, niveau 7 plus facile
+    case "deux-espacees": { const j = Math.floor(rnd() * 3); return new Set([j, j + 2]); } // lot 3, niveau 7 très dur
     default: return new Set(all.filter((i) => cfg.labels.includes(valueAt(L, i))));
   }
 }
@@ -75,18 +106,20 @@ export function makeRead(cfg, rnd, opts = {}) {
   // cibles possibles : jamais une graduation numérotée (au niveau 1, toutes le sont : la cible est
   // alors celle dont on retire le nombre), jamais une extrémité
   let pool = range(1, L.n - 2).filter((i) => cfg.labels === "tous-sauf-cible" || !lab.has(i));
-  if (cfg.labels === "deux-voisines") { const hi = Math.max(...lab); pool = pool.filter((i) => i >= hi + 2); }
+  if (["deux-voisines", "trois-voisines", "deux-espacees"].includes(cfg.labels)) { const hi = Math.max(...lab), [a, b] = cfg.sautsApres ?? [2, Infinity]; pool = pool.filter((i) => i >= hi + a && i <= hi + b); }
+  // lot 3 : la cible dans le tiers du milieu (plus dur : les extrémités n'aident plus)
+  if (cfg.cibleMilieu) { const m = pool.filter((i) => i >= (L.n - 1) / 3 && i <= (2 * (L.n - 1)) / 3); if (m.length) pool = m; }
   if (opts.eviter) { const f = pool.filter((i) => !opts.eviter.includes(valueAt(L, i))); if (f.length) pool = f; }
   if (!pool.length) pool = range(1, L.n - 2).filter((i) => !lab.has(i) || cfg.labels === "tous-sauf-cible");
   // un quart près d'une extrémité (niveaux 2 à 7) : les deux graduations libres les plus proches de chaque bout
-  if (cfg.niveau >= 2 && cfg.niveau <= 7 && cfg.labels !== "deux-voisines") {
+  if (cfg.niveau >= 2 && cfg.niveau <= 7 && !["deux-voisines", "trois-voisines", "deux-espacees"].includes(cfg.labels) && !cfg.cibleMilieu) {
     const sorted = [...pool].sort((a, b) => a - b), near = [...new Set([sorted[0], sorted[1], sorted[sorted.length - 1], sorted[sorted.length - 2]])].filter((i) => i !== undefined);
     const far = pool.filter((i) => !near.includes(i));
     pool = rnd() < 0.25 || !far.length ? near : far;
   }
   const target = pick(rnd, pool), answer = valueAt(L, target);
   if (cfg.labels === "tous-sauf-cible") lab.delete(target);
-  const q = { module: 1, niveau: cfg.niveau, format: "lire", ...L, target, answer, labelled: [...lab].sort((a, b) => a - b) };
+  const q = { module: 1, niveau: cfg.niveau, format: "lire", ...L, target, answer, labelled: [...lab].sort((a, b) => a - b), ...(cfg.premierSaut ? { premierSaut: true } : {}), ...(cfg.cran ? { cran: cfg.cran } : {}) };
   q.choices = choicesFor(q, opts.choix ?? cfg.choix ?? 3, rnd);
   return q;
 }
@@ -121,7 +154,9 @@ export function lineSpec(q, cfg, { x0 = 150, x1 = 1134, y = 452 } = {}) {
   const labels = Array.from({ length: q.n }, (_, i) => (q.labelled.includes(i) ? String(valueAt(q, i)) : null));
   // lot 2, étape 8 : un petit chalut au-dessus des graduations de centaines (au-delà de 100)
   const centaines = q.max > 100 ? Array.from({ length: q.n }, (_, i) => i).filter((i) => { const v = valueAt(q, i); return v > 0 && v % 100 === 0; }) : undefined;
-  return { x0, x1, y, n: q.n, labels, k: cfg.k, centaines, mark: q.format === "lire" ? q.target : undefined, ends: q.n === 0 ? [String(q.min), String(q.max)] : undefined, lit: q.format === "sauter" ? [q.start] : undefined };
+  // lot 3 : le repère du milieu (estimer, cran « plus facile »)
+  const marks = q.repere ? [{ t: 0.5, label: String((q.min + q.max) / 2), color: "#1d7f8f" }] : undefined;
+  return { x0, x1, y, n: q.n, labels, k: cfg.k, centaines, mark: q.format === "lire" ? q.target : undefined, ends: q.n === 0 ? [String(q.min), String(q.max)] : undefined, lit: q.format === "sauter" ? [q.start] : undefined, marks };
 }
 
 // ---------------------------------------------------------------- une question « sauter » (niveau 1)
@@ -160,8 +195,8 @@ export function classifyPlace(q, value) {
 // « Écris le nombre 307. » : la voix dit le nombre, l'enfant le tape au pavé numérique. Les nombres dictés
 // sont ceux de content/module1.json (niveau 12, `nombres`).
 export function makeWrite(cfg, rnd, opts = {}) {
-  const pool = cfg.nombres.filter((v) => !opts.eviter?.includes(v)), answer = pick(rnd, pool.length ? pool : cfg.nombres);
-  return { module: 1, niveau: cfg.niveau, format: "ecrire", min: 0, max: 1000, step: 1, n: 0, target: null, answer, labelled: [] };
+  const all = dictationPool(cfg, opts.k ?? 0), pool = all.filter((v) => !opts.eviter?.includes(v)), answer = pick(rnd, pool.length ? pool : all.length ? all : cfg.nombres);
+  return { module: 1, niveau: cfg.niveau, format: "ecrire", min: 0, max: 1000, step: 1, n: 0, target: null, answer, labelled: [], ...(cfg.tableau ? { tableau: true } : {}), ...(cfg.cran ? { cran: cfg.cran } : {}) };
 }
 // l'erreur d'une dictée : E6 (37 ou 370 pour 307), E7 (3007 pour 307), sinon « autre »
 export function classifyWrite(q, value) {
@@ -177,7 +212,7 @@ export function classifyWrite(q, value) {
 export function makeEstimate(cfg, rnd, opts = {}) {
   const pool = (cfg.cibles ?? [10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90]).filter((v) => !opts.eviter?.includes(v));
   const answer = pick(rnd, pool.length ? pool : [(cfg.min + cfg.max) / 2]);
-  return { module: 1, niveau: cfg.niveau, format: "estimer", min: cfg.min, max: cfg.max, step: 1, n: 0, target: null, answer, labelled: [], tolerance: opts.tolerance ?? cfg.tolerances[0] };
+  return { module: 1, niveau: cfg.niveau, format: "estimer", min: cfg.min, max: cfg.max, step: 1, n: 0, target: null, answer, labelled: [], tolerance: opts.tolerance ?? cfg.tolerances[0], ...(cfg.repere ? { repere: true } : {}), ...(cfg.cran ? { cran: cfg.cran } : {}) };
 }
 // tolérance du niveau 8 : la première tant que 5 estimations n'ont pas été justes au niveau, puis la seconde
 export const toleranceFor = (cfg, justesAuNiveau) => (justesAuNiveau >= 5 ? cfg.tolerances[1] : cfg.tolerances[0]);
@@ -186,8 +221,10 @@ export const toleranceFor = (cfg, justesAuNiveau) => (justesAuNiveau >= 5 ? cfg.
 // tous les nombres qu'un niveau peut montrer, demander ou compter : ceux de ses lignes (graduations,
 // cibles, départs), ses nombres dictés, ses cibles « estimer » et le milieu de sa ligne. L'inventaire de la
 // voix (tools/voix/inventaire.mjs) fabrique une phrase pour chacun, au-delà de 100.
-export function levelValues(cfg) {
-  const out = new Set(), steps = Array.isArray(cfg.pas) ? cfg.pas : [cfg.pas ?? 1];
+export function levelValues(cfg0) {
+  // (lot 3 : avec les lignes que ses crans peuvent produire : étendue plus grande, autres départs)
+  if (cfg0.crans) return [...new Set([cfg0, ...Object.keys(cfg0.crans).map((k) => applyCran(cfg0, k))].flatMap((c) => levelValues({ ...c, crans: undefined })))].sort((x, y) => x - y);
+  const cfg = cfg0, out = new Set(), steps = Array.isArray(cfg.pas) ? cfg.pas : [cfg.pas ?? 1];
   if (cfg.nombres) cfg.nombres.forEach((v) => out.add(v));
   if (cfg.cibles) { cfg.cibles.forEach((v) => out.add(v)); out.add((cfg.min + cfg.max) / 2); out.add(cfg.min); out.add(cfg.max); }
   const lines = cfg.etendue ? cfg.departs.map((d) => [d, d + cfg.etendue]) : cfg.min !== undefined && cfg.graduations !== false ? [[cfg.min, cfg.max]] : [];

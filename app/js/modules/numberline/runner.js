@@ -25,7 +25,7 @@
 //    niveau, avec une cible facile) ; au-dessus du conseillé, le réussir le valide et le conseillé passe au niveau
 //    suivant ; en dessous ou au-dessus, ces questions ne comptent jamais pour faire redescendre le conseillé.
 import { afterAnswer, afterSession, initialLevelState } from "../progress.js";
-import { toleranceFor } from "./generator.js";
+import { applyCran, toleranceFor } from "./generator.js";
 
 // lot 2, étape 8 : L10 (les centaines) à l'entrée du niveau 9, et quand E6 (dizaines et centaines confondues) revient
 export const LESSON_OF_ERROR = { E1: "L1", E2: "L2", E3: "L3", E6: "L10" };
@@ -62,9 +62,13 @@ export class Module1Runner {
     const lv = this.eff() - (this.lower && this.choix == null ? 1 : 0);
     let cfg = this.cfg(Math.max(1, lv)), opts = { eviter: this.recent.slice(-3), ...(lv < 1 ? { eviter: [5, 6, 7, 8, 9, 10] } : {}) };
     if (this.simpler) { this.simpler = false; if (lv > 1 && this.choix == null) cfg = this.cfg(lv - 1); else if (lv === 1) opts = { ...opts, eviter: [5, 6, 7, 8, 9, 10] }; }
+    // lot 3 : niveau choisi, le cran rend ce niveau plus facile ou plus exigeant (module1.json, crans)
+    if (this.choix != null) cfg = applyCran(cfg, this.cran());
+    opts.k = this.k;
     const fmts = cfg.formats, format = want && fmts.includes(want) ? want : fmts[this.k++ % fmts.length];
     if (format === "estimer") opts.tolerance = toleranceFor(cfg, this.st.justesNiveau);
     const q = this.screen.generate(cfg, this.rnd, { ...opts, format });
+    if (cfg.cran) q.cran = cfg.cran; // (lot 3 : le cran à l'intérieur du niveau choisi, tous formats)
     this.recent.push(q.answer);
     if (guide) q.guide = true; else if (this.slowNext) q.lent = true;
     return { q, cfg };
@@ -94,8 +98,10 @@ export class Module1Runner {
       if (!this.lower) events.push({ type: "plusBas", id, raison });
       this.lower = true; this.slowNext = true;
     };
-    // les règles d'adaptation ne comptent que les questions du niveau conseillé (pas les plus simples)
-    if (q.niveau === this.st.niveau) {
+    // les règles d'adaptation ne comptent que les questions du niveau conseillé (pas les plus simples) ; lot 3 : au
+    // niveau choisi, le cran « plus facile » consolide sans faire progresser (docs/SPEC-LOT2.md, section 2)
+    if (q.cran === "facile") { /* ni montée, ni validation */ }
+    else if (q.niveau === this.st.niveau) {
       const a = afterAnswer(this.st, { juste: r.ok, aide: false, ms: r.ms }, this.rules, this.levels.length);
       this.st = { ...a.st, justesNiveau: a.events.some((e) => e.type === "montee") ? 0 : (this.st.justesNiveau ?? 0) + (r.ok ? 1 : 0) };
       events.push(...a.events);

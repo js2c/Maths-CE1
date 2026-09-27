@@ -37,9 +37,15 @@ export const PROFILS = {
 };
 const T = { phrase: 3000, defiEnPlus: 500, chauffe: 7000, chauffeFaux: 9000, notion: 15000, notionFaux: 30000, guide: 30000, lecon: 75000, add: 8000, addFaux: 16000, addGuide: 16000 };
 
-export async function simulate({ profil, jours, seed = 1, zonesPretes = true }) {
+// lot 3 : `choix` ({ module: 1, niveau } ou { module: 2, famille }) : l'enfant choisit toujours cet exercice (écran
+// « choisir ») ; `cran` : le cran qu'elle choisit (remplace celui du profil). Hypothèse du lot 3 (docs/SPEC-LOT3.md,
+// section 3) : au niveau choisi, un cran change la probabilité de réussir la ligne de EFFET_CRAN (moins de nombres
+// écrits, tolérance plus serrée…) ; aux additions, les formes à trou jouent déjà (profil.trou) et l'aide d'emblée du
+// cran « plus facile » aussi.
+export const EFFET_CRAN = { facile: 0.1, conseille: 0, dur: -0.08, tresdur: -0.15 };
+export async function simulate({ profil, jours, seed = 1, zonesPretes = true, choix = null, cran = null }) {
   const cartes = zonesPretes ? pretes(cartes0) : cartes0;
-  const P = PROFILS[profil], R = rng(seed), store = await Store.open(new IDBFactory()), rewards = await new Rewards(store, cartes, calendrier).load(jours[0].getTime() + 18 * 3600000);
+  const P = { ...PROFILS[profil], ...(cran ? { cran } : {}) }, R = rng(seed), store = await Store.open(new IDBFactory()), rewards = await new Rewards(store, cartes, calendrier).load(jours[0].getTime() + 18 * 3600000);
   let t = 0; const clock = () => t, add = (ms) => { t += ms; };
   const essais = {}; const out = [];
   for (const [i, day] of jours.entries()) {
@@ -53,13 +59,13 @@ export async function simulate({ profil, jours, seed = 1, zonesPretes = true }) 
       return { value: ok ? expected(q) : nsp ? null : expected(q) + 1, ms, listens: 1, aide: false, nsp }; } };
     const lineScreen = { generate: gen, ask: async (q, cfg, o) => {
       const niv = cfg.niveau ?? cfg.id ?? 0; essais[niv] = (essais[niv] ?? 0) + 1;
-      const p = Math.min(0.97, P.ligne(niv) + P.apprend * essais[niv]), ok = o?.guide ? true : R() < p, nsp = !ok && R() < P.nsp; if (nsp) log.nsp++;
-      add(o?.guide ? T.guide : ok ? T.notion : T.notionFaux); log.ligne.push(`${niv}${ok ? "" : nsp ? "?" : "✗"}${o?.guide ? "g" : ""}`);
+      const p = Math.max(0.05, Math.min(0.97, P.ligne(niv) + P.apprend * essais[niv] + (q.cran || (choix && P.cran === "conseille") ? EFFET_CRAN[q.cran ?? "conseille"] : 0))), ok = o?.guide ? true : R() < p, nsp = !ok && R() < P.nsp; if (nsp) log.nsp++;
+      add(o?.guide ? T.guide : ok ? T.notion : T.notionFaux); if (!o?.guide) (log.notionOk ??= []).push(ok); log.ligne.push(`${niv}${ok ? "" : nsp ? "?" : "✗"}${o?.guide ? "g" : ""}`);
       return { q, value: ok ? q.answer : nsp ? null : q.answer + 1, ok, code: ok ? null : nsp ? "NSP" : ERR[niv] ?? "autre", ms: ok ? 4500 : 9000, listens: 1 }; } };
     // la notion du jour sur les additions (lot 2, étape 6) : même enfant, mêmes probabilités qu'à l'échauffement
     const factScreen = { ask: async (q, cfg, o) => {
       const trou = q.forme && q.forme !== "directe", ok = o?.guide || q.guide ? true : R() < P.fait * (trou ? P.trou : 1), nsp = !ok && R() < P.nsp; if (nsp) log.nsp++;
-      add(q.guide ? T.addGuide : ok ? T.add : T.addFaux); log.add.push(`${trou ? (q.forme === "trouDroite" ? `${q.a}+?` : `?+${q.b}`) : `${q.a}+${q.b}`}${ok ? "" : nsp ? "?" : "✗"}${q.guide ? "g" : ""}${q.nouveau && !q.revient ? "*" : ""}`);
+      add(q.guide ? T.addGuide : ok ? T.add : T.addFaux); if (!q.guide) (log.notionOk ??= []).push(ok); log.add.push(`${trou ? (q.forme === "trouDroite" ? `${q.a}+?` : `?+${q.b}`) : `${q.a}+${q.b}`}${ok ? "" : nsp ? "?" : "✗"}${q.guide ? "g" : ""}${q.nouveau && !q.revient ? "*" : ""}`);
       if (q.nouveau && !q.revient && !q.guide) log.nouveaux++;
       const value = ok ? expected(q) : nsp ? null : expected(q) + 1;
       return { q, value, ok, code: ok ? null : nsp ? "NSP" : "autre", ms: ok ? P.faitMs * (0.7 + R() * 0.6) : 9000, listens: 1, aide: false, nsp }; } };
@@ -71,12 +77,12 @@ export async function simulate({ profil, jours, seed = 1, zonesPretes = true }) 
       const trou = q.forme && q.forme !== "directe", ok = R() < Math.min(0.99, P.fait * (trou ? P.trou : 1) + 0.03), nsp = !ok && R() < P.nsp / 2;
       const ms = ok ? P.faitMs * 0.8 * (0.7 + R() * 0.6) : 7000; add(ms + (ok ? T.defiEnPlus : defiStep.apresErreurMs));
       return { value: ok ? expected(q) : nsp ? null : expected(q) + 1, ms, listens: 0, aide: false, nsp, after: Promise.resolve() }; } };
-    const s = new Session({ store, content: seance, rewards, clock, onCranDown: async () => { log.descentes++; add(3000); }, handlers: {
+    const s = new Session({ store, content: seance, rewards, clock, choix, onCranDown: async () => { log.descentes++; add(3000); }, handlers: {
       accueil: async ({ session }) => { add(20000); await session.setCran(P.cran ?? "conseille"); add(8000); const sp = drawSurprise(R, cartes.surprise, previousSession(await store.all("seances"), session.id), rewards.gifts); if (sp) { session.rec.surprise = sp; log.surprise = `${sp.type}:${sp.id}`; if (sp.type === "cadeau") await rewards.giveGift(sp.id); add(5000); } },
       echauffement: async (ctx) => { const w = await new Warmup({ store, content: module2, rnd: R, seance: ctx.session.id, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load(); await runWarmup({ ...ctx, warmup: w, screen: warmScreen, rnd: R }); },
       notion: async (ctx) => {
         if (ctx.session.rec.module === 2) {
-          const runner = await new Module2Runner({ store, content: module2, rnd: R, seance: ctx.session.id, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load();
+          const runner = await new Module2Runner({ store, content: module2, rnd: R, seance: ctx.session.id, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux, choix: ctx.session.choix?.famille ?? null }).load();
           log.module = 2; log.famille = runner.famille;
           // lot 3 : part des questions sur la règle de la famille en cours (hors exemples guidés), leçons jouées pour elle
           const rule = new Set(ruleFacts(module2, runner.famille).map((f) => f.fait)), asked = [];
@@ -88,7 +94,7 @@ export async function simulate({ profil, jours, seed = 1, zonesPretes = true }) 
           ctx.session.nouveaux = runner.nouveaux; return;
         }
         log.module = 1;
-        const runner = await new Module1Runner({ screen: lineScreen, store, content: module1, rnd: R, seance: ctx.session.id, offset: () => ctx.session.offset, cran: () => ctx.session.cran }).load(); log.niv0 = runner.st.niveau;
+        const runner = await new Module1Runner({ screen: lineScreen, store, content: module1, rnd: R, seance: ctx.session.id, offset: () => ctx.session.offset, cran: () => ctx.session.cran, choix: ctx.session.choix?.niveau ?? null }).load(); log.niv0 = runner.st.niveau;
         await runNotion({ ...ctx, runner, screen: lineScreen, rnd: R, lesson: async (id) => { add(T.lecon); log.lecons.push(id); return { vue: true }; } }); log.niv1 = runner.st.niveau; },
       defi: async (ctx) => {
         const w = await new Warmup({ store, content: module2, rnd: R, seance: ctx.session.id, clock, cran: () => "conseille" }).load(); w.defi = true;

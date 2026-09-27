@@ -1,5 +1,5 @@
 {
- "version": "f98ebb124aeb",
+ "version": "071a7a03188e",
  "files": [
   "./",
   "assets/art/algues@1x.webp",
@@ -1700,6 +1700,7 @@
   "js/modules/numberline/screen.js",
   "js/modules/progress.js",
   "js/parent/data.js",
+  "js/parent/depart.js",
   "js/parent/parent.js",
   "js/session/album.js",
   "js/session/cards.js",

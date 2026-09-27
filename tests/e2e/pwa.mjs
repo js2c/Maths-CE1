@@ -26,11 +26,11 @@ await page.reload(); await page.waitForFunction(() => navigator.serviceWorker.co
 const urls = await page.evaluate(async () => { const keys = await caches.keys(); const c = await caches.open(keys.find((k) => k.startsWith("ocean-"))); return (await c.keys()).map((r) => new URL(r.url).pathname); });
 const files = (await (await fetch(url + "sw-files.json")).json()).files, all = new Set(files);
 // attendus : tout, sauf les planches @1x qui existent aussi en @2x
-const expected = files.filter((f) => { const m = /^(assets\/art\/.+)@1x\.webp$/.exec(f); return !m || !all.has(`${m[1]}@2x.webp`); });
+const expected = files.filter((f) => { const m = /^(assets\/art\/.+)@1x(-\d+)?\.webp$/.exec(f); return !m || !files.some((g) => g.startsWith(`${m[1]}@2x`)); }); // (une planche peut avoir plusieurs pages)
 const has = new Set(urls.map((p) => p.replace(/^\/Maths-CE1\//, "")));
 check(expected.every((f) => f === "./" || has.has(f)), `fichiers en cache : ${urls.length} / ${expected.length} attendus (${files.length - expected.length} planches @1x laissées de côté)`);
 const art = urls.filter((p) => p.includes("/assets/art/") && p.endsWith(".webp"));
-check(art.length > 0 && art.every((p) => /@2x\.webp$/.test(p) || p.includes("rayons@1x")), `une seule résolution d'images en cache (${art.length} planches : ${art.map((p) => p.split("/").pop()).join(", ")})`);
+check(art.length > 0 && art.every((p) => /@2x(-\d+)?\.webp$/.test(p) || p.includes("rayons@1x")), `une seule résolution d'images en cache (${art.length} planches : ${art.map((p) => p.split("/").pop()).join(", ")})`);
 const errs = inst.installabilityErrors.map((e) => e.errorId);
 check(errs.length === 0, `installable selon Chromium${errs.length ? " — " + errs.join(", ") : ""}`);
 // réseau coupé : l'application redémarre depuis le cache

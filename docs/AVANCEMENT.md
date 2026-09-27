@@ -60,6 +60,26 @@ Pour reprendre si la session s'est arrêtée : branche `claude/prompt-lot2-secti
 - Une enfant qui choisit **toujours « plus facile »** reste au niveau 2 de la ligne graduée toute l'année (ses questions sont au niveau inférieur, qui ne fait jamais monter le conseillé) ; faute d'étoiles arc-en-ciel, elle ne gagne que 30 cartes. C'est la règle de la SPEC ; parade possible dès maintenant : interdire « plus facile » dans l'espace parent, ou décider qu'une réussite en « plus facile » compte pour le niveau.
 - Une enfant qui choisit **toujours « très dur »** gagne environ 50 % d'étoiles en plus, donc plus de doublons : 40 brillantes sur 60 à 2 séances par semaine (34 pour le profil « reel » au cran conseillé), 55 à 5 séances. Point ouvert des brillantes (SPEC-LOT2, section 5) à trancher avant l'étape 9.
 
+**Recette de l'étape 2 (27 septembre 2026) :**
+
+| Critère | Mesure | État |
+| --- | --- | --- |
+| Durée d'une séance complète (`recette.mjs --delai 4.5`, première séance) ; cible 8 à 10 min tant que le défi record n'existe pas | **8 min 56 s** (accueil et sélecteur 15 s, échauffement 1 min 18 s, notion du jour 6 min 06 s avec les leçons L1, L3 et L2 et la voie rapide du niveau 1 au niveau 5, récompense 1 min 13 s) ; 4 min 32 s avec les nombres de la SPEC, d'où le relèvement | tenu |
+| Attente sans rien pouvoir faire, hors consigne orale (`recette-durees.mjs --passer`) | au plus **2,4 s** après une question, sur les niveaux 1 à 8 (sans « passer » : jusqu'à 18 s pendant une correction, qui a toujours son bouton « passer ») | tenu |
+| Faits nouveaux (profil « reel », 2 séances par semaine) | 6, 6, 3, 6, 3, 6, 3 par séance jusqu'aux 33 faits (minimum 3) ; profil « diff » : 0 à 6, bloqué quand la boîte 1 est pleine (8 faits) | tenu |
+| Familles 1 et 2 (profil « sait ») | les 33 faits vus à la **6e séance** (2 et 5 séances par semaine) | tenu |
+| Cartes (2 séances par semaine, zones 3 et 4 prêtes) | 60 cartes (5 légendaires) le 17 juin pour « sait », « reel », « diff » et « très dur » ; quota jamais dépassé. « Plus facile » toujours : 30 cartes (voir les points à décider) | tenu (sauf « plus facile » toujours) |
+| Tirage des brillantes | inchangé (test unitaire : 20 % ± 3 points) ; sur l'année à 2 séances par semaine : 21 à 40 brillantes selon le profil | tenu |
+| Alternance | — | sans objet (étape 6) |
+| Sélecteur : profils « très dur » et « plus facile » (10 premières séances, 2 par semaine) | très dur : réussite 71 %, 2,3 « je ne sais pas » par séance, 16 descentes de cran en 10 séances, 56 étoiles par séance ; plus facile : réussite 92 %, 1,1 « je ne sais pas », 29 étoiles par séance ; « reel » au cran conseillé : 77 %, 1,6, 39 étoiles | mesuré |
+| Leçon au plus une fois par séance | aucune leçon revue deux fois dans une séance, tous profils, sur l'année | tenu |
+| Erreurs dans la page | aucune (recette, séance, leçons, récompenses, cartes, frise, pwa, voix, perf, ergonomie, parent, sélecteur) | tenu |
+| Performance (`perf.mjs`, processeur ÷4, densité 2) | démarrage 1,6 s à froid ; intervalle moyen 18,7 ms (95e centile 33 ms) ; 175 Mo de planches décodées (156 avant l'étape) | tenu |
+
+**Correctif trouvé par la recette :** le service worker aurait mis en cache, sur la tablette, la planche @1x des gestes de la pieuvre en plus de la @2x (la planche @2x a désormais deux pages : `pieuvre-gestes@2x-0.webp`, `-1.webp`) ; `sw.js` et `tests/e2e/pwa.mjs` reconnaissent maintenant les planches en plusieurs pages.
+
+**À vérifier sur la tablette :** le confort du sélecteur (lisibilité des vagues et des demi-étoiles, 15 s d'attente), la longueur réelle d'une séance avec l'enfant (environ 40 questions de ligne graduée à la première séance : est-ce trop ?), la voix des 11 phrases nouvelles, la pieuvre qui montre la cible, la fluidité (planches un peu plus lourdes).
+
 ### Reprise de l'étape 1
 
 Pour reprendre si la session s'est arrêtée : branche `lot2-etape1`, demande de fusion en brouillon « Lot 2, étape 1 (en cours) ».

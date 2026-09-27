@@ -194,7 +194,7 @@ export const SESSION_COLUMNS = [
   ["leçons", (s) => (s.lecons ?? []).map((l) => `${l.id}${l.vue ? "" : l.passee ? " (passée)" : " (arrêtée)"}`).join(" ")], ["cartes", (s) => (s.cartes ?? []).join(" ")],
   ["entraînement libre", (s) => !!s.libre], ["pauses", (s) => s.pauses ?? 0],
   ["cran choisi", (s) => (s.cranDepart ? CRAN_NAMES[s.cranDepart] : null)], ["cran à la fin", (s) => (s.cran ? CRAN_NAMES[s.cran] : null)], ["descentes de cran", (s) => (s.descentes ?? []).length],
-  ["famille du jour (additions)", (s) => s.famille ?? null], ["défi : bonnes réponses", (s) => s.defi?.score ?? null], ["défi : nouveau record", (s) => (s.defi ? !!s.defi.nouveauRecord : null)],
+  ["famille du jour (additions)", (s) => s.famille ?? null], ["exercice choisi par l'enfant", (s) => (s.leconChoisie ? `leçon ${s.lecons?.[0]?.id ?? ""}` : s.choix ? (s.choix.module === 1 ? `ligne, niveau ${s.choix.niveau}` : `additions, famille ${s.choix.famille}`) : null)], ["échauffement passé", (s) => (s.echauffementPasse ? true : null)], ["défi : bonnes réponses", (s) => s.defi?.score ?? null], ["défi : nouveau record", (s) => (s.defi ? !!s.defi.nouveauRecord : null)],
   ["étapes", (s) => (s.etapes ?? []).map((e) => (e.sautee ? `${e.id} (sautée)` : `${e.id} ${e.dureeS ?? ""}s`)).join(" | ")],
 ];
 export const ANSWER_COLUMNS = [

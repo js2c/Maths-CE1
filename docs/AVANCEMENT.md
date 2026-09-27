@@ -10,7 +10,7 @@ Spécification : `docs/SPEC-LOT3.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LO
 
 | Étape | Partie | Contenu | État |
 | --- | --- | --- | --- |
-| 1 | A | Accueil « choisir » : exercice et niveau (ligne 1 à 13, familles 1 à 7, leçons), exercice choisi = séance du jour ; échauffement passable et réglage ; leçons cohérentes (suppression de `leconSiPasVue`, 80 % sur la famille) ; maison des nombres ; test des bords des sprites | en cours |
+| 1 | A | Accueil « choisir » : exercice et niveau (ligne 1 à 13, familles 1 à 7, leçons), exercice choisi = séance du jour ; échauffement passable et réglage ; leçons cohérentes (suppression de `leconSiPasVue`, 80 % sur la famille) ; maison des nombres ; test des bords des sprites | fait (branche `claude/laughing-ritchie-cp777i`, https://github.com/js2c/Maths-CE1/pull/19) |
 | 2 | A | Difficulté à l'intérieur du niveau (ligne graduée, 13 niveaux × 4 crans ; additions) ; outil de sauvegardes de test ; guide du parent ; recette complète de la partie A | à faire |
 | 3 | B | Atelier : mur de corail, poisson sur le mur, ponts du chemin, pictogramme du calcul rapide pour l'écran de choix | à faire |
 | 4 | B | Module 3 : niveaux 1 à 9, générateurs, erreurs C1 à C5, déroulé d'un nouveau niveau, leçons L7 à L9, crans, choix du niveau, rotation dans « jouer », espace parent | à faire |
@@ -20,13 +20,25 @@ Spécification : `docs/SPEC-LOT3.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LO
 
 Pour reprendre si la session s'est arrêtée : branche `claude/laughing-ritchie-cp777i`, demande de fusion en brouillon « Lot 3, étapes 1 à 4 (en cours) ».
 
-**Étape en cours :** 1 (début).
+**Étape en cours :** 2 (à commencer).
 
-**Fait :** inscription du lot 3.
+**Fait :**
 
-**Reste :** étapes 1 à 4 ; recette complète à la fin de l'étape 4.
+- Étape 1 : écran « choisir » (`js/session/choice.js`, planche « choix » de l'atelier, `sea/choice.ts`) ; exercice choisi = séance du jour (`Session({ choix })`, `Module1Runner({ choix })`, `Module2Runner({ choix })`) ; leçon choisie seule ; « Encore ! » ouvre le même écran sans étoiles ; « passer » l'échauffement et réglage parent « Échauffement : oui / non » ; `leconSiPasVue` supprimée (`leconSiJamaisVue` : L6 pour les maisons de 8 et 9, L4 pour les presque-doubles), 80 % sur la famille, rappel du double ; maison des nombres ; contrôle des bords des sprites (`bords` dans l'atlas, `tests/unit/bords.test.mjs`) et six sprites corrigés ; voix des phrases nouvelles ; tests `choix.test.mjs`, `bords.test.mjs`, parcours `tests/e2e/choix.mjs`.
 
-**Décisions prises :** (aucune pour l'instant)
+**Reste :** étapes 2 à 4 ; recette complète à la fin de l'étape 4.
+
+**Recette allégée de l'étape 1 :** `npm test` : 182 tests, tous passent. `node tests/e2e/choix.mjs` : tout est bon (niveau 8 dès une base vide, 100 % des questions au niveau 8 ; famille 5 ouverte par le choix ; leçon seule ; notion du jour 307 ms après « passer » ; « Échauffement : non » sans pictogramme ; « Encore ! »). `seance.mjs`, `ergonomie.mjs` (adapté : « Encore ! » ouvre l'écran « choisir »), `notion2.mjs`, `ermite.mjs` : tout est bon. Simulation sur l'année, 2 séances par semaine : part des questions sur la famille en cours au minimum 81 % (réel), 82 % (sait), 81 % (en difficulté), 80 % (très dur), 100 % (plus facile) ; aucune leçon de famille jouée pour une autre famille ; après L4, 91 % de doubles ou presque-doubles (sait). Captures regardées : `tests/e2e/out/choix/`, `tests/e2e/out/ermite/5-maison.png`.
+
+**Décisions prises (étape 1) :**
+
+- *Validation de l'écran de choix* : la SPEC dit « toucher deux fois ou la coche valide » (section 2) et « en 3 touchers au plus (choisir, exercice, niveau) » (section 7). Choix par défaut : la description de l'écran (validation « double » à chaque étape, pour une enfant qui ne lit pas : le premier toucher fait entendre le nom) ; mesuré : 5 touchers jusqu'au sélecteur (choisir, exercice ×2, niveau ×2), soit 3 choix. Réglage `seance.json`, `choix.validation` : « simple » donne 3 touchers. **Question ouverte pour le parent.**
+- *Presque-doubles* : le rappel du double est dit avec la consigne des formes directes seulement (dans une forme à trou, il donnerait la réponse) ; ce n'est pas compté comme une aide (le fait peut monter de boîte) ; « avec l'appui double + 1 » est lu comme l'appui de la famille (coquillage, correction), déjà en place.
+- *80 % sur la famille* : pour y parvenir avec une petite famille (5 doubles, 8 presque-doubles), un fait de la famille peut revenir plus de 3 fois (`memeFaitMax` ne vaut plus que pour les autres familles quand la famille est épuisée) ; jamais deux fois de suite. Avec « jouer » aux crans « plus dur » et « très dur », les faits que le cran ajoute (famille suivante, familles mêlées) passent dans les 20 % restants.
+- *Passer l'échauffement* : le bouton est montré au début (consigne et première question), puis disparaît à la première réponse (la correction a son propre « passer » à la même place).
+- *Leçon choisie seule* : notée vue (ou passée) dans l'état du module ; ses 3 étoiles une fois par leçon et par jour ; rangée dans l'historique comme une séance « libre » (« leçon choisie »), jamais la séance du jour.
+- *Maison des nombres* : le seuil débordait parce que la courbe lissée à quatre points gonflait de 40 px de chaque côté ; redessiné avec des points près des coins, calque élargi, et en pierre gris-bleu (la marche de sable se perdait sur le sable).
+- *Export de l'atelier* : un contrôle échoue depuis le lot 2 sur le raccord de la boucle `ermite.repos` (écart 31,1 pour 28,7 entre images voisines, seuil 1,05 ×) ; il n'était pas relevé parce que le bernard-l'ermite était exporté avec `--only ermite`. La SPEC du lot 3 demande de ne plus toucher au bernard-l'ermite : laissé tel quel, signalé.
 
 ## Lot 2
 

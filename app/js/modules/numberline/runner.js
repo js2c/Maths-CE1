@@ -19,7 +19,11 @@
 //    `offset()` (écart du cran au conseillé, -1 à 2) décale le niveau joué, borné au premier et au dernier
 //    niveau ; réussir au-dessus du conseillé (règle habituelle, ou voie rapide) valide ce niveau et fait
 //    monter le conseillé au suivant ; échouer au-dessus ne le fait jamais baisser (la protection de la
-//    séance redescend le cran, session.js) et ces questions ne comptent pas dans le taux de la séance.
+//    séance redescend le cran, session.js) et ces questions ne comptent pas dans le taux de la séance ;
+//  - lot 3 (docs/SPEC-LOT3.md, section 2) : le niveau choisi par l'enfant (`choix`, écran « choisir ») : toutes
+//    les questions sont posées à ce niveau (le cran ne le décale plus ; une question « plus simple » reste à ce
+//    niveau, avec une cible facile) ; au-dessus du conseillé, le réussir le valide et le conseillé passe au niveau
+//    suivant ; en dessous ou au-dessus, ces questions ne comptent jamais pour faire redescendre le conseillé.
 import { afterAnswer, afterSession, initialLevelState } from "../progress.js";
 import { toleranceFor } from "./generator.js";
 
@@ -30,14 +34,15 @@ export const LESSON_OF_LEVEL = { 1: "L1", 4: "L3", 5: "L2", 9: "L10" };
 export class Module1Runner {
   // screen : l'écran (generate) ; store : la base ; content : module1.json ; rnd : hasard
   // offset : () => l'écart du cran choisi au conseillé (session.offset)
-  constructor({ screen, store, content, rnd, seance = null, offset = () => 0, cran = () => null }) {
-    this.screen = screen; this.store = store; this.content = content; this.rnd = rnd; this.seance = seance; this.offset = offset; this.cran = cran;
+  // choix : le niveau choisi par l'enfant (écran « choisir », lot 3), sinon null (« jouer » : le conseillé décalé du cran)
+  constructor({ screen, store, content, rnd, seance = null, offset = () => 0, cran = () => null, choix = null }) {
+    this.screen = screen; this.store = store; this.content = content; this.rnd = rnd; this.seance = seance; this.offset = offset; this.cran = cran; this.choix = choix;
     this.levels = content.niveaux; this.rules = content.reglesAdaptation;
     this.replays = []; this.recent = []; this.errors = {}; this.count = 0; this.ok = 0; this.k = 0; this.simpler = false;
     this.played = new Set(); this.lower = false; this.slowNext = false; this.up = null; this.rateN = 0; this.rateOk = 0;
   }
   // le niveau joué : le conseillé décalé du cran, borné au premier et au dernier niveau
-  eff() { return Math.min(this.levels.length, Math.max(1, this.st.niveau + (this.offset() ?? 0))); }
+  eff() { return Math.min(this.levels.length, Math.max(1, this.choix ?? this.st.niveau + (this.offset() ?? 0))); }
   async load() { this.st = (await this.store?.get("niveaux", 1)) ?? initialLevelState(1); this.st.justesNiveau ??= 0; return this; }
   cfg(n = this.st.niveau) { return this.levels[Math.min(this.levels.length, Math.max(1, n)) - 1]; }
   // la leçon à jouer avant de commencer, s'il y en a une pour ce niveau et qu'elle n'a jamais été vue
@@ -53,9 +58,10 @@ export class Module1Runner {
     const due = guide ? -1 : this.replays.findIndex((r) => r.in <= 0);
     if (due >= 0) { const r = this.replays.splice(due, 1)[0]; return { q: { ...r.q, revient: true }, cfg: r.cfg }; }
     // difficulté persistante après la leçon déjà vue dans la séance : le niveau inférieur jusqu'à la fin
-    const lv = this.eff() - (this.lower ? 1 : 0);
+    // (niveau choisi : jamais d'autre niveau que le sien ; la question « plus simple » y prend une cible facile)
+    const lv = this.eff() - (this.lower && this.choix == null ? 1 : 0);
     let cfg = this.cfg(Math.max(1, lv)), opts = { eviter: this.recent.slice(-3), ...(lv < 1 ? { eviter: [5, 6, 7, 8, 9, 10] } : {}) };
-    if (this.simpler) { this.simpler = false; if (lv > 1) cfg = this.cfg(lv - 1); else opts = { ...opts, eviter: [5, 6, 7, 8, 9, 10] }; }
+    if (this.simpler) { this.simpler = false; if (lv > 1 && this.choix == null) cfg = this.cfg(lv - 1); else if (lv === 1) opts = { ...opts, eviter: [5, 6, 7, 8, 9, 10] }; }
     const fmts = cfg.formats, format = want && fmts.includes(want) ? want : fmts[this.k++ % fmts.length];
     if (format === "estimer") opts.tolerance = toleranceFor(cfg, this.st.justesNiveau);
     const q = this.screen.generate(cfg, this.rnd, { ...opts, format });
@@ -80,7 +86,8 @@ export class Module1Runner {
     if (!r.ok && !q.revient) this.replays.push({ q, cfg, in: 3 + Math.floor(this.rnd() * 3) });
     if (!r.ok && q.lent) this.slowNext = false; // l'erreur corrigée lentement : c'est fait
     // le taux de la séance (redescente) : pas les questions au-dessus du conseillé (échouer au-dessus ne fait jamais baisser)
-    if (q.niveau <= this.st.niveau) { this.rateN++; if (r.ok) this.rateOk++; }
+    // (niveau choisi : seulement s'il est le conseillé)
+    if (this.choix == null ? q.niveau <= this.st.niveau : q.niveau === this.st.niveau) { this.rateN++; if (r.ok) this.rateOk++; }
     // une leçon à relancer ; déjà jouée dans la séance : le niveau inférieur et une correction lente à la place
     const relaunch = (id, raison) => {
       if (!this.played.has(id)) { events.push({ type: "lecon", id, raison }); this.played.add(id); return; }

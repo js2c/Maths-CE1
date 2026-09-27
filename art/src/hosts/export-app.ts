@@ -6,10 +6,10 @@ import { Gfx, PENCIL, tile, type Ctx, type Env, type Layer } from "../canvas-cor
 import { OCTO_TIMELINE, OH, OW, OX, OY, SPECS, type Spec } from "../canvas-core/sea/catalog";
 import { drawOctopus, OCTO_CLIPS } from "../canvas-core/sea/octopus";
 
-type Frame = { c: OffscreenCanvas; x: number; y: number; w: number; h: number; hash: string };
+type Frame = { c: OffscreenCanvas; x: number; y: number; w: number; h: number; hash: string; edges: number[] };
 const surface = (w: number, h: number): Layer => { const c = new OffscreenCanvas(w, h); return { canvas: c, ctx: c.getContext("2d", { willReadFrequently: true }) as unknown as Ctx } as Layer; };
 const fnv = (d: Uint8ClampedArray) => { let h = 0x811c9dc5; for (let i = 0; i < d.length; i++) { h ^= d[i]; h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(16).padStart(8, "0"); };
-const PAPER = 0.05;
+const PAPER = 0.05, EDGE_ALPHA = 24;
 
 // une image : dessin sur un calque propre, grain du papier, recadrage au plus juste
 // un environnement par taille de calque : la texture du papier et la réserve de calques de Gfx sont
@@ -25,6 +25,9 @@ const renderFrame = (s: Spec, f: number, scale: number): Frame => {
   ctx.setTransform(scale, 0, 0, scale, 0, 0);
   const g = new Gfx(ctx, env, 0, PENCIL);
   s.draw(g, f);
+  // lot 3 : les pixels visibles (alpha >= EDGE_ALPHA) sur chaque bord du calque [haut, droite, bas, gauche] : un
+  // dessin qui touche le bord de son calque y est coupé (contrôle tests/unit/bords.test.mjs)
+  const edges = [ctx.getImageData(0, 0, DW, 1), ctx.getImageData(DW - 1, 0, 1, DH), ctx.getImageData(0, DH - 1, DW, 1), ctx.getImageData(0, 0, 1, DH)].map((d) => { let n = 0; for (let i = 3; i < d.data.length; i += 4) if (d.data[i] >= EDGE_ALPHA) n++; return n; });
   const r = s.full || !g.drawn ? [0, 0, DW, DH] : g.drawn, w = Math.max(1, r[2] - r[0]), h = Math.max(1, r[3] - r[1]);
   // grain : multiplié comme sur la référence (Gfx.paper, même motif ancré en 0,0), mais seulement dans
   // le rectangle utile ; puis l'alpha d'origine est remis (le papier ne doit pas teinter le transparent)
@@ -35,7 +38,7 @@ const renderFrame = (s: Spec, f: number, scale: number): Frame => {
   for (let i = 3; i < after.data.length; i += 4) after.data[i] = before.data[i];
   const out = new OffscreenCanvas(w, h), oc = out.getContext("2d")!;
   oc.putImageData(after, 0, 0);
-  return { c: out, x: r[0], y: r[1], w, h, hash: fnv(after.data) };
+  return { c: out, x: r[0], y: r[1], w, h, hash: fnv(after.data), edges };
 };
 
 // rangement en étagères : les plus hautes d'abord, pages de 4096 px au plus
@@ -75,14 +78,15 @@ window.EXPORT = {
     const drawMs = performance.now() - t0, { pos, sizes } = pack(all.map((a) => a.fr));
     const pages = sizes.map(([w, h]) => { const c = new OffscreenCanvas(w, h); return { c, x: c.getContext("2d")! }; });
     all.forEach((a, i) => pages[pos[i].page].x.drawImage(a.fr.c, pos[i].x, pos[i].y));
-    const frames: Record<string, number[][]> = {}, hashes: Record<string, string[]> = {};
+    const frames: Record<string, number[][]> = {}, hashes: Record<string, string[]> = {}, edges: Record<string, number[]> = {};
     all.forEach((a, i) => {
       const o = a.spec.origin, ox = a.fr.x - Math.round(o[0] * scale), oy = a.fr.y - Math.round(o[1] * scale);
       (frames[a.spec.name] ??= []).push([pos[i].page, pos[i].x, pos[i].y, a.fr.w, a.fr.h, ox, oy]);
       (hashes[a.spec.name] ??= []).push(a.fr.hash);
+      const e = (edges[a.spec.name] ??= [0, 0, 0, 0]); a.fr.edges.forEach((n, k) => { e[k] = Math.max(e[k], n); });
     });
     const files = encode ? await Promise.all(pages.map(async (p) => b64(await p.c.convertToBlob({ type: "image/webp", quality })))) : [];
-    return { frames, hashes, files, sizes, drawMs, pixels: all.reduce((a, x) => a + x.fr.w * x.fr.h, 0) };
+    return { frames, hashes, edges, files, sizes, drawMs, pixels: all.reduce((a, x) => a + x.fr.w * x.fr.h, 0) };
   },
   // contrôle des boucles (à l'échelle 1) : l'écart au raccord doit rester dans l'ordre des écarts
   // entre images voisines ; et un geste doit partir de l'image du repos où il entre et y revenir.

@@ -112,10 +112,13 @@ check(await page.evaluate(() => { const m = document.querySelector(".moon"); ret
 // ---- 4 : l'entraînement libre
 const stars0 = await page.evaluate(() => [window.__app.rewards.st.total, window.__app.rewards.st.coquillages]);
 await page.tap(".again", { force: true });
-await page.waitForSelector(".free", { timeout: 20000 }); await page.waitForTimeout(600);
+// (lot 3 : « Encore ! » ouvre l'écran « choisir », sans étoiles : l'exercice, puis le niveau ; deux touchers chacun)
+await page.waitForSelector(".choix-ex", { timeout: 20000 }); await page.waitForTimeout(600);
 await shot("7-encore-menu");
-check((await page.locator(".free").count()) === 2, "entraînement libre : la ligne et les additions (aucune leçon vue)");
-await page.tap(".free >> nth=0", { force: true });
+check((await page.locator(".choix-ex").count()) === 3, "entraînement libre : l'écran « choisir » (ligne, additions, leçons)");
+for (let i = 0; i < 2; i++) { await page.tap('.choix-ex[aria-label="ligne"]', { force: true }); await page.waitForTimeout(250); }
+await page.waitForSelector('.choix-tuile[data-conseille="1"]', { timeout: 10000 });
+for (let i = 0; i < 2; i++) { await page.tap('.choix-tuile[data-conseille="1"]', { force: true }); await page.waitForTimeout(250); }
 for (let i = 0; i < 3; i++) { await waitQ(); if (i === 0) { await page.waitForTimeout(300); await shot("8-libre-ligne"); } await answerRight(); await page.waitForTimeout(300); }
 const stars1 = await page.evaluate(() => [window.__app.rewards.st.total, window.__app.rewards.st.coquillages, window.__app.hud.shown]);
 check(stars1[0] === stars0[0] && stars1[1] === stars0[1] && stars1[2] === stars0[0], `entraînement libre : ni étoile ni coquillage (${stars1[0]} étoiles avant et après)`);

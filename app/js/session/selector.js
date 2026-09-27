@@ -9,7 +9,7 @@ import * as R from "../art/runtime.js";
 import { CRANS } from "./session.js";
 import { onTap, pop, spriteBox } from "../engine/ui.js";
 
-export const CRAN_ROW = { y: 420, cx: 810, gap: 220 } /* à droite de la pieuvre */, CRAN_BOX = 232, CHECK_AT = [810, 668];
+export const CRAN_ROW = { y: 420, cx: 810, gap: 220 } /* à droite de la pieuvre */, CRAN_BOX = 240, CHECK_AT = [810, 668];
 // les crans que le parent autorise, dans l'ordre (au moins un) ; réglage { min, max } par noms de crans
 export function allowedCrans(setting) {
   const lo = Math.max(0, CRANS.indexOf(setting?.min ?? "facile")), hi = Math.max(lo, CRANS.indexOf(setting?.max ?? "tresdur") < 0 ? 3 : CRANS.indexOf(setting?.max ?? "tresdur"));

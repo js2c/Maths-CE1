@@ -79,9 +79,12 @@ export const drawHouseFloor = (g: Gfx, x: number, y: number) => g.group("plain",
 });
 // le seuil : une marche de sable et une petite porte ronde entre les deux pièces du bas. Origine : milieu du haut.
 export const drawHouseBase = (g: Gfx, x: number, y: number) => g.group("plain", () => {
-  const w = HOUSE.w / 2 + 10, h = HOUSE.base, step = smooth([[x - w, y], [x + w, y], [x + w + 6, y + h], [x - w - 6, y + h]], true, 4);
+  // (lot 3 : des points près de chaque coin, comme l'étage ; avec les seuls quatre coins, la courbe lissée
+  // débordait de 40 px de chaque côté et sortait de son calque)
+  const w = HOUSE.w / 2 + 10, h = HOUSE.base, step = smooth([[x - w, y], [x - w + 10, y - 0.5], [x, y + 0.5], [x + w - 10, y], [x + w, y], [x + w + 2, y + 10], [x + w + 5, y + h - 10], [x + w + 6, y + h], [x + w - 10, y + h + 0.5], [x, y + h], [x - w + 10, y + h + 0.5], [x - w - 6, y + h], [x - w - 5, y + h - 10], [x - w - 2, y + 10]], true, 3);
   fillShape(g, shift(step, 8, 6), SH, 0.2);
-  cel(g, step, "#f1d79f", "#d8b577", 5); contour(g, step, 3.2, 6400);
+  // (lot 3 : une marche de pierre, comme les galets du décor : la marche de sable se perdait sur le sable)
+  cel(g, step, "#c3cfd3", "#8fa0a6", 5); contour(g, step, 3.2, 6400);
   const door = smooth([[x - 18, y + h - 2], [x - 18, y + 14], [x, y + 4], [x + 18, y + 14], [x + 18, y + h - 2]], true, 6);
   fillShape(g, door, "#6a3e28"); clipped(g, door, () => fillShape(g, shift(door, 4, 4), "#8a5638")); contour(g, door, 2.6, 6401);
 });

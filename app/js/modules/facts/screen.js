@@ -185,12 +185,15 @@ export class FactsScreen {
   consigne(q) {
     if (q.dictee) return this.dictee;
     const { text } = this.app, v = { a: q.a, b: q.b, n: q.a + q.b };
+    // lot 3 : les presque-doubles rappellent le double (« 3 plus 4, c'est 3 plus 3, et encore 1 »), runner.js
+    if (q.rappel && (q.forme ?? "directe") === "directe") return `${fill(text.pick("fait"), v)} ${fill(text.data.rappelDouble, { ...v, d: q.rappel.d })}`;
     return q.forme === "trouDroite" ? fill(text.data.faitTrouDroite, v) : q.forme === "trouGauche" ? fill(text.data.faitTrouGauche, v) : fill(text.pick("fait"), v);
   }
   // la correction (erreur ou « je ne sais pas ») peut être passée dès qu'elle commence : la voix se tait,
   // le résultat reste écrit sur l'ardoise environ une seconde, puis le fait suivant ; noté « correction passée ».
   // Ses pauses suivent la vitesse des corrections (content/seance.json, vitesseAnimations).
   async submit({ nsp = false } = {}) {
+    this.beforeSubmit?.(); // (lot 3 : le « passer » de l'échauffement disparaît dès la première réponse)
     if (this.defi) return this.submitDefi(nsp);
     if (this.q?.dictee) { this.locked = true; this.app.voice.stop(); const done = this.resolve; this.resolve = null; return done?.({ value: nsp ? null : Number(this.typed), ms: Math.round(clock.now() - this.t0), listens: this.app.voice.listens, nsp }); }
     const { voice, text, ocean } = this.app, q = this.q, value = nsp ? null : Number(this.typed), ok = value === expected(q), ms = Math.round(clock.now() - this.t0), k = this.app.vitesse ?? 1;
@@ -249,28 +252,40 @@ export class FactsScreen {
       await g(wait(solved ? 600 : 1600));
     } finally { nl.turtle.hide(); nl.arcs = []; line.fxClear(); line.clear(); }
   }
+  // lot 3 : l'échauffement est passé pendant une question : elle est abandonnée (plus de réponse attendue)
+  abandon() { this.locked = true; this.resolve = null; this.app.voice.stop(); this.app.aidBoard?.clear(); }
   leave() { this.show(false); this.q = null; this.defi = null; this.dictee = null; this.app.aidBoard?.clear(); }
 }
 
 // l'échauffement dans la séance : n faits (10 à 14), précédés, une séance sur cinq, des questions du temps de
 // base ; la voie rapide peut en ajouter à la fin ; si la protection fait redescendre le cran, les faits
 // nouveaux « bonus » du cran pas encore posés sont retirés (et les formes à trou suivent le nouveau cran)
-export async function runWarmup({ session, step, end, warmup, screen, intro, rnd = Math.random }) {
+// lot 3 (docs/SPEC-LOT3.md, section 4) : `skip(onSkip)` crée le bouton « passer » habituel, montré au début de
+// l'échauffement (consigne et première question) ; un toucher l'arrête aussitôt et la séance enchaîne sur
+// l'exercice (noté `echauffementPasse` dans l'enregistrement de la séance)
+export async function runWarmup({ session, step, end, warmup, screen, intro, rnd = Math.random, skip = null }) {
   const [a, b] = step.questions, n = a + Math.floor(rnd() * (b - a + 1)), rest = warmup.questions(n, a);
+  let skipped = false, abort = null; const abortP = new Promise((res) => { abort = res; });
+  const btn = skip?.(() => { skipped = true; abort(); }), g = (p) => (btn ? Promise.race([p, abortP]) : p);
+  if (btn) screen.beforeSubmit = () => { btn.remove(); screen.beforeSubmit = null; };
   screen.show(true); screen.keys(false);
   session.expect?.(rest.length);
-  await intro?.();
-  screen.keys(true);
-  while (rest.length && !session.over(end)) {
+  await g(intro?.(() => skipped));
+  if (!skipped) screen.keys(true);
+  while (!skipped && rest.length && !session.over(end)) {
     const q = warmup.prepare(rest.shift());
     if (!q) { session.expect?.(session.progress.faites + rest.length); continue; }
-    const r = await screen.ask(q), res = await warmup.record(q, r, rest);
+    const r = await g(screen.ask(q));
+    if (skipped) break;
+    const res = await warmup.record(q, r, rest);
     session.expect?.(session.progress.faites + 1 + rest.length); // un fait raté revient, la voie rapide en ajoute : des bulles de plus
     session.cranDown = false;
     await session.answered(res.juste);
     if (session.cranDown) warmup.drop(rest);
     await session.stars(res.etoiles, q.revient && res.juste ? "erreur corrigée" : "bonne réponse");
   }
+  btn?.remove(); screen.beforeSubmit = null;
+  if (skipped) { screen.abandon?.(); if (session.rec) session.rec.echauffementPasse = { apres: session.progress.faites }; }
   session.nouveaux = warmup.nouveaux; if (session.rec) session.rec.faitsNouveaux = warmup.nouveaux;
   // lot 2, étape 6 : une famille acquise est un niveau franchi (étoile arc-en-ciel) ; ouverture de la suivante
   for (const e of (await warmup.families?.()) ?? []) { if (e.type === "acquise" && !e.parent) await session.levelUp(); if (session.rec) (session.rec.familles ??= []).push(e); }

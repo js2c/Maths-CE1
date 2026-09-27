@@ -82,6 +82,8 @@ function domaines(C) {
     // lot 2, étape 6 : le cadre de 10 (le nombre de poissons déjà dans la boîte), le double + 1 (le double)
     aideCadre: range(1, 9).map((k) => ({ k })),
     aideDoublePlus: range(1, 4).map((d) => ({ d })),
+    // lot 3 : chaque question des presque-doubles rappelle le double (facts/runner.js, q.rappel : d, le petit nombre)
+    rappelDouble: faits.filter(({ a, b }) => Math.abs(a - b) === 1 && Math.max(a, b) <= 5).map(({ a, b }) => ({ a, b, d: Math.min(a, b) })),
     // le défi record : « {n} bonnes réponses ! » (2 ou plus ; une seule : defiScoreUn), le record à battre (1 ou plus)
     defiScore: range(2, DEFI_MAX).map((n) => ({ n })),
     defiPasRecord: range(1, DEFI_MAX).map((n) => ({ n })),

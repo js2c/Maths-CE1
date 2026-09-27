@@ -11,7 +11,7 @@ import { drawAnswerBubble } from "./decor";
 
 const SH = "#0a3f49", SEA = "#35b3c1", SEA_S = "#1d7f8f", FOAM = "#fffdf6", FOAM_S = "#cfe6ea";
 export const CRAN_R = 96; // rayon de la bulle d'un cran
-export const CRAN_W = 2 * CRAN_R + 40;
+export const CRAN_W = 2 * CRAN_R + 64; // (lot 3 : de la place pour l'ombre, coupée en bas avec + 40)
 // la vague d'un cran (0 : plus facile … 3 : très dur), sa base en y0, centrée en cx ; clippée par la bulle
 const WAVES = [
   { h: 16, curl: 0, crest: 0.05 },

@@ -227,7 +227,7 @@ export class ParentSpace {
     const lv = D.level(x.reussite, this.c.reussite), det = h("div", { class: "pa-detail" });
     const el = h("div", { class: "pa-session" });
     const head = h("button", { "aria-expanded": "false", onclick: () => { const o = el.classList.toggle("open"); head.setAttribute("aria-expanded", String(o)); det.hidden = !o; if (o && !det.childElementCount) this.sessionDetail(x, det); } },
-      h("span", { class: "t" }, `${D.fmtDay(x.debut)}, ${D.fmtTime(x.debut)}${x.libre ? " · entraînement libre" : ""}`),
+      h("span", { class: "t" }, `${D.fmtDay(x.debut)}, ${D.fmtTime(x.debut)}${x.leconChoisie ? " · leçon choisie" : x.libre ? " · entraînement libre" : x.choix ? " · exercice choisi" : ""}`),
       h("span", { class: "s" }, `${D.fmtDuration(x.dureeS)} · ${plural(x.questions ?? 0, "question")} · ${plural(x.etoiles ?? 0, "étoile")} de mer`),
       h("span", { class: "r" }, h("span", { class: `pa-badge ${x.terminee || x.libre ? lv ?? "neutre" : "neutre"}` }, x.libre ? (x.questions ? `${D.fmtPct(x.reussite)} de réussite` : "libre") : x.terminee ? (x.questions ? `${D.fmtPct(x.reussite)} de réussite` : "terminée") : "interrompue"), h("span", { class: "chev", "aria-hidden": "true" }, "›")));
     el.append(head, det); det.hidden = true;
@@ -241,6 +241,9 @@ export class ParentSpace {
     det.append(h("div", { class: "pa-facts" },
       h("span", {}, "De ", h("b", {}, D.fmtTime(x.debut)), " à ", h("b", {}, x.fin ? D.fmtTime(x.fin) : "—")),
       h("span", {}, "Notion du jour : ", h("b", {}, `${this.c.modules[x.module]?.nom ?? `module ${x.module}`}${x.module === 2 && x.famille ? ` (famille « ${this.module2.familles.find((f) => f.id === x.famille)?.nom ?? x.famille} »)` : ""}`)),
+      x.choix && h("span", {}, "Exercice choisi par l'enfant : ", h("b", {}, x.choix.module === 1 ? `ligne graduée, niveau ${x.choix.niveau}` : `additions, famille « ${this.module2.familles.find((f) => f.id === x.choix.famille)?.nom ?? x.choix.famille} »`)),
+      x.echauffementPasse && h("span", {}, "Échauffement : ", h("b", {}, `passé par l'enfant après ${plural(x.echauffementPasse.apres, "question")}`)),
+      (x.etapes ?? []).some((e) => e.sautee === "réglage du parent") && h("span", {}, "Échauffement : ", h("b", {}, "retiré (réglage « Échauffement : non »)")),
       x.defi && h("span", {}, "Défi record : ", h("b", {}, `${plural(x.defi.score, "bonne réponse")} sur ${x.defi.questions}${x.defi.nouveauRecord ? " (nouveau record !)" : x.defi.record ? ` (record : ${x.defi.record})` : ""}`)),
       h("span", {}, "Réponses justes : ", h("b", {}, `${x.justes ?? 0} sur ${x.questions ?? 0}`)),
       steps.length > 0 && h("span", {}, "Étapes : ", h("b", {}, steps.join(", "))),
@@ -436,13 +439,20 @@ export class ParentSpace {
     this.store.setting("defiActif").then((v) => paint(v !== false));
     return row("Défi record", "Une minute de faits d'addition déjà bien sus, comparés au record de l'enfant (jamais à une norme), après la notion du jour. Il n'a lieu qu'à partir de la 5e séance et quand au moins 8 faits sont bien sus (onglet Progression, « Défi record »).", seg);
   }
+  // lot 3 (docs/SPEC-LOT3.md, section 4) : l'échauffement, oui ou non
+  echauffementRow(row) {
+    const seg = h("div", { class: "pa-seg", role: "group", "aria-label": "échauffement" }), paint = (v) => { for (const b of seg.children) b.setAttribute("aria-pressed", String((b.dataset.v === "oui") === v)); };
+    for (const [v, t] of [["oui", "oui"], ["non", "non"]]) seg.append(h("button", { "data-v": v, onclick: async () => { await this.store.setSetting("echauffement", v === "oui"); paint(v === "oui"); } }, t));
+    this.store.setting("echauffement").then((v) => paint(v !== false));
+    return row("Échauffement", "Quelques additions au début de chaque séance ; l'enfant peut aussi le passer (bouton « passer » en haut à droite). C'est là que reviennent les additions à revoir (la révision espacée) : sans échauffement, elles ne reviennent que dans les exercices d'additions.", seg);
+  }
   // le module imposé pour la prochaine séance (lot 2, étape 6) : valable une séance, ensuite l'alternance reprend
   moduleRow(row) {
     const seg = h("div", { class: "pa-seg", role: "group", "aria-label": "module de la prochaine séance" }), ok = h("span", { class: "pa-ok" });
     const paint = (v) => { for (const b of seg.children) b.setAttribute("aria-pressed", String(b.dataset.v === String(v ?? "auto"))); };
     for (const [v, t] of [["auto", "au choix de l'application"], ["1", "ligne graduée"], ["2", "additions"]]) seg.append(h("button", { "data-v": v, onclick: async () => { await this.store.setSetting("moduleImpose", v === "auto" ? null : { module: Number(v), t: Date.now() }); paint(v === "auto" ? null : v); ok.textContent = "Enregistré."; } }, t));
     this.store.setting("moduleImpose").then((m) => paint(m?.module ?? null));
-    return row("Notion du jour de la prochaine séance", "D'habitude, la ligne graduée et les additions alternent d'une séance à l'autre. Vous pouvez imposer l'une des deux pour la prochaine séance seulement.", seg, ok);
+    return row("Notion du jour de la prochaine séance", "D'habitude, la ligne graduée et les additions alternent d'une séance à l'autre. Vous pouvez imposer l'une des deux pour la prochaine séance seulement (celle que l'enfant lance avec « jouer » : si elle choisit elle-même son exercice, votre choix attend la séance suivante).", seg, ok);
   }
   // le son (lot 2) : musique oui/non et son volume, bruitages oui/non ; un seul réglage « son » dans la base
   sonRow(row) {
@@ -489,7 +499,7 @@ export class ParentSpace {
     this.store.setting("dureeSeanceMin", this.seance.dureeMaxMin).then(paint);
     box.append(row("Durée maximale d'une séance", "Au bout de ce temps, l'application dit « à demain » (la dernière minute est gardée pour la récompense).", seg));
     // lot 2 : le sélecteur de difficulté (crans proposés à l'enfant), le défi record, le point de départ
-    box.append(this.moduleRow(row), this.sonRow(row), this.cransRow(row), this.defiRow(row), this.departRow(row));
+    box.append(this.moduleRow(row), this.sonRow(row), this.cransRow(row), this.echauffementRow(row), this.defiRow(row), this.departRow(row));
     // le code
     box.append(row("Code parent", "Le code à 4 chiffres qui ouvre cet espace.", h("button", { class: "pa-btn", onclick: () => { this.root.replaceChildren(h("div", { class: "pa-veil" })); this.app.stage.paused = false; this.gate("choisir"); } }, "Changer le code")));
     // le stockage persistant

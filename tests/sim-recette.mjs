@@ -12,7 +12,7 @@ import { Rewards, goldenStar } from "../app/js/session/rewards.js";
 import { drawSurprise, previousSession } from "../app/js/session/surprise.js";
 import { Warmup } from "../app/js/modules/facts/warmup.js";
 import { runWarmup } from "../app/js/modules/facts/screen.js";
-import { expected } from "../app/js/modules/facts/facts.js";
+import { expected, ruleFacts } from "../app/js/modules/facts/facts.js";
 import { Module2Runner } from "../app/js/modules/facts/runner.js";
 import { runChallenge } from "../app/js/modules/facts/challenge.js";
 
@@ -78,7 +78,12 @@ export async function simulate({ profil, jours, seed = 1, zonesPretes = true }) 
         if (ctx.session.rec.module === 2) {
           const runner = await new Module2Runner({ store, content: module2, rnd: R, seance: ctx.session.id, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load();
           log.module = 2; log.famille = runner.famille;
-          const res = await runNotion({ ...ctx, step: { ...ctx.step, ...(ctx.step.module2 ?? {}) }, runner, screen: factScreen, rnd: R, lesson: async (id) => { add(T.lecon); log.lecons.push(id); return { vue: true }; } });
+          // lot 3 : part des questions sur la règle de la famille en cours (hors exemples guidés), leçons jouées pour elle
+          const rule = new Set(ruleFacts(module2, runner.famille).map((f) => f.fait)), asked = [];
+          const scr = { ask: async (q, cfg, o) => { if (!q.guide) asked.push(q.fait); return factScreen.ask(q, cfg, o); } };
+          const res = await runNotion({ ...ctx, step: { ...ctx.step, ...(ctx.step.module2 ?? {}) }, runner, screen: scr, rnd: R, lesson: async (id) => { add(T.lecon); log.lecons.push(id); return { vue: true }; } });
+          log.asked = asked; log.partFamille = asked.length ? asked.filter((f) => rule.has(f)).length / asked.length : null;
+          log.doubles = asked.length ? asked.filter((f) => { const [a, b] = f.split("+").map(Number); return Math.abs(a - b) <= 1 && Math.max(a, b) <= 5; }).length / asked.length : null;
           for (const e of res?.events ?? []) if (e.type === "acquise" && !e.parent && !runner.events.some((x) => x.famille === e.famille)) await ctx.session.levelUp();
           ctx.session.nouveaux = runner.nouveaux; return;
         }

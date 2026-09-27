@@ -70,6 +70,14 @@ export function noteNotion(c, st0, id, now = Date.now(), { seance = null } = {})
   }
   return { st, events };
 }
+// lot 3 : une famille choisie par l'enfant (écran « choisir ») s'ouvre si elle ne l'était pas ; notée `choix` dans les
+// ouvertures, elle ne rapporte rien (ce n'est pas une famille acquise)
+export function openChosen(st0, id, now = Date.now(), seance = null) {
+  if (st0.ouvertes.includes(id)) return st0;
+  const st = structuredClone(st0);
+  st.ouvertes.push(id); st.ouvertures.push({ famille: id, date: now, choix: true, ...(seance != null ? { seance } : {}) });
+  return st;
+}
 // les familles dont le fait (a, b) relève de la règle (un fait peut relever de plusieurs)
 export const familiesOfFact = (c, a, b) => c.familles.filter((f) => ruleFacts(c, f.id).some((r) => r.a === a && r.b === b)).map((f) => f.id);
 // les formes à trou sont-elles ouvertes pour ce fait ? (une famille de sa règle les a ouvertes ; pas le mélange)

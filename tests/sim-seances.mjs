@@ -37,6 +37,13 @@ console.log(`leçons jouées sur l'année : ${res.flatMap((r) => r.lecons.map((l
 console.log(`45 faits vus à la séance ${res.find((r) => r.faitsVus >= 45)?.n ?? "jamais"} ; leçons du module 2 : ${res.flatMap((r) => r.lecons.filter((l) => ["L4", "L5", "L6"].includes(l)).map((l) => `${l} (séance ${r.n})`)).join(", ") || "aucune"}`);
 const m2 = res.filter((r) => r.module === 2);
 console.log(`séances d'additions : ${moy(m2.map((r) => r.add.filter((x) => !x.includes("g")).length)).toFixed(1)} questions en moyenne, durée estimée ${moy(m2.map((r) => r.duree)).toFixed(1)} min ; formes à trou ${m2.reduce((a, r) => a + r.add.filter((x) => x.includes("?")).length, 0)} sur ${m2.reduce((a, r) => a + r.add.length, 0)}`);
+// lot 3, étape 1 (docs/SPEC-LOT3.md, section 7) : leçon et exercice cohérents
+{
+  const LF = { L4: [2, 6], L5: [3], L6: [4, 5] }, bad = m2.filter((r) => r.lecons.some((l) => LF[l] && !LF[l].includes(r.famille)));
+  const apresL4 = m2.filter((r) => r.lecons.includes("L4"));
+  console.log(`\n## lot 3 : leçons et exercice (${PROFILS[profil].nom})`);
+  console.log(`part des questions sur la famille en cours (additions) : minimum ${Math.round(Math.min(...m2.map((r) => r.partFamille ?? 1)) * 100)} %, moyenne ${Math.round(moy(m2.map((r) => r.partFamille ?? 1)) * 100)} % (seuil 80 %) ; leçon de famille jouée pour une autre famille : ${bad.length ? bad.map((r) => `${r.n} (${r.lecons.join(",")} pour f${r.famille})`).join(" ; ") : "jamais"} ; après L4 : ${apresL4.map((r) => `${Math.round((r.doubles ?? 0) * 100)} % de doubles ou presque-doubles (f${r.famille})`).join(", ") || "L4 jamais jouée"}`);
+}
 // lot 2, étape 7 : le défi record
 const defis = res.filter((r) => r.defi !== undefined), sautes = {};
 for (const r of res) if (r.defiSaute) sautes[r.defiSaute] = (sautes[r.defiSaute] ?? 0) + 1;

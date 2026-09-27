@@ -1,6 +1,6 @@
 # Application maths CE1 — contenu pédagogique
 
-Version du 26 septembre 2026 (style graphique A retenu). Ce document est la référence de contenu de l'application. **Lot 2 : `docs/SPEC-LOT2.md` complète et, en cas de contradiction, remplace ce document** (durée de séance, révision des faits, rythme des cartes, étoiles dorées, son). Il est modifiable : les seuils sont des points de départ à ajuster après usage réel.
+Version du 26 septembre 2026 (style graphique A retenu). Ce document est la référence de contenu de l'application. **Lot 3 : `docs/SPEC-LOT3.md` prévaut sur ce document et sur celui du lot 2 (choix de l'exercice et du niveau, difficulté dans le niveau, échauffement passable, module 3).** **Lot 2 : `docs/SPEC-LOT2.md` complète et, en cas de contradiction, remplace ce document** (durée de séance, révision des faits, rythme des cartes, étoiles dorées, son). Il est modifiable : les seuils sont des points de départ à ajuster après usage réel.
 
 L'application vise trois compétences évaluées comme non acquises en septembre (évaluation Repères CE1) : placer un nombre sur une ligne graduée, connaître les tables d'addition, calculer rapidement. Elle repose sur 10 à 12 minutes par soir, avec consignes orales (synthèse vocale Android) et un univers marin.
 
@@ -422,8 +422,8 @@ Retours du parent après le premier essai du lot 1 (26 septembre 2026).
 | 1 | Application installable, moteur de voix, enregistrement des données, espace parent (calendrier, historique, export), atelier graphique et fabrication des animations, pieuvre et tortue animées, étoiles, coquillages et premier jeu de cartes (zone lagon, illustrations provisoires si les images générées ne sont pas prêtes), module 1 complet avec les leçons L1 à L3, échauffement sur les familles 1 et 2 des faits d'addition |
 | 1 bis | Ergonomie et voix : bouton maison, frise d'avancement, « passer », « je ne sais pas », entraînement libre sans étoiles, voix générée à l'avance avec Piper, cache d'une seule résolution |
 | 2 | Voir `docs/SPEC-LOT2.md` : séance allongée et alternance de la notion du jour ; module 2 complet (familles 3 à 7, formes à trou, voie rapide et places réservées, grille parent, défi record), leçons L4 à L6, bernard-l'ermite ; nombres jusqu'à 1 000 (niveaux 9 à 13, L10) ; rythme des cartes jusqu'en juin, cartes brillantes, zone 2 dans l'album, étoiles dorées et légendaires ; bruitages et musique ; point de départ du parent |
-| 3 | Module 3 complet, leçons L7 à L9, dauphin |
+| 3 | Voir `docs/SPEC-LOT3.md` : correctif du lot 2 (choisir l'exercice et le niveau dès l'accueil, difficulté dans le niveau, échauffement passable, leçons cohérentes, maison des nombres, sauvegardes de test) ; module 3 complet, leçons L7 à L9, sans dauphin |
 | 4 | Module 4, bilans périodiques, zones 2 à 4 du récif, 60 cartes, crabe |
 | 5 (optionnel) | Synchronisation Google Sheet |
 
-**État au 27 septembre 2026, 17 h** : lots 1 et 1 bis en ligne ; lot 2, étapes 1 à 3 faites (cartes et rythme, séance et sélecteur de difficulté, échantillons de son), étapes 4 à 6 lancées ensemble. Détail : `docs/AVANCEMENT.md` ; décisions : `docs/JOURNAL-CONCEPTION.md`.
+**État au 27 septembre 2026, 23 h 30** : lots 1, 1 bis et 2 en ligne ; lot 3 spécifié (`docs/SPEC-LOT3.md`), à lancer. Détail : `docs/AVANCEMENT.md` ; décisions : `docs/JOURNAL-CONCEPTION.md`.

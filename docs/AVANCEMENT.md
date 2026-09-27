@@ -9,7 +9,7 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 | Étape | Contenu | État |
 | --- | --- | --- |
 | 1 | Cartes et rythme : calendrier et quota, doublons, brillantes (20 % et effet), ouverture des zones, zone 2 (anecdotes et voix), étoiles dorées (4 semaines réussies), légendaires et coquillage doré, étoile arc-en-ciel de l'entraînement libre, surprise une séance sur cinq, ligne « Cartes » de l'espace parent ; simulation des cartes sur l'année | fait (branche `lot2-etape1`, https://github.com/js2c/Maths-CE1/pull/11) |
-| 2 | Séance et progression : durées et nombres de questions, défi record activable, places réservées et voie rapide des faits, enchaînement des niveaux, leçon au plus une fois par séance, point de départ du parent, tortue devant la pieuvre, pieuvre qui montre la cible ; option `--delai` de la recette ; sélecteur de difficulté (4 crans) | en cours (branche `claude/prompt-lot2-section-9xloz0`) |
+| 2 | Séance et progression : durées et nombres de questions, défi record activable, places réservées et voie rapide des faits, enchaînement des niveaux, leçon au plus une fois par séance, point de départ du parent, tortue devant la pieuvre, pieuvre qui montre la cible ; option `--delai` de la recette ; sélecteur de difficulté (4 crans) | fait (branche `claude/prompt-lot2-section-9xloz0`, https://github.com/js2c/Maths-CE1/pull/13) |
 | 3 | Son, échantillons (`tools/son/`, `docs/son-echantillons/`) ; arrêt pour le choix du parent | à faire |
 | 4 | Son, intégration : bruitages, musique, mixage, réglages du parent | à faire |
 | 5 | Atelier : bernard-l'ermite, cadre de 10, maison des nombres, double + 1 | à faire |
@@ -20,15 +20,45 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 
 ### Reprise de l'étape 2
 
-Pour reprendre si la session s'est arrêtée : branche `claude/prompt-lot2-section-9xloz0` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 2, étape 2 (en cours) ».
+Pour reprendre si la session s'est arrêtée : branche `claude/prompt-lot2-section-9xloz0` (nom imposé par l'environnement), demande de fusion https://github.com/js2c/Maths-CE1/pull/13.
 
-**Fait :** branche créée depuis `origin/main` (`5b02963`).
+**Fait :**
 
-**Reste à faire :** tout le contenu de l'étape 2.
+- Échauffement (`modules/facts/`, réglages `content/module2.json`) : 3 places réservées aux faits nouveaux (dans la limite de la boîte 1), faits dus les plus en retard d'abord, voie rapide (première rencontre juste, rapide, sans aide : boîte 3 ; si tous les faits nouveaux prévus passent ainsi, jusqu'à 3 autres à la fin), limite commune de 6 faits nouveaux par séance, une boîte au plus par séance, questions triviales « a + 0 » une séance sur cinq, formes à trou (ardoise et consignes) selon le cran. Tests : `tests/unit/echauffement-lot2.test.mjs`, `facts.test.mjs`.
+- Ligne graduée (`modules/numberline/runner.js`) : la voie rapide enchaîne plusieurs niveaux dans une séance (leçon d'entrée de chaque niveau) ; une même leçon au plus une fois par séance, ensuite niveau inférieur et correction à vitesse 1 ; cran du sélecteur (niveau joué, validation au-dessus du conseillé, jamais de baisse). Tests : `tests/unit/ligne-lot2.test.mjs`.
+- Sélecteur de difficulté : atelier (`sea/selector.ts`, planche « selecteur », `selectorSheet`), écran (`session/selector.js`), voix (6 phrases nouvelles + 4 sans étoiles + « On essaie un peu moins dur ? »), séance (`setCran`, multiplicateur, protection), entraînement libre sans étoiles. Tests : `tests/unit/selecteur.test.mjs`, parcours `tests/e2e/selecteur.mjs`.
+- Séance (`content/seance.json`) : durées 3 et 6 min, nombres de questions relevés (la durée prime), défi record actif mais sauté tant qu'il n'est pas construit (conditions : 5e séance terminée, 8 faits en boîte 3, réglage du parent) ; la frise ne montre que les étapes construites.
+- Graphisme : la pieuvre montre la cible (gestes `montrer`, `montrerBasDroite`, `montrerBas`) ; calque d'effets au-dessus de la pieuvre ; la pieuvre s'écarte pendant les exemples et corrections.
+- Espace parent : point de départ (niveaux 1 à 8, familles 1 et 2 ; `parent/depart.js`), crans autorisés, défi record activé ou non, cran dans l'historique et les exports.
+- Recette : simulation (profils `tresdur` et `facile`), `recette.mjs --delai 4.5`, `recette-durees.mjs` avec et sans `--passer` ; documentation (ARCHITECTURE, GUIDE-PARENT).
 
-**Où j'en suis :** lecture de la spécification.
+**Reste à faire :** rien pour l'étape 2. Étape suivante : étape 3 (son, échantillons), dans une nouvelle session, après fusion.
 
-**Décisions prises :** —
+**Où j'en suis :** étape terminée, demande de fusion prête.
+
+**Décisions prises :**
+
+- Défi record « activé à partir de la 5e séance terminée » : compris comme « au moins 5 séances déjà terminées » (réglage `aPartirDeSeance`).
+- Liste d'échauffement trop courte (peu de faits dus, par exemple à la première séance) : complétée d'abord par d'autres faits nouveaux (dans la limite de 6 et de la boîte 1), puis par des révisions en avance (faits pas encore dus, sans montée de boîte), enfin par un second passage des faits de la boîte 1 ; ce second passage est sauté si le fait vient d'entrer en boîte 3 par la voie rapide (c'était « 1 + 1, 2 + 1, 1 + 2 deux fois » à la première séance).
+- Réussir au-dessus du conseillé (sélecteur) : le niveau joué est validé et le conseillé passe au niveau suivant (au dernier niveau : ce niveau) ; le cran reste le même écart pour la suite de la séance. Échouer au-dessus : ces questions ne comptent pas dans le taux de la séance (donc jamais de redescente).
+- Protection : 3 erreurs sur les 5 dernières réponses (échauffement et notion du jour confondus, « je ne sais pas » compris), il faut donc 5 réponses au nouveau cran avant une seconde descente ; pas de relance de leçon au-dessus du conseillé (la protection s'en charge) ; les faits nouveaux « bonus » du cran pas encore posés sont retirés ; pas de protection en entraînement libre.
+- Textes nouveaux, **à valider** : « Plus facile : une demi-étoile par bonne réponse. », « Le niveau fait pour toi : une étoile par bonne réponse. », « Plus dur : une étoile et demie par bonne réponse ! » (la SPEC ne donnait que « Très dur : deux fois plus d'étoiles ! ») ; sans étoiles (entraînement libre) : « Choisis ton niveau. », « Plus facile. », « Le niveau fait pour toi. », « Plus dur ! », « Très dur ! ».
+- Écran du sélecteur : quatre bulles à droite de la pieuvre, la bulle choisie à sa taille avec un anneau doré, les autres un peu réduites ; la lueur marque le conseillé ; la coche en dessous. Le parent peut restreindre les crans ; un seul cran autorisé : pas d'écran.
+- Point de départ, famille connue : ce sont les faits de la **règle** de la famille (les doubles 1 + 1 à 5 + 5), pas seulement ceux que la famille introduit ; un fait déjà plus haut que la boîte 3 y reste.
+
+**Écarts avec la spécification (étape 2) :**
+
+- **Nombres de questions** : la SPEC donne 10 à 14 faits et 12 à 16 questions ; mesurée avec ces nombres, la première séance durait **4 min 32 s** (7 s environ par question). Relevés selon la règle « la durée prime » à 12 à 16 faits et **36 à 44 questions** de notion du jour : la séance dure **8 min 56 s** ; c'est la limite de 6 minutes de la notion du jour qui l'arrête (vers la 40e question). À revoir avec l'essai réel : une enfant qui se trompe davantage fera moins de questions dans le même temps.
+- **Cran « plus facile » à l'échauffement** : « seulement des faits dus » donnait un échauffement vide (aucun fait connu) à une enfant qui choisit toujours « plus facile ». Au plus 3 faits nouveaux complètent donc une liste trop courte (`complementMax`).
+- **« Très dur » : faits de la famille suivante** : sans objet à cette étape (les familles 1 et 2 sont déjà ouvertes toutes les deux, les suivantes arrivent à l'étape 6) ; le mécanisme existe (`familleSuivante`).
+- **Tortue devant la pieuvre** : la tortue était déjà dans un calque au-dessus ; ce sont le calque d'effets (arcs, filets de bulles) qui passait derrière. En plus, la pieuvre s'écarte de 60 px vers la gauche pendant les exemples et corrections (la remonter, comme dans les leçons, lui faisait cacher la frise).
+- **Mémoire** : les deux gestes « montrer » nouveaux font passer la planche des gestes de la pieuvre de 62 à 81 Mo décodés (@2x). L'ondulation de leur pointe est quantifiée pour limiter cette hausse.
+- **Défi record** : l'étape est active dans `seance.json`, mais sans écran (étape 7) : elle est toujours sautée et notée « pas encore construite ».
+
+**Points à décider par le parent (constats de la simulation) :**
+
+- Une enfant qui choisit **toujours « plus facile »** reste au niveau 2 de la ligne graduée toute l'année (ses questions sont au niveau inférieur, qui ne fait jamais monter le conseillé) ; faute d'étoiles arc-en-ciel, elle ne gagne que 30 cartes. C'est la règle de la SPEC ; parade possible dès maintenant : interdire « plus facile » dans l'espace parent, ou décider qu'une réussite en « plus facile » compte pour le niveau.
+- Une enfant qui choisit **toujours « très dur »** gagne environ 50 % d'étoiles en plus, donc plus de doublons : 40 brillantes sur 60 à 2 séances par semaine (34 pour le profil « reel » au cran conseillé), 55 à 5 séances. Point ouvert des brillantes (SPEC-LOT2, section 5) à trancher avant l'étape 9.
 
 ### Reprise de l'étape 1
 

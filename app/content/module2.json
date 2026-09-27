@@ -5,13 +5,13 @@
     { "id": 2, "nom": "doubles jusqu'à 5", "regle": "doubles", "aide": "reflet", "lecon": "L4" },
     { "id": 3, "nom": "amis de 10", "regle": "amis10", "aide": "cadre", "lecon": "L5" },
     { "id": 4, "nom": "maisons de 5, 6 et 7", "regle": "maisons567", "aide": "maison", "lecon": "L6" },
-    { "id": 5, "nom": "maisons de 8 et 9", "regle": "maisons89", "aide": "maison" },
-    { "id": 6, "nom": "presque-doubles", "regle": "presqueDoubles", "aide": "doublePlus" },
-    { "id": 7, "nom": "mélange", "regle": "melange", "aide": "fait" }
+    { "id": 5, "nom": "maisons de 8 et 9", "regle": "maisons89", "aide": "maison", "leconSiPasVue": ["L6"] },
+    { "id": 6, "nom": "presque-doubles", "regle": "presqueDoubles", "aide": "doublePlus", "leconSiPasVue": ["L4", "L6"] },
+    { "id": 7, "nom": "mélange", "regle": "melange", "aide": "fait", "leconSiPasVue": ["L6", "L4", "L5"] }
   ],
   "famillesActives": [1, 2],
   "familles2": {
-    "_doc": "Lot 2, étape 6 (docs/SPEC-LOT2.md, section 3). famillesActives : les familles ouvertes au départ ; les autres s'ouvrent une à une (magasin « niveaux », module 2). ouverture : la famille suivante s'ouvre quand `part` des faits déjà introduits sont en boîte `boite` ou plus. acquise : `part` des faits de la règle de la famille en boîte `boite` ou plus (une étoile arc-en-ciel, sauf si c'est le point de départ du parent). trou : les formes à trou s'ouvrent pour une famille (définitivement) quand `part` des faits de sa règle atteignent la boîte `boite` ; ensuite chaque question sur un fait de cette famille tire la forme au hasard (un tiers chacune).",
+    "_doc": "Lot 2, étape 6 (docs/SPEC-LOT2.md, section 3). famillesActives : les familles ouvertes au départ ; les autres s'ouvrent une à une (magasin « niveaux », module 2). ouverture : la famille suivante s'ouvre quand `part` des faits déjà introduits sont en boîte `boite` ou plus. acquise : `part` des faits de la règle de la famille en boîte `boite` ou plus (une étoile arc-en-ciel, sauf si c'est le point de départ du parent). trou : les formes à trou s'ouvrent pour une famille (définitivement) quand `part` des faits de sa règle atteignent la boîte `boite` ; ensuite chaque question sur un fait de cette famille tire la forme au hasard (un tiers chacune). familles[].leconSiPasVue : une famille sans leçon qui s'appuie sur celle d'une famille acquise avant d'avoir été la notion du jour (la maison pour les maisons de 8 et 9, les doubles pour les presque-doubles) joue la première de ces leçons jamais vue, à sa première notion du jour (le mélange : toute leçon d'appui jamais vue).",
     "ouverture": { "part": 0.8, "boite": 2 },
     "acquise": { "part": 0.8, "boite": 3 },
     "trou": { "part": 0.5, "boite": 3 }

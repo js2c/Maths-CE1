@@ -32,8 +32,10 @@ export class Module2Runner {
   get nouveaux() { return this.w.nouveaux; }
   // la leçon de la famille, la première fois qu'elle est la notion du jour (jamais vue, pas encore jouée dans la séance)
   entryLesson() {
-    const l = familyOf(this.c0, this.famille)?.lecon;
-    return l && !(this.fam.lecons ?? []).includes(l) && !(this.fam.notion ?? []).includes(this.famille) && !this.played.has(l) ? l : null;
+    // (une famille sans leçon joue celle de l'appui qu'elle reprend, si elle n'a jamais été vue : module2.json, leconSiPasVue)
+    const f = familyOf(this.c0, this.famille), seen = (id) => (this.fam.lecons ?? []).includes(id) || this.played.has(id);
+    if ((this.fam.notion ?? []).includes(this.famille)) return null;
+    return (f?.lecon ? [f.lecon] : f?.leconSiPasVue ?? []).find((id) => !seen(id)) ?? null;
   }
   lessonPlayed(id) { this.played.add(id); }
   async lessonSeen(id) { (this.fam.lecons ??= []).includes(id) || this.fam.lecons.push(id); await this.save(); }

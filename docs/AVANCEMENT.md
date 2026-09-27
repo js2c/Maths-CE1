@@ -15,7 +15,7 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 | 3 | Son, échantillons (`tools/son/`, `docs/son-echantillons/`) ; arrêt pour le choix du parent | fait (branche `claude/tender-volta-20rhlz`, https://github.com/js2c/Maths-CE1/pull/14) ; choix du parent reçu |
 | 4 | Son, intégration : bruitages, musique, mixage, réglages du parent | fait (branche `claude/loving-tesla-rtv3o5`, https://github.com/js2c/Maths-CE1/pull/16) |
 | 5 | Atelier : bernard-l'ermite, cadre de 10, maison des nombres, double + 1 | fait (même branche, même demande de fusion) |
-| 6 | Module 2 comme notion du jour : familles 3 à 7, formes à trou, leçons L4 à L6, alternance, module imposé, point de départ étendu | à faire |
+| 6 | Module 2 comme notion du jour : familles 3 à 7, formes à trou, leçons L4 à L6, alternance, module imposé, point de départ étendu | fait (même branche, même demande de fusion) |
 | 7 | Défi record, grille des 66 additions, progression du module 2 dans l'espace parent | à faire |
 | 8 | Nombres jusqu'à 1 000 (`docs/SPEC-COMPLEMENTS.md`, partie A) | à faire |
 | 9 | Bilan : `docs/BILAN-LOT2.md`, guide du parent, recette complète sur l'année | à faire |
@@ -24,7 +24,7 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 
 Pour reprendre si la session s'est arrêtée : branche `claude/loving-tesla-rtv3o5` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 2, étapes 4 à 6 (en cours) » (https://github.com/js2c/Maths-CE1/pull/16).
 
-**Étape en cours :** 6 (module 2 comme notion du jour).
+**Étape en cours :** recette complète des étapes 4 à 6.
 
 **Fait :**
 
@@ -34,7 +34,23 @@ Pour reprendre si la session s'est arrêtée : branche `claude/loving-tesla-rtv3
 
 **Reste :** étape 6 ; recette complète à la fin.
 
-**Où j'en suis :** étape 6 en cours : fait — familles 3 à 7 (`module2.json`, `facts.js` : règles ; `families.js` : ouverture, famille acquise, formes à trou), échauffement sur les familles ouvertes, `modules/facts/runner.js` (notion du jour du module 2), écran des additions (exemples guidés, aide de chaque famille, correction avec l'appui). Reste : textes et voix, alternance et module imposé (session, main.js), leçons L4 à L6 (lecteur du module 2), bernard-l'ermite dans la notion, espace parent (module imposé, point de départ 3 à 7), simulation, tests, recette complète.
+- Étape 6 (module 2 comme notion du jour) : familles 3 à 7 (`module2.json`, règles dans `facts.js`, `families.js` : ouverture, famille acquise, formes à trou définitives) ; alternance séance après séance et module imposé (`session.js`, `chooseModule`) ; `modules/facts/runner.js` (notion du jour des additions) ; écran des additions (exemples guidés, appui de chaque famille, correction avec l'appui, aide d'emblée du cran « plus facile ») ; bernard-l'ermite pendant la notion du jour ; leçons L4 à L6 (`lecons.json`, `lessons/player2.js`), aussi dans la revue de l'entraînement libre ; espace parent (notion du jour de la prochaine séance, point de départ familles 1 à 7, additions de la notion du jour à part dans le détail d'une séance) ; 5 phrases nouvelles et leurs variantes (38 fichiers son) ; simulation et recette (`sim-recette.mjs`, `sim-seances.mjs`, `recette.mjs --module 2`, `recette-durees.mjs`, parcours `notion2.mjs`) ; tests `tests/unit/module2-notion.test.mjs`.
+
+**Où j'en suis :** les trois étapes sont faites ; recette complète en cours.
+
+**Décisions prises (étape 6) :**
+
+- **Ouverture des familles** : règle de la SPEC (80 % des faits introduits en boîte 2 ou plus), au plus une famille par séance. Comme l'introduction suit l'ordre du catalogue, une famille ouverte tôt n'introduit ses faits nouveaux qu'après ceux des familles 1 et 2 ; mais elle compte pour la famille en cours, les formes à trou et les crans « plus dur ». Mesure (simulation, 2 séances par semaine) : les 7 familles sont ouvertes dès la 5e séance pour les profils « sait » et « reel », à la 40e pour « diff ».
+- **Point de départ du parent** : marquer une famille connue ouvre cette famille et celles d'avant, et la compte comme acquise par le parent (sans étoile arc-en-ciel) ; la suivante s'ouvre ensuite d'elle-même par la règle des 80 %.
+- **Leçons d'appui jamais vues** (ajout à la SPEC, **à valider**) : une famille est souvent acquise (par les faits des familles 1 et 2) avant d'être la notion du jour ; sans règle, la leçon L6 (maison des nombres) n'était jamais jouée, et L4 rarement. Les maisons de 8 et 9 jouent donc L6 si elle n'a jamais été vue, les presque-doubles L4 (puis L6), le mélange la première leçon d'appui qui manque (réglage `leconSiPasVue` de `module2.json`). Avec cette règle, sur l'année : L4, L5 et L6 pour « sait » ; L5 et L6 pour « reel » (2 par semaine) ; aucune pour « diff », qui reste sur la famille 1 (voir les points à observer).
+- **Choix des faits** en notion du jour : une question sur deux sur la règle de la famille en cours (toutes au cran « plus facile »), l'autre sur les faits les plus faibles des autres familles ; un fait nouveau une question de famille sur deux, tant que la limite de la séance (6) et la boîte 1 (8) le permettent ; aux crans « plus dur » et « très dur », les faits nouveaux alternent entre la famille en cours et la suivante.
+- **Appui de chaque question** : celui de la famille en cours si le fait relève de sa règle, sinon celui de la famille du fait ; pour le mélange, l'appui le plus parlant (`aidFor` : ami de 10 → cadre, double → reflet, presque-double → double + 1, + 1 et + 2 → la tortue, sinon la maison).
+- **Exemple guidé** : l'appui avec la réponse, « 3 plus 7, ça fait 10. », « À toi ! Tape la réponse. » ; l'appui est rangé quand le pavé revient (il occupe la même place). Correction en notion du jour : l'appui avec la réponse, puis la phrase de correction ; « passer » comme partout.
+- **Cran « plus facile »** : l'aide « affichée d'emblée » est montrée au début de chaque question (appui sans la réponse, avec sa phrase), puis le pavé revient ; elle n'est pas comptée comme une aide demandée (la séance « plus facile » compte normalement ; sinon aucun fait ne monterait jamais de boîte).
+- **Difficulté persistante** (3 erreurs sur 5) : la leçon de la famille si elle en a une et qu'elle n'a pas été jouée dans la séance, puis un fait déjà bien su.
+- **Nombres de questions** : 30 à 38 (`seance.json`, `notion.module2`), la limite de 6 minutes arrête l'étape ; simulation : environ 33 questions, 7,5 à 9 minutes de séance.
+- **Frise** : pendant la notion du jour des additions, le pictogramme est le « + » de l'échauffement.
+- **Textes nouveaux, à valider** : « Maintenant, les additions, avec le bernard-l'ermite ! » (ou « Au tour des additions ! Le bernard-l'ermite va t'aider. »), « Regarde la boîte à dix places : 7 poissons. », « Regarde la maison : les deux pièces, ensemble, font le nombre du toit. », « 3 plus 3, c'est un double. Et une bulle de plus ! », « À toi ! Tape la réponse. » ; leçon L4 : les bulles de chaque côté du miroir sont les bulles dorées de l'atelier ; L5 : « Six et quatre. », « Huit et deux. » (les deux exemples rapides de la SPEC dits à voix haute) ; L6 : le bernard-l'ermite change de coquille pendant « Voici la maison du sept. ».
 
 **Décisions prises (étape 5) :**
 

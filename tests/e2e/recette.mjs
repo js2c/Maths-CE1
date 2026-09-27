@@ -2,7 +2,7 @@
 // une enfant qui répond --delai secondes (1,5 par défaut) après pouvoir répondre. Chronologie : ce que l'enfant peut faire à chaque
 // instant (répondre, toucher une bulle, rien), captures à chaque changement d'écran, inventaire des
 // éléments visibles qui ressemblent à des boutons et de leur réaction au toucher.
-//   node tests/e2e/recette.mjs [--out dossier] [--delai secondes : temps de réponse de l'enfant, 1,5 par défaut]
+//   node tests/e2e/recette.mjs [--out dossier] [--delai secondes : temps de réponse de l'enfant, 1,5 par défaut] [--module 2 : notion du jour imposée (lot 2, étape 6)]
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -32,7 +32,7 @@ const state = () => page.evaluate(() => {
 const tapSel = (sel) => page.tap(sel, { force: true }).catch(() => {});
 const typeIn = async (n) => { for (const d of String(n)) await tapSel(`.key[data-key="${d}"]`); await tapSel('.key[data-key="valider"]'); };
 
-await page.goto(url + "?nosw"); await page.waitForFunction(() => window.__ready !== undefined);
+await page.goto(url + `?nosw${opt("--module") ? `&module=${opt("--module")}` : ""}`); await page.waitForFunction(() => window.__ready !== undefined);
 await shot("accueil"); note("accueil prêt");
 const home = await state(); note(`accueil : boutons visibles ${home.btns.join(", ")} ; décors ${home.huds.join(", ")}`);
 await tapSel(".play");
@@ -49,7 +49,7 @@ while (Date.now() < deadline) {
     waits.push({ etape: st.etape, attenteS: (Date.now() - waitStart) / 1000, q: st.q });
     await page.waitForTimeout(DELAI);
     if (st.inputFacts) {
-      nf++; const q = await page.evaluate(() => { const f = window.__app.facts.q; return f.a + f.b; });
+      nf++; const q = await page.evaluate(() => { const f = window.__app.facts.q; return f.forme === "trouDroite" ? f.b : f.forme === "trouGauche" ? f.a : f.a + f.b; });
       if (nf === 3) { note(`additions : « je ne sais pas » (${st.q})`); await tapSel(".facts .nsp, .nsp"); } else await typeIn(nf === 5 ? q + 1 : q);
       if (nf === 3) await shot("additions-nsp");
     } else {

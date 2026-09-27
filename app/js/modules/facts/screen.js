@@ -8,7 +8,8 @@ import { onTap, spriteBox } from "../../session/screens.js";
 import { fill } from "../numberline/screen.js";
 import { clock, wait } from "../../engine/clock.js";
 import { skipKey } from "../../engine/ui.js";
-import { expected } from "./facts.js";
+import { aidFor, expected } from "./facts.js";
+import { AidBoard, paintDoublePlus, paintHouse, paintTenFrame } from "./aids.js";
 
 const SKIPPED = Symbol("correction passée");
 
@@ -61,13 +62,57 @@ export class FactsScreen {
   }
   // pose la question et attend la réponse ; la promesse se résout après le retour
   ask(q) {
-    const { voice, text } = this.app;
+    const { voice } = this.app;
     this.q = q; this.typed = ""; this.ring = false; this.aide = false; this.locked = false; this.app.starFrom = SLATE;
     this.help.style.visibility = q.base ? "hidden" : "visible"; // pas d'aide pour « 4 + 0 »
     this.slate.repaint(); pop(this.slate);
+    // lot 2, étape 6 : un exemple guidé (l'appui visuel montre la réponse, on peut le passer), ou l'aide
+    // affichée d'emblée (cran « plus facile » en notion du jour)
+    const p = new Promise((res) => { this.resolve = res; });
+    if (q.guide) { this.locked = true; this.demo(q).then(() => { this.locked = false; this.keys(true); this.t0 = clock.now(); voice.say(this.consigne(q), { instruction: true }); }); return p; }
+    if (q.aideDEmblee) this.paintAid(q, false);
     this.t0 = clock.now();
     voice.stop(); voice.say(this.consigne(q), { instruction: true });
-    return new Promise((res) => { this.resolve = res; });
+    return p;
+  }
+  // ---------------------------------------------------------------- l'appui visuel de la famille (lot 2, étape 6)
+  // cadre de 10, maison des nombres, double + 1, reflet des doubles (la ligne de la famille 1 est la tortue,
+  // voir showHelp) ; `solved` : avec la réponse (exemple guidé, correction), sinon avec « ? » et des places vides
+  // l'appui d'une question : celui que la notion du jour a choisi (`q.appui`), sinon celui de la famille du fait
+  aidKind(q) { const fam = this.c.familles.find((f) => f.id === q.famille)?.aide; return q.appui ?? (fam && fam !== "fait" ? fam : aidFor(q.a, q.b)); }
+  get board() { return (this.app.aidBoard ??= new AidBoard(this.app)); }
+  paintAid(q, solved) {
+    const { sprites } = this.app, kind = this.aidKind(q), f = q.forme ?? "directe", n = q.a + q.b;
+    const A = f === "trouGauche" && !solved ? "?" : q.a, B = f === "trouDroite" && !solved ? "?" : q.b, N = f === "directe" && !solved ? "?" : n;
+    if (kind === "ligne") return kind;
+    this.keys(false); this.hermit?.play("montrer", { hold: 2500 });
+    this.board.draw((ctx) => {
+      if (kind === "cadre") { const k = f === "trouGauche" ? q.b : q.a, rest = n - k; paintTenFrame(ctx, sprites, 700 - 228, 495, { n: k, extra: solved || f === "directe" ? rest : 0, glow: solved || f === "directe" ? [] : Array.from({ length: rest }, (_, i) => k + i) }); }
+      else if (kind === "maison") paintHouse(ctx, sprites, 700, 580, N, [[A, B]]);
+      else if (kind === "doublePlus") paintDoublePlus(ctx, sprites, Math.min(q.a, q.b), { cx: 700, y: 500 });
+      else paintDoublePlus(ctx, sprites, q.a, { cx: 700, y: 500, bonus: false });
+    });
+    return kind;
+  }
+  aidSpeech(q, kind) {
+    const t = this.app.text.data, k = q.forme === "trouGauche" ? q.b : q.a;
+    return kind === "cadre" ? fill(t.aideCadre, { k }) : kind === "maison" ? t.aideMaison : kind === "doublePlus" ? fill(t.aideDoublePlus, { d: Math.min(q.a, q.b) }) : fill(t.aideReflet, { a: q.a });
+  }
+  // un exemple guidé : l'appui avec la réponse, « a plus b, ça fait n », puis « À toi ! » ; « passer » l'arrête
+  async demo(q) {
+    const { voice, text } = this.app, k = this.app.vitesse ?? 1;
+    this.keys(false); voice.stop();
+    let abort = null; const abortP = new Promise((_, rej) => { abort = () => rej(SKIPPED); }); abortP.catch(() => {});
+    const g = (p) => Promise.race([p, abortP]), skip = skipKey(this.app, () => abort(), "passer l'exemple");
+    try {
+      const kind = this.aidKind(q);
+      if (kind === "ligne") await g(this.lineAid(q, true));
+      else { this.paintAid(q, true); await g(voice.say(this.aidSpeech(q, kind))); }
+      await g(voice.say(fill(text.data.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b })));
+      await g(wait(500 / k));
+      await g(voice.say(text.data.aToiFait));
+    } catch (e) { if (e !== SKIPPED) throw e; voice.stop(); q.passe = true; this.app.line.fxClear(); }
+    skip.remove();
   }
   // la consigne lue : « 5 plus 2 ? », ou la forme à trou (« 3 plus combien, ça fait 7 ? »)
   consigne(q) {
@@ -84,7 +129,7 @@ export class FactsScreen {
     ocean.octo.play(ok ? "rejouir" : "encourager");
     if (ok) this.app.sound?.play("bonne"); else if (!nsp) this.app.sound?.play("erreur");
     const answer = () => { this.typed = String(expected(q)); this.ring = true; this.slate.repaint(); };
-    if (ok) { pop(this.slate); await voice.say(text.pick("bravo")); await wait(250); }
+    if (ok) { pop(this.slate); if (this.notion && (q.guide || q.revient)) this.hermit?.play("rejouir"); await voice.say(text.pick("bravo")); await wait(250); }
     else {
       let abort = null;
       const abortP = new Promise((_, rej) => { abort = () => rej(SKIPPED); }); abortP.catch(() => {});
@@ -92,6 +137,8 @@ export class FactsScreen {
       try {
         if (nsp) await g(voice.say(text.data.faitNSP)); else { pop(this.slate, "shake"); await g(wait(500 / k)); }
         answer();
+        // en notion du jour (lot 2, étape 6) : l'appui visuel de la famille, avec la réponse
+        if (this.notion && !q.base) { const kind = this.aidKind(q); if (kind === "ligne") await g(this.lineAid(q, false)); else { this.paintAid(q, true); await g(voice.say(this.aidSpeech(q, kind))); } }
         await g(voice.say(fill(text.data.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b })));
         await g(wait(700 / k));
       } catch (e) {
@@ -101,42 +148,34 @@ export class FactsScreen {
       }
       skip.remove();
     }
+    this.app.aidBoard?.clear();
     const done = this.resolve; this.resolve = null; done?.(r);
   }
   // ---------------------------------------------------------------- l'aide (coquillage)
   async showHelp() {
     if (this.locked || !this.q || this.q.base) return;
-    const { voice, text, line, sprites } = this.app, q = this.q, fam = this.c.familles.find((f) => f.id === q.famille);
+    const { voice } = this.app, q = this.q, kind = this.aidKind(q);
     this.locked = true; this.aide = true; pop(this.help); this.keys(false); voice.stop();
-    if (fam?.aide === "ligne") {
-      // la tortue part du grand nombre et fait 1 ou 2 sauts (la ligne de 0 à 10, tous les nombres écrits)
-      const nl = this.app.lineScreen(), big = Math.max(q.a, q.b), small = Math.min(q.a, q.b);
-      const spec = { x0: 150, x1: 1134, y: 452, n: 11, labels: Array.from({ length: 11 }, (_, i) => String(i)), k: 0, lit: [big] };
-      const [bmp] = await line.render([spec]); line.show(bmp);
-      nl.spec = spec; nl.q = { min: 0, max: 10, step: 1 }; nl.arcs = []; nl.overlay = []; line.fxClear();
-      nl.turtle.sitOn(spec, big);
-      await voice.say(fill(text.data.aideLigne, { a: big, sauts: small === 1 ? text.data.unSaut : `${small} ${text.data.sauts}` }));
-      await nl.countJumps(big, big + small, { label: (k) => `+${k}`, say: (k) => String(k) });
-      await wait(1600);
-      nl.turtle.hide(); nl.arcs = []; line.fxClear(); line.clear();
-    } else if (fam?.aide === "reflet") {
-      // le poisson et son reflet : a poissons en haut, les mêmes renversés sous la surface d'un miroir d'eau
-      const n = q.a, gap = 92, x0 = 640 - ((n - 1) * gap) / 2;
-      const fishAt = (ctx, x, y, flip, alpha) => { const f = sprites.frame("poisson.1.d", 0), m = ctx.getTransform(); ctx.setTransform(1, 0, 0, flip ? -1 : 1, 0, 0); ctx.globalAlpha = alpha; const X = Math.round(m.a * x + m.e + f.dx), Y = m.d * y + m.f; ctx.drawImage(f.img, f.sx, f.sy, f.w, f.h, X, flip ? -Math.round(Y - f.dy) : Math.round(Y + f.dy), f.w, f.h); ctx.globalAlpha = 1; ctx.setTransform(m); };
-      line.fxClear();
-      line.fxDraw((ctx) => {
-        for (let i = 0; i < n; i++) fishAt(ctx, x0 + i * gap, 388, false, 1);
-        R.drawWave(ctx, x0 - 70, x0 + (n - 1) * gap + 70, 436);
-        for (let i = 0; i < n; i++) fishAt(ctx, x0 + i * gap, 484, true, 0.6);
-      });
-      await voice.say(fill(text.data.aideReflet, { a: q.a }));
-      await wait(2200);
-      line.fxClear();
-    }
+    if (kind === "ligne") await this.lineAid(q, false);
+    else { this.paintAid(q, false); await voice.say(this.aidSpeech(q, kind)); await wait(2200); this.board.clear(); }
     this.keys(true); this.locked = false;
     voice.say(this.consigne(q));
   }
-  leave() { this.show(false); this.q = null; }
+  // la tortue part du grand nombre et fait 1 ou 2 sauts (la ligne de 0 à 10, tous les nombres écrits)
+  async lineAid(q, solved) {
+    const { voice, text, line } = this.app, nl = this.app.lineScreen(), big = Math.max(q.a, q.b), small = Math.min(q.a, q.b);
+    this.keys(false); this.hermit?.play("montrer", { hold: 2000 });
+    const spec = { x0: 150, x1: 1134, y: 452, n: 11, labels: Array.from({ length: 11 }, (_, i) => String(i)), k: 0, lit: [big] };
+    const [bmp] = await line.render([spec]); line.show(bmp);
+    nl.spec = spec; nl.q = { min: 0, max: 10, step: 1 }; nl.arcs = []; nl.overlay = []; line.fxClear();
+    nl.turtle.sitOn(spec, big);
+    try {
+      await voice.say(fill(text.data.aideLigne, { a: big, sauts: small === 1 ? text.data.unSaut : `${small} ${text.data.sauts}` }));
+      await nl.countJumps(big, big + small, { label: (k) => `+${k}`, say: (k) => String(k) });
+      await wait(solved ? 600 : 1600);
+    } finally { nl.turtle.hide(); nl.arcs = []; line.fxClear(); line.clear(); }
+  }
+  leave() { this.show(false); this.q = null; this.app.aidBoard?.clear(); }
 }
 
 // l'échauffement dans la séance : n faits (10 à 14), précédés, une séance sur cinq, des questions du temps de
@@ -159,5 +198,7 @@ export async function runWarmup({ session, step, end, warmup, screen, intro, rnd
     await session.stars(res.etoiles, q.revient && res.juste ? "erreur corrigée" : "bonne réponse");
   }
   session.nouveaux = warmup.nouveaux; if (session.rec) session.rec.faitsNouveaux = warmup.nouveaux;
+  // lot 2, étape 6 : une famille acquise est un niveau franchi (étoile arc-en-ciel) ; ouverture de la suivante
+  for (const e of (await warmup.families?.()) ?? []) { if (e.type === "acquise" && !e.parent) await session.levelUp(); if (session.rec) (session.rec.familles ??= []).push(e); }
   screen.leave();
 }

@@ -16,10 +16,19 @@ export const startOfDay = (t) => { const d = new Date(t); d.setHours(0, 0, 0, 0)
 export const key = (a, b) => `${a}+${b}`;
 
 // les règles des familles : un fait (a, b) en fait-il partie ?
-const RULES = {
+// (lot 2, étape 6 : familles 3 à 7 ; docs/SPEC-LOT2.md, section 3)
+export const RULES = {
   plus1ou2: (a, b) => Math.min(a, b) <= 2,
   doubles: (a, b) => a === b && a <= 5,
+  amis10: (a, b) => a + b === 10,
+  maisons567: (a, b) => a + b >= 5 && a + b <= 7,
+  maisons89: (a, b) => a + b === 8 || a + b === 9,
+  presqueDoubles: (a, b) => Math.abs(a - b) === 1 && Math.max(a, b) <= 5,
+  melange: () => true,
 };
+// l'appui visuel qui montre le mieux un fait (aide du coquillage, correction, exemple guidé) : le plus
+// parlant d'abord (ami de 10, double, presque-double), puis les sauts pour + 1 et + 2, sinon la maison
+export const aidFor = (a, b) => (a + b === 10 ? "cadre" : a === b && a <= 5 ? "reflet" : Math.abs(a - b) === 1 && Math.max(a, b) <= 5 ? "doublePlus" : Math.min(a, b) <= 2 ? "ligne" : "maison");
 // le catalogue, dans l'ordre d'apprentissage : famille par famille ; dans une famille, du plus petit
 // total au plus grand, + 1 avant + 2, le grand nombre d'abord (on part du grand et on fait 1 ou 2 sauts)
 export function catalog(c) {
@@ -107,8 +116,11 @@ export function plan(c, stored, now, n, min, o = {}) {
 export const newFact = (f, now) => ({ ...f, boite: 1, prochain: now, historique: [], introduit: now, nouveau: true });
 // la forme d'une question : directe, ou à trou (« 3 + ? = 7 », « ? + 4 = 6 ») pour un fait dont la boîte le
 // permet (cran « plus dur » : boîte 3 ou plus ; « très dur » : boîte 2 ou plus) ; un tiers chacune
-export function formFor(f, trouDesBoite, rnd) {
-  if (!trouDesBoite || f.base || (f.boite ?? 1) < trouDesBoite) return "directe";
+// lot 2, étape 6 : `trouFamille` (la famille du fait a ouvert ses formes à trou) vaut aussi, sauf `directe`
+// (cran « plus facile » en notion du jour : formes directes seulement)
+export function formFor(f, trouDesBoite, rnd, { trouFamille = false, directe = false } = {}) {
+  if (directe || f.base) return "directe";
+  if (!trouFamille && (!trouDesBoite || (f.boite ?? 1) < trouDesBoite)) return "directe";
   const u = rnd(); return u < 1 / 3 ? "directe" : u < 2 / 3 ? "trouDroite" : "trouGauche";
 }
 // ce que l'enfant doit trouver, selon la forme

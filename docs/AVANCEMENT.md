@@ -34,7 +34,7 @@ Pour reprendre si la session s'est arrêtée : branche `claude/loving-tesla-rtv3
 
 **Reste :** étape 6 ; recette complète à la fin.
 
-**Où j'en suis :** étapes 4 et 5 terminées et poussées ; début de l'étape 6.
+**Où j'en suis :** étape 6 en cours : fait — familles 3 à 7 (`module2.json`, `facts.js` : règles ; `families.js` : ouverture, famille acquise, formes à trou), échauffement sur les familles ouvertes, `modules/facts/runner.js` (notion du jour du module 2), écran des additions (exemples guidés, aide de chaque famille, correction avec l'appui). Reste : textes et voix, alternance et module imposé (session, main.js), leçons L4 à L6 (lecteur du module 2), bernard-l'ermite dans la notion, espace parent (module imposé, point de départ 3 à 7), simulation, tests, recette complète.
 
 **Décisions prises (étape 5) :**
 

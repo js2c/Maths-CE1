@@ -2,9 +2,32 @@
   "_doc": "Module 2, faits d'addition (docs/SPEC.md, « Module 2 »). familles : dans l'ordre d'apprentissage ; un fait appartient à la première famille qui le contient. lot 1 : familles 1 et 2, forme directe seulement. boites : jours avant le retour (boîte 1 : à chaque séance). seuil : secondes au-delà du temps de base ; seuilAvance quand la moitié des faits déjà rencontrés sont en boîte 3 ou plus. base : questions triviales (a + 0) posées pour mesurer le temps de réponse (premiere : au premier échauffement ; ensuite : à chaque échauffement) ; on garde la médiane des `garder` dernières mesures. Lot 2 (docs/SPEC-LOT2.md, section 3) : placesReservees : places de l'échauffement réservées aux faits nouveaux tant qu'il en reste à introduire ; nouveauxMaxSeance : limite commune de faits nouveaux par séance (échauffement et notion du jour) ; nouveauxMax : ancienne limite du lot 1 (n'est plus lue) ; voieRapide : un fait rencontré pour la première fois, juste, rapide et sans aide entre en boîte `boite` ; si tous les faits nouveaux prévus passent ainsi, jusqu'à `ajoutMax` autres s'ajoutent à la fin de l'échauffement ; base.uneSeanceSur : les questions triviales ne reviennent qu'une séance sur 5 ; crans : ce que change le sélecteur de difficulté à l'échauffement (nouveaux false : pas de place réservée aux faits nouveaux ; complementMax : faits nouveaux admis quand même pour compléter une liste trop courte (sinon, sans aucun fait connu, pas d'échauffement du tout) ; nouveauxEnPlus : faits nouveaux de plus, dans la limite commune ; trouDesBoite : formes à trou pour les faits de cette boîte ou plus ; familleSuivante : faits de la famille suivante même si elle n'est pas ouverte).",
   "familles": [
     { "id": 1, "nom": "+ 1 et + 2", "regle": "plus1ou2", "aide": "ligne" },
-    { "id": 2, "nom": "doubles jusqu'à 5", "regle": "doubles", "aide": "reflet" }
+    { "id": 2, "nom": "doubles jusqu'à 5", "regle": "doubles", "aide": "reflet", "lecon": "L4" },
+    { "id": 3, "nom": "amis de 10", "regle": "amis10", "aide": "cadre", "lecon": "L5" },
+    { "id": 4, "nom": "maisons de 5, 6 et 7", "regle": "maisons567", "aide": "maison", "lecon": "L6" },
+    { "id": 5, "nom": "maisons de 8 et 9", "regle": "maisons89", "aide": "maison" },
+    { "id": 6, "nom": "presque-doubles", "regle": "presqueDoubles", "aide": "doublePlus" },
+    { "id": 7, "nom": "mélange", "regle": "melange", "aide": "fait" }
   ],
   "famillesActives": [1, 2],
+  "familles2": {
+    "_doc": "Lot 2, étape 6 (docs/SPEC-LOT2.md, section 3). famillesActives : les familles ouvertes au départ ; les autres s'ouvrent une à une (magasin « niveaux », module 2). ouverture : la famille suivante s'ouvre quand `part` des faits déjà introduits sont en boîte `boite` ou plus. acquise : `part` des faits de la règle de la famille en boîte `boite` ou plus (une étoile arc-en-ciel, sauf si c'est le point de départ du parent). trou : les formes à trou s'ouvrent pour une famille (définitivement) quand `part` des faits de sa règle atteignent la boîte `boite` ; ensuite chaque question sur un fait de cette famille tire la forme au hasard (un tiers chacune).",
+    "ouverture": { "part": 0.8, "boite": 2 },
+    "acquise": { "part": 0.8, "boite": 3 },
+    "trou": { "part": 0.5, "boite": 3 }
+  },
+  "notion": {
+    "_doc": "Le module 2 comme notion du jour (docs/SPEC-LOT2.md, section 3). partFamille : au moins cette part des questions sur les faits de la règle de la famille en cours (faits nouveaux compris, dans la limite commune de la séance) ; memeFaitMax : un même fait au plus tant de fois dans la séance ; difficulte : `erreurs` erreurs sur les `sur` dernières réponses relancent la leçon de la famille (une fois par séance) puis une question plus simple (un fait déjà bien su). crans : ce que change le sélecteur de difficulté (facile : formes directes de la famille en cours, aide affichée d'emblée ; dur : formes à trou et faits de la famille suivante ; tresdur : formes à trou, toutes les familles ouvertes mêlées, et la famille suivante).",
+    "partFamille": 0.5,
+    "memeFaitMax": 3,
+    "difficulte": { "sur": 5, "erreurs": 3 },
+    "crans": {
+      "facile": { "directe": true, "aideDEmblee": true, "familleSeule": true },
+      "conseille": {},
+      "dur": { "trou": true, "familleSuivante": true },
+      "tresdur": { "trou": true, "familleSuivante": true, "melange": true }
+    }
+  },
   "sommeMax": 10,
   "boites": [0, 2, 4, 8, 15],
   "nouveauxMax": 3,

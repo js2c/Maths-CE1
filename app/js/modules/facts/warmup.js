@@ -6,15 +6,19 @@
 // faits nouveaux en plus et des formes à trou. Chaque réponse est enregistrée (magasins « reponses » et
 // « faits ») ; le temps de base est rangé dans les réglages (« tempsDeBase »).
 import { afterFact, catalog, expected, formFor, key, median, newFact, plan, pool, roomForNew, threshold } from "./facts.js";
+import { initialFamilies, trouOpenFor, updateFamilies, withOpen } from "./families.js";
 
 export class Warmup {
   // cran : () => le nom du cran en cours (« facile », « conseille », « dur », « tresdur ») ; nouveaux : faits
   // nouveaux déjà introduits dans la séance (limite commune)
   constructor({ store, content, rnd, seance = null, clock = () => Date.now(), cran = () => "conseille", dejaNouveaux = 0 }) {
-    this.store = store; this.c = content; this.rnd = rnd; this.seance = seance; this.clock = clock; this.cran = cran; this.nouveaux = dejaNouveaux;
+    this.store = store; this.c0 = content; this.c = content; this.rnd = rnd; this.seance = seance; this.clock = clock; this.cran = cran; this.nouveaux = dejaNouveaux;
   }
   async load() {
     this.facts = await this.store.all("faits");
+    // lot 2, étape 6 : les familles ouvertes (et leurs formes à trou) ; le plan ne pose que des faits des familles ouvertes
+    this.fam = (await this.store.get("niveaux", 2)) ?? initialFamilies(this.c0, this.clock());
+    this.c = withOpen(this.c0, this.fam);
     this.base = (await this.store.setting("tempsDeBase")) ?? { mesures: [] };
     return this;
   }
@@ -43,8 +47,16 @@ export class Warmup {
   // (second passage d'un fait nouveau qui vient d'entrer en boîte 3 : la voie rapide l'a déjà validé)
   prepare(q) {
     if (q.anticipe && q.nouveau) { const cur = this.facts.find((f) => f.fait === q.fait); if (cur && cur.boite > 1) return null; }
-    if (!q.forme) q.forme = formFor(this.facts.find((f) => f.fait === q.fait) ?? q, this.effet.trouDesBoite, this.rnd);
+    if (!q.forme) q.forme = formFor(this.facts.find((f) => f.fait === q.fait) ?? q, this.effet.trouDesBoite, this.rnd, { trouFamille: !q.base && trouOpenFor(this.c, this.fam, q.a, q.b), directe: this.cran() === "facile" && this.notion });
     return q;
+  }
+  // fin de l'étape : les familles (ouverture de la suivante, famille acquise, formes à trou) ; renvoie les
+  // événements (une famille acquise rapporte une étoile arc-en-ciel, session.levelUp)
+  async families(now = this.clock()) {
+    const { st, events } = updateFamilies(this.c0, this.fam, this.facts, now);
+    this.fam = st; this.c = withOpen(this.c0, st);
+    await this.store.put("niveaux", st);
+    return events;
   }
   // le cran vient de redescendre (protection) : les faits nouveaux « bonus » pas encore posés sont retirés
   // (avec leurs seconds passages)
@@ -56,7 +68,7 @@ export class Warmup {
     await this.store.add("reponses", {
       t: now, seance: this.seance, module: 2, niveau: q.famille ?? 0, question: describeFact(q, forme), forme, donnee: r.value, attendue: expected({ ...q, forme }),
       juste, tempsMs: r.ms, ecoutes: r.listens, aide: !!r.aide, erreur: juste ? null : r.nsp ? "NSP" : "autre", revient: !!q.revient, anticipe: !!q.anticipe,
-      ...(r.correctionPassee ? { correctionPassee: true } : {}), ...(this.libre ? { libre: true } : {}), ...(this.cran() !== "conseille" ? { cran: this.cran() } : {}),
+      ...(r.correctionPassee ? { correctionPassee: true } : {}), ...(this.libre ? { libre: true } : {}), ...(q.guide ? { guide: true } : {}), ...(q.passe ? { passe: true } : {}), ...(this.notion ? { notion: true } : {}), ...(this.cran() !== "conseille" ? { cran: this.cran() } : {}),
     });
     if (q.base) {
       // temps de base : seulement les réponses justes, on garde les dernières

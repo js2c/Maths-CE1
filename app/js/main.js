@@ -82,6 +82,7 @@ stage.ticks.add(() => sound.duck(voice.speaking));
 // le premier écran est prêt : on le note pour la mesure du démarrage
 requestAnimationFrame(() => requestAnimationFrame(() => { performance.mark("app-ready"); window.__ready = performance.now() - T0; }));
 sprites.load("pieuvre-gestes").then(() => ocean.octo.warm("pieuvre-gestes"));
+sprites.load("aides"); // lot 2 : les aides visuelles du module 2 (petite planche : cadre de 10, maison, bulle dorée)
 
 // ---------------------------------------------------------------- en-tête : réécouter, étoiles de mer
 const speaker = spriteBox(app, { x: 1140, y: 8, w: 130, h: 130, cls: "hud speaker", label: "réécouter", paint: (ctx) => sprites.draw(ctx, "reecouter", 0, 65, 65) });
@@ -141,7 +142,7 @@ async function notion2(ctx) {
   const runner = await new Module2Runner({ store, content: module2, rnd, seance: session.id, cran: () => session.cran, dejaNouveaux: session.nouveaux }).load();
   const conf = ctx.step.module2 ?? ctx.step, step = { ...ctx.step, ...conf, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}), ...(P.get("guides") ? { guides: Number(P.get("guides")) } : {}) };
   app.runner = runner; session.rec.famille = runner.famille; await session.save();
-  await sprites.load("ermite");
+  await Promise.all([sprites.load("ermite"), sprites.load("aides")]);
   const hermit = new Hermit(ocean, { x: 150, y: 795, scale: 0.85 });
   screen.hermit = hermit; screen.notion = true; app.hermit = hermit;
   hermit.show(true); hermit.play("sortir");

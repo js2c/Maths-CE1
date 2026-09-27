@@ -28,10 +28,10 @@ export async function markFamilyKnown(store, c, id, now = Date.now()) {
   const log = (await store.setting("choixParent")) ?? [];
   await store.setSetting("choixParent", [...log, { t: now, type: "famille", famille: id, nom: familyOf(c, id)?.nom, faits: out.length }]);
   // lot 2, étape 6 : la famille (et celles d'avant) est ouverte ; elle compte comme acquise, choix du parent (pas
-  // d'étoile arc-en-ciel) ; la suivante peut s'ouvrir
+  // d'étoile arc-en-ciel) ; la suivante s'ouvrira d'elle-même (règle des 80 %, à la prochaine séance)
   let st = (await store.get("niveaux", 2)) ?? initialFamilies(c, now);
   for (const f of c.familles) if (f.id <= id && !st.ouvertes.includes(f.id)) { st = { ...st, ouvertes: [...st.ouvertes, f.id], ouvertures: [...st.ouvertures, { famille: f.id, date: now, parent: true }] }; }
-  st = updateFamilies(c, st, await store.all("faits"), now, { parent: true }).st;
+  st = updateFamilies(c, st, await store.all("faits"), now, { parent: true, open: false }).st;
   await store.put("niveaux", st);
   return out;
 }

@@ -53,7 +53,7 @@ export class Warmup {
   // fin de l'étape : les familles (ouverture de la suivante, famille acquise, formes à trou) ; renvoie les
   // événements (une famille acquise rapporte une étoile arc-en-ciel, session.levelUp)
   async families(now = this.clock()) {
-    const { st, events } = updateFamilies(this.c0, this.fam, this.facts, now);
+    const { st, events } = updateFamilies(this.c0, this.fam, this.facts, now, { seance: this.libre ? null : this.seance });
     this.fam = st; this.c = withOpen(this.c0, st);
     await this.store.put("niveaux", st);
     return events;

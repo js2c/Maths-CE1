@@ -69,8 +69,10 @@ export class FactsScreen {
     // lot 2, étape 6 : un exemple guidé (l'appui visuel montre la réponse, on peut le passer), ou l'aide
     // affichée d'emblée (cran « plus facile » en notion du jour)
     const p = new Promise((res) => { this.resolve = res; });
-    if (q.guide) { this.locked = true; this.demo(q).then(() => { this.locked = false; this.keys(true); this.t0 = clock.now(); voice.say(this.consigne(q), { instruction: true }); }); return p; }
-    if (q.aideDEmblee) this.paintAid(q, false);
+    // (l'appui est rangé quand le pavé revient : il occupe la même place)
+    const then = () => { this.app.aidBoard?.clear(); this.locked = false; this.keys(true); this.t0 = clock.now(); voice.say(this.consigne(q), { instruction: true }); };
+    if (q.guide) { this.locked = true; this.demo(q).then(then); return p; }
+    if (q.aideDEmblee) { this.locked = true; this.keys(false); this.autoAid(q).then(then); return p; }
     this.t0 = clock.now();
     voice.stop(); voice.say(this.consigne(q), { instruction: true });
     return p;
@@ -97,6 +99,14 @@ export class FactsScreen {
   aidSpeech(q, kind) {
     const t = this.app.text.data, k = q.forme === "trouGauche" ? q.b : q.a;
     return kind === "cadre" ? fill(t.aideCadre, { k }) : kind === "maison" ? t.aideMaison : kind === "doublePlus" ? fill(t.aideDoublePlus, { d: Math.min(q.a, q.b) }) : fill(t.aideReflet, { a: q.a });
+  }
+  // cran « plus facile » : l'appui est montré d'emblée (sans la réponse), puis le pavé revient ; ce n'est pas
+  // compté comme une aide demandée (la séance « plus facile » compte normalement)
+  async autoAid(q) {
+    const { voice } = this.app, kind = this.aidKind(q);
+    voice.stop(); voice.say(this.consigne(q));
+    if (kind === "ligne") return this.lineAid(q, false);
+    this.paintAid(q, false); await voice.say(this.aidSpeech(q, kind)); await wait(1500);
   }
   // un exemple guidé : l'appui avec la réponse, « a plus b, ça fait n », puis « À toi ! » ; « passer » l'arrête
   async demo(q) {

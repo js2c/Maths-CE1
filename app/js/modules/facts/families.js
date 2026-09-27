@@ -3,7 +3,7 @@
 //  - ouvertes : les familles ouvertes ; au départ celles de `famillesActives` (1 et 2). La famille suivante
 //    s'ouvre quand 80 % des faits déjà introduits sont en boîte 2 ou plus, ou quand le parent la marque connue
 //    (point de départ) ; une famille sans fait nouveau à introduire s'ouvre de la même façon (elle a des faits
-//    à pratiquer). Une famille à la fois ;
+//    à pratiquer). Une famille à la fois, au plus une par séance (`seance`) ;
 //  - acquise : 80 % des faits de sa RÈGLE en boîte 3 ou plus (les amis de 10 comptent 9 + 1, 8 + 2 et 5 + 5,
 //    déjà rencontrés dans les familles 1 et 2) ; une famille acquise est un niveau franchi (une étoile
 //    arc-en-ciel), sauf si c'est le parent qui l'a marquée connue ;
@@ -33,14 +33,14 @@ export function canOpenNext(c, st, faits) {
 }
 // met l'état à jour ; renvoie { st, events } : { type: "ouverte" | "acquise" | "trou", famille, parent? }
 // `parent` : un changement dû au point de départ du parent (noté comme tel, ne rapporte rien)
-export function updateFamilies(c, st0, faits, now = Date.now(), { parent = false } = {}) {
+export function updateFamilies(c, st0, faits, now = Date.now(), { parent = false, seance = null, open = true } = {}) {
   const st = structuredClone(st0), events = [], K = cfgOf(c);
   for (const id of st.ouvertes) {
     if (!st.acquises.includes(id) && isAcquired(c, faits, id)) { st.acquises.push(id); (st.obtenus ??= []).push({ famille: id, date: now, ...(parent ? { parent: true } : {}) }); events.push({ type: "acquise", famille: id, ...(parent ? { parent: true } : {}) }); }
     if (!st.trou.includes(id) && ruleShare(c, faits, id, K.trou.boite) >= K.trou.part - 1e-9) { st.trou.push(id); events.push({ type: "trou", famille: id }); }
   }
-  const next = canOpenNext(c, st, faits);
-  if (next) { st.ouvertes.push(next); st.ouvertures.push({ famille: next, date: now, ...(parent ? { parent: true } : {}) }); events.push({ type: "ouverte", famille: next }); }
+  const next = !open || (seance != null && st.ouvertures.at(-1)?.seance === seance) ? null : canOpenNext(c, st, faits);
+  if (next) { st.ouvertes.push(next); st.ouvertures.push({ famille: next, date: now, ...(parent ? { parent: true } : {}), ...(seance != null ? { seance } : {}) }); events.push({ type: "ouverte", famille: next }); }
   return { st, events };
 }
 // la famille en cours : la plus basse ouverte pas encore acquise, sinon la dernière (le mélange)

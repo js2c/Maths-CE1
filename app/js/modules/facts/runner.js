@@ -131,7 +131,7 @@ export class Module2Runner {
   // fin : la famille a été la notion du jour ; ouverture de la suivante, formes à trou ; taux de la séance
   async finish() {
     if (!(this.fam.notion ?? []).includes(this.famille)) this.fam = { ...this.fam, notion: [...(this.fam.notion ?? []), this.famille] };
-    const { st, events } = updateFamilies(this.c0, this.fam, this.w.facts, this.clock());
+    const { st, events } = updateFamilies(this.c0, this.fam, this.w.facts, this.clock(), { seance: this.seance });
     this.fam = st; this.w.fam = st; await this.save();
     return { rate: this.count ? this.ok / this.count : null, events: [...this.events, ...events] };
   }

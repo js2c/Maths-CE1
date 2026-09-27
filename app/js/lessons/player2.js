@@ -27,9 +27,11 @@ export class Lesson2Player {
     const { app } = this, lesson = this.c[id], t0 = Date.now(), stats = { rejouees: 0 };
     if (!lesson) return { vue: false };
     app.facts?.show(false);
-    await app.sprites.load("ermite");
+    await Promise.all([app.sprites.load("ermite"), app.sprites.load("aides")]);
     // le bernard-l'ermite : celui de la notion du jour, sinon le sien (entraînement libre)
+    // pendant la leçon, il vient au milieu du sable, en grand ; il retrouve sa place ensuite
     this.own = !app.hermit; this.h = app.hermit ?? new Hermit(app.ocean, { x: 150, y: 795, scale: 0.85 }); this.h.show(true);
+    this.back = [this.h.x, this.h.y, this.h.s]; this.h.at(300, 780, 1);
     if (this.own) this.h.play("sortir");
     this.p = 0; this.skipped = false; this.abort = null; this.goto = undefined;
     const jump = (to) => { this.goto = to; app.voice.stop(); if (this.abort) this.abort(); else this.p = to; };
@@ -81,13 +83,13 @@ export class Lesson2Player {
       if (st.miroir) paintMirror(ctx, sprites, st.miroir, 700, 470);
       if (st.cadre) paintTenFrame(ctx, sprites, 700 - 228, 400, { n: st.cadre.n, extra: st.cadre.extra ?? 0, glow: st.cadre.lueur ?? [] });
       if (st.maison) paintHouse(ctx, sprites, 700, 400, st.maison.total, st.maison.etages ?? []);
-      if (st.ecrit) { const em = 64; R.drawWord(ctx, st.ecrit, 760, 196 - em / 2, em, { w: 9, seed: 990 }); }
+      if (st.ecrit) { const em = 64; R.drawWord(ctx, st.ecrit, 720, 262 - em / 2, em, { w: 9, seed: 990 }); }
     });
   }
   abandon() { if (!this.keys) return; this.tok++; this.abort = null; this.keys.forEach((k) => k.remove()); this.keys = null; this.clear(); }
   clear() {
     this.app.aidBoard?.clear();
-    if (this.own) { this.h?.remove(); this.app.sprites.unload("ermite"); }
+    if (this.own) { this.h?.remove(); this.app.sprites.unload("ermite"); } else if (this.h && this.back) this.h.at(...this.back);
     this.h = null;
   }
 }

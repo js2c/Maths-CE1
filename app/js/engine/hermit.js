@@ -22,7 +22,7 @@ export class Hermit {
   frames(c) { return this.sp.atlas.sprites[`ermite.${c}`].frames; }
   fps(c) { return this.sp.atlas.sprites[`ermite.${c}`].fps || 8; }
   show(v = true) { this.visible = v; if (!v) this.all.forEach((a) => a.show(false)); }
-  at(x, y) { this.x = x; this.y = y; }
+  at(x, y, scale = this.s) { if (this.left != null) this.left += x - this.x; this.x = x; this.y = y; this.s = scale; }
   // joue un geste ; la promesse se résout à sa fin (`hold` : ms pendant lesquelles « montrer » reste tendu)
   play(clip, { hold = 0 } = {}) {
     this.done?.(); this.clip = clip; this.t0 = null; this.holdUntil = hold;
@@ -49,7 +49,7 @@ export class Hermit {
       if (c === "changer") { this.left = this.x; this.x += this.meta(c).to[0] * this.s; this.shell = 1; }
       const r = this.done; this.done = null; this.clip = c = "repos"; this.t0 = t; f = 0; r?.();
     }
-    const m = this.meta(c), comp = m.comp[f], s = this.s, sh = c === "repos" ? this.shell : comp[0];
+    const m = this.meta(c), comp = m.comp[f], s = this.s, sh = c === "changer" ? comp[0] : this.shell;
     this.body.show(true); this.body.draw(f, `ermite.${c}`); this.body.moveTo(this.x, this.y, s);
     this.carried.show(true); this.carried.draw(0, `ermite.coquille.${sh}`); this.carried.moveTo(this.x + comp[1] * s, this.y + comp[2] * s, s, 1, comp[3]);
     // la coquille posée : l'autre pendant « changer », l'ancienne ensuite

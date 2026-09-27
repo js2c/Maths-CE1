@@ -34,12 +34,14 @@ Mémoire de la conversation de conception (claude.ai, 26 et 27 septembre 2026), 
 | Cartes (27 septembre) | 2 cartes nouvelles par semaine d'école (calendrier zone C), doublons au-delà ; 20 % de cartes brillantes (plus le 3e doublon) ; zone suivante ouverte quand communes et rares sont gagnées ; étoile dorée pour 4 semaines d'au moins 2 séances ; légendaires en dernière carte de leur zone | Toutes les cartes à la fin de l'année scolaire ; collection de brillantes comme motivation |
 | Son (27 septembre) | Bruitages courts et musique de fond calme, thème marin, plus basse que les bruitages ; fabriqués par un outil du dépôt, échantillons choisis par le parent | Décision du parent |
 | Lot 2 (27 septembre) | Option complète (bernard-l'ermite animé) ; nombres jusqu'à 1 000 inclus ; zone 2 avancée (album seulement) ; correctifs « passer » partout (PR #9, fusionnée) | Décisions du parent |
+| Sélecteur de difficulté (27 septembre) | Curseur à 4 crans en début de séance, placé sur « conseillé » : plus facile × 0,5, conseillé × 1, plus dur × 1,5, très dur × 2 (étoiles des bonnes réponses) ; vaut dès l'échauffement ; échouer au-dessus ne fait jamais baisser le niveau | Éviter les échauffements triviaux, inciter l'enfant à choisir plus dur |
+| Méthode (27 septembre) | Une demande de fusion par étape, fusionnée dans `main` avant l'étape suivante ; reprise sans perte (branche poussée dès le début, brouillon, commits réguliers, rubrique de reprise) | Tester chaque étape sur la tablette ; ne rien perdre si le quota d'utilisation est atteint |
 | Formulations | Formes à trou : « 3 plus combien, ça fait 7 ? », « Combien plus 4, ça fait 6 ? » ; E5 au singulier (« 1 dizaine ») | Oral naturel pour un enfant de 7 ans |
 
 ## État au 27 septembre 2026, 10 h
 
 - **Lot 1** et **lot 1 bis** : terminés, en ligne (https://js2c.github.io/Maths-CE1/). Correctifs du 27 septembre (« passer » dès la première vue sur les leçons, exemples guidés et corrections ; frise redessinée ; vitesse 1,5) : PR #9, fusionnée, recette faite (attente après une correction passée : environ 1 s).
-- **Lot 2** : spécification `docs/SPEC-LOT2.md`, prompt `docs/PROMPT-LOT2.md` (9 étapes, 90 à 140 $ estimés). Les 15 illustrations du récif de corail sont dans `app/assets/cards/` ; leurs anecdotes et leur voix sont intégrées à l'étape 1.
+- **Lot 2** : spécification `docs/SPEC-LOT2.md`, prompt `docs/PROMPT-LOT2.md` (9 étapes, 100 à 150 $ estimés avec le sélecteur de difficulté). Étape 1 (cartes et rythme) terminée : PR #11. Les 15 illustrations du récif de corail sont dans `app/assets/cards/` ; leurs anecdotes et leur voix sont intégrées à l'étape 1.
 - **Lot « Compléments »** : la partie A (nombres jusqu'à 1 000) passe dans le lot 2 ; B et C restent à faire.
 
 ## Prochaines étapes
@@ -54,11 +56,13 @@ Mémoire de la conversation de conception (claude.ai, 26 et 27 septembre 2026), 
 - Modèle de la tablette inconnu ; mémoire des images mesurée à 150 à 195 Mo (à vérifier sur la vraie tablette).
 - Progression de la classe (centaines, heure, monnaie) à demander à l'enseignante.
 - Confort de la vitesse 1,5 des animations et usage réel de « passer » (visible dans l'historique du parent) : à observer sur quelques soirs.
+- Cartes brillantes : à 5 séances par semaine, presque toutes les cartes deviennent brillantes avant l'été (recette de l'étape 1) ; règle à revoir avant l'étape 9.
+- Calendrier scolaire 2027-2028 à ajouter dans `app/content/calendrier.json` avant la rentrée 2027.
 - Récif des zones 3 et 4 : question d'échelle pour les très grands animaux (baleines), à traiter au lot 4.
 
 ## Estimations de coût (Claude Code)
 
-Lot 2 (périmètre élargi le 27 septembre : séance, cartes, son, nombres jusqu'à 1 000) : 90 à 140 $ ; lot 3 : 30 à 50 $ ; lot 4 : 50 à 90 $ ; Compléments : 60 à 100 $. Fiabilité : environ ±50 %. Option « recentrée » (moins de personnages animés, récif simplifié) : environ 110 à 160 $ au total au lieu de 180 à 300 $.
+Lot 2 (périmètre élargi le 27 septembre : séance, cartes, son, nombres jusqu'à 1 000, sélecteur de difficulté) : 100 à 150 $ ; lot 3 : 30 à 50 $ ; lot 4 : 50 à 90 $ ; Compléments : 60 à 100 $. Fiabilité : environ ±50 %. Option « recentrée » (moins de personnages animés, récif simplifié) : environ 110 à 160 $ au total au lieu de 180 à 300 $.
 
 ## Prompts de référence Nano Banana
 

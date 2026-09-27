@@ -31,6 +31,31 @@ Les nombres sont des réglages de `app/content/seance.json`, à ajuster après e
 
 **Notion du jour : alternance.** La notion du jour alterne **séance après séance** (et non jour après jour) entre le module 1 (ligne graduée) et le module 2 (faits d'addition). On ne choisit jamais deux fois de suite le même module, sauf si l'autre n'a rien à proposer. Le parent peut imposer le module de la prochaine séance (réglage de l'espace parent, valable une séance). Le module 3 s'ajoutera à la rotation au lot 3 (règle de la SPEC : le module débloqué le moins maîtrisé, jamais trois fois de suite).
 
+### Sélecteur de difficulté en début de séance (décision du parent, 27 septembre)
+
+Juste après l'accueil, avant l'échauffement, l'enfant voit un **curseur à 4 crans déjà placé sur « conseillé »** (le niveau que l'adaptation a calculé). Elle peut le laisser ou le déplacer. Le cran vaut pour **toute la séance, échauffement compris**.
+
+| Cran | Effet | Étoiles des bonnes réponses |
+| --- | --- | --- |
+| Plus facile | un cran de difficulté en dessous du conseillé | × 0,5 |
+| Conseillé (position de départ) | le niveau calculé par l'adaptation | × 1 |
+| Plus dur | un cran au-dessus | × 1,5 |
+| Très dur | deux crans au-dessus | × 2 |
+
+- **Le multiplicateur** ne s'applique qu'aux étoiles des bonnes réponses (et des erreurs corrigées). Les étoiles de fin de séance, des leçons, de la série et du défi record restent inchangées. Les fractions s'accumulent : une étoile tombe chaque fois que le total atteint un entier (à × 0,5, une étoile toutes les deux bonnes réponses). Réglages dans `app/content/seance.json` (`selecteur.multiplicateurs`).
+- **Ce que veut dire « un cran »**, réglages dans `app/content/` :
+  - *Ligne graduée* : un niveau (plus facile = niveau − 1, très dur = niveau + 2), borné au premier et au dernier niveau disponible.
+  - *Échauffement* : plus facile = seulement des faits dus, pas de fait nouveau ; plus dur = 2 faits nouveaux de plus (dans la limite commune de la séance) et formes à trou pour les faits en boîte 3 ou plus ; très dur = 3 faits nouveaux de plus, formes à trou dès la boîte 2, et faits de la famille suivante même si elle n'est pas encore ouverte.
+  - *Additions en notion du jour* (étape 6) : plus facile = formes directes de la famille en cours, aide affichée d'emblée ; plus dur = formes à trou et faits de la famille suivante ; très dur = formes à trou, mélange de toutes les familles ouvertes et famille suivante.
+- **Progression** : réussir à un cran au-dessus valide ce niveau (8 bonnes réponses sur 10, règle habituelle) et fait monter le « conseillé ». Échouer au-dessus ne fait **jamais** baisser le conseillé. Une séance « plus facile » compte normalement.
+- **Protection** : si l'enfant est en difficulté persistante à un cran au-dessus du conseillé (3 erreurs sur 5), l'application redescend d'un cran pour le reste de la séance, avec une phrase douce (« On essaie un peu moins dur ? »), et le multiplicateur suit le nouveau cran.
+- **Les questions triviales « a + 0 »** (mesure du temps de base) ne sont plus posées qu'une séance sur 5, quel que soit le cran.
+- **Écran** : sans texte à lire. Quatre bulles alignées ou un curseur à glisser ; chaque cran montre des vagues de plus en plus grosses et ses étoiles (une demi-étoile, une étoile, une étoile et demie, deux étoiles). Le cran conseillé est entouré d'une lueur. La voix dit : « Choisis ton niveau. Plus c'est dur, plus tu gagnes d'étoiles ! » ; toucher un cran le fait dire (« Très dur : deux fois plus d'étoiles ! »). Une grosse coche valide ; sans toucher pendant 15 secondes, la séance commence sur le cran affiché. Dessins dans l'atelier, style A.
+- **Entraînement libre** : même sélecteur, sans étoiles (donc sans multiplicateur).
+- **Espace parent** : le cran choisi à chaque séance (historique, export CSV) ; réglage des crans autorisés (par exemple interdire « plus facile », ou ne pas aller au-delà de « plus dur »).
+- **Effet sur les cartes** : davantage d'étoiles ne donne pas plus de cartes nouvelles (le quota prime) ; cela donne plus de doublons, donc plus de chances de brillantes. À surveiller avec le point ouvert sur les brillantes (voir section 5).
+- **Recette** : deux profils de plus dans la simulation, une enfant qui choisit toujours « très dur » et une qui choisit toujours « plus facile » : taux de réussite, « je ne sais pas », descentes automatiques de cran, étoiles par séance.
+
 ## 3. Module 2 complet
 
 ### Familles et ouverture
@@ -115,6 +140,7 @@ Source : calendrier scolaire officiel, education.gouv.fr (arrêté publié en oc
 - **Effet** : un reflet irisé qui balaie la carte en diagonale toutes les 3 à 4 secondes, et quelques étincelles sur le cadre ; en grand comme dans l'album (les vignettes brillantes scintillent). Dessiné dans l'atelier, léger à l'affichage (pas de redessin de l'illustration).
 - **Annonce** : quand la carte sort brillante, la voix dit « Oh ! Elle est brillante ! » (phrase nouvelle, voix à fabriquer) et l'effet démarre au retournement.
 - But : une collection de brillantes qui grandit toute l'année. Pas de compteur chiffré pour l'enfant.
+- **Point ouvert (recette de l'étape 1)** : à 5 séances par semaine, 56 à 57 cartes sur 60 deviennent brillantes avant l'été (les doublons au-delà du quota tirent eux aussi 20 %, et le 3e doublon rend brillante) ; à 2 séances par semaine, 13 à 22. Le sélecteur de difficulté augmentera encore les doublons. Décision du parent à prendre avant l'étape 9 (par exemple : 20 % pour une carte nouvelle, 5 % pour un doublon, et suppression de la règle du 3e doublon). Ne rien changer d'ici là.
 
 ### Zones
 

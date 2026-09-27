@@ -2,6 +2,69 @@
 
 Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail dans une nouvelle session : lire ce fichier, puis `CLAUDE.md`, `docs/SPEC.md` et `docs/ARCHITECTURE.md`.
 
+## Lot 2
+
+Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `docs/PROMPT-LOT2.md`. Une étape = une session = une demande de fusion vers `main`.
+
+| Étape | Contenu | État |
+| --- | --- | --- |
+| 1 | Cartes et rythme : calendrier et quota, doublons, brillantes (20 % et effet), ouverture des zones, zone 2 (anecdotes et voix), étoiles dorées (4 semaines réussies), légendaires et coquillage doré, étoile arc-en-ciel de l'entraînement libre, surprise une séance sur cinq, ligne « Cartes » de l'espace parent ; simulation des cartes sur l'année | fait (branche `lot2-etape1`, https://github.com/js2c/Maths-CE1/pull/11) |
+| 2 | Séance et progression : durées et nombres de questions, défi record activable, places réservées et voie rapide des faits, enchaînement des niveaux, leçon au plus une fois par séance, point de départ du parent, tortue devant la pieuvre, pieuvre qui montre la cible ; option `--delai` de la recette | à faire |
+| 3 | Son, échantillons (`tools/son/`, `docs/son-echantillons/`) ; arrêt pour le choix du parent | à faire |
+| 4 | Son, intégration : bruitages, musique, mixage, réglages du parent | à faire |
+| 5 | Atelier : bernard-l'ermite, cadre de 10, maison des nombres, double + 1 | à faire |
+| 6 | Module 2 comme notion du jour : familles 3 à 7, formes à trou, leçons L4 à L6, alternance, module imposé, point de départ étendu | à faire |
+| 7 | Défi record, grille des 66 additions, progression du module 2 dans l'espace parent | à faire |
+| 8 | Nombres jusqu'à 1 000 (`docs/SPEC-COMPLEMENTS.md`, partie A) | à faire |
+| 9 | Bilan : `docs/BILAN-LOT2.md`, guide du parent, recette complète sur l'année | à faire |
+
+### Reprise de l'étape 1
+
+Pour reprendre si la session s'est arrêtée : branche `lot2-etape1`, demande de fusion en brouillon « Lot 2, étape 1 (en cours) ».
+
+**Fait :**
+
+- Branche créée, demande de fusion en brouillon ouverte (https://github.com/js2c/Maths-CE1/pull/11), étapes du lot 2 inscrites ci-dessus.
+- Moteur des cartes (`app/js/session/rewards.js`) : calendrier (`app/content/calendrier.json`), quota (base enregistrée au premier lancement, fiche `quota`), doublons au-dessus du quota (de préférence pas encore brillants), tirage des brillantes (20 %, `brillanteHasard`), ouverture des zones (fiche `zones`, étoile arc-en-ciel dépensée : `arcDepensees`), semaines réussies et étoile dorée toutes les 4, légendaires et coquillage doré (`doreesDepensees`), étoile arc-en-ciel de l'entraînement libre (`arcLibre`), cadeaux (fiche `cadeaux`). Tests : `tests/unit/cartes.test.mjs`.
+- Contenu : `cartes.json` (quota, brillantes, semaines, surprise, anecdotes de la zone 2, `ouvertureLu`), `textes.json` (phrases nouvelles), voix fabriquée (72 phrases).
+- Atelier : coquillage doré (`coquillage.or`), reflet irisé (`carte.reflet`), cadeaux (`cadeau.corail|gorgone|etoile|coquille`) ; planche `node tools/still.mjs giftsSheet`.
+- Application : récompense (`screens.js` : cérémonie d'ouverture de zone, coquillage doré, annonce des brillantes, carte « dans ton album »), effet des brillantes (`cards.js`, `shine`, en grand et dans l'album), album selon les zones ouvertes, surprise (`session/surprise.js`, à l'accueil), cadeaux dans le récif, étoile arc-en-ciel gardée en entraînement libre (`free.js`), espace parent : bloc « Cartes » (Progression ; `data.js`, `cardsSummary`).
+
+- Parcours `tests/e2e/cartes.mjs` (ouverture d'une zone, brillantes, doublon au quota, coquillage doré, surprise, bloc parent), captures regardées et corrigées (visiteurs passés derrière la pieuvre et attendus avant la première question, cadeaux replacés dans le récif, cadeau montré au moins 2,5 s).
+- Simulation de l'année (`node tests/sim-seances.mjs <profil> <2|5> annee`, zones 3 et 4 prêtes) ; recette complète ; documentation (ARCHITECTURE, GUIDE-PARENT).
+
+**Reste à faire :** rien pour l'étape 1. Étape suivante : étape 2 (séance et progression), dans une nouvelle session, après fusion.
+
+**Où j'en suis :** étape terminée, demande de fusion prête.
+
+**Décisions prises :**
+
+- Semaine d'école : au moins un jour de classe du lundi au vendredi. Après la fin de l'année du calendrier, plus aucune semaine d'école : à compléter pour 2027-2028 (sans toucher au moteur).
+- Étoile arc-en-ciel dépensée pour ouvrir une zone : compteur à part (`arcDepensees`) ; `arcEnCiel` garde le total gagné (le parent voit toujours les niveaux franchis).
+- Une carte brillante l'est pour de bon ; un doublon d'une carte déjà brillante ne relance pas l'annonce. « Oh ! Elle est brillante ! » pour le tirage de 20 %, « Ta carte devient brillante ! » (phrase existante) pour le 3e doublon.
+- Surprise : `hasard` 0,25 (avec « jamais deux de suite », cela fait une séance sur cinq en moyenne). Visiteurs : la tortue ou un banc de poissons (déjà dessinés et chargés ; les créatures du lagon demanderaient de charger la planche du récif, 43 Mo). Cadeaux : 4 décors, chacun offert une fois, puis seulement des visites.
+- Cartes des zones 2 à 4 : pas de créature dans le récif (lot 4) ; la voix dit « Tu la retrouveras dans ton album ! » au lieu de « Cette créature va vivre dans ton récif ! ».
+- Texte de l'étoile dorée changé (l'ancien disait « cinq fois cette semaine ») : « Et une étoile dorée ! Tu as joué souvent, semaine après semaine. » (à valider).
+
+**Écarts avec la spécification (étape 1) :**
+
+- Surprise : les visiteurs sont la tortue ou un banc de poissons (pas le bernard-l'ermite, dessiné à l'étape 5, ni une créature du lagon, dont la planche pèse 43 Mo décodés) ; `hasard` vaut 0,25 pour obtenir une séance sur cinq malgré « jamais deux de suite ».
+- Ouverture d'une zone : la cérémonie se joue sur l'écran de la récompense (le dos de la zone, assombri, s'éclaire quand l'étoile arc-en-ciel l'atteint, puis file vers un livre de l'album posé pour l'occasion), puisque l'album lui-même n'est pas ouvert à ce moment.
+- Coquillage doré : il passe avant les coquillages ordinaires dès qu'il est possible (pas seulement quand il ne reste qu'une place sous le quota) ; c'est la même règle vue autrement, au plus un par séance.
+- Les illustrations et anecdotes des zones 3 et 4 manquent : dans la réalité, le grand large attend son contenu (à livrer avant début février), les abysses avant fin avril.
+
+**Recette de l'étape 1 (27 septembre 2026) :**
+
+| Critère | Mesure | État |
+| --- | --- | --- |
+| Cartes : 60 avant le 25 juin 2027, jamais plus que le quota (2 séances par semaine, zones 3 et 4 prêtes) | 60 cartes (5 légendaires) le 17 juin pour les trois profils ; 15 le 30 novembre, 30 le 4 février, 45 le 26 avril ; quota jamais dépassé. À 5 séances par semaine : 60 le 15 juin | tenu |
+| Tirage des brillantes | 20 % ± 3 points sur 1 000 tirages (test unitaire) ; sur l'année : 13 à 22 brillantes à 2 séances par semaine, 56 à 57 à 5 séances | tenu |
+| Durée d'une séance (`recette.mjs --delai 4.5`) | 3 min 40 s (première séance, leçon L1 comprise) | sans objet (étape 2) |
+| Attente sans rien pouvoir faire | inchangée par cette étape ; avec « passer », au plus 2,5 s après une question (recette-durees) | inchangé |
+| Faits nouveaux, familles 1 et 2 | profil « sait » : 13 faits sur 33 avant la 7e séance ; « reel » : 1,5 par séance environ | sans objet (étape 2) |
+| Alternance | — | sans objet (étape 6) |
+| Erreurs dans la page | aucune (recette, cartes, récompenses, séance, ergonomie, leçons, frise, parent, pwa, voix) | tenu |
+
 ## Lot 1 bis — correctifs du 27 septembre
 
 Demandés par le parent après essai sur la tablette (27 septembre 2026). Une session, branche `claude/ergonomie-lecons-exercices-dsrvra`, demande de fusion vers `main`.

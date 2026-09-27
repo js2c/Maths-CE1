@@ -123,39 +123,87 @@ export async function reward(app, { session, hud }) {
   await shells(app, { session, hud });
 }
 
-// la série (une séance sur trois : 5 étoiles), l'étoile dorée (5 séances dans la semaine), les étoiles
-// arc-en-ciel (un niveau franchi pendant la séance) ; les étoiles spéciales s'alignent sous le bilan
+// la série (une séance sur trois : 5 étoiles), l'étoile dorée (4 semaines réussies), les étoiles arc-en-ciel
+// (un niveau franchi pendant la séance, et celles gagnées depuis en entraînement libre) ; les étoiles
+// spéciales s'alignent sous le bilan
 async function bonuses(app, { session }) {
   const { rewards, store, voice, text, ocean } = app, specials = [];
   if (!rewards.c) return;
   app.starFrom = [635, 305];
   const b = await rewards.endOfSession(session.rec.debut);
   if (b) { const said = voice.say(fill(text.data.serieBonus, { n: b })); await session.stars(b, "série"); await said; await wait(600); }
-  const others = (await store.all("seances")).filter((x) => x.terminee && x.id !== session.id).map((x) => x.debut);
+  const others = (await store.all("seances")).filter((x) => x.terminee && !x.libre && x.id !== session.id).map((x) => x.debut);
   if (goldenStar([...others, session.rec.debut], session.rec.debut, rewards.c.semaine)) { await rewards.special("dorees"); session.rec.doree = true; await session.save(); specials.push(["etoile.doree", text.data.etoileDoree]); }
-  for (let i = 0; i < (session.rec.arcEnCiel ?? 0); i++) specials.push(["etoile.arc", text.data.etoileArc]);
+  const libres = await rewards.collectFree();
+  if (libres) { session.rec.arcLibre = libres; await session.save(); }
+  for (let i = 0; i < (session.rec.arcEnCiel ?? 0) + libres; i++) specials.push(["etoile.arc", text.data.etoileArc]);
   for (const [i, [sprite, say]] of specials.entries()) {
     spriteBox(app, { x: 640 - 60 + (i - (specials.length - 1) / 2) * 130, y: 440, w: 120, h: 120, cls: "hud special pop", still: true, paint: (ctx) => app.sprites.draw(ctx, sprite, 0, 60, 60) });
     ocean.octo.play("rejouir"); await voice.say(say); await wait(500);
   }
 }
 
-// les coquillages : tant qu'il y a assez d'étoiles (au plus `parSeance` à la fin d'une séance)
+// les coquillages : d'abord la zone suivante si elle peut s'ouvrir, puis au plus un coquillage doré (une
+// étoile dorée, une légendaire), puis les coquillages ordinaires tant qu'il y a assez d'étoiles (au plus
+// `parSeance`) ; une zone qui se complète pendant ce temps s'ouvre avant le coquillage suivant
 export async function shells(app, { session, hud }) {
-  const { rewards, sprites } = app;
+  const { rewards, sprites } = app, now = () => Date.now();
   if (!rewards.c) return;
+  // la planche des cartes (grande) n'est chargée que si elle sert
+  if (!(rewards.canOpen() || rewards.goldenCard(now()) || (rewards.nextZone() && rewards.arcDispo > 0))) return;
+  await sprites.load("cartes");
+  const zone = async () => { const z = await rewards.openZone(now()); if (z) { (session.rec.zones ??= []).push(z.id); await session.save(); await zoneCeremony(app, { zone: z, hud }); } };
+  await zone();
+  let first = true;
+  if (rewards.goldenCard(now())) { await openShell(app, { session, hud, gold: true }); first = false; }
   for (let k = 0; k < rewards.c.coquillage.parSeance && rewards.canOpen(); k++) {
-    await sprites.load("cartes");
-    await openShell(app, { session, hud, first: k === 0 });
+    if (k) await zone();
+    await openShell(app, { session, hud, first });
+    first = false;
   }
+  await zone();
   sprites.unload("cartes");
 }
-// un coquillage : les étoiles de son prix s'y envolent ; l'enfant le touche (ou il s'ouvre tout seul
-// au bout de quelques secondes) ; il s'entrouvre, la perle brille, la carte en sort et se retourne ; la
-// voix dit le nom et l'anecdote ; la coche verte (ou le temps) referme le tout
-export async function openShell(app, { session, hud, first = true, C = [640, 640] }) {
-  const { voice, text, ocean, rewards, rnd, sprites } = app, prix = rewards.c.coquillage.prix;
-  const shell = ocean.spriteActor(ocean.frontEl, "coquillage"), glint = ocean.spriteActor(ocean.frontEl, "eclat");
+// l'ouverture d'une zone (docs/SPEC-LOT2.md, « Zones ») : le dos de la zone, assombri, au milieu ; une étoile
+// arc-en-ciel vole jusqu'à lui et il s'éclaire ; la voix dit que la zone est ouverte ; puis la carte file
+// vers l'album (le livre, en bas à droite)
+export async function zoneCeremony(app, { zone, hud }) {
+  const { voice, text, ocean, sprites } = app;
+  voice.stop();
+  const back = await cardElement(app, { id: `dos-${zone.id}`, zone: zone.id, rarete: "commune", nom: zone.nom }, { x: 640 - CARD.W / 2, y: 150, front: "dos", back: "dos" });
+  back.classList.add("zone-closed", "enter");
+  const book = spriteBox(app, { x: 1080 - 90, y: 650 - 90, w: 180, h: 180, cls: "hud zone-book pop", still: true, paint: (ctx) => sprites.draw(ctx, "album", 0, 90, 90) });
+  await wait(900);
+  // l'étoile arc-en-ciel vole du bas de l'écran jusqu'au dos de la zone
+  const star = ocean.spriteActor(ocean.frontEl, "etoile.arc");
+  star.draw(0); star.show(false);
+  await new Promise((done) => hud.flights.push({ a: star, t0: performance.now() / 1000, dur: 1.1, from: [640, 760], to: [640, 370], dx: -60, done }));
+  star.show(false); star.remove(); ocean.actors.splice(ocean.actors.indexOf(star), 1);
+  back.classList.remove("zone-closed");
+  const glint = ocean.spriteActor(ocean.frontEl, "eclat"), t0 = performance.now() / 1000, tick = (t) => { const u = (t - t0) / 1.4; glint.show(u < 1); if (u < 1) glint.moveTo(640, 370, 0.5 + 1.2 * Math.sin(Math.PI * u), Math.round(Math.sin(Math.PI * u) * 20) / 20); };
+  glint.draw(0); ocean.front.push(tick);
+  ocean.octo.play("rejouir");
+  await voice.say(zone.ouvertureLu ?? text.data.etoileArc, { instruction: true });
+  await wait(400);
+  back.classList.add("to-album"); await wait(950);
+  back.remove(); book.remove();
+  ocean.front.splice(ocean.front.indexOf(tick), 1); glint.show(false); glint.remove(); ocean.actors.splice(ocean.actors.indexOf(glint), 1);
+}
+// ce que dit la voix quand la carte est retournée : son nom (et « légendaire »), « elle est brillante », son
+// anecdote et où elle vit (le récif si elle y est dessinée, sinon l'album) ; pour un doublon, « encore … »
+export function cardSpeech(text, got, inReef) {
+  const nom = got.carte.nomLu ?? got.carte.nom, d = text.data;
+  const shiny = got.parTirage ? d.carteBrillanteTirage : got.devientBrillante ? d.carteBrillante : null;
+  if (!got.nouvelle) return [fill(d.carteDoublon, { nom }), shiny].filter(Boolean).join(" ");
+  return [got.carte.rarete === "legendaire" ? d.carteLegendaire : null, fill(d.carteNouvelle, { nom }), shiny, got.carte.anecdote, inReef ? d.carteRecif : d.carteAlbum].filter(Boolean).join(" ");
+}
+// un coquillage : les étoiles de son prix s'y envolent (un coquillage doré ne coûte qu'une étoile dorée) ;
+// l'enfant le touche (ou il s'ouvre tout seul au bout de quelques secondes) ; il s'entrouvre, la perle brille,
+// la carte en sort et se retourne (une brillante s'irise dès le retournement) ; la voix dit le nom et
+// l'anecdote ; la coche verte (ou le temps) referme le tout
+export async function openShell(app, { session, hud, first = true, gold = false, C = [640, 640] }) {
+  const { voice, text, ocean, rewards, rnd, sprites } = app, prix = rewards.c.coquillage.prix, now = Date.now();
+  const shell = ocean.spriteActor(ocean.frontEl, gold ? "coquillage.or" : "coquillage"), glint = ocean.spriteActor(ocean.frontEl, "eclat");
   let frame = 0, t0 = null, wob = true, gl = null;
   shell.draw(0); glint.show(false);
   const tick = (t) => {
@@ -164,11 +212,12 @@ export async function openShell(app, { session, hud, first = true, C = [640, 640
     if (gl !== null) { const u = (t - gl) / 1.4; glint.show(u < 1); if (u < 1) glint.moveTo(C[0], C[1] + 8, 0.35 + 0.65 * Math.sin(Math.PI * u), Math.round(Math.sin(Math.PI * u) * 20) / 20); }
   };
   ocean.front.push(tick);
-  voice.stop(); voice.say(text.data[first ? "coquillage" : "coquillageEncore"], { instruction: true });
-  await hud.spend(prix, [C[0], C[1] - 20]);
-  const got = await rewards.openShell(rnd);
+  voice.stop(); voice.say(gold ? text.data.coquillageDore : text.data[first ? "coquillage" : "coquillageEncore"], { instruction: true });
+  if (!gold) await hud.spend(prix, [C[0], C[1] - 20]);
+  const got = gold ? await rewards.openGolden(rnd, now) : await rewards.openShell(rnd, now);
   hud.set(rewards.total);
-  (session.rec.cartes ??= []).push(got.carte.id); await session.save();
+  (session.rec.cartes ??= []).push(got.carte.id); if (got.parTirage || got.devientBrillante) (session.rec.brillantes ??= []).push(got.carte.id); if (gold) session.rec.coquillageDore = got.carte.id;
+  await session.save();
   // toucher le coquillage (ou attendre)
   const tap = document.createElement("button"); tap.className = "bubble shelltap invite"; tap.setAttribute("aria-label", "ouvrir le coquillage");
   Object.assign(tap.style, { left: `${C[0] - 130}px`, top: `${C[1] - 110}px`, width: "260px", height: "200px" }); app.stage.ui.append(tap);
@@ -182,9 +231,8 @@ export async function openShell(app, { session, hud, first = true, C = [640, 640
   const el = await cardElement(app, got.carte, { x: C[0] - CARD.W / 2, y: 128, front: "dos", back: "recto", brillante: owned.brillante });
   el.classList.add("enter"); await wait(900); await opened;
   el.flip(true); ocean.octo.play("rejouir"); await wait(800);
-  const nom = got.carte.nomLu ?? got.carte.nom;
-  const say = got.nouvelle ? `${fill(text.data.carteNouvelle, { nom })} ${got.carte.anecdote} ${text.data.carteRecif}` : `${fill(text.data.carteDoublon, { nom })}${got.devientBrillante ? ` ${text.data.carteBrillante}` : ""}`;
-  await voice.say(say, { instruction: true });
+  const inReef = !!(got.carte.recif && sprites.atlas.sprites[`creature.${got.carte.id}`]);
+  await voice.say(cardSpeech(text, got, inReef), { instruction: true });
   const ok = spriteBox(app, { x: 1000 - 80, y: 560, w: 160, h: 160, cls: "bubble check invite", label: "c'est bon", paint: (ctx) => sprites.draw(ctx, "valider", 0, 80, 80) });
   await Promise.race([new Promise((r) => onTap(ok, r)), wait(20000)]);
   ok.remove(); voice.stop();

@@ -1,5 +1,5 @@
 {
-  "_doc": "Tout ce que la voix lit. {mascotte} : le nom choisi pour la pieuvre ; {n}, {a}, {b} : des nombres ; {nom} : un nom proposé. Plusieurs variantes : l'application en tire une au hasard. Récompenses et récif : {nom} est le nom de la créature avec son article (cartes.json, nomLu). erreur.E3sauter : l'erreur E3 au format « sauter » (oublier le point de départ ; {a} : la bouée de départ). faitTrouDroite, faitTrouGauche : les formes à trou des faits (3 + ? = 7, ? + 4 = 6), utilisées à partir du lot 2 (textes validés par le parent). erreur.E5 : {dizaines} et {unites} sont remplis avec uneDizaine ou desDizaines, uneUnite ou desUnites (accord au singulier : « 1 dizaine »). erreur.NSP, faitNSP : après le bouton « je ne sais pas ». reprise : au retour d'une pause (bouton « maison » pendant la séance). encore, libre… : l'entraînement libre après la séance. album : l'album des cartes. Chaque phrase dite a son fichier son (app/assets/voix/, fabriqué par tools/voix/fabriquer.mjs) : après une modification ici, relancer cet outil ; une phrase sans fichier est lue par la synthèse du navigateur.",
+  "_doc": "Tout ce que la voix lit. {mascotte} : le nom choisi pour la pieuvre ; {n}, {a}, {b} : des nombres ; {nom} : un nom proposé. Plusieurs variantes : l'application en tire une au hasard. Récompenses et récif : {nom} est le nom de la créature avec son article (cartes.json, nomLu). erreur.E3sauter : l'erreur E3 au format « sauter » (oublier le point de départ ; {a} : la bouée de départ). faitTrouDroite, faitTrouGauche : les formes à trou des faits (3 + ? = 7, ? + 4 = 6), utilisées à partir du lot 2 (textes validés par le parent). erreur.E5 : {dizaines} et {unites} sont remplis avec uneDizaine ou desDizaines, uneUnite ou desUnites (accord au singulier : « 1 dizaine »). erreur.NSP, faitNSP : après le bouton « je ne sais pas ». reprise : au retour d'une pause (bouton « maison » pendant la séance). encore, libre… : l'entraînement libre après la séance. album : l'album des cartes. Lot 2 : carteBrillanteTirage (une carte qui sort brillante, tirage d'une chance sur cinq), carteAlbum (une carte dont la créature n'est pas encore dans le récif), carteLegendaire (avant le nom d'une légendaire), coquillageDore (le coquillage des étoiles dorées), surpriseVisite et surpriseCadeau (la surprise de l'accueil) ; ce que dit l'ouverture d'une zone est dans cartes.json (zones[].ouvertureLu). Chaque phrase dite a son fichier son (app/assets/voix/, fabriqué par tools/voix/fabriquer.mjs) : après une modification ici, relancer cet outil ; une phrase sans fichier est lue par la synthèse du navigateur.",
   "accueil": [
     "Coucou ! C'est moi, {mascotte}. On va jouer dans l'océan !",
     "Bonsoir ! {mascotte} est contente de te voir. On y va ?"
@@ -94,7 +94,7 @@
   "aideLigne": "La tortue est sur {a}. Elle fait {sauts}. Compte avec elle !",
   "aideReflet": "{a} poissons, et dans le reflet, encore {a} poissons.",
   "serieBonus": "Et {n} étoiles de plus, parce que tu viens jouer souvent !",
-  "etoileDoree": "Et une étoile dorée ! Tu as joué cinq fois cette semaine.",
+  "etoileDoree": "Et une étoile dorée ! Tu as joué souvent, semaine après semaine.",
   "etoileArc": "Et une étoile arc-en-ciel ! Un jour, elle t'ouvrira un nouveau coin du récif.",
   "coquillage": "Tu as assez d'étoiles pour ouvrir un coquillage ! Touche-le.",
   "coquillageEncore": "Et tu peux en ouvrir encore un ! Touche-le.",
@@ -103,6 +103,12 @@
   "carteRecif": "Cette créature va vivre dans ton récif !",
   "carteDoublon": "Encore {nom} ! Tu avais déjà cette carte.",
   "carteBrillante": "Ta carte devient brillante !",
+  "carteBrillanteTirage": "Oh ! Elle est brillante !",
+  "carteAlbum": "Tu la retrouveras dans ton album !",
+  "carteLegendaire": "C'est une carte légendaire !",
+  "coquillageDore": "Ton étoile dorée ouvre un coquillage doré ! Touche-le.",
+  "surpriseVisite": "Regarde, quelqu'un vient te dire bonjour !",
+  "surpriseCadeau": "Surprise ! Un cadeau pour ton récif.",
   "recifBienvenue": "Voici ton récif ! Touche une créature pour voir sa carte.",
   "recifVide": "Ton récif attend ses premiers habitants. Gagne des étoiles de mer pour ouvrir des coquillages !",
   "recifCarte": "C'est {nom}.",

@@ -47,8 +47,15 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .card.flipped .card-inner { transform: rotateY(180deg); }
 .card-face { position: absolute; inset: 0; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 .card-face.back { transform: rotateY(180deg); }
-.card .glint { position: absolute; width: 80px; height: 80px; pointer-events: none; animation: twinkle 1.6s ease-in-out infinite; opacity: 0; }
-.card .g0 { left: -18px; top: 8px; } .card .g1 { right: -14px; top: 170px; animation-delay: 0.55s; } .card .g2 { left: 70px; bottom: 60px; animation-delay: 1.1s; }
+.glint { position: absolute; pointer-events: none; animation: twinkle 1.6s ease-in-out infinite; opacity: 0; }
+.card .g0 { left: -18px; top: 8px; } .card .g1 { right: -14px; top: 170px; animation-delay: 0.55s; } .card .g2 { left: 70px; bottom: -18px; animation-delay: 1.1s; }
+.card .g3 { right: 40px; top: -20px; animation-delay: 0.3s; } .card .g4 { left: -20px; bottom: 120px; animation-delay: 0.85s; }
+.album-card .gs { right: -12px; top: -12px; animation-duration: 2.2s; }
+/* lot 2 : le reflet irisé des cartes brillantes (atelier, carte.reflet), qui balaie la carte toutes les 3,6 s */
+.shine { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.shine canvas { position: absolute; animation: sweep 3.6s ease-in-out infinite; will-change: transform; }
+@keyframes sweep { 0% { transform: translateX(-100%); } 42% { transform: translateX(95%); } 100% { transform: translateX(95%); } }
+.card.shiny:not(.lit) .glint { display: none; }
 @keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(0.4); } 50% { opacity: 1; transform: scale(1); } }
 .card.enter { animation: cardIn 0.7s ease-out; }
 @keyframes cardIn { from { transform: translateY(160px) scale(0.25); opacity: 0; } to { transform: none; opacity: 1; } }
@@ -77,3 +84,10 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .album-tab.closed.sel { filter: brightness(0.6) saturate(0.6) drop-shadow(0 0 5px #ffe45c) drop-shadow(0 0 12px #ffd23a); }
 .album-card.shiny { filter: drop-shadow(0 0 6px #fff6c8) drop-shadow(4px 6px 0 rgba(3, 20, 26, 0.45)); }
 .album-lock, .pearls { pointer-events: none !important; }
+
+/* lot 2 : l'ouverture d'une zone (le dos s'éclaire), les cadeaux de la surprise */
+.card.zone-closed .card-face { filter: brightness(0.4) saturate(0.5); }
+.card .card-face { transition: filter 1.4s ease-out; }
+.card.to-album { transition: transform 0.9s ease-in, opacity 0.9s ease-in; transform: translate(420px, 330px) scale(0.12); opacity: 0.2; }
+.gift { pointer-events: none; }
+.gift.away { transition: transform 1s ease-in, opacity 1s ease-in; transform: translateY(260px) scale(0.3); opacity: 0; }

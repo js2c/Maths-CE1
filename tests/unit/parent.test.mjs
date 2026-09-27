@@ -4,6 +4,7 @@ import "fake-indexeddb/auto";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import * as D from "../../app/js/parent/data.js";
+import { readFileSync } from "node:fs";
 import { DB_NAME, MIGRATIONS, Store, STORES } from "../../app/js/engine/store.js";
 
 const at = (y, m, d, h = 18) => new Date(y, m - 1, d, h).getTime();
@@ -111,4 +112,21 @@ test("restauration : tout est remplacé, le code actuel est gardé", async () =>
   await st.restore(dump, ["codeParent"]);
   assert.deepEqual((await st.all("seances")).map((s) => s.debut), [1]);
   assert.equal(await st.setting("codeParent"), "2222"); assert.equal(await st.setting("mascotte"), "Bulle");
+});
+
+test("cartes (lot 2) : cartes et brillantes, quota restant, zone suivante et ce qu'elle attend, semaines réussies", async () => {
+  const { cardsSummary } = await import("../../app/js/parent/data.js");
+  const cartes = JSON.parse(readFileSync(new URL("../../app/content/cartes.json", import.meta.url))), cal = JSON.parse(readFileSync(new URL("../../app/content/calendrier.json", import.meta.url)));
+  const L = cartes.cartes.filter((c) => c.zone === "lagon"), at = (d) => new Date(`${d}T18:00:00`).getTime();
+  const owned = Object.fromEntries(L.slice(0, 13).map((c, i) => [c.id, { n: 1, premiere: 0, brillante: i < 2 }]));
+  const R = { cartes: { cartes: owned }, quota: { date: at("2026-09-28"), cartes: 10 }, etoiles: { dorees: 1, doreesDepensees: 0, arcEnCiel: 3, arcDepensees: 0, arcLibre: 1 } };
+  const seances = ["2026-09-28", "2026-10-01", "2026-10-05", "2026-10-06"].map((d) => ({ debut: at(d), terminee: true })).concat([{ debut: at("2026-10-07"), libre: true }]);
+  const K = cardsSummary(R, cartes, cal, seances, at("2026-10-07"));
+  assert.deepEqual([K.cartes, K.brillantes, K.quota, K.gagnables], [13, 2, 14, 1]);
+  assert.equal(K.semaines, 2); assert.equal(K.prochaineDoree, 2);
+  assert.equal(K.zones[0].gagnees, 13); assert.equal(K.zones[0].ouverte, true); assert.equal(K.zones[1].pret, true); assert.equal(K.zones[2].pret, false);
+  assert.match(K.suivante.attend, /il reste 2 cartes/);
+  const all = Object.fromEntries(L.map((c) => [c.id, { n: 1 }]));
+  assert.match(cardsSummary({ ...R, cartes: { cartes: all } }, cartes, cal, seances, at("2026-10-07")).suivante.attend, /étoile arc-en-ciel/);
+  assert.match(cardsSummary({ ...R, cartes: { cartes: all }, zones: { ouvertes: ["lagon", "corail"] } }, cartes, cal, seances).suivante.attend, /il reste 15/);
 });

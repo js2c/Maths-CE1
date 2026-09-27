@@ -41,7 +41,7 @@ function domaines(C) {
   const e5 = range(10, 99).filter((n) => n % 10 !== 0 && n % 10 !== Math.floor(n / 10)).map((n) => decompose(T, n));
   const faits = additions(C.module2.sommeMax);
   const milieux = M1.filter((c) => c.formats.includes("estimer")).map((c) => ({ n: (c.min + c.max) / 2 }));
-  // seules les cartes qui se gagnent déjà sont dites (celles des zones 2 à 4 attendent leur anecdote, lot 4)
+  // seules les cartes qui se gagnent déjà sont dites (celles qui attendent leur anecdote ne se gagnent pas)
   const cartes = C.cartes.cartes.filter((c) => c.anecdote).map((c) => ({ nom: c.nomLu ?? c.nom }));
   return {
     accueil: noms.map((mascotte) => ({ mascotte })),
@@ -93,8 +93,8 @@ export function inventaire(C = lireContenu()) {
   }
   // les anecdotes des cartes (dites après « C'est … ! », dans le récif et dans l'album)
   for (const c of C.cartes.cartes) if (c.anecdote) add(c.anecdote, `cartes.${c.id}`);
-  // l'album : le dos d'une carte pas encore découverte, une zone fermée, le dos doré d'une légendaire
-  for (const z of C.cartes.zones) for (const k of ["dosLu", "fermeeLu"]) if (z[k]) add(z[k], `cartes.zones.${z.id}.${k}`);
+  // l'album : le dos d'une carte pas encore découverte, une zone qui s'ouvre, une zone fermée, le dos doré d'une légendaire
+  for (const z of C.cartes.zones) for (const k of ["dosLu", "ouvertureLu", "fermeeLu"]) if (z[k]) add(z[k], `cartes.zones.${z.id}.${k}`);
   if (C.cartes.legendaireLu) add(C.cartes.legendaireLu, "cartes.legendaireLu");
   // les sauts comptés à voix haute (tortue, leçons, aide) : un nombre seul, par sauts ou par valeurs
   for (const n of TOUS) add(String(n), "comptage");

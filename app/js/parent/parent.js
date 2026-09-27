@@ -50,9 +50,9 @@ export function parentLogo(app, { onOpen, holdMs = 2000, src = "icons/icon-192.p
 // ---------------------------------------------------------------- l'espace parent
 export class ParentSpace {
   // content : parent.json ; seance : seance.json (durée par défaut) ; module2 : module2.json (catalogue des faits) ;
-  // cartes : cartes.json
-  constructor(app, { content, seance, module2, cartes }) {
-    this.app = app; this.c = content; this.seance = seance; this.module2 = module2; this.cartes = cartes;
+  // cartes : cartes.json ; calendrier : calendrier.json (quota des cartes)
+  constructor(app, { content, seance, module2, cartes, calendrier = null }) {
+    this.app = app; this.c = content; this.seance = seance; this.module2 = module2; this.cartes = cartes; this.calendrier = calendrier;
     this.root = null; this.tab = "calendrier"; this.changed = false;
   }
   get store() { return this.app.store; }
@@ -283,11 +283,30 @@ export class ParentSpace {
         h("span", { class: "ex" }, "Exemples : ", c.exemples.map((x) => `${x.question} → réponse ${x.donnee ?? "—"} au lieu de ${x.attendue}`).join(" ; "))));
     }
     // le trésor de l'enfant
-    const R = this.d.recompenses, et = R.etoiles ?? {}, owned = R.cartes?.cartes ?? {}, lagon = this.cartes.cartes.filter((c) => c.zone === this.cartes.zones[0].id);
+    const R = this.d.recompenses, et = R.etoiles ?? {};
     const tr = h("div", { class: "pa-card-box" }, h("h2", {}, "Le trésor de l'enfant"), h("div", { class: "pa-stats" },
       stat(String(et.cumul ?? 0), "étoiles de mer gagnées depuis le début"), stat(String(et.total ?? 0), "étoiles pas encore dépensées"), stat(String(et.coquillages ?? 0), "coquillages ouverts"),
-      stat(`${Object.keys(owned).length} / ${lagon.length}`, "cartes du lagon"), stat(String(et.dorees ?? 0), "étoiles dorées (5 séances dans la semaine)"), stat(String(et.arcEnCiel ?? 0), "étoiles arc-en-ciel (niveaux franchis)"), stat(String(R.serie?.seances ?? 0), "séances dans la série (elle ne retombe jamais à zéro)")));
-    page.append(m1, m2, jr, tr);
+      stat(String(R.serie?.seances ?? 0), "séances dans la série (elle ne retombe jamais à zéro)")));
+    page.append(m1, m2, jr, tr, this.cardsBox());
+  }
+  // les cartes (lot 2) : ce que l'enfant a gagné et ce qui règle le rythme ; pour le parent seulement
+  cardsBox() {
+    const K = D.cardsSummary(this.d.recompenses, this.cartes, this.calendrier, this.d.seances), pl = (n, w) => plural(n, w, w.split(" ").map((x) => `${x}s`).join(" "));
+    const box = h("div", { class: "pa-card-box" }, h("h2", {}, "Cartes"),
+      h("p", { class: "pa-note" }, `Pour que toutes les cartes arrivent d'ici l'été, l'enfant peut gagner ${pl(this.cartes.quota.parSemaine, "carte nouvelle")} par semaine d'école (vacances non comptées). Au-delà, un coquillage donne un doublon d'une carte déjà gagnée. Chaque carte gagnée a une chance sur cinq d'être brillante. L'enfant ne voit aucun de ces nombres.`),
+      h("div", { class: "pa-stats" },
+        stat(`${K.cartes} / ${K.total}`, "cartes gagnées"), stat(String(K.brillantes), "cartes brillantes"),
+        stat(String(K.gagnables), `cartes nouvelles encore gagnables d'ici dimanche${K.gagnables ? "" : " (quota atteint : de nouvelles lundi, sauf pendant les vacances)"}`),
+        stat(`${K.legendaires} / ${K.legendairesTotal}`, "légendaires (une étoile dorée chacune)"),
+        stat(String(K.dorees - K.doreesDepensees), `étoiles dorées en réserve (${K.dorees} gagnées)`),
+        stat(String(K.semaines), `semaines réussies (au moins ${pl(this.cartes.semaine.seances, "séance")}) ; prochaine étoile dorée dans ${pl(K.prochaineDoree, "semaine réussie")}`),
+        stat(String(K.arc - K.arcDepensees), `étoiles arc-en-ciel en réserve (${K.arc} gagnées, ${K.arcDepensees} pour ouvrir des zones)${K.arcLibre ? ` ; ${K.arcLibre} gagnée(s) en entraînement libre, remise(s) à la prochaine séance` : ""}`),
+        stat(`${K.cadeaux} / 4`, "cadeaux de la surprise dans le récif")),
+      h("h3", {}, "Les zones"),
+      h("div", { class: "pa-chips" }, K.zones.map((z) => h("span", { class: "pa-chip" }, `${z.nom} : ${z.ouverte ? `${z.gagnees} / ${z.total}` : z.pret ? "fermée" : "fermée, contenu à venir"}`))),
+      h("p", { class: "pa-note" }, K.suivante ? `Prochaine zone, « ${K.suivante.nom} » : elle attend ${K.suivante.attend}.` : "Toutes les zones sont ouvertes."));
+    if (K.base) box.append(h("p", { class: "pa-muted" }, `Quota compté depuis le ${D.fmtDay(K.base.date)} (${pl(K.base.cartes, "carte")} déjà gagnée${K.base.cartes > 1 ? "s" : ""} ce jour-là).`));
+    return box;
   }
   // les courbes semaine par semaine d'un module (réussite, puis temps médian : deux graphiques, jamais deux axes)
   weeklyBlock(box, module) {

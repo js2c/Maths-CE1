@@ -2,7 +2,7 @@
 // la base entrent (séances, réponses, niveaux, faits), les tableaux que le parent lit sortent. Aucun accès
 // au DOM ni à la base ici (tests : tests/unit/parent.test.mjs).
 import { median } from "../modules/facts/facts.js";
-import { weekStart } from "../session/rewards.js";
+import { goodWeeks, quotaAt, weekStart, zoneDone } from "../session/rewards.js";
 
 export const DAY = 86400000;
 const two = (n) => String(n).padStart(2, "0");
@@ -169,4 +169,30 @@ export const validCode = (s, n = 4) => new RegExp(`^\\d{${n}}$`).test(s);
 export function gateQuestion(rnd = Math.random) {
   const a = 6 + Math.floor(rnd() * 4), b = 6 + Math.floor(rnd() * 4), c = 11 + Math.floor(rnd() * 19);
   return { texte: `${a} × ${b} + ${c}`, reponse: a * b + c };
+}
+
+// ---------------------------------------------------------------- les cartes (lot 2)
+// Pour le parent seulement (docs/SPEC-LOT2.md, section 7) : cartes et brillantes, cartes encore gagnables selon
+// le quota, zones, étoiles dorées et arc-en-ciel, semaines réussies, cadeaux. R : les fiches du magasin
+// « recompenses » par clé ; cartes, calendrier : le contenu ; seances : les séances enregistrées.
+export function cardsSummary(R, cartes, calendrier, seances, now = Date.now()) {
+  const owned = R.cartes?.cartes ?? {}, et = R.etoiles ?? {}, C = cartes.cartes, n = Object.keys(owned).length;
+  const open = R.zones?.ouvertes ?? cartes.zones.filter((z) => z.ouverte).map((z) => z.id);
+  const zones = cartes.zones.map((z) => { const all = C.filter((c) => c.zone === z.id); return { id: z.id, nom: z.nom, ouverte: open.includes(z.id), gagnees: all.filter((c) => owned[c.id]).length, total: all.length, pret: all.every((c) => c.illustration && c.anecdote) }; });
+  const quota = quotaAt(R.quota, calendrier, now, cartes.quota);
+  // la zone suivante : ce qu'elle attend
+  const last = Math.max(...zones.map((z, i) => (z.ouverte ? i : -1))), next = zones[last + 1] ?? null;
+  let attend = null;
+  if (next) {
+    const cur = zones[last], reste = C.filter((c) => c.zone === cur.id && c.rarete !== "legendaire" && !owned[c.id]).length;
+    attend = !zoneDone(C, owned, cur.id) ? `il reste ${reste} carte${reste > 1 ? "s" : ""} (communes et rares) à gagner dans « ${cur.nom} »` : !next.pret ? "ses illustrations et ses anecdotes (contenu à livrer)" : "une étoile arc-en-ciel (le prochain niveau franchi)";
+  }
+  const debuts = seances.filter((s) => s.terminee && !s.libre).map((s) => s.debut), semaines = goodWeeks(debuts, cartes.semaine), per = cartes.semaine.semainesParDoree;
+  return {
+    cartes: n, total: C.length, brillantes: Object.values(owned).filter((o) => o.brillante).length,
+    legendaires: C.filter((c) => c.rarete === "legendaire" && owned[c.id]).length, legendairesTotal: C.filter((c) => c.rarete === "legendaire").length,
+    quota, gagnables: Math.max(0, quota - n), base: R.quota ?? null, zones, suivante: next ? { nom: next.nom, attend } : null,
+    dorees: et.dorees ?? 0, doreesDepensees: et.doreesDepensees ?? 0, semaines, prochaineDoree: per - (semaines % per),
+    arc: et.arcEnCiel ?? 0, arcDepensees: et.arcDepensees ?? 0, arcLibre: et.arcLibre ?? 0, cadeaux: R.cadeaux?.ids?.length ?? 0,
+  };
 }

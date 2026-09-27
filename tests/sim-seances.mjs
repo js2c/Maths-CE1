@@ -14,7 +14,7 @@ const args = process.argv.slice(2).filter((a) => !a.startsWith("--")), court = p
 const [profil = "reel", perWeek = "2", n = "30"] = args;
 const res = await simulate({ profil, jours: days(+perWeek, n === "annee" ? "annee" : +n), seed: 7 });
 console.log(`# profil ${PROFILS[profil].nom}, ${perWeek}/sem, ${res.length} séances`);
-if (!court) for (const r of res) console.log(`${r.n}\t${r.date}\t${r.cranDepart}${r.descentes ? `->${r.cran}` : ""}\tniv ${r.niv0}->${r.niv1}\tq=${r.questions} ${Math.round((r.reussite ?? 0) * 100)}% nsp ${r.nsp} nouveaux ${r.nouveaux}\t${r.duree}min\t★${r.etoiles}\tarc${r.arc}${r.doree ? " DORÉE" : ""}${r.surprise ? ` surprise ${r.surprise}` : ""}\tcartes ${r.nbCartes}/${r.quota} [${r.cartes.join(",")}]${r.zones.length ? ` ZONE ${r.zones.join(",")}` : ""}\tfaits vus ${r.faitsVus} boîtes ${r.boites.join("/")}\tchauffe: ${r.faits.join(" ")}\tligne: ${r.ligne.join(" ")}${r.lecons.length ? " leçons " + r.lecons.join(",") : ""}`);
+if (!court) for (const r of res) console.log(`${r.n}\t${r.date}\t${r.cranDepart}${r.descentes ? `->${r.cran}` : ""}\t${r.module === 2 ? "additions" : `niv ${r.niv0}->${r.niv1}`}\tq=${r.questions} ${Math.round((r.reussite ?? 0) * 100)}% nsp ${r.nsp} nouveaux ${r.nouveaux}\t${r.duree}min\tm${r.module}${r.module === 2 ? ` f${r.famille}` : ""}\t★${r.etoiles}\tarc${r.arc}${r.doree ? " DORÉE" : ""}${r.surprise ? ` surprise ${r.surprise}` : ""}\tcartes ${r.nbCartes}/${r.quota} [${r.cartes.join(",")}]${r.zones.length ? ` ZONE ${r.zones.join(",")}` : ""}\tfaits vus ${r.faitsVus} boîtes ${r.boites.join("/")}\tchauffe: ${r.faits.join(" ")}\tligne: ${r.ligne.join(" ")}${r.lecons.length ? " leçons " + r.lecons.join(",") : ""}`);
 // lot 2, étape 2 : faits nouveaux, familles 1 et 2, niveaux, sélecteur de difficulté (docs/SPEC-LOT2.md, section 8)
 const avant7 = res.slice(0, 6).at(-1), withRoom = res.filter((r, i) => i === 0 || res[i - 1].faitsVus < 33);
 const moy = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
@@ -24,6 +24,15 @@ console.log(`faits nouveaux par séance tant qu'il en reste : ${withRoom.map((r)
 console.log(`ligne graduée : niveau 8 atteint à la séance ${res.find((r) => r.niv1 >= 8)?.n ?? "jamais"} ; séances avec plusieurs niveaux franchis : ${res.filter((r) => r.niv1 - r.niv0 >= 2).length} ; leçons revues deux fois dans une séance : ${res.filter((r) => new Set(r.lecons).size < r.lecons.length).length}`);
 const first10 = res.slice(0, 10);
 console.log(`sélecteur (10 premières séances) : réussite moyenne ${Math.round(moy(first10.map((r) => r.reussite ?? 0)) * 100)} % ; « je ne sais pas » ${moy(first10.map((r) => r.nsp)).toFixed(1)} par séance ; descentes de cran ${first10.reduce((a, r) => a + r.descentes, 0)} ; étoiles par séance ${moy(first10.map((r) => r.etoiles)).toFixed(1)} ; durée estimée ${moy(first10.map((r) => r.duree)).toFixed(1)} min`);
+// lot 2, étape 6 : alternance de la notion du jour, familles du module 2
+const mods = res.map((r) => r.module), deux = mods.filter((m, i) => i && m === mods[i - 1]).length;
+console.log(`\n## module 2 et alternance (${PROFILS[profil].nom})`);
+console.log(`notion du jour : ${mods.filter((m) => m === 1).length} séances de ligne graduée, ${mods.filter((m) => m === 2).length} d'additions ; deux fois de suite le même module : ${deux}`);
+const famDate = (k, id) => res.find((r) => r[k].includes(id))?.n ?? "-";
+console.log(`familles (séance où elle s'ouvre / est acquise / ouvre ses formes à trou) : ${[1, 2, 3, 4, 5, 6, 7].map((id) => `${id}: ${famDate("fOuvertes", id)}/${famDate("fAcquises", id)}/${famDate("fTrou", id)}`).join(" ; ")}`);
+console.log(`45 faits vus à la séance ${res.find((r) => r.faitsVus >= 45)?.n ?? "jamais"} ; leçons du module 2 : ${res.flatMap((r) => r.lecons.filter((l) => ["L4", "L5", "L6"].includes(l)).map((l) => `${l} (séance ${r.n})`)).join(", ") || "aucune"}`);
+const m2 = res.filter((r) => r.module === 2);
+console.log(`séances d'additions : ${moy(m2.map((r) => r.add.filter((x) => !x.includes("g")).length)).toFixed(1)} questions en moyenne, durée estimée ${moy(m2.map((r) => r.duree)).toFixed(1)} min ; formes à trou ${m2.reduce((a, r) => a + r.add.filter((x) => x.includes("?")).length, 0)} sur ${m2.reduce((a, r) => a + r.add.length, 0)}`);
 // bilan des cartes
 const first = (f) => res.find(f)?.date ?? "jamais";
 const zoneDone = (z, k) => first((r) => r.ouvertes.includes(z) && r.nbCartes >= k);

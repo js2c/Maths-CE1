@@ -1,0 +1,54 @@
+{
+ "_": "Fabriqué par node tools/son/fabriquer.mjs app (ne pas modifier à la main). Durées en secondes.",
+ "bruitages": {
+  "bonne": {
+   "fichier": "bruitage-bonne-a-a9f7a816.ogg",
+   "duree": 0.75
+  },
+  "erreur": {
+   "fichier": "bruitage-erreur-a-3e1b08d2.ogg",
+   "duree": 0.6
+  },
+  "etoile": {
+   "fichier": "bruitage-etoile-02463cee.ogg",
+   "duree": 0.85
+  },
+  "coquillage": {
+   "fichier": "bruitage-coquillage-af0e9fa9.ogg",
+   "duree": 2
+  },
+  "carte": {
+   "fichier": "bruitage-carte-76335ae6.ogg",
+   "duree": 0.4
+  },
+  "brillante": {
+   "fichier": "bruitage-brillante-5e18c572.ogg",
+   "duree": 0.95
+  },
+  "bouton": {
+   "fichier": "bruitage-bouton-7def3d7d.ogg",
+   "duree": 0.09
+  },
+  "zone": {
+   "fichier": "bruitage-zone-b3ed1ca3.ogg",
+   "duree": 0.98
+  }
+ },
+ "musiques": {
+  "harpe": {
+   "fichier": "musique-harpe-bbd3f03d.ogg",
+   "duree": 150,
+   "nom": "La harpe du lagon"
+  },
+  "marimba": {
+   "fichier": "musique-marimba-027f8675.ogg",
+   "duree": 141.18,
+   "nom": "Le marimba des bulles"
+  },
+  "profondeurs": {
+   "fichier": "musique-profondeurs-dc1159ed.ogg",
+   "duree": 144,
+   "nom": "Les profondeurs"
+  }
+ }
+}

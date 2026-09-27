@@ -13,12 +13,91 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 | 1 | Cartes et rythme : calendrier et quota, doublons, brillantes (20 % et effet), ouverture des zones, zone 2 (anecdotes et voix), étoiles dorées (4 semaines réussies), légendaires et coquillage doré, étoile arc-en-ciel de l'entraînement libre, surprise une séance sur cinq, ligne « Cartes » de l'espace parent ; simulation des cartes sur l'année | fait (branche `lot2-etape1`, https://github.com/js2c/Maths-CE1/pull/11) |
 | 2 | Séance et progression : durées et nombres de questions, défi record activable, places réservées et voie rapide des faits, enchaînement des niveaux, leçon au plus une fois par séance, point de départ du parent, tortue devant la pieuvre, pieuvre qui montre la cible ; option `--delai` de la recette ; sélecteur de difficulté (4 crans) | fait (branche `claude/prompt-lot2-section-9xloz0`, https://github.com/js2c/Maths-CE1/pull/13) |
 | 3 | Son, échantillons (`tools/son/`, `docs/son-echantillons/`) ; arrêt pour le choix du parent | fait (branche `claude/tender-volta-20rhlz`, https://github.com/js2c/Maths-CE1/pull/14) ; choix du parent reçu |
-| 4 | Son, intégration : bruitages, musique, mixage, réglages du parent | à faire |
-| 5 | Atelier : bernard-l'ermite, cadre de 10, maison des nombres, double + 1 | à faire |
-| 6 | Module 2 comme notion du jour : familles 3 à 7, formes à trou, leçons L4 à L6, alternance, module imposé, point de départ étendu | à faire |
+| 4 | Son, intégration : bruitages, musique, mixage, réglages du parent | fait (branche `claude/loving-tesla-rtv3o5`, https://github.com/js2c/Maths-CE1/pull/16) |
+| 5 | Atelier : bernard-l'ermite, cadre de 10, maison des nombres, double + 1 | fait (même branche, même demande de fusion) |
+| 6 | Module 2 comme notion du jour : familles 3 à 7, formes à trou, leçons L4 à L6, alternance, module imposé, point de départ étendu | fait (même branche, même demande de fusion) |
 | 7 | Défi record, grille des 66 additions, progression du module 2 dans l'espace parent | à faire |
 | 8 | Nombres jusqu'à 1 000 (`docs/SPEC-COMPLEMENTS.md`, partie A) | à faire |
 | 9 | Bilan : `docs/BILAN-LOT2.md`, guide du parent, recette complète sur l'année | à faire |
+
+### Reprise des étapes 4 à 6
+
+Pour reprendre si la session s'est arrêtée : branche `claude/loving-tesla-rtv3o5` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 2, étapes 4 à 6 (en cours) » (https://github.com/js2c/Maths-CE1/pull/16).
+
+**Étape en cours :** aucune : étapes 4 à 6 terminées, recette complète faite, demande de fusion prête.
+
+**Fait :**
+
+- Étape 4 (son, intégration) : sons choisis copiés dans `app/assets/son/` (`node tools/son/fabriquer.mjs app`), moteur `app/js/engine/son.js`, mixage `app/content/son.json`, bruitages branchés (réponses, étoiles, coquillage, carte, brillante, bouton, zone), musique tirée à chaque séance et notée (`rec.musique`), baisse sous la voix et en pause, arrêt dans l'espace parent, ligne « Son » des réglages du parent. Tests `tests/unit/son-app.test.mjs` ; parcours `seance.mjs` (son) et `parent.mjs` (réglages).
+
+- Étape 5 (atelier) : bernard-l'ermite (`art/src/canvas-core/sea/hermit.ts`, planche de modèle `hermitSheet`, gestes repos, sortir, montrer, se réjouir, changer de coquille ; export en deux calques, planche « ermite » ; `app/js/engine/hermit.js`) ; aides visuelles (`sea/aids.ts`, planche « aides », `aidsSheet` ; `app/js/modules/facts/aids.js`). Tests `tests/unit/ermite.test.mjs`, parcours `tests/e2e/ermite.mjs` (captures regardées).
+
+**Reste :** étape 6 ; recette complète à la fin.
+
+- Étape 6 (module 2 comme notion du jour) : familles 3 à 7 (`module2.json`, règles dans `facts.js`, `families.js` : ouverture, famille acquise, formes à trou définitives) ; alternance séance après séance et module imposé (`session.js`, `chooseModule`) ; `modules/facts/runner.js` (notion du jour des additions) ; écran des additions (exemples guidés, appui de chaque famille, correction avec l'appui, aide d'emblée du cran « plus facile ») ; bernard-l'ermite pendant la notion du jour ; leçons L4 à L6 (`lecons.json`, `lessons/player2.js`), aussi dans la revue de l'entraînement libre ; espace parent (notion du jour de la prochaine séance, point de départ familles 1 à 7, additions de la notion du jour à part dans le détail d'une séance) ; 5 phrases nouvelles et leurs variantes (38 fichiers son) ; simulation et recette (`sim-recette.mjs`, `sim-seances.mjs`, `recette.mjs --module 2`, `recette-durees.mjs`, parcours `notion2.mjs`) ; tests `tests/unit/module2-notion.test.mjs`.
+
+**Où j'en suis :** terminé ; demande de fusion https://github.com/js2c/Maths-CE1/pull/16 prête (sortie du brouillon). Étape suivante : 7 (défi record, grille des additions, progression du module 2), après fusion.
+
+**Décisions prises (étape 6) :**
+
+- **Ouverture des familles** : règle de la SPEC (80 % des faits introduits en boîte 2 ou plus), au plus une famille par séance. Comme l'introduction suit l'ordre du catalogue, une famille ouverte tôt n'introduit ses faits nouveaux qu'après ceux des familles 1 et 2 ; mais elle compte pour la famille en cours, les formes à trou et les crans « plus dur ». Mesure (simulation, 2 séances par semaine) : les 7 familles sont ouvertes dès la 5e séance pour les profils « sait » et « reel », à la 40e pour « diff ».
+- **Point de départ du parent** : marquer une famille connue ouvre cette famille et celles d'avant, et la compte comme acquise par le parent (sans étoile arc-en-ciel) ; la suivante s'ouvre ensuite d'elle-même par la règle des 80 %.
+- **Leçons d'appui jamais vues** (ajout à la SPEC, **à valider**) : une famille est souvent acquise (par les faits des familles 1 et 2) avant d'être la notion du jour ; sans règle, la leçon L6 (maison des nombres) n'était jamais jouée, et L4 rarement. Les maisons de 8 et 9 jouent donc L6 si elle n'a jamais été vue, les presque-doubles L4 (puis L6), le mélange la première leçon d'appui qui manque (réglage `leconSiPasVue` de `module2.json`). Avec cette règle, sur l'année : L4, L5 et L6 pour « sait » ; L5 et L6 pour « reel » (2 par semaine) ; aucune pour « diff », qui reste sur la famille 1 (voir les points à observer).
+- **Choix des faits** en notion du jour : une question sur deux sur la règle de la famille en cours (toutes au cran « plus facile »), l'autre sur les faits les plus faibles des autres familles ; un fait nouveau une question de famille sur deux, tant que la limite de la séance (6) et la boîte 1 (8) le permettent ; aux crans « plus dur » et « très dur », les faits nouveaux alternent entre la famille en cours et la suivante.
+- **Appui de chaque question** : celui de la famille en cours si le fait relève de sa règle, sinon celui de la famille du fait ; pour le mélange, l'appui le plus parlant (`aidFor` : ami de 10 → cadre, double → reflet, presque-double → double + 1, + 1 et + 2 → la tortue, sinon la maison).
+- **Exemple guidé** : l'appui avec la réponse, « 3 plus 7, ça fait 10. », « À toi ! Tape la réponse. » ; l'appui est rangé quand le pavé revient (il occupe la même place). Correction en notion du jour : l'appui avec la réponse, puis la phrase de correction ; « passer » comme partout.
+- **Cran « plus facile »** : l'aide « affichée d'emblée » est montrée au début de chaque question (appui sans la réponse, avec sa phrase), puis le pavé revient ; elle n'est pas comptée comme une aide demandée (la séance « plus facile » compte normalement ; sinon aucun fait ne monterait jamais de boîte).
+- **Difficulté persistante** (3 erreurs sur 5) : la leçon de la famille si elle en a une et qu'elle n'a pas été jouée dans la séance, puis un fait déjà bien su.
+- **Nombres de questions** : la durée prime. Avec 30 à 38 questions, la séance d'additions jouée à vitesse réelle (`recette.mjs --delai 4.5 --module 2`) durait 6 min 39 s (39 questions en 4 min 21 s, environ 6,7 s par question) ; relevé à **50 à 60** (`seance.json`, `notion.module2`), c'est la limite de 6 minutes qui arrête l'étape : 8 min 23 s, 56 questions.
+- **Frise** : pendant la notion du jour des additions, le pictogramme est le « + » de l'échauffement.
+- **Textes nouveaux, à valider** : « Maintenant, les additions, avec le bernard-l'ermite ! » (ou « Au tour des additions ! Le bernard-l'ermite va t'aider. »), « Regarde la boîte à dix places : 7 poissons. », « Regarde la maison : les deux pièces, ensemble, font le nombre du toit. », « 3 plus 3, c'est un double. Et une bulle de plus ! », « À toi ! Tape la réponse. » ; leçon L4 : les bulles de chaque côté du miroir sont les bulles dorées de l'atelier ; L5 : « Six et quatre. », « Huit et deux. » (les deux exemples rapides de la SPEC dits à voix haute) ; L6 : le bernard-l'ermite change de coquille pendant « Voici la maison du sept. ».
+
+**Écarts avec la spécification (étapes 4 à 6) :**
+
+- Son : 3,6 Mo (trois musiques à 64 kbit/s) au lieu des 3 Mo visés ; 48 kbit/s ramènerait à 2,7 Mo (choix du parent attendu, `tools/son/reglages.json`).
+- SPEC : « 12 à 16 questions » en notion du jour ; relevé à 50 à 60 pour les additions (la durée prime, voir plus haut).
+- Leçons L4 et L6 jouées aussi par les familles qui reprennent leur appui (`leconSiPasVue`) : ajout à la SPEC, voir les décisions de l'étape 6.
+- Le bernard-l'ermite n'est pas un visiteur de la surprise de l'accueil (planche de 55 Mo à charger pour quelques secondes).
+
+**Points à observer ou à décider (recette des étapes 4 à 6) :**
+
+- Profil « en difficulté » (simulation) : la famille 1 (« + 1 et + 2 », 30 faits) n'est jamais acquise dans l'année (80 % en boîte 3) ; la notion du jour des additions reste donc sur la famille 1 toute l'année (avec les autres familles en révision), sans leçon L4 à L6. À observer ; parade possible : le point de départ du parent.
+- L'ouverture des familles est rapide pour une enfant à l'aise (les 7 ouvertes dès la 6e séance), car la règle ne compte que les faits déjà introduits.
+- Écouter les phrases nouvelles et le mixage sur la tablette (je n'ai rien pu écouter).
+
+**Recette complète des étapes 4 à 6 (27 septembre 2026) :**
+
+| Critère | Mesure | État |
+| --- | --- | --- |
+| Tests unitaires | 150 sur 150 (dont 21 nouveaux : son, bernard-l'ermite, module 2) ; `precache.mjs --check` à jour | tenu |
+| Durée d'une séance complète (`recette.mjs --delai 4.5`), 8 à 10 min tant que le défi record n'existe pas | ligne graduée (première séance) : **8 min 58 s** ; additions (`--module 2`, première séance) : **8 min 23 s** (6 min 39 s avant le relèvement des questions) | tenu |
+| Attente sans rien pouvoir faire, hors consigne orale (`recette-durees.mjs --passer`) | au plus **2,5 s** après une question, niveaux 1 à 8 de la ligne et familles 1 à 5 des additions ; avant la première question : 4 à 5 s (ligne), 7,4 à 8,7 s (additions : accueil et « Maintenant, les additions… », consigne orale). Sans « passer » : corrections jusqu'à 24 s (après « je ne sais pas », la tortue compte), leçons L4 à L6 de 13 à 17 s | tenu |
+| Faits nouveaux (profil « reel », 2 séances par semaine) | 6, 6, 6, 6, 1, 5, 6 jusqu'aux 33 faits (le 1 : boîte 1 à 7 faits sur 8) ; « diff » : 0 à 6, bloqué quand la boîte 1 est pleine | tenu |
+| Familles 1 et 2 (profil « sait ») | les 33 faits vus à la **6e séance** (2 et 5 par semaine) ; les 45 à la 8e | tenu |
+| Cartes (2 séances par semaine, zones 3 et 4 prêtes) | 60 cartes (5 légendaires) le 17 juin pour les 5 profils (le 15 juin à 5 par semaine) ; quota jamais dépassé | tenu |
+| Tirage des brillantes | inchangé (test unitaire 20 % ± 3 points) ; sur l'année : 17 à 42 à 2 par semaine, 56 à 57 à 5 par semaine (point ouvert inchangé) | tenu |
+| Alternance | jamais deux fois de suite le même module (5 profils, 2 et 5 par semaine) : 32 + 32 et 80 + 80 séances ; module imposé : parcours `notion2.mjs` et test unitaire | tenu |
+| Module 2 en notion du jour (simulation) | 35 à 39 questions par séance d'additions, 8,1 à 9,1 min estimées ; leçons L4 à L6 vues dans l'année (« sait », « reel » à 5 par semaine, « très dur », « plus facile ») ; une famille acquise = une étoile arc-en-ciel | tenu (voir « diff ») |
+| Son | bruitages décodés et joués dans Chromium, contexte à 48 kHz, musique tirée et notée, arrêtée à la fin (`seance.mjs`) ; réglages du parent (`parent.mjs`) | tenu (écoute à faire) |
+| Écrans nouveaux ou modifiés | captures regardées : réglages du son, bernard-l'ermite (gestes, planche de modèle, visage en grand), cadre de 10, maison, double + 1, leçons L4 à L6, exemple guidé, corrections avec l'appui (tortue, cadre, reflet, maison), fin de la notion avec la nouvelle coquille ; corrigés : proportions et visage du bernard-l'ermite, coquille retrouvée après « changer », appui qui chevauchait le pavé, coquille à moitié hors de l'écran | tenu |
+| Erreurs dans la page | aucune (pwa, voix, séance, leçons, récompenses, sélecteur, cartes, ergonomie, frise, parent, perf, ermite, notion2 et `--famille 3`, `--famille 6`, deux recettes à vitesse réelle, recette-durees) | tenu |
+| Performance (`perf.mjs`, processeur ÷4, densité 2) | la machine de l'environnement est plus lente depuis un redémarrage : mesuré le même jour, `main` donne 2,75 s au démarrage à froid et 44,7 ms d'intervalle moyen ; cette branche 2,9 à 3,1 s et 42,9 à 46,5 ms : pas d'écart significatif ; planches décodées 180 Mo (+5 Mo, « aides ») ; « ermite » (55 Mo) seulement pendant le module 2 | à vérifier sur la tablette |
+
+**Décisions prises (étape 5) :**
+
+- Bernard-l'ermite : de profil vers la droite, bulot crème rayé de brun (comme la carte du lagon), grands yeux blancs à pupille au bout des pédoncules (comme la pieuvre), joue rose et sourire ; grosse pince devant. Rentré dans sa coquille, sa grosse pince reste à l'ouverture (c'est ainsi qu'un pagure ferme sa maison). « Changer de coquille » : une turbo rose plus grande l'attend à droite ; il sort (on voit son abdomen mou), marche, y entre à reculons, se réjouit ; l'ancienne reste posée.
+- Mémoire : rendu en images entières, le personnage coûtait 139 Mo décodés (@2x) ; en deux calques (coquilles fixes, corps seul) et avec moins d'images (8 images/s), 55 Mo, chargés seulement pendant le module 2.
+- Aides : le cadre de 10 reçoit les poissons de l'application (le petit poisson jaune du décor), la maison des nombres s'empile (un toit Saint-Jacques avec le total, un étage par paire, un seuil), le double + 1 reprend le poisson et son reflet et ajoute une bulle dorée ; les nombres sont écrits en direct avec les chiffres de la scène.
+- Le bernard-l'ermite n'est pas (encore) un visiteur de la surprise de l'accueil : il faudrait charger sa planche (55 Mo) pour quelques secondes.
+
+**Décisions prises (étape 4) :**
+
+- Débit des musiques : 64 kbit/s (choix par défaut, le parent n'ayant pas demandé 48 kbit/s) ; 3,6 Mo de sons en tout, au-delà des 3 Mo visés (noté comme écart).
+- Niveaux : bruitages 4 dB sous leur niveau de fabrication (la voix mesure environ -16 LUFS : elle reste devant) ; musique 18 dB sous les bruitages ; volume du parent : douce -6 dB, moyenne, plus forte +4 dB ; baisse de 10 dB sous la voix (fondu 0,25 s) ; pendant la pause, 14 dB de moins (« très bas ») ; fondu d'entrée 3 s, de sortie 2 s. Tout est dans `app/content/son.json`.
+- Musique aussi pendant l'entraînement libre (tirée à son ouverture) ; pas de musique dans le récif ni dans l'album (visite libre, hors séance), ni sur l'écran « à demain ».
+- « Je ne sais pas » ne fait pas le bruitage d'erreur (ce n'est pas une erreur pour l'enfant ; la voix rassure).
+- Bruitage « étoile » : une fois par vol d'étoiles (à la première arrivée), pas à chaque étoile (jusqu'à 10 d'affilée).
+- Bruitage « bouton » : tous les boutons de l'écran de l'enfant (pavé compris), sauf les bulles-réponses (elles ont la bulle claire ou douce) et le coquillage à ouvrir (il a le sien).
 
 ### Reprise de l'étape 3
 

@@ -19,7 +19,7 @@ import { allowedCrans, chooseCran } from "./selector.js";
 
 const PROPOSE_STOP_MS = 10 * 60000;
 // les leçons, telles que l'enfant les reconnaît : les nombres que la tortue écrit
-const LESSON_LABELS = { L1: "1 2 3", L2: "10 20", L3: "30 31" };
+const LESSON_LABELS = { L1: "1 2 3", L2: "10 20", L3: "30 31", L4: "3+3", L5: "7+3", L6: "5+2" };
 
 export class FreeTraining {
   constructor(app, { store, module1, module2, rnd, seance = null }) { this.app = app; this.store = store; this.m1 = module1; this.m2 = module2; this.rnd = rnd; this.seance = seance; this.rec = null; this.cran = "conseille"; }
@@ -33,7 +33,7 @@ export class FreeTraining {
   get offset() { return this.seance?.selecteur?.decalages?.[CRANS.indexOf(this.cran)] ?? 0; }
   // la séance « libre » : créée quand une activité commence, mise à jour après chaque réponse
   async seanceId() {
-    if (!this.rec) { const now = Date.now(); this.rec = { debut: now, fin: now, dureeS: 0, terminee: false, libre: true, module: chooseModule(), questions: 0, justes: 0, reussite: null, etoiles: 0, etapes: [] }; this.rec.id = await this.store.add("seances", this.rec); }
+    if (!this.rec) { const now = Date.now(); this.rec = { debut: now, fin: now, dureeS: 0, terminee: false, libre: true, module: chooseModule().module, questions: 0, justes: 0, reussite: null, etoiles: 0, etapes: [] }; this.rec.id = await this.store.add("seances", this.rec); }
     return this.rec.id;
   }
   async answered(ok) {
@@ -46,7 +46,7 @@ export class FreeTraining {
   }
   // le menu : trois grandes bulles (la troisième seulement si une leçon a déjà été vue)
   async menu() {
-    const { app } = this, { voice, text } = app, n1 = (await this.store.get("niveaux", 1)) ?? { lecons: [] }, seen = n1.lecons ?? [];
+    const { app } = this, { voice, text } = app, n1 = (await this.store.get("niveaux", 1)) ?? { lecons: [] }, n2 = (await this.store.get("niveaux", 2)) ?? { lecons: [] }, seen = [...(n1.lecons ?? []), ...(n2.lecons ?? [])]; // (lot 2 : et les leçons L4 à L6 des additions)
     this.t0 ??= app.clock.now();
     const items = [["ligne", "la ligne des nombres", "libreLigne"], ["faits", "les additions", "libreFaits"], ...(seen.length ? [["lecons", "les leçons", "libreLecons"]] : [])];
     const els = items.map(([id, label], i) => spriteBox(app, { x: 640 + (i - (items.length - 1) / 2) * 230 - 90, y: 520, w: 180, h: 180, cls: "bubble free", label, paint: (ctx) => app.sprites.draw(ctx, `libre.${id}`, 0, 90, 90) }));

@@ -16,6 +16,7 @@ import { onTap, spriteBox } from "../session/screens.js";
 import { skipKey } from "../engine/ui.js";
 import { actions, countLabel, lessonLineSpec, settle, stateAt, tickOf } from "./script.js";
 import { wait } from "../engine/clock.js";
+import { Lesson2Player } from "./player2.js";
 
 const ABORT = Symbol("leçon interrompue");
 const ease = (u) => 1 - Math.pow(1 - u, 3);
@@ -32,6 +33,8 @@ export class LessonPlayer {
   // joue la leçon `id` jusqu'au bout ; renvoie { vue, passee, dureeS, rejouees }.
   // « passer » (dès la première vue) l'arrête : passee, pas d'étoiles (notion.js).
   async play(id) {
+    // les leçons du module 2 (L4 à L6) ont leur propre scène (lessons/player2.js)
+    if (this.c[id]?.module === 2) return (this.p2 ??= new Lesson2Player(this.app, this.c)).play(id);
     const { app } = this, lesson = this.c[id], nl = this.nl, t0 = Date.now(), stats = { rejouees: 0 };
     if (!lesson) return { vue: false };
     nl.leave();
@@ -212,6 +215,7 @@ export class LessonPlayer {
   // la leçon est quittée pour de bon (entraînement libre : bouton « maison ») ; le déroulement abandonné
   // reste figé (engine/clock.js), on range la scène
   abandon() {
+    this.p2?.abandon();
     if (!this.keys) return;
     this.tok++; this.abort = null; this.keys.forEach((k) => k.remove()); this.keys = null; this.clear();
     if (this.home) this.app.ocean.octoAt = [...this.home];

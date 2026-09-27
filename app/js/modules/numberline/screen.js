@@ -255,6 +255,8 @@ export class NumberLineScreen {
       if (nsp) good.classList.add("pop");
     }
     ocean.octo.play(ok ? "rejouir" : "encourager");
+    // bruitage : une bulle claire, ou une bulle douce (rien pour « je ne sais pas », la voix rassure)
+    if (ok) this.app.sound?.play("bonne"); else if (!nsp) this.app.sound?.play("erreur");
     const n = q.answer, T = text.data.erreur;
     if (ok) {
       if (q.format === "sauter") { await voice.say(text.pick("bravo")); await this.countJumps(q.start, q.target); }

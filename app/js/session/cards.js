@@ -125,7 +125,7 @@ export class CardView {
     const ok = spriteBox(app, { x: 1000 - 80, y: 560, w: 160, h: 160, cls: "bubble check", label: "c'est bon", paint: (ctx) => sprites.draw(ctx, "valider", 0, 80, 80) });
     this.card = { veil, el, ok };
     const read = () => { voice.stop(); voice.say(`${fill(text.data.recifCarte, { nom: c.nomLu ?? c.nom })} ${c.anecdote}`, { instruction: true }); };
-    onTap(el, () => { el.flip(); read(); });
+    onTap(el, () => { el.flip(); app.sound?.play("carte"); read(); });
     onTap(veil, () => this.close()); onTap(ok, () => this.close());
     read();
   }

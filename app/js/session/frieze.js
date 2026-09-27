@@ -20,6 +20,8 @@ export class Frieze {
   }
   show(v) { this.el.style.visibility = v ? "visible" : "hidden"; }
   set(p) { this.p = { ...p }; this.el.repaint(); }
+  // le pictogramme de la notion du jour : la ligne graduée (module 1) ou le « + » des additions (module 2)
+  notionIcon(module) { this.icon = module === 2 ? "frise.echauffement" : null; this.el.repaint(); }
   // où va chaque élément : [{ kind: "etape"|"point", id|j, x }], x au centre (px logiques du calque)
   layout() {
     const cur = this.steps.indexOf(this.p.etape), dots = cur >= 0 ? this.p.prevues : 0;
@@ -40,7 +42,7 @@ export class Frieze {
       if (e.kind === "etape") {
         // en cours : la lueur derrière ; faite : pleine ; à venir (ou pas encore commencée) : estompée
         if (e.i === cur) sprites.draw(ctx, "frise.lueur", 0, e.x, CY);
-        sprites.draw(ctx, `frise.${e.id}`, 0, e.x, CY, cur >= 0 && e.i <= cur ? 1 : 0.45);
+        sprites.draw(ctx, (e.id === "notion" && this.icon) || `frise.${e.id}`, 0, e.x, CY, cur >= 0 && e.i <= cur ? 1 : 0.45);
       } else {
         const q = sprites.frame("frise.point", e.j < this.p.faites ? 1 : 0), X = Math.round(e.x * px + q.dx * k), Yp = Math.round(CY * px + q.dy * k);
         ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, X, Yp, Math.round(q.w * k), Math.round(q.h * k));

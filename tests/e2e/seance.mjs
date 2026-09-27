@@ -74,7 +74,7 @@ check(sawLesson, "la leçon L1 a été jouée");
 const db = await page.evaluate(async () => { const s = window.__app.store; return { faits: await s.all("faits"), base: await s.setting("tempsDeBase"), seances: await s.all("seances"), reponses: (await s.all("reponses")).filter((r) => r.module === 1), rep2: (await s.all("reponses")).filter((r) => r.module === 2), etoiles: await s.get("recompenses", "etoiles"), nom: await s.setting("mascotte"), niveau: await s.get("niveaux", 1) }; });
 const se = db.seances.at(-1);
 check(db.base?.mesures?.length === 3, `temps de base mesuré (${db.base?.mesures?.map((m) => Math.round(m)).join(", ")} ms)`);
-check(db.faits.length === 3 && db.faits.filter((x) => x.boite === 1).length >= 1, `3 nouveaux faits rangés en boîtes (${db.faits.map((x) => `${x.fait}:${x.boite}`).join(" ")})`);
+check(db.faits.length >= 3 && db.faits.filter((x) => x.boite === 1).length >= 1, `au moins 3 nouveaux faits rangés en boîtes (lot 2 : voie rapide, faits ajoutés) (${db.faits.map((x) => `${x.fait}:${x.boite}`).join(" ")})`);
 check(db.rep2.some((r) => r.aide) && db.rep2.some((r) => r.revient), "échauffement : réponse avec aide, fait raté revenu");
 check(db.rep2.length >= 3 + 5, `${db.rep2.length} réponses d'échauffement enregistrées`);
 check(db.nom === "Octavie", `nom de la pieuvre enregistré (${db.nom})`);
@@ -89,6 +89,11 @@ check((se.cartes?.length ?? 0) >= 1, `une séance complète rapporte au moins un
 check(db.reponses.filter((r) => !r.guide).at(-1)?.juste === true, "la séance finit sur une réussite");
 const hudShown = await page.evaluate(() => window.__app.hud.shown); check(hudShown === db.etoiles.total, `le compteur affiche le trésor (${hudShown})`);
 console.log(JSON.stringify({ seance: { ...se, etapes: se.etapes.map((e) => `${e.id}${e.sautee ? ` (sautée : ${e.sautee})` : ` ${e.dureeS} s`}`) } }, null, 1));
+// le son (lot 2, étape 4) : contexte à 48 kHz, bruitages joués et décodés, musique de la séance tirée et enregistrée, arrêtée à la fin
+const son = await page.evaluate(() => { const s = window.__app.sound; return { rate: s.ctx?.sampleRate, played: [...new Set(s.played)], decoded: Object.values(s.buffers).filter(Boolean).length, music: s.musicKey }; });
+check(son.rate === 48000 && son.decoded === 8, `son : contexte à ${son.rate} Hz, ${son.decoded} bruitages décodés`);
+check(["bonne", "erreur", "etoile", "bouton", "coquillage", "carte"].every((k) => son.played.includes(k)), `bruitages joués : ${son.played.join(", ")}`);
+check(["harpe", "marimba", "profondeurs"].includes(se.musique) && son.music === null, `musique de la séance « ${se.musique} », arrêtée après la séance`);
 const voix = await page.evaluate(() => ({ manques: [...window.__app.voice.misses], index: !!window.__app.voice.index }));
 check(voix.index && voix.manques.length === 0, `chaque phrase dite a son fichier son${voix.manques.length ? ` ; sans fichier : ${voix.manques.join(" | ")}` : ""}`);
 // relance le même jour : la lune, pas de « jouer »

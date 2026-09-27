@@ -10,6 +10,8 @@ import { drawTurtle, TURTLE_CLIPS, TURTLE_FPS } from "./turtle";
 import { CREATURE_FPS, CREATURE_N, CREATURES } from "./creatures";
 import { CARD_H, CARD_W, drawBigShell, drawGift, drawShinySweep, GIFTS, SWEEP_H, SWEEP_W, drawCardBack, drawCardBanner, drawCardFrame, drawCardVerso, drawCardWater, drawGlint, drawGoldStar, drawHomeKey, drawRainbowStar, drawReefKey, SHELL_N } from "./treasure";
 import { CRAN_W, drawCranGlow, drawCranKey, GLOW_CR } from "./selector";
+import { drawHermit, HERMIT_CLIPS, HERMIT_FPS, HERMIT_REST } from "./hermit";
+import { drawBonusBubble, drawCellGlow, drawHouseBase, drawHouseFloor, drawHouseRoof, drawTenFrame, HOUSE, TEN, TEN_H, TEN_W, tenCell } from "./aids";
 import { drawAgainKey, drawAlbumKey, drawDontKnowKey, drawFreeFacts, drawFreeLessons, drawFreeLine, drawMoonDecor, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepGlow, drawStepShell, GLOW_R, STEP_R } from "./ui";
 
 // la tortue dans l'application : longueur ~110 px logiques, assez petite pour tenir sur une bouée
@@ -121,6 +123,28 @@ export const SPECS: Spec[] = [
     { name: `cran.libre.${lv}`, sheet: "selecteur", W: CRAN_W, H: CRAN_W, origin: [CRAN_W / 2, CRAN_W / 2], frames: 1, draw: (g) => drawCranKey(g, CRAN_W / 2, CRAN_W / 2, lv, false) },
   ]),
   { name: "cran.lueur", sheet: "selecteur", W: 2 * GLOW_CR, H: 2 * GLOW_CR, origin: [GLOW_CR, GLOW_CR], frames: 1, draw: (g) => drawCranGlow(g, GLOW_CR, GLOW_CR) },
+  // lot 2, étape 5 : le bernard-l'ermite, guide du module 2 (planche « ermite », chargée le temps du module 2),
+  // en deux calques comme la pieuvre : la coquille (une image fixe par coquille, que l'application décale et
+  // tourne) et le corps (une image par pose ; ce qui est rentré dans la coquille est déjà coupé). Ancrage : sur
+  // le sable, sous l'ouverture de la coquille. meta.comp, par image : [coquille portée, décalage x, y, rotation
+  // (degrés), coquille posée à côté ou -1, sa position x] ; hold : boucle intérieure d'un geste ; to : où il est à
+  // la fin de « changer » (dans la nouvelle coquille), vide : où reste l'ancienne.
+  ...HERMIT_CLIPS.filter((c) => c.name !== "repos.b").map((c): Spec => ({
+    name: `ermite.${c.name}`, sheet: "ermite", W: 440, H: 240, origin: [150, 205], frames: c.frames, fps: HERMIT_FPS,
+    draw: (g, f) => drawHermit(g, c.pose(f), 150, 205, "corps"),
+    meta: { loop: c.loop, hold: c.hold ?? null, ...(c.meta ?? {}), comp: Array.from({ length: c.frames }, (_, f) => { const p = c.pose(f), r = (v: number) => Math.round(v * 10) / 10; return [p.shell, r(p.dx + p.sx), r(p.dy + p.sy), r(p.stilt), p.other ? p.other.shell : -1, p.other ? r(p.other.x) : 0]; }) },
+    loop: c.loop ? [0, c.frames] : undefined,
+  })),
+  ...[0, 1].map((k): Spec => ({ name: `ermite.coquille.${k}`, sheet: "ermite", W: 240, H: 190, origin: [150, 150], frames: 1, draw: (g) => drawHermit(g, { ...HERMIT_REST, shell: k }, 150, 150, "coquille") })),
+  // les aides visuelles du module 2 (planche « aides ») : le cadre de 10 (ancrage : coin haut gauche ;
+  // meta.cells : centre de chaque alvéole), la lueur d'une alvéole, la maison des nombres en trois morceaux
+  // (ancrage : milieu du bas du toit, du haut d'un étage, du haut du seuil), la bulle dorée du double + 1
+  { name: "aide.cadre10", sheet: "aides", W: TEN_W + 30, H: TEN_H + 30, origin: [6, 6], frames: 1, draw: (g) => drawTenFrame(g, 6, 6), meta: { cells: Array.from({ length: 10 }, (_, i) => tenCell(i)), w: TEN_W, h: TEN_H, cell: TEN.cell } },
+  { name: "aide.cadre.lueur", sheet: "aides", W: TEN.cell + 24, H: TEN.cell + 24, origin: [TEN.cell / 2 + 12, TEN.cell / 2 + 12], frames: 1, draw: (g) => drawCellGlow(g, TEN.cell / 2 + 12, TEN.cell / 2 + 12) },
+  { name: "aide.maison.toit", sheet: "aides", W: HOUSE.w + 70, H: HOUSE.roof + 40, origin: [HOUSE.w / 2 + 30, HOUSE.roof + 14], frames: 1, draw: (g) => drawHouseRoof(g, HOUSE.w / 2 + 30, HOUSE.roof + 14), meta: { ...HOUSE } },
+  { name: "aide.maison.etage", sheet: "aides", W: HOUSE.w + 30, H: HOUSE.floor + 20, origin: [HOUSE.w / 2 + 10, 4], frames: 1, draw: (g) => drawHouseFloor(g, HOUSE.w / 2 + 10, 4) },
+  { name: "aide.maison.seuil", sheet: "aides", W: HOUSE.w + 50, H: HOUSE.base + 20, origin: [HOUSE.w / 2 + 20, 4], frames: 1, draw: (g) => drawHouseBase(g, HOUSE.w / 2 + 20, 4) },
+  { name: "aide.bulle.doree", sheet: "aides", W: 100, H: 100, origin: [50, 50], frames: 1, draw: (g) => drawBonusBubble(g, 50, 50) },
   // les cadeaux du récif (la surprise) : ancrés au milieu de leur base, posés sur le sable
   ...GIFTS.map((id): Spec => ({ name: `cadeau.${id}`, sheet: "petits", W: 200, H: 180, origin: [100, 160], frames: 1, draw: (g) => drawGift(g, id, 100, 160) })),
 ];

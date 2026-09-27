@@ -5,6 +5,8 @@
 //   pip install imageio-ffmpeg        (une fois ; ou un ffmpeg avec libopus et libmp3lame dans la variable FFMPEG)
 //   node tools/son/fabriquer.mjs                 tout
 //   node tools/son/fabriquer.mjs bruitages       seulement les bruitages (ou : musiques)
+//   node tools/son/fabriquer.mjs app             copie les sons choisis par le parent (reglages.json,
+//                                                « application ») dans app/assets/son/, puis : node tools/precache.mjs
 //
 // Déterministe : même source, mêmes échantillons (empreinte « pcm » dans echantillons.json).
 import { execFileSync } from "node:child_process";
@@ -69,7 +71,25 @@ const arrondi = (x, k = 1) => Math.round(x * 10 ** k) / 10 ** k;
 // quelques phrases de la voix de l'application, pour entendre le mélange dans la page d'écoute
 const VOIX = { consigne: "Place le poisson sur le nombre 37.", bravo: "Bravo !", erreur: "Ce n'est pas grave, regardons ensemble." };
 
+// les sons de l'application : les fichiers Opus des échantillons choisis, nommés par l'empreinte de leur contenu
+// (le service worker ne les retélécharge pas d'une version à l'autre), et app/assets/son/index.json
+export const SON_APP = join(RACINE, "app/assets/son");
+export function exporterApp() {
+  const man = JSON.parse(readFileSync(join(SORTIE, "echantillons.json"), "utf8")), A = REGLAGES.application;
+  rmSync(SON_APP, { recursive: true, force: true }); mkdirSync(SON_APP, { recursive: true });
+  const copie = (src) => {
+    const buf = readFileSync(join(SORTIE, `${src}.ogg`)), nom = `${src}-${createHash("sha256").update(buf).digest("hex").slice(0, 8)}.ogg`;
+    writeFileSync(join(SON_APP, nom), buf); return nom;
+  };
+  const index = { _: "Fabriqué par node tools/son/fabriquer.mjs app (ne pas modifier à la main). Durées en secondes.", bruitages: {}, musiques: {} };
+  for (const [role, cle] of Object.entries(A.bruitages)) index.bruitages[role] = { fichier: copie(`bruitage-${cle}`), duree: man.bruitages[cle].duree };
+  for (const cle of A.musiques) index.musiques[cle] = { fichier: copie(`musique-${cle}`), duree: man.musiques[cle].duree, nom: man.musiques[cle].nom };
+  writeFileSync(join(SON_APP, "index.json"), JSON.stringify(index, null, 1) + "\n");
+  return index;
+}
+
 async function principal() {
+  if (process.argv[2] === "app") { const i = exporterApp(); console.log(`app/assets/son : ${Object.keys(i.bruitages).length} bruitages, ${Object.keys(i.musiques).length} musiques`); return; }
   const quoi = process.argv[2] || "tout", ff = ffmpeg(), g = REGLAGES.graine;
   mkdirSync(SORTIE, { recursive: true });
   const fichier = join(SORTIE, "echantillons.json");

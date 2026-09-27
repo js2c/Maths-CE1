@@ -1,5 +1,5 @@
 {
-  "_doc": "Leçons animées (docs/SPEC.md, « Leçons animées »). Une leçon = une ligne (min, max, pas, k : 0 corde à bouées, 1 ligne d'école ; ecrits : les nombres écrits au départ) et une suite de phrases. Le bouton « rejouer » revient au début de la leçon, « passer » l'arrête (dès la première vue). Une phrase = un ou plusieurs temps ; dans un temps, la voix dit « dire » pendant que « faire » se joue (actions l'une après l'autre), et le temps attend la fin des deux. Les nombres des actions sont des VALEURS de la ligne (pas des numéros de graduation). Actions : ligne (la ligne apparaît), allumer (les bouées s'allument une à une puis s'éteignent), tortue v (la tortue arrive et se pose sur v), note texte (un mot écrit au-dessus de la tortue, effacé au premier saut), sauter [v, texte de l'arc], ecrire [v…] (nombres écrits sous la ligne), clignoter « arcs », etoile v (l'étoile de mer sur v, un « ? » dessous), retour v (les arcs s'effacent, la tortue revient sur v), compter { jusqua, arcs : « sauts » ou « valeurs », dire : « sauts » ou « valeurs », ecrire } (la tortue saute jusqu'à la valeur en comptant à voix haute), filet [v…] (un filet de dix poissons sous la corde, de v au saut suivant), compteur n (la bulle du compteur), entourer [v…] (un anneau autour des nombres), arc [numéro de l'arc, texte], loupe v (une loupe montre le nombre en grand), eclairer [v…] (la graduation s'allume). aToi : ce que dit la voix au premier exercice guidé qui suit ; aToiDepuisZero : à la place, si la ligne de l'exercice part de 0 avec un pas de 1.",
+  "_doc": "Leçons animées (docs/SPEC.md, « Leçons animées »). Une leçon = une ligne (min, max, pas, k : 0 corde à bouées, 1 ligne d'école ; ecrits : les nombres écrits au départ) et une suite de phrases. Le bouton « rejouer » revient au début de la leçon, « passer » l'arrête (dès la première vue). Une phrase = un ou plusieurs temps ; dans un temps, la voix dit « dire » pendant que « faire » se joue (actions l'une après l'autre), et le temps attend la fin des deux. Les nombres des actions sont des VALEURS de la ligne (pas des numéros de graduation). Actions : ligne (la ligne apparaît), allumer (les bouées s'allument une à une puis s'éteignent), tortue v (la tortue arrive et se pose sur v), note texte (un mot écrit au-dessus de la tortue, effacé au premier saut), sauter [v, texte de l'arc], ecrire [v…] (nombres écrits sous la ligne), clignoter « arcs », etoile v (l'étoile de mer sur v, un « ? » dessous), retour v (les arcs s'effacent, la tortue revient sur v), compter { jusqua, arcs : « sauts » ou « valeurs », dire : « sauts » ou « valeurs », ecrire } (la tortue saute jusqu'à la valeur en comptant à voix haute), filet [v…] (un filet de dix poissons sous la corde, de v au saut suivant), compteur n (la bulle du compteur), entourer [v…] (un anneau autour des nombres), arc [numéro de l'arc, texte], loupe v (une loupe montre le nombre en grand), eclairer [v…] (la graduation s'allume). aToi : ce que dit la voix au premier exercice guidé qui suit ; aToiDepuisZero : à la place, si la ligne de l'exercice part de 0 avec un pas de 1. Lot 2, étape 6 : les leçons du module 2 (L4 à L6, « module »: 2) se jouent sur le calque des aides avec le bernard-l'ermite (lessons/player2.js) ; actions : ermite (sortir, montrer, rejouir, changer), miroir n, ecrire « texte », defiler [[a, b]…], cadre { n, extra, lueur }, entrer n, maison { total, etages }, effacer, attendre ms.",
   "L1": {
     "titre": "On compte les sauts",
     "ligne": { "min": 0, "max": 10, "pas": 1, "k": 0, "ecrits": [0] },
@@ -70,6 +70,63 @@
       ],
       [
         { "dire": "Toujours commencer par regarder d'où on part.", "faire": [{ "eclairer": [30] }] }
+      ]
+    ],
+    "aToi": "À toi !"
+  },
+  "L4": {
+    "module": 2,
+    "titre": "Les doubles",
+    "phrases": [
+      [
+        {"dire": "Ce poisson se regarde dans un miroir.", "faire": [{"ermite": "montrer"}, {"miroir": 1}]},
+        {"dire": "Trois bulles d'un côté, trois bulles de l'autre.", "faire": [{"miroir": 3}]}
+      ],
+      [
+        {"dire": "Trois plus trois, ça fait six. C'est un double.", "faire": [{"ecrire": "3 + 3 = 6"}, {"ermite": "rejouir"}]}
+      ],
+      [
+        {"dire": "Les doubles, on les apprend par cœur comme une chanson : un et un deux, deux et deux quatre…", "faire": [{"effacer": true}, {"ermite": "montrer"}, {"defiler": [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]]}]}
+      ]
+    ],
+    "aToi": "À toi !"
+  },
+  "L5": {
+    "module": 2,
+    "titre": "Les amis de 10",
+    "phrases": [
+      [
+        {"dire": "Voici la boîte à dix places.", "faire": [{"cadre": {"n": 0}}, {"ermite": "montrer"}]},
+        {"dire": "Deux rangées de cinq.", "faire": [{"cadre": {"n": 0, "lueur": [0, 1, 2, 3, 4]}}, {"attendre": 900}, {"cadre": {"n": 0, "lueur": [5, 6, 7, 8, 9]}}]}
+      ],
+      [
+        {"dire": "Sept poissons entrent.", "faire": [{"cadre": {"n": 0}}, {"entrer": 7}]},
+        {"dire": "Combien de places vides ? Trois !", "faire": [{"cadre": {"n": 7, "lueur": [7, 8, 9]}}]}
+      ],
+      [
+        {"dire": "Sept et trois font dix. Ce sont des amis de dix.", "faire": [{"cadre": {"n": 7, "extra": 3}}, {"ecrire": "7 + 3 = 10"}, {"ermite": "rejouir"}]}
+      ],
+      [
+        {"dire": "Pour trouver l'ami de dix, regarde les places vides.", "faire": [{"effacer": true}, {"cadre": {"n": 6, "lueur": [6, 7, 8, 9]}}, {"ermite": "montrer"}]},
+        {"dire": "Six et quatre.", "faire": [{"cadre": {"n": 6, "extra": 4}}, {"ecrire": "6 + 4 = 10"}]},
+        {"dire": "Huit et deux.", "faire": [{"cadre": {"n": 8, "extra": 2}}, {"ecrire": "8 + 2 = 10"}]}
+      ]
+    ],
+    "aToi": "À toi !"
+  },
+  "L6": {
+    "module": 2,
+    "titre": "La maison des nombres",
+    "phrases": [
+      [
+        {"dire": "Voici la maison du sept.", "faire": [{"ermite": "changer"}]},
+        {"dire": "Sur le toit, il y a le nombre sept.", "faire": [{"maison": {"total": 7, "etages": []}}, {"ermite": "montrer"}]}
+      ],
+      [
+        {"dire": "Dans chaque étage, deux nombres qui, ensemble, font sept.", "faire": [{"maison": {"total": 7, "etages": [[6, 1]]}}, {"attendre": 1100}, {"maison": {"total": 7, "etages": [[6, 1], [5, 2]]}}, {"attendre": 1100}, {"maison": {"total": 7, "etages": [[6, 1], [5, 2], [4, 3]]}}]}
+      ],
+      [
+        {"dire": "Si je connais une pièce et le toit, je trouve l'autre pièce.", "faire": [{"maison": {"total": 7, "etages": [[5, "?"]]}}, {"ermite": "montrer"}, {"attendre": 1400}, {"maison": {"total": 7, "etages": [[5, 2]]}}, {"ermite": "rejouir"}]}
       ]
     ],
     "aToi": "À toi !"

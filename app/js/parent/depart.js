@@ -28,10 +28,14 @@ export async function markFamilyKnown(store, c, id, now = Date.now()) {
   const log = (await store.setting("choixParent")) ?? [];
   await store.setSetting("choixParent", [...log, { t: now, type: "famille", famille: id, nom: familyOf(c, id)?.nom, faits: out.length }]);
   // lot 2, étape 6 : la famille (et celles d'avant) est ouverte ; elle compte comme acquise, choix du parent (pas
-  // d'étoile arc-en-ciel) ; la suivante s'ouvrira d'elle-même (règle des 80 %, à la prochaine séance)
+  // d'étoile arc-en-ciel) ; la suivante s'ouvre si toutes les familles ouvertes sont acquises, sinon d'elle-même
+  // (règle des 80 %)
   let st = (await store.get("niveaux", 2)) ?? initialFamilies(c, now);
   for (const f of c.familles) if (f.id <= id && !st.ouvertes.includes(f.id)) { st = { ...st, ouvertes: [...st.ouvertes, f.id], ouvertures: [...st.ouvertures, { famille: f.id, date: now, parent: true }] }; }
   st = updateFamilies(c, st, await store.all("faits"), now, { parent: true, open: false }).st;
+  // toutes les familles ouvertes sont acquises : la suivante s'ouvre (sinon la notion du jour reprendrait une famille sue)
+  const next = c.familles.find((f) => !st.ouvertes.includes(f.id));
+  if (next && st.ouvertes.every((f) => st.acquises.includes(f))) st = { ...st, ouvertes: [...st.ouvertes, next.id], ouvertures: [...st.ouvertures, { famille: next.id, date: now, parent: true }] };
   await store.put("niveaux", st);
   return out;
 }

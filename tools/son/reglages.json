@@ -1,0 +1,16 @@
+{
+  "_": "Réglages de la fabrication des sons (tools/son/fabriquer.mjs). Sonies en LUFS (UIT-R BS.1770) : les bruitages sont réglés sur leur sonie momentanée maximale, les musiques sur leur sonie intégrée. Le mixage de l'application (musique environ 18 dB sous les bruitages, baisse de 10 dB sous la voix) est fait à l'étape 4 ; « mixageEcoute » ne sert qu'à la page d'écoute.",
+  "graine": 20260927,
+  "opus": { "bruitages": "64k", "musiques": "64k" },
+  "mp3": { "bruitages": "96k", "musiques": "96k" },
+  "sonieBruitages": -16,
+  "sonieParBruitage": { "erreur": -18, "bouton": -23 },
+  "sonieMusique": -23,
+  "creteMax": -1.5,
+  "mixageEcoute": { "musiqueSousBruitages": 18, "baisseSousVoix": 10, "fonduBaisse": 0.25 },
+  "musiques": {
+    "harpe": { "nom": "La harpe du lagon", "tempo": 64, "mesures": 40, "tonique": 62, "gamme": [0, 2, 4, 7, 9], "instrument": "harpe", "accords": [[0, 7, 14, 16], [-3, 4, 7, 12], [-7, 2, 9, 12], [2, 9, 12, 19], [0, 4, 9, 14], [-3, 2, 7, 12], [-7, 2, 7, 9], [-5, 2, 7, 14]], "mesuresParAccord": 2, "densite": 0.42, "graves": true, "nappe": 0.55, "vagues": 0.5, "reverb": 0.32 },
+    "marimba": { "nom": "Le marimba des bulles", "tempo": 68, "mesures": 40, "tonique": 55, "gamme": [0, 2, 4, 7, 9], "instrument": "marimba", "accords": [[0, 7, 14, 16], [-3, 4, 9, 12], [-7, 5, 9, 14], [-3, 7, 12, 16], [0, 4, 9, 14], [-5, 2, 9, 14], [-7, 9, 12, 16], [-5, 2, 7, 9]], "mesuresParAccord": 2, "densite": 0.5, "graves": false, "nappe": 0.45, "vagues": 0.45, "reverb": 0.3 },
+    "profondeurs": { "nom": "Les profondeurs", "tempo": 60, "mesures": 36, "tonique": 60, "gamme": [0, 2, 4, 7, 9], "instrument": "cloche", "accords": [[0, 7, 14, 16], [-3, 4, 7, 12], [-7, 4, 9, 12], [-5, 2, 9, 14]], "mesuresParAccord": 3, "densite": 0.2, "graves": false, "nappe": 0.9, "vagues": 0.65, "reverb": 0.42 }
+  }
+}

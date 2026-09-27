@@ -1,0 +1,167 @@
+{
+  "fabrique": "node tools/son/fabriquer.mjs (synthèse, sans enregistrement ni banque de sons)",
+  "mixageEcoute": {
+    "musiqueSousBruitages": 18,
+    "baisseSousVoix": 10,
+    "fonduBaisse": 0.25
+  },
+  "sonieBruitages": -16,
+  "sonieMusique": -23,
+  "bruitages": {
+    "bonne-a": {
+      "nom": "Bonne réponse (a) : deux bulles et une perle",
+      "duree": 0.75,
+      "sonie": -16,
+      "crete": -2.1,
+      "limitation": 0,
+      "pcm": "8d6da6c7fca96363",
+      "opus": 8376,
+      "mp3": 9812
+    },
+    "bonne-b": {
+      "nom": "Bonne réponse (b) : trois bulles",
+      "duree": 0.5,
+      "sonie": -16.2,
+      "crete": -1.6,
+      "limitation": 1.9,
+      "pcm": "2dc949df819e224c",
+      "opus": 4446,
+      "mp3": 6644
+    },
+    "erreur-a": {
+      "nom": "Erreur (a) : une bulle grave et douce",
+      "duree": 0.6,
+      "sonie": -18,
+      "crete": -2.7,
+      "limitation": 0,
+      "pcm": "2367abb5921acbf0",
+      "opus": 5956,
+      "mp3": 7796
+    },
+    "erreur-b": {
+      "nom": "Erreur (b) : deux bulles étouffées",
+      "duree": 0.55,
+      "sonie": -18,
+      "crete": -2.3,
+      "limitation": 0,
+      "pcm": "fe749084afa168f4",
+      "opus": 5378,
+      "mp3": 7220
+    },
+    "etoile": {
+      "nom": "L'étoile vole vers le compteur",
+      "duree": 0.85,
+      "sonie": -16,
+      "crete": -4.7,
+      "limitation": 0,
+      "pcm": "ba0fc789f7a8ce70",
+      "opus": 9832,
+      "mp3": 10964
+    },
+    "coquillage": {
+      "nom": "Le coquillage s'ouvre",
+      "duree": 2,
+      "sonie": -16,
+      "crete": -5.1,
+      "limitation": 0,
+      "pcm": "ce5f07f607676e67",
+      "opus": 19513,
+      "mp3": 24788
+    },
+    "carte": {
+      "nom": "La carte se retourne",
+      "duree": 0.4,
+      "sonie": -16.1,
+      "crete": -1.6,
+      "limitation": 1.2,
+      "pcm": "12f1719343f528f7",
+      "opus": 3867,
+      "mp3": 5492
+    },
+    "brillante": {
+      "nom": "La carte est brillante",
+      "duree": 0.95,
+      "sonie": -16,
+      "crete": -6.6,
+      "limitation": 0,
+      "pcm": "fa2fbfa292f0e888",
+      "opus": 12939,
+      "mp3": 12116
+    },
+    "bouton": {
+      "nom": "Toucher d'un bouton",
+      "duree": 0.09,
+      "sonie": -23.4,
+      "crete": -1.6,
+      "limitation": 2.1,
+      "pcm": "7474e65507abad3b",
+      "opus": 1761,
+      "mp3": 1748
+    },
+    "zone": {
+      "nom": "Une zone du récif s'ouvre",
+      "duree": 0.98,
+      "sonie": -16,
+      "crete": -4.1,
+      "limitation": 0,
+      "pcm": "556d4f30d998e28b",
+      "opus": 12071,
+      "mp3": 12404
+    }
+  },
+  "voix": {
+    "consigne": {
+      "phrase": "Place le poisson sur le nombre 37.",
+      "duree": 2.35
+    },
+    "bravo": {
+      "phrase": "Bravo !",
+      "duree": 0.78
+    },
+    "erreur": {
+      "phrase": "Ce n'est pas grave, regardons ensemble.",
+      "duree": 2.71
+    }
+  },
+  "musiques": {
+    "harpe": {
+      "nom": "La harpe du lagon",
+      "tempo": 64,
+      "instrument": "harpe",
+      "duree": 150,
+      "notes": 55,
+      "sonie": -23,
+      "crete": -4.7,
+      "limitation": 0,
+      "pcm": "53089411c3ba3d2e",
+      "opus": 1283070,
+      "mp3": 1800596
+    },
+    "marimba": {
+      "nom": "Le marimba des bulles",
+      "tempo": 68,
+      "instrument": "marimba",
+      "duree": 141.18,
+      "notes": 64,
+      "sonie": -23,
+      "crete": -5.5,
+      "limitation": 0,
+      "pcm": "27cf4b7c9984f578",
+      "opus": 1141329,
+      "mp3": 1694900
+    },
+    "profondeurs": {
+      "nom": "Les profondeurs",
+      "tempo": 60,
+      "instrument": "cloche",
+      "duree": 144,
+      "notes": 26,
+      "sonie": -23,
+      "crete": -4.7,
+      "limitation": 0,
+      "pcm": "763acb28f1f0380a",
+      "opus": 1198530,
+      "mp3": 1728596
+    }
+  }
+}

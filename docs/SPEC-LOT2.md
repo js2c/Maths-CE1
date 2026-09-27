@@ -193,6 +193,7 @@ Demande du parent : des bruitages courts, et une petite musique de fond calme, p
 - **Mixage** : la musique environ 18 dB sous les bruitages ; elle baisse encore (environ 10 dB, fondu court) pendant que la voix parle ; fondu à l'entrée et à la sortie. Elle démarre au premier toucher (règle de Chrome), s'arrête dans l'espace parent, continue très bas pendant la pause.
 - **Échantillons d'abord** : 2 ou 3 musiques et la série de bruitages dans `docs/son-echantillons/`, avec une petite page qui les joue (et un fichier MP3 de chaque, lisible partout). Le parent choisit à l'écoute, comme pour la voix.
 - **Espace parent** : musique oui/non et son volume (3 niveaux), bruitages oui/non.
+- **Choix du parent (27 septembre, après écoute des échantillons de l'étape 3)** : bruitages, les variantes « a » (bonne réponse : deux bulles et une perle ; erreur : une bulle grave et douce). Musique : **les trois musiques** (la harpe du lagon, le marimba des bulles, les profondeurs), l'une tirée au hasard au début de chaque séance et gardée en boucle pour toute la séance (y compris après une pause). Poids : les trois musiques font 3,6 Mo en Opus à 64 kbit/s, au-delà des 3 Mo visés ; voir `docs/AVANCEMENT.md`, étape 3.
 
 ## 7. Espace parent
 

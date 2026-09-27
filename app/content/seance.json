@@ -4,8 +4,8 @@
   "reserveRecompenseS": 60,
   "etapes": [
     { "id": "accueil" },
-    { "id": "echauffement", "minutes": 3, "questions": [10, 14] },
-    { "id": "notion", "minutes": 6, "guides": 2, "questions": [12, 16] },
+    { "id": "echauffement", "minutes": 3, "questions": [12, 16] },
+    { "id": "notion", "minutes": 6, "guides": 2, "questions": [36, 44] },
     { "id": "defi", "minutes": 1, "aPartirDeSeance": 5, "faitsBoite3Min": 8 },
     { "id": "probleme", "actif": false, "minutes": 2 },
     { "id": "recompense" }

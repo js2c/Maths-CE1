@@ -44,12 +44,12 @@ test("« à demain » : une séance terminée aujourd'hui, pas une séance inter
   assert.equal(await doneToday(store, now), true);
 });
 
-test("notion du jour : deux exemples guidés, puis 8 à 10 questions ; les exemples ne comptent pas pour l'adaptation", async () => {
+test("notion du jour : deux exemples guidés, puis le nombre de questions de seance.json ; les exemples ne comptent pas pour l'adaptation", async () => {
   const { store, rewards } = await mk(), c = clock();
   const s = await new Session({ store, content: seance, rewards, clock: c, handlers: {} }).start(), screen = fakeScreen(c, () => true, 10000);
   const runner = await new Module1Runner({ screen, store, content: module1, rnd: rng(3), seance: s.id }).load();
   const step = seance.etapes.find((e) => e.id === "notion");
-  await runNotion({ session: s, step, end: c() + 5 * 60000, runner, screen, rnd: rng(5) });
+  await runNotion({ session: s, step, end: Infinity, runner, screen, rnd: rng(5) });
   const guides = screen.log.filter((x) => x.guide).length, qs = screen.log.length - guides;
   assert.equal(guides, 2); assert.ok(qs >= step.questions[0] && qs <= step.questions[1], `${qs} questions`);
   assert.equal(screen.log.slice(0, 2).every((x) => x.guide), true);

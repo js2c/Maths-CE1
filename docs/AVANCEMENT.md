@@ -10,7 +10,7 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 | --- | --- | --- |
 | 1 | Cartes et rythme : calendrier et quota, doublons, brillantes (20 % et effet), ouverture des zones, zone 2 (anecdotes et voix), étoiles dorées (4 semaines réussies), légendaires et coquillage doré, étoile arc-en-ciel de l'entraînement libre, surprise une séance sur cinq, ligne « Cartes » de l'espace parent ; simulation des cartes sur l'année | fait (branche `lot2-etape1`, https://github.com/js2c/Maths-CE1/pull/11) |
 | 2 | Séance et progression : durées et nombres de questions, défi record activable, places réservées et voie rapide des faits, enchaînement des niveaux, leçon au plus une fois par séance, point de départ du parent, tortue devant la pieuvre, pieuvre qui montre la cible ; option `--delai` de la recette ; sélecteur de difficulté (4 crans) | fait (branche `claude/prompt-lot2-section-9xloz0`, https://github.com/js2c/Maths-CE1/pull/13) |
-| 3 | Son, échantillons (`tools/son/`, `docs/son-echantillons/`) ; arrêt pour le choix du parent | fait (branche `claude/tender-volta-20rhlz`, https://github.com/js2c/Maths-CE1/pull/14) ; **en attente du choix du parent** |
+| 3 | Son, échantillons (`tools/son/`, `docs/son-echantillons/`) ; arrêt pour le choix du parent | fait (branche `claude/tender-volta-20rhlz`, https://github.com/js2c/Maths-CE1/pull/14) ; choix du parent reçu |
 | 4 | Son, intégration : bruitages, musique, mixage, réglages du parent | à faire |
 | 5 | Atelier : bernard-l'ermite, cadre de 10, maison des nombres, double + 1 | à faire |
 | 6 | Module 2 comme notion du jour : familles 3 à 7, formes à trou, leçons L4 à L6, alternance, module imposé, point de départ étendu | à faire |
@@ -29,9 +29,16 @@ Pour reprendre si la session s'est arrêtée : branche `claude/tender-volta-20rh
 - Tests `tests/unit/son.test.mjs` (déterminisme, durées, niveaux, crêtes, fin sans clic, tempo, gamme pentatonique, aucune mesure répétée, raccord de la boucle, échantillons à jour, poids, étalonnage de la sonie).
 - Documentation : `docs/ARCHITECTURE.md` (« Le son (lot 2) »).
 
-**Reste à faire :** le choix du parent (musique ; variantes a ou b de la bonne réponse et de l'erreur ; retouches éventuelles). Puis l'étape 4 (intégration), dans une nouvelle session, après fusion.
+**Choix du parent (27 septembre 2026)** : bruitages, les variantes « a » (`bruitage-bonne-a`, `bruitage-erreur-a`) ; musique, **les trois**, l'une tirée au hasard au début de chaque séance et gardée en boucle toute la séance (reprise après une pause comprise). Noté dans `docs/SPEC-LOT2.md`, section 6. À faire à l'étape 4 :
 
-**Où j'en suis :** étape terminée, arrêt pour le choix du parent.
+- intégrer `bruitage-*-a` (les variantes « b » restent dans les échantillons, hors de l'application) et les trois musiques ;
+- tirer la musique au début de la séance et l'enregistrer avec la séance (une séance reprise après la maison garde sa musique) ;
+- **poids** : les trois musiques font 3,6 Mo en Opus à 64 kbit/s, plus 0,08 Mo de bruitages, au-delà des 3 Mo visés par la SPEC. Deux possibilités, à trancher par le parent : garder 64 kbit/s (3,7 Mo en tout, soit environ 20 % de plus que la voix déjà en cache), ou encoder les musiques à 48 kbit/s (environ 2,7 Mo en tout, sous l'objectif ; pour une musique douce, la différence devrait être peu audible, à confirmer à l'écoute). Par défaut, l'étape 4 garderait 64 kbit/s ;
+- ne charger que la musique tirée (décodée, une boucle stéréo de 2 min 30 à 48 kHz occupe environ 58 Mo en mémoire ; les trois ensemble : 170 Mo).
+
+**Reste à faire :** l'étape 4 (intégration), dans une nouvelle session, après fusion.
+
+**Où j'en suis :** étape terminée, choix du parent reçu et noté.
 
 **Décisions prises :**
 

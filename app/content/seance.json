@@ -1,5 +1,5 @@
 {
-  "_doc": "Déroulé d'une séance (docs/SPEC.md, « Cadre d'une séance »). etapes : dans l'ordre ; actif false = prévue mais désactivée ; minutes : durée maximale de l'étape ; questions : [min, max] tiré au hasard ; guides : exemples guidés avant les questions de la notion du jour. dureeMaxMin : plafond de la séance ; on ne pose plus de nouvelle question quand il reste reserveRecompenseS secondes (le temps de la récompense). finirSurReussite.essaisMax : questions plus simples ajoutées au plus pour finir sur une réussite.",
+  "_doc": "Déroulé d'une séance (docs/SPEC.md, « Cadre d'une séance »). etapes : dans l'ordre ; actif false = prévue mais désactivée ; minutes : durée maximale de l'étape ; questions : [min, max] tiré au hasard ; guides : exemples guidés avant les questions de la notion du jour. dureeMaxMin : plafond de la séance ; on ne pose plus de nouvelle question quand il reste reserveRecompenseS secondes (le temps de la récompense). finirSurReussite.essaisMax : questions plus simples ajoutées au plus pour finir sur une réussite. vitesseAnimations : vitesse des animations des exemples guidés et des corrections (durée des sauts et de la nage de la tortue, pauses entre les étapes) ; 1 = la vitesse d'origine, 1.5 = une fois et demie plus rapide ; le débit de la voix n'en dépend pas, ni les leçons animées.",
   "dureeMaxMin": 12,
   "reserveRecompenseS": 60,
   "etapes": [
@@ -11,6 +11,7 @@
     { "id": "recompense" }
   ],
   "finirSurReussite": { "essaisMax": 2 },
+  "vitesseAnimations": 1.5,
   "etoiles": { "bonneReponse": 1, "erreurCorrigee": 1, "lecon": 3, "seanceTerminee": 10 },
   "noms": ["Pili", "Octavie", "Bulle", "Coralie", "Plouf", "Mimosa"]
 }

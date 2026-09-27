@@ -9,6 +9,8 @@
 //  - la même erreur deux fois dans la séance relance la leçon correspondante (E1 -> L1, E2 -> L2, E3 -> L3) ;
 //  - leçon d'entrée : L1 au niveau 1, L3 au niveau 4, L2 au niveau 5, la première fois ;
 //  - « je ne sais pas » : une erreur de code NSP (elle compte pour l'adaptation et la question revient) ;
+//  - correction passée (bouton « passer ») : notée `correctionPassee`, rien d'autre ne change (pas
+//    d'étoile, la question revient comme après toute erreur) ;
 //    `libre` : entraînement libre (réponses marquées « libre », mêmes règles d'adaptation, pas d'étoiles).
 import { afterAnswer, afterSession, initialLevelState } from "../progress.js";
 import { toleranceFor } from "./generator.js";
@@ -50,7 +52,7 @@ export class Module1Runner {
     await this.store?.add("reponses", {
       t: Date.now(), seance: this.seance, module: 1, niveau: q.niveau, question: describe(q), forme: q.format, donnee: r.value, attendue: q.answer,
       juste: r.ok, tempsMs: r.ms, ecoutes: r.listens, aide: !!q.guide, erreur: r.code, revient: !!q.revient, guide: !!q.guide,
-      ...(q.passe ? { passe: true } : {}), ...(this.libre ? { libre: true } : {}),
+      ...(q.passe ? { passe: true } : {}), ...(r.correctionPassee ? { correctionPassee: true } : {}), ...(this.libre ? { libre: true } : {}),
     });
     // un exemple guidé (la méthode vient d'être montrée) : une étoile s'il est réussi, mais il ne compte
     // ni pour les règles d'adaptation, ni pour le taux de la séance, et ne revient pas

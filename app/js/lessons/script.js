@@ -1,6 +1,6 @@
 // LEÇONS ANIMÉES · LA PARTITION (fonctions pures, sans DOM : testées par tests/unit/lessons.test.mjs).
 // Une leçon (content/lecons.json) est une suite de phrases, chaque phrase une suite de temps
-// { dire, faire }. Pour que « phrase précédente » et « rejouer » retombent toujours sur la même image,
+// { dire, faire }. Pour que « rejouer » (et chaque début de phrase) retombe toujours sur la même image,
 // l'état de la scène au début de chaque phrase se calcule sans rien jouer : on part de la scène vide et
 // on applique, dans l'ordre, l'effet final de chaque action des phrases d'avant (`settle`). Le lecteur
 // (player.js) joue ensuite la phrase demandée avec ses animations, et finit sur ce même état.

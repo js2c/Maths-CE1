@@ -203,16 +203,7 @@ export const drawShell = (g: Gfx, cx: number, cy: number, k = 1) => g.group("pla
   contour(g, f, 3.6 * k, 420);
 });
 export const drawShellKey = (g: Gfx, cx: number, cy: number) => { drawAnswerBubble(g, cx, cy, 12, 52); drawShell(g, cx, cy - 2, 1); };
-// les boutons des leçons animées : « phrase précédente » (une flèche jaune qui revient en arrière,
-// butée comprise, comme sur un lecteur) et « rejouer » (une flèche corail qui fait le tour)
-export const drawBackKey = (g: Gfx, cx: number, cy: number) => {
-  drawAnswerBubble(g, cx, cy, 13, 52);
-  g.group("plain", () => {
-    const bar: P[] = [[cx - 24, cy - 19], [cx - 15, cy - 19], [cx - 15, cy + 19], [cx - 24, cy + 19]];
-    const tri: P[] = [[cx + 23, cy - 22], [cx + 23, cy + 22], [cx - 12, cy]];
-    [bar, tri].forEach((s, k) => { fillShape(g, shift(s, 3, 4), "#0a3f49", 0.25); cel(g, s, "#ffd84a", "#e08d1c", 3); contour(g, s, 3.4, 430 + k); });
-  });
-};
+// le bouton « rejouer » des leçons animées : une flèche corail qui fait le tour (« passer » : sea/ui.ts)
 export const drawReplayKey = (g: Gfx, cx: number, cy: number) => {
   drawAnswerBubble(g, cx, cy, 14, 52);
   g.group("plain", () => {

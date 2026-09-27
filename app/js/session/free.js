@@ -80,7 +80,7 @@ export class FreeTraining {
       } }));
       const id = await new Promise((res) => els.forEach((e, i) => onTap(e, () => { pop(e); res(seen[i]); })));
       els.forEach((e) => e.remove());
-      const r = await app.lessons.play(id, { skippable: true });
+      const r = await app.lessons.play(id);
       await this.seanceId(); (this.rec.lecons ??= []).push({ id, raison: "libre", ...r }); await this.store.put("seances", this.rec);
     }
   }

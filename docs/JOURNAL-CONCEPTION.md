@@ -41,6 +41,8 @@ Mémoire de la conversation de conception (claude.ai, 26 et 27 septembre 2026, m
 | Son, choix du parent (27 septembre) | Bruitages variante « a » ; les **trois** musiques (harpe, marimba, cloches), une tirée au hasard au début de chaque séance et gardée toute la séance ; débit par défaut 64 kbit/s (3,7 Mo) sauf décision contraire du parent | Écoute des échantillons de l'étape 3 |
 | Recettes (27 septembre, soir) | Pour économiser l'usage : Claude Code fait une recette allégée à chaque étape et une recette complète en fin d'enchaînement ; la conversation de conception ne fait de recette que sur demande, ciblée (historique réel de l'enfant, plusieurs soirs, espace parent contre la vérité) ; étapes 4 à 6 enchaînées sur une seule branche | Forfait Pro du parent |
 | Formulations | Formes à trou : « 3 plus combien, ça fait 7 ? », « Combien plus 4, ça fait 6 ? » ; E5 au singulier (« 1 dizaine ») | Oral naturel pour un enfant de 7 ans |
+| Brillantes (27 septembre, décision du parent) | 20 % de chances pour une carte nouvelle, 5 % pour un doublon ; **suppression de la règle « le 3e doublon rend la carte brillante »** ; réglages séparés dans `cartes.json` (`brillanteNouvelle`, `brillanteDoublon`) ; les cartes déjà brillantes le restent. Appliqué au début de l'étape 7 | À 5 séances par semaine, presque toutes les cartes devenaient brillantes avant l'été ; la brillante doit rester une trouvaille |
+| Cran « plus facile » (27 septembre, décision du parent) | Moteur inchangé : une réussite au cran « plus facile » ne compte toujours pas pour la montée du niveau conseillé. Parade : le réglage existant de l'espace parent (interdire « plus facile »), expliqué dans `docs/GUIDE-PARENT.md` | Garder « plus facile » comme un repos, pas comme un moyen d'avancer ; le parent intervient s'il devient systématique |
 
 ## État au 27 septembre 2026, 17 h
 
@@ -56,15 +58,15 @@ Mémoire de la conversation de conception (claude.ai, 26 et 27 septembre 2026, m
 
 ## Prochaines étapes
 
-1. Lancer les étapes 4 à 6 enchaînées ; à la fin, recette ciblée en conception si le parent la demande, fusion, essai sur la tablette.
-2. Puis étapes 7 et 8 (enchaînables de la même façon), puis 9 (bilan).
+1. Étapes 4 à 6 faites et fusionnées (PR #16).
+2. Étapes 7 à 9 enchaînées sur une seule branche (prompt « Enchaîner plusieurs étapes », N = 7, M = 9), une recette complète à la fin.
 3. **Contenu des cartes** : illustrations et anecdotes du grand large (zone 3) **avant début février**, des abysses (zone 4) **avant fin avril** ; les descriptions `[CREATURE]` sont à rédiger en conception le moment venu (même méthode que la zone 2, voir « Prompts de référence » ci-dessous).
-4. Décisions à prendre avant l'étape 9 : règle des brillantes ; comportement du cran « plus facile » (voir points ouverts).
+4. ~~Décisions à prendre avant l'étape 9~~ : prises le 27 septembre (brillantes : 20 % / 5 %, sans règle du 3e doublon ; cran « plus facile » : moteur inchangé, parade dans l'espace parent).
 
 ## Points ouverts
 
-- **Brillantes trop nombreuses** : à 5 séances par semaine, presque toutes les cartes deviennent brillantes avant l'été ; au cran « très dur » toujours, 40 sur 60 à 2 séances par semaine. Piste : 20 % pour une carte nouvelle, 5 % pour un doublon, suppression de la règle du 3e doublon ; ou remplacer la brillante par une carte animée (voir ci-dessous).
-- **Cran « plus facile » toujours** (simulation de l'étape 2) : l'enfant reste au niveau 2 de la ligne graduée toute l'année et ne gagne que 30 cartes (moitié d'étoiles, pas d'étoile arc-en-ciel). Parades : interdire « plus facile » dans l'espace parent (déjà possible), ou faire compter une réussite au cran « plus facile » pour la montée du conseillé.
+- ~~Brillantes trop nombreuses~~ : **tranché le 27 septembre** (20 % pour une carte nouvelle, 5 % pour un doublon, plus de règle du 3e doublon ; voir « Décisions prises »).
+- ~~Cran « plus facile » toujours~~ : **tranché le 27 septembre** (moteur inchangé ; parade : interdire « plus facile » dans l'espace parent, expliqué dans `docs/GUIDE-PARENT.md`).
 - **Cartes animées (idée du parent, 27 septembre)** : remplacer la version brillante par une courte vidéo en boucle (6 s). Avis de conception : réalisable ; WebM (VP9) ou MP4 (H.264) sans son, 3:4 (720 × 960 ou 600 × 800), 24 images/s, environ 0,3 à 0,8 Mo par carte ; image fixe gardée comme affiche et pour l'album ; une seule vidéo jouée à la fois ; téléchargement à la demande plutôt que tout en cache hors ligne. Les vidéos générées en 9:16 se recadrent en 3:4 en gardant toute la largeur et 75 % de la hauteur (sujet centré, rien d'important dans les 12,5 % du haut et du bas). Non décidé, non spécifié.
 - **Débit des musiques** : 64 kbit/s par défaut (3,7 Mo) ou 48 kbit/s (2,7 Mo, sous l'objectif de 3 Mo) : à trancher par le parent à l'écoute, sinon 64.
 - **Longueur réelle de la séance avec l'enfant** : environ 40 questions de ligne graduée à la première séance ; à observer sur la tablette.

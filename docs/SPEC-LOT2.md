@@ -53,7 +53,8 @@ Juste après l'accueil, avant l'échauffement, l'enfant voit un **curseur à 4 c
 - **Écran** : sans texte à lire. Quatre bulles alignées ou un curseur à glisser ; chaque cran montre des vagues de plus en plus grosses et ses étoiles (une demi-étoile, une étoile, une étoile et demie, deux étoiles). Le cran conseillé est entouré d'une lueur. La voix dit : « Choisis ton niveau. Plus c'est dur, plus tu gagnes d'étoiles ! » ; toucher un cran le fait dire (« Très dur : deux fois plus d'étoiles ! »). Une grosse coche valide ; sans toucher pendant 15 secondes, la séance commence sur le cran affiché. Dessins dans l'atelier, style A.
 - **Entraînement libre** : même sélecteur, sans étoiles (donc sans multiplicateur).
 - **Espace parent** : le cran choisi à chaque séance (historique, export CSV) ; réglage des crans autorisés (par exemple interdire « plus facile », ou ne pas aller au-delà de « plus dur »).
-- **Effet sur les cartes** : davantage d'étoiles ne donne pas plus de cartes nouvelles (le quota prime) ; cela donne plus de doublons, donc plus de chances de brillantes. À surveiller avec le point ouvert sur les brillantes (voir section 5).
+- **Effet sur les cartes** : davantage d'étoiles ne donne pas plus de cartes nouvelles (le quota prime) ; cela donne plus de doublons, donc un peu plus de brillantes (5 % par doublon depuis la décision du 27 septembre, voir section 5).
+- **Cran « plus facile » choisi à chaque séance (point tranché le 27 septembre 2026)** : le moteur ne change pas ; une réussite au cran « plus facile » ne compte toujours pas pour la montée du niveau conseillé. La parade est le réglage existant de l'espace parent (interdire « plus facile »), expliqué dans `docs/GUIDE-PARENT.md` : à utiliser si l'enfant choisit « plus facile » presque à chaque séance et ne monte plus de niveau.
 - **Recette** : deux profils de plus dans la simulation, une enfant qui choisit toujours « très dur » et une qui choisit toujours « plus facile » : taux de réussite, « je ne sais pas », descentes automatiques de cran, étoiles par séance.
 
 ## 3. Module 2 complet
@@ -136,11 +137,11 @@ Source : calendrier scolaire officiel, education.gouv.fr (arrêté publié en oc
 
 ### Cartes brillantes (décision du parent)
 
-- **Toute carte gagnée, nouvelle ou doublon, a 20 % de chances d'être brillante** (réglage `brillanteHasard` : 0,2 dans `cartes.json`). La règle actuelle reste en plus : le 3e doublon d'une carte la rend brillante.
+- **Une carte nouvelle a 20 % de chances d'être brillante, un doublon 5 %** (décision du parent du 27 septembre 2026 ; réglages `brillanteNouvelle` : 0,2 et `brillanteDoublon` : 0,05 dans `cartes.json`). **La règle « le 3e doublon rend la carte brillante » est supprimée.** Une carte déjà brillante sur la tablette le reste.
 - **Effet** : un reflet irisé qui balaie la carte en diagonale toutes les 3 à 4 secondes, et quelques étincelles sur le cadre ; en grand comme dans l'album (les vignettes brillantes scintillent). Dessiné dans l'atelier, léger à l'affichage (pas de redessin de l'illustration).
 - **Annonce** : quand la carte sort brillante, la voix dit « Oh ! Elle est brillante ! » (phrase nouvelle, voix à fabriquer) et l'effet démarre au retournement.
 - But : une collection de brillantes qui grandit toute l'année. Pas de compteur chiffré pour l'enfant.
-- **Point ouvert (recette de l'étape 1)** : à 5 séances par semaine, 56 à 57 cartes sur 60 deviennent brillantes avant l'été (les doublons au-delà du quota tirent eux aussi 20 %, et le 3e doublon rend brillante) ; à 2 séances par semaine, 13 à 22. Le sélecteur de difficulté augmentera encore les doublons. Décision du parent à prendre avant l'étape 9 (par exemple : 20 % pour une carte nouvelle, 5 % pour un doublon, et suppression de la règle du 3e doublon). Ne rien changer d'ici là.
+- **Point tranché le 27 septembre 2026** (il était ouvert depuis la recette de l'étape 1) : avec 20 % pour toute carte et la règle du 3e doublon, 56 à 57 cartes sur 60 devenaient brillantes avant l'été à 5 séances par semaine, 13 à 42 à 2 séances selon le profil (le cran « très dur » augmentant les doublons). Décision du parent : 20 % pour une carte nouvelle, 5 % pour un doublon, suppression de la règle du 3e doublon (appliquée au début de l'étape 7 ; le nombre de brillantes en juin par profil est donné à la recette de l'étape 9).
 
 ### Zones
 
@@ -220,7 +221,7 @@ Chaque étape se termine par une recette, lancée par Claude Code et résumée d
 | Faits nouveaux (profil « reel », 2 séances par semaine) | au moins 2 par séance tant qu'il en reste à introduire, autant que la boîte 1 le permet |
 | Familles 1 et 2 (profil « sait ») | les 33 faits vus avant la 7e séance |
 | Cartes (2 séances par semaine, zones 3 et 4 considérées prêtes) | 60 cartes, légendaires comprises, avant le 25 juin 2027 ; jamais plus de cartes nouvelles que le quota |
-| Tirage des brillantes | 20 % des tirages (graine fixe, 1 000 tirages, écart de moins de 3 points), hors règle du 3e doublon |
+| Tirage des brillantes | 20 % des tirages pour une carte nouvelle, 5 % pour un doublon (graine fixe, 1 000 tirages, écart de moins de 3 points) |
 | Alternance | jamais deux fois de suite le même module, sauf module imposé ou autre module sans rien à proposer |
 | Erreurs dans la page | aucune |
 

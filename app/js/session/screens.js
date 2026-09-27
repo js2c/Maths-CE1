@@ -193,7 +193,7 @@ export async function zoneCeremony(app, { zone, hud }) {
 // anecdote et où elle vit (le récif si elle y est dessinée, sinon l'album) ; pour un doublon, « encore … »
 export function cardSpeech(text, got, inReef) {
   const nom = got.carte.nomLu ?? got.carte.nom, d = text.data;
-  const shiny = got.parTirage ? d.carteBrillanteTirage : got.devientBrillante ? d.carteBrillante : null;
+  const shiny = got.devientBrillante ? d.carteBrillanteTirage : null;
   if (!got.nouvelle) return [fill(d.carteDoublon, { nom }), shiny].filter(Boolean).join(" ");
   return [got.carte.rarete === "legendaire" ? d.carteLegendaire : null, fill(d.carteNouvelle, { nom }), shiny, got.carte.anecdote, inReef ? d.carteRecif : d.carteAlbum].filter(Boolean).join(" ");
 }

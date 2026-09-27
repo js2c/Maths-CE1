@@ -6,7 +6,7 @@ Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail 
 
 Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `docs/PROMPT-LOT2.md`. Une étape = une session = une demande de fusion vers `main`.
 
-**Où en est-on (27 septembre 2026, 17 h, noté par la conversation de conception)** : étapes 1 à 3 faites et fusionnées (PR #11, #13, #14). **Étapes 4 à 6 à faire ensemble**, sur une seule branche, avec une recette allégée à chaque étape et une recette complète à la fin (section « Prompt pour enchaîner plusieurs étapes » de `docs/PROMPT-LOT2.md`). Décisions du parent à reprendre : choix des sons (rubrique « Reprise de l'étape 3 » : bruitages « a », les trois musiques tirées au hasard ; débit 64 kbit/s par défaut) ; points ouverts dans `docs/JOURNAL-CONCEPTION.md` (brillantes, cran « plus facile »).
+**Où en est-on (27 septembre 2026)** : étapes 1 à 6 faites et fusionnées (PR #11, #13, #14, #16). **Étapes 7 à 9 en cours**, enchaînées sur une seule branche (rubrique « Reprise des étapes 7 à 9 » ci-dessous). Décisions du parent du 27 septembre : brillantes à 20 % pour une carte nouvelle et 5 % pour un doublon, sans règle du 3e doublon ; cran « plus facile » : moteur inchangé, parade dans l'espace parent (`docs/GUIDE-PARENT.md`).
 
 | Étape | Contenu | État |
 | --- | --- | --- |
@@ -16,9 +16,23 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 | 4 | Son, intégration : bruitages, musique, mixage, réglages du parent | fait (branche `claude/loving-tesla-rtv3o5`, https://github.com/js2c/Maths-CE1/pull/16) |
 | 5 | Atelier : bernard-l'ermite, cadre de 10, maison des nombres, double + 1 | fait (même branche, même demande de fusion) |
 | 6 | Module 2 comme notion du jour : familles 3 à 7, formes à trou, leçons L4 à L6, alternance, module imposé, point de départ étendu | fait (même branche, même demande de fusion) |
-| 7 | Défi record, grille des 66 additions, progression du module 2 dans l'espace parent | à faire |
-| 8 | Nombres jusqu'à 1 000 (`docs/SPEC-COMPLEMENTS.md`, partie A) | à faire |
-| 9 | Bilan : `docs/BILAN-LOT2.md`, guide du parent, recette complète sur l'année | à faire |
+| 7 | Défi record, grille des 66 additions, progression du module 2 dans l'espace parent | en cours (branche `claude/youthful-tesla-rtkgta`) |
+| 8 | Nombres jusqu'à 1 000 (`docs/SPEC-COMPLEMENTS.md`, partie A) | à faire (même branche) |
+| 9 | Bilan : `docs/BILAN-LOT2.md`, guide du parent, recette complète sur l'année | à faire (même branche) |
+
+### Reprise des étapes 7 à 9
+
+Pour reprendre si la session s'est arrêtée : branche `claude/youthful-tesla-rtkgta` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 2, étapes 7 à 9 (en cours) ».
+
+**Étape en cours :** 7.
+
+**Fait :**
+
+- Décisions du parent du 27 septembre reportées (SPEC-LOT2 section 5 et points ouverts, JOURNAL-CONCEPTION, GUIDE-PARENT). Brillantes : `cartes.json` (`brillanteNouvelle` 0,2, `brillanteDoublon` 0,05 ; `brillante` et `brillanteHasard` retirés), `rewards.js` (`shinyChance`, `addCard` sans règle du 3e doublon ; une carte déjà brillante le reste : aucun changement de schéma, donc pas de migration), phrase « Ta carte devient brillante ! » retirée (voix refabriquée). Tests `cartes.test.mjs`, `rewards.test.mjs`.
+
+**Reste :** étape 7 (défi record, grille des additions, progression du module 2), étape 8, étape 9, recette complète.
+
+**Décisions prises :** voir plus bas, étape par étape.
 
 ### Reprise des étapes 4 à 6
 

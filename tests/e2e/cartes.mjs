@@ -57,7 +57,7 @@ async function playToReward(page, { onCeremony, atShell, atCard } = {}) {
 // ---- 1. ouverture du récif de corail, cartes brillantes, album
 {
   const { context, page } = await fresh([owned(lagon), { id: "quota", date: Date.now() - 3600000, cartes: 15 }, { id: "etoiles", total: 60, cumul: 60, arcEnCiel: 1, dorees: 0, coquillages: 15 }], Q, 2);
-  await page.evaluate(() => { window.__app.rewards.c = { ...window.__app.rewards.c, brillanteHasard: 1 }; });
+  await page.evaluate(() => { window.__app.rewards.c = { ...window.__app.rewards.c, brillanteNouvelle: 1, brillanteDoublon: 1 }; });
   await playToReward(page, {
     onCeremony: async () => { await page.waitForTimeout(1000); await page.screenshot({ path: join(OUT, "1-zone-fermee.png") }); await page.waitForFunction(() => !document.querySelector(".card.zone-closed"), null, { timeout: 20000 }); await page.waitForTimeout(700); await page.screenshot({ path: join(OUT, "2-zone-ouverte.png") }); },
     atShell: async (n) => { if (n === 1) await page.screenshot({ path: join(OUT, "3-coquillage.png") }); },

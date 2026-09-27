@@ -6,6 +6,8 @@ Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail 
 
 Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `docs/PROMPT-LOT2.md`. Une étape = une session = une demande de fusion vers `main`.
 
+**Où en est-on (27 septembre 2026, 17 h, noté par la conversation de conception)** : étapes 1 à 3 faites et fusionnées (PR #11, #13, #14). **Étapes 4 à 6 à faire ensemble**, sur une seule branche, avec une recette allégée à chaque étape et une recette complète à la fin (section « Prompt pour enchaîner plusieurs étapes » de `docs/PROMPT-LOT2.md`). Décisions du parent à reprendre : choix des sons (rubrique « Reprise de l'étape 3 » : bruitages « a », les trois musiques tirées au hasard ; débit 64 kbit/s par défaut) ; points ouverts dans `docs/JOURNAL-CONCEPTION.md` (brillantes, cran « plus facile »).
+
 | Étape | Contenu | État |
 | --- | --- | --- |
 | 1 | Cartes et rythme : calendrier et quota, doublons, brillantes (20 % et effet), ouverture des zones, zone 2 (anecdotes et voix), étoiles dorées (4 semaines réussies), légendaires et coquillage doré, étoile arc-en-ciel de l'entraînement libre, surprise une séance sur cinq, ligne « Cartes » de l'espace parent ; simulation des cartes sur l'année | fait (branche `lot2-etape1`, https://github.com/js2c/Maths-CE1/pull/11) |

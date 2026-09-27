@@ -47,3 +47,24 @@ Méthode :
 ## Prompt de reprise (si la session d'une étape s'est arrêtée et n'est plus disponible ; remplacer N)
 
 Reprise de l'étape N du lot 2, interrompue. Récupère la branche de la demande de fusion en brouillon « Lot 2, étape N (en cours) » (branche `lot2-etapeN` ou celle indiquée dans la demande), lis la rubrique « Reprise de l'étape N » de docs/AVANCEMENT.md sur cette branche, relance les tests pour vérifier l'état, puis continue là où le travail s'est arrêté, sans refaire ce qui est fait, avec les mêmes règles (section « Prompt » de docs/PROMPT-LOT2.md : commits et poussées réguliers, rubrique de reprise à jour, recette avant de finir).
+
+---
+
+## Prompt pour enchaîner plusieurs étapes (de N à M) avec une seule recette à la fin
+
+Décision du parent (27 septembre 2026, soir) : pour économiser l'usage, les étapes 4, 5 et 6 s'enchaînent sur une même branche, avec une seule demande de fusion et une recette complète à la fin. À coller dans une nouvelle session (réflexion « élevé »), en remplaçant N et M :
+
+Lis CLAUDE.md, docs/SPEC.md, docs/SPEC-LOT2.md (elle prévaut en cas de contradiction), docs/ARCHITECTURE.md et docs/AVANCEMENT.md (dont les rubriques de reprise des étapes déjà faites : elles contiennent des décisions du parent, par exemple le choix des sons). Réalise **les étapes N à M du lot 2, dans l'ordre, sans t'arrêter entre elles**, chacune telle que décrite dans le tableau de docs/PROMPT-LOT2.md et détaillée dans docs/SPEC-LOT2.md.
+
+Méthode :
+- Pars de `origin/main` à jour. Dès le début, crée la branche `lot2-etapes-N-M` (ou garde le nom imposé par l'environnement), pousse-la et ouvre une demande de fusion en BROUILLON vers `main` intitulée « Lot 2, étapes N à M (en cours) ».
+- Tiens à jour dans docs/AVANCEMENT.md une rubrique « Reprise des étapes N à M » : étape en cours, ce qui est fait, ce qui reste, où tu en es exactement, décisions prises. Après chaque sous-partie terminée, et au moins toutes les 30 à 45 minutes, fais un commit « Étape k (en cours) : … » et pousse-le.
+- **Pour chaque étape** : toutes les règles de la section « Prompt » ci-dessus (réglages dans app/content/, voix des phrases nouvelles fabriquée, tests unitaires des règles nouvelles), puis une **recette allégée** (tests unitaires, `node tests/sim-seances.mjs`, une capture de chaque écran nouveau ou modifié, regardée et corrigée), mise à jour de docs/AVANCEMENT.md, commit « Étape k : … » poussé ; passe ensuite à l'étape suivante sans attendre.
+- **Arrêt propre si la session devient longue** : si, à la fin d'une étape, le contexte dépasse environ la moitié, ne commence pas la suivante : pousse tout, mets à jour la rubrique de reprise (« reprendre à l'étape k+1 ») et arrête-toi en le disant. Le parent relancera avec le prompt de reprise ci-dessous.
+- **Décisions du parent qui manquent** : si une étape bute sur une question qui n'est pas tranchée par la spécification ni par les rubriques de reprise, prends le choix par défaut indiqué (s'il y en a un), note la question dans la demande de fusion et dans docs/AVANCEMENT.md, et continue ; s'il n'y a pas de choix par défaut raisonnable, arrête-toi et pose la question.
+- **Recette complète à la fin des M étapes** (docs/SPEC-LOT2.md, section 8) : `node tests/sim-seances.mjs` (tous les profils, 2 et 5 séances par semaine, sur l'année), `node tests/e2e/recette.mjs --delai 4.5`, `node tests/e2e/recette-durees.mjs` avec et sans `--passer`, tous les parcours Playwright (un par un s'ils échouent sous la charge), captures regardées. Tableau des critères avec les mesures, une ligne par critère, étape par étape si besoin.
+- À la fin : complète la description de la demande de fusion (pour chaque étape : ce qui change pour l'enfant, pour le parent ; puis le tableau de recette, les questions restées ouvertes, ce qui reste à vérifier sur la tablette), retire « (en cours) » du titre, sors-la du mode brouillon, **puis arrête-toi.**
+
+### Prompt de reprise (enchaînement interrompu)
+
+Reprise des étapes N à M du lot 2, interrompues. Récupère la branche de la demande de fusion en brouillon « Lot 2, étapes N à M (en cours) », lis la rubrique « Reprise des étapes N à M » de docs/AVANCEMENT.md sur cette branche, relance les tests pour vérifier l'état, puis continue là où le travail s'est arrêté, sans refaire ce qui est fait, avec les mêmes règles (section « Prompt pour enchaîner plusieurs étapes » de docs/PROMPT-LOT2.md).

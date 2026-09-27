@@ -1,6 +1,8 @@
 # Journal de conception
 
-Mémoire de la conversation de conception (claude.ai, 26 et 27 septembre 2026), pour la reprendre dans une nouvelle conversation sans rien perdre. À lire en premier par toute nouvelle conversation de conception, avec `docs/SPEC.md` et `docs/AVANCEMENT.md`.
+Mémoire de la conversation de conception (claude.ai, 26 et 27 septembre 2026, mise à jour le 27 septembre à 17 h), pour la reprendre dans une nouvelle conversation sans rien perdre. À lire en premier par toute nouvelle conversation de conception.
+
+**Pour reprendre dans une nouvelle conversation** : ajouter le dépôt `js2c/Maths-CE1` à la session, puis lire, dans cet ordre, ce journal, `docs/SPEC-LOT2.md` (prévaut), `docs/SPEC.md`, `docs/AVANCEMENT.md` (tableau du lot 2 et rubriques « Reprise… » : décisions du parent prises en cours d'étape) et `docs/PROMPT-LOT2.md`. Outils de recette : `tests/sim-seances.mjs` (simulation par profil d'enfant), `tests/e2e/recette.mjs --delai 4.5` (séance jouée à vitesse réelle), `tests/e2e/recette-durees.mjs [--passer]` (attentes). Le parent est sous forfait Claude Pro : économiser l'usage (pas de recette sans demande, recettes ciblées, pas de relecteur indépendant sauf enjeu important).
 
 ## Qui fait quoi
 
@@ -36,27 +38,38 @@ Mémoire de la conversation de conception (claude.ai, 26 et 27 septembre 2026), 
 | Lot 2 (27 septembre) | Option complète (bernard-l'ermite animé) ; nombres jusqu'à 1 000 inclus ; zone 2 avancée (album seulement) ; correctifs « passer » partout (PR #9, fusionnée) | Décisions du parent |
 | Sélecteur de difficulté (27 septembre) | Curseur à 4 crans en début de séance, placé sur « conseillé » : plus facile × 0,5, conseillé × 1, plus dur × 1,5, très dur × 2 (étoiles des bonnes réponses) ; vaut dès l'échauffement ; échouer au-dessus ne fait jamais baisser le niveau | Éviter les échauffements triviaux, inciter l'enfant à choisir plus dur |
 | Méthode (27 septembre) | Une demande de fusion par étape, fusionnée dans `main` avant l'étape suivante ; reprise sans perte (branche poussée dès le début, brouillon, commits réguliers, rubrique de reprise) | Tester chaque étape sur la tablette ; ne rien perdre si le quota d'utilisation est atteint |
+| Son, choix du parent (27 septembre) | Bruitages variante « a » ; les **trois** musiques (harpe, marimba, cloches), une tirée au hasard au début de chaque séance et gardée toute la séance ; débit par défaut 64 kbit/s (3,7 Mo) sauf décision contraire du parent | Écoute des échantillons de l'étape 3 |
+| Recettes (27 septembre, soir) | Pour économiser l'usage : Claude Code fait une recette allégée à chaque étape et une recette complète en fin d'enchaînement ; la conversation de conception ne fait de recette que sur demande, ciblée (historique réel de l'enfant, plusieurs soirs, espace parent contre la vérité) ; étapes 4 à 6 enchaînées sur une seule branche | Forfait Pro du parent |
 | Formulations | Formes à trou : « 3 plus combien, ça fait 7 ? », « Combien plus 4, ça fait 6 ? » ; E5 au singulier (« 1 dizaine ») | Oral naturel pour un enfant de 7 ans |
 
-## État au 27 septembre 2026, 10 h
+## État au 27 septembre 2026, 17 h
 
-- **Lot 1** et **lot 1 bis** : terminés, en ligne (https://js2c.github.io/Maths-CE1/). Correctifs du 27 septembre (« passer » dès la première vue sur les leçons, exemples guidés et corrections ; frise redessinée ; vitesse 1,5) : PR #9, fusionnée, recette faite (attente après une correction passée : environ 1 s).
-- **Lot 2** : spécification `docs/SPEC-LOT2.md`, prompt `docs/PROMPT-LOT2.md` (9 étapes, 100 à 150 $ estimés avec le sélecteur de difficulté). Étape 1 (cartes et rythme) terminée : PR #11. Les 15 illustrations du récif de corail sont dans `app/assets/cards/` ; leurs anecdotes et leur voix sont intégrées à l'étape 1.
-- **Lot « Compléments »** : la partie A (nombres jusqu'à 1 000) passe dans le lot 2 ; B et C restent à faire.
+- **Lot 1** et **lot 1 bis** : terminés, en ligne (https://js2c.github.io/Maths-CE1/), correctifs « passer » (PR #9).
+- **Lot 2** (`docs/SPEC-LOT2.md`, `docs/PROMPT-LOT2.md`, 9 étapes, 100 à 150 $ estimés) :
+  - étape 1, cartes et rythme : faite, fusionnée (PR #11) ;
+  - étape 2, séance et progression, sélecteur de difficulté : faite, fusionnée (PR #13) ; première séance mesurée à 8 min 56 s (36 à 44 questions de notion) ;
+  - étape 3, échantillons de son : faite, fusionnée (PR #14), choix du parent reçu ;
+  - **étapes 4 (son, intégration), 5 (atelier : bernard-l'ermite, aides visuelles) et 6 (module 2 en notion du jour) : à lancer ensemble**, prompt « Enchaîner plusieurs étapes » de `docs/PROMPT-LOT2.md` avec N = 4, M = 6 ;
+  - étapes 7 (défi record, grille parent), 8 (nombres jusqu'à 1 000), 9 (bilan) : à faire.
+- **Lot « Compléments »** : la partie A (nombres jusqu'à 1 000) est dans le lot 2 (étape 8) ; B et C restent à faire.
+- La conversation de conception n'a pas fait de recette sur les étapes 1 à 3 (choix du parent) ; Claude Code a fait les siennes (tableaux dans `docs/AVANCEMENT.md`).
 
 ## Prochaines étapes
 
-1. Fusionner la PR de conception du lot 2, puis lancer l'étape 1 (cartes et rythme), puis l'étape 2 (séance et progression) : ce sont les plus urgentes.
-2. Après chaque étape : recette en conception sur la branche, fusion, essai sur la tablette.
-3. Étape 3 : écouter les échantillons de son et choisir.
-4. En parallèle : illustrations et anecdotes des zones 3 (grand large, attendu début février) et 4 (abysses, attendu fin avril) ; prompts `[CREATURE]` à rédiger en conception le moment venu.
+1. Lancer les étapes 4 à 6 enchaînées ; à la fin, recette ciblée en conception si le parent la demande, fusion, essai sur la tablette.
+2. Puis étapes 7 et 8 (enchaînables de la même façon), puis 9 (bilan).
+3. **Contenu des cartes** : illustrations et anecdotes du grand large (zone 3) **avant début février**, des abysses (zone 4) **avant fin avril** ; les descriptions `[CREATURE]` sont à rédiger en conception le moment venu (même méthode que la zone 2, voir « Prompts de référence » ci-dessous).
+4. Décisions à prendre avant l'étape 9 : règle des brillantes ; comportement du cran « plus facile » (voir points ouverts).
 
 ## Points ouverts
 
-- Modèle de la tablette inconnu ; mémoire des images mesurée à 150 à 195 Mo (à vérifier sur la vraie tablette).
+- **Brillantes trop nombreuses** : à 5 séances par semaine, presque toutes les cartes deviennent brillantes avant l'été ; au cran « très dur » toujours, 40 sur 60 à 2 séances par semaine. Piste : 20 % pour une carte nouvelle, 5 % pour un doublon, suppression de la règle du 3e doublon ; ou remplacer la brillante par une carte animée (voir ci-dessous).
+- **Cran « plus facile » toujours** (simulation de l'étape 2) : l'enfant reste au niveau 2 de la ligne graduée toute l'année et ne gagne que 30 cartes (moitié d'étoiles, pas d'étoile arc-en-ciel). Parades : interdire « plus facile » dans l'espace parent (déjà possible), ou faire compter une réussite au cran « plus facile » pour la montée du conseillé.
+- **Cartes animées (idée du parent, 27 septembre)** : remplacer la version brillante par une courte vidéo en boucle (6 s). Avis de conception : réalisable ; WebM (VP9) ou MP4 (H.264) sans son, 3:4 (720 × 960 ou 600 × 800), 24 images/s, environ 0,3 à 0,8 Mo par carte ; image fixe gardée comme affiche et pour l'album ; une seule vidéo jouée à la fois ; téléchargement à la demande plutôt que tout en cache hors ligne. Les vidéos générées en 9:16 se recadrent en 3:4 en gardant toute la largeur et 75 % de la hauteur (sujet centré, rien d'important dans les 12,5 % du haut et du bas). Non décidé, non spécifié.
+- **Débit des musiques** : 64 kbit/s par défaut (3,7 Mo) ou 48 kbit/s (2,7 Mo, sous l'objectif de 3 Mo) : à trancher par le parent à l'écoute, sinon 64.
+- **Longueur réelle de la séance avec l'enfant** : environ 40 questions de ligne graduée à la première séance ; à observer sur la tablette.
+- Modèle de la tablette inconnu ; mémoire des images mesurée à 175 Mo (à vérifier sur la vraie tablette).
 - Progression de la classe (centaines, heure, monnaie) à demander à l'enseignante.
-- Confort de la vitesse 1,5 des animations et usage réel de « passer » (visible dans l'historique du parent) : à observer sur quelques soirs.
-- Cartes brillantes : à 5 séances par semaine, presque toutes les cartes deviennent brillantes avant l'été (recette de l'étape 1) ; règle à revoir avant l'étape 9.
 - Calendrier scolaire 2027-2028 à ajouter dans `app/content/calendrier.json` avant la rentrée 2027.
 - Récif des zones 3 et 4 : question d'échelle pour les très grands animaux (baleines), à traiter au lot 4.
 

@@ -425,3 +425,5 @@ Retours du parent après le premier essai du lot 1 (26 septembre 2026).
 | 3 | Module 3 complet, leçons L7 à L9, dauphin |
 | 4 | Module 4, bilans périodiques, zones 2 à 4 du récif, 60 cartes, crabe |
 | 5 (optionnel) | Synchronisation Google Sheet |
+
+**État au 27 septembre 2026, 17 h** : lots 1 et 1 bis en ligne ; lot 2, étapes 1 à 3 faites (cartes et rythme, séance et sélecteur de difficulté, échantillons de son), étapes 4 à 6 lancées ensemble. Détail : `docs/AVANCEMENT.md` ; décisions : `docs/JOURNAL-CONCEPTION.md`.

@@ -1,8 +1,8 @@
 // RECETTE « avec les yeux de l'enfant » : une première séance complète, voix à vitesse réelle, jouée comme
-// une enfant qui répond 1,5 s après pouvoir répondre. Chronologie : ce que l'enfant peut faire à chaque
+// une enfant qui répond --delai secondes (1,5 par défaut) après pouvoir répondre. Chronologie : ce que l'enfant peut faire à chaque
 // instant (répondre, toucher une bulle, rien), captures à chaque changement d'écran, inventaire des
 // éléments visibles qui ressemblent à des boutons et de leur réaction au toucher.
-//   node tests/e2e/recette.mjs [--out dossier] [--seances n]
+//   node tests/e2e/recette.mjs [--out dossier] [--delai secondes : temps de réponse de l'enfant, 1,5 par défaut]
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -10,6 +10,7 @@ import { serve } from "../serve.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const OUT = resolve(opt("--out", "tests/e2e/out/recette")); mkdirSync(OUT, { recursive: true });
+const DELAI = Math.round(Number(opt("--delai", "1.5")) * 1000); // temps de réponse de l'enfant
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
 const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true });
@@ -46,7 +47,7 @@ while (Date.now() < deadline) {
   if (sig !== last) { note(`écran : question=${st.q ?? "-"} ; boutons=${st.btns.filter((b) => !b.startsWith("key")).join(",")} ; affichages=${st.huds.join(",")}${st.voix ? " ; voix" : ""}`); last = sig; }
   if (st.inputFacts || st.inputLine) {
     waits.push({ etape: st.etape, attenteS: (Date.now() - waitStart) / 1000, q: st.q });
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(DELAI);
     if (st.inputFacts) {
       nf++; const q = await page.evaluate(() => { const f = window.__app.facts.q; return f.a + f.b; });
       if (nf === 3) { note(`additions : « je ne sais pas » (${st.q})`); await tapSel(".facts .nsp, .nsp"); } else await typeIn(nf === 5 ? q + 1 : q);
@@ -70,6 +71,7 @@ while (Date.now() < deadline) {
 }
 // inventaire après la séance : tout ce qui est visible et réagit ou non au toucher
 const fin = await state(); note(`fin : boutons ${fin.btns.join(", ")} ; décors ${fin.huds.join(", ")}`);
+note(`durée totale : ${s()} s`);
 writeFileSync(join(OUT, "chronologie.json"), JSON.stringify({ tl, waits, errors }, null, 1));
 console.log("erreurs console :", errors.length ? errors : "aucune");
 await browser.close(); srv.close();

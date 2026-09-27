@@ -17,7 +17,7 @@ Application d'entraînement aux mathématiques pour une élève de CE1, utilisé
 | `app/content/` | Tout le contenu éditable, en JSON, séparé du code : niveaux et paramètres de génération, textes lus (consignes, retours d'erreur, scripts des leçons), cartes et anecdotes, seuils et réglages. Un changement de contenu ne doit jamais demander de toucher au moteur. |
 | `art/` | L'**atelier graphique** : le moteur anidoodle (TypeScript, esbuild, Playwright) et les modules de dessin de l'application. Il ne tourne jamais sur la tablette ; il fabrique les images de `app/assets/art/`. |
 | `.claude/skills/anidoodle/` | La compétence anidoodle (copie figée, licence Apache 2.0, voir `VENDORED.txt`). La lire avant tout travail graphique. |
-| `docs/` | `SPEC.md` (contenu pédagogique), `maquettes/` (références visuelles validées). |
+| `docs/` | `SPEC.md` (contenu pédagogique), `SPEC-LOT2.md` (lot 2, prévaut en cas de contradiction), `maquettes/` (références visuelles validées). |
 | `tests/` | Tests unitaires (`node --test`) et parcours Playwright. |
 
 ## Direction graphique (validée)
@@ -62,6 +62,7 @@ Chromium est préinstallé dans l'environnement de Claude Code (ne pas lancer `p
 ## Méthode de travail
 
 - Avancer par étapes courtes et vérifiables. Après chaque étape : lancer les tests, faire des captures d'écran avec Playwright, les regarder, corriger ce qui est laid ou illisible avant de continuer.
+- **Recette à chaque étape** (depuis le lot 2) : simulation de séances par profil d'enfant et séance jouée à vitesse réelle (`tests/sim-seances.mjs`, `tests/e2e/recette.mjs`, `tests/e2e/recette-durees.mjs`), critères et mesures dans la demande de fusion ; voir `docs/SPEC-LOT2.md`, section 8.
 - Un commit par étape, message en français.
 - La qualité graphique est un critère de réussite : un écran fonctionnel mais pauvre n'est pas terminé.
 - Ne pas simplifier silencieusement le contenu de `docs/SPEC.md` ; signaler tout écart et sa raison.

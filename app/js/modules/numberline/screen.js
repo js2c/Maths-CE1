@@ -63,6 +63,14 @@ export class NumberLineScreen {
     this.nsp.style.visibility = "hidden";
     onTap(this.nsp, () => { if (this.locked) return; pop(this.nsp); this.answer(null, null, { nsp: true }); });
   }
+  // lot 2 (docs/SPEC-LOT2.md, section 4 : la tortue devant la pieuvre) : pendant un exemple guidé ou une
+  // correction, la pieuvre remonte un peu (comme pendant les leçons) pour dégager le début de la ligne ; la
+  // tortue, les arcs et les filets de bulles sont de toute façon dans des calques au-dessus d'elle
+  lift(up) {
+    const o = this.app.ocean, home = (this.octoHome ??= [...o.octoAt]), to = up ? [home[0] - 20, home[1] - 56] : home, from = [...o.octoAt], t0 = performance.now(), tok = (this.liftTok = (this.liftTok ?? 0) + 1);
+    const step = () => { if (tok !== this.liftTok) return; const u = Math.min(1, (performance.now() - t0) / 600), e = u * u * (3 - 2 * u); o.octoAt = [from[0] + (to[0] - from[0]) * e, from[1] + (to[1] - from[1]) * e]; if (u < 1) requestAnimationFrame(step); };
+    step();
+  }
   // la vitesse des animations des exemples guidés et des corrections ; une pause entre deux étapes
   // (vitesse 1 pour la correction « lente » qui remplace une leçon déjà vue dans la séance, runner.js)
   get pace() { return this.q?.lent ? 1 : this.app.vitesse ?? 1; }
@@ -132,9 +140,9 @@ export class NumberLineScreen {
     const { voice } = this.app, tok = (this.demoTok = (this.demoTok ?? 0) + 1);
     let btn = null;
     const skipP = new Promise((res) => { btn = skipKey(this.app, () => res(true), "passer l'exemple"); });
-    this.turtle.speed = this.pace;
+    this.turtle.speed = this.pace; this.lift(true);
     const skipped = await Promise.race([this.demo(q, () => tok !== this.demoTok).then(() => false), skipP]);
-    this.turtle.speed = 1; btn.remove();
+    this.turtle.speed = 1; btn.remove(); this.lift(false);
     if (!skipped) return;
     this.demoTok++; q.passe = true; voice.stop();
     this.arcs = []; this.overlay = []; this.paintFx(true);
@@ -258,7 +266,7 @@ export class NumberLineScreen {
       let abort = null;
       const abortP = new Promise((_, rej) => { abort = () => rej(SKIPPED); }); abortP.catch(() => {});
       const g = (p) => Promise.race([p, abortP]), skip = skipKey(this.app, () => abort(), "passer la correction");
-      this.turtle.speed = this.pace;
+      this.turtle.speed = this.pace; this.lift(true);
       try {
         // au format « sauter », E3 est l'oubli du point de départ (la bouée où la tortue est posée), pas celui du début de la ligne
         const key = q.format === "sauter" && code === "E3" ? "E3sauter" : code;
@@ -278,7 +286,7 @@ export class NumberLineScreen {
         if (q.format === "sauter") this.turtle.sitOn(this.spec, q.target); else this.turtle.hide();
         await wait(1000);
       }
-      this.turtle.speed = 1; skip.remove();
+      this.turtle.speed = 1; skip.remove(); this.lift(false);
     }
     this.band.style.display = "none";
     const done = this.resolve; this.resolve = null; done?.(result);

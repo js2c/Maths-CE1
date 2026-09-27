@@ -447,7 +447,7 @@ export class ParentSpace {
   // le point de départ : le niveau de la ligne graduée, les familles de faits déjà connues
   departRow(row) {
     const box = h("div", { class: "pa-depart" }), msg = h("span", { class: "pa-ok" });
-    const levels = h("div", { class: "pa-seg", role: "group", "aria-label": "niveau de la ligne graduée" });
+    const levels = h("div", { class: "pa-seg pa-levels-seg", role: "group", "aria-label": "niveau de la ligne graduée" });
     const paint = (n) => { for (const b of levels.children) b.setAttribute("aria-pressed", String(Number(b.dataset.v) === n)); };
     for (let n = 1; n <= this.depart.niveauxMax; n++) levels.append(h("button", { "data-v": n, onclick: async () => { const st = await setLineLevel(this.store, n); paint(st.niveau); msg.textContent = `Ligne graduée : niveau ${n} à la prochaine séance.`; } }, String(n)));
     this.store.get("niveaux", 1).then((st) => paint(st?.niveau ?? 1));

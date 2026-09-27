@@ -123,7 +123,7 @@ const json = await grab('[data-export="json"]'), dump = JSON.parse(json.text);
 check(dump.base === "ocean-des-nombres" && dump.seances.length >= 18 && dump.reponses.length > 200, `sauvegarde JSON : ${json.name}, ${dump.seances.length} séances, ${dump.reponses.length} réponses`);
 check(!dump.reglages.some((r) => r.cle === "codeParent"), "le code parent n'est pas dans la sauvegarde");
 check(!(await page.locator(".pa-reminder").count()), "plus de rappel d'export après la sauvegarde");
-await page.locator('.pa-seg [data-v="10"]').click(); await page.waitForTimeout(150);
+await page.locator('.pa-seg[aria-label="durée maximale d\'une séance"] [data-v="10"]').click(); await page.waitForTimeout(150);
 check(await page.evaluate(() => window.__app.store.setting("dureeSeanceMin")) === 10, "la durée de séance est enregistrée");
 await page.locator(".pa-main").evaluate((m) => { m.scrollTop = m.scrollHeight; }); await page.waitForTimeout(150); await shot("12-reglages");
 // lot 2 : le son (musique, volume, bruitages)

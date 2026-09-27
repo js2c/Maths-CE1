@@ -6,7 +6,7 @@ Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail 
 
 Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `docs/PROMPT-LOT2.md`. Une étape = une session = une demande de fusion vers `main`.
 
-**Où en est-on (27 septembre 2026)** : étapes 1 à 6 faites et fusionnées (PR #11, #13, #14, #16). **Étapes 7 à 9 en cours**, enchaînées sur une seule branche (rubrique « Reprise des étapes 7 à 9 » ci-dessous). Décisions du parent du 27 septembre : brillantes à 20 % pour une carte nouvelle et 5 % pour un doublon, sans règle du 3e doublon ; cran « plus facile » : moteur inchangé, parade dans l'espace parent (`docs/GUIDE-PARENT.md`).
+**Où en est-on (27 septembre 2026)** : étapes 1 à 6 faites et fusionnées (PR #11, #13, #14, #16) ; étapes 7 et 8 faites sur la branche de la PR #17 (brouillon). **Reste l'étape 9**, enchaînées sur une seule branche (rubrique « Reprise des étapes 7 à 9 » ci-dessous). Décisions du parent du 27 septembre : brillantes à 20 % pour une carte nouvelle et 5 % pour un doublon, sans règle du 3e doublon ; cran « plus facile » : moteur inchangé, parade dans l'espace parent (`docs/GUIDE-PARENT.md`).
 
 | Étape | Contenu | État |
 | --- | --- | --- |
@@ -17,21 +17,63 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 | 5 | Atelier : bernard-l'ermite, cadre de 10, maison des nombres, double + 1 | fait (même branche, même demande de fusion) |
 | 6 | Module 2 comme notion du jour : familles 3 à 7, formes à trou, leçons L4 à L6, alternance, module imposé, point de départ étendu | fait (même branche, même demande de fusion) |
 | 7 | Défi record, grille des 66 additions, progression du module 2 dans l'espace parent | fait (branche `claude/youthful-tesla-rtkgta`, https://github.com/js2c/Maths-CE1/pull/17) |
-| 8 | Nombres jusqu'à 1 000 (`docs/SPEC-COMPLEMENTS.md`, partie A) | en cours (même branche) |
-| 9 | Bilan : `docs/BILAN-LOT2.md`, guide du parent, recette complète sur l'année | à faire (même branche) |
+| 8 | Nombres jusqu'à 1 000 (`docs/SPEC-COMPLEMENTS.md`, partie A) | fait (même branche, même demande de fusion) |
+| 9 | Bilan : `docs/BILAN-LOT2.md`, guide du parent, recette complète sur l'année | à faire (même branche ; reprendre ici) |
 
 ### Reprise des étapes 7 à 9
 
 Pour reprendre si la session s'est arrêtée : branche `claude/youthful-tesla-rtkgta` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 2, étapes 7 à 9 (en cours) » (https://github.com/js2c/Maths-CE1/pull/17).
 
-**Étape en cours :** 8 (nombres jusqu'à 1 000).
+**Étape en cours :** aucune ; étapes 7 et 8 faites. **Reprendre à l'étape 9** (bilan : `docs/BILAN-LOT2.md`, guide du parent, recette complète sur l'année ; voir « Reste » ci-dessous), dans une nouvelle session avec le prompt de reprise de `docs/PROMPT-LOT2.md` (« Reprise des étapes N à M », N = 7, M = 9) : la session s'est arrêtée proprement à la fin de l'étape 8, le contexte dépassant la moitié.
 
 **Fait :**
 
 - Décisions du parent du 27 septembre reportées (SPEC-LOT2 section 5 et points ouverts, JOURNAL-CONCEPTION, GUIDE-PARENT). Brillantes : `cartes.json` (`brillanteNouvelle` 0,2, `brillanteDoublon` 0,05 ; `brillante` et `brillanteHasard` retirés), `rewards.js` (`shinyChance`, `addCard` sans règle du 3e doublon ; une carte déjà brillante le reste : aucun changement de schéma, donc pas de migration), phrase « Ta carte devient brillante ! » retirée (voix refabriquée). Tests `cartes.test.mjs`, `rewards.test.mjs`.
 - Étape 7 (défi record, grille des additions, progression du module 2) : voir ci-dessous.
+- Étape 8 (nombres jusqu'à 1 000) : voir ci-dessous.
 
-**Reste :** étape 8, étape 9, recette complète.
+**Reste (étape 9) :** `docs/BILAN-LOT2.md` ; relecture du guide du parent ; recette complète (section 8 de la SPEC-LOT2 : `sim-seances` tous profils à 2 et 5 séances, `recette.mjs --delai 4.5` (ligne et `--module 2`, avec une séance où le défi a lieu : la cible devient 9 à 11 min), `recette-durees.mjs` avec et sans `--passer` (y compris niveaux 9 à 13), tous les parcours Playwright) ; donner le nombre de brillantes en juin par profil (mesure provisoire ci-dessous, étape 8) ; mettre à jour la ligne « Où en est-on », le JOURNAL-CONCEPTION (état), puis finir la demande de fusion https://github.com/js2c/Maths-CE1/pull/17 (description complète, sortir du brouillon). Surveiller une erreur « Cannot read properties of undefined (reading '0') » vue une fois dans `centaines.mjs` et jamais reproduite (trois passages propres).
+
+**Décisions prises (étape 8) :**
+
+- **Niveaux 9 à 13** (`module1.json`) : 9, ligne 0 à 1 000 pas de 100 (0, 500, 1 000 écrits) ; 10, une centaine pas de 10 (départs 100 à 900, extrémités écrites) ; 11, 20 graduations de 1 (douze lignes fixes, de 120-140 à 890-910, dizaines écrites) ; 12, dictée (78 nombres fixes : les neuf centaines rondes, des zéros au milieu comme 307, des dizaines rondes, des « dix-… » comme 317, et d'autres) ; 13, estimer sur 0 à 1 000 (11 cibles, ±60 puis ±40). Ils s'enchaînent après le niveau 8 (voie rapide et montée 8 sur 10 comme ailleurs) ; ligne d'école (k = 1) comme les niveaux 5 à 8.
+- **Voix** : seulement les nombres que ces réglages peuvent produire (`levelValues`), d'où les lignes du niveau 11 et la dictée en listes fixes : 2 004 phrases de plus, **26,9 Mo** de voix en tout (estimation avant fabrication : 27,2 Mo), sous le plafond de 40 Mo ; pas de solution de repli nécessaire.
+- **Pièges** : E6 remplace E2 et E5 au-delà de 100 (70 pour 700, 37 pour 370, 37 ou 370 pour 307, 437 pour 347) ; E7 (3007 pour 307, 30017 pour 317, 40040 pour 440) seulement en dictée (ces nombres ne sont pas sur la ligne) ; E3 garde son sens (340 au lieu de 347 sur 340-360 donne 7).
+- **Petits chaluts** : les niveaux 9 à 13 sont des lignes d'école, sans bouées ; la « bouée géante à chalut » de la SPEC devient un petit chalut (sac de mailles et flotteur orange) au-dessus de chaque graduation de centaine.
+- **Dictée** : la voix dit « Écris le nombre 307. » (ou « Tape le nombre 307 sur le pavé. ») ; le pavé des additions, l'ardoise ne montre que le nombre tapé (jusqu'à 5 chiffres, pour reconnaître 3007 ou 30017) ; exemple guidé : le nombre décomposé et dit, puis écrit ; correction : la phrase E7 (ou E6, NSP, autre), puis la décomposition en chaluts, filets et poissons avec les chiffres dessous (le chiffre de la place vide en rouge), le nombre sur l'ardoise, « C'était 307. ». Pas de coquillage d'aide en dictée.
+- **E6 sur la ligne** : la décomposition (sans les chiffres) au-dessus de la ligne pendant 2,8 s, puis la suite habituelle.
+- **L10** : le texte de la SPEC ; le comptage des filets est dit filet par filet (« dix, vingt, … cent ! »), le compteur à côté du chalut ; « trois-cents » : 300 écrit en grand, le 3 en rouge ; 307 : le 0 clignote. Jouée à l'entrée du niveau 9 et quand E6 revient deux fois (comme L1 à L3 pour leurs erreurs) ; sans le bernard-l'ermite (la SPEC-COMPLÉMENTS confie les centaines à la tortue ; la leçon se joue sur le calque des aides, la pieuvre à côté).
+- **Arcs de saut** : un nombre à trois chiffres ne tient pas entre deux graduations serrées (niveau 11) ; l'arc n'a alors pas d'étiquette, la voix compte toujours.
+- **Mémoire** : le chalut (11 images) est sur une planche « centaines » (19 Mo décodés en @2x) chargée seulement pour L10, la dictée et la correction E6, pas sur « aides » (chargée au démarrage).
+- **Textes nouveaux, à valider** : « Écris le nombre 307. », « Tape le nombre 307 sur le pavé. », « Regarde d'abord comment on fait. » (exemple guidé de la dictée), « 307 : 3 centaines, 0 dizaine, 7 unités. » (E6, singulier pour 0 et 1 comme dans la SPEC), « On n'écrit pas 300 puis 7 : le 7 prend la place des unités. » / « … puis 17 : le 17 prend la place des dizaines et des unités. » (E7).
+
+**Écarts avec la spécification (étape 8) :**
+
+- Les quatre cartes rares « liées aux nouveaux décors » (SPEC-COMPLÉMENTS, Récompenses) ne sont pas ajoutées (contenu à générer par le parent ; hors du tableau de l'étape 8).
+- Réglage « Modules activés » de la SPEC-COMPLÉMENTS : sans objet (la partie A est une extension du module 1, ouverte par le niveau 8 ou le point de départ).
+- Petits chaluts au-dessus des graduations au lieu de « bouées géantes » (voir les décisions).
+
+**Brillantes en juin (décision du parent du 27 septembre, mesure provisoire de l'étape 8, simulation sur l'année, zones 3 et 4 prêtes) :**
+
+| Profil | 2 séances par semaine | 5 séances par semaine |
+| --- | --- | --- |
+| sait | 13 | 17 |
+| reel | 17 | 19 |
+| diff | 10 | 30 |
+| très dur | 17 | 25 |
+| plus facile | 18 | 22 |
+
+(avant la décision : 56 à 57 à 5 séances par semaine, 13 à 42 à 2 séances). À refaire à la recette complète de l'étape 9.
+
+**Recette allégée de l'étape 8 (27 septembre 2026) :**
+
+| Critère | Mesure | État |
+| --- | --- | --- |
+| Tests unitaires | 168 sur 168 (dont 7 nouveaux : niveaux 9 à 13, E6 et E7, dictée, estimer, chaluts, décomposition dite, nombres possibles ; L10) ; voix 26,9 Mo, sous 40 Mo | tenu |
+| Simulation sur l'année | niveau 9 atteint à la 9e séance (« sait »), 25e (« reel »), 51e (« diff ») ; niveau 13 à la 13e, 55e (47e à 5 par semaine), jamais pour « diff » à 2 par semaine (93e séance à 5) ; « plus facile » reste au niveau 2 (règle inchangée, parade du parent) ; 60 cartes le 17 juin (15 juin à 5 par semaine), quota jamais dépassé ; alternance jamais rompue | tenu |
+| Parcours `centaines.mjs` | L10 jusqu'au bout ; niveau 9 avec erreur E6 ; niveau 10 placer ; niveau 11 lire ; dictée avec erreur E7 et réponse juste ; niveau 13 estimer ; chaque phrase dite a son fichier | tenu |
+| Parcours `parent.mjs` | point de départ 1 à 13 (rangée resserrée pour tenir dans la carte), le reste inchangé | tenu |
+| Captures regardées | planche de l'atelier (filet, chalut 0, 3 et 10 filets, petits chaluts sur la ligne), L10 (chalut qui se remplit, 307 et son zéro), ligne 0 à 1 000, correction E6, dictée et sa correction ; corrigés : L10 invisible dans les captures (elles venaient après la leçon, jouée en voix accélérée), chaluts trop petits et chiffres sur la ligne pendant E6, anneau décalé sur l'ardoise, étiquettes « 891 892… » qui se chevauchaient, colonnes de la décomposition trop serrées, neuf chaluts sur une rangée | tenu |
 
 **Décisions prises (étape 7) :**
 

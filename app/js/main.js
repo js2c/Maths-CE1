@@ -20,6 +20,7 @@ import { Rewards } from "./session/rewards.js";
 import { chooseName, goodNight, onTap, reward, spriteBox, StarHud } from "./session/screens.js";
 import { doneToday, Session } from "./session/session.js";
 import { Reef } from "./session/reef.js";
+import { drawSurprise, playSurprise, previousSession } from "./session/surprise.js";
 import { Album } from "./session/album.js";
 import { Frieze } from "./session/frieze.js";
 import { FreeTraining } from "./session/free.js";
@@ -34,7 +35,7 @@ const stage = new Stage(document.getElementById("stage"));
 // hors ligne : le service worker met toute l'application en cache (pas en file://, ni pendant les tests qui
 // le désactivent), avec une seule résolution des planches d'images : celle que cet écran utilise (sprites.js)
 if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !location.search.includes("nosw")) navigator.serviceWorker.register(`sw.js?r=${stage.px > 1.2 ? 2 : 1}`).catch(() => {});
-const [atlas, module1, module2, textes, seance, lecons, cartes, parentContent, voix] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/module2.json"), json("content/textes.json"), json("content/seance.json"), json("content/lecons.json"), json("content/cartes.json"), json("content/parent.json"), json("assets/voix/index.json").catch(() => null)]);
+const [atlas, module1, module2, textes, seance, lecons, cartes, calendrier, parentContent, voix] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/module2.json"), json("content/textes.json"), json("content/seance.json"), json("content/lecons.json"), json("content/cartes.json"), json("content/calendrier.json"), json("content/parent.json"), json("assets/voix/index.json").catch(() => null)]);
 const sprites = new Sprites(atlas, stage.px);
 // la base locale ; au premier lancement, on demande au navigateur de ne jamais l'effacer de lui-même
 const store = await Store.open();
@@ -48,14 +49,14 @@ stage.start();
 stage.onResize(() => { if (Math.abs(stage.px - sprites.px) > 0.01) location.reload(); });
 
 const rnd = rng(Date.now() & 0xffffffff);
-// pour les tests et les captures : ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape ?sansLecon ?lecon=L1 ?etoiles=N
+// pour les tests et les captures : ?surprise=cadeau:corail ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape ?sansLecon ?lecon=L1 ?etoiles=N
 const P = new URLSearchParams(location.search);
 const text = { data: textes, pick: (k, v = {}) => { const e = textes[k]; return fill(Array.isArray(e) ? e[Math.floor(rnd() * e.length)] : e, { mascotte: app.mascotte, ...v }); } };
 // les phrases fabriquées à l'avance (assets/voix/) ; ?voix=synthese : seulement la synthèse du navigateur (comparaison)
 const voice = new Voice({ rate: 0.9, fast: P.get("voix") === "rapide" }).setIndex(P.get("voix") === "synthese" ? null : voix);
-const rewards = await new Rewards(store, cartes).load();
+const rewards = await new Rewards(store, cartes, calendrier).load();
 if (P.get("etoiles")) { rewards.st.total = Number(P.get("etoiles")); await rewards.save(); } // tests : un trésor de départ
-const app = { stage, sprites, ocean, voice, text, rnd, atlas, store, rewards, lecons, cartes, clock, line: new LineView(stage), mascotte: await store.setting("mascotte") };
+const app = { stage, sprites, ocean, voice, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, line: new LineView(stage), mascotte: await store.setting("mascotte") };
 // la vitesse des animations des exemples guidés et des corrections (1 : la vitesse d'origine ; la voix garde son débit)
 app.vitesse = seance.vitesseAnimations ?? 1;
 app.lineScreen = () => (app.screen ??= new ReadScreen(app)); // l'écran de la ligne (aussi pour l'aide des faits + 1, + 2)
@@ -79,12 +80,16 @@ const lessons = new LessonPlayer(app, lecons);
 app.lessons = lessons;
 const lessonIn = () => (id) => lessons.play(id); // notée dans la séance par runNotion
 const handlers = {
-  accueil: async () => {
+  accueil: async ({ session }) => {
     // premier lancement : l'enfant choisit le nom de la pieuvre ; ensuite, la pieuvre salue
     if (!app.mascotte) {
       app.mascotte = await chooseName(app, seance.noms); await store.setSetting("mascotte", app.mascotte);
       ocean.octo.play("rejouir"); await voice.say(text.pick("nomChoisi"));
     } else { ocean.octo.play("saluer"); await voice.say(text.pick("accueil")); }
+    // une séance sur cinq environ : une surprise (un visiteur, ou un cadeau pour le récif) ; ?surprise=cadeau:corail|visite:tortue (tests)
+    const forced = P.get("surprise")?.split(":"), prev = previousSession(await store.all("seances"), session.id);
+    const s = forced ? { type: forced[0], id: forced[1] } : drawSurprise(rnd, cartes.surprise, prev, rewards.gifts);
+    if (s) { session.rec.surprise = s; await session.save(); await playSurprise(app, s); }
   },
   // échauffement : faits d'addition dus (familles 1 et 2 au lot 1), précédés des questions du temps de base
   echauffement: async (ctx) => {
@@ -121,7 +126,7 @@ const album = new Album(app);
 app.album = album;
 // l'espace parent : appui long sur le logo, puis le code (parent/parent.js) ; après une restauration ou un
 // effacement, l'application repart de zéro
-const parent = new ParentSpace(app, { content: parentContent, seance, module2, cartes });
+const parent = new ParentSpace(app, { content: parentContent, seance, module2, cartes, calendrier });
 app.parent = parent;
 const openParent = async () => { voice.stop(); const r = await parent.open(); if (r?.reload) location.reload(); };
 const big = (name, cx, cy, label, cls = "bubble") => spriteBox(app, { x: cx - 90, y: cy - 90, w: 180, h: 180, cls, label, paint: (ctx) => sprites.draw(ctx, name, 0, 90, 90) });

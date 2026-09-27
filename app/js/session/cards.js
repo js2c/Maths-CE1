@@ -69,6 +69,27 @@ export async function paintFace(ctx, px, sprites, card, face, { k = 1, cartes = 
   R.drawWord(ctx, card.nom, CARD.W / 2, cy - em * 0.55, em, { color: "#fffaf0", w: em * 0.14, seed: 700 + card.nom.length });
 }
 
+// L'EFFET DES CARTES BRILLANTES (docs/SPEC-LOT2.md, « Cartes brillantes ») : le reflet irisé de l'atelier
+// (carte.reflet, dessiné une fois dans un canvas) balaie la carte en diagonale toutes les 3 à 4 secondes par
+// une translation CSS (le compositeur : aucun redessin de l'illustration), et des étincelles scintillent sur
+// le cadre. `host` : la carte (ou une vignette de l'album, à l'échelle k) ; `inner` : le conteneur qui tourne
+// (le reflet y est posé comme une face, du côté du recto : `face`).
+export function shine(app, host, { k = 1, face = null, inner = null } = {}) {
+  const { stage, sprites } = app, px = stage.px, q = sprites.frame("carte.reflet", 0), box = document.createElement("div");
+  box.className = `shine${face ? ` card-face ${face}` : ""}`; box.style.borderRadius = `${Math.round(CARD.R * k)}px`;
+  if (q) {
+    const c = document.createElement("canvas"); c.width = Math.max(1, Math.round(q.w * k)); c.height = Math.max(1, Math.round(q.h * k));
+    c.getContext("2d").drawImage(q.img, q.sx, q.sy, q.w, q.h, 0, 0, c.width, c.height);
+    Object.assign(c.style, { left: `${(q.dx * k) / px}px`, top: `${(q.dy * k) / px - 60 * k}px`, width: `${c.width / px}px`, height: `${c.height / px}px`, animationDelay: `${-(Math.random() * 3).toFixed(2)}s` });
+    box.append(c);
+  }
+  (inner ?? host).append(box);
+  // les étincelles : trois sur une carte en grand, une sur une vignette
+  const n = k < 0.6 ? 1 : 5, g = Math.round(80 * Math.max(0.5, k));
+  for (let i = 0; i < n; i++) { const s = document.createElement("canvas"); s.width = s.height = Math.round(g * px); s.className = `glint g${k < 0.6 ? "s" : i}`; Object.assign(s.style, { width: `${g}px`, height: `${g}px` }); s.getContext("2d").setTransform((g / 80), 0, 0, (g / 80), 0, 0); sprites.draw(s.getContext("2d"), "eclat", 0, 40, 40); host.append(s); }
+  return box;
+}
+
 // l'élément HTML d'une carte : deux faces dos à dos dans un conteneur qui tourne. `front` : « recto »
 // (au départ, face visible) ; `back` : « dos » ou « verso ». Renvoie l'élément, prêt (faces dessinées).
 export async function cardElement(app, card, { x, y, front = "recto", back = "dos", brillante = false } = {}) {
@@ -78,8 +99,10 @@ export async function cardElement(app, card, { x, y, front = "recto", back = "do
   const face = async (name, cls) => { const c = document.createElement("canvas"); c.width = Math.round(CARD.W * px); c.height = Math.round(CARD.H * px); c.className = `card-face ${cls}`; await paintFace(c.getContext("2d"), px, sprites, card, name, { cartes }); return c; };
   const [a, b] = await Promise.all([face(front, "front"), face(back, "back")]);
   inner.append(a, b); el.append(inner);
-  if (brillante) for (let i = 0; i < 3; i++) { const s = document.createElement("canvas"), q = 80; s.width = s.height = Math.round(q * px); s.className = `glint g${i}`; sprites.draw(s.getContext("2d"), "eclat", 0, q / 2, q / 2); el.append(s); }
-  el.flip = (v = !el.classList.contains("flipped")) => el.classList.toggle("flipped", v);
+  // une carte brillante : le reflet sur la face du recto, les étincelles autour du cadre (visibles quand le
+  // recto est visible : classe « lit »)
+  if (brillante) { shine(app, el, { face: front === "recto" ? "front" : "back", inner }); if (front === "recto") el.classList.add("lit"); }
+  el.flip = (v = !el.classList.contains("flipped")) => { el.classList.toggle("flipped", v); if (back === "recto" && v) el.classList.add("lit"); };
   el.faces = { front: a, back: b };
   stage.ui.append(el);
   return el;

@@ -1,7 +1,8 @@
 // L'ENTRAÎNEMENT LIBRE (docs/SPEC.md, « Fin de séance ») : après la séance du jour, le bouton « Encore ! »
 // ouvre la liste des activités déjà débloquées : la ligne graduée à son niveau actuel, les additions de
 // l'échauffement, la revue des leçons déjà vues.
-//  - il ne rapporte ni étoiles ni coquillages ;
+//  - il ne rapporte ni étoiles de mer ni coquillages ; un niveau franchi y gagne son étoile arc-en-ciel, remise
+//    à la récompense de la séance suivante (lot 2) ;
 //  - ses réponses sont enregistrées, marquées « libre », dans une séance marquée « libre » (elle ne compte
 //    jamais comme la séance du jour) ; elles comptent pour les règles d'adaptation et la révision espacée ;
 //  - pas de limite de durée ; au bout de 10 minutes, la voix propose d'arrêter (une fois) ;
@@ -53,7 +54,10 @@ export class FreeTraining {
     runner.libre = true; this.runner = runner;
     for (;;) {
       const { q, cfg } = runner.next(), r = await screen.ask(q, cfg);
-      await runner.record(r, cfg); // les étoiles qu'elle rendrait sont ignorées ; un niveau franchi compte (sans étoile arc-en-ciel)
+      // les étoiles de mer qu'elle rendrait sont ignorées ; un niveau franchi compte, et son étoile arc-en-ciel
+      // est gardée pour la récompense de la séance suivante (docs/SPEC-LOT2.md, « Autres règles »)
+      const { events } = await runner.record(r, cfg);
+      for (const e of events) if (e.type === "montee") await app.rewards.arcFromFree();
       await this.answered(r.ok);
     }
   }

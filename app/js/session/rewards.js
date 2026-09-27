@@ -11,7 +11,8 @@
 //   quota    { date, cartes } : la base du quota de cartes nouvelles (enregistrée au premier lancement de
 //            cette version, ou après « tout effacer ») ;
 //   zones    { ouvertes: [id], dates: { id: t } } : les zones ouvertes (au départ, celles que cartes.json
-//            marque `ouverte`).
+//            marque `ouverte`) ;
+//   cadeaux  { ids: [id] } : les décors offerts par la surprise (session/surprise.js), posés dans le récif.
 // Les règles (prix d'un coquillage, poids des raretés, quota, brillantes, série, semaines réussies) viennent
 // de content/cartes.json ; les semaines d'école, de content/calendrier.json. Les fonctions pures sont
 // testées par tests/unit/rewards.test.mjs et tests/unit/cartes.test.mjs.
@@ -113,7 +114,7 @@ export class Rewards {
   constructor(store, content = null, calendrier = null) {
     this.store = store; this.c = content; this.cal = calendrier; this.listeners = new Set();
     this.st = { id: "etoiles", total: 0, cumul: 0, dorees: 0, doreesDepensees: 0, arcEnCiel: 0, arcDepensees: 0, arcLibre: 0, coquillages: 0, coquillagesDores: 0 };
-    this.owned = {}; this.serie = null; this.base = null; this.zones = null;
+    this.owned = {}; this.serie = null; this.base = null; this.zones = null; this.gifts = [];
   }
   async load(now = Date.now()) {
     this.st = { ...this.st, ...((await this.store.get("recompenses", "etoiles")) ?? {}) };
@@ -124,6 +125,7 @@ export class Rewards {
     if (!this.base) { this.base = { id: "quota", date: now, cartes: Object.keys(this.owned).length }; await this.store.put("recompenses", this.base); }
     this.zones = await this.store.get("recompenses", "zones");
     if (!this.zones) this.zones = { id: "zones", ouvertes: (this.c?.zones ?? []).filter((z) => z.ouverte).map((z) => z.id), dates: {} };
+    this.gifts = (await this.store.get("recompenses", "cadeaux"))?.ids ?? [];
     return this;
   }
   get total() { return this.st.total; }
@@ -141,6 +143,8 @@ export class Rewards {
   quota(now = Date.now()) { return quotaAt(this.base, this.cal, now, this.c.quota); }
   // les zones ouvertes
   zoneOpen(id) { return this.zones.ouvertes.includes(id); }
+  // un cadeau de la surprise rejoint le récif
+  async giveGift(id) { if (!this.gifts.includes(id)) { this.gifts = [...this.gifts, id]; await this.store.put("recompenses", { id: "cadeaux", ids: this.gifts }); } }
   // ---------------------------------------------------------------- entraînement libre
   // un niveau franchi pendant l'entraînement libre : l'étoile arc-en-ciel attend la séance suivante
   async arcFromFree() { await this.special("arcLibre"); }

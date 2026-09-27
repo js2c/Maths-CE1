@@ -24,13 +24,24 @@ Pour reprendre si la session s'est arrêtée : branche `lot2-etape1`, demande de
 
 **Fait :**
 
-- Branche créée, demande de fusion en brouillon ouverte, étapes du lot 2 inscrites ci-dessus.
+- Branche créée, demande de fusion en brouillon ouverte (https://github.com/js2c/Maths-CE1/pull/11), étapes du lot 2 inscrites ci-dessus.
+- Moteur des cartes (`app/js/session/rewards.js`) : calendrier (`app/content/calendrier.json`), quota (base enregistrée au premier lancement, fiche `quota`), doublons au-dessus du quota (de préférence pas encore brillants), tirage des brillantes (20 %, `brillanteHasard`), ouverture des zones (fiche `zones`, étoile arc-en-ciel dépensée : `arcDepensees`), semaines réussies et étoile dorée toutes les 4, légendaires et coquillage doré (`doreesDepensees`), étoile arc-en-ciel de l'entraînement libre (`arcLibre`), cadeaux (fiche `cadeaux`). Tests : `tests/unit/cartes.test.mjs`.
+- Contenu : `cartes.json` (quota, brillantes, semaines, surprise, anecdotes de la zone 2, `ouvertureLu`), `textes.json` (phrases nouvelles), voix fabriquée (72 phrases).
+- Atelier : coquillage doré (`coquillage.or`), reflet irisé (`carte.reflet`), cadeaux (`cadeau.corail|gorgone|etoile|coquille`) ; planche `node tools/still.mjs giftsSheet`.
+- Application : récompense (`screens.js` : cérémonie d'ouverture de zone, coquillage doré, annonce des brillantes, carte « dans ton album »), effet des brillantes (`cards.js`, `shine`, en grand et dans l'album), album selon les zones ouvertes, surprise (`session/surprise.js`, à l'accueil), cadeaux dans le récif, étoile arc-en-ciel gardée en entraînement libre (`free.js`), espace parent : bloc « Cartes » (Progression ; `data.js`, `cardsSummary`).
 
-**Reste à faire :** tout le contenu de l'étape 1 (voir le tableau).
+**Reste à faire :** parcours Playwright des cartes (`tests/e2e/cartes.mjs`, captures à regarder), simulation des cartes sur l'année (`tests/sim-recette.mjs`, zones 3 et 4 prêtes), recette complète (sim-seances, recette.mjs --delai 4.5, recette-durees avec et sans --passer), mise à jour de ARCHITECTURE, GUIDE-PARENT, description de la demande de fusion.
 
-**Où j'en suis :** lecture du code existant (récompenses, séance, espace parent).
+**Où j'en suis :** écrire `tests/e2e/cartes.mjs` et regarder les captures.
 
-**Décisions prises :** aucune pour l'instant.
+**Décisions prises :**
+
+- Semaine d'école : au moins un jour de classe du lundi au vendredi. Après la fin de l'année du calendrier, plus aucune semaine d'école : à compléter pour 2027-2028 (sans toucher au moteur).
+- Étoile arc-en-ciel dépensée pour ouvrir une zone : compteur à part (`arcDepensees`) ; `arcEnCiel` garde le total gagné (le parent voit toujours les niveaux franchis).
+- Une carte brillante l'est pour de bon ; un doublon d'une carte déjà brillante ne relance pas l'annonce. « Oh ! Elle est brillante ! » pour le tirage de 20 %, « Ta carte devient brillante ! » (phrase existante) pour le 3e doublon.
+- Surprise : `hasard` 0,25 (avec « jamais deux de suite », cela fait une séance sur cinq en moyenne). Visiteurs : la tortue ou un banc de poissons (déjà dessinés et chargés ; les créatures du lagon demanderaient de charger la planche du récif, 43 Mo). Cadeaux : 4 décors, chacun offert une fois, puis seulement des visites.
+- Cartes des zones 2 à 4 : pas de créature dans le récif (lot 4) ; la voix dit « Tu la retrouveras dans ton album ! » au lieu de « Cette créature va vivre dans ton récif ! ».
+- Texte de l'étoile dorée changé (l'ancien disait « cinq fois cette semaine ») : « Et une étoile dorée ! Tu as joué souvent, semaine après semaine. » (à valider).
 
 ## Lot 1 bis — correctifs du 27 septembre
 

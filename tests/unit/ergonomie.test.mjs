@@ -43,11 +43,11 @@ test("« je ne sais pas » (échauffement) : erreur NSP, le fait revient et rede
   assert.equal((await store.all("faits")).find((f) => f.fait === q.fait).boite, 1);
 });
 
-test("entraînement libre : réponses enregistrées « libre », adaptation appliquée, aucune étoile ni coquillage", async () => {
+test("entraînement libre : réponses enregistrées « libre », adaptation appliquée, aucune étoile de mer ; l'étoile arc-en-ciel attend la séance suivante", async () => {
   const store = await Store.open(new IDBFactory()), rewards = await new Rewards(store, cartes).load(), STOP = Symbol("fin");
   let n = 0;
   const line = { generate: screen.generate, leave() {}, ask: async (q) => { if (n++ >= 6) throw STOP; return { q, value: q.answer, ok: true, code: null, ms: 2000, listens: 1 }; } };
-  const app = { voice: { say: async () => {}, stop() {} }, text: { data: textes }, clock: { now: () => 0 }, lineScreen: () => line };
+  const app = { voice: { say: async () => {}, stop() {} }, text: { data: textes }, clock: { now: () => 0 }, lineScreen: () => line, rewards };
   const free = new FreeTraining(app, { store, module1, module2, rnd: rng(3) });
   free.t0 = 0;
   await assert.rejects(free.line(), (e) => e === STOP);
@@ -55,9 +55,12 @@ test("entraînement libre : réponses enregistrées « libre », adaptation appl
   assert.equal(reps.length, 6); assert.ok(reps.every((r) => r.libre && r.seance === free.rec.id));
   assert.equal(seances.length, 1); assert.equal(seances[0].libre, true); assert.equal(seances[0].terminee, false); assert.equal(seances[0].questions, 6);
   assert.equal(rewards.total, 0); assert.equal((await new Rewards(store, cartes).load()).total, 0); // le trésor n'a pas bougé
-  // cinq bonnes réponses rapides : la voie rapide s'applique aussi en entraînement libre (sans étoile arc-en-ciel)
+  // cinq bonnes réponses rapides : la voie rapide s'applique aussi en entraînement libre ; l'étoile arc-en-ciel
+  // n'est plus perdue : elle est gardée (arcLibre) et remise à la récompense de la séance suivante (lot 2)
   assert.ok((await store.get("niveaux", 1)).niveau >= 2);
-  assert.equal((await new Rewards(store, cartes).load()).st.arcEnCiel, 0);
+  const later = await new Rewards(store, cartes).load();
+  assert.equal(later.st.arcEnCiel, 0); assert.ok(later.st.arcLibre >= 1);
+  assert.ok((await later.collectFree()) >= 1); assert.ok(later.st.arcEnCiel >= 1);
 });
 
 test("l'horloge : la pause ne compte pas ; reprise exacte ; une activité abandonnée ne reprend jamais", async () => {

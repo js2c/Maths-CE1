@@ -7,6 +7,7 @@
 // Au lot 1, seule la première zone (le lagon) est ouverte : c'est le décor de l'océan lui-même.
 import { CardView, forgetPictures } from "./cards.js";
 import { onTap, spriteBox } from "./screens.js";
+import { GIFT_SPOTS } from "./surprise.js";
 
 const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };
 // comment chaque créature bouge dans le récif (le reste de son mouvement est dans sa boucle)
@@ -28,7 +29,10 @@ export class Reef {
     const { app } = this, { sprites, ocean, voice, text, rewards } = app;
     this.open = true; this.els = []; this.beings = [];
     await sprites.load("recif");
-    // les créatures qui ont leur dessin dans l'atelier (les zones 2 à 4 viendront au lot 4)
+    // les cadeaux de la surprise, posés sur le sable, derrière les créatures
+    this.gifts = rewards.gifts.filter((id) => GIFT_SPOTS[id] && sprites.atlas.sprites[`cadeau.${id}`]).map((id) => { const a = ocean.spriteActor(ocean.frontEl, `cadeau.${id}`); a.draw(0); a.moveTo(...GIFT_SPOTS[id]); return a; });
+    // les créatures qui ont leur dessin dans l'atelier (les zones 2 à 4 viendront au lot 4 : d'ici là, leurs
+    // cartes vivent seulement dans l'album)
     for (const c of rewards.collection().filter((x) => x.recif && sprites.atlas.sprites[`creature.${x.id}`])) {
       const a = ocean.spriteActor(ocean.frontEl, `creature.${c.id}`), spec = sprites.atlas.sprites[`creature.${c.id}`], ph = c.id.length * 1.7;
       const b = { c, a, ph, move: MOVES[c.id] ?? ((t) => [0, spec.meta?.ground ? 0 : 5 * Math.sin(t)]) };
@@ -54,7 +58,7 @@ export class Reef {
     onTap(book, async () => { pop(book); await this.view.close(); if (app.album && !app.album.open) { await app.album.visit(); voice.say(text.data.recifBienvenue, { instruction: true }); } });
     this.els.push(home, book);
     ocean.octo.play("saluer");
-    voice.stop(); voice.say(text.data[this.beings.length ? "recifBienvenue" : "recifVide"], { instruction: true });
+    voice.stop(); voice.say(text.data[this.beings.length || this.gifts.length ? "recifBienvenue" : "recifVide"], { instruction: true });
     await new Promise((r) => onTap(home, () => { if (app.album?.open) return; pop(home); r(); }));
     await this.view.close();
     voice.stop(); this.leave();
@@ -63,7 +67,8 @@ export class Reef {
     const { ocean, sprites } = this.app;
     ocean.front.splice(ocean.front.indexOf(this.tick), 1);
     for (const b of this.beings) { b.hit.remove(); for (const a of [b.a, b.glint].filter(Boolean)) { a.remove(); ocean.actors.splice(ocean.actors.indexOf(a), 1); } }
-    this.els.forEach((e) => e.remove()); this.beings = []; this.open = false;
+    for (const a of this.gifts ?? []) { a.remove(); ocean.actors.splice(ocean.actors.indexOf(a), 1); }
+    this.els.forEach((e) => e.remove()); this.beings = []; this.gifts = []; this.open = false;
     sprites.unload("recif"); sprites.unload("cartes"); forgetPictures();
   }
 }

@@ -1,0 +1,13 @@
+{
+  "_doc": "Calendrier scolaire (docs/SPEC-LOT2.md, section 5, « Calendrier ») : il règle le quota de cartes nouvelles (cartes.json, quota). Zone C (académie de Versailles), année 2026-2027 ; source : calendrier scolaire officiel, education.gouv.fr. Dates au format AAAA-MM-JJ. rentree : premier jour de classe ; vacances : debut = premier jour sans classe (le samedi du départ, « après la classe »), reprise = jour de la reprise des cours, le matin ; finAnnee : premier jour des grandes vacances. Une semaine (du lundi au dimanche) est une semaine d'école si au moins un de ses jours du lundi au vendredi est un jour de classe (entre la rentrée et la fin de l'année, hors vacances). Après finAnnee, aucune semaine n'est une semaine d'école : ajouter l'année suivante ici (sans toucher au moteur) avant la rentrée de septembre 2027. Les jours fériés isolés ne changent rien (la semaine reste une semaine d'école).",
+  "annee": "2026-2027",
+  "zone": "C",
+  "rentree": "2026-09-01",
+  "vacances": [
+    { "nom": "Toussaint", "debut": "2026-10-17", "reprise": "2026-11-02" },
+    { "nom": "Noël", "debut": "2026-12-19", "reprise": "2027-01-04" },
+    { "nom": "Hiver", "debut": "2027-02-06", "reprise": "2027-02-22" },
+    { "nom": "Printemps", "debut": "2027-04-03", "reprise": "2027-04-19" }
+  ],
+  "finAnnee": "2027-07-03"
+}

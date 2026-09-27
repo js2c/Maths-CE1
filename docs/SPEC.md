@@ -177,7 +177,7 @@ Les structures sont tirées en rotation, avec davantage de problèmes moyens et 
 
 ## Leçons animées
 
-Il y a neuf leçons de 45 à 90 secondes chacune. Chacune est découpée en temps courts : une phrase lue, puis une animation. L'animation attend la fin de la phrase avant de continuer, car la durée de la synthèse vocale varie. Chaque leçon se termine par « À toi ! » et un premier exercice guidé. Les boutons « rejouer » et « phrase précédente » restent disponibles.
+Il y a neuf leçons de 45 à 90 secondes chacune. Chacune est découpée en temps courts : une phrase lue, puis une animation. L'animation attend la fin de la phrase avant de continuer, car la durée de la synthèse vocale varie. Chaque leçon se termine par « À toi ! » et un premier exercice guidé. Deux boutons restent disponibles pendant toute la leçon, dès la première vue : « rejouer » (la leçon reprend au début) et « passer » (voir « Ergonomie et voix »). Il n'y a plus de bouton « phrase précédente » (retiré le 27 septembre 2026, à la demande du parent).
 
 Les textes ci-dessous sont ceux que lira la voix. L'application tutoie l'enfant. `{mascotte}` sera remplacé par le nom que l'enfant donnera à la pieuvre.
 
@@ -383,10 +383,18 @@ Retours du parent après le premier essai du lot 1 (26 septembre 2026).
 **Navigation pendant la séance.**
 
 - Un bouton **« maison »** discret (coin haut gauche, zone tactile de 64 px au moins) ramène à l'accueil. La séance est mise en pause et reprend exactement où elle en était ; elle ne compte comme terminée qu'à la récompense (règle inchangée).
-- Une **frise d'avancement** en haut de l'écran : une bulle par étape de la séance (accueil, échauffement, notion du jour, récompense), et dans l'étape en cours une rangée de petites bulles qui se remplissent à chaque question. Pas de chiffre, pas de chronomètre.
+- Une **frise d'avancement** en haut de l'écran : un pictogramme par étape de la séance (accueil, échauffement, notion du jour, récompense), et dans l'étape en cours une rangée de petites bulles qui se remplissent à chaque question. Pas de chiffre, pas de chronomètre. Elle ne doit ressembler à aucun bouton (correctif du 27 septembre 2026) : pictogrammes plats et petits, sans disque blanc, sans contour épais ni ombre, enfilés sur une corde fine ; l'étape en cours se reconnaît à une lueur douce, les étapes à venir sont estompées. Elle ne réagit pas au toucher.
 - On ne choisit **pas** l'activité pendant la séance : la notion du jour reste choisie par l'application (sinon l'enfant évite ce qui est difficile). Le choix libre existe après la séance (voir « Encore ! »).
 
-**Passer une explication.** Un bouton **« passer »** apparaît sur une leçon animée ou un exemple guidé **à partir de la deuxième fois** que l'enfant les voit (la première écoute est obligatoire). Chaque passage est enregistré et visible dans l'espace parent (historique). Une leçon passée ne rapporte pas ses 3 étoiles.
+**Passer une explication** (révisé le 27 septembre 2026, après essai par le parent : la règle « à partir de la deuxième vue » est abandonnée partout).
+
+- Un bouton **« passer »** est disponible **dès la première vue** sur les **leçons animées**, les **exemples guidés** et les **corrections animées** (après une erreur comme après « je ne sais pas », sur la ligne graduée et au pavé des additions).
+- C'est **toujours le même bouton** : le même dessin (deux triangles jaunes) à la même place (en haut à droite, sous « réécouter »), zone tactile d'au moins 64 px, visible moins d'une demi-seconde après le début de l'explication.
+- **Leçons animées** : deux boutons seulement, **« rejouer »** (la leçon reprend au début) et **« passer »** (la leçon s'arrête et l'application enchaîne directement sur « À toi ! » puis l'exercice guidé). Une leçon passée ne rapporte pas ses 3 étoiles ; elle est notée « passée » dans l'historique.
+- **Exemples guidés** : « passer » arrête la démonstration ; la question attend la réponse de l'enfant ; la réponse est notée « exemple passé ».
+- **Corrections** : le bouton apparaît dès que la correction commence. Un toucher coupe la voix et l'animation, montre la bonne réponse en place pendant environ une seconde (sur la ligne : le nombre écrit et sa graduation allumée ; au pavé : le résultat entouré sur l'ardoise), puis la question suivante arrive. La question revient plus tard comme après toute erreur, sans étoile de plus. La réponse est notée « correction passée » (historique du parent, export CSV des réponses).
+
+**Rythme des animations.** Un réglage de `app/content/seance.json`, `vitesseAnimations`, règle la vitesse des animations des exemples guidés et des corrections : durée des sauts et de la nage de la tortue, pauses entre les étapes. 1 = la vitesse d'origine ; réglé à **1,5** (une fois et demie plus rapide) le 27 septembre 2026. Le débit de la voix n'en dépend pas ; les leçons animées gardent leur rythme.
 
 **« Je ne sais pas ».** Sur chaque question, un bouton **« je ne sais pas »** (pictogramme : la pieuvre qui hausse les bras, ou un point d'interrogation dans une bulle). Il compte comme une réponse fausse pour les règles d'adaptation, avec le code d'erreur **NSP** ; il déclenche la même correction animée qu'une erreur et la question revient plus tard comme après une erreur. La voix rassure (« Ce n'est pas grave, regardons ensemble »). Dans l'espace parent, les NSP sont comptés à part des erreurs.
 

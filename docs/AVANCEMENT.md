@@ -2,6 +2,30 @@
 
 Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail dans une nouvelle session : lire ce fichier, puis `CLAUDE.md`, `docs/SPEC.md` et `docs/ARCHITECTURE.md`.
 
+## Lot 1 bis — correctifs du 27 septembre
+
+Demandés par le parent après essai sur la tablette (27 septembre 2026). Une session, branche `claude/ergonomie-lecons-exercices-dsrvra`, demande de fusion vers `main`.
+
+| Correctif | Ce qui a été fait |
+| --- | --- |
+| Leçons : « rejouer » et « passer » | `lessons/player.js` : plus de « phrase précédente » (le bouton et son dessin `precedent` sont retirés de l'atelier) ; « rejouer » (en bas à droite) reprend au début ; « passer » arrête la leçon, la séance enchaîne sur « À toi ! » et l'exercice guidé. Une leçon passée ne rapporte pas ses 3 étoiles et reste notée « passée » (l'enregistrement de la leçon est désormais fait par `session/notion.js`). |
+| « Passer » dès la première vue | La règle « à partir de la deuxième vue » est abandonnée partout (leçons, exemples guidés, revue des leçons de l'entraînement libre) ; le réglage `vues` n'est plus lu ni écrit. |
+| Corrections passables | Ligne graduée (`answer`) et additions (`submit`), après une erreur comme après « je ne sais pas » : le bouton apparaît dès le début de la correction ; un toucher coupe la voix et l'animation, laisse la bonne réponse en place environ 1 s (nombre écrit et graduation allumée, poisson posé dessus, tortue sur la bonne bouée au format « sauter » ; résultat entouré sur l'ardoise), puis la question suivante. La question revient comme avant. Réponse notée `correctionPassee` : historique du parent (« correction passée », « Corrections passées : n ») et colonne « correction passée » de l'export CSV des réponses. |
+| Un seul bouton « passer » | `engine/ui.js`, `skipKey` : les deux triangles jaunes, en haut à droite (140 × 140 px), créés sans attente ; mesuré dans `tests/e2e/ergonomie.mjs` : 2 ms après le toucher pour une correction, 5 ms après le début d'une leçon. Le bouton s'efface dès qu'on l'a touché. |
+| Rythme | `app/content/seance.json`, `vitesseAnimations` : 1,5. Accélère les sauts et la nage de la tortue et les pauses des exemples guidés et des corrections (y compris l'attente maximale entre deux sauts comptés, 750 ms → 500 ms). Voix inchangée. |
+| Frise | Redessinée dans l'atelier (`sea/ui.ts`) : pictogrammes plats d'environ 36 px (au lieu de disques blancs de 60 px en relief), sans contour épais ni ombre, sur une corde fine couleur sable (`drawCord`, dessinée en direct car sa longueur dépend du nombre de questions) ; lueur douce (`frise.lueur`) derrière l'étape en cours ; étapes à venir estompées ; petites bulles des questions inchangées. Toujours `pointer-events: none`. |
+| Documents | `docs/SPEC.md` (« Leçons animées », « Ergonomie et voix »), `docs/GUIDE-PARENT.md`, `docs/ARCHITECTURE.md`, ce fichier. |
+
+Tests : `tests/unit/correctifs.test.mjs` (correction passée sur la ligne et au pavé : aucune étoile en plus, la question revient, colonne CSV ; leçon passée dès la première vue : pas de 3 étoiles, « À toi ! » et exercice guidé, notée dans la séance ; plus de règle de vues ni de « phrase précédente » ; réglage 1,5), `tests/unit/parent.test.mjs` (nouvelle colonne) ; parcours `tests/e2e/ergonomie.mjs` et `tests/e2e/lecons.mjs` mis à jour, nouveau `tests/e2e/frise.mjs` (captures avant / après en densité 2). Aucune phrase nouvelle n'est dite par la voix : pas de fichier son à fabriquer.
+
+**Écarts et remarques.**
+
+- La vitesse ne s'applique qu'aux exemples guidés et aux corrections, comme demandé : les leçons animées et le petit retour « bravo » du format « sauter » (la tortue refait les sauts après une bonne réponse) gardent la vitesse d'origine, ainsi que l'aide du coquillage au pavé.
+- Au pavé, la correction n'a pas d'animation : « passer » y coupe la phrase de correction et garde le résultat écrit une seconde.
+- Pendant la seconde où la bonne réponse reste montrée, rien ne se touche (les réponses sont verrouillées) ; la maison reste disponible.
+- Le mot « passer » n'est pas dit par la voix (bouton sans consigne orale, comme avant).
+- Non vérifié sur la tablette : le confort de la vitesse 1,5 avec la vraie voix (les tests jouent la voix accélérée) ; si les sauts semblent trop rapides pour suivre le comptage, baisser `vitesseAnimations` (par exemple 1,25) dans `seance.json`.
+
 ## Lot 1 bis — ergonomie et voix
 
 Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : `docs/PROMPT-LOT1BIS.md`. Une étape par session.

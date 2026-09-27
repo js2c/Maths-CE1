@@ -1,6 +1,6 @@
 # Guide du parent
 
-Ce guide explique, sans connaissances techniques, comment mettre l'application en ligne, l'installer sur la tablette et suivre la progression. Il correspond au lot 1 et au lot 1 bis (septembre 2026).
+Ce guide explique, sans connaissances techniques, comment mettre l'application en ligne, l'installer sur la tablette et suivre la progression. Il correspond au lot 1 et au lot 1 bis (septembre 2026), avec les correctifs du 27 septembre 2026.
 
 ## a) L'adresse de l'application
 
@@ -35,9 +35,11 @@ Le dépôt est public : l'application et son code sont visibles par tous, mais *
 **Pendant la séance.**
 
 - La **maison**, en haut à gauche, met la séance en pause : l'écran se vide, seule reste la bulle pour continuer. La séance reprend là où elle en était, et le temps de pause ne compte pas dans les 12 minutes.
-- La **frise**, en haut, montre les étapes de la séance ; dans l'étape en cours, une petite bulle se remplit à chaque question.
+- La **frise**, en haut, montre les étapes de la séance : de petits dessins plats enfilés sur une corde fine ; l'étape en cours brille doucement et, à côté, une petite bulle se remplit à chaque question. Ce n'est pas un bouton : elle ne réagit pas au toucher.
 - La bulle au **point d'interrogation** (en bas à droite, ou à droite du pavé) veut dire « je ne sais pas » : l'application montre la réponse, la voix rassure, et la question reviendra plus tard. Elle compte comme une réponse fausse pour le choix des niveaux.
-- Les **deux triangles jaunes** (en haut à droite) permettent de passer une leçon ou un exemple déjà vu une fois. Une leçon passée ne rapporte pas ses 3 étoiles.
+- Les **deux triangles jaunes** (en haut à droite, toujours au même endroit) permettent de **passer**, dès la première fois : une leçon, un exemple montré par la tortue, ou une correction après une erreur ou un « je ne sais pas ». Une leçon passée ne rapporte pas ses 3 étoiles, et l'application enchaîne tout de suite sur « À toi ! » et l'exercice guidé. Une correction passée montre la bonne réponse environ une seconde, puis passe à la question suivante ; la question reviendra plus tard, comme après toute erreur. Tout cela est noté dans l'historique (« passée », « exemple guidé passé », « correction passée »).
+- Pendant une **leçon**, il n'y a que deux boutons : les triangles jaunes pour passer, et la flèche ronde en bas à droite pour **rejouer** la leçon depuis le début.
+- Les animations des exemples et des corrections vont **une fois et demie plus vite** qu'au premier essai (la voix garde son débit). Ce réglage est dans le fichier `app/content/seance.json` (`vitesseAnimations` : 1 = vitesse d'origine, 1.5 = plus rapide) ; le modifier demande une nouvelle publication.
 
 **Tenir la tablette en paysage.** L'application est prévue pour l'écran couché.
 
@@ -54,7 +56,7 @@ Le dépôt est public : l'application et son code sont visibles par tous, mais *
 **Ce qu'on y trouve.**
 
 - **Calendrier** : chaque jour travaillé, avec la durée et la part de réponses justes (en vert à partir de 80 %, en jaune de 50 à 79 %, en orange en dessous ; hachuré si la séance a été interrompue). Toucher un jour montre ses séances.
-- **Séances** : l'historique complet. Toucher une séance déplie chaque question posée, la réponse donnée, la bonne réponse, le temps mis, le nombre d'écoutes de la consigne et, pour la ligne graduée, le type d'erreur (par exemple « E1 · compte les traits au lieu des sauts »). Les « je ne sais pas » sont comptés à part des erreurs ; on voit aussi les exemples et les leçons passés, les pauses et, marqué « entraînement libre », ce qui a été fait après la séance (qui n'apparaît pas dans le calendrier).
+- **Séances** : l'historique complet. Toucher une séance déplie chaque question posée, la réponse donnée, la bonne réponse, le temps mis, le nombre d'écoutes de la consigne et, pour la ligne graduée, le type d'erreur (par exemple « E1 · compte les traits au lieu des sauts »). Les « je ne sais pas » sont comptés à part des erreurs ; on voit aussi les exemples, les corrections et les leçons passés, les pauses et, marqué « entraînement libre », ce qui a été fait après la séance (qui n'apparaît pas dans le calendrier).
 - **Progression** : le niveau atteint sur la ligne graduée (sur 8) et les dates, les faits d'addition rangés par boîte (de la boîte 1, revue à chaque séance, à la boîte 5, revue tous les 15 jours) et ceux qui résistent, deux courbes semaine par semaine (réussite et temps de réponse), le journal des erreurs avec des exemples réels, et le trésor de l'enfant (étoiles, cartes).
 - **Données et réglages** : les sauvegardes, le nom de la pieuvre, la durée maximale d'une séance (10, 12 ou 15 minutes), le changement de code, et « Tout effacer ».
 

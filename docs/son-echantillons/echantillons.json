@@ -32,20 +32,20 @@
       "nom": "Erreur (a) : une bulle grave et douce",
       "duree": 0.6,
       "sonie": -18,
-      "crete": -1.9,
+      "crete": -2.7,
       "limitation": 0,
-      "pcm": "e370e0e87423d5c9",
-      "opus": 5847,
+      "pcm": "2367abb5921acbf0",
+      "opus": 5956,
       "mp3": 7796
     },
     "erreur-b": {
       "nom": "Erreur (b) : deux bulles étouffées",
       "duree": 0.55,
       "sonie": -18,
-      "crete": -1.7,
+      "crete": -2.3,
       "limitation": 0,
-      "pcm": "e6f08ab1908e2a90",
-      "opus": 5281,
+      "pcm": "fe749084afa168f4",
+      "opus": 5378,
       "mp3": 7220
     },
     "etoile": {

@@ -109,6 +109,10 @@ async function principal() {
     man.voix[cle] = { phrase, duree: arrondi(index[phrase][1] / 1000, 2) };
   }
   writeFileSync(fichier, JSON.stringify(man, null, 2) + "\n");
+  // la page d'écoute porte ses données (elle doit marcher sans serveur de fichiers JSON)
+  const page = join(SORTIE, "index.html"), balise = '<script type="application/json" id="donnees">';
+  const html = readFileSync(page, "utf8"), a = html.indexOf(balise) + balise.length, b = html.indexOf("</script>", a);
+  writeFileSync(page, html.slice(0, a) + JSON.stringify(man) + html.slice(b));
   const opus = Object.values(man.bruitages ?? {}).reduce((s, b) => s + b.opus, 0), mus = Object.values(man.musiques ?? {}).map((m) => m.opus);
   console.log(`Opus : bruitages ${(opus / 1e6).toFixed(2)} Mo ; musiques ${mus.map((x) => (x / 1e6).toFixed(2)).join(", ")} Mo`);
 }

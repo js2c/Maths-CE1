@@ -1,0 +1,339 @@
+<meta charset="utf-8">
+<title>Sons du lagon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&display=swap">
+<style>
+/* Couleurs de l'espace parent de l'application (app/css/parent.css) : sable, eau profonde, corail, étoile. */
+:root {
+  --ink: #15222a; --ink-2: #3f5560; --ink-3: #6b7f88;
+  --sand: #f4ead3; --card: #fffaf0; --line: #e3d6b8;
+  --sea: #0b5563; --sea-2: #137683; --sea-3: #d5ecec;
+  --coral: #e2674d; --star: #f2bb2c; --shadow: rgba(21, 34, 42, 0.22);
+  --btn-ink: #fffaf0;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ink: #eaf2f1; --ink-2: #b6c8cb; --ink-3: #8aa0a6;
+    --sand: #0c1d23; --card: #13303a; --line: #29505c;
+    --sea: #5cc2cc; --sea-2: #7fd3d9; --sea-3: #173c46;
+    --coral: #f2876d; --star: #f5c64d; --shadow: rgba(0, 0, 0, 0.45);
+    --btn-ink: #0c1d23;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #eaf2f1; --ink-2: #b6c8cb; --ink-3: #8aa0a6;
+  --sand: #0c1d23; --card: #13303a; --line: #29505c;
+  --sea: #5cc2cc; --sea-2: #7fd3d9; --sea-3: #173c46;
+  --coral: #f2876d; --star: #f5c64d; --shadow: rgba(0, 0, 0, 0.45);
+  --btn-ink: #0c1d23;
+}
+body { background: var(--sand); color: var(--ink); font: 17px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; padding-inline: 16px; padding-block: 28px 56px; }
+main { max-width: 920px; margin: 0 auto; display: grid; gap: 40px; }
+h1, h2 { font-family: "Baloo 2", "Trebuchet MS", system-ui, sans-serif; line-height: 1.1; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(34px, 6vw, 48px); color: var(--sea); }
+h2 { font-size: 28px; }
+p { margin: 0; max-width: 64ch; }
+header { display: grid; gap: 12px; }
+.lead { font-size: 19px; color: var(--ink-2); }
+.note { font-size: 15px; color: var(--ink-3); }
+section { display: grid; gap: 16px; }
+.section-head { display: grid; gap: 6px; }
+.num { font-variant-numeric: tabular-nums; }
+
+button { font: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible + label, select:focus-visible { outline: 3px solid var(--star); outline-offset: 2px; }
+.btn { min-height: 48px; padding: 0 18px; border-radius: 14px; border: 2px solid var(--ink); background: var(--card); color: var(--ink); font-weight: 650; box-shadow: 0 3px 0 var(--ink); }
+.btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+.btn.main { background: var(--sea); color: var(--btn-ink); }
+.btn.on { background: var(--coral); color: var(--btn-ink); }
+
+/* musiques */
+.tracks { display: grid; gap: 14px; }
+.track { background: var(--card); border: 3px solid var(--ink); border-radius: 22px; box-shadow: 6px 7px 0 var(--shadow); padding: 16px 18px; display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; align-items: center; }
+.play { width: 64px; height: 64px; border-radius: 50%; border: 3px solid var(--ink); background: var(--sea); color: var(--btn-ink); grid-row: span 3; display: grid; place-items: center; box-shadow: 0 3px 0 var(--ink); }
+.play svg { width: 26px; height: 26px; fill: currentColor; }
+.track h3 { margin: 0; font-family: "Baloo 2", "Trebuchet MS", system-ui, sans-serif; font-size: 23px; }
+.facts { color: var(--ink-2); font-size: 15px; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.progress { flex: 1 1 200px; height: 10px; border-radius: 6px; background: var(--sea-3); position: relative; overflow: hidden; }
+.progress span { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--sea-2); }
+.time { font-size: 14px; color: var(--ink-3); min-width: 88px; }
+.bar .btn { min-height: 40px; font-size: 15px; }
+
+/* bruitages */
+.sfx { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; align-items: start; }
+.tile { background: var(--card); border: 3px solid var(--ink); border-radius: 20px; box-shadow: 5px 6px 0 var(--shadow); padding: 14px; display: grid; gap: 10px; align-content: start; }
+.tile h3 { margin: 0; font-size: 17px; line-height: 1.3; }
+.tile .facts { font-size: 14px; }
+.variants { display: flex; gap: 10px; flex-wrap: wrap; }
+.variants .btn { flex: 1 1 80px; min-height: 56px; font-size: 18px; }
+.tag { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--coral); }
+
+/* scène */
+.scene { background: var(--sea); color: var(--btn-ink); border-radius: 26px; padding: 22px; display: grid; gap: 14px; border: 3px solid var(--ink); box-shadow: 6px 7px 0 var(--shadow); }
+.scene p { color: inherit; opacity: 0.92; }
+.scene .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.scene .btn { border-color: var(--btn-ink); box-shadow: 0 3px 0 rgba(0,0,0,0.3); }
+.scene .btn.main { background: var(--star); color: #15222a; }
+.scene select { font: inherit; min-height: 48px; border-radius: 12px; border: 2px solid var(--btn-ink); background: var(--card); color: var(--ink); padding: 0 10px; }
+.log { font-size: 15px; min-height: 1.5em; font-weight: 600; }
+
+/* choix */
+.choice { background: var(--card); border: 3px solid var(--ink); border-radius: 22px; padding: 18px; display: grid; gap: 14px; }
+.choice fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; }
+.choice legend { font-weight: 700; margin-bottom: 6px; width: 100%; }
+.choice input { position: absolute; opacity: 0; }
+.choice label { border: 2px solid var(--line); border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+.choice input:checked + label { border-color: var(--sea); background: var(--sea-3); font-weight: 700; }
+.summary { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.summary code { font: 15px/1.4 ui-monospace, "SF Mono", Menlo, monospace; background: var(--sea-3); padding: 8px 10px; border-radius: 10px; flex: 1 1 260px; user-select: all; }
+@media (prefers-reduced-motion: reduce) { .btn:active { transform: none; } }
+</style>
+
+<main>
+  <header>
+    <h1>Les sons du lagon</h1>
+    <p class="lead">Écoutez les trois musiques de fond et les bruitages proposés pour l'application, puis choisissez. Tous les sons sont fabriqués par un programme : aucun enregistrement, aucune banque de sons, donc aucune question de droits.</p>
+    <p class="note">Avec un casque ou les haut-parleurs de la tablette, volume moyen. Sur iPhone, désactivez le mode silencieux, sinon rien ne sort.</p>
+  </header>
+
+  <section aria-labelledby="t-musiques">
+    <div class="section-head">
+      <h2 id="t-musiques">Musiques de fond</h2>
+      <p class="note">Chaque musique tourne en boucle. « Écouter le raccord » part 6 secondes avant la fin : si l'on n'entend pas où la boucle recommence, c'est réussi.</p>
+    </div>
+    <div class="tracks" id="tracks"></div>
+  </section>
+
+  <section aria-labelledby="t-bruitages">
+    <div class="section-head">
+      <h2 id="t-bruitages">Bruitages</h2>
+      <p class="note">Touchez un bouton pour entendre le son. Pour la bonne réponse et l'erreur, qu'elle entendra le plus souvent, deux variantes sont proposées.</p>
+    </div>
+    <div class="sfx" id="sfx"></div>
+  </section>
+
+  <section aria-labelledby="t-scene">
+    <div class="scene">
+      <h2 id="t-scene">Comme dans l'application</h2>
+      <p>Une minute de séance imaginaire : la musique, 18 dB sous les bruitages, baisse encore de 10 dB quand la voix parle ; une bonne réponse, une erreur, une carte, un coquillage.</p>
+      <div class="row">
+        <select id="scene-musique" aria-label="Musique de la scène"></select>
+        <button class="btn main" id="scene-go" type="button">Lancer la scène</button>
+      </div>
+      <p class="log" id="scene-log" aria-live="polite">Les variantes jouées sont celles cochées plus bas.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-choix">
+    <div class="section-head">
+      <h2 id="t-choix">Votre choix</h2>
+      <p class="note">Cochez, puis copiez la ligne et collez-la dans la conversation. Tout peut encore changer ensuite : « plus doux », « moins aigu », « plus lent »…</p>
+    </div>
+    <form class="choice" id="choice">
+      <fieldset id="f-musique"><legend>Musique</legend></fieldset>
+      <fieldset id="f-bonne"><legend>Bonne réponse</legend></fieldset>
+      <fieldset id="f-erreur"><legend>Erreur</legend></fieldset>
+      <div class="summary"><code id="summary"></code><button class="btn" id="copy" type="button">Copier</button></div>
+    </form>
+  </section>
+</main>
+
+<!-- données : écrites par node tools/son/fabriquer.mjs -->
+<script type="application/json" id="donnees">{"fabrique":"node tools/son/fabriquer.mjs (synthèse, sans enregistrement ni banque de sons)","mixageEcoute":{"musiqueSousBruitages":18,"baisseSousVoix":10,"fonduBaisse":0.25},"sonieBruitages":-16,"sonieMusique":-23,"bruitages":{"bonne-a":{"nom":"Bonne réponse (a) : deux bulles et une perle","duree":0.75,"sonie":-16,"crete":-2.1,"limitation":0,"pcm":"8d6da6c7fca96363","opus":8376,"mp3":9812},"bonne-b":{"nom":"Bonne réponse (b) : trois bulles","duree":0.5,"sonie":-16.2,"crete":-1.6,"limitation":1.9,"pcm":"2dc949df819e224c","opus":4446,"mp3":6644},"erreur-a":{"nom":"Erreur (a) : une bulle grave et douce","duree":0.6,"sonie":-18,"crete":-2.7,"limitation":0,"pcm":"2367abb5921acbf0","opus":5956,"mp3":7796},"erreur-b":{"nom":"Erreur (b) : deux bulles étouffées","duree":0.55,"sonie":-18,"crete":-2.3,"limitation":0,"pcm":"fe749084afa168f4","opus":5378,"mp3":7220},"etoile":{"nom":"L'étoile vole vers le compteur","duree":0.85,"sonie":-16,"crete":-4.7,"limitation":0,"pcm":"ba0fc789f7a8ce70","opus":9832,"mp3":10964},"coquillage":{"nom":"Le coquillage s'ouvre","duree":2,"sonie":-16,"crete":-5.1,"limitation":0,"pcm":"ce5f07f607676e67","opus":19513,"mp3":24788},"carte":{"nom":"La carte se retourne","duree":0.4,"sonie":-16.1,"crete":-1.6,"limitation":1.2,"pcm":"12f1719343f528f7","opus":3867,"mp3":5492},"brillante":{"nom":"La carte est brillante","duree":0.95,"sonie":-16,"crete":-6.6,"limitation":0,"pcm":"fa2fbfa292f0e888","opus":12939,"mp3":12116},"bouton":{"nom":"Toucher d'un bouton","duree":0.09,"sonie":-23.4,"crete":-1.6,"limitation":2.1,"pcm":"7474e65507abad3b","opus":1761,"mp3":1748},"zone":{"nom":"Une zone du récif s'ouvre","duree":0.98,"sonie":-16,"crete":-4.1,"limitation":0,"pcm":"556d4f30d998e28b","opus":12071,"mp3":12404}},"voix":{"consigne":{"phrase":"Place le poisson sur le nombre 37.","duree":2.35},"bravo":{"phrase":"Bravo !","duree":0.78},"erreur":{"phrase":"Ce n'est pas grave, regardons ensemble.","duree":2.71}},"musiques":{"harpe":{"nom":"La harpe du lagon","tempo":64,"instrument":"harpe","duree":150,"notes":55,"sonie":-23,"crete":-4.7,"limitation":0,"pcm":"53089411c3ba3d2e","opus":1283070,"mp3":1800596},"marimba":{"nom":"Le marimba des bulles","tempo":68,"instrument":"marimba","duree":141.18,"notes":64,"sonie":-23,"crete":-5.5,"limitation":0,"pcm":"27cf4b7c9984f578","opus":1141329,"mp3":1694900},"profondeurs":{"nom":"Les profondeurs","tempo":60,"instrument":"cloche","duree":144,"notes":26,"sonie":-23,"crete":-4.7,"limitation":0,"pcm":"763acb28f1f0380a","opus":1198530,"mp3":1728596}}}</script>
+<script>
+const D = JSON.parse(document.getElementById("donnees").textContent);
+const $ = (s) => document.querySelector(s);
+const opus = (() => { try { return new Audio().canPlayType('audio/ogg; codecs="opus"') !== ""; } catch { return false; } })();
+let ctx = null, busSfx, busMus, busVoix;
+const cache = new Map();
+function audio() {
+  if (!ctx) {
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    busSfx = ctx.createGain(); busSfx.connect(ctx.destination);
+    busMus = ctx.createGain(); busMus.connect(ctx.destination);
+    busVoix = ctx.createGain(); busVoix.connect(ctx.destination);
+  }
+  if (ctx.state === "suspended") ctx.resume();
+  return ctx;
+}
+async function charger(base) {
+  if (cache.has(base)) return cache.get(base);
+  const p = (async () => {
+    for (const ext of opus && !base.startsWith("voix-") ? ["ogg", "mp3"] : ["mp3"]) {
+      try {
+        const r = await fetch(`${base}.${ext}`);
+        if (!r.ok) continue;
+        return await audio().decodeAudioData(await r.arrayBuffer());
+      } catch { /* format suivant */ }
+    }
+    throw new Error(base);
+  })();
+  cache.set(base, p);
+  return p;
+}
+const dB = (x) => 10 ** (x / 20);
+const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+const ICONE = { play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>', pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4.5v16H6zM13.5 4H18v16h-4.5z"/></svg>' };
+
+// ---- bruitages ----
+async function jouer(nom, gain = 1) {
+  const b = await charger(`bruitage-${nom}`), s = audio().createBufferSource(), g = ctx.createGain();
+  g.gain.value = gain; s.buffer = b; s.connect(g).connect(busSfx); s.start();
+  return new Promise((ok) => (s.onended = ok));
+}
+const types = {};
+for (const [k, b] of Object.entries(D.bruitages || {})) {
+  const [type, v] = k.split(/-(?=[ab]$)/);
+  (types[type] ||= []).push({ k, v, ...b });
+}
+const NOMS = { bonne: "Bonne réponse", erreur: "Erreur (jamais un son d'échec)", etoile: "L'étoile vole vers le compteur", coquillage: "Le coquillage s'ouvre", carte: "La carte se retourne", brillante: "La carte est brillante", bouton: "Toucher d'un bouton", zone: "Une zone du récif s'ouvre" };
+for (const [type, liste] of Object.entries(types)) {
+  const el = document.createElement("article");
+  el.className = "tile";
+  const detail = liste.length > 1 ? liste.map((x) => `${x.v} : ${x.nom.split(" : ")[1] || ""}`).join(" · ") : `${String(liste[0].duree).replace(".", ",")} s`;
+  el.innerHTML = `${liste.length > 1 ? '<span class="tag">au choix</span>' : ""}<h3>${NOMS[type] || type}</h3><div class="facts">${detail}</div><div class="variants"></div>`;
+  for (const x of liste) {
+    const b = document.createElement("button");
+    b.className = "btn"; b.type = "button";
+    b.textContent = x.v ? `Écouter ${x.v}` : "Écouter";
+    b.onclick = async () => { b.classList.add("on"); await jouer(x.k).catch(() => {}); b.classList.remove("on"); };
+    el.querySelector(".variants").append(b);
+  }
+  $("#sfx").append(el);
+}
+
+// ---- musiques ----
+const lecteurs = {};
+function lecteur(cle, m) {
+  const st = { src: null, debut: 0, offset: 0, buffer: null };
+  const el = document.createElement("article");
+  el.className = "track";
+  el.innerHTML = `<button class="play" type="button" aria-label="Écouter ${m.nom}">${ICONE.play}</button>
+    <h3>${m.nom}</h3>
+    <div class="facts"><span>${{ harpe: "harpe", marimba: "marimba", cloche: "cloches douces" }[m.instrument] || m.instrument} sur une nappe et des vagues</span><span class="num">${m.tempo} battements par minute</span><span class="num">boucle de ${mmss(m.duree)}</span><span class="num">${(m.opus / 1e6).toFixed(1).replace(".", ",")} Mo</span></div>
+    <div class="bar"><div class="progress"><span></span></div><span class="time num">0:00 / ${mmss(m.duree)}</span><button class="btn raccord" type="button">Écouter le raccord</button></div>`;
+  const bouton = el.querySelector(".play"), barre = el.querySelector(".progress span"), temps = el.querySelector(".time");
+  const position = () => st.buffer ? ((ctx.currentTime - st.debut) % st.buffer.duration + st.buffer.duration) % st.buffer.duration : st.offset;
+  function arreter() {
+    if (!st.src) return;
+    st.offset = position(); st.src.stop(); st.src = null;
+    bouton.innerHTML = ICONE.play; bouton.setAttribute("aria-label", `Écouter ${m.nom}`);
+  }
+  async function lancer(depuis) {
+    for (const [k, l] of Object.entries(lecteurs)) if (k !== cle) l.arreter();
+    arretScene();
+    bouton.innerHTML = ICONE.pause;
+    st.buffer = await charger(`musique-${cle}`);
+    if (st.src) st.src.stop();
+    busMus.gain.cancelScheduledValues(ctx.currentTime); busMus.gain.value = 1;
+    const s = ctx.createBufferSource();
+    s.buffer = st.buffer; s.loop = true; s.connect(busMus);
+    const o = depuis ?? st.offset;
+    s.start(0, o); st.src = s; st.debut = ctx.currentTime - o;
+    bouton.setAttribute("aria-label", `Mettre ${m.nom} en pause`);
+  }
+  bouton.onclick = () => (st.src ? arreter() : lancer());
+  el.querySelector(".raccord").onclick = () => lancer(Math.max(0, m.duree - 6));
+  (function boucle() {
+    if (st.src && st.buffer) { const p = position(); barre.style.width = `${(p / st.buffer.duration) * 100}%`; temps.textContent = `${mmss(p)} / ${mmss(m.duree)}`; }
+    requestAnimationFrame(boucle);
+  })();
+  $("#tracks").append(el);
+  return { arreter, lancer };
+}
+for (const [k, m] of Object.entries(D.musiques || {})) {
+  lecteurs[k] = lecteur(k, m);
+  $("#scene-musique").append(new Option(m.nom, k));
+}
+
+// ---- choix ----
+const choix = { musique: Object.keys(D.musiques || {})[0], bonne: "a", erreur: "a" };
+try { Object.assign(choix, JSON.parse(localStorage.getItem("sons-choix") || "{}")); } catch {}
+function options(champ, liste) {
+  for (const [val, txt] of liste) {
+    const id = `c-${champ}-${val}`, i = document.createElement("input"), l = document.createElement("label");
+    i.type = "radio"; i.name = champ; i.id = id; i.value = val; i.checked = choix[champ] === val;
+    i.onchange = () => { choix[champ] = val; resume(); };
+    l.htmlFor = id; l.textContent = txt;
+    $(`#f-${champ}`).append(i, l);
+  }
+}
+options("musique", Object.entries(D.musiques || {}).map(([k, m]) => [k, m.nom]));
+options("bonne", (types.bonne || []).map((x) => [x.v, `${x.v} : ${x.nom.split(" : ")[1]}`]));
+options("erreur", (types.erreur || []).map((x) => [x.v, `${x.v} : ${x.nom.split(" : ")[1]}`]));
+function resume() {
+  const m = D.musiques?.[choix.musique]?.nom || choix.musique;
+  $("#summary").textContent = `Musique : ${m} ; bonne réponse : ${choix.bonne} ; erreur : ${choix.erreur}`;
+  $("#scene-musique").value = choix.musique;
+  try { localStorage.setItem("sons-choix", JSON.stringify(choix)); } catch {}
+}
+resume();
+$("#scene-musique").onchange = (e) => { choix.musique = e.target.value; document.getElementById(`c-musique-${e.target.value}`).checked = true; resume(); };
+$("#copy").onclick = async () => {
+  const t = $("#summary").textContent;
+  try { await navigator.clipboard.writeText(t); $("#copy").textContent = "Copié"; }
+  catch { const r = document.createRange(); r.selectNodeContents($("#summary")); getSelection().removeAllRanges(); getSelection().addRange(r); $("#copy").textContent = "Sélectionné"; }
+  setTimeout(() => ($("#copy").textContent = "Copier"), 1800);
+};
+
+// ---- scène : mixage comme prévu pour l'application ----
+let scene = null;
+function arretScene() {
+  if (!scene) return;
+  scene.stop = true; scene.src?.stop(); scene = null;
+  $("#scene-go").textContent = "Lancer la scène";
+}
+const pause = (s) => new Promise((ok) => setTimeout(ok, s * 1000));
+async function voix(cle, sc) {
+  const x = D.mixageEcoute, g = busMus.gain, t = ctx.currentTime, niveau = dB(D.sonieBruitages - x.musiqueSousBruitages - D.sonieMusique);
+  g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(niveau * dB(-x.baisseSousVoix), t + x.fonduBaisse);
+  const b = await charger(`voix-${cle}`), s = ctx.createBufferSource();
+  s.buffer = b; s.connect(busVoix); s.start();
+  $("#scene-log").textContent = `La voix : « ${D.voix[cle].phrase} »`;
+  await new Promise((ok) => (s.onended = ok));
+  if (sc.stop) return;
+  const t2 = ctx.currentTime;
+  g.cancelScheduledValues(t2); g.setValueAtTime(g.value, t2); g.linearRampToValueAtTime(niveau, t2 + x.fonduBaisse * 2);
+}
+async function bruit(nom, texte, sc) { if (sc.stop) return; $("#scene-log").textContent = texte; await jouer(nom); }
+$("#scene-go").onclick = async () => {
+  if (scene) return arretScene();
+  Object.values(lecteurs).forEach((l) => l.arreter());
+  const sc = (scene = { stop: false });
+  $("#scene-go").textContent = "Arrêter la scène";
+  $("#scene-log").textContent = "Chargement…";
+  const noms = [`musique-${choix.musique}`, ...Object.keys(D.bruitages).map((k) => `bruitage-${k}`), ...Object.keys(D.voix).map((k) => `voix-${k}`)];
+  try { await Promise.all(noms.map(charger)); } catch { $("#scene-log").textContent = "Un fichier son n'a pas pu être chargé."; return arretScene(); }
+  if (sc.stop) return;
+  const niveau = dB(D.sonieBruitages - D.mixageEcoute.musiqueSousBruitages - D.sonieMusique);
+  const g = busMus.gain, t = ctx.currentTime;
+  g.cancelScheduledValues(t); g.setValueAtTime(0, t); g.linearRampToValueAtTime(niveau, t + 2.5);
+  const s = ctx.createBufferSource();
+  s.buffer = await charger(`musique-${choix.musique}`); s.loop = true; s.connect(busMus); s.start(); sc.src = s;
+  $("#scene-log").textContent = "La musique entre doucement.";
+  const etapes = [
+    () => pause(3), () => voix("consigne", sc), () => pause(2.2),
+    () => bruit("bouton", "Elle touche la ligne.", sc), () => pause(0.15),
+    () => bruit(`bonne-${choix.bonne}`, `Bonne réponse (${choix.bonne}).`, sc), () => voix("bravo", sc),
+    () => bruit("etoile", "L'étoile vole vers le compteur.", sc), () => pause(2.5),
+    () => voix("consigne", sc), () => pause(2.5),
+    () => bruit("bouton", "Elle touche la ligne.", sc), () => pause(0.15),
+    () => bruit(`erreur-${choix.erreur}`, `Erreur (${choix.erreur}).`, sc), () => voix("erreur", sc), () => pause(3),
+    () => bruit("bouton", "Elle ouvre un coquillage.", sc),
+    () => bruit("coquillage", "Le coquillage s'ouvre.", sc), () => pause(0.3),
+    () => bruit("carte", "La carte se retourne.", sc), () => pause(0.2),
+    () => bruit("brillante", "Elle est brillante !", sc), () => pause(2),
+    () => bruit("zone", "Une zone du récif s'ouvre.", sc), () => pause(4),
+  ];
+  for (const e of etapes) { if (sc.stop) return; await e(); }
+  if (sc.stop) return;
+  $("#scene-log").textContent = "Fin de la scène.";
+  const t3 = ctx.currentTime;
+  g.cancelScheduledValues(t3); g.setValueAtTime(g.value, t3); g.linearRampToValueAtTime(0, t3 + 2.5);
+  await pause(2.6);
+  if (scene === sc) arretScene();
+};
+</script>

@@ -42,7 +42,7 @@ export const BRUITAGES = {
     nom: "Erreur (a) : une bulle grave et douce",
     fabriquer(r) {
       const b = new Float32Array(t(0.6));
-      ajouter(b, bulle(300, { duree: 0.22, montee: 1.35, t60: 0.2, attaque: 0.006 }), 0, 0.9);
+      ajouter(b, bulle(300, { duree: 0.22, montee: 1.35, t60: 0.2, attaque: 0.012 }), 0, 0.9);
       ajouter(b, modal(hz(note(0, 62)), 0.5, MARIMBA, { montee: 0.004 }), t(0.03), 0.18);
       filtrer(b, biquad("passe-bas", 1400, 0.7));
       return fonduFin(mono(b, { taille: 0.6, humide: 0.1 }), 0.15);
@@ -53,8 +53,8 @@ export const BRUITAGES = {
     nom: "Erreur (b) : deux bulles étouffées",
     fabriquer(r) {
       const b = new Float32Array(t(0.55));
-      ajouter(b, bulle(270, { duree: 0.18, montee: 1.4, t60: 0.15, attaque: 0.005 }), 0, 0.9);
-      ajouter(b, bulle(340, { duree: 0.16, montee: 1.4, t60: 0.13, attaque: 0.005 }), t(0.14), 0.75);
+      ajouter(b, bulle(270, { duree: 0.18, montee: 1.4, t60: 0.15, attaque: 0.012 }), 0, 0.9);
+      ajouter(b, bulle(340, { duree: 0.16, montee: 1.4, t60: 0.13, attaque: 0.012 }), t(0.14), 0.75);
       filtrer(b, biquad("passe-bas", 1100, 0.7));
       return fonduFin(mono(b, { taille: 0.55, humide: 0.08 }), 0.12);
     },

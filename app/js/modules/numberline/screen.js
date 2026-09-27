@@ -64,10 +64,10 @@ export class NumberLineScreen {
     onTap(this.nsp, () => { if (this.locked) return; pop(this.nsp); this.answer(null, null, { nsp: true }); });
   }
   // lot 2 (docs/SPEC-LOT2.md, section 4 : la tortue devant la pieuvre) : pendant un exemple guidé ou une
-  // correction, la pieuvre remonte un peu (comme pendant les leçons) pour dégager le début de la ligne ; la
+  // correction, la pieuvre s'écarte un peu vers la gauche (sans monter : la frise est juste au-dessus) pour dégager le début de la ligne ; la
   // tortue, les arcs et les filets de bulles sont de toute façon dans des calques au-dessus d'elle
   lift(up) {
-    const o = this.app.ocean, home = (this.octoHome ??= [...o.octoAt]), to = up ? [home[0] - 20, home[1] - 56] : home, from = [...o.octoAt], t0 = performance.now(), tok = (this.liftTok = (this.liftTok ?? 0) + 1);
+    const o = this.app.ocean, home = (this.octoHome ??= [...o.octoAt]), to = up ? [home[0] - 60, home[1] - 4] : home, from = [...o.octoAt], t0 = performance.now(), tok = (this.liftTok = (this.liftTok ?? 0) + 1);
     const step = () => { if (tok !== this.liftTok) return; const u = Math.min(1, (performance.now() - t0) / 600), e = u * u * (3 - 2 * u); o.octoAt = [from[0] + (to[0] - from[0]) * e, from[1] + (to[1] - from[1]) * e]; if (u < 1) requestAnimationFrame(step); };
     step();
   }

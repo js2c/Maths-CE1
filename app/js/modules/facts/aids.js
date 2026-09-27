@@ -62,3 +62,28 @@ export function paintDoublePlus(ctx, sprites, a, { cx = 640, y = 360, gap = 92, 
   if (bonus) put(ctx, sprites, "aide.bulle.doree", x0 + a * gap, y + 96);
   return { bonus: [x0 + a * gap, y + 96] };
 }
+
+// ---------------------------------------------------------------- les centaines (lot 2, étape 8)
+// un sprite à l'échelle k (le chalut et le filet sont grands : on les réduit pour en aligner plusieurs)
+export const putScaled = (ctx, sprites, name, x, y, k, f = 0) => {
+  const q = sprites.frame(name, f), m = ctx.getTransform(), s = 1 / sprites.px;
+  ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, m.a * x + m.e + q.dx * k * m.a * s, m.d * y + m.f + q.dy * k * m.d * s, q.w * k * m.a * s, q.h * k * m.d * s);
+};
+// un nombre décomposé (docs/SPEC-COMPLEMENTS.md, partie A) : c chaluts pleins (des centaines), d filets de dix
+// poissons (des dizaines), u poissons seuls (des unités), chaque groupe au-dessus de son chiffre ; `lit` : la
+// place dont le chiffre est écrit en couleur (0 centaines, 1 dizaines, 2 unités) ; `vides` : écrire le 0 des
+// places vides. Planche « centaines » (chargée avant). (cx, top) : milieu, haut du dessin
+export function paintHundreds(ctx, sprites, n, cx = 640, top = 330, { lit = null, width = 1000, digits = true, kMax = 0.5 } = {}) {
+  const c = Math.floor(n / 100), d = Math.floor(n / 10) % 10, u = n % 10;
+  const T = sprites.atlas.sprites["aide.chalut"].meta, N = sprites.atlas.sprites["aide.filet"].meta;
+  const perRow = c > 5 ? Math.ceil(c / 2) : c, kc = Math.min(kMax, (width * 0.5) / Math.max(1, perRow * (T.w + 20))), kn = 0.55;
+  const wc = perRow * (T.w + 20) * kc, wd = Math.max(110, Math.ceil(d / 5) * (N.w + 14) * kn), wu = Math.max(110, Math.ceil(u / 5) * 64);
+  const gap = 60, total = wc + wd + wu + gap * 2, x0 = cx - total / 2, colX = [x0 + wc / 2, x0 + wc + gap + wd / 2, x0 + wc + wd + 2 * gap + wu / 2];
+  for (let i = 0; i < c; i++) putScaled(ctx, sprites, "aide.chalut", x0 + ((i % perRow) + 0.5) * (T.w + 20) * kc, top + Math.floor(i / perRow) * (T.h + 40) * kc, kc, 10);
+  const fy = top + 20;
+  for (let i = 0; i < d; i++) putScaled(ctx, sprites, "aide.filet", x0 + wc + gap + Math.floor(i / 5) * (N.w + 14) * kn, fy + (i % 5) * (N.h + 8) * kn, kn);
+  for (let i = 0; i < u; i++) put(ctx, sprites, "poisson.2.d", x0 + wc + wd + 2 * gap + 32 + Math.floor(i / 5) * 64, fy + 20 + (i % 5) * 36);
+  const yN = top + Math.max(Math.ceil(c / perRow) * (T.h + 40) * kc, 5 * (N.h + 8) * kn + 30, 5 * 34 + 30) + 30;
+  if (digits) [c, d, u].forEach((v, i) => num(ctx, v, colX[i], yN, 64, lit === i ? R.RED : undefined));
+  return { chiffres: colX.map((x) => [x, yN]) };
+}

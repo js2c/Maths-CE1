@@ -10,6 +10,8 @@ import { drawTurtle, TURTLE_CLIPS, TURTLE_FPS } from "./turtle";
 import { CREATURE_FPS, CREATURE_N, CREATURES } from "./creatures";
 import { CARD_H, CARD_W, drawBigShell, drawGift, drawShinySweep, GIFTS, SWEEP_H, SWEEP_W, drawCardBack, drawCardBanner, drawCardFrame, drawCardVerso, drawCardWater, drawGlint, drawGoldStar, drawHomeKey, drawRainbowStar, drawReefKey, SHELL_N } from "./treasure";
 import { CRAN_W, drawCranGlow, drawCranKey, GLOW_CR } from "./selector";
+import { drawFishNet, drawTrawl, NET_H, NET_W, TRAWL } from "./hundreds";
+import { DEFI_N, drawRecordFlag, drawScorePearl, drawStepChallenge, drawTimerBubble, TIMER_W } from "./challenge";
 import { drawHermit, HERMIT_CLIPS, HERMIT_FPS, HERMIT_REST } from "./hermit";
 import { drawBonusBubble, drawCellGlow, drawHouseBase, drawHouseFloor, drawHouseRoof, drawTenFrame, HOUSE, TEN, TEN_H, TEN_W, tenCell } from "./aids";
 import { drawAgainKey, drawAlbumKey, drawDontKnowKey, drawFreeFacts, drawFreeLessons, drawFreeLine, drawMoonDecor, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepGlow, drawStepShell, GLOW_R, STEP_R } from "./ui";
@@ -93,7 +95,7 @@ export const SPECS: Spec[] = [
   { name: "passer", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawSkipKey(g, 70, 70) },
   { name: "encore", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawAgainKey(g, 90, 90) },
   { name: "album", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawAlbumKey(g, 90, 90) },
-  ...([["accueil", drawStepHello], ["echauffement", drawStepPlus], ["notion", drawStepLine], ["recompense", drawStepShell]] as const).map(([id, f]): Spec => ({ name: `frise.${id}`, sheet: "petits", W: 2 * STEP_R + 24, H: 2 * STEP_R + 24, origin: [STEP_R + 10, STEP_R + 10], frames: 1, draw: (g) => f(g, STEP_R + 10, STEP_R + 10) })),
+  ...([["accueil", drawStepHello], ["echauffement", drawStepPlus], ["notion", drawStepLine], ["defi", drawStepChallenge], ["recompense", drawStepShell]] as const).map(([id, f]): Spec => ({ name: `frise.${id}`, sheet: "petits", W: 2 * STEP_R + 24, H: 2 * STEP_R + 24, origin: [STEP_R + 10, STEP_R + 10], frames: 1, draw: (g) => f(g, STEP_R + 10, STEP_R + 10) })),
   { name: "frise.lueur", sheet: "petits", W: 2 * GLOW_R + 8, H: 2 * GLOW_R + 8, origin: [GLOW_R + 4, GLOW_R + 4], frames: 1, draw: (g) => drawStepGlow(g, GLOW_R + 4, GLOW_R + 4) },
   { name: "frise.point", sheet: "petits", W: 30, H: 30, origin: [15, 15], frames: 2, draw: (g, f) => drawProgressDot(g, 15, 15, f === 1) },
   { name: "lune.decor", sheet: "petits", W: 240, H: 220, origin: [120, 110], frames: 1, draw: (g) => drawMoonDecor(g, 120, 110) },
@@ -144,7 +146,16 @@ export const SPECS: Spec[] = [
   { name: "aide.maison.toit", sheet: "aides", W: HOUSE.w + 70, H: HOUSE.roof + 40, origin: [HOUSE.w / 2 + 30, HOUSE.roof + 14], frames: 1, draw: (g) => drawHouseRoof(g, HOUSE.w / 2 + 30, HOUSE.roof + 14), meta: { ...HOUSE } },
   { name: "aide.maison.etage", sheet: "aides", W: HOUSE.w + 30, H: HOUSE.floor + 20, origin: [HOUSE.w / 2 + 10, 4], frames: 1, draw: (g) => drawHouseFloor(g, HOUSE.w / 2 + 10, 4) },
   { name: "aide.maison.seuil", sheet: "aides", W: HOUSE.w + 50, H: HOUSE.base + 20, origin: [HOUSE.w / 2 + 20, 4], frames: 1, draw: (g) => drawHouseBase(g, HOUSE.w / 2 + 20, 4) },
+  // lot 2, étape 8 : les centaines (leçon L10, retours E6 et E7) : le filet de dix poissons (ancrage : coin haut
+  // gauche) et le chalut, vide puis avec 1 à 10 filets (ancrage : milieu de la ralingue du haut)
+  { name: "aide.filet", sheet: "centaines", W: NET_W + 20, H: NET_H + 20, origin: [6, 6], frames: 1, draw: (g) => drawFishNet(g, 6, 6), meta: { w: NET_W, h: NET_H } },
+  { name: "aide.chalut", sheet: "centaines", W: TRAWL.w + 40, H: TRAWL.h + 60, origin: [TRAWL.w / 2 + 16, 28], frames: 11, draw: (g, f) => drawTrawl(g, TRAWL.w / 2 + 16, 28, f), meta: { ...TRAWL } },
   { name: "aide.bulle.doree", sheet: "aides", W: 100, H: 100, origin: [50, 50], frames: 1, draw: (g) => drawBonusBubble(g, 50, 50) },
+  // lot 2, étape 7 : le défi record (planche « defi », chargée le temps du défi) : la bulle-sablier (DEFI_N
+  // niveaux d'eau, du plein au vide), la perle d'une bonne réponse, le drapeau du record (ancrage : pied du mât)
+  { name: "defi.bulle", sheet: "defi", W: TIMER_W, H: TIMER_W, origin: [TIMER_W / 2, TIMER_W / 2], frames: DEFI_N, draw: (g, f) => drawTimerBubble(g, TIMER_W / 2, TIMER_W / 2, f) },
+  { name: "defi.perle", sheet: "defi", W: 44, H: 44, origin: [20, 20], frames: 1, draw: (g) => drawScorePearl(g, 20, 20) },
+  { name: "defi.record", sheet: "defi", W: 60, H: 80, origin: [14, 72], frames: 1, draw: (g) => drawRecordFlag(g, 14, 72) },
   // les cadeaux du récif (la surprise) : ancrés au milieu de leur base, posés sur le sable
   ...GIFTS.map((id): Spec => ({ name: `cadeau.${id}`, sheet: "petits", W: 200, H: 180, origin: [100, 160], frames: 1, draw: (g) => drawGift(g, id, 100, 160) })),
 ];

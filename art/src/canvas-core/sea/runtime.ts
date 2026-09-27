@@ -44,6 +44,7 @@ export type LineSpec = {
   mark?: number; // graduation marquée d'un « ? » rouge (format lire)
   lit?: number[]; // graduations allumées (retours, leçons)
   marks?: { t: number; label?: string; color?: string }[]; // repères posés hors graduation (estimer) : t de 0 à 1
+  centaines?: number[]; // lot 2, étape 8 : graduations des centaines (un petit chalut au-dessus)
 };
 export const LABEL_DY = 80, LABEL_EM = 36;
 // la corde pend un peu entre ses deux poteaux ; la ligne d'école est droite
@@ -96,10 +97,22 @@ export const drawLine = (ctx: CanvasRenderingContext2D, L: LineSpec) => {
     if (k < 1) buoy(g, L, i, !!lit);
     else if (lit) fillShape(g, blob(x, y, 9, 9, 40 + i, 0.05, 12), "#ffe45c");
   }
+  // lot 2, étape 8 : un petit chalut au-dessus de chaque graduation de centaine (docs/SPEC-COMPLEMENTS.md, partie A)
+  (L.centaines ?? []).forEach((i) => { const [x, y] = tickP(L, i); drawTrawlBadge(ctx, x, y - 34); });
   // nombres sur le sable, sous leur graduation ; le « ? » rouge sous la graduation demandée
   L.labels.forEach((t, i) => { const x = tickX(L, i), m = i === L.mark; if (t || m) drawNumber(ctx, m ? "?" : t!, x, L.y + LABEL_DY, LABEL_EM, { color: m ? RED : INK, w: 5.2, seed: 200 + i * 5 }); });
   if (L.ends) L.ends.forEach((t, i) => { const x = i ? L.x1 - 40 : L.x0 + 40, y = lineY(L, x); ink(g, [[x, y - 24], [x, y + 24]], INK, { w: 5, shadow: 0, taper: [0.12, 0.12], seed: 95 + i }); drawNumber(ctx, t, x, L.y + LABEL_DY, LABEL_EM, { w: 5.2, seed: 400 + i * 5 }); });
   (L.marks ?? []).forEach((m, i) => { const x = L.x0 + 40 + (L.x1 - L.x0 - 80) * m.t, y = lineY(L, x), c = m.color ?? RED; fillShape(g, blob(x, y, 9, 9, 450 + i, 0.05, 12), "#ffe45c"); ink(g, [[x, y - 28], [x, y + 28]], c, { w: 5.5, shadow: 0, taper: [0.12, 0.12], seed: 460 + i }); if (m.label) drawNumber(ctx, m.label, x, L.y + LABEL_DY, LABEL_EM, { color: c, w: 5.2, seed: 470 + i }); });
+};
+
+// le petit chalut des centaines (lot 2, étape 8) : un sac de mailles pendu à un flotteur orange, (x, y) : bas du sac
+export const drawTrawlBadge = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
+  const g = shim(ctx), bag = smooth([[x - 12, y - 22], [x + 12, y - 22], [x + 13, y - 12], [x + 6, y - 3], [x, y], [x - 6, y - 3], [x - 13, y - 12]], true, 6);
+  fillShape(g, bag.map(([a, b]) => [a + 3, b + 3.5] as P), "#0a3f49", 0.25);
+  cel(g, bag, "#1d8a98", "#0f6f7c", 2);
+  clipped(g, bag, () => { for (let k = -2; k <= 2; k++) { ink(g, [[x + k * 7 - 10, y - 24], [x + k * 7 + 10, y + 2]], "#f3e6c8", { w: 1, shadow: 0, taper: [0.05, 0.05], seed: 480 + k }, 0.7); ink(g, [[x + k * 7 + 10, y - 24], [x + k * 7 - 10, y + 2]], "#f3e6c8", { w: 1, shadow: 0, taper: [0.05, 0.05], seed: 490 + k }, 0.7); } });
+  ink(g, bag, "#8a6238", { w: 2.2, closed: true, shadow: 0.3, seed: 495 });
+  const f = blob(x, y - 26, 7, 5, 497, 0.04, 12); cel(g, f, "#ff8a3d", "#c85a1f", 1.5); contour(g, f, 1.8, 498);
 };
 
 // ---------------------------------------------------------------- aides visuelles des retours d'erreur

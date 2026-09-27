@@ -23,7 +23,7 @@
         "5": "0 à 100, pas de 10, 0, 50 et 100 écrits (lire, placer)",
         "6": "segment de 20, pas de 1, dizaines écrites (lire, placer)",
         "7": "pas à deviner (1 ou 10) à partir de deux graduations voisines (lire)",
-        "8": "0 à 100 sans graduations (estimer)"
+        "8": "0 à 100 sans graduations (estimer)", "9": "0 à 1 000, pas de 100, 0, 500 et 1 000 écrits (lire, placer)", "10": "une centaine, pas de 10 (par exemple 300 à 400), extrémités écrites (lire, placer)", "11": "20 graduations de 1 dans les centaines (par exemple 340 à 360), dizaines écrites (lire, placer)", "12": "dictée de nombres jusqu'à 999 au pavé numérique (écrire)", "13": "0 à 1 000 sans graduations (estimer)"
       }
     },
     "2": {
@@ -36,24 +36,24 @@
     }
   },
   "formes": {
-    "lire": "lire",
+    "lire": "lire", "ecrire": "écrire (dictée)",
     "sauter": "sauter",
     "placer": "placer",
     "estimer": "estimer",
     "base": "temps de base",
-    "directe": "a + b = ?"
+    "directe": "a + b = ?", "trouDroite": "a + ? = n", "trouGauche": "? + b = n"
   },
   "erreurs": {
     "E1": "compte les traits au lieu des sauts",
     "E2": "oublie qu'un saut vaut 10",
     "E3": "oublie le point de départ",
     "E4": "compte depuis la droite",
-    "E5": "inverse dizaines et unités",
+    "E5": "inverse dizaines et unités", "E6": "confond dizaines et centaines (37 ou 370 pour 307)", "E7": "écrit le nombre comme il l'entend (3007 pour 307)",
     "autre": "autre erreur",
     "NSP": "« je ne sais pas » (bouton)"
   },
   "pointDeDepart": {
-    "niveauxMax": 8,
+    "niveauxMax": 13,
     "familles": [1, 2, 3, 4, 5, 6, 7]
   }
 }

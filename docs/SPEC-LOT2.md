@@ -53,7 +53,9 @@ Juste après l'accueil, avant l'échauffement, l'enfant voit un **curseur à 4 c
 - **Écran** : sans texte à lire. Quatre bulles alignées ou un curseur à glisser ; chaque cran montre des vagues de plus en plus grosses et ses étoiles (une demi-étoile, une étoile, une étoile et demie, deux étoiles). Le cran conseillé est entouré d'une lueur. La voix dit : « Choisis ton niveau. Plus c'est dur, plus tu gagnes d'étoiles ! » ; toucher un cran le fait dire (« Très dur : deux fois plus d'étoiles ! »). Une grosse coche valide ; sans toucher pendant 15 secondes, la séance commence sur le cran affiché. Dessins dans l'atelier, style A.
 - **Entraînement libre** : même sélecteur, sans étoiles (donc sans multiplicateur).
 - **Espace parent** : le cran choisi à chaque séance (historique, export CSV) ; réglage des crans autorisés (par exemple interdire « plus facile », ou ne pas aller au-delà de « plus dur »).
-- **Effet sur les cartes** : davantage d'étoiles ne donne pas plus de cartes nouvelles (le quota prime) ; cela donne plus de doublons, donc plus de chances de brillantes. À surveiller avec le point ouvert sur les brillantes (voir section 5).
+- **Effet sur les cartes** : davantage d'étoiles ne donne pas plus de cartes nouvelles (le quota prime) ; cela donne plus de doublons, donc un peu plus de brillantes (5 % par doublon depuis la décision du 27 septembre, voir section 5).
+- **Cran « plus facile », additions (décision du parent du 27 septembre, après une relecture extérieure)** : un fait réussi avec l'aide affichée d'emblée **ne change pas de boîte** (règle de la SPEC « juste avec une aide : pas de promotion ») ; il n'est pas non plus renvoyé en boîte 1 (seule une erreur le fait). La réponse est notée « aide d'emblée » (champ `aideDEmblee`), distincte de l'aide demandée. Cohérent avec la ligne graduée (une réussite « plus facile » ne fait pas monter le niveau) : le cran « plus facile » consolide sans faire progresser.
+- **Cran « plus facile » choisi à chaque séance (point tranché le 27 septembre 2026)** : le moteur ne change pas ; une réussite au cran « plus facile » ne compte toujours pas pour la montée du niveau conseillé. La parade est le réglage existant de l'espace parent (interdire « plus facile »), expliqué dans `docs/GUIDE-PARENT.md` : à utiliser si l'enfant choisit « plus facile » presque à chaque séance et ne monte plus de niveau.
 - **Recette** : deux profils de plus dans la simulation, une enfant qui choisit toujours « très dur » et une qui choisit toujours « plus facile » : taux de réussite, « je ne sais pas », descentes automatiques de cran, étoiles par séance.
 
 ## 3. Module 2 complet
@@ -84,10 +86,12 @@ Les familles 3 à 7 de la SPEC s'ajoutent aux familles 1 et 2. Le catalogue comp
 
 Quand la notion du jour est le module 2 :
 
-1. **La famille en cours** est la plus basse des familles ouvertes qui n'est pas encore acquise ; quand toutes sont acquises, c'est la famille 7 (mélange).
+1. **La famille en cours** est la plus basse des familles ouvertes qui n'est pas encore acquise (ni dépassée, ci-dessous) ; quand toutes sont acquises, c'est la famille 7 (mélange).
+   **Stagnation (décision du parent du 27 septembre, après une relecture extérieure)** : si la famille en cours n'est pas acquise après **6 séances dont la notion du jour est les additions** avec elle pour famille en cours (réglage `familles2.stagnation.seances` de `app/content/module2.json`), elle est « dépassée » : la famille suivante devient la famille en cours (elle s'ouvre si elle ne l'était pas) et joue sa leçon à sa première notion du jour ; la famille dépassée reste travaillée en révision (échauffement, questions « autres familles » de la notion du jour) et peut encore être acquise (étoile arc-en-ciel). L'espace parent la marque « en révision ».
 2. **La première fois** qu'une famille est la notion du jour : sa leçon (L4 doubles, L5 amis de 10, L6 maison des nombres ; textes de la SPEC). Pour une famille sans leçon (1, 5, 6, 7), deux exemples guidés avec l'appui visuel de la famille. Ensuite, comme au module 1 : deux exemples guidés, que l'on peut passer.
 3. **12 à 16 questions** : au moins la moitié sur les faits de la règle de la famille en cours (faits nouveaux compris, dans la limite commune de 6 par séance ; formes à trou quand elles sont ouvertes), le reste sur les faits introduits les plus faibles des autres familles. Un même fait ne revient pas plus de 3 fois dans la séance. Aide du coquillage disponible. Les réponses suivent la même révision espacée que l'échauffement.
 4. Une erreur montre l'appui visuel de la famille (cadre de 10, maison, reflet, ligne), puis la bonne réponse ; « passer » disponible comme partout.
+5. **Aide passable (décision du parent du 27 septembre, après une relecture extérieure)** : l'aide du coquillage et l'aide affichée d'emblée du cran « plus facile » montrent **dès leur début** le bouton « passer » habituel (`skipKey` : même dessin, même place) ; un toucher coupe la voix et l'animation (tortue, cadre, maison, reflet), range l'appui et rend le pavé aussitôt. Aucune attente sans commande ne doit dépasser environ 2 s (hors voix), vérifié par `tests/e2e/recette-durees.mjs`.
 
 ### Aides visuelles et personnage guide
 
@@ -136,11 +140,11 @@ Source : calendrier scolaire officiel, education.gouv.fr (arrêté publié en oc
 
 ### Cartes brillantes (décision du parent)
 
-- **Toute carte gagnée, nouvelle ou doublon, a 20 % de chances d'être brillante** (réglage `brillanteHasard` : 0,2 dans `cartes.json`). La règle actuelle reste en plus : le 3e doublon d'une carte la rend brillante.
+- **Une carte nouvelle a 20 % de chances d'être brillante, un doublon 5 %** (décision du parent du 27 septembre 2026 ; réglages `brillanteNouvelle` : 0,2 et `brillanteDoublon` : 0,05 dans `cartes.json`). **La règle « le 3e doublon rend la carte brillante » est supprimée.** Une carte déjà brillante sur la tablette le reste.
 - **Effet** : un reflet irisé qui balaie la carte en diagonale toutes les 3 à 4 secondes, et quelques étincelles sur le cadre ; en grand comme dans l'album (les vignettes brillantes scintillent). Dessiné dans l'atelier, léger à l'affichage (pas de redessin de l'illustration).
 - **Annonce** : quand la carte sort brillante, la voix dit « Oh ! Elle est brillante ! » (phrase nouvelle, voix à fabriquer) et l'effet démarre au retournement.
 - But : une collection de brillantes qui grandit toute l'année. Pas de compteur chiffré pour l'enfant.
-- **Point ouvert (recette de l'étape 1)** : à 5 séances par semaine, 56 à 57 cartes sur 60 deviennent brillantes avant l'été (les doublons au-delà du quota tirent eux aussi 20 %, et le 3e doublon rend brillante) ; à 2 séances par semaine, 13 à 22. Le sélecteur de difficulté augmentera encore les doublons. Décision du parent à prendre avant l'étape 9 (par exemple : 20 % pour une carte nouvelle, 5 % pour un doublon, et suppression de la règle du 3e doublon). Ne rien changer d'ici là.
+- **Point tranché le 27 septembre 2026** (il était ouvert depuis la recette de l'étape 1) : avec 20 % pour toute carte et la règle du 3e doublon, 56 à 57 cartes sur 60 devenaient brillantes avant l'été à 5 séances par semaine, 13 à 42 à 2 séances selon le profil (le cran « très dur » augmentant les doublons). Décision du parent : 20 % pour une carte nouvelle, 5 % pour un doublon, suppression de la règle du 3e doublon (appliquée au début de l'étape 7 ; le nombre de brillantes en juin par profil est donné à la recette de l'étape 9).
 
 ### Zones
 
@@ -200,6 +204,7 @@ Demande du parent : des bruitages courts, et une petite musique de fond calme, p
 - **Point de départ** (« Données et réglages ») : choisir le niveau actuel de la ligne graduée ; marquer une famille de faits comme connue (ses faits passent en boîte 3). Noté dans l'historique des niveaux comme un choix du parent. Construit à l'étape 2 pour les niveaux 1 à 8 et les familles 1 et 2, étendu aux familles 3 à 7 à l'étape 6 et aux niveaux 9 à 13 à l'étape 8.
 - **Module imposé pour la prochaine séance** (ligne graduée ou additions ; valable une séance).
 - **Défi record** : activé ou non.
+- **Terminer une séance en pause (décision du parent du 27 septembre, après une relecture extérieure)** : l'enfant n'a pas de bouton d'arrêt ; pendant une pause (bouton « maison »), l'espace parent montre en haut « Terminer la séance » (avec confirmation). La séance est enregistrée comme interrompue (terminée : non, sans récompense ; les étoiles déjà gagnées restent ; champ `arreteeParParent`), la scène est rangée et l'application revient à l'accueil (une nouvelle séance est possible le même jour).
 - **Son** : section 6.
 - **Grille des additions** (SPEC, tableau de bord 3) : tableau 11 × 11, couleur selon la boîte et la rapidité pour les 45 faits ; les 21 cases « + 0 » montrent seulement le temps de base, en gris ; toucher une case montre l'historique du fait.
 - **Progression** : le module 2 a sa ligne (famille en cours, familles acquises, courbes semaine par semaine) ; formes des réponses (directe, trou à droite, trou à gauche) dans le détail des séances et l'export CSV ; journal des erreurs avec E6 et E7 (à l'étape 8, avec ces erreurs).
@@ -216,11 +221,11 @@ Chaque étape se termine par une recette, lancée par Claude Code et résumée d
 | Critère | Seuil |
 | --- | --- |
 | Durée d'une séance complète (`recette.mjs --delai 4.5`) | 9 à 11 min ; 8 à 10 min tant que le défi record n'existe pas |
-| Attente sans rien pouvoir faire, hors consigne orale | jamais plus de 3 s sans bouton « passer » |
+| Attente sans rien pouvoir faire, hors consigne orale | jamais plus de 3 s sans bouton « passer » ; environ 2 s pour l'aide des additions (décision du 27 septembre) |
 | Faits nouveaux (profil « reel », 2 séances par semaine) | au moins 2 par séance tant qu'il en reste à introduire, autant que la boîte 1 le permet |
 | Familles 1 et 2 (profil « sait ») | les 33 faits vus avant la 7e séance |
 | Cartes (2 séances par semaine, zones 3 et 4 considérées prêtes) | 60 cartes, légendaires comprises, avant le 25 juin 2027 ; jamais plus de cartes nouvelles que le quota |
-| Tirage des brillantes | 20 % des tirages (graine fixe, 1 000 tirages, écart de moins de 3 points), hors règle du 3e doublon |
+| Tirage des brillantes | 20 % des tirages pour une carte nouvelle, 5 % pour un doublon (graine fixe, 1 000 tirages, écart de moins de 3 points) |
 | Alternance | jamais deux fois de suite le même module, sauf module imposé ou autre module sans rien à proposer |
 | Erreurs dans la page | aucune |
 

@@ -80,6 +80,7 @@ export class Session {
     return this;
   }
   save() {
+    if (this.stopped) return Promise.resolve();
     this.rec.fin = this.clock(); this.rec.dureeS = Math.round((this.active() - this.rec.debut) / 1000);
     const p = Math.round((this.paused() - this.p0) / 1000); if (p > 0) this.rec.pauseS = p;
     return this.store.put("seances", this.rec);
@@ -88,8 +89,9 @@ export class Session {
   // erreur fait revenir une question, une leçon relancée ajoute son exercice guidé)
   expect(n) { this.progress.prevues = Math.max(this.progress.prevues, n, this.progress.faites); this.onProgress?.(this.progress); }
   // une réponse donnée (les exemples guidés comptent comme des questions posées)
-  async answered(ok) {
-    await this.protect(ok);
+  // (le défi record ne déclenche pas la protection du cran : `protect` false)
+  async answered(ok, { protect = true } = {}) {
+    if (protect) await this.protect(ok);
     this.rec.questions++; if (ok) this.rec.justes++; this.rec.reussite = +(this.rec.justes / this.rec.questions).toFixed(3); this.lastOk = ok;
     this.progress.faites++; this.progress.prevues = Math.max(this.progress.prevues, this.progress.faites); this.onProgress?.(this.progress);
     await this.save();
@@ -107,6 +109,9 @@ export class Session {
   }
   // une pause (bouton « maison ») : comptée dans l'enregistrement
   async notePause() { this.rec.pauses = (this.rec.pauses ?? 0) + 1; await this.save(); }
+  // le parent termine la séance en pause (espace parent) : interrompue, sans récompense ; le déroulement en
+  // cours est abandonné (main.js), plus rien n'est enregistré ensuite
+  async interrupt() { this.rec.terminee = false; this.rec.arreteeParParent = true; await this.save(); this.stopped = true; }
   // des étoiles gagnées : aussitôt ajoutées au trésor (on ne perd jamais rien, même si la séance s'arrête)
   // les étoiles des bonnes réponses et des erreurs corrigées suivent le multiplicateur du cran
   async stars(n, raison) {

@@ -19,9 +19,13 @@ import { FactsScreen, runWarmup } from "./modules/facts/screen.js";
 import { Warmup } from "./modules/facts/warmup.js";
 import { Module2Runner } from "./modules/facts/runner.js";
 import { Hermit } from "./engine/hermit.js";
+import { runChallenge } from "./modules/facts/challenge.js";
+import { Dictation } from "./modules/numberline/dictation.js";
+import { AidBoard } from "./modules/facts/aids.js";
+import { ChallengeView } from "./modules/facts/challengeView.js";
 import { Rewards } from "./session/rewards.js";
 import { chooseName, goodNight, onTap, reward, spriteBox, StarHud } from "./session/screens.js";
-import { doneToday, Session } from "./session/session.js";
+import { challengeReady, doneToday, Session } from "./session/session.js";
 import { Reef } from "./session/reef.js";
 import { drawSurprise, playSurprise, previousSession } from "./session/surprise.js";
 import { Album } from "./session/album.js";
@@ -74,7 +78,10 @@ if (P.get("etoiles")) { rewards.st.total = Number(P.get("etoiles")); await rewar
 const app = { stage, sprites, ocean, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, line: new LineView(stage), mascotte: await store.setting("mascotte") };
 // la vitesse des animations des exemples guidés et des corrections (1 : la vitesse d'origine ; la voix garde son débit)
 app.vitesse = seance.vitesseAnimations ?? 1;
-app.lineScreen = () => (app.screen ??= new ReadScreen(app)); // l'écran de la ligne (aussi pour l'aide des faits + 1, + 2)
+app.lineScreen = () => (app.screen ??= new ReadScreen(app));
+// lot 2, étape 8 : la dictée de nombres (niveau 12) prend le pavé de l'écran des additions ; les chaluts des centaines vont sur le calque des aides
+app.dictation = new Dictation(app, () => (app.facts ??= new FactsScreen(app, module2)));
+app.aidBoard ??= new AidBoard(app); // l'écran de la ligne (aussi pour l'aide des faits + 1, + 2)
 window.__app = app;
 // la musique baisse pendant que la voix parle
 stage.ticks.add(() => sound.duck(voice.speaking));
@@ -132,6 +139,16 @@ const handlers = {
     await runNotion({ ...ctx, step, runner, screen, lesson: P.has("sansLecon") ? async () => false : lessonIn(ctx.session), rnd });
     screen.leave();
   },
+  // lot 2, étape 7 : le défi record (une minute, faits en boîte 3 ou plus, la bulle qui se vide, le record)
+  defi: async (ctx) => {
+    const screen = (app.facts ??= new FactsScreen(app, module2)), warmup = await new Warmup({ store, content: module2, rnd, seance: ctx.session.id, cran: () => "conseille" }).load();
+    warmup.defi = true;
+    await sprites.load("defi");
+    const view = new ChallengeView(app); app.challenge = view;
+    try {
+      await runChallenge({ ...ctx, warmup, screen, view, store, rnd, octo: ocean.octo, stars: seance.etoiles, say: (k, v = {}) => voice.say(text.pick(k, v)) });
+    } finally { view.remove(); app.challenge = null; sprites.unload("defi"); }
+  },
   recompense: (ctx) => reward(app, { ...ctx, hud }),
 };
 // lot 2, étape 6 : la notion du jour sur les additions (docs/SPEC-LOT2.md, section 3) : l'écran des additions, le
@@ -176,7 +193,8 @@ app.album = album;
 const parent = new ParentSpace(app, { content: parentContent, seance, module2, cartes, calendrier });
 app.parent = parent;
 // l'espace parent coupe le son ; à la sortie, ses réglages (musique, volume, bruitages) sont relus
-const openParent = async () => { voice.stop(); sound.suspend(); const r = await parent.open(); if (r?.reload) location.reload(); sound.setPrefs(await store.setting("son")); sound.resume(); };
+// (pendant une pause, le parent peut terminer la séance : endPausedSession)
+const openParent = async () => { voice.stop(); sound.suspend(); const r = await parent.open(); if (r?.terminer) await endPausedSession(); if (r?.reload) location.reload(); sound.setPrefs(await store.setting("son")); sound.resume(); };
 const big = (name, cx, cy, label, cls = "bubble") => spriteBox(app, { x: cx - 90, y: cy - 90, w: 180, h: 180, cls, label, paint: (ctx) => sprites.draw(ctx, name, 0, 90, 90) });
 let homeEls = [];
 const clearHome = () => { homeEls.forEach((e) => e.remove()); homeEls = []; };
@@ -208,6 +226,9 @@ async function showHome({ done, first = false }) {
       // la protection du sélecteur redescend d'un cran : la pieuvre encourage, la voix le dit doucement
       onCranDown: async () => { voice.stop(); ocean.octo.play("encourager"); await voice.say(text.data.cranDescente); } });
     app.session = session; mode = "seance";
+    // la frise ne montre le défi record que s'il aura lieu (à partir de la 5e séance, assez de faits bien sus)
+    const defi = seance.etapes.find((e) => e.id === "defi");
+    frieze.only(defi && handlers.defi && !(await challengeReady(store, defi)) ? ["defi"] : []);
     await session.run();
     mode = null; frieze.show(false); homeKey.style.visibility = "hidden";
     sound.stopMusic();
@@ -230,26 +251,40 @@ const progress = (p) => {
 };
 // attend-on une réponse de l'enfant (la consigne est finie ou en cours) ?
 const awaiting = () => [app.screen, app.facts].some((s) => s && s.resolve && !s.locked);
+let pausedEls = null; // la pause en cours : la bulle « continuer » et le logo de l'espace parent
 async function pauseSession() {
   clock.pause(); voice.pause(); sound.pauseLevel(true); stage.root.classList.add("paused"); homeKey.style.visibility = "hidden";
   await app.session?.notePause();
   const resume = big("jouer", 640, 650, "continuer", "bubble play keep"), logo = parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs });
-  logo.classList.add("keep");
+  logo.classList.add("keep"); pausedEls = [resume, logo]; app.enPause = true;
   onTap(resume, () => {
+    pausedEls = null; app.enPause = false;
     voice.unlock(); resume.remove(); logo.remove(); stage.root.classList.remove("paused"); homeKey.style.visibility = "visible";
     clock.resume(); voice.resume(); sound.pauseLevel(false);
     // la séance attendait une réponse : la voix redit la consigne
     if (!voice.cur && awaiting() && voice.instruction) voice.say(`${text.data.reprise} ${voice.instruction}`);
   });
 }
-// quitter l'entraînement libre : l'activité en cours est abandonnée (engine/clock.js) et la scène rangée
-function quitFree() {
+// l'activité en cours est abandonnée pour de bon (engine/clock.js) et la scène rangée
+function abandonActivity() {
   clock.abandon(); voice.abandon();
-  app.screen?.leave(); app.facts?.leave(); lessons.abandon();
+  app.screen?.leave(); app.facts?.leave(); app.dictation?.hide?.(); lessons.abandon();
   for (const s of [app.screen, app.facts]) if (s) { s.resolve = null; s.locked = true; }
-  document.querySelectorAll("#ui .free").forEach((e) => e.remove());
+  // le bernard-l'ermite de la notion du jour sur les additions (notion2)
+  if (app.hermit) { app.hermit.remove(); app.hermit = null; if (app.facts) { app.facts.notion = false; app.facts.hermit = null; } sprites.unload("ermite"); }
+  document.querySelectorAll("#ui .free, #ui .skip").forEach((e) => e.remove());
   mode = null; homeKey.style.visibility = "hidden"; sound.stopMusic();
-  showHome({ done: true });
+}
+// quitter l'entraînement libre
+function quitFree() { abandonActivity(); showHome({ done: true }); }
+// terminer la séance en pause, depuis l'espace parent (décision du parent du 27 septembre : l'enfant n'a pas de
+// bouton d'arrêt) : elle est enregistrée comme interrompue (terminée : non, sans récompense), retour à l'accueil
+async function endPausedSession() {
+  if (!pausedEls || !app.session) return;
+  pausedEls.forEach((e) => e.remove()); pausedEls = null; app.enPause = false;
+  await app.session.interrupt();
+  abandonActivity(); frieze.show(false); stage.root.classList.remove("paused"); sound.pauseLevel(false);
+  showHome({ done: await doneToday(store) });
 }
 onTap(homeKey, () => { pop(homeKey); if (mode === "seance") pauseSession(); else if (mode === "libre") quitFree(); });
 async function freeTraining() {

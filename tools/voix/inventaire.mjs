@@ -5,7 +5,9 @@
 // Le domaine de chaque nombre est écrit ici, à côté de la règle du code qui le produit ; un gabarit à
 // nombre ajouté dans textes.json sans règle ici fait échouer l'inventaire (et donc les tests).
 import { readFileSync } from "node:fs";
-import { decompose, fill, sentences } from "../../app/js/engine/phrases.js";
+import { decompose, fill, hundredsWords, sentences } from "../../app/js/engine/phrases.js";
+import { e7Value, levelValues } from "../../app/js/modules/numberline/generator.js";
+import { e7Words } from "../../app/js/modules/numberline/dictation.js";
 
 const CONTENT = new URL("../../app/content/", import.meta.url);
 export const lireContenu = () => Object.fromEntries(["textes", "lecons", "cartes", "module1", "module2", "seance"].map((k) => [k, JSON.parse(readFileSync(new URL(`${k}.json`, CONTENT), "utf8"))]));
@@ -14,6 +16,9 @@ const range = (a, b, s = 1) => { const out = []; for (let v = a; v <= b; v += s)
 const TOUS = range(0, 100); // tout nombre de la ligne graduée (le module 1 va de 0 à 100)
 // au plus autant d'étoiles gagnées dans une séance dites au bilan ; au-delà, la synthèse du navigateur prend le relais
 export const ETOILES_MAX = 60;
+// le score du défi record (lot 2, étape 7, modules/facts/challenge.js) et le record dit quand il n'est pas battu :
+// au plus autant de bonnes réponses en une minute (au-delà, la synthèse du navigateur prend le relais)
+export const DEFI_MAX = 60;
 // les sauts d'une question « sauter » : 1 à 4 (generator.js, makeJump)
 const SAUTS_MAX = 4;
 
@@ -21,7 +26,7 @@ const SAUTS_MAX = 4;
 export const additions = (max = 10) => range(0, max).flatMap((a) => range(0, max - a).map((b) => ({ a, b, n: a + b })));
 
 // les fragments qui ne sont jamais dits seuls : ils remplissent un autre gabarit
-const FRAGMENTS = new Set(["unSaut", "sauts", "uneEtoile", "desEtoiles", "uneDizaine", "desDizaines", "uneUnite", "desUnites"]);
+const FRAGMENTS = new Set(["unSaut", "sauts", "uneEtoile", "desEtoiles", "uneDizaine", "desDizaines", "uneUnite", "desUnites", "centaineUn", "centainesPlus", "dizaineUn", "uniteUn", "placesUnites", "placesDizainesUnites"]);
 
 // clé de textes.json -> liste des valeurs de ses {variables}
 function domaines(C) {
@@ -43,20 +48,30 @@ function domaines(C) {
   const milieux = M1.filter((c) => c.formats.includes("estimer")).map((c) => ({ n: (c.min + c.max) / 2 }));
   // seules les cartes qui se gagnent déjà sont dites (celles qui attendent leur anecdote ne se gagnent pas)
   const cartes = C.cartes.cartes.filter((c) => c.anecdote).map((c) => ({ nom: c.nomLu ?? c.nom }));
+  // lot 2, étape 8 : les nombres jusqu'à 1 000, seulement ceux que les niveaux 9 à 13 peuvent produire
+  // (generator.js, levelValues : lignes, départs, nombres dictés, cibles « estimer ») ; docs/SPEC-LOT2.md, section 4
+  const N = (n) => M1.find((c) => c.niveau === n) ?? null, vals = (ns) => [...new Set(ns.flatMap((n) => (N(n) ? levelValues(N(n)) : [])))].filter((v) => v > 100);
+  const lignes1000 = vals([9, 10, 11]), dictee = N(12)?.nombres ?? [], estimer1000 = N(13)?.cibles ?? [], grands = [...new Set([...lignes1000, ...dictee, ...estimer1000])];
+  const departs1000 = M1.filter((c) => c.niveau >= 9 && c.departs).flatMap((c) => c.departs);
+  const avecNombre = (xs) => xs.map((n) => ({ n }));
   return {
+    // lot 2, étape 8 : la dictée, la correction E6 (décomposition) et E7 (écrit comme on l'entend)
+    ecrire: avecNombre(dictee),
+    "erreur.E6": grands.filter((n) => n < 1000).map((n) => ({ n, ...hundredsWords(T, n) })),
+    "erreur.E7": dictee.filter((n) => e7Value(n) !== null).map((n) => e7Words(n, T)),
     accueil: noms.map((mascotte) => ({ mascotte })),
     nomChoisi: noms.map((mascotte) => ({ mascotte })),
     nomTouche: noms.map((nom) => ({ nom })),
     nomValider: noms.map((nom) => ({ nom })),
     sauter: sauter.map(({ a, b }) => ({ a, sauts: sautsDe(b) })),
-    "erreur.E3": [...departs].map((a) => ({ a })),
+    "erreur.E3": [...departs, ...departs1000].map((a) => ({ a })),
     "erreur.E3sauter": [...new Set(sauter.map((s) => s.a))].map((a) => ({ a })),
     "erreur.E5": e5,
-    bonneReponse: TOUS.map((n) => ({ n })),
-    placer: TOUS.map((n) => ({ n })),
-    estimer: TOUS.map((n) => ({ n })),
-    guideDepart: TOUS.map((a) => ({ a })),
-    guideMilieu: milieux,
+    bonneReponse: [...TOUS, ...grands].map((n) => ({ n })),
+    placer: [...TOUS, ...lignes1000].map((n) => ({ n })),
+    estimer: [...TOUS, ...estimer1000].map((n) => ({ n })),
+    guideDepart: [...TOUS, ...lignes1000.filter((v) => v % 10 === 0)].map((a) => ({ a })),
+    guideMilieu: [...milieux, ...(N(13) ? [{ n: (N(13).min + N(13).max) / 2 }] : [])],
     recompense: range(0, ETOILES_MAX).map((n) => ({ etoiles: etoiles(n) })),
     serieBonus: [{ n: C.cartes.serie.bonus }],
     fait: faits, faitTrouDroite: faits, faitTrouGauche: faits, faitCorrection: faits,
@@ -67,6 +82,9 @@ function domaines(C) {
     // lot 2, étape 6 : le cadre de 10 (le nombre de poissons déjà dans la boîte), le double + 1 (le double)
     aideCadre: range(1, 9).map((k) => ({ k })),
     aideDoublePlus: range(1, 4).map((d) => ({ d })),
+    // le défi record : « {n} bonnes réponses ! » (2 ou plus ; une seule : defiScoreUn), le record à battre (1 ou plus)
+    defiScore: range(2, DEFI_MAX).map((n) => ({ n })),
+    defiPasRecord: range(1, DEFI_MAX).map((n) => ({ n })),
     carteNouvelle: cartes, carteDoublon: cartes, recifCarte: cartes,
   };
 }
@@ -101,5 +119,8 @@ export function inventaire(C = lireContenu()) {
   if (C.cartes.legendaireLu) add(C.cartes.legendaireLu, "cartes.legendaireLu");
   // les sauts comptés à voix haute (tortue, leçons, aide) : un nombre seul, par sauts ou par valeurs
   for (const n of TOUS) add(String(n), "comptage");
+  // lot 2, étape 8 : les nombres des lignes des niveaux 9 à 11, comptés pendant les corrections
+  const M1 = C.module1.niveaux;
+  for (const c of M1.filter((x) => x.niveau >= 9 && x.niveau <= 11)) for (const n of levelValues(c)) if (n > 100) add(String(n), "comptage");
   return out;
 }

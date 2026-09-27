@@ -7,7 +7,7 @@ import { readFileSync } from "node:fs";
 import { IDBFactory } from "fake-indexeddb";
 import { Store } from "../../app/js/engine/store.js";
 import { rng } from "../../app/js/engine/ocean.js";
-import { addCard, dateOf, goldenStar, goodWeeks, legendaryFor, nextZone, pickCard, quotaAt, Rewards, schoolWeek, schoolWeeks, shinyDraw } from "../../app/js/session/rewards.js";
+import { addCard, dateOf, goldenStar, goodWeeks, legendaryFor, nextZone, pickCard, quotaAt, Rewards, schoolWeek, schoolWeeks, shinyChance, shinyDraw } from "../../app/js/session/rewards.js";
 
 const load = (f) => JSON.parse(readFileSync(new URL(`../../app/content/${f}`, import.meta.url)));
 const cartes = load("cartes.json"), cal = load("calendrier.json");
@@ -65,15 +65,32 @@ test("doublons : au-dessus du quota un doublon même si la zone est incomplète,
   const full = own(L); assert.ok(full[pickCard(cartes.cartes, full, { ...lagon, nouvelle: true }, r).id]);
 });
 
-test("brillantes : 20 % des tirages (graine fixe, 1 000 tirages, écart de moins de 3 points), plus la règle du 3e doublon", () => {
-  const r = rng(2026); let n = 0; for (let i = 0; i < 1000; i++) if (shinyDraw(r, cartes.brillanteHasard)) n++;
-  assert.ok(Math.abs(n / 1000 - 0.2) < 0.03, `${n} brillantes sur 1000`);
-  assert.equal(cartes.brillanteHasard, 0.2);
-  const c = cartes.cartes[0];
-  let o = addCard({}, c, 3, 1, true); assert.deepEqual([o.nouvelle, o.devientBrillante, o.parTirage], [true, true, true]);
-  o = addCard(o.owned, c, 3, 2, true); assert.deepEqual([o.devientBrillante, o.parTirage], [false, false]); // déjà brillante
-  o = addCard({}, c, 3, 1, false); for (let i = 0; i < 3; i++) o = addCard(o.owned, c, 3, 2 + i, false);
-  assert.equal(o.devientBrillante, true); assert.equal(o.parTirage, false); // 3e doublon
+test("brillantes (décision du parent du 27 septembre 2026) : 20 % pour une carte nouvelle, 5 % pour un doublon (graine fixe, 1 000 tirages, écart de moins de 3 points) ; plus de règle du 3e doublon", () => {
+  assert.equal(cartes.brillanteNouvelle, 0.2); assert.equal(cartes.brillanteDoublon, 0.05);
+  assert.ok(!("brillante" in cartes) && !("brillanteHasard" in cartes), "anciens réglages retirés de cartes.json");
+  const c = cartes.cartes[0], d = cartes.cartes[1];
+  // la chance dépend de la carte : nouvelle ou déjà possédée
+  assert.equal(shinyChance(cartes, {}, c), 0.2); assert.equal(shinyChance(cartes, own([c]), c), 0.05); assert.equal(shinyChance(cartes, own([c]), d), 0.2);
+  for (const [p, attendu] of [[shinyChance(cartes, {}, c), 0.2], [shinyChance(cartes, own([c]), c), 0.05]]) {
+    const r = rng(2026); let n = 0; for (let i = 0; i < 1000; i++) if (shinyDraw(r, p)) n++;
+    assert.ok(Math.abs(n / 1000 - attendu) < 0.03, `${n} brillantes sur 1000 (attendu ${attendu})`);
+  }
+  let o = addCard({}, c, 1, true); assert.deepEqual([o.nouvelle, o.devientBrillante, o.parTirage], [true, true, true]);
+  o = addCard(o.owned, c, 2, true); assert.deepEqual([o.devientBrillante, o.parTirage], [false, false]); // déjà brillante
+  // sans tirage, aucun nombre de doublons ne rend la carte brillante
+  o = addCard({}, c, 1, false); for (let i = 0; i < 6; i++) { o = addCard(o.owned, c, 2 + i, false); assert.equal(o.devientBrillante, false); }
+  assert.equal(o.owned[c.id].n, 7); assert.equal(o.owned[c.id].brillante, false);
+  // une carte déjà brillante sur la tablette (ancienne règle du 3e doublon) le reste
+  o = addCard({ [c.id]: { n: 4, premiere: 1, brillante: true } }, c, 9, false); assert.equal(o.owned[c.id].brillante, true); assert.equal(o.devientBrillante, false);
+});
+
+test("brillantes : le trésor tire 20 % pour une carte nouvelle et 5 % pour un doublon", async () => {
+  const { rw } = await fresh(cartes, cal, at("2026-09-28")), c = cartes.cartes[0];
+  // un tirage à 0,1 : brillante si c'est une carte nouvelle (0,1 < 0,2), pas si c'est un doublon (0,1 ≥ 0,05)
+  let g = await rw.win(c, () => 0.1, at("2026-09-28")); assert.equal(g.brillante, true);
+  const d = cartes.cartes[1]; await rw.win(d, () => 0.9, at("2026-09-28"));
+  g = await rw.win(d, () => 0.1, at("2026-09-29")); assert.deepEqual([g.nouvelle, g.brillante], [false, false]);
+  g = await rw.win(d, () => 0.04, at("2026-09-30")); assert.deepEqual([g.nouvelle, g.brillante, g.devientBrillante], [false, true, true]);
 });
 
 test("un coquillage ne donne jamais plus de cartes nouvelles que le quota ; ensuite des doublons", async () => {

@@ -6,7 +6,7 @@ Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail 
 
 Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `docs/PROMPT-LOT2.md`. Une étape = une session = une demande de fusion vers `main`.
 
-**Où en est-on (27 septembre 2026, 17 h, noté par la conversation de conception)** : étapes 1 à 3 faites et fusionnées (PR #11, #13, #14). **Étapes 4 à 6 à faire ensemble**, sur une seule branche, avec une recette allégée à chaque étape et une recette complète à la fin (section « Prompt pour enchaîner plusieurs étapes » de `docs/PROMPT-LOT2.md`). Décisions du parent à reprendre : choix des sons (rubrique « Reprise de l'étape 3 » : bruitages « a », les trois musiques tirées au hasard ; débit 64 kbit/s par défaut) ; points ouverts dans `docs/JOURNAL-CONCEPTION.md` (brillantes, cran « plus facile »).
+**Où en est-on (27 septembre 2026, soir)** : étapes 1 à 6 faites et fusionnées (PR #11, #13, #14, #16) ; **étapes 7 à 9 faites** sur la branche de la PR #17, avec les quatre corrections de la relecture extérieure (aide passable, fin de séance en pause par le parent, cran « plus facile » sans promotion, stagnation du module 2) ; bilan dans `docs/BILAN-LOT2.md`. **Lot 2 terminé** : reste à fusionner la PR #17 et à essayer sur la tablette. Décisions du parent du 27 septembre : brillantes à 20 % pour une carte nouvelle et 5 % pour un doublon, sans règle du 3e doublon ; cran « plus facile » : moteur inchangé, parade dans l'espace parent (`docs/GUIDE-PARENT.md`).
 
 | Étape | Contenu | État |
 | --- | --- | --- |
@@ -16,9 +16,108 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 | 4 | Son, intégration : bruitages, musique, mixage, réglages du parent | fait (branche `claude/loving-tesla-rtv3o5`, https://github.com/js2c/Maths-CE1/pull/16) |
 | 5 | Atelier : bernard-l'ermite, cadre de 10, maison des nombres, double + 1 | fait (même branche, même demande de fusion) |
 | 6 | Module 2 comme notion du jour : familles 3 à 7, formes à trou, leçons L4 à L6, alternance, module imposé, point de départ étendu | fait (même branche, même demande de fusion) |
-| 7 | Défi record, grille des 66 additions, progression du module 2 dans l'espace parent | à faire |
-| 8 | Nombres jusqu'à 1 000 (`docs/SPEC-COMPLEMENTS.md`, partie A) | à faire |
-| 9 | Bilan : `docs/BILAN-LOT2.md`, guide du parent, recette complète sur l'année | à faire |
+| 7 | Défi record, grille des 66 additions, progression du module 2 dans l'espace parent | fait (branche `claude/youthful-tesla-rtkgta`, https://github.com/js2c/Maths-CE1/pull/17) |
+| 8 | Nombres jusqu'à 1 000 (`docs/SPEC-COMPLEMENTS.md`, partie A) | fait (même branche, même demande de fusion) |
+| 9 | Bilan : `docs/BILAN-LOT2.md`, guide du parent, recette complète sur l'année ; corrections de la relecture extérieure | fait (même branche, même demande de fusion) |
+
+### Reprise des étapes 7 à 9
+
+Pour reprendre si la session s'est arrêtée : branche `claude/youthful-tesla-rtkgta` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 2, étapes 7 à 9 (en cours) » (https://github.com/js2c/Maths-CE1/pull/17).
+
+**Étape en cours :** aucune ; **étapes 7 à 9 terminées**, recette complète faite (tableau dans `docs/BILAN-LOT2.md`, section « Recette complète »), demande de fusion https://github.com/js2c/Maths-CE1/pull/17 prête (sortie du brouillon). L'étape 9 a été reprise le 27 septembre au soir avec quatre corrections demandées par le parent après une relecture extérieure (ci-dessous).
+
+**Corrections du 27 septembre (relecture extérieure, décisions du parent ; faites au début de l'étape 9) :**
+
+1. **Aide des additions passable** (`modules/facts/screen.js`, `skippable`) : le coquillage et l'aide affichée d'emblée du cran « plus facile » créent dès leur début le bouton « passer » habituel (`skipKey`, même dessin, même place, libellé « passer l'aide ») ; un toucher coupe la voix et l'animation (la tortue et ses sauts sont arrêtés par `stop`/`guard`, `lineAid`), range l'appui (calque des aides, ligne) et rend le pavé aussitôt (40 à 60 ms mesurés, parcours `tests/e2e/aide-passer.mjs`). Les exemples guidés et les corrections passent aussi `guard` à la tortue (elle ne continue plus de sauter derrière). Mesures à vitesse réelle : `recette-durees.mjs`, section « aide ».
+2. **Sortie de la pause par le parent** (`main.js`, `endPausedSession` ; `parent.js`, `pauseBlock` ; `session.js`, `interrupt`) : pas de bouton d'arrêt pour l'enfant ; pendant une pause, l'espace parent montre en haut « Terminer la séance… », puis une confirmation (« Oui, terminer la séance » / « Annuler »). La séance est enregistrée interrompue (`terminee: false`, `arreteeParParent: true`, pas d'étape « récompense »), l'activité est abandonnée comme l'entraînement libre (`abandonActivity` : horloge, voix, leçon, écrans, bernard-l'ermite, boutons « passer »), et l'accueil revient avec « jouer » (une autre séance est possible le même jour). Parcours `tests/e2e/pause-parent.mjs`.
+3. **Cran « plus facile », additions** (`runner.js`, `warmup.js`) : une réponse avec l'aide affichée d'emblée est enregistrée `aideDEmblee: true` (et non `aide`) et passée comme une aide à `afterFact` : juste, le fait reste dans sa boîte (ni montée, ni voie rapide, ni retour en boîte 1) ; faux, boîte 1 comme toute erreur. **Remplace** la décision de l'étape 6 (« l'aide d'emblée n'est pas comptée comme une aide demandée »). Test unitaire ; guide du parent mis à jour (« consolide sans faire progresser »).
+4. **Stagnation du module 2** (`families.js`, `noteNotion` ; réglage `familles2.stagnation.seances` : 6) : chaque fin de notion du jour sur les additions compte une séance pour la famille en cours (`seancesNotion`) ; à 6, si elle n'est pas acquise, elle est « dépassée » (`depassees`) : `currentFamily` passe à la famille ouverte suivante non acquise ; s'il n'y en a pas, la famille suivante s'ouvre (notée `stagnation`). Sa leçon se joue à sa première notion du jour (règle existante). La famille dépassée reste dans l'échauffement et parmi les « autres familles », et peut encore être acquise (étoile arc-en-ciel). Espace parent : « (en révision) » dans le tableau des familles, et la règle expliquée. Tests unitaires ; simulation ci-dessous.
+
+**Décisions prises (corrections) :**
+
+- Le compteur de stagnation ne compte que les séances où la famille était **la famille en cours** de la notion du jour (une séance de ligne graduée ne compte pas ; les séances d'avant cette version non plus : le compteur part de zéro).
+- Une famille dépassée ne redevient jamais la famille en cours ; quand toutes les familles sont acquises ou dépassées, la famille en cours est le mélange (qui, lui, n'est jamais dépassé).
+- Après « passer l'aide » du coquillage, la consigne est redite (comme après l'aide non passée) ; l'appui compte quand même comme aide demandée (le fait ne monte pas).
+- « Terminer la séance » n'apparaît que pendant une pause de séance (ni pendant l'entraînement libre, que la maison quitte déjà, ni hors séance).
+
+**Fait :**
+
+- Décisions du parent du 27 septembre reportées (SPEC-LOT2 section 5 et points ouverts, JOURNAL-CONCEPTION, GUIDE-PARENT). Brillantes : `cartes.json` (`brillanteNouvelle` 0,2, `brillanteDoublon` 0,05 ; `brillante` et `brillanteHasard` retirés), `rewards.js` (`shinyChance`, `addCard` sans règle du 3e doublon ; une carte déjà brillante le reste : aucun changement de schéma, donc pas de migration), phrase « Ta carte devient brillante ! » retirée (voix refabriquée). Tests `cartes.test.mjs`, `rewards.test.mjs`.
+- Étape 7 (défi record, grille des additions, progression du module 2) : voir ci-dessous.
+- Étape 8 (nombres jusqu'à 1 000) : voir ci-dessous.
+
+**Étape 9, fait :** `docs/BILAN-LOT2.md` (bilan, corrections, recette complète) ; guide du parent relu (lot 2, cran « plus facile » qui consolide sans faire progresser, aide passable, « Terminer la séance », famille « en révision », défauts corrigés retirés) ; `recette-durees.mjs` étendue (niveaux 9 à 13, aides, plus longue attente sans commande) ; option `--defi` de `recette.mjs` ; parcours `aide-passer.mjs` et `pause-parent.mjs` ; simulation : familles dépassées et leçons jouées sur l'année. L'erreur « Cannot read properties of undefined (reading '0') » de `centaines.mjs` ne s'est pas reproduite (un passage propre de plus). Recette complète : tous les critères tenus (voir le bilan).
+
+**Ce qui était prévu pour l'étape 9 (pour mémoire) :** `docs/BILAN-LOT2.md` ; relecture du guide du parent ; recette complète (section 8 de la SPEC-LOT2 : `sim-seances` tous profils à 2 et 5 séances, `recette.mjs --delai 4.5` (ligne et `--module 2`, avec une séance où le défi a lieu : la cible devient 9 à 11 min), `recette-durees.mjs` avec et sans `--passer` (y compris niveaux 9 à 13), tous les parcours Playwright) ; donner le nombre de brillantes en juin par profil (mesure provisoire ci-dessous, étape 8) ; mettre à jour la ligne « Où en est-on », le JOURNAL-CONCEPTION (état), puis finir la demande de fusion https://github.com/js2c/Maths-CE1/pull/17 (description complète, sortir du brouillon). Surveiller une erreur « Cannot read properties of undefined (reading '0') » vue une fois dans `centaines.mjs` et jamais reproduite (trois passages propres).
+
+**Décisions prises (étape 8) :**
+
+- **Niveaux 9 à 13** (`module1.json`) : 9, ligne 0 à 1 000 pas de 100 (0, 500, 1 000 écrits) ; 10, une centaine pas de 10 (départs 100 à 900, extrémités écrites) ; 11, 20 graduations de 1 (douze lignes fixes, de 120-140 à 890-910, dizaines écrites) ; 12, dictée (78 nombres fixes : les neuf centaines rondes, des zéros au milieu comme 307, des dizaines rondes, des « dix-… » comme 317, et d'autres) ; 13, estimer sur 0 à 1 000 (11 cibles, ±60 puis ±40). Ils s'enchaînent après le niveau 8 (voie rapide et montée 8 sur 10 comme ailleurs) ; ligne d'école (k = 1) comme les niveaux 5 à 8.
+- **Voix** : seulement les nombres que ces réglages peuvent produire (`levelValues`), d'où les lignes du niveau 11 et la dictée en listes fixes : 2 004 phrases de plus, **26,9 Mo** de voix en tout (estimation avant fabrication : 27,2 Mo), sous le plafond de 40 Mo ; pas de solution de repli nécessaire.
+- **Pièges** : E6 remplace E2 et E5 au-delà de 100 (70 pour 700, 37 pour 370, 37 ou 370 pour 307, 437 pour 347) ; E7 (3007 pour 307, 30017 pour 317, 40040 pour 440) seulement en dictée (ces nombres ne sont pas sur la ligne) ; E3 garde son sens (340 au lieu de 347 sur 340-360 donne 7).
+- **Petits chaluts** : les niveaux 9 à 13 sont des lignes d'école, sans bouées ; la « bouée géante à chalut » de la SPEC devient un petit chalut (sac de mailles et flotteur orange) au-dessus de chaque graduation de centaine.
+- **Dictée** : la voix dit « Écris le nombre 307. » (ou « Tape le nombre 307 sur le pavé. ») ; le pavé des additions, l'ardoise ne montre que le nombre tapé (jusqu'à 5 chiffres, pour reconnaître 3007 ou 30017) ; exemple guidé : le nombre décomposé et dit, puis écrit ; correction : la phrase E7 (ou E6, NSP, autre), puis la décomposition en chaluts, filets et poissons avec les chiffres dessous (le chiffre de la place vide en rouge), le nombre sur l'ardoise, « C'était 307. ». Pas de coquillage d'aide en dictée.
+- **E6 sur la ligne** : la décomposition (sans les chiffres) au-dessus de la ligne pendant 2,8 s, puis la suite habituelle.
+- **L10** : le texte de la SPEC ; le comptage des filets est dit filet par filet (« dix, vingt, … cent ! »), le compteur à côté du chalut ; « trois-cents » : 300 écrit en grand, le 3 en rouge ; 307 : le 0 clignote. Jouée à l'entrée du niveau 9 et quand E6 revient deux fois (comme L1 à L3 pour leurs erreurs) ; sans le bernard-l'ermite (la SPEC-COMPLÉMENTS confie les centaines à la tortue ; la leçon se joue sur le calque des aides, la pieuvre à côté).
+- **Arcs de saut** : un nombre à trois chiffres ne tient pas entre deux graduations serrées (niveau 11) ; l'arc n'a alors pas d'étiquette, la voix compte toujours.
+- **Mémoire** : le chalut (11 images) est sur une planche « centaines » (19 Mo décodés en @2x) chargée seulement pour L10, la dictée et la correction E6, pas sur « aides » (chargée au démarrage).
+- **Textes nouveaux, à valider** : « Écris le nombre 307. », « Tape le nombre 307 sur le pavé. », « Regarde d'abord comment on fait. » (exemple guidé de la dictée), « 307 : 3 centaines, 0 dizaine, 7 unités. » (E6, singulier pour 0 et 1 comme dans la SPEC), « On n'écrit pas 300 puis 7 : le 7 prend la place des unités. » / « … puis 17 : le 17 prend la place des dizaines et des unités. » (E7).
+
+**Écarts avec la spécification (étape 8) :**
+
+- Les quatre cartes rares « liées aux nouveaux décors » (SPEC-COMPLÉMENTS, Récompenses) ne sont pas ajoutées (contenu à générer par le parent ; hors du tableau de l'étape 8).
+- Réglage « Modules activés » de la SPEC-COMPLÉMENTS : sans objet (la partie A est une extension du module 1, ouverte par le niveau 8 ou le point de départ).
+- Petits chaluts au-dessus des graduations au lieu de « bouées géantes » (voir les décisions).
+
+**Brillantes en juin (décision du parent du 27 septembre, mesure provisoire de l'étape 8, simulation sur l'année, zones 3 et 4 prêtes) :**
+
+| Profil | 2 séances par semaine | 5 séances par semaine |
+| --- | --- | --- |
+| sait | 13 | 17 |
+| reel | 17 | 19 |
+| diff | 10 | 30 |
+| très dur | 17 | 25 |
+| plus facile | 18 | 22 |
+
+(avant la décision : 56 à 57 à 5 séances par semaine, 13 à 42 à 2 séances). Refait à la recette complète de l'étape 9 (avec les corrections) : sait 13 / 17, reel 17 / 19, diff 13 / 30, très dur 17 / 25, plus facile 14 / 25 (2 / 5 séances par semaine) ; voir `docs/BILAN-LOT2.md`.
+
+**Recette allégée de l'étape 8 (27 septembre 2026) :**
+
+| Critère | Mesure | État |
+| --- | --- | --- |
+| Tests unitaires | 168 sur 168 (dont 7 nouveaux : niveaux 9 à 13, E6 et E7, dictée, estimer, chaluts, décomposition dite, nombres possibles ; L10) ; voix 26,9 Mo, sous 40 Mo | tenu |
+| Simulation sur l'année | niveau 9 atteint à la 9e séance (« sait »), 25e (« reel »), 51e (« diff ») ; niveau 13 à la 13e, 55e (47e à 5 par semaine), jamais pour « diff » à 2 par semaine (93e séance à 5) ; « plus facile » reste au niveau 2 (règle inchangée, parade du parent) ; 60 cartes le 17 juin (15 juin à 5 par semaine), quota jamais dépassé ; alternance jamais rompue | tenu |
+| Parcours `centaines.mjs` | L10 jusqu'au bout ; niveau 9 avec erreur E6 ; niveau 10 placer ; niveau 11 lire ; dictée avec erreur E7 et réponse juste ; niveau 13 estimer ; chaque phrase dite a son fichier | tenu |
+| Parcours `parent.mjs` | point de départ 1 à 13 (rangée resserrée pour tenir dans la carte), le reste inchangé | tenu |
+| Captures regardées | planche de l'atelier (filet, chalut 0, 3 et 10 filets, petits chaluts sur la ligne), L10 (chalut qui se remplit, 307 et son zéro), ligne 0 à 1 000, correction E6, dictée et sa correction ; corrigés : L10 invisible dans les captures (elles venaient après la leçon, jouée en voix accélérée), chaluts trop petits et chiffres sur la ligne pendant E6, anneau décalé sur l'ardoise, étiquettes « 891 892… » qui se chevauchaient, colonnes de la décomposition trop serrées, neuf chaluts sur une rangée | tenu |
+
+**Décisions prises (étape 7) :**
+
+- **Défi record, déroulement** : après la notion du jour (ordre de `seance.json`), une minute de chronomètre (`dureeS`), faits en boîte 3 ou plus mélangés (tous les faits avant d'en reposer un, jamais deux fois de suite le même), formes à trou comme à l'échauffement au cran conseillé ; **pas de consigne lue par question** (la voix ralentirait tout ; l'ardoise suffit, et la consigne du défi est dite avant le départ), pas d'aide ; « je ne sais pas » reste disponible (il passe la question). Une erreur : bruitage doux, l'ardoise tremble, la bonne réponse reste écrite 0,9 s (`apresErreurMs`), sans correction ; le temps continue. La question en cours quand la bulle est vide n'est pas notée.
+- **Score et record** : le score est le nombre de bonnes réponses ; le premier défi avec au moins une bonne réponse fait le premier record (5 étoiles, « C'est ton premier record ! ») ; ensuite seul un score plus haut le bat (5 étoiles, `etoiles.nouveauRecord`) ; égalé : « Autant que ton record ! Bravo ! » ; en dessous : « Ton record, c'est 12. Tu le battras peut-être la prochaine fois ! » ; aucune bonne réponse : « Ce n'est pas grave, on réessaiera la prochaine fois ! ». Chaque bonne réponse rapporte une étoile (multipliée par le cran, comme partout).
+- **Révision espacée** : les réponses du défi comptent comme les autres (une boîte au plus par séance, une erreur renvoie en boîte 1), conformément à la SPEC-LOT2 (« échauffement, notion du jour et défi confondus »). Pas de protection du cran pendant le défi (elle dirait « On essaie un peu moins dur ? » au milieu de la minute).
+- **Écran** : la bulle-sablier (une bulle de verre pleine d'eau qui baisse, 30 niveaux fabriqués dans l'atelier) à la place du coquillage d'aide ; une perle d'or par bonne réponse sous l'ardoise ; le record est un petit drapeau rouge planté après la perle du record ; à la fin, l'ardoise est rangée et la rangée reste pendant l'annonce. La frise montre un pictogramme de bulle à moitié pleine, seulement pour les séances où le défi aura lieu.
+- **Textes nouveaux, à valider** : « C'est le défi ! Tape le plus de bonnes réponses possible avant que la bulle se vide. Chaque bonne réponse te donne une perle. » (premier défi), « C'est le défi ! Essaie de dépasser le drapeau de ton record. », « Attention… Partez ! », « Fini ! », « 12 bonnes réponses ! » / « Une bonne réponse ! », « C'est ton nouveau record ! Bravo ! », « C'est ton premier record ! Tu essaieras de le battre la prochaine fois. », « Autant que ton record ! Bravo ! », « Ton record, c'est 12. Tu le battras peut-être la prochaine fois ! », « Ce n'est pas grave, on réessaiera la prochaine fois ! ».
+- **Espace parent** : grille des additions 11 × 11 (boîte en couleur et en chiffre, anneau vert « rapide » : temps médian des réponses justes sous le seuil ; « + 0 » en gris avec le temps de base de chaque question ; toucher une case : l'historique du fait) ; tableau des familles (ouverte le, faits bien sus, acquise le, formes à trou ; famille en cours) ; courbe des faits bien sus semaine par semaine (en plus de la réussite et du temps médian) ; bloc « Défi record » ; détail d'une séance : famille du jour, défi et ses réponses à part ; colonnes CSV. Le point de départ du parent n'est plus compté comme une erreur ni un passage d'un fait (défaut trouvé en passant : « faits qui résistent » et export des faits).
+
+**Écarts avec la spécification (étape 7) :**
+
+- Étape « defi » : `minutes` porté à 2 dans `seance.json` (durée maximale de l'étape, consignes et annonce du score comprises) ; le chronomètre lui-même dure 60 s (`dureeS`).
+- La SPEC dit « faits mélangés » ; le défi pose aussi les formes à trou des familles qui les ont ouvertes (comme l'évaluation, qui a les trois formes).
+
+**Points à observer (étape 7) :**
+
+- Records battus rarement dans la simulation (2 à 4 dans l'année) : l'enfant simulé ne gagne pas en vitesse, contrairement à une vraie enfant. À observer : si le record plafonne, la phrase « Ton record, c'est … » revient souvent ; parade possible plus tard : un record par période.
+
+**Recette allégée de l'étape 7 (27 septembre 2026) :**
+
+| Critère | Mesure | État |
+| --- | --- | --- |
+| Tests unitaires | 161 sur 161 (dont 11 nouveaux : défi record, grille, familles, faits bien sus, brillantes) | tenu |
+| Défi dans la simulation (2 séances par semaine, sur l'année) | premier défi à la 6e séance pour les 5 profils ; « reel » : 59 défis sur 64 séances, scores 5 à 14 ; « sait » 16 à 20 ; « diff » 3 à 8 (19 défis sautés faute de 8 faits bien sus) ; séances avec défi : 9,4 à 10,5 min estimées | tenu |
+| Parcours `defi.mjs` | la bulle se vide en 60,0 s ; erreur notée, le défi continue ; score = bonnes réponses notées ; premier record ; record de 20 non battu ; chaque phrase a son fichier ; aucune erreur | tenu |
+| Parcours `parent.mjs` | grille (66 cases dont 21 « + 0 »), historique d'une case, bloc « Défi record », familles avec la famille en cours ; tout le reste inchangé ; aucune erreur | tenu |
+| Captures regardées | planche de l'atelier (bulle à 6 niveaux, perles, drapeau, pictogramme), défi (début, erreur, perles, bulle à moitié, fin avec le drapeau), grille des additions ; corrigés : eau sombre au-dessus de la surface, eau trop proche du fond de la mer, question restée sur l'ardoise à la fin, perles qui se chevauchaient | tenu |
 
 ### Reprise des étapes 4 à 6
 
@@ -46,7 +145,7 @@ Pour reprendre si la session s'est arrêtée : branche `claude/loving-tesla-rtv3
 - **Choix des faits** en notion du jour : une question sur deux sur la règle de la famille en cours (toutes au cran « plus facile »), l'autre sur les faits les plus faibles des autres familles ; un fait nouveau une question de famille sur deux, tant que la limite de la séance (6) et la boîte 1 (8) le permettent ; aux crans « plus dur » et « très dur », les faits nouveaux alternent entre la famille en cours et la suivante.
 - **Appui de chaque question** : celui de la famille en cours si le fait relève de sa règle, sinon celui de la famille du fait ; pour le mélange, l'appui le plus parlant (`aidFor` : ami de 10 → cadre, double → reflet, presque-double → double + 1, + 1 et + 2 → la tortue, sinon la maison).
 - **Exemple guidé** : l'appui avec la réponse, « 3 plus 7, ça fait 10. », « À toi ! Tape la réponse. » ; l'appui est rangé quand le pavé revient (il occupe la même place). Correction en notion du jour : l'appui avec la réponse, puis la phrase de correction ; « passer » comme partout.
-- **Cran « plus facile »** : l'aide « affichée d'emblée » est montrée au début de chaque question (appui sans la réponse, avec sa phrase), puis le pavé revient ; elle n'est pas comptée comme une aide demandée (la séance « plus facile » compte normalement ; sinon aucun fait ne monterait jamais de boîte).
+- **Cran « plus facile »** : l'aide « affichée d'emblée » est montrée au début de chaque question (appui sans la réponse, avec sa phrase), puis le pavé revient ; elle n'est pas comptée comme une aide demandée (la séance « plus facile » compte normalement ; sinon aucun fait ne monterait jamais de boîte). **Remplacé le 27 septembre** (décision du parent, correction 3 de l'étape 9) : un fait réussi avec l'aide d'emblée ne change plus de boîte.
 - **Difficulté persistante** (3 erreurs sur 5) : la leçon de la famille si elle en a une et qu'elle n'a pas été jouée dans la séance, puis un fait déjà bien su.
 - **Nombres de questions** : la durée prime. Avec 30 à 38 questions, la séance d'additions jouée à vitesse réelle (`recette.mjs --delai 4.5 --module 2`) durait 6 min 39 s (39 questions en 4 min 21 s, environ 6,7 s par question) ; relevé à **50 à 60** (`seance.json`, `notion.module2`), c'est la limite de 6 minutes qui arrête l'étape : 8 min 23 s, 56 questions.
 - **Frise** : pendant la notion du jour des additions, le pictogramme est le « + » de l'échauffement.

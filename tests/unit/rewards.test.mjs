@@ -22,7 +22,7 @@ test("le lagon : 15 cartes, noms uniques, communes et rares, une anecdote et une
 
 test("pas de doublon tant que la zone n'est pas complète ; ensuite des doublons ; les raretés pèsent", () => {
   const r = rng(7); let owned = {}; const seen = [];
-  for (let i = 0; i < 15; i++) { const c = pickCard(cartes.cartes, owned, lagon, r); seen.push(c.id); owned = addCard(owned, c, 3).owned; }
+  for (let i = 0; i < 15; i++) { const c = pickCard(cartes.cartes, owned, lagon, r); seen.push(c.id); owned = addCard(owned, c).owned; }
   assert.equal(new Set(seen).size, 15);
   const again = pickCard(cartes.cartes, owned, lagon, r); assert.ok(owned[again.id]);
   // sur beaucoup de premiers tirages, une commune sort plus souvent qu'une rare (poids 3 contre 1)
@@ -34,11 +34,10 @@ test("pas de doublon tant que la zone n'est pas complète ; ensuite des doublons
   for (let i = 0; i < 200; i++) assert.notEqual(pickCard(cartes.cartes, {}, { zones: ["large", "abysses"], poids: cartes.poids }, r).rarete, "legendaire");
 });
 
-test("une carte devient brillante au troisième doublon", () => {
+test("une carte ne devient plus brillante au troisième doublon (décision du parent du 27 septembre 2026)", () => {
   const c = cartes.cartes[0]; let o = {}, r;
-  for (let i = 1; i <= 4; i++) { r = addCard(o, c, 3, 1000 * i); o = r.owned; assert.equal(r.devientBrillante, i === 4); assert.equal(r.nouvelle, i === 1); }
-  assert.deepEqual(o[c.id], { n: 4, premiere: 1000, brillante: true });
-  assert.equal(addCard(o, c, 3).devientBrillante, false);
+  for (let i = 1; i <= 4; i++) { r = addCard(o, c, 1000 * i); o = r.owned; assert.equal(r.devientBrillante, false); assert.equal(r.nouvelle, i === 1); }
+  assert.deepEqual(o[c.id], { n: 4, premiere: 1000, brillante: false });
 });
 
 test("la série : une séance par jour compte, un jour manqué ne la fait pas retomber, bonus toutes les 3 séances", () => {

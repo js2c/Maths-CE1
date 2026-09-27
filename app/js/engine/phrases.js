@@ -21,3 +21,10 @@ export const decompose = (T, n) => {
   const d = Math.floor(n / 10), u = n % 10;
   return { dizaines: d === 1 ? T.uneDizaine : fill(T.desDizaines, { d }), unites: u === 1 ? T.uneUnite : fill(T.desUnites, { u }) };
 };
+
+// l'erreur E6 (lot 2, étape 8) : « 307 : 3 centaines, 0 dizaine, 7 unités. » (singulier pour 0 et 1, comme dans
+// docs/SPEC-COMPLEMENTS.md) ; renvoie les variables { centaines, dizaines, unites } du gabarit erreur.E6
+export const hundredsWords = (T, n) => {
+  const c = Math.floor(n / 100), d = Math.floor(n / 10) % 10, u = n % 10, one = (v, k1, kn, x) => fill(v <= 1 ? T[k1] : T[kn], { [x]: v });
+  return { centaines: one(c, "centaineUn", "centainesPlus", "c"), dizaines: one(d, "dizaineUn", "desDizaines", "d"), unites: one(u, "uniteUn", "desUnites", "u") };
+};

@@ -67,8 +67,8 @@ export class Warmup {
     const now = this.clock(), forme = q.base ? "base" : q.forme ?? "directe", juste = r.value === expected({ ...q, forme });
     await this.store.add("reponses", {
       t: now, seance: this.seance, module: 2, niveau: q.famille ?? 0, question: describeFact(q, forme), forme, donnee: r.value, attendue: expected({ ...q, forme }),
-      juste, tempsMs: r.ms, ecoutes: r.listens, aide: !!r.aide, erreur: juste ? null : r.nsp ? "NSP" : "autre", revient: !!q.revient, anticipe: !!q.anticipe,
-      ...(r.correctionPassee ? { correctionPassee: true } : {}), ...(this.libre ? { libre: true } : {}), ...(q.guide ? { guide: true } : {}), ...(q.passe ? { passe: true } : {}), ...(this.notion ? { notion: true } : {}), ...(this.cran() !== "conseille" ? { cran: this.cran() } : {}),
+      juste, tempsMs: r.ms, ecoutes: r.listens, aide: !!r.aide, ...(r.aideDEmblee ? { aideDEmblee: true } : {}), erreur: juste ? null : r.nsp ? "NSP" : "autre", revient: !!q.revient, anticipe: !!q.anticipe,
+      ...(r.correctionPassee ? { correctionPassee: true } : {}), ...(this.libre ? { libre: true } : {}), ...(q.guide ? { guide: true } : {}), ...(q.passe ? { passe: true } : {}), ...(this.notion ? { notion: true } : {}), ...(this.defi ? { defi: true } : {}), ...(this.cran() !== "conseille" ? { cran: this.cran() } : {}),
     });
     if (q.base) {
       // temps de base : seulement les réponses justes, on garde les dernières
@@ -79,7 +79,7 @@ export class Warmup {
     if (!known && q.nouveau) this.nouveaux++;
     const { nouveau, anticipe, revient, bonus, forme: _f, extra, ...clean } = cur; void nouveau; void anticipe; void revient; void bonus; void _f; void extra;
     // une question qui revient, ou un second passage, ne fait pas monter de boîte (mais une erreur fait redescendre)
-    const f = afterFact(this.c, clean, { juste, ms: r.ms, aide: r.aide, anticipe: q.anticipe || q.revient, seance: this.seance, forme }, limit, now);
+    const f = afterFact(this.c, clean, { juste, ms: r.ms, aide: r.aide || r.aideDEmblee, anticipe: q.anticipe || q.revient, seance: this.seance, forme }, limit, now);
     this.facts = [...this.facts.filter((x) => x.fait !== f.fait), f];
     await this.store.put("faits", f);
     if (!juste && !q.revient) rest.splice(Math.min(rest.length, 3), 0, { ...q, revient: true });

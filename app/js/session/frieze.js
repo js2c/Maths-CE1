@@ -14,10 +14,12 @@ const X0 = 150, X1 = 950, Y = 60, CY = 44, STEP = 52, DOT = 22, GAP = 12;
 export class Frieze {
   // steps : les étapes actives de seance.json (leurs id ont chacun un pictogramme « frise.<id> »)
   constructor(app, steps) {
-    this.app = app; this.steps = steps.filter((s) => app.sprites.atlas.sprites[`frise.${s}`]); this.p = { etape: null, faites: 0, prevues: 0 };
+    this.app = app; this.all = steps.filter((s) => app.sprites.atlas.sprites[`frise.${s}`]); this.steps = this.all; this.p = { etape: null, faites: 0, prevues: 0 };
     this.el = spriteBox(app, { x: X0, y: Y - CY, w: X1 - X0, h: 2 * CY, cls: "hud frieze", still: true, paint: (ctx, px) => this.paint(ctx, px) });
     this.show(false);
   }
+  // les étapes de cette séance : toutes, sauf `sans` (le défi record quand il n'aura pas lieu)
+  only(sans = []) { this.steps = this.all.filter((s) => !sans.includes(s)); this.el.repaint(); }
   show(v) { this.el.style.visibility = v ? "visible" : "hidden"; }
   set(p) { this.p = { ...p }; this.el.repaint(); }
   // le pictogramme de la notion du jour : la ligne graduée (module 1) ou le « + » des additions (module 2)

@@ -13,9 +13,12 @@
 //  - une famille acquise pendant la séance est un niveau franchi (événement « montee » : étoile arc-en-ciel) ;
 //  - sélecteur de difficulté (module2.json, notion.crans) : « plus facile » = formes directes de la famille en
 //    cours, aide affichée d'emblée ; « plus dur » = formes à trou et faits de la famille suivante ; « très dur » =
-//    formes à trou, toutes les familles ouvertes mêlées, et la famille suivante.
+//    formes à trou, toutes les familles ouvertes mêlées, et la famille suivante ; une réussite avec l'aide
+//    affichée d'emblée ne fait pas monter le fait (elle ne le fait pas redescendre non plus) ;
+//  - stagnation (module2.json, familles2.stagnation) : une famille pas acquise après 6 séances où elle était la
+//    notion du jour est dépassée : la suivante devient la famille en cours (avec sa leçon), elle reste en révision.
 import { aidFor, catalog, familyOf, formFor, key, newFact, roomForNew, ruleFacts } from "./facts.js";
-import { currentFamily, isAcquired, trouOpenFor, updateFamilies } from "./families.js";
+import { currentFamily, isAcquired, noteNotion, trouOpenFor, updateFamilies } from "./families.js";
 import { Warmup } from "./warmup.js";
 
 export class Module2Runner {
@@ -115,7 +118,9 @@ export class Module2Runner {
   async record(r, cfg) {
     void cfg;
     const q = r.q, events = [], scratch = [];
-    const res = await this.w.record(q, { value: r.value, ms: r.ms, listens: r.listens, aide: !!r.aide && !q.aideDEmblee || !!q.guide, nsp: r.nsp, correctionPassee: r.correctionPassee }, scratch);
+    // (cran « plus facile », décision du parent du 27 septembre : un fait réussi avec l'aide affichée d'emblée ne
+    // change pas de boîte, comme « juste avec une aide » ; il n'est pas renvoyé en boîte 1 pour autant)
+    const res = await this.w.record(q, { value: r.value, ms: r.ms, listens: r.listens, aide: !!r.aide || !!q.guide, aideDEmblee: !!q.aideDEmblee, nsp: r.nsp, correctionPassee: r.correctionPassee }, scratch);
     if (q.guide) return { etoiles: res.juste ? 1 : 0, events };
     this.count++; if (res.juste) this.ok++;
     // l'erreur : le fait revient 3 questions plus loin (une seule fois)
@@ -136,11 +141,13 @@ export class Module2Runner {
     return { etoiles: res.etoiles, events };
   }
   // fin : la famille a été la notion du jour ; ouverture de la suivante, formes à trou ; taux de la séance
+  // stagnation : la séance compte pour la famille en cours ; au seuil, elle est dépassée (families.js, noteNotion)
   async finish() {
     if (!(this.fam.notion ?? []).includes(this.famille)) this.fam = { ...this.fam, notion: [...(this.fam.notion ?? []), this.famille] };
-    const { st, events } = updateFamilies(this.c0, this.fam, this.w.facts, this.clock(), { seance: this.seance });
-    this.fam = st; this.w.fam = st; await this.save();
-    return { rate: this.count ? this.ok / this.count : null, events: [...this.events, ...events] };
+    const u = updateFamilies(this.c0, this.fam, this.w.facts, this.clock(), { seance: this.seance });
+    const n = noteNotion(this.c0, u.st, this.famille, this.clock(), { seance: this.seance });
+    this.fam = n.st; this.w.fam = n.st; await this.save();
+    return { rate: this.count ? this.ok / this.count : null, events: [...this.events, ...u.events, ...n.events] };
   }
   save() { return this.store?.put("niveaux", this.fam); }
 }

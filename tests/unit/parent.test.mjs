@@ -70,7 +70,7 @@ test("CSV : point-virgule, virgule décimale, guillemets, oui/non", () => {
   const csv = D.toCSV([["a", (r) => r.a], ["b", (r) => r.b], ["c", (r) => r.c]], [{ a: 1.5, b: 'dit "non"; puis', c: true }, { a: null, b: "x", c: false }]);
   assert.equal(csv, 'a;b;c\r\n1,5;"dit ""non""; puis";oui\r\n;x;non\r\n');
   const row = D.toCSV(D.ANSWER_COLUMNS, [{ id: 1, seance: 2, t: at(2026, 9, 1), module: 1, niveau: 3, question: "lire 14", forme: "lire", donnee: 15, attendue: 14, juste: false, tempsMs: 4260, ecoutes: 2, aide: false, erreur: "E1" }]).split("\r\n")[1];
-  assert.equal(row, "1;2;2026-09-01 18:00:00;1;3;lire 14;lire;15;14;non;4,3;2;non;E1;non;non;non;non;non;");
+  assert.equal(row, "1;2;2026-09-01 18:00:00;1;3;lire 14;lire;15;14;non;4,3;2;non;E1;non;non;non;non;non;;non;non"); // lot 2, étape 7 : notion du jour, défi record
 });
 
 test("sauvegarde : pas de code parent ; contrôle avant restauration", () => {
@@ -160,4 +160,45 @@ test("export : le cran choisi, le cran à la fin et les descentes de chaque séa
   const cols = D.SESSION_COLUMNS.map(([k]) => k); assert.ok(cols.includes("cran choisi") && cols.includes("descentes de cran"));
   const row = D.toCSV(D.SESSION_COLUMNS.filter(([k]) => k.includes("cran")), [{ cranDepart: "tresdur", cran: "dur", descentes: [{}] }]).split("\r\n")[1];
   assert.equal(row, "très dur;plus dur;1");
+});
+
+// ---------------------------------------------------------------- lot 2, étape 7 : grille des additions, module 2, défi record
+const M2 = JSON.parse(readFileSync(new URL("../../app/content/module2.json", import.meta.url)));
+const fait = (k, boite, hist = []) => { const [a, b] = k.split("+").map(Number); return { fait: k, a, b, boite, historique: hist, tempsMedian: hist.filter((x) => x.juste).map((x) => x.ms).sort((p, q) => p - q)[0] ?? null, prochain: at(2026, 10, 9) }; };
+
+test("grille des additions : 11 × 11, 45 faits colorés par boîte et rapidité, 21 cases « + 0 » avec le temps de base, le reste hors grille", () => {
+  const faits = [fait("3+4", 3, [{ t: at(2026, 10, 1), juste: true, ms: 1500, boite: 2, apres: 3 }]), fait("2+2", 1, [{ t: at(2026, 10, 1), juste: false, ms: 9000, boite: 2, apres: 1 }, { t: at(2026, 10, 2), juste: true, ms: 9000, boite: 1, apres: 1 }]), fait("5+5", 3, [{ t: at(2026, 10, 1), parent: true, boite: null, apres: 3 }])];
+  const reps = [{ forme: "base", question: "4 + 0", juste: true, tempsMs: 1800 }, { forme: "base", question: "4 + 0", juste: true, tempsMs: 2200 }, { forme: "base", question: "0 + 7", juste: false, tempsMs: 900 }];
+  const G = D.additionGrid(faits, reps, { c: M2, baseMs: 2000 }), cells = G.flat();
+  assert.equal(G.length, 11); assert.ok(G.every((r) => r.length === 11));
+  assert.equal(cells.filter((x) => x.kind === "fait").length, 45); assert.equal(cells.filter((x) => x.kind === "base").length, 21); assert.equal(cells.filter((x) => x.kind === "hors").length, 55);
+  assert.deepEqual([G[3][4].boite, G[3][4].rapide], [3, true]);
+  assert.deepEqual([G[2][2].boite, G[2][2].rapide, G[2][2].erreurs, G[2][2].passages], [1, false, 1, 2]);
+  assert.deepEqual([G[5][5].erreurs, G[5][5].passages], [0, 0]); // le point de départ du parent n'est ni un passage ni une erreur
+  assert.equal(G[1][1].boite, 0); // pas encore rencontré
+  assert.equal(G[4][0].tempsMedian, 2000); assert.equal(G[0][7].tempsMedian, null); // seulement les réponses justes
+  const H = D.factHistory(faits[1]); assert.equal(H.length, 2); assert.ok(H[0].date > H[1].date); assert.deepEqual([H[1].juste, H[1].avant, H[1].apres], [false, 2, 1]);
+});
+
+test("familles du module 2 pour le parent : ouverte, acquise, formes à trou, faits bien sus, famille en cours", () => {
+  const st = { module: 2, ouvertes: [1, 2, 3], ouvertures: [{ famille: 1, date: 0 }, { famille: 2, date: 0 }, { famille: 3, date: at(2026, 10, 3), parent: true }], acquises: [2], obtenus: [{ famille: 2, date: at(2026, 10, 2) }], trou: [2], notion: [], lecons: [] };
+  const faits = ["1+1", "2+2", "3+3", "4+4", "5+5"].map((k) => fait(k, 3));
+  const S = D.familiesSummary(M2, st, faits), f = (id) => S.familles.find((x) => x.id === id);
+  assert.equal(S.enCours, 1); assert.equal(S.familles.length, 7);
+  assert.deepEqual([f(2).acquise, f(2).trou, f(2).bienSus, f(2).total], [true, true, 5, 5]);
+  assert.deepEqual([f(3).ouverte, f(3).ouverteParent, f(3).bienSus], [true, true, 1]); // 5 + 5 est aussi un ami de 10
+  assert.equal(f(4).ouverte, false);
+  assert.equal(D.familiesSummary(M2, null, []).enCours, 1);
+});
+
+test("faits bien sus semaine par semaine (d'après l'historique des faits) ; résumé du défi record", () => {
+  const faits = [fait("3+4", 3, [{ t: at(2026, 9, 29), juste: true, ms: 1500, boite: 1, apres: 2 }, { t: at(2026, 10, 7), juste: true, ms: 1500, boite: 2, apres: 3 }]), fait("1+1", 1, [{ t: at(2026, 9, 29), juste: true, ms: 1000, boite: 2, apres: 3 }, { t: at(2026, 10, 14), juste: false, ms: 5000, boite: 3, apres: 1 }])];
+  const W = D.weeklySolid(faits, at(2026, 10, 15));
+  assert.deepEqual(W.map((w) => w.n), [1, 2, 1]);
+  const C = D.challengeSummary({ record: 12, date: 5, scores: [{ t: 1, score: 0 }, { t: 2, score: 9 }, { t: 3, score: 7 }, { t: 4, score: 9 }, { t: 5, score: 12 }] }, []);
+  assert.deepEqual(C.scores.map((x) => x.record), [false, true, false, false, true]); assert.equal(C.defis, 5); assert.equal(C.record, 12);
+  assert.deepEqual(D.challengeSummary(undefined, []), { record: null, date: null, defis: 0, scores: [] });
+  // les réponses du défi forment leur propre groupe dans le détail d'une séance
+  const g = D.answersOf([{ seance: 1, t: 1, module: 2 }, { seance: 1, t: 2, module: 1 }, { seance: 1, t: 3, module: 2, defi: true }], 1);
+  assert.deepEqual(g.map((x) => [x.module, !!x.defi]), [[2, false], [1, false], [2, true]]);
 });

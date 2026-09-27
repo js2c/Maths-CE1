@@ -1,5 +1,5 @@
 {
-  "_doc": "Module 1, ligne graduée. Paramètres de génération par niveau (docs/SPEC.md, « Module 1 »). labels : quelles graduations portent leur nombre. k : 0 corde à bouées, 1 ligne d'école. choix : nombre de propositions au format lire.",
+  "_doc": "Module 1, ligne graduée. Paramètres de génération par niveau (docs/SPEC.md, « Module 1 »). labels : quelles graduations portent leur nombre. k : 0 corde à bouées, 1 ligne d'école. choix : nombre de propositions au format lire. Lot 2, étape 8 (docs/SPEC-COMPLEMENTS.md, partie A) : niveaux 9 à 13, nombres jusqu'à 1 000 ; ils s'ouvrent quand le niveau 8 est acquis (ou par le point de départ du parent). departs : les débuts de ligne possibles (niveau 11 : douze lignes de 20 graduations, choisies pour varier les centaines et les dizaines sans multiplier les phrases à fabriquer) ; nombres (niveau 12, format « écrire », la dictée au pavé numérique) : la liste des nombres dictés (des centaines rondes, des zéros au milieu comme 307, des dizaines rondes, des « dix-… » comme 317, et d'autres) ; cibles (niveau 13) : les nombres à placer sans graduations. Chaque nombre que ces réglages peuvent produire a sa phrase fabriquée (tools/voix/inventaire.mjs, valeursPossibles) : ajouter un départ ou un nombre demande de relancer la fabrication de la voix.",
   "niveaux": [
     { "niveau": 1, "min": 0, "max": 10, "pas": 1, "labels": "tous-sauf-cible", "formats": ["lire", "sauter"], "k": 0, "choix": 3 },
     { "niveau": 2, "min": 0, "max": 10, "pas": 1, "labels": [0, 5, 10], "formats": ["lire", "placer"], "k": 0, "choix": 3 },
@@ -8,7 +8,12 @@
     { "niveau": 5, "min": 0, "max": 100, "pas": 10, "labels": [0, 50, 100], "formats": ["lire", "placer"], "k": 1, "choix": 4 },
     { "niveau": 6, "etendue": 20, "pas": 1, "departs": [10, 20, 30, 40, 50, 60, 70, 80], "labels": "dizaines", "formats": ["lire", "placer"], "k": 1, "choix": 4 },
     { "niveau": 7, "pas": [1, 10], "labels": "deux-voisines", "formats": ["lire"], "k": 1, "choix": 4 },
-    { "niveau": 8, "min": 0, "max": 100, "graduations": false, "labels": "extremites", "formats": ["estimer"], "tolerances": [8, 5], "k": 1 }
+    { "niveau": 8, "min": 0, "max": 100, "graduations": false, "labels": "extremites", "formats": ["estimer"], "tolerances": [8, 5], "k": 1 },
+    {"niveau": 9, "min": 0, "max": 1000, "pas": 100, "labels": [0, 500, 1000], "formats": ["lire", "placer"], "k": 1, "choix": 4},
+    {"niveau": 10, "etendue": 100, "pas": 10, "departs": [100, 200, 300, 400, 500, 600, 700, 800, 900], "labels": "extremites", "formats": ["lire", "placer"], "k": 1, "choix": 4},
+    {"niveau": 11, "etendue": 20, "pas": 1, "departs": [120, 150, 230, 340, 380, 450, 520, 560, 670, 710, 780, 890], "labels": "dizaines", "formats": ["lire", "placer"], "k": 1, "choix": 4},
+    {"niveau": 12, "formats": ["ecrire"], "nombres": [100, 102, 107, 119, 140, 145, 151, 181, 200, 202, 206, 211, 252, 253, 269, 275, 290, 300, 302, 305, 311, 331, 332, 368, 370, 400, 408, 409, 415, 440, 463, 467, 477, 489, 500, 507, 509, 512, 538, 540, 587, 599, 600, 603, 605, 613, 638, 640, 676, 692, 698, 700, 706, 709, 714, 754, 759, 770, 774, 784, 800, 807, 809, 810, 813, 828, 837, 858, 872, 900, 906, 907, 911, 922, 940, 941, 947, 949]},
+    {"niveau": 13, "min": 0, "max": 1000, "graduations": false, "labels": "extremites", "formats": ["estimer"], "tolerances": [60, 40], "cibles": [100, 150, 200, 250, 300, 400, 600, 700, 750, 800, 900], "k": 1}
   ],
   "procheExtremite": 0.25,
   "reglesAdaptation": {

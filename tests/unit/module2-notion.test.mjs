@@ -9,7 +9,7 @@ import { IDBFactory } from "fake-indexeddb";
 import { Store } from "../../app/js/engine/store.js";
 import { rng } from "../../app/js/engine/ocean.js";
 import { aidFor, catalog, DAY, expected, ruleFacts } from "../../app/js/modules/facts/facts.js";
-import { canOpenNext, currentFamily, initialFamilies, isAcquired, trouOpenFor, updateFamilies } from "../../app/js/modules/facts/families.js";
+import { canOpenNext, currentFamily, initialFamilies, isAcquired, noteNotion, trouOpenFor, updateFamilies } from "../../app/js/modules/facts/families.js";
 import { Module2Runner } from "../../app/js/modules/facts/runner.js";
 import { chooseModule, Session } from "../../app/js/session/session.js";
 import { markFamilyKnown } from "../../app/js/parent/depart.js";
@@ -174,4 +174,58 @@ test("leçon d'appui jamais vue : les maisons de 8 et 9 jouent L6, les presque-d
   assert.equal(await entry(6, ["L4"]), "L6");
   assert.equal(await entry(7, ["L4", "L6"]), "L5");
   assert.equal(await entry(7, ["L4", "L5", "L6"]), null);
+});
+
+// décisions du parent du 27 septembre (relecture extérieure), corrections 3 et 4
+test("cran « plus facile » : un fait réussi avec l'aide affichée d'emblée ne change pas de boîte (ni montée, ni retour en boîte 1) ; une erreur le renvoie en boîte 1", async () => {
+  const store = await open();
+  for (const k of ["1+1", "2+1", "1+2", "3+1", "1+3", "2+2"]) await store.put("faits", fact(k, 3));
+  for (const f of ruleFacts(c, 3)) await store.put("faits", fact(f.fait, 2));
+  await store.put("niveaux", { ...initialFamilies(c, NOW), ouvertes: [1, 2, 3], acquises: [1, 2] });
+  const before = new Map((await store.all("faits")).map((f) => [f.fait, f.boite]));
+  const { qs } = await notion(store, { n: 12, cran: "facile" });
+  assert.ok(qs.every((q) => q.aideDEmblee));
+  const after = await store.all("faits");
+  for (const f of after) if (before.has(f.fait)) assert.equal(f.boite, before.get(f.fait), `${f.fait} : boîte ${before.get(f.fait)} -> ${f.boite}`);
+  const rep = await store.all("reponses");
+  assert.ok(rep.every((r) => r.aideDEmblee && !r.aide), "noté « aide d'emblée », pas « aide demandée »");
+  // une erreur avec l'aide d'emblée : boîte 1, comme toute erreur
+  const s2 = await open(); await s2.put("faits", fact("9+1", 3)); for (const f of ruleFacts(c, 3)) if (f.fait !== "9+1") await s2.put("faits", fact(f.fait, 2));
+  await s2.put("niveaux", { ...initialFamilies(c, NOW), ouvertes: [1, 2, 3], acquises: [1, 2] });
+  await notion(s2, { n: 12, cran: "facile", answer: (q) => q.fait !== "9+1" });
+  const f91 = (await s2.all("faits")).find((f) => f.fait === "9+1"); if (f91.historique.length > 1) assert.equal(f91.boite, 1);
+  // au cran conseillé, la même réussite fait monter
+  const s3 = await open(); for (const f of ruleFacts(c, 3)) await s3.put("faits", fact(f.fait, 2));
+  await s3.put("niveaux", { ...initialFamilies(c, NOW), ouvertes: [1, 2, 3], acquises: [1, 2] });
+  await notion(s3, { n: 12 });
+  assert.ok((await s3.all("faits")).some((f) => f.boite === 3));
+});
+
+test("stagnation : une famille pas acquise après 6 séances en notion du jour est dépassée ; la suivante devient la famille en cours, avec sa leçon ; l'autre reste en révision", async () => {
+  assert.deepEqual(c.familles2.stagnation, { seances: 6 });
+  // familles 1 et 2 ouvertes, la 1 jamais acquise : après 6 séances, la famille en cours est la 2 (L4)
+  let st = initialFamilies(c, NOW);
+  for (let i = 1; i <= 5; i++) { const n = noteNotion(c, st, 1, NOW, { seance: i }); st = n.st; assert.deepEqual(n.events, []); assert.equal(currentFamily(c, st), 1); }
+  const n6 = noteNotion(c, st, 1, NOW, { seance: 6 }); st = n6.st;
+  assert.deepEqual(n6.events, [{ type: "depassee", famille: 1 }]); assert.equal(currentFamily(c, st), 2);
+  assert.deepEqual(st.ouvertes, [1, 2], "la famille 2 était déjà ouverte");
+  // la famille suivante pas encore ouverte : elle s'ouvre (notée « stagnation »)
+  let s2 = { ...initialFamilies(c, NOW), acquises: [1] };
+  for (let i = 1; i <= 6; i++) s2 = noteNotion(c, s2, 2, NOW, { seance: i }).st;
+  assert.deepEqual(s2.ouvertes, [1, 2, 3]); assert.ok(s2.ouvertures.at(-1).stagnation); assert.equal(currentFamily(c, s2), 3);
+  // une famille acquise entre-temps n'est jamais dépassée ; le mélange non plus
+  let s3 = { ...initialFamilies(c, NOW), acquises: [1] };
+  for (let i = 1; i <= 8; i++) s3 = noteNotion(c, s3, 1, NOW).st;
+  assert.equal((s3.depassees ?? []).length, 0);
+  // dans la notion du jour : la séance compte, la leçon de la famille suivante se joue, la famille dépassée revient parmi les « autres familles »
+  const store = await open();
+  for (const k of ["1+1", "2+1", "1+2", "3+1", "1+3", "4+1", "1+4", "2+2"]) await store.put("faits", fact(k, 1));
+  await store.put("niveaux", { ...initialFamilies(c, NOW), seancesNotion: { 1: 5 }, notion: [1] });
+  const { m, fin } = await notion(store, { n: 12, answer: () => false });
+  assert.equal(m.famille, 1); assert.ok(fin.events.some((e) => e.type === "depassee" && e.famille === 1));
+  const m2 = await new Module2Runner({ store, content: c, rnd: rng(3), seance: 2, clock: () => NOW, cran: () => "conseille" }).load();
+  assert.equal(m2.famille, 2); assert.equal(m2.entryLesson(), "L4");
+  const qs = []; for (let i = 0; i < 12; i++) { const { q, cfg } = m2.next(); qs.push(q); await m2.record({ q, value: expected(q), ok: true, ms: 2500, listens: 1 }, cfg); }
+  const rule2 = new Set(ruleFacts(c, 2).map((f) => f.fait));
+  assert.ok(qs.some((q) => !rule2.has(q.fait)), "la famille dépassée reste travaillée");
 });

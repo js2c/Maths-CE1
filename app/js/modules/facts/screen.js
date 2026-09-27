@@ -46,7 +46,7 @@ export class FactsScreen {
     if (!this.q) return;
     ctx.setTransform(px, 0, 0, px, 0, 0);
     const q = this.q, n = q.a + q.b, f = q.forme ?? "directe";
-    const [left, right] = f === "trouDroite" ? [`${q.a} +`, `= ${n}`] : f === "trouGauche" ? ["", `+ ${q.b} = ${n}`] : [`${q.a} + ${q.b} =`, ""];
+    const [left, right] = q.dictee ? ["", ""] : f === "trouDroite" ? [`${q.a} +`, `= ${n}`] : f === "trouGauche" ? ["", `+ ${q.b} = ${n}`] : [`${q.a} + ${q.b} =`, ""];
     const em = 76, slot = this.typed || "?", lw = left ? R.wordWidth(left) * em : 0, rw = right ? R.wordWidth(right) * em : 0, sw = Math.max(1.36, R.wordWidth(slot)) * em, gap = 0.4 * em;
     const total = lw + (left ? gap : 0) + sw + (right ? gap : 0) + rw, x0 = 295 - total / 2;
     if (left) R.drawWord(ctx, left, x0 + lw / 2, 110 - em / 2, em, { w: 10, seed: 950 });
@@ -57,7 +57,8 @@ export class FactsScreen {
   }
   type(d, b) {
     if (this.locked) return; pop(b);
-    this.typed = (this.typed.length >= 2 ? "" : this.typed) + d; // deux chiffres au plus (les sommes vont jusqu'à 10)
+    const max = this.q?.dictee ? 5 : 2; // deux chiffres au plus (les sommes vont jusqu'à 10) ; la dictée : cinq (3007, 30017 sont des erreurs à reconnaître)
+    this.typed = (this.typed.length >= max ? "" : this.typed) + d;
     this.slate.repaint();
   }
   // pose la question et attend la réponse ; la promesse se résout après le retour
@@ -76,6 +77,45 @@ export class FactsScreen {
     this.t0 = clock.now();
     voice.stop(); voice.say(this.consigne(q), { instruction: true });
     return p;
+  }
+  // ---------------------------------------------------------------- la dictée de nombres (lot 2, étape 8)
+  // le module 1, niveau 12 : l'ardoise ne montre que le nombre tapé (ou « ? »), la voix dit la consigne ; la
+  // réponse est rendue telle quelle à la coche (le retour est fait par modules/numberline/dictation.js)
+  askNumber(q, consigne) {
+    const { voice } = this.app;
+    this.defi = null; this.dictee = consigne; this.q = { ...q, dictee: true }; this.typed = ""; this.ring = false; this.aide = false; this.locked = false; this.app.starFrom = SLATE;
+    this.show(true); this.help.style.visibility = "hidden";
+    this.slate.repaint(); pop(this.slate); this.t0 = clock.now();
+    voice.stop(); voice.say(consigne, { instruction: true });
+    return new Promise((res) => { this.resolve = res; });
+  }
+  // montre un nombre sur l'ardoise (correction, exemple guidé), entouré ou non
+  write(n, ring = true) { this.typed = String(n); this.ring = ring; this.slate.repaint(); }
+  // ---------------------------------------------------------------- le défi record (lot 2, étape 7)
+  // une question du défi : pas de consigne lue (le temps compte ; l'ardoise suffit), pas d'aide ; la réponse
+  // est rendue dès la coche, avec `after` : la fin du petit retour (bulle claire, ou la bonne réponse montrée
+  // un instant après une erreur, sans correction)
+  askDefi(q, { apresErreurMs = 900 } = {}) {
+    this.defi = { apresErreurMs }; this.q = q; this.typed = ""; this.ring = false; this.aide = false; this.locked = false; this.app.starFrom = SLATE;
+    this.help.style.visibility = "hidden";
+    this.slate.repaint(); pop(this.slate); this.t0 = clock.now();
+    return new Promise((res) => { this.resolve = res; });
+  }
+  // la minute est finie : la question en cours est abandonnée
+  cancel() { this.locked = true; const done = this.resolve; this.resolve = null; done?.({ timeout: true }); }
+  // fin du défi : plus de question, l'ardoise est rangée (les perles et le drapeau restent)
+  blank() { this.locked = true; this.q = null; this.typed = ""; this.slate.repaint(); this.slate.style.visibility = "hidden"; }
+  submitDefi(nsp) {
+    const q = this.q, value = nsp ? null : Number(this.typed), ok = value === expected(q), ms = Math.round(clock.now() - this.t0);
+    this.locked = true; const pauseMs = this.defi.apresErreurMs;
+    if (ok) this.app.sound?.play("bonne"); else if (!nsp) this.app.sound?.play("erreur");
+    const after = (async () => {
+      if (ok) { pop(this.slate); await wait(180); return; }
+      if (!nsp) pop(this.slate, "shake");
+      this.typed = String(expected(q)); this.ring = true; this.slate.repaint();
+      await wait(pauseMs);
+    })();
+    const done = this.resolve; this.resolve = null; done?.({ value, ms, listens: 0, aide: false, nsp, after });
   }
   // ---------------------------------------------------------------- l'appui visuel de la famille (lot 2, étape 6)
   // cadre de 10, maison des nombres, double + 1, reflet des doubles (la ligne de la famille 1 est la tortue,
@@ -100,13 +140,24 @@ export class FactsScreen {
     const t = this.app.text.data, k = q.forme === "trouGauche" ? q.b : q.a;
     return kind === "cadre" ? fill(t.aideCadre, { k }) : kind === "maison" ? t.aideMaison : kind === "doublePlus" ? fill(t.aideDoublePlus, { d: Math.min(q.a, q.b) }) : fill(t.aideReflet, { a: q.a });
   }
-  // cran « plus facile » : l'appui est montré d'emblée (sans la réponse), puis le pavé revient ; ce n'est pas
-  // compté comme une aide demandée (la séance « plus facile » compte normalement)
+  // l'aide (coquillage, aide affichée d'emblée) peut être passée dès qu'elle commence (décision du parent du
+  // 27 septembre) : le bouton « passer » habituel ; un toucher coupe la voix et l'animation, range l'appui et
+  // rend le pavé aussitôt. `body(g, dead)` : `g` garde chaque attente, `dead()` dit si l'aide a été passée.
+  async skippable(label, body) {
+    let abort = null, dead = false; const abortP = new Promise((_, rej) => { abort = () => { dead = true; rej(SKIPPED); }; }); abortP.catch(() => {});
+    const g = (p) => Promise.race([p, abortP]), skip = skipKey(this.app, () => abort(), label);
+    try { await body(g, () => dead); } catch (e) { if (e !== SKIPPED) throw e; this.app.voice.stop(); }
+    finally { skip.remove(); this.board.clear(); }
+  }
+  // cran « plus facile » : l'appui est montré d'emblée (sans la réponse), puis le pavé revient ; un fait réussi
+  // ainsi ne change pas de boîte (runner.js, `aideDEmblee`) ; « passer » rend le pavé aussitôt
   async autoAid(q) {
     const { voice } = this.app, kind = this.aidKind(q);
     voice.stop(); voice.say(this.consigne(q));
-    if (kind === "ligne") return this.lineAid(q, false);
-    this.paintAid(q, false); await voice.say(this.aidSpeech(q, kind)); await wait(1500);
+    await this.skippable("passer l'aide", async (g, dead) => {
+      if (kind === "ligne") return this.lineAid(q, false, { g, dead });
+      this.paintAid(q, false); await g(voice.say(this.aidSpeech(q, kind))); await g(wait(1500));
+    });
   }
   // un exemple guidé : l'appui avec la réponse, « a plus b, ça fait n », puis « À toi ! » ; « passer » l'arrête
   async demo(q) {
@@ -116,7 +167,7 @@ export class FactsScreen {
     const g = (p) => Promise.race([p, abortP]), skip = skipKey(this.app, () => abort(), "passer l'exemple");
     try {
       const kind = this.aidKind(q);
-      if (kind === "ligne") await g(this.lineAid(q, true));
+      if (kind === "ligne") await g(this.lineAid(q, true, { g }));
       else { this.paintAid(q, true); await g(voice.say(this.aidSpeech(q, kind))); }
       await g(voice.say(fill(text.data.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b })));
       await g(wait(500 / k));
@@ -132,6 +183,7 @@ export class FactsScreen {
   }
   // la consigne lue : « 5 plus 2 ? », ou la forme à trou (« 3 plus combien, ça fait 7 ? »)
   consigne(q) {
+    if (q.dictee) return this.dictee;
     const { text } = this.app, v = { a: q.a, b: q.b, n: q.a + q.b };
     return q.forme === "trouDroite" ? fill(text.data.faitTrouDroite, v) : q.forme === "trouGauche" ? fill(text.data.faitTrouGauche, v) : fill(text.pick("fait"), v);
   }
@@ -139,6 +191,8 @@ export class FactsScreen {
   // le résultat reste écrit sur l'ardoise environ une seconde, puis le fait suivant ; noté « correction passée ».
   // Ses pauses suivent la vitesse des corrections (content/seance.json, vitesseAnimations).
   async submit({ nsp = false } = {}) {
+    if (this.defi) return this.submitDefi(nsp);
+    if (this.q?.dictee) { this.locked = true; this.app.voice.stop(); const done = this.resolve; this.resolve = null; return done?.({ value: nsp ? null : Number(this.typed), ms: Math.round(clock.now() - this.t0), listens: this.app.voice.listens, nsp }); }
     const { voice, text, ocean } = this.app, q = this.q, value = nsp ? null : Number(this.typed), ok = value === expected(q), ms = Math.round(clock.now() - this.t0), k = this.app.vitesse ?? 1;
     this.locked = true; voice.stop();
     const r = { value, ms, listens: voice.listens, aide: this.aide, nsp };
@@ -154,7 +208,7 @@ export class FactsScreen {
         if (nsp) await g(voice.say(text.data.faitNSP)); else { pop(this.slate, "shake"); await g(wait(500 / k)); }
         answer();
         // en notion du jour (lot 2, étape 6) : l'appui visuel de la famille, avec la réponse
-        if (this.notion && !q.base) { const kind = this.aidKind(q); if (kind === "ligne") await g(this.lineAid(q, false)); else { this.paintAid(q, true); await g(voice.say(this.aidSpeech(q, kind))); } }
+        if (this.notion && !q.base) { const kind = this.aidKind(q); if (kind === "ligne") await g(this.lineAid(q, false, { g })); else { this.paintAid(q, true); await g(voice.say(this.aidSpeech(q, kind))); } }
         await g(voice.say(fill(text.data.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b })));
         await g(wait(700 / k));
       } catch (e) {
@@ -172,26 +226,30 @@ export class FactsScreen {
     if (this.locked || !this.q || this.q.base) return;
     const { voice } = this.app, q = this.q, kind = this.aidKind(q);
     this.locked = true; this.aide = true; pop(this.help); this.keys(false); voice.stop();
-    if (kind === "ligne") await this.lineAid(q, false);
-    else { this.paintAid(q, false); await voice.say(this.aidSpeech(q, kind)); await wait(2200); this.board.clear(); }
+    await this.skippable("passer l'aide", async (g, dead) => {
+      if (kind === "ligne") return this.lineAid(q, false, { g, dead });
+      this.paintAid(q, false); await g(voice.say(this.aidSpeech(q, kind))); await g(wait(2200));
+    });
+    if (this.q !== q) return;
     this.keys(true); this.locked = false;
     voice.say(this.consigne(q));
   }
-  // la tortue part du grand nombre et fait 1 ou 2 sauts (la ligne de 0 à 10, tous les nombres écrits)
-  async lineAid(q, solved) {
+  // la tortue part du grand nombre et fait 1 ou 2 sauts (la ligne de 0 à 10, tous les nombres écrits) ;
+  // `g`, `dead` : l'aide passée (skippable) arrête la voix, les sauts et range la ligne aussitôt
+  async lineAid(q, solved, { g = (p) => p, dead = () => false } = {}) {
     const { voice, text, line } = this.app, nl = this.app.lineScreen(), big = Math.max(q.a, q.b), small = Math.min(q.a, q.b);
     this.keys(false); this.hermit?.play("montrer", { hold: 2000 });
     const spec = { x0: 150, x1: 1134, y: 452, n: 11, labels: Array.from({ length: 11 }, (_, i) => String(i)), k: 0, lit: [big] };
-    const [bmp] = await line.render([spec]); line.show(bmp);
+    const [bmp] = await g(line.render([spec])); line.show(bmp);
     nl.spec = spec; nl.q = { min: 0, max: 10, step: 1 }; nl.arcs = []; nl.overlay = []; line.fxClear();
     nl.turtle.sitOn(spec, big);
     try {
-      await voice.say(fill(text.data.aideLigne, { a: big, sauts: small === 1 ? text.data.unSaut : `${small} ${text.data.sauts}` }));
-      await nl.countJumps(big, big + small, { label: (k) => `+${k}`, say: (k) => String(k) });
-      await wait(solved ? 600 : 1600);
+      await g(voice.say(fill(text.data.aideLigne, { a: big, sauts: small === 1 ? text.data.unSaut : `${small} ${text.data.sauts}` })));
+      await g(nl.countJumps(big, big + small, { label: (k) => `+${k}`, say: (k) => String(k), stop: dead, guard: g }));
+      await g(wait(solved ? 600 : 1600));
     } finally { nl.turtle.hide(); nl.arcs = []; line.fxClear(); line.clear(); }
   }
-  leave() { this.show(false); this.q = null; this.app.aidBoard?.clear(); }
+  leave() { this.show(false); this.q = null; this.defi = null; this.dictee = null; this.app.aidBoard?.clear(); }
 }
 
 // l'échauffement dans la séance : n faits (10 à 14), précédés, une séance sur cinq, des questions du temps de

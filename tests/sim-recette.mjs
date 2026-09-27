@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { IDBFactory } from "fake-indexeddb";
 import { Store } from "../app/js/engine/store.js";
 import { rng } from "../app/js/engine/ocean.js";
-import { makeEstimate, makeJump, makePlace, makeRead } from "../app/js/modules/numberline/generator.js";
+import { makeEstimate, makeJump, makePlace, makeRead, makeWrite } from "../app/js/modules/numberline/generator.js";
 import { Module1Runner } from "../app/js/modules/numberline/runner.js";
 import { Session } from "../app/js/session/session.js";
 import { runNotion } from "../app/js/session/notion.js";
@@ -14,26 +14,28 @@ import { Warmup } from "../app/js/modules/facts/warmup.js";
 import { runWarmup } from "../app/js/modules/facts/screen.js";
 import { expected } from "../app/js/modules/facts/facts.js";
 import { Module2Runner } from "../app/js/modules/facts/runner.js";
+import { runChallenge } from "../app/js/modules/facts/challenge.js";
 
 const load = (f) => JSON.parse(readFileSync(new URL(`../app/content/${f}`, import.meta.url)));
 const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), cartes0 = load("cartes.json"), calendrier = load("calendrier.json");
 // les zones 3 et 4 « prêtes » (illustrations et anecdotes fictives) pour vérifier le rythme des cartes sur l'année
 const pretes = (c) => ({ ...c, cartes: c.cartes.map((x) => ({ ...x, illustration: x.illustration ?? `fictif/${x.id}.webp`, anecdote: x.anecdote ?? "Anecdote fictive." })) });
-const gen = (cfg, r, o = {}) => (o.format === "sauter" ? makeJump(cfg, r) : o.format === "placer" ? makePlace(cfg, r, o) : o.format === "estimer" ? makeEstimate(cfg, r, o) : makeRead(cfg, r, o));
-const ERR = { 1: "E1", 2: "E1", 3: "E1", 4: "E3", 5: "E2", 6: "E5", 7: "E2", 8: "autre" };
+const gen = (cfg, r, o = {}) => (o.format === "ecrire" ? makeWrite(cfg, r, o) : o.format === "sauter" ? makeJump(cfg, r) : o.format === "placer" ? makePlace(cfg, r, o) : o.format === "estimer" ? makeEstimate(cfg, r, o) : makeRead(cfg, r, o));
+const ERR = { 1: "E1", 2: "E1", 3: "E1", 4: "E3", 5: "E2", 6: "E5", 7: "E2", 8: "autre", 9: "E6", 10: "E6", 11: "E3", 12: "E6", 13: "autre" };
 
 // profils : p(niveau, essais) = probabilité de réussir ; faits : p et temps ; nsp : part des échecs donnés par
 // « je ne sais pas » ; trou : probabilité de réussir un fait sous une forme à trou, relative à la forme directe ;
 // cran : le cran que l'enfant choisit toujours au sélecteur de difficulté (lot 2)
-const reel = { ligne: (n) => [0, 0.95, 0.9, 0.85, 0.55, 0.45, 0.45, 0.4, 0.45][n], apprend: 0.006, fait: 0.9, faitMs: 5000, baseMs: 3500, nsp: 0.3, trou: 0.85 };
+// (lot 2, étape 8 : niveaux 9 à 13, nombres jusqu'à 1 000 : hypothèses du même ordre que les niveaux 5 à 8)
+const reel = { ligne: (n) => [0, 0.95, 0.9, 0.85, 0.55, 0.45, 0.45, 0.4, 0.45, 0.5, 0.45, 0.4, 0.5, 0.45][n], apprend: 0.006, fait: 0.9, faitMs: 5000, baseMs: 3500, nsp: 0.3, trou: 0.85 };
 export const PROFILS = {
   sait: { nom: "sait déjà (rapide)", ligne: (n) => (n <= 5 ? 0.97 : 0.85), apprend: 0.004, fait: 0.97, faitMs: 3500, baseMs: 3000, nsp: 0.2, trou: 0.95 },
   reel: { nom: "profil de l'évaluation (ligne faible au-delà de 20, faits en partie sus)", ...reel },
-  diff: { nom: "en difficulté", ligne: (n) => [0, 0.85, 0.75, 0.7, 0.45, 0.35, 0.35, 0.3, 0.35][n], apprend: 0.004, fait: 0.75, faitMs: 8000, baseMs: 4000, nsp: 0.4, trou: 0.75 },
+  diff: { nom: "en difficulté", ligne: (n) => [0, 0.85, 0.75, 0.7, 0.45, 0.35, 0.35, 0.3, 0.35, 0.4, 0.35, 0.3, 0.4, 0.35][n], apprend: 0.004, fait: 0.75, faitMs: 8000, baseMs: 4000, nsp: 0.4, trou: 0.75 },
   tresdur: { nom: "profil de l'évaluation, choisit toujours « très dur »", ...reel, cran: "tresdur" },
   facile: { nom: "profil de l'évaluation, choisit toujours « plus facile »", ...reel, cran: "facile" },
 };
-const T = { chauffe: 7000, chauffeFaux: 9000, notion: 15000, notionFaux: 30000, guide: 30000, lecon: 75000, add: 8000, addFaux: 16000, addGuide: 16000 };
+const T = { phrase: 3000, defiEnPlus: 500, chauffe: 7000, chauffeFaux: 9000, notion: 15000, notionFaux: 30000, guide: 30000, lecon: 75000, add: 8000, addFaux: 16000, addGuide: 16000 };
 
 export async function simulate({ profil, jours, seed = 1, zonesPretes = true }) {
   const cartes = zonesPretes ? pretes(cartes0) : cartes0;
@@ -62,6 +64,13 @@ export async function simulate({ profil, jours, seed = 1, zonesPretes = true }) 
       const value = ok ? expected(q) : nsp ? null : expected(q) + 1;
       return { q, value, ok, code: ok ? null : nsp ? "NSP" : "autre", ms: ok ? P.faitMs * (0.7 + R() * 0.6) : 9000, listens: 1, aide: false, nsp }; } };
     log.add = [];
+    // le défi record (lot 2, étape 7) : faits bien sus, réponses un peu plus rapides qu'à l'échauffement (pas de
+    // consigne lue), la bonne réponse montrée un instant après une erreur ; le temps n'avance qu'avec les réponses
+    const defiStep = seance.etapes.find((e) => e.id === "defi");
+    const defiScreen = { show() {}, keys() {}, leave() {}, blank() {}, cancel() {}, askDefi: async (q) => {
+      const trou = q.forme && q.forme !== "directe", ok = R() < Math.min(0.99, P.fait * (trou ? P.trou : 1) + 0.03), nsp = !ok && R() < P.nsp / 2;
+      const ms = ok ? P.faitMs * 0.8 * (0.7 + R() * 0.6) : 7000; add(ms + (ok ? T.defiEnPlus : defiStep.apresErreurMs));
+      return { value: ok ? expected(q) : nsp ? null : expected(q) + 1, ms, listens: 0, aide: false, nsp, after: Promise.resolve() }; } };
     const s = new Session({ store, content: seance, rewards, clock, onCranDown: async () => { log.descentes++; add(3000); }, handlers: {
       accueil: async ({ session }) => { add(20000); await session.setCran(P.cran ?? "conseille"); add(8000); const sp = drawSurprise(R, cartes.surprise, previousSession(await store.all("seances"), session.id), rewards.gifts); if (sp) { session.rec.surprise = sp; log.surprise = `${sp.type}:${sp.id}`; if (sp.type === "cadeau") await rewards.giveGift(sp.id); add(5000); } },
       echauffement: async (ctx) => { const w = await new Warmup({ store, content: module2, rnd: R, seance: ctx.session.id, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load(); await runWarmup({ ...ctx, warmup: w, screen: warmScreen, rnd: R }); },
@@ -76,6 +85,11 @@ export async function simulate({ profil, jours, seed = 1, zonesPretes = true }) 
         log.module = 1;
         const runner = await new Module1Runner({ screen: lineScreen, store, content: module1, rnd: R, seance: ctx.session.id, offset: () => ctx.session.offset, cran: () => ctx.session.cran }).load(); log.niv0 = runner.st.niveau;
         await runNotion({ ...ctx, runner, screen: lineScreen, rnd: R, lesson: async (id) => { add(T.lecon); log.lecons.push(id); return { vue: true }; } }); log.niv1 = runner.st.niveau; },
+      defi: async (ctx) => {
+        const w = await new Warmup({ store, content: module2, rnd: R, seance: ctx.session.id, clock, cran: () => "conseille" }).load(); w.defi = true;
+        const view = { show() {}, start() {}, stop() {}, pearl() {}, record() {} };
+        const r = await runChallenge({ ...ctx, warmup: w, screen: defiScreen, view, store, rnd: R, stars: seance.etoiles, say: async () => add(T.phrase), now: clock, pause: async (ms) => add(ms), timer: () => new Promise(() => {}) });
+        log.defi = r.score; log.record = r.nouveau; },
       // la récompense, dans l'ordre de l'application (session/screens.js : bonuses, puis shells)
       recompense: async ({ session }) => { await session.stars(seance.etoiles.seanceTerminee, "fin"); const b = await rewards.endOfSession(session.rec.debut); if (b) await session.stars(b, "série");
         const others = (await store.all("seances")).filter((x) => x.terminee && !x.libre && x.id !== session.id).map((x) => x.debut);
@@ -92,7 +106,8 @@ export async function simulate({ profil, jours, seed = 1, zonesPretes = true }) 
     } });
     const rec = await s.run();
     Object.assign(log, { cran: rec.cran, cranDepart: rec.cranDepart, reussite: rec.reussite, questions: rec.questions, etoiles: rec.etoiles, duree: Math.round(rec.dureeS / 60 * 10) / 10, arc: rec.arcEnCiel ?? 0, reste: rewards.total, nbCartes: rewards.count, brillantes: Object.values(rewards.owned).filter((o) => o.brillante).length, legendaires: cartes.cartes.filter((c) => c.rarete === "legendaire" && rewards.owned[c.id]).length, ouvertes: [...rewards.zones.ouvertes], doreesDispo: rewards.doreesDispo, arcDispo: rewards.arcDispo });
-    const fam = await store.get("niveaux", 2); log.fOuvertes = [...(fam?.ouvertes ?? [])]; log.fAcquises = [...(fam?.acquises ?? [])]; log.fTrou = [...(fam?.trou ?? [])];
+    log.defiSaute = rec.etapes.find((e) => e.id === "defi")?.sautee ?? null;
+    const fam = await store.get("niveaux", 2); log.fOuvertes = [...(fam?.ouvertes ?? [])]; log.fAcquises = [...(fam?.acquises ?? [])]; log.fTrou = [...(fam?.trou ?? [])]; log.fDepassees = (fam?.depassees ?? []).map((d) => d.famille);
     const faits = await store.all("faits"); log.boites = [1, 2, 3, 4, 5].map((b) => faits.filter((f) => f.boite === b).length); log.faitsVus = faits.length;
     out.push(log);
   }

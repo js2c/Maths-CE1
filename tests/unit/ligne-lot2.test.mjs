@@ -44,8 +44,9 @@ test("une même leçon au plus une fois par séance ; ensuite le niveau inférie
 test("cran : le niveau joué suit l'écart au conseillé, borné au premier et au dernier niveau", async () => {
   let off = 2; const R = await mk({ offset: () => off }); R.st.niveau = 3;
   assert.equal(R.next().q.niveau, 5); off = -1; assert.equal(R.next().q.niveau, 2);
-  R.st.niveau = 1; assert.equal(R.next().q.niveau, 1); off = 2; R.st.niveau = 8; assert.equal(R.next().q.niveau, 8);
-  assert.equal(content.niveaux.length, 8);
+  R.st.niveau = 1; assert.equal(R.next().q.niveau, 1); off = 2; R.st.niveau = 8; assert.equal(R.next().q.niveau, 10);
+  R.st.niveau = 13; assert.equal(R.next().q.niveau, 13);
+  assert.equal(content.niveaux.length, 13); // lot 2, étape 8 : niveaux 9 à 13
 });
 
 test("cran au-dessus : réussir valide le niveau joué et fait monter le conseillé ; échouer ne le fait jamais baisser", async () => {
@@ -68,8 +69,8 @@ test("cran « plus facile » : les questions au niveau inférieur comptent pour 
   assert.equal(R.st.niveau, 4); assert.equal((await R.finish()).rate, 1);
 });
 
-test("cran au-dessus au dernier niveau : réussir le niveau 8 fait passer le conseillé de 7 à 8", async () => {
-  const R = await mk({ offset: () => 2 }); R.st.niveau = 7; const ev = [];
-  for (let i = 0; i < 5; i++) { const n = R.next(); assert.equal(n.q.niveau, 8); ev.push(...(await R.record(res(n.q, true, 2000), n.cfg)).events); }
-  assert.equal(R.st.niveau, 8); assert.ok(ev.some((e) => e.type === "montee" && e.a === 8));
+test("cran au-dessus au dernier niveau : réussir le niveau 13 fait passer le conseillé de 12 à 13", async () => {
+  const R = await mk({ offset: () => 1 }); R.st.niveau = 12; const ev = [];
+  for (let i = 0; i < 5; i++) { const n = R.next(); assert.equal(n.q.niveau, 13); ev.push(...(await R.record(res(n.q, true, 2000), n.cfg)).events); }
+  assert.equal(R.st.niveau, 13); assert.ok(ev.some((e) => e.type === "montee" && e.a === 13));
 });

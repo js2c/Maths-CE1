@@ -1,7 +1,8 @@
 // ESPACE PARENT · LES CALCULS (docs/SPEC.md, « Espace parent »). Fonctions pures : les enregistrements de
 // la base entrent (séances, réponses, niveaux, faits), les tableaux que le parent lit sortent. Aucun accès
 // au DOM ni à la base ici (tests : tests/unit/parent.test.mjs).
-import { median } from "../modules/facts/facts.js";
+import { catalog, median, ruleFacts, threshold } from "../modules/facts/facts.js";
+import { cfgOf, currentFamily, initialFamilies } from "../modules/facts/families.js";
 import { goodWeeks, quotaAt, weekStart, zoneDone } from "../session/rewards.js";
 
 export const DAY = 86400000;
@@ -61,7 +62,8 @@ export const level = (x, { bien, moyen }) => (x === null || x === undefined ? nu
 export function answersOf(reponses, seanceId) {
   const list = reponses.filter((r) => r.seance === seanceId).sort((a, b) => a.t - b.t), groups = [];
   // (lot 2, étape 6 : les additions de la notion du jour, marquées `notion`, forment leur propre groupe)
-  for (const r of list) { const notion = r.module === 2 && !!r.notion; let g = groups.at(-1); if (!g || g.module !== r.module || g.notion !== notion) groups.push((g = { module: r.module, notion, reponses: [] })); g.reponses.push(r); }
+  // (lot 2, étape 7 : les réponses du défi record, marquées `defi`, aussi)
+  for (const r of list) { const notion = r.module === 2 && !!r.notion, defi = !!r.defi; let g = groups.at(-1); if (!g || g.module !== r.module || g.notion !== notion || !!g.defi !== defi) groups.push((g = { module: r.module, notion, defi, reponses: [] })); g.reponses.push(r); }
   return groups;
 }
 // une leçon d'une séance, telle que le parent la lit : vue jusqu'au bout, passée (bouton « passer »), arrêtée
@@ -107,9 +109,68 @@ export function levelHistory(st) {
 export function factsSummary(faits) {
   const boites = [0, 0, 0, 0, 0];
   for (const f of faits) if (f.boite >= 1 && f.boite <= 5) boites[f.boite - 1]++;
-  const resist = faits.map((f) => ({ ...f, erreurs: (f.historique ?? []).filter((h) => !h.juste).length, passages: (f.historique ?? []).length }))
+  const resist = faits.map((f) => ({ ...f, erreurs: (f.historique ?? []).filter((h) => !h.juste && !h.parent).length, passages: (f.historique ?? []).filter((h) => !h.parent).length }))
     .filter((f) => f.erreurs >= 2 || (f.boite === 1 && f.passages >= 3)).sort((a, b) => b.erreurs - a.erreurs || a.boite - b.boite);
   return { rencontres: faits.length, boites, resistent: resist };
+}
+
+// ---------------------------------------------------------------- module 2 (lot 2, étape 7)
+// LA GRILLE DES ADDITIONS (docs/SPEC.md, tableau de bord 3 ; docs/SPEC-LOT2.md, section 7) : un tableau 11 × 11,
+// a en ligne (0 à 10), b en colonne ; les cases a + b ≤ 10. Les 45 faits (a, b de 1 à 9) sont colorés selon
+// leur boîte et leur rapidité (temps médian des réponses justes sous le seuil « rapide ») ; les 21 cases « + 0 »
+// montrent seulement le temps de base (le temps médian des réponses à cette question triviale), en gris.
+// Chaque case : { a, b, kind: "fait" | "base" | "hors", fait?, boite (0 : pas encore rencontré), rapide,
+// tempsMedian, passages, erreurs }.
+export function additionGrid(faits, reponses, { c, baseMs = null } = {}) {
+  const by = new Map(faits.map((f) => [f.fait, f])), limit = c ? threshold(c, baseMs ?? c.base.defautS * 1000, faits) : null;
+  const base = new Map();
+  for (const r of reponses) if (r.forme === "base" && r.juste && typeof r.tempsMs === "number") { const k = r.question.replace(/\s/g, ""); (base.get(k) ?? base.set(k, []).get(k)).push(r.tempsMs); }
+  const known = new Set(c ? catalog(c).map((f) => f.fait) : []);
+  return Array.from({ length: 11 }, (_, a) => Array.from({ length: 11 }, (_, b) => {
+    if (a + b > 10) return { a, b, kind: "hors" };
+    const k = `${a}+${b}`;
+    if (!a || !b) return { a, b, kind: "base", tempsMedian: median(base.get(k) ?? []) };
+    const f = by.get(k), hist = f?.historique ?? [];
+    return { a, b, kind: "fait", fait: k, catalogue: !c || known.has(k), boite: f?.boite ?? 0, tempsMedian: f?.tempsMedian ?? null, rapide: f?.tempsMedian != null && limit != null && f.tempsMedian < limit, passages: hist.filter((h) => !h.parent).length, erreurs: hist.filter((h) => !h.juste && !h.parent).length };
+  }));
+}
+// l'historique d'un fait, pour le parent : chaque passage (date, juste, temps, forme, aide, boîte avant et après)
+export const factHistory = (f) => [...(f?.historique ?? [])].sort((x, y) => y.t - x.t).map((h) => ({ date: h.t, juste: !!h.juste, ms: h.ms, forme: h.forme ?? "directe", aide: !!h.aide, avant: h.boite, apres: h.apres, parent: !!h.parent }));
+// les familles du module 2, pour le parent : ouverte (date, par le parent ?), acquise (date), formes à trou,
+// faits de la règle bien sus (boîte 3 ou plus) ; la famille en cours de la notion du jour ; dépassée (stagnation :
+// pas acquise après 6 séances en notion du jour, la suivante a pris la relève) et séances en notion du jour
+export function familiesSummary(c, st, faits) {
+  st ??= initialFamilies(c, 0);
+  const by = new Map(faits.map((f) => [f.fait, f])), K = cfgOf(c).acquise;
+  const cur = currentFamily(c, st);
+  return {
+    enCours: cur,
+    familles: c.familles.map((f) => {
+      const rule = ruleFacts(c, f.id), ouv = (st.ouvertures ?? []).find((o) => o.famille === f.id), acq = (st.obtenus ?? []).find((o) => o.famille === f.id);
+      return { id: f.id, nom: f.nom, ouverte: st.ouvertes.includes(f.id), ouverteLe: ouv?.date ?? null, ouverteParent: !!ouv?.parent, acquise: st.acquises.includes(f.id), acquiseLe: acq?.date ?? null, acquiseParent: !!acq?.parent, trou: (st.trou ?? []).includes(f.id), bienSus: rule.filter((r) => (by.get(r.fait)?.boite ?? 0) >= K.boite).length, total: rule.length, enCours: f.id === cur, depassee: (st.depassees ?? []).some((d) => d.famille === f.id), seancesNotion: st.seancesNotion?.[f.id] ?? 0 };
+    }),
+  };
+}
+// semaine par semaine : combien de faits sont en boîte 3 ou plus à la fin de chaque semaine (d'après
+// l'historique de chaque fait : la boîte après son dernier passage de la semaine ou d'avant)
+export function weeklySolid(faits, now = Date.now(), boite = 3) {
+  const all = faits.flatMap((f) => (f.historique ?? []).map((h) => h.t));
+  if (!all.length) return [];
+  const out = [];
+  for (let w = weekStart(Math.min(...all)); w <= weekStart(now); w = weekStart(w + 8 * DAY)) {
+    const end = w + 7 * DAY;
+    const n = faits.filter((f) => { const last = (f.historique ?? []).filter((h) => h.t < end).at(-1); return (last ? last.apres ?? f.boite : 0) >= boite; }).length;
+    out.push({ semaine: w, n });
+  }
+  return out;
+}
+// le défi record, pour le parent : le record, sa date, chaque défi (date, score, record battu ?)
+export function challengeSummary(fiche, seances = []) {
+  const scores = (fiche?.scores ?? []).map((x) => ({ ...x }));
+  let best = null;
+  for (const x of scores) { x.record = x.score > 0 && (best == null || x.score > best); if (x.record) best = x.score; }
+  const n = seances.filter((s) => s.defi).length;
+  return { record: fiche?.record ?? null, date: fiche?.date ?? null, defis: Math.max(scores.length, n), scores };
 }
 
 // ---------------------------------------------------------------- export
@@ -133,6 +194,7 @@ export const SESSION_COLUMNS = [
   ["leçons", (s) => (s.lecons ?? []).map((l) => `${l.id}${l.vue ? "" : l.passee ? " (passée)" : " (arrêtée)"}`).join(" ")], ["cartes", (s) => (s.cartes ?? []).join(" ")],
   ["entraînement libre", (s) => !!s.libre], ["pauses", (s) => s.pauses ?? 0],
   ["cran choisi", (s) => (s.cranDepart ? CRAN_NAMES[s.cranDepart] : null)], ["cran à la fin", (s) => (s.cran ? CRAN_NAMES[s.cran] : null)], ["descentes de cran", (s) => (s.descentes ?? []).length],
+  ["famille du jour (additions)", (s) => s.famille ?? null], ["défi : bonnes réponses", (s) => s.defi?.score ?? null], ["défi : nouveau record", (s) => (s.defi ? !!s.defi.nouveauRecord : null)],
   ["étapes", (s) => (s.etapes ?? []).map((e) => (e.sautee ? `${e.id} (sautée)` : `${e.id} ${e.dureeS ?? ""}s`)).join(" | ")],
 ];
 export const ANSWER_COLUMNS = [
@@ -141,11 +203,11 @@ export const ANSWER_COLUMNS = [
   ["temps (s)", (r) => (typeof r.tempsMs === "number" ? Math.round(r.tempsMs / 100) / 10 : null)], ["écoutes de la consigne", (r) => r.ecoutes], ["aide utilisée", (r) => !!r.aide],
   ["code d'erreur", (r) => r.erreur], ["question qui revient", (r) => !!r.revient], ["exemple guidé", (r) => !!r.guide],
   ["exemple passé", (r) => !!r.passe], ["correction passée", (r) => !!r.correctionPassee], ["entraînement libre", (r) => !!r.libre],
-  ["cran", (r) => (r.cran ? CRAN_NAMES[r.cran] : null)],
+  ["cran", (r) => (r.cran ? CRAN_NAMES[r.cran] : null)], ["notion du jour", (r) => !!r.notion], ["défi record", (r) => !!r.defi],
 ];
 export const FACT_COLUMNS = [
   ["fait", (f) => f.fait.replace("+", " + ")], ["famille", (f) => f.famille], ["boîte", (f) => f.boite], ["prochain passage", (f) => dayKey(f.prochain)],
-  ["passages", (f) => (f.historique ?? []).length], ["erreurs", (f) => (f.historique ?? []).filter((h) => !h.juste).length], ["temps médian (s)", (f) => (typeof f.tempsMedian === "number" ? Math.round(f.tempsMedian / 100) / 10 : null)],
+  ["passages", (f) => (f.historique ?? []).filter((h) => !h.parent).length], ["erreurs", (f) => (f.historique ?? []).filter((h) => !h.juste && !h.parent).length], ["temps médian (s)", (f) => (typeof f.tempsMedian === "number" ? Math.round(f.tempsMedian / 100) / 10 : null)],
 ];
 // l'export JSON ne contient pas le code parent (il resterait lisible dans le fichier)
 export const PRIVATE_SETTINGS = ["codeParent"];

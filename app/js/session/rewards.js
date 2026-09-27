@@ -63,10 +63,11 @@ export function pickCard(cards, owned, { zones, poids, nouvelle = true }, rnd = 
   const dull = mine.filter((c) => !owned[c.id].brillante);
   return weighted(dull.length ? dull : mine, poids, rnd);
 }
-// range une carte dans la collection. Elle est brillante si elle l'était déjà, si le tirage `tirage` l'a
-// rendue brillante (20 % de chances, cartes.json, brillanteHasard) ou au `brillante`-ième doublon.
-export function addCard(owned, card, brillante, now = Date.now(), tirage = false) {
-  const had = owned[card.id], n = (had?.n ?? 0) + 1, shiny = !!had?.brillante || tirage || n - 1 >= brillante;
+// range une carte dans la collection. Elle est brillante si elle l'était déjà (une brillante le reste) ou si
+// le tirage `tirage` l'a rendue brillante (cartes.json : brillanteNouvelle, brillanteDoublon ; décision du
+// parent du 27 septembre 2026 : plus de règle du 3e doublon).
+export function addCard(owned, card, now = Date.now(), tirage = false) {
+  const had = owned[card.id], n = (had?.n ?? 0) + 1, shiny = !!had?.brillante || tirage;
   return { owned: { ...owned, [card.id]: { n, premiere: had?.premiere ?? now, brillante: shiny } }, nouvelle: !had, devientBrillante: shiny && !had?.brillante, parTirage: tirage && !had?.brillante };
 }
 // une carte prête : son illustration et son anecdote existent
@@ -105,8 +106,10 @@ export function goldenStar(debuts, now, rules) {
   if (debuts.filter((t) => weekStart(t) === w).length !== rules.seances) return false;
   return goodWeeks(debuts, rules) % rules.semainesParDoree === 0;
 }
-// une carte sort-elle brillante (tirage de 20 %) ?
+// une carte sort-elle brillante ? `p` : sa chance (20 % pour une carte nouvelle, 5 % pour un doublon)
 export const shinyDraw = (rnd, p) => rnd() < p;
+// la chance qu'une carte gagnée sorte brillante : carte nouvelle ou doublon (cartes.json)
+export const shinyChance = (content, owned, card) => (owned[card.id] ? content.brillanteDoublon : content.brillanteNouvelle) ?? 0;
 
 // ---------------------------------------------------------------- le trésor
 export class Rewards {
@@ -167,7 +170,7 @@ export class Rewards {
   canOpen() { return !!this.c && this.st.total >= this.c.coquillage.prix; }
   // range une carte gagnée (tirage de la brillante compris) et renvoie ce qu'il faut montrer
   async win(card, rnd, now) {
-    const r = addCard(this.owned, card, this.c.brillante, now, shinyDraw(rnd, this.c.brillanteHasard ?? 0));
+    const r = addCard(this.owned, card, now, shinyDraw(rnd, shinyChance(this.c, this.owned, card)));
     this.owned = r.owned;
     await this.store.put("recompenses", { id: "cartes", cartes: this.owned });
     return { carte: card, nouvelle: r.nouvelle, devientBrillante: r.devientBrillante, parTirage: r.parTirage, brillante: this.owned[card.id].brillante, n: this.owned[card.id].n };

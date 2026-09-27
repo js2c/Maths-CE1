@@ -62,7 +62,7 @@ export class FreeTraining {
   async line() {
     const { app } = this, screen = app.lineScreen();
     await this.pickCran();
-    const runner = await new Module1Runner({ screen, store: this.store, content: this.m1, rnd: this.rnd, seance: await this.seanceId(), offset: () => this.offset }).load();
+    const runner = await new Module1Runner({ screen, store: this.store, content: this.m1, rnd: this.rnd, seance: await this.seanceId(), offset: () => this.offset, cran: () => this.cran }).load();
     runner.libre = true; this.runner = runner;
     for (;;) {
       const { q, cfg } = runner.next(), r = await screen.ask(q, cfg);

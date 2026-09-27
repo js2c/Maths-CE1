@@ -103,7 +103,7 @@ const handlers = {
   },
   notion: async (ctx) => {
     const screen = app.lineScreen();
-    const runner = await new Module1Runner({ screen, store, content: module1, rnd, seance: ctx.session.id, offset: () => ctx.session.offset }).load();
+    const runner = await new Module1Runner({ screen, store, content: module1, rnd, seance: ctx.session.id, offset: () => ctx.session.offset, cran: () => ctx.session.cran }).load();
     if (P.get("niveau")) { runner.st.niveau = Number(P.get("niveau")); runner.save = () => {}; }
     if (P.get("format")) runner.levels = runner.levels.map((c) => ({ ...c, formats: [P.get("format")] }));
     const step = { ...ctx.step, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}), ...(P.get("guides") ? { guides: Number(P.get("guides")) } : {}) };

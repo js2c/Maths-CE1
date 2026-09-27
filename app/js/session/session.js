@@ -29,6 +29,7 @@ export const CRANS = ["facile", "conseille", "dur", "tresdur"];
 // le défi record peut-il avoir lieu ? (docs/SPEC-LOT2.md, section 2 : à partir de la 5e séance terminée,
 // seulement si au moins 8 faits sont en boîte 3 ou plus)
 export async function challengeReady(store, step) {
+  if ((await store.setting("defiActif")) === false) return false; // le parent l'a désactivé
   const done = (await store.all("seances")).filter((s) => s.terminee && !s.libre).length;
   const solid = (await store.all("faits")).filter((f) => f.boite >= 3).length;
   return done >= (step.aPartirDeSeance ?? 0) && solid >= (step.faitsBoite3Min ?? 0);

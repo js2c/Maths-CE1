@@ -29,8 +29,8 @@ export const LESSON_OF_LEVEL = { 1: "L1", 4: "L3", 5: "L2" };
 export class Module1Runner {
   // screen : l'écran (generate) ; store : la base ; content : module1.json ; rnd : hasard
   // offset : () => l'écart du cran choisi au conseillé (session.offset)
-  constructor({ screen, store, content, rnd, seance = null, offset = () => 0 }) {
-    this.screen = screen; this.store = store; this.content = content; this.rnd = rnd; this.seance = seance; this.offset = offset;
+  constructor({ screen, store, content, rnd, seance = null, offset = () => 0, cran = () => null }) {
+    this.screen = screen; this.store = store; this.content = content; this.rnd = rnd; this.seance = seance; this.offset = offset; this.cran = cran;
     this.levels = content.niveaux; this.rules = content.reglesAdaptation;
     this.replays = []; this.recent = []; this.errors = {}; this.count = 0; this.ok = 0; this.k = 0; this.simpler = false;
     this.played = new Set(); this.lower = false; this.slowNext = false; this.up = null; this.rateN = 0; this.rateOk = 0;
@@ -68,7 +68,7 @@ export class Module1Runner {
     await this.store?.add("reponses", {
       t: Date.now(), seance: this.seance, module: 1, niveau: q.niveau, question: describe(q), forme: q.format, donnee: r.value, attendue: q.answer,
       juste: r.ok, tempsMs: r.ms, ecoutes: r.listens, aide: !!q.guide, erreur: r.code, revient: !!q.revient, guide: !!q.guide,
-      ...(q.passe ? { passe: true } : {}), ...(r.correctionPassee ? { correctionPassee: true } : {}), ...(this.libre ? { libre: true } : {}),
+      ...(q.passe ? { passe: true } : {}), ...(r.correctionPassee ? { correctionPassee: true } : {}), ...(this.libre ? { libre: true } : {}), ...(this.cran() && this.cran() !== "conseille" ? { cran: this.cran() } : {}),
     });
     // un exemple guidé (la méthode vient d'être montrée) : une étoile s'il est réussi, mais il ne compte
     // ni pour les règles d'adaptation, ni pour le taux de la séance, et ne revient pas

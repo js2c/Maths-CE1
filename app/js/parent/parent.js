@@ -11,6 +11,7 @@
 import * as D from "./data.js";
 import { catalog, median } from "../modules/facts/facts.js";
 import { DB_NAME, MIGRATIONS, persist, STORES } from "../engine/store.js";
+import { familyKnown, markFamilyKnown, setLineLevel } from "./depart.js";
 
 // ---------------------------------------------------------------- petits outils du DOM
 function h(tag, attrs = {}, ...kids) {
@@ -53,6 +54,7 @@ export class ParentSpace {
   // cartes : cartes.json ; calendrier : calendrier.json (quota des cartes)
   constructor(app, { content, seance, module2, cartes, calendrier = null }) {
     this.app = app; this.c = content; this.seance = seance; this.module2 = module2; this.cartes = cartes; this.calendrier = calendrier;
+    this.depart = content.pointDeDepart ?? { niveauxMax: 8, familles: [1, 2] }; // lot 2 : étendu aux niveaux 9 à 13 et aux familles 3 à 7 plus tard
     this.root = null; this.tab = "calendrier"; this.changed = false;
   }
   get store() { return this.app.store; }
@@ -230,6 +232,7 @@ export class ParentSpace {
       h("span", {}, "Réponses justes : ", h("b", {}, `${x.justes ?? 0} sur ${x.questions ?? 0}`)),
       steps.length > 0 && h("span", {}, "Étapes : ", h("b", {}, steps.join(", "))),
       (x.lecons ?? []).length > 0 && h("span", {}, "Leçons : ", h("b", {}, x.lecons.map((l) => `${l.id}${D.lessonNote(l)}`).join(", "))),
+      x.cranDepart && h("span", {}, "Difficulté choisie : ", h("b", {}, `${D.CRAN_NAMES[x.cranDepart]}${(x.descentes ?? []).length ? ` (redescendue à « ${D.CRAN_NAMES[x.cran]} » après des erreurs)` : ""}`)),
       nsp > 0 && h("span", {}, "« Je ne sais pas » : ", h("b", {}, `${nsp} (comptés à part des erreurs)`)),
       passes > 0 && h("span", {}, "Exemples guidés passés : ", h("b", {}, String(passes))),
       corr > 0 && h("span", {}, "Corrections passées : ", h("b", {}, String(corr))),
@@ -258,7 +261,7 @@ export class ParentSpace {
     else {
       m1.append(h("p", { class: "pa-big" }, `Niveau ${n1.niveau} sur ${max}`), h("p", { class: "pa-note" }, M1.niveaux[n1.niveau]),
         h("div", { class: "pa-levels", "aria-hidden": "true" }, Array.from({ length: max }, (_, i) => h("span", { class: i + 1 < n1.niveau ? "done" : i + 1 === n1.niveau ? "cur" : "" }, i + 1))),
-        h("h3", {}, "Historique des niveaux"), h("ul", { class: "pa-hist" }, D.levelHistory(n1).map((e) => h("li", {}, e.type === "obtenu" ? `${D.fmtDay(e.date)} : ${e.niveau === 1 ? "début au niveau 1" : `niveau ${e.niveau} atteint`}` : `${D.fmtDay(e.date)} : redescente du niveau ${e.de} au niveau ${e.niveau} (deux séances de suite sous 50 % ; l'enfant ne le voit pas)`))),
+        h("h3", {}, "Historique des niveaux"), h("ul", { class: "pa-hist" }, D.levelHistory(n1).map((e) => h("li", {}, e.type === "parent" ? `${D.fmtDay(e.date)} : niveau ${e.niveau} choisi par le parent (point de départ${e.de ? `, au lieu du niveau ${e.de}` : ""})` : e.type === "obtenu" ? `${D.fmtDay(e.date)} : ${e.niveau === 1 && !e.cran ? "début au niveau 1" : `niveau ${e.niveau} atteint${e.cran ? " (en réussissant à un cran plus dur)" : ""}`}` : `${D.fmtDay(e.date)} : redescente du niveau ${e.de} au niveau ${e.niveau} (deux séances de suite sous 50 % ; l'enfant ne le voit pas)`))),
         (n1.lecons ?? []).length ? h("p", { class: "pa-note" }, `Leçons déjà vues : ${n1.lecons.join(", ")}.`) : null);
     }
     this.weeklyBlock(m1, 1);
@@ -357,6 +360,42 @@ export class ParentSpace {
       h("button", { class: "pa-btn", onclick: () => input.click() }, "Choisir un fichier de sauvegarde…"), rmsg, h("div", { "data-restored": "" }));
     page.append(exp, rest, this.settingsBox());
   }
+  // les crans que l'enfant peut choisir au début de la séance : du plus facile autorisé au plus dur autorisé
+  cransRow(row) {
+    const names = ["facile", "conseille", "dur", "tresdur"], lo = h("div", { class: "pa-seg", role: "group", "aria-label": "cran le plus facile" }), hi = h("div", { class: "pa-seg", role: "group", "aria-label": "cran le plus dur" }), ok = h("span", { class: "pa-ok" });
+    let cur = { min: "facile", max: "tresdur" };
+    const paint = () => { for (const b of lo.children) b.setAttribute("aria-pressed", String(b.dataset.v === cur.min)); for (const b of hi.children) b.setAttribute("aria-pressed", String(b.dataset.v === cur.max)); };
+    const save = async (k, v) => { cur = { ...cur, [k]: v }; if (names.indexOf(cur.min) > names.indexOf(cur.max)) cur = k === "min" ? { ...cur, max: v } : { ...cur, min: v }; await this.store.setSetting("cransAutorises", cur); paint(); ok.textContent = "Enregistré."; };
+    for (const v of ["facile", "conseille"]) lo.append(h("button", { "data-v": v, onclick: () => save("min", v) }, D.CRAN_NAMES[v]));
+    for (const v of ["conseille", "dur", "tresdur"]) hi.append(h("button", { "data-v": v, onclick: () => save("max", v) }, D.CRAN_NAMES[v]));
+    this.store.setting("cransAutorises").then((c) => { if (c) cur = { ...cur, ...c }; paint(); });
+    const line = (t, seg, ...more) => h("div", { class: "pa-row" }, h("span", { class: "pa-muted", style: "min-width: 9em" }, t), seg, ...more);
+    return row("Difficulté proposée à l'enfant", "Au début de chaque séance, l'enfant choisit un cran (plus c'est dur, plus les bonnes réponses rapportent d'étoiles). Vous pouvez interdire les crans extrêmes.",
+      h("div", { style: "display: grid; gap: 10px" }, line("Le plus facile :", lo), line("Le plus dur :", hi, ok)));
+  }
+  defiRow(row) {
+    const seg = h("div", { class: "pa-seg", role: "group", "aria-label": "défi record" }), paint = (v) => { for (const b of seg.children) b.setAttribute("aria-pressed", String((b.dataset.v === "oui") === v)); };
+    for (const [v, t] of [["oui", "activé"], ["non", "désactivé"]]) seg.append(h("button", { "data-v": v, onclick: async () => { await this.store.setSetting("defiActif", v === "oui"); paint(v === "oui"); } }, t));
+    this.store.setting("defiActif").then((v) => paint(v !== false));
+    return row("Défi record", "Une minute de faits d'addition chronométrés, comparés au record de l'enfant. Il n'a lieu qu'à partir de la 5e séance et quand au moins 8 faits sont bien sus. (Le défi lui-même arrive dans une prochaine version.)", seg);
+  }
+  // le point de départ : le niveau de la ligne graduée, les familles de faits déjà connues
+  departRow(row) {
+    const box = h("div", { class: "pa-depart" }), msg = h("span", { class: "pa-ok" });
+    const levels = h("div", { class: "pa-seg", role: "group", "aria-label": "niveau de la ligne graduée" });
+    const paint = (n) => { for (const b of levels.children) b.setAttribute("aria-pressed", String(Number(b.dataset.v) === n)); };
+    for (let n = 1; n <= this.depart.niveauxMax; n++) levels.append(h("button", { "data-v": n, onclick: async () => { const st = await setLineLevel(this.store, n); paint(st.niveau); msg.textContent = `Ligne graduée : niveau ${n} à la prochaine séance.`; } }, String(n)));
+    this.store.get("niveaux", 1).then((st) => paint(st?.niveau ?? 1));
+    const fams = h("div", { class: "pa-row" });
+    const famBtns = async () => {
+      const faits = await this.store.all("faits");
+      fams.replaceChildren(...this.depart.familles.map((id) => { const f = this.module2.familles.find((x) => x.id === id), known = familyKnown(this.module2, faits, id);
+        return h("button", { class: "pa-btn", disabled: known, onclick: async () => { const n = (await markFamilyKnown(this.store, this.module2, id)).length; msg.textContent = `Famille « ${f.nom} » marquée connue : ${n} fait(s) en boîte 3.`; famBtns(); } }, known ? `« ${f.nom} » : déjà connue` : `Marquer « ${f.nom} » comme connue`); }));
+    };
+    famBtns();
+    box.append(h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau de la ligne graduée :"), levels), fams, msg);
+    return row("Point de départ", "Si l'enfant sait déjà faire : choisissez le niveau de la ligne graduée où elle commencera, ou marquez une famille de faits d'addition comme connue (ses faits seront revus moins souvent). C'est noté dans l'historique comme votre choix, et cela ne rapporte rien à l'enfant.", box);
+  }
   async marked() { const t = Date.now(); await this.store.setSetting("dernierExport", t); this.d.dernierExport = t; }
   settingsBox() {
     const box = h("div", { class: "pa-card-box" }, h("h2", {}, "Réglages"));
@@ -372,6 +411,8 @@ export class ParentSpace {
     for (const m of this.c.dureesSeance) seg.append(h("button", { "data-v": m, onclick: async () => { await this.store.setSetting("dureeSeanceMin", m); paint(m); } }, `${m} min`));
     this.store.setting("dureeSeanceMin", this.seance.dureeMaxMin).then(paint);
     box.append(row("Durée maximale d'une séance", "Au bout de ce temps, l'application dit « à demain » (la dernière minute est gardée pour la récompense).", seg));
+    // lot 2 : le sélecteur de difficulté (crans proposés à l'enfant), le défi record, le point de départ
+    box.append(this.cransRow(row), this.defiRow(row), this.departRow(row));
     // le code
     box.append(row("Code parent", "Le code à 4 chiffres qui ouvre cet espace.", h("button", { class: "pa-btn", onclick: () => { this.root.replaceChildren(h("div", { class: "pa-veil" })); this.app.stage.paused = false; this.gate("choisir"); } }, "Changer le code")));
     // le stockage persistant

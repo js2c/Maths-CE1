@@ -70,7 +70,7 @@ test("CSV : point-virgule, virgule décimale, guillemets, oui/non", () => {
   const csv = D.toCSV([["a", (r) => r.a], ["b", (r) => r.b], ["c", (r) => r.c]], [{ a: 1.5, b: 'dit "non"; puis', c: true }, { a: null, b: "x", c: false }]);
   assert.equal(csv, 'a;b;c\r\n1,5;"dit ""non""; puis";oui\r\n;x;non\r\n');
   const row = D.toCSV(D.ANSWER_COLUMNS, [{ id: 1, seance: 2, t: at(2026, 9, 1), module: 1, niveau: 3, question: "lire 14", forme: "lire", donnee: 15, attendue: 14, juste: false, tempsMs: 4260, ecoutes: 2, aide: false, erreur: "E1" }]).split("\r\n")[1];
-  assert.equal(row, "1;2;2026-09-01 18:00:00;1;3;lire 14;lire;15;14;non;4,3;2;non;E1;non;non;non;non;non");
+  assert.equal(row, "1;2;2026-09-01 18:00:00;1;3;lire 14;lire;15;14;non;4,3;2;non;E1;non;non;non;non;non;");
 });
 
 test("sauvegarde : pas de code parent ; contrôle avant restauration", () => {
@@ -129,4 +129,35 @@ test("cartes (lot 2) : cartes et brillantes, quota restant, zone suivante et ce 
   const all = Object.fromEntries(L.map((c) => [c.id, { n: 1 }]));
   assert.match(cardsSummary({ ...R, cartes: { cartes: all } }, cartes, cal, seances, at("2026-10-07")).suivante.attend, /étoile arc-en-ciel/);
   assert.match(cardsSummary({ ...R, cartes: { cartes: all }, zones: { ouvertes: ["lagon", "corail"] } }, cartes, cal, seances).suivante.attend, /il reste 15/);
+});
+
+// lot 2, étape 2 : le point de départ du parent, le cran dans l'historique et l'export
+import { IDBFactory as IDB2 } from "fake-indexeddb";
+import { Store as Store2 } from "../../app/js/engine/store.js";
+import { familyKnown, markFamilyKnown, setLineLevel } from "../../app/js/parent/depart.js";
+import { readFileSync as rf2 } from "node:fs";
+const m2 = JSON.parse(rf2(new URL("../../app/content/module2.json", import.meta.url)));
+
+test("point de départ : le niveau de la ligne choisi par le parent, noté dans l'historique, sans étoile", async () => {
+  const store = await Store2.open(new IDB2()), t = at(2026, 10, 1);
+  const st = await setLineLevel(store, 5, t);
+  assert.equal(st.niveau, 5); assert.equal((await store.get("niveaux", 1)).niveau, 5);
+  const hist = D.levelHistory(st); assert.deepEqual(hist.at(-1), { date: t, type: "parent", niveau: 5, cran: false, de: 1 });
+  assert.equal((await store.all("recompenses")).length, 0, "aucune étoile arc-en-ciel");
+});
+
+test("point de départ : une famille marquée connue met les faits de sa règle en boîte 3 (sans faire redescendre les autres)", async () => {
+  const store = await Store2.open(new IDB2()), t = at(2026, 10, 1);
+  await store.put("faits", { fait: "2+2", a: 2, b: 2, famille: 1, boite: 5, prochain: t, historique: [] });
+  const changed = await markFamilyKnown(store, m2, 2, t);
+  assert.deepEqual(changed.map((f) => f.fait).sort(), ["1+1", "3+3", "4+4", "5+5"]); // les doubles jusqu'à 5, 2+2 déjà plus haut
+  const faits = await store.all("faits"); assert.equal(faits.find((f) => f.fait === "2+2").boite, 5); assert.ok(changed.every((f) => f.historique.at(-1).parent));
+  assert.ok(familyKnown(m2, faits, 2)); assert.ok(!familyKnown(m2, faits, 1));
+  assert.equal((await store.setting("choixParent"))[0].famille, 2);
+});
+
+test("export : le cran choisi, le cran à la fin et les descentes de chaque séance ; le cran de chaque réponse", () => {
+  const cols = D.SESSION_COLUMNS.map(([k]) => k); assert.ok(cols.includes("cran choisi") && cols.includes("descentes de cran"));
+  const row = D.toCSV(D.SESSION_COLUMNS.filter(([k]) => k.includes("cran")), [{ cranDepart: "tresdur", cran: "dur", descentes: [{}] }]).split("\r\n")[1];
+  assert.equal(row, "très dur;plus dur;1");
 });

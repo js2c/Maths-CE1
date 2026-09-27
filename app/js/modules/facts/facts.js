@@ -33,6 +33,14 @@ export function catalog(c) {
   return out;
 }
 export const familyOf = (c, id) => c.familles.find((f) => f.id === id);
+// les faits qui relèvent de la règle d'une famille (lot 2 : la pratique d'une famille, et le « point de départ »
+// du parent), même ceux déjà rencontrés dans une famille précédente
+export function ruleFacts(c, id) {
+  const fam = familyOf(c, id), out = [];
+  if (!fam || !RULES[fam.regle]) return out;
+  for (let a = 1; a < c.sommeMax; a++) for (let b = 1; a + b <= c.sommeMax; b++) if (RULES[fam.regle](a, b)) out.push({ fait: key(a, b), a, b });
+  return out;
+}
 export const median = (xs) => { if (!xs.length) return null; const s = [...xs].sort((p, q) => p - q), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
 
 // le seuil « rapide », en ms

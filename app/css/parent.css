@@ -99,6 +99,8 @@
 .pa-ok { color: var(--pa-good); font-weight: 650; }
 .pa-confirm { margin-top: 12px; padding: 14px 16px; border-radius: 16px; background: var(--pa-low-bg); }
 .pa-confirm p { margin: 0 0 10px; }
+.pa-pause { padding: 12px max(20px, env(safe-area-inset-right)) 14px max(20px, env(safe-area-inset-left)); background: var(--pa-mid-bg); border-bottom: 2px solid var(--pa-line); }
+.pa-pause > p { margin: 0 0 8px; }
 
 /* ---- le calendrier */
 .pa-month { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }

@@ -193,7 +193,8 @@ app.album = album;
 const parent = new ParentSpace(app, { content: parentContent, seance, module2, cartes, calendrier });
 app.parent = parent;
 // l'espace parent coupe le son ; à la sortie, ses réglages (musique, volume, bruitages) sont relus
-const openParent = async () => { voice.stop(); sound.suspend(); const r = await parent.open(); if (r?.reload) location.reload(); sound.setPrefs(await store.setting("son")); sound.resume(); };
+// (pendant une pause, le parent peut terminer la séance : endPausedSession)
+const openParent = async () => { voice.stop(); sound.suspend(); const r = await parent.open(); if (r?.terminer) await endPausedSession(); if (r?.reload) location.reload(); sound.setPrefs(await store.setting("son")); sound.resume(); };
 const big = (name, cx, cy, label, cls = "bubble") => spriteBox(app, { x: cx - 90, y: cy - 90, w: 180, h: 180, cls, label, paint: (ctx) => sprites.draw(ctx, name, 0, 90, 90) });
 let homeEls = [];
 const clearHome = () => { homeEls.forEach((e) => e.remove()); homeEls = []; };
@@ -250,26 +251,40 @@ const progress = (p) => {
 };
 // attend-on une réponse de l'enfant (la consigne est finie ou en cours) ?
 const awaiting = () => [app.screen, app.facts].some((s) => s && s.resolve && !s.locked);
+let pausedEls = null; // la pause en cours : la bulle « continuer » et le logo de l'espace parent
 async function pauseSession() {
   clock.pause(); voice.pause(); sound.pauseLevel(true); stage.root.classList.add("paused"); homeKey.style.visibility = "hidden";
   await app.session?.notePause();
   const resume = big("jouer", 640, 650, "continuer", "bubble play keep"), logo = parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs });
-  logo.classList.add("keep");
+  logo.classList.add("keep"); pausedEls = [resume, logo]; app.enPause = true;
   onTap(resume, () => {
+    pausedEls = null; app.enPause = false;
     voice.unlock(); resume.remove(); logo.remove(); stage.root.classList.remove("paused"); homeKey.style.visibility = "visible";
     clock.resume(); voice.resume(); sound.pauseLevel(false);
     // la séance attendait une réponse : la voix redit la consigne
     if (!voice.cur && awaiting() && voice.instruction) voice.say(`${text.data.reprise} ${voice.instruction}`);
   });
 }
-// quitter l'entraînement libre : l'activité en cours est abandonnée (engine/clock.js) et la scène rangée
-function quitFree() {
+// l'activité en cours est abandonnée pour de bon (engine/clock.js) et la scène rangée
+function abandonActivity() {
   clock.abandon(); voice.abandon();
-  app.screen?.leave(); app.facts?.leave(); lessons.abandon();
+  app.screen?.leave(); app.facts?.leave(); app.dictation?.hide?.(); lessons.abandon();
   for (const s of [app.screen, app.facts]) if (s) { s.resolve = null; s.locked = true; }
-  document.querySelectorAll("#ui .free").forEach((e) => e.remove());
+  // le bernard-l'ermite de la notion du jour sur les additions (notion2)
+  if (app.hermit) { app.hermit.remove(); app.hermit = null; if (app.facts) { app.facts.notion = false; app.facts.hermit = null; } sprites.unload("ermite"); }
+  document.querySelectorAll("#ui .free, #ui .skip").forEach((e) => e.remove());
   mode = null; homeKey.style.visibility = "hidden"; sound.stopMusic();
-  showHome({ done: true });
+}
+// quitter l'entraînement libre
+function quitFree() { abandonActivity(); showHome({ done: true }); }
+// terminer la séance en pause, depuis l'espace parent (décision du parent du 27 septembre : l'enfant n'a pas de
+// bouton d'arrêt) : elle est enregistrée comme interrompue (terminée : non, sans récompense), retour à l'accueil
+async function endPausedSession() {
+  if (!pausedEls || !app.session) return;
+  pausedEls.forEach((e) => e.remove()); pausedEls = null; app.enPause = false;
+  await app.session.interrupt();
+  abandonActivity(); frieze.show(false); stage.root.classList.remove("paused"); sound.pauseLevel(false);
+  showHome({ done: await doneToday(store) });
 }
 onTap(homeKey, () => { pop(homeKey); if (mode === "seance") pauseSession(); else if (mode === "libre") quitFree(); });
 async function freeTraining() {

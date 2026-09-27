@@ -140,13 +140,24 @@ export class FactsScreen {
     const t = this.app.text.data, k = q.forme === "trouGauche" ? q.b : q.a;
     return kind === "cadre" ? fill(t.aideCadre, { k }) : kind === "maison" ? t.aideMaison : kind === "doublePlus" ? fill(t.aideDoublePlus, { d: Math.min(q.a, q.b) }) : fill(t.aideReflet, { a: q.a });
   }
-  // cran « plus facile » : l'appui est montré d'emblée (sans la réponse), puis le pavé revient ; ce n'est pas
-  // compté comme une aide demandée (la séance « plus facile » compte normalement)
+  // l'aide (coquillage, aide affichée d'emblée) peut être passée dès qu'elle commence (décision du parent du
+  // 27 septembre) : le bouton « passer » habituel ; un toucher coupe la voix et l'animation, range l'appui et
+  // rend le pavé aussitôt. `body(g, dead)` : `g` garde chaque attente, `dead()` dit si l'aide a été passée.
+  async skippable(label, body) {
+    let abort = null, dead = false; const abortP = new Promise((_, rej) => { abort = () => { dead = true; rej(SKIPPED); }; }); abortP.catch(() => {});
+    const g = (p) => Promise.race([p, abortP]), skip = skipKey(this.app, () => abort(), label);
+    try { await body(g, () => dead); } catch (e) { if (e !== SKIPPED) throw e; this.app.voice.stop(); this.aidePassee = true; }
+    finally { skip.remove(); this.board.clear(); }
+  }
+  // cran « plus facile » : l'appui est montré d'emblée (sans la réponse), puis le pavé revient ; un fait réussi
+  // ainsi ne change pas de boîte (runner.js, `aideDEmblee`) ; « passer » rend le pavé aussitôt
   async autoAid(q) {
     const { voice } = this.app, kind = this.aidKind(q);
     voice.stop(); voice.say(this.consigne(q));
-    if (kind === "ligne") return this.lineAid(q, false);
-    this.paintAid(q, false); await voice.say(this.aidSpeech(q, kind)); await wait(1500);
+    await this.skippable("passer l'aide", async (g, dead) => {
+      if (kind === "ligne") return this.lineAid(q, false, { g, dead });
+      this.paintAid(q, false); await g(voice.say(this.aidSpeech(q, kind))); await g(wait(1500));
+    });
   }
   // un exemple guidé : l'appui avec la réponse, « a plus b, ça fait n », puis « À toi ! » ; « passer » l'arrête
   async demo(q) {
@@ -156,7 +167,7 @@ export class FactsScreen {
     const g = (p) => Promise.race([p, abortP]), skip = skipKey(this.app, () => abort(), "passer l'exemple");
     try {
       const kind = this.aidKind(q);
-      if (kind === "ligne") await g(this.lineAid(q, true));
+      if (kind === "ligne") await g(this.lineAid(q, true, { g }));
       else { this.paintAid(q, true); await g(voice.say(this.aidSpeech(q, kind))); }
       await g(voice.say(fill(text.data.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b })));
       await g(wait(500 / k));
@@ -197,7 +208,7 @@ export class FactsScreen {
         if (nsp) await g(voice.say(text.data.faitNSP)); else { pop(this.slate, "shake"); await g(wait(500 / k)); }
         answer();
         // en notion du jour (lot 2, étape 6) : l'appui visuel de la famille, avec la réponse
-        if (this.notion && !q.base) { const kind = this.aidKind(q); if (kind === "ligne") await g(this.lineAid(q, false)); else { this.paintAid(q, true); await g(voice.say(this.aidSpeech(q, kind))); } }
+        if (this.notion && !q.base) { const kind = this.aidKind(q); if (kind === "ligne") await g(this.lineAid(q, false, { g })); else { this.paintAid(q, true); await g(voice.say(this.aidSpeech(q, kind))); } }
         await g(voice.say(fill(text.data.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b })));
         await g(wait(700 / k));
       } catch (e) {
@@ -215,23 +226,27 @@ export class FactsScreen {
     if (this.locked || !this.q || this.q.base) return;
     const { voice } = this.app, q = this.q, kind = this.aidKind(q);
     this.locked = true; this.aide = true; pop(this.help); this.keys(false); voice.stop();
-    if (kind === "ligne") await this.lineAid(q, false);
-    else { this.paintAid(q, false); await voice.say(this.aidSpeech(q, kind)); await wait(2200); this.board.clear(); }
+    await this.skippable("passer l'aide", async (g, dead) => {
+      if (kind === "ligne") return this.lineAid(q, false, { g, dead });
+      this.paintAid(q, false); await g(voice.say(this.aidSpeech(q, kind))); await g(wait(2200));
+    });
+    if (this.q !== q) return;
     this.keys(true); this.locked = false;
     voice.say(this.consigne(q));
   }
-  // la tortue part du grand nombre et fait 1 ou 2 sauts (la ligne de 0 à 10, tous les nombres écrits)
-  async lineAid(q, solved) {
+  // la tortue part du grand nombre et fait 1 ou 2 sauts (la ligne de 0 à 10, tous les nombres écrits) ;
+  // `g`, `dead` : l'aide passée (skippable) arrête la voix, les sauts et range la ligne aussitôt
+  async lineAid(q, solved, { g = (p) => p, dead = () => false } = {}) {
     const { voice, text, line } = this.app, nl = this.app.lineScreen(), big = Math.max(q.a, q.b), small = Math.min(q.a, q.b);
     this.keys(false); this.hermit?.play("montrer", { hold: 2000 });
     const spec = { x0: 150, x1: 1134, y: 452, n: 11, labels: Array.from({ length: 11 }, (_, i) => String(i)), k: 0, lit: [big] };
-    const [bmp] = await line.render([spec]); line.show(bmp);
+    const [bmp] = await g(line.render([spec])); line.show(bmp);
     nl.spec = spec; nl.q = { min: 0, max: 10, step: 1 }; nl.arcs = []; nl.overlay = []; line.fxClear();
     nl.turtle.sitOn(spec, big);
     try {
-      await voice.say(fill(text.data.aideLigne, { a: big, sauts: small === 1 ? text.data.unSaut : `${small} ${text.data.sauts}` }));
-      await nl.countJumps(big, big + small, { label: (k) => `+${k}`, say: (k) => String(k) });
-      await wait(solved ? 600 : 1600);
+      await g(voice.say(fill(text.data.aideLigne, { a: big, sauts: small === 1 ? text.data.unSaut : `${small} ${text.data.sauts}` })));
+      await g(nl.countJumps(big, big + small, { label: (k) => `+${k}`, say: (k) => String(k), stop: dead, guard: g }));
+      await g(wait(solved ? 600 : 1600));
     } finally { nl.turtle.hide(); nl.arcs = []; line.fxClear(); line.clear(); }
   }
   leave() { this.show(false); this.q = null; this.defi = null; this.dictee = null; this.app.aidBoard?.clear(); }

@@ -9,12 +9,16 @@
 //    arc-en-ciel), sauf si c'est le parent qui l'a marquée connue ;
 //  - trou : les formes à trou s'ouvrent pour une famille quand la moitié des faits de sa règle atteignent la
 //    boîte 3 ; c'est définitif (des erreurs qui font redescendre des faits ne les referment pas) ;
-//  - famille en cours (notion du jour) : la plus basse des familles ouvertes pas encore acquise ; quand toutes
-//    le sont, la famille 7 (mélange).
+//  - famille en cours (notion du jour) : la plus basse des familles ouvertes pas encore acquise ni dépassée ;
+//    quand toutes le sont, la famille 7 (mélange) ;
+//  - stagnation (décision du parent du 27 septembre ; `familles2.stagnation`) : une famille pas acquise après
+//    6 séances où elle était la notion du jour est « dépassée » : la suivante devient la famille en cours (elle
+//    s'ouvre si besoin, et joue sa leçon à sa première notion du jour) ; la famille dépassée reste travaillée en
+//    révision (échauffement, autres familles de la notion du jour) et peut encore être acquise.
 import { catalog, familyOf, ruleFacts } from "./facts.js";
 
 export const initialFamilies = (c, now = Date.now()) => ({ module: 2, ouvertes: [...c.famillesActives], ouvertures: c.famillesActives.map((id) => ({ famille: id, date: now })), acquises: [], trou: [], notion: [], lecons: [] });
-export const cfgOf = (c) => ({ ouverture: { part: 0.8, boite: 2 }, acquise: { part: 0.8, boite: 3 }, trou: { part: 0.5, boite: 3 }, ...(c.familles2 ?? {}) });
+export const cfgOf = (c) => ({ ouverture: { part: 0.8, boite: 2 }, acquise: { part: 0.8, boite: 3 }, trou: { part: 0.5, boite: 3 }, stagnation: { seances: 6 }, ...(c.familles2 ?? {}) });
 // le contenu avec les familles ouvertes (ce que lisent le plan de l'échauffement et `pool`)
 export const withOpen = (c, st) => ({ ...c, famillesActives: st?.ouvertes ?? c.famillesActives });
 const byKey = (faits) => new Map(faits.map((f) => [f.fait, f]));
@@ -43,10 +47,28 @@ export function updateFamilies(c, st0, faits, now = Date.now(), { parent = false
   if (next) { st.ouvertes.push(next); st.ouvertures.push({ famille: next, date: now, ...(parent ? { parent: true } : {}), ...(seance != null ? { seance } : {}) }); events.push({ type: "ouverte", famille: next }); }
   return { st, events };
 }
-// la famille en cours : la plus basse ouverte pas encore acquise, sinon la dernière (le mélange)
+// la famille en cours : la plus basse ouverte pas encore acquise ni dépassée, sinon la dernière (le mélange)
+const passed = (st) => (st.depassees ?? []).map((d) => d.famille);
+const firstLive = (c, st) => c.familles.find((f) => st.ouvertes.includes(f.id) && !st.acquises.includes(f.id) && !passed(st).includes(f.id) && f.regle !== "melange") ?? null;
 export function currentFamily(c, st) {
   const open = c.familles.filter((f) => st.ouvertes.includes(f.id));
-  return (open.find((f) => !st.acquises.includes(f.id) && f.regle !== "melange") ?? (st.ouvertes.includes(c.familles.at(-1).id) ? c.familles.at(-1) : open.at(-1))).id;
+  return (firstLive(c, st) ?? (st.ouvertes.includes(c.familles.at(-1).id) ? c.familles.at(-1) : open.at(-1))).id;
+}
+// fin d'une séance dont la notion du jour était la famille `id` : on compte la séance ; au seuil, si elle n'est
+// toujours pas acquise, elle est dépassée et la famille suivante s'ouvre (si aucune autre ne peut prendre la
+// relève) ; renvoie { st, events } ({ type: "depassee", famille }, { type: "ouverte", famille, stagnation })
+export function noteNotion(c, st0, id, now = Date.now(), { seance = null } = {}) {
+  const st = structuredClone(st0), events = [], N = cfgOf(c).stagnation?.seances;
+  st.seancesNotion = { ...(st.seancesNotion ?? {}), [id]: (st.seancesNotion?.[id] ?? 0) + 1 };
+  const f = familyOf(c, id);
+  if (!N || !f || f.regle === "melange" || st.acquises.includes(id) || passed(st).includes(id) || st.seancesNotion[id] < N) return { st, events };
+  (st.depassees ??= []).push({ famille: id, date: now, ...(seance != null ? { seance } : {}) }); events.push({ type: "depassee", famille: id });
+  const next = c.familles.find((x) => !st.ouvertes.includes(x.id));
+  if (!firstLive(c, st) && next) {
+    st.ouvertes.push(next.id); st.ouvertures.push({ famille: next.id, date: now, stagnation: true, ...(seance != null ? { seance } : {}) });
+    events.push({ type: "ouverte", famille: next.id, stagnation: true });
+  }
+  return { st, events };
 }
 // les familles dont le fait (a, b) relève de la règle (un fait peut relever de plusieurs)
 export const familiesOfFact = (c, a, b) => c.familles.filter((f) => ruleFacts(c, f.id).some((r) => r.a === a && r.b === b)).map((f) => f.id);

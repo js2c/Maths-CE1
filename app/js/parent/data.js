@@ -137,7 +137,8 @@ export function additionGrid(faits, reponses, { c, baseMs = null } = {}) {
 // l'historique d'un fait, pour le parent : chaque passage (date, juste, temps, forme, aide, boîte avant et après)
 export const factHistory = (f) => [...(f?.historique ?? [])].sort((x, y) => y.t - x.t).map((h) => ({ date: h.t, juste: !!h.juste, ms: h.ms, forme: h.forme ?? "directe", aide: !!h.aide, avant: h.boite, apres: h.apres, parent: !!h.parent }));
 // les familles du module 2, pour le parent : ouverte (date, par le parent ?), acquise (date), formes à trou,
-// faits de la règle bien sus (boîte 3 ou plus) ; la famille en cours de la notion du jour
+// faits de la règle bien sus (boîte 3 ou plus) ; la famille en cours de la notion du jour ; dépassée (stagnation :
+// pas acquise après 6 séances en notion du jour, la suivante a pris la relève) et séances en notion du jour
 export function familiesSummary(c, st, faits) {
   st ??= initialFamilies(c, 0);
   const by = new Map(faits.map((f) => [f.fait, f])), K = cfgOf(c).acquise;
@@ -146,7 +147,7 @@ export function familiesSummary(c, st, faits) {
     enCours: cur,
     familles: c.familles.map((f) => {
       const rule = ruleFacts(c, f.id), ouv = (st.ouvertures ?? []).find((o) => o.famille === f.id), acq = (st.obtenus ?? []).find((o) => o.famille === f.id);
-      return { id: f.id, nom: f.nom, ouverte: st.ouvertes.includes(f.id), ouverteLe: ouv?.date ?? null, ouverteParent: !!ouv?.parent, acquise: st.acquises.includes(f.id), acquiseLe: acq?.date ?? null, acquiseParent: !!acq?.parent, trou: (st.trou ?? []).includes(f.id), bienSus: rule.filter((r) => (by.get(r.fait)?.boite ?? 0) >= K.boite).length, total: rule.length, enCours: f.id === cur };
+      return { id: f.id, nom: f.nom, ouverte: st.ouvertes.includes(f.id), ouverteLe: ouv?.date ?? null, ouverteParent: !!ouv?.parent, acquise: st.acquises.includes(f.id), acquiseLe: acq?.date ?? null, acquiseParent: !!acq?.parent, trou: (st.trou ?? []).includes(f.id), bienSus: rule.filter((r) => (by.get(r.fait)?.boite ?? 0) >= K.boite).length, total: rule.length, enCours: f.id === cur, depassee: (st.depassees ?? []).some((d) => d.famille === f.id), seancesNotion: st.seancesNotion?.[f.id] ?? 0 };
     }),
   };
 }

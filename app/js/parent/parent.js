@@ -68,9 +68,10 @@ export class ParentSpace {
     document.body.append(this.root);
     return new Promise((resolve) => { this.resolve = resolve; this.gate(); });
   }
+  // `terminer` : le parent a terminé la séance en pause (main.js la range et revient à l'accueil)
   close() {
     this.root?.remove(); this.root = null; this.app.stage.paused = false;
-    const r = { reload: this.changed }; this.changed = false;
+    const r = { reload: this.changed, ...(this.terminer ? { terminer: true } : {}) }; this.changed = false; this.terminer = false;
     this.resolve?.(r);
   }
 
@@ -154,8 +155,19 @@ export class ParentSpace {
     this.root.append(h("div", { class: "pa-sheet" },
       h("header", { class: "pa-top" }, h("img", { src: "icons/icon-192.png", alt: "" }), h("div", { class: "pa-grow" }, h("h1", {}, "Espace parent"), h("p", {}, `L'océan des nombres · la pieuvre s'appelle ${mascotte}`)),
         h("button", { class: "pa-close", onclick: () => this.close() }, "Fermer")),
-      this.tabsEl, this.main));
+      this.pauseBlock(), this.tabsEl, this.main));
     this.show(this.tab);
+  }
+  // une séance est en pause (bouton « maison ») : le parent peut la terminer (décision du 27 septembre ; l'enfant,
+  // lui, n'a pas de bouton d'arrêt). Elle est enregistrée comme interrompue, sans récompense ; les étoiles déjà
+  // gagnées restent.
+  pauseBlock() {
+    if (!this.app.enPause) return null;
+    const conf = h("div");
+    return h("div", { class: "pa-pause" },
+      h("p", {}, h("b", {}, "Une séance est en pause. "), "Si l'enfant ne la reprend pas, vous pouvez la terminer ici : elle sera notée « interrompue », sans coquillage ni carte à la fin (les étoiles déjà gagnées restent). L'application revient à l'accueil."),
+      h("button", { class: "pa-btn", onclick: () => conf.replaceChildren(h("div", { class: "pa-confirm" }, h("p", {}, h("b", {}, "Terminer la séance maintenant ? "), "Elle ne pourra pas être reprise ; l'enfant pourra en commencer une autre aujourd'hui."),
+        h("div", { class: "pa-row" }, h("button", { class: "pa-btn danger primary", onclick: () => { this.terminer = true; this.close(); } }, "Oui, terminer la séance"), h("button", { class: "pa-btn", onclick: () => conf.replaceChildren() }, "Annuler")))) }, "Terminer la séance…"), conf);
   }
   show(id, opts = {}) {
     this.tab = id;
@@ -271,11 +283,11 @@ export class ParentSpace {
     const famName = (id) => M2.familles.find((f) => f.id === id)?.nom ?? id;
     const m2 = h("div", { class: "pa-card-box" }, h("h2", {}, `Module 2 · ${this.c.modules[2].nom}`),
       h("p", { class: "pa-big" }, `${F.rencontres} faits rencontrés sur ${cat.length}`),
-      h("p", { class: "pa-note" }, `Famille en cours (celle de la notion du jour sur les additions) : `, h("b", {}, famName(FS.enCours)), `. Un fait monte d'une boîte quand il est juste et rapide (au plus une boîte par séance) ; une erreur le renvoie en boîte 1. Une famille est acquise quand ${Math.round(100 * (M2.familles2?.acquise?.part ?? 0.8))} % des faits de sa règle sont en boîte 3 ou plus.`),
+      h("p", { class: "pa-note" }, `Famille en cours (celle de la notion du jour sur les additions) : `, h("b", {}, famName(FS.enCours)), `. Un fait monte d'une boîte quand il est juste et rapide (au plus une boîte par séance) ; une erreur le renvoie en boîte 1. Une famille est acquise quand ${Math.round(100 * (M2.familles2?.acquise?.part ?? 0.8))} % des faits de sa règle sont en boîte 3 ou plus. Une famille qui n'est pas acquise après ${M2.familles2?.stagnation?.seances ?? 6} séances d'additions passe « en révision » : la suivante devient la famille en cours, et ses faits reviennent toujours à l'échauffement.`),
       h("div", { class: "pa-table-wrap" }, h("table", { class: "pa-table pa-fam" },
         h("thead", {}, h("tr", {}, ["Famille", "Ouverte", "Faits bien sus", "Acquise", "Formes à trou"].map((t, i) => h("th", { class: i === 2 ? "num" : "" }, t)))),
         h("tbody", {}, FS.familles.map((f) => h("tr", { class: f.enCours ? "cur" : f.ouverte ? "" : "off" },
-          h("td", {}, `${f.id} · ${f.nom}${f.enCours ? " (en cours)" : ""}`),
+          h("td", {}, `${f.id} · ${f.nom}${f.enCours ? " (en cours)" : f.depassee && !f.acquise ? " (en révision)" : ""}`),
           h("td", {}, f.ouverte ? (f.ouverteLe ? `${D.fmtShortDay(f.ouverteLe)}${f.ouverteParent ? " (parent)" : ""}` : "dès le départ") : "pas encore"),
           h("td", { class: "num" }, `${f.bienSus} / ${f.total}`),
           h("td", {}, f.acquise ? `${f.acquiseLe ? D.fmtShortDay(f.acquiseLe) : "oui"}${f.acquiseParent ? " (point de départ)" : ""}` : "—"),

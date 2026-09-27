@@ -80,6 +80,7 @@ export class Session {
     return this;
   }
   save() {
+    if (this.stopped) return Promise.resolve();
     this.rec.fin = this.clock(); this.rec.dureeS = Math.round((this.active() - this.rec.debut) / 1000);
     const p = Math.round((this.paused() - this.p0) / 1000); if (p > 0) this.rec.pauseS = p;
     return this.store.put("seances", this.rec);
@@ -108,6 +109,9 @@ export class Session {
   }
   // une pause (bouton « maison ») : comptée dans l'enregistrement
   async notePause() { this.rec.pauses = (this.rec.pauses ?? 0) + 1; await this.save(); }
+  // le parent termine la séance en pause (espace parent) : interrompue, sans récompense ; le déroulement en
+  // cours est abandonné (main.js), plus rien n'est enregistré ensuite
+  async interrupt() { this.rec.terminee = false; this.rec.arreteeParParent = true; await this.save(); this.stopped = true; }
   // des étoiles gagnées : aussitôt ajoutées au trésor (on ne perd jamais rien, même si la séance s'arrête)
   // les étoiles des bonnes réponses et des erreurs corrigées suivent le multiplicateur du cran
   async stars(n, raison) {

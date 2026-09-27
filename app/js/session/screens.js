@@ -149,6 +149,8 @@ async function bonuses(app, { session }) {
 export async function shells(app, { session, hud }) {
   const { rewards, sprites } = app, now = () => Date.now();
   if (!rewards.c) return;
+  // la planche des cartes (grande) n'est chargée que si elle sert
+  if (!(rewards.canOpen() || rewards.goldenCard(now()) || (rewards.nextZone() && rewards.arcDispo > 0))) return;
   await sprites.load("cartes");
   const zone = async () => { const z = await rewards.openZone(now()); if (z) { (session.rec.zones ??= []).push(z.id); await session.save(); await zoneCeremony(app, { zone: z, hud }); } };
   await zone();

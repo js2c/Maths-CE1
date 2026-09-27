@@ -140,6 +140,13 @@ Les lettres (noms, plus tard cartes) sont écrites au feutre comme les chiffres 
 - *Contrôle des bords* : l'export relève les pixels visibles sur chaque bord du calque de chaque sprite (`bords` dans `atlas.json`, `EDGE_ALPHA` de `export-app.ts`) ; `tests/unit/bords.test.mjs` échoue sur un dessin coupé, sauf exceptions justifiées (fond, rayons, images pleine page des cartes, reflet des cartes). Corrigés : seuil de la maison, cadre de 10, bulles du sélecteur (ombre), crevette, hippocampe, raie pastenague.
 - Tests : `tests/unit/choix.test.mjs`, `bords.test.mjs` ; parcours `node tests/e2e/choix.mjs` ; simulation : part de la famille et leçons jouées (`sim-seances.mjs`, « lot 3 : leçons et exercice »).
 
+**La difficulté à l'intérieur du niveau, les sauvegardes de test (lot 3, étape 2 ; docs/SPEC-LOT3.md, sections 3 et 5).**
+
+- *Ligne graduée* : un bloc `crans` par niveau dans `content/module1.json` (facile, dur, tresdur), appliqué par `applyCran` (`numberline/generator.js`) seulement quand le niveau est choisi (`Module1Runner`, `choix`) ; il remplace des paramètres du niveau (labels, choix, formats, etendue, departs, tolerances) et ajoute des options : labels « extremites-milieu », « cinq », « trois-voisines », « deux-espacees » ; `cibleMilieu` ; `sautsApres` ; `premierSaut` (la tortue fait le premier saut, `screen.js`) ; `repere` (estimer : le milieu marqué, `lineSpec`) ; `filtre` et `tableau` de la dictée (`dictationPool` ; `paintPlaceTable` de `facts/aids.js`, rempli à chaque chiffre tapé par `FactsScreen.onTyped`). La question porte `q.cran` ; au cran « plus facile », elle ne compte ni pour la montée ni pour la validation. `levelValues` couvre les lignes des crans (voix). Captures : `node tests/e2e/crans.mjs` (13 niveaux × 4 crans, et les additions).
+- *Additions, famille choisie* : `module2.json`, `notion.cransChoix` (facile : formes directes et aide d'emblée ; dur : `trouPart` 0,5 ; très dur : `trouPart` 1), lus par `Module2Runner.effet` quand `choix` est donné ; avec « jouer », `notion.crans` (lot 2) inchangé.
+- *Sauvegardes de test* : `node tools/sauvegarde-test.mjs <profil> <séances par semaine> <semaines> [--sortie f.json]` : la simulation (`tests/sim-recette.mjs`, option `horloge` : `Date.now()` suit l'horloge simulée ; `out.store`) jusqu'à la veille, puis `Store.dump` nettoyé (`cleanDump`, sans code parent). Contrôle : `node tests/e2e/sauvegardes.mjs` (un mois, trois mois, en difficulté : restauration, accueil, album, écran « choisir », espace parent).
+- Simulation : `node tests/sim-seances.mjs reel 2 10 --choix 1:5 --cran tresdur` (l'enfant choisit toujours cet exercice ; `EFFET_CRAN`, hypothèse de l'effet d'un cran sur la ligne). Tests : `tests/unit/crans.test.mjs`.
+
 ## L'espace parent
 
 `js/parent/parent.js` (l'affichage) et `js/parent/data.js` (les calculs, fonctions pures testées par `tests/unit/parent.test.mjs`), réglages dans `content/parent.json`, styles dans `css/parent.css`. C'est la seule partie de l'application faite de pages HTML ordinaires, avec du texte : elle est destinée au parent.
@@ -191,6 +198,8 @@ node tests/e2e/recompenses.mjs     # bonus, coquillage qui s'ouvre, carte, réci
 node tests/e2e/selecteur.mjs       # lot 2 : sélecteur de difficulté (crans, lueur, coche, 15 s, crans du parent), pieuvre qui montre la cible, formes à trou
 node tests/e2e/centaines.mjs       # lot 2 : nombres jusqu'à 1 000 (leçon L10, niveaux 9 à 13, dictée, erreurs E6 et E7)
 node tests/e2e/choix.mjs           # lot 3 : l'écran « choisir » (niveau 8 dès une base vide, famille pas encore ouverte, leçon seule), échauffement passé ou retiré
+node tests/e2e/crans.mjs           # lot 3 : chaque niveau de la ligne à chaque cran (captures), additions aux quatre crans
+node tests/e2e/sauvegardes.mjs     # lot 3 : les sauvegardes de test restaurées (un mois, trois mois, en difficulté)
 node tests/e2e/defi.mjs            # lot 2 : le défi record (bulle qui se vide, perles, erreur, premier record, record à battre)
 node tests/e2e/cartes.mjs          # lot 2 : ouverture d'une zone, brillantes, quota et doublon, coquillage doré, surprise, bloc « Cartes » du parent
 node tests/e2e/ergonomie.mjs       # frise, « je ne sais pas », pause et reprise, « passer » (leçon, exemple, correction), « Encore ! » et entraînement libre

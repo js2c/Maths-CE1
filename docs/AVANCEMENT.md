@@ -11,7 +11,7 @@ Spécification : `docs/SPEC-LOT3.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LO
 | Étape | Partie | Contenu | État |
 | --- | --- | --- | --- |
 | 1 | A | Accueil « choisir » : exercice et niveau (ligne 1 à 13, familles 1 à 7, leçons), exercice choisi = séance du jour ; échauffement passable et réglage ; leçons cohérentes (suppression de `leconSiPasVue`, 80 % sur la famille) ; maison des nombres ; test des bords des sprites | fait (branche `claude/laughing-ritchie-cp777i`, https://github.com/js2c/Maths-CE1/pull/19) |
-| 2 | A | Difficulté à l'intérieur du niveau (ligne graduée, 13 niveaux × 4 crans ; additions) ; outil de sauvegardes de test ; guide du parent ; recette complète de la partie A | à faire |
+| 2 | A | Difficulté à l'intérieur du niveau (ligne graduée, 13 niveaux × 4 crans ; additions) ; outil de sauvegardes de test ; guide du parent ; recette complète de la partie A | fait (même branche ; recette complète faite avec celle de l'étape 4, les étapes 1 à 4 étant enchaînées) |
 | 3 | B | Atelier : mur de corail, poisson sur le mur, ponts du chemin, pictogramme du calcul rapide pour l'écran de choix | à faire |
 | 4 | B | Module 3 : niveaux 1 à 9, générateurs, erreurs C1 à C5, déroulé d'un nouveau niveau, leçons L7 à L9, crans, choix du niveau, rotation dans « jouer », espace parent | à faire |
 | 5 | B | Bilan : `docs/BILAN-LOT3.md`, guide du parent, recette complète sur l'année | à faire |
@@ -20,13 +20,25 @@ Spécification : `docs/SPEC-LOT3.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LO
 
 Pour reprendre si la session s'est arrêtée : branche `claude/laughing-ritchie-cp777i`, demande de fusion en brouillon « Lot 3, étapes 1 à 4 (en cours) ».
 
-**Étape en cours :** 2 (à commencer).
+**Étape en cours :** 3 (atelier du calcul rapide).
 
 **Fait :**
 
 - Étape 1 : écran « choisir » (`js/session/choice.js`, planche « choix » de l'atelier, `sea/choice.ts`) ; exercice choisi = séance du jour (`Session({ choix })`, `Module1Runner({ choix })`, `Module2Runner({ choix })`) ; leçon choisie seule ; « Encore ! » ouvre le même écran sans étoiles ; « passer » l'échauffement et réglage parent « Échauffement : oui / non » ; `leconSiPasVue` supprimée (`leconSiJamaisVue` : L6 pour les maisons de 8 et 9, L4 pour les presque-doubles), 80 % sur la famille, rappel du double ; maison des nombres ; contrôle des bords des sprites (`bords` dans l'atlas, `tests/unit/bords.test.mjs`) et six sprites corrigés ; voix des phrases nouvelles ; tests `choix.test.mjs`, `bords.test.mjs`, parcours `tests/e2e/choix.mjs`.
 
-**Reste :** étapes 2 à 4 ; recette complète à la fin de l'étape 4.
+- Étape 2 : crans à l'intérieur du niveau choisi (`module1.json`, un bloc `crans` par niveau, `applyCran` ; additions : `module2.json`, `notion.cransChoix`) ; « plus facile » consolide sans faire progresser ; captures des 13 niveaux × 4 crans (`tests/e2e/crans.mjs`) ; voix des nombres nouveaux (niveau 11 très dur : 30 graduations) ; simulation par cran (`--choix`, `--cran`) ; outil `tools/sauvegarde-test.mjs` et contrôle `tests/e2e/sauvegardes.mjs` ; guide du parent (section d bis).
+
+**Reste :** étapes 3 et 4 ; recette complète à la fin de l'étape 4.
+
+**Recette allégée de l'étape 2 :** `npm test` : 189 tests, tous passent. `node tests/e2e/crans.mjs` : 52 captures (13 niveaux × 4 crans) conformes au tableau de la SPEC, additions aux quatre crans (0, 0, 3 et 6 formes à trou sur 6) ; captures regardées (`tests/e2e/out/crans/`). `node tests/e2e/sauvegardes.mjs` : un mois, trois mois, en difficulté restaurés sans erreur, accueil, album, écran « choisir » et espace parent cohérents. Tous les parcours existants (aide-passer, cartes, centaines, defi, ergonomie, frise, lecons, notion2, parent, pause-parent, pwa, recompenses, selecteur, seance, voix) : tout est bon. Simulation, profil « reel », 10 séances en choisissant toujours le même exercice (réussite de la notion du jour, plus facile / conseillé / plus dur / très dur) : ligne niveau 5 : 86 / 81 / 82 / 78 % ; ligne niveau 8 : 87 / 86 / 85 / 78 % ; additions famille 4 : 90 / 84 / 83 / 81 % (hypothèse de l'effet d'un cran sur la ligne : `EFFET_CRAN` de `sim-recette.mjs` ; les protections redescendent le cran 4 à 9 fois en 10 séances aux crans au-dessus).
+
+**Décisions prises (étape 2) :**
+
+- *Niveau 1, « plus facile »* : la SPEC dit « 3 propositions au lieu de 4 », mais le niveau 1 en a déjà 3 (réglage validé du lot 1) : « plus facile » en donne 2, avec la tortue qui montre le premier saut (depuis zéro, avant la consigne, au format « lire »).
+- *Protection* : au niveau choisi, elle redescend le cran (donc les repères reviennent), jamais le niveau, comme demandé.
+- *Additions, « très dur »* : « les révisions prises dans toutes les familles » : c'était déjà le cas des révisions (les faits introduits de toutes les familles) ; la différence est que toutes les questions sont à trou.
+- *Tableau de la dictée* : les trois colonnes ont l'image de la leçon L10 (le chalut, le filet, le poisson) au lieu des lettres c, d, u (l'enfant ne lit pas) ; les chiffres tapés s'y rangent depuis la droite.
+- *Sauvegardes de test* : les séances tombent aux jours habituels (2 par semaine : lundi et jeudi ; 3 : lundi, mercredi, vendredi), sans tenir compte des vacances ; la dernière est la veille. Trois mois fabriqués en septembre commencent en juillet : les cartes, qui suivent le calendrier scolaire (quota), restent alors peu nombreuses (8 cartes pour 36 séances) ; c'est dit dans le guide du parent.
 
 **Recette allégée de l'étape 1 :** `npm test` : 182 tests, tous passent. `node tests/e2e/choix.mjs` : tout est bon (niveau 8 dès une base vide, 100 % des questions au niveau 8 ; famille 5 ouverte par le choix ; leçon seule ; notion du jour 307 ms après « passer » ; « Échauffement : non » sans pictogramme ; « Encore ! »). `seance.mjs`, `ergonomie.mjs` (adapté : « Encore ! » ouvre l'écran « choisir »), `notion2.mjs`, `ermite.mjs` : tout est bon. Simulation sur l'année, 2 séances par semaine : part des questions sur la famille en cours au minimum 81 % (réel), 82 % (sait), 81 % (en difficulté), 80 % (très dur), 100 % (plus facile) ; aucune leçon de famille jouée pour une autre famille ; après L4, 91 % de doubles ou presque-doubles (sait). Captures regardées : `tests/e2e/out/choix/`, `tests/e2e/out/ermite/5-maison.png`.
 

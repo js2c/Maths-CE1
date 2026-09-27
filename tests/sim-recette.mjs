@@ -43,10 +43,17 @@ const T = { phrase: 3000, defiEnPlus: 500, chauffe: 7000, chauffeFaux: 9000, not
 // écrits, tolérance plus serrée…) ; aux additions, les formes à trou jouent déjà (profil.trou) et l'aide d'emblée du
 // cran « plus facile » aussi.
 export const EFFET_CRAN = { facile: 0.1, conseille: 0, dur: -0.08, tresdur: -0.15 };
-export async function simulate({ profil, jours, seed = 1, zonesPretes = true, choix = null, cran = null }) {
+// `horloge` (lot 3, tools/sauvegarde-test.mjs) : pendant la simulation, Date.now() donne l'heure simulée (le moteur la
+// prend à plusieurs endroits : réponses, obtention d'un niveau…) ; le résultat garde la base (`out.store`)
+export async function simulate({ profil, jours, seed = 1, zonesPretes = true, choix = null, cran = null, horloge = false }) {
+  const realNow = Date.now;
+  try { return await simulate0({ profil, jours, seed, zonesPretes, choix, cran, horloge }); } finally { Date.now = realNow; }
+}
+async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horloge }) {
   const cartes = zonesPretes ? pretes(cartes0) : cartes0;
   const P = { ...PROFILS[profil], ...(cran ? { cran } : {}) }, R = rng(seed), store = await Store.open(new IDBFactory()), rewards = await new Rewards(store, cartes, calendrier).load(jours[0].getTime() + 18 * 3600000);
   let t = 0; const clock = () => t, add = (ms) => { t += ms; };
+  if (horloge) Date.now = () => Math.round(t);
   const essais = {}; const out = [];
   for (const [i, day] of jours.entries()) {
     t = day.getTime() + 18 * 3600000;
@@ -122,5 +129,6 @@ export async function simulate({ profil, jours, seed = 1, zonesPretes = true, ch
     const faits = await store.all("faits"); log.boites = [1, 2, 3, 4, 5].map((b) => faits.filter((f) => f.boite === b).length); log.faitsVus = faits.length;
     out.push(log);
   }
+  out.store = store;
   return out;
 }

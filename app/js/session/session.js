@@ -22,8 +22,17 @@ export const sameDay = (a, b) => { const x = new Date(a), y = new Date(b); retur
 // une séance a-t-elle déjà été terminée aujourd'hui ?
 // (l'entraînement libre, marqué `libre`, n'est jamais une séance terminée)
 export const doneToday = async (store, now = Date.now()) => (await store.all("seances")).some((s) => s.terminee && !s.libre && sameDay(s.debut, now));
-// la notion du jour : au lot 1, toujours la ligne graduée (décision notée dans docs/AVANCEMENT.md)
-export const chooseModule = () => 1;
+// la notion du jour (lot 2, étape 6 ; docs/SPEC-LOT2.md, section 2) : elle alterne SÉANCE APRÈS SÉANCE entre les
+// modules de `alternance.modules` (ligne graduée, additions) : jamais deux fois de suite le même, sauf module
+// imposé par le parent (réglage « moduleImpose », valable une séance) ou si l'autre n'a rien à proposer
+// (`has(module)`). Sans alternance (lot 1) : toujours la ligne graduée.
+export const chooseModule = (c = {}, seances = [], impose = null, has = () => true) => {
+  const mods = c.alternance?.modules ?? [1];
+  if (impose && mods.includes(impose)) return { module: impose, impose: true };
+  const last = [...seances].filter((s) => s.terminee && !s.libre && s.module).sort((x, y) => x.debut - y.debut).at(-1)?.module;
+  const i = mods.indexOf(last), order = i < 0 ? mods : [...mods.slice(i + 1), ...mods.slice(0, i + 1)];
+  return { module: order.find((m) => has(m)) ?? mods[0] };
+};
 // les crans du sélecteur de difficulté (content/seance.json, selecteur)
 export const CRANS = ["facile", "conseille", "dur", "tresdur"];
 // le défi record peut-il avoir lieu ? (docs/SPEC-LOT2.md, section 2 : à partir de la 5e séance terminée,
@@ -63,7 +72,10 @@ export class Session {
   over(stageEnd = Infinity) { const t = this.active(); return t >= this.deadline || t >= stageEnd; }
   async start() {
     this.p0 = this.paused();
-    this.rec = { debut: this.clock(), fin: null, dureeS: null, terminee: false, module: chooseModule(), questions: 0, justes: 0, reussite: null, etoiles: 0, etapes: [] };
+    // le module du jour ; un module imposé par le parent ne vaut qu'une séance
+    const impose = (await this.store.setting("moduleImpose"))?.module ?? null, pick = chooseModule(this.c, await this.store.all("seances"), impose, this.has ?? (() => true));
+    if (impose) await this.store.setSetting("moduleImpose", null);
+    this.rec = { debut: this.clock(), fin: null, dureeS: null, terminee: false, module: pick.module, ...(pick.impose ? { moduleImpose: true } : {}), questions: 0, justes: 0, reussite: null, etoiles: 0, etapes: [] };
     this.rec.id = await this.store.add("seances", this.rec);
     return this;
   }

@@ -54,7 +54,7 @@ export class ParentSpace {
   // cartes : cartes.json ; calendrier : calendrier.json (quota des cartes)
   constructor(app, { content, seance, module2, cartes, calendrier = null }) {
     this.app = app; this.c = content; this.seance = seance; this.module2 = module2; this.cartes = cartes; this.calendrier = calendrier;
-    this.depart = content.pointDeDepart ?? { niveauxMax: 8, familles: [1, 2] }; // lot 2 : étendu aux niveaux 9 à 13 et aux familles 3 à 7 plus tard
+    this.depart = content.pointDeDepart ?? { niveauxMax: 8, familles: [1, 2] }; // lot 2 : étendu aux niveaux 9 à 13 à l'étape 8
     this.root = null; this.tab = "calendrier"; this.changed = false;
   }
   get store() { return this.app.store; }
@@ -240,7 +240,7 @@ export class ParentSpace {
       cartes.length > 0 && h("span", {}, "Cartes gagnées : ", h("b", {}, cartes.join(", ")))));
     const groups = D.answersOf(this.d.reponses, x.id);
     if (!groups.length) det.append(h("p", { class: "pa-muted" }, "Aucune réponse enregistrée pour cette séance."));
-    for (const g of groups) det.append(h("h3", {}, g.module === 2 ? "Échauffement : faits d'addition" : `Notion du jour : ${this.c.modules[g.module]?.nom ?? g.module}`), this.answerTable(g.reponses));
+    for (const g of groups) det.append(h("h3", {}, g.module === 2 && !g.notion ? "Échauffement : faits d'addition" : `Notion du jour : ${this.c.modules[g.module]?.nom ?? g.module}`), this.answerTable(g.reponses));
   }
   answerTable(rs) {
     const E = this.c.erreurs, F = this.c.formes;
@@ -379,6 +379,14 @@ export class ParentSpace {
     this.store.setting("defiActif").then((v) => paint(v !== false));
     return row("Défi record", "Une minute de faits d'addition chronométrés, comparés au record de l'enfant. Il n'a lieu qu'à partir de la 5e séance et quand au moins 8 faits sont bien sus. (Le défi lui-même arrive dans une prochaine version.)", seg);
   }
+  // le module imposé pour la prochaine séance (lot 2, étape 6) : valable une séance, ensuite l'alternance reprend
+  moduleRow(row) {
+    const seg = h("div", { class: "pa-seg", role: "group", "aria-label": "module de la prochaine séance" }), ok = h("span", { class: "pa-ok" });
+    const paint = (v) => { for (const b of seg.children) b.setAttribute("aria-pressed", String(b.dataset.v === String(v ?? "auto"))); };
+    for (const [v, t] of [["auto", "au choix de l'application"], ["1", "ligne graduée"], ["2", "additions"]]) seg.append(h("button", { "data-v": v, onclick: async () => { await this.store.setSetting("moduleImpose", v === "auto" ? null : { module: Number(v), t: Date.now() }); paint(v === "auto" ? null : v); ok.textContent = "Enregistré."; } }, t));
+    this.store.setting("moduleImpose").then((m) => paint(m?.module ?? null));
+    return row("Notion du jour de la prochaine séance", "D'habitude, la ligne graduée et les additions alternent d'une séance à l'autre. Vous pouvez imposer l'une des deux pour la prochaine séance seulement.", seg, ok);
+  }
   // le son (lot 2) : musique oui/non et son volume, bruitages oui/non ; un seul réglage « son » dans la base
   sonRow(row) {
     let cur = { musique: true, volume: "moyen", bruitages: true };
@@ -424,7 +432,7 @@ export class ParentSpace {
     this.store.setting("dureeSeanceMin", this.seance.dureeMaxMin).then(paint);
     box.append(row("Durée maximale d'une séance", "Au bout de ce temps, l'application dit « à demain » (la dernière minute est gardée pour la récompense).", seg));
     // lot 2 : le sélecteur de difficulté (crans proposés à l'enfant), le défi record, le point de départ
-    box.append(this.sonRow(row), this.cransRow(row), this.defiRow(row), this.departRow(row));
+    box.append(this.moduleRow(row), this.sonRow(row), this.cransRow(row), this.defiRow(row), this.departRow(row));
     // le code
     box.append(row("Code parent", "Le code à 4 chiffres qui ouvre cet espace.", h("button", { class: "pa-btn", onclick: () => { this.root.replaceChildren(h("div", { class: "pa-veil" })); this.app.stage.paused = false; this.gate("choisir"); } }, "Changer le code")));
     // le stockage persistant

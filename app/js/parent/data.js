@@ -60,7 +60,8 @@ export const level = (x, { bien, moyen }) => (x === null || x === undefined ? nu
 // les réponses d'une séance, dans l'ordre, groupées par module (l'échauffement, puis la notion du jour)
 export function answersOf(reponses, seanceId) {
   const list = reponses.filter((r) => r.seance === seanceId).sort((a, b) => a.t - b.t), groups = [];
-  for (const r of list) { let g = groups.at(-1); if (!g || g.module !== r.module) groups.push((g = { module: r.module, reponses: [] })); g.reponses.push(r); }
+  // (lot 2, étape 6 : les additions de la notion du jour, marquées `notion`, forment leur propre groupe)
+  for (const r of list) { const notion = r.module === 2 && !!r.notion; let g = groups.at(-1); if (!g || g.module !== r.module || g.notion !== notion) groups.push((g = { module: r.module, notion, reponses: [] })); g.reponses.push(r); }
   return groups;
 }
 // une leçon d'une séance, telle que le parent la lit : vue jusqu'au bout, passée (bouton « passer »), arrêtée

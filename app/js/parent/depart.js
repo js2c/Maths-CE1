@@ -5,6 +5,7 @@
 // l'activation du défi record.
 import { initialLevelState } from "../modules/progress.js";
 import { catalog, DAY, familyOf, ruleFacts, startOfDay } from "../modules/facts/facts.js";
+import { initialFamilies, updateFamilies } from "../modules/facts/families.js";
 
 // le niveau actuel de la ligne graduée, choisi par le parent
 export async function setLineLevel(store, niveau, now = Date.now()) {
@@ -26,6 +27,12 @@ export async function markFamilyKnown(store, c, id, now = Date.now()) {
   }
   const log = (await store.setting("choixParent")) ?? [];
   await store.setSetting("choixParent", [...log, { t: now, type: "famille", famille: id, nom: familyOf(c, id)?.nom, faits: out.length }]);
+  // lot 2, étape 6 : la famille (et celles d'avant) est ouverte ; elle compte comme acquise, choix du parent (pas
+  // d'étoile arc-en-ciel) ; la suivante peut s'ouvrir
+  let st = (await store.get("niveaux", 2)) ?? initialFamilies(c, now);
+  for (const f of c.familles) if (f.id <= id && !st.ouvertes.includes(f.id)) { st = { ...st, ouvertes: [...st.ouvertes, f.id], ouvertures: [...st.ouvertures, { famille: f.id, date: now, parent: true }] }; }
+  st = updateFamilies(c, st, await store.all("faits"), now, { parent: true }).st;
+  await store.put("niveaux", st);
   return out;
 }
 // les familles déjà connues (au moins 80 % des faits de leur règle en boîte 3 ou plus)

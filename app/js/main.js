@@ -17,6 +17,8 @@ import { fill, ReadScreen } from "./modules/numberline/screen.js";
 import { runNotion } from "./session/notion.js";
 import { FactsScreen, runWarmup } from "./modules/facts/screen.js";
 import { Warmup } from "./modules/facts/warmup.js";
+import { Module2Runner } from "./modules/facts/runner.js";
+import { Hermit } from "./engine/hermit.js";
 import { Rewards } from "./session/rewards.js";
 import { chooseName, goodNight, onTap, reward, spriteBox, StarHud } from "./session/screens.js";
 import { doneToday, Session } from "./session/session.js";
@@ -52,7 +54,7 @@ stage.start();
 stage.onResize(() => { if (Math.abs(stage.px - sprites.px) > 0.01) location.reload(); });
 
 const rnd = rng(Date.now() & 0xffffffff);
-// pour les tests et les captures : ?cran=dur ?surprise=cadeau:corail ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape ?sansLecon ?lecon=L1 ?etoiles=N
+// pour les tests et les captures : ?module=2 ?cran=dur ?surprise=cadeau:corail ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape ?sansLecon ?lecon=L1 ?etoiles=N
 const P = new URLSearchParams(location.search);
 const text = { data: textes, pick: (k, v = {}) => { const e = textes[k]; return fill(Array.isArray(e) ? e[Math.floor(rnd() * e.length)] : e, { mascotte: app.mascotte, ...v }); } };
 // les phrases fabriquées à l'avance (assets/voix/) ; ?voix=synthese : seulement la synthèse du navigateur (comparaison)
@@ -118,6 +120,8 @@ const handlers = {
     await runWarmup({ ...ctx, step, warmup, screen, rnd, intro: async () => { await voice.say(text.pick("echauffement")); if (!warmup.base.mesures.length) await voice.say(text.data.pave); } });
   },
   notion: async (ctx) => {
+    frieze.notionIcon(ctx.session.rec.module);
+    if (ctx.session.rec.module === 2) return notion2(ctx);
     const screen = app.lineScreen();
     const runner = await new Module1Runner({ screen, store, content: module1, rnd, seance: ctx.session.id, offset: () => ctx.session.offset, cran: () => ctx.session.cran }).load();
     if (P.get("niveau")) { runner.st.niveau = Number(P.get("niveau")); runner.save = () => {}; }
@@ -129,6 +133,29 @@ const handlers = {
   },
   recompense: (ctx) => reward(app, { ...ctx, hud }),
 };
+// lot 2, étape 6 : la notion du jour sur les additions (docs/SPEC-LOT2.md, section 3) : l'écran des additions, le
+// bernard-l'ermite (planche « ermite », chargée le temps de l'étape), la leçon de la famille la première fois
+// (L4 à L6), sinon deux exemples guidés ; une famille acquise rapporte une étoile arc-en-ciel
+async function notion2(ctx) {
+  const { session } = ctx, screen = (app.facts ??= new FactsScreen(app, module2));
+  const runner = await new Module2Runner({ store, content: module2, rnd, seance: session.id, cran: () => session.cran, dejaNouveaux: session.nouveaux }).load();
+  const conf = ctx.step.module2 ?? ctx.step, step = { ...ctx.step, ...conf, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}), ...(P.get("guides") ? { guides: Number(P.get("guides")) } : {}) };
+  app.runner = runner; session.rec.famille = runner.famille; await session.save();
+  await sprites.load("ermite");
+  const hermit = new Hermit(ocean, { x: 150, y: 795, scale: 0.85 });
+  screen.hermit = hermit; screen.notion = true; app.hermit = hermit;
+  hermit.show(true); hermit.play("sortir");
+  screen.show(true); screen.keys(false);
+  await voice.say(text.pick("notionFaits"));
+  const ask = { ask: async (q, cfg, o) => screen.askNotion(q, cfg, o) };
+  try {
+    const res = await runNotion({ ...ctx, step, runner, screen: ask, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
+    for (const e of res?.events ?? []) { if (e.type === "acquise" && !e.parent && !(runner.events ?? []).some((x) => x.famille === e.famille)) await session.levelUp(); (session.rec.familles ??= []).push(e); }
+  } finally {
+    session.nouveaux = runner.nouveaux; session.rec.faitsNouveaux = runner.nouveaux; await session.save();
+    screen.notion = false; screen.hermit = null; app.hermit = null; screen.leave(); hermit.remove(); sprites.unload("ermite");
+  }
+}
 // pour les mesures : ?sans=echauffement (ou une autre étape) la saute
 for (const id of (P.get("sans") ?? "").split(",").filter(Boolean)) delete handlers[id];
 // chaque gain d'étoiles pendant les questions : les étoiles s'envolent des bulles-réponses vers le compteur
@@ -173,6 +200,8 @@ async function showHome({ done, first = false }) {
     e.preventDefault(); voice.unlock(); clearHome();
     // pour les captures et les tests : ?lecon=L1 joue seulement cette leçon
     if (P.get("lecon")) { window.__lecon = await lessons.play(P.get("lecon")); return; }
+    // ?module=2 (tests) : la notion du jour imposée pour cette séance
+    if (P.get("module")) await store.setSetting("moduleImpose", { module: Number(P.get("module")), t: Date.now() });
     // la durée maximale d'une séance est un réglage du parent (seance.json donne la valeur par défaut)
     const session = new Session({ store, content: { ...seance, dureeMaxMin: await store.setting("dureeSeanceMin", seance.dureeMaxMin) }, handlers, rewards, paused: () => clock.pausedTotal(), onProgress: (p) => progress(p),
       // la protection du sélecteur redescend d'un cran : la pieuvre encourage, la voix le dit doucement

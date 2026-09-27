@@ -1,5 +1,5 @@
 {
-  "_doc": "Espace parent (docs/SPEC.md, « Espace parent »). appuiLongMs : durée de l'appui sur le logo ; codeChiffres : longueur du code ; rappelExportJours : délai avant le rappel d'export ; dureesSeance : choix proposés pour le plafond d'une séance (minutes, la valeur de seance.json par défaut) ; modules : noms et niveaux tels que le parent les lit ; erreurs : les codes du journal ; reussite : seuils des couleurs du calendrier. pointDeDepart (lot 2) : niveaux de la ligne graduée et familles de faits que le parent peut choisir comme point de départ (étape 2 : niveaux 1 à 8, familles 1 et 2).",
+  "_doc": "Espace parent (docs/SPEC.md, « Espace parent »). appuiLongMs : durée de l'appui sur le logo ; codeChiffres : longueur du code ; rappelExportJours : délai avant le rappel d'export ; dureesSeance : choix proposés pour le plafond d'une séance (minutes, la valeur de seance.json par défaut) ; modules : noms et niveaux tels que le parent les lit ; erreurs : les codes du journal ; reussite : seuils des couleurs du calendrier. pointDeDepart (lot 2) : niveaux de la ligne graduée et familles de faits que le parent peut choisir comme point de départ (étape 2 : niveaux 1 à 8, familles 1 et 2 ; étape 6 : familles 1 à 7).",
   "appuiLongMs": 2000,
   "codeChiffres": 4,
   "rappelExportJours": 7,
@@ -27,7 +27,7 @@
       }
     },
     "2": {
-      "nom": "Faits d'addition (échauffement)",
+      "nom": "Faits d'addition",
       "niveaux": {
         "0": "temps de base (« a + 0 »)",
         "1": "famille 1 : + 1 et + 2",
@@ -54,9 +54,6 @@
   },
   "pointDeDepart": {
     "niveauxMax": 8,
-    "familles": [
-      1,
-      2
-    ]
+    "familles": [1, 2, 3, 4, 5, 6, 7]
   }
 }

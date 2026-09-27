@@ -64,6 +64,9 @@ function domaines(C) {
     aideLigne: faits.filter(({ a, b }) => Math.min(a, b) === 1 || Math.min(a, b) === 2).map(({ a, b }) => ({ a: Math.max(a, b), sauts: sautsDe(Math.min(a, b)) })),
     // l'aide des doubles jusqu'à 5 : a poissons et leur reflet
     aideReflet: range(1, 5).map((a) => ({ a })),
+    // lot 2, étape 6 : le cadre de 10 (le nombre de poissons déjà dans la boîte), le double + 1 (le double)
+    aideCadre: range(1, 9).map((k) => ({ k })),
+    aideDoublePlus: range(1, 4).map((d) => ({ d })),
     carteNouvelle: cartes, carteDoublon: cartes, recifCarte: cartes,
   };
 }

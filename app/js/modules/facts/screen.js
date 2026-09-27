@@ -114,6 +114,12 @@ export class FactsScreen {
     } catch (e) { if (e !== SKIPPED) throw e; voice.stop(); q.passe = true; this.app.line.fxClear(); }
     skip.remove();
   }
+  // la notion du jour (session/notion.js) : la question, puis ce que le déroulement attend (juste ou non, code)
+  async askNotion(q) {
+    this.show(true);
+    const r = await this.ask(q), ok = r.value === expected(q);
+    return { ...r, q, ok, code: ok ? null : r.nsp ? "NSP" : "autre" };
+  }
   // la consigne lue : « 5 plus 2 ? », ou la forme à trou (« 3 plus combien, ça fait 7 ? »)
   consigne(q) {
     const { text } = this.app, v = { a: q.a, b: q.b, n: q.a + q.b };

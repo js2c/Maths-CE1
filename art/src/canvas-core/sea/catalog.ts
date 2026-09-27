@@ -9,6 +9,7 @@ import { IDLE_N, OCTO_CLIPS, OCTO_FPS, octoParts, type Part, RING_Y } from "./oc
 import { drawTurtle, TURTLE_CLIPS, TURTLE_FPS } from "./turtle";
 import { CREATURE_FPS, CREATURE_N, CREATURES } from "./creatures";
 import { CARD_H, CARD_W, drawBigShell, drawGift, drawShinySweep, GIFTS, SWEEP_H, SWEEP_W, drawCardBack, drawCardBanner, drawCardFrame, drawCardVerso, drawCardWater, drawGlint, drawGoldStar, drawHomeKey, drawRainbowStar, drawReefKey, SHELL_N } from "./treasure";
+import { CRAN_W, drawCranGlow, drawCranKey, GLOW_CR } from "./selector";
 import { drawAgainKey, drawAlbumKey, drawDontKnowKey, drawFreeFacts, drawFreeLessons, drawFreeLine, drawMoonDecor, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepGlow, drawStepShell, GLOW_R, STEP_R } from "./ui";
 
 // la tortue dans l'application : longueur ~110 px logiques, assez petite pour tenir sur une bouée
@@ -113,6 +114,13 @@ export const SPECS: Spec[] = [
   // lot 2 : le coquillage doré (une étoile dorée, une légendaire) et le reflet irisé des cartes brillantes
   { name: "coquillage.or", sheet: "cartes", W: 300, H: 280, origin: [150, 150], frames: SHELL_N, fps: 12, draw: (g, f) => drawBigShell(g, 1 - Math.pow(1 - f / (SHELL_N - 1), 2.2), 150, 150, true) },
   { name: "carte.reflet", sheet: "cartes", W: SWEEP_W, H: SWEEP_H, origin: [0, 0], frames: 1, draw: (g) => drawShinySweep(g, 0, 0) },
+  // lot 2 : le sélecteur de difficulté (chargé au début de la séance, libéré ensuite) : un cran avec ses
+  // étoiles, le même sans étoiles (entraînement libre), la lueur du cran conseillé
+  ...[0, 1, 2, 3].flatMap((lv): Spec[] => [
+    { name: `cran.${lv}`, sheet: "selecteur", W: CRAN_W, H: CRAN_W, origin: [CRAN_W / 2, CRAN_W / 2], frames: 1, draw: (g) => drawCranKey(g, CRAN_W / 2, CRAN_W / 2, lv) },
+    { name: `cran.libre.${lv}`, sheet: "selecteur", W: CRAN_W, H: CRAN_W, origin: [CRAN_W / 2, CRAN_W / 2], frames: 1, draw: (g) => drawCranKey(g, CRAN_W / 2, CRAN_W / 2, lv, false) },
+  ]),
+  { name: "cran.lueur", sheet: "selecteur", W: 2 * GLOW_CR, H: 2 * GLOW_CR, origin: [GLOW_CR, GLOW_CR], frames: 1, draw: (g) => drawCranGlow(g, GLOW_CR, GLOW_CR) },
   // les cadeaux du récif (la surprise) : ancrés au milieu de leur base, posés sur le sable
   ...GIFTS.map((id): Spec => ({ name: `cadeau.${id}`, sheet: "petits", W: 200, H: 180, origin: [100, 160], frames: 1, draw: (g) => drawGift(g, id, 100, 160) })),
 ];

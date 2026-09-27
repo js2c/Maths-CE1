@@ -6,7 +6,7 @@ import { fillShape } from "./gallery";
 import { WATER, WATER_D } from "./oceanMarker";
 import { drawOctopus, OCTO_CLIPS } from "./sea/octopus";
 
-const CW = 700, CH = 600, W = CW * 3, H = CH * 2;
+const CW = 700, CH = 600, W = CW * 3, H = CH * 3;
 const draw = (ctx: Ctx, frame: number, env: Env) => {
   ctx.setTransform(env.scale, 0, 0, env.scale, 0, 0);
   const g = new Gfx(ctx, env, 0, PENCIL);

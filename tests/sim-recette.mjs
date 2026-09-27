@@ -12,6 +12,7 @@ import { Rewards, goldenStar } from "../app/js/session/rewards.js";
 import { drawSurprise, previousSession } from "../app/js/session/surprise.js";
 import { Warmup } from "../app/js/modules/facts/warmup.js";
 import { runWarmup } from "../app/js/modules/facts/screen.js";
+import { expected } from "../app/js/modules/facts/facts.js";
 
 const load = (f) => JSON.parse(readFileSync(new URL(`../app/content/${f}`, import.meta.url)));
 const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), cartes0 = load("cartes.json"), calendrier = load("calendrier.json");
@@ -20,11 +21,16 @@ const pretes = (c) => ({ ...c, cartes: c.cartes.map((x) => ({ ...x, illustration
 const gen = (cfg, r, o = {}) => (o.format === "sauter" ? makeJump(cfg, r) : o.format === "placer" ? makePlace(cfg, r, o) : o.format === "estimer" ? makeEstimate(cfg, r, o) : makeRead(cfg, r, o));
 const ERR = { 1: "E1", 2: "E1", 3: "E1", 4: "E3", 5: "E2", 6: "E5", 7: "E2", 8: "autre" };
 
-// profils : p(niveau, essais) = probabilité de réussir ; faits : p et temps
+// profils : p(niveau, essais) = probabilité de réussir ; faits : p et temps ; nsp : part des échecs donnés par
+// « je ne sais pas » ; trou : probabilité de réussir un fait sous une forme à trou, relative à la forme directe ;
+// cran : le cran que l'enfant choisit toujours au sélecteur de difficulté (lot 2)
+const reel = { ligne: (n) => [0, 0.95, 0.9, 0.85, 0.55, 0.45, 0.45, 0.4, 0.45][n], apprend: 0.006, fait: 0.9, faitMs: 5000, baseMs: 3500, nsp: 0.3, trou: 0.85 };
 export const PROFILS = {
-  sait: { nom: "sait déjà (rapide)", ligne: (n) => (n <= 5 ? 0.97 : 0.85), apprend: 0.004, fait: 0.97, faitMs: 3500, baseMs: 3000 },
-  reel: { nom: "profil de l'évaluation (ligne faible au-delà de 20, faits en partie sus)", ligne: (n) => [0, 0.95, 0.9, 0.85, 0.55, 0.45, 0.45, 0.4, 0.45][n], apprend: 0.006, fait: 0.9, faitMs: 5000, baseMs: 3500 },
-  diff: { nom: "en difficulté", ligne: (n) => [0, 0.85, 0.75, 0.7, 0.45, 0.35, 0.35, 0.3, 0.35][n], apprend: 0.004, fait: 0.75, faitMs: 8000, baseMs: 4000 },
+  sait: { nom: "sait déjà (rapide)", ligne: (n) => (n <= 5 ? 0.97 : 0.85), apprend: 0.004, fait: 0.97, faitMs: 3500, baseMs: 3000, nsp: 0.2, trou: 0.95 },
+  reel: { nom: "profil de l'évaluation (ligne faible au-delà de 20, faits en partie sus)", ...reel },
+  diff: { nom: "en difficulté", ligne: (n) => [0, 0.85, 0.75, 0.7, 0.45, 0.35, 0.35, 0.3, 0.35][n], apprend: 0.004, fait: 0.75, faitMs: 8000, baseMs: 4000, nsp: 0.4, trou: 0.75 },
+  tresdur: { nom: "profil de l'évaluation, choisit toujours « très dur »", ...reel, cran: "tresdur" },
+  facile: { nom: "profil de l'évaluation, choisit toujours « plus facile »", ...reel, cran: "facile" },
 };
 const T = { chauffe: 7000, chauffeFaux: 9000, notion: 15000, notionFaux: 30000, guide: 30000, lecon: 75000 };
 
@@ -35,20 +41,22 @@ export async function simulate({ profil, jours, seed = 1, zonesPretes = true }) 
   const essais = {}; const out = [];
   for (const [i, day] of jours.entries()) {
     t = day.getTime() + 18 * 3600000;
-    const log = { n: i + 1, date: day.toLocaleDateString("fr-FR"), faits: [], ligne: [], lecons: [] };
+    const log = { n: i + 1, date: day.toLocaleDateString("fr-FR"), faits: [], ligne: [], lecons: [], nsp: 0, descentes: 0, nouveaux: 0 };
     const warmScreen = { show() {}, keys() {}, leave() {}, ask: async (q) => {
-      const ok = q.base ? true : R() < P.fait; const ms = q.base ? P.baseMs + R() * 1000 : ok ? P.faitMs * (0.7 + R() * 0.6) : 9000;
-      add(ok ? T.chauffe : T.chauffeFaux); if (!q.base) log.faits.push(`${q.a}+${q.b}${ok ? "" : "✗"}${q.nouveau ? "*" : ""}`);
-      return { value: ok ? q.a + q.b : q.a + q.b + 1, ms, listens: 1, aide: false }; } };
+      const trou = q.forme && q.forme !== "directe", ok = q.base ? true : R() < P.fait * (trou ? P.trou : 1); const ms = q.base ? P.baseMs + R() * 1000 : ok ? P.faitMs * (0.7 + R() * 0.6) : 9000;
+      const nsp = !ok && R() < P.nsp; if (nsp) log.nsp++;
+      add(ok ? T.chauffe : T.chauffeFaux); if (!q.base) log.faits.push(`${trou ? (q.forme === "trouDroite" ? `${q.a}+?` : `?+${q.b}`) : `${q.a}+${q.b}`}${ok ? "" : nsp ? "?" : "✗"}${q.nouveau && !q.anticipe && !q.revient ? "*" : ""}`);
+      if (q.nouveau && !q.anticipe && !q.revient) log.nouveaux++;
+      return { value: ok ? expected(q) : nsp ? null : expected(q) + 1, ms, listens: 1, aide: false, nsp }; } };
     const lineScreen = { generate: gen, ask: async (q, cfg, o) => {
       const niv = cfg.niveau ?? cfg.id ?? 0; essais[niv] = (essais[niv] ?? 0) + 1;
-      const p = Math.min(0.97, P.ligne(niv) + P.apprend * essais[niv]), ok = o?.guide ? true : R() < p;
-      add(o?.guide ? T.guide : ok ? T.notion : T.notionFaux); log.ligne.push(`${niv}${ok ? "" : "✗"}${o?.guide ? "g" : ""}`);
-      return { q, value: ok ? q.answer : q.answer + 1, ok, code: ok ? null : ERR[niv] ?? "autre", ms: ok ? 4500 : 9000, listens: 1 }; } };
-    const s = new Session({ store, content: seance, rewards, clock, handlers: {
-      accueil: async ({ session }) => { add(20000); const sp = drawSurprise(R, cartes.surprise, previousSession(await store.all("seances"), session.id), rewards.gifts); if (sp) { session.rec.surprise = sp; log.surprise = `${sp.type}:${sp.id}`; if (sp.type === "cadeau") await rewards.giveGift(sp.id); add(5000); } },
-      echauffement: async (ctx) => { const w = await new Warmup({ store, content: module2, rnd: R, seance: ctx.session.id, clock }).load(); await runWarmup({ ...ctx, warmup: w, screen: warmScreen, rnd: R }); },
-      notion: async (ctx) => { const runner = await new Module1Runner({ screen: lineScreen, store, content: module1, rnd: R, seance: ctx.session.id }).load(); log.niv0 = runner.st.niveau;
+      const p = Math.min(0.97, P.ligne(niv) + P.apprend * essais[niv]), ok = o?.guide ? true : R() < p, nsp = !ok && R() < P.nsp; if (nsp) log.nsp++;
+      add(o?.guide ? T.guide : ok ? T.notion : T.notionFaux); log.ligne.push(`${niv}${ok ? "" : nsp ? "?" : "✗"}${o?.guide ? "g" : ""}`);
+      return { q, value: ok ? q.answer : nsp ? null : q.answer + 1, ok, code: ok ? null : nsp ? "NSP" : ERR[niv] ?? "autre", ms: ok ? 4500 : 9000, listens: 1 }; } };
+    const s = new Session({ store, content: seance, rewards, clock, onCranDown: async () => { log.descentes++; add(3000); }, handlers: {
+      accueil: async ({ session }) => { add(20000); await session.setCran(P.cran ?? "conseille"); add(8000); const sp = drawSurprise(R, cartes.surprise, previousSession(await store.all("seances"), session.id), rewards.gifts); if (sp) { session.rec.surprise = sp; log.surprise = `${sp.type}:${sp.id}`; if (sp.type === "cadeau") await rewards.giveGift(sp.id); add(5000); } },
+      echauffement: async (ctx) => { const w = await new Warmup({ store, content: module2, rnd: R, seance: ctx.session.id, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load(); await runWarmup({ ...ctx, warmup: w, screen: warmScreen, rnd: R }); },
+      notion: async (ctx) => { const runner = await new Module1Runner({ screen: lineScreen, store, content: module1, rnd: R, seance: ctx.session.id, offset: () => ctx.session.offset, cran: () => ctx.session.cran }).load(); log.niv0 = runner.st.niveau;
         await runNotion({ ...ctx, runner, screen: lineScreen, rnd: R, lesson: async (id) => { add(T.lecon); log.lecons.push(id); return { vue: true }; } }); log.niv1 = runner.st.niveau; },
       // la récompense, dans l'ordre de l'application (session/screens.js : bonuses, puis shells)
       recompense: async ({ session }) => { await session.stars(seance.etoiles.seanceTerminee, "fin"); const b = await rewards.endOfSession(session.rec.debut); if (b) await session.stars(b, "série");
@@ -65,7 +73,7 @@ export async function simulate({ profil, jours, seed = 1, zonesPretes = true }) 
         log.depasse = rewards.count > rewards.quota(t); },
     } });
     const rec = await s.run();
-    Object.assign(log, { questions: rec.questions, etoiles: rec.etoiles, duree: Math.round(rec.dureeS / 60 * 10) / 10, arc: rec.arcEnCiel ?? 0, reste: rewards.total, nbCartes: rewards.count, brillantes: Object.values(rewards.owned).filter((o) => o.brillante).length, legendaires: cartes.cartes.filter((c) => c.rarete === "legendaire" && rewards.owned[c.id]).length, ouvertes: [...rewards.zones.ouvertes], doreesDispo: rewards.doreesDispo, arcDispo: rewards.arcDispo });
+    Object.assign(log, { cran: rec.cran, cranDepart: rec.cranDepart, reussite: rec.reussite, questions: rec.questions, etoiles: rec.etoiles, duree: Math.round(rec.dureeS / 60 * 10) / 10, arc: rec.arcEnCiel ?? 0, reste: rewards.total, nbCartes: rewards.count, brillantes: Object.values(rewards.owned).filter((o) => o.brillante).length, legendaires: cartes.cartes.filter((c) => c.rarete === "legendaire" && rewards.owned[c.id]).length, ouvertes: [...rewards.zones.ouvertes], doreesDispo: rewards.doreesDispo, arcDispo: rewards.arcDispo });
     const faits = await store.all("faits"); log.boites = [1, 2, 3, 4, 5].map((b) => faits.filter((f) => f.boite === b).length); log.faitsVus = faits.length;
     out.push(log);
   }

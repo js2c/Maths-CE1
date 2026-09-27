@@ -66,6 +66,8 @@ export function answersOf(reponses, seanceId) {
 // une leçon d'une séance, telle que le parent la lit : vue jusqu'au bout, passée (bouton « passer »), arrêtée
 export const lessonNote = (l) => (l.vue ? " (vue jusqu'au bout)" : l.passee ? " (passée)" : " (arrêtée)");
 // les étapes d'une séance, lisibles
+// les crans du sélecteur de difficulté, pour le parent
+export const CRAN_NAMES = { facile: "plus facile", conseille: "conseillé", dur: "plus dur", tresdur: "très dur" };
 export const STEP_NAMES = { accueil: "accueil", echauffement: "échauffement", notion: "notion du jour", defi: "défi record", probleme: "problème du jour", recompense: "récompense" };
 
 // ---------------------------------------------------------------- semaine par semaine
@@ -97,7 +99,7 @@ export function errorJournal(reponses, { ex = 2 } = {}) {
 // l'histoire d'un module : chaque niveau obtenu (date), chaque redescente, dans l'ordre du temps
 export function levelHistory(st) {
   if (!st) return [];
-  return [...(st.obtenus ?? []).map((o) => ({ date: o.date, type: "obtenu", niveau: o.niveau })), ...(st.redescentes ?? []).map((r) => ({ date: r.date, type: "redescente", de: r.de, niveau: r.a }))].sort((a, b) => a.date - b.date);
+  return [...(st.obtenus ?? []).map((o) => ({ date: o.date, type: o.parent ? "parent" : "obtenu", niveau: o.niveau, cran: !!o.cran, de: o.de })), ...(st.redescentes ?? []).map((r) => ({ date: r.date, type: "redescente", de: r.de, niveau: r.a }))].sort((a, b) => a.date - b.date);
 }
 // les faits d'addition : combien par boîte, et ceux qui résistent (au moins 2 erreurs, ou encore en
 // boîte 1 après 3 passages), du plus résistant au moins résistant
@@ -129,6 +131,7 @@ export const SESSION_COLUMNS = [
   ["taux de réussite (%)", (s) => (s.reussite === null || s.reussite === undefined ? null : Math.round(s.reussite * 100))], ["étoiles", (s) => s.etoiles],
   ["leçons", (s) => (s.lecons ?? []).map((l) => `${l.id}${l.vue ? "" : l.passee ? " (passée)" : " (arrêtée)"}`).join(" ")], ["cartes", (s) => (s.cartes ?? []).join(" ")],
   ["entraînement libre", (s) => !!s.libre], ["pauses", (s) => s.pauses ?? 0],
+  ["cran choisi", (s) => (s.cranDepart ? CRAN_NAMES[s.cranDepart] : null)], ["cran à la fin", (s) => (s.cran ? CRAN_NAMES[s.cran] : null)], ["descentes de cran", (s) => (s.descentes ?? []).length],
   ["étapes", (s) => (s.etapes ?? []).map((e) => (e.sautee ? `${e.id} (sautée)` : `${e.id} ${e.dureeS ?? ""}s`)).join(" | ")],
 ];
 export const ANSWER_COLUMNS = [
@@ -137,6 +140,7 @@ export const ANSWER_COLUMNS = [
   ["temps (s)", (r) => (typeof r.tempsMs === "number" ? Math.round(r.tempsMs / 100) / 10 : null)], ["écoutes de la consigne", (r) => r.ecoutes], ["aide utilisée", (r) => !!r.aide],
   ["code d'erreur", (r) => r.erreur], ["question qui revient", (r) => !!r.revient], ["exemple guidé", (r) => !!r.guide],
   ["exemple passé", (r) => !!r.passe], ["correction passée", (r) => !!r.correctionPassee], ["entraînement libre", (r) => !!r.libre],
+  ["cran", (r) => (r.cran ? CRAN_NAMES[r.cran] : null)],
 ];
 export const FACT_COLUMNS = [
   ["fait", (f) => f.fait.replace("+", " + ")], ["famille", (f) => f.famille], ["boîte", (f) => f.boite], ["prochain passage", (f) => dayKey(f.prochain)],

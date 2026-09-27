@@ -1,7 +1,7 @@
 // RECETTE : simule N séances pour un profil d'enfant (voir tests/sim-recette.mjs) et affiche, séance par séance,
 // le niveau de la ligne, les additions posées, les étoiles et les cartes ; puis le bilan des cartes (lot 2) :
 // dates où chaque zone s'ouvre et se complète, légendaires, brillantes, quota jamais dépassé.
-//   node tests/sim-seances.mjs [sait|reel|diff] [séances par semaine : 2|3|5] [nombre de séances, ou « annee » : jusqu'au 2 juillet 2027] [--court]
+//   node tests/sim-seances.mjs [sait|reel|diff|tresdur|facile] [séances par semaine : 2|3|5] [nombre de séances, ou « annee » : jusqu'au 2 juillet 2027] [--court]
 // Les zones 3 et 4 sont considérées prêtes (contenu fictif). --court : seulement le bilan.
 import { readFileSync } from "node:fs";
 import { simulate, PROFILS } from "./sim-recette.mjs";
@@ -14,7 +14,16 @@ const args = process.argv.slice(2).filter((a) => !a.startsWith("--")), court = p
 const [profil = "reel", perWeek = "2", n = "30"] = args;
 const res = await simulate({ profil, jours: days(+perWeek, n === "annee" ? "annee" : +n), seed: 7 });
 console.log(`# profil ${PROFILS[profil].nom}, ${perWeek}/sem, ${res.length} séances`);
-if (!court) for (const r of res) console.log(`${r.n}\t${r.date}\tniv ${r.niv0}->${r.niv1}\tq=${r.questions}\t${r.duree}min\t★${r.etoiles}\tarc${r.arc}${r.doree ? " DORÉE" : ""}${r.surprise ? ` surprise ${r.surprise}` : ""}\tcartes ${r.nbCartes}/${r.quota} [${r.cartes.join(",")}]${r.zones.length ? ` ZONE ${r.zones.join(",")}` : ""}\tfaits vus ${r.faitsVus} boîtes ${r.boites.join("/")}\tchauffe: ${r.faits.join(" ")}\tligne: ${r.ligne.join(" ")}${r.lecons.length ? " leçons " + r.lecons.join(",") : ""}`);
+if (!court) for (const r of res) console.log(`${r.n}\t${r.date}\t${r.cranDepart}${r.descentes ? `->${r.cran}` : ""}\tniv ${r.niv0}->${r.niv1}\tq=${r.questions} ${Math.round((r.reussite ?? 0) * 100)}% nsp ${r.nsp} nouveaux ${r.nouveaux}\t${r.duree}min\t★${r.etoiles}\tarc${r.arc}${r.doree ? " DORÉE" : ""}${r.surprise ? ` surprise ${r.surprise}` : ""}\tcartes ${r.nbCartes}/${r.quota} [${r.cartes.join(",")}]${r.zones.length ? ` ZONE ${r.zones.join(",")}` : ""}\tfaits vus ${r.faitsVus} boîtes ${r.boites.join("/")}\tchauffe: ${r.faits.join(" ")}\tligne: ${r.ligne.join(" ")}${r.lecons.length ? " leçons " + r.lecons.join(",") : ""}`);
+// lot 2, étape 2 : faits nouveaux, familles 1 et 2, niveaux, sélecteur de difficulté (docs/SPEC-LOT2.md, section 8)
+const avant7 = res.slice(0, 6).at(-1), withRoom = res.filter((r, i) => i === 0 || res[i - 1].faitsVus < 33);
+const moy = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
+console.log(`\n## séance et progression (${PROFILS[profil].nom})`);
+console.log(`faits vus avant la 7e séance : ${avant7?.faitsVus ?? "-"} sur 33 ; 33 faits vus à la séance ${res.find((r) => r.faitsVus >= 33)?.n ?? "jamais"}`);
+console.log(`faits nouveaux par séance tant qu'il en reste : ${withRoom.map((r) => r.nouveaux).join(" ")} (moyenne ${moy(withRoom.map((r) => r.nouveaux)).toFixed(1)}, minimum ${Math.min(...withRoom.map((r) => r.nouveaux))}) ; boîte 1 au début de ces séances : ${withRoom.map((r, i) => (i ? res[i - 1].boites[0] : 0)).join(" ")}`);
+console.log(`ligne graduée : niveau 8 atteint à la séance ${res.find((r) => r.niv1 >= 8)?.n ?? "jamais"} ; séances avec plusieurs niveaux franchis : ${res.filter((r) => r.niv1 - r.niv0 >= 2).length} ; leçons revues deux fois dans une séance : ${res.filter((r) => new Set(r.lecons).size < r.lecons.length).length}`);
+const first10 = res.slice(0, 10);
+console.log(`sélecteur (10 premières séances) : réussite moyenne ${Math.round(moy(first10.map((r) => r.reussite ?? 0)) * 100)} % ; « je ne sais pas » ${moy(first10.map((r) => r.nsp)).toFixed(1)} par séance ; descentes de cran ${first10.reduce((a, r) => a + r.descentes, 0)} ; étoiles par séance ${moy(first10.map((r) => r.etoiles)).toFixed(1)} ; durée estimée ${moy(first10.map((r) => r.duree)).toFixed(1)} min`);
 // bilan des cartes
 const first = (f) => res.find(f)?.date ?? "jamais";
 const zoneDone = (z, k) => first((r) => r.ouvertes.includes(z) && r.nbCartes >= k);

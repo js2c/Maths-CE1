@@ -111,6 +111,15 @@ check(!(await page.locator(".pa-reminder").count()), "plus de rappel d'export ap
 await page.locator('.pa-seg [data-v="10"]').click(); await page.waitForTimeout(150);
 check(await page.evaluate(() => window.__app.store.setting("dureeSeanceMin")) === 10, "la durée de séance est enregistrée");
 await page.locator(".pa-main").evaluate((m) => { m.scrollTop = m.scrollHeight; }); await page.waitForTimeout(150); await shot("12-reglages");
+// lot 2 : difficulté proposée, défi record, point de départ
+await page.locator('[aria-label="cran le plus dur"] [data-v="dur"]').click(); await page.waitForTimeout(150);
+check(JSON.stringify(await page.evaluate(() => window.__app.store.setting("cransAutorises"))) === JSON.stringify({ min: "facile", max: "dur" }), "crans autorisés enregistrés");
+await page.locator('[aria-label="défi record"] [data-v="non"]').click(); await page.waitForTimeout(150);
+check((await page.evaluate(() => window.__app.store.setting("defiActif"))) === false, "défi record désactivable");
+await page.locator('[aria-label="niveau de la ligne graduée"] [data-v="4"]').click(); await page.waitForTimeout(200);
+check((await page.evaluate(async () => (await window.__app.store.get("niveaux", 1)).niveau)) === 4, "point de départ : niveau 4 de la ligne");
+await page.locator(".pa-depart .pa-btn").first().click(); await page.waitForTimeout(300);
+await page.locator(".pa-depart").scrollIntoViewIfNeeded(); await page.locator(".pa-main").evaluate((m) => { m.scrollTop -= 260; }); await page.waitForTimeout(150); await shot("12b-difficulte-point-de-depart");
 
 // ---------------------------------------------------------------- fermer, rouvrir : mauvais code, bon code, code oublié
 await page.tap(".pa-close"); await page.waitForTimeout(300);

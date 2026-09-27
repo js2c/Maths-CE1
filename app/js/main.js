@@ -24,6 +24,7 @@ import { drawSurprise, playSurprise, previousSession } from "./session/surprise.
 import { Album } from "./session/album.js";
 import { Frieze } from "./session/frieze.js";
 import { FreeTraining } from "./session/free.js";
+import { allowedCrans, chooseCran } from "./session/selector.js";
 import { clock } from "./engine/clock.js";
 import { pop } from "./engine/ui.js";
 import { ParentSpace, parentLogo } from "./parent/parent.js";
@@ -49,7 +50,7 @@ stage.start();
 stage.onResize(() => { if (Math.abs(stage.px - sprites.px) > 0.01) location.reload(); });
 
 const rnd = rng(Date.now() & 0xffffffff);
-// pour les tests et les captures : ?surprise=cadeau:corail ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape ?sansLecon ?lecon=L1 ?etoiles=N
+// pour les tests et les captures : ?cran=dur ?surprise=cadeau:corail ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape ?sansLecon ?lecon=L1 ?etoiles=N
 const P = new URLSearchParams(location.search);
 const text = { data: textes, pick: (k, v = {}) => { const e = textes[k]; return fill(Array.isArray(e) ? e[Math.floor(rnd() * e.length)] : e, { mascotte: app.mascotte, ...v }); } };
 // les phrases fabriquées à l'avance (assets/voix/) ; ?voix=synthese : seulement la synthèse du navigateur (comparaison)
@@ -90,17 +91,19 @@ const handlers = {
     const forced = P.get("surprise")?.split(":"), prev = previousSession(await store.all("seances"), session.id);
     const s = forced ? { type: forced[0], id: forced[1] } : drawSurprise(rnd, cartes.surprise, prev, rewards.gifts);
     if (s) { session.rec.surprise = s; await session.save(); await playSurprise(app, s); }
+    // lot 2 : le sélecteur de difficulté (?cran=dur pour les tests : sans l'écran)
+    if (seance.selecteur?.actif) await session.setCran(P.get("cran") ?? await chooseCran(app, { allowed: allowedCrans(await store.setting("cransAutorises")), attenteS: seance.selecteur.attenteS }));
   },
   // échauffement : faits d'addition dus (familles 1 et 2 au lot 1), précédés des questions du temps de base
   echauffement: async (ctx) => {
-    const screen = (app.facts ??= new FactsScreen(app, module2)), warmup = await new Warmup({ store, content: module2, rnd, seance: ctx.session.id }).load();
+    const screen = (app.facts ??= new FactsScreen(app, module2)), warmup = await new Warmup({ store, content: module2, rnd, seance: ctx.session.id, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load();
     const step = { ...ctx.step, ...(P.get("faits") ? { questions: [Number(P.get("faits")), Number(P.get("faits"))] } : {}) };
     app.warmup = warmup;
     await runWarmup({ ...ctx, step, warmup, screen, rnd, intro: async () => { await voice.say(text.pick("echauffement")); if (!warmup.base.mesures.length) await voice.say(text.data.pave); } });
   },
   notion: async (ctx) => {
     const screen = app.lineScreen();
-    const runner = await new Module1Runner({ screen, store, content: module1, rnd, seance: ctx.session.id }).load();
+    const runner = await new Module1Runner({ screen, store, content: module1, rnd, seance: ctx.session.id, offset: () => ctx.session.offset, cran: () => ctx.session.cran }).load();
     if (P.get("niveau")) { runner.st.niveau = Number(P.get("niveau")); runner.save = () => {}; }
     if (P.get("format")) runner.levels = runner.levels.map((c) => ({ ...c, formats: [P.get("format")] }));
     const step = { ...ctx.step, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}), ...(P.get("guides") ? { guides: Number(P.get("guides")) } : {}) };
@@ -154,7 +157,9 @@ async function showHome({ done, first = false }) {
     // pour les captures et les tests : ?lecon=L1 joue seulement cette leçon
     if (P.get("lecon")) { window.__lecon = await lessons.play(P.get("lecon")); return; }
     // la durée maximale d'une séance est un réglage du parent (seance.json donne la valeur par défaut)
-    const session = new Session({ store, content: { ...seance, dureeMaxMin: await store.setting("dureeSeanceMin", seance.dureeMaxMin) }, handlers, rewards, paused: () => clock.pausedTotal(), onProgress: (p) => progress(p) });
+    const session = new Session({ store, content: { ...seance, dureeMaxMin: await store.setting("dureeSeanceMin", seance.dureeMaxMin) }, handlers, rewards, paused: () => clock.pausedTotal(), onProgress: (p) => progress(p),
+      // la protection du sélecteur redescend d'un cran : la pieuvre encourage, la voix le dit doucement
+      onCranDown: async () => { voice.stop(); ocean.octo.play("encourager"); await voice.say(text.data.cranDescente); } });
     app.session = session; mode = "seance";
     await session.run();
     mode = null; frieze.show(false); homeKey.style.visibility = "hidden";
@@ -165,7 +170,7 @@ async function showHome({ done, first = false }) {
 // ---------------------------------------------------------------- pendant la séance : la frise et la maison
 // La frise montre les étapes et les questions ; la maison (échauffement, notion du jour, entraînement libre)
 // met la séance en pause (elle reprendra exactement où elle en était) ou quitte l'entraînement libre.
-const frieze = new Frieze(app, seance.etapes.filter((e) => e.actif !== false).map((e) => e.id));
+const frieze = new Frieze(app, seance.etapes.filter((e) => e.actif !== false && handlers[e.id]).map((e) => e.id)); // les étapes qui existent
 app.frieze = frieze;
 let mode = null; // "seance", "libre" ou null (écran d'accueil)
 const homeKey = spriteBox(app, { x: 14, y: 10, w: 120, h: 120, cls: "bubble homekey session-home keep", label: "maison", paint: (ctx, px) => { const q = sprites.frame("maison", 0), k = 120 / 140; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 60 * px + q.dx * k, 60 * px + q.dy * k, q.w * k, q.h * k); } });
@@ -201,7 +206,7 @@ function quitFree() {
 onTap(homeKey, () => { pop(homeKey); if (mode === "seance") pauseSession(); else if (mode === "libre") quitFree(); });
 async function freeTraining() {
   mode = "libre"; homeKey.style.visibility = "visible";
-  const free = new FreeTraining(app, { store, module1, module2, rnd });
+  const free = new FreeTraining(app, { store, module1, module2, rnd, seance });
   app.free = free;
   await free.menu();
 }

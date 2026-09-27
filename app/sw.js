@@ -2,12 +2,13 @@
 // cache, même sans réseau. La liste des fichiers et la version viennent de sw-files.json, produit par
 // `node tools/precache.mjs` (la ligne VERSION ci-dessous est réécrite par le même outil : quand un
 // fichier change, ce script change aussi, et le navigateur installe la nouvelle version).
-const VERSION = "03c9ec4c690e";
+const VERSION = "071a7a03188e";
 const CACHE = `ocean-${VERSION}`;
 // la résolution des planches d'images de cet écran (main.js : sw.js?r=1 ou ?r=2) : on ne met en cache que
 // celle-là (une planche qui n'existe qu'en @1x, comme les rayons, est toujours gardée)
 const RES = new URL(location.href).searchParams.get("r");
-const useful = (f, all) => { const m = /^(assets\/art\/.+)@([12])x\.webp$/.exec(f); return !m || !RES || m[2] === RES || !all.has(`${m[1]}@${RES}x.webp`); };
+// (une planche peut avoir plusieurs pages : pieuvre-gestes@2x-0.webp, pieuvre-gestes@2x-1.webp)
+const useful = (f, all) => { const m = /^(assets\/art\/.+)@([12])x(-\d+)?\.webp$/.exec(f); return !m || !RES || m[2] === RES || ![...all].some((g) => g.startsWith(`${m[1]}@${RES}x`) && g.endsWith(".webp")); };
 
 self.addEventListener("install", (e) => {
   e.waitUntil((async () => {

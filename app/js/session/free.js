@@ -6,20 +6,31 @@
 //  - ses réponses sont enregistrées, marquées « libre », dans une séance marquée « libre » (elle ne compte
 //    jamais comme la séance du jour) ; elles comptent pour les règles d'adaptation et la révision espacée ;
 //  - pas de limite de durée ; au bout de 10 minutes, la voix propose d'arrêter (une fois) ;
-//  - la maison le quitte à tout moment (main.js : l'activité en cours est abandonnée, engine/clock.js).
+//  - la maison le quitte à tout moment (main.js : l'activité en cours est abandonnée, engine/clock.js) ;
+//  - lot 2 : la ligne et les additions commencent par le sélecteur de difficulté, sans étoiles (donc sans
+//    multiplicateur) ni protection ; le cran décale le niveau de la ligne et règle l'échauffement.
 import { onTap, pop, spriteBox } from "../engine/ui.js";
 import * as R from "../art/runtime.js";
 import { Module1Runner } from "../modules/numberline/runner.js";
 import { Warmup } from "../modules/facts/warmup.js";
 import { FactsScreen } from "../modules/facts/screen.js";
-import { chooseModule } from "./session.js";
+import { chooseModule, CRANS } from "./session.js";
+import { allowedCrans, chooseCran } from "./selector.js";
 
 const PROPOSE_STOP_MS = 10 * 60000;
 // les leçons, telles que l'enfant les reconnaît : les nombres que la tortue écrit
 const LESSON_LABELS = { L1: "1 2 3", L2: "10 20", L3: "30 31" };
 
 export class FreeTraining {
-  constructor(app, { store, module1, module2, rnd }) { this.app = app; this.store = store; this.m1 = module1; this.m2 = module2; this.rnd = rnd; this.rec = null; }
+  constructor(app, { store, module1, module2, rnd, seance = null }) { this.app = app; this.store = store; this.m1 = module1; this.m2 = module2; this.rnd = rnd; this.seance = seance; this.rec = null; this.cran = "conseille"; }
+  // le sélecteur, sans étoiles
+  async pickCran() {
+    const sel = this.seance?.selecteur; if (!sel?.actif) return (this.cran = "conseille");
+    this.cran = await chooseCran(this.app, { allowed: allowedCrans(await this.store.setting("cransAutorises")), stars: false, attenteS: sel.attenteS, cls: "free" });
+    await this.seanceId(); this.rec.cran = this.cran; await this.store.put("seances", this.rec);
+    return this.cran;
+  }
+  get offset() { return this.seance?.selecteur?.decalages?.[CRANS.indexOf(this.cran)] ?? 0; }
   // la séance « libre » : créée quand une activité commence, mise à jour après chaque réponse
   async seanceId() {
     if (!this.rec) { const now = Date.now(); this.rec = { debut: now, fin: now, dureeS: 0, terminee: false, libre: true, module: chooseModule(), questions: 0, justes: 0, reussite: null, etoiles: 0, etapes: [] }; this.rec.id = await this.store.add("seances", this.rec); }
@@ -50,7 +61,8 @@ export class FreeTraining {
   // la ligne graduée au niveau actuel, sans fin
   async line() {
     const { app } = this, screen = app.lineScreen();
-    const runner = await new Module1Runner({ screen, store: this.store, content: this.m1, rnd: this.rnd, seance: await this.seanceId() }).load();
+    await this.pickCran();
+    const runner = await new Module1Runner({ screen, store: this.store, content: this.m1, rnd: this.rnd, seance: await this.seanceId(), offset: () => this.offset, cran: () => this.cran }).load();
     runner.libre = true; this.runner = runner;
     for (;;) {
       const { q, cfg } = runner.next(), r = await screen.ask(q, cfg);
@@ -64,14 +76,15 @@ export class FreeTraining {
   // les additions : les faits dus d'abord, puis des faits déjà rencontrés (qui ne montent pas de boîte)
   async facts() {
     const { app } = this, screen = (app.facts ??= new FactsScreen(app, this.m2));
-    const warmup = await new Warmup({ store: this.store, content: this.m2, rnd: this.rnd, seance: await this.seanceId() }).load();
+    await this.pickCran();
+    const warmup = await new Warmup({ store: this.store, content: this.m2, rnd: this.rnd, seance: await this.seanceId(), cran: () => this.cran }).load();
     warmup.libre = true;
     screen.show(true);
     for (;;) {
       let rest = warmup.questions(6, 5).filter((q) => !q.base);
       if (!rest.length) rest = [...warmup.facts].sort(() => this.rnd() - 0.5).slice(0, 6).map((f) => ({ ...f, anticipe: true }));
       if (!rest.length) return;
-      while (rest.length) { const q = rest.shift(), r = await screen.ask(q), res = await warmup.record(q, r, rest); await this.answered(res.juste); }
+      while (rest.length) { const q = warmup.prepare(rest.shift()); if (!q) continue; const r = await screen.ask(q), res = await warmup.record(q, r, rest); await this.answered(res.juste); }
     }
   }
   // la revue des leçons déjà vues : une bulle par leçon (les nombres que la tortue y écrit)

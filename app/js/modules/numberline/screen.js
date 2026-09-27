@@ -23,6 +23,14 @@ export const NSP_AT = [1180, 700];
 export { SKIP_AT };
 const SKIPPED = Symbol("correction passée");
 
+// le geste « montrer » selon la direction de la cible vue depuis l'épaule du bras (le centre du manteau décalé
+// de l'attache du bras 7, art/src/canvas-core/ocean.ts, à l'échelle de la pieuvre dans l'application)
+export const SHOULDER = [76, 56];
+export function pointClip(octoAt, [x, y], clips = null) {
+  const a = (Math.atan2(y - (octoAt[1] + SHOULDER[1]), x - (octoAt[0] + SHOULDER[0])) * 180) / Math.PI;
+  const name = a > 52 || x < octoAt[0] + SHOULDER[0] ? "montrerBas" : a > 24 ? "montrerBasDroite" : "montrer";
+  return !clips || clips[name] ? name : "montrer";
+}
 export class NumberLineScreen {
   constructor(app) {
     this.app = app; this.ui = app.stage.ui; this.q = null; this.buttons = []; this.arcs = []; this.overlay = [];
@@ -55,8 +63,17 @@ export class NumberLineScreen {
     this.nsp.style.visibility = "hidden";
     onTap(this.nsp, () => { if (this.locked) return; pop(this.nsp); this.answer(null, null, { nsp: true }); });
   }
+  // lot 2 (docs/SPEC-LOT2.md, section 4 : la tortue devant la pieuvre) : pendant un exemple guidé ou une
+  // correction, la pieuvre s'écarte un peu vers la gauche (sans monter : la frise est juste au-dessus) pour dégager le début de la ligne ; la
+  // tortue, les arcs et les filets de bulles sont de toute façon dans des calques au-dessus d'elle
+  lift(up) {
+    const o = this.app.ocean, home = (this.octoHome ??= [...o.octoAt]), to = up ? [home[0] - 60, home[1] - 4] : home, from = [...o.octoAt], t0 = performance.now(), tok = (this.liftTok = (this.liftTok ?? 0) + 1);
+    const step = () => { if (tok !== this.liftTok) return; const u = Math.min(1, (performance.now() - t0) / 600), e = u * u * (3 - 2 * u); o.octoAt = [from[0] + (to[0] - from[0]) * e, from[1] + (to[1] - from[1]) * e]; if (u < 1) requestAnimationFrame(step); };
+    step();
+  }
   // la vitesse des animations des exemples guidés et des corrections ; une pause entre deux étapes
-  get pace() { return this.app.vitesse ?? 1; }
+  // (vitesse 1 pour la correction « lente » qui remplace une leçon déjà vue dans la séance, runner.js)
+  get pace() { return this.q?.lent ? 1 : this.app.vitesse ?? 1; }
   pause(ms) { return wait(ms / this.pace); }
   // ---------------------------------------------------------------- géométrie de la ligne
   get a() { return this.spec.x0 + 40; }
@@ -97,14 +114,20 @@ export class NumberLineScreen {
     } else this.buttons.push(this.bubble(640, ANSWER_Y, String(q.answer), null, true)); // le nombre à placer, en grand
     voice.stop();
     const v = { n: q.answer, a: q.format === "sauter" ? q.min + q.start * q.step : q.min, sauts: q.jumps === 1 ? text.data.unSaut : `${q.jumps} ${text.data.sauts}` };
-    // pendant la consigne, la pieuvre montre la ligne ; elle relâche quand la phrase est finie
-    this.app.ocean.octo.hold("montrer");
+    // pendant la consigne, la pieuvre montre la cible (lot 2 : trois orientations) ; elle relâche quand la phrase est finie
+    this.app.ocean.octo.hold(this.pointAt(q));
     // exemple guidé : on montre d'abord la méthode (les réponses attendent), puis « À toi ! »
     if (guide && !lesson) { await this.demoOrSkip(q); this.t0 = clock.now(); }
     this.locked = false; this.nsp.style.visibility = "visible";
     const L = lesson && this.app.lecons?.[lesson];
     const say = L ? (L.aToiDepuisZero && q.format === "lire" && q.min === 0 && q.step === 1 ? L.aToiDepuisZero : `${L.aToi} ${text.pick(q.format, v)}`) : `${guide ? `${text.pick("aToi")} ` : ""}${text.pick(q.format, v)}`;
     return voice.say(say, { instruction: true }).then(() => this.app.ocean.octo.release());
+  }
+  // le geste « montrer » qui vise la cible de la question : vers le bas (une cible sous la pieuvre), vers le
+  // bas et la droite, ou vers la droite (une cible loin) ; l'angle est pris depuis l'épaule du bras qui montre
+  pointAt(q) {
+    const x = q.format === "sauter" ? R.tickP(this.spec, q.start)[0] : q.format === "lire" ? R.tickP(this.spec, q.target)[0] : this.xOf(q.format === "estimer" ? (q.min + q.max) / 2 : q.answer);
+    return pointClip(this.app.ocean.octoAt, [x, R.lineY(this.spec, x)], this.app.atlas?.octo?.clips);
   }
   // EXEMPLE GUIDÉ (docs/SPEC.md, « Notion du jour ») : la tortue montre comment trouver la réponse, puis
   // l'enfant répond. Lire, placer : elle part de zéro (ou du nombre écrit le plus proche à gauche, quand
@@ -117,9 +140,9 @@ export class NumberLineScreen {
     const { voice } = this.app, tok = (this.demoTok = (this.demoTok ?? 0) + 1);
     let btn = null;
     const skipP = new Promise((res) => { btn = skipKey(this.app, () => res(true), "passer l'exemple"); });
-    this.turtle.speed = this.pace;
+    this.turtle.speed = this.pace; this.lift(true);
     const skipped = await Promise.race([this.demo(q, () => tok !== this.demoTok).then(() => false), skipP]);
-    this.turtle.speed = 1; btn.remove();
+    this.turtle.speed = 1; btn.remove(); this.lift(false);
     if (!skipped) return;
     this.demoTok++; q.passe = true; voice.stop();
     this.arcs = []; this.overlay = []; this.paintFx(true);
@@ -243,7 +266,7 @@ export class NumberLineScreen {
       let abort = null;
       const abortP = new Promise((_, rej) => { abort = () => rej(SKIPPED); }); abortP.catch(() => {});
       const g = (p) => Promise.race([p, abortP]), skip = skipKey(this.app, () => abort(), "passer la correction");
-      this.turtle.speed = this.pace;
+      this.turtle.speed = this.pace; this.lift(true);
       try {
         // au format « sauter », E3 est l'oubli du point de départ (la bouée où la tortue est posée), pas celui du début de la ligne
         const key = q.format === "sauter" && code === "E3" ? "E3sauter" : code;
@@ -263,7 +286,7 @@ export class NumberLineScreen {
         if (q.format === "sauter") this.turtle.sitOn(this.spec, q.target); else this.turtle.hide();
         await wait(1000);
       }
-      this.turtle.speed = 1; skip.remove();
+      this.turtle.speed = 1; skip.remove(); this.lift(false);
     }
     this.band.style.display = "none";
     const done = this.resolve; this.resolve = null; done?.(result);

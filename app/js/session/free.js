@@ -71,7 +71,7 @@ export class FreeTraining {
       let rest = warmup.questions(6, 5).filter((q) => !q.base);
       if (!rest.length) rest = [...warmup.facts].sort(() => this.rnd() - 0.5).slice(0, 6).map((f) => ({ ...f, anticipe: true }));
       if (!rest.length) return;
-      while (rest.length) { const q = rest.shift(), r = await screen.ask(q), res = await warmup.record(q, r, rest); await this.answered(res.juste); }
+      while (rest.length) { const q = warmup.prepare(rest.shift()); if (!q) continue; const r = await screen.ask(q), res = await warmup.record(q, r, rest); await this.answered(res.juste); }
     }
   }
   // la revue des leçons déjà vues : une bulle par leçon (les nombres que la tortue y écrit)

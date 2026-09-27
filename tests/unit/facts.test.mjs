@@ -36,14 +36,21 @@ test("seuil rapide : base + 4 s, puis + 3 s quand la moitié des faits rencontr�
   assert.equal(threshold(c, 2500, fs([1, 3, 4, 2])), 5500);
 });
 
-test("plan : au plus 3 nouveaux faits, seulement si la boîte 1 a moins de 8 faits ; faits dus d'abord", () => {
-  const first = plan(c, [], NOW, 8, 5);
-  assert.deepEqual(first.filter((f) => !f.anticipe).map((f) => f.fait), ["1+1", "2+1", "1+2"]);
-  assert.equal(first.length, 5); assert.ok(first.slice(3).every((f) => f.anticipe));
+test("plan (lot 2) : 3 places réservées aux faits nouveaux, dans la limite de la boîte 1 ; faits dus les plus en retard d'abord", () => {
+  // première séance : 3 réservés, puis d'autres faits nouveaux pour atteindre le minimum (limite commune : 6)
+  const first = plan(c, [], NOW, 12, 10);
+  assert.deepEqual(first.slice(0, 3).map((f) => f.fait), ["1+1", "2+1", "1+2"]);
+  assert.equal(first.filter((f) => f.nouveau && !f.anticipe).length, 6);
   const cat = catalog(c), stored = cat.slice(0, 8).map((f, i) => ({ ...f, boite: 1, prochain: NOW - i }));
   const p = plan(c, stored, NOW, 8, 5); assert.equal(p.length, 8); assert.ok(p.every((f) => !f.nouveau)); // boîte 1 pleine : rien de nouveau
-  const later = cat.slice(0, 6).map((f, i) => ({ ...f, boite: i < 2 ? 2 : 1, prochain: i < 2 ? NOW + DAY : NOW }));
-  const p2 = plan(c, later, NOW, 8, 5); assert.equal(p2.filter((f) => f.nouveau).length, 3); assert.equal(p2.length, 7); assert.ok(!p2.some((f) => f.fait === "1+1" || f.fait === "2+1"));
+  // des faits dus plein la liste : 3 places restent aux nouveaux, les dus en trop attendent (les plus en retard passent)
+  const many = cat.slice(0, 20).map((f, i) => ({ ...f, boite: 2 + (i % 3), prochain: NOW - (i + 1) * DAY }));
+  const p2 = plan(c, many, NOW, 12, 10);
+  assert.equal(p2.length, 12); assert.equal(p2.filter((f) => f.nouveau).length, 3);
+  assert.deepEqual(p2.filter((f) => !f.nouveau).map((f) => f.fait), many.slice(11, 20).reverse().map((f) => f.fait));
+  // boîte 1 presque pleine : autant que la boîte 1 le permet
+  const nearly = cat.slice(0, 7).map((f) => ({ ...f, boite: 1, prochain: NOW }));
+  assert.equal(plan(c, nearly, NOW, 12, 10).filter((f) => f.nouveau && !f.anticipe).length, 1);
 });
 
 test("échauffement : temps de base mesuré, faits enregistrés, un fait raté revient 3 questions plus loin", async () => {
@@ -57,7 +64,8 @@ test("échauffement : temps de base mesuré, faits enregistrés, un fait raté r
   }
   assert.ok(back, "le fait raté est revenu");
   assert.equal((await store.setting("tempsDeBase")).mesures.length, 3); assert.equal(W.baseMs, 2000);
-  const faits = await store.all("faits"); assert.equal(faits.length, 3); assert.equal(faits.find((f) => f.fait === back.q.fait).boite, 1);
-  assert.ok(faits.filter((f) => f.fait !== back.q.fait).every((f) => f.boite === 2));
+  // première rencontre, juste et rapide : la voie rapide les met en boîte 3 ; le fait raté reste en boîte 1
+  const faits = await store.all("faits"); assert.equal(faits.length, 6); assert.equal(faits.find((f) => f.fait === back.q.fait).boite, 1);
+  assert.ok(faits.filter((f) => f.fait !== back.q.fait).every((f) => f.boite === 3));
   const reps = await store.all("reponses"); assert.ok(reps.every((r) => r.module === 2 && r.seance === 7)); assert.equal(reps.filter((r) => r.forme === "base").length, 3);
 });

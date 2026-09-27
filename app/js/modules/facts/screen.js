@@ -8,6 +8,7 @@ import { onTap, spriteBox } from "../../session/screens.js";
 import { fill } from "../numberline/screen.js";
 import { clock, wait } from "../../engine/clock.js";
 import { skipKey } from "../../engine/ui.js";
+import { expected } from "./facts.js";
 
 const SKIPPED = Symbol("correction passée");
 
@@ -37,14 +38,19 @@ export class FactsScreen {
   }
   show(v) { for (const e of [this.slate, this.help, this.nsp, ...this.els]) e.style.visibility = v ? "visible" : "hidden"; }
   keys(v) { for (const e of [this.help, this.nsp, ...this.els]) e.style.visibility = v ? "visible" : "hidden"; }
-  // l'ardoise : « a + b = » puis la case réponse (« ? » rouge, les chiffres tapés, ou la correction)
+  // l'ardoise : « a + b = » puis la case réponse (« ? » rouge, les chiffres tapés, ou la correction) ; formes à
+  // trou (lot 2) : « a + ? = n » ou « ? + b = n », la case à la place du nombre qui manque
   paintSlate(ctx, px) {
     this.app.sprites.draw(ctx, "ardoise", 0, 295, 110);
     if (!this.q) return;
     ctx.setTransform(px, 0, 0, px, 0, 0);
-    const em = 76, eq = `${this.q.a} + ${this.q.b} =`, slot = this.typed || "?", ew = R.wordWidth(eq) * em, sw = Math.max(1.36, R.wordWidth(slot)) * em, gap = 0.4 * em, x0 = 295 - (ew + gap + sw) / 2;
-    R.drawWord(ctx, eq, x0 + ew / 2, 110 - em / 2, em, { w: 10, seed: 950 });
-    const sx = x0 + ew + gap + sw / 2;
+    const q = this.q, n = q.a + q.b, f = q.forme ?? "directe";
+    const [left, right] = f === "trouDroite" ? [`${q.a} +`, `= ${n}`] : f === "trouGauche" ? ["", `+ ${q.b} = ${n}`] : [`${q.a} + ${q.b} =`, ""];
+    const em = 76, slot = this.typed || "?", lw = left ? R.wordWidth(left) * em : 0, rw = right ? R.wordWidth(right) * em : 0, sw = Math.max(1.36, R.wordWidth(slot)) * em, gap = 0.4 * em;
+    const total = lw + (left ? gap : 0) + sw + (right ? gap : 0) + rw, x0 = 295 - total / 2;
+    if (left) R.drawWord(ctx, left, x0 + lw / 2, 110 - em / 2, em, { w: 10, seed: 950 });
+    const sx = x0 + lw + (left ? gap : 0) + sw / 2;
+    if (right) R.drawWord(ctx, right, sx + sw / 2 + gap + rw / 2, 110 - em / 2, em, { w: 10, seed: 960 });
     if (this.ring) R.drawRing(ctx, sx, 110, 56);
     R.drawNumber(ctx, slot, sx, 110 - em / 2, em, { w: 10.5, color: this.typed ? R.INK : R.RED, seed: 970 });
   }
@@ -60,18 +66,23 @@ export class FactsScreen {
     this.help.style.visibility = q.base ? "hidden" : "visible"; // pas d'aide pour « 4 + 0 »
     this.slate.repaint(); pop(this.slate);
     this.t0 = clock.now();
-    voice.stop(); voice.say(fill(text.pick("fait"), { a: q.a, b: q.b }), { instruction: true });
+    voice.stop(); voice.say(this.consigne(q), { instruction: true });
     return new Promise((res) => { this.resolve = res; });
+  }
+  // la consigne lue : « 5 plus 2 ? », ou la forme à trou (« 3 plus combien, ça fait 7 ? »)
+  consigne(q) {
+    const { text } = this.app, v = { a: q.a, b: q.b, n: q.a + q.b };
+    return q.forme === "trouDroite" ? fill(text.data.faitTrouDroite, v) : q.forme === "trouGauche" ? fill(text.data.faitTrouGauche, v) : fill(text.pick("fait"), v);
   }
   // la correction (erreur ou « je ne sais pas ») peut être passée dès qu'elle commence : la voix se tait,
   // le résultat reste écrit sur l'ardoise environ une seconde, puis le fait suivant ; noté « correction passée ».
   // Ses pauses suivent la vitesse des corrections (content/seance.json, vitesseAnimations).
   async submit({ nsp = false } = {}) {
-    const { voice, text, ocean } = this.app, q = this.q, value = nsp ? null : Number(this.typed), ok = value === q.a + q.b, ms = Math.round(clock.now() - this.t0), k = this.app.vitesse ?? 1;
+    const { voice, text, ocean } = this.app, q = this.q, value = nsp ? null : Number(this.typed), ok = value === expected(q), ms = Math.round(clock.now() - this.t0), k = this.app.vitesse ?? 1;
     this.locked = true; voice.stop();
     const r = { value, ms, listens: voice.listens, aide: this.aide, nsp };
     ocean.octo.play(ok ? "rejouir" : "encourager");
-    const answer = () => { this.typed = String(q.a + q.b); this.ring = true; this.slate.repaint(); };
+    const answer = () => { this.typed = String(expected(q)); this.ring = true; this.slate.repaint(); };
     if (ok) { pop(this.slate); await voice.say(text.pick("bravo")); await wait(250); }
     else {
       let abort = null;
@@ -122,12 +133,14 @@ export class FactsScreen {
       line.fxClear();
     }
     this.keys(true); this.locked = false;
-    voice.say(fill(text.pick("fait"), { a: q.a, b: q.b }));
+    voice.say(this.consigne(q));
   }
   leave() { this.show(false); this.q = null; }
 }
 
-// l'échauffement dans la séance : n faits (5 à 8), précédés des questions du temps de base
+// l'échauffement dans la séance : n faits (10 à 14), précédés, une séance sur cinq, des questions du temps de
+// base ; la voie rapide peut en ajouter à la fin ; si la protection fait redescendre le cran, les faits
+// nouveaux « bonus » du cran pas encore posés sont retirés (et les formes à trou suivent le nouveau cran)
 export async function runWarmup({ session, step, end, warmup, screen, intro, rnd = Math.random }) {
   const [a, b] = step.questions, n = a + Math.floor(rnd() * (b - a + 1)), rest = warmup.questions(n, a);
   screen.show(true); screen.keys(false);
@@ -135,10 +148,15 @@ export async function runWarmup({ session, step, end, warmup, screen, intro, rnd
   await intro?.();
   screen.keys(true);
   while (rest.length && !session.over(end)) {
-    const q = rest.shift(), r = await screen.ask(q), res = await warmup.record(q, r, rest);
-    session.expect?.(session.progress.faites + 1 + rest.length); // un fait raté revient : une bulle de plus
+    const q = warmup.prepare(rest.shift());
+    if (!q) { session.expect?.(session.progress.faites + rest.length); continue; }
+    const r = await screen.ask(q), res = await warmup.record(q, r, rest);
+    session.expect?.(session.progress.faites + 1 + rest.length); // un fait raté revient, la voie rapide en ajoute : des bulles de plus
+    session.cranDown = false;
     await session.answered(res.juste);
+    if (session.cranDown) warmup.drop(rest);
     await session.stars(res.etoiles, q.revient && res.juste ? "erreur corrigée" : "bonne réponse");
   }
+  session.nouveaux = warmup.nouveaux; if (session.rec) session.rec.faitsNouveaux = warmup.nouveaux;
   screen.leave();
 }

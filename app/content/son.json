@@ -1,0 +1,16 @@
+{
+  "_": "Mixage des bruitages et de la musique (docs/SPEC-LOT2.md, section 6). Niveaux en dB. Les fichiers sont fabriqués par tools/son/ : bruitages à -16 LUFS (sonie momentanée maximale), musiques à -23 LUFS (sonie intégrée) ; la voix est vers -16 LUFS. Les réglages du parent (musique oui/non et son volume, bruitages oui/non) sont dans l'espace parent.",
+  "bruitages": { "gain": -4, "parBruitage": { "bouton": 0 } },
+  "musique": {
+    "musiqueSousBruitages": 18,
+    "sonieFichiers": { "bruitages": -16, "musique": -23 },
+    "volumes": { "doux": -6, "moyen": 0, "fort": 4 },
+    "volumeParDefaut": "moyen",
+    "baisseSousVoix": 10,
+    "fonduBaisse": 0.25,
+    "baissePause": 14,
+    "fonduEntree": 3,
+    "fonduSortie": 2
+  },
+  "frequenceEchantillonnage": 48000
+}

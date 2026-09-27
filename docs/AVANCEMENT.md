@@ -13,7 +13,7 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 | 1 | Cartes et rythme : calendrier et quota, doublons, brillantes (20 % et effet), ouverture des zones, zone 2 (anecdotes et voix), étoiles dorées (4 semaines réussies), légendaires et coquillage doré, étoile arc-en-ciel de l'entraînement libre, surprise une séance sur cinq, ligne « Cartes » de l'espace parent ; simulation des cartes sur l'année | fait (branche `lot2-etape1`, https://github.com/js2c/Maths-CE1/pull/11) |
 | 2 | Séance et progression : durées et nombres de questions, défi record activable, places réservées et voie rapide des faits, enchaînement des niveaux, leçon au plus une fois par séance, point de départ du parent, tortue devant la pieuvre, pieuvre qui montre la cible ; option `--delai` de la recette ; sélecteur de difficulté (4 crans) | fait (branche `claude/prompt-lot2-section-9xloz0`, https://github.com/js2c/Maths-CE1/pull/13) |
 | 3 | Son, échantillons (`tools/son/`, `docs/son-echantillons/`) ; arrêt pour le choix du parent | fait (branche `claude/tender-volta-20rhlz`, https://github.com/js2c/Maths-CE1/pull/14) ; choix du parent reçu |
-| 4 | Son, intégration : bruitages, musique, mixage, réglages du parent | à faire |
+| 4 | Son, intégration : bruitages, musique, mixage, réglages du parent | fait (branche `claude/loving-tesla-rtv3o5`, https://github.com/js2c/Maths-CE1/pull/16) |
 | 5 | Atelier : bernard-l'ermite, cadre de 10, maison des nombres, double + 1 | à faire |
 | 6 | Module 2 comme notion du jour : familles 3 à 7, formes à trou, leçons L4 à L6, alternance, module imposé, point de départ étendu | à faire |
 | 7 | Défi record, grille des 66 additions, progression du module 2 dans l'espace parent | à faire |
@@ -22,17 +22,26 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 
 ### Reprise des étapes 4 à 6
 
-Pour reprendre si la session s'est arrêtée : branche `claude/loving-tesla-rtv3o5` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 2, étapes 4 à 6 (en cours) ».
+Pour reprendre si la session s'est arrêtée : branche `claude/loving-tesla-rtv3o5` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 2, étapes 4 à 6 (en cours) » (https://github.com/js2c/Maths-CE1/pull/16).
 
-**Étape en cours :** 4 (son, intégration).
+**Étape en cours :** 5 (atelier).
 
-**Fait :** branche créée depuis `origin/main` à jour, demande de fusion en brouillon.
+**Fait :**
 
-**Reste :** étapes 4, 5 et 6 ; recette complète à la fin.
+- Étape 4 (son, intégration) : sons choisis copiés dans `app/assets/son/` (`node tools/son/fabriquer.mjs app`), moteur `app/js/engine/son.js`, mixage `app/content/son.json`, bruitages branchés (réponses, étoiles, coquillage, carte, brillante, bouton, zone), musique tirée à chaque séance et notée (`rec.musique`), baisse sous la voix et en pause, arrêt dans l'espace parent, ligne « Son » des réglages du parent. Tests `tests/unit/son-app.test.mjs` ; parcours `seance.mjs` (son) et `parent.mjs` (réglages).
 
-**Où j'en suis :** début de l'étape 4.
+**Reste :** étapes 5 et 6 ; recette complète à la fin.
 
-**Décisions prises :** —
+**Où j'en suis :** étape 4 terminée et poussée ; début de l'étape 5.
+
+**Décisions prises (étape 4) :**
+
+- Débit des musiques : 64 kbit/s (choix par défaut, le parent n'ayant pas demandé 48 kbit/s) ; 3,6 Mo de sons en tout, au-delà des 3 Mo visés (noté comme écart).
+- Niveaux : bruitages 4 dB sous leur niveau de fabrication (la voix mesure environ -16 LUFS : elle reste devant) ; musique 18 dB sous les bruitages ; volume du parent : douce -6 dB, moyenne, plus forte +4 dB ; baisse de 10 dB sous la voix (fondu 0,25 s) ; pendant la pause, 14 dB de moins (« très bas ») ; fondu d'entrée 3 s, de sortie 2 s. Tout est dans `app/content/son.json`.
+- Musique aussi pendant l'entraînement libre (tirée à son ouverture) ; pas de musique dans le récif ni dans l'album (visite libre, hors séance), ni sur l'écran « à demain ».
+- « Je ne sais pas » ne fait pas le bruitage d'erreur (ce n'est pas une erreur pour l'enfant ; la voix rassure).
+- Bruitage « étoile » : une fois par vol d'étoiles (à la première arrivée), pas à chaque étoile (jusqu'à 10 d'affilée).
+- Bruitage « bouton » : tous les boutons de l'écran de l'enfant (pavé compris), sauf les bulles-réponses (elles ont la bulle claire ou douce) et le coquillage à ouvrir (il a le sien).
 
 ### Reprise de l'étape 3
 

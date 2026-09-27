@@ -37,7 +37,7 @@ export class StarHud {
       const a = this.pool.pop() ?? this.app.ocean.spriteActor(this.app.ocean.frontEl, "etoile");
       a.draw(0); a.show(false);
       const t0 = performance.now() / 1000 + (i * gap) / 1000, dx = (i % 2 ? 1 : -1) * (30 + 12 * i);
-      this.flights.push({ a, t0, dur: dur / 1000, from, to: HUD_STAR, dx, done: () => { this.set(this.shown + v); pop(this.box); this.pool.push(a); res(); } });
+      this.flights.push({ a, t0, dur: dur / 1000, from, to: HUD_STAR, dx, done: () => { if (i === 0) this.app.sound?.play("etoile"); this.set(this.shown + v); pop(this.box); this.pool.push(a); res(); } });
     })));
   }
   // n étoiles dépensées (un coquillage) : elles quittent le compteur une à une et volent vers `to`
@@ -179,7 +179,7 @@ export async function zoneCeremony(app, { zone, hud }) {
   star.draw(0); star.show(false);
   await new Promise((done) => hud.flights.push({ a: star, t0: performance.now() / 1000, dur: 1.1, from: [640, 760], to: [640, 370], dx: -60, done }));
   star.show(false); star.remove(); ocean.actors.splice(ocean.actors.indexOf(star), 1);
-  back.classList.remove("zone-closed");
+  back.classList.remove("zone-closed"); app.sound?.play("zone");
   const glint = ocean.spriteActor(ocean.frontEl, "eclat"), t0 = performance.now() / 1000, tick = (t) => { const u = (t - t0) / 1.4; glint.show(u < 1); if (u < 1) glint.moveTo(640, 370, 0.5 + 1.2 * Math.sin(Math.PI * u), Math.round(Math.sin(Math.PI * u) * 20) / 20); };
   glint.draw(0); ocean.front.push(tick);
   ocean.octo.play("rejouir");
@@ -223,14 +223,15 @@ export async function openShell(app, { session, hud, first = true, gold = false,
   Object.assign(tap.style, { left: `${C[0] - 130}px`, top: `${C[1] - 110}px`, width: "260px", height: "200px" }); app.stage.ui.append(tap);
   await Promise.race([new Promise((r) => onTap(tap, r)), wait(9000)]);
   tap.remove(); wob = false; voice.stop(); voice.unlock();
-  const opened = voice.say(text.data.coquillageOuvre);
+  const opened = voice.say(text.data.coquillageOuvre); app.sound?.play("coquillage");
   for (let f = 1; f < 12; f++) { frame = f; await wait(1000 / 12); }
   gl = performance.now() / 1000; await wait(1300);
   // la carte sort du coquillage, face cachée, puis se retourne
   const owned = rewards.owned[got.carte.id];
   const el = await cardElement(app, got.carte, { x: C[0] - CARD.W / 2, y: 128, front: "dos", back: "recto", brillante: owned.brillante });
   el.classList.add("enter"); await wait(900); await opened;
-  el.flip(true); ocean.octo.play("rejouir"); await wait(800);
+  el.flip(true); app.sound?.play("carte"); if (owned.brillante) setTimeout(() => app.sound?.play("brillante"), 350);
+  ocean.octo.play("rejouir"); await wait(800);
   const inReef = !!(got.carte.recif && sprites.atlas.sprites[`creature.${got.carte.id}`]);
   await voice.say(cardSpeech(text, got, inReef), { instruction: true });
   const ok = spriteBox(app, { x: 1000 - 80, y: 560, w: 160, h: 160, cls: "bubble check invite", label: "c'est bon", paint: (ctx) => sprites.draw(ctx, "valider", 0, 80, 80) });

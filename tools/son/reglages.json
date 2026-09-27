@@ -7,6 +7,11 @@
   "sonieParBruitage": { "erreur": -18, "bouton": -23 },
   "sonieMusique": -23,
   "creteMax": -1.5,
+  "application": {
+    "_": "Choix du parent (27 septembre 2026, étape 3) : bruitages « a », les trois musiques. `node tools/son/fabriquer.mjs app` copie ces fichiers Opus de docs/son-echantillons/ dans app/assets/son/ (nom suivi de l'empreinte du contenu) avec index.json.",
+    "bruitages": { "bonne": "bonne-a", "erreur": "erreur-a", "etoile": "etoile", "coquillage": "coquillage", "carte": "carte", "brillante": "brillante", "bouton": "bouton", "zone": "zone" },
+    "musiques": ["harpe", "marimba", "profondeurs"]
+  },
   "mixageEcoute": { "musiqueSousBruitages": 18, "baisseSousVoix": 10, "fonduBaisse": 0.25 },
   "musiques": {
     "harpe": { "nom": "La harpe du lagon", "tempo": 64, "mesures": 40, "tonique": 62, "gamme": [0, 2, 4, 7, 9], "instrument": "harpe", "accords": [[0, 7, 14, 16], [-3, 4, 7, 12], [-7, 2, 9, 12], [2, 9, 12, 19], [0, 4, 9, 14], [-3, 2, 7, 12], [-7, 2, 7, 9], [-5, 2, 7, 14]], "mesuresParAccord": 2, "densite": 0.42, "graves": true, "nappe": 0.55, "vagues": 0.5, "reverb": 0.32 },

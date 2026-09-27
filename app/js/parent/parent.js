@@ -379,6 +379,18 @@ export class ParentSpace {
     this.store.setting("defiActif").then((v) => paint(v !== false));
     return row("Défi record", "Une minute de faits d'addition chronométrés, comparés au record de l'enfant. Il n'a lieu qu'à partir de la 5e séance et quand au moins 8 faits sont bien sus. (Le défi lui-même arrive dans une prochaine version.)", seg);
   }
+  // le son (lot 2) : musique oui/non et son volume, bruitages oui/non ; un seul réglage « son » dans la base
+  sonRow(row) {
+    let cur = { musique: true, volume: "moyen", bruitages: true };
+    const ok = h("span", { class: "pa-ok" }), segs = [];
+    const seg = (label, key, opts) => { const g = h("div", { class: "pa-seg", role: "group", "aria-label": label }); for (const [v, t] of opts) g.append(h("button", { "data-v": String(v), onclick: async () => { cur = { ...cur, [key]: v }; await this.store.setSetting("son", cur); paint(); ok.textContent = "Enregistré."; } }, t)); segs.push([g, key]); return g; };
+    const mus = seg("musique", "musique", [[true, "oui"], [false, "non"]]), vol = seg("volume de la musique", "volume", [["doux", "douce"], ["moyen", "moyenne"], ["fort", "plus forte"]]), sfx = seg("bruitages", "bruitages", [[true, "oui"], [false, "non"]]);
+    const paint = () => { for (const [g, key] of segs) for (const b of g.children) b.setAttribute("aria-pressed", String(b.dataset.v === String(cur[key]))); vol.style.opacity = cur.musique ? "1" : "0.45"; };
+    this.store.setting("son").then((v) => { if (v) cur = { ...cur, ...v }; paint(); });
+    const line = (t, g, ...more) => h("div", { class: "pa-row" }, h("span", { class: "pa-muted", style: "min-width: 9em" }, t), g, ...more);
+    return row("Son", "Une musique douce pendant la séance (l'une des trois, tirée au hasard), toujours plus basse que la voix, et de petits bruitages (bonne réponse, étoiles, coquillage…). Ils s'arrêtent dans cet espace.",
+      h("div", { style: "display: grid; gap: 10px" }, line("Musique :", mus), line("Volume :", vol), line("Bruitages :", sfx, ok)));
+  }
   // le point de départ : le niveau de la ligne graduée, les familles de faits déjà connues
   departRow(row) {
     const box = h("div", { class: "pa-depart" }), msg = h("span", { class: "pa-ok" });
@@ -412,7 +424,7 @@ export class ParentSpace {
     this.store.setting("dureeSeanceMin", this.seance.dureeMaxMin).then(paint);
     box.append(row("Durée maximale d'une séance", "Au bout de ce temps, l'application dit « à demain » (la dernière minute est gardée pour la récompense).", seg));
     // lot 2 : le sélecteur de difficulté (crans proposés à l'enfant), le défi record, le point de départ
-    box.append(this.cransRow(row), this.defiRow(row), this.departRow(row));
+    box.append(this.sonRow(row), this.cransRow(row), this.defiRow(row), this.departRow(row));
     // le code
     box.append(row("Code parent", "Le code à 4 chiffres qui ouvre cet espace.", h("button", { class: "pa-btn", onclick: () => { this.root.replaceChildren(h("div", { class: "pa-veil" })); this.app.stage.paused = false; this.gate("choisir"); } }, "Changer le code")));
     // le stockage persistant

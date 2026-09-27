@@ -111,6 +111,11 @@ check(!(await page.locator(".pa-reminder").count()), "plus de rappel d'export ap
 await page.locator('.pa-seg [data-v="10"]').click(); await page.waitForTimeout(150);
 check(await page.evaluate(() => window.__app.store.setting("dureeSeanceMin")) === 10, "la durée de séance est enregistrée");
 await page.locator(".pa-main").evaluate((m) => { m.scrollTop = m.scrollHeight; }); await page.waitForTimeout(150); await shot("12-reglages");
+// lot 2 : le son (musique, volume, bruitages)
+await page.locator('[aria-label="volume de la musique"] [data-v="doux"]').click(); await page.waitForTimeout(100);
+await page.locator('[aria-label="bruitages"] [data-v="false"]').click(); await page.waitForTimeout(150);
+check(JSON.stringify(await page.evaluate(() => window.__app.store.setting("son"))) === JSON.stringify({ musique: true, volume: "doux", bruitages: false }), "réglages du son enregistrés");
+await page.locator('[aria-label="musique"]').scrollIntoViewIfNeeded(); await page.locator(".pa-main").evaluate((m) => { m.scrollTop -= 120; }); await page.waitForTimeout(150); await shot("12a-son");
 // lot 2 : difficulté proposée, défi record, point de départ
 await page.locator('[aria-label="cran le plus dur"] [data-v="dur"]').click(); await page.waitForTimeout(150);
 check(JSON.stringify(await page.evaluate(() => window.__app.store.setting("cransAutorises"))) === JSON.stringify({ min: "facile", max: "dur" }), "crans autorisés enregistrés");

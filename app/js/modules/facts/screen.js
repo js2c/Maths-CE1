@@ -82,6 +82,7 @@ export class FactsScreen {
     this.locked = true; voice.stop();
     const r = { value, ms, listens: voice.listens, aide: this.aide, nsp };
     ocean.octo.play(ok ? "rejouir" : "encourager");
+    if (ok) this.app.sound?.play("bonne"); else if (!nsp) this.app.sound?.play("erreur");
     const answer = () => { this.typed = String(expected(q)); this.ring = true; this.slate.repaint(); };
     if (ok) { pop(this.slate); await voice.say(text.pick("bravo")); await wait(250); }
     else {

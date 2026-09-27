@@ -91,3 +91,7 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .card.to-album { transition: transform 0.9s ease-in, opacity 0.9s ease-in; transform: translate(420px, 330px) scale(0.12); opacity: 0.2; }
 .gift { pointer-events: none; }
 .gift.away { transition: transform 1s ease-in, opacity 1s ease-in; transform: translateY(260px) scale(0.3); opacity: 0; }
+/* lot 2 : le sélecteur de difficulté ; la bulle choisie est à sa taille, les autres un peu réduites (jamais agrandies) */
+.cran { transform: scale(0.84); transition: transform 0.2s ease-out; }
+.cran.chosen { transform: scale(1); }
+.cran-glow { pointer-events: none; }

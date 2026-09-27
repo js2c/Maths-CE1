@@ -11,7 +11,8 @@ export class LineView {
     this.worker.onmessage = ({ data }) => { this.wait.get(data.id)?.(data.bitmaps); this.wait.delete(data.id); };
     // calque d'effets de la même bande (arcs de saut, surbrillances) : dessiné seulement pendant un retour
     // ou une leçon, vidé ensuite (un canvas qui ne change pas ne coûte rien)
-    this.fx = document.createElement("canvas"); this.fx.id = "fx"; this.c.after(this.fx); this.fxCtx = this.fx.getContext("2d"); this.fxUsed = false;
+    // (lot 2 : posé au-dessus de la pieuvre, comme la tortue : arcs et filets ne passent jamais derrière ses bras)
+    this.fx = document.createElement("canvas"); this.fx.id = "fx"; (stage.root.querySelector("#octo") ?? this.c).after(this.fx); this.fxCtx = this.fx.getContext("2d"); this.fxUsed = false;
     this.place(); stage.onResize(() => this.place());
   }
   place() {

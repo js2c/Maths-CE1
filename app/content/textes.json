@@ -1,5 +1,5 @@
 {
-  "_doc": "Tout ce que la voix lit. {mascotte} : le nom choisi pour la pieuvre ; {n}, {a}, {b} : des nombres ; {nom} : un nom proposé. Plusieurs variantes : l'application en tire une au hasard. Récompenses et récif : {nom} est le nom de la créature avec son article (cartes.json, nomLu). erreur.E3sauter : l'erreur E3 au format « sauter » (oublier le point de départ ; {a} : la bouée de départ). faitTrouDroite, faitTrouGauche : les formes à trou des faits (3 + ? = 7, ? + 4 = 6), utilisées à partir du lot 2 (textes validés par le parent). erreur.E5 : {dizaines} et {unites} sont remplis avec uneDizaine ou desDizaines, uneUnite ou desUnites (accord au singulier : « 1 dizaine »). erreur.NSP, faitNSP : après le bouton « je ne sais pas ». reprise : au retour d'une pause (bouton « maison » pendant la séance). encore, libre… : l'entraînement libre après la séance. album : l'album des cartes. Lot 2 : carteBrillanteTirage (une carte qui sort brillante, tirage d'une chance sur cinq), carteAlbum (une carte dont la créature n'est pas encore dans le récif), carteLegendaire (avant le nom d'une légendaire), coquillageDore (le coquillage des étoiles dorées), surpriseVisite et surpriseCadeau (la surprise de l'accueil) ; ce que dit l'ouverture d'une zone est dans cartes.json (zones[].ouvertureLu). Chaque phrase dite a son fichier son (app/assets/voix/, fabriqué par tools/voix/fabriquer.mjs) : après une modification ici, relancer cet outil ; une phrase sans fichier est lue par la synthèse du navigateur.",
+  "_doc": "Tout ce que la voix lit. {mascotte} : le nom choisi pour la pieuvre ; {n}, {a}, {b} : des nombres ; {nom} : un nom proposé. Plusieurs variantes : l'application en tire une au hasard. Récompenses et récif : {nom} est le nom de la créature avec son article (cartes.json, nomLu). erreur.E3sauter : l'erreur E3 au format « sauter » (oublier le point de départ ; {a} : la bouée de départ). faitTrouDroite, faitTrouGauche : les formes à trou des faits (3 + ? = 7, ? + 4 = 6), utilisées à partir du lot 2 (textes validés par le parent). erreur.E5 : {dizaines} et {unites} sont remplis avec uneDizaine ou desDizaines, uneUnite ou desUnites (accord au singulier : « 1 dizaine »). erreur.NSP, faitNSP : après le bouton « je ne sais pas ». reprise : au retour d'une pause (bouton « maison » pendant la séance). encore, libre… : l'entraînement libre après la séance. album : l'album des cartes. Lot 2 : carteBrillanteTirage (une carte qui sort brillante, tirage d'une chance sur cinq), carteAlbum (une carte dont la créature n'est pas encore dans le récif), carteLegendaire (avant le nom d'une légendaire), coquillageDore (le coquillage des étoiles dorées), surpriseVisite et surpriseCadeau (la surprise de l'accueil) ; ce que dit l'ouverture d'une zone est dans cartes.json (zones[].ouvertureLu). Chaque phrase dite a son fichier son (app/assets/voix/, fabriqué par tools/voix/fabriquer.mjs) : après une modification ici, relancer cet outil ; une phrase sans fichier est lue par la synthèse du navigateur. Lot 2, étape 2 : selecteur, selecteurLibre (le sélecteur de difficulté au début de la séance, ou de l'entraînement libre), cran.* et cranLibre.* (dit quand l'enfant touche un cran), cranDescente (la protection redescend d'un cran).",
   "accueil": [
     "Coucou ! C'est moi, {mascotte}. On va jouer dans l'océan !",
     "Bonsoir ! {mascotte} est contente de te voir. On y va ?"
@@ -120,5 +120,20 @@
   "libreFaits": "Les additions !",
   "libreLecons": "Quelle leçon veux-tu revoir ?",
   "libreLongtemps": "Tu t'entraînes depuis longtemps ! Tu peux t'arrêter quand tu veux : touche la maison.",
-  "album": "Voici ton album ! Touche une carte pour la regarder."
+  "album": "Voici ton album ! Touche une carte pour la regarder.",
+  "selecteur": "Choisis ton niveau. Plus c'est dur, plus tu gagnes d'étoiles !",
+  "selecteurLibre": "Choisis ton niveau.",
+  "cran": {
+    "facile": "Plus facile : une demi-étoile par bonne réponse.",
+    "conseille": "Le niveau fait pour toi : une étoile par bonne réponse.",
+    "dur": "Plus dur : une étoile et demie par bonne réponse !",
+    "tresdur": "Très dur : deux fois plus d'étoiles !"
+  },
+  "cranLibre": {
+    "facile": "Plus facile.",
+    "conseille": "Le niveau fait pour toi.",
+    "dur": "Plus dur !",
+    "tresdur": "Très dur !"
+  },
+  "cranDescente": "On essaie un peu moins dur ?"
 }

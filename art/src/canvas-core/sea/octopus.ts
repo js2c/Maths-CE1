@@ -192,17 +192,27 @@ const wave: Clip = {
   },
 };
 
-// Montrer : le bras 7 se tend vers la droite et le bas (la ligne de l'exercice), la pointe se relève.
-const point: Clip = {
-  name: "montrer", frames: 60, entry: 0, exit: 24, hold: [12, 48],
+// Montrer : le bras 7 se tend vers la cible de la question, la pointe se relève. Trois orientations (lot 2,
+// docs/SPEC-LOT2.md, section 4 : « la pieuvre montre la cible ») : « montrer » vers la droite (le geste
+// d'origine : une cible loin à droite), « montrerBasDroite » vers le bas et la droite (le milieu de la
+// ligne), « montrerBas » plongeant (une cible au début de la ligne, sous la pieuvre).
+// `q` : pas de l'ondulation de la pointe pendant la boucle (0 : continue) ; un pas grossier réutilise les
+// mêmes images du bras (mémoire des planches : chaque image distincte du bras tendu est une grande pièce)
+const pointing = (name: string, arm: ArmP, look: [number, number], q = 0): Clip => ({
+  name, frames: 60, entry: 0, exit: 24, hold: [12, 48],
   pose: (f) => {
     const u = f / IDLE_N, w = f < 12 ? ease(f / 9) : f < 48 ? 1 : ease((59 - f) / 11), p = restPose(u);
-    const tgt = { ...POINT_ARM, curl: POINT_ARM.curl + 0.12 * Math.sin(TAU * u) };
+    const wig = 0.12 * Math.sin(TAU * u), tgt = { ...arm, curl: arm.curl + (q ? Math.round(wig / q) * q : wig) };
     p.arms[7] = lerpArm(p.arms[7], tgt, w);
-    p.look = [5 * w, 3 * w]; p.tilt += 3 * w;
+    p.look = [look[0] * w, look[1] * w]; p.tilt += 3 * w;
     return p;
   },
-};
+});
+const point = pointing("montrer", POINT_ARM, [5, 3]);
+export const POINT_DOWN: ArmP = { th: 1.02, bend: 0.2, curl: -1.25, len: 196 };
+export const POINT_DOWN_RIGHT: ArmP = { th: 0.66, bend: 0.12, curl: -1.1, len: 222 };
+const pointDown = pointing("montrerBas", POINT_DOWN, [3, 6], 0.06);
+const pointDownRight = pointing("montrerBasDroite", POINT_DOWN_RIGHT, [5, 5], 0.06);
 
 // Se réjouir : les quatre bras de devant montent, deux petits bonds (écrasement à l'atterrissage), yeux plissés.
 // les bras de devant en V (« youpi ») : ils partent sur le côté et montent à 45°, la pointe se recourbe
@@ -249,4 +259,4 @@ const cheer: Clip = {
 
 // Arrondis du visage (regard et paupières au pixel, joues au vingtième) : moins de variantes d'yeux à fabriquer.
 const tidy = (c: Clip): Clip => ({ ...c, pose: (f) => { const p = c.pose(f); return { ...p, look: [Math.round(p.look[0]), Math.round(p.look[1])], lid: [Math.round(p.lid[0]), Math.round(p.lid[1])], cheek: Math.round(p.cheek * 20) / 20 }; } });
-export const OCTO_CLIPS: Clip[] = [idle, wave, point, joy, think, cheer].map(tidy);
+export const OCTO_CLIPS: Clip[] = [idle, wave, point, joy, think, cheer, pointDown, pointDownRight].map(tidy);

@@ -27,7 +27,9 @@ test("une séance enchaîne les étapes, saute celles désactivées ou pas encor
   const rec = await s.run();
   assert.deepEqual(seen, ["accueil", "notion", "recompense"]);
   assert.equal(rec.etapes.find((e) => e.id === "echauffement").sautee, "pas encore construite");
-  assert.equal(rec.etapes.find((e) => e.id === "defi").sautee, "désactivée");
+  // lot 2 : le défi record est actif, mais pas avant la 5e séance terminée (ni sans 8 faits en boîte 3)
+  assert.equal(rec.etapes.find((e) => e.id === "defi").sautee, "pas encore");
+  assert.equal(rec.etapes.find((e) => e.id === "probleme").sautee, "désactivée");
   const saved = await store.get("seances", rec.id);
   assert.equal(saved.terminee, true); assert.equal(saved.module, 1); assert.equal(saved.etoiles, 10);
   assert.equal(rewards.total, 10); assert.equal((await store.get("recompenses", "etoiles")).cumul, 10);
@@ -49,7 +51,7 @@ test("notion du jour : deux exemples guidés, puis 8 à 10 questions ; les exemp
   const step = seance.etapes.find((e) => e.id === "notion");
   await runNotion({ session: s, step, end: c() + 5 * 60000, runner, screen, rnd: rng(5) });
   const guides = screen.log.filter((x) => x.guide).length, qs = screen.log.length - guides;
-  assert.equal(guides, 2); assert.ok(qs >= 8 && qs <= 10, `${qs} questions`);
+  assert.equal(guides, 2); assert.ok(qs >= step.questions[0] && qs <= step.questions[1], `${qs} questions`);
   assert.equal(screen.log.slice(0, 2).every((x) => x.guide), true);
   assert.equal(runner.count, qs); // les exemples guidés ne sont pas comptés dans le taux du module
   const reps = await store.all("reponses"); assert.equal(reps.length, qs + 2); assert.equal(reps.filter((r) => r.guide && r.aide).length, 2); assert.ok(reps.every((r) => r.seance === s.id));
@@ -64,11 +66,12 @@ test("notion du jour : la leçon du niveau la première fois (3 étoiles), puis 
   const runner = await new Module1Runner({ screen, store, content: module1, rnd: rng(3), seance: s.id }).load();
   runner.k = 1; // le format suivant aurait été « sauter » : l'exercice qui suit la leçon est quand même « lire »
   await runNotion({ session: s, step: seance.etapes[2], end: c() + 5 * 60000, runner, screen, rnd: rng(5), lesson: async (id, raison) => { played.push([id, raison]); return true; } });
-  assert.deepEqual(played, [["L1", "niveau"]]);
+  // (lot 2 : tout juste et rapide, la voie rapide enchaîne les niveaux ; chaque niveau à leçon a la sienne)
+  assert.deepEqual(played[0], ["L1", "niveau"]); assert.ok(played.every(([, r]) => r === "niveau"));
   assert.equal(screen.log[0].guide, true); assert.equal(screen.log[0].lesson, "L1"); assert.equal(screen.log[0].q.format, "lire");
-  assert.equal(screen.log.filter((x) => x.guide).length, 1); // pas d'autres exemples guidés après une leçon
-  assert.deepEqual(runner.st.lecons, ["L1"]); assert.equal(runner.entryLesson(), null);
-  const qs = screen.log.length - 1; assert.equal(rewards.total, qs + 1 + seance.etoiles.lecon);
+  assert.equal(screen.log.filter((x) => x.guide).length, played.length); // pas d'autres exemples guidés après une leçon
+  assert.deepEqual(runner.st.lecons, played.map(([id]) => id)); assert.equal(runner.entryLesson(), null);
+  assert.equal(rewards.total, screen.log.length + played.length * seance.etoiles.lecon);
 });
 
 test("notion du jour : la même erreur deux fois relance sa leçon, suivie d'un exercice guidé ; une leçon non finie ne rapporte rien", async () => {

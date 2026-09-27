@@ -23,6 +23,14 @@ export const NSP_AT = [1180, 700];
 export { SKIP_AT };
 const SKIPPED = Symbol("correction passée");
 
+// le geste « montrer » selon la direction de la cible vue depuis l'épaule du bras (le centre du manteau décalé
+// de l'attache du bras 7, art/src/canvas-core/ocean.ts, à l'échelle de la pieuvre dans l'application)
+export const SHOULDER = [76, 56];
+export function pointClip(octoAt, [x, y], clips = null) {
+  const a = (Math.atan2(y - (octoAt[1] + SHOULDER[1]), x - (octoAt[0] + SHOULDER[0])) * 180) / Math.PI;
+  const name = a > 52 || x < octoAt[0] + SHOULDER[0] ? "montrerBas" : a > 24 ? "montrerBasDroite" : "montrer";
+  return !clips || clips[name] ? name : "montrer";
+}
 export class NumberLineScreen {
   constructor(app) {
     this.app = app; this.ui = app.stage.ui; this.q = null; this.buttons = []; this.arcs = []; this.overlay = [];
@@ -98,14 +106,20 @@ export class NumberLineScreen {
     } else this.buttons.push(this.bubble(640, ANSWER_Y, String(q.answer), null, true)); // le nombre à placer, en grand
     voice.stop();
     const v = { n: q.answer, a: q.format === "sauter" ? q.min + q.start * q.step : q.min, sauts: q.jumps === 1 ? text.data.unSaut : `${q.jumps} ${text.data.sauts}` };
-    // pendant la consigne, la pieuvre montre la ligne ; elle relâche quand la phrase est finie
-    this.app.ocean.octo.hold("montrer");
+    // pendant la consigne, la pieuvre montre la cible (lot 2 : trois orientations) ; elle relâche quand la phrase est finie
+    this.app.ocean.octo.hold(this.pointAt(q));
     // exemple guidé : on montre d'abord la méthode (les réponses attendent), puis « À toi ! »
     if (guide && !lesson) { await this.demoOrSkip(q); this.t0 = clock.now(); }
     this.locked = false; this.nsp.style.visibility = "visible";
     const L = lesson && this.app.lecons?.[lesson];
     const say = L ? (L.aToiDepuisZero && q.format === "lire" && q.min === 0 && q.step === 1 ? L.aToiDepuisZero : `${L.aToi} ${text.pick(q.format, v)}`) : `${guide ? `${text.pick("aToi")} ` : ""}${text.pick(q.format, v)}`;
     return voice.say(say, { instruction: true }).then(() => this.app.ocean.octo.release());
+  }
+  // le geste « montrer » qui vise la cible de la question : vers le bas (une cible sous la pieuvre), vers le
+  // bas et la droite, ou vers la droite (une cible loin) ; l'angle est pris depuis l'épaule du bras qui montre
+  pointAt(q) {
+    const x = q.format === "sauter" ? R.tickP(this.spec, q.start)[0] : q.format === "lire" ? R.tickP(this.spec, q.target)[0] : this.xOf(q.format === "estimer" ? (q.min + q.max) / 2 : q.answer);
+    return pointClip(this.app.ocean.octoAt, [x, R.lineY(this.spec, x)], this.app.atlas?.octo?.clips);
   }
   // EXEMPLE GUIDÉ (docs/SPEC.md, « Notion du jour ») : la tortue montre comment trouver la réponse, puis
   // l'enfant répond. Lire, placer : elle part de zéro (ou du nombre écrit le plus proche à gauche, quand

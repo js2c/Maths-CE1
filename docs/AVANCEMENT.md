@@ -2,6 +2,32 @@
 
 Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail dans une nouvelle session : lire ce fichier, puis `CLAUDE.md`, `docs/SPEC.md` et `docs/ARCHITECTURE.md`.
 
+## Lot 3
+
+Spécification : `docs/SPEC-LOT3.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LOT2.md` et `docs/SPEC-COMPLEMENTS.md`) ; prompt : `docs/PROMPT-LOT3.md`. Deux parties : A (étapes 1 et 2, correctif du lot 2), B (étapes 3 à 5, calcul rapide).
+
+**Où en est-on (27 septembre 2026)** : lot 2 terminé et fusionné (PR #17). Lot 3 lancé : étapes 1 à 4 enchaînées dans une même session (branche `claude/laughing-ritchie-cp777i`, nom imposé par l'environnement) ; voir « Reprise des étapes 1 à 4 du lot 3 ».
+
+| Étape | Partie | Contenu | État |
+| --- | --- | --- | --- |
+| 1 | A | Accueil « choisir » : exercice et niveau (ligne 1 à 13, familles 1 à 7, leçons), exercice choisi = séance du jour ; échauffement passable et réglage ; leçons cohérentes (suppression de `leconSiPasVue`, 80 % sur la famille) ; maison des nombres ; test des bords des sprites | en cours |
+| 2 | A | Difficulté à l'intérieur du niveau (ligne graduée, 13 niveaux × 4 crans ; additions) ; outil de sauvegardes de test ; guide du parent ; recette complète de la partie A | à faire |
+| 3 | B | Atelier : mur de corail, poisson sur le mur, ponts du chemin, pictogramme du calcul rapide pour l'écran de choix | à faire |
+| 4 | B | Module 3 : niveaux 1 à 9, générateurs, erreurs C1 à C5, déroulé d'un nouveau niveau, leçons L7 à L9, crans, choix du niveau, rotation dans « jouer », espace parent | à faire |
+| 5 | B | Bilan : `docs/BILAN-LOT3.md`, guide du parent, recette complète sur l'année | à faire |
+
+### Reprise des étapes 1 à 4 du lot 3
+
+Pour reprendre si la session s'est arrêtée : branche `claude/laughing-ritchie-cp777i`, demande de fusion en brouillon « Lot 3, étapes 1 à 4 (en cours) ».
+
+**Étape en cours :** 1 (début).
+
+**Fait :** inscription du lot 3.
+
+**Reste :** étapes 1 à 4 ; recette complète à la fin de l'étape 4.
+
+**Décisions prises :** (aucune pour l'instant)
+
 ## Lot 2
 
 Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `docs/PROMPT-LOT2.md`. Une étape = une session = une demande de fusion vers `main`.

@@ -2,6 +2,7 @@
 // leçon d'entrée, exemples guidés, correction après « je ne sais pas », correction après une erreur.
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { serve } from "../serve.mjs";
+const PASSER = process.argv.includes("--passer"); // l'enfant touche « passer » dès qu'il apparaît
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
 const out = [];
@@ -13,6 +14,7 @@ for (const niveau of [1, 3, 4, 5, 6, 7, 8]) {
   const t0 = Date.now(); await page.tap(".play", { force: true });
   const open = () => page.waitForFunction(() => { const s = window.__app.screen; return s?.q && s.resolve && !s.locked; }, null, { timeout: 240000, polling: 100 });
   const ev = []; let t = Date.now();
+  if (PASSER) await page.evaluate(() => { window.__passes = 0; setInterval(() => { const b = document.querySelector(".skip"); if (b && getComputedStyle(b).visibility !== "hidden") { b.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })); window.__passes++; } }, 150); });
   for (let k = 0; k < 5; k++) {
     await open(); const now = Date.now(), q = await page.evaluate(() => ({ f: window.__app.screen.q.format, a: window.__app.screen.q.answer, g: !!window.__app.screen.q.guide }));
     ev.push(`${k === 0 ? "avant la 1re question (accueil, leçon, exemple)" : "attente"} ${((now - t) / 1000).toFixed(1)} s`);
@@ -23,7 +25,8 @@ for (const niveau of [1, 3, 4, 5, 6, 7, 8]) {
     else await page.evaluate(() => { const s = window.__app.screen; s.aimed = s.q.answer; s.answer(s.q.answer, null); });
   }
   const rec = await page.evaluate(() => window.__app.session.rec);
-  out.push(`niveau ${niveau} : ${ev.join(" · ")} ; leçons ${JSON.stringify((rec.lecons ?? []).map((l) => l.id + " " + l.dureeS + "s"))}`);
+  const passes = PASSER ? await page.evaluate(() => window.__passes) : 0;
+  out.push(`niveau ${niveau}${PASSER ? ` (passer touché ${passes} fois)` : ""} : ${ev.join(" · ")} ; leçons ${JSON.stringify((rec.lecons ?? []).map((l) => l.id + " " + l.dureeS + "s"))}`);
   console.log(out.at(-1)); await context.close();
 }
 await browser.close(); srv.close();

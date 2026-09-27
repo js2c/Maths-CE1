@@ -20,6 +20,20 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 | 8 | Nombres jusqu'à 1 000 (`docs/SPEC-COMPLEMENTS.md`, partie A) | à faire |
 | 9 | Bilan : `docs/BILAN-LOT2.md`, guide du parent, recette complète sur l'année | à faire |
 
+### Reprise des étapes 4 à 6
+
+Pour reprendre si la session s'est arrêtée : branche `claude/loving-tesla-rtv3o5` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 2, étapes 4 à 6 (en cours) ».
+
+**Étape en cours :** 4 (son, intégration).
+
+**Fait :** branche créée depuis `origin/main` à jour, demande de fusion en brouillon.
+
+**Reste :** étapes 4, 5 et 6 ; recette complète à la fin.
+
+**Où j'en suis :** début de l'étape 4.
+
+**Décisions prises :** —
+
 ### Reprise de l'étape 3
 
 Pour reprendre si la session s'est arrêtée : branche `claude/tender-volta-20rhlz` (nom imposé par l'environnement), demande de fusion https://github.com/js2c/Maths-CE1/pull/14.

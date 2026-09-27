@@ -3,6 +3,7 @@
 // instant (répondre, toucher une bulle, rien), captures à chaque changement d'écran, inventaire des
 // éléments visibles qui ressemblent à des boutons et de leur réaction au toucher.
 //   node tests/e2e/recette.mjs [--out dossier] [--delai secondes : temps de réponse de l'enfant, 1,5 par défaut] [--module 2 : notion du jour imposée (lot 2, étape 6)]
+//     [--defi : une séance où le défi record a lieu (lot 2, étape 9) : 5 séances déjà terminées, la famille 1 connue (point de départ), la pieuvre déjà nommée]
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -32,6 +33,14 @@ const state = () => page.evaluate(() => {
 const tapSel = (sel) => page.tap(sel, { force: true }).catch(() => {});
 const typeIn = async (n) => { for (const d of String(n)) await tapSel(`.key[data-key="${d}"]`); await tapSel('.key[data-key="valider"]'); };
 
+if (args.includes("--defi")) {
+  await page.goto(url + "?nosw"); await page.waitForFunction(() => window.__ready !== undefined);
+  await page.evaluate(async () => {
+    const s = window.__app.store; await s.setSetting("mascotte", "Pili");
+    const { markFamilyKnown } = await import("./js/parent/depart.js"), m2 = await (await fetch("content/module2.json")).json(); await markFamilyKnown(s, m2, 1);
+    const t = Date.now() - 12 * 86400000; for (let i = 0; i < 5; i++) await s.add("seances", { debut: t + i * 2 * 86400000, fin: t + i * 2 * 86400000 + 600000, dureeS: 600, terminee: true, module: (i % 2) + 1, questions: 30, justes: 25, reussite: 0.83, etoiles: 30, etapes: [] });
+  });
+}
 await page.goto(url + `?nosw${opt("--module") ? `&module=${opt("--module")}` : ""}`); await page.waitForFunction(() => window.__ready !== undefined);
 await shot("accueil"); note("accueil prêt");
 const home = await state(); note(`accueil : boutons visibles ${home.btns.join(", ")} ; décors ${home.huds.join(", ")}`);

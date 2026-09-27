@@ -28,8 +28,12 @@ console.log(`sélecteur (10 premières séances) : réussite moyenne ${Math.roun
 const mods = res.map((r) => r.module), deux = mods.filter((m, i) => i && m === mods[i - 1]).length;
 console.log(`\n## module 2 et alternance (${PROFILS[profil].nom})`);
 console.log(`notion du jour : ${mods.filter((m) => m === 1).length} séances de ligne graduée, ${mods.filter((m) => m === 2).length} d'additions ; deux fois de suite le même module : ${deux}`);
+const m2f = (rs) => rs.filter((r) => r.module === 2).map((r) => r.famille).join(" ");
 const famDate = (k, id) => res.find((r) => r[k].includes(id))?.n ?? "-";
 console.log(`familles (séance où elle s'ouvre / est acquise / ouvre ses formes à trou) : ${[1, 2, 3, 4, 5, 6, 7].map((id) => `${id}: ${famDate("fOuvertes", id)}/${famDate("fAcquises", id)}/${famDate("fTrou", id)}`).join(" ; ")}`);
+// décision du parent du 27 septembre : stagnation (famille dépassée après 6 séances d'additions sans être acquise)
+console.log(`familles dépassées (séance) : ${[1, 2, 3, 4, 5, 6].filter((id) => res.at(-1).fDepassees.includes(id)).map((id) => `${id} (${famDate("fDepassees", id)})`).join(", ") || "aucune"} ; familles ouvertes à la fin : ${res.at(-1).fOuvertes.join(", ")} ; acquises : ${res.at(-1).fAcquises.join(", ") || "aucune"} ; famille en cours, séance par séance d'additions : ${m2f(res)}`);
+console.log(`leçons jouées sur l'année : ${res.flatMap((r) => r.lecons.map((l) => `${l} (${r.n})`)).join(", ") || "aucune"}`);
 console.log(`45 faits vus à la séance ${res.find((r) => r.faitsVus >= 45)?.n ?? "jamais"} ; leçons du module 2 : ${res.flatMap((r) => r.lecons.filter((l) => ["L4", "L5", "L6"].includes(l)).map((l) => `${l} (séance ${r.n})`)).join(", ") || "aucune"}`);
 const m2 = res.filter((r) => r.module === 2);
 console.log(`séances d'additions : ${moy(m2.map((r) => r.add.filter((x) => !x.includes("g")).length)).toFixed(1)} questions en moyenne, durée estimée ${moy(m2.map((r) => r.duree)).toFixed(1)} min ; formes à trou ${m2.reduce((a, r) => a + r.add.filter((x) => x.includes("?")).length, 0)} sur ${m2.reduce((a, r) => a + r.add.length, 0)}`);

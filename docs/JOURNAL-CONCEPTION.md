@@ -43,8 +43,13 @@ Mémoire de la conversation de conception (claude.ai, 26 et 27 septembre 2026, m
 | Formulations | Formes à trou : « 3 plus combien, ça fait 7 ? », « Combien plus 4, ça fait 6 ? » ; E5 au singulier (« 1 dizaine ») | Oral naturel pour un enfant de 7 ans |
 | Brillantes (27 septembre, décision du parent) | 20 % de chances pour une carte nouvelle, 5 % pour un doublon ; **suppression de la règle « le 3e doublon rend la carte brillante »** ; réglages séparés dans `cartes.json` (`brillanteNouvelle`, `brillanteDoublon`) ; les cartes déjà brillantes le restent. Appliqué au début de l'étape 7 | À 5 séances par semaine, presque toutes les cartes devenaient brillantes avant l'été ; la brillante doit rester une trouvaille |
 | Cran « plus facile » (27 septembre, décision du parent) | Moteur inchangé : une réussite au cran « plus facile » ne compte toujours pas pour la montée du niveau conseillé. Parade : le réglage existant de l'espace parent (interdire « plus facile »), expliqué dans `docs/GUIDE-PARENT.md` | Garder « plus facile » comme un repos, pas comme un moyen d'avancer ; le parent intervient s'il devient systématique |
+| Relecture extérieure (27 septembre, décisions du parent, faites à l'étape 9) | 1. **Aide des additions passable** : coquillage et aide affichée d'emblée du cran « plus facile » ont le bouton « passer » habituel dès leur début ; un toucher coupe voix et animation, range l'appui et rend le pavé ; aucune attente sans commande au-delà d'environ 2 s (mesuré par `recette-durees.mjs`). 2. **Sortie de la pause** : pas de bouton d'arrêt pour l'enfant ; dans l'espace parent, pendant une pause, « Terminer la séance » (avec confirmation) l'enregistre comme interrompue, sans récompense, et ramène à l'accueil. 3. **Cran « plus facile », additions** : un fait réussi avec l'aide affichée d'emblée ne change pas de boîte (« juste avec une aide : pas de promotion »), sans être renvoyé en boîte 1 ; cohérent avec la ligne graduée. 4. **Stagnation du module 2** : une famille pas acquise après 6 séances d'additions en notion du jour (`module2.json`, `familles2.stagnation`) est dépassée : la suivante devient la famille en cours, avec sa leçon ; l'autre reste travaillée en révision | Une aide sans issue bloquait l'enfant ; l'enfant n'avait aucun moyen de sortir d'une pause sinon de fermer l'application ; « plus facile » faisait monter les faits sans effort ; une enfant en difficulté restait toute l'année sur la famille 1 (simulation : aucune leçon du module 2 sur l'année) |
 
-## État au 27 septembre 2026, 17 h
+## État au 27 septembre 2026, soir
+
+- **Lot 2 terminé** sur la branche de la PR #17 (étapes 7 à 9, avec les quatre corrections de la relecture extérieure) ; bilan dans `docs/BILAN-LOT2.md`. Étapes 1 à 6 fusionnées (PR #11, #13, #14, #16). Reste : fusionner la PR #17, essayer sur la tablette.
+
+## État au 27 septembre 2026, 17 h (historique)
 
 - **Lot 1** et **lot 1 bis** : terminés, en ligne (https://js2c.github.io/Maths-CE1/), correctifs « passer » (PR #9).
 - **Lot 2** (`docs/SPEC-LOT2.md`, `docs/PROMPT-LOT2.md`, 9 étapes, 100 à 150 $ estimés) :
@@ -59,7 +64,7 @@ Mémoire de la conversation de conception (claude.ai, 26 et 27 septembre 2026, m
 ## Prochaines étapes
 
 1. Étapes 4 à 6 faites et fusionnées (PR #16).
-2. Étapes 7 à 9 enchaînées sur une seule branche (prompt « Enchaîner plusieurs étapes », N = 7, M = 9), une recette complète à la fin.
+2. Étapes 7 à 9 faites sur une seule branche (PR #17), recette complète faite, avec les corrections de la relecture extérieure : à fusionner.
 3. **Contenu des cartes** : illustrations et anecdotes du grand large (zone 3) **avant début février**, des abysses (zone 4) **avant fin avril** ; les descriptions `[CREATURE]` sont à rédiger en conception le moment venu (même méthode que la zone 2, voir « Prompts de référence » ci-dessous).
 4. ~~Décisions à prendre avant l'étape 9~~ : prises le 27 septembre (brillantes : 20 % / 5 %, sans règle du 3e doublon ; cran « plus facile » : moteur inchangé, parade dans l'espace parent).
 

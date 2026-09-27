@@ -6,7 +6,7 @@ Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail 
 
 Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `docs/PROMPT-LOT2.md`. Une étape = une session = une demande de fusion vers `main`.
 
-**Où en est-on (27 septembre 2026)** : étapes 1 à 6 faites et fusionnées (PR #11, #13, #14, #16) ; étapes 7 et 8 faites sur la branche de la PR #17 (brouillon). **Reste l'étape 9**, enchaînées sur une seule branche (rubrique « Reprise des étapes 7 à 9 » ci-dessous). Décisions du parent du 27 septembre : brillantes à 20 % pour une carte nouvelle et 5 % pour un doublon, sans règle du 3e doublon ; cran « plus facile » : moteur inchangé, parade dans l'espace parent (`docs/GUIDE-PARENT.md`).
+**Où en est-on (27 septembre 2026, soir)** : étapes 1 à 6 faites et fusionnées (PR #11, #13, #14, #16) ; **étapes 7 à 9 faites** sur la branche de la PR #17, avec les quatre corrections de la relecture extérieure (aide passable, fin de séance en pause par le parent, cran « plus facile » sans promotion, stagnation du module 2) ; bilan dans `docs/BILAN-LOT2.md`. **Lot 2 terminé** : reste à fusionner la PR #17 et à essayer sur la tablette. Décisions du parent du 27 septembre : brillantes à 20 % pour une carte nouvelle et 5 % pour un doublon, sans règle du 3e doublon ; cran « plus facile » : moteur inchangé, parade dans l'espace parent (`docs/GUIDE-PARENT.md`).
 
 | Étape | Contenu | État |
 | --- | --- | --- |
@@ -18,13 +18,27 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 | 6 | Module 2 comme notion du jour : familles 3 à 7, formes à trou, leçons L4 à L6, alternance, module imposé, point de départ étendu | fait (même branche, même demande de fusion) |
 | 7 | Défi record, grille des 66 additions, progression du module 2 dans l'espace parent | fait (branche `claude/youthful-tesla-rtkgta`, https://github.com/js2c/Maths-CE1/pull/17) |
 | 8 | Nombres jusqu'à 1 000 (`docs/SPEC-COMPLEMENTS.md`, partie A) | fait (même branche, même demande de fusion) |
-| 9 | Bilan : `docs/BILAN-LOT2.md`, guide du parent, recette complète sur l'année | à faire (même branche ; reprendre ici) |
+| 9 | Bilan : `docs/BILAN-LOT2.md`, guide du parent, recette complète sur l'année ; corrections de la relecture extérieure | fait (même branche, même demande de fusion) |
 
 ### Reprise des étapes 7 à 9
 
 Pour reprendre si la session s'est arrêtée : branche `claude/youthful-tesla-rtkgta` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 2, étapes 7 à 9 (en cours) » (https://github.com/js2c/Maths-CE1/pull/17).
 
-**Étape en cours :** aucune ; étapes 7 et 8 faites. **Reprendre à l'étape 9** (bilan : `docs/BILAN-LOT2.md`, guide du parent, recette complète sur l'année ; voir « Reste » ci-dessous), dans une nouvelle session avec le prompt de reprise de `docs/PROMPT-LOT2.md` (« Reprise des étapes N à M », N = 7, M = 9) : la session s'est arrêtée proprement à la fin de l'étape 8, le contexte dépassant la moitié.
+**Étape en cours :** étape 9 (bilan), reprise le 27 septembre au soir avec quatre corrections demandées par le parent après une relecture extérieure (ci-dessous). Si la session s'arrête : voir « Reste (étape 9) ».
+
+**Corrections du 27 septembre (relecture extérieure, décisions du parent ; faites au début de l'étape 9) :**
+
+1. **Aide des additions passable** (`modules/facts/screen.js`, `skippable`) : le coquillage et l'aide affichée d'emblée du cran « plus facile » créent dès leur début le bouton « passer » habituel (`skipKey`, même dessin, même place, libellé « passer l'aide ») ; un toucher coupe la voix et l'animation (la tortue et ses sauts sont arrêtés par `stop`/`guard`, `lineAid`), range l'appui (calque des aides, ligne) et rend le pavé aussitôt (40 à 60 ms mesurés, parcours `tests/e2e/aide-passer.mjs`). Les exemples guidés et les corrections passent aussi `guard` à la tortue (elle ne continue plus de sauter derrière). Mesures à vitesse réelle : `recette-durees.mjs`, section « aide ».
+2. **Sortie de la pause par le parent** (`main.js`, `endPausedSession` ; `parent.js`, `pauseBlock` ; `session.js`, `interrupt`) : pas de bouton d'arrêt pour l'enfant ; pendant une pause, l'espace parent montre en haut « Terminer la séance… », puis une confirmation (« Oui, terminer la séance » / « Annuler »). La séance est enregistrée interrompue (`terminee: false`, `arreteeParParent: true`, pas d'étape « récompense »), l'activité est abandonnée comme l'entraînement libre (`abandonActivity` : horloge, voix, leçon, écrans, bernard-l'ermite, boutons « passer »), et l'accueil revient avec « jouer » (une autre séance est possible le même jour). Parcours `tests/e2e/pause-parent.mjs`.
+3. **Cran « plus facile », additions** (`runner.js`, `warmup.js`) : une réponse avec l'aide affichée d'emblée est enregistrée `aideDEmblee: true` (et non `aide`) et passée comme une aide à `afterFact` : juste, le fait reste dans sa boîte (ni montée, ni voie rapide, ni retour en boîte 1) ; faux, boîte 1 comme toute erreur. **Remplace** la décision de l'étape 6 (« l'aide d'emblée n'est pas comptée comme une aide demandée »). Test unitaire ; guide du parent mis à jour (« consolide sans faire progresser »).
+4. **Stagnation du module 2** (`families.js`, `noteNotion` ; réglage `familles2.stagnation.seances` : 6) : chaque fin de notion du jour sur les additions compte une séance pour la famille en cours (`seancesNotion`) ; à 6, si elle n'est pas acquise, elle est « dépassée » (`depassees`) : `currentFamily` passe à la famille ouverte suivante non acquise ; s'il n'y en a pas, la famille suivante s'ouvre (notée `stagnation`). Sa leçon se joue à sa première notion du jour (règle existante). La famille dépassée reste dans l'échauffement et parmi les « autres familles », et peut encore être acquise (étoile arc-en-ciel). Espace parent : « (en révision) » dans le tableau des familles, et la règle expliquée. Tests unitaires ; simulation ci-dessous.
+
+**Décisions prises (corrections) :**
+
+- Le compteur de stagnation ne compte que les séances où la famille était **la famille en cours** de la notion du jour (une séance de ligne graduée ne compte pas ; les séances d'avant cette version non plus : le compteur part de zéro).
+- Une famille dépassée ne redevient jamais la famille en cours ; quand toutes les familles sont acquises ou dépassées, la famille en cours est le mélange (qui, lui, n'est jamais dépassé).
+- Après « passer l'aide » du coquillage, la consigne est redite (comme après l'aide non passée) ; l'appui compte quand même comme aide demandée (le fait ne monte pas).
+- « Terminer la séance » n'apparaît que pendant une pause de séance (ni pendant l'entraînement libre, que la maison quitte déjà, ni hors séance).
 
 **Fait :**
 
@@ -32,7 +46,7 @@ Pour reprendre si la session s'est arrêtée : branche `claude/youthful-tesla-rt
 - Étape 7 (défi record, grille des additions, progression du module 2) : voir ci-dessous.
 - Étape 8 (nombres jusqu'à 1 000) : voir ci-dessous.
 
-**Reste (étape 9) :** `docs/BILAN-LOT2.md` ; relecture du guide du parent ; recette complète (section 8 de la SPEC-LOT2 : `sim-seances` tous profils à 2 et 5 séances, `recette.mjs --delai 4.5` (ligne et `--module 2`, avec une séance où le défi a lieu : la cible devient 9 à 11 min), `recette-durees.mjs` avec et sans `--passer` (y compris niveaux 9 à 13), tous les parcours Playwright) ; donner le nombre de brillantes en juin par profil (mesure provisoire ci-dessous, étape 8) ; mettre à jour la ligne « Où en est-on », le JOURNAL-CONCEPTION (état), puis finir la demande de fusion https://github.com/js2c/Maths-CE1/pull/17 (description complète, sortir du brouillon). Surveiller une erreur « Cannot read properties of undefined (reading '0') » vue une fois dans `centaines.mjs` et jamais reproduite (trois passages propres).
+**Reste (étape 9) :** (fait au fur et à mesure, voir la recette complète ci-dessous) `docs/BILAN-LOT2.md` ; relecture du guide du parent ; recette complète (section 8 de la SPEC-LOT2 : `sim-seances` tous profils à 2 et 5 séances, `recette.mjs --delai 4.5` (ligne et `--module 2`, avec une séance où le défi a lieu : la cible devient 9 à 11 min), `recette-durees.mjs` avec et sans `--passer` (y compris niveaux 9 à 13), tous les parcours Playwright) ; donner le nombre de brillantes en juin par profil (mesure provisoire ci-dessous, étape 8) ; mettre à jour la ligne « Où en est-on », le JOURNAL-CONCEPTION (état), puis finir la demande de fusion https://github.com/js2c/Maths-CE1/pull/17 (description complète, sortir du brouillon). Surveiller une erreur « Cannot read properties of undefined (reading '0') » vue une fois dans `centaines.mjs` et jamais reproduite (trois passages propres).
 
 **Décisions prises (étape 8) :**
 
@@ -129,7 +143,7 @@ Pour reprendre si la session s'est arrêtée : branche `claude/loving-tesla-rtv3
 - **Choix des faits** en notion du jour : une question sur deux sur la règle de la famille en cours (toutes au cran « plus facile »), l'autre sur les faits les plus faibles des autres familles ; un fait nouveau une question de famille sur deux, tant que la limite de la séance (6) et la boîte 1 (8) le permettent ; aux crans « plus dur » et « très dur », les faits nouveaux alternent entre la famille en cours et la suivante.
 - **Appui de chaque question** : celui de la famille en cours si le fait relève de sa règle, sinon celui de la famille du fait ; pour le mélange, l'appui le plus parlant (`aidFor` : ami de 10 → cadre, double → reflet, presque-double → double + 1, + 1 et + 2 → la tortue, sinon la maison).
 - **Exemple guidé** : l'appui avec la réponse, « 3 plus 7, ça fait 10. », « À toi ! Tape la réponse. » ; l'appui est rangé quand le pavé revient (il occupe la même place). Correction en notion du jour : l'appui avec la réponse, puis la phrase de correction ; « passer » comme partout.
-- **Cran « plus facile »** : l'aide « affichée d'emblée » est montrée au début de chaque question (appui sans la réponse, avec sa phrase), puis le pavé revient ; elle n'est pas comptée comme une aide demandée (la séance « plus facile » compte normalement ; sinon aucun fait ne monterait jamais de boîte).
+- **Cran « plus facile »** : l'aide « affichée d'emblée » est montrée au début de chaque question (appui sans la réponse, avec sa phrase), puis le pavé revient ; elle n'est pas comptée comme une aide demandée (la séance « plus facile » compte normalement ; sinon aucun fait ne monterait jamais de boîte). **Remplacé le 27 septembre** (décision du parent, correction 3 de l'étape 9) : un fait réussi avec l'aide d'emblée ne change plus de boîte.
 - **Difficulté persistante** (3 erreurs sur 5) : la leçon de la famille si elle en a une et qu'elle n'a pas été jouée dans la séance, puis un fait déjà bien su.
 - **Nombres de questions** : la durée prime. Avec 30 à 38 questions, la séance d'additions jouée à vitesse réelle (`recette.mjs --delai 4.5 --module 2`) durait 6 min 39 s (39 questions en 4 min 21 s, environ 6,7 s par question) ; relevé à **50 à 60** (`seance.json`, `notion.module2`), c'est la limite de 6 minutes qui arrête l'étape : 8 min 23 s, 56 questions.
 - **Frise** : pendant la notion du jour des additions, le pictogramme est le « + » de l'échauffement.

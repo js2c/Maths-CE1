@@ -49,7 +49,7 @@ export class Module2Runner {
     const e = this.effet, ids = new Set(e.melange ? this.fam.ouvertes : [this.famille]);
     if (e.familleSuivante) { const nx = this.c0.familles.find((f) => !this.fam.ouvertes.includes(f.id)); if (nx) ids.add(nx.id); }
     const cat = new Map(catalog(this.c0).map((f) => [f.fait, f])), out = new Map();
-    for (const id of ids) for (const r of familyOf(this.c0, id)?.regle === "melange" ? [...cat.values()].filter((f) => this.stored(f.fait)) : ruleFacts(this.c0, id)) out.set(r.fait, cat.get(r.fait));
+    for (const id of ids) for (const r of familyOf(this.c0, id)?.regle === "melange" ? [...cat.values()].filter((f) => this.stored(f.fait)) : ruleFacts(this.c0, id)) if (!out.has(r.fait)) out.set(r.fait, { ...cat.get(r.fait), src: id });
     return [...out.values()];
   }
   weakest(list) {
@@ -59,9 +59,14 @@ export class Module2Runner {
   usable(f) { return (this.asked.get(f.fait) ?? 0) < this.N.memeFaitMax && !this.last.slice(-2).includes(f.fait); }
   // un fait de la famille : un fait nouveau une fois sur deux s'il y en a et si la place le permet, sinon le plus faible déjà rencontré
   pickFamily(allowNew = true) {
-    const pool = this.familyPool(), fresh = pool.filter((f) => !this.stored(f.fait) && !this.asked.has(f.fait));
+    const pool = this.familyPool(), fresh0 = pool.filter((f) => !this.stored(f.fait) && !this.asked.has(f.fait));
+    // plusieurs familles (crans « plus dur », « très dur ») : les faits nouveaux alternent d'une famille à l'autre
+    const srcs = [...new Set(fresh0.map((f) => f.src))], nth = srcs.map((id) => fresh0.filter((f) => f.src === id)), fresh = [];
+    for (let i = 0; fresh.length < fresh0.length; i++) for (const l of nth) if (l[i]) fresh.push(l[i]);
+    if (srcs.length > 1) this.turn = (this.turn ?? 0) + 1;
+    const f0 = srcs.length > 1 ? fresh[(this.turn - 1) % Math.min(fresh.length, srcs.length)] ?? fresh[0] : fresh[0];
     const room = roomForNew(this.c, this.w.facts, this.w.nouveaux);
-    if (allowNew && fresh.length && room > 0 && (this.k % 2 === 0 || !pool.some((f) => this.stored(f.fait) && this.usable(f)))) return newFact(fresh[0], this.clock());
+    if (allowNew && fresh.length && room > 0 && (this.k % 2 === 0 || !pool.some((f) => this.stored(f.fait) && this.usable(f)))) { const { src, ...f } = f0; void src; return newFact(f, this.clock()); }
     const known = this.weakest(pool.filter((f) => this.stored(f.fait) && this.usable(f)));
     return known[0] ? { ...this.stored(known[0].fait), famille: known[0].famille } : null;
   }

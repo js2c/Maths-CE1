@@ -13,6 +13,7 @@ import { drawSurprise, previousSession } from "../app/js/session/surprise.js";
 import { Warmup } from "../app/js/modules/facts/warmup.js";
 import { runWarmup } from "../app/js/modules/facts/screen.js";
 import { expected } from "../app/js/modules/facts/facts.js";
+import { Module2Runner } from "../app/js/modules/facts/runner.js";
 
 const load = (f) => JSON.parse(readFileSync(new URL(`../app/content/${f}`, import.meta.url)));
 const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), cartes0 = load("cartes.json"), calendrier = load("calendrier.json");
@@ -32,7 +33,7 @@ export const PROFILS = {
   tresdur: { nom: "profil de l'évaluation, choisit toujours « très dur »", ...reel, cran: "tresdur" },
   facile: { nom: "profil de l'évaluation, choisit toujours « plus facile »", ...reel, cran: "facile" },
 };
-const T = { chauffe: 7000, chauffeFaux: 9000, notion: 15000, notionFaux: 30000, guide: 30000, lecon: 75000 };
+const T = { chauffe: 7000, chauffeFaux: 9000, notion: 15000, notionFaux: 30000, guide: 30000, lecon: 75000, add: 8000, addFaux: 16000, addGuide: 16000 };
 
 export async function simulate({ profil, jours, seed = 1, zonesPretes = true }) {
   const cartes = zonesPretes ? pretes(cartes0) : cartes0;
@@ -53,10 +54,27 @@ export async function simulate({ profil, jours, seed = 1, zonesPretes = true }) 
       const p = Math.min(0.97, P.ligne(niv) + P.apprend * essais[niv]), ok = o?.guide ? true : R() < p, nsp = !ok && R() < P.nsp; if (nsp) log.nsp++;
       add(o?.guide ? T.guide : ok ? T.notion : T.notionFaux); log.ligne.push(`${niv}${ok ? "" : nsp ? "?" : "✗"}${o?.guide ? "g" : ""}`);
       return { q, value: ok ? q.answer : nsp ? null : q.answer + 1, ok, code: ok ? null : nsp ? "NSP" : ERR[niv] ?? "autre", ms: ok ? 4500 : 9000, listens: 1 }; } };
+    // la notion du jour sur les additions (lot 2, étape 6) : même enfant, mêmes probabilités qu'à l'échauffement
+    const factScreen = { ask: async (q, cfg, o) => {
+      const trou = q.forme && q.forme !== "directe", ok = o?.guide || q.guide ? true : R() < P.fait * (trou ? P.trou : 1), nsp = !ok && R() < P.nsp; if (nsp) log.nsp++;
+      add(q.guide ? T.addGuide : ok ? T.add : T.addFaux); log.add.push(`${trou ? (q.forme === "trouDroite" ? `${q.a}+?` : `?+${q.b}`) : `${q.a}+${q.b}`}${ok ? "" : nsp ? "?" : "✗"}${q.guide ? "g" : ""}${q.nouveau && !q.revient ? "*" : ""}`);
+      if (q.nouveau && !q.revient && !q.guide) log.nouveaux++;
+      const value = ok ? expected(q) : nsp ? null : expected(q) + 1;
+      return { q, value, ok, code: ok ? null : nsp ? "NSP" : "autre", ms: ok ? P.faitMs * (0.7 + R() * 0.6) : 9000, listens: 1, aide: false, nsp }; } };
+    log.add = [];
     const s = new Session({ store, content: seance, rewards, clock, onCranDown: async () => { log.descentes++; add(3000); }, handlers: {
       accueil: async ({ session }) => { add(20000); await session.setCran(P.cran ?? "conseille"); add(8000); const sp = drawSurprise(R, cartes.surprise, previousSession(await store.all("seances"), session.id), rewards.gifts); if (sp) { session.rec.surprise = sp; log.surprise = `${sp.type}:${sp.id}`; if (sp.type === "cadeau") await rewards.giveGift(sp.id); add(5000); } },
       echauffement: async (ctx) => { const w = await new Warmup({ store, content: module2, rnd: R, seance: ctx.session.id, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load(); await runWarmup({ ...ctx, warmup: w, screen: warmScreen, rnd: R }); },
-      notion: async (ctx) => { const runner = await new Module1Runner({ screen: lineScreen, store, content: module1, rnd: R, seance: ctx.session.id, offset: () => ctx.session.offset, cran: () => ctx.session.cran }).load(); log.niv0 = runner.st.niveau;
+      notion: async (ctx) => {
+        if (ctx.session.rec.module === 2) {
+          const runner = await new Module2Runner({ store, content: module2, rnd: R, seance: ctx.session.id, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load();
+          log.module = 2; log.famille = runner.famille;
+          const res = await runNotion({ ...ctx, step: { ...ctx.step, ...(ctx.step.module2 ?? {}) }, runner, screen: factScreen, rnd: R, lesson: async (id) => { add(T.lecon); log.lecons.push(id); return { vue: true }; } });
+          for (const e of res?.events ?? []) if (e.type === "acquise" && !e.parent && !runner.events.some((x) => x.famille === e.famille)) await ctx.session.levelUp();
+          ctx.session.nouveaux = runner.nouveaux; return;
+        }
+        log.module = 1;
+        const runner = await new Module1Runner({ screen: lineScreen, store, content: module1, rnd: R, seance: ctx.session.id, offset: () => ctx.session.offset, cran: () => ctx.session.cran }).load(); log.niv0 = runner.st.niveau;
         await runNotion({ ...ctx, runner, screen: lineScreen, rnd: R, lesson: async (id) => { add(T.lecon); log.lecons.push(id); return { vue: true }; } }); log.niv1 = runner.st.niveau; },
       // la récompense, dans l'ordre de l'application (session/screens.js : bonuses, puis shells)
       recompense: async ({ session }) => { await session.stars(seance.etoiles.seanceTerminee, "fin"); const b = await rewards.endOfSession(session.rec.debut); if (b) await session.stars(b, "série");
@@ -74,6 +92,7 @@ export async function simulate({ profil, jours, seed = 1, zonesPretes = true }) 
     } });
     const rec = await s.run();
     Object.assign(log, { cran: rec.cran, cranDepart: rec.cranDepart, reussite: rec.reussite, questions: rec.questions, etoiles: rec.etoiles, duree: Math.round(rec.dureeS / 60 * 10) / 10, arc: rec.arcEnCiel ?? 0, reste: rewards.total, nbCartes: rewards.count, brillantes: Object.values(rewards.owned).filter((o) => o.brillante).length, legendaires: cartes.cartes.filter((c) => c.rarete === "legendaire" && rewards.owned[c.id]).length, ouvertes: [...rewards.zones.ouvertes], doreesDispo: rewards.doreesDispo, arcDispo: rewards.arcDispo });
+    const fam = await store.get("niveaux", 2); log.fOuvertes = [...(fam?.ouvertes ?? [])]; log.fAcquises = [...(fam?.acquises ?? [])]; log.fTrou = [...(fam?.trou ?? [])];
     const faits = await store.all("faits"); log.boites = [1, 2, 3, 4, 5].map((b) => faits.filter((f) => f.boite === b).length); log.faitsVus = faits.length;
     out.push(log);
   }

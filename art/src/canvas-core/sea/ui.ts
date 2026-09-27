@@ -1,13 +1,13 @@
 // L'ERGONOMIE DU LOT 1 BIS (docs/SPEC.md, « Ergonomie et voix ») : les boutons « je ne sais pas »,
-// « passer », « Encore ! » et « album », les pictogrammes de la frise d'avancement (une bulle par étape de
-// la séance, une petite bulle par question), les perles de l'album, la lune « à demain » en décor (sans
+// « passer », « Encore ! » et « album », les pictogrammes de la frise d'avancement (un pictogramme plat
+// par étape de la séance, une petite bulle par question, la lueur de l'étape en cours), les perles de l'album, la lune « à demain » en décor (sans
 // bulle : elle ne doit pas ressembler à un bouton) et les pictogrammes de l'entraînement libre. Même main
 // que le reste (oceanMarker.ts) : aplats, une ombre nette, contour qui s'épaissit du côté de l'ombre.
 import type { Gfx, P } from "../core";
 import { blob, clipped, fillShape, ink, mix, smooth } from "../gallery";
 import * as O from "../ocean";
 import { cel, contour, INK, shift } from "../oceanMarker";
-import { drawAnswerBubble, drawShell } from "./decor";
+import { drawAnswerBubble } from "./decor";
 
 const SH = "#0a3f49", CORAL = "#ff7a5c", CORAL_S = "#c64d3c", GOLD = "#ffd84a", GOLD_S = "#e08d1c", TAU = Math.PI * 2;
 const shadowed = (g: Gfx, s: P[], lit: string, shade: string, w: number, seed: number, k = 3) => { fillShape(g, shift(s, 3, 4), SH, 0.25); cel(g, s, lit, shade, k); contour(g, s, w, seed); };
@@ -76,35 +76,48 @@ const drawGoldShell = (g: Gfx, cx: number, cy: number, k: number) => g.group("pl
 });
 
 // ---------------------------------------------------------------- la frise d'avancement
-// une petite bulle par étape de la séance ; dedans, le pictogramme de l'étape
-export const STEP_R = 30;
-const miniBubble = (g: Gfx, cx: number, cy: number, i: number) => drawAnswerBubble(g, cx, cy, 40 + i, STEP_R);
-// accueil : la tête de la pieuvre qui dit bonjour (manteau corail, deux yeux)
-export const drawStepHello = (g: Gfx, cx: number, cy: number) => {
-  miniBubble(g, cx, cy, 0);
-  g.group("plain", () => {
-    const head = blob(cx, cy + 1, 17, 15, 3460, 0.04, 16);
-    shadowed(g, head, "#ff9a86", "#d9624f", 2.6, 3461, 3);
-    [-6, 6].forEach((dx, i) => { const e = blob(cx + dx, cy, 4.2, 5, 3462 + i, 0.02, 10); fillShape(g, e, "#fffdf6"); ink(g, e, INK, { w: 1.4, closed: true, shadow: 0.3, seed: 3464 + i }); fillShape(g, blob(cx + dx + 0.8, cy + 1, 2.1, 2.6, 3466 + i, 0.02, 8), INK); });
-    ink(g, smooth([[cx - 4, cy + 8], [cx, cy + 10], [cx + 4, cy + 8]], false, 4), INK, { w: 1.6, shadow: 0, taper: [0.3, 0.3], seed: 3468 });
-  });
-};
-// échauffement : un « + » corail
-export const drawStepPlus = (g: Gfx, cx: number, cy: number) => {
-  miniBubble(g, cx, cy, 1);
-  g.group("plain", () => { const a = 5.5, b = 17, p: P[] = [[cx - a, cy - b], [cx + a, cy - b], [cx + a, cy - a], [cx + b, cy - a], [cx + b, cy + a], [cx + a, cy + a], [cx + a, cy + b], [cx - a, cy + b], [cx - a, cy + a], [cx - b, cy + a], [cx - b, cy - a], [cx - a, cy - a]]; shadowed(g, p, CORAL, CORAL_S, 2.6, 3470, 2); });
-};
-// notion du jour : une petite ligne graduée, trois traits, l'étoile de mer au-dessus
-export const drawStepLine = (g: Gfx, cx: number, cy: number) => {
-  miniBubble(g, cx, cy, 2);
-  g.group("plain", () => {
-    ink(g, [[cx - 20, cy + 9], [cx + 20, cy + 9]], INK, { w: 3.2, shadow: 0, taper: [0.1, 0.1], seed: 3480 });
-    [-15, 0, 15].forEach((dx, i) => ink(g, [[cx + dx, cy + 3], [cx + dx, cy + 15]], INK, { w: 2.6, shadow: 0, taper: [0.1, 0.1], seed: 3481 + i }));
-    const st = O.starShape([cx, cy - 7], 11, 4.8, 0.2); cel(g, st, "#ffc93a", "#e08d1c", 2); contour(g, st, 2.2, 3485);
-  });
-};
-// récompense : le coquillage rose
-export const drawStepShell = (g: Gfx, cx: number, cy: number) => { miniBubble(g, cx, cy, 3); drawShell(g, cx, cy - 1, 0.5); };
+// Correctifs du 27 septembre 2026 : l'ancienne frise (pictogrammes dans des disques blancs en relief) se
+// confondait avec les boutons. Les pictogrammes sont désormais plats et petits : aplats sans contour
+// épais ni ombre, sans disque, enfilés sur une corde fine (runtime.ts, `drawCord`) ; l'étape en cours se
+// reconnaît à une lueur douce posée derrière elle (`drawStepGlow`). Rien ne s'y touche.
+export const STEP_R = 18;
+const CREAM = "#fff4de", CORAL_F = "#ff9a86", CORAL_D = "#e2705d", PINK_F = "#ffb896", PINK_D = "#d9765a";
+// accueil : la tête de la pieuvre qui dit bonjour (manteau corail, trois bouts de bras, deux yeux)
+export const drawStepHello = (g: Gfx, cx: number, cy: number) => g.group("plain", () => {
+  [-9, 0, 9].forEach((dx, i) => fillShape(g, blob(cx + dx, cy + 10, 4.2, 5.4, 3459 + i, 0.05, 10), CORAL_D));
+  fillShape(g, blob(cx, cy - 1, 15, 13, 3460, 0.04, 16), CORAL_F);
+  fillShape(g, blob(cx - 5, cy - 8, 5, 2.6, 3461, 0.05, 10, -0.4), "#ffc0b2");
+  [-5.5, 5.5].forEach((dx, i) => { fillShape(g, blob(cx + dx, cy - 1, 3.4, 4, 3462 + i, 0.02, 10), CREAM); fillShape(g, blob(cx + dx + 0.7, cy, 1.8, 2.2, 3466 + i, 0.02, 8), INK); });
+  ink(g, smooth([[cx - 3.5, cy + 5], [cx, cy + 6.6], [cx + 3.5, cy + 5]], false, 4), INK, { w: 1.3, shadow: 0, taper: [0.3, 0.3], seed: 3468 });
+});
+// échauffement : un « + » corail, aux bouts arrondis
+export const drawStepPlus = (g: Gfx, cx: number, cy: number) => g.group("plain", () => {
+  // deux barres aux bouts ronds (des capsules), un reflet clair sur la barre verticale
+  const a = 4.4, b = 13, bar = (x0: number, y0: number, x1: number, y1: number): P[] => { const th = Math.atan2(y1 - y0, x1 - x0), out: P[] = [], n = 10; for (let i = 0; i <= n; i++) { const t = th + Math.PI / 2 + (Math.PI * i) / n; out.push([x0 + a * Math.cos(t), y0 + a * Math.sin(t)]); } for (let i = 0; i <= n; i++) { const t = th - Math.PI / 2 + (Math.PI * i) / n; out.push([x1 + a * Math.cos(t), y1 + a * Math.sin(t)]); } return out; };
+  fillShape(g, bar(cx - b + a, cy, cx + b - a, cy), CORAL_F); fillShape(g, bar(cx, cy - b + a, cx, cy + b - a), CORAL_F);
+  fillShape(g, blob(cx - 1.4, cy - b + 5, 1.5, 3.4, 3470, 0.02, 10), "#ffc6b8");
+});
+// notion du jour : une petite ligne graduée (trois traits crème), l'étoile de mer au-dessus
+export const drawStepLine = (g: Gfx, cx: number, cy: number) => g.group("plain", () => {
+  ink(g, [[cx - 15, cy + 9], [cx + 15, cy + 9]], CREAM, { w: 3.2, shadow: 0, taper: [0.1, 0.1], seed: 3480 });
+  [-11, 0, 11].forEach((dx, i) => ink(g, [[cx + dx, cy + 3.5], [cx + dx, cy + 14.5]], CREAM, { w: 2.8, shadow: 0, taper: [0.1, 0.1], seed: 3481 + i }));
+  const st = O.starShape([cx, cy - 5], 10, 4.4, 0.2); fillShape(g, st, "#ffc93a");
+  fillShape(g, O.starShape([cx - 1.2, cy - 6.2], 4.2, 1.9, 0.2), "#ffe594");
+});
+// récompense : le coquillage rose, à plat (côtes d'un trait fin, sans contour)
+export const drawStepShell = (g: Gfx, cx: number, cy: number) => g.group("plain", () => {
+  const k = 0.44, hinge: P = [cx, cy + 12], R = 34 * k, a0 = -Math.PI * 0.86, a1 = -Math.PI * 0.14, n = 7, edge: P[] = [];
+  for (let i = 0; i <= n * 6; i++) { const t = i / (n * 6), a = a0 + (a1 - a0) * t, r = R * (1 + 0.08 * Math.abs(Math.sin(Math.PI * n * t))); edge.push([hinge[0] + Math.cos(a) * r, hinge[1] - 5 + Math.sin(a) * r]); }
+  fillShape(g, smooth([[hinge[0] - 9, hinge[1] - 3], [hinge[0] + 9, hinge[1] - 3], [hinge[0] + 7.5, hinge[1] + 2.5], [hinge[0] - 7.5, hinge[1] + 2.5]], true, 3), PINK_D);
+  fillShape(g, smooth([...edge, [hinge[0] + 4, hinge[1]], [hinge[0] - 4, hinge[1]]], true, 2), PINK_F);
+  for (let i = 1; i < n; i++) { const a = a0 + ((a1 - a0) * i) / n; ink(g, [[hinge[0] + Math.cos(a) * 3, hinge[1] - 2 + Math.sin(a) * 3], [hinge[0] + Math.cos(a) * R * 0.92, hinge[1] - 5 + Math.sin(a) * R * 0.92]], PINK_D, { w: 1.3, shadow: 0, taper: [0.4, 0.2], seed: 3471 + i }); }
+});
+// la lueur de l'étape en cours : un halo chaud et doux, sans bord
+export const GLOW_R = 34;
+export const drawStepGlow = (g: Gfx, cx: number, cy: number) => g.group("plain", () => {
+  // beaucoup de disques très légers, du plus grand au plus petit : le halo s'éclaire vers le centre sans palier visible
+  for (let i = 23; i >= 0; i--) fillShape(g, blob(cx, cy, 8 + i * 1.1, 8 + i * 1.1, 3486, 0, 32), "#fff3b8", 0.028);
+});
 // une question de l'étape en cours : une petite bulle vide (0) ou remplie d'or (1)
 export const drawProgressDot = (g: Gfx, cx: number, cy: number, full: boolean) => g.group("plain", () => {
   const r = 9, s = blob(cx, cy, r, r, 3490 + (full ? 1 : 0), 0.02, 14);

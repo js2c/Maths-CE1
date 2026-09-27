@@ -16,23 +16,50 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 | 4 | Son, intégration : bruitages, musique, mixage, réglages du parent | fait (branche `claude/loving-tesla-rtv3o5`, https://github.com/js2c/Maths-CE1/pull/16) |
 | 5 | Atelier : bernard-l'ermite, cadre de 10, maison des nombres, double + 1 | fait (même branche, même demande de fusion) |
 | 6 | Module 2 comme notion du jour : familles 3 à 7, formes à trou, leçons L4 à L6, alternance, module imposé, point de départ étendu | fait (même branche, même demande de fusion) |
-| 7 | Défi record, grille des 66 additions, progression du module 2 dans l'espace parent | en cours (branche `claude/youthful-tesla-rtkgta`) |
-| 8 | Nombres jusqu'à 1 000 (`docs/SPEC-COMPLEMENTS.md`, partie A) | à faire (même branche) |
+| 7 | Défi record, grille des 66 additions, progression du module 2 dans l'espace parent | fait (branche `claude/youthful-tesla-rtkgta`, https://github.com/js2c/Maths-CE1/pull/17) |
+| 8 | Nombres jusqu'à 1 000 (`docs/SPEC-COMPLEMENTS.md`, partie A) | en cours (même branche) |
 | 9 | Bilan : `docs/BILAN-LOT2.md`, guide du parent, recette complète sur l'année | à faire (même branche) |
 
 ### Reprise des étapes 7 à 9
 
-Pour reprendre si la session s'est arrêtée : branche `claude/youthful-tesla-rtkgta` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 2, étapes 7 à 9 (en cours) ».
+Pour reprendre si la session s'est arrêtée : branche `claude/youthful-tesla-rtkgta` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 2, étapes 7 à 9 (en cours) » (https://github.com/js2c/Maths-CE1/pull/17).
 
-**Étape en cours :** 7.
+**Étape en cours :** 8 (nombres jusqu'à 1 000).
 
 **Fait :**
 
 - Décisions du parent du 27 septembre reportées (SPEC-LOT2 section 5 et points ouverts, JOURNAL-CONCEPTION, GUIDE-PARENT). Brillantes : `cartes.json` (`brillanteNouvelle` 0,2, `brillanteDoublon` 0,05 ; `brillante` et `brillanteHasard` retirés), `rewards.js` (`shinyChance`, `addCard` sans règle du 3e doublon ; une carte déjà brillante le reste : aucun changement de schéma, donc pas de migration), phrase « Ta carte devient brillante ! » retirée (voix refabriquée). Tests `cartes.test.mjs`, `rewards.test.mjs`.
+- Étape 7 (défi record, grille des additions, progression du module 2) : voir ci-dessous.
 
-**Reste :** étape 7 (défi record, grille des additions, progression du module 2), étape 8, étape 9, recette complète.
+**Reste :** étape 8, étape 9, recette complète.
 
-**Décisions prises :** voir plus bas, étape par étape.
+**Décisions prises (étape 7) :**
+
+- **Défi record, déroulement** : après la notion du jour (ordre de `seance.json`), une minute de chronomètre (`dureeS`), faits en boîte 3 ou plus mélangés (tous les faits avant d'en reposer un, jamais deux fois de suite le même), formes à trou comme à l'échauffement au cran conseillé ; **pas de consigne lue par question** (la voix ralentirait tout ; l'ardoise suffit, et la consigne du défi est dite avant le départ), pas d'aide ; « je ne sais pas » reste disponible (il passe la question). Une erreur : bruitage doux, l'ardoise tremble, la bonne réponse reste écrite 0,9 s (`apresErreurMs`), sans correction ; le temps continue. La question en cours quand la bulle est vide n'est pas notée.
+- **Score et record** : le score est le nombre de bonnes réponses ; le premier défi avec au moins une bonne réponse fait le premier record (5 étoiles, « C'est ton premier record ! ») ; ensuite seul un score plus haut le bat (5 étoiles, `etoiles.nouveauRecord`) ; égalé : « Autant que ton record ! Bravo ! » ; en dessous : « Ton record, c'est 12. Tu le battras peut-être la prochaine fois ! » ; aucune bonne réponse : « Ce n'est pas grave, on réessaiera la prochaine fois ! ». Chaque bonne réponse rapporte une étoile (multipliée par le cran, comme partout).
+- **Révision espacée** : les réponses du défi comptent comme les autres (une boîte au plus par séance, une erreur renvoie en boîte 1), conformément à la SPEC-LOT2 (« échauffement, notion du jour et défi confondus »). Pas de protection du cran pendant le défi (elle dirait « On essaie un peu moins dur ? » au milieu de la minute).
+- **Écran** : la bulle-sablier (une bulle de verre pleine d'eau qui baisse, 30 niveaux fabriqués dans l'atelier) à la place du coquillage d'aide ; une perle d'or par bonne réponse sous l'ardoise ; le record est un petit drapeau rouge planté après la perle du record ; à la fin, l'ardoise est rangée et la rangée reste pendant l'annonce. La frise montre un pictogramme de bulle à moitié pleine, seulement pour les séances où le défi aura lieu.
+- **Textes nouveaux, à valider** : « C'est le défi ! Tape le plus de bonnes réponses possible avant que la bulle se vide. Chaque bonne réponse te donne une perle. » (premier défi), « C'est le défi ! Essaie de dépasser le drapeau de ton record. », « Attention… Partez ! », « Fini ! », « 12 bonnes réponses ! » / « Une bonne réponse ! », « C'est ton nouveau record ! Bravo ! », « C'est ton premier record ! Tu essaieras de le battre la prochaine fois. », « Autant que ton record ! Bravo ! », « Ton record, c'est 12. Tu le battras peut-être la prochaine fois ! », « Ce n'est pas grave, on réessaiera la prochaine fois ! ».
+- **Espace parent** : grille des additions 11 × 11 (boîte en couleur et en chiffre, anneau vert « rapide » : temps médian des réponses justes sous le seuil ; « + 0 » en gris avec le temps de base de chaque question ; toucher une case : l'historique du fait) ; tableau des familles (ouverte le, faits bien sus, acquise le, formes à trou ; famille en cours) ; courbe des faits bien sus semaine par semaine (en plus de la réussite et du temps médian) ; bloc « Défi record » ; détail d'une séance : famille du jour, défi et ses réponses à part ; colonnes CSV. Le point de départ du parent n'est plus compté comme une erreur ni un passage d'un fait (défaut trouvé en passant : « faits qui résistent » et export des faits).
+
+**Écarts avec la spécification (étape 7) :**
+
+- Étape « defi » : `minutes` porté à 2 dans `seance.json` (durée maximale de l'étape, consignes et annonce du score comprises) ; le chronomètre lui-même dure 60 s (`dureeS`).
+- La SPEC dit « faits mélangés » ; le défi pose aussi les formes à trou des familles qui les ont ouvertes (comme l'évaluation, qui a les trois formes).
+
+**Points à observer (étape 7) :**
+
+- Records battus rarement dans la simulation (2 à 4 dans l'année) : l'enfant simulé ne gagne pas en vitesse, contrairement à une vraie enfant. À observer : si le record plafonne, la phrase « Ton record, c'est … » revient souvent ; parade possible plus tard : un record par période.
+
+**Recette allégée de l'étape 7 (27 septembre 2026) :**
+
+| Critère | Mesure | État |
+| --- | --- | --- |
+| Tests unitaires | 161 sur 161 (dont 11 nouveaux : défi record, grille, familles, faits bien sus, brillantes) | tenu |
+| Défi dans la simulation (2 séances par semaine, sur l'année) | premier défi à la 6e séance pour les 5 profils ; « reel » : 59 défis sur 64 séances, scores 5 à 14 ; « sait » 16 à 20 ; « diff » 3 à 8 (19 défis sautés faute de 8 faits bien sus) ; séances avec défi : 9,4 à 10,5 min estimées | tenu |
+| Parcours `defi.mjs` | la bulle se vide en 60,0 s ; erreur notée, le défi continue ; score = bonnes réponses notées ; premier record ; record de 20 non battu ; chaque phrase a son fichier ; aucune erreur | tenu |
+| Parcours `parent.mjs` | grille (66 cases dont 21 « + 0 »), historique d'une case, bloc « Défi record », familles avec la famille en cours ; tout le reste inchangé ; aucune erreur | tenu |
+| Captures regardées | planche de l'atelier (bulle à 6 niveaux, perles, drapeau, pictogramme), défi (début, erreur, perles, bulle à moitié, fin avec le drapeau), grille des additions ; corrigés : eau sombre au-dessus de la surface, eau trop proche du fond de la mer, question restée sur l'ardoise à la fin, perles qui se chevauchaient | tenu |
 
 ### Reprise des étapes 4 à 6
 

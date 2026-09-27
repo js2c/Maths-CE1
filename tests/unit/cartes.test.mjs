@@ -144,3 +144,16 @@ test("zone 2 : 15 cartes prêtes (illustration et anecdote), nom lu ; zones 3 et
   assert.ok(cartes.cartes.filter((c) => ["large", "abysses"].includes(c.zone)).every((c) => !c.anecdote));
   assert.ok(cartes.zones.slice(1).every((z) => z.ouvertureLu && z.fermeeLu));
 });
+
+test("surprise : environ une séance sur cinq, jamais deux de suite, chaque cadeau offert une fois", async () => {
+  const { drawSurprise, previousSession, GIFTS } = await import("../../app/js/session/surprise.js");
+  const r = rng(11); let prev = null, n = 0, twice = 0; const given = [];
+  for (let i = 0; i < 2000; i++) {
+    const s = drawSurprise(r, cartes.surprise, prev, given);
+    if (s) { n++; if (prev?.surprise) twice++; if (s.type === "cadeau") { assert.ok(!given.includes(s.id)); given.push(s.id); } }
+    prev = { surprise: s };
+  }
+  assert.equal(twice, 0); assert.ok(Math.abs(n / 2000 - 0.2) < 0.03, `${n} surprises sur 2000 séances`);
+  assert.deepEqual([...given].sort(), [...GIFTS].sort());
+  assert.equal(previousSession([{ id: 1, debut: 1 }, { id: 2, debut: 5, libre: true }, { id: 3, debut: 3 }, { id: 4, debut: 9 }], 4).id, 3);
+});

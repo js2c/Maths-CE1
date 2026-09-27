@@ -4,7 +4,7 @@ Ces fichiers servent à **choisir la musique de fond et les bruitages** de l'app
 
 ## Pour écouter
 
-- **Le plus simple** : la page d'écoute publiée (lien dans la demande de fusion de l'étape 3). Elle joue les trois musiques, « écouter le raccord » (la fin de la boucle qui repart au début), les bruitages, une petite scène « comme dans l'application » (musique basse, voix, bruitages), et prépare la ligne à recopier pour donner votre choix.
+- **Le plus simple** : la page d'écoute publiée, https://claude.ai/artifact/QAmobN6rrwNExcEe3PrwBE (privée : réservée au compte qui l'a publiée ; le même fichier est `index.html` dans ce dossier). Elle joue les trois musiques, « écouter le raccord » (la fin de la boucle qui repart au début), les bruitages, une petite scène « comme dans l'application » (musique basse, voix, bruitages), et prépare la ligne à recopier pour donner votre choix.
 - **Sans la page** : chaque son existe en MP3, lisible partout. Sur GitHub, ouvrir le fichier, puis « Download » (ou « View raw »).
 
 ## Ce qu'il y a

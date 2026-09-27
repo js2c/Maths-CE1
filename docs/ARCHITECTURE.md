@@ -127,6 +127,10 @@ app/content/*.json ─▶ tools/voix/inventaire.mjs ─▶ phrases ─▶ tools/
 - **Hors ligne** : les fichiers son sont dans la liste du service worker comme le reste de `app/`. Leur nom étant l'empreinte de leur contenu, une nouvelle version de l'application reprend ceux qui sont déjà dans le cache au lieu de les retélécharger.
 - **Vérifications** : `tests/unit/voix.test.mjs` (nombres en lettres, découpage, inventaire, un fichier pour chaque phrase, pas de fichier orphelin, poids sous 15 Mo, moteur), `tests/e2e/voix.mjs` (lecture réelle dans Chromium : décodage, durée, enchaînement, « réécouter », secours, arrêt) ; les parcours `seance`, `lecons` et `recompenses` échouent si une phrase dite n'a pas de fichier.
 
+## Le son (lot 2)
+
+Bruitages et musiques de fond sont fabriqués par synthèse, sans enregistrement ni banque de sons : `node tools/son/fabriquer.mjs` (réglages dans `tools/son/reglages.json` ; `pip install imageio-ffmpeg` une fois, ou un ffmpeg avec libopus et libmp3lame dans `FFMPEG`). `tools/son/synth.mjs` contient les primitives (corde pincée de Karplus-Strong, sons modaux, bulle de Minnaert, nappe en table d'onde, filtres, réverbération Freeverb, limiteur, sonie UIT-R BS.1770) ; `bruitages.mjs` et `musiques.mjs` les assemblent. Déterministe (graine unique). Les musiques sont rendues dans un tampon circulaire de la longueur exacte de la boucle (queues de notes rabattues au début, filtres et réverbération en régime périodique, houle des vagues de période divisant la boucle) : la fin se raccorde au début. Étape 3 : échantillons Opus et MP3 dans `docs/son-echantillons/` avec une page d'écoute ; l'intégration dans l'application est l'étape 4. Tests : `tests/unit/son.test.mjs`.
+
 ## Hors ligne et stockage
 
 - `app/sw.js` met en cache tous les fichiers listés dans `app/sw-files.json`. Cette liste et la version du cache sont produites par `node tools/precache.mjs` ; `npm test` échoue si elle n'est pas à jour. À relancer après chaque changement dans `app/`.

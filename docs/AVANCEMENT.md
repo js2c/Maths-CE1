@@ -10,7 +10,7 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 | --- | --- | --- |
 | 1 | Cartes et rythme : calendrier et quota, doublons, brillantes (20 % et effet), ouverture des zones, zone 2 (anecdotes et voix), étoiles dorées (4 semaines réussies), légendaires et coquillage doré, étoile arc-en-ciel de l'entraînement libre, surprise une séance sur cinq, ligne « Cartes » de l'espace parent ; simulation des cartes sur l'année | fait (branche `lot2-etape1`, https://github.com/js2c/Maths-CE1/pull/11) |
 | 2 | Séance et progression : durées et nombres de questions, défi record activable, places réservées et voie rapide des faits, enchaînement des niveaux, leçon au plus une fois par séance, point de départ du parent, tortue devant la pieuvre, pieuvre qui montre la cible ; option `--delai` de la recette ; sélecteur de difficulté (4 crans) | fait (branche `claude/prompt-lot2-section-9xloz0`, https://github.com/js2c/Maths-CE1/pull/13) |
-| 3 | Son, échantillons (`tools/son/`, `docs/son-echantillons/`) ; arrêt pour le choix du parent | en cours (branche `claude/tender-volta-20rhlz`) |
+| 3 | Son, échantillons (`tools/son/`, `docs/son-echantillons/`) ; arrêt pour le choix du parent | fait (branche `claude/tender-volta-20rhlz`, https://github.com/js2c/Maths-CE1/pull/14) ; **en attente du choix du parent** |
 | 4 | Son, intégration : bruitages, musique, mixage, réglages du parent | à faire |
 | 5 | Atelier : bernard-l'ermite, cadre de 10, maison des nombres, double + 1 | à faire |
 | 6 | Module 2 comme notion du jour : familles 3 à 7, formes à trou, leçons L4 à L6, alternance, module imposé, point de départ étendu | à faire |
@@ -20,13 +20,44 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 
 ### Reprise de l'étape 3
 
-Pour reprendre si la session s'est arrêtée : branche `claude/tender-volta-20rhlz` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 2, étape 3 (en cours) ».
+Pour reprendre si la session s'est arrêtée : branche `claude/tender-volta-20rhlz` (nom imposé par l'environnement), demande de fusion https://github.com/js2c/Maths-CE1/pull/14.
 
-**Fait :** branche et demande de fusion en brouillon.
+**Fait :**
 
-**Reste à faire :** synthétiseur `tools/son/` (déterministe, sans banque de sons), bruitages, 2 ou 3 musiques en boucle, fichiers Opus et MP3 dans `docs/son-echantillons/` avec une page d'écoute, tests, recette allégée (tests, simulation, capture de la page), avancement, demande de fusion prête.
+- Synthétiseur `tools/son/` (JavaScript pur, déterministe, sans enregistrement ni banque de sons) : `synth.mjs` (corde pincée, sons modaux de marimba, de cloche et de perle, bulle de Minnaert, nappe, filtres, réverbération, limiteur, sonie BS.1770), `bruitages.mjs`, `musiques.mjs`, `fabriquer.mjs`, réglages `reglages.json`.
+- Échantillons dans `docs/son-echantillons/` : 3 musiques (harpe 64 bpm, marimba 68 bpm, cloches douces 60 bpm ; boucles de 2 min 21 à 2 min 30), 10 bruitages (les 8 de la SPEC, avec deux variantes pour la bonne réponse et l'erreur), chacun en Opus et en MP3 ; `LISEZMOI.md` ; page d'écoute `index.html`, publiée : https://claude.ai/artifact/QAmobN6rrwNExcEe3PrwBE (musiques, « écouter le raccord », bruitages, scène « comme dans l'application » avec le mixage prévu, ligne de choix à copier).
+- Tests `tests/unit/son.test.mjs` (déterminisme, durées, niveaux, crêtes, fin sans clic, tempo, gamme pentatonique, aucune mesure répétée, raccord de la boucle, échantillons à jour, poids, étalonnage de la sonie).
+- Documentation : `docs/ARCHITECTURE.md` (« Le son (lot 2) »).
 
-**Où j'en suis :** début.
+**Reste à faire :** le choix du parent (musique ; variantes a ou b de la bonne réponse et de l'erreur ; retouches éventuelles). Puis l'étape 4 (intégration), dans une nouvelle session, après fusion.
+
+**Où j'en suis :** étape terminée, arrêt pour le choix du parent.
+
+**Décisions prises :**
+
+- Deux variantes (a, b) pour la bonne réponse et l'erreur, les deux sons qu'elle entendra le plus souvent ; un seul son pour les autres (ajout à la SPEC, qui ne demandait qu'une série).
+- Erreur : une ou deux bulles graves, attaque adoucie (12 ms), filtrées ; ni descente de hauteur, ni intervalle mineur, ni bourdonnement ; 2 dB plus bas que les autres bruitages.
+- Niveaux des fichiers : bruitages à -16 LUFS (sonie momentanée maximale ; erreur -18, toucher d'un bouton -23 car il revient sans cesse), musiques à -23 LUFS (sonie intégrée), crête au plus -1,5 dBFS. Le mixage (-18 dB, baisse de 10 dB sous la voix) sera fait par l'application à l'étape 4 ; la page d'écoute l'applique déjà.
+- Musiques jamais limitées (un limiteur casserait le régime périodique de la boucle) : l'excitation de la harpe est un triangle (forme d'une corde tirée), ce qui a supprimé les crêtes qui demandaient 5 à 8 dB de limitation.
+- Formats : Opus 64 kbit/s (stéréo pour les musiques, mono pour les bruitages) ; MP3 96 kbit/s pour l'écoute. La nappe : une voix juste et deux voix désaccordées plus faibles (deux voix égales produisaient un battement d'amplitude complet, visible au spectrogramme).
+
+**Écarts avec la spécification (étape 3) :**
+
+- La page d'écoute charge une police de Google Fonts (titres) ; c'est un document pour le parent, hors de l'application, qui reste sans ressource tierce.
+- **Je n'ai pas pu écouter les sons.** Vérifications faites à la place : spectrogrammes (raccords des boucles invisibles, attaques, battements corrigés), sonie et crêtes mesurées, fichiers décodés dans Chromium à la bonne longueur, erreur d'encodage Opus pas plus grande au début et à la fin de la boucle qu'au milieu, justesse de la corde pincée mesurée (à moins de 6 cents). Le jugement à l'oreille (naturel de la harpe, douceur de l'erreur, calme de la musique) revient au parent.
+- À prévoir à l'étape 4 : jouer la musique dans un `AudioContext` à 48 kHz (sur un contexte à 44,1 kHz, Chromium rééchantillonne et la boucle perd au plus un échantillon, inaudible mais évitable).
+
+**Recette de l'étape 3 (27 septembre 2026, allégée à la demande du parent : tests, simulation, capture de chaque écran nouveau ou modifié ; ni séance réelle ni mesure des durées) :**
+
+| Critère | Mesure | État |
+| --- | --- | --- |
+| Tests unitaires | 130 sur 130 (dont 10 nouveaux pour le son) ; `precache.mjs --check` à jour | tenu |
+| Simulation (`sim-seances.mjs`, sait, reel, diff ; 2 et 5 séances par semaine, sur l'année) | résultats identiques à l'étape 2 (l'application n'a pas changé) : 60 cartes le 15 ou le 17 juin, quota jamais dépassé, familles 1 et 2 vues à la 6e séance (« sait »), aucune leçon revue deux fois | tenu |
+| Écrans nouveaux ou modifiés | un seul, la page d'écoute (hors de l'application) : captures à 1280 × 800, 400 px de large et en thème sombre, regardées ; tuiles étirées corrigées ; aucune erreur dans la page (hors police bloquée par le proxy de l'environnement) | tenu |
+| Poids (SPEC : moins de 3 Mo) | musique la plus lourde 1,28 Mo + bruitages 0,08 Mo = 1,36 Mo en Opus | tenu |
+| Musique : 60 à 72 battements par minute, pentatonique, boucle de 2 à 3 min sans raccord | 60, 64 et 68 ; toutes les notes dans la gamme (test) ; 2 min 21 à 2 min 30 ; raccord vérifié par construction, test et spectrogramme | tenu (à confirmer à l'oreille) |
+| Bruitages : moins d'une seconde sauf le coquillage | 0,09 à 0,98 s ; coquillage 2 s | tenu |
+| Durée d'une séance, attentes, faits nouveaux, alternance | — | sans objet (recette allégée ; application inchangée) |
 
 ### Reprise de l'étape 2
 

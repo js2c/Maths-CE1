@@ -24,7 +24,7 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 
 Pour reprendre si la session s'est arrêtée : branche `claude/youthful-tesla-rtkgta` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 2, étapes 7 à 9 (en cours) » (https://github.com/js2c/Maths-CE1/pull/17).
 
-**Étape en cours :** étape 9 (bilan), reprise le 27 septembre au soir avec quatre corrections demandées par le parent après une relecture extérieure (ci-dessous). Si la session s'arrête : voir « Reste (étape 9) ».
+**Étape en cours :** aucune ; **étapes 7 à 9 terminées**, recette complète faite (tableau dans `docs/BILAN-LOT2.md`, section « Recette complète »), demande de fusion https://github.com/js2c/Maths-CE1/pull/17 prête (sortie du brouillon). L'étape 9 a été reprise le 27 septembre au soir avec quatre corrections demandées par le parent après une relecture extérieure (ci-dessous).
 
 **Corrections du 27 septembre (relecture extérieure, décisions du parent ; faites au début de l'étape 9) :**
 
@@ -46,7 +46,9 @@ Pour reprendre si la session s'est arrêtée : branche `claude/youthful-tesla-rt
 - Étape 7 (défi record, grille des additions, progression du module 2) : voir ci-dessous.
 - Étape 8 (nombres jusqu'à 1 000) : voir ci-dessous.
 
-**Reste (étape 9) :** (fait au fur et à mesure, voir la recette complète ci-dessous) `docs/BILAN-LOT2.md` ; relecture du guide du parent ; recette complète (section 8 de la SPEC-LOT2 : `sim-seances` tous profils à 2 et 5 séances, `recette.mjs --delai 4.5` (ligne et `--module 2`, avec une séance où le défi a lieu : la cible devient 9 à 11 min), `recette-durees.mjs` avec et sans `--passer` (y compris niveaux 9 à 13), tous les parcours Playwright) ; donner le nombre de brillantes en juin par profil (mesure provisoire ci-dessous, étape 8) ; mettre à jour la ligne « Où en est-on », le JOURNAL-CONCEPTION (état), puis finir la demande de fusion https://github.com/js2c/Maths-CE1/pull/17 (description complète, sortir du brouillon). Surveiller une erreur « Cannot read properties of undefined (reading '0') » vue une fois dans `centaines.mjs` et jamais reproduite (trois passages propres).
+**Étape 9, fait :** `docs/BILAN-LOT2.md` (bilan, corrections, recette complète) ; guide du parent relu (lot 2, cran « plus facile » qui consolide sans faire progresser, aide passable, « Terminer la séance », famille « en révision », défauts corrigés retirés) ; `recette-durees.mjs` étendue (niveaux 9 à 13, aides, plus longue attente sans commande) ; option `--defi` de `recette.mjs` ; parcours `aide-passer.mjs` et `pause-parent.mjs` ; simulation : familles dépassées et leçons jouées sur l'année. L'erreur « Cannot read properties of undefined (reading '0') » de `centaines.mjs` ne s'est pas reproduite (un passage propre de plus). Recette complète : tous les critères tenus (voir le bilan).
+
+**Ce qui était prévu pour l'étape 9 (pour mémoire) :** `docs/BILAN-LOT2.md` ; relecture du guide du parent ; recette complète (section 8 de la SPEC-LOT2 : `sim-seances` tous profils à 2 et 5 séances, `recette.mjs --delai 4.5` (ligne et `--module 2`, avec une séance où le défi a lieu : la cible devient 9 à 11 min), `recette-durees.mjs` avec et sans `--passer` (y compris niveaux 9 à 13), tous les parcours Playwright) ; donner le nombre de brillantes en juin par profil (mesure provisoire ci-dessous, étape 8) ; mettre à jour la ligne « Où en est-on », le JOURNAL-CONCEPTION (état), puis finir la demande de fusion https://github.com/js2c/Maths-CE1/pull/17 (description complète, sortir du brouillon). Surveiller une erreur « Cannot read properties of undefined (reading '0') » vue une fois dans `centaines.mjs` et jamais reproduite (trois passages propres).
 
 **Décisions prises (étape 8) :**
 
@@ -77,7 +79,7 @@ Pour reprendre si la session s'est arrêtée : branche `claude/youthful-tesla-rt
 | très dur | 17 | 25 |
 | plus facile | 18 | 22 |
 
-(avant la décision : 56 à 57 à 5 séances par semaine, 13 à 42 à 2 séances). À refaire à la recette complète de l'étape 9.
+(avant la décision : 56 à 57 à 5 séances par semaine, 13 à 42 à 2 séances). Refait à la recette complète de l'étape 9 (avec les corrections) : sait 13 / 17, reel 17 / 19, diff 13 / 30, très dur 17 / 25, plus facile 14 / 25 (2 / 5 séances par semaine) ; voir `docs/BILAN-LOT2.md`.
 
 **Recette allégée de l'étape 8 (27 septembre 2026) :**
 

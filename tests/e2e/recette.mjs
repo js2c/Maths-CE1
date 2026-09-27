@@ -58,7 +58,10 @@ while (Date.now() < deadline) {
     waits.push({ etape: st.etape, attenteS: (Date.now() - waitStart) / 1000, q: st.q });
     await page.waitForTimeout(DELAI);
     if (st.inputFacts) {
-      nf++; const q = await page.evaluate(() => { const f = window.__app.facts.q; return f.forme === "trouDroite" ? f.b : f.forme === "trouGauche" ? f.a : f.a + f.b; });
+      // (la minute du défi peut finir pendant l'attente : la question disparaît)
+      const q = await page.evaluate(() => { const f = window.__app.facts.q; return f ? (f.forme === "trouDroite" ? f.b : f.forme === "trouGauche" ? f.a : f.a + f.b) : null; });
+      if (q === null) { waitStart = Date.now(); continue; }
+      nf++;
       if (nf === 3) { note(`additions : « je ne sais pas » (${st.q})`); await tapSel(".facts .nsp, .nsp"); } else await typeIn(nf === 5 ? q + 1 : q);
       if (nf === 3) await shot("additions-nsp");
     } else {

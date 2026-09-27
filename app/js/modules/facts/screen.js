@@ -146,7 +146,7 @@ export class FactsScreen {
   async skippable(label, body) {
     let abort = null, dead = false; const abortP = new Promise((_, rej) => { abort = () => { dead = true; rej(SKIPPED); }; }); abortP.catch(() => {});
     const g = (p) => Promise.race([p, abortP]), skip = skipKey(this.app, () => abort(), label);
-    try { await body(g, () => dead); } catch (e) { if (e !== SKIPPED) throw e; this.app.voice.stop(); this.aidePassee = true; }
+    try { await body(g, () => dead); } catch (e) { if (e !== SKIPPED) throw e; this.app.voice.stop(); }
     finally { skip.remove(); this.board.clear(); }
   }
   // cran « plus facile » : l'appui est montré d'emblée (sans la réponse), puis le pavé revient ; un fait réussi

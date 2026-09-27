@@ -7,6 +7,9 @@ import * as R from "../../art/runtime.js";
 import { onTap, spriteBox } from "../../session/screens.js";
 import { fill } from "../numberline/screen.js";
 import { clock, wait } from "../../engine/clock.js";
+import { skipKey } from "../../engine/ui.js";
+
+const SKIPPED = Symbol("correction passée");
 
 const SLATE = [790, 222], KEY = 112, ROWS = [540, 668], COLS = [390, 508, 626, 744, 862], SIDE = 1010;
 const pop = (el, cls = "pop") => { el.classList.remove("pop", "shake"); void el.offsetWidth; el.classList.add(cls); };
@@ -60,17 +63,31 @@ export class FactsScreen {
     voice.stop(); voice.say(fill(text.pick("fait"), { a: q.a, b: q.b }), { instruction: true });
     return new Promise((res) => { this.resolve = res; });
   }
+  // la correction (erreur ou « je ne sais pas ») peut être passée dès qu'elle commence : la voix se tait,
+  // le résultat reste écrit sur l'ardoise environ une seconde, puis le fait suivant ; noté « correction passée ».
+  // Ses pauses suivent la vitesse des corrections (content/seance.json, vitesseAnimations).
   async submit({ nsp = false } = {}) {
-    const { voice, text, ocean } = this.app, q = this.q, value = nsp ? null : Number(this.typed), ok = value === q.a + q.b, ms = Math.round(clock.now() - this.t0);
+    const { voice, text, ocean } = this.app, q = this.q, value = nsp ? null : Number(this.typed), ok = value === q.a + q.b, ms = Math.round(clock.now() - this.t0), k = this.app.vitesse ?? 1;
     this.locked = true; voice.stop();
     const r = { value, ms, listens: voice.listens, aide: this.aide, nsp };
     ocean.octo.play(ok ? "rejouir" : "encourager");
+    const answer = () => { this.typed = String(q.a + q.b); this.ring = true; this.slate.repaint(); };
     if (ok) { pop(this.slate); await voice.say(text.pick("bravo")); await wait(250); }
     else {
-      if (nsp) await voice.say(text.data.faitNSP); else { pop(this.slate, "shake"); await wait(500); }
-      this.typed = String(q.a + q.b); this.ring = true; this.slate.repaint();
-      await voice.say(fill(text.data.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b }));
-      await wait(700);
+      let abort = null;
+      const abortP = new Promise((_, rej) => { abort = () => rej(SKIPPED); }); abortP.catch(() => {});
+      const g = (p) => Promise.race([p, abortP]), skip = skipKey(this.app, () => abort(), "passer la correction");
+      try {
+        if (nsp) await g(voice.say(text.data.faitNSP)); else { pop(this.slate, "shake"); await g(wait(500 / k)); }
+        answer();
+        await g(voice.say(fill(text.data.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b })));
+        await g(wait(700 / k));
+      } catch (e) {
+        if (e !== SKIPPED) throw e;
+        voice.stop(); r.correctionPassee = true; answer(); pop(this.slate);
+        await wait(1000);
+      }
+      skip.remove();
     }
     const done = this.resolve; this.resolve = null; done?.(r);
   }

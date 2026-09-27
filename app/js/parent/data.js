@@ -136,7 +136,7 @@ export const ANSWER_COLUMNS = [
   ["question", (r) => r.question], ["forme", (r) => r.forme], ["réponse donnée", (r) => r.donnee], ["réponse attendue", (r) => r.attendue], ["juste", (r) => !!r.juste],
   ["temps (s)", (r) => (typeof r.tempsMs === "number" ? Math.round(r.tempsMs / 100) / 10 : null)], ["écoutes de la consigne", (r) => r.ecoutes], ["aide utilisée", (r) => !!r.aide],
   ["code d'erreur", (r) => r.erreur], ["question qui revient", (r) => !!r.revient], ["exemple guidé", (r) => !!r.guide],
-  ["exemple passé", (r) => !!r.passe], ["entraînement libre", (r) => !!r.libre],
+  ["exemple passé", (r) => !!r.passe], ["correction passée", (r) => !!r.correctionPassee], ["entraînement libre", (r) => !!r.libre],
 ];
 export const FACT_COLUMNS = [
   ["fait", (f) => f.fait.replace("+", " + ")], ["famille", (f) => f.famille], ["boîte", (f) => f.boite], ["prochain passage", (f) => dayKey(f.prochain)],

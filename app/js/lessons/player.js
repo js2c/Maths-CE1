@@ -2,8 +2,9 @@
 // Joue une leçon de content/lecons.json sur la scène de la ligne graduée (l'écran du module 1 prête sa
 // tortue, son étoile et son calque d'effets). Chaque phrase est découpée en temps : la voix dit la phrase
 // pendant que l'animation se joue, et le temps suivant attend la fin des deux (la durée de la synthèse
-// vocale varie). Deux boutons restent visibles pendant toute la leçon : « phrase précédente » et
-// « rejouer ». Pour y répondre, la phrase en cours est abandonnée (jeton), la scène est remise dans
+// vocale varie). Deux boutons restent visibles pendant toute la leçon, dès sa première vue : « rejouer »
+// (reprend la leçon au début) et « passer » (la leçon s'arrête ; la séance enchaîne sur « À toi ! » et
+// l'exercice guidé). Pour y répondre, la phrase en cours est abandonnée (jeton), la scène est remise dans
 // l'état exact du début de la phrase demandée (script.js, `stateAt`), puis la lecture reprend.
 // Rien de ce qui bouge n'est redessiné à chaque image : la tortue et l'étoile sont des acteurs, les filets,
 // la loupe et le compteur ont leur petit canvas dessiné une fois, le calque d'effets n'est repeint que
@@ -12,6 +13,7 @@ import * as R from "../art/runtime.js";
 import { Actor } from "../engine/actor.js";
 import { arcHeight } from "../engine/turtle.js";
 import { onTap, spriteBox } from "../session/screens.js";
+import { skipKey } from "../engine/ui.js";
 import { actions, countLabel, lessonLineSpec, settle, stateAt, tickOf } from "./script.js";
 import { wait } from "../engine/clock.js";
 
@@ -20,21 +22,30 @@ const ease = (u) => 1 - Math.pow(1 - u, 3);
 // une animation de `ms` millisecondes, f(u) à chaque image, u de 0 à 1
 const tween = (ms, f) => new Promise((res) => { const t0 = performance.now(), step = (now) => { const u = Math.min(1, (now - t0) / ms); f(u); if (u < 1) requestAnimationFrame(step); else res(); }; requestAnimationFrame(step); });
 const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };
-const KEYS = { precedent: [930, 712], rejouer: [1090, 712], passer: [1205, 218] }, COUNTER = [700, 172];
+const REPLAY_AT = [1180, 712], COUNTER = [700, 172]; // « rejouer » en bas à droite ; « passer » : engine/ui.js
 const NET_W = 62, NET_H = 34;
 
 export class LessonPlayer {
   constructor(app, content) { this.app = app; this.c = content; this.tok = 0; this.nets = new Map(); }
   get nl() { return this.app.lineScreen(); }
 
-  // joue la leçon `id` jusqu'au bout ; renvoie { vue, passee, dureeS, precedentes, rejouees }.
-  // `skippable` (à partir de la deuxième fois qu'elle est vue) : le bouton « passer » l'arrête (passee).
-  async play(id, { skippable = false } = {}) {
-    const { app } = this, lesson = this.c[id], nl = this.nl, t0 = Date.now(), stats = { precedentes: 0, rejouees: 0 };
+  // joue la leçon `id` jusqu'au bout ; renvoie { vue, passee, dureeS, rejouees }.
+  // « passer » (dès la première vue) l'arrête : passee, pas d'étoiles (notion.js).
+  async play(id) {
+    const { app } = this, lesson = this.c[id], nl = this.nl, t0 = Date.now(), stats = { rejouees: 0 };
     if (!lesson) return { vue: false };
     nl.leave();
+    // les deux boutons, visibles tout de suite et pendant toute la leçon ; un toucher abandonne la phrase en cours
+    this.p = 0; this.skipped = false; this.abort = null; this.goto = undefined;
+    const jump = (to) => { this.goto = to; app.voice.stop(); if (this.abort) this.abort(); else this.p = to; };
+    const again = spriteBox(app, { x: REPLAY_AT[0] - 70, y: REPLAY_AT[1] - 70, w: 140, h: 140, cls: "bubble lessonkey rejouer", label: "rejouer la leçon", paint: (ctx) => app.sprites.draw(ctx, "rejouer", 0, 70, 70) });
+    onTap(again, () => { if (!this.abort) return; pop(again); stats.rejouees++; jump(0); });
+    const skip = skipKey(app, () => { this.skipped = true; jump(lesson.phrases.length); }, "passer la leçon");
+    skip.classList.add("lessonkey");
+    const keys = [again, skip]; this.keys = keys;
     // la pieuvre remonte un peu : ses bras dégagent le début de la ligne, où se tracent les premiers arcs
     const home = [...app.ocean.octoAt], up = [home[0] - 20, home[1] - 56];
+    this.home = home;
     tween(900, (u) => { const e = ease(u); app.ocean.octoAt = [home[0] + (up[0] - home[0]) * e, home[1] + (up[1] - home[1]) * e]; });
     if (this.netsOf !== id) { this.nets.forEach((n) => n.a.remove()); this.nets.clear(); this.netsOf = id; }
     this.lesson = lesson; this.spec = lessonLineSpec(lesson);
@@ -48,16 +59,6 @@ export class LessonPlayer {
     }
     const [bmp] = await rendered;
     Object.assign(app.line.c.style, { transition: "opacity 0.6s", opacity: "0" }); app.line.show(bmp);
-    // les deux boutons, toujours visibles pendant la leçon
-    const key = (name, label, go) => {
-      const [x, y] = KEYS[name], b = spriteBox(app, { x: x - 70, y: y - 70, w: 140, h: 140, cls: `bubble lessonkey ${name}`, label, paint: (ctx) => app.sprites.draw(ctx, name, 0, 70, 70) });
-      onTap(b, () => { if (!this.abort) return; pop(b); go(); this.goto = go.to; app.voice.stop(); this.abort(); });
-      return b;
-    };
-    const back = () => { stats.precedentes++; back.to = Math.max(0, this.p - 1); }, again = () => { stats.rejouees++; again.to = 0; };
-    const skip = () => { skip.to = lesson.phrases.length; this.skipped = true; };
-    const keys = [key("precedent", "phrase précédente", back), key("rejouer", "rejouer la leçon", again), ...(skippable ? [key("passer", "passer la leçon", skip)] : [])];
-    this.p = 0; this.skipped = false; this.keys = keys; this.home = home;
     while (this.p < lesson.phrases.length) {
       const tok = ++this.tok;
       this.abortP = new Promise((_, rej) => { this.abort = () => rej(ABORT); }); this.abortP.catch(() => {});

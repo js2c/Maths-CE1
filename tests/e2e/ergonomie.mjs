@@ -1,11 +1,16 @@
 // L'ERGONOMIE DU LOT 1 BIS dans Chromium (tablette 1280 × 800, tactile), voix accélérée :
 //  1. la frise d'avancement ; « je ne sais pas » (code NSP, la question revient) ; la maison met la séance
 //     en pause (tout disparaît, le temps ne compte plus) et « continuer » la reprend là où elle en était ;
-//  2. « passer » un exemple guidé déjà vu (réponse notée « exemple passé ») ;
-//  3. « passer » une leçon déjà vue (pas d'étoiles, notée « passée ») ;
+//  2. « passer » un exemple guidé dès la première vue (réponse notée « exemple passé ») ; « passer » une
+//     correction (après « je ne sais pas ») : visible moins d'une demi-seconde après son début, la bonne
+//     réponse reste en place, puis la question suivante ; réponse notée « correction passée » ; de même au
+//     pavé des additions ;
+//  3. une leçon jamais vue : « rejouer » et « passer » dès le début (pas de « phrase précédente ») ;
+//     passée : pas d'étoiles, notée « passée » ;
 //  4. après la séance du jour : la lune en décor, « Encore ! » et l'entraînement libre (réponses marquées
 //     « libre », aucune étoile, aucun coquillage ; la maison le quitte) ;
-//  5. l'espace parent montre les « je ne sais pas », l'exemple passé et l'entraînement libre.
+//  5. l'espace parent montre les « je ne sais pas », l'exemple passé, la correction passée et l'entraînement libre.
+// Le bouton « passer » est toujours le même, à la même place (en haut à droite), zone tactile de 64 px au moins.
 // Captures dans tests/e2e/out/ergonomie.
 //   node tests/e2e/ergonomie.mjs [--out dossier]
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
@@ -19,22 +24,30 @@ mkdirSync(OUT, { recursive: true });
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium" });
 const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true });
+// le moment où chaque bouton « passer » apparaît, et celui du dernier toucher
+const SPY = () => { window.__skipAt = []; window.__tapAt = 0; addEventListener("pointerdown", () => { window.__tapAt = performance.now(); }, true); new MutationObserver((ms) => { for (const m of ms) for (const n of m.addedNodes) if (n.classList?.contains("skip")) window.__skipAt.push(performance.now()); }).observe(document, { childList: true, subtree: true }); };
+await context.addInitScript(SPY);
 const page = await context.newPage();
 const errors = []; page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
 const shot = (n) => page.screenshot({ path: join(OUT, `${n}.png`) });
 const check = (ok, msg) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${msg}`); if (!ok) process.exitCode = 1; };
 const ready = async () => page.waitForFunction(() => window.__ready !== undefined);
 const waitQ = () => page.waitForFunction(() => { const s = window.__app.screen; return s?.q && s.resolve && !s.locked; }, null, { timeout: 60000 });
+// le bouton « passer » : même place, même taille partout ; délai depuis le dernier toucher (ms)
+const skipBox = (p = page) => p.evaluate(() => { const b = [...document.querySelectorAll(".skip")].at(-1), r = b.getBoundingClientRect(); return { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.width), h: Math.round(r.height), delay: Math.round(window.__skipAt.at(-1) - window.__tapAt) }; });
+const SKIP_BOX = { x: 1135, y: 148, w: 140, h: 140 };
+const sameSkip = (b) => b.x === SKIP_BOX.x && b.y === SKIP_BOX.y && b.w === SKIP_BOX.w && b.h === SKIP_BOX.h && b.w >= 64;
 const answerRight = async () => { const q = await page.evaluate(() => { const s = window.__app.screen; return { f: s.q.format, a: s.q.answer }; }); if (q.f === "lire" || q.f === "sauter") await page.tap(`.answer[data-value="${q.a}"]`, { force: true }); else await page.evaluate(() => { const s = window.__app.screen; s.aimed = s.q.answer; s.answer(s.q.answer, null); }); await page.waitForFunction(() => !window.__app.screen?.resolve || window.__app.screen.locked, null, { timeout: 30000 }).catch(() => {}); };
 
-// ---- 1 et 2 : une séance (nom déjà choisi, exemples guidés déjà vus, sans leçon ni échauffement)
+// ---- 1 et 2 : une séance (nom déjà choisi, exemples guidés jamais vus, sans leçon ni échauffement)
 await page.goto(url + "?nosw&voix=rapide"); await ready();
-await page.evaluate(async () => { const s = window.__app.store; await s.setSetting("mascotte", "Pili"); await s.setSetting("vues", { "guide.lire": 1, "guide.sauter": 1 }); });
+await page.evaluate(async () => { const s = window.__app.store; await s.setSetting("mascotte", "Pili"); });
 await page.goto(url + "?nosw&voix=rapide&sansLecon&sans=echauffement&questions=7&guides=1&format=lire"); await ready();
 await page.tap(".play", { force: true });
-// l'exemple guidé, déjà vu : « passer » apparaît
+// l'exemple guidé, vu pour la première fois : « passer » apparaît
 await page.waitForSelector(".skip", { timeout: 30000 }); await page.waitForTimeout(700);
 await shot("1-exemple-guide-passer");
+check(sameSkip(await skipBox()), `exemple guidé : « passer » dès la première vue, en haut à droite (${JSON.stringify(await skipBox())})`);
 await page.tap(".skip", { force: true });
 await waitQ();
 check(await page.evaluate(() => window.__app.screen.q.guide && window.__app.screen.q.passe), "l'exemple guidé passé : la question attend sa réponse, notée « passé »");
@@ -44,8 +57,21 @@ await waitQ(); await page.waitForTimeout(300);
 await shot("2-question-frise");
 const frise = await page.evaluate(() => ({ ...window.__app.frieze.p }));
 check(frise.etape === "notion" && frise.faites === 1 && frise.prevues === 8, `la frise : notion du jour, 1 question faite sur 8 prévues (${JSON.stringify(frise)})`);
-const nspQ = await page.evaluate(() => window.__app.screen.q.answer);
-await page.tap(".nsp", { force: true }); await page.waitForTimeout(1200);
+const nspQ = await page.evaluate(() => window.__app.screen.q.answer), nspAt = await page.evaluate(() => window.__app.session.rec.questions);
+await page.tap(".nsp", { force: true });
+// la correction commence : « passer » est là tout de suite
+await page.waitForSelector(".skip", { timeout: 2000 });
+const cb = await skipBox();
+check(sameSkip(cb) && cb.delay >= 0 && cb.delay < 500, `correction : « passer » visible ${cb.delay} ms après le toucher, même place et même taille (${JSON.stringify(cb)})`);
+await page.waitForTimeout(1500);
+await shot("3-correction-passer");
+await page.tap(".skip", { force: true }); await page.waitForTimeout(250);
+const shown = await page.evaluate(() => { const s = window.__app.screen; return { voix: window.__app.voice.speaking, poisson: s.fishAt ? Math.round(s.fishAt[0]) : null, but: s.fishAt ? Math.round(s.xOf(s.q.answer)) : null, locked: s.locked, bouton: [...document.querySelectorAll(".skip")].some((e) => getComputedStyle(e).visibility === "visible") }; });
+await shot("3b-correction-passee");
+check(!shown.voix && shown.locked && !shown.bouton, `correction passée : la voix se tait, la bonne réponse reste montrée (${JSON.stringify(shown)})`);
+const t0 = Date.now(); await waitQ();
+const next = await page.evaluate(() => window.__app.session.rec.questions), gap = Date.now() - t0 + 250;
+check(next === nspAt + 1 && gap < 2500, `correction passée : la question suivante arrive ${gap} ms après le toucher`);
 await shot("3-je-ne-sais-pas");
 // la maison, pendant la question suivante
 await waitQ();
@@ -77,6 +103,7 @@ const db = await page.evaluate(async () => { const s = window.__app.store; retur
 const nsp = db.reps.filter((r) => r.erreur === "NSP");
 check(nsp.length === 1 && nsp[0].juste === false && nsp[0].donnee === null, `réponse « je ne sais pas » enregistrée (erreur NSP)`);
 check(db.reps.filter((r) => r.passe && r.guide).length === 1, "l'exemple guidé passé est enregistré");
+check(nsp[0]?.correctionPassee === true && db.reps.filter((r) => r.correctionPassee).length === 1, "la correction passée est notée dans la réponse");
 const se = db.seances.at(-1);
 check(se.terminee && se.pauses === 1 && se.pauseS >= 1, `séance terminée, une pause de ${se.pauseS} s, non comptée dans la durée (${se.dureeS} s)`);
 // la lune est un décor : elle ne se touche pas
@@ -102,21 +129,43 @@ const libre = await page.evaluate(async () => { const s = window.__app.store; re
 check(libre.reps.length === 3 && libre.seances.length === 1 && libre.seances[0].questions === 3 && libre.reps.every((r) => r.seance === libre.seances[0].id), `3 réponses « libre » dans une séance « libre » (${libre.reps.length})`);
 check(await page.evaluate(() => import("./js/session/session.js").then((m) => m.doneToday(window.__app.store))), "l'entraînement libre ne change pas « la séance du jour est faite »");
 
-// ---- 3 : « passer » une leçon déjà vue (une tablette neuve : la séance du jour n'est pas faite)
+// ---- 3 : une leçon jamais vue : « rejouer » et « passer » dès le début (une tablette neuve)
 {
-  const p2 = await (await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true })).newPage();
+  const c2 = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true }); await c2.addInitScript(SPY);
+  const p2 = await c2.newPage();
   p2.on("pageerror", (e) => errors.push(e.message));
-  await p2.goto(url + "?nosw&voix=rapide"); await p2.waitForFunction(() => window.__ready !== undefined);
-  await p2.evaluate(async () => { await window.__app.store.setSetting("vues", { "lecon.L1": 1 }); });
-  await p2.goto(url + "?nosw&voix=rapide&lecon=L1&passer"); await p2.waitForFunction(() => window.__ready !== undefined);
+  await p2.goto(url + "?nosw&voix=rapide&lecon=L1"); await p2.waitForFunction(() => window.__ready !== undefined);
   await p2.tap(".play", { force: true });
-  await p2.waitForSelector(".lessonkey.passer", { timeout: 20000 }); await p2.waitForTimeout(1500);
-  await p2.screenshot({ path: join(OUT, "10-lecon-passer.png") });
-  await p2.tap(".lessonkey.passer", { force: true });
+  await p2.waitForSelector(".skip", { timeout: 2000 });
+  const lb = await skipBox(p2);
+  check(sameSkip(lb) && lb.delay < 500, `leçon vue pour la première fois : « passer » visible ${lb.delay} ms après le début, même place (${JSON.stringify(lb)})`);
+  check((await p2.locator(".lessonkey.rejouer").count()) === 1 && (await p2.locator(".lessonkey.precedent").count()) === 0 && (await p2.locator(".lessonkey").count()) === 2, "leçon : deux boutons, « rejouer » et « passer »");
+  await p2.waitForFunction(() => window.__app.lessons.p >= 1, null, { timeout: 30000 }); await p2.waitForTimeout(800);
+  await p2.screenshot({ path: join(OUT, "10-lecon-boutons.png") });
+  await p2.tap(".skip", { force: true });
   await p2.waitForFunction(() => window.__lecon !== undefined, null, { timeout: 20000 });
   const L = await p2.evaluate(() => window.__lecon);
   check(L.passee === true && L.vue === false, `leçon passée : ni vue jusqu'au bout, ni étoiles (${JSON.stringify(L)})`);
-  await p2.close();
+  // ---- 2 bis : « passer » la correction au pavé des additions
+  await p2.goto(url + "?nosw&voix=rapide"); await p2.waitForFunction(() => window.__ready !== undefined);
+  await p2.evaluate(async () => { await window.__app.store.setSetting("mascotte", "Pili"); await window.__app.store.setSetting("tempsDeBase", { mesures: [3000, 3000, 3000] }); });
+  await p2.goto(url + "?nosw&voix=rapide&sansLecon&sans=notion&faits=5"); await p2.waitForFunction(() => window.__ready !== undefined);
+  await p2.tap(".play", { force: true });
+  await p2.waitForFunction(() => { const f = window.__app.facts; return f?.q && f.resolve && !f.locked; }, null, { timeout: 30000 });
+  await p2.waitForTimeout(300);
+  const fq = await p2.evaluate(() => { const q = window.__app.facts.q; return `${q.a} + ${q.b}`; });
+  await p2.evaluate(() => { window.__app.facts.submit({ nsp: true }); }); // sans attendre la fin de la correction
+  await p2.waitForSelector(".skip", { timeout: 2000 });
+  const fb = await skipBox(p2);
+  check(sameSkip(fb), `additions : « passer » à la même place pendant la correction (${JSON.stringify(fb)})`);
+  await p2.tap(".skip", { force: true }); await p2.waitForTimeout(300);
+  await p2.screenshot({ path: join(OUT, "10b-additions-correction-passee.png") });
+  const slate = await p2.evaluate(() => ({ typed: window.__app.facts.typed, sum: window.__app.facts.q.a + window.__app.facts.q.b, ring: window.__app.facts.ring }));
+  check(Number(slate.typed) === slate.sum && slate.ring, `additions : le résultat reste écrit sur l'ardoise (${JSON.stringify(slate)})`);
+  await p2.waitForFunction(() => { const f = window.__app.facts; return f?.q && f.resolve && !f.locked; }, null, { timeout: 5000 });
+  const fr = (await p2.evaluate(() => window.__app.store.all("reponses"))).find((r) => r.module === 2 && r.question === fq);
+  check(fr?.correctionPassee === true && fr.erreur === "NSP", `additions : réponse notée « correction passée » (${fq})`);
+  await c2.close();
 }
 
 // ---- 5 : l'espace parent
@@ -132,7 +181,7 @@ await page.waitForTimeout(300);
 await page.locator(".pa-session button").nth(1).click(); await page.waitForTimeout(400);
 await page.screenshot({ path: join(OUT, "11-parent-seance.png"), fullPage: true });
 const txt = await page.evaluate(() => document.querySelector(".pa-sheet").innerText);
-check(/entraînement libre/.test(txt) && /« Je ne sais pas »/.test(txt) && /je ne sais pas/.test(txt) && /exemple guidé passé/.test(txt) && /Pauses/.test(txt), "espace parent : entraînement libre, « je ne sais pas » à part, exemple passé, pause");
+check(/entraînement libre/.test(txt) && /« Je ne sais pas »/.test(txt) && /je ne sais pas/.test(txt) && /exemple guidé passé/.test(txt) && /correction passée/.test(txt) && /Corrections passées/.test(txt) && /Pauses/.test(txt), "espace parent : entraînement libre, « je ne sais pas » à part, exemple passé, correction passée, pause");
 check(errors.length === 0, `aucune erreur dans la page ${errors.join(" | ")}`);
 const misses = await page.evaluate(() => [...window.__app.voice.misses]);
 check(misses.length === 0, `chaque phrase dite a son fichier son ${misses.join(" | ")}`);

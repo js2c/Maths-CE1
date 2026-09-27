@@ -6,18 +6,22 @@
 //  - « estimer » : ligne sans graduations, l'enfant pose le poisson où il mettrait le nombre.
 // Retour immédiat : juste -> la pieuvre se réjouit ; faux -> la pieuvre encourage (jamais triste), la voix
 // dit pourquoi, et l'animation propre à l'erreur est jouée (tableau des erreurs E1 à E5 de la SPEC).
+// Exemples guidés et corrections : « passer » dès le début (engine/ui.js, skipKey) ; leurs animations vont
+// à la vitesse `app.vitesse` (content/seance.json, vitesseAnimations), la voix garde son débit.
 import * as R from "../../art/runtime.js";
 import { Actor } from "../../engine/actor.js";
 import { decompose, fill } from "../../engine/phrases.js";
 import { arcHeight, Turtle } from "../../engine/turtle.js";
 import { classify, lineSpec, makeEstimate, makeJump, makePlace, makeRead } from "./generator.js";
 import { clock, wait } from "../../engine/clock.js";
-import { onTap, pop, spriteBox } from "../../engine/ui.js";
+import { onTap, pop, skipKey, SKIP_AT, spriteBox } from "../../engine/ui.js";
 
 const ANSWER_Y = 700, BUB = 140; // centre des bulles, taille de leur calque (px logiques)
 const FISH_WAIT = [790, 690]; // où le poisson attend d'être posé : à côté du nombre à placer
-// les boutons du lot 1 bis : « je ne sais pas » en bas à droite, « passer » en haut à droite (sous « réécouter »)
-export const NSP_AT = [1180, 700], SKIP_AT = [1205, 218];
+// les boutons du lot 1 bis : « je ne sais pas » en bas à droite, « passer » en haut à droite (sous « réécouter », engine/ui.js)
+export const NSP_AT = [1180, 700];
+export { SKIP_AT };
+const SKIPPED = Symbol("correction passée");
 
 export class NumberLineScreen {
   constructor(app) {
@@ -51,6 +55,9 @@ export class NumberLineScreen {
     this.nsp.style.visibility = "hidden";
     onTap(this.nsp, () => { if (this.locked) return; pop(this.nsp); this.answer(null, null, { nsp: true }); });
   }
+  // la vitesse des animations des exemples guidés et des corrections ; une pause entre deux étapes
+  get pace() { return this.app.vitesse ?? 1; }
+  pause(ms) { return wait(ms / this.pace); }
   // ---------------------------------------------------------------- géométrie de la ligne
   get a() { return this.spec.x0 + 40; }
   get b() { return this.spec.x1 - 40; }
@@ -104,18 +111,15 @@ export class NumberLineScreen {
   // la cible est loin ou que la ligne ne commence pas à 0) et compte les sauts jusqu'à la cible, un arc
   // lumineux numéroté par saut. Sauter : elle fait les sauts en les comptant, puis revient à son départ.
   // Estimer : le milieu de la ligne s'allume avec son nombre.
-  // À partir de la deuxième fois qu'un exemple guidé de ce format est montré (app.vues), le bouton
-  // « passer » l'arrête : la scène revient à la question, et la réponse sera notée « exemple passé ».
+  // Le bouton « passer » (dès la première vue) l'arrête : la scène revient à la question, et la réponse
+  // sera notée « exemple passé ».
   async demoOrSkip(q) {
-    const { voice } = this.app, tok = (this.demoTok = (this.demoTok ?? 0) + 1), canSkip = await this.app.vues?.see(`guide.${q.format}`);
+    const { voice } = this.app, tok = (this.demoTok = (this.demoTok ?? 0) + 1);
     let btn = null;
-    const skipP = new Promise((res) => {
-      if (!canSkip) return;
-      btn = spriteBox(this.app, { x: SKIP_AT[0] - 70, y: SKIP_AT[1] - 70, w: 140, h: 140, cls: "bubble skip", label: "passer", paint: (ctx) => this.app.sprites.draw(ctx, "passer", 0, 70, 70) });
-      onTap(btn, () => { pop(btn); res(true); });
-    });
+    const skipP = new Promise((res) => { btn = skipKey(this.app, () => res(true), "passer l'exemple"); });
+    this.turtle.speed = this.pace;
     const skipped = await Promise.race([this.demo(q, () => tok !== this.demoTok).then(() => false), skipP]);
-    btn?.remove();
+    this.turtle.speed = 1; btn.remove();
     if (!skipped) return;
     this.demoTok++; q.passe = true; voice.stop();
     this.arcs = []; this.overlay = []; this.paintFx(true);
@@ -133,13 +137,13 @@ export class NumberLineScreen {
     }
     if (q.format === "sauter") {
       await this.countJumps(q.start, q.target, { label: (k) => String(k), stop: dead });
-      await wait(500); if (!dead()) T.sitOn(this.spec, q.start); return;
+      await this.pause(500); if (!dead()) T.sitOn(this.spec, q.start); return;
     }
     const from = this.startOf(q), tgt = Math.round((q.answer - q.min) / q.step);
     await T.swimTo(this.spec, from); if (dead()) return;
     await voice.say(fill(text.data.guideDepart, { a: val(from) })); if (dead()) return;
     await this.countJumps(from, tgt, { label: (k, i) => String(val(i)), stop: dead });
-    await wait(300);
+    await this.pause(300);
   }
   // d'où la tortue part pour montrer la méthode : 0 si la cible est proche sur une ligne qui commence à 0,
   // sinon le nombre écrit le plus proche à gauche de la cible
@@ -194,22 +198,27 @@ export class NumberLineScreen {
   }
   bubbleAt(ctx, sp, x, y, r) { const q = sp.frame(`bulle.${r}`, 0), px = sp.px, m = ctx.getTransform(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, Math.round(m.a * x + m.e + q.dx), Math.round(m.d * y + m.f + q.dy), q.w, q.h); ctx.setTransform(m); void px; }
   // la tortue saute de la graduation `from` à `to`, un saut à la fois ; chaque saut laisse un arc lumineux
-  // numéroté et la voix compte. `label(k, i)` : ce qui s'écrit sur l'arc (k-ième saut, arrivée en i)
-  async countJumps(from, to, { label = (k) => String(k), say = label, bubbles = false, stop = () => false } = {}) {
+  // numéroté et la voix compte. `label(k, i)` : ce qui s'écrit sur l'arc (k-ième saut, arrivée en i) ;
+  // `guard` : enveloppe chaque attente (correction : s'arrête net si elle est passée). L'attente entre deux
+  // sauts suit la vitesse de la tortue (exemples guidés et corrections).
+  async countJumps(from, to, { label = (k) => String(k), say = label, bubbles = false, stop = () => false, guard = (p) => p } = {}) {
     const { voice } = this.app, t = this.turtle;
     for (let k = 1; from + k <= to && !stop(); k++) {
       const i = from + k, a = t.seat(i - 1), b = t.seat(i), arc = { a: [a[0], a[1] + 4], b: [b[0], b[1] + 4], h: arcHeight(Math.abs(b[0] - a[0])) - 4, label: label(k, i), live: true, p: 0, bubbles };
       this.arcs.push(arc);
-      await t.jump(i);
+      await guard(t.jump(i));
       if (stop()) return;
       arc.live = false; arc.p = 1; this.paintFx(true);
-      await Promise.race([voice.say(say(k, i)), wait(750)]);
+      await guard(Promise.race([voice.say(say(k, i)), wait(750 / t.speed)]));
     }
   }
   // une animation d'effet (flèche qui se trace, anneau qui clignote) pendant `ms`
-  async animateFx(ms) { this.fxAnimating = true; await wait(ms); this.fxAnimating = false; this.paintFx(true); }
+  async animateFx(ms, guard = (p) => p) { this.fxAnimating = true; try { await guard(wait(ms)); } finally { this.fxAnimating = false; this.paintFx(true); } }
   // ---------------------------------------------------------------- la réponse et son retour
   // `nsp` : le bouton « je ne sais pas » (une erreur de code NSP : même correction animée, la question revient)
+  // La correction (après une erreur ou « je ne sais pas ») peut être passée dès qu'elle commence : la voix et
+  // l'animation s'arrêtent, la bonne réponse reste montrée en place environ une seconde, puis la question
+  // suivante arrive ; la réponse est notée « correction passée ».
   async answer(value, btn, { nsp = false } = {}) {
     if (this.locked) return; this.locked = true; this.nsp.style.visibility = "hidden";
     const { voice, ocean, text, line } = this.app, q = this.q, ms = clock.now() - this.t0, code = nsp ? "NSP" : classify(q, value), ok = code === null;
@@ -230,51 +239,68 @@ export class NumberLineScreen {
       if (q.format !== "sauter") await voice.say(text.pick("bravo"));
       await wait(700);
     } else {
-      // au format « sauter », E3 est l'oubli du point de départ (la bouée où la tortue est posée), pas celui du début de la ligne
-      const key = q.format === "sauter" && code === "E3" ? "E3sauter" : code;
-      await voice.say(key && T[key] ? fill(T[key], { a: q.format === "sauter" ? q.min + q.start * q.step : q.min, ...decompose(text.data, n) }) : T.autre);
-      if (this.input) { const X = this.xOf(n); this.fishGoal = [X, R.lineY(this.spec, X) - 50]; } // le poisson va à la bonne place
-      await this.explain(code);
-      line.show(this.fix);
-      await voice.say(fill(text.data.bonneReponse, { n }));
-      await wait(900);
+      // la correction ; `g` enveloppe chaque attente : un toucher sur « passer » l'interrompt net
+      let abort = null;
+      const abortP = new Promise((_, rej) => { abort = () => rej(SKIPPED); }); abortP.catch(() => {});
+      const g = (p) => Promise.race([p, abortP]), skip = skipKey(this.app, () => abort(), "passer la correction");
+      this.turtle.speed = this.pace;
+      try {
+        // au format « sauter », E3 est l'oubli du point de départ (la bouée où la tortue est posée), pas celui du début de la ligne
+        const key = q.format === "sauter" && code === "E3" ? "E3sauter" : code;
+        await g(voice.say(key && T[key] ? fill(T[key], { a: q.format === "sauter" ? q.min + q.start * q.step : q.min, ...decompose(text.data, n) }) : T.autre));
+        if (this.input) { const X = this.xOf(n); this.fishGoal = [X, R.lineY(this.spec, X) - 50]; } // le poisson va à la bonne place
+        await this.explain(code, g);
+        line.show(this.fix);
+        await g(voice.say(fill(text.data.bonneReponse, { n })));
+        await g(this.pause(900));
+      } catch (e) {
+        if (e !== SKIPPED) throw e;
+        // passée : la bonne réponse en place (le nombre écrit, la graduation allumée, le poisson dessus)
+        voice.stop(); result.correctionPassee = true;
+        this.fxAnimating = false; this.arcs = []; this.overlay = []; this.paintFx(true);
+        line.show(this.fix);
+        if (this.input) { const X = this.xOf(n); this.fishGoal = [X, R.lineY(this.spec, X) - 50]; }
+        if (q.format === "sauter") this.turtle.sitOn(this.spec, q.target); else this.turtle.hide();
+        await wait(1000);
+      }
+      this.turtle.speed = 1; skip.remove();
     }
     this.band.style.display = "none";
     const done = this.resolve; this.resolve = null; done?.(result);
   }
-  // l'animation qui explique l'erreur (docs/SPEC.md, tableau des erreurs du module 1)
-  async explain(code) {
-    const q = this.q, T = this.turtle, idx = (v) => Math.round((v - q.min) / q.step), tgt = idx(q.answer), far = q.n > 0 && tgt <= 12;
-    if (q.format === "sauter") return this.countJumps(q.start, q.target);
+  // l'animation qui explique l'erreur (docs/SPEC.md, tableau des erreurs du module 1) ; `g` : voir answer
+  async explain(code, g = (p) => p) {
+    const q = this.q, T = this.turtle, idx = (v) => Math.round((v - q.min) / q.step), tgt = idx(q.answer), far = q.n > 0 && tgt <= 12, k = this.pace;
+    if (q.format === "sauter") return this.countJumps(q.start, q.target, { guard: g });
     if (code === "NSP") {
       // « je ne sais pas » : la méthode, comme dans l'exemple guidé (le milieu de la corde, ou les sauts
       // comptés depuis 0 ou depuis le nombre écrit le plus proche)
-      if (q.format === "estimer") { const mid = (q.min + q.max) / 2, x = this.xOf(mid); this.overlay.push((ctx) => { R.drawRing(ctx, x, R.lineY(this.spec, x), 22); R.drawNumber(ctx, String(mid), x, this.spec.y - 96, 34, { color: "#fffaf0", w: 5, seed: 640 }); }); this.paintFx(true); return wait(1800); }
-      const from = this.startOf(q); await T.swimTo(this.spec, from);
-      return this.countJumps(from, tgt, { label: (k, i) => String(q.min + i * q.step) });
+      if (q.format === "estimer") { const mid = (q.min + q.max) / 2, x = this.xOf(mid); this.overlay.push((ctx) => { R.drawRing(ctx, x, R.lineY(this.spec, x), 22); R.drawNumber(ctx, String(mid), x, this.spec.y - 96, 34, { color: "#fffaf0", w: 5, seed: 640 }); }); this.paintFx(true); return g(this.pause(1800)); }
+      const from = this.startOf(q); await g(T.swimTo(this.spec, from));
+      return this.countJumps(from, tgt, { label: (k, i) => String(q.min + i * q.step), guard: g });
     }
     if (code === "E1" && far) {
       // la tortue saute depuis le début de la ligne, chaque saut s'allume et se compte
-      await T.swimTo(this.spec, 0); return this.countJumps(0, tgt, { label: (k, i) => (q.min === 0 ? String(k) : String(q.min + i * q.step)) });
+      await g(T.swimTo(this.spec, 0)); return this.countJumps(0, tgt, { label: (k, i) => (q.min === 0 ? String(k) : String(q.min + i * q.step)), guard: g });
     }
     if (code === "E2" && far) {
       // comptage 10, 20, 30… avec un paquet de dix bulles par saut
-      await T.swimTo(this.spec, 0); return this.countJumps(0, tgt, { label: (k, i) => String(q.min + i * q.step), bubbles: q.step === 10 });
+      await g(T.swimTo(this.spec, 0)); return this.countJumps(0, tgt, { label: (k, i) => String(q.min + i * q.step), bubbles: q.step === 10, guard: g });
     }
     if (code === "E3" && far) {
       // le départ clignote, puis comptage depuis le départ : 31, 32, 33, 34
       const [x, y] = R.tickP(this.spec, 0);
       this.overlay.push((ctx) => { if (Math.floor(performance.now() / 300) % 2 === 0) R.drawRing(ctx, x, y + R.LABEL_DY + 18, 30); });
-      await this.animateFx(1800); this.overlay = [(ctx) => R.drawRing(ctx, x, y + R.LABEL_DY + 18, 30)];
-      T.sitOn(this.spec, 0); await wait(300);
-      return this.countJumps(0, tgt, { label: (k, i) => String(q.min + i * q.step) });
+      await this.animateFx(1800 / k, g); this.overlay = [(ctx) => R.drawRing(ctx, x, y + R.LABEL_DY + 18, 30)];
+      T.sitOn(this.spec, 0); await g(this.pause(300));
+      return this.countJumps(0, tgt, { label: (k, i) => String(q.min + i * q.step), guard: g });
     }
     if (code === "E4" && q.n > 0) {
       // la flèche de croissance se trace de gauche à droite, puis la tortue repart de la gauche
       const y = this.spec.y - 96, t0 = performance.now();
-      this.overlay.push((ctx) => R.drawArrow(ctx, this.a - 10, this.b + 10, y, Math.min(1, (performance.now() - t0) / 1400)));
-      await this.animateFx(1500);
-      if (far) { await T.swimTo(this.spec, 0); return this.countJumps(0, tgt, { label: (k, i) => String(q.min + i * q.step) }); }
+      this.overlay.push((ctx) => R.drawArrow(ctx, this.a - 10, this.b + 10, y, Math.min(1, ((performance.now() - t0) * k) / 1400)));
+      await this.animateFx(1500 / k, g);
+      if (far) { await g(T.swimTo(this.spec, 0)); return this.countJumps(0, tgt, { label: (k, i) => String(q.min + i * q.step), guard: g }); }
       return;
     }
     if (code === "E5") {
@@ -285,7 +311,7 @@ export class NumberLineScreen {
         for (let i = 0; i < u; i++) this.bubbleAt(ctx, this.app.sprites, x0 + d * (NW + 14) + 12 + i * 24, y0 + 23, 10);
       });
       this.paintFx(true);
-      return wait(2500);
+      return g(this.pause(2500));
     }
   }
   // pose la question et attend la réponse ; la promesse se résout après le retour, avec le résultat

@@ -221,7 +221,7 @@ export class ParentSpace {
     return el;
   }
   sessionDetail(x, det) {
-    const mine = this.d.reponses.filter((r) => r.seance === x.id), nsp = mine.filter((r) => r.erreur === "NSP").length, passes = mine.filter((r) => r.passe).length;
+    const mine = this.d.reponses.filter((r) => r.seance === x.id), nsp = mine.filter((r) => r.erreur === "NSP").length, passes = mine.filter((r) => r.passe).length, corr = mine.filter((r) => r.correctionPassee).length;
     const steps = (x.etapes ?? []).filter((e) => !e.sautee || e.sautee === "temps écoulé").map((e) => `${D.STEP_NAMES[e.id] ?? e.id}${e.sautee ? " (sautée, temps écoulé)" : e.dureeS !== undefined ? ` ${D.fmtDuration(e.dureeS)}` : ""}`);
     const cartes = (x.cartes ?? []).map((id) => this.cartes.cartes.find((c) => c.id === id)?.nom ?? id);
     det.append(h("div", { class: "pa-facts" },
@@ -232,6 +232,7 @@ export class ParentSpace {
       (x.lecons ?? []).length > 0 && h("span", {}, "Leçons : ", h("b", {}, x.lecons.map((l) => `${l.id}${D.lessonNote(l)}`).join(", "))),
       nsp > 0 && h("span", {}, "« Je ne sais pas » : ", h("b", {}, `${nsp} (comptés à part des erreurs)`)),
       passes > 0 && h("span", {}, "Exemples guidés passés : ", h("b", {}, String(passes))),
+      corr > 0 && h("span", {}, "Corrections passées : ", h("b", {}, String(corr))),
       x.pauses > 0 && h("span", {}, "Pauses : ", h("b", {}, `${x.pauses}${x.pauseS ? `, ${D.fmtDuration(x.pauseS)} en tout (non comptées dans la durée)` : ""}`)),
       cartes.length > 0 && h("span", {}, "Cartes gagnées : ", h("b", {}, cartes.join(", ")))));
     const groups = D.answersOf(this.d.reponses, x.id);
@@ -240,7 +241,7 @@ export class ParentSpace {
   }
   answerTable(rs) {
     const E = this.c.erreurs, F = this.c.formes;
-    const note = (r) => [r.guide && (r.passe ? "exemple guidé passé" : "exemple guidé"), r.revient && "question qui revient", r.aide && !r.guide && "aide utilisée", r.libre && "entraînement libre"].filter(Boolean).join(", ");
+    const note = (r) => [r.guide && (r.passe ? "exemple guidé passé" : "exemple guidé"), r.correctionPassee && "correction passée", r.revient && "question qui revient", r.aide && !r.guide && "aide utilisée", r.libre && "entraînement libre"].filter(Boolean).join(", ");
     return h("div", { class: "pa-table-wrap" }, h("table", { class: "pa-table" },
       h("thead", {}, h("tr", {}, ["Heure", "Niveau", "Forme", "Question", "Réponse", "Attendue", "Résultat", "Temps", "Écoutes", "Erreur", "Remarque"].map((t, i) => h("th", { class: [4, 5, 7, 8].includes(i) ? "num" : "" }, t)))),
       h("tbody", {}, rs.map((r) => h("tr", { class: r.juste ? "" : "faux" },

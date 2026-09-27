@@ -56,9 +56,8 @@ const voice = new Voice({ rate: 0.9, fast: P.get("voix") === "rapide" }).setInde
 const rewards = await new Rewards(store, cartes).load();
 if (P.get("etoiles")) { rewards.st.total = Number(P.get("etoiles")); await rewards.save(); } // tests : un trésor de départ
 const app = { stage, sprites, ocean, voice, text, rnd, atlas, store, rewards, lecons, cartes, clock, line: new LineView(stage), mascotte: await store.setting("mascotte") };
-// combien de fois l'enfant a vu chaque leçon et chaque exemple guidé : « passer » apparaît à la deuxième fois
-const vues = (await store.setting("vues")) ?? {};
-app.vues = { count: (k) => vues[k] ?? 0, see: async (k) => { const n = vues[k] ?? 0; vues[k] = n + 1; await store.setSetting("vues", vues); return n >= 1; } };
+// la vitesse des animations des exemples guidés et des corrections (1 : la vitesse d'origine ; la voix garde son débit)
+app.vitesse = seance.vitesseAnimations ?? 1;
 app.lineScreen = () => (app.screen ??= new ReadScreen(app)); // l'écran de la ligne (aussi pour l'aide des faits + 1, + 2)
 window.__app = app;
 
@@ -75,14 +74,10 @@ app.hud = hud;
 // ---------------------------------------------------------------- la séance
 // les étapes que l'application sait jouer (les autres sont sautées : défi et problème du jour sont
 // désactivés au lot 1)
-// une leçon animée (L1 à L3) ; notée dans l'enregistrement de la séance (vue, durée, retours en arrière)
+// une leçon animée (L1 à L3), « rejouer » et « passer » dès la première vue
 const lessons = new LessonPlayer(app, lecons);
 app.lessons = lessons;
-const lessonIn = (session) => async (id, raison) => {
-  const r = await lessons.play(id, { skippable: await app.vues.see(`lecon.${id}`) });
-  (session.rec.lecons ??= []).push({ id, raison, ...r }); await session.save();
-  return r;
-};
+const lessonIn = () => (id) => lessons.play(id); // notée dans la séance par runNotion
 const handlers = {
   accueil: async () => {
     // premier lancement : l'enfant choisit le nom de la pieuvre ; ensuite, la pieuvre salue
@@ -152,7 +147,7 @@ async function showHome({ done, first = false }) {
   play.addEventListener("pointerdown", async (e) => {
     e.preventDefault(); voice.unlock(); clearHome();
     // pour les captures et les tests : ?lecon=L1 joue seulement cette leçon
-    if (P.get("lecon")) { window.__lecon = await lessons.play(P.get("lecon"), { skippable: P.has("passer") }); return; }
+    if (P.get("lecon")) { window.__lecon = await lessons.play(P.get("lecon")); return; }
     // la durée maximale d'une séance est un réglage du parent (seance.json donne la valeur par défaut)
     const session = new Session({ store, content: { ...seance, dureeMaxMin: await store.setting("dureeSeanceMin", seance.dureeMaxMin) }, handlers, rewards, paused: () => clock.pausedTotal(), onProgress: (p) => progress(p) });
     app.session = session; mode = "seance";

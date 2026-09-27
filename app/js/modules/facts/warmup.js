@@ -26,7 +26,7 @@ export class Warmup {
     await this.store.add("reponses", {
       t: now, seance: this.seance, module: 2, niveau: q.famille ?? 0, question: `${q.a} + ${q.b}`, forme: q.base ? "base" : "directe", donnee: r.value, attendue: q.a + q.b,
       juste, tempsMs: r.ms, ecoutes: r.listens, aide: !!r.aide, erreur: juste ? null : r.nsp ? "NSP" : "autre", revient: !!q.revient, anticipe: !!q.anticipe,
-      ...(this.libre ? { libre: true } : {}),
+      ...(r.correctionPassee ? { correctionPassee: true } : {}), ...(this.libre ? { libre: true } : {}),
     });
     if (q.base) {
       // temps de base : seulement les réponses justes, on garde les dernières

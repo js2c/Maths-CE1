@@ -1,5 +1,5 @@
 // Leçons animées : le contenu (content/lecons.json) est cohérent, et l'état de la scène au début de
-// chaque phrase (« phrase précédente », « rejouer ») se calcule sans rien jouer.
+// chaque phrase (« rejouer », reprise de chaque phrase) se calcule sans rien jouer.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";

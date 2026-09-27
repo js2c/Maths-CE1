@@ -69,7 +69,7 @@ test("CSV : point-virgule, virgule décimale, guillemets, oui/non", () => {
   const csv = D.toCSV([["a", (r) => r.a], ["b", (r) => r.b], ["c", (r) => r.c]], [{ a: 1.5, b: 'dit "non"; puis', c: true }, { a: null, b: "x", c: false }]);
   assert.equal(csv, 'a;b;c\r\n1,5;"dit ""non""; puis";oui\r\n;x;non\r\n');
   const row = D.toCSV(D.ANSWER_COLUMNS, [{ id: 1, seance: 2, t: at(2026, 9, 1), module: 1, niveau: 3, question: "lire 14", forme: "lire", donnee: 15, attendue: 14, juste: false, tempsMs: 4260, ecoutes: 2, aide: false, erreur: "E1" }]).split("\r\n")[1];
-  assert.equal(row, "1;2;2026-09-01 18:00:00;1;3;lire 14;lire;15;14;non;4,3;2;non;E1;non;non;non;non");
+  assert.equal(row, "1;2;2026-09-01 18:00:00;1;3;lire 14;lire;15;14;non;4,3;2;non;E1;non;non;non;non;non");
 });
 
 test("sauvegarde : pas de code parent ; contrôle avant restauration", () => {

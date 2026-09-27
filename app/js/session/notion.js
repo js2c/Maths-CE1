@@ -3,9 +3,9 @@
 // du plafond de la séance ; enfin, si la dernière réponse était fausse, une ou deux questions plus
 // simples pour finir sur une réussite. Indépendant du module : `runner` choisit et enregistre les
 // questions (next, record, entryLesson, finish), `screen.ask` les pose.
-// lesson(id, raison) : joue une leçon animée, renvoie { vue, passee } : vue si elle a été regardée
-// jusqu'au bout (3 étoiles), passee si l'enfant l'a passée (bouton « passer », à partir de la deuxième
-// fois : pas d'étoiles). Toute leçon (celle du niveau, ou relancée par une erreur répétée ou une
+// lesson(id, raison) : joue une leçon animée, renvoie { vue, passee, … } (noté dans la séance) : vue si elle a été regardée
+// jusqu'au bout (3 étoiles), passee si l'enfant l'a passée (bouton « passer », dès la première vue :
+// pas d'étoiles). Toute leçon (celle du niveau, ou relancée par une erreur répétée ou une
 // difficulté), regardée ou passée, finit par « À toi ! » et un premier exercice guidé, au format « lire ».
 export async function runNotion({ session, step, end, runner, screen, lesson = async () => ({ vue: false }), rnd = Math.random }) {
   const [a, b] = step.questions, n = a + Math.floor(rnd() * (b - a + 1)), E = session.c.etoiles;
@@ -21,6 +21,8 @@ export async function runNotion({ session, step, end, runner, screen, lesson = a
   // une leçon animée ; regardée jusqu'au bout : 3 étoiles, puis « À toi ! » et un premier exercice guidé
   const watch = async (id, raison) => {
     const r = await lesson(id, raison), seen = r === true || !!r?.vue;
+    // notée dans l'enregistrement de la séance (historique du parent), vue, passée ou arrêtée
+    if (r && typeof r === "object" && session.rec) { (session.rec.lecons ??= []).push({ id, raison, ...r }); await session.save(); }
     if (seen || r?.passee) {
       await runner.lessonSeen(id);
       if (seen) await session.stars(E.lecon, `leçon ${id}`);

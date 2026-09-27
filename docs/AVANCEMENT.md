@@ -24,7 +24,7 @@ Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `d
 
 Pour reprendre si la session s'est arrêtée : branche `claude/loving-tesla-rtv3o5` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 2, étapes 4 à 6 (en cours) » (https://github.com/js2c/Maths-CE1/pull/16).
 
-**Étape en cours :** recette complète des étapes 4 à 6.
+**Étape en cours :** aucune : étapes 4 à 6 terminées, recette complète faite, demande de fusion prête.
 
 **Fait :**
 
@@ -36,7 +36,7 @@ Pour reprendre si la session s'est arrêtée : branche `claude/loving-tesla-rtv3
 
 - Étape 6 (module 2 comme notion du jour) : familles 3 à 7 (`module2.json`, règles dans `facts.js`, `families.js` : ouverture, famille acquise, formes à trou définitives) ; alternance séance après séance et module imposé (`session.js`, `chooseModule`) ; `modules/facts/runner.js` (notion du jour des additions) ; écran des additions (exemples guidés, appui de chaque famille, correction avec l'appui, aide d'emblée du cran « plus facile ») ; bernard-l'ermite pendant la notion du jour ; leçons L4 à L6 (`lecons.json`, `lessons/player2.js`), aussi dans la revue de l'entraînement libre ; espace parent (notion du jour de la prochaine séance, point de départ familles 1 à 7, additions de la notion du jour à part dans le détail d'une séance) ; 5 phrases nouvelles et leurs variantes (38 fichiers son) ; simulation et recette (`sim-recette.mjs`, `sim-seances.mjs`, `recette.mjs --module 2`, `recette-durees.mjs`, parcours `notion2.mjs`) ; tests `tests/unit/module2-notion.test.mjs`.
 
-**Où j'en suis :** les trois étapes sont faites ; recette complète en cours.
+**Où j'en suis :** terminé ; demande de fusion https://github.com/js2c/Maths-CE1/pull/16 prête (sortie du brouillon). Étape suivante : 7 (défi record, grille des additions, progression du module 2), après fusion.
 
 **Décisions prises (étape 6) :**
 
@@ -48,9 +48,40 @@ Pour reprendre si la session s'est arrêtée : branche `claude/loving-tesla-rtv3
 - **Exemple guidé** : l'appui avec la réponse, « 3 plus 7, ça fait 10. », « À toi ! Tape la réponse. » ; l'appui est rangé quand le pavé revient (il occupe la même place). Correction en notion du jour : l'appui avec la réponse, puis la phrase de correction ; « passer » comme partout.
 - **Cran « plus facile »** : l'aide « affichée d'emblée » est montrée au début de chaque question (appui sans la réponse, avec sa phrase), puis le pavé revient ; elle n'est pas comptée comme une aide demandée (la séance « plus facile » compte normalement ; sinon aucun fait ne monterait jamais de boîte).
 - **Difficulté persistante** (3 erreurs sur 5) : la leçon de la famille si elle en a une et qu'elle n'a pas été jouée dans la séance, puis un fait déjà bien su.
-- **Nombres de questions** : 30 à 38 (`seance.json`, `notion.module2`), la limite de 6 minutes arrête l'étape ; simulation : environ 33 questions, 7,5 à 9 minutes de séance.
+- **Nombres de questions** : la durée prime. Avec 30 à 38 questions, la séance d'additions jouée à vitesse réelle (`recette.mjs --delai 4.5 --module 2`) durait 6 min 39 s (39 questions en 4 min 21 s, environ 6,7 s par question) ; relevé à **50 à 60** (`seance.json`, `notion.module2`), c'est la limite de 6 minutes qui arrête l'étape : 8 min 23 s, 56 questions.
 - **Frise** : pendant la notion du jour des additions, le pictogramme est le « + » de l'échauffement.
 - **Textes nouveaux, à valider** : « Maintenant, les additions, avec le bernard-l'ermite ! » (ou « Au tour des additions ! Le bernard-l'ermite va t'aider. »), « Regarde la boîte à dix places : 7 poissons. », « Regarde la maison : les deux pièces, ensemble, font le nombre du toit. », « 3 plus 3, c'est un double. Et une bulle de plus ! », « À toi ! Tape la réponse. » ; leçon L4 : les bulles de chaque côté du miroir sont les bulles dorées de l'atelier ; L5 : « Six et quatre. », « Huit et deux. » (les deux exemples rapides de la SPEC dits à voix haute) ; L6 : le bernard-l'ermite change de coquille pendant « Voici la maison du sept. ».
+
+**Écarts avec la spécification (étapes 4 à 6) :**
+
+- Son : 3,6 Mo (trois musiques à 64 kbit/s) au lieu des 3 Mo visés ; 48 kbit/s ramènerait à 2,7 Mo (choix du parent attendu, `tools/son/reglages.json`).
+- SPEC : « 12 à 16 questions » en notion du jour ; relevé à 50 à 60 pour les additions (la durée prime, voir plus haut).
+- Leçons L4 et L6 jouées aussi par les familles qui reprennent leur appui (`leconSiPasVue`) : ajout à la SPEC, voir les décisions de l'étape 6.
+- Le bernard-l'ermite n'est pas un visiteur de la surprise de l'accueil (planche de 55 Mo à charger pour quelques secondes).
+
+**Points à observer ou à décider (recette des étapes 4 à 6) :**
+
+- Profil « en difficulté » (simulation) : la famille 1 (« + 1 et + 2 », 30 faits) n'est jamais acquise dans l'année (80 % en boîte 3) ; la notion du jour des additions reste donc sur la famille 1 toute l'année (avec les autres familles en révision), sans leçon L4 à L6. À observer ; parade possible : le point de départ du parent.
+- L'ouverture des familles est rapide pour une enfant à l'aise (les 7 ouvertes dès la 6e séance), car la règle ne compte que les faits déjà introduits.
+- Écouter les phrases nouvelles et le mixage sur la tablette (je n'ai rien pu écouter).
+
+**Recette complète des étapes 4 à 6 (27 septembre 2026) :**
+
+| Critère | Mesure | État |
+| --- | --- | --- |
+| Tests unitaires | 150 sur 150 (dont 21 nouveaux : son, bernard-l'ermite, module 2) ; `precache.mjs --check` à jour | tenu |
+| Durée d'une séance complète (`recette.mjs --delai 4.5`), 8 à 10 min tant que le défi record n'existe pas | ligne graduée (première séance) : **8 min 58 s** ; additions (`--module 2`, première séance) : **8 min 23 s** (6 min 39 s avant le relèvement des questions) | tenu |
+| Attente sans rien pouvoir faire, hors consigne orale (`recette-durees.mjs --passer`) | au plus **2,5 s** après une question, niveaux 1 à 8 de la ligne et familles 1 à 5 des additions ; avant la première question : 4 à 5 s (ligne), 7,4 à 8,7 s (additions : accueil et « Maintenant, les additions… », consigne orale). Sans « passer » : corrections jusqu'à 24 s (après « je ne sais pas », la tortue compte), leçons L4 à L6 de 13 à 17 s | tenu |
+| Faits nouveaux (profil « reel », 2 séances par semaine) | 6, 6, 6, 6, 1, 5, 6 jusqu'aux 33 faits (le 1 : boîte 1 à 7 faits sur 8) ; « diff » : 0 à 6, bloqué quand la boîte 1 est pleine | tenu |
+| Familles 1 et 2 (profil « sait ») | les 33 faits vus à la **6e séance** (2 et 5 par semaine) ; les 45 à la 8e | tenu |
+| Cartes (2 séances par semaine, zones 3 et 4 prêtes) | 60 cartes (5 légendaires) le 17 juin pour les 5 profils (le 15 juin à 5 par semaine) ; quota jamais dépassé | tenu |
+| Tirage des brillantes | inchangé (test unitaire 20 % ± 3 points) ; sur l'année : 17 à 42 à 2 par semaine, 56 à 57 à 5 par semaine (point ouvert inchangé) | tenu |
+| Alternance | jamais deux fois de suite le même module (5 profils, 2 et 5 par semaine) : 32 + 32 et 80 + 80 séances ; module imposé : parcours `notion2.mjs` et test unitaire | tenu |
+| Module 2 en notion du jour (simulation) | 35 à 39 questions par séance d'additions, 8,1 à 9,1 min estimées ; leçons L4 à L6 vues dans l'année (« sait », « reel » à 5 par semaine, « très dur », « plus facile ») ; une famille acquise = une étoile arc-en-ciel | tenu (voir « diff ») |
+| Son | bruitages décodés et joués dans Chromium, contexte à 48 kHz, musique tirée et notée, arrêtée à la fin (`seance.mjs`) ; réglages du parent (`parent.mjs`) | tenu (écoute à faire) |
+| Écrans nouveaux ou modifiés | captures regardées : réglages du son, bernard-l'ermite (gestes, planche de modèle, visage en grand), cadre de 10, maison, double + 1, leçons L4 à L6, exemple guidé, corrections avec l'appui (tortue, cadre, reflet, maison), fin de la notion avec la nouvelle coquille ; corrigés : proportions et visage du bernard-l'ermite, coquille retrouvée après « changer », appui qui chevauchait le pavé, coquille à moitié hors de l'écran | tenu |
+| Erreurs dans la page | aucune (pwa, voix, séance, leçons, récompenses, sélecteur, cartes, ergonomie, frise, parent, perf, ermite, notion2 et `--famille 3`, `--famille 6`, deux recettes à vitesse réelle, recette-durees) | tenu |
+| Performance (`perf.mjs`, processeur ÷4, densité 2) | la machine de l'environnement est plus lente depuis un redémarrage : mesuré le même jour, `main` donne 2,75 s au démarrage à froid et 44,7 ms d'intervalle moyen ; cette branche 2,9 à 3,1 s et 42,9 à 46,5 ms : pas d'écart significatif ; planches décodées 180 Mo (+5 Mo, « aides ») ; « ermite » (55 Mo) seulement pendant le module 2 | à vérifier sur la tablette |
 
 **Décisions prises (étape 5) :**
 

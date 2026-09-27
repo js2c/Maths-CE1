@@ -89,7 +89,7 @@ export class Lesson2Player {
   abandon() { if (!this.keys) return; this.tok++; this.abort = null; this.keys.forEach((k) => k.remove()); this.keys = null; this.clear(); }
   clear() {
     this.app.aidBoard?.clear();
-    if (this.own) { this.h?.remove(); this.app.sprites.unload("ermite"); } else if (this.h && this.back) this.h.at(...this.back);
+    if (this.own) { this.h?.remove(); this.app.sprites.unload("ermite"); } else if (this.h && this.back) { this.h.left = null; this.h.at(...this.back); } // (l'ancienne coquille reste dans la leçon)
     this.h = null;
   }
 }

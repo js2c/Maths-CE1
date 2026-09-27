@@ -10,7 +10,7 @@ for (const niveau of [1, 3, 4, 5, 6, 7, 8]) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }), page = await context.newPage();
   await page.goto(url + "?nosw"); await page.waitForFunction(() => window.__ready !== undefined);
   await page.evaluate(async () => { await window.__app.store.setSetting("mascotte", "Pili"); });
-  await page.goto(url + `?nosw&sans=echauffement&niveau=${niveau}&questions=4`); await page.waitForFunction(() => window.__ready !== undefined);
+  await page.goto(url + `?nosw&cran=conseille&sans=echauffement&niveau=${niveau}&questions=4`); // (lot 2 : le sélecteur de difficulté est mesuré à part, tests/e2e/selecteur.mjs) await page.waitForFunction(() => window.__ready !== undefined);
   const t0 = Date.now(); await page.tap(".play", { force: true });
   const open = () => page.waitForFunction(() => { const s = window.__app.screen; return s?.q && s.resolve && !s.locked; }, null, { timeout: 240000, polling: 100 });
   const ev = []; let t = Date.now();

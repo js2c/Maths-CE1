@@ -186,7 +186,9 @@ export class Module2Runner {
     // cinq pour les autres familles, la 5e, la 10e…
     const famTurn = !this.otherAllowed();
     const extra = famTurn ? [] : this.extraPool();
-    if (!f) f = famTurn ? this.pickFamily() ?? this.pickOther() : (extra.length ? this.pickFamily(true, extra) : null) ?? this.pickOther() ?? this.pickFamily();
+    // (lot 3 bis : au tour de la famille, un fait nouveau de la famille au-delà de la limite de la séance, `pickOverflow`, passe
+    // avant les autres familles : sinon une famille dont peu de faits sont introduits laisserait la notion du jour aux révisions)
+    if (!f) f = famTurn ? this.pickFamily() ?? this.pickOverflow() ?? this.pickOther() : (extra.length ? this.pickFamily(true, extra) : null) ?? this.pickOther() ?? this.pickFamily();
     return f ?? this.pickOther() ?? this.pickNewOther() ?? this.pickOverflow();
   }
   // lot 3 bis : la famille en cours n'a plus rien d'utilisable (ses faits connus déjà posés 3 fois, §0), la limite de faits

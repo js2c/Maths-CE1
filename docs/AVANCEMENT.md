@@ -6,12 +6,12 @@ Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail 
 
 Spécification : `docs/SPEC-LOT3BIS.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LOT2.md`, `docs/SPEC-LOT3.md` et `docs/SPEC-COMPLEMENTS.md`) ; rapport qui la motive : `docs/RECETTE-LOT3.md` (constats R1 à R25) ; prompt : `docs/PROMPT-LOT3BIS.md`. Deux parties : A (étapes 1 et 2, moteur et contenu), B (étapes 3 à 5, visuel, atelier et parent).
 
-**Où en est-on (28 septembre 2026)** : lot 3 bis commencé ; étapes 1 et 2 (partie A) en cours sur la branche `claude/great-brahmagupta-bj3214` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 3 bis, étapes 1 à 2 (en cours) ».
+**Où en est-on (28 septembre 2026, soir)** : **partie A du lot 3 bis terminée** (étapes 1 et 2, recette complète faite), branche `claude/great-brahmagupta-bj3214` (nom imposé par l'environnement), demande de fusion « Lot 3 bis, étapes 1 à 2 » (https://github.com/js2c/Maths-CE1/pull/22). Reste : fusionner, essayer sur la tablette, puis la partie B (étapes 3 à 5).
 
 | Étape | Partie | Contenu | État |
 | --- | --- | --- | --- |
 | 1 | A | §0 (réponse qui varie : règles et test sur les 116 combinaisons) ; A1 (amis de 10 et maisons, faits tirés au hasard, acquisition) ; A2 (calcul rapide « très dur ») ; A4 (mélange) | fait |
-| 2 | A | A3 (ligne : « plus facile », tirage sans remise, niveau 1, L3) ; A5 (toucher et reprise) ; A6 (décors : logique et voix, dessin provisoire) ; recette de la partie A | en cours |
+| 2 | A | A3 (ligne : « plus facile », tirage sans remise, niveau 1, L3) ; A5 (toucher et reprise) ; A6 (décors : logique et voix, dessin provisoire) ; recette de la partie A | fait |
 | 3 | B | B8 : atelier (plaques numérotées, numéros des tuiles, légende, étiquette, décors, poissons des maisons, poisson étiqueté, étoiles volantes, fin du défi, bouées de L2) | à faire |
 | 4 | B | B1 à B7, B9 à B12 : intégration (choisir, légende, appui long, aides et corrections, fins, « placer », leçons L2, L8, L9, espace parent, cosmétique, guide du parent) | à faire |
 | 5 | B | Recette complète du lot 3 bis et relance des parties B et C de la recette fonctionnelle | à faire |
@@ -20,7 +20,7 @@ Spécification : `docs/SPEC-LOT3BIS.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC
 
 Pour reprendre si la session s'est arrêtée : branche `claude/great-brahmagupta-bj3214`, demande de fusion en brouillon « Lot 3 bis, étapes 1 à 2 (en cours) ».
 
-**Étape en cours :** 2.
+**Étape en cours :** aucune ; étapes 1 et 2 terminées, recette complète faite, demande de fusion prête. Prochaine : l'étape 3 (partie B), dans une autre session, après l'essai sur la tablette.
 
 **Fait :**
 
@@ -40,7 +40,28 @@ Pour reprendre si la session s'est arrêtée : branche `claude/great-brahmagupta
   - *Décors du doublon* (`cartes.json`, `decors` : 15 décors, dans l'ordre, nom avec article, zone et place ; `rewards.js`, `nextDecor`, `reefDecor`, `Rewards.win` ; `screens.js`, `cardSpeech`, le décor montré à côté de la carte ; `reef.js` ; espace parent, bloc « Cartes » : « n / 15 décors du récif ») : chaque doublon apporte le décor suivant et la voix dit « Encore la moule ! Tu avais déjà cette carte : elle t'offre un corail branchu pour ton récif ! » (15 phrases fabriquées) ; la collection complète, le doublon redevient comme avant. Dessins provisoires : les quatre cadeaux de la surprise (les 15 décors seront dessinés à l'étape 3). Brillante d'un doublon : 5 %, tirée avant le décor (un tirage avec et sans décors donne exactement les mêmes brillantes). Simulation (`sim-seances.mjs`, un mois à 2 séances par semaine) : 7 décors pour les profils qui répondent bien, 8 à « très dur », 3 à « plus facile ». Captures `10-doublon-decor`, `11-recif-decors`, `12-parent-decors`.
   - Tests : `tests/unit/lot3bis-partieA2.test.mjs` (8 tests : repères et tirage sans remise, niveau 1, E3 en « sauter » sans L3, pavé ignoré pendant un retour et double toucher, reprise avec consigne, décors du doublon, brillante inchangée) ; `npm test` : 228, tout est bon.
 
-**Reste :** la recette complète de la partie A (fin de l'étape 2), puis la demande de fusion.
+**Reste :** l'essai sur la tablette ; la partie B (étapes 3 à 5).
+
+**Recette complète de la partie A (28 septembre 2026) :**
+
+| Critère (`docs/SPEC-LOT3BIS.md`, « Recette du lot 3 bis ») | Mesure | Tenu |
+| --- | --- | --- |
+| Réponse qui varie (§0) | `b-sequences.mjs --test` : les 4 règles sur les 116 combinaisons, bases neuve et « un mois », « appliquée » et « réelle » : **0 séance en défaut sur 464** (213 avant le lot 3 bis) | oui |
+| Amis de 10 et maisons (A1) | famille 3 : 100 % de questions à trou à tous les crans (19/19, 25/25, 25/25, 25/25 en base neuve ; 24/24, 27/27 × 3 en « un mois ») ; aucune famille acquise en une seule séance (simulation sur l'année, 5 profils, 2 et 5 séances par semaine) | oui |
+| Calcul rapide « très dur » (A2) | niveaux 1, 2, 3, 6 : 28 à 37 réponses différentes par séance ; « pressée » : 9 à 19 % des étoiles de « appliquée » (seuil 50 %) | oui |
+| Ligne (A3) | niveaux 2, 5, 9 « plus facile » : 6 cibles, jamais le même ordre deux tours de suite ; niveau 1 : cible et voisins cachés (test, capture) ; E3 en « sauter » ne relance jamais L3 (test) | oui |
+| Toucher (A5) | parcours `lot3bis.mjs` : chiffre tapé pendant le « bravo » ignoré ; double toucher (60 ms demandés, 116 ms mesurés) : un seul chiffre ; consigne redite après la reprise dans les trois modules | oui |
+| Décors (A6) | un mois à 2 séances par semaine : 7 décors (profils « sait », « réel », « en difficulté »), 8 (« très dur »), 4 (« plus facile ») ; brillante inchangée : tirage de contrôle identique avec et sans décors, 5 % sur 1 000 tirages | oui |
+| Choisir, légende, appui long, aides, fins, leçons (B1 à B9) | partie B | — |
+| Non-régression (§5 du rapport) | parcours Playwright tous bons ; corrections E1 à E7, C1, C3 inchangées ; leçons inchangées ; voie rapide : plusieurs niveaux dans la première séance (simulation) | oui |
+
+| Recettes des lots précédents | Mesure |
+| --- | --- |
+| `sim-seances.mjs`, 5 profils, 2 et 5 séances par semaine, sur l'année | 60 cartes du 15 au 17 juin 2027, légendaires comprises ; quota jamais dépassé ; séances estimées 8,7 à 9,5 min ; part de la famille en cours : 88 à 100 % en moyenne, sauf « en difficulté » à 2 par semaine (72 %, voir « Décisions ») |
+| `recette.mjs --delai 4.5` | ligne graduée 8 min 42 s ; additions 8 min 21 s ; calcul rapide 8 min 12 s (lot 3 : 8 min 20 s à 8 min 50 s) ; aucune erreur |
+| `recette-durees.mjs` | sans « passer » : attente sans commande hors voix 1,0 s au plus ; avec « passer » : 1,0 s au plus |
+| Parcours Playwright | les 25 parcours (sauf `video`) : tout est bon ; `pwa` a échoué une fois sous la charge (attente du pavé), rejoué seul : bon ; `centaines`, `crans`, `lot3bis` : échecs corrigés (double toucher des parcours, formes à trou de A1, un défaut réel : voir « Décisions ») puis rejoués avec `notion2`, `seance`, `choix`, `defi`, `aide-passer`, `selecteur`, `pause-parent` : tout est bon |
+| `npm test` | 229 tests, tout est bon |
 
 **Décisions prises :**
 

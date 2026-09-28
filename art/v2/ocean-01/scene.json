@@ -4,56 +4,44 @@
   "design": { "width": 1280, "height": 800 },
   "layers": [
     {
-      "id": "water-far",
+      "id": "background-00",
       "slot": "background",
       "depth": 0,
-      "placeholder": { "type": "rect", "x": 0, "y": 0, "w": 1280, "h": 800, "fill": "#176c7d" }
+      "asset": "assets/background-00.webp",
+      "x": 0,
+      "y": 0,
+      "w": 640,
+      "h": 400
     },
     {
-      "id": "deep-haze",
+      "id": "background-01",
       "slot": "background",
-      "depth": 4,
-      "opacity": 0.52,
-      "parallax": 1.5,
-      "placeholder": { "type": "ellipse", "x": 640, "y": 250, "w": 980, "h": 440, "fill": "#4ba8a7" }
+      "depth": 0,
+      "asset": "assets/background-01.webp",
+      "x": 640,
+      "y": 0,
+      "w": 640,
+      "h": 400
     },
     {
-      "id": "ruins-left",
+      "id": "background-10",
       "slot": "background",
-      "depth": 10,
-      "parallax": 3,
-      "opacity": 0.68,
-      "placeholder": { "type": "rect", "x": 42, "y": 235, "w": 255, "h": 360, "fill": "#355e65", "radius": 30 }
+      "depth": 0,
+      "asset": "assets/background-10.webp",
+      "x": 0,
+      "y": 400,
+      "w": 640,
+      "h": 400
     },
     {
-      "id": "ruins-right",
+      "id": "background-11",
       "slot": "background",
-      "depth": 11,
-      "parallax": 3.5,
-      "opacity": 0.72,
-      "placeholder": { "type": "rect", "x": 1010, "y": 195, "w": 210, "h": 410, "fill": "#315760", "radius": 42 }
-    },
-    {
-      "id": "seabed",
-      "slot": "background",
-      "depth": 20,
-      "placeholder": { "type": "rect", "x": 0, "y": 535, "w": 1280, "h": 265, "fill": "#d8b77c" }
-    },
-    {
-      "id": "foreground-left",
-      "slot": "front",
-      "depth": 50,
-      "parallax": 8,
-      "opacity": 0.9,
-      "placeholder": { "type": "ellipse", "x": 32, "y": 675, "w": 260, "h": 370, "fill": "#174f48" }
-    },
-    {
-      "id": "foreground-right",
-      "slot": "front",
-      "depth": 51,
-      "parallax": 9,
-      "opacity": 0.92,
-      "placeholder": { "type": "ellipse", "x": 1255, "y": 670, "w": 285, "h": 395, "fill": "#164840" }
+      "depth": 0,
+      "asset": "assets/background-11.webp",
+      "x": 640,
+      "y": 400,
+      "w": 640,
+      "h": 400
     }
   ],
   "actors": [

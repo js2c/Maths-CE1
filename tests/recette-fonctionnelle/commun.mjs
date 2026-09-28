@@ -65,7 +65,7 @@ export const touchables = (page) => page.evaluate(() => {
   // (un élément recouvert par un autre, par exemple l'accueil sous l'espace parent ou sous une carte ouverte, ne reçoit pas
   // le toucher : on garde ceux dont le centre, ou l'un des quatre points à mi-chemin des bords, est bien le leur)
   const onTop = (e) => { const r = e.getBoundingClientRect(); return [[0.5, 0.5], [0.3, 0.5], [0.7, 0.5], [0.5, 0.3], [0.5, 0.7]].some(([fx, fy]) => { const x = r.left + r.width * fx, y = r.top + r.height * fy; if (x < 0 || y < 0 || x >= innerWidth || y >= innerHeight) return false; const t = document.elementFromPoint(x, y); return !!t && (t === e || e.contains(t)); }); };
-  const els = [...document.querySelectorAll("button, .touchband, .reef-swipe, [role=tab], .pa-root a, input, select")].filter(vis).filter(onTop);
+  const els = [...document.querySelectorAll("button, .touchband, .reef-swipe, .card, [role=tab], .pa-root a, input, select")].filter(vis).filter(onTop);
   const groups = new Map(), add = (g, v) => { if (!groups.has(g)) groups.set(g, []); if (v != null && !groups.get(g).includes(v)) groups.get(g).push(v); };
   for (const e of els) {
     const cl = e.classList, lab = e.getAttribute("aria-label");
@@ -74,6 +74,7 @@ export const touchables = (page) => page.evaluate(() => {
     else if (cl.contains("choix-tuile")) add("tuiles", `${e.dataset.key}${e.dataset.conseille === "1" ? " (conseillé)" : ""}${e.dataset.valide === "1" ? " (validé)" : ""}`);
     else if (cl.contains("album-card")) add(cl.contains("album-tab") ? "onglets de zone de l'album" : "cartes de l'album", lab || "?");
     else if (cl.contains("creature")) add("créatures du récif", lab);
+    else if (cl.contains("card")) add("la carte (la retourner)");
     else if (cl.contains("touchband")) add("bande de la ligne (poser le poisson)");
     else if (cl.contains("reef-swipe")) add("fond du récif (glisser)");
     else if (e.getAttribute("role") === "tab") add("onglets", e.textContent.trim());

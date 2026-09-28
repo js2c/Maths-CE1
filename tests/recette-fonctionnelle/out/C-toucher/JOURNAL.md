@@ -105,15 +105,15 @@ Chaque essai : le geste, ce qui change entre avant et après (étape, question, 
 | rien pendant 60 s | choix du nom (premier lancement) | aucun toucher pendant 60 s | rien ne change | (rien) | aucune | C4-rien-60s n° 3–4 |
 | rien pendant 60 s | choisir : les exercices | aucun toucher pendant 60 s | rien ne change | (rien) | aucune | C4-rien-60s n° 5–6 |
 | rien pendant 60 s | choisir : les niveaux de la ligne | aucun toucher pendant 60 s | rien ne change | (rien) | aucune | C4-rien-60s n° 7–8 |
-| rien pendant 60 s | sélecteur de difficulté | aucun toucher pendant 60 s | rien ne change | (rien) | aucune | C4-rien-60s n° 9–10 |
+| rien pendant 60 s | sélecteur de difficulté | aucun toucher pendant 60 s | question « — » → « 1 + 2 (trouDroite) » ; attend une réponse ; ardoise «  » → «  » ; la voix s'est tue | « 1 plus combien, ça fait 3 ? » | aucune | C4-rien-60s n° 9–10 |
 | rien pendant 60 s | échauffement : une question | aucun toucher pendant 60 s | rien ne change | (rien) | aucune | C4-rien-60s n° 11–12 |
 | rien pendant 60 s | ligne graduée : une question | aucun toucher pendant 60 s | rien ne change | (rien) | aucune | C4-rien-60s n° 13–14 |
 | rien pendant 60 s | additions : une question | aucun toucher pendant 60 s | rien ne change | (rien) | aucune | C4-rien-60s n° 15–16 |
 | rien pendant 60 s | calcul rapide : une question | aucun toucher pendant 60 s | rien ne change | (rien) | aucune | C4-rien-60s n° 17–18 |
-| rien pendant 60 s | leçon L1 : pendant la leçon | aucun toucher pendant 60 s | rien ne change | « 1 » « 2 » « 3 » « 4 » « 5 » « 6 » | aucune | C4-rien-60s n° 19–20 |
+| rien pendant 60 s | leçon L1 : pendant la leçon | aucun toucher pendant 60 s | la voix s'est tue | « 1 » « 2 » « 3 » « 4 » « 5 » « 6 » | aucune | C4-rien-60s n° 19–20 |
 | rien pendant 60 s | accueil en pause | aucun toucher pendant 60 s | rien ne change | (rien) | aucune | C4-rien-60s n° 21–22 |
-| rien pendant 60 s | récompense : le coquillage | aucun toucher pendant 60 s | étape recompense → — | « C'est l'hippocampe ! Chez l'hippocampe, c'est le papa qui porte les bébés, dans une poche sur son ventre. Cette créature va vivre dans ton récif ! » « C'est fini pour aujourd'hui. À demain ! » | aucune | C4-rien-60s n° 23–24 |
-| rien pendant 60 s | récompense : la carte retournée | aucun toucher pendant 60 s | étape recompense → — ; la voix s'est tue | « Tu as bien travaillé. À demain ! » | aucune | C4-rien-60s n° 25–26 |
+| rien pendant 60 s | récompense : le coquillage | aucun toucher pendant 60 s | étape recompense → — | « C'est l'oursin ! Oh ! Elle est brillante ! L'oursin a sa bouche sous son corps, avec cinq petites dents. Cette créature va vivre dans ton récif ! » « C'est fini pour aujourd'hui. À demain ! » | aucune | C4-rien-60s n° 23–24 |
+| rien pendant 60 s | récompense : la carte retournée | aucun toucher pendant 60 s | étape recompense → — ; la voix s'est tue | « C'est fini pour aujourd'hui. À demain ! » | aucune | C4-rien-60s n° 25–26 |
 | rien pendant 60 s | fin de séance : la lune | aucun toucher pendant 60 s | rien ne change | (rien) | aucune | C4-rien-60s n° 27–28 |
 | rien pendant 60 s | le récif | aucun toucher pendant 60 s | rien ne change | (rien) | aucune | C4-rien-60s n° 29–30 |
 | rien pendant 60 s | l'album | aucun toucher pendant 60 s | rien ne change | (rien) | aucune | C4-rien-60s n° 31–32 |

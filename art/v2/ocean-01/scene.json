@@ -1,0 +1,112 @@
+{
+  "version": 1,
+  "id": "ocean-01",
+  "design": { "width": 1280, "height": 800 },
+  "layers": [
+    {
+      "id": "water-far",
+      "slot": "background",
+      "depth": 0,
+      "placeholder": { "type": "rect", "x": 0, "y": 0, "w": 1280, "h": 800, "fill": "#176c7d" }
+    },
+    {
+      "id": "deep-haze",
+      "slot": "background",
+      "depth": 4,
+      "opacity": 0.52,
+      "parallax": 1.5,
+      "placeholder": { "type": "ellipse", "x": 640, "y": 250, "w": 980, "h": 440, "fill": "#4ba8a7" }
+    },
+    {
+      "id": "ruins-left",
+      "slot": "background",
+      "depth": 10,
+      "parallax": 3,
+      "opacity": 0.68,
+      "placeholder": { "type": "rect", "x": 42, "y": 235, "w": 255, "h": 360, "fill": "#355e65", "radius": 30 }
+    },
+    {
+      "id": "ruins-right",
+      "slot": "background",
+      "depth": 11,
+      "parallax": 3.5,
+      "opacity": 0.72,
+      "placeholder": { "type": "rect", "x": 1010, "y": 195, "w": 210, "h": 410, "fill": "#315760", "radius": 42 }
+    },
+    {
+      "id": "seabed",
+      "slot": "background",
+      "depth": 20,
+      "placeholder": { "type": "rect", "x": 0, "y": 535, "w": 1280, "h": 265, "fill": "#d8b77c" }
+    },
+    {
+      "id": "foreground-left",
+      "slot": "front",
+      "depth": 50,
+      "parallax": 8,
+      "opacity": 0.9,
+      "placeholder": { "type": "ellipse", "x": 32, "y": 675, "w": 260, "h": 370, "fill": "#174f48" }
+    },
+    {
+      "id": "foreground-right",
+      "slot": "front",
+      "depth": 51,
+      "parallax": 9,
+      "opacity": 0.92,
+      "placeholder": { "type": "ellipse", "x": 1255, "y": 670, "w": 285, "h": 395, "fill": "#164840" }
+    }
+  ],
+  "actors": [
+    {
+      "id": "school-far",
+      "slot": "back",
+      "depth": 16,
+      "x": 760,
+      "y": 190,
+      "parallax": 2,
+      "placeholder": { "type": "ellipse", "x": 0, "y": 0, "w": 155, "h": 32, "fill": "#355f68" },
+      "motion": { "float": { "amplitude": 3, "periodMs": 4800 } }
+    },
+    {
+      "id": "ray",
+      "slot": "back",
+      "depth": 28,
+      "x": 760,
+      "y": 510,
+      "placeholder": { "type": "ellipse", "x": 0, "y": 0, "w": 180, "h": 92, "fill": "#8cb5a8" },
+      "motion": { "float": { "amplitude": 4, "periodMs": 3900, "rotateDeg": 1.2 } },
+      "animation": { "clip": "swim", "fps": 8 }
+    },
+    {
+      "id": "clownfish-big",
+      "slot": "back",
+      "depth": 34,
+      "x": 925,
+      "y": 215,
+      "placeholder": { "type": "ellipse", "x": 0, "y": 0, "w": 185, "h": 92, "fill": "#ef7d36" },
+      "motion": { "float": { "amplitude": 5, "periodMs": 3000, "rotateDeg": 1 } },
+      "animation": { "clip": "swim", "fps": 10 }
+    },
+    {
+      "id": "clownfish-small",
+      "slot": "back",
+      "depth": 35,
+      "x": 770,
+      "y": 345,
+      "scale": 0.72,
+      "placeholder": { "type": "ellipse", "x": 0, "y": 0, "w": 170, "h": 82, "fill": "#f28b3c" },
+      "motion": { "float": { "amplitude": 4, "periodMs": 3400, "rotateDeg": 0.8 } },
+      "animation": { "clip": "swim", "fps": 10 }
+    },
+    {
+      "id": "octopus",
+      "slot": "octo",
+      "depth": 40,
+      "x": 308,
+      "y": 255,
+      "placeholder": { "type": "ellipse", "x": 0, "y": 0, "w": 345, "h": 300, "fill": "#e85d55" },
+      "motion": { "float": { "amplitude": 7, "periodMs": 3200, "rotateDeg": 1.1 } },
+      "animation": { "clip": "idle", "fps": 10 }
+    }
+  ]
+}

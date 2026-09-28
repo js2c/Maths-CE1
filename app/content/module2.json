@@ -5,21 +5,21 @@
     { "id": 2, "nom": "doubles jusqu'à 5", "regle": "doubles", "aide": "reflet", "lecon": "L4" },
     { "id": 3, "nom": "amis de 10", "regle": "amis10", "aide": "cadre", "lecon": "L5" },
     { "id": 4, "nom": "maisons de 5, 6 et 7", "regle": "maisons567", "aide": "maison", "lecon": "L6" },
-    { "id": 5, "nom": "maisons de 8 et 9", "regle": "maisons89", "aide": "maison", "leconSiPasVue": ["L6"] },
-    { "id": 6, "nom": "presque-doubles", "regle": "presqueDoubles", "aide": "doublePlus", "leconSiPasVue": ["L4", "L6"] },
-    { "id": 7, "nom": "mélange", "regle": "melange", "aide": "fait", "leconSiPasVue": ["L6", "L4", "L5"] }
+    { "id": 5, "nom": "maisons de 8 et 9", "regle": "maisons89", "aide": "maison", "leconSiJamaisVue": "L6" },
+    { "id": 6, "nom": "presque-doubles", "regle": "presqueDoubles", "aide": "doublePlus", "leconSiJamaisVue": "L4", "rappelDouble": true },
+    { "id": 7, "nom": "mélange", "regle": "melange", "aide": "fait" }
   ],
   "famillesActives": [1, 2],
   "familles2": {
-    "_doc": "Lot 2, étape 6 (docs/SPEC-LOT2.md, section 3). famillesActives : les familles ouvertes au départ ; les autres s'ouvrent une à une (magasin « niveaux », module 2). ouverture : la famille suivante s'ouvre quand `part` des faits déjà introduits sont en boîte `boite` ou plus. acquise : `part` des faits de la règle de la famille en boîte `boite` ou plus (une étoile arc-en-ciel, sauf si c'est le point de départ du parent). trou : les formes à trou s'ouvrent pour une famille (définitivement) quand `part` des faits de sa règle atteignent la boîte `boite` ; ensuite chaque question sur un fait de cette famille tire la forme au hasard (un tiers chacune). stagnation (décision du parent du 27 septembre) : une famille pas acquise après `seances` séances où elle était la notion du jour est dépassée : la famille suivante devient la famille en cours (elle s'ouvre si besoin, avec sa leçon), la famille dépassée reste travaillée en révision. familles[].leconSiPasVue : une famille sans leçon qui s'appuie sur celle d'une famille acquise avant d'avoir été la notion du jour (la maison pour les maisons de 8 et 9, les doubles pour les presque-doubles) joue la première de ces leçons jamais vue, à sa première notion du jour (le mélange : toute leçon d'appui jamais vue).",
+    "_doc": "Lot 2, étape 6 (docs/SPEC-LOT2.md, section 3). famillesActives : les familles ouvertes au départ ; les autres s'ouvrent une à une (magasin « niveaux », module 2). ouverture : la famille suivante s'ouvre quand `part` des faits déjà introduits sont en boîte `boite` ou plus. acquise : `part` des faits de la règle de la famille en boîte `boite` ou plus (une étoile arc-en-ciel, sauf si c'est le point de départ du parent). trou : les formes à trou s'ouvrent pour une famille (définitivement) quand `part` des faits de sa règle atteignent la boîte `boite` ; ensuite chaque question sur un fait de cette famille tire la forme au hasard (un tiers chacune). stagnation (décision du parent du 27 septembre) : une famille pas acquise après `seances` séances où elle était la notion du jour est dépassée : la famille suivante devient la famille en cours (elle s'ouvre si besoin, avec sa leçon), la famille dépassée reste travaillée en révision. Lot 3 (docs/SPEC-LOT3.md, section 4 : une leçon n'est jouée que pour ce qu'on va travailler ; la règle leconSiPasVue du lot 2 est supprimée, le mélange ne joue aucune leçon) : familles[].leconSiJamaisVue : la leçon de la même représentation, jouée quand la famille est travaillée si elle n'a jamais été vue (L6, la maison, pour les maisons de 8 et 9 ; L4, les doubles, pour les presque-doubles) ; familles[].rappelDouble : chaque question (forme directe) de la famille rappelle le double (« 3 + 4, c'est 3 + 3, et encore 1 »).",
     "ouverture": { "part": 0.8, "boite": 2 },
     "acquise": { "part": 0.8, "boite": 3 },
     "trou": { "part": 0.5, "boite": 3 },
     "stagnation": { "seances": 6 }
   },
   "notion": {
-    "_doc": "Le module 2 comme notion du jour (docs/SPEC-LOT2.md, section 3). partFamille : au moins cette part des questions sur les faits de la règle de la famille en cours (faits nouveaux compris, dans la limite commune de la séance) ; memeFaitMax : un même fait au plus tant de fois dans la séance ; difficulte : `erreurs` erreurs sur les `sur` dernières réponses relancent la leçon de la famille (une fois par séance) puis une question plus simple (un fait déjà bien su). crans : ce que change le sélecteur de difficulté (facile : formes directes de la famille en cours, aide affichée d'emblée ; dur : formes à trou et faits de la famille suivante ; tresdur : formes à trou, toutes les familles ouvertes mêlées, et la famille suivante).",
-    "partFamille": 0.5,
+    "_doc": "Le module 2 comme notion du jour (docs/SPEC-LOT2.md, section 3 ; lot 3, docs/SPEC-LOT3.md, sections 2 et 4). partFamille : au moins cette part des questions sur les faits de la règle de la famille en cours (lot 3 : 80 %, avec « jouer » comme avec « choisir » ; faits nouveaux compris, dans la limite commune de la séance, sauf pour une famille choisie par l'enfant : ses faits nouveaux ne sont limités ni par nouveauxMaxSeance ni par boite1Max) ; memeFaitMax : un même fait au plus tant de fois dans la séance (lot 3 : pour les faits de la famille, seulement tant qu'un autre fait de la famille est disponible ; une petite famille comme les doubles, 5 faits, revient donc plus souvent : sinon les 80 % seraient impossibles) ; difficulte : `erreurs` erreurs sur les `sur` dernières réponses relancent la leçon de la famille (une fois par séance) puis une question plus simple (un fait déjà bien su). crans : ce que change le sélecteur de difficulté (facile : formes directes de la famille en cours, aide affichée d'emblée ; dur : formes à trou et faits de la famille suivante ; tresdur : formes à trou, toutes les familles ouvertes mêlées, et la famille suivante).",
+    "partFamille": 0.8,
     "memeFaitMax": 3,
     "difficulte": { "sur": 5, "erreurs": 3 },
     "crans": {
@@ -27,6 +27,12 @@
       "conseille": {},
       "dur": { "trou": true, "familleSuivante": true },
       "tresdur": { "trou": true, "familleSuivante": true, "melange": true }
+    },
+    "cransChoix": {
+      "facile": { "directe": true, "aideDEmblee": true, "familleSeule": true },
+      "conseille": {},
+      "dur": { "trouPart": 0.5 },
+      "tresdur": { "trouPart": 1 }
     }
   },
   "sommeMax": 10,

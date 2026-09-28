@@ -1,6 +1,6 @@
 # Guide du parent
 
-Ce guide explique, sans connaissances techniques, comment mettre l'application en ligne, l'installer sur la tablette et suivre la progression. Il correspond aux lots 1, 1 bis et 2 (septembre 2026), avec les décisions du 27 septembre 2026. Le bilan du lot 2 est dans `docs/BILAN-LOT2.md`.
+Ce guide explique, sans connaissances techniques, comment mettre l'application en ligne, l'installer sur la tablette et suivre la progression. Il correspond aux lots 1, 1 bis, 2 et 3 (parties A et B, septembre 2026), avec les décisions du 27 septembre 2026. Le bilan du lot 2 est dans `docs/BILAN-LOT2.md`.
 
 ## a) L'adresse de l'application
 
@@ -88,6 +88,44 @@ Le dépôt est public : l'application et son code sont visibles par tous, mais *
 4. Faire une **Sauvegarde complète** et vérifier que le fichier est dans les Téléchargements.
 5. Pour recommencer à zéro avant que l'enfant ne commence vraiment : **Données et réglages** > **Tout effacer** (cela efface aussi le code et le nom de la pieuvre ; au prochain lancement, l'enfant choisira le nom).
 
+## d bis) Lot 3 : choisir l'exercice, l'échauffement, la difficulté, les sauvegardes de test
+
+**Choisir l'exercice et le niveau.** L'accueil a maintenant quatre bulles : **jouer** (la séance proposée par l'application, comme avant), **choisir** (quatre petits carrés de couleur), le récif et l'album. Avec **choisir**, l'enfant (ou vous, pour lui indiquer l'exercice du soir) choisit d'abord l'exercice : la ligne des nombres (la tortue), les additions (le « + »), les leçons (le livre). Puis le niveau : les 13 niveaux de la ligne, les 7 familles d'additions ou toutes les leçons, **même ceux jamais atteints**. Chaque image a un petit dessin qui montre le niveau ; le niveau conseillé par l'application est entouré d'une lueur jaune, ceux déjà réussis ont une petite étoile. **Toucher une image fait entendre son nom ; la toucher une seconde fois (ou toucher la coche verte) la choisit.** La petite bulle en haut revient au choix de l'exercice ; la maison revient à l'accueil. Ensuite vient le choix de la difficulté (les vagues), puis la séance.
+
+- L'exercice choisi **est la séance du jour** : accueil, échauffement, l'exercice choisi (autant de questions que d'habitude), défi record s'il a lieu, récompense ; étoiles, coquillages, série et étoile dorée comme d'habitude. Après la séance, « Encore ! » ouvre le même écran, sans étoiles.
+- Un niveau choisi au-dessus du conseillé : s'il est réussi (8 bonnes réponses sur 10), il est validé et le conseillé passe au niveau suivant ; s'il est raté, **rien ne baisse**. Une famille d'additions pas encore ouverte s'ouvre ; ses additions nouvelles ne sont pas limitées ce jour-là.
+- Une **leçon choisie seule** n'est pas une séance : elle se joue, puis on revient à l'accueil (3 étoiles si elle est regardée jusqu'au bout, une fois par leçon et par jour). Elle apparaît dans **Séances** comme « leçon choisie ».
+- Dans **Séances**, une séance choisie porte « exercice choisi » (par exemple « ligne graduée, niveau 8 ») ; l'export CSV des séances a une colonne « exercice choisi par l'enfant ».
+- Si vous avez imposé la notion du jour (**Données et réglages**) et que l'enfant choisit elle-même son exercice, votre choix attend la séance suivante lancée avec **jouer**.
+- Question ouverte : pour qu'une enfant qui ne lit pas entende le nom avant de choisir, chaque choix demande deux touchers (5 touchers de l'accueil au choix de la difficulté). Si vous préférez qu'un seul toucher suffise (3 touchers), dites-le : c'est un réglage (`app/content/seance.json`, `choix.validation`, « simple »).
+
+**L'échauffement.** Au début de l'échauffement, le bouton « passer » habituel (deux triangles jaunes, en haut à droite) l'arrête et la séance passe directement à l'exercice. Dans **Données et réglages**, **Échauffement : oui / non** le retire de toutes les séances (et de la frise). À savoir : l'échauffement est l'endroit où reviennent les additions « à revoir » (la révision espacée) ; sans lui, elles ne reviennent que dans les exercices d'additions.
+
+**Les leçons collent à l'exercice.** Une leçon d'additions n'est jouée que pour la famille travaillée : les doubles (L4) pour les doubles, les amis de 10 (L5) pour les amis de 10, la maison (L6) pour les maisons ; les maisons de 8 et 9 rejouent la maison, et les presque-doubles les doubles, seulement si elles n'ont jamais été vues ; le mélange n'en joue aucune. Au moins 80 % des questions portent sur la famille du jour. Pour les presque-doubles, chaque question rappelle le double (« 3 plus 4, c'est 3 plus 3, et encore 1 »).
+
+**La difficulté à l'intérieur du niveau.** Quand l'enfant a choisi son niveau, les vagues du début de séance ne changent plus de niveau : elles rendent **le même niveau** plus facile ou plus exigeant, avec les mêmes étoiles qu'avant (une demi-étoile à « plus facile », deux à « très dur »). Par exemple, pour la ligne de 0 à 100 (niveau 5) : plus facile, les dizaines paires sont écrites ; plus dur, seulement 0 et 100 ; très dur, 0 et 100 et il faut placer le poisson. Pour les additions : plus facile, l'aide est montrée d'emblée ; plus dur, une question sur deux avec un nombre caché (« 3 plus combien, ça fait 7 ? ») ; très dur, toutes. Comme avant, « plus facile » fait réviser sans faire monter de niveau. Avec **jouer**, les vagues gardent leur effet d'avant (un niveau au-dessus ou en dessous du conseillé). Le détail, niveau par niveau, est dans `docs/SPEC-LOT3.md`, section 3.
+
+**Les sauvegardes de test (pour essayer, pas pour l'enfant).** Pour voir à quoi ressemble l'application après un mois ou trois mois d'usage, ou avec une enfant en difficulté, sans attendre : sur un ordinateur où le dépôt est installé, lancer par exemple
+
+```
+node tools/sauvegarde-test.mjs reel 2 4      (un mois, 2 séances par semaine)
+node tools/sauvegarde-test.mjs reel 3 12     (trois mois, 3 séances par semaine)
+node tools/sauvegarde-test.mjs diff 2 6      (une enfant en difficulté)
+```
+
+Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauvegarde, calculée en simulant les séances (les réponses de l'enfant sont inventées d'après un profil : `sait`, `reel` pour le profil de l'évaluation de septembre, `diff` pour une enfant en difficulté). La dernière séance tombe la veille. Le mettre sur la tablette (par Drive ou par câble), puis **Données et réglages** > **Restaurer une sauvegarde**.
+
+**Attention : restaurer remplace toutes les données de la tablette.** Faire d'abord une **Sauvegarde complète** des vraies données, et la restaurer après l'essai. La pieuvre s'y appelle « Pili » ; votre code parent est gardé. Les cartes suivent le calendrier scolaire : des séances simulées avant la rentrée (trois mois fabriqués en septembre) ne donnent presque pas de cartes nouvelles, c'est normal.
+
+**Le calcul rapide (lot 3, partie B).** Un troisième exercice : des calculs comme 47 + 2, 34 + 10, 38 + 5 ou 42 − 5, à taper au pavé (le même écran que les additions). Il enseigne des **raccourcis** plutôt que de compter un par un, avec deux supports : le **mur de corail** (les nombres de 1 à 100 rangés par dix ; un petit poisson jaune y descend d'une rangée pour « plus dix ») et le **chemin** : des cailloux reliés par des ponts (38, pont « + 2 », 40, pont « + 3 », 43). Neuf niveaux, dans l'ordre de la SPEC ; les leçons L7 (plus dix sur le mur), L8 (l'astuce du neuf) et L9 (passer la dizaine) se jouent à l'entrée des niveaux 2, 6 et 7.
+
+- Un nouveau niveau commence par sa leçon, puis 3 calculs guidés où l'enfant tape le nombre de chaque caillou, puis des calculs où le chemin apparaît seulement si elle touche le coquillage.
+- Les vagues du début de séance : « plus facile » montre le chemin d'emblée (sans faire monter de niveau) ; « plus dur » enlève le chemin ; « très dur » aussi, et pose des calculs à trou (« 38 plus combien, ça fait 43 ? »).
+- Une réponse juste mais lente (au-delà du temps de frappe mesuré plus 8 secondes) n'est jamais reprochée : l'application dit « Bravo ! Regarde le raccourci. » et rejoue le chemin.
+- Avec **jouer**, la notion du jour tourne entre les trois exercices (le moins avancé d'abord, jamais deux fois de suite le même). Le niveau 1 est ouvert dès le début ; les suivants s'ouvrent quand les précédents sont acquis, le 4 quand les maisons de 5 à 7 sont bien sues, le 7 avec les amis de 10. Avec **choisir**, tous les niveaux sont accessibles.
+- Dans l'espace parent : le bloc **Module 3 · Calcul rapide** (onglet Progression), les erreurs C1 à C5 dans le journal (par exemple C4 : « 38 + 5 = 33 », on a oublié de passer à la dizaine suivante), le point de départ du calcul rapide et « calcul rapide » dans la notion du jour de la prochaine séance.
+- Pour que chaque calcul ait sa phrase enregistrée, les nombres restent dans des bornes (par exemple « plus 1, plus 2 » entre 21 et 69) : la voix tient ainsi sous 40 Mo. On peut les élargir (fichier `app/content/module3.json`), au prix de quelques mégaoctets de plus.
+
 ## e) Ce qui reste approximatif ou à ajuster
 
 **À vérifier sur la vraie tablette.** Écouter la voix (aucune phrase n'a été écoutée par une personne, la vérification a été automatique) et regarder les illustrations des cartes en grand. Toutes les mesures ont été faites sur un ordinateur, en ralentissant le processeur 4 fois pour imiter une tablette : démarrage en moins de 1,5 s, animation à 50 à 60 images par seconde la plupart du temps, avec des baisses vers 30 pendant certaines animations (l'application allège alors d'elle-même le décor). Il faut confirmer que tout reste fluide sur la tablette.
@@ -104,6 +142,6 @@ Le dépôt est public : l'application et son code sont visibles par tous, mais *
 - Un petit à-coup (environ un dixième de seconde) à l'apparition de certaines questions.
 - Pendant une pause, un saut de la tortue déjà commencé se termine (moins d'une seconde), et la phrase coupée est redite depuis son début.
 
-**Pas encore fait (prévu dans les lots suivants).** Le calcul rapide (lot 3), les problèmes, les bilans officiels toutes les deux semaines, les illustrations et anecdotes du grand large et des abysses (à livrer **avant début février** et **avant fin avril**, sinon la collection s'arrête au récif de corail), les quatre cartes rares liées aux nombres jusqu'à 1 000, les créatures animées des zones 2 à 4 dans le récif (lot 4).
+**Pas encore fait (prévu dans les lots suivants).** Le bilan du lot 3 (étape 5), les problèmes, les bilans officiels toutes les deux semaines, les illustrations et anecdotes du grand large et des abysses (à livrer **avant début février** et **avant fin avril**, sinon la collection s'arrête au récif de corail), les quatre cartes rares liées aux nombres jusqu'à 1 000, les créatures animées des zones 2 à 4 dans le récif (lot 4).
 
 **Stockage protégé.** Chrome accorde en général la protection des données (« stockage persistant ») quand l'application est installée sur l'écran d'accueil. L'espace parent indique si c'est le cas (**Données et réglages** > **Données protégées**). Même accordée, elle ne protège pas d'un effacement volontaire : la sauvegarde de la semaine reste la vraie sécurité.

@@ -2,6 +2,7 @@
 // le niveau de la ligne, les additions posées, les étoiles et les cartes ; puis le bilan des cartes (lot 2) :
 // dates où chaque zone s'ouvre et se complète, légendaires, brillantes, quota jamais dépassé.
 //   node tests/sim-seances.mjs [sait|reel|diff|tresdur|facile] [séances par semaine : 2|3|5] [nombre de séances, ou « annee » : jusqu'au 2 juillet 2027] [--court]
+//   lot 3 : [--choix 1:5 | 2:4] l'enfant choisit toujours cet exercice (ligne, niveau 5 ; additions, famille 4) ; [--cran facile|conseille|dur|tresdur]
 // Les zones 3 et 4 sont considérées prêtes (contenu fictif). --court : seulement le bilan.
 import { readFileSync } from "node:fs";
 import { simulate, PROFILS } from "./sim-recette.mjs";
@@ -10,11 +11,14 @@ const cal = JSON.parse(readFileSync(new URL("../app/content/calendrier.json", im
 const hol = cal.vacances.map((v) => [new Date(dateOf(v.debut)), new Date(dateOf(v.reprise))]), fin = new Date(dateOf("2027-07-02") + 86400000);
 const days = (perWeek, n) => { const out = []; let d = new Date("2026-09-28T00:00:00"); const wd = perWeek === 2 ? [1, 4] : perWeek === 3 ? [1, 3, 5] : [1, 2, 3, 4, 5];
   while (n === "annee" ? d < fin : out.length < n) { if (!hol.some(([a, b]) => d >= a && d < b) && wd.includes(d.getDay())) out.push(new Date(d)); d = new Date(d.getTime() + 86400000); } return out; };
-const args = process.argv.slice(2).filter((a) => !a.startsWith("--")), court = process.argv.includes("--court");
+const argv = process.argv.slice(2), val = (k) => (argv.includes(k) ? argv[argv.indexOf(k) + 1] : null);
+const args = argv.filter((a, i) => !a.startsWith("--") && !["--choix", "--cran"].includes(argv[i - 1])), court = argv.includes("--court");
+const ch = val("--choix")?.split(":").map(Number), choix = ch ? (ch[0] === 1 ? { module: 1, niveau: ch[1] } : { module: 2, famille: ch[1] }) : null;
 const [profil = "reel", perWeek = "2", n = "30"] = args;
-const res = await simulate({ profil, jours: days(+perWeek, n === "annee" ? "annee" : +n), seed: 7 });
+const res = await simulate({ profil, jours: days(+perWeek, n === "annee" ? "annee" : +n), seed: 7, choix, cran: val("--cran") });
+if (choix) console.log(`# lot 3 : l'enfant choisit toujours ${choix.module === 1 ? `la ligne, niveau ${choix.niveau}` : `les additions, famille ${choix.famille}`}, cran ${val("--cran") ?? PROFILS[profil].cran ?? "conseille"} : réussite de la notion du jour (10 premières séances, exemples guidés exclus) ${(() => { const xs = res.slice(0, 10).flatMap((r) => r.notionOk ?? []); return Math.round((100 * xs.filter(Boolean).length) / Math.max(1, xs.length)); })()} % ; descentes de cran ${res.slice(0, 10).reduce((a, r) => a + r.descentes, 0)}`);
 console.log(`# profil ${PROFILS[profil].nom}, ${perWeek}/sem, ${res.length} séances`);
-if (!court) for (const r of res) console.log(`${r.n}\t${r.date}\t${r.cranDepart}${r.descentes ? `->${r.cran}` : ""}\t${r.module === 2 ? "additions" : `niv ${r.niv0}->${r.niv1}`}\tq=${r.questions} ${Math.round((r.reussite ?? 0) * 100)}% nsp ${r.nsp} nouveaux ${r.nouveaux}\t${r.duree}min\tm${r.module}${r.defi !== undefined ? ` défi ${r.defi}${r.record ? "!" : ""}` : ""}${r.module === 2 ? ` f${r.famille}` : ""}\t★${r.etoiles}\tarc${r.arc}${r.doree ? " DORÉE" : ""}${r.surprise ? ` surprise ${r.surprise}` : ""}\tcartes ${r.nbCartes}/${r.quota} [${r.cartes.join(",")}]${r.zones.length ? ` ZONE ${r.zones.join(",")}` : ""}\tfaits vus ${r.faitsVus} boîtes ${r.boites.join("/")}\tchauffe: ${r.faits.join(" ")}\tligne: ${r.ligne.join(" ")}${r.lecons.length ? " leçons " + r.lecons.join(",") : ""}`);
+if (!court) for (const r of res) console.log(`${r.n}\t${r.date}\t${r.cranDepart}${r.descentes ? `->${r.cran}` : ""}\t${r.module === 2 ? "additions" : r.module === 3 ? `calcul ${r.niv0}->${r.niv1}` : `niv ${r.niv0}->${r.niv1}`}\tq=${r.questions} ${Math.round((r.reussite ?? 0) * 100)}% nsp ${r.nsp} nouveaux ${r.nouveaux}\t${r.duree}min\tm${r.module}${r.defi !== undefined ? ` défi ${r.defi}${r.record ? "!" : ""}` : ""}${r.module === 2 ? ` f${r.famille}` : ""}\t★${r.etoiles}\tarc${r.arc}${r.doree ? " DORÉE" : ""}${r.surprise ? ` surprise ${r.surprise}` : ""}\tcartes ${r.nbCartes}/${r.quota} [${r.cartes.join(",")}]${r.zones.length ? ` ZONE ${r.zones.join(",")}` : ""}\tfaits vus ${r.faitsVus} boîtes ${r.boites.join("/")}\tchauffe: ${r.faits.join(" ")}\tligne: ${r.ligne.join(" ")}${r.lecons.length ? " leçons " + r.lecons.join(",") : ""}`);
 // lot 2, étape 2 : faits nouveaux, familles 1 et 2, niveaux, sélecteur de difficulté (docs/SPEC-LOT2.md, section 8)
 const avant7 = res.slice(0, 6).at(-1), withRoom = res.filter((r, i) => i === 0 || res[i - 1].faitsVus < 33);
 const moy = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
@@ -37,6 +41,19 @@ console.log(`leçons jouées sur l'année : ${res.flatMap((r) => r.lecons.map((l
 console.log(`45 faits vus à la séance ${res.find((r) => r.faitsVus >= 45)?.n ?? "jamais"} ; leçons du module 2 : ${res.flatMap((r) => r.lecons.filter((l) => ["L4", "L5", "L6"].includes(l)).map((l) => `${l} (séance ${r.n})`)).join(", ") || "aucune"}`);
 const m2 = res.filter((r) => r.module === 2);
 console.log(`séances d'additions : ${moy(m2.map((r) => r.add.filter((x) => !x.includes("g")).length)).toFixed(1)} questions en moyenne, durée estimée ${moy(m2.map((r) => r.duree)).toFixed(1)} min ; formes à trou ${m2.reduce((a, r) => a + r.add.filter((x) => x.includes("?")).length, 0)} sur ${m2.reduce((a, r) => a + r.add.length, 0)}`);
+// lot 3, étape 1 (docs/SPEC-LOT3.md, section 7) : leçon et exercice cohérents
+{
+  const LF = { L4: [2, 6], L5: [3], L6: [4, 5] }, bad = m2.filter((r) => r.lecons.some((l) => LF[l] && !LF[l].includes(r.famille)));
+  const apresL4 = m2.filter((r) => r.lecons.includes("L4"));
+  console.log(`\n## lot 3 : leçons et exercice (${PROFILS[profil].nom})`);
+  console.log(`part des questions sur la famille en cours (additions) : minimum ${Math.round(Math.min(...m2.map((r) => r.partFamille ?? 1)) * 100)} %, moyenne ${Math.round(moy(m2.map((r) => r.partFamille ?? 1)) * 100)} % (seuil 80 %) ; leçon de famille jouée pour une autre famille : ${bad.length ? bad.map((r) => `${r.n} (${r.lecons.join(",")} pour f${r.famille})`).join(" ; ") : "jamais"} ; après L4 : ${apresL4.map((r) => `${Math.round((r.doubles ?? 0) * 100)} % de doubles ou presque-doubles (f${r.famille})`).join(", ") || "L4 jamais jouée"}`);
+}
+// lot 3, étape 4 : le calcul rapide
+{
+  const m3 = res.filter((r) => r.module === 3), acq = (n) => res.find((r) => (r.acquis3 ?? []).includes(n))?.n ?? "jamais", last3 = [...res].reverse().find((r) => r.acquis3);
+  console.log(`\n## lot 3 : calcul rapide (${PROFILS[profil].nom})`);
+  console.log(`séances de calcul rapide : ${m3.length} sur ${res.length} ; niveau acquis (séance) : ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => `${n}: ${acq(n)}`).join(" ; ")} ; acquis à la fin : ${last3?.acquis3?.join(", ") || "aucun"} ; leçons L7 à L9 : ${res.flatMap((r) => r.lecons.filter((l) => ["L7", "L8", "L9"].includes(l)).map((l) => `${l} (${r.n})`)).join(", ") || "aucune"} ; durée moyenne des séances de calcul rapide ${moy(m3.map((r) => r.duree)).toFixed(1)} min, ${moy(m3.map((r) => (r.calc ?? []).length)).toFixed(0)} calculs`);
+}
 // lot 2, étape 7 : le défi record
 const defis = res.filter((r) => r.defi !== undefined), sautes = {};
 for (const r of res) if (r.defiSaute) sautes[r.defiSaute] = (sautes[r.defiSaute] ?? 0) + 1;

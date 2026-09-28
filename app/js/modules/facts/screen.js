@@ -28,7 +28,7 @@ export class FactsScreen {
       const b = key(COLS[d % 5], ROWS[Math.floor(d / 5)], String(d), (ctx, px) => { small("reponse", 0.9)(ctx, px); ctx.setTransform(px, 0, 0, px, 0, 0); R.drawNumber(ctx, String(d), KEY / 2, KEY / 2 - 25, 50, { w: 7, seed: 900 + d }); });
       onTap(b, () => this.type(String(d), b));
     }
-    const del = key(SIDE, ROWS[0], "effacer", small("effacer", 0.8)); onTap(del, () => { if (this.locked || !this.typed) return; pop(del); this.typed = this.typed.slice(0, -1); this.slate.repaint(); });
+    const del = key(SIDE, ROWS[0], "effacer", small("effacer", 0.8)); onTap(del, () => { if (this.locked || !this.typed) return; pop(del); this.typed = this.typed.slice(0, -1); this.slate.repaint(); this.onTyped?.(this.typed); });
     const ok = key(SIDE, ROWS[1], "valider", small("valider", 0.7)); ok.classList.add("check"); onTap(ok, () => { if (this.locked || !this.typed) return; pop(ok); this.submit(); });
     // « je ne sais pas » (lot 1 bis) : compte comme une erreur (code NSP), montre la réponse, le fait revient
     this.nsp = spriteBox(app, { x: 1165 - 75, y: 604 - 75, w: 150, h: 150, cls: "bubble nsp", label: "je ne sais pas", paint: (ctx) => sprites.draw(ctx, "nsp", 0, 75, 75) });
@@ -45,8 +45,9 @@ export class FactsScreen {
     this.app.sprites.draw(ctx, "ardoise", 0, 295, 110);
     if (!this.q) return;
     ctx.setTransform(px, 0, 0, px, 0, 0);
-    const q = this.q, n = q.a + q.b, f = q.forme ?? "directe";
-    const [left, right] = q.dictee ? ["", ""] : f === "trouDroite" ? [`${q.a} +`, `= ${n}`] : f === "trouGauche" ? ["", `+ ${q.b} = ${n}`] : [`${q.a} + ${q.b} =`, ""];
+    // (lot 3 : le calcul rapide, soustractions comprises : `q.op`, `q.n`)
+    const q = this.q, n = q.n ?? q.a + q.b, f = q.forme ?? "directe", sg = q.op === "-" ? "−" : "+";
+    const [left, right] = q.dictee ? ["", ""] : f === "trouDroite" ? [`${q.a} ${sg}`, `= ${n}`] : f === "trouGauche" ? ["", `${sg} ${q.b} = ${n}`] : [`${q.a} ${sg} ${q.b} =`, ""];
     const em = 76, slot = this.typed || "?", lw = left ? R.wordWidth(left) * em : 0, rw = right ? R.wordWidth(right) * em : 0, sw = Math.max(1.36, R.wordWidth(slot)) * em, gap = 0.4 * em;
     const total = lw + (left ? gap : 0) + sw + (right ? gap : 0) + rw, x0 = 295 - total / 2;
     if (left) R.drawWord(ctx, left, x0 + lw / 2, 110 - em / 2, em, { w: 10, seed: 950 });
@@ -57,15 +58,16 @@ export class FactsScreen {
   }
   type(d, b) {
     if (this.locked) return; pop(b);
-    const max = this.q?.dictee ? 5 : 2; // deux chiffres au plus (les sommes vont jusqu'à 10) ; la dictée : cinq (3007, 30017 sont des erreurs à reconnaître)
+    const max = this.q?.dictee ? 5 : this.q?.module === 3 ? 3 : 2; // (le calcul rapide : jusqu'à 100) // deux chiffres au plus (les sommes vont jusqu'à 10) ; la dictée : cinq (3007, 30017 sont des erreurs à reconnaître)
     this.typed = (this.typed.length >= max ? "" : this.typed) + d;
     this.slate.repaint();
+    this.onTyped?.(this.typed); // (lot 3 : le tableau de la dictée)
   }
   // pose la question et attend la réponse ; la promesse se résout après le retour
   ask(q) {
     const { voice } = this.app;
     this.q = q; this.typed = ""; this.ring = false; this.aide = false; this.locked = false; this.app.starFrom = SLATE;
-    this.help.style.visibility = q.base ? "hidden" : "visible"; // pas d'aide pour « 4 + 0 »
+    this.help.style.visibility = q.base || q.cheminMode === "non" || q.pont ? "hidden" : "visible"; // pas d'aide pour « 4 + 0 » (lot 3 : ni sans chemin)
     this.slate.repaint(); pop(this.slate);
     // lot 2, étape 6 : un exemple guidé (l'appui visuel montre la réponse, on peut le passer), ou l'aide
     // affichée d'emblée (cran « plus facile » en notion du jour)
@@ -73,7 +75,7 @@ export class FactsScreen {
     // (l'appui est rangé quand le pavé revient : il occupe la même place)
     const then = () => { this.app.aidBoard?.clear(); this.locked = false; this.keys(true); this.t0 = clock.now(); voice.say(this.consigne(q), { instruction: true }); };
     if (q.guide) { this.locked = true; this.demo(q).then(then); return p; }
-    if (q.aideDEmblee) { this.locked = true; this.keys(false); this.autoAid(q).then(then); return p; }
+    if (q.aideDEmblee && q.module !== 3) { this.locked = true; this.keys(false); this.autoAid(q).then(then); return p; }
     this.t0 = clock.now();
     voice.stop(); voice.say(this.consigne(q), { instruction: true });
     return p;
@@ -184,18 +186,24 @@ export class FactsScreen {
   // la consigne lue : « 5 plus 2 ? », ou la forme à trou (« 3 plus combien, ça fait 7 ? »)
   consigne(q) {
     if (q.dictee) return this.dictee;
+    if (q.module === 3) return this.calc?.consigne(q) ?? `${q.a} ${q.op === "-" ? "moins" : "plus"} ${q.b} ?`; // lot 3 (calc/screen.js)
     const { text } = this.app, v = { a: q.a, b: q.b, n: q.a + q.b };
+    // lot 3 : les presque-doubles rappellent le double (« 3 plus 4, c'est 3 plus 3, et encore 1 »), runner.js
+    if (q.rappel && (q.forme ?? "directe") === "directe") return `${fill(text.pick("fait"), v)} ${fill(text.data.rappelDouble, { ...v, d: q.rappel.d })}`;
     return q.forme === "trouDroite" ? fill(text.data.faitTrouDroite, v) : q.forme === "trouGauche" ? fill(text.data.faitTrouGauche, v) : fill(text.pick("fait"), v);
   }
   // la correction (erreur ou « je ne sais pas ») peut être passée dès qu'elle commence : la voix se tait,
   // le résultat reste écrit sur l'ardoise environ une seconde, puis le fait suivant ; noté « correction passée ».
   // Ses pauses suivent la vitesse des corrections (content/seance.json, vitesseAnimations).
   async submit({ nsp = false } = {}) {
+    this.beforeSubmit?.(); // (lot 3 : le « passer » de l'échauffement disparaît dès la première réponse)
     if (this.defi) return this.submitDefi(nsp);
     if (this.q?.dictee) { this.locked = true; this.app.voice.stop(); const done = this.resolve; this.resolve = null; return done?.({ value: nsp ? null : Number(this.typed), ms: Math.round(clock.now() - this.t0), listens: this.app.voice.listens, nsp }); }
     const { voice, text, ocean } = this.app, q = this.q, value = nsp ? null : Number(this.typed), ok = value === expected(q), ms = Math.round(clock.now() - this.t0), k = this.app.vitesse ?? 1;
     this.locked = true; voice.stop();
     const r = { value, ms, listens: voice.listens, aide: this.aide, nsp };
+    // lot 3 : le calcul rapide a sa correction (le chemin, le mur de corail et le poisson) et son retour « juste mais lent »
+    if (q.module === 3 && this.calc) { await this.calc.feedback(q, r, ok); this.app.aidBoard?.clear(); const done = this.resolve; this.resolve = null; return done?.(r); }
     ocean.octo.play(ok ? "rejouir" : "encourager");
     if (ok) this.app.sound?.play("bonne"); else if (!nsp) this.app.sound?.play("erreur");
     const answer = () => { this.typed = String(expected(q)); this.ring = true; this.slate.repaint(); };
@@ -224,6 +232,8 @@ export class FactsScreen {
   // ---------------------------------------------------------------- l'aide (coquillage)
   async showHelp() {
     if (this.locked || !this.q || this.q.base) return;
+    // lot 3 : le coquillage du calcul rapide montre le chemin (les ponts), qui reste pendant la réponse
+    if (this.q.module === 3 && this.calc) { if (this.aide) return; this.aide = true; pop(this.help); this.calc.help(this.q); return; }
     const { voice } = this.app, q = this.q, kind = this.aidKind(q);
     this.locked = true; this.aide = true; pop(this.help); this.keys(false); voice.stop();
     await this.skippable("passer l'aide", async (g, dead) => {
@@ -249,28 +259,40 @@ export class FactsScreen {
       await g(wait(solved ? 600 : 1600));
     } finally { nl.turtle.hide(); nl.arcs = []; line.fxClear(); line.clear(); }
   }
+  // lot 3 : l'échauffement est passé pendant une question : elle est abandonnée (plus de réponse attendue)
+  abandon() { this.locked = true; this.resolve = null; this.app.voice.stop(); this.app.aidBoard?.clear(); }
   leave() { this.show(false); this.q = null; this.defi = null; this.dictee = null; this.app.aidBoard?.clear(); }
 }
 
 // l'échauffement dans la séance : n faits (10 à 14), précédés, une séance sur cinq, des questions du temps de
 // base ; la voie rapide peut en ajouter à la fin ; si la protection fait redescendre le cran, les faits
 // nouveaux « bonus » du cran pas encore posés sont retirés (et les formes à trou suivent le nouveau cran)
-export async function runWarmup({ session, step, end, warmup, screen, intro, rnd = Math.random }) {
+// lot 3 (docs/SPEC-LOT3.md, section 4) : `skip(onSkip)` crée le bouton « passer » habituel, montré au début de
+// l'échauffement (consigne et première question) ; un toucher l'arrête aussitôt et la séance enchaîne sur
+// l'exercice (noté `echauffementPasse` dans l'enregistrement de la séance)
+export async function runWarmup({ session, step, end, warmup, screen, intro, rnd = Math.random, skip = null }) {
   const [a, b] = step.questions, n = a + Math.floor(rnd() * (b - a + 1)), rest = warmup.questions(n, a);
+  let skipped = false, abort = null; const abortP = new Promise((res) => { abort = res; });
+  const btn = skip?.(() => { skipped = true; abort(); }), g = (p) => (btn ? Promise.race([p, abortP]) : p);
+  if (btn) screen.beforeSubmit = () => { btn.remove(); screen.beforeSubmit = null; };
   screen.show(true); screen.keys(false);
   session.expect?.(rest.length);
-  await intro?.();
-  screen.keys(true);
-  while (rest.length && !session.over(end)) {
+  await g(intro?.(() => skipped));
+  if (!skipped) screen.keys(true);
+  while (!skipped && rest.length && !session.over(end)) {
     const q = warmup.prepare(rest.shift());
     if (!q) { session.expect?.(session.progress.faites + rest.length); continue; }
-    const r = await screen.ask(q), res = await warmup.record(q, r, rest);
+    const r = await g(screen.ask(q));
+    if (skipped) break;
+    const res = await warmup.record(q, r, rest);
     session.expect?.(session.progress.faites + 1 + rest.length); // un fait raté revient, la voie rapide en ajoute : des bulles de plus
     session.cranDown = false;
     await session.answered(res.juste);
     if (session.cranDown) warmup.drop(rest);
     await session.stars(res.etoiles, q.revient && res.juste ? "erreur corrigée" : "bonne réponse");
   }
+  btn?.remove(); screen.beforeSubmit = null;
+  if (skipped) { screen.abandon?.(); if (session.rec) session.rec.echauffementPasse = { apres: session.progress.faites }; }
   session.nouveaux = warmup.nouveaux; if (session.rec) session.rec.faitsNouveaux = warmup.nouveaux;
   // lot 2, étape 6 : une famille acquise est un niveau franchi (étoile arc-en-ciel) ; ouverture de la suivante
   for (const e of (await warmup.families?.()) ?? []) { if (e.type === "acquise" && !e.parent) await session.levelUp(); if (session.rec) (session.rec.familles ??= []).push(e); }

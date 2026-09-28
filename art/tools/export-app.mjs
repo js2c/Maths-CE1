@@ -63,6 +63,8 @@ for (const sheet of sheets) {
       atlas.sprites[name] ??= { sheet, fps: s.fps, frames: s.frames, meta: s.meta, rects: {} };
       Object.assign(atlas.sprites[name], { sheet, fps: s.fps, frames: s.frames, meta: s.meta });
       atlas.sprites[name].rects[scale] = frames; // [page, x, y, w, h, dx, dy] ; dx, dy : coin haut-gauche moins l'ancrage, en px de la planche
+      // lot 3 : pixels visibles sur les bords du calque [haut, droite, bas, gauche], le plus grand nombre sur toutes les images
+      (atlas.sprites[name].bords ??= {})[scale] = r.edges[name];
     }
     let same = "non vérifié";
     if (check) {

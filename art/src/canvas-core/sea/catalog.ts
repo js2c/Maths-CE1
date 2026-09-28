@@ -14,6 +14,8 @@ import { drawFishNet, drawTrawl, NET_H, NET_W, TRAWL } from "./hundreds";
 import { DEFI_N, drawRecordFlag, drawScorePearl, drawStepChallenge, drawTimerBubble, TIMER_W } from "./challenge";
 import { drawHermit, HERMIT_CLIPS, HERMIT_FPS, HERMIT_REST } from "./hermit";
 import { drawBonusBubble, drawCellGlow, drawHouseBase, drawHouseFloor, drawHouseRoof, drawTenFrame, HOUSE, TEN, TEN_H, TEN_W, tenCell } from "./aids";
+import { drawCalcTile, drawExerciseCalc, drawStepCalc, drawWallFish, WALL_FISH_N } from "./calc";
+import { drawChooseKey, drawExerciseLessons, drawExerciseLine, drawFamilyTile, drawLessonTile, drawLineTile, drawTileGlow, TILE_H, TILE_W } from "./choice";
 import { drawAgainKey, drawAlbumKey, drawDontKnowKey, drawFreeFacts, drawFreeLessons, drawFreeLine, drawMoonDecor, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepGlow, drawStepShell, GLOW_R, STEP_R } from "./ui";
 
 // la tortue dans l'application : longueur ~110 px logiques, assez petite pour tenir sur une bouée
@@ -141,11 +143,13 @@ export const SPECS: Spec[] = [
   // les aides visuelles du module 2 (planche « aides ») : le cadre de 10 (ancrage : coin haut gauche ;
   // meta.cells : centre de chaque alvéole), la lueur d'une alvéole, la maison des nombres en trois morceaux
   // (ancrage : milieu du bas du toit, du haut d'un étage, du haut du seuil), la bulle dorée du double + 1
-  { name: "aide.cadre10", sheet: "aides", W: TEN_W + 30, H: TEN_H + 30, origin: [6, 6], frames: 1, draw: (g) => drawTenFrame(g, 6, 6), meta: { cells: Array.from({ length: 10 }, (_, i) => tenCell(i)), w: TEN_W, h: TEN_H, cell: TEN.cell } },
+  // (lot 3 : calque élargi : le contour du bord gauche, bombé, et le haut de la boîte étaient coupés)
+  { name: "aide.cadre10", sheet: "aides", W: TEN_W + 70, H: TEN_H + 50, origin: [32, 16], frames: 1, draw: (g) => drawTenFrame(g, 32, 16), meta: { cells: Array.from({ length: 10 }, (_, i) => tenCell(i)), w: TEN_W, h: TEN_H, cell: TEN.cell } },
   { name: "aide.cadre.lueur", sheet: "aides", W: TEN.cell + 24, H: TEN.cell + 24, origin: [TEN.cell / 2 + 12, TEN.cell / 2 + 12], frames: 1, draw: (g) => drawCellGlow(g, TEN.cell / 2 + 12, TEN.cell / 2 + 12) },
   { name: "aide.maison.toit", sheet: "aides", W: HOUSE.w + 70, H: HOUSE.roof + 40, origin: [HOUSE.w / 2 + 30, HOUSE.roof + 14], frames: 1, draw: (g) => drawHouseRoof(g, HOUSE.w / 2 + 30, HOUSE.roof + 14), meta: { ...HOUSE } },
   { name: "aide.maison.etage", sheet: "aides", W: HOUSE.w + 30, H: HOUSE.floor + 20, origin: [HOUSE.w / 2 + 10, 4], frames: 1, draw: (g) => drawHouseFloor(g, HOUSE.w / 2 + 10, 4) },
-  { name: "aide.maison.seuil", sheet: "aides", W: HOUSE.w + 50, H: HOUSE.base + 20, origin: [HOUSE.w / 2 + 20, 4], frames: 1, draw: (g) => drawHouseBase(g, HOUSE.w / 2 + 20, 4) },
+  // (lot 3 : le seuil sortait de son calque à gauche, à droite et en bas ; dessin resserré, calque élargi avec une marge)
+  { name: "aide.maison.seuil", sheet: "aides", W: HOUSE.w + 70, H: HOUSE.base + 36, origin: [HOUSE.w / 2 + 30, 10], frames: 1, draw: (g) => drawHouseBase(g, HOUSE.w / 2 + 30, 10) },
   // lot 2, étape 8 : les centaines (leçon L10, retours E6 et E7) : le filet de dix poissons (ancrage : coin haut
   // gauche) et le chalut, vide puis avec 1 à 10 filets (ancrage : milieu de la ralingue du haut)
   { name: "aide.filet", sheet: "centaines", W: NET_W + 20, H: NET_H + 20, origin: [6, 6], frames: 1, draw: (g) => drawFishNet(g, 6, 6), meta: { w: NET_W, h: NET_H } },
@@ -156,6 +160,24 @@ export const SPECS: Spec[] = [
   { name: "defi.bulle", sheet: "defi", W: TIMER_W, H: TIMER_W, origin: [TIMER_W / 2, TIMER_W / 2], frames: DEFI_N, draw: (g, f) => drawTimerBubble(g, TIMER_W / 2, TIMER_W / 2, f) },
   { name: "defi.perle", sheet: "defi", W: 44, H: 44, origin: [20, 20], frames: 1, draw: (g) => drawScorePearl(g, 20, 20) },
   { name: "defi.record", sheet: "defi", W: 60, H: 80, origin: [14, 72], frames: 1, draw: (g) => drawRecordFlag(g, 14, 72) },
+  // lot 3 : l'écran « choisir » (docs/SPEC-LOT3.md, section 2). Le bouton de l'accueil va sur « petits » ; le reste sur
+  // la planche « choix », chargée le temps du choix : les exercices, une plaque par niveau de la ligne graduée et par
+  // famille d'additions, la plaque des leçons, la lueur du conseillé (ancrage : le centre)
+  { name: "choisir", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawChooseKey(g, 90, 90) },
+  { name: "choix.ex.ligne", sheet: "choix", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawExerciseLine(g, 90, 90) },
+  { name: "choix.ex.lecons", sheet: "choix", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawExerciseLessons(g, 90, 90) },
+  ...Array.from({ length: 13 }, (_, i): Spec => ({ name: `choix.ligne.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawLineTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
+  ...Array.from({ length: 7 }, (_, i): Spec => ({ name: `choix.famille.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawFamilyTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
+  { name: "choix.lecon", sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawLessonTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12) },
+  { name: "choix.lueur", sheet: "choix", W: TILE_W + 40, H: TILE_H + 40, origin: [TILE_W / 2 + 20, TILE_H / 2 + 20], frames: 1, draw: (g) => drawTileGlow(g, TILE_W / 2 + 20, TILE_H / 2 + 20) },
+  // lot 3, étape 3 : le calcul rapide. Le pictogramme de l'écran « choisir » et les neuf plaques de niveaux (planche
+  // « choix ») ; celui de la frise (« petits », comme les autres étapes) ; le petit poisson jaune du mur de corail,
+  // vers la droite et vers la gauche, sa queue battant en 12 images (planche « calcul », chargée le temps du module 3 ;
+  // ancrage : le centre du poisson, posé au centre d'une case)
+  { name: "choix.ex.calcul", sheet: "choix", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawExerciseCalc(g, 90, 90) },
+  ...Array.from({ length: 9 }, (_, i): Spec => ({ name: `choix.calcul.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawCalcTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
+  { name: "frise.calcul", sheet: "petits", W: 2 * STEP_R + 24, H: 2 * STEP_R + 24, origin: [STEP_R + 10, STEP_R + 10], frames: 1, draw: (g) => drawStepCalc(g, STEP_R + 10, STEP_R + 10) },
+  ...([1, -1] as const).map((dir): Spec => ({ name: `mur.poisson.${dir > 0 ? "d" : "g"}`, sheet: "calcul", W: 80, H: 60, origin: [40, 30], frames: WALL_FISH_N, fps: 12, loop: [0, WALL_FISH_N], draw: (g, f) => drawWallFish(g, f, 40, 30, dir, 40) })),
   // les cadeaux du récif (la surprise) : ancrés au milieu de leur base, posés sur le sable
   ...GIFTS.map((id): Spec => ({ name: `cadeau.${id}`, sheet: "petits", W: 200, H: 180, origin: [100, 160], frames: 1, draw: (g) => drawGift(g, id, 100, 160) })),
 ];

@@ -166,6 +166,14 @@ export const drawLens = (ctx: CanvasRenderingContext2D, cx: number, cy: number, 
 // un anneau d'encre autour d'une bulle (bonne réponse, surbrillance)
 export const drawRing = (ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number, color = "#ffd23a", w = 7) =>
   ink(shim(ctx), blob(cx, cy, r, r, 77, 0.02, 20), color, { w, closed: true, shadow: 0.2, light: [-0.55, -0.83], seed: 78 });
+// lot 3 : la plaque choisie de l'écran « choisir » : un rectangle arrondi doré au feutre, avec son ombre d'encre
+export const drawTileRing = (ctx: CanvasRenderingContext2D, cx: number, cy: number, w: number, h: number, r = 26, color = "#ffd23a") => {
+  const g = shim(ctx), x = cx - w / 2, y = cy - h / 2, pts: P[] = [];
+  const arc = (ax: number, ay: number, a0: number) => { for (let i = 0; i <= 6; i++) { const t = a0 + (i / 6) * (Math.PI / 2); pts.push([ax + Math.cos(t) * r, ay + Math.sin(t) * r]); } };
+  arc(x + w - r, y + r, -Math.PI / 2); arc(x + w - r, y + h - r, 0); arc(x + r, y + h - r, Math.PI / 2); arc(x + r, y + r, Math.PI);
+  ink(g, pts, INK, { w: 10, closed: true, shadow: 0, seed: 79 }, 0.35);
+  ink(g, pts, color, { w: 7, closed: true, shadow: 0.2, light: [-0.55, -0.83], seed: 80 });
+};
 // ---------------------------------------------------------------- la frise d'avancement
 // la corde fine où sont enfilés les pictogrammes et les petites bulles : `knots` les centres, dans l'ordre ;
 // la corde pend un peu entre deux nœuds et dépasse de `tail` aux deux bouts. Couleur de sable, quelques
@@ -179,4 +187,72 @@ export const drawCord = (ctx: CanvasRenderingContext2D, knots: P[], tail = 14) =
   }
   ink(g, pts, "#e9d3a6", { w: 2.4, shadow: 0, taper: [0.25, 0.25], seed: 3600 }, 0.9);
   for (let i = 3; i < pts.length - 3; i += 2) { const [x, y] = pts[i]; ink(g, [[x - 1.3, y - 1.3], [x + 1.3, y + 1.3]], "#b88e58", { w: 1, shadow: 0, taper: [0.3, 0.3], seed: 3601 + i }, 0.6); }
+};
+
+// ---------------------------------------------------------------- lot 3 : le calcul rapide (docs/SPEC.md, « Module 3 »)
+// Dessinés une fois par question (ou une fois pour toutes, le mur), dans la même main que la ligne.
+const rr = (x: number, y: number, w: number, h: number, r: number): P[] => {
+  const pts: P[] = [], arc = (ax: number, ay: number, a0: number) => { for (let i = 0; i <= 5; i++) { const t = a0 + (i / 5) * (Math.PI / 2); pts.push([ax + Math.cos(t) * r, ay + Math.sin(t) * r]); } };
+  arc(x + w - r, y + r, -Math.PI / 2); arc(x + w - r, y + h - r, 0); arc(x + r, y + h - r, Math.PI / 2); arc(x + r, y + r, Math.PI);
+  return pts;
+};
+const shiftP2 = (pts: P[], dx: number, dy: number): P[] => pts.map(([x, y]) => [x + dx, y + dy]);
+// LE MUR DE CORAIL : le tableau des nombres de 1 à 100, 10 rangées de 10 ; ajouter 10, c'est descendre d'une rangée.
+// x, y : le coin haut gauche de la première case ; `split` : les dizaines en corail et les unités en bleu (leçon L7) ;
+// `lit` : des cases allumées (jaune) ; `dim` : les nombres estompés sauf les cases allumées
+export type WallSpec = { x: number; y: number; cell: number; gap: number; split?: boolean; lit?: number[]; dim?: boolean; upTo?: number }; // upTo : les cases jusqu'à ce nombre seulement (le mur qui se construit, L7)
+export const WALL_TENS = "#c64d3c", WALL_UNITS = "#1d7f8f";
+export const wallCell = (W: WallSpec, n: number): P => { const r = Math.floor((n - 1) / 10), c = (n - 1) % 10; return [W.x + c * (W.cell + W.gap) + W.cell / 2, W.y + r * (W.cell + W.gap) + W.cell / 2]; };
+export const wallSize = (W: WallSpec) => 10 * W.cell + 9 * W.gap;
+export const drawWall = (ctx: CanvasRenderingContext2D, W: WallSpec) => {
+  const g = shim(ctx), S = wallSize(W), pad = Math.round(W.cell * 0.34), em = W.cell * 0.42;
+  // le bloc de corail : bords irréguliers, une ombre nette, des pores
+  const slab = smooth([[W.x - pad + 6, W.y - pad], [W.x + S / 2, W.y - pad - 4], [W.x + S + pad - 5, W.y - pad + 2], [W.x + S + pad + 2, W.y + S / 2], [W.x + S + pad - 3, W.y + S + pad], [W.x + S / 2, W.y + S + pad + 4], [W.x - pad + 3, W.y + S + pad - 1], [W.x - pad - 3, W.y + S / 2]], true, 10);
+  fillShape(g, shiftP2(slab, 10, 12), "#0a3f49", 0.3);
+  cel(g, slab, "#ff8f70", "#d0573f", 9, [smooth([[W.x - pad + 16, W.y - pad + 10], [W.x + S * 0.45, W.y - pad + 6], [W.x + S * 0.4, W.y - pad + 16], [W.x - pad + 18, W.y - pad + 20]], true, 5), "#ffb29a"]);
+  contour(g, slab, 4.2, 6900);
+  for (let n = 1; n <= (W.upTo ?? 100); n++) {
+    const [cx, cy] = wallCell(W, n), cell = rr(cx - W.cell / 2, cy - W.cell / 2, W.cell, W.cell, W.cell * 0.22), lit = W.lit?.includes(n);
+    fillShape(g, shiftP2(cell, -2, -2), "#a63e2e", 0.55); // l'alvéole creusée : l'ombre du bord en haut à gauche
+    fillShape(g, cell, lit ? "#ffe45c" : "#fff4e6");
+    ink(g, cell, lit ? "#e0a21c" : "#d9b8a4", { w: 1.6, closed: true, shadow: 0.4, seed: 6910 + n });
+    const faded = W.dim && !lit, t = String(n);
+    ctx.globalAlpha = faded ? 0.3 : 1;
+    if (W.split && n < 100 && n >= 10) {
+      const dx = em * 0.3;
+      drawNumber(ctx, t[0], cx - dx, cy - em / 2, em, { color: WALL_TENS, w: em * 0.15, seed: 7000 + n });
+      drawNumber(ctx, t[1], cx + dx, cy - em / 2, em, { color: WALL_UNITS, w: em * 0.15, seed: 7200 + n });
+    } else drawNumber(ctx, t, cx, cy - em / 2, n === 100 ? em * 0.82 : em, { color: W.split && n < 10 ? WALL_UNITS : INK, w: em * 0.15, seed: 7000 + n });
+    ctx.globalAlpha = 1;
+  }
+};
+// UN CAILLOU DU CHEMIN (les ponts du calcul : 38 → + 2 → 40 → + 3 → 43) : un galet gris-bleu et son nombre ; `ask` : le
+// nombre à trouver (un « ? » rouge, ou ce que l'enfant a tapé), `lit` : entouré d'or
+export const STONE_R = 40;
+export const drawStone = (ctx: CanvasRenderingContext2D, cx: number, cy: number, text: string, o: { ask?: boolean; lit?: boolean; seed?: number; r?: number } = {}) => {
+  const g = shim(ctx), r = o.r ?? STONE_R, seed = o.seed ?? 7400, s = blob(cx, cy, r * 1.12, r * 0.86, seed, 0.05, 18);
+  fillShape(g, shiftP2(s, 6, 8), "#0a3f49", 0.3);
+  cel(g, s, o.ask ? "#fffaf0" : "#c3cfd3", o.ask ? "#e3d6bb" : "#8fa0a6", 5, [blob(cx - r * 0.4, cy - r * 0.42, r * 0.34, r * 0.16, seed + 1, 0.1, 8), "#ffffff"]);
+  contour(g, s, 3.4, seed + 2);
+  if (o.lit) ink(g, blob(cx, cy, r * 1.26, r * 1.0, seed + 3, 0.03, 20), "#ffd23a", { w: 6, closed: true, shadow: 0.2, seed: seed + 4 });
+  const em = r * (text.length > 2 ? 0.66 : 0.8);
+  if (text) drawNumber(ctx, text, cx, cy - em / 2, em, { color: text === "?" ? RED : INK, w: em * 0.15, seed: seed + 5 });
+};
+// UN PONT entre deux cailloux : une passerelle de bois en arc, et sa plaque de nacre avec le pas (« + 2 », « − 3 ») ;
+// `p` : la part déjà construite (0 à 1), pour l'animation ; `lit` : le pont en cours
+// (`r` : le rayon des cailloux qu'il relie ; `em` : la taille de l'écriture de la plaque)
+export const drawBridge = (ctx: CanvasRenderingContext2D, a: P, b: P, label: string, o: { p?: number; lit?: boolean; seed?: number; r?: number; em?: number } = {}) => {
+  const g = shim(ctx), p = o.p ?? 1, seed = o.seed ?? 7500; if (p <= 0) return;
+  const r = o.r ?? STONE_R, x0 = a[0] + r * 0.8, x1 = b[0] - r * 0.8, h = Math.min(r * 1.4, (x1 - x0) * 0.42), yb = (a[1] + b[1]) / 2 - r * 0.35, n = Math.max(3, Math.round(20 * p));
+  const pts: P[] = []; for (let i = 0; i <= n; i++) { const t = (i / n) * p; pts.push([x0 + (x1 - x0) * t, yb - Math.sin(Math.PI * t) * h]); }
+  const deck = taper(pts, () => 8).outline;
+  fillShape(g, shiftP2(deck, 4, 6), "#0a3f49", 0.3);
+  cel(g, deck, o.lit ? "#e8b25c" : "#c8965a", "#8a6238", 3); contour(g, deck, 2.8, seed);
+  // les planches : de petits traits en travers
+  for (let i = 1; i < n; i += 2) { const [px, py] = pts[i]; ink(g, [[px, py - 7], [px, py + 7]], "#6d4a2a", { w: 1.6, shadow: 0, seed: seed + i }); }
+  if (p < 1 || !label) return;
+  const em = o.em ?? 30, [mx, my] = pts[Math.floor(n / 2)], w = Math.max(em * 1.9, wordWidth(label) * em + em * 0.7), ph = em * 1.34, plate = rr(mx - w / 2, my - ph - em * 0.6, w, ph, em * 0.5);
+  fillShape(g, shiftP2(plate, 3, 4), "#0a3f49", 0.25);
+  cel(g, plate, o.lit ? "#fff3b8" : "#fffaf0", "#e3d6bb", 3); contour(g, plate, 2.6, seed + 40);
+  drawWord(ctx, label, mx, my - ph - em * 0.6 + em * 0.17, em, { color: INK, w: em * 0.147, seed: seed + 41 });
 };

@@ -10,8 +10,10 @@
 // Les calculs sont dans data.js (fonctions pures, testées) ; ici, seulement l'affichage.
 import * as D from "./data.js";
 import { catalog, median } from "../modules/facts/facts.js";
+import { recommended } from "../modules/calc/runner.js";
+import { ruleShare } from "../modules/facts/families.js";
 import { DB_NAME, MIGRATIONS, persist, STORES } from "../engine/store.js";
-import { familyKnown, markFamilyKnown, setLineLevel } from "./depart.js";
+import { familyKnown, markFamilyKnown, setCalcLevel, setLineLevel } from "./depart.js";
 
 // ---------------------------------------------------------------- petits outils du DOM
 function h(tag, attrs = {}, ...kids) {
@@ -227,7 +229,7 @@ export class ParentSpace {
     const lv = D.level(x.reussite, this.c.reussite), det = h("div", { class: "pa-detail" });
     const el = h("div", { class: "pa-session" });
     const head = h("button", { "aria-expanded": "false", onclick: () => { const o = el.classList.toggle("open"); head.setAttribute("aria-expanded", String(o)); det.hidden = !o; if (o && !det.childElementCount) this.sessionDetail(x, det); } },
-      h("span", { class: "t" }, `${D.fmtDay(x.debut)}, ${D.fmtTime(x.debut)}${x.libre ? " · entraînement libre" : ""}`),
+      h("span", { class: "t" }, `${D.fmtDay(x.debut)}, ${D.fmtTime(x.debut)}${x.leconChoisie ? " · leçon choisie" : x.libre ? " · entraînement libre" : x.choix ? " · exercice choisi" : ""}`),
       h("span", { class: "s" }, `${D.fmtDuration(x.dureeS)} · ${plural(x.questions ?? 0, "question")} · ${plural(x.etoiles ?? 0, "étoile")} de mer`),
       h("span", { class: "r" }, h("span", { class: `pa-badge ${x.terminee || x.libre ? lv ?? "neutre" : "neutre"}` }, x.libre ? (x.questions ? `${D.fmtPct(x.reussite)} de réussite` : "libre") : x.terminee ? (x.questions ? `${D.fmtPct(x.reussite)} de réussite` : "terminée") : "interrompue"), h("span", { class: "chev", "aria-hidden": "true" }, "›")));
     el.append(head, det); det.hidden = true;
@@ -240,7 +242,10 @@ export class ParentSpace {
     const cartes = (x.cartes ?? []).map((id) => this.cartes.cartes.find((c) => c.id === id)?.nom ?? id);
     det.append(h("div", { class: "pa-facts" },
       h("span", {}, "De ", h("b", {}, D.fmtTime(x.debut)), " à ", h("b", {}, x.fin ? D.fmtTime(x.fin) : "—")),
-      h("span", {}, "Notion du jour : ", h("b", {}, `${this.c.modules[x.module]?.nom ?? `module ${x.module}`}${x.module === 2 && x.famille ? ` (famille « ${this.module2.familles.find((f) => f.id === x.famille)?.nom ?? x.famille} »)` : ""}`)),
+      h("span", {}, "Notion du jour : ", h("b", {}, `${this.c.modules[x.module]?.nom ?? `module ${x.module}`}${x.module === 2 && x.famille ? ` (famille « ${this.module2.familles.find((f) => f.id === x.famille)?.nom ?? x.famille} »)` : ""}${x.module === 3 && x.niveauCalcul ? ` (niveau ${x.niveauCalcul})` : ""}`)),
+      x.choix && h("span", {}, "Exercice choisi par l'enfant : ", h("b", {}, x.choix.module === 1 ? `ligne graduée, niveau ${x.choix.niveau}` : x.choix.module === 3 ? `calcul rapide, niveau ${x.choix.niveau}` : `additions, famille « ${this.module2.familles.find((f) => f.id === x.choix.famille)?.nom ?? x.choix.famille} »`)),
+      x.echauffementPasse && h("span", {}, "Échauffement : ", h("b", {}, `passé par l'enfant après ${plural(x.echauffementPasse.apres, "question")}`)),
+      (x.etapes ?? []).some((e) => e.sautee === "réglage du parent") && h("span", {}, "Échauffement : ", h("b", {}, "retiré (réglage « Échauffement : non »)")),
       x.defi && h("span", {}, "Défi record : ", h("b", {}, `${plural(x.defi.score, "bonne réponse")} sur ${x.defi.questions}${x.defi.nouveauRecord ? " (nouveau record !)" : x.defi.record ? ` (record : ${x.defi.record})` : ""}`)),
       h("span", {}, "Réponses justes : ", h("b", {}, `${x.justes ?? 0} sur ${x.questions ?? 0}`)),
       steps.length > 0 && h("span", {}, "Étapes : ", h("b", {}, steps.join(", "))),
@@ -306,6 +311,18 @@ export class ParentSpace {
     this.weeklyBlock(m2, 2);
     const WS = D.weeklySolid(this.d.faits);
     if (WS.length) { const cap = h("p", { class: "pa-caption" }, "Touchez un point pour voir le détail de la semaine."); m2.append(h("p", { class: "pa-note" }, "Faits bien sus (boîte 3 ou plus) à la fin de chaque semaine"), chart(WS, (w) => w.n, { fmt: (v) => String(Math.round(v)), tell: (w) => { cap.textContent = `Semaine du ${D.fmtDay(w.semaine)} : ${plural(w.n, "fait bien su", "faits bien sus")} sur ${cat.length}.`; } }), cap); }
+    // lot 3, étape 4 : le calcul rapide (niveau conseillé, niveaux acquis et leur date, leçons, semaine par semaine)
+    const M3 = this.c.modules[3], st3 = this.d.niveaux.find((n) => n.module === 3) ?? null, m3 = h("div", { class: "pa-card-box" }, h("h2", {}, `Module 3 · ${M3?.nom ?? "Calcul rapide"}`));
+    if (!st3 || !this.app?.module3) m3.append(h("p", { class: "pa-empty" }, "Pas encore commencé."));
+    else {
+      const cur = recommended(this.app.module3, st3, { familyShare: (id, b) => ruleShare(this.module2, this.d.faits, id, b) }), acq = st3.acquis ?? [];
+      m3.append(h("p", { class: "pa-big" }, `Niveau conseillé : ${cur} sur 9 · ${plural(acq.length, "niveau acquis", "niveaux acquis")}`), h("p", { class: "pa-note" }, M3.niveaux[cur]),
+        h("div", { class: "pa-levels", "aria-hidden": "true" }, Array.from({ length: 9 }, (_, i) => h("span", { class: acq.includes(i + 1) ? "done" : i + 1 === cur ? "cur" : "" }, i + 1))),
+        h("p", { class: "pa-note" }, "Un niveau est acquis avec 8 bonnes réponses sur 10 (au plus une aide) ; les niveaux se débloquent dans l'ordre de la SPEC (le 4 quand les maisons de 5 à 7 sont bien sues, le 7 avec les amis de 10). Avec « choisir », l'enfant peut prendre n'importe quel niveau."),
+        h("h3", {}, "Historique des niveaux"), h("ul", { class: "pa-hist" }, (st3.obtenus ?? []).filter((o) => o.acquis || o.parent).map((o) => h("li", {}, o.parent ? `${D.fmtDay(o.date)} : niveau ${o.niveau} choisi par le parent (point de départ)` : `${D.fmtDay(o.date)} : niveau ${o.niveau} acquis${o.choix ? " (choisi par l'enfant)" : ""}`))),
+        (st3.lecons ?? []).length ? h("p", { class: "pa-note" }, `Leçons déjà vues : ${st3.lecons.join(", ")}.`) : null);
+    }
+    this.weeklyBlock(m3, 3);
     // le défi record
     const DS = D.challengeSummary(this.d.recompenses.defi, this.d.seances);
     const df = h("div", { class: "pa-card-box" }, h("h2", {}, "Défi record"),
@@ -314,7 +331,7 @@ export class ParentSpace {
       DS.scores.length ? h("div", { class: "pa-chips" }, DS.scores.slice(-20).reverse().map((x) => h("span", { class: `pa-chip${x.record ? " rec" : ""}` }, `${D.fmtShortDay(x.t)} : ${x.score}${x.record ? " · record" : ""}`))) : null);
     // le journal des erreurs
     const J = D.errorJournal(this.d.reponses), E = this.c.erreurs;
-    const jr = h("div", { class: "pa-card-box" }, h("h2", {}, "Journal des erreurs"), h("p", { class: "pa-note" }, "Pour la ligne graduée, chaque mauvaise réponse révèle souvent une erreur type (E1 à E5 ; avec les nombres jusqu'à 1 000, E6 : dizaines et centaines confondues, et E7 : le nombre écrit comme on l'entend, 3007 pour 307) ; l'application la corrige avec une animation, et relance une leçon si elle revient deux fois dans une séance. Le bouton « je ne sais pas » (NSP) a sa propre ligne : ce n'est pas une erreur, mais la question revient comme après une erreur."));
+    const jr = h("div", { class: "pa-card-box" }, h("h2", {}, "Journal des erreurs"), h("p", { class: "pa-note" }, "Pour la ligne graduée, chaque mauvaise réponse révèle souvent une erreur type (E1 à E5 ; avec les nombres jusqu'à 1 000, E6 : dizaines et centaines confondues, et E7 : le nombre écrit comme on l'entend, 3007 pour 307) ; pour le calcul rapide, C1 à C5 (C2 : une réponse juste mais lente, sans reproche : l'application rejoue le raccourci) ; l'application la corrige avec une animation, et relance une leçon si elle revient deux fois dans une séance. Le bouton « je ne sais pas » (NSP) a sa propre ligne : ce n'est pas une erreur, mais la question revient comme après une erreur."));
     if (!J.length) jr.append(h("p", { class: "pa-muted" }, "Aucune erreur enregistrée."));
     for (const w of J.slice(0, 6)) {
       jr.append(h("h3", {}, `Semaine du ${D.fmtDay(w.semaine)}`));
@@ -326,7 +343,7 @@ export class ParentSpace {
     const tr = h("div", { class: "pa-card-box" }, h("h2", {}, "Le trésor de l'enfant"), h("div", { class: "pa-stats" },
       stat(String(et.cumul ?? 0), "étoiles de mer gagnées depuis le début"), stat(String(et.total ?? 0), "étoiles pas encore dépensées"), stat(String(et.coquillages ?? 0), "coquillages ouverts"),
       stat(String(R.serie?.seances ?? 0), "séances dans la série (elle ne retombe jamais à zéro)")));
-    page.append(m1, m2, df, jr, tr, this.cardsBox());
+    page.append(m1, m2, m3, df, jr, tr, this.cardsBox());
   }
   // LA GRILLE DES ADDITIONS (lot 2, étape 7) : a en ligne, b en colonne ; couleur selon la boîte, anneau vert si le
   // fait est donné vite ; les cases « + 0 » en gris avec le temps de base ; toucher une case montre son historique
@@ -436,13 +453,20 @@ export class ParentSpace {
     this.store.setting("defiActif").then((v) => paint(v !== false));
     return row("Défi record", "Une minute de faits d'addition déjà bien sus, comparés au record de l'enfant (jamais à une norme), après la notion du jour. Il n'a lieu qu'à partir de la 5e séance et quand au moins 8 faits sont bien sus (onglet Progression, « Défi record »).", seg);
   }
+  // lot 3 (docs/SPEC-LOT3.md, section 4) : l'échauffement, oui ou non
+  echauffementRow(row) {
+    const seg = h("div", { class: "pa-seg", role: "group", "aria-label": "échauffement" }), paint = (v) => { for (const b of seg.children) b.setAttribute("aria-pressed", String((b.dataset.v === "oui") === v)); };
+    for (const [v, t] of [["oui", "oui"], ["non", "non"]]) seg.append(h("button", { "data-v": v, onclick: async () => { await this.store.setSetting("echauffement", v === "oui"); paint(v === "oui"); } }, t));
+    this.store.setting("echauffement").then((v) => paint(v !== false));
+    return row("Échauffement", "Quelques additions au début de chaque séance ; l'enfant peut aussi le passer (bouton « passer » en haut à droite). C'est là que reviennent les additions à revoir (la révision espacée) : sans échauffement, elles ne reviennent que dans les exercices d'additions.", seg);
+  }
   // le module imposé pour la prochaine séance (lot 2, étape 6) : valable une séance, ensuite l'alternance reprend
   moduleRow(row) {
     const seg = h("div", { class: "pa-seg", role: "group", "aria-label": "module de la prochaine séance" }), ok = h("span", { class: "pa-ok" });
     const paint = (v) => { for (const b of seg.children) b.setAttribute("aria-pressed", String(b.dataset.v === String(v ?? "auto"))); };
-    for (const [v, t] of [["auto", "au choix de l'application"], ["1", "ligne graduée"], ["2", "additions"]]) seg.append(h("button", { "data-v": v, onclick: async () => { await this.store.setSetting("moduleImpose", v === "auto" ? null : { module: Number(v), t: Date.now() }); paint(v === "auto" ? null : v); ok.textContent = "Enregistré."; } }, t));
+    for (const [v, t] of [["auto", "au choix de l'application"], ["1", "ligne graduée"], ["2", "additions"], ["3", "calcul rapide"]]) seg.append(h("button", { "data-v": v, onclick: async () => { await this.store.setSetting("moduleImpose", v === "auto" ? null : { module: Number(v), t: Date.now() }); paint(v === "auto" ? null : v); ok.textContent = "Enregistré."; } }, t));
     this.store.setting("moduleImpose").then((m) => paint(m?.module ?? null));
-    return row("Notion du jour de la prochaine séance", "D'habitude, la ligne graduée et les additions alternent d'une séance à l'autre. Vous pouvez imposer l'une des deux pour la prochaine séance seulement.", seg, ok);
+    return row("Notion du jour de la prochaine séance", "D'habitude, la ligne graduée, les additions et le calcul rapide tournent d'une séance à l'autre (le moins avancé d'abord, jamais deux fois de suite le même). Vous pouvez imposer l'une des deux pour la prochaine séance seulement (celle que l'enfant lance avec « jouer » : si elle choisit elle-même son exercice, votre choix attend la séance suivante).", seg, ok);
   }
   // le son (lot 2) : musique oui/non et son volume, bruitages oui/non ; un seul réglage « son » dans la base
   sonRow(row) {
@@ -470,8 +494,12 @@ export class ParentSpace {
         return h("button", { class: "pa-btn", disabled: known, onclick: async () => { const n = (await markFamilyKnown(this.store, this.module2, id)).length; msg.textContent = `Famille « ${f.nom} » marquée connue : ${n} fait(s) en boîte 3.`; famBtns(); } }, known ? `« ${f.nom} » : déjà connue` : `Marquer « ${f.nom} » comme connue`); }));
     };
     famBtns();
-    box.append(h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau de la ligne graduée :"), levels), fams, msg);
-    return row("Point de départ", "Si l'enfant sait déjà faire : choisissez le niveau de la ligne graduée où elle commencera, ou marquez une famille de faits d'addition comme connue (ses faits seront revus moins souvent). C'est noté dans l'historique comme votre choix, et cela ne rapporte rien à l'enfant.", box);
+    // lot 3 : le niveau du calcul rapide
+    const calc = h("div", { class: "pa-seg pa-levels-seg", role: "group", "aria-label": "niveau du calcul rapide" }), paintC = (n) => { for (const b of calc.children) b.setAttribute("aria-pressed", String(Number(b.dataset.v) === n)); };
+    for (let n = 1; n <= (this.depart.calculMax ?? 9); n++) calc.append(h("button", { "data-v": n, onclick: async () => { await setCalcLevel(this.store, n); paintC(n); msg.textContent = `Calcul rapide : niveau ${n} à la prochaine séance (les niveaux d'avant sont comptés acquis).`; } }, String(n)));
+    this.store.get("niveaux", 3).then((st) => paintC(st?.depart ?? null));
+    box.append(h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau de la ligne graduée :"), levels), h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau du calcul rapide :"), calc), fams, msg);
+    return row("Point de départ", "Si l'enfant sait déjà faire : choisissez le niveau de la ligne graduée ou du calcul rapide où elle commencera, ou marquez une famille de faits d'addition comme connue (ses faits seront revus moins souvent). C'est noté dans l'historique comme votre choix, et cela ne rapporte rien à l'enfant.", box);
   }
   async marked() { const t = Date.now(); await this.store.setSetting("dernierExport", t); this.d.dernierExport = t; }
   settingsBox() {
@@ -489,7 +517,7 @@ export class ParentSpace {
     this.store.setting("dureeSeanceMin", this.seance.dureeMaxMin).then(paint);
     box.append(row("Durée maximale d'une séance", "Au bout de ce temps, l'application dit « à demain » (la dernière minute est gardée pour la récompense).", seg));
     // lot 2 : le sélecteur de difficulté (crans proposés à l'enfant), le défi record, le point de départ
-    box.append(this.moduleRow(row), this.sonRow(row), this.cransRow(row), this.defiRow(row), this.departRow(row));
+    box.append(this.moduleRow(row), this.sonRow(row), this.cransRow(row), this.echauffementRow(row), this.defiRow(row), this.departRow(row));
     // le code
     box.append(row("Code parent", "Le code à 4 chiffres qui ouvre cet espace.", h("button", { class: "pa-btn", onclick: () => { this.root.replaceChildren(h("div", { class: "pa-veil" })); this.app.stage.paused = false; this.gate("choisir"); } }, "Changer le code")));
     // le stockage persistant

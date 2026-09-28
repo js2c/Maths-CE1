@@ -34,7 +34,7 @@ test("familles 3 à 7 : règles, ordre d'introduction, 45 faits (a, b de 1 à 9,
   assert.equal(aidFor(7, 3), "cadre"); assert.equal(aidFor(4, 4), "reflet"); assert.equal(aidFor(3, 4), "doublePlus"); assert.equal(aidFor(6, 2), "ligne"); assert.equal(aidFor(5, 3), "maison");
   // réglages dans le contenu, jamais en dur
   assert.deepEqual(c.familles2.ouverture, { part: 0.8, boite: 2 }); assert.deepEqual(c.familles2.trou, { part: 0.5, boite: 3 }); assert.equal(c.notion.memeFaitMax, 3);
-  assert.deepEqual(seance.alternance.modules, [1, 2]);
+  assert.deepEqual(seance.alternance.modules, [1, 2, 3]); // (lot 3 : le calcul rapide rejoint la rotation)
 });
 
 test("ouverture : 80 % des faits introduits en boîte 2 ou plus ; une famille à la fois, au plus une par séance", () => {
@@ -70,6 +70,8 @@ test("famille acquise : 80 % des faits de sa RÈGLE en boîte 3 (les amis de 10 
 });
 
 test("alternance séance après séance ; module imposé par le parent (une séance) ; l'autre module sans rien à proposer", () => {
+  // (les règles du lot 2, à deux modules ; le lot 3 en ajoute un troisième : tests/unit/calcul.test.mjs)
+  const seance = { alternance: { modules: [1, 2] } };
   const s = (module, debut, o = {}) => ({ module, debut, terminee: true, ...o });
   assert.equal(chooseModule(seance, []).module, 1);
   assert.equal(chooseModule(seance, [s(1, 1)]).module, 2);
@@ -165,15 +167,20 @@ test("point de départ du parent étendu aux familles 3 à 7 : la famille ouvert
   const parent = load("parent.json"); assert.deepEqual(parent.pointDeDepart.familles, [1, 2, 3, 4, 5, 6, 7]);
 });
 
-test("leçon d'appui jamais vue : les maisons de 8 et 9 jouent L6, les presque-doubles L4 (puis L6), le mélange la première qui manque", async () => {
+// lot 3 (docs/SPEC-LOT3.md, section 4) : la règle leconSiPasVue du lot 2 est supprimée ; une leçon n'est jouée que pour ce
+// qu'on va travailler
+test("lot 3 : leçon jamais vue : les maisons de 8 et 9 jouent L6, les presque-doubles L4 (jamais L6), le mélange aucune", async () => {
   const st = (famille, lecons = []) => ({ ...initialFamilies(c, NOW), ouvertes: [1, 2, 3, 4, 5, 6, 7], acquises: [1, 2, 3, 4, 5, 6, 7].filter((id) => id < famille), lecons });
   const entry = async (famille, lecons) => { const s = await open(); await s.put("niveaux", st(famille, lecons)); return (await new Module2Runner({ store: s, content: c, rnd: rng(1), cran: () => "conseille" }).load()).entryLesson(); };
   assert.equal(await entry(5), "L6");
   assert.equal(await entry(5, ["L6"]), null);
   assert.equal(await entry(6), "L4");
-  assert.equal(await entry(6, ["L4"]), "L6");
-  assert.equal(await entry(7, ["L4", "L6"]), "L5");
-  assert.equal(await entry(7, ["L4", "L5", "L6"]), null);
+  assert.equal(await entry(6, ["L4"]), null);
+  assert.equal(await entry(7), null);
+  assert.equal(await entry(7, ["L4", "L6"]), null);
+  // les familles 2 à 4 : leur propre leçon, la première fois
+  assert.equal(await entry(2), "L4"); assert.equal(await entry(3), "L5"); assert.equal(await entry(4), "L6");
+  assert.equal(await entry(4, ["L6"]), null);
 });
 
 // décisions du parent du 27 septembre (relecture extérieure), corrections 3 et 4

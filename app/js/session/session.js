@@ -16,6 +16,10 @@
 //    dernières réponses à un cran au-dessus du conseillé font redescendre d'un cran (`onCranDown`) ;
 //  - défi record (lot 2) : l'étape n'a lieu qu'à partir de la 5e séance terminée et si assez de faits sont
 //    en boîte 3 ou plus (`challengeReady`) ; sinon elle est sautée sans rien dire.
+//  - lot 3 (docs/SPEC-LOT3.md, sections 2 et 4) : l'exercice choisi par l'enfant (écran « choisir » : `choix`,
+//    { module, niveau } ou { module, famille }) est la notion du jour de la séance, qui compte comme la séance du
+//    jour ; le module imposé par le parent n'est alors pas consommé (il vaut pour la prochaine séance « jouer ») ;
+//    `sans` : les étapes retirées par un réglage du parent (« Échauffement : non »), sautées et notées comme telles.
 // Aucun accès au DOM ici : l'horloge et les gestionnaires sont injectés (tests : tests/unit/session.test.mjs).
 
 export const sameDay = (a, b) => { const x = new Date(a), y = new Date(b); return x.getFullYear() === y.getFullYear() && x.getMonth() === y.getMonth() && x.getDate() === y.getDate(); };
@@ -26,12 +30,16 @@ export const doneToday = async (store, now = Date.now()) => (await store.all("se
 // modules de `alternance.modules` (ligne graduée, additions) : jamais deux fois de suite le même, sauf module
 // imposé par le parent (réglage « moduleImpose », valable une séance) ou si l'autre n'a rien à proposer
 // (`has(module)`). Sans alternance (lot 1) : toujours la ligne graduée.
-export const chooseModule = (c = {}, seances = [], impose = null, has = () => true) => {
+// lot 3 (docs/SPEC-LOT3.md, section 6) : trois modules ; parmi ceux qui ne sont pas le dernier joué, le moins maîtrisé
+// d'abord (`mastery(module)`, de 0 à 1 ; à égalité, l'ordre de la rotation) ; le dernier seulement si aucun autre n'a
+// rien à proposer. Une séance d'exercice choisi compte comme la dernière jouée.
+export const chooseModule = (c = {}, seances = [], impose = null, has = () => true, mastery = () => 0) => {
   const mods = c.alternance?.modules ?? [1];
   if (impose && mods.includes(impose)) return { module: impose, impose: true };
   const last = [...seances].filter((s) => s.terminee && !s.libre && s.module).sort((x, y) => x.debut - y.debut).at(-1)?.module;
   const i = mods.indexOf(last), order = i < 0 ? mods : [...mods.slice(i + 1), ...mods.slice(0, i + 1)];
-  return { module: order.find((m) => has(m)) ?? mods[0] };
+  const others = order.filter((m) => m !== last && has(m)), m = [...others].sort((x, y) => mastery(x) - mastery(y) || others.indexOf(x) - others.indexOf(y))[0];
+  return { module: m ?? order.find((x) => has(x)) ?? mods[0] };
 };
 // les crans du sélecteur de difficulté (content/seance.json, selecteur)
 export const CRANS = ["facile", "conseille", "dur", "tresdur"];
@@ -48,7 +56,8 @@ export class Session {
   // content : seance.json ; handlers : { accueil, echauffement, notion, defi, probleme, recompense } ;
   // rewards : les étoiles (rewards.js) ; clock : l'heure en ms
   // onCranDown(de, a) : la protection vient de redescendre d'un cran (la voix le dit)
-  constructor({ store, content, handlers, rewards = null, clock = () => Date.now(), paused = () => 0, onProgress = null, onCranDown = null }) {
+  constructor({ store, content, handlers, rewards = null, clock = () => Date.now(), paused = () => 0, onProgress = null, onCranDown = null, choix = null, sans = [], mastery = () => 0 }) {
+    this.choix = choix; this.sans = sans; this.mastery = mastery;
     this.store = store; this.c = content; this.handlers = handlers; this.rewards = rewards; this.clock = clock; this.paused = paused; this.onProgress = onProgress; this.onCranDown = onCranDown;
     this.rec = null; this.lastOk = null; this.progress = { etape: null, faites: 0, prevues: 0 };
     this.cranIdx = 1; this.frac = 0; this.win = []; this.nouveaux = 0;
@@ -73,9 +82,10 @@ export class Session {
   async start() {
     this.p0 = this.paused();
     // le module du jour ; un module imposé par le parent ne vaut qu'une séance
-    const impose = (await this.store.setting("moduleImpose"))?.module ?? null, pick = chooseModule(this.c, await this.store.all("seances"), impose, this.has ?? (() => true));
+    // (exercice choisi par l'enfant : c'est lui ; le module imposé attend la prochaine séance « jouer »)
+    const impose = this.choix ? null : (await this.store.setting("moduleImpose"))?.module ?? null, pick = this.choix ? { module: this.choix.module } : chooseModule(this.c, await this.store.all("seances"), impose, this.has ?? (() => true), this.mastery);
     if (impose) await this.store.setSetting("moduleImpose", null);
-    this.rec = { debut: this.clock(), fin: null, dureeS: null, terminee: false, module: pick.module, ...(pick.impose ? { moduleImpose: true } : {}), questions: 0, justes: 0, reussite: null, etoiles: 0, etapes: [] };
+    this.rec = { debut: this.clock(), fin: null, dureeS: null, terminee: false, module: pick.module, ...(pick.impose ? { moduleImpose: true } : {}), ...(this.choix ? { choix: { ...this.choix } } : {}), questions: 0, justes: 0, reussite: null, etoiles: 0, etapes: [] };
     this.rec.id = await this.store.add("seances", this.rec);
     return this;
   }
@@ -125,6 +135,7 @@ export class Session {
     for (const step of this.c.etapes) {
       const h = this.handlers[step.id], t0 = this.active();
       if (step.actif !== false && h && step.id === "defi" && !(await challengeReady(this.store, step))) { this.rec.etapes.push({ id: step.id, sautee: "pas encore" }); continue; }
+      if (this.sans.includes(step.id)) { this.rec.etapes.push({ id: step.id, sautee: "réglage du parent" }); continue; }
       if (step.actif === false || !h) { this.rec.etapes.push({ id: step.id, sautee: step.actif === false ? "désactivée" : "pas encore construite" }); continue; }
       const asks = step.id !== "accueil" && step.id !== "recompense";
       if (asks && this.over()) { this.rec.etapes.push({ id: step.id, sautee: "temps écoulé" }); continue; }

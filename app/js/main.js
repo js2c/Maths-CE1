@@ -18,6 +18,9 @@ import { runNotion } from "./session/notion.js";
 import { FactsScreen, runWarmup } from "./modules/facts/screen.js";
 import { Warmup } from "./modules/facts/warmup.js";
 import { Module2Runner } from "./modules/facts/runner.js";
+import { calcMastery, Module3Runner } from "./modules/calc/runner.js";
+import { CalcScreen } from "./modules/calc/screen.js";
+import { median } from "./modules/facts/facts.js";
 import { Hermit } from "./engine/hermit.js";
 import { runChallenge } from "./modules/facts/challenge.js";
 import { Dictation } from "./modules/numberline/dictation.js";
@@ -32,8 +35,9 @@ import { Album } from "./session/album.js";
 import { Frieze } from "./session/frieze.js";
 import { FreeTraining } from "./session/free.js";
 import { allowedCrans, chooseCran } from "./session/selector.js";
+import { choose } from "./session/choice.js";
 import { clock } from "./engine/clock.js";
-import { pop } from "./engine/ui.js";
+import { pop, skipKey } from "./engine/ui.js";
 import { ParentSpace, parentLogo } from "./parent/parent.js";
 
 const T0 = performance.now();
@@ -44,7 +48,7 @@ const stage = new Stage(document.getElementById("stage"));
 // le désactivent), avec une seule résolution des planches d'images : celle que cet écran utilise (sprites.js)
 if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !location.search.includes("nosw")) navigator.serviceWorker.register(`sw.js?r=${stage.px > 1.2 ? 2 : 1}`).catch(() => {});
 const [atlas, module1, module2, textes, seance, lecons, cartes, calendrier, parentContent, voix] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/module2.json"), json("content/textes.json"), json("content/seance.json"), json("content/lecons.json"), json("content/cartes.json"), json("content/calendrier.json"), json("content/parent.json"), json("assets/voix/index.json").catch(() => null)]);
-const [sonContent, sonIndex] = await Promise.all([json("content/son.json"), json("assets/son/index.json").catch(() => null)]);
+const [sonContent, sonIndex, module3] = await Promise.all([json("content/son.json"), json("assets/son/index.json").catch(() => null), json("content/module3.json")]);
 const sprites = new Sprites(atlas, stage.px);
 // la base locale ; au premier lancement, on demande au navigateur de ne jamais l'effacer de lui-même
 const store = await Store.open();
@@ -82,6 +86,9 @@ app.lineScreen = () => (app.screen ??= new ReadScreen(app));
 // lot 2, étape 8 : la dictée de nombres (niveau 12) prend le pavé de l'écran des additions ; les chaluts des centaines vont sur le calque des aides
 app.dictation = new Dictation(app, () => (app.facts ??= new FactsScreen(app, module2)));
 app.aidBoard ??= new AidBoard(app); // l'écran de la ligne (aussi pour l'aide des faits + 1, + 2)
+// lot 3, étape 4 : le calcul rapide prend l'ardoise et le pavé de l'écran des additions
+app.calc = new CalcScreen(app, () => (app.facts ??= new FactsScreen(app, module2)));
+app.module3 = module3;
 window.__app = app;
 // la musique baisse pendant que la voix parle
 stage.ticks.add(() => sound.duck(voice.speaking));
@@ -125,13 +132,17 @@ const handlers = {
     const screen = (app.facts ??= new FactsScreen(app, module2)), warmup = await new Warmup({ store, content: module2, rnd, seance: ctx.session.id, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load();
     const step = { ...ctx.step, ...(P.get("faits") ? { questions: [Number(P.get("faits")), Number(P.get("faits"))] } : {}) };
     app.warmup = warmup;
-    await runWarmup({ ...ctx, step, warmup, screen, rnd, intro: async () => { await voice.say(text.pick("echauffement")); if (!warmup.base.mesures.length) await voice.say(text.data.pave); } });
+    // lot 3 : le bouton « passer » habituel, au début de l'échauffement, l'arrête et enchaîne sur l'exercice
+    const skip = (onSkip) => skipKey(app, () => { voice.stop(); onSkip(); }, "passer l'échauffement");
+    await runWarmup({ ...ctx, step, warmup, screen, rnd, skip, intro: async (skipped) => { await voice.say(text.pick("echauffement")); if (!warmup.base.mesures.length && !skipped()) await voice.say(text.data.pave); } });
   },
   notion: async (ctx) => {
     frieze.notionIcon(ctx.session.rec.module);
     if (ctx.session.rec.module === 2) return notion2(ctx);
+    if (ctx.session.rec.module === 3) return notion3(ctx);
     const screen = app.lineScreen();
-    const runner = await new Module1Runner({ screen, store, content: module1, rnd, seance: ctx.session.id, offset: () => ctx.session.offset, cran: () => ctx.session.cran }).load();
+    // lot 3 : le niveau choisi par l'enfant (écran « choisir ») : toutes les questions à ce niveau
+    const runner = await new Module1Runner({ screen, store, content: module1, rnd, seance: ctx.session.id, offset: () => ctx.session.offset, cran: () => ctx.session.cran, choix: ctx.session.choix?.niveau ?? null }).load();
     if (P.get("niveau")) { runner.st.niveau = Number(P.get("niveau")); runner.save = () => {}; }
     if (P.get("format")) runner.levels = runner.levels.map((c) => ({ ...c, formats: [P.get("format")] }));
     const step = { ...ctx.step, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}), ...(P.get("guides") ? { guides: Number(P.get("guides")) } : {}) };
@@ -156,7 +167,7 @@ const handlers = {
 // (L4 à L6), sinon deux exemples guidés ; une famille acquise rapporte une étoile arc-en-ciel
 async function notion2(ctx) {
   const { session } = ctx, screen = (app.facts ??= new FactsScreen(app, module2));
-  const runner = await new Module2Runner({ store, content: module2, rnd, seance: session.id, cran: () => session.cran, dejaNouveaux: session.nouveaux }).load();
+  const runner = await new Module2Runner({ store, content: module2, rnd, seance: session.id, cran: () => session.cran, dejaNouveaux: session.nouveaux, choix: session.choix?.famille ?? null }).load();
   const conf = ctx.step.module2 ?? ctx.step, step = { ...ctx.step, ...conf, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}), ...(P.get("guides") ? { guides: Number(P.get("guides")) } : {}) };
   app.runner = runner; session.rec.famille = runner.famille; await session.save();
   await Promise.all([sprites.load("ermite"), sprites.load("aides")]);
@@ -173,6 +184,22 @@ async function notion2(ctx) {
     session.nouveaux = runner.nouveaux; session.rec.faitsNouveaux = runner.nouveaux; await session.save();
     screen.notion = false; screen.hermit = null; app.hermit = null; screen.leave(); hermit.remove(); sprites.unload("ermite");
   }
+}
+// lot 3, étape 4 : la notion du jour sur le calcul rapide (docs/SPEC-LOT3.md, section 6) : l'écran des additions (ardoise,
+// pavé), le mur de corail, le chemin et le petit poisson (planche « calcul », chargée le temps de l'étape) ; la leçon
+// d'entrée du niveau (L7, L8, L9), les 3 calculs guidés d'un nouveau niveau ; un niveau acquis rapporte une étoile arc-en-ciel
+async function notion3(ctx) {
+  const { session } = ctx, conf = ctx.step.module3 ?? ctx.step;
+  const step = { ...ctx.step, ...conf, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}) };
+  const base = median((await store.setting("tempsDeBase"))?.mesures ?? []) ?? module2.base.defautS * 1000;
+  const runner = await new Module3Runner({ store, content: module3, content2: module2, rnd, seance: session.id, cran: () => session.cran, choix: session.choix?.module === 3 ? session.choix.niveau : null, baseMs: base }).load();
+  app.runner = runner; session.rec.niveauCalcul = runner.niveau; await session.save();
+  await sprites.load("calcul");
+  const fs = (app.facts ??= new FactsScreen(app, module2)); fs.show(true); fs.keys(false);
+  await voice.say(text.pick("notionCalcul"));
+  try {
+    await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.calc.askNotion(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
+  } finally { app.calc.leave(); sprites.unload("calcul"); }
 }
 // pour les mesures : ?sans=echauffement (ou une autre étape) la saute
 for (const id of (P.get("sans") ?? "").split(",").filter(Boolean)) delete handlers[id];
@@ -200,40 +227,77 @@ let homeEls = [];
 const clearHome = () => { homeEls.forEach((e) => e.remove()); homeEls = []; };
 async function showHome({ done, first = false }) {
   clearHome();
-  const reefKey = big("recif", 860, 650, "le récif", "bubble reefkey"), albumKey = big("album", 1080, 650, "l'album", "bubble albumkey");
+  const reefKey = big("recif", HOME_X[2], 650, "le récif", "bubble reefkey"), albumKey = big("album", HOME_X[3], 650, "l'album", "bubble albumkey");
   homeEls.push(reefKey, albumKey, parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }));
   const visit = (place) => async () => { voice.unlock(); voice.stop(); clearHome(); await place.visit(); showHome({ done: await doneToday(store) }); };
   onTap(reefKey, visit(reef)); onTap(albumKey, visit(album));
   if (done) {
-    // la séance du jour est faite : la lune (un décor) et « Encore ! », l'entraînement libre
-    const again = big("encore", 640, 650, "encore", "bubble play again");
+    // la séance du jour est faite : la lune (un décor) et « Encore ! », l'entraînement libre (le même écran « choisir »,
+    // sans étoiles)
+    const again = big("encore", HOME_X[0] + 55, 650, "encore", "bubble play again");
     homeEls.push(again);
     onTap(again, () => { voice.unlock(); clearHome(); freeTraining(); });
     homeEls.push(await goodNight(app, { first }));
     return;
   }
-  // la séance du jour
-  const play = big("jouer", 640, 650, "jouer", "bubble play");
-  homeEls.push(play);
+  // la séance du jour : « jouer » (la séance proposée par l'application) ou « choisir » (lot 3 : l'exercice et le niveau)
+  const play = big("jouer", HOME_X[0], 650, "jouer", "bubble play"), pickKey = big("choisir", HOME_X[1], 650, "choisir", "bubble choisir");
+  homeEls.push(play, pickKey);
   play.addEventListener("pointerdown", async (e) => {
     e.preventDefault(); voice.unlock(); clearHome();
     // pour les captures et les tests : ?lecon=L1 joue seulement cette leçon
     if (P.get("lecon")) { window.__lecon = await lessons.play(P.get("lecon")); return; }
     // ?module=2 (tests) : la notion du jour imposée pour cette séance
     if (P.get("module")) await store.setSetting("moduleImpose", { module: Number(P.get("module")), t: Date.now() });
-    // la durée maximale d'une séance est un réglage du parent (seance.json donne la valeur par défaut)
-    const session = new Session({ store, content: { ...seance, dureeMaxMin: await store.setting("dureeSeanceMin", seance.dureeMaxMin) }, handlers, rewards, paused: () => clock.pausedTotal(), onProgress: (p) => progress(p),
-      // la protection du sélecteur redescend d'un cran : la pieuvre encourage, la voix le dit doucement
-      onCranDown: async () => { voice.stop(); ocean.octo.play("encourager"); await voice.say(text.data.cranDescente); } });
-    app.session = session; mode = "seance";
-    // la frise ne montre le défi record que s'il aura lieu (à partir de la 5e séance, assez de faits bien sus)
-    const defi = seance.etapes.find((e) => e.id === "defi");
-    frieze.only(defi && handlers.defi && !(await challengeReady(store, defi)) ? ["defi"] : []);
-    await session.run();
-    mode = null; frieze.show(false); homeKey.style.visibility = "hidden";
-    sound.stopMusic();
-    showHome({ done: true, first: true });
+    // ?choix=1:8 ou ?choix=2:5 (tests, captures) : l'exercice choisi sans passer par l'écran « choisir »
+    const ch = P.get("choix")?.split(":").map(Number);
+    await runSession(ch ? (ch[0] === 2 ? { module: 2, famille: ch[1] } : { module: ch[0], niveau: ch[1] }) : null);
   }, { once: true });
+  onTap(pickKey, async () => {
+    voice.unlock(); clearHome();
+    mode = "choix"; homeKey.style.visibility = "visible";
+    const c = await choose(app, { store, content: { module1, module2, module3, seance } });
+    mode = null; homeKey.style.visibility = "hidden";
+    if (c.lecon) return lessonAlone(c.lecon);
+    await runSession(c);
+  });
+}
+// les bulles de l'accueil : jouer (ou « Encore ! »), choisir, le récif, l'album
+const HOME_X = [520, 740, 960, 1165];
+// une séance du jour : proposée par l'application (« jouer »), ou l'exercice choisi (`choix`, lot 3)
+async function runSession(choix = null) {
+  // la durée maximale d'une séance est un réglage du parent (seance.json donne la valeur par défaut) ; « Échauffement :
+  // non » (réglage du parent, lot 3) le retire de la séance et de la frise
+  const sans = (await store.setting("echauffement")) === false ? ["echauffement"] : [];
+  // lot 3 : la rotation de « jouer » entre les trois modules, le moins maîtrisé d'abord (session.js, chooseModule)
+  const [n1, n2, n3] = await Promise.all([1, 2, 3].map((k) => store.get("niveaux", k))), mastery = { 1: ((n1?.niveau ?? 1) - 1) / module1.niveaux.length, 2: (n2?.acquises?.length ?? 0) / module2.familles.length, 3: calcMastery(module3, n3) };
+  const session = new Session({ store, content: { ...seance, dureeMaxMin: await store.setting("dureeSeanceMin", seance.dureeMaxMin) }, handlers, rewards, paused: () => clock.pausedTotal(), onProgress: (p) => progress(p), choix, sans, mastery: (m) => mastery[m] ?? 0,
+    // la protection du sélecteur redescend d'un cran : la pieuvre encourage, la voix le dit doucement
+    onCranDown: async () => { voice.stop(); ocean.octo.play("encourager"); await voice.say(text.data.cranDescente); } });
+  app.session = session; mode = "seance";
+  // la frise ne montre le défi record que s'il aura lieu (à partir de la 5e séance, assez de faits bien sus)
+  const defi = seance.etapes.find((e) => e.id === "defi");
+  frieze.only([...sans, ...(defi && handlers.defi && !(await challengeReady(store, defi)) ? ["defi"] : [])]);
+  await session.run();
+  mode = null; frieze.show(false); homeKey.style.visibility = "hidden";
+  sound.stopMusic();
+  showHome({ done: true, first: true });
+}
+// une leçon choisie seule (lot 3) : ce n'est pas une séance ; regardée jusqu'au bout, elle rapporte ses étoiles une
+// fois par leçon et par jour (seance.json, choix.etoilesLecon), puis retour à l'accueil. Elle est notée vue, et
+// rangée dans l'historique du parent comme une séance « libre » (qui ne compte jamais comme la séance du jour).
+async function lessonAlone(id) {
+  mode = "lecon"; homeKey.style.visibility = "visible";
+  const t0 = Date.now(), r = await lessons.play(id);
+  mode = null; homeKey.style.visibility = "hidden";
+  const L = lecons[id], key = L?.module === 2 ? 2 : L?.module === 3 ? 3 : 1, st = (await store.get("niveaux", key)) ?? (key === 3 ? { module: 3, acquis: [], obtenus: [], vus: {}, fenetres: {}, lecons: [] } : null);
+  if ((r?.vue || r?.passee) && st && !(st.lecons ??= []).includes(id)) { st.lecons.push(id); await store.put("niveaux", st); }
+  const today = new Date().toDateString(), done = await store.setting("leconsChoisies"), ids = done?.jour === today ? done.ids : [];
+  let etoiles = 0;
+  if (r?.vue && !ids.includes(id)) { etoiles = seance.choix?.etoilesLecon ?? 3; await store.setSetting("leconsChoisies", { jour: today, ids: [...ids, id] }); app.starFrom = [640, 400]; await rewards.add(etoiles, `leçon ${id}`); }
+  await store.add("seances", { debut: t0, fin: Date.now(), dureeS: Math.round((Date.now() - t0) / 1000), terminee: false, libre: true, leconChoisie: true, module: key, questions: 0, justes: 0, reussite: null, etoiles, etapes: [], lecons: [{ id, raison: "choix", ...r }] });
+  await clock.wait?.(etoiles ? 1500 : 0);
+  showHome({ done: await doneToday(store) });
 }
 
 // ---------------------------------------------------------------- pendant la séance : la frise et la maison
@@ -268,6 +332,7 @@ async function pauseSession() {
 // l'activité en cours est abandonnée pour de bon (engine/clock.js) et la scène rangée
 function abandonActivity() {
   clock.abandon(); voice.abandon();
+  app.choiceClear?.(); app.choiceClear = null; if (app.facts) app.facts.notion = false; app.calc?.fishDone(); // (lot 3 : l'écran « choisir », les additions libres, le poisson du mur)
   app.screen?.leave(); app.facts?.leave(); app.dictation?.hide?.(); lessons.abandon();
   for (const s of [app.screen, app.facts]) if (s) { s.resolve = null; s.locked = true; }
   // le bernard-l'ermite de la notion du jour sur les additions (notion2)
@@ -286,10 +351,10 @@ async function endPausedSession() {
   abandonActivity(); frieze.show(false); stage.root.classList.remove("paused"); sound.pauseLevel(false);
   showHome({ done: await doneToday(store) });
 }
-onTap(homeKey, () => { pop(homeKey); if (mode === "seance") pauseSession(); else if (mode === "libre") quitFree(); });
+onTap(homeKey, () => { pop(homeKey); if (mode === "seance") pauseSession(); else if (mode === "libre") quitFree(); else if (mode === "choix" || mode === "lecon") { abandonActivity(); showHome({ done: false }); } });
 async function freeTraining() {
   mode = "libre"; homeKey.style.visibility = "visible"; sound.startMusic(pickMusic(sonIndex, rnd));
-  const free = new FreeTraining(app, { store, module1, module2, rnd, seance });
+  const free = new FreeTraining(app, { store, module1, module2, module3, rnd, seance });
   app.free = free;
   await free.menu();
 }

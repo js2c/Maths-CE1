@@ -87,3 +87,19 @@ export function paintHundreds(ctx, sprites, n, cx = 640, top = 330, { lit = null
   if (digits) [c, d, u].forEach((v, i) => num(ctx, v, colX[i], yN, 64, lit === i ? R.RED : undefined));
   return { chiffres: colX.map((x) => [x, yN]) };
 }
+
+// lot 3 : le tableau centaines, dizaines, unités de la dictée (niveau 12, cran « plus facile ») : trois colonnes
+// sous l'ardoise, chacune avec son image (le chalut, le filet, le poisson, comme dans la leçon L10) ; les chiffres
+// tapés s'y rangent depuis la droite (le dernier tapé dans les unités)
+export function paintPlaceTable(ctx, sprites, typed = "", cx = 790, top = 350) {
+  const W = 132, H = 128, gap = 18, xs = [-1, 0, 1].map((i) => cx + i * (W + gap)), digits = typed.slice(-3).padStart(3, " ");
+  const T = sprites.atlas.sprites["aide.chalut"].meta, N = sprites.atlas.sprites["aide.filet"].meta;
+  xs.forEach((x, i) => {
+    R.drawTileRing(ctx, x, top + H / 2, W, H, 20, "#fffaf0");
+    if (i === 0) putScaled(ctx, sprites, "aide.chalut", x, top + 10, 0.24, 10);
+    else if (i === 1) putScaled(ctx, sprites, "aide.filet", x - (N.w * 0.4) / 2, top + 14, 0.4);
+    else put(ctx, sprites, "poisson.2.d", x, top + 36);
+    if (digits[i] !== " ") num(ctx, Number(digits[i]), x, top + 94, 48);
+  });
+  void T;
+}

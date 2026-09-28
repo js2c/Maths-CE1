@@ -95,3 +95,4 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .cran { transform: scale(0.84); transition: transform 0.2s ease-out; }
 .cran.chosen { transform: scale(1); }
 .cran-glow { pointer-events: none; }
+.choix-lueur { pointer-events: none; }

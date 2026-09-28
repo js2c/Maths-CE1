@@ -12,7 +12,7 @@ import { fill } from "./screen.js";
 import { hundredsWords } from "../../engine/phrases.js";
 import { wait } from "../../engine/clock.js";
 import { skipKey } from "../../engine/ui.js";
-import { paintHundreds } from "../facts/aids.js";
+import { paintHundreds, paintPlaceTable } from "../facts/aids.js";
 
 const SKIPPED = Symbol("correction passée");
 
@@ -46,7 +46,10 @@ export class Dictation {
       skip.remove(); this.app.aidBoard.clear();
     }
     const say = lesson ? `${this.app.lecons?.[lesson]?.aToi ?? text.pick("aToi")} ${consigne}` : guide ? `${text.pick("aToi")} ${consigne}` : consigne;
-    const r = await this.fs.askNumber(q, say), code = r.nsp ? "NSP" : classify(q, r.value), ok = code === null;
+    // lot 3, cran « plus facile » (module1.json, crans) : le tableau centaines, dizaines, unités sous l'ardoise
+    if (q.tableau) { await this.app.sprites.load("centaines"); const paint = (t) => this.app.aidBoard.draw((ctx) => paintPlaceTable(ctx, this.app.sprites, t)); this.fs.onTyped = paint; paint(""); }
+    const r = await this.fs.askNumber(q, say); this.fs.onTyped = null; if (q.tableau) this.app.aidBoard.clear();
+    const code = r.nsp ? "NSP" : classify(q, r.value), ok = code === null;
     const result = { q, value: r.value, ok, code, ms: r.ms, listens: r.listens };
     ocean.octo.play(ok ? "rejouir" : "encourager");
     if (ok) { sound?.play("bonne"); this.fs.write(n, false); await voice.say(text.pick("bravo")); await wait(500); }

@@ -4,10 +4,17 @@
 // l'échauffement (warmup.js : mêmes boîtes, une boîte au plus par séance, limite commune de faits nouveaux).
 //  - la famille en cours : la plus basse des familles ouvertes pas encore acquise (sinon le mélange) ;
 //  - la première fois qu'une famille est la notion du jour : sa leçon (L4 doubles, L5 amis de 10, L6 maison),
-//    sinon deux exemples guidés avec l'appui visuel de la famille (session/notion.js) ;
-//  - au moins la moitié des questions sur les faits de la règle de la famille en cours (faits nouveaux compris,
-//    dans la limite commune de la séance et de la boîte 1), le reste sur les faits introduits les plus faibles
-//    des autres familles (boîte la plus basse, puis temps médian le plus long) ; un même fait au plus 3 fois ;
+//    sinon deux exemples guidés avec l'appui visuel de la famille (session/notion.js) ; lot 3 (docs/SPEC-LOT3.md,
+//    section 4) : une leçon n'est jouée que pour la famille travaillée ; les maisons de 8 et 9 jouent L6, les
+//    presque-doubles L4, si elle n'a jamais été vue (module2.json, leconSiJamaisVue) ; le mélange, aucune ; chaque
+//    question des presque-doubles rappelle le double (`q.rappel`) ;
+//  - lot 3 : au moins 80 % des questions sur les faits de la règle de la famille en cours (module2.json,
+//    notion.partFamille ; faits nouveaux compris, dans la limite commune de la séance et de la boîte 1), le reste
+//    sur les faits introduits les plus faibles des autres familles (boîte la plus basse, puis temps médian le plus
+//    long) ; un même fait au plus 3 fois, sauf un fait de la famille quand elle n'a plus d'autre fait disponible ;
+//  - lot 3 (docs/SPEC-LOT3.md, section 2) : la famille choisie par l'enfant (`choix`) est la famille en cours de
+//    la séance ; elle s'ouvre si elle ne l'était pas (sans étoile arc-en-ciel) ; ses faits nouveaux ne sont limités
+//    ni par la limite commune de la séance ni par la boîte 1 ;
 //  - une erreur fait revenir le fait 3 questions plus loin ; 3 erreurs sur 5 : la leçon de la famille (une fois
 //    par séance) puis un fait déjà bien su ;
 //  - une famille acquise pendant la séance est un niveau franchi (événement « montee » : étoile arc-en-ciel) ;
@@ -18,27 +25,39 @@
 //  - stagnation (module2.json, familles2.stagnation) : une famille pas acquise après 6 séances où elle était la
 //    notion du jour est dépassée : la suivante devient la famille en cours (avec sa leçon), elle reste en révision.
 import { aidFor, catalog, familyOf, formFor, key, newFact, roomForNew, ruleFacts } from "./facts.js";
-import { currentFamily, isAcquired, noteNotion, trouOpenFor, updateFamilies } from "./families.js";
+import { currentFamily, isAcquired, noteNotion, openChosen, trouOpenFor, updateFamilies, withOpen } from "./families.js";
 import { Warmup } from "./warmup.js";
 
 export class Module2Runner {
-  constructor({ store, content, rnd, seance = null, clock = () => Date.now(), cran = () => "conseille", dejaNouveaux = 0 }) {
-    this.store = store; this.c0 = content; this.rnd = rnd; this.seance = seance; this.clock = clock; this.cran = cran;
+  // choix : la famille choisie par l'enfant (écran « choisir », lot 3), sinon null (« jouer »)
+  constructor({ store, content, rnd, seance = null, clock = () => Date.now(), cran = () => "conseille", dejaNouveaux = 0, choix = null }) {
+    this.store = store; this.c0 = content; this.rnd = rnd; this.seance = seance; this.clock = clock; this.cran = cran; this.choix = choix;
     this.w = new Warmup({ store, content, rnd, seance, clock, cran, dejaNouveaux }); this.w.notion = true;
     this.replays = []; this.asked = new Map(); this.last = []; this.k = 0; this.win = []; this.count = 0; this.ok = 0;
     this.played = new Set(); this.simpler = false; this.events = [];
   }
-  async load() { await this.w.load(); this.fam = this.w.fam; this.famille = currentFamily(this.c0, this.fam); return this; }
+  async load() {
+    await this.w.load(); this.fam = this.w.fam;
+    if (this.choix != null && familyOf(this.c0, this.choix)) {
+      // la famille choisie s'ouvre si elle ne l'était pas (sans étoile arc-en-ciel : ce n'est pas une famille acquise)
+      if (!this.fam.ouvertes.includes(this.choix)) { this.fam = openChosen(this.fam, this.choix, this.clock(), this.seance); this.w.fam = this.fam; this.w.c = withOpen(this.c0, this.fam); await this.save(); }
+      this.famille = this.choix;
+    } else this.famille = currentFamily(this.c0, this.fam);
+    return this;
+  }
   get c() { return this.w.c; }
-  get N() { return this.c0.notion ?? { partFamille: 0.5, memeFaitMax: 3, difficulte: { sur: 5, erreurs: 3 }, crans: {} }; }
-  get effet() { return this.N.crans?.[this.cran()] ?? {}; }
+  get N() { return this.c0.notion ?? { partFamille: 0.8, memeFaitMax: 3, difficulte: { sur: 5, erreurs: 3 }, crans: {} }; }
+  // (lot 3 : famille choisie, les crans à l'intérieur de la famille, notion.cransChoix)
+  get effet() { return (this.choix != null ? this.N.cransChoix : this.N.crans)?.[this.cran()] ?? {}; }
   get nouveaux() { return this.w.nouveaux; }
   // la leçon de la famille, la première fois qu'elle est la notion du jour (jamais vue, pas encore jouée dans la séance)
+  // lot 3 : une famille sans leçon qui reprend la représentation d'une autre (maisons de 8 et 9 : la maison ; presque-
+  // doubles : les doubles) joue cette leçon si elle n'a jamais été vue (module2.json, leconSiJamaisVue) ; le mélange,
+  // aucune ; jamais la leçon d'une autre famille
   entryLesson() {
-    // (une famille sans leçon joue celle de l'appui qu'elle reprend, si elle n'a jamais été vue : module2.json, leconSiPasVue)
     const f = familyOf(this.c0, this.famille), seen = (id) => (this.fam.lecons ?? []).includes(id) || this.played.has(id);
-    if ((this.fam.notion ?? []).includes(this.famille)) return null;
-    return (f?.lecon ? [f.lecon] : f?.leconSiPasVue ?? []).find((id) => !seen(id)) ?? null;
+    if (f?.lecon) return (this.fam.notion ?? []).includes(this.famille) || seen(f.lecon) ? null : f.lecon;
+    return f?.leconSiJamaisVue && !seen(f.leconSiJamaisVue) ? f.leconSiJamaisVue : null;
   }
   lessonPlayed(id) { this.played.add(id); }
   async lessonSeen(id) { (this.fam.lecons ??= []).includes(id) || this.fam.lecons.push(id); await this.save(); }
@@ -51,7 +70,7 @@ export class Module2Runner {
   // les faits de la règle de la famille en cours (le mélange : tous les faits introduits) ; cran « très dur » :
   // toutes les familles ouvertes ; plus (dur, très dur) la famille suivante, même pas encore ouverte
   familyPool() {
-    const e = this.effet, ids = new Set(e.melange ? this.fam.ouvertes : [this.famille]);
+    const e = this.choix != null ? {} : this.effet, ids = new Set(e.melange ? this.fam.ouvertes : [this.famille]);
     if (e.familleSuivante) { const nx = this.c0.familles.find((f) => !this.fam.ouvertes.includes(f.id)); if (nx) ids.add(nx.id); }
     const cat = new Map(catalog(this.c0).map((f) => [f.fait, f])), out = new Map();
     for (const id of ids) for (const r of familyOf(this.c0, id)?.regle === "melange" ? [...cat.values()].filter((f) => this.stored(f.fait)) : ruleFacts(this.c0, id)) if (!out.has(r.fait)) out.set(r.fait, { ...cat.get(r.fait), src: id });
@@ -62,34 +81,68 @@ export class Module2Runner {
     return [...list].sort((x, y) => { const [a1, a2] = score(x), [b1, b2] = score(y); return a1 - b1 || a2 - b2; });
   }
   usable(f) { return (this.asked.get(f.fait) ?? 0) < this.N.memeFaitMax && !this.last.slice(-2).includes(f.fait); }
+  // lot 3 : quand tous les faits de la famille ont été posés `memeFaitMax` fois (petite famille : 5 doubles), le moins
+  // posé, puis le plus faible, sans reprendre l'un des deux derniers si possible (les 80 % sur la famille priment)
+  leastAsked(list) {
+    const n = (f) => this.asked.get(f.fait) ?? 0, fresh = list.filter((f) => !this.last.slice(-2).includes(f.fait)), l = fresh.length ? fresh : list;
+    return this.weakest(l).sort((x, y) => n(x) - n(y))[0] ?? null;
+  }
   // un fait de la famille : un fait nouveau une fois sur deux s'il y en a et si la place le permet, sinon le plus faible déjà rencontré
-  pickFamily(allowNew = true) {
-    const pool = this.familyPool(), fresh0 = pool.filter((f) => !this.stored(f.fait) && !this.asked.has(f.fait));
+  // lot 3 : la famille en cours seule (la règle de sa famille ; le mélange : tous les faits introduits) : c'est elle qui
+  // compte pour les 80 % ; les faits que le cran « plus dur » ou « très dur » ajoute (famille suivante, familles ouvertes
+  // mêlées) passent dans la part des autres (au plus 20 %)
+  corePool() {
+    const cat = new Map(catalog(this.c0).map((f) => [f.fait, f])), fam = familyOf(this.c0, this.famille);
+    const list = fam?.regle === "melange" ? [...cat.values()].filter((f) => this.stored(f.fait)) : ruleFacts(this.c0, this.famille).map((r) => cat.get(r.fait));
+    return list.filter(Boolean).map((f) => ({ ...f, src: this.famille }));
+  }
+  extraPool() { const core = new Set(this.corePool().map((f) => f.fait)); return this.familyPool().filter((f) => !core.has(f.fait)); }
+  pickFamily(allowNew = true, pool = this.corePool()) {
+    const fresh0 = pool.filter((f) => !this.stored(f.fait) && !this.asked.has(f.fait));
     // plusieurs familles (crans « plus dur », « très dur ») : les faits nouveaux alternent d'une famille à l'autre
     const srcs = [...new Set(fresh0.map((f) => f.src))], nth = srcs.map((id) => fresh0.filter((f) => f.src === id)), fresh = [];
     for (let i = 0; fresh.length < fresh0.length; i++) for (const l of nth) if (l[i]) fresh.push(l[i]);
     if (srcs.length > 1) this.turn = (this.turn ?? 0) + 1;
     const f0 = srcs.length > 1 ? fresh[(this.turn - 1) % Math.min(fresh.length, srcs.length)] ?? fresh[0] : fresh[0];
-    const room = roomForNew(this.c, this.w.facts, this.w.nouveaux);
+    // (famille choisie : ni la limite commune de la séance, ni celle de la boîte 1)
+    const room = this.choix != null ? Infinity : roomForNew(this.c, this.w.facts, this.w.nouveaux);
     if (allowNew && fresh.length && room > 0 && (this.k % 2 === 0 || !pool.some((f) => this.stored(f.fait) && this.usable(f)))) { const { src, ...f } = f0; void src; return newFact(f, this.clock()); }
     const known = this.weakest(pool.filter((f) => this.stored(f.fait) && this.usable(f)));
-    return known[0] ? { ...this.stored(known[0].fait), famille: known[0].famille } : null;
+    if (known[0]) return { ...this.stored(known[0].fait), famille: known[0].famille };
+    if (allowNew && fresh.length && room > 0) { const { src, ...f } = f0; void src; return newFact(f, this.clock()); }
+    const any = this.leastAsked(pool.filter((f) => this.stored(f.fait)));
+    return any ? { ...this.stored(any.fait), famille: any.famille } : null;
   }
   // un fait d'une autre famille : les plus faibles des faits introduits hors de la règle de la famille en cours
   pickOther() {
-    const inFam = new Set(this.familyPool().map((f) => f.fait)), cat = new Map(catalog(this.c0).map((f) => [f.fait, f]));
+    const inFam = new Set(this.corePool().map((f) => f.fait)), cat = new Map(catalog(this.c0).map((f) => [f.fait, f]));
     const list = this.weakest(this.w.facts.filter((f) => !inFam.has(f.fait) && cat.has(f.fait) && this.usable(f)));
     return list[0] ? { ...list[0], famille: cat.get(list[0].fait).famille } : null;
   }
   // un fait déjà bien su (question plus simple, pour finir sur une réussite ou après une difficulté)
-  pickEasy() { const s = [...this.w.facts].filter((f) => this.usable(f)).sort((x, y) => y.boite - x.boite || (x.tempsMedian ?? 9e9) - (y.tempsMedian ?? 9e9)); return s[0] ?? null; }
+  // (lot 3 : de préférence dans la famille en cours, pour garder les 80 %)
+  pickEasy() {
+    const fam = new Set(this.corePool().map((f) => f.fait)), by = (x, y) => y.boite - x.boite || (x.tempsMedian ?? 9e9) - (y.tempsMedian ?? 9e9);
+    const all = [...this.w.facts].filter((f) => this.usable(f)), inFam = all.filter((f) => fam.has(f.fait)).sort(by);
+    // (famille déjà posée 3 fois : le plus sûr de la famille quand même, sauf les deux derniers posés)
+    const any = this.w.facts.filter((f) => fam.has(f.fait) && !this.last.slice(-2).includes(f.fait)).sort(by);
+    return inFam[0] ?? (this.otherAllowed() ? all.sort(by)[0] : any[0]) ?? all.sort(by)[0] ?? null;
+  }
+  // lot 3 : la question suivante peut-elle sortir de la famille sans passer sous la part voulue (80 %) ?
+  otherAllowed() { const part = this.effet.familleSeule ? 1 : this.N.partFamille ?? 0.8; return (this.nFam ?? 0) >= part * ((this.nAll ?? 0) + 1) - 1e-9; }
+  inFamily(fait) { return this.corePool().some((f) => f.fait === fait); }
   question(f, { guide = false } = {}) {
     const cat = catalog(this.c0).find((x) => x.fait === f.fait), e = this.effet;
     const q = { ...f, a: cat.a, b: cat.b, famille: f.famille ?? cat.famille, fait: f.fait };
     delete q.forme;
     q.forme = guide ? "directe" : formFor(this.stored(f.fait) ?? q, null, this.rnd, { trouFamille: !!e.trou || trouOpenFor(this.c0, this.fam, q.a, q.b), directe: !!e.directe });
+    // lot 3, famille choisie : « plus dur » une question sur deux à trou, « très dur » toutes, même pas encore ouvertes
+    if (!guide && e.trouPart) { this.trouK = (this.trouK ?? 0) + 1; const want = e.trouPart >= 1 || Math.floor(this.trouK * e.trouPart) > Math.floor((this.trouK - 1) * e.trouPart); q.forme = want ? (this.rnd() < 0.5 ? "trouDroite" : "trouGauche") : "directe"; }
     if (guide) q.guide = true;
     if (e.aideDEmblee) q.aideDEmblee = true;
+    // lot 3 : les presque-doubles rappellent le double à chaque question (forme directe : sinon il donnerait la réponse)
+    const fc = familyOf(this.c0, this.famille);
+    if (fc?.rappelDouble && !guide && q.forme === "directe" && ruleFacts(this.c0, fc.id).some((r) => r.fait === q.fait)) q.rappel = { d: Math.min(q.a, q.b) };
     // l'appui visuel : celui de la famille en cours si le fait relève de sa règle, sinon celui de sa famille
     const cur = familyOf(this.c0, this.famille), own = familyOf(this.c0, q.famille)?.aide;
     q.appui = cur?.aide !== "fait" && ruleFacts(this.c0, cur.id).some((r) => r.fait === q.fait) ? cur.aide : own && own !== "fait" ? own : aidFor(q.a, q.b);
@@ -97,21 +150,28 @@ export class Module2Runner {
   }
   next({ guide = false } = {}) {
     if (!guide) this.replays.forEach((r) => r.in--);
-    const due = guide ? -1 : this.replays.findIndex((r) => r.in <= 0);
+    // (une question qui revient d'une autre famille attend si elle ferait passer la famille sous 80 %)
+    const due = guide ? -1 : this.replays.findIndex((r) => r.in <= 0 && (this.inFamily(r.q.fait) || this.otherAllowed()));
     if (due >= 0) { const r = this.replays.splice(due, 1)[0]; return this.ret({ ...r.q, revient: true }); }
     let f = null;
     if (this.simpler) { this.simpler = false; f = this.pickEasy(); }
     // exemples guidés : un fait de la famille déjà rencontré de préférence (l'exemple montre la méthode)
     if (!f && guide) f = this.pickFamily(false) ?? this.pickFamily(true);
-    // au moins la moitié sur la famille en cours : une question sur deux (toutes au cran « plus facile »)
-    const famTurn = this.effet.familleSeule || this.N.partFamille >= 1 || (this.k % 2 === 0);
-    if (!f) f = famTurn ? this.pickFamily() ?? this.pickOther() : this.pickOther() ?? this.pickFamily();
+    // lot 3 : au moins 80 % sur la famille en cours (partFamille ; toutes au cran « plus facile ») : une question sur
+    // cinq pour les autres familles, la 5e, la 10e…
+    const famTurn = !this.otherAllowed();
+    const extra = famTurn ? [] : this.extraPool();
+    if (!f) f = famTurn ? this.pickFamily() ?? this.pickOther() : (extra.length ? this.pickFamily(true, extra) : null) ?? this.pickOther() ?? this.pickFamily();
     // plus rien d'utilisable (tout a été posé 3 fois) : le plus faible de la famille, sans la limite
-    if (!f) { const p = this.weakest(this.familyPool().filter((x) => this.stored(x.fait))); f = p[0] ? this.stored(p[0].fait) : newFact(this.familyPool()[0], this.clock()); }
+    if (!f) { const p = this.weakest(this.corePool().filter((x) => this.stored(x.fait))); f = p[0] ? this.stored(p[0].fait) : newFact(this.corePool()[0] ?? this.familyPool()[0], this.clock()); }
     if (!guide) this.k++;
     return this.ret(this.question(f, { guide }));
   }
-  ret(q) { this.asked.set(q.fait, (this.asked.get(q.fait) ?? 0) + 1); this.last.push(q.fait); return { q, cfg: this.cfgOf(q) }; }
+  ret(q) {
+    this.asked.set(q.fait, (this.asked.get(q.fait) ?? 0) + 1); this.last.push(q.fait);
+    if (!q.guide) { this.nAll = (this.nAll ?? 0) + 1; if (this.inFamily(q.fait)) this.nFam = (this.nFam ?? 0) + 1; }
+    return { q, cfg: this.cfgOf(q) };
+  }
 
   // ---------------------------------------------------------------- une réponse
   // r (screen.ask) : { q, value, ok, ms, listens, aide, nsp, correctionPassee }

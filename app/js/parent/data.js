@@ -90,7 +90,8 @@ export function weekly(reponses, module, now = Date.now()) {
 // le journal des erreurs : par semaine, combien de fois chaque code, avec au plus `ex` exemples réels
 export function errorJournal(reponses, { ex = 2 } = {}) {
   const weeks = new Map();
-  for (const r of reponses.filter((x) => !x.juste && x.erreur).sort((a, b) => a.t - b.t)) {
+  // (lot 3 : C2, juste mais lent, est une réponse juste qui compte au journal)
+  for (const r of reponses.filter((x) => (!x.juste || x.erreur === "C2") && x.erreur).sort((a, b) => a.t - b.t)) {
     const w = weekStart(r.t), wk = weeks.get(w) ?? { semaine: w, codes: {} }, c = (wk.codes[r.erreur] ??= { n: 0, exemples: [] });
     c.n++; if (c.exemples.length < ex) c.exemples.push({ question: r.question, donnee: r.donnee, attendue: r.attendue, module: r.module });
     weeks.set(w, wk);
@@ -194,7 +195,7 @@ export const SESSION_COLUMNS = [
   ["leçons", (s) => (s.lecons ?? []).map((l) => `${l.id}${l.vue ? "" : l.passee ? " (passée)" : " (arrêtée)"}`).join(" ")], ["cartes", (s) => (s.cartes ?? []).join(" ")],
   ["entraînement libre", (s) => !!s.libre], ["pauses", (s) => s.pauses ?? 0],
   ["cran choisi", (s) => (s.cranDepart ? CRAN_NAMES[s.cranDepart] : null)], ["cran à la fin", (s) => (s.cran ? CRAN_NAMES[s.cran] : null)], ["descentes de cran", (s) => (s.descentes ?? []).length],
-  ["famille du jour (additions)", (s) => s.famille ?? null], ["défi : bonnes réponses", (s) => s.defi?.score ?? null], ["défi : nouveau record", (s) => (s.defi ? !!s.defi.nouveauRecord : null)],
+  ["famille du jour (additions)", (s) => s.famille ?? null], ["exercice choisi par l'enfant", (s) => (s.leconChoisie ? `leçon ${s.lecons?.[0]?.id ?? ""}` : s.choix ? (s.choix.module === 1 ? `ligne, niveau ${s.choix.niveau}` : s.choix.module === 3 ? `calcul rapide, niveau ${s.choix.niveau}` : `additions, famille ${s.choix.famille}`) : null)], ["échauffement passé", (s) => (s.echauffementPasse ? true : null)], ["défi : bonnes réponses", (s) => s.defi?.score ?? null], ["défi : nouveau record", (s) => (s.defi ? !!s.defi.nouveauRecord : null)],
   ["étapes", (s) => (s.etapes ?? []).map((e) => (e.sautee ? `${e.id} (sautée)` : `${e.id} ${e.dureeS ?? ""}s`)).join(" | ")],
 ];
 export const ANSWER_COLUMNS = [

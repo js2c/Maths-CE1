@@ -8,21 +8,23 @@
 //  - pas de limite de durée ; au bout de 10 minutes, la voix propose d'arrêter (une fois) ;
 //  - la maison le quitte à tout moment (main.js : l'activité en cours est abandonnée, engine/clock.js) ;
 //  - lot 2 : la ligne et les additions commencent par le sélecteur de difficulté, sans étoiles (donc sans
-//    multiplicateur) ni protection ; le cran décale le niveau de la ligne et règle l'échauffement.
-import { onTap, pop, spriteBox } from "../engine/ui.js";
-import * as R from "../art/runtime.js";
+//    multiplicateur) ni protection ; le cran décale le niveau de la ligne et règle l'échauffement ;
+//  - lot 3 (docs/SPEC-LOT3.md, section 2) : « Encore ! » ouvre le même écran « choisir » que l'accueil (session/choice.js),
+//    sans étoiles : la ligne au niveau choisi, les additions de la famille choisie (même déroulement que la notion
+//    du jour, Module2Runner), une leçon (toutes, vues ou non), puis retour à l'écran de choix.
 import { Module1Runner } from "../modules/numberline/runner.js";
-import { Warmup } from "../modules/facts/warmup.js";
+import { Module2Runner } from "../modules/facts/runner.js";
 import { FactsScreen } from "../modules/facts/screen.js";
 import { chooseModule, CRANS } from "./session.js";
 import { allowedCrans, chooseCran } from "./selector.js";
+import { choose } from "./choice.js";
+import { Module3Runner } from "../modules/calc/runner.js";
+import { median } from "../modules/facts/facts.js";
 
 const PROPOSE_STOP_MS = 10 * 60000;
-// les leçons, telles que l'enfant les reconnaît : les nombres que la tortue écrit
-const LESSON_LABELS = { L1: "1 2 3", L2: "10 20", L3: "30 31", L4: "3+3", L5: "7+3", L6: "5+2" };
 
 export class FreeTraining {
-  constructor(app, { store, module1, module2, rnd, seance = null }) { this.app = app; this.store = store; this.m1 = module1; this.m2 = module2; this.rnd = rnd; this.seance = seance; this.rec = null; this.cran = "conseille"; }
+  constructor(app, { store, module1, module2, module3 = null, rnd, seance = null }) { this.app = app; this.store = store; this.m1 = module1; this.m2 = module2; this.m3 = module3; this.rnd = rnd; this.seance = seance; this.rec = null; this.cran = "conseille"; }
   // le sélecteur, sans étoiles
   async pickCran() {
     const sel = this.seance?.selecteur; if (!sel?.actif) return (this.cran = "conseille");
@@ -44,25 +46,24 @@ export class FreeTraining {
     await this.store.put("seances", this.rec);
     if (!this.told && this.app.clock.now() - this.t0 > PROPOSE_STOP_MS) { this.told = true; await this.app.voice.say(this.app.text.data.libreLongtemps); }
   }
-  // le menu : trois grandes bulles (la troisième seulement si une leçon a déjà été vue)
+  // le menu : l'écran « choisir » (lot 3), sans étoiles ; une leçon ramène à ce menu
   async menu() {
-    const { app } = this, { voice, text } = app, n1 = (await this.store.get("niveaux", 1)) ?? { lecons: [] }, n2 = (await this.store.get("niveaux", 2)) ?? { lecons: [] }, seen = [...(n1.lecons ?? []), ...(n2.lecons ?? [])]; // (lot 2 : et les leçons L4 à L6 des additions)
+    const { app } = this;
     this.t0 ??= app.clock.now();
-    const items = [["ligne", "la ligne des nombres", "libreLigne"], ["faits", "les additions", "libreFaits"], ...(seen.length ? [["lecons", "les leçons", "libreLecons"]] : [])];
-    const els = items.map(([id, label], i) => spriteBox(app, { x: 640 + (i - (items.length - 1) / 2) * 230 - 90, y: 520, w: 180, h: 180, cls: "bubble free", label, paint: (ctx) => app.sprites.draw(ctx, `libre.${id}`, 0, 90, 90) }));
-    voice.stop(); voice.say(`${text.data.encore} ${text.data.libre}`, { instruction: true });
-    const pick = await new Promise((res) => els.forEach((e, i) => onTap(e, () => { pop(e); res(items[i]); })));
-    els.forEach((e) => e.remove());
-    voice.stop(); voice.say(text.data[pick[2]]);
-    if (pick[0] === "ligne") return this.line();
-    if (pick[0] === "faits") return this.facts();
-    return this.lessons(seen);
+    app.voice.stop(); await app.voice.say(`${app.text.data.encore} ${app.text.data.libre}`);
+    for (;;) {
+      const c = await choose(app, { stars: false, store: this.store, content: { module1: this.m1, module2: this.m2, module3: this.m3, seance: this.seance ?? {} } });
+      if (c.module === 1) return this.line(c.niveau);
+      if (c.module === 2) return this.facts(c.famille);
+      if (c.module === 3) return this.calc(c.niveau);
+      await this.lesson(c.lecon);
+    }
   }
-  // la ligne graduée au niveau actuel, sans fin
-  async line() {
+  // la ligne graduée au niveau choisi, sans fin
+  async line(niveau = null) {
     const { app } = this, screen = app.lineScreen();
     await this.pickCran();
-    const runner = await new Module1Runner({ screen, store: this.store, content: this.m1, rnd: this.rnd, seance: await this.seanceId(), offset: () => this.offset, cran: () => this.cran }).load();
+    const runner = await new Module1Runner({ screen, store: this.store, content: this.m1, rnd: this.rnd, seance: await this.seanceId(), offset: () => this.offset, cran: () => this.cran, choix: niveau }).load();
     runner.libre = true; this.runner = runner;
     for (;;) {
       const { q, cfg } = runner.next(), r = await screen.ask(q, cfg);
@@ -73,32 +74,37 @@ export class FreeTraining {
       await this.answered(r.ok);
     }
   }
-  // les additions : les faits dus d'abord, puis des faits déjà rencontrés (qui ne montent pas de boîte)
-  async facts() {
+  // les additions de la famille choisie, sans fin (le déroulement de la notion du jour, réponses marquées « libre »)
+  async facts(famille = null) {
     const { app } = this, screen = (app.facts ??= new FactsScreen(app, this.m2));
     await this.pickCran();
-    const warmup = await new Warmup({ store: this.store, content: this.m2, rnd: this.rnd, seance: await this.seanceId(), cran: () => this.cran }).load();
-    warmup.libre = true;
-    screen.show(true);
+    const runner = await new Module2Runner({ store: this.store, content: this.m2, rnd: this.rnd, seance: await this.seanceId(), cran: () => this.cran, choix: famille }).load();
+    runner.w.libre = true; this.runner = runner;
+    screen.show(true); screen.notion = true;
     for (;;) {
-      let rest = warmup.questions(6, 5).filter((q) => !q.base);
-      if (!rest.length) rest = [...warmup.facts].sort(() => this.rnd() - 0.5).slice(0, 6).map((f) => ({ ...f, anticipe: true }));
-      if (!rest.length) return;
-      while (rest.length) { const q = warmup.prepare(rest.shift()); if (!q) continue; const r = await screen.ask(q), res = await warmup.record(q, r, rest); await this.answered(res.juste); }
+      const { q, cfg } = runner.next(), r = await screen.askNotion(q, cfg);
+      const { events } = await runner.record(r, cfg);
+      for (const e of events) if (e.type === "montee") await app.rewards.arcFromFree();
+      await this.answered(r.ok);
     }
   }
-  // la revue des leçons déjà vues : une bulle par leçon (les nombres que la tortue y écrit)
-  async lessons(seen) {
-    const { app } = this;
+  // lot 3 : le calcul rapide au niveau choisi, sans fin (réponses marquées « libre »)
+  async calc(niveau) {
+    const { app } = this; await this.pickCran(); await app.sprites.load("calcul");
+    const base = median((await this.store.setting("tempsDeBase"))?.mesures ?? []) ?? this.m2.base.defautS * 1000;
+    const runner = await new Module3Runner({ store: this.store, content: this.m3, content2: this.m2, rnd: this.rnd, seance: await this.seanceId(), cran: () => this.cran, choix: niveau, baseMs: base }).load();
+    runner.libre = true; this.runner = runner;
+    const fs = (app.facts ??= new FactsScreen(app, this.m2)); fs.show(true);
     for (;;) {
-      const els = seen.map((id, i) => spriteBox(app, { x: 640 + (i - (seen.length - 1) / 2) * 200 - 80, y: 540, w: 160, h: 160, cls: "bubble free lesson", label: `leçon ${id}`, paint: (ctx, px) => {
-        const q = app.sprites.frame("reponse", 0), k = 160 / 140; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 80 * px + q.dx * k, 80 * px + q.dy * k, q.w * k, q.h * k);
-        ctx.setTransform(px, 0, 0, px, 0, 0); const t = LESSON_LABELS[id] ?? id, em = Math.min(34, 110 / R.wordWidth(t)); R.drawWord(ctx, t, 80, 80 - em / 2, em, { w: em * 0.15, seed: 860 + i });
-      } }));
-      const id = await new Promise((res) => els.forEach((e, i) => onTap(e, () => { pop(e); res(seen[i]); })));
-      els.forEach((e) => e.remove());
-      const r = await app.lessons.play(id);
-      await this.seanceId(); (this.rec.lecons ??= []).push({ id, raison: "libre", ...r }); await this.store.put("seances", this.rec);
+      const { q, cfg } = runner.next(), r = await app.calc.askNotion(q);
+      const { events } = await runner.record(r, cfg);
+      for (const e of events) if (e.type === "montee") await app.rewards.arcFromFree();
+      await this.answered(r.ok);
     }
+  }
+  // une leçon (sans étoiles), puis retour au menu
+  async lesson(id) {
+    const r = await this.app.lessons.play(id);
+    await this.seanceId(); (this.rec.lecons ??= []).push({ id, raison: "libre", ...r }); await this.store.put("seances", this.rec);
   }
 }

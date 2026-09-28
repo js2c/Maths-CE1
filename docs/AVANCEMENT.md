@@ -2,6 +2,90 @@
 
 Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail dans une nouvelle session : lire ce fichier, puis `CLAUDE.md`, `docs/SPEC.md` et `docs/ARCHITECTURE.md`.
 
+## Lot 3
+
+Spécification : `docs/SPEC-LOT3.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LOT2.md` et `docs/SPEC-COMPLEMENTS.md`) ; prompt : `docs/PROMPT-LOT3.md`. Deux parties : A (étapes 1 et 2, correctif du lot 2), B (étapes 3 à 5, calcul rapide).
+
+**Où en est-on (28 septembre 2026)** : lot 2 terminé et fusionné (PR #17). **Étapes 1 à 4 du lot 3 faites** (branche `claude/laughing-ritchie-cp777i`, https://github.com/js2c/Maths-CE1/pull/19), recette complète faite ; reste l'étape 5 (bilan du lot 3) et l'essai sur la tablette.
+
+| Étape | Partie | Contenu | État |
+| --- | --- | --- | --- |
+| 1 | A | Accueil « choisir » : exercice et niveau (ligne 1 à 13, familles 1 à 7, leçons), exercice choisi = séance du jour ; échauffement passable et réglage ; leçons cohérentes (suppression de `leconSiPasVue`, 80 % sur la famille) ; maison des nombres ; test des bords des sprites | fait (branche `claude/laughing-ritchie-cp777i`, https://github.com/js2c/Maths-CE1/pull/19) |
+| 2 | A | Difficulté à l'intérieur du niveau (ligne graduée, 13 niveaux × 4 crans ; additions) ; outil de sauvegardes de test ; guide du parent ; recette complète de la partie A | fait (même branche ; recette complète faite avec celle de l'étape 4, les étapes 1 à 4 étant enchaînées) |
+| 3 | B | Atelier : mur de corail, poisson sur le mur, ponts du chemin, pictogramme du calcul rapide pour l'écran de choix | fait (même branche) |
+| 4 | B | Module 3 : niveaux 1 à 9, générateurs, erreurs C1 à C5, déroulé d'un nouveau niveau, leçons L7 à L9, crans, choix du niveau, rotation dans « jouer », espace parent | fait (même branche ; recette complète des étapes 1 à 4 faite) |
+| 5 | B | Bilan : `docs/BILAN-LOT3.md`, guide du parent, recette complète sur l'année | à faire |
+
+### Reprise des étapes 1 à 4 du lot 3
+
+Pour reprendre si la session s'est arrêtée : branche `claude/laughing-ritchie-cp777i`, demande de fusion en brouillon « Lot 3, étapes 1 à 4 (en cours) ».
+
+**Étape en cours :** aucune ; étapes 1 à 4 terminées, demande de fusion prête. Prochaine : l'étape 5 (bilan).
+
+**Fait :**
+
+- Étape 1 : écran « choisir » (`js/session/choice.js`, planche « choix » de l'atelier, `sea/choice.ts`) ; exercice choisi = séance du jour (`Session({ choix })`, `Module1Runner({ choix })`, `Module2Runner({ choix })`) ; leçon choisie seule ; « Encore ! » ouvre le même écran sans étoiles ; « passer » l'échauffement et réglage parent « Échauffement : oui / non » ; `leconSiPasVue` supprimée (`leconSiJamaisVue` : L6 pour les maisons de 8 et 9, L4 pour les presque-doubles), 80 % sur la famille, rappel du double ; maison des nombres ; contrôle des bords des sprites (`bords` dans l'atlas, `tests/unit/bords.test.mjs`) et six sprites corrigés ; voix des phrases nouvelles ; tests `choix.test.mjs`, `bords.test.mjs`, parcours `tests/e2e/choix.mjs`.
+
+- Étape 2 : crans à l'intérieur du niveau choisi (`module1.json`, un bloc `crans` par niveau, `applyCran` ; additions : `module2.json`, `notion.cransChoix`) ; « plus facile » consolide sans faire progresser ; captures des 13 niveaux × 4 crans (`tests/e2e/crans.mjs`) ; voix des nombres nouveaux (niveau 11 très dur : 30 graduations) ; simulation par cran (`--choix`, `--cran`) ; outil `tools/sauvegarde-test.mjs` et contrôle `tests/e2e/sauvegardes.mjs` ; guide du parent (section d bis).
+
+- Étape 3 : le mur de corail, les cailloux et les ponts dessinés en direct (`runtime.ts`), le petit poisson jaune (12 images, boucle sans raccord : écart au raccord 10,5 pour 10,5 entre images voisines), les pictogrammes (écran « choisir », frise) et les neuf plaques de niveaux ; planche spécimen regardée ; export complet reproductible.
+
+- Étape 4 : le calcul rapide (`content/module3.json`, `modules/calc/` : calc.js, runner.js, screen.js, wallfish.js) : 9 niveaux générés au hasard selon leurs paramètres, chemin des ponts, erreurs C1 à C5, niveau conseillé et déblocage (définitif), déroulé d'un nouveau niveau (leçon, 3 calculs guidés pont par pont, chemin au coquillage), crans dans le niveau, leçons L7 à L9 (scènes « mur » et « ligne » du lecteur des leçons), écran « choisir » (exercice « calcul », 9 plaques), entraînement libre, rotation de « jouer » entre les trois modules (le moins maîtrisé d'abord), espace parent (bloc Calcul rapide, C1 à C5 au journal, point de départ, module imposé, export), voix (1 571 calculs, 39,7 Mo en tout), simulation, parcours `tests/e2e/calcul.mjs`, recette des durées.
+
+**Reste :** l'étape 5 (bilan, dans une autre session) ; l'essai sur la tablette.
+
+**Recette complète (étapes 1 à 4, 28 septembre 2026) :**
+
+| Critère | Mesure | |
+| --- | --- | --- |
+| Tests unitaires | `npm test` : 199 tests, tous passent | ✓ |
+| Choisir un exercice et un niveau | écran « choisir » : 3 choix (choisir, exercice, niveau), 5 touchers avec la validation « double » (question ouverte ; « simple » : 3 touchers) ; parcours pour la ligne (niveau 8 dès une base vide), les additions (famille 5 pas encore ouverte), le calcul rapide (niveaux 2 et 7), les leçons | ✓ (sauf le compte des touchers, question ouverte) |
+| L'exercice choisi est celui joué | 100 % des questions au niveau choisi (ligne : 4 sur 4 au niveau 8 ; calcul : tests unitaires et parcours) ; additions : au moins 80 % sur la famille (simulation : minimum 80 % sur tous les profils) | ✓ |
+| Leçon et exercice cohérents | simulation sur l'année, 5 profils × 2 rythmes : aucune leçon de famille jouée pour une autre famille ; après L4, 80 à 100 % de doubles ou presque-doubles | ✓ |
+| Échauffement passé | la notion du jour commence 307 ms après « passer » ; « Échauffement : non » : ni échauffement ni pictogramme | ✓ |
+| Difficulté dans le niveau | 52 captures (13 niveaux × 4 crans) regardées, conformes au tableau ; réussite simulée plus basse à « très dur » qu'à « plus facile » (ligne niveau 5 : 78 contre 86 % ; niveau 8 : 78 contre 87 % ; additions : 81 contre 90 %) | ✓ |
+| Maison des nombres et bords des sprites | seuil entier en @1x et @2x, en pierre gris-bleu ; `bords.test.mjs` passe (11 exceptions justifiées) | ✓ |
+| Sauvegardes de test | un mois, trois mois, en difficulté : restaurées sans erreur, accueil, album, écran « choisir », espace parent cohérents | ✓ |
+| Calcul rapide | 9 niveaux jouables, générés au hasard ; C1 à C5 reconnues (tests, parcours : C1, C4) ; L7 à L9 ; séance de calcul rapide (`recette.mjs --delai 4.5 --module 3`) : 8,7 min sans défi (première séance), **10,6 min avec le défi record** ; 44 calculs en 6 min | ✓ |
+| Durée d'une séance « jouer » | `recette.mjs --delai 4.5` (première séance, ligne, sans défi) : 8,9 min | ✓ (le défi, dès la 5e séance, ajoute 1 à 2 min) |
+| Attente sans commande | `recette-durees.mjs` avec et sans `--passer` : hors voix, 1,0 s au plus partout (ligne, additions, aides, calcul rapide) ; avec voix, les consignes et phrases d'entrée | ✓ |
+| Simulation sur l'année | 5 profils, 2 et 5 séances par semaine : 60 cartes avant le 18 juin 2027 partout, quota jamais dépassé, jamais deux fois de suite le même module ; calcul rapide : profil « reel » 9 niveaux acquis vers la 22e séance, « en difficulté » 4 niveaux (2/sem) à 7 (5/sem), durée simulée 9 à 10,3 min | ✓ |
+| Parcours Playwright | 20 parcours, un par un : tous passent ; `seance.mjs` a montré une fois une erreur de page (« Cannot read properties of undefined (reading '0') »), jamais reproduite en 4 relances (voir les questions ouvertes) | ✓ (1 erreur non reproduite) |
+
+**Décisions prises (étape 4) :**
+
+- *Bornes des calculs* : chaque calcul lu a son fichier son ; pour tenir sous le plafond de 40 Mo de voix, les premiers nombres sont bornés (par exemple ± 1, ± 2 entre 21 et 69 ; + 20, + 30 jusqu'à 59) : 1 571 calculs en tout. La forme à trou est dite en deux phrases (« 38 plus combien ? » « Ça fait 43. »), pour ne pas doubler les fichiers. **Question ouverte : élargir les bornes en relevant le plafond.**
+- *Déblocage* : « maisons de 5 à 7 en boîte 2 ou plus » et « compléments à 10 en boîte 3 ou plus » = 80 % des faits de la règle de la famille ; un niveau débloqué le reste. Quand tout ce qui est débloqué est acquis, « jouer » révise le plus haut niveau acquis.
+- *Supports* : le mur de corail pour les niveaux ± 10 (2, 3, 6, 8), le chemin (les ponts) pour les autres ; le chemin est aussi l'aide du coquillage et le support des calculs guidés.
+- *Mélange des niveaux acquis* : une question sur cinq avec « jouer », une fois le déroulé du nouveau niveau passé ; jamais avec « choisir ».
+- *C2* : le temps de base est celui des additions (mesuré à l'échauffement) ; au-delà de 8 s de plus : « Bravo ! Regarde le raccourci. », le chemin rejoué une fois (« passer » possible), la réponse notée C2 (juste), au journal du parent.
+- *Rotation de « jouer »* : parmi les modules qui n'étaient pas la notion de la dernière séance, le moins maîtrisé (ligne : niveau / 13 ; additions : familles acquises / 7 ; calcul : niveaux acquis / 9), à égalité l'ordre de la rotation. Conséquence en simulation : une enfant rapide finit vite le calcul rapide, qui revient alors rarement.
+- *Redescente* : pas de redescente de niveau au calcul rapide (ses niveaux ne sont pas une échelle unique) ; la difficulté persistante relance la leçon du niveau (une fois par séance) puis un calcul plus simple. En simulation, le profil « en difficulté » revoit L8 à plusieurs séances : à surveiller.
+
+**Questions ouvertes (pour le parent) :** validation « double » ou « simple » de l'écran « choisir » ; bornes des calculs et plafond de la voix ; l'erreur de page vue une fois dans `seance.mjs` ; le raccord de la boucle `ermite.repos` (lot 2).
+
+**Recette allégée de l'étape 2 :** `npm test` : 189 tests, tous passent. `node tests/e2e/crans.mjs` : 52 captures (13 niveaux × 4 crans) conformes au tableau de la SPEC, additions aux quatre crans (0, 0, 3 et 6 formes à trou sur 6) ; captures regardées (`tests/e2e/out/crans/`). `node tests/e2e/sauvegardes.mjs` : un mois, trois mois, en difficulté restaurés sans erreur, accueil, album, écran « choisir » et espace parent cohérents. Tous les parcours existants (aide-passer, cartes, centaines, defi, ergonomie, frise, lecons, notion2, parent, pause-parent, pwa, recompenses, selecteur, seance, voix) : tout est bon. Simulation, profil « reel », 10 séances en choisissant toujours le même exercice (réussite de la notion du jour, plus facile / conseillé / plus dur / très dur) : ligne niveau 5 : 86 / 81 / 82 / 78 % ; ligne niveau 8 : 87 / 86 / 85 / 78 % ; additions famille 4 : 90 / 84 / 83 / 81 % (hypothèse de l'effet d'un cran sur la ligne : `EFFET_CRAN` de `sim-recette.mjs` ; les protections redescendent le cran 4 à 9 fois en 10 séances aux crans au-dessus).
+
+**Décisions prises (étape 2) :**
+
+- *Niveau 1, « plus facile »* : la SPEC dit « 3 propositions au lieu de 4 », mais le niveau 1 en a déjà 3 (réglage validé du lot 1) : « plus facile » en donne 2, avec la tortue qui montre le premier saut (depuis zéro, avant la consigne, au format « lire »).
+- *Protection* : au niveau choisi, elle redescend le cran (donc les repères reviennent), jamais le niveau, comme demandé.
+- *Additions, « très dur »* : « les révisions prises dans toutes les familles » : c'était déjà le cas des révisions (les faits introduits de toutes les familles) ; la différence est que toutes les questions sont à trou.
+- *Tableau de la dictée* : les trois colonnes ont l'image de la leçon L10 (le chalut, le filet, le poisson) au lieu des lettres c, d, u (l'enfant ne lit pas) ; les chiffres tapés s'y rangent depuis la droite.
+- *Sauvegardes de test* : les séances tombent aux jours habituels (2 par semaine : lundi et jeudi ; 3 : lundi, mercredi, vendredi), sans tenir compte des vacances ; la dernière est la veille. Trois mois fabriqués en septembre commencent en juillet : les cartes, qui suivent le calendrier scolaire (quota), restent alors peu nombreuses (8 cartes pour 36 séances) ; c'est dit dans le guide du parent.
+
+**Recette allégée de l'étape 1 :** `npm test` : 182 tests, tous passent. `node tests/e2e/choix.mjs` : tout est bon (niveau 8 dès une base vide, 100 % des questions au niveau 8 ; famille 5 ouverte par le choix ; leçon seule ; notion du jour 307 ms après « passer » ; « Échauffement : non » sans pictogramme ; « Encore ! »). `seance.mjs`, `ergonomie.mjs` (adapté : « Encore ! » ouvre l'écran « choisir »), `notion2.mjs`, `ermite.mjs` : tout est bon. Simulation sur l'année, 2 séances par semaine : part des questions sur la famille en cours au minimum 81 % (réel), 82 % (sait), 81 % (en difficulté), 80 % (très dur), 100 % (plus facile) ; aucune leçon de famille jouée pour une autre famille ; après L4, 91 % de doubles ou presque-doubles (sait). Captures regardées : `tests/e2e/out/choix/`, `tests/e2e/out/ermite/5-maison.png`.
+
+**Décisions prises (étape 1) :**
+
+- *Validation de l'écran de choix* : la SPEC dit « toucher deux fois ou la coche valide » (section 2) et « en 3 touchers au plus (choisir, exercice, niveau) » (section 7). Choix par défaut : la description de l'écran (validation « double » à chaque étape, pour une enfant qui ne lit pas : le premier toucher fait entendre le nom) ; mesuré : 5 touchers jusqu'au sélecteur (choisir, exercice ×2, niveau ×2), soit 3 choix. Réglage `seance.json`, `choix.validation` : « simple » donne 3 touchers. **Question ouverte pour le parent.**
+- *Presque-doubles* : le rappel du double est dit avec la consigne des formes directes seulement (dans une forme à trou, il donnerait la réponse) ; ce n'est pas compté comme une aide (le fait peut monter de boîte) ; « avec l'appui double + 1 » est lu comme l'appui de la famille (coquillage, correction), déjà en place.
+- *80 % sur la famille* : pour y parvenir avec une petite famille (5 doubles, 8 presque-doubles), un fait de la famille peut revenir plus de 3 fois (`memeFaitMax` ne vaut plus que pour les autres familles quand la famille est épuisée) ; jamais deux fois de suite. Avec « jouer » aux crans « plus dur » et « très dur », les faits que le cran ajoute (famille suivante, familles mêlées) passent dans les 20 % restants.
+- *Passer l'échauffement* : le bouton est montré au début (consigne et première question), puis disparaît à la première réponse (la correction a son propre « passer » à la même place).
+- *Leçon choisie seule* : notée vue (ou passée) dans l'état du module ; ses 3 étoiles une fois par leçon et par jour ; rangée dans l'historique comme une séance « libre » (« leçon choisie »), jamais la séance du jour.
+- *Maison des nombres* : le seuil débordait parce que la courbe lissée à quatre points gonflait de 40 px de chaque côté ; redessiné avec des points près des coins, calque élargi, et en pierre gris-bleu (la marche de sable se perdait sur le sable).
+- *Export de l'atelier* : un contrôle échoue depuis le lot 2 sur le raccord de la boucle `ermite.repos` (écart 31,1 pour 28,7 entre images voisines, seuil 1,05 ×) ; il n'était pas relevé parce que le bernard-l'ermite était exporté avec `--only ermite`. La SPEC du lot 3 demande de ne plus toucher au bernard-l'ermite : laissé tel quel, signalé.
+
 ## Lot 2
 
 Spécification : `docs/SPEC-LOT2.md` (prévaut sur `docs/SPEC.md`) ; prompt : `docs/PROMPT-LOT2.md`. Une étape = une session = une demande de fusion vers `main`.

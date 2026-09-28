@@ -80,6 +80,33 @@ for (const famille of [1, 3, 4, 5, 6]) {
   out.push(`additions, famille ${rec.famille}${PASSER ? ` (passer touché ${passes} fois)` : ""} : ${ev.join(" · ")} ; leçons ${JSON.stringify((rec.lecons ?? []).map((l) => l.id + " " + l.dureeS + "s"))} ; ${await gapOf(page)}`);
   console.log(out.at(-1)); await context.close();
 }
+// lot 3, étape 4 : le calcul rapide, sur une base neuve, niveau choisi (leçon d'entrée L7 au niveau 2, L8 au 6, L9 au 7 ;
+// puis les calculs guidés, pont par pont) : « je ne sais pas », une erreur (correction sur le mur ou le chemin)
+for (const niveau of [1, 2, 6, 7, 9]) {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); const page = await context.newPage();
+  await page.goto(url + "?nosw"); await page.waitForFunction(() => window.__ready !== undefined);
+  await page.evaluate(async () => { await window.__app.store.setSetting("mascotte", "Pili"); });
+  await page.goto(url + `?nosw&cran=conseille&sans=echauffement&choix=3:${niveau}&questions=5`); await page.waitForFunction(() => window.__ready !== undefined);
+  await page.tap(".play", { force: true });
+  const open = () => page.waitForFunction(() => { const s = window.__app.facts; return s?.q && s.resolve && !s.locked; }, null, { timeout: 240000, polling: 100 });
+  const ev = []; let t = Date.now(), nq = 0;
+  if (PASSER) await page.evaluate(() => { window.__passes = 0; setInterval(() => { const b = document.querySelector(".skip"); if (b && getComputedStyle(b).visibility !== "hidden") { b.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })); window.__passes++; } }, 150); });
+  const typeIn = async (n) => { for (const d of String(n)) await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.tap('.key[data-key="valider"]', { force: true }); };
+  for (let k = 0; k < 14 && nq < 4; k++) {
+    await open(); const now = Date.now(), q = await page.evaluate(() => { const f = window.__app.facts.q; return { v: f.forme === "trouDroite" ? f.b : f.n, pont: !!f.pont }; });
+    ev.push(`${k === 0 ? "avant la 1re question (leçon, guide)" : "attente"} ${((now - t) / 1000).toFixed(1)} s${q.pont ? " (pont)" : ""}`);
+    await page.waitForTimeout(800); t = Date.now();
+    if (q.pont) { await typeIn(q.v); continue; }
+    nq++;
+    if (nq === 2) { await page.evaluate(() => { const b = [...document.querySelectorAll(".nsp")].find((x) => getComputedStyle(x).visibility !== "hidden"); b?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })); }); ev.push("[NSP]"); }
+    else if (nq === 3) { await typeIn(q.v + 1); ev.push("[erreur]"); }
+    else await typeIn(q.v);
+  }
+  const rec = await page.evaluate(() => window.__app.session.rec);
+  const passes = PASSER ? await page.evaluate(() => window.__passes) : 0;
+  out.push(`calcul rapide, niveau ${niveau}${PASSER ? ` (passer touché ${passes} fois)` : ""} : ${ev.join(" · ")} ; leçons ${JSON.stringify((rec.lecons ?? []).map((l) => l.id + " " + l.dureeS + "s"))} ; ${await gapOf(page)}`);
+  console.log(out.at(-1)); await context.close();
+}
 // décision du parent du 27 septembre : l'aide des additions (coquillage au cran conseillé, aide affichée d'emblée
 // au cran « plus facile »), appui par appui : durée jusqu'au retour du pavé, apparition de « passer »
 for (const [famille, appui] of [[1, "ligne"], [2, "reflet"], [3, "cadre"], [4, "maison"], [6, "doublePlus"]]) for (const cran of ["conseille", "facile"]) {

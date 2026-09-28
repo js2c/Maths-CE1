@@ -6,6 +6,7 @@
 import { initialLevelState } from "../modules/progress.js";
 import { catalog, DAY, familyOf, ruleFacts, startOfDay } from "../modules/facts/facts.js";
 import { initialFamilies, updateFamilies } from "../modules/facts/families.js";
+import { initialCalcState } from "../modules/calc/runner.js";
 
 // le niveau actuel de la ligne graduée, choisi par le parent
 export async function setLineLevel(store, niveau, now = Date.now()) {
@@ -43,4 +44,15 @@ export async function markFamilyKnown(store, c, id, now = Date.now()) {
 export function familyKnown(c, faits, id) {
   const rule = ruleFacts(c, id), byKey = new Map(faits.map((f) => [f.fait, f]));
   return rule.length > 0 && rule.filter((r) => (byKey.get(r.fait)?.boite ?? 0) >= 3).length >= 0.8 * rule.length;
+}
+
+// lot 3, étape 4 : le niveau du calcul rapide choisi par le parent (point de départ) : les niveaux d'avant sont comptés
+// acquis (choix du parent, sans étoile arc-en-ciel) et celui-ci devient le conseillé, même si sa condition de déblocage
+// (des additions bien sues) n'est pas encore remplie (`depart`)
+export async function setCalcLevel(store, niveau, now = Date.now()) {
+  const st0 = (await store.get("niveaux", 3)) ?? initialCalcState(now), before = Array.from({ length: niveau - 1 }, (_, i) => i + 1);
+  const acquis = [...new Set([...before, ...(st0.acquis ?? []).filter((n) => n < niveau)])].sort((a, b) => a - b);
+  const st = { ...st0, acquis, depart: niveau, obtenus: [...(st0.obtenus ?? []), { niveau, date: now, parent: true }] };
+  await store.put("niveaux", st);
+  return st;
 }

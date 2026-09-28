@@ -1,0 +1,106 @@
+{
+ "titre": "Partie D · une séance à vitesse réelle par exercice",
+ "intro": "Commencer par `SYNTHESE.md`, puis la chronologie de chaque séance ; les planches montrent les moments clés (début de chaque étape, première question, « je ne sais pas », une erreur, la récompense, la fin).",
+ "lignes": [
+  [
+   "SYNTHESE.md",
+   "durées totales, durées par étape, attentes sans rien à toucher, pour chaque séance (et les relevés de tests/e2e/recette.mjs)"
+  ],
+  [
+   "D-ligne-chronologie.md",
+   "ligne graduée (module 1) : chronologie (ce qui est dit, affiché, attendu, durée de chaque moment), attentes sans rien à toucher, durée totale (8 min 47 s)"
+  ],
+  [
+   "D-ligne-01.jpg",
+   "ligne graduée (module 1) : les moments clés (accueil (avant « jouer ») ; étape accueil (t = 1 s, début de l'étape) ; étape echauffement (t = 9 s, début de l'étape) ; echauffement : première question (t = 20 s))"
+  ],
+  [
+   "D-ligne-02.jpg",
+   "ligne graduée (module 1) : les moments clés (echauffement : « je ne sais pas » (t = 33 s) ; echauffement : une erreur (t = 51 s, réponse 4) ; étape notion (t = 91 s, début de l'étape) ; notion : première question (t = 130 s))"
+  ],
+  [
+   "D-ligne-03.jpg",
+   "ligne graduée (module 1) : les moments clés (ligne : « je ne sais pas » (t = 157 s) ; ligne : une erreur (t = 169 s) ; étape recompense (t = 447 s, début de l'étape) ; récompense : le coquillage (t = 490 s))"
+  ],
+  [
+   "D-ligne-04.jpg",
+   "ligne graduée (module 1) : les moments clés (récompense : la carte (t = 505 s) ; récompense : le coquillage (t = 507 s) ; récompense : la carte (t = 523 s) ; étape (hors séance) (t = 524 s, début de l'étape))"
+  ],
+  [
+   "D-ligne-05.jpg",
+   "ligne graduée (module 1) : les moments clés (fin (t = 527 s : la lune, « Encore ! »))"
+  ],
+  [
+   "D-additions-chronologie.md",
+   "additions (module 2) : chronologie (ce qui est dit, affiché, attendu, durée de chaque moment), attentes sans rien à toucher, durée totale (8 min 21 s)"
+  ],
+  [
+   "D-additions-01.jpg",
+   "additions (module 2) : les moments clés (accueil (avant « jouer ») ; étape accueil (t = 1 s, début de l'étape) ; étape echauffement (t = 9 s, début de l'étape) ; echauffement : première question (t = 20 s))"
+  ],
+  [
+   "D-additions-02.jpg",
+   "additions (module 2) : les moments clés (echauffement : « je ne sais pas » (t = 33 s) ; echauffement : une erreur (t = 50 s, réponse 4) ; étape notion (t = 90 s, début de l'étape) ; notion : première question (t = 109 s))"
+  ],
+  [
+   "D-additions-03.jpg",
+   "additions (module 2) : les moments clés (étape recompense (t = 456 s, début de l'étape) ; récompense : le coquillage (t = 465 s) ; récompense : la carte (t = 481 s) ; récompense : le coquillage (t = 483 s))"
+  ],
+  [
+   "D-additions-04.jpg",
+   "additions (module 2) : les moments clés (récompense : la carte (t = 496 s) ; étape (hors séance) (t = 497 s, début de l'étape) ; fin (t = 501 s : la lune, « Encore ! »))"
+  ],
+  [
+   "D-calcul-chronologie.md",
+   "calcul rapide (module 3) : chronologie (ce qui est dit, affiché, attendu, durée de chaque moment), attentes sans rien à toucher, durée totale (8 min 38 s)"
+  ],
+  [
+   "D-calcul-01.jpg",
+   "calcul rapide (module 3) : les moments clés (accueil (avant « jouer ») ; étape accueil (t = 1 s, début de l'étape) ; étape echauffement (t = 9 s, début de l'étape) ; echauffement : première question (t = 20 s))"
+  ],
+  [
+   "D-calcul-02.jpg",
+   "calcul rapide (module 3) : les moments clés (echauffement : « je ne sais pas » (t = 34 s) ; echauffement : une erreur (t = 50 s, réponse 4) ; étape notion (t = 89 s, début de l'étape) ; notion : première question (t = 102 s))"
+  ],
+  [
+   "D-calcul-03.jpg",
+   "calcul rapide (module 3) : les moments clés (étape recompense (t = 453 s, début de l'étape) ; récompense : le coquillage (t = 480 s) ; récompense : la carte (t = 497 s) ; récompense : le coquillage (t = 499 s))"
+  ],
+  [
+   "D-calcul-04.jpg",
+   "calcul rapide (module 3) : les moments clés (récompense : la carte (t = 514 s) ; étape (hors séance) (t = 515 s, début de l'étape) ; fin (t = 518 s : la lune, « Encore ! »))"
+  ],
+  [
+   "D-famille3-chronologie.md",
+   "additions, famille 3 choisie : chronologie (ce qui est dit, affiché, attendu, durée de chaque moment), attentes sans rien à toucher, durée totale (8 min 22 s)"
+  ],
+  [
+   "D-famille3-01.jpg",
+   "additions, famille 3 choisie : les moments clés (accueil (avant « jouer ») ; étape accueil (t = 1 s, début de l'étape) ; étape echauffement (t = 9 s, début de l'étape) ; echauffement : première question (t = 20 s))"
+  ],
+  [
+   "D-famille3-02.jpg",
+   "additions, famille 3 choisie : les moments clés (echauffement : « je ne sais pas » (t = 34 s) ; echauffement : une erreur (t = 50 s, réponse 4) ; étape notion (t = 90 s, début de l'étape) ; notion : première question (t = 124 s))"
+  ],
+  [
+   "D-famille3-03.jpg",
+   "additions, famille 3 choisie : les moments clés (étape recompense (t = 453 s, début de l'étape) ; récompense : le coquillage (t = 468 s) ; récompense : la carte (t = 481 s) ; récompense : le coquillage (t = 483 s))"
+  ],
+  [
+   "D-famille3-04.jpg",
+   "additions, famille 3 choisie : les moments clés (récompense : la carte (t = 498 s) ; étape (hors séance) (t = 499 s, début de l'étape) ; fin (t = 502 s : la lune, « Encore ! »))"
+  ],
+  [
+   "recette-module1.json",
+   "la chronologie brute de tests/e2e/recette.mjs --delai 4.5 --module 1 (notes horodatées, attentes, erreurs)"
+  ],
+  [
+   "recette-module2.json",
+   "la chronologie brute de tests/e2e/recette.mjs --delai 4.5 --module 2 (notes horodatées, attentes, erreurs)"
+  ],
+  [
+   "recette-module3.json",
+   "la chronologie brute de tests/e2e/recette.mjs --delai 4.5 --module 3 (notes horodatées, attentes, erreurs)"
+  ]
+ ]
+}

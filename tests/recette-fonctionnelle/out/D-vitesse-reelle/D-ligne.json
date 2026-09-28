@@ -1,0 +1,36 @@
+{
+ "cas": "ligne",
+ "nom": "ligne graduée (module 1)",
+ "total": 527.397,
+ "etapes": {
+  "accueil": 11.768000000000015,
+  "echauffement": 81.40299999999999,
+  "notion": 356.474,
+  "recompense": 77.13700000000006
+ },
+ "idle": 40,
+ "idleS": 165.97599999999989,
+ "errors": [],
+ "planches": [
+  {
+   "file": "D-ligne-01.jpg",
+   "contenu": "accueil (avant « jouer ») ; étape accueil (t = 1 s, début de l'étape) ; étape echauffement (t = 9 s, début de l'étape) ; echauffement : première question (t = 20 s)"
+  },
+  {
+   "file": "D-ligne-02.jpg",
+   "contenu": "echauffement : « je ne sais pas » (t = 33 s) ; echauffement : une erreur (t = 51 s, réponse 4) ; étape notion (t = 91 s, début de l'étape) ; notion : première question (t = 130 s)"
+  },
+  {
+   "file": "D-ligne-03.jpg",
+   "contenu": "ligne : « je ne sais pas » (t = 157 s) ; ligne : une erreur (t = 169 s) ; étape recompense (t = 447 s, début de l'étape) ; récompense : le coquillage (t = 490 s)"
+  },
+  {
+   "file": "D-ligne-04.jpg",
+   "contenu": "récompense : la carte (t = 505 s) ; récompense : le coquillage (t = 507 s) ; récompense : la carte (t = 523 s) ; étape (hors séance) (t = 524 s, début de l'étape)"
+  },
+  {
+   "file": "D-ligne-05.jpg",
+   "contenu": "fin (t = 527 s : la lune, « Encore ! »)"
+  }
+ ]
+}

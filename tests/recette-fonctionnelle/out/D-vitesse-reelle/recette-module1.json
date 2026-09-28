@@ -1,0 +1,900 @@
+{
+ "tl": [
+  [
+   1.7,
+   "accueil prêt"
+  ],
+  [
+   1.7,
+   "accueil : boutons visibles hud.speaker, reefkey, albumkey, logo, play, choisir ; décors speaker, stars"
+  ],
+  [
+   2.1,
+   "--- étape accueil"
+  ],
+  [
+   2.7,
+   "écran : question=- ; boutons=hud.speaker,name,name,name,name,name,name ; affichages=frieze,speaker,stars ; voix"
+  ],
+  [
+   3.8,
+   "toucher : name"
+  ],
+  [
+   4.6,
+   "écran : question=- ; boutons=hud.speaker,check.invite,name.chosen,name,name,name,name,name ; affichages=frieze,speaker,stars ; voix"
+  ],
+  [
+   6.4,
+   "toucher : check.invite"
+  ],
+  [
+   7.1,
+   "écran : question=- ; boutons=hud.speaker ; affichages=frieze,speaker,stars ; voix"
+  ],
+  [
+   10.9,
+   "écran : question=- ; boutons=hud.speaker,cran.,cran.chosen,cran.,cran.,check.cran-ok. ; affichages=cran-glow ,frieze,speaker,stars ; voix"
+  ],
+  [
+   10.9,
+   "toucher : check.cran-ok."
+  ],
+  [
+   11.6,
+   "--- étape echauffement"
+  ],
+  [
+   12,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home ; affichages=frieze,speaker,stars"
+  ],
+  [
+   12.3,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,skip ; affichages=frieze,slate,speaker,stars ; voix"
+  ],
+  [
+   17.7,
+   "écran : question=0+2 ; boutons=hud.speaker,homekey.session-home,nsp,skip ; affichages=frieze,slate pop,speaker,stars ; voix"
+  ],
+  [
+   22.9,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,nsp ; affichages=frieze,slate pop,speaker,stars ; voix"
+  ],
+  [
+   23.4,
+   "écran : question=0+2 ; boutons=hud.speaker,homekey.session-home,nsp ; affichages=frieze,slate pop,speaker,stars ; voix"
+  ],
+  [
+   28.7,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,nsp ; affichages=frieze,slate pop,speaker,stars pop ; voix"
+  ],
+  [
+   29.5,
+   "écran : question=0+4 ; boutons=hud.speaker,homekey.session-home,nsp ; affichages=frieze,slate pop,speaker,stars pop ; voix"
+  ],
+  [
+   34,
+   "additions : « je ne sais pas » (0+4)"
+  ],
+  [
+   35,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,nsp,skip ; affichages=frieze,slate pop,speaker,stars pop ; voix"
+  ],
+  [
+   36.8,
+   "toucher : key.check[valider]"
+  ],
+  [
+   39.2,
+   "toucher : key.check[valider]"
+  ],
+  [
+   39.9,
+   "écran : question=1+1 ; boutons=hud.speaker,homekey.session-home,nsp,help ; affichages=frieze,slate pop,speaker,stars pop ; voix"
+  ],
+  [
+   45.1,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,nsp,help ; affichages=frieze,slate pop,speaker,stars pop ; voix"
+  ],
+  [
+   46.4,
+   "écran : question=2+1 ; boutons=hud.speaker,homekey.session-home,nsp,help ; affichages=frieze,slate pop,speaker,stars pop ; voix"
+  ],
+  [
+   51.7,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,nsp,help,skip ; affichages=frieze,slate shake,speaker,stars pop ; voix"
+  ],
+  [
+   53.5,
+   "toucher : key.check[valider]"
+  ],
+  [
+   54.2,
+   "écran : question=1+2 ; boutons=hud.speaker,homekey.session-home,nsp,help ; affichages=frieze,slate pop,speaker,stars pop ; voix"
+  ],
+  [
+   59.4,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,nsp,help ; affichages=frieze,slate pop,speaker,stars pop ; voix"
+  ],
+  [
+   60.2,
+   "écran : question=3+1 ; boutons=hud.speaker,homekey.session-home,nsp,help ; affichages=frieze,slate pop,speaker,stars pop ; voix"
+  ],
+  [
+   65.4,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,nsp,help ; affichages=frieze,slate pop,speaker,stars pop ; voix"
+  ],
+  [
+   66,
+   "écran : question=1+3 ; boutons=hud.speaker,homekey.session-home,nsp,help ; affichages=frieze,slate pop,speaker,stars pop ; voix"
+  ],
+  [
+   71.2,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,nsp,help ; affichages=frieze,slate pop,speaker,stars pop ; voix"
+  ],
+  [
+   72.5,
+   "écran : question=2+1 ; boutons=hud.speaker,homekey.session-home,nsp,help ; affichages=frieze,slate pop,speaker,stars pop ; voix"
+  ],
+  [
+   77.7,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,nsp,help ; affichages=frieze,slate pop,speaker,stars pop ; voix"
+  ],
+  [
+   78.5,
+   "écran : question=4+1 ; boutons=hud.speaker,homekey.session-home,nsp,help ; affichages=frieze,slate pop,speaker,stars pop ; voix"
+  ],
+  [
+   83.8,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,nsp,help ; affichages=frieze,slate pop,speaker,stars pop ; voix"
+  ],
+  [
+   84.5,
+   "écran : question=2+1 ; boutons=hud.speaker,homekey.session-home,nsp,help ; affichages=frieze,slate pop,speaker,stars pop ; voix"
+  ],
+  [
+   89.8,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,nsp,help ; affichages=frieze,slate pop,speaker,stars pop ; voix"
+  ],
+  [
+   90.6,
+   "--- étape notion"
+  ],
+  [
+   90.9,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,lessonkey.rejouer,skip.lessonkey ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   125.3,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home ; affichages=frieze,speaker,stars pop"
+  ],
+  [
+   125.8,
+   "écran : question=lire:3 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   131.4,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   132.4,
+   "écran : question=lire:8 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   137.6,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   139.4,
+   "écran : question=sauter:10 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   144.6,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   150.2,
+   "écran : question=lire:7 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   154.8,
+   "ligne : « je ne sais pas » (lire:7)"
+  ],
+  [
+   162.5,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   163.8,
+   "écran : question=sauter:7 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   168.3,
+   "ligne : réponse fausse (sauter:7, donne 2)"
+  ],
+  [
+   171,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer.shake.dim,answer,answer,skip ; affichages=frieze,speaker,stars pop"
+  ],
+  [
+   174.5,
+   "écran : question=lire:3 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   179.7,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   180.8,
+   "écran : question=sauter:5 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   186,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   188.8,
+   "écran : question=sauter:7 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   194,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   198.1,
+   "écran : question=lire:8 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   203.3,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   204.6,
+   "écran : question=sauter:4 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   209.8,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   212.4,
+   "écran : question=lire:7 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   217.6,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   218.6,
+   "écran : question=placer:3 ; boutons=hud.speaker,homekey.session-home,nsp,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   223.8,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   225.1,
+   "écran : question=lire:6 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   230.3,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   231.6,
+   "écran : question=placer:4 ; boutons=hud.speaker,homekey.session-home,nsp,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   236.7,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   238,
+   "écran : question=lire:7 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   243.2,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   244.3,
+   "écran : question=placer:3 ; boutons=hud.speaker,homekey.session-home,nsp,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   249.4,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   250.5,
+   "écran : question=lire:9 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   255.7,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   256.9,
+   "écran : question=placer:15 ; boutons=hud.speaker,homekey.session-home,nsp,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   262.1,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   263.9,
+   "écran : question=lire:7 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   269.2,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   270.4,
+   "écran : question=placer:5 ; boutons=hud.speaker,homekey.session-home,nsp,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   275.6,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   277.4,
+   "écran : question=lire:16 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   282.6,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   283.9,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,lessonkey.rejouer,skip.lessonkey ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   303.3,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home ; affichages=frieze,speaker,stars pop"
+  ],
+  [
+   303.9,
+   "écran : question=lire:69 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   309.1,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   310.3,
+   "écran : question=placer:35 ; boutons=hud.speaker,homekey.session-home,nsp,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   315.5,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   317.3,
+   "écran : question=lire:36 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   322.5,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   323.6,
+   "écran : question=placer:55 ; boutons=hud.speaker,homekey.session-home,nsp,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   328.8,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   330.1,
+   "écran : question=lire:46 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   335.3,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   337.1,
+   "écran : question=placer:51 ; boutons=hud.speaker,homekey.session-home,nsp,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   342.3,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   343.3,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,lessonkey.rejouer,skip.lessonkey ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   352.6,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,lessonkey.rejouer,skip.lessonkey ; affichages=counter pop,frieze,speaker,stars pop ; voix"
+  ],
+  [
+   364.6,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home ; affichages=counter pop,frieze,speaker,stars pop"
+  ],
+  [
+   365.1,
+   "écran : question=lire:20 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   370.3,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   371.6,
+   "écran : question=lire:10 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   376.8,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   378.6,
+   "écran : question=placer:60 ; boutons=hud.speaker,homekey.session-home,nsp,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   383.8,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   385.1,
+   "écran : question=lire:90 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   390.3,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   392.1,
+   "écran : question=placer:40 ; boutons=hud.speaker,homekey.session-home,nsp,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   397.3,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   398.3,
+   "écran : question=lire:70 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   403.5,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   404.8,
+   "écran : question=placer:74 ; boutons=hud.speaker,homekey.session-home,nsp,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   409.9,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   411.2,
+   "écran : question=lire:69 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   416.4,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   417.7,
+   "écran : question=placer:73 ; boutons=hud.speaker,homekey.session-home,nsp,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   422.9,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   424.2,
+   "écran : question=lire:56 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   429.4,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   430.7,
+   "écran : question=placer:29 ; boutons=hud.speaker,homekey.session-home,nsp,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   435.8,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer.still ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   437.1,
+   "écran : question=lire:50 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   442.3,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   443.4,
+   "écran : question=lire:98 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   448.6,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   450.4,
+   "écran : question=lire:97 ; boutons=hud.speaker,homekey.session-home,nsp,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   455.6,
+   "écran : question=- ; boutons=hud.speaker,homekey.session-home,answer,answer,answer,answer ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   457.4,
+   "--- étape recompense"
+  ],
+  [
+   457.7,
+   "écran : question=- ; boutons=hud.speaker ; affichages=frieze,speaker,stars pop,tally pop ; voix"
+  ],
+  [
+   465.1,
+   "écran : question=- ; boutons=hud.speaker ; affichages=frieze,speaker,special pop,stars pop,tally pop ; voix"
+  ],
+  [
+   470.8,
+   "écran : question=- ; boutons=hud.speaker ; affichages=frieze,speaker,special pop,special pop,stars pop,tally pop ; voix"
+  ],
+  [
+   476.4,
+   "écran : question=- ; boutons=hud.speaker ; affichages=frieze,speaker,special pop,special pop,special pop,stars pop,tally pop ; voix"
+  ],
+  [
+   482,
+   "écran : question=- ; boutons=hud.speaker ; affichages=frieze,speaker,special pop,special pop,special pop,special pop,stars pop,tally pop ; voix"
+  ],
+  [
+   487.7,
+   "écran : question=- ; boutons=hud.speaker ; affichages=frieze,speaker,special pop,special pop,special pop,special pop,special pop,stars pop,tally pop ; voix"
+  ],
+  [
+   493.3,
+   "écran : question=- ; boutons=hud.speaker ; affichages=frieze,speaker,special pop,special pop,special pop,special pop,special pop,special pop,stars pop,tally pop ; voix"
+  ],
+  [
+   498.9,
+   "écran : question=- ; boutons=hud.speaker ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   500.2,
+   "écran : question=- ; boutons=hud.speaker,shelltap.invite ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   500.2,
+   "toucher : shelltap.invite"
+  ],
+  [
+   500.9,
+   "écran : question=- ; boutons=hud.speaker ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   513.3,
+   "écran : question=- ; boutons=hud.speaker,check.invite ; affichages=frieze,speaker,stars pop"
+  ],
+  [
+   513.3,
+   "toucher : check.invite"
+  ],
+  [
+   513.9,
+   "écran : question=- ; boutons=hud.speaker ; affichages=frieze,speaker,stars pop"
+  ],
+  [
+   515.7,
+   "écran : question=- ; boutons=hud.speaker,shelltap.invite ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   515.7,
+   "toucher : shelltap.invite"
+  ],
+  [
+   516.4,
+   "écran : question=- ; boutons=hud.speaker ; affichages=frieze,speaker,stars pop ; voix"
+  ],
+  [
+   529.3,
+   "écran : question=- ; boutons=hud.speaker,check.invite ; affichages=frieze,speaker,stars pop"
+  ],
+  [
+   529.3,
+   "toucher : check.invite"
+  ],
+  [
+   530,
+   "écran : question=- ; boutons=hud.speaker ; affichages=frieze,speaker,stars pop"
+  ],
+  [
+   530.5,
+   "--- étape null"
+  ],
+  [
+   530.9,
+   "écran : question=- ; boutons=hud.speaker,reefkey,albumkey,logo,play.again ; affichages=moon,speaker,stars pop ; voix"
+  ],
+  [
+   530.9,
+   "fin : lune / Encore"
+  ],
+  [
+   534.2,
+   "fin : boutons hud.speaker, reefkey, albumkey, logo, play.again ; décors speaker, stars pop, moon"
+  ],
+  [
+   534.2,
+   "durée totale : 534.2 s"
+  ]
+ ],
+ "waits": [
+  {
+   "etape": "echauffement",
+   "attenteS": 15.869,
+   "q": "0+2"
+  },
+  {
+   "etape": "echauffement",
+   "attenteS": 0.768,
+   "q": "0+2"
+  },
+  {
+   "etape": "echauffement",
+   "attenteS": 1.02,
+   "q": "0+4"
+  },
+  {
+   "etape": "echauffement",
+   "attenteS": 5.109,
+   "q": "1+1"
+  },
+  {
+   "etape": "echauffement",
+   "attenteS": 1.537,
+   "q": "2+1"
+  },
+  {
+   "etape": "echauffement",
+   "attenteS": 2.77,
+   "q": "1+2"
+  },
+  {
+   "etape": "echauffement",
+   "attenteS": 1.019,
+   "q": "3+1"
+  },
+  {
+   "etape": "echauffement",
+   "attenteS": 0.778,
+   "q": "1+3"
+  },
+  {
+   "etape": "echauffement",
+   "attenteS": 1.537,
+   "q": "2+1"
+  },
+  {
+   "etape": "echauffement",
+   "attenteS": 1.018,
+   "q": "4+1"
+  },
+  {
+   "etape": "echauffement",
+   "attenteS": 1.029,
+   "q": "2+1"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 36.217,
+   "q": "lire:3"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.284,
+   "q": "lire:8"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 2.05,
+   "q": "sauter:10"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 5.88,
+   "q": "lire:7"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 0.255,
+   "q": "lire:7"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.532,
+   "q": "sauter:7"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 3.845,
+   "q": "lire:3"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.285,
+   "q": "sauter:5"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 3.065,
+   "q": "sauter:7"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 4.352,
+   "q": "lire:8"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.522,
+   "q": "sauter:4"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 2.804,
+   "q": "lire:7"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.282,
+   "q": "placer:3"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.533,
+   "q": "lire:6"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.546,
+   "q": "placer:4"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.549,
+   "q": "lire:7"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.281,
+   "q": "placer:3"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.293,
+   "q": "lire:9"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.542,
+   "q": "placer:15"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 2.07,
+   "q": "lire:7"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.538,
+   "q": "placer:5"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 2.06,
+   "q": "lire:16"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 21.494,
+   "q": "lire:69"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.533,
+   "q": "placer:35"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 2.044,
+   "q": "lire:36"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.309,
+   "q": "placer:55"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.563,
+   "q": "lire:46"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 2.074,
+   "q": "placer:51"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 23.096,
+   "q": "lire:20"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.533,
+   "q": "lire:10"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 2.052,
+   "q": "placer:60"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.535,
+   "q": "lire:90"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 2.058,
+   "q": "placer:40"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.284,
+   "q": "lire:70"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.542,
+   "q": "placer:74"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.536,
+   "q": "lire:69"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.535,
+   "q": "placer:73"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.535,
+   "q": "lire:56"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.541,
+   "q": "placer:29"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.534,
+   "q": "lire:50"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 1.281,
+   "q": "lire:98"
+  },
+  {
+   "etape": "notion",
+   "attenteS": 2.043,
+   "q": "lire:97"
+  }
+ ],
+ "errors": []
+}

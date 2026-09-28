@@ -442,4 +442,4 @@ Retours du parent après le premier essai du lot 1 (26 septembre 2026).
 | 4 | Module 4, bilans périodiques, zones 2 à 4 du récif, 60 cartes, crabe |
 | 5 (optionnel) | Synchronisation Google Sheet |
 
-**État au 27 septembre 2026, 23 h 30** : lots 1, 1 bis et 2 en ligne ; lot 3 spécifié (`docs/SPEC-LOT3.md`), à lancer. Détail : `docs/AVANCEMENT.md` ; décisions : `docs/JOURNAL-CONCEPTION.md`.
+**État au 28 septembre 2026, soir** : lots 1, 1 bis et 2 en ligne ; **lot 3 terminé** (étapes 1 à 4 fusionnées, PR #19 ; étape 5 et décisions du 28 septembre : PR #20, à fusionner) ; bilan : `docs/BILAN-LOT3.md`. Prochain : essai sur la tablette, puis lot 4. Détail : `docs/AVANCEMENT.md` ; décisions : `docs/JOURNAL-CONCEPTION.md`.

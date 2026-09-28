@@ -6,7 +6,7 @@ Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail 
 
 Spécification : `docs/SPEC-LOT3.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LOT2.md` et `docs/SPEC-COMPLEMENTS.md`) ; prompt : `docs/PROMPT-LOT3.md`. Deux parties : A (étapes 1 et 2, correctif du lot 2), B (étapes 3 à 5, calcul rapide).
 
-**Où en est-on (28 septembre 2026)** : lot 2 terminé et fusionné (PR #17). **Étapes 1 à 4 du lot 3 faites** (branche `claude/laughing-ritchie-cp777i`, https://github.com/js2c/Maths-CE1/pull/19), recette complète faite ; reste l'étape 5 (bilan du lot 3) et l'essai sur la tablette.
+**Où en est-on (28 septembre 2026, soir)** : **lot 3 terminé**. Étapes 1 à 4 fusionnées (PR #19) ; étape 5, élargie par les décisions du parent du 28 septembre (validation simple, voix à 80 Mo et calculs élargis, accueil complet pendant une pause, récif en pages, voix des cartes, erreur « reading '0' »), faite sur la branche `claude/intelligent-hawking-xwz6hw` (https://github.com/js2c/Maths-CE1/pull/20), avec le bilan `docs/BILAN-LOT3.md`. Reste : fusionner la PR #20 et essayer sur la tablette.
 
 | Étape | Partie | Contenu | État |
 | --- | --- | --- | --- |
@@ -14,13 +14,13 @@ Spécification : `docs/SPEC-LOT3.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LO
 | 2 | A | Difficulté à l'intérieur du niveau (ligne graduée, 13 niveaux × 4 crans ; additions) ; outil de sauvegardes de test ; guide du parent ; recette complète de la partie A | fait (même branche ; recette complète faite avec celle de l'étape 4, les étapes 1 à 4 étant enchaînées) |
 | 3 | B | Atelier : mur de corail, poisson sur le mur, ponts du chemin, pictogramme du calcul rapide pour l'écran de choix | fait (même branche) |
 | 4 | B | Module 3 : niveaux 1 à 9, générateurs, erreurs C1 à C5, déroulé d'un nouveau niveau, leçons L7 à L9, crans, choix du niveau, rotation dans « jouer », espace parent | fait (même branche ; recette complète des étapes 1 à 4 faite) |
-| 5 | B | Bilan : `docs/BILAN-LOT3.md`, guide du parent, recette complète sur l'année | à faire |
+| 5 | B | Bilan : `docs/BILAN-LOT3.md`, guide du parent, recette ; élargie le 28 septembre (décisions du parent, pause complète, récif en pages, voix des cartes, erreur « reading '0' ») | fait (branche `claude/intelligent-hawking-xwz6hw`, https://github.com/js2c/Maths-CE1/pull/20) |
 
 ### Reprise de l'étape 5 du lot 3
 
 Pour reprendre si la session s'est arrêtée : branche `claude/intelligent-hawking-xwz6hw` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 3, étape 5 (en cours) ». L'étape 5 est élargie par la demande du parent du 28 septembre (neuf sous-parties : décisions du 28 septembre, accueil complet pendant une pause, récif en pages, voix des cartes, erreur « reading '0' », bilan, guide du parent, recette, clôture).
 
-**Sous-partie en cours :** 8 (recette) ; le guide du parent (7) est relu, le bilan (6) s'écrit avec la recette.
+**Sous-partie en cours :** aucune ; l'étape 5 est terminée, demande de fusion prête.
 
 **Fait :**
 
@@ -33,7 +33,11 @@ Pour reprendre si la session s'est arrêtée : branche `claude/intelligent-hawki
 - 3. Le récif en pages, une par zone : `session/reefpages.js` (fonctions pures), `session/reef.js` (glisser, calage, rebond, toucher ou glisser, perles, planches chargées et libérées), réglages `cartes.json` (`recifPages`), perle de page dessinée dans l'atelier (`recif.perle`, planche « petits »), `derniere` notée à chaque carte gagnée (page d'entrée). Tests : `tests/unit/recif-pages.test.mjs` ; parcours `tests/e2e/recif-pages.mjs` (contenu réel : une page, rebond, toucher ou glisser ; zone de test : entrée sur la zone de la dernière carte, glisser vers le lagon et retour, calage au tiers et au geste rapide, rebond, créature touchée pendant et après le calage, perle, planches libérées) : tout est bon ; captures regardées. Mémoire décodée des planches du récif (densité 2) : 43,8 Mo pour une zone, **87,6 Mo avec deux zones chargées** (pendant un glisser). `recompenses.mjs` et `cartes.mjs` : tout est bon, aucune phrase dite au retournement d'une carte (point 4 vérifié). SPEC (« Le récif », « La carte et l'album ») et ARCHITECTURE à jour.
 - 7. Guide du parent relu pour le lot 3 : choisir (un toucher), calcul rapide et ses bornes, échauffement passable et ses conséquences sur la révision espacée, maison pendant la séance, récif par zones, voix des cartes, incidents techniques, sauvegardes de test.
 
-**Reste :** 6 (bilan), 8 (recette), 9 (clôture).
+- 6. `docs/BILAN-LOT3.md` : ce qui a changé pour l'enfant et pour le parent, étape par étape ; décisions et écarts ; tableaux de recette ; points à observer ; textes à valider ; à vérifier sur la tablette.
+- 8. Recette ciblée (tableau dans le bilan) : `npm test` (210) ; `seance.mjs` et `centaines.mjs` trois fois chacun, sans erreur ; `choix.mjs` ; `pause.mjs` (7 scénarios) ; `recif-pages.mjs` ; `ergonomie`, `pause-parent`, `recompenses`, `cartes` ; simulation (5 profils et rythmes, sur l'année) ; `recette.mjs --delai 4.5 --module 3` : 8 min 35 s ; `recette-durees.mjs --passer` : hors voix 1,0 s au plus ; `perf.mjs` : démarrage 1,8 s, récif en pause 224,4 Mo ; captures regardées. Tout est bon. Les consignes de l'écran « choisir » ont été réécrites pour la validation simple (« Touche une bulle. »), voix refabriquée, `choix.mjs` relancé.
+- 9. Avancement, ligne d'état de la SPEC, demande de fusion.
+
+**Reste :** l'essai sur la tablette.
 
 **Décisions prises (sous-partie 3) :**
 

@@ -89,7 +89,26 @@ Décisions du parent : voir `docs/SPEC-LOT3.md` (sections 1 à 6, et section 8 p
 
 ### Recette de l'étape 5 (28 septembre 2026)
 
-RECETTE_ETAPE5
+Recette ciblée (la recette complète du 28 septembre, ci-dessus, n'est pas refaite). Voix réelle pour les séances à vitesse réelle, Chromium, 1280 × 800.
+
+| Critère | Mesure | État |
+| --- | --- | --- |
+| Tests unitaires | `npm test` : 210 tests, tous passent (nouveaux : voix des cartes, erreur « reading '0' », pages du récif, chemin et bornes du calcul rapide) ; `precache.mjs --check` à jour | tenu |
+| Voix | 39,70 Mo avant, **50,95 Mo** après (8 382 fichiers ; plafond 80 Mo, lot 3 sous 60 Mo) | tenu |
+| Choisir en 3 touchers | `choix.mjs` : 3 touchers de l'accueil au sélecteur (choisir, exercice, niveau) ; tout le parcours passe | tenu |
+| Erreur « reading '0' » | cause trouvée (temps d'animation qui recule, indice d'image négatif) et reproduite par un test ; `seance.mjs` ×3 et `centaines.mjs` ×3 : aucune erreur | tenu |
+| Accueil complet pendant une pause | `pause.mjs` : depuis l'échauffement, la ligne, les additions, le calcul rapide, une leçon et le défi, récif (une carte ouverte) puis album puis reprise exacte (même question, même consigne, même phrase de leçon ; calques, acteurs et planches identiques ; temps de visite compté comme pause) ; choisir sans valider, une leçon depuis la pause, un autre exercice (séance interrompue avec sa raison, étoiles gardées, échauffement non refait, raison visible dans l'espace parent) : tout est bon | tenu |
+| Récif en pages | `recif-pages.mjs` : une page aujourd'hui (rebond, toucher ou glisser) ; zone de test : entrée sur la dernière zone, glisser et calage (tiers de l'écran, geste rapide), retour, rebond, créature touchée pendant et après le calage, perles, planches libérées : tout est bon | tenu |
+| Mémoire | planches décodées (densité 2) : récif, une zone 43,8 Mo, **deux zones 87,6 Mo** ; `perf.mjs` : 180,6 Mo en pause, **224,4 Mo** avec le récif ouvert en pause, 180,6 Mo après le retour | tenu (à confirmer sur la tablette) |
+| Voix des cartes | test unitaire ; `recompenses.mjs` et `cartes.mjs` : aucune phrase dite au retournement, dans le récif comme dans l'album | tenu |
+| Parcours qui passent par la maison, l'accueil, le récif ou l'album | `ergonomie`, `pause-parent`, `recompenses`, `cartes`, `choix` : tout est bon | tenu |
+| Simulation du module 3 (bornes élargies, sur l'année) | « reel » : 9 niveaux acquis à la 22e séance (2 par semaine) et à la 20e (5 par semaine), comme avant ; « sait » : à la 9e ; « en difficulté » : 4 niveaux (2 par semaine), 7 (5 par semaine), comme avant ; durée simulée des séances de calcul rapide 9,2 à 10,3 min ; jamais deux fois de suite le même exercice ; 60 cartes le 15 ou le 17 juin 2027, quota jamais dépassé | tenu |
+| Séance de calcul rapide à vitesse réelle | `recette.mjs --delai 4.5 --module 3` (première séance, sans défi) : **8 min 35 s** (accueil 10 s, échauffement 1 min 16 s, calcul rapide 6 min 04 s, récompense 1 min) ; 8,7 min avant l'élargissement ; aucune erreur | tenu |
+| Attente sans commande | `recette-durees.mjs --passer` : hors voix, **1,0 s au plus** partout (ligne 1 à 13, familles 1 à 6, calcul rapide 1, 2, 6, 7, 9, aides) | tenu |
+| Performance | `perf.mjs` (processeur ÷ 4, densité 2) : démarrage 1,8 s à froid, 2,0 s à chaud ; image moyenne 18,4 ms (allègement au niveau 2 sur cette machine), 18,1 ms pendant la visite du récif en pause ; aucune erreur | tenu |
+| Captures | écrans nouveaux ou modifiés regardés : accueil en pause, récif et album en pause, leçon depuis la pause, reprises, espace parent (raison), récif (rebond, glisser vers la page voisine, perles), chemins longs (99 − 90, 10 + 80, 23 + 34), écran « choisir » | — |
+
+Remarque : lancé d'un seul tenant, `pause.mjs` a une fois dépassé 15 minutes sans rien écrire (sortie filtrée) ; scénario par scénario (`--seul`), chacun passe en 12 à 22 s. La cause n'a pas été cherchée plus loin : à regarder si le parcours doit tourner d'un bloc.
 
 ## Points à observer
 
@@ -104,7 +123,7 @@ RECETTE_ETAPE5
 
 Aucune phrase n'a été écoutée par une personne ; la voix est fabriquée par Piper (voix siwis).
 
-- **Écran « choisir »** : TEXTES_CHOIX ; les noms des exercices (« La ligne des nombres. », « Les additions. », « Le calcul rapide. », « Les leçons. »), des 13 niveaux de la ligne, des 7 familles, des 10 leçons et des 9 niveaux du calcul rapide (« Plus un, plus deux, moins un, moins deux. », « Ajouter deux grands nombres. »…).
+- **Écran « choisir »** : « Qu'est-ce que tu veux faire ? Touche une bulle. », « Choisis ! Touche une image pour commencer. », « Quelle leçon veux-tu regarder ? Touche-la. » (réécrites à l'étape 5 pour la validation simple) ; les noms des exercices (« La ligne des nombres. », « Les additions. », « Le calcul rapide. », « Les leçons. »), des 13 niveaux de la ligne, des 7 familles, des 10 leçons et des 9 niveaux du calcul rapide (« Plus un, plus deux, moins un, moins deux. », « Ajouter deux grands nombres. »…).
 - **Presque-doubles** : « 3 plus 4, c'est 3 plus 3, et encore 1. »
 - **Calcul rapide** : les consignes (« 47 plus 2 ? » ; forme à trou : « 38 plus combien ? Ça fait 43. »), les ponts (« Plus 2. », « Moins 10. », et, depuis l'étape 5, « Plus 20. » à « Plus 80. »), « Suis le chemin : tape le nombre de chaque caillou. », « Bravo ! Regarde le raccourci. », les erreurs C1 à C5 (« Quand on ajoute dix, seules les dizaines changent. On descend d'une rangée. », « 8 plus 5 dépasse dix : on passe à la dizaine suivante. »…), l'annonce (« Maintenant, le calcul rapide, avec le petit poisson du mur de corail ! »).
 - **Leçons L7, L8, L9** (textes de `docs/SPEC.md`).

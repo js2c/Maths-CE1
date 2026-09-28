@@ -45,11 +45,12 @@ export function chemin(q) {
   return steps;
 }
 // la réponse attendue selon la forme (directe, ou « trou » : le second nombre manque)
-export const answerOf = (q) => (q.forme === "trou" ? q.b : apply(q.a, q.op, q.b));
+// (lot 3 bis : « trouGauche », le nombre de départ manque : « ? + 10 = 57 »)
+export const answerOf = (q) => (q.forme === "trou" || q.forme === "trouDroite" ? q.b : q.forme === "trouGauche" ? q.a : apply(q.a, q.op, q.b));
 // l'erreur type d'une mauvaise réponse (null si juste ; « autre » si elle ne se reconnaît pas)
 export function classifyCalc(q, v) {
   if (v === answerOf(q)) return null;
-  if (v === null || v === undefined || q.forme === "trou") return "autre";
+  if (v === null || v === undefined || (q.forme && q.forme !== "directe")) return "autre";
   const { a, op, b } = q;
   // C1 : + 10 (ou − 10, + 20…) change les unités au lieu des dizaines (34 + 10 = 35)
   if (b % 10 === 0 && v === apply(a, op, b / 10)) return "C1";

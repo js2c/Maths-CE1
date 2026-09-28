@@ -98,7 +98,8 @@ export function roomForNew(c, stored, dejaNouveaux = 0) {
 export function plan(c, stored, now, n, min, o = {}) {
   const cat = pool(c, o), byKey = new Map(stored.map((f) => [f.fait, f]));
   const known = cat.filter((f) => byKey.has(f.fait)).map((f) => byKey.get(f.fait));
-  const fresh = cat.filter((x) => !byKey.has(x.fait));
+  // (lot 3 bis, docs/SPEC-LOT3BIS.md, A1 : les faits nouveaux au hasard dans leur famille, les deux ordres des termes à la suite)
+  const fresh = orderFresh(cat.filter((x) => !byKey.has(x.fait)), o.rnd);
   const nNew = o.nouveaux === false ? 0 : Math.min((c.placesReservees ?? c.nouveauxMax) + (o.enPlus ?? 0), fresh.length, roomForNew(c, stored, o.dejaNouveaux ?? 0), n);
   const due = known.filter((f) => f.prochain <= now).sort((x, y) => x.prochain - y.prochain || x.boite - y.boite);
   const out = due.slice(0, n - nNew).map((f) => ({ ...f, nouveau: false }));
@@ -113,6 +114,27 @@ export function plan(c, stored, now, n, min, o = {}) {
   for (let i = 0; out.length < min && again.length; i++) out.push({ ...again[i % again.length], anticipe: true });
   return out;
 }
+// lot 3 bis (docs/SPEC-LOT3BIS.md, A1) : l'ordre des faits nouveaux, au hasard à l'intérieur de chaque famille (et non plus
+// dans l'ordre du catalogue, 1 + 9, 2 + 8…), l'autre ordre des termes juste après (7 + 3, puis 3 + 7) ; les familles restent
+// dans leur ordre. Sans `rnd` : l'ordre du catalogue.
+export function orderFresh(list, rnd) {
+  if (!rnd) return list;
+  const r = new Map(list.map((f) => [f.fait, rnd()])), by = new Map(list.map((f) => [f.fait, f]));
+  const sorted = [...list].sort((x, y) => (x.famille ?? 0) - (y.famille ?? 0) || r.get(x.fait) - r.get(y.fait)), left = new Set(sorted.map((f) => f.fait)), out = [];
+  for (const f of sorted) {
+    if (!left.has(f.fait)) continue;
+    out.push(f); left.delete(f.fait);
+    const m = key(f.b, f.a);
+    if (left.has(m) && by.get(m).famille === f.famille) { out.push(by.get(m)); left.delete(m); }
+  }
+  return out;
+}
+// lot 3 bis (docs/SPEC-LOT3BIS.md, A1) : la part des questions à trou pour un fait de la famille `id` au cran `cran`
+// (module2.json, notion.formes : amis de 10, maisons de 5 à 7, maisons de 8 et 9) ; undefined : la règle d'avant
+export const trouPartOf = (c, id, cran) => c.notion?.formes?.[id]?.[cran ?? "conseille"] ?? c.notion?.formes?.[id]?.conseille;
+// la k-ième question (1, 2, 3…) d'une famille dont la part `part` est à trou : l'est-elle ? (répartition régulière :
+// 0,5 = une sur deux ; 2/3 = deux sur trois)
+export const trouTurn = (part, k) => part >= 1 || Math.floor(k * part + 1e-9) > Math.floor((k - 1) * part + 1e-9);
 export const newFact = (f, now) => ({ ...f, boite: 1, prochain: now, historique: [], introduit: now, nouveau: true });
 // la forme d'une question : directe, ou à trou (« 3 + ? = 7 », « ? + 4 = 6 ») pour un fait dont la boîte le
 // permet (cran « plus dur » : boîte 3 ou plus ; « très dur » : boîte 2 ou plus) ; un tiers chacune

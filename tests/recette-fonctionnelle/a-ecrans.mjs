@@ -27,7 +27,7 @@ async function juste(page) {
   else await taper(page, st.a);
   return true;
 }
-async function taper(page, n) { for (const d of String(n)) await toucher(page, `.key[data-key="${d}"]`); await toucher(page, '.key[data-key="valider"]'); }
+async function taper(page, n) { for (const d of String(n)) { await toucher(page, `.key[data-key="${d}"]`); await pause(page, 170); } await toucher(page, '.key[data-key="valider"]'); }
 // une séance ouverte sur la notion du jour, sans échauffement (le nom et le cran donnés)
 const notion = (base, choix, cran = "conseille", extra = "") => ouvrir(nav, { base, nom: true, params: `choix=${choix}&cran=${cran}&sans=echauffement,defi${extra ? `&${extra}` : ""}` });
 

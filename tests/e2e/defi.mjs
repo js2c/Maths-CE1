@@ -38,7 +38,7 @@ async function run(n, { record = null, answers = 12, wrongAt = 3 } = {}) {
     const q = await page.evaluate(() => { const s = window.__app.facts; return s?.resolve && !s.locked && s.defi ? { a: s.q.a, b: s.q.b, forme: s.q.forme ?? "directe" } : null; });
     if (!q) { if (!(await page.evaluate(() => !!window.__app.challenge))) break; await page.waitForTimeout(50); continue; }
     const exp = q.forme === "trouDroite" ? q.b : q.forme === "trouGauche" ? q.a : q.a + q.b, wrong = k === wrongAt;
-    for (const d of String(wrong ? (exp === 9 ? 8 : exp + 1) : exp)) await page.tap(`.key[data-key="${d}"]`, { force: true });
+    for (const d of String(wrong ? (exp === 9 ? 8 : exp + 1) : exp)) { await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.waitForTimeout(170); }
     await page.tap('.key[data-key="valider"]', { force: true });
     if (wrong) { await page.waitForTimeout(250); await shot("2-erreur"); sawWrong = true; }
     k++;

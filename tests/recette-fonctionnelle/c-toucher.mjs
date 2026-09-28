@@ -57,7 +57,7 @@ async function juste(page) {
   if (!st) return null;
   if (st.l && (st.f === "lire" || st.f === "sauter")) await toucher(page, `.answer[data-value="${st.a}"]`);
   else if (st.l) await page.evaluate(() => { const s = window.__app.screen; s.aimed = s.q.answer; s.answer(s.q.answer, null); });
-  else { for (const d of String(st.a)) await toucher(page, `.key[data-key="${d}"]`); await toucher(page, '.key[data-key="valider"]'); }
+  else { for (const d of String(st.a)) { await toucher(page, `.key[data-key="${d}"]`); await pause(page, 170); } await toucher(page, '.key[data-key="valider"]'); }
   return st;
 }
 const bonne = (page) => page.evaluate(() => { const A = window.__app, l = A.screen, f = A.facts; if (l?.q && l.resolve && !l.locked) return { l: true, f: l.q.format, a: l.q.answer }; const q = f?.q; return q ? { l: false, a: q.format === "ecrire" ? q.answer : q.forme === "trouDroite" ? q.b : q.forme === "trouGauche" ? q.a : q.n ?? q.a + q.b } : null; });
@@ -117,7 +117,7 @@ async function maison() {
     const b = await bonne(page);
     if (b.l && (b.f === "lire" || b.f === "sauter")) { const v = await page.evaluate((a) => [...document.querySelectorAll(".answer")].map((x) => x.dataset.value).find((x) => Number(x) !== a), b.a); await toucher(page, `.answer[data-value="${v}"]`); }
     else if (b.l) await page.evaluate(() => { const s = window.__app.screen; s.answer(s.q.min + s.q.max - s.q.answer === s.q.answer ? s.q.answer + s.q.step : s.q.min + s.q.max - s.q.answer, null); });
-    else { for (const d of String(b.a + 1)) await toucher(page, `.key[data-key="${d}"]`); await toucher(page, '.key[data-key="valider"]'); }
+    else { for (const d of String(b.a + 1)) { await toucher(page, `.key[data-key="${d}"]`); await pause(page, 170); } await toucher(page, '.key[data-key="valider"]'); }
     await pause(page, 1800);
     await essai(S, s, { essai: "maison pendant une animation", exo: nomExo, geste: "la maison touchée 1,8 s après une erreur (correction animée en cours)", attente: 2000, action: async (p) => { const c = await centre(p, ".session-home"); if (c) await tap(p, ...c); } });
     await essai(S, s, { essai: "revenir à l'accueil et reprendre", exo: nomExo, geste: "« continuer » touché sur l'accueil en pause", attente: 4000, action: async (p) => { const c = await centre(p, ".play"); if (c) await tap(p, ...c); } });
@@ -230,7 +230,7 @@ async function passer() {
         continue;
       }
       // une question : une erreur (pour voir « passer la correction »), une fois sur deux
-      if (st.q) { if (faux++ % 2 === 0) { const b = await bonne(page); if (b.l && (b.f === "lire" || b.f === "sauter")) { const v = await page.evaluate((a) => [...document.querySelectorAll(".answer")].map((x) => x.dataset.value).find((x) => Number(x) !== a), b.a); await toucher(page, `.answer[data-value="${v}"]`); } else if (b.l) await page.evaluate(() => { const s = window.__app.screen; s.answer(s.q.min, null); }); else { for (const d of String(b.a + 1)) await toucher(page, `.key[data-key="${d}"]`); await toucher(page, '.key[data-key="valider"]'); } } else await juste(page); await pause(page, 900); }
+      if (st.q) { if (faux++ % 2 === 0) { const b = await bonne(page); if (b.l && (b.f === "lire" || b.f === "sauter")) { const v = await page.evaluate((a) => [...document.querySelectorAll(".answer")].map((x) => x.dataset.value).find((x) => Number(x) !== a), b.a); await toucher(page, `.answer[data-value="${v}"]`); } else if (b.l) await page.evaluate(() => { const s = window.__app.screen; s.answer(s.q.min, null); }); else { for (const d of String(b.a + 1)) { await toucher(page, `.key[data-key="${d}"]`); await pause(page, 170); } await toucher(page, '.key[data-key="valider"]'); } } else await juste(page); await pause(page, 900); }
     }
     await s.context.close();
   }

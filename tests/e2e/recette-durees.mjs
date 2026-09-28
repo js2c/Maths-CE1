@@ -42,7 +42,7 @@ for (const niveau of [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]) {
       const n = await page.evaluate(() => window.__app.facts.q.answer);
       if (k === 1) { await page.tap(".nsp", { force: true }); ev.push("[NSP ecrire]"); continue; }
       const v = k === 2 ? `${n}0` : String(n);
-      for (const d of v) await page.tap(`.key[data-key="${d}"]`, { force: true });
+      for (const d of v) { await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.waitForTimeout(170); }
       await page.tap('.key[data-key="valider"]', { force: true }); if (k === 2) ev.push("[erreur ecrire]"); continue;
     }
     if (k === 1) { await page.tap(".nsp", { force: true }); ev.push(`[NSP ${q.f}]`); }
@@ -66,7 +66,7 @@ for (const famille of [1, 3, 4, 5, 6]) {
   const open = () => page.waitForFunction(() => { const s = window.__app.facts; return s?.q && s.resolve && !s.locked; }, null, { timeout: 240000, polling: 100 });
   const ev = []; let t = Date.now();
   if (PASSER) await page.evaluate(() => { window.__passes = 0; setInterval(() => { const b = document.querySelector(".skip"); if (b && getComputedStyle(b).visibility !== "hidden") { b.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })); window.__passes++; } }, 150); });
-  const typeIn = async (n) => { for (const d of String(n)) await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.tap('.key[data-key="valider"]', { force: true }); };
+  const typeIn = async (n) => { for (const d of String(n)) { await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.waitForTimeout(170); } await page.tap('.key[data-key="valider"]', { force: true }); };
   for (let k = 0; k < 5; k++) {
     await open(); const now = Date.now(), q = await page.evaluate(() => { const f = window.__app.facts.q; return { v: f.forme === "trouDroite" ? f.b : f.forme === "trouGauche" ? f.a : f.a + f.b, g: !!f.guide, appui: f.appui }; });
     ev.push(`${k === 0 ? "avant la 1re question (leçon, exemple)" : "attente"} ${((now - t) / 1000).toFixed(1)} s`);
@@ -91,7 +91,7 @@ for (const niveau of [1, 2, 6, 7, 9]) {
   const open = () => page.waitForFunction(() => { const s = window.__app.facts; return s?.q && s.resolve && !s.locked; }, null, { timeout: 240000, polling: 100 });
   const ev = []; let t = Date.now(), nq = 0;
   if (PASSER) await page.evaluate(() => { window.__passes = 0; setInterval(() => { const b = document.querySelector(".skip"); if (b && getComputedStyle(b).visibility !== "hidden") { b.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })); window.__passes++; } }, 150); });
-  const typeIn = async (n) => { for (const d of String(n)) await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.tap('.key[data-key="valider"]', { force: true }); };
+  const typeIn = async (n) => { for (const d of String(n)) { await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.waitForTimeout(170); } await page.tap('.key[data-key="valider"]', { force: true }); };
   for (let k = 0; k < 14 && nq < 4; k++) {
     await open(); const now = Date.now(), q = await page.evaluate(() => { const f = window.__app.facts.q; return { v: f.forme === "trouDroite" ? f.b : f.n, pont: !!f.pont }; });
     ev.push(`${k === 0 ? "avant la 1re question (leçon, guide)" : "attente"} ${((now - t) / 1000).toFixed(1)} s${q.pont ? " (pont)" : ""}`);

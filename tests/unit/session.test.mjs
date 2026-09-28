@@ -103,7 +103,7 @@ test("finir sur une réussite : après une dernière réponse fausse, une questi
   const runner = await new Module1Runner({ screen, store, content: module1, rnd: rng(9), seance: s.id }).load();
   runner.st.niveau = 3; runner.save = () => {};
   await runNotion({ session: s, step: { ...seance.etapes[2], questions: [4, 4] }, end: Infinity, runner, screen, rnd: rng(1) });
-  const qs = screen.log.filter((x) => !x.guide), last = qs.at(-1);
+  const qs = screen.log.filter((x) => !x.guide), last = qs.at(-1)
   assert.equal(qs[3].ok, false); assert.equal(qs.length, 5); assert.equal(last.ok, true); assert.equal(last.q.niveau, 2);
 });
 

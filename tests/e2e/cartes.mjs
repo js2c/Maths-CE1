@@ -101,7 +101,7 @@ async function playToReward(page, { onCeremony, atShell, atCard } = {}) {
   await playToReward(page);
   const r = await page.evaluate(() => ({ n: Object.keys(window.__app.rewards.owned).length, quota: window.__app.rewards.quota(), rec: window.__app.session.rec }));
   check(r.n <= r.quota && (r.rec.cartes ?? []).length >= 1, `quota atteint (${r.n} / ${r.quota}) : ${(r.rec.cartes ?? []).length} coquillage(s), aucune carte nouvelle`);
-  check((await said(page)).includes("Tu avais déjà cette carte."), "la voix annonce un doublon");
+  check(/Tu avais déjà cette carte/.test(await said(page)), "la voix annonce un doublon");
   await context.close();
 }
 

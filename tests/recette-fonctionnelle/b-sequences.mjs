@@ -12,7 +12,7 @@ import { IDBFactory } from "fake-indexeddb";
 import { Store } from "../../app/js/engine/store.js";
 import { rng } from "../../app/js/engine/ocean.js";
 import { decompose, fill, hundredsWords } from "../../app/js/engine/phrases.js";
-import { classify, e6Values, e7Value, makeEstimate, makeJump, makePlace, makeRead, makeWrite, TRAPS } from "../../app/js/modules/numberline/generator.js";
+import { classify, e6Values, e7Value, makeEstimate, makeJump, makePlace, makeRead, makeWrite, questionKey, TRAPS } from "../../app/js/modules/numberline/generator.js";
 import { Module1Runner } from "../../app/js/modules/numberline/runner.js";
 import { Session } from "../../app/js/session/session.js";
 import { runNotion } from "../../app/js/session/notion.js";
@@ -22,7 +22,8 @@ import { runWarmup } from "../../app/js/modules/facts/screen.js";
 import { aidFor, expected, median } from "../../app/js/modules/facts/facts.js";
 import { Module2Runner } from "../../app/js/modules/facts/runner.js";
 import { calcMastery, Module3Runner } from "../../app/js/modules/calc/runner.js";
-import { classifyCalc } from "../../app/js/modules/calc/calc.js";
+import { calcKey, classifyCalc } from "../../app/js/modules/calc/calc.js";
+import { checkSequence } from "../../app/js/modules/variete.js";
 import { runChallenge } from "../../app/js/modules/facts/challenge.js";
 
 const ROOT = new URL("../../", import.meta.url).pathname;
@@ -30,7 +31,10 @@ const load = (f) => JSON.parse(readFileSync(join(ROOT, "app/content", f), "utf8"
 const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), module3 = load("module3.json"), cartes = load("cartes.json"), calendrier = load("calendrier.json"), T = load("textes.json"), lecons = load("lecons.json");
 const OUT = join(ROOT, "tests/recette-fonctionnelle/out/B-sequences");
 mkdirSync(OUT, { recursive: true });
-const argv = process.argv.slice(2), only = argv.includes("--seulement") ? argv[argv.indexOf("--seulement") + 1].split(":").map(Number) : null;
+// --test (lot 3 bis, docs/SPEC-LOT3BIS.md, §0) : rien n'est écrit ; les quatre règles de la réponse qui varie sont vérifiées
+// sur chaque séance (bases neuve et « un mois », comportements « appliquée » et « réelle ») ; code de sortie 1 si une
+// seule séance les manque.
+const argv = process.argv.slice(2), TEST = argv.includes("--test"), only = argv.includes("--seulement") ? argv[argv.indexOf("--seulement") + 1].split(":").map(Number) : null;
 
 // ---------------------------------------------------------------- les trois comportements
 // ms : temps de réponse ; erreur : part des réponses fausses (dont `nsp` en « je ne sais pas ») ; hasard : au hasard
@@ -162,26 +166,26 @@ async function uneSeance({ base, choix, cran, comp }) {
     const wrapRunner = (runner) => { const rec = runner.record.bind(runner); runner.record = async (r, cfg) => { const res = await rec(r, cfg); for (const e of res.events ?? []) suite(e.type === "montee" ? `MONTÉE (${e.de ? `niveau ${e.de} → ${e.a}` : e.niveau ? `niveau ${e.niveau} acquis` : `famille ${e.famille} acquise`})` : e.type === "lecon" ? `leçon ${e.id} relancée` : e.type === "difficulte" ? "difficulté persistante" : e.type === "plusBas" ? "niveau inférieur jusqu'à la fin (leçon déjà jouée)" : e.type); return res; }; return runner; };
     const s = new Session({ store, content: seance, rewards, clock, choix, mastery: (m) => mast[m] ?? 0, onCranDown: async (de, a) => { suite(`le cran redescend : ${CRAN_NOM[de]} → ${CRAN_NOM[a]} (« ${T.cranDescente} »)`); add(3000); }, handlers: {
       accueil: async ({ session }) => { etape = "accueil"; add(D.accueil); await session.setCran(cran); add(D.selecteur); },
-      echauffement: async (ctx) => { etape = "échauffement"; const w = await new Warmup({ store, content: module2, rnd: R, seance: ctx.session.id, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load(); await runWarmup({ ...ctx, warmup: w, screen: warmScreen, rnd: R }); cur = null; },
+      echauffement: async (ctx) => { etape = "échauffement"; const w = await new Warmup({ store, content: module2, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load(); await runWarmup({ ...ctx, warmup: w, screen: warmScreen, rnd: R }); cur = null; },
       notion: async (ctx) => {
         etape = "notion"; const m = ctx.session.rec.module;
         if (m === 1) {
           const lineScreen = { ask: async (q, cfg, o = {}) => {
             const r = o.guide ? { value: q.answer } : reponseLigne(R, C, q), code = r.nsp ? "NSP" : classify(q, r.value), ok = code === null;
-            const x = row({ forme: formeLigne(q) + (q.revient ? " (revient)" : "") + (q.cran && q.cran !== "conseille" ? "" : ""), voix: voixLigne(RV, q, { guide: o.guide, lesson: o.lesson }), attendue: q.answer, donnee: o.guide ? `${q.answer} (guidé)` : r.nsp ? "je ne sais pas" : r.value });
+            const x = row({ forme: formeLigne(q) + (q.revient ? " (revient)" : "") + (q.cran && q.cran !== "conseille" ? "" : ""), voix: voixLigne(RV, q, { guide: o.guide, lesson: o.lesson }), cle: questionKey(q), attendue: q.answer, donnee: o.guide ? `${q.answer} (guidé)` : r.nsp ? "je ne sais pas" : r.value });
             add(D.consigne + (o.guide && !o.lesson ? D.demo : 0) + C.ms + (ok ? D.bravo : D.correction));
             if (!ok) { const key0 = q.format === "sauter" && code === "E3" ? "E3sauter" : code, n = q.answer; x.suite.push(`correction ${code} : « ${key0 && T.erreur[key0] ? fill(T.erreur[key0], { a: q.format === "sauter" ? q.min + q.start * q.step : q.min, n, ...(n >= 100 ? hundredsWords(T, n) : decompose(T, n)) }) : T.erreur.autre} … ${fill(T.bonneReponse, { n })} »`); }
             return { q, value: r.value, ok, code, ms: C.ms, listens: 1 };
           }, generate: (cfg, r, o = {}) => (o.format === "ecrire" ? makeWrite(cfg, r, o) : o.format === "sauter" ? makeJump(cfg, r) : o.format === "placer" ? makePlace(cfg, r, o) : o.format === "estimer" ? makeEstimate(cfg, r, o) : makeRead(cfg, r, o)) };
-          const runner = wrapRunner(await new Module1Runner({ screen: lineScreen, store, content: module1, rnd: R, seance: ctx.session.id, offset: () => ctx.session.offset, cran: () => ctx.session.cran, choix: ctx.session.choix?.niveau ?? null }).load());
+          const runner = wrapRunner(await new Module1Runner({ screen: lineScreen, store, content: module1, rnd: R, seance: ctx.session.id, variete: seance.variete, offset: () => ctx.session.offset, cran: () => ctx.session.cran, choix: ctx.session.choix?.niveau ?? null }).load());
           await runNotion({ ...ctx, runner, screen: lineScreen, rnd: R, lesson }); cur = null; return;
         }
         if (m === 2) {
-          const runner = wrapRunner(await new Module2Runner({ store, content: module2, rnd: R, seance: ctx.session.id, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux, choix: ctx.session.choix?.famille ?? null }).load());
+          const runner = wrapRunner(await new Module2Runner({ store, content: module2, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux, choix: ctx.session.choix?.famille ?? null }).load());
           const scr = { ask: async (q, cfg, o = {}) => {
             const good = expected(q), guide = !!(o.guide || q.guide), r = guide ? { value: good } : reponseNombre(R, C, good, { max: 20, pieges: q.forme !== "directe" ? [q.a + q.b] : [] }), ok = r.value === good;
             const pre = q.guide ? `[exemple guidé : ${aidSpeech(q)} ${fill(T.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b })} ${T.aToiFait}] ` : q.aideDEmblee ? `[aide d'emblée : ${aidSpeech(q)}] ` : "";
-            const x = row({ forme: `${fait(q)} (famille ${q.famille}${q.revient ? ", revient" : ""})`, voix: pre + voixFait(RV, q), attendue: good, donnee: guide ? `${good} (guidé)` : r.nsp ? "je ne sais pas" : r.value });
+            const x = row({ cle: `fait:${q.fait}`, forme: `${fait(q)} (famille ${q.famille}${q.revient ? ", revient" : ""})`, voix: pre + voixFait(RV, q), attendue: good, donnee: guide ? `${good} (guidé)` : r.nsp ? "je ne sais pas" : r.value });
             add(D.consigne + (q.guide ? D.demo : 0) + (q.aideDEmblee ? 6000 : 0) + C.ms + (ok ? D.bravo : D.correction));
             if (!ok) x.suite.push(`correction : « ${r.nsp ? T.faitNSP + " " : ""}${aidSpeech(q)} ${fill(T.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b })} »`);
             return { q, value: r.value, ok, code: ok ? null : r.nsp ? "NSP" : "autre", ms: C.ms, listens: 1, aide: false, nsp: !!r.nsp };
@@ -192,7 +196,7 @@ async function uneSeance({ base, choix, cran, comp }) {
           ctx.session.nouveaux = runner.nouveaux; return;
         }
         const baseMs = median((await store.setting("tempsDeBase"))?.mesures ?? []) ?? module2.base.defautS * 1000;
-        const runner = wrapRunner(await new Module3Runner({ store, content: module3, content2: module2, rnd: R, seance: ctx.session.id, clock, cran: () => ctx.session.cran, choix: ctx.session.choix?.module === 3 ? ctx.session.choix.niveau : null, baseMs }).load());
+        const runner = wrapRunner(await new Module3Runner({ store, content: module3, content2: module2, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, choix: ctx.session.choix?.module === 3 ? ctx.session.choix.niveau : null, baseMs }).load());
         const scr = { ask: async (q) => {
           const good = answerCalc(q), mode = q.remplir ? "calcul guidé (l'enfant remplit chaque caillou)" : q.aideDEmblee ? "chemin affiché d'emblée" : q.cheminMode === "non" ? "sans chemin" : "chemin au coquillage";
           let r, ok;
@@ -200,7 +204,7 @@ async function uneSeance({ base, choix, cran, comp }) {
             const pas = q.chemin.map((st) => { const rr = reponseNombre(R, C, st.a, { max: 100 }); return { st, rr }; });
             ok = pas.every((p) => p.rr.value === p.st.a); r = { value: ok ? good : null, detail: pas.map((p) => `${p.st.op === "-" ? "−" : "+"}${p.st.k}→${p.rr.nsp ? "?" : p.rr.value}${p.rr.value === p.st.a ? "" : "✗"}`).join(" ") };
           } else { r = reponseNombre(R, C, good, { max: 99, pieges: piegesCalc(q) }); ok = r.value === good; }
-          const x = row({ forme: `${fait({ ...q, forme: q.forme })} (niveau ${q.niveau}, ${q.support}, ${mode}${q.revient ? ", revient" : ""}) · chemin ${cheminTxt(q)}`, voix: q.remplir ? `${consigneCalc({ ...q, remplir: false })} ${T.calcGuide} [puis, caillou par caillou : ${q.chemin.map((st) => fill(st.op === "-" ? T.calcPont.moins : T.calcPont.plus, { k: st.k })).join(" ")}]` : consigneCalc(q), attendue: good, donnee: q.remplir ? r.detail : r.nsp ? "je ne sais pas" : r.value });
+          const x = row({ cle: calcKey(q), forme: `${fait({ ...q, forme: q.forme })} (niveau ${q.niveau}, ${q.support}, ${mode}${q.revient ? ", revient" : ""}) · chemin ${cheminTxt(q)}`, voix: q.remplir ? `${consigneCalc({ ...q, remplir: false })} ${T.calcGuide} [puis, caillou par caillou : ${q.chemin.map((st) => fill(st.op === "-" ? T.calcPont.moins : T.calcPont.plus, { k: st.k })).join(" ")}]` : consigneCalc(q), attendue: good, donnee: q.remplir ? r.detail : r.nsp ? "je ne sais pas" : r.value });
           add(D.consigne + C.ms * (q.remplir ? q.chemin.length : 1) + (ok ? D.bravo : D.correctionCalc) + (q.aideDEmblee ? 4000 : 0));
           const code = r.nsp ? "NSP" : ok ? null : q.remplir ? "autre" : classifyCalc({ ...q, forme: q.forme === "trouDroite" ? "trou" : "directe" }, r.value);
           if (!ok && !q.remplir) { const E = T.erreurCalc, first = r.nsp ? T.faitNSP : code === "C1" ? (q.op === "-" ? E.C1moins : E.C1) : code === "C4" ? fill(E.C4, { u: q.a % 10, b: q.b }) : code === "C5" ? fill(E.C5, { b: q.b, u: q.a % 10 }) : code === "C3" ? E.C3 : E.autre; x.suite.push(`correction ${code} : « ${first} » + la procédure ${q.support === "mur" ? "sur le mur (le poisson)" : "sur le chemin"} : ${cheminTxt(q)} ; « ${fill(T.bonneReponse, { n: good })} »`); }
@@ -211,7 +215,7 @@ async function uneSeance({ base, choix, cran, comp }) {
       },
       defi: async (ctx) => {
         etape = "défi"; cur = null;
-        const w = await new Warmup({ store, content: module2, rnd: R, seance: ctx.session.id, clock, cran: () => "conseille" }).load(); w.defi = true;
+        const w = await new Warmup({ store, content: module2, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => "conseille" }).load(); w.defi = true;
         const view = { show() {}, start() {}, stop() {}, pearl() {}, record() {} };
         const r = await runChallenge({ ...ctx, warmup: w, screen: defiScreen, view, store, rnd: R, stars: seance.etoiles, say: async () => add(D.consigne), now: clock, pause: async (ms) => add(ms), timer: () => new Promise(() => {}) });
         cur = null; suite(`défi : ${r.score} bonne(s) réponse(s)${r.nouveau ? ", nouveau record (+5 étoiles)" : ""}`);
@@ -273,6 +277,29 @@ const EXOS = [
   ...module2.familles.map((f) => ({ id: `additions-famille-${f.id}`, choix: { module: 2, famille: f.id }, nom: `Additions, famille ${f.id} (${f.nom})` })),
   ...module3.niveaux.map((c) => ({ id: `calcul-${c.niveau}`, choix: { module: 3, niveau: c.niveau }, nom: `Calcul rapide, niveau ${c.niveau} (${c.type}, ${c.support})` })),
 ].filter((e) => !only || (e.choix.module === only[0] && (e.choix.niveau ?? e.choix.famille) === only[1]));
+if (TEST) {
+  const fails = [], combos = new Set(), courtes = []; let n = 0;
+  for (const base of ["neuve", "mois"]) for (const ex of EXOS) for (const cran of CRANS) for (const comp of ["appliquee", "reelle"]) {
+    const res = await uneSeance({ base, choix: ex.choix, cran, comp }), seq = res.rows.filter((r) => r.etape === "notion" && typeof r.attendue === "number").map((r) => ({ cle: r.cle, reponse: r.attendue }));
+    const bad = checkSequence(seq, seance.variete); n++; combos.add(`${ex.id}:${cran}`); courtes.push([seq.length, `${base} · ${ex.nom} · ${CRAN_NOM[cran]} · ${COMPORTEMENTS[comp].nom} (${Math.round(res.rec.dureeS / 6) / 10} min simulées)`]);
+    if (bad.length) fails.push(`${base} · ${ex.nom} · ${CRAN_NOM[cran]} · ${COMPORTEMENTS[comp].nom} (${seq.length} questions) : ${bad.join(" ; ")}`);
+  }
+  console.log(`${combos.size} combinaisons exercice × niveau × cran, ${n} séances simulées ; ${fails.length} en défaut`);
+  // les mesures du tableau « Recette du lot 3 bis » (docs/SPEC-LOT3BIS.md) qui se lisent sur les séquences
+  const M = [];
+  for (const base of ["neuve", "mois"]) {
+    // A1 : amis de 10, la part des questions à trou (faits de la règle, notion du jour), à chaque cran
+    for (const cran of CRANS) { const r = await uneSeance({ base, choix: { module: 2, famille: 3 }, cran, comp: "appliquee" }), f3 = r.rows.filter((x) => x.etape === "notion" && /famille/.test(x.forme ?? "") && (() => { const m = /^(\d+|\?) \+ (\d+|\?) = (\d+|\?)/.exec(x.forme); return m && (m[3] === "10" || (m[1] !== "?" && m[2] !== "?" && +m[1] + +m[2] === 10)); })()); M.push(`A1 · ${base} · famille 3 · ${CRAN_NOM[cran]} : ${f3.filter((x) => /\?/.test(x.forme.split(" (")[0].replace(/= \?$/, ""))).length} questions à trou sur ${f3.length}`); }
+    // A2 : calcul « très dur » aux niveaux à pas fixe : réponses différentes, étoiles de « pressée » comparées à « appliquée »
+    for (const niv of [1, 2, 3, 6]) { const ap = await uneSeance({ base, choix: { module: 3, niveau: niv }, cran: "tresdur", comp: "appliquee" }), pr = await uneSeance({ base, choix: { module: 3, niveau: niv }, cran: "tresdur", comp: "pressee" }), rep = new Set(ap.rows.filter((x) => x.etape === "notion" && typeof x.attendue === "number").map((x) => x.attendue)).size; M.push(`A2 · ${base} · calcul ${niv} très dur : ${rep} réponses différentes ; étoiles pressée ${pr.rec.etoiles} / appliquée ${ap.rec.etoiles} = ${Math.round((pr.rec.etoiles / ap.rec.etoiles) * 100)} %`); }
+    // A3 : ligne « plus facile » des niveaux 2, 5, 9 : cibles différentes, et l'ordre de deux tours consécutifs
+    for (const niv of [2, 5, 9]) { const r = await uneSeance({ base, choix: { module: 1, niveau: niv }, cran: "facile", comp: "appliquee" }), a = r.rows.filter((x) => x.etape === "notion" && typeof x.attendue === "number").map((x) => x.attendue), k = new Set(a).size, tours = []; for (let i = 0; i + k <= a.length; i += k) tours.push(a.slice(i, i + k).join(" ")); M.push(`A3 · ${base} · ligne ${niv} plus facile : ${k} cibles ; tours ${tours.join(" | ")} ; même ordre deux tours de suite : ${tours.some((t, i) => i && t === tours[i - 1]) ? "OUI" : "jamais"}`); }
+  }
+  console.log("mesures de la recette du lot 3 bis :"); for (const m of M) console.log(`  ${m}`);
+  for (const f of fails) console.log(`  ✗ ${f}`);
+  console.log("les notions du jour les plus courtes :"); for (const [k, t] of courtes.sort((x, y) => x[0] - y[0]).slice(0, 8)) console.log(`  ${k} questions : ${t}`);
+  process.exit(fails.length ? 1 : 0);
+}
 const BASES = { neuve: "base neuve (premier lancement)", mois: "un mois (tools/sauvegarde-test.mjs reel 2 4)" };
 const synth = ["| base | exercice | cran | comportement | questions | réponses différentes | même que la précédente | plus longue suite prévisible | leçons | étoiles | réussite | cran final |", "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |"];
 const star = { neuve: [], mois: [] };

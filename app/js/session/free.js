@@ -63,7 +63,7 @@ export class FreeTraining {
   async line(niveau = null) {
     const { app } = this, screen = app.lineScreen();
     await this.pickCran();
-    const runner = await new Module1Runner({ screen, store: this.store, content: this.m1, rnd: this.rnd, seance: await this.seanceId(), offset: () => this.offset, cran: () => this.cran, choix: niveau }).load();
+    const runner = await new Module1Runner({ screen, store: this.store, content: this.m1, rnd: this.rnd, seance: await this.seanceId(), variete: this.seance?.variete, offset: () => this.offset, cran: () => this.cran, choix: niveau }).load();
     runner.libre = true; this.runner = runner;
     for (;;) {
       const { q, cfg } = runner.next(), r = await screen.ask(q, cfg);
@@ -78,7 +78,7 @@ export class FreeTraining {
   async facts(famille = null) {
     const { app } = this, screen = (app.facts ??= new FactsScreen(app, this.m2));
     await this.pickCran();
-    const runner = await new Module2Runner({ store: this.store, content: this.m2, rnd: this.rnd, seance: await this.seanceId(), cran: () => this.cran, choix: famille }).load();
+    const runner = await new Module2Runner({ store: this.store, content: this.m2, rnd: this.rnd, seance: await this.seanceId(), variete: this.seance?.variete, cran: () => this.cran, choix: famille }).load();
     runner.w.libre = true; this.runner = runner;
     screen.show(true); screen.notion = true;
     for (;;) {
@@ -92,7 +92,7 @@ export class FreeTraining {
   async calc(niveau) {
     const { app } = this; await this.pickCran(); await app.sprites.load("calcul");
     const base = median((await this.store.setting("tempsDeBase"))?.mesures ?? []) ?? this.m2.base.defautS * 1000;
-    const runner = await new Module3Runner({ store: this.store, content: this.m3, content2: this.m2, rnd: this.rnd, seance: await this.seanceId(), cran: () => this.cran, choix: niveau, baseMs: base }).load();
+    const runner = await new Module3Runner({ store: this.store, content: this.m3, content2: this.m2, rnd: this.rnd, seance: await this.seanceId(), variete: this.seance?.variete, cran: () => this.cran, choix: niveau, baseMs: base }).load();
     runner.libre = true; this.runner = runner;
     const fs = (app.facts ??= new FactsScreen(app, this.m2)); fs.show(true);
     for (;;) {

@@ -15,6 +15,7 @@
 import { CardView, forgetPictures } from "./cards.js";
 import { onTap, spriteBox } from "./screens.js";
 import { GIFT_SPOTS } from "./surprise.js";
+import { reefDecor } from "./rewards.js";
 import { dragShift, entryZone, isDrag, isTap, pageCreatures, pageSheets, pagesConf, reefPages, settleTarget } from "./reefpages.js";
 
 const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };
@@ -73,7 +74,9 @@ export class Reef {
     z.ready = (async () => {
       await Promise.all([...this.sheetsOf(zone)].map((s) => sprites.load(s)));
       if (!this.open || this.zones.get(zone) !== z) return;
-      if (zone === cartes.zones[0].id) this.gifts = z.gifts = rewards.gifts.filter((id) => GIFT_SPOTS[id] && sprites.atlas.sprites[`cadeau.${id}`] && sprites.ready(sprites.sheetOf(`cadeau.${id}`))).map((id) => { const a = ocean.spriteActor(ocean.frontEl, `cadeau.${id}`); a.draw(0); return { a, at: GIFT_SPOTS[id] }; });
+      // (lot 3 bis, A6 : les décors gagnés par les doublons, et dans le lagon les cadeaux de la surprise)
+      z.gifts = reefDecor(cartes, rewards, zone, GIFT_SPOTS).filter((d) => sprites.atlas.sprites[d.sprite] && sprites.ready(sprites.sheetOf(d.sprite))).map((d) => { const a = ocean.spriteActor(ocean.frontEl, d.sprite); a.draw(0); return { a, at: d.at }; });
+      this.gifts = [...this.zones.values()].flatMap((x) => x.gifts);
       for (const c of pageCreatures(rewards.collection(), zone, (id) => !!sprites.atlas.sprites[`creature.${id}`])) {
         if (!sprites.ready(sprites.sheetOf(`creature.${c.id}`))) continue;
         const a = ocean.spriteActor(ocean.frontEl, `creature.${c.id}`), spec = sprites.atlas.sprites[`creature.${c.id}`], ph = c.id.length * 1.7;
@@ -104,7 +107,7 @@ export class Reef {
   // les planches d'une page : ses créatures gagnées (et son décor) ; pour le lagon, aussi les cadeaux de la surprise
   sheetsOf(zone) {
     const { sprites, cartes, rewards } = this.app, out = pageSheets(sprites.atlas, cartes, zone, rewards.owned);
-    if (zone === cartes.zones[0].id) for (const id of rewards.gifts) if (GIFT_SPOTS[id] && sprites.atlas.sprites[`cadeau.${id}`]) out.add(sprites.sheetOf(`cadeau.${id}`));
+    for (const d of reefDecor(cartes, rewards, zone, GIFT_SPOTS)) if (sprites.atlas.sprites[d.sprite]) out.add(sprites.sheetOf(d.sprite));
     return out;
   }
   // chaque image : les créatures de chaque page chargée, décalées de leur page ; le décor suit la page affichée

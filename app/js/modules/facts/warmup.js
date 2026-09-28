@@ -5,7 +5,7 @@
 // autres s'ajoutent à la fin. Le cran du sélecteur de difficulté (content/module2.json, crans) décide des
 // faits nouveaux en plus et des formes à trou. Chaque réponse est enregistrée (magasins « reponses » et
 // « faits ») ; le temps de base est rangé dans les réglages (« tempsDeBase »).
-import { afterFact, catalog, expected, formFor, key, median, newFact, plan, pool, roomForNew, threshold } from "./facts.js";
+import { afterFact, catalog, expected, formFor, key, median, newFact, plan, pool, roomForNew, threshold, trouPartOf, trouTurn } from "./facts.js";
 import { initialFamilies, trouOpenFor, updateFamilies, withOpen } from "./families.js";
 
 export class Warmup {
@@ -15,7 +15,8 @@ export class Warmup {
     this.store = store; this.c0 = content; this.c = content; this.rnd = rnd; this.seance = seance; this.clock = clock; this.cran = cran; this.nouveaux = dejaNouveaux;
   }
   async load() {
-    this.facts = await this.store.all("faits");
+    // (lot 3 bis : les faits rangés avec un champ de question, `guide` surtout, par les versions d'avant en sont nettoyés)
+    this.facts = (await this.store.all("faits")).map(({ guide, appui, aideDEmblee, rappel, passe, cran, pont, ...f }) => (void guide, void appui, void aideDEmblee, void rappel, void passe, void cran, void pont, f));
     // lot 2, étape 6 : les familles ouvertes (et leurs formes à trou) ; le plan ne pose que des faits des familles ouvertes
     this.fam = (await this.store.get("niveaux", 2)) ?? initialFamilies(this.c0, this.clock());
     this.c = withOpen(this.c0, this.fam);
@@ -34,7 +35,7 @@ export class Warmup {
     // le compteur des séances sans mesure (les triviales reviennent une séance sur `uneSeanceSur`)
     if (!first && !this.libre) { this.base = { ...this.base, depuis: k ? 0 : depuis + 1 }; this.store.setSetting("tempsDeBase", this.base); }
     for (let i = 0; i < k; i++) { const a = 2 + Math.floor(this.rnd() * 7); triv.push(this.rnd() < 0.5 ? { a, b: 0 } : { a: 0, b: a }); }
-    const e = this.effet, facts = plan(this.c, this.facts, this.clock(), n, min, { nouveaux: e.nouveaux, complementMax: e.complementMax, enPlus: e.nouveauxEnPlus ?? 0, dejaNouveaux: this.nouveaux, familleSuivante: !!e.familleSuivante });
+    const e = this.effet, facts = plan(this.c, this.facts, this.clock(), n, min, { nouveaux: e.nouveaux, complementMax: e.complementMax, enPlus: e.nouveauxEnPlus ?? 0, dejaNouveaux: this.nouveaux, familleSuivante: !!e.familleSuivante, rnd: this.rnd });
     // les faits nouveaux au-delà des places réservées sans bonus (cran au-dessus) : retirés si le cran redescend
     let base = this.c.placesReservees ?? 3; this.bonus = new Set();
     for (const f of facts) if (f.nouveau && !f.anticipe && base-- <= 0 && e.nouveauxEnPlus) this.bonus.add(f.fait);
@@ -47,6 +48,13 @@ export class Warmup {
   // (second passage d'un fait nouveau qui vient d'entrer en boîte 3 : la voie rapide l'a déjà validé)
   prepare(q) {
     if (q.anticipe && q.nouveau) { const cur = this.facts.find((f) => f.fait === q.fait); if (cur && cur.boite > 1) return null; }
+    // lot 3 bis (docs/SPEC-LOT3BIS.md, A1) : amis de 10 et maisons, la part de formes à trou de leur famille au cran en cours
+    // (module2.json, notion.formes), les deux formes à trou en alternance
+    const fam = q.famille ?? catalog(this.c0).find((f) => f.fait === q.fait)?.famille, part = q.base || q.forme ? null : trouPartOf(this.c0, fam, this.cran());
+    if (part != null) {
+      const k = ((this.formeK ??= {})[fam] = (this.formeK[fam] ?? 0) + 1);
+      q.forme = trouTurn(part, k) ? ((this.trouAlt = (this.trouAlt ?? 0) + 1) % 2 ? "trouDroite" : "trouGauche") : "directe";
+    }
     if (!q.forme) q.forme = formFor(this.facts.find((f) => f.fait === q.fait) ?? q, this.effet.trouDesBoite, this.rnd, { trouFamille: !q.base && trouOpenFor(this.c, this.fam, q.a, q.b), directe: this.cran() === "facile" && this.notion });
     return q;
   }
@@ -77,7 +85,9 @@ export class Warmup {
     }
     const known = this.facts.find((f) => f.fait === q.fait), cur = known ?? q, limit = this.limitMs;
     if (!known && q.nouveau) this.nouveaux++;
-    const { nouveau, anticipe, revient, bonus, forme: _f, extra, ...clean } = cur; void nouveau; void anticipe; void revient; void bonus; void _f; void extra;
+    // (lot 3 bis : ce qui décrit la question, et non le fait, n'est pas rangé avec lui : un fait introduit par un exemple
+    // guidé gardait `guide`, et ses questions suivantes devenaient des exemples guidés, réponse montrée, jamais comptées)
+    const { nouveau, anticipe, revient, bonus, forme: _f, extra, guide, appui, aideDEmblee, rappel, passe, cran, pont, ...clean } = cur; void nouveau; void anticipe; void revient; void bonus; void _f; void extra; void guide; void appui; void aideDEmblee; void rappel; void passe; void cran; void pont;
     // une question qui revient, ou un second passage, ne fait pas monter de boîte (mais une erreur fait redescendre)
     const f = afterFact(this.c, clean, { juste, ms: r.ms, aide: r.aide || r.aideDEmblee, anticipe: q.anticipe || q.revient, seance: this.seance, forme }, limit, now);
     this.facts = [...this.facts.filter((x) => x.fait !== f.fait), f];

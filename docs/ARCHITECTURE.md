@@ -177,6 +177,20 @@ Les lettres (noms, plus tard cartes) sont écrites au feutre comme les chiffres 
 - *L'écran* (`session/reef.js`) : une surface de glisser (`.reef-swipe`) sous les boutons des créatures ; les pointeurs sont suivis sur la fenêtre ; un toucher bref sur une créature ouvre sa carte (`CardView`) au relâcher, un glisser fait tourner la page. Chaque page chargée a ses acteurs, décalés de `(page − page affichée) × 1280 + décalage` ; le fond (`#bg`) et le décor mobile (`#back` : algues, poissons, reflets, bulles) suivent la page affichée par une translation CSS ; la page voisine montre une copie du fond (`.reef-bgcopy`, faite au premier glisser, avec une ombre douce au bord de page) ; au calage, le décor mobile revient en fondu. La pieuvre ne bouge pas. Perles : sprite `recif.perle` de l'atelier (`art/src/canvas-core/sea/ui.ts`, `drawPagePearl`, planche « petits », toujours chargée), seulement à partir de deux pages. Mémoire : `build` charge la planche d'une page (celle de la voisine au premier glisser vers elle) ; `drop` retire les acteurs et libère les planches des pages qui ne sont plus affichées. Mesure (densité 2, parcours `tests/e2e/recif-pages.mjs`, zone de test avec une copie de la planche) : 87,6 Mo de planches du récif décodées avec deux zones chargées, 43,8 Mo avec une.
 - *Zone de test* : le parcours `recif-pages.mjs` remplace à la volée `cartes.json` et `atlas.json` (page.route) pour donner au récif de corail cinq créatures du lagon dans une planche « recif-test » ; rien de cela n'est dans `app/content`.
 
+**Lot 3 bis, étape 1 : la réponse qui varie (docs/SPEC-LOT3BIS.md, §0, A1, A2, A4).**
+
+- *Règles* : `js/modules/variete.js` (`Variete` : `cost` d'un candidat { cle, reponse }, `note`, `pick` ; `checkSequence` pour les tests ; `MANQUE`, `BLOQUE`), réglages `seance.json`, `variete`. Chaque déroulement tire plusieurs candidats (ligne : 24 tirages par format, `questionKey` de `numberline/generator.js` ; calcul : 24 tirages, `calcKey` ; additions : `choose` rappelé en écartant les faits déjà essayés, `tried`) et garde le premier sans coût ; au-delà de `MANQUE`, `next` renvoie null et `runNotion` arrête la notion du jour. Test : `node tests/recette-fonctionnelle/b-sequences.mjs --test`.
+- *Additions* : `module2.json`, `notion.formes` (part de formes à trou par famille et par cran ; `trouPartOf`, `trouTurn` de `facts.js` ; compteurs engagés dans `Module2Runner.ret` et `Warmup.prepare`), `notion.melangeNeuf` (`corePool`), `familles2.acquise.trouFamilles` et `jours` (`isAcquired`, option `parent`) ; faits nouveaux au hasard (`orderFresh` pour l'échauffement, `rank` en notion du jour).
+- *Calcul rapide* : `module3.json`, `trouDepart` ; forme `trouGauche` (`calcAnswer`, `answerOf`, `calcQuestion`, consignes `calcTrouDepartPlus` et `calcTrouDepartMoins`).
+- Parcours : `node tests/e2e/lot3bis.mjs` ; tests : `tests/unit/lot3bis-variete.test.mjs`.
+
+**Lot 3 bis, étape 2 : la ligne, le toucher, les décors (docs/SPEC-LOT3BIS.md, A3, A5, A6).**
+
+- *Ligne* : `module1.json`, `tirageSansRemise`, `cacherVoisins`, `cacherTrajet` ; le générateur reçoit `opts.pick(liste, tour)` du déroulement (`Module1Runner.picker`, un sac par niveau et cran ; la cible est retirée du sac quand la question est posée, `ret`) ; `lessonFor` : L3 seulement pour E3 en « lire » sur une corde qui ne commence pas à 0.
+- *Toucher* : `engine/toucher.js` (`TapGate` : double toucher, porte fermée pendant un retour ; `repriseText`), réglage `seance.json`, `toucher` ; `FactsScreen.tap`.
+- *Décors* : `cartes.json`, `decors.liste` ; magasin « recompenses », fiche « decors » ; `Rewards.win` (après le tirage de la brillante), `nextDecor`, `reefDecor` (décors et cadeaux d'une page du récif) ; `cardSpeech` (`carteDoublonDecor`) ; `openShell` montre le décor ; espace parent : `cardsSummary.decors`.
+- Tests : `tests/unit/lot3bis-partieA2.test.mjs` ; parcours `node tests/e2e/lot3bis.mjs` (parties `ligne`, `toucher`, `decors`).
+
 ## L'espace parent
 
 `js/parent/parent.js` (l'affichage) et `js/parent/data.js` (les calculs, fonctions pures testées par `tests/unit/parent.test.mjs`), réglages dans `content/parent.json`, styles dans `css/parent.css`. C'est la seule partie de l'application faite de pages HTML ordinaires, avec du texte : elle est destinée au parent.
@@ -220,6 +234,8 @@ Bruitages et musiques de fond sont fabriqués par synthèse, sans enregistrement
 ```bash
 npm test                          # tests unitaires (node --test)
 node tests/e2e/pwa.mjs             # installable et utilisable hors ligne
+node tests/e2e/lot3bis.mjs         # lot 3 bis : les écrans que le lot change (amis de 10 à trou, calcul « très dur » sur le départ…)
+node tests/recette-fonctionnelle/b-sequences.mjs --test   # lot 3 bis : la réponse qui varie sur les 116 combinaisons
 node tests/e2e/recif-pages.mjs     # lot 3, étape 5 : le récif en pages (une page aujourd'hui, rebond ; zone de test : glisser, calage, rebond, créature touchée pendant et après, perles, mémoire)
 node tests/e2e/pause.mjs           # lot 3, étape 5 : l'accueil complet pendant une pause (récif, album, reprise exacte depuis chaque étape ; choisir, leçon seule, autre exercice)
 node tests/e2e/voix.mjs            # la voix fabriquée, jouée pour de vrai (décodage, durée, « réécouter », secours)

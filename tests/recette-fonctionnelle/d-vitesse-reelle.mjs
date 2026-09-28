@@ -49,7 +49,7 @@ async function observe() {
   return { st, tch };
 }
 const tapSel = (sel) => page.tap(sel, { force: true }).catch(() => {});
-const typeIn = async (n) => { for (const d of String(n)) await tapSel(`.key[data-key="${d}"]`); await tapSel('.key[data-key="valider"]'); };
+const typeIn = async (n) => { for (const d of String(n)) { await tapSel(`.key[data-key="${d}"]`); await new Promise((r) => setTimeout(r, 170)); } await tapSel('.key[data-key="valider"]'); };
 await S.shot(page, { ecran: "accueil", etat: "avant « jouer »" });
 await tapSel(".play");
 let nf = 0, nl = 0, lastAct = Date.now(), prevEtape = null, firstQ = new Set(), answerAt = null;

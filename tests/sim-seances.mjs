@@ -48,6 +48,13 @@ console.log(`séances d'additions : ${moy(m2.map((r) => r.add.filter((x) => !x.i
   console.log(`\n## lot 3 : leçons et exercice (${PROFILS[profil].nom})`);
   console.log(`part des questions sur la famille en cours (additions) : minimum ${Math.round(Math.min(...m2.map((r) => r.partFamille ?? 1)) * 100)} %, moyenne ${Math.round(moy(m2.map((r) => r.partFamille ?? 1)) * 100)} % (seuil 80 %) ; leçon de famille jouée pour une autre famille : ${bad.length ? bad.map((r) => `${r.n} (${r.lecons.join(",")} pour f${r.famille})`).join(" ; ") : "jamais"} ; après L4 : ${apresL4.map((r) => `${Math.round((r.doubles ?? 0) * 100)} % de doubles ou presque-doubles (f${r.famille})`).join(", ") || "L4 jamais jouée"}`);
 }
+// lot 3 bis (docs/SPEC-LOT3BIS.md, A1) : aucune famille acquise en une seule séance
+{
+  const acq = [1, 2, 3, 4, 5, 6].map((id) => { const i = res.findIndex((r) => r.fAcquises.includes(id)); if (i < 0) return null; const avant = res.slice(0, i + 1).filter((r) => (r.fPratique ?? []).includes(id)).length; return { id, n: res[i].n, avant }; }).filter(Boolean);
+  const une = acq.filter((a) => a.avant < 2);
+  console.log(`\n## lot 3 bis : acquisition des familles (${PROFILS[profil].nom})`);
+  console.log(`familles acquises (séance, séances où elle a été réussie jusque-là) : ${acq.map((a) => `${a.id} (${a.n}, ${a.avant})`).join(" ; ") || "aucune"} ; acquise en une seule séance : ${une.length ? une.map((a) => a.id).join(", ") + " (ERREUR)" : "aucune"}`);
+}
 // lot 3, étape 4 : le calcul rapide
 {
   const m3 = res.filter((r) => r.module === 3), acq = (n) => res.find((r) => (r.acquis3 ?? []).includes(n))?.n ?? "jamais", last3 = [...res].reverse().find((r) => r.acquis3);
@@ -67,5 +74,7 @@ console.log(`ouverture : récif de corail ${first((r) => r.zones.includes("corai
 console.log(`cartes : 15 ${first((r) => r.nbCartes >= 15)}, 30 ${first((r) => r.nbCartes >= 30)}, 45 ${first((r) => r.nbCartes >= 45)}, 60 ${first((r) => r.nbCartes >= 60)} ; fin : ${res.at(-1).nbCartes} cartes dont ${res.at(-1).legendaires} légendaires, ${res.at(-1).brillantes} brillantes`);
 console.log(`étoiles dorées gagnées : ${res.filter((r) => r.doree).length} (en réserve à la fin : ${res.at(-1).doreesDispo}) ; étoiles arc-en-ciel en réserve à la fin : ${res.at(-1).arcDispo}`);
 console.log(`coquillages : ${res.reduce((a, r) => a + r.cartes.length, 0)} (${res.reduce((a, r) => a + (r.nouvelles ?? 0), 0)} cartes nouvelles, ${res.reduce((a, r) => a + r.cartes.filter((c) => c.includes("doublon")).length, 0)} doublons) ; séances sans coquillage : ${res.filter((r) => !r.cartes.length).length}`);
+// lot 3 bis (A6) : les décors du récif offerts par les doublons
+{ const d = (k) => res.slice(0, k).at(-1)?.decors ?? 0, full = res.find((r) => r.decors >= 15); console.log(`décors du récif (doublons) : ${d(8)} après 8 séances (un mois à 2 par semaine), ${d(20)} après 20 séances, ${res.at(-1).decors} à la fin ; collection complète (15) : ${full ? `séance ${full.n}, ${full.date}` : "jamais"}`); }
 console.log(`quota dépassé : ${res.some((r) => r.depasse) ? "OUI (erreur)" : "jamais"} ; surprises : ${res.filter((r) => r.surprise).length} sur ${res.length} séances`);
 void zoneDone;

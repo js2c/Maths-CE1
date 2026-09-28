@@ -18,7 +18,7 @@ import { expected } from "../../app/js/modules/facts/facts.js";
 const load = (f) => JSON.parse(readFileSync(new URL(`../../app/content/${f}`, import.meta.url)));
 const m1 = load("module1.json"), m2 = load("module2.json"), cfg = (n) => m1.niveaux[n - 1];
 const gen = (c, r, o = {}) => (o.format === "ecrire" ? makeWrite(c, r, o) : o.format === "sauter" ? makeJump(c, r) : o.format === "placer" ? makePlace(c, r, o) : o.format === "estimer" ? makeEstimate(c, r, o) : makeRead(c, r, o));
-const qs = async (n, cran, k = 30) => { const R = await new Module1Runner({ screen: { generate: gen }, store: await Store.open(new IDBFactory()), content: m1, rnd: rng(n * 7 + k), seance: 1, choix: n, cran: () => cran }).load(); return Array.from({ length: k }, () => R.next().q); };
+const qs = async (n, cran, k = 30) => { const R = await new Module1Runner({ screen: { generate: gen }, store: await Store.open(new IDBFactory()), content: m1, rnd: rng(n * 7 + k), seance: 1, choix: n, cran: () => cran }).load(); return Array.from({ length: k }, () => R.next()?.q).filter(Boolean); }; // (lot 3 bis : null quand le niveau n'a plus de question possible, §0)
 const written = (q) => q.labelled.map((i) => q.min + i * q.step);
 
 test("chaque niveau a ses crans (plus facile, plus dur, très dur) ; le conseillé est le niveau tel quel", () => {
@@ -30,14 +30,14 @@ test("ligne : les nombres écrits et les formats suivent le tableau de la SPEC",
   // niveau 1 : plus facile, 2 propositions et le premier saut ; plus dur 0, 5, 10 ; très dur 0 et 10
   const f1 = await qs(1, "facile"); assert.ok(f1.filter((q) => q.format === "lire").every((q) => q.choices.length === 2 && q.premierSaut));
   assert.deepEqual(await W(1, "dur"), [0, 5, 10]); assert.deepEqual(await W(1, "tresdur"), [0, 10]);
-  assert.deepEqual(await W(2, "facile"), [0, 2, 4, 5, 6, 8, 10]); assert.deepEqual(await W(2, "dur"), [0, 10]);
+  assert.deepEqual(await W(2, "facile"), [0, 2, 5, 8, 10]); // (lot 3 bis, A3 : un repère de plus, pas quatre) assert.deepEqual(await W(2, "dur"), [0, 10]);
   assert.ok((await qs(2, "tresdur")).every((q) => q.format === "placer"));
   assert.deepEqual(await W(3, "facile"), [0, 5, 10, 15, 20]); assert.deepEqual(await W(3, "dur"), [0, 20]);
   // niveau 4 : le milieu aussi écrit ; plus dur : cibles près du milieu ; très dur : 20 graduations
   for (const q of await qs(4, "facile")) assert.deepEqual(written(q), [q.min, q.min + 5, q.max]);
   for (const q of await qs(4, "dur")) assert.ok(q.target >= 10 / 3 && q.target <= 20 / 3, `cible ${q.target}`);
   for (const q of await qs(4, "tresdur")) { assert.equal(q.n, 21); assert.deepEqual(written(q), [q.min, q.max]); }
-  assert.deepEqual(await W(5, "facile"), [0, 20, 40, 50, 60, 80, 100]); assert.deepEqual(await W(5, "dur"), [0, 100]);
+  assert.deepEqual(await W(5, "facile"), [0, 20, 50, 80, 100]); assert.deepEqual(await W(5, "dur"), [0, 100]);
   for (const q of await qs(6, "facile")) assert.ok(written(q).every((v) => v % 5 === 0) && written(q).length === 5);
   for (const q of await qs(6, "tresdur")) { assert.equal(q.max - q.min, 30); assert.deepEqual(written(q), [q.min, q.max]); }
   // niveau 7 : trois graduations écrites ; cible 3 à 5 sauts après ; deux graduations non voisines
@@ -78,15 +78,17 @@ test("niveau choisi, cran « plus facile » : consolide sans faire progresser (n
   assert.equal(U.st.niveau, 1, "pas de validation au-dessus du conseillé non plus");
 });
 
-test("additions, famille choisie : plus facile formes directes et aide d'emblée ; plus dur une question sur deux à trou ; très dur toutes", async () => {
+test("additions, famille choisie (lot 3 bis, A1 : maisons de 5 à 7) : moitié à trou et aide d'emblée, moitié, 2 sur 3, toutes ; les deux formes à trou alternent", async () => {
   const run = async (cran) => {
     const store = await Store.open(new IDBFactory()); await store.put("niveaux", { ...initialFamilies(m2), ouvertes: [1, 2, 3, 4] });
     const m = await new Module2Runner({ store, content: m2, rnd: rng(9), seance: 1, cran: () => cran, choix: 4 }).load(), out = [];
-    for (let i = 0; i < 20; i++) { const { q, cfg: c } = m.next(); out.push(q); await m.record({ q, value: expected(q), ok: true, ms: 2500, listens: 1 }, c); }
-    return out;
+    for (let i = 0; i < 20; i++) { const x = m.next(); if (!x) break; out.push(x.q); await m.record({ q: x.q, value: expected(x.q), ok: true, ms: 2500, listens: 1 }, x.cfg); }
+    return out.filter((q) => !q.revient && q.a + q.b >= 5 && q.a + q.b <= 7);
   };
-  const f = await run("facile"); assert.ok(f.every((q) => q.forme === "directe" && q.aideDEmblee));
-  const c = await run("conseille"); assert.ok(c.every((q) => q.forme === "directe"), "formes à trou pas encore ouvertes pour la famille");
-  const d = (await run("dur")).filter((q) => !q.revient), trouD = d.filter((q) => q.forme !== "directe").length; assert.ok(Math.abs(trouD - d.length / 2) <= 1, `${trouD} sur ${d.length}`);
-  assert.ok((await run("tresdur")).every((q) => q.forme !== "directe"));
+  const part = (qs) => qs.filter((q) => q.forme !== "directe").length / qs.length;
+  const f = await run("facile"); assert.ok(f.every((q) => q.aideDEmblee)); assert.ok(Math.abs(part(f) - 0.5) < 0.1, `plus facile : ${part(f)}`);
+  assert.ok(Math.abs(part(await run("conseille")) - 0.5) < 0.1);
+  const d = await run("dur"); assert.ok(Math.abs(part(d) - 2 / 3) < 0.1, `plus dur : ${part(d)}`);
+  const t = await run("tresdur"); assert.equal(part(t), 1);
+  const trous = t.map((q) => q.forme); assert.ok(trous.every((x, i) => !i || x !== trous[i - 1]), `alternance : ${trous.join(" ")}`);
 });

@@ -12,7 +12,7 @@ import * as R from "../../art/runtime.js";
 import { fill } from "../numberline/screen.js";
 import { wait } from "../../engine/clock.js";
 import { skipKey } from "../../engine/ui.js";
-import { classifyCalc } from "./calc.js";
+import { answerOf, classifyCalc } from "./calc.js";
 import { WallFish } from "./wallfish.js";
 
 const SKIPPED = Symbol("passé");
@@ -36,6 +36,8 @@ export class CalcScreen {
     const T = this.app.text.data;
     if (q.pont) return fill(q.op === "-" ? T.calcPont.moins : T.calcPont.plus, { k: q.b }).replace(/\.$/, " ?");
     if (q.forme === "trouDroite") return fill(q.op === "-" ? T.calcTrouMoins : T.calcTrouPlus, { a: q.a, n: q.n });
+    // (lot 3 bis : le trou sur le nombre de départ, « Combien plus 10 ? Ça fait 57. »)
+    if (q.forme === "trouGauche") return fill(q.op === "-" ? T.calcTrouDepartMoins : T.calcTrouDepartPlus, { b: q.b, n: q.n });
     return fill(q.op === "-" ? T.calcMoins : T.calcPlus, { a: q.a, b: q.b });
   }
   // le coquillage (et le cran « plus facile », d'emblée) : le chemin en petit, le premier caillou écrit, les autres à trouver
@@ -45,7 +47,7 @@ export class CalcScreen {
     const fs = this.fs; fs.show(true); this.board.clear();
     if (q.remplir) return this.guided(q);
     if (q.aideDEmblee) this.help(q);
-    const r = await fs.ask(q), code = r.nsp ? "NSP" : r.value === (q.forme === "trouDroite" ? q.b : q.n) ? null : classifyCalc({ ...q, forme: q.forme === "trouDroite" ? "trou" : "directe" }, r.value);
+    const r = await fs.ask(q), code = r.nsp ? "NSP" : r.value === answerOf(q) ? null : classifyCalc(q, r.value);
     return { ...r, q, ok: code === null, code: code ?? (r.lent ? "C2" : null), aide: r.aide || !!q.aideDEmblee };
   }
   // un calcul guidé : le chemin en petit, chaque caillou à remplir au pavé (« Plus 2 ? »), le suivant quand il est trouvé
@@ -70,7 +72,7 @@ export class CalcScreen {
     const fs = this.fs, { voice, text, ocean, sound } = this.app, T = text.data, k = this.app.vitesse ?? 1;
     ocean.octo.play(ok ? "rejouir" : "encourager");
     if (ok) sound?.play("bonne"); else if (!r.nsp) sound?.play("erreur");
-    const answer = () => { fs.typed = String(q.forme === "trouDroite" ? q.b : q.n); fs.ring = true; fs.slate.repaint(); };
+    const answer = () => { fs.typed = String(answerOf(q)); fs.ring = true; fs.slate.repaint(); };
     if (q.pont) { // un caillou d'un calcul guidé : bravo, ou la bonne valeur montrée
       if (ok) { await voice.say(text.pick("bravo")); return; }
       answer(); await voice.say(fill(T.bonneReponse, { n: q.n })); await wait(500 / k); return;
@@ -83,13 +85,13 @@ export class CalcScreen {
     try {
       if (ok) { r.lent = true; await g(voice.say(T.calcLent)); }
       else {
-        const code = r.nsp ? "NSP" : classifyCalc({ ...q, forme: q.forme === "trouDroite" ? "trou" : "directe" }, r.value), E = T.erreurCalc;
+        const code = r.nsp ? "NSP" : classifyCalc(q, r.value), E = T.erreurCalc;
         const first = r.nsp ? T.faitNSP : code === "C1" ? (q.op === "-" ? E.C1moins : E.C1) : code === "C4" ? fill(E.C4, { u: q.a % 10, b: q.b }) : code === "C5" ? fill(E.C5, { b: q.b, u: q.a % 10 }) : code === "C3" ? E.C3 : E.autre;
         if (!r.nsp) fs.slate.classList.add("shake");
         await g(voice.say(first));
       }
       await this.procedure(q, g);
-      if (!ok) { answer(); await g(voice.say(fill(T.bonneReponse, { n: q.forme === "trouDroite" ? q.b : q.n }))); }
+      if (!ok) { answer(); await g(voice.say(fill(T.bonneReponse, { n: answerOf(q) }))); }
       await g(wait(600 / k));
     } catch (e) {
       if (e !== SKIPPED) throw e;

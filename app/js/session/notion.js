@@ -10,8 +10,12 @@
 export async function runNotion({ session, step, end, runner, screen, lesson = async () => ({ vue: false }), rnd = Math.random }) {
   const [a, b] = step.questions, n = a + Math.floor(rnd() * (b - a + 1)), E = session.c.etoiles;
   // une question ; `after` : la leçon qui vient d'être jouée (le premier exercice guidé qui la suit)
+  // (lot 3 bis, docs/SPEC-LOT3BIS.md, §0 : `next` renvoie null quand plus aucune question ne peut être posée sans reposer une
+  // question déjà posée assez de fois ; la notion du jour s'arrête là)
   const one = async (guide = false, after = null) => {
-    const { q, cfg } = runner.next({ guide, format: after ? "lire" : null }), r = await screen.ask(q, cfg, { guide, lesson: after }), { etoiles, events } = await runner.record(r, cfg);
+    const nx = runner.next({ guide, format: after ? "lire" : null });
+    if (!nx) { fini = true; return null; }
+    const { q, cfg } = nx, r = await screen.ask(q, cfg, { guide, lesson: after }), { etoiles, events } = await runner.record(r, cfg);
     await session.answered(r.ok);
     await session.stars(etoiles, q.revient && r.ok ? "erreur corrigée" : "bonne réponse");
     for (const e of events) if (e.type === "montee") await session.levelUp();
@@ -32,14 +36,15 @@ export async function runNotion({ session, step, end, runner, screen, lesson = a
     return seen || !!r?.passee;
   };
   // la leçon du niveau la première fois, sinon deux exemples guidés
+  let fini = false;
   const entry = runner.entryLesson(), guides = step.guides ?? 0;
   session.expect?.((entry ? 1 : guides) + n);
   const seen = entry ? await watch(entry, "niveau") : false;
   if (!seen) session.expect?.(session.progress.faites + guides + n);
-  for (let i = 0; i < (seen ? 0 : guides) && !session.over(end); i++) await one(true);
+  for (let i = 0; i < (seen ? 0 : guides) && !session.over(end) && !fini; i++) await one(true);
   let last = null;
-  for (let k = 0; k < n && !session.over(end); k++) last = await one();
+  for (let k = 0; k < n && !session.over(end) && !fini; k++) last = await one() ?? last;
   // finir sur une réussite
-  for (let k = 0; last && !last.ok && k < session.c.finirSurReussite.essaisMax; k++) { runner.simpler = true; last = await one(); }
+  for (let k = 0; last && !last.ok && !fini && k < session.c.finirSurReussite.essaisMax; k++) { runner.simpler = true; last = await one() ?? last; }
   return runner.finish();
 }

@@ -94,7 +94,10 @@ test("crans : plus facile = le chemin d'emblée, sans promotion ; plus dur = san
   const store = await open(); await store.put("niveaux", { ...initialCalcState(), vus: { 3: 10 }, acquis: [1, 2] });
   const f = await play({ store, cran: "facile", choix: 3 }, 14); assert.ok(f.qs.every((q) => q.aideDEmblee && q.cheminMode === "emblee")); assert.ok(!f.R.st.acquis.includes(3), "plus facile : pas de montée");
   const d = await play({ cran: "dur", choix: 3, store: await (async () => { const s = await open(); await s.put("niveaux", { ...initialCalcState(), vus: { 3: 10 } }); return s; })() }, 6); assert.ok(d.qs.every((q) => q.cheminMode === "non" && q.forme === "directe"));
-  const td = await play({ cran: "tresdur", choix: 3, store: await (async () => { const s = await open(); await s.put("niveaux", { ...initialCalcState(), vus: { 3: 10 } }); return s; })() }, 6); assert.ok(td.qs.every((q) => q.cheminMode === "non" && q.forme === "trouDroite"));
+  const td = await play({ cran: "tresdur", choix: 3, store: await (async () => { const s = await open(); await s.put("niveaux", { ...initialCalcState(), vus: { 3: 10 } }); return s; })() }, 6); assert.ok(td.qs.every((q) => q.cheminMode === "non"));
+  // lot 3 bis (A2) : au niveau 3 (pas fixe), la forme directe et le trou sur le nombre de départ, à parts égales ; au niveau 4, le trou sur le second nombre
+  assert.deepEqual(td.qs.filter((q) => !q.revient).map((q) => q.forme), ["directe", "trouGauche", "directe", "trouGauche", "directe", "trouGauche"].slice(0, td.qs.filter((q) => !q.revient).length));
+  const t4 = await play({ cran: "tresdur", choix: 4, store: await (async () => { const s = await open(); await s.put("niveaux", { ...initialCalcState(), vus: { 4: 10 } }); return s; })() }, 4); assert.ok(t4.qs.every((q) => q.forme === "trouDroite"));
   const t9 = await play({ cran: "tresdur", choix: 9, store: await (async () => { const s = await open(); await s.put("niveaux", { ...initialCalcState(), vus: { 9: 10 } }); return s; })() }, 4); assert.ok(t9.qs.every((q) => q.forme === "directe"), "niveau 9 : la forme à trou n'a pas de sens");
 });
 

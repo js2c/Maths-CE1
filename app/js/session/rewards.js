@@ -112,6 +112,15 @@ export const shinyDraw = (rnd, p) => rnd() < p;
 export const shinyChance = (content, owned, card) => (owned[card.id] ? content.brillanteDoublon : content.brillanteNouvelle) ?? 0;
 
 // ---------------------------------------------------------------- le trésor
+// lot 3 bis (docs/SPEC-LOT3BIS.md, A6) : les décors du récif gagnés par les doublons (cartes.json, decors.liste, dans
+// l'ordre) ; `nextDecor` : le suivant, ou null quand la collection est complète ; `reefDecor` : ce qui est posé sur la page
+// d'une zone du récif, les décors des doublons et (dans la première zone) les cadeaux de la surprise : [{ id, sprite, at }]
+export const nextDecor = (c, ids) => (c?.decors?.liste ?? []).find((d) => !ids.includes(d.id)) ?? null;
+export function reefDecor(c, { decors = [], gifts = [] }, zone, giftSpots = {}) {
+  const out = (c?.decors?.liste ?? []).filter((d) => decors.includes(d.id) && d.zone === zone).map((d) => ({ id: d.id, sprite: d.sprite, at: d.place }));
+  if (zone === c?.zones?.[0]?.id) for (const id of gifts) if (giftSpots[id]) out.push({ id, sprite: `cadeau.${id}`, at: giftSpots[id] });
+  return out;
+}
 export class Rewards {
   // content : cartes.json ; calendrier : calendrier.json (quota des cartes nouvelles ; sans lui, pas de quota)
   constructor(store, content = null, calendrier = null) {
@@ -129,6 +138,7 @@ export class Rewards {
     this.zones = await this.store.get("recompenses", "zones");
     if (!this.zones) this.zones = { id: "zones", ouvertes: (this.c?.zones ?? []).filter((z) => z.ouverte).map((z) => z.id), dates: {} };
     this.gifts = (await this.store.get("recompenses", "cadeaux"))?.ids ?? [];
+    this.decors = (await this.store.get("recompenses", "decors"))?.ids ?? [];
     return this;
   }
   get total() { return this.st.total; }
@@ -148,6 +158,8 @@ export class Rewards {
   zoneOpen(id) { return this.zones.ouvertes.includes(id); }
   // un cadeau de la surprise rejoint le récif
   async giveGift(id) { if (!this.gifts.includes(id)) { this.gifts = [...this.gifts, id]; await this.store.put("recompenses", { id: "cadeaux", ids: this.gifts }); } }
+  // lot 3 bis (A6) : le décor que le prochain doublon apporterait (le premier de la liste pas encore gagné), ou null
+  nextDecor() { return nextDecor(this.c, this.decors); }
   // ---------------------------------------------------------------- entraînement libre
   // un niveau franchi pendant l'entraînement libre : l'étoile arc-en-ciel attend la séance suivante
   async arcFromFree() { await this.special("arcLibre"); }
@@ -173,7 +185,11 @@ export class Rewards {
     const r = addCard(this.owned, card, now, shinyDraw(rnd, shinyChance(this.c, this.owned, card)));
     this.owned = r.owned;
     await this.store.put("recompenses", { id: "cartes", cartes: this.owned });
-    return { carte: card, nouvelle: r.nouvelle, devientBrillante: r.devientBrillante, parTirage: r.parTirage, brillante: this.owned[card.id].brillante, n: this.owned[card.id].n };
+    // lot 3 bis (A6) : un doublon apporte le décor suivant de la liste pour le récif, tant qu'il en reste (le tirage de la
+    // brillante, fait avant, ne change pas)
+    const decor = r.nouvelle ? null : this.nextDecor();
+    if (decor) { this.decors = [...this.decors, decor.id]; await this.store.put("recompenses", { id: "decors", ids: this.decors }); }
+    return { carte: card, nouvelle: r.nouvelle, devientBrillante: r.devientBrillante, parTirage: r.parTirage, brillante: this.owned[card.id].brillante, n: this.owned[card.id].n, ...(decor ? { decor } : {}) };
   }
   // ouvre un coquillage : dépense son prix, tire une carte (nouvelle sous le quota, sinon un doublon) et la
   // range ; renvoie { carte, nouvelle, devientBrillante, parTirage, brillante, n }

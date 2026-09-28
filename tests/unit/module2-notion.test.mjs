@@ -54,8 +54,15 @@ test("ouverture : 80 % des faits introduits en boîte 2 ou plus ; une famille à
 
 test("famille acquise : 80 % des faits de sa RÈGLE en boîte 3 (les amis de 10 comptent 9 + 1, 8 + 2, 5 + 5) ; formes à trou à 50 %, définitives", () => {
   const amis = ruleFacts(c, 3).map((f) => f.fait); // 9 faits
-  const known = (n, boite = 3) => amis.slice(0, n).map((k) => fact(k, boite));
+  // (lot 3 bis, A1 : chaque fait compté réussi au moins une fois à trou, ces réussites sur deux jours au moins)
+  const trou = (k, boite, jours = [2, 1]) => fact(k, boite, { historique: jours.map((j) => ({ t: NOW - j * DAY, juste: true, ms: 2000, forme: "trouDroite" })) });
+  const known = (n, boite = 3) => amis.slice(0, n).map((k) => trou(k, boite));
   assert.equal(isAcquired(c, known(7), 3), false); assert.equal(isAcquired(c, known(8), 3), true); // 8/9 >= 80 %
+  assert.equal(isAcquired(c, amis.map((k) => fact(k, 3)), 3), false, "réussis seulement à la forme directe");
+  assert.equal(isAcquired(c, amis.map((k) => trou(k, 3, [1])), 3), false, "réussis à trou, mais le même jour");
+  assert.equal(isAcquired(c, amis.map((k, i) => trou(k, 3, [i % 2 + 1])), 3), true, "réussites réparties sur deux jours");
+  assert.equal(isAcquired(c, ruleFacts(c, 2).map((f) => fact(f.fait, 3)), 2), false, "doubles : la boîte 3, mais un seul jour");
+  assert.equal(isAcquired(c, ruleFacts(c, 2).map((f, i) => fact(f.fait, 3, { historique: [{ t: NOW - (i % 2 + 1) * DAY, juste: true, ms: 2000 }] })), 2), true, "doubles : deux jours, pas besoin de trou");
   const st0 = { ...initialFamilies(c, NOW), ouvertes: [1, 2, 3] };
   let u = updateFamilies(c, st0, known(5), NOW, { open: false }); // 5/9 en boîte 3 : trou ouvert, pas acquise
   assert.deepEqual(u.st.trou, [3]); assert.deepEqual(u.st.acquises, []);
@@ -96,7 +103,7 @@ test("séance : le module imposé est noté et le réglage consommé", async () 
 async function notion(store, { n = 20, answer = () => true, cran = "conseille", guides = 0 } = {}) {
   const R = rng(5), m = await new Module2Runner({ store, content: c, rnd: R, seance: 1, clock: () => NOW, cran: () => cran }).load(), qs = [], events = [];
   for (let i = 0; i < guides + n; i++) {
-    const { q, cfg } = m.next({ guide: i < guides }), ok = answer(q);
+    const x = m.next({ guide: i < guides }); if (!x) break; const { q, cfg } = x, ok = answer(q);
     qs.push(q);
     const r = await m.record({ q, value: ok ? expected(q) : 99, ok, ms: 2500, listens: 1 }, cfg); events.push(...r.events);
   }
@@ -132,7 +139,8 @@ test("notion du jour : une erreur revient 3 questions plus loin ; 3 erreurs sur 
 
 test("notion du jour : la famille acquise pendant la séance est un niveau franchi (étoile arc-en-ciel)", async () => {
   const store = await open();
-  for (const f of ruleFacts(c, 3)) await store.put("faits", fact(f.fait, f.a + f.b === 10 && f.a <= 2 || f.a === 5 ? 3 : 2, { montee: 0 }));
+  // (lot 3 bis : des réussites à trou la veille ; celles de la séance font le second jour)
+  for (const f of ruleFacts(c, 3)) await store.put("faits", fact(f.fait, f.a + f.b === 10 && f.a <= 2 || f.a === 5 ? 3 : 2, { montee: 0, historique: [{ t: NOW - DAY, juste: true, ms: 2000, forme: "trouGauche" }] }));
   await store.put("niveaux", { ...initialFamilies(c, NOW), ouvertes: [1, 2, 3], acquises: [1, 2] });
   const { events, fin } = await notion(store, { n: 20 });
   assert.equal(events.filter((e) => e.type === "montee").length, 1);
@@ -140,12 +148,12 @@ test("notion du jour : la famille acquise pendant la séance est un niveau franc
   assert.ok(fin.events.some((e) => e.type === "acquise" && e.famille === 3));
 });
 
-test("sélecteur en notion du jour : facile = formes directes de la famille, aide d'emblée ; dur = formes à trou et famille suivante ; très dur = tout mêlé", async () => {
+test("sélecteur en notion du jour : facile = la famille seule, aide d'emblée (amis de 10 : toutes à trou, lot 3 bis) ; dur = formes à trou et famille suivante ; très dur = tout mêlé", async () => {
   const mk = async () => { const s = await open(); for (const k of ["1+1", "2+1", "1+2", "3+1", "1+3", "2+2", "9+1", "8+2", "5+5"]) await s.put("faits", fact(k, 3)); await s.put("niveaux", { ...initialFamilies(c, NOW), ouvertes: [1, 2, 3], acquises: [1, 2] }); return s; };
   const f = await notion(await mk(), { n: 12, cran: "facile" });
-  assert.ok(f.qs.every((q) => q.forme === "directe" && q.aideDEmblee));
   const rule3 = new Set(ruleFacts(c, 3).map((x) => x.fait));
-  assert.ok(f.qs.every((q) => rule3.has(q.fait) || q.revient), "facile : la famille en cours seulement");
+  assert.ok(f.qs.every((q) => q.aideDEmblee && (q.forme !== "directe" || !rule3.has(q.fait))));
+    assert.ok(f.qs.every((q) => rule3.has(q.fait) || q.revient), "facile : la famille en cours seulement");
   const d = await notion(await mk(), { n: 18, cran: "dur" });
   assert.ok(d.qs.filter((q) => q.forme !== "directe").length >= 6, "dur : des formes à trou");
   const rule4 = new Set(ruleFacts(c, 4).map((x) => x.fait));

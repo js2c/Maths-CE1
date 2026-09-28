@@ -88,12 +88,14 @@ function domaines(C) {
     // lot 3, étape 4 : le calcul rapide (modules/calc/calc.js : calcsOf, les calculs de chaque niveau de module3.json ; chemin :
     // les pas des ponts ; la forme à trou aux niveaux où elle a un sens ; C4 et C5 : les unités et le nombre ajouté ou retiré)
     ...(() => {
-      const M3 = C.module3?.niveaux ?? [], all = M3.flatMap((c) => calcsOf(c).map((x) => ({ ...x, type: c.type, trou: c.trou })));
+      const M3 = C.module3?.niveaux ?? [], all = M3.flatMap((c) => calcsOf(c).map((x) => ({ ...x, type: c.type, trou: c.trou, trouDepart: c.trouDepart })));
       const steps = all.flatMap((x) => chemin(x)), k = (op) => [...new Set([...steps.filter((s) => s.op === op).map((s) => s.k), ...all.filter((x) => x.op === op && x.b < 10).map((x) => x.b)])].sort((a, b) => a - b).map((v) => ({ k: v }));
       const u = (n) => n % 10;
       return {
         calcPlus: all.filter((x) => x.op === "+").map(({ a, b }) => ({ a, b })), calcMoins: all.filter((x) => x.op === "-").map(({ a, b }) => ({ a, b })),
         calcTrouPlus: all.filter((x) => x.op === "+" && x.trou).map(({ a, n }) => ({ a, n })), calcTrouMoins: all.filter((x) => x.op === "-" && x.trou).map(({ a, n }) => ({ a, n })),
+        // (lot 3 bis : le trou sur le nombre de départ aux niveaux à pas fixe, « Combien plus 10 ? Ça fait 57. »)
+        calcTrouDepartPlus: all.filter((x) => x.op === "+" && x.trouDepart).map(({ b, n }) => ({ b, n })), calcTrouDepartMoins: all.filter((x) => x.op === "-" && x.trouDepart).map(({ b, n }) => ({ b, n })),
         "calcPont.plus": k("+"), "calcPont.moins": k("-"),
         "erreurCalc.C4": all.filter((x) => x.op === "+" && x.b < 10 && u(x.a) + x.b >= 10).map((x) => ({ u: u(x.a), b: x.b })),
         "erreurCalc.C5": all.filter((x) => x.op === "-" && x.b < 10 && u(x.a) < x.b).map((x) => ({ b: x.b, u: u(x.a) })),
@@ -103,6 +105,8 @@ function domaines(C) {
     defiScore: range(2, DEFI_MAX).map((n) => ({ n })),
     defiPasRecord: range(1, DEFI_MAX).map((n) => ({ n })),
     carteNouvelle: cartes, carteDoublon: cartes, recifCarte: cartes,
+    // lot 3 bis (A6) : le doublon et son décor pour le récif (cartes.json, decors.liste : chaque décor avec chaque carte)
+    carteDoublonDecor: cartes.flatMap((c) => (C.cartes.decors?.liste ?? []).map((x) => ({ ...c, decor: x.nomLu }))),
   };
 }
 

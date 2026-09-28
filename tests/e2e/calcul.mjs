@@ -25,7 +25,7 @@ const open = async (q = "", prep = null) => {
 };
 const shot = (page, n) => page.screenshot({ path: join(OUT, `${n}.png`) });
 const waitQ = (page) => page.waitForFunction(() => { const f = window.__app.facts; return f?.q && f.resolve && !f.locked; }, null, { timeout: 60000 });
-const type = async (page, n) => { for (const d of String(n)) { await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.waitForTimeout(60); } await page.tap('.key[data-key="valider"]', { force: true }); };
+const type = async (page, n) => { for (const d of String(n)) { await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.waitForTimeout(170); } await page.tap('.key[data-key="valider"]', { force: true }); };
 const cur = (page) => page.evaluate(() => { const q = window.__app.facts.q; return { a: q.a, op: q.op, b: q.b, n: q.n, forme: q.forme, pont: !!q.pont, niveau: q.niveau, cheminMode: q.cheminMode, aideDEmblee: !!q.aideDEmblee }; });
 
 // 1. une base neuve, le calcul rapide niveau 2 choisi : la leçon L7 (le mur), puis les calculs guidés, une erreur (C1) corrigée sur le mur

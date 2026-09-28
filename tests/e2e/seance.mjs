@@ -31,7 +31,7 @@ await page.tap(".check", { force: true });
 
 // l'échauffement : répond au pavé (juste, sauf le premier fait) ; l'aide du coquillage au premier fait
 let f = 0, sawHelp = false, facts = 0;
-const typeIn = async (n) => { for (const d of String(n)) await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.tap('.key[data-key="valider"]', { force: true }); };
+const typeIn = async (n) => { for (const d of String(n)) { await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.waitForTimeout(170); } await page.tap('.key[data-key="valider"]', { force: true }); };
 for (const until = Date.now() + 120000; Date.now() < until;) {
   const st = await page.evaluate(() => { const s = window.__app.facts; return { done: !!window.__app.runner || !!document.querySelector(".tally"), q: s?.q && !s.locked && s.resolve ? { a: s.q.a, b: s.q.b, base: !!s.q.base, fam: s.q.famille } : null }; });
   if (st.done) break;

@@ -262,5 +262,7 @@ export function cardsSummary(R, cartes, calendrier, seances, now = Date.now()) {
     quota, gagnables: Math.max(0, quota - n), base: R.quota ?? null, zones, suivante: next ? { nom: next.nom, attend } : null,
     dorees: et.dorees ?? 0, doreesDepensees: et.doreesDepensees ?? 0, semaines, prochaineDoree: per - (semaines % per),
     arc: et.arcEnCiel ?? 0, arcDepensees: et.arcDepensees ?? 0, arcLibre: et.arcLibre ?? 0, cadeaux: R.cadeaux?.ids?.length ?? 0,
+    // lot 3 bis (A6) : les décors du récif offerts par les doublons
+    decors: R.decors?.ids?.length ?? 0, decorsTotal: cartes.decors?.liste?.length ?? 0,
   };
 }

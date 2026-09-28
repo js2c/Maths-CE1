@@ -25,7 +25,8 @@
 //    niveau, avec une cible facile) ; au-dessus du conseillé, le réussir le valide et le conseillé passe au niveau
 //    suivant ; en dessous ou au-dessus, ces questions ne comptent jamais pour faire redescendre le conseillé.
 import { afterAnswer, afterSession, initialLevelState } from "../progress.js";
-import { applyCran, toleranceFor } from "./generator.js";
+import { applyCran, questionKey, toleranceFor } from "./generator.js";
+import { MANQUE, Variete } from "../variete.js";
 
 // lot 2, étape 8 : L10 (les centaines) à l'entrée du niveau 9, et quand E6 (dizaines et centaines confondues) revient
 export const LESSON_OF_ERROR = { E1: "L1", E2: "L2", E3: "L3", E6: "L10" };
@@ -35,8 +36,9 @@ export class Module1Runner {
   // screen : l'écran (generate) ; store : la base ; content : module1.json ; rnd : hasard
   // offset : () => l'écart du cran choisi au conseillé (session.offset)
   // choix : le niveau choisi par l'enfant (écran « choisir », lot 3), sinon null (« jouer » : le conseillé décalé du cran)
-  constructor({ screen, store, content, rnd, seance = null, offset = () => 0, cran = () => null, choix = null }) {
-    this.screen = screen; this.store = store; this.content = content; this.rnd = rnd; this.seance = seance; this.offset = offset; this.cran = cran; this.choix = choix;
+  // variete : les règles de la réponse qui varie (lot 3 bis, content/seance.json, `variete`)
+  constructor({ screen, store, content, rnd, seance = null, offset = () => 0, cran = () => null, choix = null, variete = {} }) {
+    this.var = new Variete(variete); this.screen = screen; this.store = store; this.content = content; this.rnd = rnd; this.seance = seance; this.offset = offset; this.cran = cran; this.choix = choix;
     this.levels = content.niveaux; this.rules = content.reglesAdaptation;
     this.replays = []; this.recent = []; this.errors = {}; this.count = 0; this.ok = 0; this.k = 0; this.simpler = false;
     this.played = new Set(); this.lower = false; this.slowNext = false; this.up = null; this.rateN = 0; this.rateOk = 0;
@@ -55,8 +57,9 @@ export class Module1Runner {
   // `format` : le format voulu s'il existe au niveau (après une leçon : « lire », celui de la leçon)
   next({ guide = false, format: want = null } = {}) {
     if (!guide) this.replays.forEach((r) => r.in--);
-    const due = guide ? -1 : this.replays.findIndex((r) => r.in <= 0);
-    if (due >= 0) { const r = this.replays.splice(due, 1)[0]; return { q: { ...r.q, revient: true }, cfg: r.cfg }; }
+    // (lot 3 bis : un retour qui ferait une troisième fois de suite la même réponse, ou une suite prévisible, attend la suivante)
+    const due = guide || this.simpler ? -1 : this.replays.findIndex((r) => r.in <= 0 && this.var.cost(this.cand(r.q), { retour: true }) < 50);
+    if (due >= 0) { const r = this.replays.splice(due, 1)[0]; return this.ret({ q: { ...r.q, revient: true }, cfg: r.cfg }); }
     // difficulté persistante après la leçon déjà vue dans la séance : le niveau inférieur jusqu'à la fin
     // (niveau choisi : jamais d'autre niveau que le sien ; la question « plus simple » y prend une cible facile)
     const lv = this.eff() - (this.lower && this.choix == null ? 1 : 0);
@@ -67,11 +70,39 @@ export class Module1Runner {
     opts.k = this.k;
     const fmts = cfg.formats, format = want && fmts.includes(want) ? want : fmts[this.k++ % fmts.length];
     if (format === "estimer") opts.tolerance = toleranceFor(cfg, this.st.justesNiveau);
-    const q = this.screen.generate(cfg, this.rnd, { ...opts, format });
-    if (cfg.cran) q.cran = cfg.cran; // (lot 3 : le cran à l'intérieur du niveau choisi, tous formats)
-    this.recent.push(q.answer);
-    if (guide) q.guide = true; else if (this.slowNext) q.lent = true;
-    return { q, cfg };
+    // lot 3 bis (docs/SPEC-LOT3BIS.md, §0) : plusieurs tirages, le premier qui respecte les règles de la réponse qui varie ;
+    // si le format du tour n'a plus de question possible, les autres formats du niveau ; plus rien : la notion s'arrête
+    const tries = [], T = this.tries ?? 24;
+    for (const f of [format, ...fmts.filter((x) => x !== format)]) {
+      // (lot 3 bis, A3 : les cibles de « lire », « placer » et « estimer » tirées sans remise, module1.json, tirageSansRemise)
+      const bag = this.content.tirageSansRemise && ["lire", "placer", "estimer"].includes(f) ? `${cfg.niveau}:${cfg.cran ?? ""}:${f === "estimer" ? "e" : "l"}` : null;
+      for (let i = 0; i < T; i++) { const x = this.screen.generate(cfg, this.rnd, { ...opts, ...(i >= T / 2 ? { eviter: undefined } : {}), format: f, ...(bag ? { pick: this.picker(bag) } : {}), ...(f === "estimer" ? { tolerance: toleranceFor(cfg, this.st.justesNiveau) } : {}) }); if (bag) x.bag = bag; tries.push(x); }
+      const best = this.var.pick(tries.map((x) => this.cand(x)), (c) => ({ attente: this.waiting(c.cle) }));
+      if (best.cout < MANQUE) { const q = tries[best.i]; if (cfg.cran) q.cran = cfg.cran; this.recent.push(q.answer); if (guide) q.guide = true; else if (this.slowNext) q.lent = true; return this.ret({ q, cfg }); }
+    }
+    return null;
+  }
+  // lot 3 bis : la question vue par les règles de la réponse qui varie ; ses retours prévus ; une question posée
+  cand(q) { return { cle: questionKey(q), reponse: q.answer }; }
+  waiting(cle) { return this.replays.filter((r) => questionKey(r.q) === cle).length; }
+  ret(x) {
+    this.var.note(this.cand(x.q));
+    // (tirage sans remise : la cible est retirée du sac ; un fait qui revient ne compte pas)
+    const q = x.q, b = q.bag && !q.revient ? this.bags?.[q.bag] : null;
+    if (b) { const t = q.format === "estimer" ? q.answer : q.target; b.used.add(t); b.last = t; b.fresh = false; }
+    return x;
+  }
+  // lot 3 bis (docs/SPEC-LOT3BIS.md, A3) : le sac d'une série de cibles ; `pick(liste, tour)` : une cible pas encore tirée de
+  // la liste, au hasard ; toutes tirées et `tour` (la liste est la série entière) : un nouveau tour, dont la première n'est
+  // pas la dernière du tour d'avant ; sinon null (le générateur essaie une autre liste)
+  picker(key) {
+    const b = ((this.bags ??= {})[key] ??= { used: new Set(), last: null, fresh: true });
+    return (list, tour) => {
+      let free = list.filter((t) => !b.used.has(t));
+      if (!free.length) { if (!tour) return null; b.used = new Set(); b.fresh = true; free = [...list]; }
+      if (b.fresh && free.length > 1) free = free.filter((t) => t !== b.last);
+      return free[Math.floor(this.rnd() * free.length)];
+    };
   }
   // enregistre une réponse ; renvoie { etoiles, events } (events : montee, difficulte, lecon)
   async record(r, cfg) {
@@ -87,7 +118,8 @@ export class Module1Runner {
     this.count++; if (r.ok) this.ok++;
     let etoiles = r.ok ? 1 : 0;
     if (r.ok && q.revient) etoiles += 1; // erreur corrigée
-    if (!r.ok && !q.revient) this.replays.push({ q, cfg, in: 3 + Math.floor(this.rnd() * 3) });
+    // (lot 3 bis : pas de retour pour une question déjà posée assez de fois)
+    if (!r.ok && !q.revient && this.var.times(questionKey(q)) < this.var.c.memeQuestionMax) this.replays.push({ q, cfg, in: 3 + Math.floor(this.rnd() * 3) });
     if (!r.ok && q.lent) this.slowNext = false; // l'erreur corrigée lentement : c'est fait
     // le taux de la séance (redescente) : pas les questions au-dessus du conseillé (échouer au-dessus ne fait jamais baisser)
     // (niveau choisi : seulement s'il est le conseillé)
@@ -121,7 +153,10 @@ export class Module1Runner {
       }
     }
     // la même erreur deux fois dans la séance : la leçon correspondante
-    if (r.code && LESSON_OF_ERROR[r.code]) { this.errors[r.code] = (this.errors[r.code] ?? 0) + 1; if (this.errors[r.code] === this.rules.memeErreurLecon) relaunch(LESSON_OF_ERROR[r.code], r.code); }
+    // (lot 3 bis, docs/SPEC-LOT3BIS.md, A3 : L3 parle d'une corde qui ne commence pas à zéro ; elle n'est relancée que pour E3 au
+    // format « lire » sur une telle corde ; E3 en « sauter », oublier le départ de la tortue, garde sa correction habituelle)
+    const lessonFor = (q, code) => (code === "E3" && !(q.format === "lire" && q.min !== 0) ? null : LESSON_OF_ERROR[code]);
+    if (r.code && lessonFor(q, r.code)) { this.errors[r.code] = (this.errors[r.code] ?? 0) + 1; if (this.errors[r.code] === this.rules.memeErreurLecon) relaunch(LESSON_OF_ERROR[r.code], r.code); }
     await this.save();
     return { etoiles, events };
   }

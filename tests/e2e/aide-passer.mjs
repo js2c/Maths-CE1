@@ -61,7 +61,7 @@ async function run({ nom, familles = 0, cran = "conseille", appui }) {
   check((busy.board || busy.tortue) && !after.board && !after.tortue && !after.arcs && !after.skip, `${nom} : l'appui était là (${JSON.stringify(busy)}) ; il est rangé, le bouton « passer » aussi (${JSON.stringify(after)})`);
   // la réponse, puis ce qui est noté
   const v = await page.evaluate(() => { const f = window.__app.facts.q; return f.forme === "trouDroite" ? f.b : f.forme === "trouGauche" ? f.a : f.a + f.b; });
-  for (const d of String(v)) await page.tap(`.key[data-key="${d}"]`, { force: true });
+  for (const d of String(v)) { await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.waitForTimeout(170); }
   await page.tap('.key[data-key="valider"]', { force: true });
   let rep = null;
   for (let i = 0; i < 50 && !rep; i++) { await page.waitForTimeout(200); rep = await page.evaluate(async () => (await window.__app.store.all("reponses")).at(-1) ?? null); }

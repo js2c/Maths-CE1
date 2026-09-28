@@ -234,6 +234,7 @@ Bruitages et musiques de fond sont fabriqués par synthèse, sans enregistrement
 ```bash
 npm test                          # tests unitaires (node --test)
 node tests/e2e/pwa.mjs             # installable et utilisable hors ligne
+node tests/e2e/etat-quitte.mjs     # correctif du 28 septembre : chaque exercice quitté en cours (consigne, saisie, aide, correction, exemple guidé), puis chacun des autres : écran identique à un démarrage à neuf
 node tests/e2e/lot3bis.mjs         # lot 3 bis : les écrans que le lot change (amis de 10 à trou, calcul « très dur » sur le départ…)
 node tests/recette-fonctionnelle/b-sequences.mjs --test   # lot 3 bis : la réponse qui varie sur les 116 combinaisons
 node tests/e2e/recif-pages.mjs     # lot 3, étape 5 : le récif en pages (une page aujourd'hui, rebond ; zone de test : glisser, calage, rebond, créature touchée pendant et après, perles, mémoire)

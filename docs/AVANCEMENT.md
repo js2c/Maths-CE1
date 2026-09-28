@@ -26,7 +26,9 @@ Pour reprendre si la session s'est arrêtée : branche `claude/eloquent-ptolemy-
 
 **Reste :** étapes 3, 4 et 5.
 
-**Décisions prises :** aucune encore.
+**Décisions prises :**
+
+- *Correctif demandé par le parent (28 septembre 2026, constaté sur la tablette), commit à part* : un exercice quitté en cours laissait de son état à l'exercice suivant. `FactsScreen.leave()` et `abandon()` remettent à zéro le rappel de la saisie (`onTyped` : le chemin d'un calcul guidé, le tableau de la dictée), la saisie, l'anneau, l'aide et le « passer » de l'échauffement (`reset`) ; en cherchant toute la famille de défauts, deux autres trouvés et corrigés : les arcs et surbrillances d'une correction de la ligne restaient redessinés à chaque image (`LineScreen.leave`), la bulle-sablier et les perles du défi record restaient à l'écran (`abandonActivity`). Parcours `tests/e2e/etat-quitte.mjs` : 65 cas (ligne, dictée, additions, calcul rapide guidé et non guidé, défi ; consigne, saisie, aide, correction, exemple guidé ; puis chacun des autres exercices depuis l'accueil en pause), tout est bon ; sans le correctif, il reproduit le défaut constaté. Le défi n'est pas une cible (il ne se choisit pas) ; « Encore ! » passe par le même rangement (`abandonActivity`) que la maison.
 
 ### Reprise des étapes 1 à 2 du lot 3 bis
 

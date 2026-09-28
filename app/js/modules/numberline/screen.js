@@ -360,7 +360,9 @@ export class NumberLineScreen {
     const f = opts.format ?? "lire";
     return f === "ecrire" ? makeWrite(cfg, rnd, opts) : f === "sauter" ? makeJump(cfg, rnd) : f === "placer" ? makePlace(cfg, rnd, opts) : f === "estimer" ? makeEstimate(cfg, rnd, opts) : makeRead(cfg, rnd, opts);
   }
-  leave() { this.clearButtons(); this.nsp.style.visibility = "hidden"; this.starAt = null; this.fishAt = null; this.turtle.hide(); this.band.style.display = "none"; this.app.line.clear(); this.app.line.fxClear(); }
+  // (correctif du 28 septembre 2026 : une correction quittée en cours laissait ses arcs et ses surbrillances, redessinés à
+  // chaque image par `paintFx` tant que `fxAnimating` restait vrai, par-dessus l'exercice suivant)
+  leave() { this.clearButtons(); this.nsp.style.visibility = "hidden"; this.starAt = null; this.fishAt = null; this.fishGoal = null; this.turtle.hide(); this.band.style.display = "none"; this.arcs = []; this.overlay = []; this.fxAnimating = false; this.liveArc?.show(false); this.app.line.clear(); this.app.line.fxClear(); }
 }
 export { NumberLineScreen as ReadScreen };
 

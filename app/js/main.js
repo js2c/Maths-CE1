@@ -434,6 +434,8 @@ function abandonActivity() {
   clock.abandon(); voice.abandon();
   app.choiceClear?.(); app.choiceClear = null; if (app.facts) app.facts.notion = false; app.calc?.fishDone(); // (lot 3 : l'écran « choisir », les additions libres, le poisson du mur)
   app.screen?.leave(); app.facts?.leave(); app.dictation?.hide?.(); lessons.abandon();
+  // (correctif du 28 septembre 2026) le défi record quitté en cours : sa bulle-sablier et ses perles restaient à l'écran
+  if (app.challenge) { app.challenge.remove(); app.challenge = null; sprites.unload("defi"); }
   for (const s of [app.screen, app.facts]) if (s) { s.resolve = null; s.locked = true; }
   // le bernard-l'ermite de la notion du jour sur les additions (notion2)
   if (app.hermit) { app.hermit.remove(); app.hermit = null; if (app.facts) { app.facts.notion = false; app.facts.hermit = null; } sprites.unload("ermite"); }

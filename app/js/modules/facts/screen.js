@@ -268,8 +268,12 @@ export class FactsScreen {
     } finally { nl.turtle.hide(); nl.arcs = []; line.fxClear(); line.clear(); }
   }
   // lot 3 : l'échauffement est passé pendant une question : elle est abandonnée (plus de réponse attendue)
-  abandon() { this.locked = true; this.resolve = null; this.app.voice.stop(); this.app.aidBoard?.clear(); }
-  leave() { this.show(false); this.q = null; this.defi = null; this.dictee = null; this.app.aidBoard?.clear(); }
+  abandon() { this.locked = true; this.resolve = null; this.app.voice.stop(); this.reset(); }
+  leave() { this.show(false); this.q = null; this.defi = null; this.dictee = null; this.reset(); }
+  // (correctif du 28 septembre 2026) rien de ce qu'un exercice quitté en cours a posé sur l'écran ne doit survivre : le
+  // rappel de la saisie (le chemin d'un calcul guidé, le tableau de la dictée) redessinait l'ancien chemin au premier
+  // chiffre tapé dans l'exercice suivant ; la saisie, l'anneau, l'aide et le « passer » de l'échauffement sont remis à zéro
+  reset() { this.onTyped = null; this.beforeSubmit = null; this.typed = ""; this.ring = false; this.aide = false; this.locked = true; this.app.aidBoard?.clear(); this.slate?.repaint(); }
 }
 
 // l'échauffement dans la séance : n faits (10 à 14), précédés, une séance sur cinq, des questions du temps de

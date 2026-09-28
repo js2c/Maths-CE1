@@ -48,6 +48,13 @@ console.log(`séances d'additions : ${moy(m2.map((r) => r.add.filter((x) => !x.i
   console.log(`\n## lot 3 : leçons et exercice (${PROFILS[profil].nom})`);
   console.log(`part des questions sur la famille en cours (additions) : minimum ${Math.round(Math.min(...m2.map((r) => r.partFamille ?? 1)) * 100)} %, moyenne ${Math.round(moy(m2.map((r) => r.partFamille ?? 1)) * 100)} % (seuil 80 %) ; leçon de famille jouée pour une autre famille : ${bad.length ? bad.map((r) => `${r.n} (${r.lecons.join(",")} pour f${r.famille})`).join(" ; ") : "jamais"} ; après L4 : ${apresL4.map((r) => `${Math.round((r.doubles ?? 0) * 100)} % de doubles ou presque-doubles (f${r.famille})`).join(", ") || "L4 jamais jouée"}`);
 }
+// lot 3 bis (docs/SPEC-LOT3BIS.md, A1) : aucune famille acquise en une seule séance
+{
+  const acq = [1, 2, 3, 4, 5, 6].map((id) => { const i = res.findIndex((r) => r.fAcquises.includes(id)); if (i < 0) return null; const avant = res.slice(0, i + 1).filter((r) => (r.fPratique ?? []).includes(id)).length; return { id, n: res[i].n, avant }; }).filter(Boolean);
+  const une = acq.filter((a) => a.avant < 2);
+  console.log(`\n## lot 3 bis : acquisition des familles (${PROFILS[profil].nom})`);
+  console.log(`familles acquises (séance, séances où elle a été réussie jusque-là) : ${acq.map((a) => `${a.id} (${a.n}, ${a.avant})`).join(" ; ") || "aucune"} ; acquise en une seule séance : ${une.length ? une.map((a) => a.id).join(", ") + " (ERREUR)" : "aucune"}`);
+}
 // lot 3, étape 4 : le calcul rapide
 {
   const m3 = res.filter((r) => r.module === 3), acq = (n) => res.find((r) => (r.acquis3 ?? []).includes(n))?.n ?? "jamais", last3 = [...res].reverse().find((r) => r.acquis3);

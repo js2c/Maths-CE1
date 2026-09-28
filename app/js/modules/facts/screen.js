@@ -16,6 +16,8 @@ const SKIPPED = Symbol("correction passée");
 const SLATE = [790, 222], KEY = 112, ROWS = [540, 668], COLS = [390, 508, 626, 744, 862], SIDE = 1010;
 const pop = (el, cls = "pop") => { el.classList.remove("pop", "shake"); void el.offsetWidth; el.classList.add(cls); };
 
+// la largeur utile de l'ardoise pour l'écriture du calcul (px de la scène)
+const SLATE_W = 430;
 export class FactsScreen {
   constructor(app, content) {
     this.app = app; this.c = content; this.typed = ""; this.locked = true; this.q = null; this.ring = false; this.els = [];
@@ -48,7 +50,9 @@ export class FactsScreen {
     // (lot 3 : le calcul rapide, soustractions comprises : `q.op`, `q.n`)
     const q = this.q, n = q.n ?? q.a + q.b, f = q.forme ?? "directe", sg = q.op === "-" ? "−" : "+";
     const [left, right] = q.dictee ? ["", ""] : f === "trouDroite" ? [`${q.a} ${sg}`, `= ${n}`] : f === "trouGauche" ? ["", `${sg} ${q.b} = ${n}`] : [`${q.a} ${sg} ${q.b} =`, ""];
-    const em = 76, slot = this.typed || "?", lw = left ? R.wordWidth(left) * em : 0, rw = right ? R.wordWidth(right) * em : 0, sw = Math.max(1.36, R.wordWidth(slot)) * em, gap = 0.4 * em;
+    // (lot 3 bis : l'écriture se resserre si elle dépasserait de l'ardoise, « ? + 10 = 57 », « ? − 2 = 45 »)
+    const slot = this.typed || "?", W = (x) => (x ? R.wordWidth(x) : 0), u = W(left) + (left ? 0.4 : 0) + Math.max(1.36, W(slot)) + (right ? 0.4 : 0) + W(right);
+    const em = Math.min(76, SLATE_W / u), lw = W(left) * em, rw = W(right) * em, sw = Math.max(1.36, W(slot)) * em, gap = 0.4 * em;
     const total = lw + (left ? gap : 0) + sw + (right ? gap : 0) + rw, x0 = 295 - total / 2;
     if (left) R.drawWord(ctx, left, x0 + lw / 2, 110 - em / 2, em, { w: 10, seed: 950 });
     const sx = x0 + lw + (left ? gap : 0) + sw / 2;

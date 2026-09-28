@@ -10,8 +10,8 @@ Spécification : `docs/SPEC-LOT3BIS.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC
 
 | Étape | Partie | Contenu | État |
 | --- | --- | --- | --- |
-| 1 | A | §0 (réponse qui varie : règles et test sur les 116 combinaisons) ; A1 (amis de 10 et maisons, faits tirés au hasard, acquisition) ; A2 (calcul rapide « très dur ») ; A4 (mélange) | en cours |
-| 2 | A | A3 (ligne : « plus facile », tirage sans remise, niveau 1, L3) ; A5 (toucher et reprise) ; A6 (décors : logique et voix, dessin provisoire) ; recette de la partie A | à faire |
+| 1 | A | §0 (réponse qui varie : règles et test sur les 116 combinaisons) ; A1 (amis de 10 et maisons, faits tirés au hasard, acquisition) ; A2 (calcul rapide « très dur ») ; A4 (mélange) | fait |
+| 2 | A | A3 (ligne : « plus facile », tirage sans remise, niveau 1, L3) ; A5 (toucher et reprise) ; A6 (décors : logique et voix, dessin provisoire) ; recette de la partie A | en cours |
 | 3 | B | B8 : atelier (plaques numérotées, numéros des tuiles, légende, étiquette, décors, poissons des maisons, poisson étiqueté, étoiles volantes, fin du défi, bouées de L2) | à faire |
 | 4 | B | B1 à B7, B9 à B12 : intégration (choisir, légende, appui long, aides et corrections, fins, « placer », leçons L2, L8, L9, espace parent, cosmétique, guide du parent) | à faire |
 | 5 | B | Recette complète du lot 3 bis et relance des parties B et C de la recette fonctionnelle | à faire |
@@ -20,13 +20,31 @@ Spécification : `docs/SPEC-LOT3BIS.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC
 
 Pour reprendre si la session s'est arrêtée : branche `claude/great-brahmagupta-bj3214`, demande de fusion en brouillon « Lot 3 bis, étapes 1 à 2 (en cours) ».
 
-**Étape en cours :** 1.
+**Étape en cours :** 2.
 
-**Fait :** rien encore.
+**Fait :**
 
-**Reste :** étapes 1 et 2, puis la recette complète de la partie A.
+- Étape 1 (§0, A1, A2, A4) :
+  - *La réponse qui varie* (`app/js/modules/variete.js`, réglages `seance.json`, `variete`) : les trois déroulements (ligne, additions, calcul rapide) proposent plusieurs candidats et gardent le premier qui respecte les quatre règles (au moins 5 réponses différentes, jamais 3 fois de suite la même réponse, pas de suite prévisible de plus de 3 questions ni de suite de 4 questions déjà vue, une même question au plus 3 fois, retours après une erreur compris ; jamais deux fois de suite la même question) ; un retour qui manquerait une règle attend la question suivante ; une question « plus simple » passe avant un retour ; quand plus aucune question n'est possible sans reposer une question déjà posée 3 fois, la notion du jour s'arrête (`next` renvoie null, `session/notion.js`).
+  - *Test automatique* : `node tests/recette-fonctionnelle/b-sequences.mjs --test` (rien n'est écrit) vérifie les quatre règles sur les 116 combinaisons, bases neuve et « un mois », comportements « appliquée » et « réelle » (464 séances) : **213 séances en défaut avant, 12 après l'étape 1**, toutes au cran « plus facile » des niveaux 2, 5 et 9 de la ligne (4 réponses possibles : c'est A3, étape 2). Il donne aussi les notions du jour les plus courtes (14 à 16 questions, 7,6 à 11 min de séance simulée : l'arrêt ne raccourcit pas les séances).
+  - *Amis de 10 et maisons* (`module2.json`, `notion.formes` ; `facts.js`, `trouPartOf`, `trouTurn` ; `runner.js`, `warmup.js`) : part de formes à trou par famille et par cran (famille 3 : toutes ; 5 : 2 sur 3 puis toutes ; 4 : moitié, moitié, 2 sur 3, toutes), avec « jouer » comme avec « choisir », à l'échauffement comme en notion du jour, les deux formes à trou en alternance ; au cran « plus facile » de la famille 3, le cadre montre les poissons du premier nombre et les places vides (capture `tests/e2e/out/lot3bis/1-amis10-facile-cadre.png`).
+  - *Faits nouveaux au hasard* (`orderFresh`, `Module2Runner.rank`) : au hasard dans leur famille, l'autre ordre des termes juste après ; les familles gardent leur ordre.
+  - *Acquisition* (`families.js`, `isAcquired` ; `module2.json`, `familles2.acquise.trouFamilles` et `jours`) : pour les familles 3 à 5, chaque fait compté réussi au moins une fois à trou ; les réussites qui comptent réparties sur au moins 2 jours ; le point de départ du parent n'y est pas soumis. Simulation (`sim-seances.mjs`, rubrique « lot 3 bis : acquisition des familles ») : aucune famille acquise en une seule séance, pour les 5 profils, avec « jouer » et en choisissant la famille 3 à chaque séance.
+  - *Calcul rapide « très dur »* (`module3.json`, `trouDepart` aux niveaux 1, 2, 3, 6 ; `calc/runner.js`, `calcAnswer`, `calcQuestion` ; `calc/screen.js`) : la forme directe et le trou sur le départ (« ? + 10 = 57 », voix « Combien plus 10 ? Ça fait 57. », 22 phrases fabriquées) à parts égales ; niveaux 4, 5, 7, 8 : le trou sur le second nombre ; l'ardoise resserre l'écriture pour tenir dans la bulle (`SLATE_W`).
+  - *Mélange choisi sur une base neuve* (`module2.json`, `notion.melangeNeuf`) : moins de 3 familles avec des faits introduits, il introduit des faits des familles 1 à 3, sans limite par séance (comme une famille choisie), au plus 3 passages par fait.
+  - Tests : `tests/unit/lot3bis-variete.test.mjs` (10 tests : les quatre règles, les formes à trou des familles 3 à 5 et l'alternance, le tirage au hasard des faits nouveaux, l'acquisition sur deux séances et à trou, le trou sur le départ, le mélange sur une base neuve) ; tests adaptés aux nouvelles règles (`crans`, `calcul`, `choix`, `module2-notion`) ; `npm test` : 220, tout est bon. Parcours `tests/e2e/lot3bis.mjs` (amis de 10, maisons de 8 et 9, calcul « très dur ») et `tests/e2e/calcul.mjs` : tout est bon ; captures regardées.
 
-**Décisions prises :** aucune encore.
+**Reste :** étape 2 (A3, A5, A6), puis la recette complète de la partie A.
+
+**Décisions prises :**
+
+- *« Une même question »* : à la ligne, le format, la ligne et la cible (au format « sauter », le départ et le nombre de sauts) ; aux additions, le fait (toutes formes confondues) ; au calcul rapide, le calcul (toutes formes confondues).
+- *Suite prévisible* : des réponses qui avancent d'un même pas (quel que soit le pas) sur 4 questions, ou une suite de 4 questions déjà vue dans la séance (cibles dans le même ordre qu'au tour précédent).
+- *Petites familles* (les doubles : 5 faits) : la limite de 3 passages par fait (§0) prime sur la part de 80 % de la famille : une fois ses faits posés 3 fois, les questions vont aux autres familles (dans la simulation, part de la famille en cours au minimum 72 %, en moyenne 87 %). La règle du lot 3 qui laissait revenir un fait plus de 3 fois dans une petite famille est retirée.
+- *Presque-doubles au cran « plus facile »* : formes directes seulement, 4 réponses possibles (3, 5, 7, 9), sous les 5 du §0 ; une question sur trois à trou (`notion.formes`, famille 6).
+- *Acquisition sur deux séances* : lue au niveau de la famille (les réussites qui comptent, réparties sur au moins deux jours), pas fait par fait ; les formes à trou des familles 3 à 5 sont posées aussi à l'échauffement (même part qu'en notion du jour, cran de la séance).
+- *Exemples guidés* des familles 3 à 5 : à trou eux aussi (la part de la famille), pour montrer la méthode des places vides.
+
 
 ## Lot 3
 

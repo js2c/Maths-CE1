@@ -12,7 +12,7 @@ import { Rewards, goldenStar } from "../app/js/session/rewards.js";
 import { drawSurprise, previousSession } from "../app/js/session/surprise.js";
 import { Warmup } from "../app/js/modules/facts/warmup.js";
 import { runWarmup } from "../app/js/modules/facts/screen.js";
-import { expected, ruleFacts } from "../app/js/modules/facts/facts.js";
+import { expected, ruleFacts, startOfDay } from "../app/js/modules/facts/facts.js";
 import { Module2Runner } from "../app/js/modules/facts/runner.js";
 import { calcMastery, Module3Runner } from "../app/js/modules/calc/runner.js";
 import { runChallenge } from "../app/js/modules/facts/challenge.js";
@@ -149,6 +149,8 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
     log.defiSaute = rec.etapes.find((e) => e.id === "defi")?.sautee ?? null;
     const fam = await store.get("niveaux", 2); log.fOuvertes = [...(fam?.ouvertes ?? [])]; log.fAcquises = [...(fam?.acquises ?? [])]; log.fTrou = [...(fam?.trou ?? [])]; log.fDepassees = (fam?.depassees ?? []).map((d) => d.famille);
     const faits = await store.all("faits"); log.boites = [1, 2, 3, 4, 5].map((b) => faits.filter((f) => f.boite === b).length); log.faitsVus = faits.length;
+    // lot 3 bis (A1) : les familles dont un fait de la règle a été réussi dans cette séance (acquisition sur deux séances au moins)
+    { const d0 = startOfDay(t), by = new Map(faits.map((f) => [f.fait, f])); log.fPratique = [1, 2, 3, 4, 5, 6].filter((id) => ruleFacts(module2, id).some((r) => (by.get(r.fait)?.historique ?? []).some((h) => h.juste && h.t >= d0))); }
     out.push(log);
   }
   out.store = store;

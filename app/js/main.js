@@ -38,7 +38,7 @@ import { FreeTraining } from "./session/free.js";
 import { allowedCrans, chooseCran } from "./session/selector.js";
 import { choose } from "./session/choice.js";
 import { clock } from "./engine/clock.js";
-import { pop, skipKey } from "./engine/ui.js";
+import { onBrief, pop, skipKey } from "./engine/ui.js";
 import { ParentSpace, parentLogo } from "./parent/parent.js";
 
 const T0 = performance.now();
@@ -49,7 +49,7 @@ const stage = new Stage(document.getElementById("stage"));
 // le désactivent), avec une seule résolution des planches d'images : celle que cet écran utilise (sprites.js)
 if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !location.search.includes("nosw")) navigator.serviceWorker.register(`sw.js?r=${stage.px > 1.2 ? 2 : 1}`).catch(() => {});
 const [atlas, module1, module2, textes, seance, lecons, cartes, calendrier, parentContent, voix] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/module2.json"), json("content/textes.json"), json("content/seance.json"), json("content/lecons.json"), json("content/cartes.json"), json("content/calendrier.json"), json("content/parent.json"), json("assets/voix/index.json").catch(() => null)]);
-const [sonContent, sonIndex, module3] = await Promise.all([json("content/son.json"), json("assets/son/index.json").catch(() => null), json("content/module3.json")]);
+const [sonContent, sonIndex, module3, legendes] = await Promise.all([json("content/son.json"), json("assets/son/index.json").catch(() => null), json("content/module3.json"), json("content/legendes.json")]);
 const sprites = new Sprites(atlas, stage.px);
 // la base locale ; au premier lancement, on demande au navigateur de ne jamais l'effacer de lui-même
 const store = await Store.open();
@@ -92,7 +92,7 @@ addEventListener("error", (ev) => journal({ type: "erreur de page", message: ev.
 addEventListener("unhandledrejection", (ev) => journal({ type: "erreur de page", message: String(ev.reason?.message ?? ev.reason), pile: ev.reason?.stack?.split("\n").slice(0, 4).join(" | ") ?? null }));
 const rewards = await new Rewards(store, cartes, calendrier).load();
 if (P.get("etoiles")) { rewards.st.total = Number(P.get("etoiles")); await rewards.save(); } // tests : un trésor de départ
-const app = { stage, sprites, ocean, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, line: new LineView(stage), mascotte: await store.setting("mascotte") };
+const app = { stage, sprites, ocean, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, legendes, line: new LineView(stage), mascotte: await store.setting("mascotte") };
 // la vitesse des animations des exemples guidés et des corrections (1 : la vitesse d'origine ; la voix garde son débit)
 app.vitesse = seance.vitesseAnimations ?? 1;
 app.toucher = seance.toucher ?? {}; // (lot 3 bis, A5 : le double toucher)
@@ -244,7 +244,8 @@ async function showHome({ done, first = false }) {
   const reefKey = big("recif", HOME_X[2], 650, "le récif", "bubble reefkey"), albumKey = big("album", HOME_X[3], 650, "l'album", "bubble albumkey");
   homeEls.push(reefKey, albumKey, parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }));
   const visit = (place) => async () => { voice.unlock(); voice.stop(); clearHome(); await place.visit(); showHome({ done: await doneToday(store) }); };
-  onTap(reefKey, visit(reef)); onTap(albumKey, visit(album));
+  // (lot 3 bis, B3) les bulles de l'accueil : un toucher bref les lance, un appui long montre leur étiquette
+  onBrief(app, reefKey, visit(reef), "recif"); onBrief(app, albumKey, visit(album), "album");
   if (done) {
     // la séance du jour est faite : la lune (un décor) et « Encore ! », l'entraînement libre (le même écran « choisir »,
     // sans étoiles)
@@ -257,8 +258,9 @@ async function showHome({ done, first = false }) {
   // la séance du jour : « jouer » (la séance proposée par l'application) ou « choisir » (lot 3 : l'exercice et le niveau)
   const play = big("jouer", HOME_X[0], 650, "jouer", "bubble play"), pickKey = big("choisir", HOME_X[1], 650, "choisir", "bubble choisir");
   homeEls.push(play, pickKey);
-  play.addEventListener("pointerdown", async (e) => {
-    e.preventDefault(); voice.unlock(); clearHome();
+  let played = false;
+  onBrief(app, play, async () => {
+    if (played) return; played = true; voice.unlock(); clearHome();
     // pour les captures et les tests : ?lecon=L1 joue seulement cette leçon
     if (P.get("lecon")) { window.__lecon = await lessons.play(P.get("lecon")); return; }
     // ?module=2 (tests) : la notion du jour imposée pour cette séance
@@ -266,15 +268,15 @@ async function showHome({ done, first = false }) {
     // ?choix=1:8 ou ?choix=2:5 (tests, captures) : l'exercice choisi sans passer par l'écran « choisir »
     const ch = P.get("choix")?.split(":").map(Number);
     await runSession(ch ? (ch[0] === 2 ? { module: 2, famille: ch[1] } : { module: ch[0], niveau: ch[1] }) : null);
-  }, { once: true });
-  onTap(pickKey, async () => {
+  }, "jouer");
+  onBrief(app, pickKey, async () => {
     voice.unlock(); clearHome();
     mode = "choix"; homeKey.style.visibility = "visible";
     const c = await choose(app, { store, content: { module1, module2, module3, seance } });
     mode = null; homeKey.style.visibility = "hidden";
     if (c.lecon) return lessonAlone(c.lecon);
     await runSession(c);
-  });
+  }, "choisir");
 }
 // les bulles de l'accueil : jouer (ou « Encore ! »), choisir, le récif, l'album
 const HOME_X = [520, 740, 960, 1165];
@@ -355,10 +357,10 @@ function showPauseHome() {
   const reefKey = big("recif", HOME_X[2], 650, "le récif", "bubble reefkey keep"), albumKey = big("album", HOME_X[3], 650, "l'album", "bubble albumkey keep");
   const logo = parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }); logo.classList.add("keep");
   pausedEls = [resume, pickKey, reefKey, albumKey, logo];
-  onTap(resume, resumeSession);
-  onTap(reefKey, () => visitInPause(() => reef.visit()));
-  onTap(albumKey, () => visitInPause(() => album.visit()));
-  onTap(pickKey, () => visitInPause(pickInPause));
+  onBrief(app, resume, resumeSession, "jouer");
+  onBrief(app, reefKey, () => visitInPause(() => reef.visit()), "recif");
+  onBrief(app, albumKey, () => visitInPause(() => album.visit()), "album");
+  onBrief(app, pickKey, () => visitInPause(pickInPause), "choisir");
 }
 function resumeSession() {
   if (visiting) return;

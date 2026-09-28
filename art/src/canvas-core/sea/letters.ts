@@ -91,6 +91,8 @@ const ACC: Record<string, [string, string]> = {
   î: ["ı", "circ"], ï: ["ı", "trema"], ô: ["o", "circ"], ç: ["c", "cedille"], É: ["E", "aigu"], È: ["E", "grave"],
 };
 G["ı"] = { w: 0.2, s: [[[0.1, X], [0.1, 1]]] }; // le i sans point, pour î et ï
+// (lot 3 bis : « cœur » dans les étiquettes) le o et le e liés : la panse du o, et le e qui s'y appuie
+G["œ"] = { w: 0.96, s: [arc(0.25, MID, 0.22, RY, 0, 360), [[0.46, MID], [0.93, MID], [0.93, MID], ...arc(0.69, MID, 0.24, RY, -5, -318)]] };
 const mark = (kind: string, c: number, top: number): { s: P[][]; dots: P[] } => {
   const y = top === 0 ? -0.2 : 0.2; // au-dessus d'une capitale, ou d'une minuscule
   if (kind === "aigu") return { s: [[[c - 0.06, y + 0.08], [c + 0.08, y - 0.08]]], dots: [] };

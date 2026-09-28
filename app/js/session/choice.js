@@ -9,7 +9,8 @@
 // Renvoie { module: 1, niveau } | { module: 2, famille } | { lecon } (| null : quitté sans valider, `app.choiceCancel`). Fonctions pures (`levelItems`) testées par
 // tests/unit/choix.test.mjs.
 import * as R from "../art/runtime.js";
-import { onTap, pop, spriteBox } from "../engine/ui.js";
+import { onBrief, onTap, pop, spriteBox } from "../engine/ui.js";
+import { closeLegend, legendKey } from "./legend.js";
 import { currentFamily, initialFamilies, ruleShare } from "../modules/facts/families.js";
 import { initialCalcState, recommended } from "../modules/calc/runner.js";
 
@@ -60,7 +61,7 @@ export async function choose(app, o) {
   await sprites.load("choix");
   const [st1, st2, st3, faits] = await Promise.all([store.get("niveaux", 1), store.get("niveaux", 2), store.get("niveaux", 3), store.all("faits")]);
   const familyShare = (id, boite) => ruleShare(o.content.module2, faits, id, boite);
-  const els = [], clear = () => { els.forEach((e) => e.remove()); els.length = 0; };
+  const els = [], clear = () => { closeLegend(app); els.forEach((e) => e.remove()); els.length = 0; };
   app.choiceClear = () => { clear(); sprites.unload("choix"); };
   // (lot 3, étape 5) quitter sans rien valider (la maison, depuis l'accueil en pause) : `app.choiceCancel()`, choose renvoie null
   const CANCEL = Symbol("annulé"), cancelled = new Promise((res) => { app.choiceCancel = () => res(CANCEL); });
@@ -69,7 +70,8 @@ export async function choose(app, o) {
   // « simple » : le premier toucher nomme et valide
   // (sel.key : la clé de l'image entourée, lue par les dessins)
   const sel = { key: null };
-  const pick = (buttons, name, check) => new Promise((res) => {
+  // (lot 3 bis, B3 : les pictogrammes des exercices, `brief` : un toucher bref valide, un appui long montre l'étiquette)
+  const pick = (buttons, name, check, brief = false) => new Promise((res) => {
     let cur = null; sel.key = null;
     const select = (b) => {
       if (cur === b && double) return res(b.dataset.key);
@@ -81,7 +83,7 @@ export async function choose(app, o) {
       if (!double) setTimeout(() => res(b.dataset.key), 300);
       else if (check) check.style.visibility = "visible";
     };
-    buttons.forEach((b) => onTap(b, () => select(b)));
+    buttons.forEach((b) => (brief ? onBrief(app, b, () => select(b), b.dataset.key) : onTap(b, () => select(b))));
     if (check) onTap(check, () => { if (cur) { pop(check); res(cur.dataset.key); } });
   });
   const checkKey = () => { const c = spriteBox(app, { x: CHECK[0] - 80, y: CHECK[1] - 80, w: 160, h: 160, cls: "bubble check choix-ok", label: "valider", paint: (ctx) => sprites.draw(ctx, "valider", 0, 80, 80) }); c.style.visibility = "hidden"; els.push(c); return c; };
@@ -92,7 +94,7 @@ export async function choose(app, o) {
       b.dataset.key = e.id; els.push(b); return b;
     });
     voice.stop(); voice.say(text.data.choixExercice, { instruction: true });
-    const ex = await Promise.race([pick(exBtn, (k) => text.data.choixNom[k], checkKey()), cancelled]);
+    const ex = await Promise.race([pick(exBtn, (k) => text.data.choixNom[k], checkKey(), true), cancelled]);
     if (ex === CANCEL) return done();
     clear();
     // 2. le niveau, la famille ou la leçon
@@ -114,6 +116,8 @@ export async function choose(app, o) {
       } });
       b.dataset.key = String(it.key); b.dataset.conseille = it.conseille ? "1" : ""; b.dataset.valide = it.valide ? "1" : ""; els.push(b); return b;
     });
+    // (lot 3 bis, B2) la légende des niveaux, pour le parent : ne choisit rien, ne lance rien
+    legendKey(app, ex, { keys: items.map((it) => it.key), labels: LESSON_LABELS, els });
     if (double) voice.stop();
     voice.say(ex === "lecons" ? text.data.choixLecon : text.data.choixNiveau, { instruction: true });
     const name = (k) => (ex === "ligne" ? text.data.choixLigne[k] : ex === "additions" ? text.data.choixFamille[k] : ex === "calcul" ? text.data.choixCalcul[k] : text.data.choixLeconNom[k] ?? k);

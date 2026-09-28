@@ -53,6 +53,65 @@ if (want("choisir")) {
   }
 }
 
+// un appui tenu `ms` millisecondes (vrai toucher : Input.dispatchTouchEvent), au centre d'un élément
+const hold = async (page, sel, ms) => {
+  const b = await page.locator(sel).first().boundingBox(), x = b.x + b.width / 2, y = b.y + b.height / 2, cdp = await page.context().newCDPSession(page);
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
+  await page.waitForTimeout(ms);
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  await cdp.detach();
+};
+const inScreen = async (page, sel) => (await boxes(page, sel)).every((r) => r.x >= 0 && r.y >= 0 && r.x + r.w <= 1280 && r.y + r.h <= 800);
+
+// B2 : la légende
+if (want("legende")) {
+  const { page, context, errors } = await open("&cran=conseille&sans=echauffement");
+  await page.waitForSelector(".choisir"); await tap(page, ".choisir"); await page.waitForSelector(".choix-ex");
+  for (const ex of ["ligne", "additions", "calcul", "lecons"]) {
+    await tap(page, `.choix-ex[aria-label="${ex}"]`); await page.waitForSelector(".legende");
+    const lb = (await boxes(page, ".legende"))[0], tiles = await boxes(page, ".choix-tuile");
+    check(!tiles.some((r) => lb.x < r.x + r.w && r.x < lb.x + lb.w && lb.y < r.y + r.h && r.y < lb.y + lb.h), `${ex} : le bouton de la légende est hors de la zone des plaques`);
+    const spoken = await page.evaluate(() => (window.__app.voice.log ?? []).length);
+    await tap(page, ".legende"); await page.waitForSelector(".legende-panneau"); await page.waitForTimeout(300);
+    const n = await page.locator(".legende-ligne").count();
+    check(n === tiles.length, `${ex} : le panneau a une ligne par niveau (${n} / ${tiles.length})`);
+    await shot(page, `B2-legende-${ex}`);
+    if (ex === "ligne") { await page.evaluate(() => { document.querySelector(".legende-defile").scrollTop = 10000; }); await page.waitForTimeout(200); await shot(page, "B2-legende-ligne-bas"); }
+    // fermer : la croix (ligne, calcul), un toucher dehors (additions, leçons)
+    if (ex === "ligne" || ex === "calcul") await tap(page, ".legende-fermer");
+    else { const cdp = await context.newCDPSession(page), vp = page.viewportSize(); await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: vp.width * 0.05, y: vp.height * 0.95 }] }); await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] }); await page.waitForTimeout(300); }
+    const st = await page.evaluate(() => ({ panneau: !!document.querySelector(".legende-panneau"), tuiles: document.querySelectorAll(".choix-tuile").length, runner: !!window.__app.session }));
+    check(!st.panneau && st.tuiles === tiles.length && !st.runner, `${ex} : fermée (${ex === "ligne" || ex === "calcul" ? "la croix" : "toucher dehors"}), rien de lancé, les plaques toujours là`);
+    await tap(page, ".choix-retour"); await page.waitForSelector(".choix-ex");
+  }
+  check(!errors.length, `légende : aucune erreur (${errors.join(" | ")})`); await context.close();
+}
+
+// B3 : l'appui long sur les pictogrammes
+if (want("appui")) {
+  const { page, context, errors } = await open("&cran=conseille&sans=echauffement");
+  await page.waitForSelector(".choisir"); await page.waitForTimeout(300);
+  for (const [sel, key] of [[".play", "jouer"], [".choisir", "choisir"], [".reefkey", "recif"], [".albumkey", "album"]]) {
+    await hold(page, sel, 800); await page.waitForTimeout(100);
+    const st = await page.evaluate(() => ({ lab: !!document.querySelector(".etiquette"), home: !!document.querySelector(".choisir"), choix: !!document.querySelector(".choix-ex"), session: !!window.__app.session }));
+    check(st.lab && st.home && !st.choix && !st.session && (await inScreen(page, ".etiquette")), `accueil, appui long de 0,8 s sur « ${key} » : étiquette visible (dans l'écran), rien de lancé`);
+    await shot(page, `B3-appui-${key}`);
+    await page.waitForTimeout(2300);
+    check(!(await page.locator(".etiquette").count()), `« ${key} » : l'étiquette disparaît 2 s après`);
+  }
+  await tap(page, ".choisir"); await page.waitForSelector(".choix-ex");
+  check(true, "accueil, toucher bref sur « choisir » : l'écran des exercices s'ouvre");
+  for (const ex of ["ligne", "additions", "calcul", "lecons"]) {
+    await hold(page, `.choix-ex[aria-label="${ex}"]`, 800); await page.waitForTimeout(100);
+    const st = await page.evaluate(() => ({ lab: !!document.querySelector(".etiquette"), tiles: document.querySelectorAll(".choix-tuile").length }));
+    check(st.lab && !st.tiles && (await inScreen(page, ".etiquette")), `« choisir », appui long de 0,8 s sur « ${ex} » : étiquette, rien de lancé`);
+    await shot(page, `B3-appui-${ex}`);
+  }
+  await tap(page, '.choix-ex[aria-label="calcul"]'); await page.waitForSelector(".choix-tuile");
+  check(true, "toucher bref sur « calcul » : ses niveaux s'ouvrent");
+  check(!errors.length, `appui long : aucune erreur (${errors.join(" | ")})`); await context.close();
+}
+
 await browser.close(); srv.close();
 console.log(fail.length ? `\n${fail.length} ÉCHEC(S)` : "\ntout est bon");
 process.exit(fail.length ? 1 : 0);

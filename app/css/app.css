@@ -104,3 +104,11 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .choix-lueur { pointer-events: none; animation: breathe 2.4s ease-in-out infinite; }
 @keyframes breathe { 0%, 100% { opacity: 0.75; transform: scale(0.97); } 50% { opacity: 1; transform: scale(1.03); } }
 .choix-chemin { pointer-events: none; }
+/* lot 3 bis (B2, B3) : l'étiquette d'un appui long, la légende des niveaux (voile, panneau, tableau qui défile, croix) */
+.etiquette { pointer-events: none; z-index: 30; animation: pop 0.25s ease-out; }
+.legende-voile { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; background: rgba(6, 38, 46, 0.45); z-index: 40; }
+.legende-panneau { z-index: 41; }
+.legende-tete { pointer-events: none; z-index: 42; }
+.legende-defile { position: absolute; z-index: 42; overflow-y: auto; overflow-x: hidden; touch-action: pan-y; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #d8c9a8 transparent; }
+.legende-ligne { display: block; }
+.legende-fermer { z-index: 43; }

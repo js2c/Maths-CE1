@@ -21,7 +21,7 @@ const shot = (n) => page.screenshot({ path: join(OUT, `${n}.png`) });
 const check = (ok, msg) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${msg}`); if (!ok) process.exitCode = 1; };
 const ready = async () => page.waitForFunction(() => window.__ready !== undefined);
 const waitQ = () => page.waitForFunction(() => { const s = window.__app.facts; return s?.q && s.resolve && !s.locked; }, null, { timeout: 90000 });
-const typeIn = async (n) => { for (const d of String(n)) await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.tap('.key[data-key="valider"]', { force: true }); };
+const typeIn = async (n) => { for (const d of String(n)) { await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.waitForTimeout(170); } await page.tap('.key[data-key="valider"]', { force: true }); };
 const answer = async () => { const v = await page.evaluate(() => { const f = window.__app.facts.q; return f.forme === "trouDroite" ? f.b : f.forme === "trouGauche" ? f.a : f.a + f.b; }); await typeIn(v); };
 const openParent = async () => {
   const b = await page.locator(".logo").last().boundingBox(); await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2); await page.mouse.down(); await page.waitForTimeout(2300); await page.mouse.up();

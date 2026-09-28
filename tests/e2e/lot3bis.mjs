@@ -25,7 +25,7 @@ const open = async (q = "", prep = null) => {
 };
 const shot = (page, n) => page.screenshot({ path: join(OUT, `${n}.png`) });
 const waitQ = (page) => page.waitForFunction(() => { const f = window.__app.facts; return f?.q && f.resolve && !f.locked; }, null, { timeout: 60000 });
-const type = async (page, n) => { for (const d of String(n)) { await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.waitForTimeout(60); } await page.tap('.key[data-key="valider"]', { force: true }); };
+const type = async (page, n) => { for (const d of String(n)) { await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.waitForTimeout(170); } await page.tap('.key[data-key="valider"]', { force: true }); };
 const cur = (page) => page.evaluate(() => { const q = window.__app.facts.q; return { a: q.a, op: q.op, b: q.b, n: q.n ?? q.a + q.b, forme: q.forme, aide: !!q.aideDEmblee, appui: q.appui, niveau: q.niveau, guide: !!q.guide, pont: !!q.pont }; });
 const answerOf = (q) => (q.forme === "trouDroite" ? q.b : q.forme === "trouGauche" ? q.a : q.n);
 
@@ -126,7 +126,7 @@ if (run("toucher")) {
   await waitQ(page); const q2 = await cur(page);
   await page.waitForTimeout(300); const c2 = await page.evaluate(() => window.__app.voice.instruction);
   // la bonne réponse, puis un chiffre tapé aussitôt, pendant le « bravo »
-  for (const d of String(answerOf(q2))) await touch(page, `.key[data-key="${d}"]`);
+  for (const d of String(answerOf(q2))) { await touch(page, `.key[data-key="${d}"]`); await page.waitForTimeout(170); }
   await touch(page, '.key[data-key="valider"]'); await page.waitForTimeout(150); await touch(page, '.key[data-key="5"]');
   await waitQ(page); await page.waitForTimeout(400);
   const after = await page.evaluate(() => ({ typed: window.__app.facts.typed, q: window.__app.facts.q.fait, said: window.__said.slice(-2) }));

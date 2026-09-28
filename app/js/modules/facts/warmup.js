@@ -15,7 +15,8 @@ export class Warmup {
     this.store = store; this.c0 = content; this.c = content; this.rnd = rnd; this.seance = seance; this.clock = clock; this.cran = cran; this.nouveaux = dejaNouveaux;
   }
   async load() {
-    this.facts = await this.store.all("faits");
+    // (lot 3 bis : les faits rangés avec un champ de question, `guide` surtout, par les versions d'avant en sont nettoyés)
+    this.facts = (await this.store.all("faits")).map(({ guide, appui, aideDEmblee, rappel, passe, cran, pont, ...f }) => (void guide, void appui, void aideDEmblee, void rappel, void passe, void cran, void pont, f));
     // lot 2, étape 6 : les familles ouvertes (et leurs formes à trou) ; le plan ne pose que des faits des familles ouvertes
     this.fam = (await this.store.get("niveaux", 2)) ?? initialFamilies(this.c0, this.clock());
     this.c = withOpen(this.c0, this.fam);
@@ -84,7 +85,9 @@ export class Warmup {
     }
     const known = this.facts.find((f) => f.fait === q.fait), cur = known ?? q, limit = this.limitMs;
     if (!known && q.nouveau) this.nouveaux++;
-    const { nouveau, anticipe, revient, bonus, forme: _f, extra, ...clean } = cur; void nouveau; void anticipe; void revient; void bonus; void _f; void extra;
+    // (lot 3 bis : ce qui décrit la question, et non le fait, n'est pas rangé avec lui : un fait introduit par un exemple
+    // guidé gardait `guide`, et ses questions suivantes devenaient des exemples guidés, réponse montrée, jamais comptées)
+    const { nouveau, anticipe, revient, bonus, forme: _f, extra, guide, appui, aideDEmblee, rappel, passe, cran, pont, ...clean } = cur; void nouveau; void anticipe; void revient; void bonus; void _f; void extra; void guide; void appui; void aideDEmblee; void rappel; void passe; void cran; void pont;
     // une question qui revient, ou un second passage, ne fait pas monter de boîte (mais une erreur fait redescendre)
     const f = afterFact(this.c, clean, { juste, ms: r.ms, aide: r.aide || r.aideDEmblee, anticipe: q.anticipe || q.revient, seance: this.seance, forme }, limit, now);
     this.facts = [...this.facts.filter((x) => x.fait !== f.fait), f];

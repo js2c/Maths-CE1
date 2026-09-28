@@ -41,7 +41,8 @@ for (const cran of CRANS) {
   await page.waitForTimeout(400);
   const forms = []; for (let i = 0; i < 6; i++) { await page.waitForFunction(() => { const f = window.__app.facts; return f?.q && f.resolve && !f.locked; }, null, { timeout: 40000 }); forms.push(await page.evaluate(() => window.__app.facts.q.forme)); if (i === 0) await page.screenshot({ path: join(OUT, `additions-${cran}.png`) }); await page.evaluate(() => { const f = window.__app.facts; f.typed = String(f.q.forme === "trouDroite" ? f.q.b : f.q.forme === "trouGauche" ? f.q.a : f.q.a + f.q.b); f.submit(); }); await page.waitForTimeout(300); }
   const trou = forms.filter((x) => x !== "directe").length;
-  check(cran === "facile" ? trou === 0 : cran === "dur" ? trou === 3 : cran === "tresdur" ? trou === 6 : true, `additions, famille 4, ${cran} : formes ${forms.join(", ")}`);
+  // (lot 3 bis, A1 : maisons de 5 à 7, moitié à trou aux crans « plus facile » et « conseillé », 2 sur 3 à « plus dur », toutes à « très dur » ; parmi 6 questions, dont peut-être une d'une autre famille)
+  check(cran === "facile" || cran === "conseille" ? trou >= 2 && trou <= 4 : cran === "dur" ? trou >= 3 && trou <= 5 : trou === 6, `additions, famille 4, ${cran} : formes ${forms.join(", ")}`);
 }
 check(!errors.length, `aucune erreur (${errors.join(" | ")})`);
 await browser.close(); srv.close();

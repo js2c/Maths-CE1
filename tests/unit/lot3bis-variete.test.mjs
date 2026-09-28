@@ -149,3 +149,13 @@ test("A2 : calcul « très dur » aux niveaux à pas fixe : la forme directe et 
   assert.equal(classifyCalc(q, 47), null); assert.equal(classifyCalc(q, 57), "autre");
   assert.equal(T.calcTrouDepartPlus, "Combien plus {b} ? Ça fait {n}.");
 });
+
+test("un fait introduit par un exemple guidé n'est plus un exemple guidé ensuite (correction du lot 3 bis) ; les faits déjà rangés ainsi sont nettoyés", async () => {
+  const store = await open(); await store.put("niveaux", { ...initialFamilies(m2, NOW), ouvertes: [1, 2, 3], acquises: [1, 2], notion: [3], lecons: ["L5"] });
+  await store.put("faits", { fait: "6+4", a: 6, b: 4, famille: 3, boite: 1, prochain: NOW, historique: [], guide: true, appui: "cadre" });
+  const m = await new Module2Runner({ store, content: m2, rnd: rng(3), seance: 1, clock: () => NOW, cran: () => "facile", choix: 3 }).load(), qs = [];
+  assert.ok(m.facts().every((f) => !("guide" in f) && !("appui" in f)), "nettoyé au chargement");
+  for (let i = 0; i < 14; i++) { const x = m.next({ guide: i < 2 }); qs.push({ guide: !!x.q.guide, i }); await m.record({ q: x.q, value: expected(x.q), ok: true, ms: 2500, listens: 1 }, x.cfg); }
+  assert.deepEqual(qs.filter((q) => q.guide).map((q) => q.i), [0, 1]);
+  assert.ok((await store.all("faits")).every((f) => !f.guide));
+});

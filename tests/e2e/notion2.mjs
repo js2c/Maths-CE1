@@ -24,7 +24,7 @@ await page.evaluate(async (fam) => {
   if (fam > 1) { const { markFamilyKnown } = await import("./js/parent/depart.js"), m2 = await (await fetch("content/module2.json")).json(); for (let f = 1; f < fam; f++) await markFamilyKnown(s, m2, f); }
 }, FAM);
 await page.tap(".play", { force: true });
-const typeIn = async (n) => { for (const d of String(n)) await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.tap('.key[data-key="valider"]', { force: true }); };
+const typeIn = async (n) => { for (const d of String(n)) { await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.waitForTimeout(170); } await page.tap('.key[data-key="valider"]', { force: true }); };
 let k = 0, sawGuide = false, sawFix = false, notionQ = 0, sawLesson = false, sawHermit = false;
 for (const until = Date.now() + 240000; Date.now() < until;) {
   const st = await page.evaluate(() => { const s = window.__app.facts, h = window.__app.hermit; return { done: !!document.querySelector(".tally"), notion: !!s?.notion, hermit: !!h?.visible, lesson: !!window.__app.lessons.p2?.keys, q: s?.q && !s.locked && s.resolve ? { a: s.q.a, b: s.q.b, forme: s.q.forme ?? "directe", guide: !!s.q.guide, base: !!s.q.base } : null }; });

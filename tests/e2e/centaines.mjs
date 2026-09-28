@@ -61,7 +61,7 @@ async function level(niveau, { format = null, wrong = null, shots = {}, question
     const bad = !st.guide && k >= 1 && wrong && !page.__wrongDone;
     if (st.kind === "ecrire") {
       const v = bad ? wrong(st.n) : st.n;
-      for (const d of String(v)) await page.tap(`.key[data-key="${d}"]`, { force: true });
+      for (const d of String(v)) { await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.waitForTimeout(170); }
       if (bad && shots.tape) await page.screenshot({ path: join(OUT, `${shots.tape}.png`) });
       await page.tap('.key[data-key="valider"]', { force: true });
     } else if (st.choices) {

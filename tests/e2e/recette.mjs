@@ -31,7 +31,7 @@ const state = () => page.evaluate(() => {
   return { etape: A.frieze?.p?.etape ?? null, inputFacts, inputLine, q: inputFacts ? `${f.q.a}+${f.q.b}` : inputLine ? `${l.q.format}:${l.q.answer}` : null, lesson: !!A.lessons?.keys?.length && A.lessons.p !== undefined, voix: A.voice.speaking, btns, huds, paused: document.getElementById("stage").classList.contains("paused") };
 });
 const tapSel = (sel) => page.tap(sel, { force: true }).catch(() => {});
-const typeIn = async (n) => { for (const d of String(n)) await tapSel(`.key[data-key="${d}"]`); await tapSel('.key[data-key="valider"]'); };
+const typeIn = async (n) => { for (const d of String(n)) { await tapSel(`.key[data-key="${d}"]`); await new Promise((r) => setTimeout(r, 170)); } await tapSel('.key[data-key="valider"]'); };
 
 if (args.includes("--defi")) {
   await page.goto(url + "?nosw"); await page.waitForFunction(() => window.__ready !== undefined);

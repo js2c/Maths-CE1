@@ -72,7 +72,7 @@ for (const [niveau, fmt] of [[3, "placer"], [6, "placer"], [2, "lire"]]) {
     const q = await page.evaluate(() => window.__app.facts.q);
     if (q.forme && q.forme !== "directe") { trou++; await page.waitForTimeout(400); await page.screenshot({ path: join(OUT, `5-trou-${q.forme}.png`) }); }
     const v = q.forme === "trouDroite" ? q.b : q.forme === "trouGauche" ? q.a : q.a + q.b;
-    for (const d of String(v)) await tap(page, `.key[data-key="${d}"]`); await tap(page, '.key[data-key="valider"]');
+    for (const d of String(v)) { await tap(page, `.key[data-key="${d}"]`); await page.waitForTimeout(170); } await tap(page, '.key[data-key="valider"]');
   }
   check(trou > 0, "formes à trou au cran très dur");
   await context.close();

@@ -1,0 +1,32 @@
+{
+ "cas": "famille3",
+ "nom": "additions, famille 3 choisie",
+ "total": 502.372,
+ "etapes": {
+  "accueil": 11.57700000000004,
+  "echauffement": 81.51,
+  "notion": 362.315,
+  "recompense": 46.351999999999975
+ },
+ "idle": 13,
+ "idleS": 122.73500000000013,
+ "errors": [],
+ "planches": [
+  {
+   "file": "D-famille3-01.jpg",
+   "contenu": "accueil (avant « jouer ») ; étape accueil (t = 1 s, début de l'étape) ; étape echauffement (t = 9 s, début de l'étape) ; echauffement : première question (t = 20 s)"
+  },
+  {
+   "file": "D-famille3-02.jpg",
+   "contenu": "echauffement : « je ne sais pas » (t = 34 s) ; echauffement : une erreur (t = 50 s, réponse 4) ; étape notion (t = 90 s, début de l'étape) ; notion : première question (t = 124 s)"
+  },
+  {
+   "file": "D-famille3-03.jpg",
+   "contenu": "étape recompense (t = 453 s, début de l'étape) ; récompense : le coquillage (t = 468 s) ; récompense : la carte (t = 481 s) ; récompense : le coquillage (t = 483 s)"
+  },
+  {
+   "file": "D-famille3-04.jpg",
+   "contenu": "récompense : la carte (t = 498 s) ; étape (hors séance) (t = 499 s, début de l'étape) ; fin (t = 502 s : la lune, « Encore ! »)"
+  }
+ ]
+}

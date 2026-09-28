@@ -1,0 +1,32 @@
+{
+ "cas": "calcul",
+ "nom": "calcul rapide (module 3)",
+ "total": 518.165,
+ "etapes": {
+  "accueil": 11.528000000000018,
+  "echauffement": 80.18499999999999,
+  "notion": 363.954,
+  "recompense": 61.97799999999995
+ },
+ "idle": 26,
+ "idleS": 192.93099999999993,
+ "errors": [],
+ "planches": [
+  {
+   "file": "D-calcul-01.jpg",
+   "contenu": "accueil (avant « jouer ») ; étape accueil (t = 1 s, début de l'étape) ; étape echauffement (t = 9 s, début de l'étape) ; echauffement : première question (t = 20 s)"
+  },
+  {
+   "file": "D-calcul-02.jpg",
+   "contenu": "echauffement : « je ne sais pas » (t = 34 s) ; echauffement : une erreur (t = 50 s, réponse 4) ; étape notion (t = 89 s, début de l'étape) ; notion : première question (t = 102 s)"
+  },
+  {
+   "file": "D-calcul-03.jpg",
+   "contenu": "étape recompense (t = 453 s, début de l'étape) ; récompense : le coquillage (t = 480 s) ; récompense : la carte (t = 497 s) ; récompense : le coquillage (t = 499 s)"
+  },
+  {
+   "file": "D-calcul-04.jpg",
+   "contenu": "récompense : la carte (t = 514 s) ; étape (hors séance) (t = 515 s, début de l'étape) ; fin (t = 518 s : la lune, « Encore ! »)"
+  }
+ ]
+}

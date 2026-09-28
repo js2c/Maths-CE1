@@ -1,0 +1,32 @@
+{
+ "cas": "additions",
+ "nom": "additions (module 2)",
+ "total": 500.659,
+ "etapes": {
+  "accueil": 11.658999999999965,
+  "echauffement": 80.635,
+  "notion": 365.786,
+  "recompense": 41.914000000000044
+ },
+ "idle": 18,
+ "idleS": 126.79000000000008,
+ "errors": [],
+ "planches": [
+  {
+   "file": "D-additions-01.jpg",
+   "contenu": "accueil (avant « jouer ») ; étape accueil (t = 1 s, début de l'étape) ; étape echauffement (t = 9 s, début de l'étape) ; echauffement : première question (t = 20 s)"
+  },
+  {
+   "file": "D-additions-02.jpg",
+   "contenu": "echauffement : « je ne sais pas » (t = 33 s) ; echauffement : une erreur (t = 50 s, réponse 4) ; étape notion (t = 90 s, début de l'étape) ; notion : première question (t = 109 s)"
+  },
+  {
+   "file": "D-additions-03.jpg",
+   "contenu": "étape recompense (t = 456 s, début de l'étape) ; récompense : le coquillage (t = 465 s) ; récompense : la carte (t = 481 s) ; récompense : le coquillage (t = 483 s)"
+  },
+  {
+   "file": "D-additions-04.jpg",
+   "contenu": "récompense : la carte (t = 496 s) ; étape (hors séance) (t = 497 s, début de l'étape) ; fin (t = 501 s : la lune, « Encore ! »)"
+  }
+ ]
+}

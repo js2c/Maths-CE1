@@ -28,6 +28,7 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 
 /* la bande tactile de la ligne (placer, estimer) : toute la hauteur de la ligne et de ses nombres */
 .touchband { position: absolute; top: 380px; height: 230px; display: none; touch-action: none; cursor: pointer; }
+.fishhit { position: absolute; display: none; touch-action: none; cursor: grab; } /* lot 3 bis (B7) : le poisson du format « placer » se touche et se fait glisser */
 .answer.still { pointer-events: none; }
 
 /* séance : choix du nom, coche, lune, bilan des étoiles */

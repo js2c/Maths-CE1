@@ -18,7 +18,9 @@ import { clock, wait } from "../../engine/clock.js";
 import { onTap, pop, skipKey, SKIP_AT, spriteBox } from "../../engine/ui.js";
 
 const ANSWER_Y = 700, BUB = 140; // centre des bulles, taille de leur calque (px logiques)
-const FISH_WAIT = [790, 690]; // où le poisson attend d'être posé : à côté du nombre à placer
+// (lot 3 bis, B7 ; R16) le nombre à placer est écrit sur l'étiquette que porte le poisson (« placer.poisson », ancré à la
+// pointe de l'étiquette) ; il attend en bas, au milieu, la pointe à FISH_WAIT ; posé, la pointe touche la corde
+const FISH_WAIT = [640, 730], TIP = 3;
 // les boutons du lot 1 bis : « je ne sais pas » en bas à droite, « passer » en haut à droite (sous « réécouter », engine/ui.js)
 export const NSP_AT = [1180, 700];
 export { SKIP_AT };
@@ -38,7 +40,14 @@ export class NumberLineScreen {
     const o = app.ocean;
     // l'étoile de mer (lire) et le poisson à poser (placer, estimer) : des acteurs du premier plan
     this.star = o.spriteActor(o.frontEl, "etoile"); this.star.draw(0); this.star.show(false);
-    this.fish = o.spriteActor(o.frontEl, "poisson.0.d"); this.fish.show(false); this.fishAt = null; this.fishGoal = null; this.starLift = 0;
+    this.fish = o.spriteActor(o.frontEl, "placer.poisson"); this.fish.show(false); this.fishAt = null; this.fishGoal = null; this.starLift = 0;
+    const T = app.atlas.sprites["placer.poisson"]?.meta?.tag ?? { cx: 0, cy: -52, w: 92, h: 60 }, sp = app.sprites;
+    this.fish.draw = (f) => this.fish.paint(`${f}:${this.fishLabel}`, (ctx) => {
+      sp.draw(ctx, "placer.poisson", f, this.fish.ax, this.fish.ay);
+      if (!this.fishLabel) return;
+      const t = this.fishLabel, em = Math.min(34, (T.w - 16) / Math.max(1, R.wordWidth(t))), px = sp.px;
+      ctx.setTransform(px, 0, 0, px, 0, 0); R.drawNumber(ctx, t, this.fish.ax + T.cx, this.fish.ay + T.cy - em / 2 + 2, em, { w: em * 0.16, seed: 1300 });
+    });
     o.front.push((t) => {
       // l'étoile s'élève quand la tortue vient se poser sous elle (exemple guidé, retour E1)
       this.starLift += ((this.turtle.a.vis && this.starAt && Math.abs(this.turtle.pos[0] - this.starAt[0]) < 40 ? 46 : 0) - this.starLift) * 0.15;
@@ -59,6 +68,26 @@ export class NumberLineScreen {
     this.band.addEventListener("pointermove", (e) => { if (this.dragging) this.aim(pos(e)); });
     const up = (e) => { if (!this.dragging) return; this.dragging = false; this.aim(pos(e)); this.answer(this.aimed, null); };
     this.band.addEventListener("pointerup", up); this.band.addEventListener("pointercancel", () => { this.dragging = false; });
+    // (lot 3 bis, B7) le poisson lui-même se touche et se fait glisser jusqu'à la corde : on le lâche, il se pose à la
+    // graduation la plus proche (comme en touchant la corde) ; un toucher sans glisser fait onduler la corde
+    this.fishHit = document.createElement("div"); this.fishHit.className = "fishhit"; this.ui.append(this.fishHit);
+    Object.assign(this.fishHit.style, { left: `${FISH_WAIT[0] - 110}px`, top: `${FISH_WAIT[1] - 190}px`, width: "220px", height: "200px" });
+    let grab = null;
+    const gpos = (e) => { const r = this.ui.getBoundingClientRect(), k = r.width / 1280; return [(e.clientX - r.left) / k, (e.clientY - r.top) / k]; };
+    this.fishHit.addEventListener("pointerdown", (e) => { if (this.locked || !this.input) return; e.preventDefault(); this.fishHit.setPointerCapture(e.pointerId); grab = gpos(e); this.dragging = false; });
+    this.fishHit.addEventListener("pointermove", (e) => {
+      if (!grab) return; const [x, y] = gpos(e);
+      if (!this.dragging && Math.hypot(x - grab[0], y - grab[1]) < 12) return;
+      this.dragging = true;
+      // près de la corde, le poisson se cale sur la graduation visée ; plus bas, il suit le doigt
+      if (y < 620) this.aim(x); else { this.aimed = null; this.fishGoal = [x, y + 40]; }
+    });
+    const drop = (e) => {
+      if (!grab) return; const [x, y] = gpos(e), moved = this.dragging; grab = null; this.dragging = false;
+      if (!moved) return this.ripple();
+      if (y < 620) { this.aim(x); this.answer(this.aimed, null); } else this.fishGoal = [...FISH_WAIT];
+    };
+    this.fishHit.addEventListener("pointerup", drop); this.fishHit.addEventListener("pointercancel", () => { grab = null; this.dragging = false; this.fishGoal = [...FISH_WAIT]; });
     // « je ne sais pas » : visible tant qu'on attend une réponse ; compte comme une erreur (code NSP)
     this.nsp = spriteBox(app, { x: NSP_AT[0] - 75, y: NSP_AT[1] - 75, w: 150, h: 150, cls: "bubble nsp", label: "je ne sais pas", paint: (ctx) => app.sprites.draw(ctx, "nsp", 0, 75, 75) });
     this.nsp.style.visibility = "hidden";
@@ -84,7 +113,7 @@ export class NumberLineScreen {
   aim(x) {
     const q = this.q, t = Math.min(1, Math.max(0, (x - this.a) / (this.b - this.a)));
     this.aimed = q.format === "placer" ? q.min + Math.round((t * (q.max - q.min)) / q.step) * q.step : Math.round(q.min + t * (q.max - q.min));
-    const X = this.xOf(this.aimed); this.fishGoal = [X, R.lineY(this.spec, X) - 50];
+    const X = this.xOf(this.aimed); this.fishGoal = [X, R.lineY(this.spec, X) - TIP];
   }
   // ---------------------------------------------------------------- une question
   // Les deux versions de la ligne (la question, puis la correction avec le nombre et la graduation
@@ -102,7 +131,8 @@ export class NumberLineScreen {
     this.starAt = q.format === "lire" ? [R.tickP(this.spec, q.target)[0], R.tickP(this.spec, q.target)[1] - 42] : null;
     if (q.format === "sauter") this.turtle.sitOn(this.spec, q.start); else if (lesson && q.format !== "estimer") this.turtle.sitOn(this.spec, 0); else this.turtle.hide();
     this.input = q.format === "placer" || q.format === "estimer";
-    this.fishAt = this.input ? [...FISH_WAIT] : null; this.fishGoal = this.fishAt ? [...FISH_WAIT] : null;
+    this.fishAt = this.input ? [...FISH_WAIT] : null; this.fishGoal = this.fishAt ? [...FISH_WAIT] : null; this.fishLabel = this.input ? String(q.answer) : null;
+    this.fishHit.style.display = this.input ? "block" : "none";
     Object.assign(this.band.style, { display: this.input ? "block" : "none", left: `${this.spec.x0 - 30}px`, width: `${this.spec.x1 - this.spec.x0 + 60}px` });
     this.clearButtons();
     if (q.choices) {
@@ -112,7 +142,9 @@ export class NumberLineScreen {
         b.addEventListener("pointerdown", (e) => { e.preventDefault(); this.answer(c.value, b); });
         this.buttons.push(b);
       });
-    } else this.buttons.push(this.bubble(640, ANSWER_Y, String(q.answer), null, true)); // le nombre à placer, en grand
+    }
+    // (lot 3 bis, B7) la corde ondule brièvement au début de la question, pour montrer où toucher
+    if (this.input) this.ripple();
     voice.stop();
     const v = { n: q.answer, a: q.format === "sauter" ? q.min + q.start * q.step : q.min, sauts: q.jumps === 1 ? text.data.unSaut : `${q.jumps} ${text.data.sauts}` };
     // pendant la consigne, la pieuvre montre la cible (lot 2 : trois orientations) ; elle relâche quand la phrase est finie
@@ -278,7 +310,7 @@ export class NumberLineScreen {
         // au format « sauter », E3 est l'oubli du point de départ (la bouée où la tortue est posée), pas celui du début de la ligne
         const key = q.format === "sauter" && code === "E3" ? "E3sauter" : code;
         await g(voice.say(key && T[key] ? fill(T[key], { a: q.format === "sauter" ? q.min + q.start * q.step : q.min, n, ...(n >= 100 ? hundredsWords(text.data, n) : decompose(text.data, n)) }) : T.autre));
-        if (this.input) { const X = this.xOf(n); this.fishGoal = [X, R.lineY(this.spec, X) - 50]; } // le poisson va à la bonne place
+        if (this.input) { const X = this.xOf(n); this.fishGoal = [X, R.lineY(this.spec, X) - TIP]; } // le poisson va à la bonne place
         await this.explain(code, g);
         line.show(this.fix);
         await g(voice.say(fill(text.data.bonneReponse, { n })));
@@ -289,7 +321,7 @@ export class NumberLineScreen {
         voice.stop(); result.correctionPassee = true;
         this.fxAnimating = false; this.arcs = []; this.overlay = []; this.paintFx(true);
         line.show(this.fix);
-        if (this.input) { const X = this.xOf(n); this.fishGoal = [X, R.lineY(this.spec, X) - 50]; }
+        if (this.input) { const X = this.xOf(n); this.fishGoal = [X, R.lineY(this.spec, X) - TIP]; }
         if (q.format === "sauter") this.turtle.sitOn(this.spec, q.target); else this.turtle.hide();
         await wait(1000);
       }
@@ -362,7 +394,9 @@ export class NumberLineScreen {
   }
   // (correctif du 28 septembre 2026 : une correction quittée en cours laissait ses arcs et ses surbrillances, redessinés à
   // chaque image par `paintFx` tant que `fxAnimating` restait vrai, par-dessus l'exercice suivant)
-  leave() { this.clearButtons(); this.nsp.style.visibility = "hidden"; this.starAt = null; this.fishAt = null; this.fishGoal = null; this.turtle.hide(); this.band.style.display = "none"; this.arcs = []; this.overlay = []; this.fxAnimating = false; this.liveArc?.show(false); this.app.line.clear(); this.app.line.fxClear(); }
+  // la corde ondule (le calque de la ligne, animé par le compositeur : rien n'est redessiné)
+  ripple() { const c = this.app.stage.root.querySelector("#line"); c?.animate([{ transform: "translateY(0)" }, { transform: "translateY(-7px)" }, { transform: "translateY(5px)" }, { transform: "translateY(-3px)" }, { transform: "translateY(0)" }], { duration: 900, easing: "ease-in-out" }); }
+  leave() { this.fishHit.style.display = "none"; this.clearButtons(); this.nsp.style.visibility = "hidden"; this.starAt = null; this.fishAt = null; this.fishGoal = null; this.turtle.hide(); this.band.style.display = "none"; this.arcs = []; this.overlay = []; this.fxAnimating = false; this.liveArc?.show(false); this.app.line.clear(); this.app.line.fxClear(); }
 }
 export { NumberLineScreen as ReadScreen };
 

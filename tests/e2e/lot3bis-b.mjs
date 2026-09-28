@@ -10,6 +10,8 @@
 //               (familles 4 et 5, formes directe et à trou ; le cadre de 10 de la famille 5)
 //   fins      — B6 : trois étoiles arc-en-ciel à la récompense (une phrase au pluriel, les étoiles qui volent vers l'album,
 //               le coquillage à toucher aussitôt) ; la fin du défi est vérifiée par tests/e2e/defi.mjs
+//   placer    — B7 : le nombre écrit sur l'étiquette du poisson (plus de rond comme une bulle-réponse), la corde qui ondule,
+//               le poisson glissé jusqu'à la corde donne la réponse
 // (les autres parties s'ajoutent au fil de l'étape 4)
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { mkdirSync } from "node:fs";
@@ -236,6 +238,29 @@ if (want("fins")) {
   check(r.arc.length === 1 && /^3 étoiles arc-en-ciel ! Un jour, elles/.test(r.arc[0]), `une seule phrase, au pluriel (« ${r.arc.join(" | ")} »)`);
   check(r.dt < 6000, `le coquillage est à toucher ${(r.dt / 1000).toFixed(1)} s après le début de la phrase (voix accélérée)`);
   check(!errors.length, `fins : aucune erreur (${errors.join(" | ")})`); await context.close();
+}
+
+// ---------------------------------------------------------------- B7 : « placer »
+if (want("placer")) {
+  for (const [niveau, format] of [[2, "placer"], [9, "placer"], [8, "estimer"]]) {
+    const { page, context, errors } = await open(`&cran=conseille&choix=1:${niveau}&format=${format}&sans=echauffement&sansLecon&guides=0`);
+    await page.tap(".play", { force: true });
+    await page.waitForFunction(() => { const s = window.__app.screen; return s?.q && s.input && !s.locked; }, null, { timeout: 60000 });
+    await page.waitForTimeout(250); await shot(page, `B7-${format}-${niveau}-debut`);
+    const st = await page.evaluate(() => { const s = window.__app.screen; return { label: s.fishLabel, answer: s.q.answer, bulles: document.querySelectorAll(".answer").length, x: s.xOf(s.q.answer) }; });
+    check(st.label === String(st.answer) && st.bulles === 0, `niveau ${niveau}, ${format} : le nombre ${st.answer} est sur l'étiquette du poisson, aucun rond comme une bulle-réponse`);
+    await page.waitForTimeout(900);
+    // glisser le poisson (vrai toucher) jusqu'au-dessus de la bonne graduation, puis le lâcher
+    const vp = page.viewportSize(), k = vp.width / 1280, cdp = await context.newCDPSession(page), P = (x, y) => ({ x: x * k, y: y * k });
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [P(640, 640)] });
+    for (let i = 1; i <= 8; i++) { await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [P(640 + ((st.x - 640) * i) / 8, 640 - (170 * i) / 8)] }); await page.waitForTimeout(40); }
+    await page.waitForTimeout(200); await shot(page, `B7-${format}-${niveau}-glisse`);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await page.waitForTimeout(600); await shot(page, `B7-${format}-${niveau}-pose`);
+    const rep = await page.evaluate(async () => (await window.__app.store.all("reponses")).filter((r) => r.module === 1).at(-1));
+    check(rep && rep.juste, `niveau ${niveau}, ${format} : le poisson glissé sur la corde donne la réponse (${rep?.reponse ?? rep?.valeur}, juste : ${rep?.juste})`);
+    check(!errors.length, `${format} ${niveau} : aucune erreur (${errors.join(" | ")})`); await context.close();
+  }
 }
 
 await browser.close(); srv.close();

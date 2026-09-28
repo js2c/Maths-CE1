@@ -79,7 +79,7 @@ const pick = async (page, sel) => { await page.waitForSelector(sel, { timeout: 1
   const { page, context, errors } = await open();
   await tap(page, ".choisir"); await pick(page, '.choix-ex[aria-label="lecons"]');
   await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(400);
-  check((await page.locator(".choix-tuile").count()) === 7, "les leçons L1 à L6 et L10, vues ou non");
+  check((await page.locator(".choix-tuile").count()) === 10, "les leçons L1 à L10, vues ou non");
   await page.screenshot({ path: join(OUT, "8-lecons.png") });
   await pick(page, '.choix-tuile[data-key="L4"]');
   await page.waitForSelector(".skip", { timeout: 10000 }); await page.waitForTimeout(1500);

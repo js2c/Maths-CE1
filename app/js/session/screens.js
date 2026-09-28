@@ -235,12 +235,14 @@ export async function openShell(app, { session, hud, first = true, gold = false,
   ocean.octo.play("rejouir"); await wait(800);
   const inReef = !!(got.carte.recif && sprites.atlas.sprites[`creature.${got.carte.id}`]);
   // (lot 3 bis, A6 : le décor offert par un doublon apparaît à côté de la carte pendant que la voix l'annonce)
-  const decor = got.decor && sprites.atlas.sprites[got.decor.sprite] ? spriteBox(app, { x: C[0] + 230, y: 300, w: 200, h: 180, cls: "hud gift pop", still: true, paint: (ctx) => sprites.draw(ctx, got.decor.sprite, 0, 100, 160) }) : null;
+  // (lot 3 bis, étape 3 : les quinze décors dessinés, sur leur planche « decors », chargée le temps de le montrer)
+  if (got.decor && sprites.atlas.sprites[got.decor.sprite]) await sprites.load(sprites.sheetOf(got.decor.sprite));
+  const decor = got.decor && sprites.atlas.sprites[got.decor.sprite] ? spriteBox(app, { x: C[0] + 200, y: 260, w: 280, h: 250, cls: "hud gift pop", still: true, paint: (ctx) => sprites.draw(ctx, got.decor.sprite, 0, 140, 214) }) : null;
   await voice.say(cardSpeech(text, got, inReef), { instruction: true });
   const ok = spriteBox(app, { x: 1000 - 80, y: 560, w: 160, h: 160, cls: "bubble check invite", label: "c'est bon", paint: (ctx) => sprites.draw(ctx, "valider", 0, 80, 80) });
   await Promise.race([new Promise((r) => onTap(ok, r)), wait(20000)]);
   ok.remove(); voice.stop();
-  if (decor) { decor.classList.add("away"); setTimeout(() => decor.remove(), 1000); }
+  if (decor) { decor.classList.add("away"); setTimeout(() => { decor.remove(); if (sprites.sheetOf(got.decor.sprite) === "decors" && !app.reef?.open) sprites.unload("decors"); }, 1000); }
   el.classList.add("leave"); await wait(650); el.remove();
   ocean.front.splice(ocean.front.indexOf(tick), 1); shell.show(false); glint.show(false); shell.remove(); glint.remove();
   ocean.actors.splice(ocean.actors.indexOf(shell), 1); ocean.actors.splice(ocean.actors.indexOf(glint), 1);

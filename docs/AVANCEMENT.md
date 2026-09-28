@@ -12,22 +12,28 @@ Spécification : `docs/SPEC-LOT3BIS.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC
 | --- | --- | --- | --- |
 | 1 | A | §0 (réponse qui varie : règles et test sur les 116 combinaisons) ; A1 (amis de 10 et maisons, faits tirés au hasard, acquisition) ; A2 (calcul rapide « très dur ») ; A4 (mélange) | fait |
 | 2 | A | A3 (ligne : « plus facile », tirage sans remise, niveau 1, L3) ; A5 (toucher et reprise) ; A6 (décors : logique et voix, dessin provisoire) ; recette de la partie A | fait |
-| 3 | B | B8 : atelier (plaques numérotées, numéros des tuiles, légende, étiquette, décors, poissons des maisons, poisson étiqueté, étoiles volantes, fin du défi, bouées de L2) | en cours |
-| 4 | B | B1 à B7, B9 à B12 : intégration (choisir, légende, appui long, aides et corrections, fins, « placer », leçons L2, L8, L9, espace parent, cosmétique, guide du parent) | à faire |
+| 3 | B | B8 : atelier (plaques numérotées, numéros des tuiles, légende, étiquette, décors, poissons des maisons, poisson étiqueté, étoiles volantes, fin du défi, bouées de L2) | fait |
+| 4 | B | B1 à B7, B9 à B12 : intégration (choisir, légende, appui long, aides et corrections, fins, « placer », leçons L2, L8, L9, espace parent, cosmétique, guide du parent) | en cours |
 | 5 | B | Recette complète du lot 3 bis et relance des parties B et C de la recette fonctionnelle | à faire |
 
 ### Reprise des étapes 3 à 5 du lot 3 bis
 
 Pour reprendre si la session s'est arrêtée : branche `claude/eloquent-ptolemy-v1l9qg`, demande de fusion en brouillon « Lot 3 bis, étapes 3 à 5 (en cours) ».
 
-**Étape en cours :** 3 (atelier, B8).
+**Étape en cours :** 4 (intégration).
 
-**Fait :** rien encore.
+**Fait :**
 
-**Reste :** étapes 3, 4 et 5.
+- Correctif demandé par le parent (voir « Décisions prises »), commit à part.
+- Étape 3 (atelier, B8) : plaques numérotées (ligne, additions, calcul), lueur du conseillé épaissie, chemin de cailloux du calcul (dessin en direct), bouton de légende, croix, panneau et étiquette (dessin en direct, texte au feutre), « je ne sais pas » (pieuvre qui hausse les bras), coquillage d'aide (triton bleu-violet), onglets de zone de l'album (médaillons), poissons des maisons, poisson porteur d'étiquette, filet haut et bouées géantes de L2, traînée d'étoile arc-en-ciel, grand drapeau du record, les 15 décors du récif et leurs places (`cartes.json` : `place`, `echelle`). Planches spécimens regardées à l'agrandissement (`choiceSheet`, `lot3bisSheet`, `decorsSheet`) ; récif avec les 15 créatures et les 15 décors (rien de coupé, rien sur un bouton) ; décor montré à la récompense (`lot3bis.mjs`, partie décors : tout est bon). Test des bords : bon. `npm test` : 229, tout est bon ; `b-sequences.mjs --test` : 0 séance en défaut sur 464 ; simulation : 7 décors en un mois à 2 séances par semaine.
+
+**Reste :** étape 4 (intégration : B1 à B7, B9 à B12), étape 5 (recette).
 
 **Décisions prises :**
 
+- *Chemin de cailloux* : dessiné en direct (une fois par ouverture de l'écran) plutôt que fabriqué : la planche aurait pesé 7 Mo décodés pour un décor fixe ; mêmes primitives que les cailloux du chemin du calcul.
+- *Poisson de « placer »* : l'étiquette pend à un fil tenu dans la bouche du poisson, en forme de goutte dont la pointe touche la ligne à la graduation : le nombre est bien « porté » par le poisson et la pointe dit où il est posé.
+- *Décors* : réduits dans le récif (échelle 0,5 à 0,72, réglée dans le contenu) et posés derrière les créatures, pour que quinze décors tiennent avec quinze créatures sans rien cacher d'important ; un oursin, une anémone et une étoile de mer décors coexistent avec les créatures du même nom (liste du parent) : couleurs différentes (violet, rose clair, rouge).
 - *Correctif demandé par le parent (28 septembre 2026, constaté sur la tablette), commit à part* : un exercice quitté en cours laissait de son état à l'exercice suivant. `FactsScreen.leave()` et `abandon()` remettent à zéro le rappel de la saisie (`onTyped` : le chemin d'un calcul guidé, le tableau de la dictée), la saisie, l'anneau, l'aide et le « passer » de l'échauffement (`reset`) ; en cherchant toute la famille de défauts, deux autres trouvés et corrigés : les arcs et surbrillances d'une correction de la ligne restaient redessinés à chaque image (`LineScreen.leave`), la bulle-sablier et les perles du défi record restaient à l'écran (`abandonActivity`). Parcours `tests/e2e/etat-quitte.mjs` : 65 cas (ligne, dictée, additions, calcul rapide guidé et non guidé, défi ; consigne, saisie, aide, correction, exemple guidé ; puis chacun des autres exercices depuis l'accueil en pause), tout est bon ; sans le correctif, il reproduit le défaut constaté. Le défi n'est pas une cible (il ne se choisit pas) ; « Encore ! » passe par le même rangement (`abandonActivity`) que la maison.
 
 ### Reprise des étapes 1 à 2 du lot 3 bis

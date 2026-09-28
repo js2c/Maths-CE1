@@ -75,7 +75,7 @@ export class Reef {
       await Promise.all([...this.sheetsOf(zone)].map((s) => sprites.load(s)));
       if (!this.open || this.zones.get(zone) !== z) return;
       // (lot 3 bis, A6 : les décors gagnés par les doublons, et dans le lagon les cadeaux de la surprise)
-      z.gifts = reefDecor(cartes, rewards, zone, GIFT_SPOTS).filter((d) => sprites.atlas.sprites[d.sprite] && sprites.ready(sprites.sheetOf(d.sprite))).map((d) => { const a = ocean.spriteActor(ocean.frontEl, d.sprite); a.draw(0); return { a, at: d.at }; });
+      z.gifts = reefDecor(cartes, rewards, zone, GIFT_SPOTS).filter((d) => sprites.atlas.sprites[d.sprite] && sprites.ready(sprites.sheetOf(d.sprite))).map((d) => { const a = ocean.spriteActor(ocean.frontEl, d.sprite); a.draw(0); return { a, at: d.at, s: d.s ?? 1 }; });
       this.gifts = [...this.zones.values()].flatMap((x) => x.gifts);
       for (const c of pageCreatures(rewards.collection(), zone, (id) => !!sprites.atlas.sprites[`creature.${id}`])) {
         if (!sprites.ready(sprites.sheetOf(`creature.${c.id}`))) continue;
@@ -122,7 +122,7 @@ export class Reef {
         Object.assign(b.hit.style, { left: `${x + b.box.dx - b.box.w / 2}px`, top: `${y + b.box.dy - b.box.h / 2}px` });
         if (b.glint) { const u = (t * 0.6 + b.ph) % 1; b.glint.moveTo(x + b.box.dx + 30, y + b.box.dy - 30, 0.3 + 0.7 * Math.sin(Math.PI * u), Math.round(Math.sin(Math.PI * u) * 20) / 20); }
       }
-      for (const g of z.gifts) { g.a.show(on); g.a.moveTo(g.at[0] + off, g.at[1]); }
+      for (const g of z.gifts) { g.a.show(on); g.a.moveTo(g.at[0] + off, g.at[1], g.s); }
     }
     // le fond et le décor mobile (algues, poissons, reflets, bulles) suivent la page affichée ; la copie du fond montre la voisine
     const css = s ? `translateX(${Math.round(s * k * 100) / 100}px)` : "";
@@ -235,6 +235,6 @@ export class Reef {
     this.shift = 0; for (const el of [this.app.stage.bg, ocean.backEl]) { el.style.transform = ""; el.style.opacity = ""; el.style.transition = ""; }
     this.bgCopy?.remove(); this.bgCopy = null;
     this.els.forEach((e) => e.remove()); this.gifts = []; this.open = false;
-    sprites.unload("recif"); sprites.unload("cartes"); forgetPictures();
+    sprites.unload("recif"); sprites.unload("cartes"); sprites.unload("decors"); forgetPictures();
   }
 }

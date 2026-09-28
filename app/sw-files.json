@@ -1,5 +1,5 @@
 {
- "version": "5cd116a7fad1",
+ "version": "11d10fd29657",
  "files": [
   "./",
   "assets/art/aides@1x.webp",
@@ -8531,6 +8531,7 @@
   "js/session/frieze.js",
   "js/session/notion.js",
   "js/session/reef.js",
+  "js/session/reefpages.js",
   "js/session/rewards.js",
   "js/session/screens.js",
   "js/session/selector.js",

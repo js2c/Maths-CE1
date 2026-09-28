@@ -15,20 +15,22 @@ import { arcHeight } from "../engine/turtle.js";
 import { onTap, spriteBox } from "../session/screens.js";
 import { skipKey } from "../engine/ui.js";
 import { actions, countLabel, lessonLineSpec, settle, stateAt, tickOf } from "./script.js";
-import { wait } from "../engine/clock.js";
+import { clock, wait } from "../engine/clock.js";
 import { Lesson2Player } from "./player2.js";
 
 const ABORT = Symbol("leçon interrompue");
 const ease = (u) => 1 - Math.pow(1 - u, 3);
 // une animation de `ms` millisecondes, f(u) à chaque image, u de 0 à 1
-const tween = (ms, f) => new Promise((res) => { const t0 = performance.now(), step = (now) => { const u = Math.min(1, (now - t0) / ms); f(u); if (u < 1) requestAnimationFrame(step); else res(); }; requestAnimationFrame(step); });
+const tween = (ms, f) => { const g = clock.hold(); return new Promise((res) => { const t0 = performance.now(), step = (now) => { const u = Math.min(1, (now - t0) / ms); f(u); if (u < 1) requestAnimationFrame(step); else res(); }; requestAnimationFrame(step); }).then(g); };
 const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };
 const REPLAY_AT = [1180, 712], COUNTER = [700, 172]; // « rejouer » en bas à droite ; « passer » : engine/ui.js
 const NET_W = 62, NET_H = 34;
 
 export class LessonPlayer {
-  constructor(app, content) { this.app = app; this.c = content; this.tok = 0; this.nets = new Map(); }
-  get nl() { return this.app.lineScreen(); }
+  // `screen` : l'écran de la ligne à utiliser (lot 3, étape 5 : une leçon jouée depuis l'accueil en pause a le sien, pour ne
+  // rien toucher à celui de la séance) ; par défaut, celui de l'application
+  constructor(app, content, { screen = null } = {}) { this.app = app; this.c = content; this.tok = 0; this.nets = new Map(); this.screen = screen; }
+  get nl() { return this.screen ?? this.app.lineScreen(); }
 
   // joue la leçon `id` jusqu'au bout ; renvoie { vue, passee, dureeS, rejouees }.
   // « passer » (dès la première vue) l'arrête : passee, pas d'étoiles (notion.js).

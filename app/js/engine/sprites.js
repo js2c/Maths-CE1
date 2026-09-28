@@ -3,6 +3,8 @@
 // et @2x ; on prend la plus proche au-dessus de l'échelle d'affichage et, si elle ne tombe pas juste
 // (écran à 1,5 pixel par pixel logique, par exemple), on la réduit UNE fois au chargement : ensuite chaque
 // image est une copie pixel pour pixel, sans rééchantillonnage à chaque affichage.
+import { clock } from "./clock.js";
+
 const BASE = "assets/art/";
 
 export class Sprites {
@@ -24,11 +26,15 @@ export class Sprites {
       }));
       this.pages.set(sheet, { pages, r });
     })());
-    return this.loading.get(key);
+    return this.loading.get(key).then(clock.hold()); // (lot 3, étape 5 : la porte de l'activité qui charge)
   }
   ready(sheet) { return this.pages.has(sheet); }
+  // les planches chargées ou en cours de chargement
+  held() { return new Set([...this.pages.keys(), ...[...this.loading.keys()].map((k) => k.split("@")[0])]); }
   // libère une grande planche dont on n'a plus besoin (récif, cartes) : la mémoire décodée est rendue
+  // (lot 3, étape 5 : pendant une visite en pause, les planches de la séance sont épinglées, `pinned` : jamais libérées)
   unload(sheet) {
+    if (this.pinned?.has(sheet)) return;
     const p = this.pages.get(sheet); if (!p) return;
     p.pages.forEach((b) => b.close?.()); this.pages.delete(sheet);
     for (const k of [...this.loading.keys()]) if (k.startsWith(`${sheet}@`)) this.loading.delete(k);

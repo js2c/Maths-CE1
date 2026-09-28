@@ -383,8 +383,14 @@ Retours du parent après le premier essai du lot 1 (26 septembre 2026).
 **Navigation pendant la séance.**
 
 - Un bouton **« maison »** discret (coin haut gauche, zone tactile de 64 px au moins) ramène à l'accueil. La séance est mise en pause et reprend exactement où elle en était ; elle ne compte comme terminée qu'à la récompense (règle inchangée).
+- **L'accueil complet pendant une pause** (décision du parent du 28 septembre 2026 ; il remplace l'accueil réduit à « continuer » du lot 1 bis). Quelle que soit l'étape où l'enfant touche la maison (échauffement, notion du jour des trois modules, leçon, exemple guidé, correction, défi record), l'accueil montre :
+  - **« continuer »** à la place de « jouer » : la séance reprend exactement où elle en était (la même question, la même consigne redite, la même phrase de la leçon) ;
+  - **« choisir »** : l'écran de choix. Revenir sans valider (la maison) ramène à l'accueil en pause. Valider un **exercice** termine la séance en pause comme « Terminer la séance » du parent (enregistrée interrompue, avec la raison « autre exercice choisi par l'enfant », sans récompense ; ses réponses et ses étoiles restent : on ne perd jamais rien), puis lance l'exercice choisi comme séance du jour, avec étoiles ; si l'échauffement a déjà été fait ou passé ce jour-là, il n'est pas refait. Valider une **leçon** la joue, puis revient à l'accueil en pause, sans toucher à la séance ;
+  - **le récif et l'album** : visite libre, puis retour à l'accueil en pause, la séance intacte. Pendant ces visites, l'horloge, la voix et la musique de la séance restent en pause : le temps n'est pas compté ;
+  - **le logo de l'espace parent**, comme avant (« Terminer la séance » y reste).
+- La maison est présente pendant l'échauffement, la notion du jour (leçons, exemples guidés et corrections compris) et le défi record (le chronomètre s'arrête pendant la pause) ; pas pendant l'accueil ni la récompense.
 - Une **frise d'avancement** en haut de l'écran : un pictogramme par étape de la séance (accueil, échauffement, notion du jour, récompense), et dans l'étape en cours une rangée de petites bulles qui se remplissent à chaque question. Pas de chiffre, pas de chronomètre. Elle ne doit ressembler à aucun bouton (correctif du 27 septembre 2026) : pictogrammes plats et petits, sans disque blanc, sans contour épais ni ombre, enfilés sur une corde fine ; l'étape en cours se reconnaît à une lueur douce, les étapes à venir sont estompées. Elle ne réagit pas au toucher.
-- On ne choisit **pas** l'activité pendant la séance : la notion du jour reste choisie par l'application (sinon l'enfant évite ce qui est difficile). Le choix libre existe après la séance (voir « Encore ! »).
+- ~~On ne choisit pas l'activité pendant la séance.~~ Remplacé au lot 3 : l'enfant choisit l'exercice et le niveau dès l'accueil (`docs/SPEC-LOT3.md`, section 2), et depuis l'accueil en pause (ci-dessus).
 
 **Passer une explication** (révisé le 27 septembre 2026, après essai par le parent : la règle « à partir de la deuxième vue » est abandonnée partout).
 

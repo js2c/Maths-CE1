@@ -5,6 +5,8 @@
 // où elle est et comment elle penche. Gestes : repos (boucle), sortir, montrer (boucle intérieure `hold`
 // tant qu'on le demande), rejouir, changer (à la fin, il est dans la nouvelle coquille, `meta.to`).
 // La planche doit être chargée (`sprites.load("ermite")`) ; `remove()` range tout.
+import { clock } from "./clock.js";
+
 const CLIPS = ["repos", "sortir", "montrer", "rejouir", "changer"];
 
 export class Hermit {
@@ -26,7 +28,7 @@ export class Hermit {
   // joue un geste ; la promesse se résout à sa fin (`hold` : ms pendant lesquelles « montrer » reste tendu)
   play(clip, { hold = 0 } = {}) {
     this.done?.(); this.clip = clip; this.t0 = null; this.holdUntil = hold;
-    return new Promise((res) => { this.done = res; });
+    const g = clock.hold(); return new Promise((res) => { this.done = res; }).then(g);
   }
   // l'image du geste au temps `el` (s) ; null quand il est fini. Avec `hold` [a, b) : l'entrée (0 à a), la
   // boucle intérieure tant que dure le temps demandé (au moins un tour), puis la sortie (b à la fin)

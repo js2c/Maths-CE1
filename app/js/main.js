@@ -28,7 +28,7 @@ import { AidBoard } from "./modules/facts/aids.js";
 import { ChallengeView } from "./modules/facts/challengeView.js";
 import { Rewards } from "./session/rewards.js";
 import { chooseName, goodNight, onTap, reward, spriteBox, StarHud } from "./session/screens.js";
-import { challengeReady, doneToday, Session } from "./session/session.js";
+import { challengeReady, doneToday, sameDay, Session } from "./session/session.js";
 import { Reef } from "./session/reef.js";
 import { drawSurprise, playSurprise, previousSession } from "./session/surprise.js";
 import { Album } from "./session/album.js";
@@ -233,7 +233,7 @@ const parent = new ParentSpace(app, { content: parentContent, seance, module2, c
 app.parent = parent;
 // l'espace parent coupe le son ; à la sortie, ses réglages (musique, volume, bruitages) sont relus
 // (pendant une pause, le parent peut terminer la séance : endPausedSession)
-const openParent = async () => { voice.stop(); sound.suspend(); const r = await parent.open(); if (r?.terminer) await endPausedSession(); if (r?.reload) location.reload(); sound.setPrefs(await store.setting("son")); sound.resume(); };
+const openParent = async () => { voice.stop(); sound.suspend(); const r = await parent.open(); if (r?.terminer) await endPausedSession({ par: "parent", raison: "terminée par le parent pendant une pause" }); if (r?.reload) location.reload(); sound.setPrefs(await store.setting("son")); sound.resume(); };
 const big = (name, cx, cy, label, cls = "bubble") => spriteBox(app, { x: cx - 90, y: cy - 90, w: 180, h: 180, cls, label, paint: (ctx) => sprites.draw(ctx, name, 0, 90, 90) });
 let homeEls = [];
 const clearHome = () => { homeEls.forEach((e) => e.remove()); homeEls = []; };
@@ -280,10 +280,12 @@ const HOME_X = [520, 740, 960, 1165];
 async function runSession(choix = null) {
   // la durée maximale d'une séance est un réglage du parent (seance.json donne la valeur par défaut) ; « Échauffement :
   // non » (réglage du parent, lot 3) le retire de la séance et de la frise
-  const sans = (await store.setting("echauffement")) === false ? ["echauffement"] : [];
+  const sans = (await store.setting("echauffement")) === false ? ["echauffement"] : [], sansRaison = {};
+  // lot 3, étape 5 : l'échauffement déjà fait ou passé ce jour-là (séance interrompue pour un autre exercice) n'est pas refait
+  if (!sans.length && (await store.all("seances")).some((s) => !s.libre && sameDay(s.debut, Date.now()) && (s.etapes ?? []).some((e) => e.id === "echauffement" && e.dureeS !== undefined))) { sans.push("echauffement"); sansRaison.echauffement = "déjà fait aujourd'hui"; }
   // lot 3 : la rotation de « jouer » entre les trois modules, le moins maîtrisé d'abord (session.js, chooseModule)
   const [n1, n2, n3] = await Promise.all([1, 2, 3].map((k) => store.get("niveaux", k))), mastery = { 1: ((n1?.niveau ?? 1) - 1) / module1.niveaux.length, 2: (n2?.acquises?.length ?? 0) / module2.familles.length, 3: calcMastery(module3, n3) };
-  const session = new Session({ store, content: { ...seance, dureeMaxMin: await store.setting("dureeSeanceMin", seance.dureeMaxMin) }, handlers, rewards, paused: () => clock.pausedTotal(), onProgress: (p) => progress(p), choix, sans, mastery: (m) => mastery[m] ?? 0,
+  const session = new Session({ store, content: { ...seance, dureeMaxMin: await store.setting("dureeSeanceMin", seance.dureeMaxMin) }, handlers, rewards, paused: () => clock.pausedTotal(), onProgress: (p) => progress(p), choix, sans, sansRaison, mastery: (m) => mastery[m] ?? 0,
     // la protection du sélecteur redescend d'un cran : la pieuvre encourage, la voix le dit doucement
     onCranDown: async () => { voice.stop(); ocean.octo.play("encourager"); await voice.say(text.data.cranDescente); } });
   app.session = session; mode = "seance";
@@ -298,18 +300,22 @@ async function runSession(choix = null) {
 // une leçon choisie seule (lot 3) : ce n'est pas une séance ; regardée jusqu'au bout, elle rapporte ses étoiles une
 // fois par leçon et par jour (seance.json, choix.etoilesLecon), puis retour à l'accueil. Elle est notée vue, et
 // rangée dans l'historique du parent comme une séance « libre » (qui ne compte jamais comme la séance du jour).
-async function lessonAlone(id) {
-  mode = "lecon"; homeKey.style.visibility = "visible";
-  const t0 = Date.now(), r = await lessons.play(id);
-  mode = null; homeKey.style.visibility = "hidden";
+// (lot 3, étape 5 : `pause` : choisie depuis l'accueil en pause ; jouée par un lecteur à part, dans le bac à sable de la
+// scène (`sandbox`), puis retour à l'accueil en pause, la séance intacte ; la maison la quitte, sans rien noter)
+async function lessonAlone(id, { pause = false } = {}) {
+  const player = pause ? new LessonPlayer(app, lecons, { screen: new ReadScreen(app) }) : lessons;
+  mode = pause ? "pause-lecon" : "lecon"; homeKey.style.visibility = "visible";
+  const t0 = Date.now(), r = await Promise.race([player.play(id), new Promise((res) => { app.lessonCancel = () => { player.abandon(); clock.abandon(); voice.abandon(); res(null); }; })]);
+  app.lessonCancel = null; mode = pause ? "seance" : null; homeKey.style.visibility = "hidden";
+  if (!r) return;
   const L = lecons[id], key = L?.module === 2 ? 2 : L?.module === 3 ? 3 : 1, st = (await store.get("niveaux", key)) ?? (key === 3 ? { module: 3, acquis: [], obtenus: [], vus: {}, fenetres: {}, lecons: [] } : null);
   if ((r?.vue || r?.passee) && st && !(st.lecons ??= []).includes(id)) { st.lecons.push(id); await store.put("niveaux", st); }
   const today = new Date().toDateString(), done = await store.setting("leconsChoisies"), ids = done?.jour === today ? done.ids : [];
   let etoiles = 0;
   if (r?.vue && !ids.includes(id)) { etoiles = seance.choix?.etoilesLecon ?? 3; await store.setSetting("leconsChoisies", { jour: today, ids: [...ids, id] }); app.starFrom = [640, 400]; await rewards.add(etoiles, `leçon ${id}`); }
-  await store.add("seances", { debut: t0, fin: Date.now(), dureeS: Math.round((Date.now() - t0) / 1000), terminee: false, libre: true, leconChoisie: true, module: key, questions: 0, justes: 0, reussite: null, etoiles, etapes: [], lecons: [{ id, raison: "choix", ...r }] });
+  await store.add("seances", { debut: t0, fin: Date.now(), dureeS: Math.round((Date.now() - t0) / 1000), terminee: false, libre: true, leconChoisie: true, ...(pause ? { pendantPause: app.session?.id ?? true } : {}), module: key, questions: 0, justes: 0, reussite: null, etoiles, etapes: [], lecons: [{ id, raison: "choix", ...r }] });
   await clock.wait?.(etoiles ? 1500 : 0);
-  showHome({ done: await doneToday(store) });
+  if (!pause) showHome({ done: await doneToday(store) });
 }
 
 // ---------------------------------------------------------------- pendant la séance : la frise et la maison
@@ -322,24 +328,102 @@ const homeKey = spriteBox(app, { x: 14, y: 10, w: 120, h: 120, cls: "bubble home
 homeKey.style.visibility = "hidden";
 const progress = (p) => {
   frieze.set(p); frieze.show(!!p.etape);
-  // la maison pendant les questions et les leçons (pas pendant l'accueil ni la récompense)
-  homeKey.style.visibility = p.etape === "echauffement" || p.etape === "notion" ? "visible" : "hidden";
+  // la maison pendant les questions et les leçons (pas pendant l'accueil ni la récompense ; lot 3, étape 5 : aussi pendant le défi record)
+  homeKey.style.visibility = app.enPause ? "hidden" : p.etape === "echauffement" || p.etape === "notion" || p.etape === "defi" ? "visible" : "hidden";
 };
 // attend-on une réponse de l'enfant (la consigne est finie ou en cours) ?
 const awaiting = () => [app.screen, app.facts].some((s) => s && s.resolve && !s.locked);
-let pausedEls = null; // la pause en cours : la bulle « continuer » et le logo de l'espace parent
+// L'ACCUEIL COMPLET PENDANT UNE PAUSE (lot 3, étape 5 ; décision du parent du 28 septembre ; docs/SPEC.md, « Navigation
+// pendant la séance ») : « continuer » (reprise exacte), « choisir » (l'écran de choix : revenir sans valider ramène ici ;
+// valider un exercice termine la séance en pause, interrompue, et lance l'exercice choisi comme séance du jour ; valider
+// une leçon la joue puis revient ici), le récif et l'album (visite libre, puis retour ici), le logo de l'espace parent.
+// Horloge, voix et musique de la séance restent en pause pendant les visites (le temps n'est pas compté).
+let pausedEls = null; // l'accueil en pause : continuer, choisir, le récif, l'album, le logo de l'espace parent
+let visiting = false;
 async function pauseSession() {
   clock.pause(); voice.pause(); sound.pauseLevel(true); stage.root.classList.add("paused"); homeKey.style.visibility = "hidden";
+  app.enPause = true;
   await app.session?.notePause();
-  const resume = big("jouer", 640, 650, "continuer", "bubble play keep"), logo = parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs });
-  logo.classList.add("keep"); pausedEls = [resume, logo]; app.enPause = true;
-  onTap(resume, () => {
-    pausedEls = null; app.enPause = false;
-    voice.unlock(); resume.remove(); logo.remove(); stage.root.classList.remove("paused"); homeKey.style.visibility = "visible";
-    clock.resume(); voice.resume(); sound.pauseLevel(false);
-    // la séance attendait une réponse : la voix redit la consigne
-    if (!voice.cur && awaiting() && voice.instruction) voice.say(`${text.data.reprise} ${voice.instruction}`);
-  });
+  showPauseHome();
+}
+function clearPauseHome() { pausedEls?.forEach((e) => e.remove()); pausedEls = null; }
+function showPauseHome() {
+  clearPauseHome();
+  const resume = big("jouer", HOME_X[0], 650, "continuer", "bubble play keep"), pickKey = big("choisir", HOME_X[1], 650, "choisir", "bubble choisir keep");
+  const reefKey = big("recif", HOME_X[2], 650, "le récif", "bubble reefkey keep"), albumKey = big("album", HOME_X[3], 650, "l'album", "bubble albumkey keep");
+  const logo = parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }); logo.classList.add("keep");
+  pausedEls = [resume, pickKey, reefKey, albumKey, logo];
+  onTap(resume, resumeSession);
+  onTap(reefKey, () => visitInPause(() => reef.visit()));
+  onTap(albumKey, () => visitInPause(() => album.visit()));
+  onTap(pickKey, () => visitInPause(pickInPause));
+}
+function resumeSession() {
+  if (visiting) return;
+  clearPauseHome(); app.enPause = false;
+  voice.unlock(); stage.root.classList.remove("paused"); homeKey.style.visibility = "visible";
+  clock.resume(); voice.resume(); sound.pauseLevel(false);
+  // la séance attendait une réponse : la voix redit la consigne
+  if (!voice.cur && awaiting() && voice.instruction) voice.say(`${text.data.reprise} ${voice.instruction}`);
+}
+// une visite depuis l'accueil en pause, dans le bac à sable de la scène ; ensuite, retour à l'accueil en pause (ou, si
+// l'enfant a validé un autre exercice, la séance en pause est terminée et l'exercice choisi commence)
+async function visitInPause(fn) {
+  if (visiting || !app.enPause) return;
+  visiting = true; voice.unlock(); clearPauseHome();
+  const back = sandbox(); let after = null;
+  try { after = await fn(); } finally { back(); visiting = false; }
+  if (after?.exercice) return startChosen(after.exercice);
+  showPauseHome();
+}
+// l'écran « choisir » depuis la pause : la maison y revient sans rien valider
+async function pickInPause() {
+  mode = "pause-choix"; homeKey.style.visibility = "visible";
+  const c = await choose(app, { store, content: { module1, module2, module3, seance } });
+  mode = "seance"; homeKey.style.visibility = "hidden";
+  if (!c) return null;
+  if (c.lecon) { await lessonAlone(c.lecon, { pause: true }); return null; }
+  return { exercice: c };
+}
+// un autre exercice validé : la séance en pause est terminée comme « Terminer la séance » du parent (interrompue, sans
+// récompense ; ses réponses et ses étoiles restent), avec la raison, puis l'exercice choisi est la séance du jour
+async function startChosen(c) {
+  await endPausedSession({ par: "enfant", raison: "autre exercice choisi par l'enfant", home: false });
+  await runSession(c);
+}
+// LE BAC À SABLE DE LA SCÈNE pendant une visite en pause : ce que montre la séance est masqué tel quel (classe « stash »),
+// ses planches sont épinglées (jamais libérées pendant la visite), l'horloge et la voix de la séance sont mises de côté
+// (`suspend`) ; une leçon dessine dans des calques neufs (ligne, effets, aides) avec son propre écran de la ligne. Au
+// retour, tout ce que la visite a ajouté (éléments, acteurs, rappels d'image, planches) est retiré, et la séance
+// retrouve exactement sa pause.
+const ALWAYS = new Set(["fond", "rayons", "pieuvre", "algues", "poissons", "petits", "tortue", "pieuvre-gestes", "aides"]);
+function sandbox() {
+  const o = ocean, st = stage, kids = (el) => new Set(el.children);
+  const ui = kids(st.ui), front = kids(o.frontEl), root = kids(st.root);
+  const hidden = [...[...ui].filter((e) => !e.matches(".stars, .speaker, .session-home")), ...front, ...[...root].filter((e) => e.matches("#line, #fx, #aides, .aid-board"))];
+  hidden.forEach((e) => e.classList.add("stash"));
+  const actors = [...o.actors], oFront = [...o.front], ticks = new Set(st.ticks), sheets = sprites.held();
+  // (l'écran de la ligne de la séance reste en place, masqué : une leçon en pause a le sien ; les additions, le calque des
+  // aides et le bernard-l'ermite sont mis de côté : une leçon des additions ou du calcul rapide prend les siens)
+  const saved = { facts: app.facts, aidBoard: app.aidBoard, hermit: app.hermit, starFrom: app.starFrom, octoAt: [...o.octoAt], holding: o.octo.holding };
+  app.facts = null; app.aidBoard = null; app.hermit = null;
+  const lineBack = app.line.swap();
+  sprites.pinned = sheets;
+  const cs = clock.suspend(), vs = voice.suspend();
+  st.root.classList.remove("paused");
+  return () => {
+    voice.restore(vs); clock.restore(cs);
+    lineBack();
+    for (const [el, before] of [[st.ui, ui], [o.frontEl, front], [st.root, root]]) [...el.children].forEach((e) => { if (!before.has(e)) e.remove(); });
+    o.actors.splice(0, o.actors.length, ...actors); o.front.splice(0, o.front.length, ...oFront);
+    for (const f of [...st.ticks]) if (!ticks.has(f)) st.ticks.delete(f);
+    hidden.forEach((e) => e.classList.remove("stash"));
+    Object.assign(app, { facts: saved.facts, aidBoard: saved.aidBoard, hermit: saved.hermit, starFrom: saved.starFrom });
+    o.octoAt = saved.octoAt; o.octo.holding = saved.holding;
+    sprites.pinned = null;
+    for (const k of sprites.held()) if (!sheets.has(k) && !ALWAYS.has(k)) sprites.unload(k);
+    st.root.classList.add("paused");
+  };
 }
 // l'activité en cours est abandonnée pour de bon (engine/clock.js) et la scène rangée
 function abandonActivity() {
@@ -356,14 +440,24 @@ function abandonActivity() {
 function quitFree() { abandonActivity(); showHome({ done: true }); }
 // terminer la séance en pause, depuis l'espace parent (décision du parent du 27 septembre : l'enfant n'a pas de
 // bouton d'arrêt) : elle est enregistrée comme interrompue (terminée : non, sans récompense), retour à l'accueil
-async function endPausedSession() {
-  if (!pausedEls || !app.session) return;
-  pausedEls.forEach((e) => e.remove()); pausedEls = null; app.enPause = false;
-  await app.session.interrupt();
+// (lot 3, étape 5 : aussi quand l'enfant choisit un autre exercice depuis l'accueil en pause : `par` « enfant », la raison
+// notée pour l'historique du parent, et pas de retour à l'accueil : l'exercice choisi commence)
+async function endPausedSession({ par = "parent", raison = null, home = true } = {}) {
+  if (!app.enPause || !app.session) return;
+  clearPauseHome(); app.enPause = false;
+  await app.session.interrupt({ par, raison });
   abandonActivity(); frieze.show(false); stage.root.classList.remove("paused"); sound.pauseLevel(false);
-  showHome({ done: await doneToday(store) });
+  if (home) showHome({ done: await doneToday(store) });
 }
-onTap(homeKey, () => { pop(homeKey); if (mode === "seance") pauseSession(); else if (mode === "libre") quitFree(); else if (mode === "choix" || mode === "lecon") { abandonActivity(); showHome({ done: false }); } });
+onTap(homeKey, () => {
+  pop(homeKey);
+  if (mode === "seance") { if (!app.enPause) pauseSession(); }
+  else if (mode === "libre") quitFree();
+  else if (mode === "choix" || mode === "lecon") { abandonActivity(); showHome({ done: false }); }
+  // (lot 3, étape 5) depuis l'accueil en pause : l'écran « choisir » ou la leçon seule, quittés sans rien toucher à la séance
+  else if (mode === "pause-choix") app.choiceCancel?.();
+  else if (mode === "pause-lecon") app.lessonCancel?.();
+});
 async function freeTraining() {
   mode = "libre"; homeKey.style.visibility = "visible"; sound.startMusic(pickMusic(sonIndex, rnd));
   const free = new FreeTraining(app, { store, module1, module2, module3, rnd, seance });

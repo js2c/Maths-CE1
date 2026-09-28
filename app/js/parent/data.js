@@ -190,7 +190,7 @@ export function toCSV(columns, rows) {
 }
 export const SESSION_COLUMNS = [
   ["séance", (s) => s.id], ["date", (s) => dayKey(s.debut)], ["début", (s) => dateTime(s.debut)], ["fin", (s) => dateTime(s.fin)], ["durée (s)", (s) => s.dureeS],
-  ["terminée", (s) => !!s.terminee], ["module du jour", (s) => s.module], ["questions", (s) => s.questions], ["justes", (s) => s.justes],
+  ["terminée", (s) => !!s.terminee], ["interrompue : raison", (s) => (s.terminee || s.libre ? null : s.interruption?.raison ?? (s.arreteeParParent ? "terminée par le parent" : null))], ["module du jour", (s) => s.module], ["questions", (s) => s.questions], ["justes", (s) => s.justes],
   ["taux de réussite (%)", (s) => (s.reussite === null || s.reussite === undefined ? null : Math.round(s.reussite * 100))], ["étoiles", (s) => s.etoiles],
   ["leçons", (s) => (s.lecons ?? []).map((l) => `${l.id}${l.vue ? "" : l.passee ? " (passée)" : " (arrêtée)"}`).join(" ")], ["cartes", (s) => (s.cartes ?? []).join(" ")],
   ["entraînement libre", (s) => !!s.libre], ["pauses", (s) => s.pauses ?? 0],

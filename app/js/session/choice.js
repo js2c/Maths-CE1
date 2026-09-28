@@ -6,7 +6,7 @@
 // « double », ou « simple » : le premier toucher valide). Le niveau conseillé est entouré d'une lueur ; les niveaux
 // déjà validés portent une petite étoile. À l'étape du niveau, la bulle de l'exercice (en haut) ramène au choix de
 // l'exercice ; la maison (main.js) ramène à l'accueil.
-// Renvoie { module: 1, niveau } | { module: 2, famille } | { lecon }. Fonctions pures (`levelItems`) testées par
+// Renvoie { module: 1, niveau } | { module: 2, famille } | { lecon } (| null : quitté sans valider, `app.choiceCancel`). Fonctions pures (`levelItems`) testées par
 // tests/unit/choix.test.mjs.
 import * as R from "../art/runtime.js";
 import { onTap, pop, spriteBox } from "../engine/ui.js";
@@ -58,6 +58,9 @@ export async function choose(app, o) {
   const familyShare = (id, boite) => ruleShare(o.content.module2, faits, id, boite);
   const els = [], clear = () => { els.forEach((e) => e.remove()); els.length = 0; };
   app.choiceClear = () => { clear(); sprites.unload("choix"); };
+  // (lot 3, étape 5) quitter sans rien valider (la maison, depuis l'accueil en pause) : `app.choiceCancel()`, choose renvoie null
+  const CANCEL = Symbol("annulé"), cancelled = new Promise((res) => { app.choiceCancel = () => res(CANCEL); });
+  const done = () => { clear(); sprites.unload("choix"); app.choiceClear = null; app.choiceCancel = null; voice.stop(); return null; };
   // une étape : des boutons (b.dataset.key), le premier toucher les nomme, le second (ou la coche) valide (« double ») ;
   // « simple » : le premier toucher nomme et valide
   // (sel.key : la clé de l'image entourée, lue par les dessins)
@@ -85,7 +88,8 @@ export async function choose(app, o) {
       b.dataset.key = e.id; els.push(b); return b;
     });
     voice.stop(); voice.say(text.data.choixExercice, { instruction: true });
-    const ex = await pick(exBtn, (k) => text.data.choixNom[k], checkKey());
+    const ex = await Promise.race([pick(exBtn, (k) => text.data.choixNom[k], checkKey()), cancelled]);
+    if (ex === CANCEL) return done();
     clear();
     // 2. le niveau, la famille ou la leçon
     const exo = xs.find((e) => e.id === ex), items = levelItems(ex, { st1, st2, st3, module1: o.content.module1, module2: o.content.module2, module3: o.content.module3, lecons: C.lecons ?? [], familyShare });
@@ -107,11 +111,12 @@ export async function choose(app, o) {
     voice.say(ex === "lecons" ? text.data.choixLecon : text.data.choixNiveau, { instruction: true });
     const name = (k) => (ex === "ligne" ? text.data.choixLigne[k] : ex === "additions" ? text.data.choixFamille[k] : ex === "calcul" ? text.data.choixCalcul[k] : text.data.choixLeconNom[k] ?? k);
     const backP = new Promise((res) => onTap(back, () => { pop(back); res(null); }));
-    const key = await Promise.race([pick(tiles, name, checkKey()), backP]);
+    const key = await Promise.race([pick(tiles, name, checkKey()), backP, cancelled]);
+    if (key === CANCEL) return done();
     clear();
     if (key === null) continue;
     if (double) voice.stop();
-    sprites.unload("choix"); app.choiceClear = null;
+    sprites.unload("choix"); app.choiceClear = null; app.choiceCancel = null;
     if (ex === "ligne") return { module: 1, niveau: Number(key) };
     if (ex === "additions") return { module: 2, famille: Number(key) };
     if (ex === "calcul") return { module: 3, niveau: Number(key) };

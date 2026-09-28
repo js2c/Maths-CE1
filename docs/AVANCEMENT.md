@@ -20,7 +20,7 @@ Spécification : `docs/SPEC-LOT3.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LO
 
 Pour reprendre si la session s'est arrêtée : branche `claude/intelligent-hawking-xwz6hw` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 3, étape 5 (en cours) ». L'étape 5 est élargie par la demande du parent du 28 septembre (neuf sous-parties : décisions du 28 septembre, accueil complet pendant une pause, récif en pages, voix des cartes, erreur « reading '0' », bilan, guide du parent, recette, clôture).
 
-**Sous-partie en cours :** 2 (accueil complet pendant une pause).
+**Sous-partie en cours :** 3 (le récif en pages).
 
 **Fait :**
 
@@ -28,7 +28,16 @@ Pour reprendre si la session s'est arrêtée : branche `claude/intelligent-hawki
 - 4 (fait en avance). La voix des cartes en grand : une seule fois, à l'ouverture (`cards.js`, `cardLine`) ; test `tests/unit/carte-voix.test.mjs` ; contrôles ajoutés dans `recompenses.mjs` et `cartes.mjs`.
 - 5 (fait en avance). Erreur « reading '0' » : cause trouvée par lecture du code (voir « Décisions prises (étape 5) ») ; corrigée (`stage.js`, `turtle.js`, `sprites.js` : `frameIndex`) avec le test `tests/unit/erreur-image.test.mjs`, qui reproduit le message avant la correction ; journal des incidents techniques (console et espace parent).
 
-**Reste :** 2, 3, 6 à 9 ; vérifier 4 dans `recompenses.mjs` et `cartes.mjs` (recette).
+- 2. Accueil complet pendant une pause : continuer, choisir, le récif, l'album, le logo (`main.js` : `pauseSession`, `showPauseHome`, `visitInPause`, `sandbox`, `pickInPause`, `startChosen`) ; horloge et voix mises de côté (`suspend`, `restore`, `park`) et porte d'activité (`clock.hold`) ; planches épinglées ; calques de la ligne remplacés le temps d'une leçon (`LineView.swap`), lecteur de leçons à part avec son propre écran de la ligne ; `choose` quittable (`choiceCancel`) ; séance interrompue avec sa raison (`Session.interrupt({ par, raison })`, espace parent, export) ; échauffement déjà fait ou passé non refait (`sansRaison`) ; maison pendant le défi record. Parcours `tests/e2e/pause.mjs` : pause depuis l'échauffement, la ligne, les additions, le calcul rapide, une leçon et le défi ; pour chacun, récif (une carte ouverte) puis album puis reprise exacte ; puis choisir sans valider, une leçon depuis la pause, un autre exercice : tout est bon. Mémoire : `perf.mjs` (densité 2, processeur ÷ 4), planches décodées : 180,6 Mo en pause pendant la ligne, 224,4 Mo avec le récif ouvert en pause (planche du récif et des cartes en plus), 180,6 Mo après le retour (rien ne reste) ; image moyenne 21,4 ms pendant la visite. `pause-parent`, `ergonomie`, `seance` : tout est bon. SPEC (« Navigation pendant la séance ») et ARCHITECTURE à jour ; guide du parent au point 7.
+
+**Reste :** 3, 6 à 9 ; vérifier 4 dans `recompenses.mjs` et `cartes.mjs` (recette).
+
+**Décisions prises (sous-partie 2) :**
+
+- *« Fait ou passé »* : l'échauffement compte comme fait dès que son étape s'est terminée dans une séance du jour (toutes ses questions, le temps écoulé, ou « passer ») ; une séance interrompue au milieu de l'échauffement ne le compte pas : il est refait dans la séance choisie.
+- *Une leçon jouée depuis la pause* est rangée comme une leçon choisie seule (séance « libre », étoiles une fois par leçon et par jour), notée `pendantPause` ; la maison l'arrête sans rien noter et revient à l'accueil en pause.
+- *Porte d'activité* : trouvée par le parcours (une phrase de leçon avançait pendant une visite) ; elle change aussi une pause simple : un saut de la tortue déjà commencé se termine à l'écran, mais la suite attend la reprise (avant : elle pouvait continuer jusqu'à la prochaine attente).
+- *Pendant une visite*, « réécouter » redit la consigne de la visite (récif, album) ; au retour, celle de la séance.
 
 **Décisions prises (étape 5) :**
 

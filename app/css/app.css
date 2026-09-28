@@ -72,6 +72,8 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
    le logo du parent et le compteur d'étoiles restent */
 #stage.paused #line, #stage.paused #fx, #stage.paused #aides, #stage.paused #front { visibility: hidden; }
 #stage.paused #ui > :not(.keep):not(.stars) { visibility: hidden !important; }
+/* lot 3, étape 5 : pendant une visite depuis l'accueil en pause (récif, album, choisir, leçon), ce que montrait la séance est mis de côté tel quel */
+.stash { visibility: hidden !important; pointer-events: none !important; }
 
 /* l'album : un voile sombre, les vignettes des cartes, les onglets des zones */
 .album-veil { background: rgba(6, 34, 44, 0.84); }

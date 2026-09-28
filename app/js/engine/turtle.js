@@ -3,6 +3,7 @@
 // chaque image, l'avancée entre les deux bouées et la hauteur relative de l'arc (meta.path) : ici on
 // l'étire à l'écart réel entre deux graduations, qui change d'un niveau à l'autre.
 import { buoyR, lineY, tickP } from "../art/runtime.js";
+import { clock } from "./clock.js";
 
 const FPS = 12;
 
@@ -29,7 +30,8 @@ export class Turtle {
     this.a.draw(f, this.clip);
     this.a.moveTo(this.pos[0], this.pos[1]);
   }
-  run(fn) { return new Promise((res) => { this.t0 = this.now ?? 0; this.animDone = res; this.anim = fn; }); }
+  // (la fin de l'animation passe par la porte de l'activité qui l'a demandée : engine/clock.js, `hold`)
+  run(fn) { const g = clock.hold(); return new Promise((res) => { this.t0 = this.now ?? 0; this.animDone = res; this.anim = fn; }).then(g); }
   // un saut de la graduation i à la graduation j (voisines ou non) ; onLand à l'atterrissage
   jump(j, { onTakeOff } = {}) {
     const a = this.seat(this.at), b = this.seat(j), d = Math.abs(b[0] - a[0]), h = Math.min(70, 22 + d * 0.45), n = this.path.length;

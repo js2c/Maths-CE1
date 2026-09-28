@@ -1,6 +1,6 @@
 # Guide du parent
 
-Ce guide explique, sans connaissances techniques, comment mettre l'application en ligne, l'installer sur la tablette et suivre la progression. Il correspond aux lots 1, 1 bis, 2 et 3 (partie A, septembre 2026), avec les décisions du 27 septembre 2026. Le bilan du lot 2 est dans `docs/BILAN-LOT2.md`.
+Ce guide explique, sans connaissances techniques, comment mettre l'application en ligne, l'installer sur la tablette et suivre la progression. Il correspond aux lots 1, 1 bis, 2 et 3 (parties A et B, septembre 2026), avec les décisions du 27 septembre 2026. Le bilan du lot 2 est dans `docs/BILAN-LOT2.md`.
 
 ## a) L'adresse de l'application
 
@@ -117,6 +117,15 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 
 **Attention : restaurer remplace toutes les données de la tablette.** Faire d'abord une **Sauvegarde complète** des vraies données, et la restaurer après l'essai. La pieuvre s'y appelle « Pili » ; votre code parent est gardé. Les cartes suivent le calendrier scolaire : des séances simulées avant la rentrée (trois mois fabriqués en septembre) ne donnent presque pas de cartes nouvelles, c'est normal.
 
+**Le calcul rapide (lot 3, partie B).** Un troisième exercice : des calculs comme 47 + 2, 34 + 10, 38 + 5 ou 42 − 5, à taper au pavé (le même écran que les additions). Il enseigne des **raccourcis** plutôt que de compter un par un, avec deux supports : le **mur de corail** (les nombres de 1 à 100 rangés par dix ; un petit poisson jaune y descend d'une rangée pour « plus dix ») et le **chemin** : des cailloux reliés par des ponts (38, pont « + 2 », 40, pont « + 3 », 43). Neuf niveaux, dans l'ordre de la SPEC ; les leçons L7 (plus dix sur le mur), L8 (l'astuce du neuf) et L9 (passer la dizaine) se jouent à l'entrée des niveaux 2, 6 et 7.
+
+- Un nouveau niveau commence par sa leçon, puis 3 calculs guidés où l'enfant tape le nombre de chaque caillou, puis des calculs où le chemin apparaît seulement si elle touche le coquillage.
+- Les vagues du début de séance : « plus facile » montre le chemin d'emblée (sans faire monter de niveau) ; « plus dur » enlève le chemin ; « très dur » aussi, et pose des calculs à trou (« 38 plus combien, ça fait 43 ? »).
+- Une réponse juste mais lente (au-delà du temps de frappe mesuré plus 8 secondes) n'est jamais reprochée : l'application dit « Bravo ! Regarde le raccourci. » et rejoue le chemin.
+- Avec **jouer**, la notion du jour tourne entre les trois exercices (le moins avancé d'abord, jamais deux fois de suite le même). Le niveau 1 est ouvert dès le début ; les suivants s'ouvrent quand les précédents sont acquis, le 4 quand les maisons de 5 à 7 sont bien sues, le 7 avec les amis de 10. Avec **choisir**, tous les niveaux sont accessibles.
+- Dans l'espace parent : le bloc **Module 3 · Calcul rapide** (onglet Progression), les erreurs C1 à C5 dans le journal (par exemple C4 : « 38 + 5 = 33 », on a oublié de passer à la dizaine suivante), le point de départ du calcul rapide et « calcul rapide » dans la notion du jour de la prochaine séance.
+- Pour que chaque calcul ait sa phrase enregistrée, les nombres restent dans des bornes (par exemple « plus 1, plus 2 » entre 21 et 69) : la voix tient ainsi sous 40 Mo. On peut les élargir (fichier `app/content/module3.json`), au prix de quelques mégaoctets de plus.
+
 ## e) Ce qui reste approximatif ou à ajuster
 
 **À vérifier sur la vraie tablette.** Écouter la voix (aucune phrase n'a été écoutée par une personne, la vérification a été automatique) et regarder les illustrations des cartes en grand. Toutes les mesures ont été faites sur un ordinateur, en ralentissant le processeur 4 fois pour imiter une tablette : démarrage en moins de 1,5 s, animation à 50 à 60 images par seconde la plupart du temps, avec des baisses vers 30 pendant certaines animations (l'application allège alors d'elle-même le décor). Il faut confirmer que tout reste fluide sur la tablette.
@@ -133,6 +142,6 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 - Un petit à-coup (environ un dixième de seconde) à l'apparition de certaines questions.
 - Pendant une pause, un saut de la tortue déjà commencé se termine (moins d'une seconde), et la phrase coupée est redite depuis son début.
 
-**Pas encore fait (prévu dans les lots suivants).** Le calcul rapide (lot 3), les problèmes, les bilans officiels toutes les deux semaines, les illustrations et anecdotes du grand large et des abysses (à livrer **avant début février** et **avant fin avril**, sinon la collection s'arrête au récif de corail), les quatre cartes rares liées aux nombres jusqu'à 1 000, les créatures animées des zones 2 à 4 dans le récif (lot 4).
+**Pas encore fait (prévu dans les lots suivants).** Le bilan du lot 3 (étape 5), les problèmes, les bilans officiels toutes les deux semaines, les illustrations et anecdotes du grand large et des abysses (à livrer **avant début février** et **avant fin avril**, sinon la collection s'arrête au récif de corail), les quatre cartes rares liées aux nombres jusqu'à 1 000, les créatures animées des zones 2 à 4 dans le récif (lot 4).
 
 **Stockage protégé.** Chrome accorde en général la protection des données (« stockage persistant ») quand l'application est installée sur l'écran d'accueil. L'espace parent indique si c'est le cas (**Données et réglages** > **Données protégées**). Même accordée, elle ne protège pas d'un effacement volontaire : la sauvegarde de la semaine reste la vraie sécurité.

@@ -16,6 +16,16 @@ Spécification : `docs/SPEC-LOT3.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LO
 | 4 | B | Module 3 : niveaux 1 à 9, générateurs, erreurs C1 à C5, déroulé d'un nouveau niveau, leçons L7 à L9, crans, choix du niveau, rotation dans « jouer », espace parent | fait (même branche ; recette complète des étapes 1 à 4 faite) |
 | 5 | B | Bilan : `docs/BILAN-LOT3.md`, guide du parent, recette complète sur l'année | à faire |
 
+### Reprise de l'étape 5 du lot 3
+
+Pour reprendre si la session s'est arrêtée : branche `claude/intelligent-hawking-xwz6hw` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 3, étape 5 (en cours) ». L'étape 5 est élargie par la demande du parent du 28 septembre (neuf sous-parties : décisions du 28 septembre, accueil complet pendant une pause, récif en pages, voix des cartes, erreur « reading '0' », bilan, guide du parent, recette, clôture).
+
+**Sous-partie en cours :** 1 (décisions du parent du 28 septembre).
+
+**Fait :** rien encore.
+
+**Reste :** 1 à 9.
+
 ### Reprise des étapes 1 à 4 du lot 3
 
 Pour reprendre si la session s'est arrêtée : branche `claude/laughing-ritchie-cp777i`, demande de fusion en brouillon « Lot 3, étapes 1 à 4 (en cours) ».

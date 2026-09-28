@@ -12,6 +12,7 @@
 //               le coquillage à toucher aussitôt) ; la fin du défi est vérifiée par tests/e2e/defi.mjs
 //   placer    — B7 : le nombre écrit sur l'étiquette du poisson (plus de rond comme une bulle-réponse), la corde qui ondule,
 //               le poisson glissé jusqu'à la corde donne la réponse
+//   lecons    — B9 : L2, L8, L9, une capture à chaque phrase dite ; la chronologie voix et sauts de L2 ; durée de L8
 // (les autres parties s'ajoutent au fil de l'étape 4)
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { mkdirSync } from "node:fs";
@@ -260,6 +261,43 @@ if (want("placer")) {
     const rep = await page.evaluate(async () => (await window.__app.store.all("reponses")).filter((r) => r.module === 1).at(-1));
     check(rep && rep.juste, `niveau ${niveau}, ${format} : le poisson glissé sur la corde donne la réponse (${rep?.reponse ?? rep?.valeur}, juste : ${rep?.juste})`);
     check(!errors.length, `${format} ${niveau} : aucune erreur (${errors.join(" | ")})`); await context.close();
+  }
+}
+
+// ---------------------------------------------------------------- B9 : les leçons L2, L8, L9
+if (want("lecons")) {
+  for (const id of ["L2", "L8", "L9"]) {
+    // voix réelle (non accélérée) : la chronologie et la durée sont celles de la tablette
+    const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 2, hasTouch: true }), page = await context.newPage(), errors = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    await page.goto(url + "?nosw&son=non"); await page.waitForFunction(() => window.__ready !== undefined);
+    await page.evaluate(async () => { await window.__app.store.setSetting("mascotte", "Pili"); });
+    await page.goto(url + `?nosw&son=non&lecon=${id}`); await page.waitForFunction(() => window.__ready !== undefined);
+    await page.evaluate(() => {
+      const v = window.__app.voice, say = v.say.bind(v), t0 = performance.now(); window.__said = []; window.__jumps = [];
+      v.say = (t, o) => { window.__said.push({ t: performance.now() - t0, text: t }); return say(t, o); };
+      const T = window.__app.lineScreen().turtle, j = T.jump.bind(T); T.jump = (i) => { window.__jumps.push({ t: performance.now() - t0, i }); return j(i); };
+    });
+    const start = Date.now();
+    await page.tap(".play", { force: true });
+    let n = 0;
+    for (;;) {
+      const done = await page.waitForFunction((n) => window.__said.length > n || (window.__lecon !== undefined), n, { timeout: 90000, polling: 50 }).then(() => page.evaluate(() => window.__lecon !== undefined));
+      const len = await page.evaluate(() => window.__said.length);
+      if (len > n) { n = len; await page.waitForTimeout(id === "L2" ? 450 : 900); await shot(page, `B9-${id}-${String(n).padStart(2, "0")}`); }
+      else if (done) break;
+    }
+    const dur = (Date.now() - start) / 1000, said = await page.evaluate(() => window.__said), jumps = await page.evaluate(() => window.__jumps);
+    console.log(`     ${id} : ${said.length} phrases en ${dur.toFixed(1)} s`);
+    if (id === "L2") {
+      // chaque saut part au moment où son nombre est dit (« dix, », « vingt, », « trente… »)
+      const lag = ["dix,", "vingt,", "trente…"].map((w, k) => { const s = said.find((x) => x.text === w), jmp = jumps.filter((x) => x.i > 0)[k]; return s && jmp ? Math.round(jmp.t - s.t) : null; });
+      check(lag.every((d) => d !== null && Math.abs(d) < 200), `L2 : chaque saut part avec son nombre (écarts voix → saut : ${lag.join(", ")} ms)`);
+      const geant = await page.evaluate(() => { const S = window.__app.lessons.p ?? null; return !!window.__app.lineScreen().spec?.geant; });
+      check(geant, "L2 : la corde aux bouées géantes");
+    }
+    if (id === "L8") check(dur >= 25 && dur <= 50, `L8 : deux exemples, ${dur.toFixed(0)} s (cible 30 à 45 s)`);
+    check(!errors.length, `${id} : aucune erreur (${errors.join(" | ")})`); await context.close();
   }
 }
 

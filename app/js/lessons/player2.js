@@ -17,7 +17,7 @@
 // « aides ») : mur { construire } (le mur de corail, rangée par rangée si `construire`) ; poisson n (le petit poisson jaune
 // se pose sur la case n, ou sur la graduation n de la ligne) ; nager n (il y nage) ; allumer [n…] (les cases allumées) ;
 // couleurs true|false (les dizaines en corail, les unités en bleu) ; ligne { min, max } (une ligne de 1 en 1) ; sauts n
-// (le poisson saute de graduation en graduation jusqu'à n, un arc par saut).
+// (le poisson saute de graduation en graduation jusqu'à n, un arc par saut) ; pont n (lot 3 bis : un seul grand saut jusqu'à n, marqué « + k »).
 import * as R from "../art/runtime.js";
 import { onTap, spriteBox } from "../session/screens.js";
 import { skipKey } from "../engine/ui.js";
@@ -31,7 +31,8 @@ const REPLAY_AT = [1180, 712];
 const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };
 const EMPTY = () => ({ miroir: null, cadre: null, maison: null, ecrit: null, filet: false, chalut: null, compteur: null, chaluts: null, nombre: null, mur: null, ligne: null, arcs: [] });
 // lot 3 : le mur de corail et la ligne des leçons L7 à L9
-export const LESSON_WALL = { x: 580, y: 150, cell: 42, gap: 3 }, LESSON_LINE = { x0: 330, x1: 1190, y: 610 };
+// (lot 3 bis, R18 : la ligne s'arrête avant « rejouer », qui coupait le dernier nombre)
+export const LESSON_WALL = { x: 580, y: 150, cell: 42, gap: 3 }, LESSON_LINE = { x0: 330, x1: 1090, y: 610 };
 
 export class Lesson2Player {
   constructor(app, content) { this.app = app; this.c = content; this.tok = 0; this.keys = null; }
@@ -91,7 +92,8 @@ export class Lesson2Player {
     if (name === "remplir") { st.filet = false; st.chalut = v; st.compteur = v * 10; this.app.sound?.play("bouton"); return this.paint(); }
     if (name === "chaluts") { st.filet = false; st.chalut = null; st.compteur = null; st.chaluts = v; return this.paint(); }
     if (name === "nombre") {
-      st.nombre = { ...v, cache: false }; this.paint();
+      // (lot 3 bis, R20 : le nombre écrit en grand remplace le compteur du chalut : « 100 » n'est plus écrit deux fois)
+      st.compteur = null; st.nombre = { ...v, cache: false }; this.paint();
       if (v.clignote !== undefined) for (let i = 0; i < 6; i++) { await wait(320); st.nombre.cache = !st.nombre.cache; this.paint(); }
       st.nombre.cache = false; return this.paint();
     }
@@ -111,6 +113,10 @@ export class Lesson2Player {
       // sur le mur : d'abord les rangées (± 10), puis les cases (± 1)
       if (st.mur && Math.floor((from - 1) / 10) !== Math.floor((v - 1) / 10) && (from - 1) % 10 !== (v - 1) % 10) { await this.fish.swim(...this.fishAt(from + 10 * (Math.floor((v - 1) / 10) - Math.floor((from - 1) / 10))), 700); }
       return this.fish.swim(...p, 700);
+    }
+    // (lot 3 bis, B9 : L9 en deux tableaux) un pont : le poisson saute d'un coup jusqu'à n, un grand arc marqué « + k »
+    if (name === "pont") {
+      const a = this.fishN, k = v - a; st.arcs.push([a, v, `+${k}`]); this.paint(); await this.fish.swim(...this.fishAt(v), 800); this.fishN = v; this.app.sound?.play("bouton"); return;
     }
     if (name === "sauts") {
       while (this.fishN < v) { const a = this.fishN, b = a + 1; st.arcs.push([a, b]); this.paint(); await this.fish.swim(...this.fishAt(b), 420); this.fishN = b; this.app.sound?.play("bouton"); await wait(120); }
@@ -134,7 +140,7 @@ export class Lesson2Player {
       if (st.maison) paintHouse(ctx, sprites, 700, 400, st.maison.total, st.maison.etages ?? []);
       // lot 3 : le mur de corail, la ligne de L9 (et ses arcs)
       if (st.mur) R.drawWall(ctx, { ...LESSON_WALL, lit: st.mur.lit, split: st.mur.split, upTo: st.mur.upTo });
-      if (st.ligne) { const L = this.lineSpec(); R.drawLine(ctx, L); for (const [a, b] of st.arcs) R.drawJumpArc(ctx, R.tickP(L, a - st.ligne.min), R.tickP(L, b - st.ligne.min), 1, { label: "+1" }); }
+      if (st.ligne) { const L = this.lineSpec(); R.drawLine(ctx, L); for (const [a, b, label] of st.arcs) R.drawJumpArc(ctx, R.tickP(L, a - st.ligne.min), R.tickP(L, b - st.ligne.min), 1, { label: label ?? "+1" }); }
       if (st.ecrit) { const em = 64; R.drawWord(ctx, st.ecrit, 720, (st.mur ? 700 : 262) - em / 2, em, { w: 9, seed: 990 }); }
       // L10 (les centaines)
       if (st.filet) putScaled(ctx, sprites, "aide.filet", 560, 330, 1.4);

@@ -56,7 +56,7 @@ export function stateAt(lesson, p) {
 // écrits en direct par la leçon, au même endroit et de la même plume
 export function lessonLineSpec(lesson, { x0 = 290, x1 = 1134, y = 452 } = {}) {
   const L = lesson.ligne, n = Math.round((L.max - L.min) / L.pas) + 1;
-  return { x0, x1, y, n, k: L.k, labels: Array.from({ length: n }, (_, i) => (L.ecrits.includes(valueOf(L, i)) ? String(valueOf(L, i)) : null)) };
+  return { x0, x1, y, n, k: L.k, ...(L.geant ? { geant: true } : {}), labels: Array.from({ length: n }, (_, i) => (L.ecrits.includes(valueOf(L, i)) ? String(valueOf(L, i)) : null)) };
 }
 // vérifie une leçon du contenu (actions connues, valeurs sur la ligne, la tortue posée avant de sauter)
 export function check(lesson) {

@@ -1,5 +1,5 @@
 {
-  "_doc": "Leçons animées (docs/SPEC.md, « Leçons animées »). Une leçon = une ligne (min, max, pas, k : 0 corde à bouées, 1 ligne d'école ; ecrits : les nombres écrits au départ) et une suite de phrases. Le bouton « rejouer » revient au début de la leçon, « passer » l'arrête (dès la première vue). Une phrase = un ou plusieurs temps ; dans un temps, la voix dit « dire » pendant que « faire » se joue (actions l'une après l'autre), et le temps attend la fin des deux. Les nombres des actions sont des VALEURS de la ligne (pas des numéros de graduation). Actions : ligne (la ligne apparaît), allumer (les bouées s'allument une à une puis s'éteignent), tortue v (la tortue arrive et se pose sur v), note texte (un mot écrit au-dessus de la tortue, effacé au premier saut), sauter [v, texte de l'arc], ecrire [v…] (nombres écrits sous la ligne), clignoter « arcs », etoile v (l'étoile de mer sur v, un « ? » dessous), retour v (les arcs s'effacent, la tortue revient sur v), compter { jusqua, arcs : « sauts » ou « valeurs », dire : « sauts » ou « valeurs », ecrire } (la tortue saute jusqu'à la valeur en comptant à voix haute), filet [v…] (un filet de dix poissons sous la corde, de v au saut suivant), compteur n (la bulle du compteur), entourer [v…] (un anneau autour des nombres), arc [numéro de l'arc, texte], loupe v (une loupe montre le nombre en grand), eclairer [v…] (la graduation s'allume). aToi : ce que dit la voix au premier exercice guidé qui suit ; aToiDepuisZero : à la place, si la ligne de l'exercice part de 0 avec un pas de 1. Lot 2, étape 6 : les leçons du module 2 (L4 à L6, « module »: 2) se jouent sur le calque des aides avec le bernard-l'ermite (lessons/player2.js) ; actions : ermite (sortir, montrer, rejouir, changer), miroir n, ecrire « texte », defiler [[a, b]…], cadre { n, extra, lueur }, entrer n, maison { total, etages }, effacer, attendre ms. Lot 2, étape 8 : L10 (les centaines, docs/SPEC-COMPLEMENTS.md, partie A) a sa propre scène (scene : « centaines », lessons/player2.js : filet, chalut, remplir, chaluts, nombre) ; elle est jouée à l'entrée du niveau 9 et quand l'erreur E6 revient.",
+  "_doc": "Leçons animées (docs/SPEC.md, « Leçons animées »). Une leçon = une ligne (min, max, pas, k : 0 corde à bouées, 1 ligne d'école ; ecrits : les nombres écrits au départ ; geant, lot 3 bis : les bouées géantes et les grands filets suspendus au-dessus de la corde, leçon L2) et une suite de phrases. Le bouton « rejouer » revient au début de la leçon, « passer » l'arrête (dès la première vue). Une phrase = un ou plusieurs temps ; dans un temps, la voix dit « dire » pendant que « faire » se joue (actions l'une après l'autre), et le temps attend la fin des deux. Les nombres des actions sont des VALEURS de la ligne (pas des numéros de graduation). Actions : ligne (la ligne apparaît), allumer (les bouées s'allument une à une puis s'éteignent), tortue v (la tortue arrive et se pose sur v), note texte (un mot écrit au-dessus de la tortue, effacé au premier saut), sauter [v, texte de l'arc], ecrire [v…] (nombres écrits sous la ligne), clignoter « arcs », etoile v (l'étoile de mer sur v, un « ? » dessous), retour v (les arcs s'effacent, la tortue revient sur v), compter { jusqua, arcs : « sauts » ou « valeurs », dire : « sauts » ou « valeurs », ecrire } (la tortue saute jusqu'à la valeur en comptant à voix haute), filet [v…] (un filet de dix poissons sous la corde, de v au saut suivant), compteur n (la bulle du compteur), entourer [v…] (un anneau autour des nombres), arc [numéro de l'arc, texte], loupe v (une loupe montre le nombre en grand), eclairer [v…] (la graduation s'allume). aToi : ce que dit la voix au premier exercice guidé qui suit ; aToiDepuisZero : à la place, si la ligne de l'exercice part de 0 avec un pas de 1. Lot 2, étape 6 : les leçons du module 2 (L4 à L6, « module »: 2) se jouent sur le calque des aides avec le bernard-l'ermite (lessons/player2.js) ; actions : ermite (sortir, montrer, rejouir, changer), miroir n, ecrire « texte », defiler [[a, b]…], cadre { n, extra, lueur }, entrer n, maison { total, etages }, effacer, attendre ms. Lot 2, étape 8 : L10 (les centaines, docs/SPEC-COMPLEMENTS.md, partie A) a sa propre scène (scene : « centaines », lessons/player2.js : filet, chalut, remplir, chaluts, nombre) ; elle est jouée à l'entrée du niveau 9 et quand l'erreur E6 revient.",
   "L1": {
     "titre": "On compte les sauts",
     "ligne": { "min": 0, "max": 10, "pas": 1, "k": 0, "ecrits": [0] },
@@ -31,7 +31,7 @@
   },
   "L2": {
     "titre": "Un saut peut valoir 10",
-    "ligne": { "min": 0, "max": 100, "pas": 10, "k": 0, "ecrits": [0, 10, 100] },
+    "ligne": { "min": 0, "max": 100, "pas": 10, "k": 0, "ecrits": [0, 10, 100], "geant": true },
     "phrases": [
       [
         { "dire": "Sur cette corde-ci, les bouées sont des bouées géantes.", "faire": [{ "ligne": true }, { "allumer": "toutes" }] }
@@ -41,10 +41,10 @@
       ],
       [
         { "dire": "Alors chaque saut vaut dix !", "faire": [{ "tortue": 0 }, { "compteur": 0 }] },
-        { "dire": "On compte :" },
+        { "dire": "On compte :", "faire": [{ "filet": [10, 20] }] },
         { "dire": "dix,", "faire": [{ "sauter": [10, "10"] }, { "compteur": 10 }] },
-        { "dire": "vingt,", "faire": [{ "filet": [10] }, { "sauter": [20, "20"] }, { "ecrire": [20] }, { "compteur": 20 }] },
-        { "dire": "trente…", "faire": [{ "filet": [20] }, { "sauter": [30, "30"] }, { "ecrire": [30] }, { "compteur": 30 }] }
+        { "dire": "vingt,", "faire": [{ "sauter": [20, "20"] }, { "ecrire": [20] }, { "compteur": 20 }] },
+        { "dire": "trente…", "faire": [{ "sauter": [30, "30"] }, { "ecrire": [30] }, { "compteur": 30 }] }
       ],
       [
         { "dire": "Pour savoir comment compter, regarde les nombres écrits :", "faire": [{ "entourer": [0, 10] }] },
@@ -162,10 +162,27 @@
         {"dire": "Ajouter neuf, c'est presque ajouter dix.", "faire": [{"ecrire": "+ 9     + 10"}]}
       ],
       [
-        {"dire": "Alors on ajoute dix, et on recule d'un pas.", "faire": [{"mur": {}}, {"poisson": 34}, {"allumer": [34]}, {"nager": 44}, {"allumer": [34, 44]}, {"nager": 43}, {"allumer": [34, 44, 43]}]}
+        {"dire": "Trente-quatre plus neuf. Le poisson est sur trente-quatre.", "faire": [{"mur": {}}, {"poisson": 34}, {"allumer": [34]}]},
+        {"dire": "On ajoute dix : le poisson descend d'une rangée, sur quarante-quatre.", "faire": [{"nager": 44}, {"allumer": [34, 44]}]},
+        {"faire": [{"attendre": 900}]},
+        {"dire": "Puis on recule d'un pas : quarante-trois.", "faire": [{"nager": 43}, {"allumer": [34, 44, 43]}]},
+        {"faire": [{"attendre": 900}]}
       ],
       [
         {"dire": "Trente-quatre plus neuf, ça fait quarante-trois.", "faire": [{"ecrire": "34 + 9 = 43"}]}
+      ],
+      [
+        {"dire": "Encore une fois : cinquante-six plus neuf.", "faire": [{"mur": {}}, {"poisson": 56}, {"allumer": [56]}]},
+        {"dire": "Plus dix : soixante-six.", "faire": [{"nager": 66}, {"allumer": [56, 66]}]},
+        {"faire": [{"attendre": 900}]},
+        {"dire": "Moins un : soixante-cinq.", "faire": [{"nager": 65}, {"allumer": [56, 66, 65]}]},
+        {"faire": [{"attendre": 900}]}
+      ],
+      [
+        {"dire": "Cinquante-six plus neuf, ça fait soixante-cinq.", "faire": [{"ecrire": "56 + 9 = 65"}]}
+      ],
+      [
+        {"dire": "Retiens bien : plus neuf, c'est plus dix, puis moins un.", "faire": [{"effacer": true}, {"ecrire": "+ 9  =  + 10 - 1"}]}
       ]
     ],
     "aToi": "À toi !"
@@ -176,16 +193,19 @@
     "titre": "Passer la dizaine",
     "phrases": [
       [
-        {"dire": "Trente-huit plus cinq. Le poisson est sur trente-huit, il a envie d'aller jusqu'à quarante.", "faire": [{"ligne": {"min": 35, "max": 45}}, {"poisson": 38}]}
+        {"dire": "Trente-huit plus cinq. D'abord, regarde le huit dans la boîte à dix places.", "faire": [{"cadre": {"n": 8}}]},
+        {"dire": "Pour la remplir, il faut deux. Deux, c'est l'ami de huit pour faire dix !", "faire": [{"cadre": {"n": 8, "extra": 2}}]}
       ],
       [
-        {"dire": "Pour aller à quarante, il faut deux. Et deux, c'est l'ami de huit pour faire dix !", "faire": [{"sauts": 40}, {"cadre": {"n": 8, "extra": 2}}]}
+        {"dire": "Cinq, c'est deux et trois. On met deux pour aller à dix, il reste trois.", "faire": [{"ecrire": "5 = 2 + 3"}]}
       ],
       [
-        {"dire": "Cinq, c'est deux et trois. Il a déjà fait deux, il reste trois.", "faire": [{"ecrire": "5 = 2 + 3"}]}
+        {"dire": "Sur la ligne, le poisson est sur trente-huit.", "faire": [{"effacer": true}, {"ligne": {"min": 35, "max": 45}}, {"poisson": 38}]},
+        {"dire": "Un pont de deux : il arrive sur quarante.", "faire": [{"pont": 40}]},
+        {"dire": "Puis un pont de trois : quarante-trois !", "faire": [{"pont": 43}]}
       ],
       [
-        {"dire": "Quarante, plus trois : quarante-trois !", "faire": [{"sauts": 43}]}
+        {"dire": "Trente-huit plus cinq, ça fait quarante-trois.", "faire": [{"ecrire": "38 + 5 = 43"}]}
       ]
     ],
     "aToi": "À toi !"

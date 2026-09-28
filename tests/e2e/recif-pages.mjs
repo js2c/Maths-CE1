@@ -82,9 +82,9 @@ const closeCard = async (page) => { await page.tap(".card ~ .check, .bubble.chec
   check(r.loaded.join() === "recif-test", `seule la planche de la page affichée est chargée (${r.loaded})`);
   await page.screenshot({ path: join(OUT, "2-corail-entree.png") });
   // glisser vers le lagon (à droite) : la planche voisine se charge dès le début du glisser
-  await drag(page, 300, 560, { hold: true, ms: 500 }); await page.waitForTimeout(600); r = await reef(page);
+  await drag(page, 300, 820, { hold: true, ms: 500 }); await page.waitForTimeout(600); r = await reef(page);
   const two = await memRecif(page);
-  check(r.shift > 200 && r.loaded.join() === "recif,recif-test", `le décor et les créatures suivent le doigt (${r.shift} px) ; la planche voisine chargée (${r.loaded})`);
+  check(r.shift > 427 && r.loaded.join() === "recif,recif-test", `le décor et les créatures suivent le doigt (${r.shift} px) ; la planche voisine chargée (${r.loaded})`);
   console.log(`     mémoire décodée, deux zones chargées (densité 2) : ${two} Mo`);
   await page.screenshot({ path: join(OUT, "3-glisser-vers-le-lagon.png") });
   await page.mouse.up(); await page.waitForTimeout(800); r = await reef(page);
@@ -103,11 +103,17 @@ const closeCard = async (page) => { await page.tap(".card ~ .check, .bubble.chec
   await drag(page, 900, 760, { steps: 4, ms: 80 });
   await page.waitForTimeout(60); r = await reef(page);
   const moving = r.anim;
-  const hit = await hitOf(page, TEST[0].id);
-  if (hit) await page.mouse.click(...hit);
+  // (la créature file à environ 3 px par ms pendant le calage : le toucher est envoyé sur son bouton, là où elle est)
+  const hit = await page.evaluate((id) => {
+    const b = [...document.querySelectorAll(`.creature[data-id="${id}"]`)].find((e) => e.style.visibility !== "hidden"); if (!b) return null;
+    const r = b.getBoundingClientRect(), o = { bubbles: true, pointerId: 7, clientX: r.x + r.width / 2, clientY: r.y + r.height / 2, pointerType: "touch" };
+    const animating = !!window.__app.reef.anim;
+    b.dispatchEvent(new PointerEvent("pointerdown", o)); window.dispatchEvent(new PointerEvent("pointerup", o));
+    return { animating };
+  }, TEST[0].id);
   await page.waitForTimeout(900); r = await reef(page);
   check(moving && r.zone === "corail", `un geste rapide et court : la page suivante (${r.zone})`);
-  check(!!hit && r.card, "toucher une créature pendant que la page se cale ouvre sa carte");
+  check(!!hit?.animating && r.card, `toucher une créature pendant que la page se cale ouvre sa carte (${JSON.stringify(hit)})`);
   await page.screenshot({ path: join(OUT, "5-carte-pendant-le-calage.png") });
   await closeCard(page);
   check(!(await reef(page)).card, "la carte se range");

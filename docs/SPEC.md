@@ -297,6 +297,7 @@ Une séance rapporte environ 35 à 50 étoiles, qu'elle réussisse bien ou moins
 
 - **La carte** est une illustration pleine page (portrait 3:4). L'application pose par-dessus un cadre fin aux coins arrondis dont la matière indique la rareté (nacre pour une commune, argent pour une rare, or pour une légendaire) et, en bas, un bandeau semi-transparent avec le nom de l'animal. Le dos de la carte porte l'anecdote.
 - **L'album** (bouton coquillage-livre depuis l'accueil et depuis le récif) montre les quatre zones, chacune avec ses **15 emplacements**. Une carte obtenue est visible ; une carte **pas encore découverte montre son dos** ; une zone pas encore ouverte montre ses dos assombris, avec un coquillage fermé. Sous chaque zone, 15 petites perles se remplissent au fil des cartes gagnées (pas de chiffre).
+- **La carte en grand** (toucher une créature dans le récif, toucher une carte dans l'album) : la voix dit le nom et l'anecdote **une seule fois**, à l'ouverture. Toucher la carte la retourne pour lire l'anecdote écrite, dans un sens comme dans l'autre, **sans relancer la voix** (le bruitage du retournement reste ; si la voix parle encore, elle continue). Décision du parent du 28 septembre 2026. L'ouverture d'un coquillage en fin de séance est inchangée.
 - Toucher un dos : la voix dit « Cette carte t'attend quelque part dans le lagon ! » ; pour une zone fermée : « Le grand large s'ouvrira quand tu auras gagné une étoile arc-en-ciel. » Les dos des légendaires sont dorés : on sait qu'elles existent, sans savoir lesquelles.
 - **Dos de cartes** : une image par zone (couleurs et motif de la zone) et une image dorée pour les légendaires, générées comme les illustrations, sans texte.
 
@@ -310,6 +311,15 @@ Une séance rapporte environ 35 à 50 étoiles, qu'elle réussisse bien ou moins
 | 4 · **Les abysses et les mers glacées** | poisson-lanterne, baudroie abyssale, poisson-vipère, isopode géant, pieuvre Dumbo, calmar vampire, requin-lutin, ver tubicole géant, cténophore | béluga, requin du Groenland, calmar géant | baleine bleue, cachalot, narval |
 
 Soit 40 communes, 15 rares et 5 légendaires. La progression va du familier (la plage) au spectaculaire (requins, orques, baleines).
+
+**Le récif en pages, une par zone** (décision du parent du 28 septembre 2026, pour éviter l'encombrement quand les zones 2 à 4 arriveront). Les zones et leur ordre sont ceux des cartes et de l'album ; au plus 15 créatures par page, chacune à sa place de sa zone.
+
+- Glisser le doigt à l'horizontale fait passer à la zone voisine : le décor et les créatures suivent le doigt, puis se calent sur la page au relâcher (au-delà d'environ un tiers de l'écran, ou d'un geste rapide ; sinon, retour). En bout de liste, un léger rebond. La pieuvre, guide de la visite, reste en place.
+- Un toucher bref sur une créature ouvre toujours sa carte, même pendant que la page se cale ; un glisser qui part d'une créature ne l'ouvre pas.
+- Une rangée de petites perles en bas (dessinées dans l'atelier, style A, sans texte ni chiffre, de la même main que celles de l'album) montre la page : pleine pour la page affichée ; toucher une perle mène à sa zone. Elle n'apparaît qu'à partir de deux pages.
+- Une zone a sa page seulement si elle est ouverte ET si au moins une de ses créatures a un dessin (atelier) et une place dans le récif (`app/content/cartes.json`). Aujourd'hui seul le lagon remplit ces conditions : le récif se comporte comme avant, avec le rebond. Le lot 4 ajoutera les décors et les créatures des zones 2 à 4 sans toucher au moteur (réglages `recifPages` et `zones[].recif.decor` de `cartes.json`).
+- À l'entrée, le récif s'ouvre sur la zone de la dernière carte gagnée (sinon le lagon). Les cadeaux (décors offerts) restent dans le lagon.
+- Mémoire : seule la planche de la zone affichée est chargée, plus celle de la voisine dès que le glisser commence ; les autres sont libérées quand la page est calée.
 
 **Règles de protection.**
 

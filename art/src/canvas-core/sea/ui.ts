@@ -133,6 +133,13 @@ export const drawPearl = (g: Gfx, cx: number, cy: number, full: boolean) => g.gr
   else { const s = blob(cx, cy, r - 1, r - 2, 3504, 0.03, 14); fillShape(g, s, "#0a3f49", 0.35); ink(g, s, "#8fd8dc", { w: 1.8, closed: true, shadow: 0, seed: 3505 }, 0.7); }
 });
 
+// lot 3, étape 5 : la perle d'une page du récif (une par zone), de la même main que celle de l'album ; la page affichée :
+// la perle pleine, un peu plus grande ; les autres : vides. Sans texte ni chiffre.
+export const drawPagePearl = (g: Gfx, cx: number, cy: number, full: boolean) => g.group("plain", () => {
+  if (full) { const r = 14, s = blob(cx, cy, r, r, 3520, 0.01, 18); fillShape(g, blob(cx + 3, cy + 7, r, 4.5, 3521, 0.05, 10), SH, 0.3); cel(g, s, "#fffdf8", "#d8cbe8", 4, [blob(cx - 5, cy - 5, 4.6, 3.4, 3522, 0.05, 8), "#ffffff"]); contour(g, s, 2.8, 3523); }
+  else { const r = 11, s = blob(cx, cy, r, r - 1, 3524, 0.03, 14); fillShape(g, s, "#0a3f49", 0.4); ink(g, s, "#8fd8dc", { w: 2.2, closed: true, shadow: 0, seed: 3525 }, 0.8); }
+});
+
 // ---------------------------------------------------------------- « à demain » : la lune, décor
 // Le croissant dans son halo, sans bulle ni contour de bouton : il flotte au-dessus de l'eau, avec deux
 // petites étoiles. (L'ancienne lune était posée dans une bulle-réponse et se touchait.)

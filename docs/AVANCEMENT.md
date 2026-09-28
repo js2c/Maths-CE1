@@ -20,7 +20,7 @@ Spécification : `docs/SPEC-LOT3.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LO
 
 Pour reprendre si la session s'est arrêtée : branche `claude/intelligent-hawking-xwz6hw` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 3, étape 5 (en cours) ». L'étape 5 est élargie par la demande du parent du 28 septembre (neuf sous-parties : décisions du 28 septembre, accueil complet pendant une pause, récif en pages, voix des cartes, erreur « reading '0' », bilan, guide du parent, recette, clôture).
 
-**Sous-partie en cours :** 3 (le récif en pages).
+**Sous-partie en cours :** 8 (recette) ; le guide du parent (7) est relu, le bilan (6) s'écrit avec la recette.
 
 **Fait :**
 
@@ -30,7 +30,17 @@ Pour reprendre si la session s'est arrêtée : branche `claude/intelligent-hawki
 
 - 2. Accueil complet pendant une pause : continuer, choisir, le récif, l'album, le logo (`main.js` : `pauseSession`, `showPauseHome`, `visitInPause`, `sandbox`, `pickInPause`, `startChosen`) ; horloge et voix mises de côté (`suspend`, `restore`, `park`) et porte d'activité (`clock.hold`) ; planches épinglées ; calques de la ligne remplacés le temps d'une leçon (`LineView.swap`), lecteur de leçons à part avec son propre écran de la ligne ; `choose` quittable (`choiceCancel`) ; séance interrompue avec sa raison (`Session.interrupt({ par, raison })`, espace parent, export) ; échauffement déjà fait ou passé non refait (`sansRaison`) ; maison pendant le défi record. Parcours `tests/e2e/pause.mjs` : pause depuis l'échauffement, la ligne, les additions, le calcul rapide, une leçon et le défi ; pour chacun, récif (une carte ouverte) puis album puis reprise exacte ; puis choisir sans valider, une leçon depuis la pause, un autre exercice : tout est bon. Mémoire : `perf.mjs` (densité 2, processeur ÷ 4), planches décodées : 180,6 Mo en pause pendant la ligne, 224,4 Mo avec le récif ouvert en pause (planche du récif et des cartes en plus), 180,6 Mo après le retour (rien ne reste) ; image moyenne 21,4 ms pendant la visite. `pause-parent`, `ergonomie`, `seance` : tout est bon. SPEC (« Navigation pendant la séance ») et ARCHITECTURE à jour ; guide du parent au point 7.
 
-**Reste :** 3, 6 à 9 ; vérifier 4 dans `recompenses.mjs` et `cartes.mjs` (recette).
+- 3. Le récif en pages, une par zone : `session/reefpages.js` (fonctions pures), `session/reef.js` (glisser, calage, rebond, toucher ou glisser, perles, planches chargées et libérées), réglages `cartes.json` (`recifPages`), perle de page dessinée dans l'atelier (`recif.perle`, planche « petits »), `derniere` notée à chaque carte gagnée (page d'entrée). Tests : `tests/unit/recif-pages.test.mjs` ; parcours `tests/e2e/recif-pages.mjs` (contenu réel : une page, rebond, toucher ou glisser ; zone de test : entrée sur la zone de la dernière carte, glisser vers le lagon et retour, calage au tiers et au geste rapide, rebond, créature touchée pendant et après le calage, perle, planches libérées) : tout est bon ; captures regardées. Mémoire décodée des planches du récif (densité 2) : 43,8 Mo pour une zone, **87,6 Mo avec deux zones chargées** (pendant un glisser). `recompenses.mjs` et `cartes.mjs` : tout est bon, aucune phrase dite au retournement d'une carte (point 4 vérifié). SPEC (« Le récif », « La carte et l'album ») et ARCHITECTURE à jour.
+- 7. Guide du parent relu pour le lot 3 : choisir (un toucher), calcul rapide et ses bornes, échauffement passable et ses conséquences sur la révision espacée, maison pendant la séance, récif par zones, voix des cartes, incidents techniques, sauvegardes de test.
+
+**Reste :** 6 (bilan), 8 (recette), 9 (clôture).
+
+**Décisions prises (sous-partie 3) :**
+
+- *Les perles* : une perle de page dessinée pour l'occasion dans l'atelier (`recif.perle`, de la même main que celles de l'album, dans la petite planche « petits ») ; réutiliser la perle de l'album aurait chargé la planche des cartes (34 Mo) pour deux perles. Pleine et un peu plus grande pour la page affichée ; la rangée n'apparaît qu'à partir de deux pages (aujourd'hui : pas de perle).
+- *Ce qui suit le doigt* : le fond, le décor mobile (algues, poissons, reflets, bulles), les créatures et les cadeaux ; la pieuvre reste en place (guide de la visite). La page voisine montre une copie du fond, avec une ombre douce au bord de page (sinon la jonction faisait une cassure nette) ; au calage, le décor mobile revient en fondu.
+- *La page d'entrée* suit la dernière carte gagnée, doublons compris (`derniere`, nouvelle donnée ; pour les cartes gagnées avant, `premiere`).
+- *Touchers* : un glisser qui commence pendant un calage termine d'abord le calage ; la carte d'une créature s'ouvre même pendant un calage.
 
 **Décisions prises (sous-partie 2) :**
 

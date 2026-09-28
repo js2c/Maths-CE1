@@ -29,6 +29,7 @@ async function run(n, { record = null, answers = 12, wrongAt = 3 } = {}) {
     if (record != null) await s.put("recompenses", { id: "defi", record, date: now - 3 * DAY, scores: [{ t: now - 3 * DAY, score: record }] });
   }, { record, DAY });
   await page.reload(); await page.waitForFunction(() => window.__ready !== undefined);
+  await page.evaluate(() => { const v = window.__app.voice, say = v.say.bind(v); window.__said = []; v.say = (t, o) => { window.__said.push(t); return say(t, o); }; });
   await page.tap(".play", { force: true });
   await page.waitForFunction(() => window.__app.challenge && window.__app.facts?.resolve && !window.__app.facts.locked, null, { timeout: 60000 });
   const t0 = Date.now();
@@ -49,6 +50,10 @@ async function run(n, { record = null, answers = 12, wrongAt = 3 } = {}) {
   await page.waitForFunction(() => window.__app.facts?.locked && window.__app.challenge?.f === window.__app.challenge?.frames - 1, null, { timeout: 45000 });
   const dur = (Date.now() - t0) / 1000;
   await page.waitForTimeout(300); await shot("5-fin");
+  // (lot 3 bis, B6) la fin : le pavé rangé, les perles jusqu'au score, le grand drapeau du record, la phrase du résultat
+  await page.waitForSelector(".defi-drapeau", { timeout: 15000 }).catch(() => {}); await page.waitForTimeout(600); await shot("5b-drapeau");
+  const fin = await page.evaluate(() => ({ drapeau: !!document.querySelector(".defi-drapeau"), pave: [...document.querySelectorAll(".key")].some((k) => getComputedStyle(k).visibility !== "hidden"), ardoise: getComputedStyle(document.querySelector(".slate")).visibility }));
+  check(fin.drapeau && !fin.pave && fin.ardoise === "hidden", "fin du défi : pavé et ardoise rangés, le drapeau du record planté");
   await page.waitForSelector(".tally", { timeout: 60000 }); await page.waitForTimeout(600); await shot("6-recompense");
   const db = await page.evaluate(async () => { const s = window.__app.store; return { se: (await s.all("seances")).at(-1), rep: await s.all("reponses"), rec: await s.get("recompenses", "defi") }; });
   const rep = db.rep.filter((r) => r.defi && r.seance === db.se.id);
@@ -58,6 +63,8 @@ async function run(n, { record = null, answers = 12, wrongAt = 3 } = {}) {
   check(!db.se.etapes.find((e) => e.id === "defi")?.sautee, "l'étape « defi » a eu lieu");
   if (record == null) check(db.se.defi.nouveauRecord && db.rec.record === db.se.defi.score, `premier record : ${db.rec.record}`);
   else check(db.se.defi.nouveauRecord === db.se.defi.score > record && db.rec.record === Math.max(record, db.se.defi.score), `record ${record} → ${db.rec.record}`);
+  const dit = await page.evaluate(() => window.__said.filter((t) => /record|Presque|perle/i.test(t)).join(" | "));
+  check(record == null || db.se.defi.score > record ? /Nouveau record ! (\d+ perles|Une perle) !/.test(dit) : db.se.defi.score === record ? /Record égalé/.test(dit) : /Presque ! Tu as fait/.test(dit), `la fin du défi est dite (« ${dit} »)`);
   const voix = await page.evaluate(() => [...window.__app.voice.misses]);
   check(voix.length === 0, `chaque phrase dite a son fichier son${voix.length ? ` ; sans fichier : ${voix.join(" | ")}` : ""}`);
   check(errors.length === 0, `aucune erreur dans la page ${errors.join(" | ")}`);

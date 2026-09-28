@@ -73,8 +73,10 @@ function domaines(C) {
     estimer: [...TOUS, ...estimer1000].map((n) => ({ n })),
     guideDepart: [...TOUS, ...lignes1000.filter((v) => v % 10 === 0)].map((a) => ({ a })),
     guideMilieu: [...milieux, ...(N(13) ? [{ n: (N(13).min + N(13).max) / 2 }] : [])],
-    recompense: range(0, ETOILES_MAX).map((n) => ({ etoiles: etoiles(n) })),
+    recompense: range(1, ETOILES_MAX).map((n) => ({ etoiles: etoiles(n) })),
     serieBonus: [{ n: C.cartes.serie.bonus }],
+    // lot 3 bis (B6) : plusieurs étoiles arc-en-ciel à la récompense, une seule phrase (au plus un niveau par question)
+    etoilesArc: range(2, 20).map((n) => ({ n })),
     fait: faits, faitTrouDroite: faits, faitTrouGauche: faits, faitCorrection: faits,
     // l'aide de la famille 1 : la tortue part du grand nombre et fait 1 ou 2 sauts (facts/screen.js)
     aideLigne: faits.filter(({ a, b }) => Math.min(a, b) === 1 || Math.min(a, b) === 2).map(({ a, b }) => ({ a: Math.max(a, b), sauts: sautsDe(Math.min(a, b)) })),
@@ -116,9 +118,10 @@ function domaines(C) {
         })(),
       };
     })(),
-    // le défi record : « {n} bonnes réponses ! » (2 ou plus ; une seule : defiScoreUn), le record à battre (1 ou plus)
-    defiScore: range(2, DEFI_MAX).map((n) => ({ n })),
-    defiPasRecord: range(1, DEFI_MAX).map((n) => ({ n })),
+    // le défi record (lot 3 bis, B6) : le score en perles, 2 ou plus (une seule : les phrases « …Un »)
+    defiNouveauRecord: range(2, DEFI_MAX).map((n) => ({ n })),
+    defiEgal: range(2, DEFI_MAX).map((n) => ({ n })),
+    defiPresque: range(2, DEFI_MAX).map((n) => ({ n })),
     carteNouvelle: cartes, carteDoublon: cartes, recifCarte: cartes,
     // lot 3 bis (A6) : le doublon et son décor pour le récif (cartes.json, decors.liste : chaque décor avec chaque carte)
     carteDoublonDecor: cartes.flatMap((c) => (C.cartes.decors?.liste ?? []).map((x) => ({ ...c, decor: x.nomLu }))),

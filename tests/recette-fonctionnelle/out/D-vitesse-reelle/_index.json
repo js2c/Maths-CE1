@@ -31,6 +31,10 @@
    "ligne graduée (module 1) : les moments clés (fin (t = 527 s : la lune, « Encore ! »))"
   ],
   [
+   "D-ligne.json",
+   "ligne graduée (module 1) : le relevé brut (durées, attentes, erreurs, planches)"
+  ],
+  [
    "D-additions-chronologie.md",
    "additions (module 2) : chronologie (ce qui est dit, affiché, attendu, durée de chaque moment), attentes sans rien à toucher, durée totale (8 min 21 s)"
   ],
@@ -49,6 +53,10 @@
   [
    "D-additions-04.jpg",
    "additions (module 2) : les moments clés (récompense : la carte (t = 496 s) ; étape (hors séance) (t = 497 s, début de l'étape) ; fin (t = 501 s : la lune, « Encore ! »))"
+  ],
+  [
+   "D-additions.json",
+   "additions (module 2) : le relevé brut (durées, attentes, erreurs, planches)"
   ],
   [
    "D-calcul-chronologie.md",
@@ -71,6 +79,10 @@
    "calcul rapide (module 3) : les moments clés (récompense : la carte (t = 514 s) ; étape (hors séance) (t = 515 s, début de l'étape) ; fin (t = 518 s : la lune, « Encore ! »))"
   ],
   [
+   "D-calcul.json",
+   "calcul rapide (module 3) : le relevé brut (durées, attentes, erreurs, planches)"
+  ],
+  [
    "D-famille3-chronologie.md",
    "additions, famille 3 choisie : chronologie (ce qui est dit, affiché, attendu, durée de chaque moment), attentes sans rien à toucher, durée totale (8 min 22 s)"
   ],
@@ -89,6 +101,10 @@
   [
    "D-famille3-04.jpg",
    "additions, famille 3 choisie : les moments clés (récompense : la carte (t = 498 s) ; étape (hors séance) (t = 499 s, début de l'étape) ; fin (t = 502 s : la lune, « Encore ! »))"
+  ],
+  [
+   "D-famille3.json",
+   "additions, famille 3 choisie : le relevé brut (durées, attentes, erreurs, planches)"
   ],
   [
    "recette-module1.json",

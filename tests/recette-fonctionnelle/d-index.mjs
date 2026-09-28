@@ -16,6 +16,7 @@ for (const c of CAS) {
   L.push(`| ${d.nom} | ${mn(d.total)} | ${Object.entries(d.etapes).map(([k, v]) => `${k} ${fmt(v)} s`).join(" ; ")} | ${d.idle} | ${fmt(d.idleS)} s | ${d.errors.length ? [...new Set(d.errors)].join(" / ") : "aucune"} |`);
   lignes.push([`D-${c}-chronologie.md`, `${d.nom} : chronologie (ce qui est dit, affiché, attendu, durée de chaque moment), attentes sans rien à toucher, durée totale (${mn(d.total)})`]);
   for (const p of d.planches) lignes.push([p.file, `${d.nom} : les moments clés (${p.contenu})`]);
+  lignes.push([`D-${c}.json`, `${d.nom} : le relevé brut (durées, attentes, erreurs, planches)`]);
 }
 L.push("", "## tests/e2e/recette.mjs --delai 4.5 (l'outil de recette du dépôt, lancé tel quel)", "", "Même enfant, sans le relevé de la voix ; « attente » : le temps entre la fin de l'action précédente et le moment où l'enfant peut répondre (la consigne comprise).", "", "| module | durée totale | questions | attente avant de pouvoir répondre : moyenne / plus longue (étape) | erreurs de page |", "| --- | --- | --- | --- | --- |");
 for (const m of [1, 2, 3]) {

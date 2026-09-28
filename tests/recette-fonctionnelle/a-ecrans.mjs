@@ -286,7 +286,7 @@ async function recifAlbum() {
 
 // ---------------------------------------------------------------- 10. l'espace parent
 async function parent() {
-  const S = new Serie(DIR, "A10-parent", "Partie A · l'espace parent (chaque rubrique)");
+  const S = new Serie(DIR, "A10-parent", "Partie A · l'espace parent (chaque rubrique ; 2 captures par planche, à pleine taille, pour que le texte reste lisible)", { pleine: true });
   for (const base of ["neuve", "mois"]) {
     const B = base === "neuve" ? "base neuve" : "un mois";
     const s = await ouvrir(nav, { base, nom: true });

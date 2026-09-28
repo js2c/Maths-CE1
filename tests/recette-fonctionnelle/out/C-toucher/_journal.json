@@ -913,8 +913,8 @@
    "essai": "rien pendant 60 s",
    "exo": "sélecteur de difficulté",
    "geste": "aucun toucher pendant 60 s",
-   "resultat": "question « — » → « 1 + 2 (trouDroite) » ; attend une réponse ; ardoise «  » → «  » ; la voix s'est tue",
-   "dit": "« 1 plus combien, ça fait 3 ? »",
+   "resultat": "rien ne change",
+   "dit": "(rien)",
    "erreurs": "aucune",
    "capture": "C4-rien-60s n° 9–10"
   },
@@ -958,7 +958,7 @@
    "essai": "rien pendant 60 s",
    "exo": "leçon L1 : pendant la leçon",
    "geste": "aucun toucher pendant 60 s",
-   "resultat": "la voix s'est tue",
+   "resultat": "rien ne change",
    "dit": "« 1 » « 2 » « 3 » « 4 » « 5 » « 6 »",
    "erreurs": "aucune",
    "capture": "C4-rien-60s n° 19–20"
@@ -976,8 +976,8 @@
    "essai": "rien pendant 60 s",
    "exo": "récompense : le coquillage",
    "geste": "aucun toucher pendant 60 s",
-   "resultat": "étape recompense → — ; la voix s'est tue",
-   "dit": "« C'est la moule ! La moule s'accroche aux rochers avec des fils très solides, qu'elle fabrique elle-même. Cette créature va vivre dans ton récif ! » « Tu as bien travaillé. À demain ! »",
+   "resultat": "étape recompense → —",
+   "dit": "« C'est l'hippocampe ! Chez l'hippocampe, c'est le papa qui porte les bébés, dans une poche sur son ventre. Cette créature va vivre dans ton récif ! » « C'est fini pour aujourd'hui. À demain ! »",
    "erreurs": "aucune",
    "capture": "C4-rien-60s n° 23–24"
   },
@@ -986,7 +986,7 @@
    "exo": "récompense : la carte retournée",
    "geste": "aucun toucher pendant 60 s",
    "resultat": "étape recompense → — ; la voix s'est tue",
-   "dit": "« C'est fini pour aujourd'hui. À demain ! »",
+   "dit": "« Tu as bien travaillé. À demain ! »",
    "erreurs": "aucune",
    "capture": "C4-rien-60s n° 25–26"
   },
@@ -1234,7 +1234,7 @@
   ],
   [
    "C4-rien-60s-03.jpg",
-   "rien pendant 60 s : sélecteur de difficulté (AVANT : l'enfant ne touche plus rien) ; sélecteur de difficulté (APRÈS 60 s sans toucher : question « — » → « 1 + 2 (trouDroite) » ; attend une réponse ; ardoise «  » → «  » ; la voix s'est tue) ; échauffement : une question (AVANT : l'enfant ne touche plus rien) ; échauffement : une question (APRÈS 60 s sans toucher : rien ne change)"
+   "rien pendant 60 s : sélecteur de difficulté (AVANT : l'enfant ne touche plus rien) ; sélecteur de difficulté (APRÈS 60 s sans toucher : rien ne change) ; échauffement : une question (AVANT : l'enfant ne touche plus rien) ; échauffement : une question (APRÈS 60 s sans toucher : rien ne change)"
   ],
   [
    "C4-rien-60s-04.jpg",
@@ -1242,11 +1242,11 @@
   ],
   [
    "C4-rien-60s-05.jpg",
-   "rien pendant 60 s : calcul rapide : une question (AVANT : l'enfant ne touche plus rien) ; calcul rapide : une question (APRÈS 60 s sans toucher : rien ne change) ; leçon L1 : pendant la leçon (AVANT : l'enfant ne touche plus rien) ; leçon L1 : pendant la leçon (APRÈS 60 s sans toucher : la voix s'est tue)"
+   "rien pendant 60 s : calcul rapide : une question (AVANT : l'enfant ne touche plus rien) ; calcul rapide : une question (APRÈS 60 s sans toucher : rien ne change) ; leçon L1 : pendant la leçon (AVANT : l'enfant ne touche plus rien) ; leçon L1 : pendant la leçon (APRÈS 60 s sans toucher : rien ne change)"
   ],
   [
    "C4-rien-60s-06.jpg",
-   "rien pendant 60 s : accueil en pause (AVANT : l'enfant ne touche plus rien) ; accueil en pause (APRÈS 60 s sans toucher : rien ne change) ; récompense : le coquillage (AVANT : l'enfant ne touche plus rien) ; récompense : le coquillage (APRÈS 60 s sans toucher : étape recompense → — ; la voix s'est tue)"
+   "rien pendant 60 s : accueil en pause (AVANT : l'enfant ne touche plus rien) ; accueil en pause (APRÈS 60 s sans toucher : rien ne change) ; récompense : le coquillage (AVANT : l'enfant ne touche plus rien) ; récompense : le coquillage (APRÈS 60 s sans toucher : étape recompense → —)"
   ],
   [
    "C4-rien-60s-07.jpg",

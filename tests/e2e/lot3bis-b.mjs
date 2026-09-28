@@ -6,6 +6,8 @@
 //   appui     — B3 : appui long de 0,8 s sur chaque pictogramme : étiquette, rien de lancé ; toucher bref : lancé
 //   calcul    — B4 : l'aide du coquillage (mur et poisson, premier pont dit), les corrections (mur : bonne réponse entourée ;
 //               chemin : rassurer, pont rejoué, C4 ou C5), les calculs guidés (l'ardoise garde le calcul), l'annonce du poisson
+//   additions — B5 : l'aide de la famille 1 (forme directe, formes à trou : sans dire la réponse), la maison aux poissons
+//               (familles 4 et 5, formes directe et à trou ; le cadre de 10 de la famille 5)
 // (les autres parties s'ajoutent au fil de l'étape 4)
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { mkdirSync } from "node:fs";
@@ -187,6 +189,34 @@ if (want("calcul")) {
     const sl = await slate(page); await shot(page, `B4-guide-${niveau}-fin`);
     check(sl.ring && Number(sl.typed) === q.parent.n, `niveau ${niveau} : à la fin, le résultat écrit dans la bulle (${sl.typed})`);
     check(!errors.length, `guidé ${niveau} : aucune erreur (${errors.join(" | ")})`); await context.close();
+  }
+}
+
+// ---------------------------------------------------------------- B5 : les aides des additions
+if (want("additions")) {
+  const cases = [
+    [1, { a: 8, b: 2, forme: "directe" }, "f1-directe"], [1, { a: 2, b: 8, forme: "trouGauche" }, "f1-trou"],
+    [4, { a: 4, b: 3, forme: "directe" }, "f4-directe"], [4, { a: 4, b: 3, forme: "trouDroite" }, "f4-trou"],
+    [5, { a: 5, b: 3, forme: "directe" }, "f5-directe"], [5, { a: 6, b: 3, forme: "trouGauche" }, "f5-trou"],
+  ];
+  for (const [fam, over, name] of cases) {
+    const { page, context, errors } = await open(`&cran=conseille&choix=2:${fam}&sans=echauffement&sansLecon`);
+    await spy(page); await page.tap(".play", { force: true }); await waitQ(page);
+    // la question en cours devient le cas voulu (même famille), puis le coquillage
+    await page.evaluate(([over, fam]) => { const f = window.__app.facts; Object.assign(f.q, over, { n: over.a + over.b, famille: fam, guide: false, aideDEmblee: false, appui: undefined }); f.slate.repaint(); }, [over, fam]);
+    await page.waitForTimeout(200);
+    const g0 = await page.evaluate(() => window.__app.aidBoard?.gen ?? 0);
+    await page.tap(".bubble.help", { force: true });
+    if (fam === 1) { await page.waitForFunction(() => window.__app.lineScreen?.().arcs?.length >= 1, null, { polling: 50, timeout: 15000 }).catch(() => {}); await page.waitForTimeout(900); }
+    else await page.waitForTimeout(300);
+    await shot(page, `B5-aide-${name}-a`);
+    if (fam > 1) { await page.waitForFunction((g0) => window.__app.aidBoard.gen - g0 >= 21, g0, { polling: 20, timeout: 8000 }).catch(() => {}); await shot(page, `B5-aide-${name}-b`); }
+    await waitQ(page);
+    const s = (await said(page)).split(" | ");
+    if (fam === 1 && over.forme !== "directe") check(s.some((x) => /jusqu'à 10/.test(x)) && !s.slice(s.findIndex((x) => /jusqu'à 10/.test(x))).some((x) => /fait (un saut|\d sauts)|^[0-9]+$/.test(x)), `famille 1, « ? + 8 = 10 » : « Compte les sauts avec la tortue jusqu'à 10. », sans dire le nombre de sauts (${s.slice(-6).join(" / ")})`);
+    if (fam === 1 && over.forme === "directe") check(s.some((x) => /La tortue est sur 8/.test(x)), "famille 1, « 8 + 2 » : la tortue fait les sauts");
+    if (fam > 1) check(s.some((x) => (over.forme === "directe" ? /montent sous le toit/ : /places vides/).test(x)), `famille ${fam}, ${over.forme} : ${over.forme === "directe" ? "« … montent sous le toit : compte-les tous ! »" : "« Sous le toit, il y a n places. Compte les places vides ! »"}`);
+    check(!errors.length, `${name} : aucune erreur (${errors.join(" | ")})`); await context.close();
   }
 }
 

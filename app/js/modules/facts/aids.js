@@ -16,9 +16,10 @@ export class AidBoard {
     this.used = false; this.place(); st.onResize(() => this.place());
   }
   place() { const { px, k } = this.app.stage; this.c.width = Math.round(1280 * px); this.c.height = Math.round(800 * px); Object.assign(this.c.style, { width: `${1280 * k}px`, height: `${800 * k}px` }); this.used = false; }
-  // dessine en coordonnées de la scène (px logiques) ; efface d'abord
-  draw(fn) { const x = this.c.getContext("2d"), px = this.app.stage.px; x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, this.c.width, this.c.height); x.setTransform(px, 0, 0, px, 0, 0); fn(x); this.used = true; }
-  clear() { if (!this.used) return; const x = this.c.getContext("2d"); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, this.c.width, this.c.height); this.used = false; }
+  // dessine en coordonnées de la scène (px logiques) ; efface d'abord. Renvoie le numéro du dessin (`gen`) : une animation
+  // s'arrête dès qu'un autre dessin ou un effacement l'a remplacé
+  draw(fn) { const x = this.c.getContext("2d"), px = this.app.stage.px; x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, this.c.width, this.c.height); x.setTransform(px, 0, 0, px, 0, 0); fn(x); this.used = true; return (this.gen = (this.gen ?? 0) + 1); }
+  clear() { this.gen = (this.gen ?? 0) + 1; if (!this.used) return; const x = this.c.getContext("2d"); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, this.c.width, this.c.height); this.used = false; }
 }
 
 // pose un sprite dans un contexte déjà en px logiques (sprites.draw travaille en pixels d'écran)
@@ -29,10 +30,11 @@ export const num = (ctx, v, x, y, em = 36, color) => R.drawNumber(ctx, String(v)
 // ---------------------------------------------------------------- le cadre de 10
 // (x, y) : coin haut gauche du cadre ; n : poissons posés dans les alvéoles, dans l'ordre (rangée du haut,
 // puis du bas) ; glow : alvéoles entourées de lumière ; extra : poissons d'une autre couleur après les n premiers
-export function paintTenFrame(ctx, sprites, x, y, { n = 0, glow = [], extra = 0 } = {}) {
+// (lot 3 bis : `fish`, les deux sprites des poissons ; la maison aux poissons y met les siens, orange puis bleus)
+export function paintTenFrame(ctx, sprites, x, y, { n = 0, glow = [], extra = 0, fish = ["poisson.2.d", "poisson.1.d"] } = {}) {
   const m = sprites.atlas.sprites["aide.cadre10"].meta;
   put(ctx, sprites, "aide.cadre10", x, y);
-  for (let i = 0; i < Math.min(10, n + extra); i++) { const [cx, cy] = m.cells[i]; put(ctx, sprites, i < n ? "poisson.2.d" : "poisson.1.d", x + cx, y + cy); }
+  for (let i = 0; i < Math.min(10, n + extra); i++) { const [cx, cy] = m.cells[i]; put(ctx, sprites, i < n ? fish[0] : fish[1], x + cx, y + cy); }
   for (const i of glow) { const [cx, cy] = m.cells[i]; put(ctx, sprites, "aide.cadre.lueur", x + cx, y + cy); }
   return { w: m.w, h: m.h, cell: (i) => [x + m.cells[i][0], y + m.cells[i][1]] };
 }
@@ -48,6 +50,38 @@ export function paintHouse(ctx, sprites, cx, top, total, rows) {
   num(ctx, total, cx, top - H.roof * 0.5, 44);
   const slots = rows.map(([a, b], k) => { const y = top + k * H.floor + H.floor / 2; for (const [v, x] of [[a, cx - q], [b, cx + q]]) if (v !== null && v !== undefined) num(ctx, v, x, y, 36, v === "?" ? R.RED : undefined); return [[cx - q, y], [cx + q, y]]; });
   return { height: H.roof + rows.length * H.floor + H.base, slots, roof: [cx, top - H.roof * 0.5] };
+}
+// (lot 3 bis, B5 ; R5) LA MAISON AUX POISSONS (familles 4 et 5) : l'étage sans plaques, agrandi (`s`), les poissons du
+// premier nombre (orange) dans la pièce de gauche, ceux du second (bleus) dans celle de droite ; « ? » rouge dans la
+// pièce du nombre qui manque (formes à trou). `t` (0 à 1) : les poissons montent se ranger sous le toit, en une rangée ;
+// aux formes à trou, la rangée a `total` places et celles qui restent vides s'allument (ce sont elles qu'on compte).
+// (cx, top) : milieu, bas du toit. Renvoie la place occupée.
+export const HOUSE_FISH_K = 0.8;
+// un sprite à l'échelle k, dans un contexte en px logiques (putScaled attend un contexte en pixels d'écran)
+const putK = (ctx, sprites, name, x, y, k, f = 0) => { const q = sprites.frame(name, f), m = ctx.getTransform(), s = 1 / sprites.px; ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, m.a * x + m.e + q.dx * k * m.a * s, m.d * y + m.f + q.dy * k * m.d * s, q.w * k * m.a * s, q.h * k * m.d * s); ctx.setTransform(m); };
+export function paintFishHouse(ctx, sprites, cx, top, { a, b, total, forme = "directe", t = 0, s = 1.3, roofLabel = "?" }) {
+  const H = sprites.atlas.sprites["aide.maison.toit"].meta, q = (H.w / 4) * s, floorY = top, roomW = (H.w / 2) * s - 20, roomH = H.floor * s;
+  putK(ctx, sprites, "aide.maison.etage.vide", cx, floorY, s);
+  putK(ctx, sprites, "aide.maison.seuil", cx, floorY + roomH, s);
+  putK(ctx, sprites, "aide.maison.toit", cx, top, s);
+  num(ctx, roofLabel, cx, top - H.roof * s * 0.5, 50, roofLabel === "?" ? R.RED : undefined);
+  const known = forme === "trouDroite" ? [a, 0] : forme === "trouGauche" ? [0, b] : [a, b];
+  // les places dans une pièce : 3 colonnes, jusqu'à 3 rangées, posées sur le sol
+  const k = HOUSE_FISH_K, fw = 56 * k, room = (side, i) => [cx + side * q + ((i % 3) - 1) * fw * 1.04, floorY + roomH - 22 * k - 8 - Math.floor(i / 3) * 34 * k];
+  // les places sous le toit : une rangée de `total` places au bas de la coquille
+  // (la bande libre entre la plaque du total et la charnière du toit)
+  const n = forme === "directe" ? a + b : total, span = Math.min(n * fw * 0.98, H.w * s * 0.95), roofY = top - 32;
+  const slot = (j) => [cx - span / 2 + fw / 2 + (n > 1 ? j * ((span - fw) / (n - 1)) : 0), roofY];
+  const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+  const fish = (name, from, to) => { const x = from[0] + (to[0] - from[0]) * ease, y = from[1] + (to[1] - from[1]) * ease - Math.sin(Math.PI * ease) * 40; putK(ctx, sprites, name, x, y, k); };
+  // les places vides sous le toit (formes à trou), allumées une fois les poissons rangés
+  if (forme !== "directe" && t >= 1) { const first = forme === "trouDroite" ? a : 0, count = total - known[0] - known[1]; for (let j = 0; j < count; j++) putK(ctx, sprites, "aide.cadre.lueur", ...slot(first + j), 0.5); }
+  for (let i = 0; i < known[0]; i++) fish("aide.poisson.0", room(-1, i), slot(i));
+  const startB = forme === "trouGauche" ? total - b : known[0];
+  for (let i = 0; i < known[1]; i++) fish("aide.poisson.1", room(1, i), slot(startB + i));
+  if (forme === "trouDroite") num(ctx, "?", cx + q, floorY + roomH / 2, 44, R.RED);
+  if (forme === "trouGauche") num(ctx, "?", cx - q, floorY + roomH / 2, 44, R.RED);
+  return { w: H.w * s, h: (H.roof + H.floor + H.base) * s };
 }
 export const houseHeight = (sprites, floors) => { const H = sprites.atlas.sprites["aide.maison.toit"].meta; return H.roof + floors * H.floor + H.base; };
 

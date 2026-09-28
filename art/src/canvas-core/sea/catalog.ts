@@ -154,6 +154,7 @@ export const SPECS: Spec[] = [
   { name: "aide.cadre.lueur", sheet: "aides", W: TEN.cell + 24, H: TEN.cell + 24, origin: [TEN.cell / 2 + 12, TEN.cell / 2 + 12], frames: 1, draw: (g) => drawCellGlow(g, TEN.cell / 2 + 12, TEN.cell / 2 + 12) },
   { name: "aide.maison.toit", sheet: "aides", W: HOUSE.w + 70, H: HOUSE.roof + 40, origin: [HOUSE.w / 2 + 30, HOUSE.roof + 14], frames: 1, draw: (g) => drawHouseRoof(g, HOUSE.w / 2 + 30, HOUSE.roof + 14), meta: { ...HOUSE } },
   { name: "aide.maison.etage", sheet: "aides", W: HOUSE.w + 30, H: HOUSE.floor + 20, origin: [HOUSE.w / 2 + 10, 4], frames: 1, draw: (g) => drawHouseFloor(g, HOUSE.w / 2 + 10, 4) },
+  { name: "aide.maison.etage.vide", sheet: "aides", W: HOUSE.w + 30, H: HOUSE.floor + 20, origin: [HOUSE.w / 2 + 10, 4], frames: 1, draw: (g) => drawHouseFloor(g, HOUSE.w / 2 + 10, 4, false) },
   // (lot 3 : le seuil sortait de son calque à gauche, à droite et en bas ; dessin resserré, calque élargi avec une marge)
   { name: "aide.maison.seuil", sheet: "aides", W: HOUSE.w + 70, H: HOUSE.base + 36, origin: [HOUSE.w / 2 + 30, 10], frames: 1, draw: (g) => drawHouseBase(g, HOUSE.w / 2 + 30, 10) },
   // lot 2, étape 8 : les centaines (leçon L10, retours E6 et E7) : le filet de dix poissons (ancrage : coin haut

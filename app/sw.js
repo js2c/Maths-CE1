@@ -2,7 +2,7 @@
 // cache, même sans réseau. La liste des fichiers et la version viennent de sw-files.json, produit par
 // `node tools/precache.mjs` (la ligne VERSION ci-dessous est réécrite par le même outil : quand un
 // fichier change, ce script change aussi, et le navigateur installe la nouvelle version).
-const VERSION = "fa353ae24271";
+const VERSION = "5a797414cef6";
 const CACHE = `ocean-${VERSION}`;
 // la résolution des planches d'images de cet écran (main.js : sw.js?r=1 ou ?r=2) : on ne met en cache que
 // celle-là (une planche qui n'existe qu'en @1x, comme les rayons, est toujours gardée)

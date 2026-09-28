@@ -67,7 +67,8 @@ export const drawHouseRoof = (g: Gfx, x: number, y: number) => g.group("plain", 
   plaque(g, x, y - h * 0.5, HOUSE.plaque + 6, 6230);
 });
 // un étage : deux pièces côte à côte, chacune avec sa fenêtre ronde et sa plaque. Origine : milieu du haut.
-export const drawHouseFloor = (g: Gfx, x: number, y: number) => g.group("plain", () => {
+// (lot 3 bis, B5 : `plaques: false`, l'étage sans plaques, dont les pièces reçoivent les poissons des deux nombres)
+export const drawHouseFloor = (g: Gfx, x: number, y: number, plaques = true) => g.group("plain", () => {
   const w = HOUSE.w / 2, h = HOUSE.floor, wall = smooth([[x - w, y], [x - w + 8, y - 0.5], [x, y + 0.5], [x + w - 8, y], [x + w, y], [x + w + 0.5, y + 8], [x + w + 1, y + h / 2], [x + w + 1, y + h - 8], [x + w + 1, y + h], [x + w - 8, y + h], [x, y + h + 0.5], [x - w + 8, y + h], [x - w - 1, y + h], [x - w - 1, y + h - 8], [x - w - 0.5, y + h / 2], [x - w, y + 8]], true, 2);
   fillShape(g, shift(wall, 9, 6), SH, 0.22);
   cel(g, wall, WALL, WALL_S, 6);
@@ -75,7 +76,9 @@ export const drawHouseFloor = (g: Gfx, x: number, y: number) => g.group("plain",
   clipped(g, wall, () => { for (let i = 0; i < 12; i++) fillShape(g, blob(x - w + 10 + ((i * 71) % (2 * w - 20)), y + 8 + ((i * 37) % (h - 16)), 5, 3.5, 6300 + i, 0.25, 7), WALL_S, 0.5); });
   ink(g, [[x, y + 4], [x, y + h - 4]], mix(WALL_S, INK, 0.3), { w: 3.4, shadow: 0, taper: [0.1, 0.1], seed: 6320 });
   contour(g, wall, 3.4, 6321);
-  [-1, 1].forEach((sd, i) => plaque(g, x + sd * w * 0.5, y + h / 2, HOUSE.plaque, 6330 + i * 5));
+  if (plaques) [-1, 1].forEach((sd, i) => plaque(g, x + sd * w * 0.5, y + h / 2, HOUSE.plaque, 6330 + i * 5));
+  // sans plaques : le sol de chaque pièce, une bande de sable plus claire où les poissons se posent
+  else [-1, 1].forEach((sd, i) => fillShape(g, blob(x + sd * w * 0.5, y + h - 12, w * 0.4, 5, 6340 + i, 0.05, 12), "#fbe3c6", 0.8));
 });
 // le seuil : une marche de sable et une petite porte ronde entre les deux pièces du bas. Origine : milieu du haut.
 export const drawHouseBase = (g: Gfx, x: number, y: number) => g.group("plain", () => {

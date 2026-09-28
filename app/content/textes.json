@@ -105,6 +105,8 @@
   "faitTrouGauche": "Combien plus {b}, ça fait {n} ?",
   "faitCorrection": "{a} plus {b}, ça fait {n}.",
   "aideLigne": "La tortue est sur {a}. Elle fait {sauts}. Compte avec elle !",
+  "aideLigneTrou": "Compte les sauts avec la tortue jusqu'à {n}.",
+  "hop": "Hop !",
   "aideReflet": "{a} poissons, et dans le reflet, encore {a} poissons.",
   "serieBonus": "Et {n} étoiles de plus, parce que tu viens jouer souvent !",
   "etoileDoree": "Et une étoile dorée ! Tu as joué souvent, semaine après semaine.",
@@ -142,7 +144,8 @@
     "Au tour des additions ! Le bernard-l'ermite va t'aider."
   ],
   "aideCadre": "Regarde la boîte à dix places : {k} poissons.",
-  "aideMaison": "Regarde la maison : les deux pièces, ensemble, font le nombre du toit.",
+  "aideMaison": "Les poissons des deux pièces montent sous le toit : compte-les tous !",
+  "aideMaisonTrou": "Sous le toit, il y a {n} places. Compte les places vides !",
   "aideDoublePlus": "{d} plus {d}, c'est un double. Et une bulle de plus !",
   "aToiFait": "À toi ! Tape la réponse.",
   "reprise": "On continue !",

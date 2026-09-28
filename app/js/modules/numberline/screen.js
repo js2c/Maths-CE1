@@ -221,7 +221,8 @@ export class NumberLineScreen {
     this.app.sprites.draw(ctx, "reponse", 0, BUB / 2, BUB / 2);
     ctx.setTransform(px, 0, 0, px, 0, 0);
     if (ring) R.drawRing(ctx, BUB / 2 - 1, BUB / 2 - 1, 52, ring);
-    const em = label.length > 2 ? 40 : 54;
+    // (lot 3 bis, R20 : « 700 », « 900 » débordaient de la bulle : l'écriture se resserre pour tenir dans 80 px)
+    const em = Math.min(54, 80 / Math.max(0.1, R.wordWidth(label)));
     R.drawNumber(ctx, label, BUB / 2, BUB / 2 - em / 2, em, { w: em * 0.14, seed: 330 + label.length });
   }
   clearButtons() { this.buttons.forEach((b) => b.remove()); this.buttons = []; }
@@ -263,7 +264,7 @@ export class NumberLineScreen {
     const { voice } = this.app, t = this.turtle;
     for (let k = 1; from + k <= to && !stop(); k++) {
       // (lot 2, étape 8 : un nombre à trois chiffres ne tient pas entre deux graduations serrées : l'arc n'a pas d'étiquette, la voix compte)
-      const i = from + k, a = t.seat(i - 1), b = t.seat(i), text = label(k, i), room = Math.abs(b[0] - a[0]) >= String(text).length * 17;
+      const i = from + k, a = t.seat(i - 1), b = t.seat(i), text = label(k, i), room = Math.abs(b[0] - a[0]) >= Math.max(String(text).length * 17, 60); // (lot 3 bis, R20 : sur des graduations serrées, l'étiquette passait sous la tortue)
       const arc = { a: [a[0], a[1] + 4], b: [b[0], b[1] + 4], h: arcHeight(Math.abs(b[0] - a[0])) - 4, label: room ? text : null, live: true, p: 0, bubbles };
       this.arcs.push(arc);
       await guard(t.jump(i));

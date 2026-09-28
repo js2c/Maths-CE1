@@ -26,7 +26,7 @@ export class Dictation {
     await this.app.sprites.load("centaines");
     this.fs.keys(false);
     this.app.ocean.octo.play("montrer");
-    this.app.aidBoard.draw((ctx) => paintHundreds(ctx, this.app.sprites, n, 760, 340, { lit }));
+    this.app.aidBoard.draw((ctx) => paintHundreds(ctx, this.app.sprites, n, 760, 340, { lit, fit: [420, 990] }));
   }
   parts(n) { return fill(this.app.text.data.erreur.E6, { n, ...hundredsWords(this.app.text.data, n) }); }
   async ask(q, cfg, { guide = false, lesson = null } = {}) {

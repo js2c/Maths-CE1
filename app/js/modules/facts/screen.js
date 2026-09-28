@@ -173,7 +173,8 @@ export class FactsScreen {
   }
   aidSpeech(q, kind, solved = false) {
     const t = this.app.text.data, k = q.forme === "trouGauche" ? q.b : q.a;
-    return kind === "cadre" ? fill(t.aideCadre, { k }) : kind === "maison" ? (solved || (q.forme ?? "directe") === "directe" ? t.aideMaison : fill(t.aideMaisonTrou, { n: q.a + q.b })) : kind === "doublePlus" ? fill(t.aideDoublePlus, { d: Math.min(q.a, q.b) }) : fill(t.aideReflet, { a: q.a });
+    // (lot 3 bis, R21 : « un poisson », jamais « 1 poissons »)
+    return kind === "cadre" ? (k === 1 ? t.aideCadreUn : fill(t.aideCadre, { k })) : kind === "maison" ? (solved || (q.forme ?? "directe") === "directe" ? t.aideMaison : fill(t.aideMaisonTrou, { n: q.a + q.b })) : kind === "doublePlus" ? fill(t.aideDoublePlus, { d: Math.min(q.a, q.b) }) : q.a === 1 ? t.aideRefletUn : fill(t.aideReflet, { a: q.a });
   }
   // l'aide (coquillage, aide affichée d'emblée) peut être passée dès qu'elle commence (décision du parent du
   // 27 septembre) : le bouton « passer » habituel ; un toucher coupe la voix et l'animation, range l'appui et

@@ -57,13 +57,11 @@ export function paintHouse(ctx, sprites, cx, top, total, rows) {
 // aux formes à trou, la rangée a `total` places et celles qui restent vides s'allument (ce sont elles qu'on compte).
 // (cx, top) : milieu, bas du toit. Renvoie la place occupée.
 export const HOUSE_FISH_K = 0.8;
-// un sprite à l'échelle k, dans un contexte en px logiques (putScaled attend un contexte en pixels d'écran)
-const putK = (ctx, sprites, name, x, y, k, f = 0) => { const q = sprites.frame(name, f), m = ctx.getTransform(), s = 1 / sprites.px; ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, m.a * x + m.e + q.dx * k * m.a * s, m.d * y + m.f + q.dy * k * m.d * s, q.w * k * m.a * s, q.h * k * m.d * s); ctx.setTransform(m); };
 export function paintFishHouse(ctx, sprites, cx, top, { a, b, total, forme = "directe", t = 0, s = 1.3, roofLabel = "?" }) {
   const H = sprites.atlas.sprites["aide.maison.toit"].meta, q = (H.w / 4) * s, floorY = top, roomW = (H.w / 2) * s - 20, roomH = H.floor * s;
-  putK(ctx, sprites, "aide.maison.etage.vide", cx, floorY, s);
-  putK(ctx, sprites, "aide.maison.seuil", cx, floorY + roomH, s);
-  putK(ctx, sprites, "aide.maison.toit", cx, top, s);
+  putScaled(ctx, sprites, "aide.maison.etage.vide", cx, floorY, s);
+  putScaled(ctx, sprites, "aide.maison.seuil", cx, floorY + roomH, s);
+  putScaled(ctx, sprites, "aide.maison.toit", cx, top, s);
   num(ctx, roofLabel, cx, top - H.roof * s * 0.5, 50, roofLabel === "?" ? R.RED : undefined);
   const known = forme === "trouDroite" ? [a, 0] : forme === "trouGauche" ? [0, b] : [a, b];
   // les places dans une pièce : 3 colonnes, jusqu'à 3 rangées, posées sur le sol
@@ -73,9 +71,9 @@ export function paintFishHouse(ctx, sprites, cx, top, { a, b, total, forme = "di
   const n = forme === "directe" ? a + b : total, span = Math.min(n * fw * 0.98, H.w * s * 0.95), roofY = top - 32;
   const slot = (j) => [cx - span / 2 + fw / 2 + (n > 1 ? j * ((span - fw) / (n - 1)) : 0), roofY];
   const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-  const fish = (name, from, to) => { const x = from[0] + (to[0] - from[0]) * ease, y = from[1] + (to[1] - from[1]) * ease - Math.sin(Math.PI * ease) * 40; putK(ctx, sprites, name, x, y, k); };
+  const fish = (name, from, to) => { const x = from[0] + (to[0] - from[0]) * ease, y = from[1] + (to[1] - from[1]) * ease - Math.sin(Math.PI * ease) * 40; putScaled(ctx, sprites, name, x, y, k); };
   // les places vides sous le toit (formes à trou), allumées une fois les poissons rangés
-  if (forme !== "directe" && t >= 1) { const first = forme === "trouDroite" ? a : 0, count = total - known[0] - known[1]; for (let j = 0; j < count; j++) putK(ctx, sprites, "aide.cadre.lueur", ...slot(first + j), 0.5); }
+  if (forme !== "directe" && t >= 1) { const first = forme === "trouDroite" ? a : 0, count = total - known[0] - known[1]; for (let j = 0; j < count; j++) putScaled(ctx, sprites, "aide.cadre.lueur", ...slot(first + j), 0.5); }
   for (let i = 0; i < known[0]; i++) fish("aide.poisson.0", room(-1, i), slot(i));
   const startB = forme === "trouGauche" ? total - b : known[0];
   for (let i = 0; i < known[1]; i++) fish("aide.poisson.1", room(1, i), slot(startB + i));
@@ -99,20 +97,30 @@ export function paintDoublePlus(ctx, sprites, a, { cx = 640, y = 360, gap = 92, 
 
 // ---------------------------------------------------------------- les centaines (lot 2, étape 8)
 // un sprite à l'échelle k (le chalut et le filet sont grands : on les réduit pour en aligner plusieurs)
+// (lot 3 bis : le dessin se fait en pixels d'écran, transformation remise à zéro puis rendue ; avant, sur un écran de
+// densité 2 comme la tablette, les chaluts et filets étaient dessinés deux fois trop grands et trop loin)
 export const putScaled = (ctx, sprites, name, x, y, k, f = 0) => {
   const q = sprites.frame(name, f), m = ctx.getTransform(), s = 1 / sprites.px;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, m.a * x + m.e + q.dx * k * m.a * s, m.d * y + m.f + q.dy * k * m.d * s, q.w * k * m.a * s, q.h * k * m.d * s);
+  ctx.setTransform(m);
 };
 // un nombre décomposé (docs/SPEC-COMPLEMENTS.md, partie A) : c chaluts pleins (des centaines), d filets de dix
 // poissons (des dizaines), u poissons seuls (des unités), chaque groupe au-dessus de son chiffre ; `lit` : la
 // place dont le chiffre est écrit en couleur (0 centaines, 1 dizaines, 2 unités) ; `vides` : écrire le 0 des
 // places vides. Planche « centaines » (chargée avant). (cx, top) : milieu, haut du dessin
-export function paintHundreds(ctx, sprites, n, cx = 640, top = 330, { lit = null, width = 1000, digits = true, kMax = 0.5 } = {}) {
+// (lot 3 bis, R20 : `fit` = [gauche, droite] : le dessin tient entre ces deux abscisses, les chaluts rapetissent s'il le faut ;
+// sans lui, « 408 » et « 307 » débordaient jusque sur le rocher de droite)
+export function paintHundreds(ctx, sprites, n, cx = 640, top = 330, { lit = null, width = 1000, digits = true, kMax = 0.5, fit = null } = {}) {
   const c = Math.floor(n / 100), d = Math.floor(n / 10) % 10, u = n % 10;
   const T = sprites.atlas.sprites["aide.chalut"].meta, N = sprites.atlas.sprites["aide.filet"].meta;
-  const perRow = c > 5 ? Math.ceil(c / 2) : c, kc = Math.min(kMax, (width * 0.5) / Math.max(1, perRow * (T.w + 20))), kn = 0.55;
-  const wc = perRow * (T.w + 20) * kc, wd = Math.max(110, Math.ceil(d / 5) * (N.w + 14) * kn), wu = Math.max(110, Math.ceil(u / 5) * 64);
-  const gap = 60, total = wc + wd + wu + gap * 2, x0 = cx - total / 2, colX = [x0 + wc / 2, x0 + wc + gap + wd / 2, x0 + wc + wd + 2 * gap + wu / 2];
+  const perRow = c > 5 ? Math.ceil(c / 2) : c, kn = 0.55, gap = fit ? 40 : 60;
+  const wd = Math.max(110, Math.ceil(d / 5) * (N.w + 14) * kn), wu = Math.max(110, Math.ceil(u / 5) * 64);
+  let kc = Math.min(kMax, (width * 0.5) / Math.max(1, perRow * (T.w + 20)));
+  if (fit) kc = Math.max(0.12, Math.min(kc, (fit[1] - fit[0] - wd - wu - gap * 2) / Math.max(1, perRow * (T.w + 20))));
+  const wc = perRow * (T.w + 20) * kc, total = wc + wd + wu + gap * 2;
+  if (fit) cx = Math.min(fit[1] - total / 2, Math.max(fit[0] + total / 2, cx));
+  const x0 = cx - total / 2, colX = [x0 + wc / 2, x0 + wc + gap + wd / 2, x0 + wc + wd + 2 * gap + wu / 2];
   for (let i = 0; i < c; i++) putScaled(ctx, sprites, "aide.chalut", x0 + ((i % perRow) + 0.5) * (T.w + 20) * kc, top + Math.floor(i / perRow) * (T.h + 40) * kc, kc, 10);
   const fy = top + 20;
   for (let i = 0; i < d; i++) putScaled(ctx, sprites, "aide.filet", x0 + wc + gap + Math.floor(i / 5) * (N.w + 14) * kn, fy + (i % 5) * (N.h + 8) * kn, kn);

@@ -89,6 +89,7 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .album-card.closed { filter: brightness(0.42) saturate(0.55) drop-shadow(4px 6px 0 rgba(3, 20, 26, 0.45)); }
 .album-tab.sel { filter: drop-shadow(0 0 5px #ffe45c) drop-shadow(0 0 12px #ffd23a); }
 .album-tab.closed.sel { filter: brightness(0.6) saturate(0.6) drop-shadow(0 0 5px #ffe45c) drop-shadow(0 0 12px #ffd23a); }
+.album-tab.closed { filter: brightness(0.6) saturate(0.6); }
 .album-card.shiny { filter: drop-shadow(0 0 6px #fff6c8) drop-shadow(4px 6px 0 rgba(3, 20, 26, 0.45)); }
 .album-lock, .pearls { pointer-events: none !important; }
 

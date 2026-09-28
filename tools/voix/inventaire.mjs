@@ -81,12 +81,12 @@ function domaines(C) {
     // l'aide de la famille 1 : la tortue part du grand nombre et fait 1 ou 2 sauts (facts/screen.js)
     aideLigne: faits.filter(({ a, b }) => Math.min(a, b) === 1 || Math.min(a, b) === 2).map(({ a, b }) => ({ a: Math.max(a, b), sauts: sautsDe(Math.min(a, b)) })),
     // l'aide des doubles jusqu'à 5 : a poissons et leur reflet
-    aideReflet: range(1, 5).map((a) => ({ a })),
+    aideReflet: range(2, 5).map((a) => ({ a })),
     // lot 3 bis (B5) : la famille 1 à trou (la tortue saute jusqu'au total), la maison à trou (les places sous le toit)
     aideLigneTrou: range(1, C.module2.sommeMax).map((n) => ({ n })),
     aideMaisonTrou: range(2, C.module2.sommeMax).map((n) => ({ n })),
     // lot 2, étape 6 : le cadre de 10 (le nombre de poissons déjà dans la boîte), le double + 1 (le double)
-    aideCadre: range(1, 9).map((k) => ({ k })),
+    aideCadre: range(2, 9).map((k) => ({ k })),
     aideDoublePlus: range(1, 4).map((d) => ({ d })),
     // lot 3 : chaque question des presque-doubles rappelle le double (facts/runner.js, q.rappel : d, le petit nombre)
     rappelDouble: faits.filter(({ a, b }) => Math.abs(a - b) === 1 && Math.max(a, b) <= 5).map(({ a, b }) => ({ a, b, d: Math.min(a, b) })),

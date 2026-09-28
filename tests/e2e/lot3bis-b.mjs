@@ -15,7 +15,8 @@
 //   lecons    — B9 : L2, L8, L9, une capture à chaque phrase dite ; la chronologie voix et sauts de L2 ; durée de L8
 //   parent    — B10 : l'espace parent sur une base « un mois » (tools/sauvegarde-test.mjs reel 2 4) : aucun sigle, erreurs
 //               d'additions détaillées, « acquise le … (depuis, n sur m) », la légende des niveaux
-// (les autres parties s'ajoutent au fil de l'étape 4)
+//   cosmetique — B11 : accueil (bulles hors du rocher), album (médaillons), « réécouter » à l'accueil et en pause, L1 (« 0 saut »),
+//               L10 (rien sur le rocher, « 100 » une fois), bulles « 800 », « 900 », le bernard-l'ermite entier, « rejouer »
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -336,6 +337,55 @@ if (want("parent")) {
   const txt2 = await page.evaluate(() => document.body.innerText);
   check(!/l'une des deux|SPEC/.test(txt2) && /l'un des trois exercices/.test(txt2), "réglages : « imposer l'un des trois exercices »");
   check(!errors.length, `parent : aucune erreur (${errors.join(" | ")})`); await context.close();
+}
+
+// ---------------------------------------------------------------- B11 : la cosmétique
+if (want("cosmetique")) {
+  {
+    const { page, context, errors } = await open("&cran=conseille");
+    await page.waitForSelector(".choisir"); await page.waitForTimeout(400); await shot(page, "B11-accueil");
+    // les bulles de l'accueil ne sont plus posées sur le rocher de droite (x 1024 à 1203, y 600 à 665)
+    const b = await boxes(page, ".play, .choisir, .reefkey, .albumkey");
+    check(b.every((r) => r.x + r.w / 2 + 75 <= 1040), `accueil : les quatre bulles à gauche du rocher (${b.map((r) => Math.round(r.x + r.w / 2)).join(", ")})`);
+    await spy(page); await page.tap(".speaker", { force: true }); await page.waitForTimeout(600);
+    check(/Touche une bulle/.test(await said(page)), "accueil : « réécouter » dit ce qu'on peut faire");
+    await tap(page, ".albumkey"); await page.waitForSelector(".album-tab"); await page.waitForTimeout(700); await shot(page, "B11-album");
+    check((await page.locator(".album-tab").count()) === 4, "album : quatre médaillons de zone");
+    check(!errors.length, `accueil, album : aucune erreur (${errors.join(" | ")})`); await context.close();
+  }
+  {
+    // en pause : « réécouter » visible et qui répond
+    const { page, context, errors } = await open("&cran=conseille&choix=2:3&sans=echauffement&sansLecon");
+    await page.tap(".play", { force: true }); await waitQ(page); await page.waitForTimeout(300);
+    await page.tap(".session-home", { force: true }); await page.waitForSelector(".play.keep"); await page.waitForTimeout(400);
+    const vis = await page.evaluate(() => getComputedStyle(document.querySelector(".speaker")).visibility);
+    await spy(page); await page.tap(".speaker", { force: true }); await page.waitForTimeout(800);
+    check(vis === "visible" && /C'est la pause/.test(await said(page)), `pause : « réécouter » visible (${vis}) et qui répond`);
+    await shot(page, "B11-pause-reecouter");
+    await page.tap(".play.keep", { force: true }); await waitQ(page); await page.waitForTimeout(300);
+    const b = await boxes(page, ".nsp");
+    await shot(page, "B11-bernard");
+    check(!errors.length, `pause : aucune erreur (${errors.join(" | ")})`); void b; await context.close();
+  }
+  for (const [q, name, waitFor] of [["&lecon=L1", "L1", 6], ["&lecon=L10", "L10", 99]]) {
+    const { page, context, errors } = await open(`&cran=conseille${q}`);
+    await spy(page); await page.tap(".play", { force: true });
+    let n = 0;
+    for (let k = 0; k < 60; k++) {
+      const len = await page.evaluate(() => window.__said.length), done = await page.evaluate(() => window.__lecon !== undefined);
+      if (len > n) { n = len; await page.waitForTimeout(500); await shot(page, `B11-${name}-${String(n).padStart(2, "0")}`); if (n >= waitFor) break; }
+      if (done) break;
+      await page.waitForTimeout(250);
+    }
+    const rj = (await boxes(page, ".rejouer"))[0];
+    if (rj) check(rj.y + rj.h < 460, `${name} : « rejouer » en haut à droite, sous « passer » (y ${Math.round(rj.y)})`);
+    check(!errors.length, `${name} : aucune erreur (${errors.join(" | ")})`); await context.close();
+  }
+  {
+    const { page, context, errors } = await open("&cran=conseille&choix=1:9&format=lire&sans=echauffement&sansLecon&guides=0");
+    await page.tap(".play", { force: true }); await page.waitForSelector(".answer"); await page.waitForTimeout(600); await shot(page, "B11-bulles-centaines");
+    check(!errors.length, `bulles : aucune erreur (${errors.join(" | ")})`); await context.close();
+  }
 }
 
 await browser.close(); srv.close();

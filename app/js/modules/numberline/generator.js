@@ -157,7 +157,8 @@ export function classify(q, value) {
 }
 
 // la ligne à dessiner (runtime.js, drawLine) pour une question : positions en px logiques de la scène
-export function lineSpec(q, cfg, { x0 = 150, x1 = 1134, y = 452 } = {}) {
+// (lot 3 bis, R20 : une ligne qui va jusqu'à 1 000 s'arrête un peu avant, pour que « 1000 » ne touche ni le bord ni les algues)
+export function lineSpec(q, cfg, { x0 = 150, x1 = q.max >= 1000 ? 1104 : 1134, y = 452 } = {}) {
   const labels = Array.from({ length: q.n }, (_, i) => (q.labelled.includes(i) ? String(valueAt(q, i)) : null));
   // lot 2, étape 8 : un petit chalut au-dessus des graduations de centaines (au-delà de 100)
   const centaines = q.max > 100 ? Array.from({ length: q.n }, (_, i) => i).filter((i) => { const v = valueAt(q, i); return v > 0 && v % 100 === 0; }) : undefined;

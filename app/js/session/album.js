@@ -12,7 +12,7 @@ import { onTap, pop, spriteBox } from "../engine/ui.js";
 import { CARD, CardView, forgetPictures, paintFace, shine } from "./cards.js";
 
 const K = 0.36, TW = CARD.W * K, TH = CARD.H * K; // une vignette : 119 × 158
-const GRID = { x: 300, y: 118, gx: 18, gy: 20 }, TAB = { x: 1090, y: 150, k: 0.27, gap: 22 }, PEARLS_Y = 680;
+const GRID = { x: 300, y: 118, gx: 18, gy: 20 }, TAB = { x: 1160, y: 200, pitch: 128 }, PEARLS_Y = 680;
 
 export class Album {
   constructor(app) { this.app = app; this.open = false; this.view = new CardView(app); }
@@ -23,9 +23,10 @@ export class Album {
     await sprites.load("cartes");
     const veil = document.createElement("div"); veil.className = "veil album-veil"; app.stage.ui.append(veil); this.els.push(veil);
     this.page = document.createElement("div"); this.page.className = "album-page"; app.stage.ui.append(this.page); this.els.push(this.page);
-    // les onglets des zones : le dos de chaque zone, en petit
+    // les onglets des zones (lot 3 bis, R23 : des médaillons ronds, « album.zone.<zone> », qui ne ressemblent plus à des cartes ;
+    // une zone fermée, assombrie)
     this.tabs = cartes.zones.map((z, i) => {
-      const t = this.thumb({ id: `dos-${z.id}`, zone: z.id, rarete: "commune" }, "dos", TAB.x, TAB.y + i * (CARD.H * TAB.k + TAB.gap), TAB.k, { cls: `album-tab${app.rewards.zoneOpen(z.id) ? "" : " closed"}`, label: z.nom });
+      const t = spriteBox(app, { x: TAB.x - 56, y: TAB.y + i * TAB.pitch - 56, w: 112, h: 112, cls: `bubble album-tab${app.rewards.zoneOpen(z.id) ? "" : " closed"}`, label: z.nom, paint: (ctx) => sprites.draw(ctx, `album.zone.${z.id}`, 0, 56, 56) });
       onTap(t, () => { pop(t); this.showZone(z.id, { say: true }); });
       this.els.push(t); return t;
     });

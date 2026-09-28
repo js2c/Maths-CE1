@@ -23,7 +23,8 @@ const ease = (u) => 1 - Math.pow(1 - u, 3);
 // une animation de `ms` millisecondes, f(u) à chaque image, u de 0 à 1
 const tween = (ms, f) => { const g = clock.hold(); return new Promise((res) => { const t0 = performance.now(), step = (now) => { const u = Math.min(1, (now - t0) / ms); f(u); if (u < 1) requestAnimationFrame(step); else res(); }; requestAnimationFrame(step); }).then(g); };
 const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };
-const REPLAY_AT = [1180, 712], COUNTER = [700, 172]; // « rejouer » en bas à droite ; « passer » : engine/ui.js
+// (lot 3 bis, R23 : « rejouer » monte sous « passer », en haut à droite : en bas, il prenait la place de « je ne sais pas »)
+const REPLAY_AT = [1205, 372], COUNTER = [700, 172]; // « rejouer » sous « passer » (engine/ui.js), en haut à droite
 const NET_W = 62, NET_H = 34;
 
 export class LessonPlayer {

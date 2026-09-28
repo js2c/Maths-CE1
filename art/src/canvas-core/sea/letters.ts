@@ -22,7 +22,9 @@ const MID = (1 + X) / 2, RY = (1 - X) / 2; // centre et demi-hauteur d'une panse
 const bowlL = (cx: number, rx = 0.24) => arc(cx, MID, rx, RY, -25, -335); // panse ouverte à droite (a, d, g, q)
 
 const G: Record<string, Glyph> = {
-  a: { w: 0.54, s: [bowlL(0.25), [[0.49, X], [0.49, 1]]] },
+  // (lot 3 bis, R21 : « 0 sout » : la jambe du a posée sur sa panse le faisait lire comme un o ; la panse est plus étroite,
+  // la jambe détachée à droite, avec un petit pied)
+  a: { w: 0.58, s: [bowlL(0.23, 0.2), [[0.5, X - 0.02], [0.5, 0.93], [0.5, 0.93], [0.58, 1]]] },
   b: { w: 0.56, s: [[[0.05, 0], [0.05, 1]], arc(0.3, MID, 0.24, RY, 200, 520)] },
   c: { w: 0.5, s: [arc(0.27, MID, 0.24, RY, -40, -320)] },
   d: { w: 0.54, s: [bowlL(0.25), [[0.49, 0], [0.49, 1]]] },

@@ -113,8 +113,20 @@ sprites.load("pieuvre-gestes").then(() => ocean.octo.warm("pieuvre-gestes"));
 sprites.load("aides"); // lot 2 : les aides visuelles du module 2 (petite planche : cadre de 10, maison, bulle dorée)
 
 // ---------------------------------------------------------------- en-tête : réécouter, étoiles de mer
-const speaker = spriteBox(app, { x: 1140, y: 8, w: 130, h: 130, cls: "hud speaker", label: "réécouter", paint: (ctx) => sprites.draw(ctx, "reecouter", 0, 65, 65) });
-onTap(speaker, () => { speaker.classList.remove("pop"); void speaker.offsetWidth; speaker.classList.add("pop"); voice.replay(); });
+// (lot 3 bis, R22) « réécouter » reste visible pendant la pause (`keep`) ; à l'accueil, il redit ce qu'on peut faire ; en
+// pause, il le dit aussi, avec une file de voix à part (la voix de la séance, en pause, est rendue intacte ensuite)
+const speaker = spriteBox(app, { x: 1140, y: 8, w: 130, h: 130, cls: "hud speaker keep", label: "réécouter", paint: (ctx) => sprites.draw(ctx, "reecouter", 0, 65, 65) });
+let pauseTalk = null;
+onTap(speaker, async () => {
+  speaker.classList.remove("pop"); void speaker.offsetWidth; speaker.classList.add("pop");
+  if (app.enPause && !visiting) {
+    if (pauseTalk) return;
+    pauseTalk = voice.suspend();
+    try { await voice.say(text.data.pauseConsigne); } finally { voice.restore(pauseTalk); pauseTalk = null; }
+    return;
+  }
+  voice.replay();
+});
 const hud = new StarHud(app, rewards);
 app.hud = hud;
 
@@ -185,7 +197,7 @@ async function notion2(ctx) {
   const conf = ctx.step.module2 ?? ctx.step, step = { ...ctx.step, ...conf, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}), ...(P.get("guides") ? { guides: Number(P.get("guides")) } : {}) };
   app.runner = runner; session.rec.famille = runner.famille; await session.save();
   await Promise.all([sprites.load("ermite"), sprites.load("aides")]);
-  const hermit = new Hermit(ocean, { x: 150, y: 795, scale: 0.85 });
+  const hermit = new Hermit(ocean, { x: 150, y: 776, scale: 0.85 }); // (lot 3 bis, R20 : un peu plus haut, il était coupé par le bas de l'écran)
   screen.hermit = hermit; screen.notion = true; app.hermit = hermit;
   hermit.show(true); hermit.play("sortir");
   screen.show(true); screen.keys(false);
@@ -244,6 +256,8 @@ let homeEls = [];
 const clearHome = () => { homeEls.forEach((e) => e.remove()); homeEls = []; };
 async function showHome({ done, first = false }) {
   clearHome();
+  // (lot 3 bis, R22) ce que « réécouter » redit à l'accueil
+  voice.instruction = done ? text.data.accueilConsigneFaite : text.data.accueilConsigne;
   const reefKey = big("recif", HOME_X[2], 650, "le récif", "bubble reefkey"), albumKey = big("album", HOME_X[3], 650, "l'album", "bubble albumkey");
   homeEls.push(reefKey, albumKey, parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }));
   const visit = (place) => async () => { voice.unlock(); voice.stop(); clearHome(); await place.visit(); showHome({ done: await doneToday(store) }); };
@@ -282,7 +296,8 @@ async function showHome({ done, first = false }) {
   }, "choisir");
 }
 // les bulles de l'accueil : jouer (ou « Encore ! »), choisir, le récif, l'album
-const HOME_X = [520, 740, 960, 1165];
+// (lot 3 bis, R20 : l'album était posé sur le rocher de droite ; les bulles se décalent vers la gauche, sous la pieuvre)
+const HOME_X = [390, 580, 770, 960];
 // une séance du jour : proposée par l'application (« jouer »), ou l'exercice choisi (`choix`, lot 3)
 async function runSession(choix = null) {
   // la durée maximale d'une séance est un réglage du parent (seance.json donne la valeur par défaut) ; « Échauffement :

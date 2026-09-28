@@ -27,12 +27,12 @@ import { AidBoard, num, paintHouse, paintHundreds, paintTenFrame, put, putScaled
 import { WallFish } from "../modules/calc/wallfish.js";
 
 const ABORT = Symbol("leçon interrompue");
-const REPLAY_AT = [1180, 712];
+const REPLAY_AT = [1205, 372]; // (lot 3 bis, R23 : sous « passer », plus à la place de « je ne sais pas »)
 const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };
 const EMPTY = () => ({ miroir: null, cadre: null, maison: null, ecrit: null, filet: false, chalut: null, compteur: null, chaluts: null, nombre: null, mur: null, ligne: null, arcs: [] });
 // lot 3 : le mur de corail et la ligne des leçons L7 à L9
 // (lot 3 bis, R18 : la ligne s'arrête avant « rejouer », qui coupait le dernier nombre)
-export const LESSON_WALL = { x: 580, y: 150, cell: 42, gap: 3 }, LESSON_LINE = { x0: 330, x1: 1090, y: 610 };
+export const LESSON_WALL = { x: 580, y: 150, cell: 42, gap: 3 }, LESSON_LINE = { x0: 330, x1: 1040, y: 610 };
 
 export class Lesson2Player {
   constructor(app, content) { this.app = app; this.c = content; this.tok = 0; this.keys = null; }
@@ -48,7 +48,7 @@ export class Lesson2Player {
     if (this.guide) {
       // le bernard-l'ermite : celui de la notion du jour, sinon le sien (entraînement libre)
       // pendant la leçon, il vient au milieu du sable, en grand ; il retrouve sa place ensuite
-      this.own = !app.hermit; this.h = app.hermit ?? new Hermit(app.ocean, { x: 150, y: 795, scale: 0.85 }); this.h.show(true);
+      this.own = !app.hermit; this.h = app.hermit ?? new Hermit(app.ocean, { x: 150, y: 776, scale: 0.85 }); this.h.show(true);
       this.back = [this.h.x, this.h.y, this.h.s]; this.h.at(300, 780, 1);
       if (this.own) this.h.play("sortir");
     }
@@ -141,12 +141,14 @@ export class Lesson2Player {
       // lot 3 : le mur de corail, la ligne de L9 (et ses arcs)
       if (st.mur) R.drawWall(ctx, { ...LESSON_WALL, lit: st.mur.lit, split: st.mur.split, upTo: st.mur.upTo });
       if (st.ligne) { const L = this.lineSpec(); R.drawLine(ctx, L); for (const [a, b, label] of st.arcs) R.drawJumpArc(ctx, R.tickP(L, a - st.ligne.min), R.tickP(L, b - st.ligne.min), 1, { label: label ?? "+1" }); }
-      if (st.ecrit) { const em = 64; R.drawWord(ctx, st.ecrit, 720, (st.mur ? 700 : 262) - em / 2, em, { w: 9, seed: 990 }); }
+      // (lot 3 bis, R20 : les égalités et le nombre en grand sont posés sur une plaque de nacre : les poissons du décor passent
+      // derrière elle, plus à travers l'écriture)
+      if (st.ecrit) { const em = 64, y = st.mur ? 700 : 262, w = R.wordWidth(st.ecrit) * em + 70; R.drawPanel(ctx, 720 - w / 2, y - em / 2 - 26, w, em + 52); R.drawWord(ctx, st.ecrit, 720, y - em / 2, em, { w: 9, seed: 990 }); }
       // L10 (les centaines)
       if (st.filet) putScaled(ctx, sprites, "aide.filet", 560, 330, 1.4);
       if (st.chalut !== null) { putScaled(ctx, sprites, "aide.chalut", 640, 250, 1, st.chalut); if (st.compteur !== null) num(ctx, st.compteur, 960, 400, 84); }
-      if (st.chaluts !== null) paintHundreds(ctx, sprites, st.chaluts, 700, 300, { lit: st.nombre?.couleur ?? null });
-      if (st.nombre) paintBigNumber(ctx, st.nombre, 700, 200);
+      if (st.chaluts !== null) paintHundreds(ctx, sprites, st.chaluts, 700, 300, { lit: st.nombre?.couleur ?? null, fit: [380, 990] });
+      if (st.nombre) { const w = R.wordWidth(String(st.nombre.v)) * 96 + 90; R.drawPanel(ctx, 700 - w / 2, 200 - 48 - 30, w, 96 + 56); paintBigNumber(ctx, st.nombre, 700, 200); }
     });
   }
   // la ligne de L9 : de 1 en 1, tous les nombres écrits

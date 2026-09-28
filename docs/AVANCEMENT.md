@@ -20,7 +20,7 @@ Spécification : `docs/SPEC-LOT3BIS.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC
 
 Pour reprendre si la session s'est arrêtée : branche `claude/eloquent-ptolemy-v1l9qg`, demande de fusion en brouillon « Lot 3 bis, étapes 3 à 5 (en cours) ».
 
-**Étape en cours :** 4 (intégration).
+**Étape en cours :** aucune ; **reprendre à l'étape 4** (intégration), session arrêtée proprement à la fin de l'étape 3 (contexte au-delà de la moitié). Points d'entrée pour l'étape 4 : `app/js/session/choice.js` (disposition 4 colonnes x 457 à 1121 pour éviter pieuvre et algues ; plaques 150 × 136 ; `choix.lueur` a changé de taille : `GLOW_PAD` ; chemin `R.drawStonePath` et `R.CALC_STOPS` pour le calcul) ; filets de L2 à poser AU-DESSUS de la corde (sous elle, ils cachent les nombres) ; `placer.poisson` (ancrage : pointe de l'étiquette, `meta.tag`) à la place de `poisson.0.d` dans `numberline/screen.js`.
 
 **Fait :**
 

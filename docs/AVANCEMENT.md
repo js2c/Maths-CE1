@@ -20,14 +20,16 @@ Spécification : `docs/SPEC-LOT3BIS.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC
 
 Pour reprendre si la session s'est arrêtée : branche `claude/eloquent-ptolemy-v1l9qg`, demande de fusion en brouillon « Lot 3 bis, étapes 3 à 5 (en cours) ».
 
-**Étape en cours :** aucune ; **reprendre à l'étape 4** (intégration), session arrêtée proprement à la fin de l'étape 3 (contexte au-delà de la moitié). Points d'entrée pour l'étape 4 : `app/js/session/choice.js` (disposition 4 colonnes x 457 à 1121 pour éviter pieuvre et algues ; plaques 150 × 136 ; `choix.lueur` a changé de taille : `GLOW_PAD` ; chemin `R.drawStonePath` et `R.CALC_STOPS` pour le calcul) ; filets de L2 à poser AU-DESSUS de la corde (sous elle, ils cachent les nombres) ; `placer.poisson` (ancrage : pointe de l'étiquette, `meta.tag`) à la place de `poisson.0.d` dans `numberline/screen.js`.
+**Étape en cours :** étape 4 (intégration), reprise le 28 septembre 2026 sur la même branche. Sous-parties faites : B1 (écrans de niveaux). En cours : B2, B3. Points d'entrée pour l'étape 4 : `app/js/session/choice.js` (disposition 4 colonnes x 457 à 1121 pour éviter pieuvre et algues ; plaques 150 × 136 ; `choix.lueur` a changé de taille : `GLOW_PAD` ; chemin `R.drawStonePath` et `R.CALC_STOPS` pour le calcul) ; filets de L2 à poser AU-DESSUS de la corde (sous elle, ils cachent les nombres) ; `placer.poisson` (ancrage : pointe de l'étiquette, `meta.tag`) à la place de `poisson.0.d` dans `numberline/screen.js`.
 
 **Fait :**
 
 - Correctif demandé par le parent (voir « Décisions prises »), commit à part.
 - Étape 3 (atelier, B8) : plaques numérotées (ligne, additions, calcul), lueur du conseillé épaissie, chemin de cailloux du calcul (dessin en direct), bouton de légende, croix, panneau et étiquette (dessin en direct, texte au feutre), « je ne sais pas » (pieuvre qui hausse les bras), coquillage d'aide (triton bleu-violet), onglets de zone de l'album (médaillons), poissons des maisons, poisson porteur d'étiquette, filet haut et bouées géantes de L2, traînée d'étoile arc-en-ciel, grand drapeau du record, les 15 décors du récif et leurs places (`cartes.json` : `place`, `echelle`). Planches spécimens regardées à l'agrandissement (`choiceSheet`, `lot3bisSheet`, `decorsSheet`) ; récif avec les 15 créatures et les 15 décors (rien de coupé, rien sur un bouton) ; décor montré à la récompense (`lot3bis.mjs`, partie décors : tout est bon). Test des bords : bon. `npm test` : 229, tout est bon ; `b-sequences.mjs --test` : 0 séance en défaut sur 464 ; simulation : 7 décors en un mois à 2 séances par semaine.
 
-**Reste :** étape 4 (intégration : B1 à B7, B9 à B12), étape 5 (recette).
+- Étape 4, B1 (`session/choice.js`) : plaques de 150 × 136 en 4 colonnes (x 496 à 1084, pas de 196 × 152 ; bouton de retour remonté à y 108), hors des bras de la pieuvre et des algues ; calcul rapide : les neuf plaques sur le chemin de cailloux (`CALC_AT`, `R.CALC_STOPS`, chemin dessiné en direct dessous) ; lueur du conseillé plus franche (atelier : halo plus dense, fil d'or de 7) et qui respire (CSS `breathe`) ; étoile des niveaux validés dans le coin de sa plaque. Parcours `tests/e2e/lot3bis-b.mjs --seul choisir` : les quatre écrans aux formats 1280 × 800, 1920 × 1200 et 1340 × 800, rien de coupé ni sur la pieuvre ou les algues, sans chevauchement ; captures regardées.
+
+**Reste :** étape 4 (B2 à B7, B9 à B12), étape 5 (recette).
 
 **Décisions prises :**
 

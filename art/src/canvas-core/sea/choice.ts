@@ -105,8 +105,8 @@ const drawOpenBook = (g: Gfx, cx: number, cy: number, k: number, seed: number) =
 // s'éteint vers l'extérieur, cerné d'un fil d'or ; l'application la fait respirer doucement, en opacité et en taille)
 export const GLOW_PAD = 26;
 export const drawTileGlow = (g: Gfx, cx: number, cy: number) => g.group("plain", () => {
-  for (let i = GLOW_PAD; i >= 0; i--) fillShape(g, rrect(cx - TILE_W / 2 - i, cy - TILE_H / 2 - i, TILE_W + 2 * i, TILE_H + 2 * i, TILE_R + i), i > 12 ? "#fff3b8" : "#ffe066", i > 12 ? 0.07 : 0.14);
-  ink(g, rrect(cx - TILE_W / 2 - 7, cy - TILE_H / 2 - 7, TILE_W + 14, TILE_H + 14, TILE_R + 7), "#ffd23a", { w: 5, closed: true, shadow: 0, seed: 5801 }, 0.95);
+  for (let i = GLOW_PAD; i >= 0; i--) fillShape(g, rrect(cx - TILE_W / 2 - i, cy - TILE_H / 2 - i, TILE_W + 2 * i, TILE_H + 2 * i, TILE_R + i), i > 12 ? "#fff3b8" : "#ffe066", i > 12 ? 0.1 : 0.16);
+  ink(g, rrect(cx - TILE_W / 2 - 7, cy - TILE_H / 2 - 7, TILE_W + 14, TILE_H + 14, TILE_R + 7), "#ffd23a", { w: 7, closed: true, shadow: 0, seed: 5801 }, 0.95);
 });
 
 // ---------------------------------------------------------------- les niveaux de la ligne graduée

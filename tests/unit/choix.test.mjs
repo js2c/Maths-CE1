@@ -16,7 +16,8 @@ import { Warmup } from "../../app/js/modules/facts/warmup.js";
 import { runWarmup } from "../../app/js/modules/facts/screen.js";
 import { makeEstimate, makeJump, makePlace, makeRead, makeWrite } from "../../app/js/modules/numberline/generator.js";
 import { Module1Runner } from "../../app/js/modules/numberline/runner.js";
-import { levelItems, tilePos } from "../../app/js/session/choice.js";
+import { levelItems, tilePos, TILE } from "../../app/js/session/choice.js";
+import { CALC_STOPS } from "../../app/js/art/runtime.js";
 import { Session } from "../../app/js/session/session.js";
 
 const load = (f) => JSON.parse(readFileSync(new URL(`../../app/content/${f}`, import.meta.url)));
@@ -49,8 +50,11 @@ test("écran de choix : 13 niveaux, 7 familles, toutes les leçons ; le conseill
   for (const x of C) assert.ok(textes.choixCalcul[x.key]);
   // chaque vignette a son nom dit par la voix
   for (const x of L) assert.ok(textes.choixLigne[x.key]); for (const x of F) assert.ok(textes.choixFamille[x.key]); for (const x of S) assert.ok(textes.choixLeconNom[x.key]);
-  // les vignettes tiennent dans la scène (1280 × 800), à côté de la pieuvre
-  for (let i = 0; i < 13; i++) { const [x, y] = tilePos(i, 13); assert.ok(x - 85 >= 400 && x + 85 <= 1280 && y - 70 >= 180 && y + 70 <= 630, `${i} : ${x}, ${y}`); }
+  // les vignettes tiennent dans la scène (1280 × 800), entre les bras de la pieuvre et les algues de droite (lot 3 bis, B1 :
+  // 4 colonnes, sous le bouton de retour) ; le calcul rapide sur son chemin de cailloux
+  const inScene = ([x, y]) => x - TILE.w / 2 >= 410 && x + TILE.w / 2 <= 1165 && y - TILE.h / 2 >= 172 && y + TILE.h / 2 <= 790;
+  for (const n of [13, 7, 10]) for (let i = 0; i < n; i++) assert.ok(inScene(tilePos(i, n)), `${n}, ${i} : ${tilePos(i, n)}`);
+  for (let i = 0; i < 9; i++) assert.ok(inScene(tilePos(i, 9, TILE, "calcul", CALC_STOPS)), `calcul ${i} : ${tilePos(i, 9, TILE, "calcul", CALC_STOPS)}`);
 });
 
 test("ligne graduée, niveau choisi : toutes les questions à ce niveau (niveau 8 dès une base vide), le cran ne le décale pas", async () => {

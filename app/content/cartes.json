@@ -11,15 +11,15 @@
   "decors": {
   "_doc": "Lot 3 bis (docs/SPEC-LOT3BIS.md, A6, décision du parent du 28 septembre 2026 : le doublon a une contrepartie visible) : chaque doublon (coquillage ordinaire, au-dessus du quota) apporte un décor pour le récif, dans l'ordre de cette liste, tant qu'il en reste ; ensuite, le doublon reprend son comportement d'avant. La probabilité de brillante d'un doublon est inchangée (brillanteDoublon). nomLu : le nom dit par la voix, avec son article (textes.json, carteDoublonDecor) ; zone : la page du récif où il est posé ; place : le milieu de sa base (scène 1280 × 800) ; sprite : son dessin (provisoire au lot 3 bis, étape 2 : les dessins des cadeaux de la surprise ; les 15 décors sont dessinés à l'étape 3).",
   "liste": [
-   {"id": "corail-branchu", "nomLu": "un corail branchu", "zone": "lagon", "place": [150, 604], "sprite": "cadeau.corail"},
+   {"id": "corail-branchu", "nomLu": "un corail branchu", "zone": "lagon", "place": [225, 560], "sprite": "cadeau.corail"},
    {"id": "anemone-rose", "nomLu": "une anémone", "zone": "lagon", "place": [690, 612], "sprite": "cadeau.gorgone"},
    {"id": "gorgone", "nomLu": "une gorgone", "zone": "lagon", "place": [935, 600], "sprite": "cadeau.gorgone"},
    {"id": "coquillage-geant", "nomLu": "un coquillage géant", "zone": "lagon", "place": [1240, 650], "sprite": "cadeau.coquille"},
-   {"id": "etoile-rouge", "nomLu": "une étoile de mer", "zone": "lagon", "place": [60, 720], "sprite": "cadeau.etoile"},
+   {"id": "etoile-rouge", "nomLu": "une étoile de mer", "zone": "lagon", "place": [690, 795], "sprite": "cadeau.etoile"},
    {"id": "oursin-violet", "nomLu": "un oursin", "zone": "lagon", "place": [505, 712], "sprite": "cadeau.coquille"},
    {"id": "herbier", "nomLu": "un herbier", "zone": "lagon", "place": [390, 604], "sprite": "cadeau.gorgone"},
    {"id": "amphore", "nomLu": "une amphore", "zone": "lagon", "place": [750, 730], "sprite": "cadeau.coquille"},
-   {"id": "ancre", "nomLu": "une ancre", "zone": "lagon", "place": [895, 770], "sprite": "cadeau.corail"},
+   {"id": "ancre", "nomLu": "une ancre", "zone": "lagon", "place": [540, 792], "sprite": "cadeau.corail"},
    {"id": "coffre", "nomLu": "un coffre", "zone": "lagon", "place": [1165, 700], "sprite": "cadeau.coquille"},
    {"id": "corail-cerveau", "nomLu": "un corail cerveau", "zone": "lagon", "place": [205, 770], "sprite": "cadeau.corail"},
    {"id": "eponge", "nomLu": "une éponge", "zone": "lagon", "place": [1040, 705], "sprite": "cadeau.corail"},

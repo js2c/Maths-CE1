@@ -184,6 +184,13 @@ Les lettres (noms, plus tard cartes) sont écrites au feutre comme les chiffres 
 - *Calcul rapide* : `module3.json`, `trouDepart` ; forme `trouGauche` (`calcAnswer`, `answerOf`, `calcQuestion`, consignes `calcTrouDepartPlus` et `calcTrouDepartMoins`).
 - Parcours : `node tests/e2e/lot3bis.mjs` ; tests : `tests/unit/lot3bis-variete.test.mjs`.
 
+**Lot 3 bis, étape 2 : la ligne, le toucher, les décors (docs/SPEC-LOT3BIS.md, A3, A5, A6).**
+
+- *Ligne* : `module1.json`, `tirageSansRemise`, `cacherVoisins`, `cacherTrajet` ; le générateur reçoit `opts.pick(liste, tour)` du déroulement (`Module1Runner.picker`, un sac par niveau et cran ; la cible est retirée du sac quand la question est posée, `ret`) ; `lessonFor` : L3 seulement pour E3 en « lire » sur une corde qui ne commence pas à 0.
+- *Toucher* : `engine/toucher.js` (`TapGate` : double toucher, porte fermée pendant un retour ; `repriseText`), réglage `seance.json`, `toucher` ; `FactsScreen.tap`.
+- *Décors* : `cartes.json`, `decors.liste` ; magasin « recompenses », fiche « decors » ; `Rewards.win` (après le tirage de la brillante), `nextDecor`, `reefDecor` (décors et cadeaux d'une page du récif) ; `cardSpeech` (`carteDoublonDecor`) ; `openShell` montre le décor ; espace parent : `cardsSummary.decors`.
+- Tests : `tests/unit/lot3bis-partieA2.test.mjs` ; parcours `node tests/e2e/lot3bis.mjs` (parties `ligne`, `toucher`, `decors`).
+
 ## L'espace parent
 
 `js/parent/parent.js` (l'affichage) et `js/parent/data.js` (les calculs, fonctions pures testées par `tests/unit/parent.test.mjs`), réglages dans `content/parent.json`, styles dans `css/parent.css`. C'est la seule partie de l'application faite de pages HTML ordinaires, avec du texte : elle est destinée au parent.

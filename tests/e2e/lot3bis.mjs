@@ -157,6 +157,79 @@ if (run("toucher")) {
   check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
 }
 
+// ---------------------------------------------------------------- étape 2 : la ligne graduée (A3)
+const lineQ = (page) => page.waitForFunction(() => { const s = window.__app.screen; return s?.q && s.resolve && !s.locked; }, null, { timeout: 60000 });
+const lineAnswer = async (page) => { const q = await page.evaluate(() => ({ f: window.__app.screen.q.format, a: window.__app.screen.q.answer })); if (q.f === "lire" || q.f === "sauter") await page.tap(`.answer[data-value="${q.a}"]`, { force: true }); else await page.evaluate(() => { const s = window.__app.screen; s.aimed = s.q.answer; s.answer(s.q.answer, null); }); };
+if (run("ligne")) {
+  // niveau 1, leçon L1 déjà vue : « lire » (la cible et ses voisins cachés), « sauter » (le trajet caché)
+  const { page, context, errors } = await open("&cran=conseille&choix=1:1", async () => { await window.__app.store.put("niveaux", { module: 1, niveau: 1, obtenus: [], redescentes: [], fenetre: [], vus: 0, taux: [], lecons: ["L1"] }); });
+  await page.tap(".play", { force: true });
+  const seen = {};
+  for (let i = 0; i < 10 && !(seen.lire && seen.sauter); i++) {
+    await lineQ(page); const q = await page.evaluate(() => { const q = window.__app.screen.q; return { f: q.format, g: !!q.guide, w: q.labelled.map((i) => q.min + i * q.step), t: q.target, s: q.start, j: q.jumps }; });
+    if (!q.g && !seen[q.f]) {
+      seen[q.f] = true; await page.waitForTimeout(700); await shot(page, `8-ligne1-${q.f}`);
+      if (q.f === "lire") check([q.t - 1, q.t, q.t + 1].filter((v) => v > 0 && v < 10).every((v) => !q.w.includes(v)), `niveau 1, lire : la cible ${q.t} et ses voisins cachés (écrits : ${q.w.join(" ")})`);
+      else check(Array.from({ length: q.j }, (_, k) => q.s + k + 1).filter((v) => v < 10).every((v) => !q.w.includes(v)), `niveau 1, sauter : le trajet ${q.s} → ${q.s + q.j} caché (écrits : ${q.w.join(" ")})`);
+    }
+    await lineAnswer(page); await page.waitForTimeout(500);
+  }
+  check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
+}
+if (run("ligne")) {
+  // niveau 2 « plus facile » : 0, 2, 5, 8, 10 écrits ; les cibles tournent sans remise
+  const { page, context, errors } = await open("&cran=facile&choix=1:2", async () => { await window.__app.store.put("niveaux", { module: 1, niveau: 2, obtenus: [], redescentes: [], fenetre: [], vus: 0, taux: [], lecons: ["L1"] }); });
+  await page.tap(".play", { force: true });
+  const cibles = [];
+  for (let i = 0; i < 14; i++) {
+    await lineQ(page); const q = await page.evaluate(() => { const q = window.__app.screen.q; return { f: q.format, g: !!q.guide, a: q.answer, w: q.labelled.map((i) => q.min + i * q.step), r: !!q.revient }; });
+    if (!q.r) cibles.push(q.a); // (les exemples guidés tirent aussi dans le sac)
+    if (i === 3) { await page.waitForTimeout(600); await shot(page, `9-ligne2-facile-${q.f}`); check(q.w.join(" ") === "0 2 5 8 10", `niveau 2, plus facile : ${q.w.join(" ")} écrits`); }
+    await lineAnswer(page); await page.waitForTimeout(400);
+  }
+  check(new Set(cibles.slice(0, 6)).size === 6, `les 6 premières cibles toutes différentes (${cibles.join(" ")})`);
+  check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
+}
+
+// ---------------------------------------------------------------- étape 2 : le doublon offre un décor (A6)
+if (run("decors")) {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 2, hasTouch: true }), page = await context.newPage(), errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  const Q = "?nosw&voix=rapide&son=non&sansLecon&sans=echauffement&questions=2&guides=0&cran=conseille";
+  await page.goto(url + Q); await page.waitForFunction(() => window.__ready !== undefined);
+  await page.evaluate(async () => {
+    const s = window.__app.store, ids = window.__app.cartes.cartes.filter((c) => c.zone === "lagon").slice(0, 10).map((c) => c.id);
+    await s.setSetting("mascotte", "Pili");
+    await s.put("recompenses", { id: "cartes", cartes: Object.fromEntries(ids.map((id) => [id, { n: 1, premiere: 1, brillante: false }])) });
+    await s.put("recompenses", { id: "quota", date: Date.now() - 3600000, cartes: 8 });
+    await s.put("recompenses", { id: "etoiles", total: 30, cumul: 30, arcEnCiel: 0, dorees: 0, coquillages: 8 });
+    await s.put("recompenses", { id: "decors", ids: window.__app.cartes.decors.liste.slice(0, 9).map((d) => d.id) });
+  });
+  await page.goto(url + Q); await page.waitForFunction(() => window.__ready !== undefined);
+  await page.evaluate(() => { const v = window.__app.voice, say = v.say.bind(v); window.__said = []; v.say = (t, o) => { window.__said.push(t); return say(t, o); }; });
+  await page.tap(".play", { force: true });
+  let shot1 = false;
+  for (const until = Date.now() + 150000; Date.now() < until;) {
+    const st = await page.evaluate(() => { const s = window.__app.screen; return { q: !!(s?.q && !s.locked && s.resolve), shell: !!document.querySelector(".shelltap"), check: !!document.querySelector(".check"), card: !!document.querySelector(".card"), gift: !!document.querySelector(".gift"), moon: !!document.querySelector(".moon") }; });
+    if (st.moon) break;
+    if (st.q) { await lineAnswer(page); await page.waitForTimeout(200); continue; }
+    if (st.shell) { await page.tap(".shelltap", { force: true }); await page.waitForTimeout(300); continue; }
+    if (st.card && st.check) { if (!shot1 && st.gift) { shot1 = true; await page.waitForTimeout(600); await shot(page, "10-doublon-decor"); } await page.tap(".check", { force: true }); await page.waitForTimeout(800); continue; }
+    await page.waitForTimeout(150);
+  }
+  const s = await page.evaluate(() => window.__said.join(" | "));
+  check(/elle t'offre un coffre pour ton récif/.test(s), "le doublon offre le 10e décor (un coffre), dit par la voix");
+  if (!/elle t'offre/.test(s)) console.log("DBG", s.slice(-600), await page.evaluate(() => JSON.stringify({ rec: window.__app.session?.rec?.cartes, moon: !!document.querySelector(".moon"), total: window.__app.rewards.total, q: window.__app.rewards.quota(), n: window.__app.rewards.count })));
+  check(shot1, "le décor est montré à côté de la carte");
+  const n = await page.evaluate(async () => (await window.__app.store.get("recompenses", "decors")).ids.length);
+  check(n >= 10, `décors rangés dans la base (${n})`);
+  await page.tap(".reefkey", { force: true }); await page.waitForTimeout(2500); await shot(page, "11-recif-decors");
+  await page.evaluate(async () => { const p = window.__app.parent; p.tab = "progression"; p.open(); await p.dashboard(); }); await page.waitForTimeout(500);
+  const box = page.locator(".pa-card-box", { has: page.locator("h2", { hasText: /^Cartes$/ }) }); await box.scrollIntoViewIfNeeded(); await box.screenshot({ path: join(OUT, "12-parent-decors.png") });
+  check(/\d+ \/ 15\s*décors du récif/.test(await box.textContent()), "l'espace parent donne le nombre de décors");
+  check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
+}
+
 await browser.close(); srv.close();
 console.log(fail.length ? `\n${fail.length} échec(s)` : "\ntout est bon");
 process.exit(fail.length ? 1 : 0);

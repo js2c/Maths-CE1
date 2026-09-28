@@ -285,6 +285,17 @@ if (TEST) {
     if (bad.length) fails.push(`${base} · ${ex.nom} · ${CRAN_NOM[cran]} · ${COMPORTEMENTS[comp].nom} (${seq.length} questions) : ${bad.join(" ; ")}`);
   }
   console.log(`${combos.size} combinaisons exercice × niveau × cran, ${n} séances simulées ; ${fails.length} en défaut`);
+  // les mesures du tableau « Recette du lot 3 bis » (docs/SPEC-LOT3BIS.md) qui se lisent sur les séquences
+  const M = [];
+  for (const base of ["neuve", "mois"]) {
+    // A1 : amis de 10, la part des questions à trou (faits de la règle, notion du jour), à chaque cran
+    for (const cran of CRANS) { const r = await uneSeance({ base, choix: { module: 2, famille: 3 }, cran, comp: "appliquee" }), f3 = r.rows.filter((x) => x.etape === "notion" && /famille/.test(x.forme ?? "") && (() => { const m = /^(\d+|\?) \+ (\d+|\?) = (\d+|\?)/.exec(x.forme); return m && (m[3] === "10" || (m[1] !== "?" && m[2] !== "?" && +m[1] + +m[2] === 10)); })()); M.push(`A1 · ${base} · famille 3 · ${CRAN_NOM[cran]} : ${f3.filter((x) => /\?/.test(x.forme.split(" (")[0].replace(/= \?$/, ""))).length} questions à trou sur ${f3.length}`); }
+    // A2 : calcul « très dur » aux niveaux à pas fixe : réponses différentes, étoiles de « pressée » comparées à « appliquée »
+    for (const niv of [1, 2, 3, 6]) { const ap = await uneSeance({ base, choix: { module: 3, niveau: niv }, cran: "tresdur", comp: "appliquee" }), pr = await uneSeance({ base, choix: { module: 3, niveau: niv }, cran: "tresdur", comp: "pressee" }), rep = new Set(ap.rows.filter((x) => x.etape === "notion" && typeof x.attendue === "number").map((x) => x.attendue)).size; M.push(`A2 · ${base} · calcul ${niv} très dur : ${rep} réponses différentes ; étoiles pressée ${pr.rec.etoiles} / appliquée ${ap.rec.etoiles} = ${Math.round((pr.rec.etoiles / ap.rec.etoiles) * 100)} %`); }
+    // A3 : ligne « plus facile » des niveaux 2, 5, 9 : cibles différentes, et l'ordre de deux tours consécutifs
+    for (const niv of [2, 5, 9]) { const r = await uneSeance({ base, choix: { module: 1, niveau: niv }, cran: "facile", comp: "appliquee" }), a = r.rows.filter((x) => x.etape === "notion" && typeof x.attendue === "number").map((x) => x.attendue), k = new Set(a).size, tours = []; for (let i = 0; i + k <= a.length; i += k) tours.push(a.slice(i, i + k).join(" ")); M.push(`A3 · ${base} · ligne ${niv} plus facile : ${k} cibles ; tours ${tours.join(" | ")} ; même ordre deux tours de suite : ${tours.some((t, i) => i && t === tours[i - 1]) ? "OUI" : "jamais"}`); }
+  }
+  console.log("mesures de la recette du lot 3 bis :"); for (const m of M) console.log(`  ${m}`);
   for (const f of fails) console.log(`  ✗ ${f}`);
   console.log("les notions du jour les plus courtes :"); for (const [k, t] of courtes.sort((x, y) => x[0] - y[0]).slice(0, 8)) console.log(`  ${k} questions : ${t}`);
   process.exit(fails.length ? 1 : 0);

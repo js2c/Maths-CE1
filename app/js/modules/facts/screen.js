@@ -3,6 +3,7 @@
 // touche pour effacer et la coche pour valider. Le coquillage, à gauche, montre l'aide de la famille
 // (docs/SPEC.md, « Aide disponible ») : la tortue qui fait 1 ou 2 sauts sur la ligne (famille 1), le
 // poisson et son reflet (famille 2). Un fait résolu avec l'aide n'avance pas de boîte.
+import { TapGate } from "../../engine/toucher.js";
 import * as R from "../../art/runtime.js";
 import { onTap, spriteBox } from "../../session/screens.js";
 import { fill } from "../numberline/screen.js";
@@ -30,8 +31,8 @@ export class FactsScreen {
       const b = key(COLS[d % 5], ROWS[Math.floor(d / 5)], String(d), (ctx, px) => { small("reponse", 0.9)(ctx, px); ctx.setTransform(px, 0, 0, px, 0, 0); R.drawNumber(ctx, String(d), KEY / 2, KEY / 2 - 25, 50, { w: 7, seed: 900 + d }); });
       onTap(b, () => this.type(String(d), b));
     }
-    const del = key(SIDE, ROWS[0], "effacer", small("effacer", 0.8)); onTap(del, () => { if (this.locked || !this.typed) return; pop(del); this.typed = this.typed.slice(0, -1); this.slate.repaint(); this.onTyped?.(this.typed); });
-    const ok = key(SIDE, ROWS[1], "valider", small("valider", 0.7)); ok.classList.add("check"); onTap(ok, () => { if (this.locked || !this.typed) return; pop(ok); this.submit(); });
+    const del = key(SIDE, ROWS[0], "effacer", small("effacer", 0.8)); onTap(del, () => { if (!this.typed || !this.tap("effacer")) return; pop(del); this.typed = this.typed.slice(0, -1); this.slate.repaint(); this.onTyped?.(this.typed); });
+    const ok = key(SIDE, ROWS[1], "valider", small("valider", 0.7)); ok.classList.add("check"); onTap(ok, () => { if (!this.typed || !this.tap("valider")) return; pop(ok); this.submit(); });
     // « je ne sais pas » (lot 1 bis) : compte comme une erreur (code NSP), montre la réponse, le fait revient
     this.nsp = spriteBox(app, { x: 1165 - 75, y: 604 - 75, w: 150, h: 150, cls: "bubble nsp", label: "je ne sais pas", paint: (ctx) => sprites.draw(ctx, "nsp", 0, 75, 75) });
     onTap(this.nsp, () => { if (this.locked) return; pop(this.nsp); this.submit({ nsp: true }); });
@@ -60,8 +61,11 @@ export class FactsScreen {
     if (this.ring) R.drawRing(ctx, sx, 110, 56);
     R.drawNumber(ctx, slot, sx, 110 - em / 2, em, { w: 10.5, color: this.typed ? R.INK : R.RED, seed: 970 });
   }
+  // lot 3 bis (A5) : la porte du pavé (un rebond de doigt sur la même touche est ignoré ; fermée pendant un retour)
+  get gate() { return (this._gate ??= new TapGate(this.app.toucher ?? {})); }
+  tap(key) { return !this.locked && this.gate.accept(key, performance.now()); }
   type(d, b) {
-    if (this.locked) return; pop(b);
+    if (!this.tap(d)) return; pop(b);
     const max = this.q?.dictee ? 5 : this.q?.module === 3 ? 3 : 2; // (le calcul rapide : jusqu'à 100) // deux chiffres au plus (les sommes vont jusqu'à 10) ; la dictée : cinq (3007, 30017 sont des erreurs à reconnaître)
     this.typed = (this.typed.length >= max ? "" : this.typed) + d;
     this.slate.repaint();
@@ -70,7 +74,7 @@ export class FactsScreen {
   // pose la question et attend la réponse ; la promesse se résout après le retour
   ask(q) {
     const { voice } = this.app;
-    this.q = q; this.typed = ""; this.ring = false; this.aide = false; this.locked = false; this.app.starFrom = SLATE;
+    this.q = q; this.typed = ""; this.ring = false; this.aide = false; this.locked = false; this.app.starFrom = SLATE; this.gate.open();
     this.help.style.visibility = q.base || q.cheminMode === "non" || q.pont ? "hidden" : "visible"; // pas d'aide pour « 4 + 0 » (lot 3 : ni sans chemin)
     this.slate.repaint(); pop(this.slate);
     // lot 2, étape 6 : un exemple guidé (l'appui visuel montre la réponse, on peut le passer), ou l'aide
@@ -89,7 +93,7 @@ export class FactsScreen {
   // réponse est rendue telle quelle à la coche (le retour est fait par modules/numberline/dictation.js)
   askNumber(q, consigne) {
     const { voice } = this.app;
-    this.defi = null; this.dictee = consigne; this.q = { ...q, dictee: true }; this.typed = ""; this.ring = false; this.aide = false; this.locked = false; this.app.starFrom = SLATE;
+    this.defi = null; this.dictee = consigne; this.q = { ...q, dictee: true }; this.typed = ""; this.ring = false; this.aide = false; this.locked = false; this.app.starFrom = SLATE; this.gate.open();
     this.show(true); this.help.style.visibility = "hidden";
     this.slate.repaint(); pop(this.slate); this.t0 = clock.now();
     voice.stop(); voice.say(consigne, { instruction: true });
@@ -102,7 +106,7 @@ export class FactsScreen {
   // est rendue dès la coche, avec `after` : la fin du petit retour (bulle claire, ou la bonne réponse montrée
   // un instant après une erreur, sans correction)
   askDefi(q, { apresErreurMs = 900 } = {}) {
-    this.defi = { apresErreurMs }; this.q = q; this.typed = ""; this.ring = false; this.aide = false; this.locked = false; this.app.starFrom = SLATE;
+    this.defi = { apresErreurMs }; this.q = q; this.typed = ""; this.ring = false; this.aide = false; this.locked = false; this.app.starFrom = SLATE; this.gate.open();
     this.help.style.visibility = "hidden";
     this.slate.repaint(); pop(this.slate); this.t0 = clock.now();
     return new Promise((res) => { this.resolve = res; });

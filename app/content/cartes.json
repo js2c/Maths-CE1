@@ -8,6 +8,25 @@
   "serie": {"bonusChaque": 3, "bonus": 5},
   "semaine": {"seances": 2, "semainesParDoree": 4},
   "surprise": {"hasard": 0.25},
+  "decors": {
+  "_doc": "Lot 3 bis (docs/SPEC-LOT3BIS.md, A6, décision du parent du 28 septembre 2026 : le doublon a une contrepartie visible) : chaque doublon (coquillage ordinaire, au-dessus du quota) apporte un décor pour le récif, dans l'ordre de cette liste, tant qu'il en reste ; ensuite, le doublon reprend son comportement d'avant. La probabilité de brillante d'un doublon est inchangée (brillanteDoublon). nomLu : le nom dit par la voix, avec son article (textes.json, carteDoublonDecor) ; zone : la page du récif où il est posé ; place : le milieu de sa base (scène 1280 × 800) ; sprite : son dessin (provisoire au lot 3 bis, étape 2 : les dessins des cadeaux de la surprise ; les 15 décors sont dessinés à l'étape 3).",
+  "liste": [
+   {"id": "corail-branchu", "nomLu": "un corail branchu", "zone": "lagon", "place": [150, 604], "sprite": "cadeau.corail"},
+   {"id": "anemone-rose", "nomLu": "une anémone", "zone": "lagon", "place": [690, 612], "sprite": "cadeau.gorgone"},
+   {"id": "gorgone", "nomLu": "une gorgone", "zone": "lagon", "place": [935, 600], "sprite": "cadeau.gorgone"},
+   {"id": "coquillage-geant", "nomLu": "un coquillage géant", "zone": "lagon", "place": [1240, 650], "sprite": "cadeau.coquille"},
+   {"id": "etoile-rouge", "nomLu": "une étoile de mer", "zone": "lagon", "place": [60, 720], "sprite": "cadeau.etoile"},
+   {"id": "oursin-violet", "nomLu": "un oursin", "zone": "lagon", "place": [505, 712], "sprite": "cadeau.coquille"},
+   {"id": "herbier", "nomLu": "un herbier", "zone": "lagon", "place": [390, 604], "sprite": "cadeau.gorgone"},
+   {"id": "amphore", "nomLu": "une amphore", "zone": "lagon", "place": [750, 730], "sprite": "cadeau.coquille"},
+   {"id": "ancre", "nomLu": "une ancre", "zone": "lagon", "place": [895, 770], "sprite": "cadeau.corail"},
+   {"id": "coffre", "nomLu": "un coffre", "zone": "lagon", "place": [1165, 700], "sprite": "cadeau.coquille"},
+   {"id": "corail-cerveau", "nomLu": "un corail cerveau", "zone": "lagon", "place": [205, 770], "sprite": "cadeau.corail"},
+   {"id": "eponge", "nomLu": "une éponge", "zone": "lagon", "place": [1040, 705], "sprite": "cadeau.corail"},
+   {"id": "arche", "nomLu": "une arche de pierre", "zone": "lagon", "place": [640, 570], "sprite": "cadeau.coquille"},
+   {"id": "algue-rouge", "nomLu": "une algue rouge", "zone": "lagon", "place": [860, 560], "sprite": "cadeau.gorgone"},
+   {"id": "gouvernail", "nomLu": "un gouvernail", "zone": "lagon", "place": [1245, 570], "sprite": "cadeau.etoile"}
+  ]},
   "recifPages": { "_doc": "Le récif en pages, une par zone (lot 3, étape 5 ; décision du parent du 28 septembre 2026 ; app/js/session/reefpages.js). Une zone a sa page si elle est ouverte et si au moins une de ses cartes a une place (recif : [x, y]) et un dessin de l'atelier (sprite creature.<id>) ; un décor propre à une zone se donne dans zones[].recif.decor (un sprite de l'atelier, lot 4). largeur : une page (px logiques) ; seuil : part de l'écran au-delà de laquelle, au relâcher, on passe à la page voisine ; vitesse (px par ms) et distanceRapide (px) : un geste rapide suffit ; glisser : un toucher qui s'écarte de plus que cela (px) devient un glisser ; toucherMs : un toucher plus long n'ouvre pas la carte ; resistance et rebondMax : en bout de liste, le décor ne suit qu'une part du doigt, au plus rebondMax px ; dureeMs : le calage.", "largeur": 1280, "seuil": 0.333, "vitesse": 0.45, "distanceRapide": 40, "glisser": 12, "toucherMs": 700, "resistance": 0.3, "rebondMax": 110, "dureeMs": 320 },
   "zones": [
     { "id": "lagon", "nom": "Le lagon", "ouverte": true, "dos": "assets/cards/dos-lagon.webp", "dosLu": "Cette carte t'attend quelque part dans le lagon !" },

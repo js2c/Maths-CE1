@@ -142,7 +142,7 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
         if (rewards.goldenCard(t)) won(await rewards.openGolden(R, t), true);
         for (let k = 0; k < cartes.coquillage.parSeance && rewards.canOpen(); k++) { if (k) await zone(); const g = await rewards.openShell(R, t); if (!g) break; won(g); }
         await zone();
-        log.depasse = rewards.count > rewards.quota(t); },
+        log.depasse = rewards.count > rewards.quota(t); log.decors = rewards.decors?.length ?? 0; },
     } });
     const rec = await s.run();
     Object.assign(log, { cran: rec.cran, cranDepart: rec.cranDepart, reussite: rec.reussite, questions: rec.questions, etoiles: rec.etoiles, duree: Math.round(rec.dureeS / 60 * 10) / 10, arc: rec.arcEnCiel ?? 0, reste: rewards.total, nbCartes: rewards.count, brillantes: Object.values(rewards.owned).filter((o) => o.brillante).length, legendaires: cartes.cartes.filter((c) => c.rarete === "legendaire" && rewards.owned[c.id]).length, ouvertes: [...rewards.zones.ouvertes], doreesDispo: rewards.doreesDispo, arcDispo: rewards.arcDispo });

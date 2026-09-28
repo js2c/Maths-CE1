@@ -105,6 +105,8 @@ function domaines(C) {
     defiScore: range(2, DEFI_MAX).map((n) => ({ n })),
     defiPasRecord: range(1, DEFI_MAX).map((n) => ({ n })),
     carteNouvelle: cartes, carteDoublon: cartes, recifCarte: cartes,
+    // lot 3 bis (A6) : le doublon et son décor pour le récif (cartes.json, decors.liste : chaque décor avec chaque carte)
+    carteDoublonDecor: cartes.flatMap((c) => (C.cartes.decors?.liste ?? []).map((x) => ({ ...c, decor: x.nomLu }))),
   };
 }
 

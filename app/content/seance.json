@@ -13,6 +13,7 @@
   "alternance": { "modules": [1, 2, 3] },
   "choix": { "validation": "simple", "lecons": ["L1", "L2", "L3", "L4", "L5", "L6", "L10", "L7", "L8", "L9"], "etoilesLecon": 3 },
   "variete": { "_doc": "Lot 3 bis (docs/SPEC-LOT3BIS.md, §0), la réponse qui varie, pour la notion du jour des trois modules (modules/variete.js) : valeursMin : la réponse attendue prend au moins autant de valeurs différentes dans la séance ; memeReponseSuite : jamais plus de fois de suite la même réponse ; suiteMax : pas de suite prévisible plus longue (réponses qui avancent d'un même pas, ou mêmes questions dans le même ordre qu'avant) ; memeQuestionMax : une même question (un même fait aux additions) au plus autant de fois, retours après une erreur compris. Quand plus aucune question ne respecte cette dernière règle, la notion du jour s'arrête.", "valeursMin": 5, "memeReponseSuite": 2, "suiteMax": 3, "memeQuestionMax": 3 },
+  "toucher": { "_doc": "Lot 3 bis (docs/SPEC-LOT3BIS.md, A5) : doubleMs : un second toucher sur la même touche du pavé (ou la même bulle) en moins de ce temps est ignoré ; pendant un retour (« bravo », correction), le pavé et les bulles-réponses sont ignorés jusqu'à l'affichage de la question suivante ; un appui long sur une bulle-réponse ou une touche compte comme un toucher (la réponse part dès que le doigt se pose).", "doubleMs": 150 },
   "finirSurReussite": { "essaisMax": 2 },
   "vitesseAnimations": 1.5,
   "etoiles": { "bonneReponse": 1, "erreurCorrigee": 1, "lecon": 3, "seanceTerminee": 10, "nouveauRecord": 5 },

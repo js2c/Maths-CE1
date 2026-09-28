@@ -111,19 +111,26 @@ export function makeRead(cfg, rnd, opts = {}) {
   if (cfg.cibleMilieu) { const m = pool.filter((i) => i >= (L.n - 1) / 3 && i <= (2 * (L.n - 1)) / 3); if (m.length) pool = m; }
   if (opts.eviter) { const f = pool.filter((i) => !opts.eviter.includes(valueAt(L, i))); if (f.length) pool = f; }
   if (!pool.length) pool = range(1, L.n - 2).filter((i) => !lab.has(i) || cfg.labels === "tous-sauf-cible");
+  let chosen = null;
   // un quart près d'une extrémité (niveaux 2 à 7) : les deux graduations libres les plus proches de chaque bout
   if (cfg.niveau >= 2 && cfg.niveau <= 7 && !["deux-voisines", "trois-voisines", "deux-espacees"].includes(cfg.labels) && !cfg.cibleMilieu) {
     const sorted = [...pool].sort((a, b) => a - b), near = [...new Set([sorted[0], sorted[1], sorted[sorted.length - 1], sorted[sorted.length - 2]])].filter((i) => i !== undefined);
     const far = pool.filter((i) => !near.includes(i));
-    pool = rnd() < 0.25 || !far.length ? near : far;
+    const prefer = rnd() < 0.25 || !far.length ? near : far;
+    // (lot 3 bis, A3 : tirage sans remise, opts.pick ; la moitié préférée n'a plus de cible libre : l'autre)
+    if (!opts.pick) pool = prefer; else chosen = opts.pick(prefer, false);
   }
-  const target = pick(rnd, pool), answer = valueAt(L, target);
-  if (cfg.labels === "tous-sauf-cible") lab.delete(target);
+  // lot 3 bis (docs/SPEC-LOT3BIS.md, A3) : `opts.pick(liste, tour)` (le déroulement) tire la cible sans remise ; `tour` : la
+  // liste est la série entière, un nouveau tour peut commencer
+  const target = chosen ?? (opts.pick ? opts.pick(pool, true) ?? pick(rnd, pool) : pick(rnd, pool)), answer = valueAt(L, target);
+  if (cfg.labels === "tous-sauf-cible") { lab.delete(target); hideAround(lab, target, cfg.cacherVoisins ?? 0, L.n); }
   const q = { module: 1, niveau: cfg.niveau, format: "lire", ...L, target, answer, labelled: [...lab].sort((a, b) => a - b), ...(cfg.premierSaut ? { premierSaut: true } : {}), ...(cfg.cran ? { cran: cfg.cran } : {}) };
   q.choices = choicesFor(q, opts.choix ?? cfg.choix ?? 3, rnd);
   return q;
 }
 
+// lot 3 bis (A3) : au niveau 1 (« lire »), les voisins de la cible sont cachés aussi (0 1 ? ? ? 5 6…), sauf les extrémités
+function hideAround(lab, target, k, n) { for (let d = 1; d <= k; d++) for (const i of [target - d, target + d]) if (i > 0 && i < n - 1) lab.delete(i); }
 // les propositions : la bonne, les pièges possibles par priorité, puis des voisines si besoin ; triées
 export function choicesFor(q, count, rnd) {
   const out = [{ value: q.answer, code: null }], has = (v) => out.some((c) => c.value === v);
@@ -166,6 +173,8 @@ export function lineSpec(q, cfg, { x0 = 150, x1 = 1134, y = 452 } = {}) {
 export function makeJump(cfg, rnd) {
   const L = lineFor(cfg, rnd), b = 1 + Math.floor(rnd() * 4), a = Math.floor(rnd() * (L.n - b)), target = a + b, answer = valueAt(L, target);
   const lab = labelledIndices(cfg, L, rnd); if (cfg.labels === "tous-sauf-cible") lab.delete(target);
+  // lot 3 bis (A3) : au niveau 1, les nombres du trajet de la tortue sont cachés (l'arrivée n'est plus le seul trou)
+  if (cfg.cacherTrajet && cfg.labels === "tous-sauf-cible") for (let i = a + 1; i < target; i++) if (i > 0 && i < L.n - 1) lab.delete(i);
   const q = { module: 1, niveau: cfg.niveau, format: "sauter", ...L, start: a, jumps: b, target, answer, labelled: [...lab].sort((x, y) => x - y) };
   const out = [{ value: answer, code: null }], has = (v) => out.some((c) => c.value === v), count = cfg.choix ?? 3;
   for (const [v, code] of [[valueAt(L, a + b - 1), "E1"], [b * L.step, "E3"], [answer + L.step, null], [answer - 2 * L.step, null], [answer + 2 * L.step, null]]) if (out.length < count && v >= L.min && v <= L.max && !has(v)) out.push({ value: v, code });
@@ -210,8 +219,9 @@ export function classifyWrite(q, value) {
 // Ligne 0-100 sans graduations, 0 et 100 écrits : « Où mettrais-tu 50 ? ». Juste si l'écart ne dépasse pas
 // la tolérance (±8 au début du niveau, puis ±5 : voir `tolerance`).
 export function makeEstimate(cfg, rnd, opts = {}) {
-  const pool = (cfg.cibles ?? [10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90]).filter((v) => !opts.eviter?.includes(v));
-  const answer = pick(rnd, pool.length ? pool : [(cfg.min + cfg.max) / 2]);
+  const all = cfg.cibles ?? [10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90], pool = all.filter((v) => !opts.eviter?.includes(v));
+  // (lot 3 bis, A3 : tirage sans remise, opts.pick)
+  const answer = (opts.pick && opts.pick(all, true)) ?? pick(rnd, pool.length ? pool : [(cfg.min + cfg.max) / 2]);
   return { module: 1, niveau: cfg.niveau, format: "estimer", min: cfg.min, max: cfg.max, step: 1, n: 0, target: null, answer, labelled: [], tolerance: opts.tolerance ?? cfg.tolerances[0], ...(cfg.repere ? { repere: true } : {}), ...(cfg.cran ? { cran: cfg.cran } : {}) };
 }
 // tolérance du niveau 8 : la première tant que 5 estimations n'ont pas été justes au niveau, puis la seconde

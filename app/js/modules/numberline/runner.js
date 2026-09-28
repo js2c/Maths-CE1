@@ -74,7 +74,9 @@ export class Module1Runner {
     // si le format du tour n'a plus de question possible, les autres formats du niveau ; plus rien : la notion s'arrête
     const tries = [], T = this.tries ?? 24;
     for (const f of [format, ...fmts.filter((x) => x !== format)]) {
-      for (let i = 0; i < T; i++) tries.push(this.screen.generate(cfg, this.rnd, { ...opts, ...(i >= T / 2 ? { eviter: undefined } : {}), format: f, ...(f === "estimer" ? { tolerance: toleranceFor(cfg, this.st.justesNiveau) } : {}) }));
+      // (lot 3 bis, A3 : les cibles de « lire », « placer » et « estimer » tirées sans remise, module1.json, tirageSansRemise)
+      const bag = this.content.tirageSansRemise && ["lire", "placer", "estimer"].includes(f) ? `${cfg.niveau}:${cfg.cran ?? ""}:${f === "estimer" ? "e" : "l"}` : null;
+      for (let i = 0; i < T; i++) { const x = this.screen.generate(cfg, this.rnd, { ...opts, ...(i >= T / 2 ? { eviter: undefined } : {}), format: f, ...(bag ? { pick: this.picker(bag) } : {}), ...(f === "estimer" ? { tolerance: toleranceFor(cfg, this.st.justesNiveau) } : {}) }); if (bag) x.bag = bag; tries.push(x); }
       const best = this.var.pick(tries.map((x) => this.cand(x)), (c) => ({ attente: this.waiting(c.cle) }));
       if (best.cout < MANQUE) { const q = tries[best.i]; if (cfg.cran) q.cran = cfg.cran; this.recent.push(q.answer); if (guide) q.guide = true; else if (this.slowNext) q.lent = true; return this.ret({ q, cfg }); }
     }
@@ -83,7 +85,25 @@ export class Module1Runner {
   // lot 3 bis : la question vue par les règles de la réponse qui varie ; ses retours prévus ; une question posée
   cand(q) { return { cle: questionKey(q), reponse: q.answer }; }
   waiting(cle) { return this.replays.filter((r) => questionKey(r.q) === cle).length; }
-  ret(x) { this.var.note(this.cand(x.q)); return x; }
+  ret(x) {
+    this.var.note(this.cand(x.q));
+    // (tirage sans remise : la cible est retirée du sac ; un fait qui revient ne compte pas)
+    const q = x.q, b = q.bag && !q.revient ? this.bags?.[q.bag] : null;
+    if (b) { const t = q.format === "estimer" ? q.answer : q.target; b.used.add(t); b.last = t; b.fresh = false; }
+    return x;
+  }
+  // lot 3 bis (docs/SPEC-LOT3BIS.md, A3) : le sac d'une série de cibles ; `pick(liste, tour)` : une cible pas encore tirée de
+  // la liste, au hasard ; toutes tirées et `tour` (la liste est la série entière) : un nouveau tour, dont la première n'est
+  // pas la dernière du tour d'avant ; sinon null (le générateur essaie une autre liste)
+  picker(key) {
+    const b = ((this.bags ??= {})[key] ??= { used: new Set(), last: null, fresh: true });
+    return (list, tour) => {
+      let free = list.filter((t) => !b.used.has(t));
+      if (!free.length) { if (!tour) return null; b.used = new Set(); b.fresh = true; free = [...list]; }
+      if (b.fresh && free.length > 1) free = free.filter((t) => t !== b.last);
+      return free[Math.floor(this.rnd() * free.length)];
+    };
+  }
   // enregistre une réponse ; renvoie { etoiles, events } (events : montee, difficulte, lecon)
   async record(r, cfg) {
     const q = r.q, events = [];
@@ -133,7 +153,10 @@ export class Module1Runner {
       }
     }
     // la même erreur deux fois dans la séance : la leçon correspondante
-    if (r.code && LESSON_OF_ERROR[r.code]) { this.errors[r.code] = (this.errors[r.code] ?? 0) + 1; if (this.errors[r.code] === this.rules.memeErreurLecon) relaunch(LESSON_OF_ERROR[r.code], r.code); }
+    // (lot 3 bis, docs/SPEC-LOT3BIS.md, A3 : L3 parle d'une corde qui ne commence pas à zéro ; elle n'est relancée que pour E3 au
+    // format « lire » sur une telle corde ; E3 en « sauter », oublier le départ de la tortue, garde sa correction habituelle)
+    const lessonFor = (q, code) => (code === "E3" && !(q.format === "lire" && q.min !== 0) ? null : LESSON_OF_ERROR[code]);
+    if (r.code && lessonFor(q, r.code)) { this.errors[r.code] = (this.errors[r.code] ?? 0) + 1; if (this.errors[r.code] === this.rules.memeErreurLecon) relaunch(LESSON_OF_ERROR[r.code], r.code); }
     await this.save();
     return { etoiles, events };
   }

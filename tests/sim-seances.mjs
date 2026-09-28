@@ -74,5 +74,7 @@ console.log(`ouverture : récif de corail ${first((r) => r.zones.includes("corai
 console.log(`cartes : 15 ${first((r) => r.nbCartes >= 15)}, 30 ${first((r) => r.nbCartes >= 30)}, 45 ${first((r) => r.nbCartes >= 45)}, 60 ${first((r) => r.nbCartes >= 60)} ; fin : ${res.at(-1).nbCartes} cartes dont ${res.at(-1).legendaires} légendaires, ${res.at(-1).brillantes} brillantes`);
 console.log(`étoiles dorées gagnées : ${res.filter((r) => r.doree).length} (en réserve à la fin : ${res.at(-1).doreesDispo}) ; étoiles arc-en-ciel en réserve à la fin : ${res.at(-1).arcDispo}`);
 console.log(`coquillages : ${res.reduce((a, r) => a + r.cartes.length, 0)} (${res.reduce((a, r) => a + (r.nouvelles ?? 0), 0)} cartes nouvelles, ${res.reduce((a, r) => a + r.cartes.filter((c) => c.includes("doublon")).length, 0)} doublons) ; séances sans coquillage : ${res.filter((r) => !r.cartes.length).length}`);
+// lot 3 bis (A6) : les décors du récif offerts par les doublons
+{ const d = (k) => res.slice(0, k).at(-1)?.decors ?? 0, full = res.find((r) => r.decors >= 15); console.log(`décors du récif (doublons) : ${d(8)} après 8 séances (un mois à 2 par semaine), ${d(20)} après 20 séances, ${res.at(-1).decors} à la fin ; collection complète (15) : ${full ? `séance ${full.n}, ${full.date}` : "jamais"}`); }
 console.log(`quota dépassé : ${res.some((r) => r.depasse) ? "OUI (erreur)" : "jamais"} ; surprises : ${res.filter((r) => r.surprise).length} sur ${res.length} séances`);
 void zoneDone;

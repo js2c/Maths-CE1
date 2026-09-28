@@ -375,6 +375,7 @@ export class ParentSpace {
       h("p", { class: "pa-note" }, `Pour que toutes les cartes arrivent d'ici l'été, l'enfant peut gagner ${pl(this.cartes.quota.parSemaine, "carte nouvelle")} par semaine d'école (vacances non comptées). Au-delà, un coquillage donne un doublon d'une carte déjà gagnée. Une carte nouvelle a une chance sur cinq d'être brillante, un doublon une chance sur vingt. L'enfant ne voit aucun de ces nombres.`),
       h("div", { class: "pa-stats" },
         stat(`${K.cartes} / ${K.total}`, "cartes gagnées"), stat(String(K.brillantes), "cartes brillantes"),
+        stat(`${K.decors} / ${K.decorsTotal}`, "décors du récif (chaque doublon en offre un, tant qu'il en reste)"),
         stat(String(K.gagnables), `cartes nouvelles encore gagnables d'ici dimanche${K.gagnables ? "" : " (quota atteint : de nouvelles lundi, sauf pendant les vacances)"}`),
         stat(`${K.legendaires} / ${K.legendairesTotal}`, "légendaires (une étoile dorée chacune)"),
         stat(String(K.dorees - K.doreesDepensees), `étoiles dorées en réserve (${K.dorees} gagnées)`),

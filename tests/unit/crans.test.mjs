@@ -30,14 +30,14 @@ test("ligne : les nombres écrits et les formats suivent le tableau de la SPEC",
   // niveau 1 : plus facile, 2 propositions et le premier saut ; plus dur 0, 5, 10 ; très dur 0 et 10
   const f1 = await qs(1, "facile"); assert.ok(f1.filter((q) => q.format === "lire").every((q) => q.choices.length === 2 && q.premierSaut));
   assert.deepEqual(await W(1, "dur"), [0, 5, 10]); assert.deepEqual(await W(1, "tresdur"), [0, 10]);
-  assert.deepEqual(await W(2, "facile"), [0, 2, 4, 5, 6, 8, 10]); assert.deepEqual(await W(2, "dur"), [0, 10]);
+  assert.deepEqual(await W(2, "facile"), [0, 2, 5, 8, 10]); // (lot 3 bis, A3 : un repère de plus, pas quatre) assert.deepEqual(await W(2, "dur"), [0, 10]);
   assert.ok((await qs(2, "tresdur")).every((q) => q.format === "placer"));
   assert.deepEqual(await W(3, "facile"), [0, 5, 10, 15, 20]); assert.deepEqual(await W(3, "dur"), [0, 20]);
   // niveau 4 : le milieu aussi écrit ; plus dur : cibles près du milieu ; très dur : 20 graduations
   for (const q of await qs(4, "facile")) assert.deepEqual(written(q), [q.min, q.min + 5, q.max]);
   for (const q of await qs(4, "dur")) assert.ok(q.target >= 10 / 3 && q.target <= 20 / 3, `cible ${q.target}`);
   for (const q of await qs(4, "tresdur")) { assert.equal(q.n, 21); assert.deepEqual(written(q), [q.min, q.max]); }
-  assert.deepEqual(await W(5, "facile"), [0, 20, 40, 50, 60, 80, 100]); assert.deepEqual(await W(5, "dur"), [0, 100]);
+  assert.deepEqual(await W(5, "facile"), [0, 20, 50, 80, 100]); assert.deepEqual(await W(5, "dur"), [0, 100]);
   for (const q of await qs(6, "facile")) assert.ok(written(q).every((v) => v % 5 === 0) && written(q).length === 5);
   for (const q of await qs(6, "tresdur")) { assert.equal(q.max - q.min, 30); assert.deepEqual(written(q), [q.min, q.max]); }
   // niveau 7 : trois graduations écrites ; cible 3 à 5 sauts après ; deux graduations non voisines

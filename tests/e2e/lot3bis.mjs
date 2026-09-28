@@ -87,6 +87,76 @@ if (run("calcul")) {
   check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
 }
 
+// ---------------------------------------------------------------- étape 2 : toucher et reprise (A5)
+// un toucher réel (Input.dispatchTouchEvent) au centre d'un élément ; `ms` : durée de l'appui
+const touch = async (page, sel, ms = 40) => {
+  const box = await page.locator(sel).first().boundingBox(); if (!box) return false;
+  const c = (page.__cdp ??= await page.context().newCDPSession(page)), x = box.x + box.width / 2, y = box.y + box.height / 2;
+  await c.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] }); await page.waitForTimeout(ms); await c.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  return true;
+};
+const said = (page) => page.evaluate(() => window.__said.slice());
+const pauseResume = async (page) => { await touch(page, ".session-home"); await page.waitForTimeout(700); await page.evaluate(() => { window.__said = []; }); await touch(page, ".play"); await page.waitForTimeout(900); return said(page); };
+if (run("toucher")) {
+  // la reprise redit la consigne : ligne (niveau 5), additions (famille 3), calcul rapide (niveau 7)
+  for (const [nom, q, prep, wait0] of [
+    ["ligne graduée", "&cran=conseille&choix=1:5", async () => { await window.__app.store.put("niveaux", { module: 1, niveau: 5, obtenus: [], redescentes: [], fenetre: [], vus: 0, taux: [], lecons: ["L1", "L2", "L3"] }); }, async (p) => { for (;;) { await p.waitForFunction(() => { const s = window.__app.screen; return s?.q && s.resolve && !s.locked; }, null, { timeout: 60000 }); if (!(await p.evaluate(() => window.__app.screen.q.guide))) return; await p.evaluate(() => window.__app.screen.answer(window.__app.screen.q.answer, null)); await p.waitForTimeout(500); } }],
+    ["additions", "&cran=conseille&choix=2:3", async () => { await window.__app.store.put("niveaux", { module: 2, ouvertes: [1, 2, 3], ouvertures: [], acquises: [1, 2], trou: [], notion: [3], lecons: ["L4", "L5"] }); }, async (p) => { for (;;) { await waitQ(p); const q = await cur(p); if (!q.guide) return; await type(p, answerOf(q)); await p.waitForTimeout(300); } }],
+    ["calcul rapide", "&cran=dur&choix=3:7", async () => { await window.__app.store.put("niveaux", { module: 3, acquis: [], obtenus: [], vus: { 7: 10 }, fenetres: {}, lecons: ["L9"] }); }, waitQ],
+  ]) {
+    const { page, context, errors } = await open(q, prep);
+    await page.tap(".play", { force: true }); await wait0(page);
+    const consigne = await page.evaluate(() => window.__app.voice.instruction);
+    await page.waitForFunction(() => !window.__app.voice.cur, null, { timeout: 20000 }).catch(() => {});
+    const s = await pauseResume(page);
+    check(s.some((x) => x.includes(consigne)), `${nom} : après la pause, la consigne est redite (${s.join(" | ") || "rien"})`);
+    if (nom === "calcul rapide") await shot(page, "6-reprise-calcul");
+    check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
+  }
+}
+if (run("toucher")) {
+  // additions : une erreur, la pause pendant la correction, la reprise ; puis un chiffre tapé pendant le « bravo » ; puis un double toucher à 60 ms
+  const { page, context, errors } = await open("&cran=conseille&choix=2:3", async () => { await window.__app.store.put("niveaux", { module: 2, ouvertes: [1, 2, 3], ouvertures: [], acquises: [1, 2], trou: [], notion: [3], lecons: ["L4", "L5"] }); });
+  await page.tap(".play", { force: true });
+  for (;;) { await waitQ(page); const q = await cur(page); if (!q.guide) break; await type(page, answerOf(q)); await page.waitForTimeout(300); }
+  const q1 = await cur(page); await type(page, answerOf(q1) === 1 ? 2 : 1);
+  await page.waitForSelector(".skip", { timeout: 10000 }); await page.waitForTimeout(600);
+  const s = await pauseResume(page);
+  check(s.length > 0, `pause pendant une correction : à la reprise, la voix reprend (${s.join(" | ")})`);
+  await waitQ(page); const q2 = await cur(page);
+  await page.waitForTimeout(300); const c2 = await page.evaluate(() => window.__app.voice.instruction);
+  // la bonne réponse, puis un chiffre tapé aussitôt, pendant le « bravo »
+  for (const d of String(answerOf(q2))) await touch(page, `.key[data-key="${d}"]`);
+  await touch(page, '.key[data-key="valider"]'); await page.waitForTimeout(150); await touch(page, '.key[data-key="5"]');
+  await waitQ(page); await page.waitForTimeout(400);
+  const after = await page.evaluate(() => ({ typed: window.__app.facts.typed, q: window.__app.facts.q.fait, said: window.__said.slice(-2) }));
+  check(after.typed === "", `un chiffre tapé pendant le « bravo » n'est pas dans la question suivante (ardoise « ${after.typed} »)`);
+  check(after.said.some((x) => x !== c2 && /combien|plus/i.test(x)), `la consigne suivante est dite (${after.said.join(" | ")})`);
+  await page.evaluate(() => { window.__taps = []; document.addEventListener("pointerdown", () => window.__taps.push(performance.now()), { capture: true }); });
+  await touch(page, '.key[data-key="7"]', 20); await page.waitForTimeout(20); await touch(page, '.key[data-key="7"]', 20); await page.waitForTimeout(200);
+  const gap = await page.evaluate(() => Math.round(window.__taps[1] - window.__taps[0])); console.log(`     (écart mesuré entre les deux touchers : ${gap} ms)`);
+  const typed = await page.evaluate(() => window.__app.facts.typed);
+  check(typed === "7", `deux touchers à 60 ms sur la même touche : un seul chiffre (« ${typed} »)`);
+  await shot(page, "7-double-toucher");
+  check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
+}
+if (run("toucher")) {
+  // ligne graduée : un appui long (1,5 s) sur une bulle-réponse compte comme un toucher
+  const { page, context, errors } = await open("&cran=conseille&choix=1:5", async () => { await window.__app.store.put("niveaux", { module: 1, niveau: 5, obtenus: [], redescentes: [], fenetre: [], vus: 0, taux: [], lecons: ["L1", "L2", "L3"] }); });
+  await page.tap(".play", { force: true });
+  for (let i = 0; i < 6; i++) {
+    await page.waitForFunction(() => { const s = window.__app.screen; return s?.q && s.resolve && !s.locked; }, null, { timeout: 60000 });
+    const q = await page.evaluate(() => ({ f: window.__app.screen.q.format, a: window.__app.screen.q.answer, g: !!window.__app.screen.q.guide }));
+    if (q.f !== "lire" || q.g) { await page.evaluate(() => window.__app.screen.answer(window.__app.screen.q.answer, null)); await page.waitForTimeout(400); continue; }
+    const n0 = await page.evaluate(async () => (await window.__app.store.all("reponses")).length);
+    await touch(page, `.answer[data-value="${q.a}"]`, 1500); await page.waitForTimeout(500);
+    const n1 = await page.evaluate(async () => (await window.__app.store.all("reponses")).length);
+    check(n1 === n0 + 1, `appui long (1,5 s) sur la bonne bulle : une réponse enregistrée (${n0} → ${n1})`);
+    break;
+  }
+  check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
+}
+
 await browser.close(); srv.close();
 console.log(fail.length ? `\n${fail.length} échec(s)` : "\ntout est bon");
 process.exit(fail.length ? 1 : 0);

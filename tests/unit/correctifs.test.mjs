@@ -44,7 +44,7 @@ test("correction passée (additions) : notée dans la réponse, aucune étoile, 
   const res = await w.record(q, { value: q.a + q.b + 1, ms: 2000, listens: 1, aide: false, nsp: false, correctionPassee: true }, rest);
   assert.equal(res.juste, false); assert.equal(res.etoiles, 0);
   const rep = (await store.all("reponses")).at(-1);
-  assert.equal(rep.correctionPassee, true); assert.equal(rep.erreur, "autre");
+  assert.equal(rep.correctionPassee, true); assert.equal(rep.erreur, "plusOuMoins1"); // (lot 3 bis, B10 : la réponse fausse d'une unité est détaillée)
   assert.ok(rest.some((x) => x.fait === q.fait && x.revient));
 });
 

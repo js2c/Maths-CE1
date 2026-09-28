@@ -176,7 +176,7 @@
 .pa-boxes div:nth-child(1) { background: #f8d8cc; } .pa-boxes div:nth-child(2) { background: #fbe4c4; } .pa-boxes div:nth-child(3) { background: #f7efc2; } .pa-boxes div:nth-child(4) { background: #dcefd6; } .pa-boxes div:nth-child(5) { background: #c5e6cc; }
 .pa-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .pa-chip { padding: 4px 12px; border-radius: 14px; background: #f1ead8; font-variant-numeric: tabular-nums; }
-.pa-err { display: grid; grid-template-columns: 56px 1fr auto; gap: 4px 12px; align-items: baseline; padding: 6px 0; border-top: 1px solid #efe6d1; }
+.pa-err { display: grid; grid-template-columns: 96px 1fr auto; gap: 4px 12px; align-items: baseline; padding: 6px 0; border-top: 1px solid #efe6d1; }
 .pa-err:first-of-type { border-top: 0; }
 .pa-err .code { font-weight: 750; color: var(--pa-coral); }
 .pa-err .ex { grid-column: 2 / span 2; font-size: 15px; color: var(--pa-ink-3); }
@@ -199,3 +199,7 @@
 .pa-grid-info { margin-top: 6px; }
 .pa-chip.rec { background: #fbe4c4; font-weight: 700; }
 .pa-seg.pa-levels-seg { flex-wrap: wrap; max-width: 100%; } .pa-seg.pa-levels-seg button { min-width: 54px; padding-left: 6px; padding-right: 6px; } /* lot 2, étape 8 : 13 niveaux */
+/* lot 3 bis (B2, B10) : la légende des niveaux de « choisir », un volet par exercice */
+.pa-niveaux { margin-top: 10px; border-top: 1px solid var(--pa-line); padding-top: 8px; }
+.pa-niveaux summary { cursor: pointer; font-weight: 600; font-size: 17px; padding: 6px 0; }
+.pa-niveaux table td:first-child { width: 70px; text-align: center; font-weight: 600; }

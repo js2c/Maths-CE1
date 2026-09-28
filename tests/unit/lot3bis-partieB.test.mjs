@@ -48,3 +48,21 @@ test("B2 : la légende a une ligne par niveau (13, 7, 9) et par leçon proposée
   // le tableau du calcul rapide de la spécification (B2)
   assert.equal(legendes.calcul.find((r) => r.n === 7).exemple, "38 + 5 = 38 + 2 + 3");
 });
+
+test("B10 : erreurs d'additions détaillées (se trompe de 1, un des deux nombres, soustraction, autre), chacune avec sa phrase pour le parent", async () => {
+  const { classifyFact } = await import("../../app/js/modules/facts/facts.js");
+  const parent = JSON.parse(readFileSync(new URL("../../app/content/parent.json", import.meta.url), "utf8"));
+  const d = (a, b) => ({ a, b, forme: "directe" }), tD = (a, b) => ({ a, b, forme: "trouDroite" }), tG = (a, b) => ({ a, b, forme: "trouGauche" });
+  assert.equal(classifyFact(d(5, 3), 8), null);
+  assert.equal(classifyFact(d(5, 3), 9), "plusOuMoins1"); assert.equal(classifyFact(d(5, 3), 7), "plusOuMoins1");
+  assert.equal(classifyFact(d(5, 3), 5), "unDesNombres"); assert.equal(classifyFact(d(5, 3), 3), "unDesNombres");
+  assert.equal(classifyFact(d(5, 3), 2), "soustraction");
+  assert.equal(classifyFact(d(5, 3), 6), "autre"); assert.equal(classifyFact(d(3, 3), 0), "autre");
+  // à trou : donner le total, c'est la soustraction non faite ; redonner le nombre connu, « un des deux nombres »
+  assert.equal(classifyFact(tD(4, 3), 7), "soustraction"); assert.equal(classifyFact(tD(4, 3), 4), "unDesNombres"); assert.equal(classifyFact(tD(4, 3), 2), "plusOuMoins1");
+  assert.equal(classifyFact(tG(4, 3), 7), "soustraction"); assert.equal(classifyFact(tG(4, 3), 3), "unDesNombres"); assert.equal(classifyFact(tG(4, 3), 5), "plusOuMoins1");
+  assert.equal(classifyFact(d(5, 3), null), "autre");
+  for (const k of ["plusOuMoins1", "unDesNombres", "soustraction", "autre"]) assert.ok(parent.erreurs[k] && parent.erreursExercice[k], k);
+  // aucun sigle ni mot de conception dans les textes du parent
+  assert.doesNotMatch(parent.journalNote, /\b[EC][1-7]\b|SPEC|l'une des deux/);
+});

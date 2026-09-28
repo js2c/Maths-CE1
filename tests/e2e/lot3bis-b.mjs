@@ -13,11 +13,15 @@
 //   placer    — B7 : le nombre écrit sur l'étiquette du poisson (plus de rond comme une bulle-réponse), la corde qui ondule,
 //               le poisson glissé jusqu'à la corde donne la réponse
 //   lecons    — B9 : L2, L8, L9, une capture à chaque phrase dite ; la chronologie voix et sauts de L2 ; durée de L8
+//   parent    — B10 : l'espace parent sur une base « un mois » (tools/sauvegarde-test.mjs reel 2 4) : aucun sigle, erreurs
+//               d'additions détaillées, « acquise le … (depuis, n sur m) », la légende des niveaux
 // (les autres parties s'ajoutent au fil de l'étape 4)
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
+import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 
 const args = process.argv.slice(2), arg = (k, d) => (args.includes(k) ? args[args.indexOf(k) + 1] : d);
 const OUT = resolve(arg("--out", "tests/e2e/out/lot3bis-b")); mkdirSync(OUT, { recursive: true });
@@ -299,6 +303,39 @@ if (want("lecons")) {
     if (id === "L8") check(dur >= 25 && dur <= 50, `L8 : deux exemples, ${dur.toFixed(0)} s (cible 30 à 45 s)`);
     check(!errors.length, `${id} : aucune erreur (${errors.join(" | ")})`); await context.close();
   }
+}
+
+// ---------------------------------------------------------------- B10 : l'espace parent
+if (want("parent")) {
+  const f = join(OUT, "sauvegarde-un-mois.json");
+  execFileSync("node", ["tools/sauvegarde-test.mjs", "reel", "2", "4", "--sortie", f], { stdio: "ignore" });
+  const dump = JSON.parse(readFileSync(f, "utf8"));
+  const { page, context, errors } = await open("", { prepArg: dump, prep: async (dump) => { await window.__app.store.restore(dump, ["reglages"]); await window.__app.store.setSetting("codeParent", "1234"); } });
+  page.evaluate(() => window.__app.parent.open()).catch(() => {}); await page.waitForSelector(".pa-keys", { timeout: 10000 });
+  for (const d of "1234") { await page.dispatchEvent(`.pa-keys button[data-key="${d}"]`, "pointerdown"); await page.waitForTimeout(80); }
+  await page.waitForTimeout(600); await page.click('.pa-tabs button:has-text("Progression")'); await page.waitForTimeout(800);
+  const txt = await page.evaluate(() => document.querySelector(".pa-sheet")?.innerText ?? document.body.innerText);
+  const sigles = [...txt.matchAll(/\b([EC][1-7])\b|SPEC|l'une des deux/g)].map((m) => m[0]);
+  check(!sigles.length, `onglet Progression : aucun sigle ni mot de conception (${sigles.join(", ") || "aucun"})`);
+  const add = await page.evaluate(() => [...document.querySelectorAll(".pa-err")].map((e) => e.innerText.replace(/\s+/g, " ")).filter((t) => /additions/.test(t)));
+  check(add.length > 0, `journal : erreurs d'additions détaillées (${add.slice(0, 3).join(" | ")})`);
+  const acq = await page.evaluate(() => [...document.querySelectorAll(".pa-fam td")].map((t) => t.innerText).filter((t) => /acquise/.test(t)));
+  check(acq.every((t) => /acquise( le \d\d\/\d\d)?.*\(depuis, \d+ sur \d+\)/.test(t)), `familles : « acquise le … (depuis, n sur m) » (${acq.join(" ; ") || "aucune acquise"})`);
+  for (const [sel, name] of [[".pa-fam", "B10-parent-familles"], [".pa-err", "B10-parent-journal"], [".pa-niveaux", "B10-parent-legende"]]) {
+    await page.evaluate((sel) => { const e = document.querySelector(sel); if (e?.tagName === "DETAILS") e.open = true; e?.scrollIntoView({ block: "start" }); document.querySelector(".pa-sheet")?.scrollBy?.(0, -90); }, sel);
+    await page.waitForTimeout(300); await shot(page, name);
+  }
+  // le détail des séances : chaque erreur en une phrase, sans son code
+  await page.tap('[data-tab="seances"]'); await page.waitForTimeout(300);
+  const n = await page.locator(".pa-session > button").count();
+  for (let i = 0; i < n; i++) await page.locator(".pa-session > button").nth(i).click();
+  await page.waitForTimeout(300);
+  const txt3 = await page.evaluate(() => document.body.innerText), sig3 = [...txt3.matchAll(/\b([EC][1-7]) ·/g)].map((m) => m[1]);
+  check(!sig3.length, `détail des ${n} séances : les erreurs en phrases, sans code (${sig3.slice(0, 5).join(", ") || "aucun code"})`);
+  await page.click('.pa-tabs button:has-text("Données et réglages")'); await page.waitForTimeout(600);
+  const txt2 = await page.evaluate(() => document.body.innerText);
+  check(!/l'une des deux|SPEC/.test(txt2) && /l'un des trois exercices/.test(txt2), "réglages : « imposer l'un des trois exercices »");
+  check(!errors.length, `parent : aucune erreur (${errors.join(" | ")})`); await context.close();
 }
 
 await browser.close(); srv.close();

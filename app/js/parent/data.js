@@ -253,7 +253,7 @@ export function cardsSummary(R, cartes, calendrier, seances, now = Date.now()) {
   let attend = null;
   if (next) {
     const cur = zones[last], reste = C.filter((c) => c.zone === cur.id && c.rarete !== "legendaire" && !owned[c.id]).length;
-    attend = !zoneDone(C, owned, cur.id) ? `il reste ${reste} carte${reste > 1 ? "s" : ""} (communes et rares) à gagner dans « ${cur.nom} »` : !next.pret ? "ses illustrations et ses anecdotes (contenu à livrer)" : "une étoile arc-en-ciel (le prochain niveau franchi)";
+    attend = !zoneDone(C, owned, cur.id) ? (reste > 1 ? `que les ${reste} cartes (communes et rares) qui restent dans « ${cur.nom} » soient gagnées` : `que la dernière carte (commune ou rare) de « ${cur.nom} » soit gagnée`) : !next.pret ? "ses illustrations et ses anecdotes (contenu à livrer)" : "une étoile arc-en-ciel (le prochain niveau franchi)";
   }
   const debuts = seances.filter((s) => s.terminee && !s.libre).map((s) => s.debut), semaines = goodWeeks(debuts, cartes.semaine), per = cartes.semaine.semainesParDoree;
   return {

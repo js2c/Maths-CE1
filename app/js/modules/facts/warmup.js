@@ -5,7 +5,7 @@
 // autres s'ajoutent à la fin. Le cran du sélecteur de difficulté (content/module2.json, crans) décide des
 // faits nouveaux en plus et des formes à trou. Chaque réponse est enregistrée (magasins « reponses » et
 // « faits ») ; le temps de base est rangé dans les réglages (« tempsDeBase »).
-import { afterFact, catalog, expected, formFor, key, median, newFact, plan, pool, roomForNew, threshold, trouPartOf, trouTurn } from "./facts.js";
+import { afterFact, catalog, classifyFact, expected, formFor, key, median, newFact, plan, pool, roomForNew, threshold, trouPartOf, trouTurn } from "./facts.js";
 import { initialFamilies, trouOpenFor, updateFamilies, withOpen } from "./families.js";
 
 export class Warmup {
@@ -75,7 +75,7 @@ export class Warmup {
     const now = this.clock(), forme = q.base ? "base" : q.forme ?? "directe", juste = r.value === expected({ ...q, forme });
     await this.store.add("reponses", {
       t: now, seance: this.seance, module: 2, niveau: q.famille ?? 0, question: describeFact(q, forme), forme, donnee: r.value, attendue: expected({ ...q, forme }),
-      juste, tempsMs: r.ms, ecoutes: r.listens, aide: !!r.aide, ...(r.aideDEmblee ? { aideDEmblee: true } : {}), erreur: juste ? null : r.nsp ? "NSP" : "autre", revient: !!q.revient, anticipe: !!q.anticipe,
+      juste, tempsMs: r.ms, ecoutes: r.listens, aide: !!r.aide, ...(r.aideDEmblee ? { aideDEmblee: true } : {}), erreur: juste ? null : r.nsp ? "NSP" : classifyFact({ ...q, forme }, r.value), revient: !!q.revient, anticipe: !!q.anticipe,
       ...(r.correctionPassee ? { correctionPassee: true } : {}), ...(this.libre ? { libre: true } : {}), ...(q.guide ? { guide: true } : {}), ...(q.passe ? { passe: true } : {}), ...(this.notion ? { notion: true } : {}), ...(this.defi ? { defi: true } : {}), ...(this.cran() !== "conseille" ? { cran: this.cran() } : {}),
     });
     if (q.base) {

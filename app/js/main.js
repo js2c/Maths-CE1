@@ -234,7 +234,7 @@ const album = new Album(app);
 app.album = album;
 // l'espace parent : appui long sur le logo, puis le code (parent/parent.js) ; après une restauration ou un
 // effacement, l'application repart de zéro
-const parent = new ParentSpace(app, { content: parentContent, seance, module2, cartes, calendrier });
+const parent = new ParentSpace(app, { content: parentContent, seance, module2, cartes, calendrier, legendes });
 app.parent = parent;
 // l'espace parent coupe le son ; à la sortie, ses réglages (musique, volume, bruitages) sont relus
 // (pendant une pause, le parent peut terminer la séance : endPausedSession)

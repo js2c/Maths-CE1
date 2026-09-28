@@ -49,13 +49,18 @@
     "base": "temps de base",
     "directe": "a + b = ?", "trouDroite": "a + ? = n", "trouGauche": "? + b = n"
   },
+  "erreursExercice": { "_doc": "Lot 3 bis (B10) : l'exercice affiché devant chaque erreur du journal, d'après son code (premières lettres).", "E": "ligne", "C": "calcul", "soustraction": "additions", "unDesNombres": "additions", "plusOuMoins1": "additions", "NSP": "?", "autre": "—" },
+  "journalNote": "Pour la ligne graduée et le calcul rapide, une mauvaise réponse révèle souvent une erreur type, décrite ci-dessous en une phrase ; aux additions, l'application distingue quatre cas (se trompe de 1, a répondu l'un des deux nombres, a fait une soustraction, autre). L'application corrige chaque erreur avec une animation, et relance une leçon si la même erreur revient deux fois dans une séance. Au calcul rapide, une réponse juste mais lente est notée sans reproche : l'application rejoue le raccourci. Le bouton « je ne sais pas » a sa propre ligne : ce n'est pas une erreur, mais la question revient comme après une erreur.",
   "erreurs": {
     "E1": "compte les traits au lieu des sauts",
     "E2": "oublie qu'un saut vaut 10",
     "E3": "oublie le point de départ",
     "E4": "compte depuis la droite",
     "E5": "inverse dizaines et unités", "E6": "confond dizaines et centaines (37 ou 370 pour 307)", "E7": "écrit le nombre comme il l'entend (3007 pour 307)",
-    "C1": "calcul rapide : + 10 change les unités (34 + 10 = 35)", "C2": "calcul rapide : juste mais lent (a compté un par un)", "C3": "calcul rapide : oublie le − 1 du + 9 (34 + 9 = 44)", "C4": "calcul rapide : oublie de changer de dizaine (38 + 5 = 33)", "C5": "calcul rapide : inverse la soustraction des unités (42 − 5 = 43)",
+    "C1": "+ 10 change les unités (34 + 10 = 35)", "C2": "juste mais lent (a compté un par un)", "C3": "oublie le − 1 du + 9 (34 + 9 = 44)", "C4": "oublie de changer de dizaine (38 + 5 = 33)", "C5": "inverse la soustraction des unités (42 − 5 = 43)",
+    "soustraction": "a fait une soustraction au lieu d'une addition (à trou : a donné le total)",
+    "unDesNombres": "a répondu l'un des deux nombres",
+    "plusOuMoins1": "se trompe de 1",
     "autre": "autre erreur",
     "NSP": "« je ne sais pas » (bouton)"
   },

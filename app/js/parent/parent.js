@@ -54,12 +54,22 @@ export function parentLogo(app, { onOpen, holdMs = 2000, src = "icons/icon-192.p
 export class ParentSpace {
   // content : parent.json ; seance : seance.json (durée par défaut) ; module2 : module2.json (catalogue des faits) ;
   // cartes : cartes.json ; calendrier : calendrier.json (quota des cartes)
-  constructor(app, { content, seance, module2, cartes, calendrier = null }) {
-    this.app = app; this.c = content; this.seance = seance; this.module2 = module2; this.cartes = cartes; this.calendrier = calendrier;
+  constructor(app, { content, seance, module2, cartes, calendrier = null, legendes = null }) {
+    this.app = app; this.c = content; this.legendes = legendes; this.seance = seance; this.module2 = module2; this.cartes = cartes; this.calendrier = calendrier;
     this.depart = content.pointDeDepart ?? { niveauxMax: 8, familles: [1, 2] }; // lot 2 : étendu aux niveaux 9 à 13 à l'étape 8
     this.root = null; this.tab = "calendrier"; this.changed = false;
   }
   get store() { return this.app.store; }
+  // (lot 3 bis, B2 et B10) la légende des niveaux de « choisir », le même texte que le panneau du petit livre (legendes.json)
+  legendsBox() {
+    const L = this.legendes; if (!L) return null;
+    const ex = [["ligne", "La ligne graduée"], ["additions", "Les additions"], ["calcul", "Le calcul rapide"], ["lecons", "Les leçons"]];
+    return h("div", { class: "pa-card-box" }, h("h2", {}, "Les niveaux de « choisir », en bref"),
+      h("p", { class: "pa-note" }, "Le même texte que la légende de l'écran « choisir » (le bouton du petit livre, en haut à droite des niveaux). Chaque plaque porte son numéro : vous pouvez dire « fais le 7 »."),
+      ex.map(([k, titre]) => h("details", { class: "pa-niveaux" }, h("summary", {}, titre),
+        h("table", { class: "pa-table" }, h("thead", {}, h("tr", {}, [k === "lecons" ? "Leçon" : "Niveau", L.titres.travail, L.titres.exemple].map((t) => h("th", {}, t)))),
+          h("tbody", {}, (L[k] ?? []).map((r) => h("tr", {}, h("td", {}, String(r.n)), h("td", {}, r.travail), h("td", {}, r.exemple))))))));
+  }
 
   // ouvre l'espace parent ; la promesse se résout à la fermeture ({ reload } si les données ont changé)
   async open() {
@@ -270,7 +280,7 @@ export class ParentSpace {
       h("tbody", {}, rs.map((r) => h("tr", { class: r.juste ? "" : "faux" },
         h("td", {}, D.dateTime(r.t).slice(11)), h("td", { class: "num" }, r.niveau), h("td", {}, F[r.forme] ?? r.forme ?? ""), h("td", { class: "q" }, r.question),
         h("td", { class: "num" }, r.donnee ?? "—"), h("td", { class: "num" }, r.attendue ?? ""), h("td", {}, r.juste ? h("span", { class: "pa-yes" }, "✓ juste") : h("span", { class: "pa-no" }, "✗ faux")),
-        h("td", { class: "num" }, D.fmtSeconds(r.tempsMs)), h("td", { class: "num" }, r.ecoutes ?? ""), h("td", { title: E[r.erreur] ?? "" }, r.juste ? "" : r.erreur === "NSP" ? "je ne sais pas" : r.erreur && r.erreur !== "autre" ? `${r.erreur} · ${E[r.erreur] ?? ""}` : "autre"), h("td", {}, note(r)))))));
+        h("td", { class: "num" }, D.fmtSeconds(r.tempsMs)), h("td", { class: "num" }, r.ecoutes ?? ""), h("td", { title: E[r.erreur] ?? "" }, r.juste ? "" : r.erreur === "NSP" ? "je ne sais pas" : r.erreur && r.erreur !== "autre" ? E[r.erreur] ?? "autre" : "autre"), h("td", {}, note(r)))))));
   }
 
   // ---------------------------------------------------------------- progression
@@ -290,14 +300,15 @@ export class ParentSpace {
     const famName = (id) => M2.familles.find((f) => f.id === id)?.nom ?? id;
     const m2 = h("div", { class: "pa-card-box" }, h("h2", {}, `Module 2 · ${this.c.modules[2].nom}`),
       h("p", { class: "pa-big" }, `${F.rencontres} faits rencontrés sur ${cat.length}`),
-      h("p", { class: "pa-note" }, `Famille en cours (celle de la notion du jour sur les additions) : `, h("b", {}, famName(FS.enCours)), `. Un fait monte d'une boîte quand il est juste et rapide (au plus une boîte par séance) ; une erreur le renvoie en boîte 1. Une famille est acquise quand ${Math.round(100 * (M2.familles2?.acquise?.part ?? 0.8))} % des faits de sa règle sont en boîte 3 ou plus. Une famille qui n'est pas acquise après ${M2.familles2?.stagnation?.seances ?? 6} séances d'additions passe « en révision » : la suivante devient la famille en cours, et ses faits reviennent toujours à l'échauffement.`),
+      h("p", { class: "pa-note" }, `Famille en cours (celle de la notion du jour sur les additions) : `, h("b", {}, famName(FS.enCours)), `. Un fait monte d'une boîte quand il est juste et rapide (au plus une boîte par séance) ; une erreur le renvoie en boîte 1. Une famille est acquise quand ${Math.round(100 * (M2.familles2?.acquise?.part ?? 0.8))} % des faits de sa règle sont en boîte 3 ou plus. Une famille qui n'est pas acquise après ${M2.familles2?.stagnation?.seances ?? 6} séances d'additions passe « en révision » : la suivante devient la famille en cours, et ses faits reviennent toujours à l'échauffement. Une famille acquise le reste, même si des faits redescendent ensuite : « depuis » dit combien de ses faits sont bien sus aujourd'hui.`),
       h("div", { class: "pa-table-wrap" }, h("table", { class: "pa-table pa-fam" },
         h("thead", {}, h("tr", {}, ["Famille", "Ouverte", "Faits bien sus", "Acquise", "Formes à trou"].map((t, i) => h("th", { class: i === 2 ? "num" : "" }, t)))),
         h("tbody", {}, FS.familles.map((f) => h("tr", { class: f.enCours ? "cur" : f.ouverte ? "" : "off" },
           h("td", {}, `${f.id} · ${f.nom}${f.enCours ? " (en cours)" : f.depassee && !f.acquise ? " (en révision)" : ""}`),
           h("td", {}, f.ouverte ? (f.ouverteLe ? `${D.fmtShortDay(f.ouverteLe)}${f.ouverteParent ? " (parent)" : ""}` : "dès le départ") : "pas encore"),
           h("td", { class: "num" }, `${f.bienSus} / ${f.total}`),
-          h("td", {}, f.acquise ? `${f.acquiseLe ? D.fmtShortDay(f.acquiseLe) : "oui"}${f.acquiseParent ? " (point de départ)" : ""}` : "—"),
+          // (lot 3 bis, B10 ; R19) la date et l'état actuel : « acquise le 17/09 (depuis, 20 sur 30) »
+          h("td", {}, f.acquise ? `${f.acquiseLe ? `acquise le ${D.fmtShortDay(f.acquiseLe)}` : "acquise"}${f.acquiseParent ? " (point de départ)" : ""} (depuis, ${f.bienSus} sur ${f.total})` : "—"),
           h("td", {}, f.trou ? "ouvertes" : "—")))))),
       h("h3", {}, "Les faits par boîte"),
       h("div", { class: "pa-boxes" }, F.boites.map((n, i) => h("div", {}, h("b", {}, n), h("span", {}, i === 0 ? "boîte 1 · chaque séance" : `boîte ${i + 1} · tous les ${M2.boites[i]} jours`)))),
@@ -320,7 +331,7 @@ export class ParentSpace {
       const cur = recommended(this.app.module3, st3, { familyShare: (id, b) => ruleShare(this.module2, this.d.faits, id, b) }), acq = st3.acquis ?? [];
       m3.append(h("p", { class: "pa-big" }, `Niveau conseillé : ${cur} sur 9 · ${plural(acq.length, "niveau acquis", "niveaux acquis")}`), h("p", { class: "pa-note" }, M3.niveaux[cur]),
         h("div", { class: "pa-levels", "aria-hidden": "true" }, Array.from({ length: 9 }, (_, i) => h("span", { class: acq.includes(i + 1) ? "done" : i + 1 === cur ? "cur" : "" }, i + 1))),
-        h("p", { class: "pa-note" }, "Un niveau est acquis avec 8 bonnes réponses sur 10 (au plus une aide) ; les niveaux se débloquent dans l'ordre de la SPEC (le 4 quand les maisons de 5 à 7 sont bien sues, le 7 avec les amis de 10). Avec « choisir », l'enfant peut prendre n'importe quel niveau."),
+        h("p", { class: "pa-note" }, "Un niveau est acquis avec 8 bonnes réponses sur 10 (au plus une aide) ; les niveaux se débloquent dans l'ordre prévu (le 4 quand les maisons de 5 à 7 sont bien sues, le 7 avec les amis de 10). Avec « choisir », l'enfant peut prendre n'importe quel niveau."),
         h("h3", {}, "Historique des niveaux"), h("ul", { class: "pa-hist" }, (st3.obtenus ?? []).filter((o) => o.acquis || o.parent).map((o) => h("li", {}, o.parent ? `${D.fmtDay(o.date)} : niveau ${o.niveau} choisi par le parent (point de départ)` : `${D.fmtDay(o.date)} : niveau ${o.niveau} acquis${o.choix ? " (choisi par l'enfant)" : ""}`))),
         (st3.lecons ?? []).length ? h("p", { class: "pa-note" }, `Leçons déjà vues : ${st3.lecons.join(", ")}.`) : null);
     }
@@ -333,11 +344,11 @@ export class ParentSpace {
       DS.scores.length ? h("div", { class: "pa-chips" }, DS.scores.slice(-20).reverse().map((x) => h("span", { class: `pa-chip${x.record ? " rec" : ""}` }, `${D.fmtShortDay(x.t)} : ${x.score}${x.record ? " · record" : ""}`))) : null);
     // le journal des erreurs
     const J = D.errorJournal(this.d.reponses), E = this.c.erreurs;
-    const jr = h("div", { class: "pa-card-box" }, h("h2", {}, "Journal des erreurs"), h("p", { class: "pa-note" }, "Pour la ligne graduée, chaque mauvaise réponse révèle souvent une erreur type (E1 à E5 ; avec les nombres jusqu'à 1 000, E6 : dizaines et centaines confondues, et E7 : le nombre écrit comme on l'entend, 3007 pour 307) ; pour le calcul rapide, C1 à C5 (C2 : une réponse juste mais lente, sans reproche : l'application rejoue le raccourci) ; l'application la corrige avec une animation, et relance une leçon si elle revient deux fois dans une séance. Le bouton « je ne sais pas » (NSP) a sa propre ligne : ce n'est pas une erreur, mais la question revient comme après une erreur."));
+    const jr = h("div", { class: "pa-card-box" }, h("h2", {}, "Journal des erreurs"), h("p", { class: "pa-note" }, this.c.journalNote));
     if (!J.length) jr.append(h("p", { class: "pa-muted" }, "Aucune erreur enregistrée."));
     for (const w of J.slice(0, 6)) {
       jr.append(h("h3", {}, `Semaine du ${D.fmtDay(w.semaine)}`));
-      for (const [code, c] of Object.entries(w.codes).sort((a, b) => b[1].n - a[1].n)) jr.append(h("div", { class: "pa-err" }, h("span", { class: "code" }, code === "autre" ? "—" : code === "NSP" ? "?" : code), h("span", {}, E[code] ?? code), h("span", { class: "n" }, `${c.n} fois`),
+      for (const [code, c] of Object.entries(w.codes).sort((a, b) => b[1].n - a[1].n)) jr.append(h("div", { class: "pa-err" }, h("span", { class: "code" }, this.c.erreursExercice?.[code] ?? this.c.erreursExercice?.[code[0]] ?? "—"), h("span", {}, E[code] ?? code), h("span", { class: "n" }, `${c.n} fois`),
         h("span", { class: "ex" }, "Exemples : ", c.exemples.map((x) => `${x.question} → réponse ${x.donnee ?? "—"} au lieu de ${x.attendue}`).join(" ; "))));
     }
     // le trésor de l'enfant
@@ -345,7 +356,7 @@ export class ParentSpace {
     const tr = h("div", { class: "pa-card-box" }, h("h2", {}, "Le trésor de l'enfant"), h("div", { class: "pa-stats" },
       stat(String(et.cumul ?? 0), "étoiles de mer gagnées depuis le début"), stat(String(et.total ?? 0), "étoiles pas encore dépensées"), stat(String(et.coquillages ?? 0), "coquillages ouverts"),
       stat(String(R.serie?.seances ?? 0), "séances dans la série (elle ne retombe jamais à zéro)")));
-    page.append(m1, m2, m3, df, jr, tr, this.cardsBox());
+    page.append(m1, m2, m3, df, jr, tr, this.cardsBox(), this.legendsBox());
   }
   // LA GRILLE DES ADDITIONS (lot 2, étape 7) : a en ligne, b en colonne ; couleur selon la boîte, anneau vert si le
   // fait est donné vite ; les cases « + 0 » en gris avec le temps de base ; toucher une case montre son historique
@@ -477,7 +488,7 @@ export class ParentSpace {
     const paint = (v) => { for (const b of seg.children) b.setAttribute("aria-pressed", String(b.dataset.v === String(v ?? "auto"))); };
     for (const [v, t] of [["auto", "au choix de l'application"], ["1", "ligne graduée"], ["2", "additions"], ["3", "calcul rapide"]]) seg.append(h("button", { "data-v": v, onclick: async () => { await this.store.setSetting("moduleImpose", v === "auto" ? null : { module: Number(v), t: Date.now() }); paint(v === "auto" ? null : v); ok.textContent = "Enregistré."; } }, t));
     this.store.setting("moduleImpose").then((m) => paint(m?.module ?? null));
-    return row("Notion du jour de la prochaine séance", "D'habitude, la ligne graduée, les additions et le calcul rapide tournent d'une séance à l'autre (le moins avancé d'abord, jamais deux fois de suite le même). Vous pouvez imposer l'une des deux pour la prochaine séance seulement (celle que l'enfant lance avec « jouer » : si elle choisit elle-même son exercice, votre choix attend la séance suivante).", seg, ok);
+    return row("Notion du jour de la prochaine séance", "D'habitude, la ligne graduée, les additions et le calcul rapide tournent d'une séance à l'autre (le moins avancé d'abord, jamais deux fois de suite le même). Vous pouvez imposer l'un des trois exercices pour la prochaine séance seulement (celle que l'enfant lance avec « jouer » : si elle choisit elle-même son exercice, votre choix attend la séance suivante).", seg, ok);
   }
   // le son (lot 2) : musique oui/non et son volume, bruitages oui/non ; un seul réglage « son » dans la base
   sonRow(row) {

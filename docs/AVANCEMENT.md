@@ -6,15 +6,27 @@ Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail 
 
 Spécification : `docs/SPEC-LOT3BIS.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LOT2.md`, `docs/SPEC-LOT3.md` et `docs/SPEC-COMPLEMENTS.md`) ; rapport qui la motive : `docs/RECETTE-LOT3.md` (constats R1 à R25) ; prompt : `docs/PROMPT-LOT3BIS.md`. Deux parties : A (étapes 1 et 2, moteur et contenu), B (étapes 3 à 5, visuel, atelier et parent).
 
-**Où en est-on (28 septembre 2026, soir)** : **partie A du lot 3 bis terminée** (étapes 1 et 2, recette complète faite), branche `claude/great-brahmagupta-bj3214` (nom imposé par l'environnement), demande de fusion « Lot 3 bis, étapes 1 à 2 » (https://github.com/js2c/Maths-CE1/pull/22). Reste : fusionner, essayer sur la tablette, puis la partie B (étapes 3 à 5).
+**Où en est-on (28 septembre 2026, soir)** : partie A du lot 3 bis fusionnée (https://github.com/js2c/Maths-CE1/pull/22) ; **partie B en cours** (étapes 3 à 5), branche `claude/eloquent-ptolemy-v1l9qg` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 3 bis, étapes 3 à 5 (en cours) ».
 
 | Étape | Partie | Contenu | État |
 | --- | --- | --- | --- |
 | 1 | A | §0 (réponse qui varie : règles et test sur les 116 combinaisons) ; A1 (amis de 10 et maisons, faits tirés au hasard, acquisition) ; A2 (calcul rapide « très dur ») ; A4 (mélange) | fait |
 | 2 | A | A3 (ligne : « plus facile », tirage sans remise, niveau 1, L3) ; A5 (toucher et reprise) ; A6 (décors : logique et voix, dessin provisoire) ; recette de la partie A | fait |
-| 3 | B | B8 : atelier (plaques numérotées, numéros des tuiles, légende, étiquette, décors, poissons des maisons, poisson étiqueté, étoiles volantes, fin du défi, bouées de L2) | à faire |
+| 3 | B | B8 : atelier (plaques numérotées, numéros des tuiles, légende, étiquette, décors, poissons des maisons, poisson étiqueté, étoiles volantes, fin du défi, bouées de L2) | en cours |
 | 4 | B | B1 à B7, B9 à B12 : intégration (choisir, légende, appui long, aides et corrections, fins, « placer », leçons L2, L8, L9, espace parent, cosmétique, guide du parent) | à faire |
 | 5 | B | Recette complète du lot 3 bis et relance des parties B et C de la recette fonctionnelle | à faire |
+
+### Reprise des étapes 3 à 5 du lot 3 bis
+
+Pour reprendre si la session s'est arrêtée : branche `claude/eloquent-ptolemy-v1l9qg`, demande de fusion en brouillon « Lot 3 bis, étapes 3 à 5 (en cours) ».
+
+**Étape en cours :** 3 (atelier, B8).
+
+**Fait :** rien encore.
+
+**Reste :** étapes 3, 4 et 5.
+
+**Décisions prises :** aucune encore.
 
 ### Reprise des étapes 1 à 2 du lot 3 bis
 

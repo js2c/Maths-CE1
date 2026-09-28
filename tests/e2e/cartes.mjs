@@ -85,6 +85,11 @@ async function playToReward(page, { onCeremony, atShell, atCard } = {}) {
   await page.tap(".album-page .album-card.got", { force: true }); await page.waitForTimeout(1500);
   await page.screenshot({ path: join(OUT, "6-carte-en-grand.png") });
   check(await page.locator(".card .shine canvas").count() === 1, "la carte en grand a son reflet irisé");
+  // décision du parent du 28 septembre : la voix dit la carte une fois, à l'ouverture ; rien au retournement
+  const said = () => page.evaluate(() => window.__app.voice.__said.length);
+  await page.evaluate(() => { const v = window.__app.voice; v.__said = []; const say = v.say.bind(v); v.say = (t, o) => { v.__said.push(t); return say(t, o); }; });
+  await page.tap(".card", { force: true }); await page.waitForTimeout(800); await page.tap(".card", { force: true }); await page.waitForTimeout(800);
+  check((await said()) === 0 && (await page.locator(".card.flipped").count()) === 0, `album : la carte retournée deux fois, aucune phrase dite (${await said()})`);
   await context.close();
 }
 

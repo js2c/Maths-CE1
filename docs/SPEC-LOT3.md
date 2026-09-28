@@ -123,3 +123,14 @@ Mêmes outils et même méthode que `docs/SPEC-LOT2.md`, section 8, plus ces cri
 | Sauvegardes de test | un mois, trois mois, profil en difficulté : restaurées dans l'application sans erreur, accueil, album, espace parent cohérents (dates, niveaux) |
 | Calcul rapide | les 9 niveaux jouables et générés au hasard selon leurs paramètres ; C1 à C5 détectées (tests) ; leçons L7 à L9 ; durée d'une séance de calcul rapide 9 à 11 min (`recette.mjs --delai 4.5`) |
 | Attente sans commande | au plus environ 2 s partout, écrans nouveaux compris (`recette-durees.mjs --passer`) |
+
+## 8. Décisions du parent du 28 septembre 2026 (étape 5)
+
+Prises après la recette complète des étapes 1 à 4 ; elles prévalent sur ce qui précède.
+
+- **Validation de l'écran « choisir » : simple.** Le premier toucher d'une image dit son nom et la valide (réglage `seance.json`, `choix.validation` : « simple » ; « double » reste possible). De l'accueil au sélecteur : 3 touchers (choisir, l'exercice, le niveau), comme le demande la section 7.
+- **Plafond de la voix : 80 Mo** (au lieu de 40 Mo ; contrôle `tests/unit/voix.test.mjs`). Le lot 3 reste sous 60 Mo pour garder au moins 20 Mo au lot 4. Les bornes des calculs du module 3 sont élargies à tout le domaine de chaque procédure sur le mur de 1 à 100, sans borne artificielle, pour couvrir tous les exemples de `docs/SPEC.md` : niveau 1 de 10 à 99 ; niveau 2 de 1 à 99 ; niveau 3 de 10 à 99 avec ± 20 à ± 90 ; niveaux 4, 5, 6, 7 et 9 : tous les nombres à deux chiffres qui gardent la règle du niveau ; niveau 8 : deux nombres à deux chiffres sans retenue (somme au plus 99). 3 762 calculs (1 498 avant) ; voix : 50,96 Mo (39,70 Mo avant). Au niveau 8, le chemin ajoute les dizaines d'un seul pont puis les unités (23 + 34 → + 30 → 53 → + 4 → 57), comme l'exemple 23 + 10 + 4 ; au niveau 3, un pont par dizaine (la procédure du mur), jusqu'à 9 ponts.
+- **Boucle `ermite.repos`** : laissée telle quelle.
+- **Accueil complet pendant une pause** (remplace l'accueil réduit à « continuer » du lot 1 bis) : voir `docs/SPEC.md`, « Navigation pendant la séance ».
+- **Le récif en pages, une par zone** : voir `docs/SPEC.md`, « Le récif ».
+- **La voix des cartes en grand** dit le nom et l'anecdote une seule fois, à l'ouverture ; retourner la carte ne la relance pas : voir `docs/SPEC.md`, « La carte et l'album ».

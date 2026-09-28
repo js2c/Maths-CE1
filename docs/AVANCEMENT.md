@@ -20,11 +20,21 @@ Spécification : `docs/SPEC-LOT3.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LO
 
 Pour reprendre si la session s'est arrêtée : branche `claude/intelligent-hawking-xwz6hw` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 3, étape 5 (en cours) ». L'étape 5 est élargie par la demande du parent du 28 septembre (neuf sous-parties : décisions du 28 septembre, accueil complet pendant une pause, récif en pages, voix des cartes, erreur « reading '0' », bilan, guide du parent, recette, clôture).
 
-**Sous-partie en cours :** 1 (décisions du parent du 28 septembre).
+**Sous-partie en cours :** 2 (accueil complet pendant une pause).
 
-**Fait :** rien encore.
+**Fait :**
 
-**Reste :** 1 à 9.
+- 1. Décisions du 28 septembre : validation « simple » (`seance.json`, `choice.js` : le nom est dit jusqu'au bout, la consigne suivante attend ; `choix.mjs` vérifie 3 touchers de l'accueil au sélecteur ; parcours `calcul`, `ergonomie`, `sauvegardes` adaptés) ; plafond de la voix 80 Mo (`voix.test.mjs`, SPEC) ; bornes du module 3 élargies (`module3.json` : 1 498 → 3 762 calculs ; niveau 1 : 10 à 99 ; 2 : 1 à 99 ; 3 : 10 à 99, ± 20 à ± 90 ; 4 : 11 à 98 ; 5 : 12 à 99 ; 6 : 11 à 89 ; 7 : 11 à 89 ; 8 : 11 à 88 et tous les seconds nombres à deux chiffres sans retenue ; 9 : 11 à 99) ; voix : **39,70 Mo avant, 50,96 Mo après** (2 230 phrases fabriquées) ; chemin du niveau 8 en deux ponts (dizaines, puis unités) ; long chemin décalé pour tenir à l'écran (captures regardées : 99 − 90, 10 + 80, 23 + 34) ; `ermite.repos` non touché ; SPEC-LOT3 (section 8), JOURNAL-CONCEPTION, ARCHITECTURE, SPEC.
+- 4 (fait en avance). La voix des cartes en grand : une seule fois, à l'ouverture (`cards.js`, `cardLine`) ; test `tests/unit/carte-voix.test.mjs` ; contrôles ajoutés dans `recompenses.mjs` et `cartes.mjs`.
+- 5 (fait en avance). Erreur « reading '0' » : cause trouvée par lecture du code (voir « Décisions prises (étape 5) ») ; corrigée (`stage.js`, `turtle.js`, `sprites.js` : `frameIndex`) avec le test `tests/unit/erreur-image.test.mjs`, qui reproduit le message avant la correction ; journal des incidents techniques (console et espace parent).
+
+**Reste :** 2, 3, 6 à 9 ; vérifier 4 dans `recompenses.mjs` et `cartes.mjs` (recette).
+
+**Décisions prises (étape 5) :**
+
+- *Validation simple* : le toucher entoure l'image, dit son nom et valide 0,3 s plus tard ; le nom n'est plus coupé par la consigne suivante (elle attend dans la file de la voix).
+- *Bornes du calcul rapide* : les listes de seconds nombres des niveaux 4, 5, 7 et 9 (2 à 7, 3 à 8) sont gardées : ce sont des choix pédagogiques (le niveau 1 couvre ± 1 et ± 2, le niveau 6 couvre + 9), pas des bornes de voix. Au niveau 3, un pont par dizaine : jusqu'à 9 ponts (99 − 90), donc une correction plus longue sur le mur (à observer).
+- *Erreur « Cannot read properties of undefined (reading '0') »* : les images des boucles sont choisies d'après le temps de l'animation ; la tortue calcule `path[Math.floor(u)]` pendant un saut et `Math.floor((t - t0) * 12) % n` au repos ; si l'horodatage d'une image (requestAnimationFrame) est plus ancien que le précédent, l'indice devient négatif, `path[-1]` ou `rects[-1]` vaut undefined et `p0[0]` ou `q[0]` lève exactement ce message. La tortue est présente dans les deux parcours où l'erreur a été vue (ligne graduée). Le test reproduit le message avec un temps qui recule de 30 ms. Le déclencheur (un horodatage non monotone sous la charge de Chromium sans écran) est une hypothèse vraisemblable, pas observée directement. Corrections : temps monotone dans la boucle de la scène et dans la tortue, indice d'image ramené dans la boucle (`frameIndex`), et, si une image manque quand même, une garde qui journalise au lieu de planter (`Sprites.onMissing`). Toute erreur de page est aussi notée (réglage `journalErreurs`, les 20 dernières, avec l'écran et l'étape) et montrée dans l'espace parent, « Données et réglages », « Incidents techniques » (rien n'est affiché s'il n'y en a pas).
 
 ### Reprise des étapes 1 à 4 du lot 3
 

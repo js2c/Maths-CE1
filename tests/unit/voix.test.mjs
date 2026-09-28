@@ -68,7 +68,7 @@ test("inventaire : chaque texte du contenu est couvert, un gabarit sans règle e
   assert.throws(() => inventaire(C2), /pas de règle/);
 });
 
-test("chaque phrase de l'inventaire a son fichier son ; poids total sous 40 Mo (lot 2, étape 8 : nombres jusqu'à 1 000)", () => {
+test("chaque phrase de l'inventaire a son fichier son ; poids total sous 80 Mo (décision du parent du 28 septembre 2026 ; lot 3 : sous 60 Mo, pour garder 20 Mo au lot 4)", () => {
   const { phrases, index, afaire } = bilan();
   assert.deepEqual(afaire, [], `phrases sans fichier à jour (lancer node tools/voix/fabriquer.mjs) : ${afaire.slice(0, 5).join(" | ")}`);
   for (const k of phrases.keys()) assert.ok(existsSync(join(VOIX, index.phrases[k][0])), k);
@@ -77,7 +77,7 @@ test("chaque phrase de l'inventaire a son fichier son ; poids total sous 40 Mo (
   const utiles = new Set(Object.values(index.phrases).map(([f]) => f));
   assert.deepEqual(readdirSync(VOIX).filter((f) => f.endsWith(".ogg") && !utiles.has(f)), []);
   const poids = readdirSync(VOIX).reduce((s, f) => s + statSync(join(VOIX, f)).size, 0);
-  assert.ok(poids < 40e6, `${(poids / 1e6).toFixed(1)} Mo`);
+  assert.ok(poids < 80e6, `${(poids / 1e6).toFixed(1)} Mo`);
   // des durées plausibles (un nombre seul : au moins 0,3 s ; une anecdote : quelques secondes)
   for (const [k, [, ms]] of Object.entries(index.phrases)) assert.ok(ms > 300 && ms < 15000, `${k} : ${ms} ms`);
 });

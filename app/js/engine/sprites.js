@@ -34,10 +34,13 @@ export class Sprites {
     for (const k of [...this.loading.keys()]) if (k.startsWith(`${sheet}@`)) this.loading.delete(k);
   }
   // une image : la page, le rectangle source et le décalage depuis l'ancrage, en pixels d'écran
+  // (lot 3, étape 5 : l'indice est ramené dans la boucle, même négatif, non entier ou NaN, voir frameIndex ; si une image
+  // manque quand même, `onMissing` journalise le contexte au lieu de faire planter l'animation)
   frame(name, f = 0) {
     const s = this.atlas.sprites[name], sheet = this.pages.get(s.sheet);
     if (!sheet) return null;
-    const scale = s.rects[this.src] ? this.src : 1, q = s.rects[scale][f % s.rects[scale].length], r = sheet.r;
+    const scale = s.rects[this.src] ? this.src : 1, list = s.rects[scale], q = list?.[frameIndex(f, list.length)], r = sheet.r;
+    if (!q) { this.onMissing?.({ sprite: name, image: f, images: list?.length ?? 0 }); return null; }
     return { img: sheet.pages[q[0]], sx: q[1] * r, sy: q[2] * r, w: q[3] * r, h: q[4] * r, dx: q[5] * r, dy: q[6] * r };
   }
   // pose l'image f du sprite avec son ancrage en (x, y) logiques ; renvoie le rectangle touché (pixels d'écran)
@@ -48,5 +51,9 @@ export class Sprites {
     return [X, Y, q.w, q.h];
   }
 }
+
+// l'indice d'une image dans une boucle de n images : entier, de 0 à n - 1 (un temps qui recule donnait un indice négatif,
+// d'où « Cannot read properties of undefined (reading '0') » ; tests/unit/erreur-image.test.mjs)
+export const frameIndex = (f, n) => (n > 0 && Number.isFinite(f) ? ((Math.floor(f) % n) + n) % n : 0);
 
 export const loadAtlas = async () => (await fetch(BASE + "atlas.json")).json();

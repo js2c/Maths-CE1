@@ -23,8 +23,9 @@ const open = async (q = "", prep = null) => {
 };
 let taps = 0;
 const tap = async (page, sel) => { taps++; await page.tap(sel, { force: true }); await page.waitForTimeout(250); };
-// choisir un exercice puis une vignette (validation « double » : deux touchers, ou un toucher et la coche)
-const pick = async (page, sel) => { await page.waitForSelector(sel, { timeout: 10000 }); await tap(page, sel); await tap(page, sel); };
+// choisir un exercice puis une vignette (validation « simple », décision du parent du 28 septembre : un toucher dit le nom
+// et valide ; seance.json, choix.validation)
+const pick = async (page, sel) => { await page.waitForSelector(sel, { timeout: 10000 }); await tap(page, sel); };
 
 // 1. l'accueil, l'écran des exercices et les 13 niveaux ; la ligne au niveau 8 dès une base vide
 {
@@ -36,16 +37,14 @@ const pick = async (page, sel) => { await page.waitForSelector(sel, { timeout: 1
   await tap(page, ".choisir");
   await page.waitForSelector(".choix-ex"); await page.waitForTimeout(400);
   check((await page.locator(".choix-ex").count()) === 4, "quatre exercices (ligne, additions, calcul rapide, leçons)");
-  await tap(page, '.choix-ex[aria-label="ligne"]');
   await page.screenshot({ path: join(OUT, "2-exercices.png") });
   await tap(page, '.choix-ex[aria-label="ligne"]');
   await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(400);
   check((await page.locator(".choix-tuile").count()) === 13, "les 13 niveaux de la ligne, tous accessibles");
   check(await page.evaluate(() => document.querySelector('.choix-tuile[data-conseille="1"]')?.dataset.key) === "1", "base vide : le niveau 1 conseillé (lueur)");
   await page.screenshot({ path: join(OUT, "3-niveaux-ligne.png") });
-  await tap(page, '.choix-tuile[data-key="8"]'); await page.screenshot({ path: join(OUT, "4-niveau-8-entoure.png") });
   await tap(page, '.choix-tuile[data-key="8"]');
-  console.log(`     touchers jusqu'au sélecteur : ${taps} (choisir, exercice ×2, niveau ×2 : validation « double »)`);
+  check(taps === 3, `3 touchers de l'accueil au sélecteur (choisir, exercice, niveau : validation « simple ») : ${taps}`);
   await page.waitForFunction(() => window.__app.runner && window.__app.screen?.q, null, { timeout: 30000 });
   const qs = [];
   for (let i = 0; i < 4; i++) {

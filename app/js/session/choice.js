@@ -58,7 +58,8 @@ export async function choose(app, o) {
   const familyShare = (id, boite) => ruleShare(o.content.module2, faits, id, boite);
   const els = [], clear = () => { els.forEach((e) => e.remove()); els.length = 0; };
   app.choiceClear = () => { clear(); sprites.unload("choix"); };
-  // une étape : des boutons (b.dataset.key), le premier toucher les nomme, le second (ou la coche) valide
+  // une étape : des boutons (b.dataset.key), le premier toucher les nomme, le second (ou la coche) valide (« double ») ;
+  // « simple » : le premier toucher nomme et valide
   // (sel.key : la clé de l'image entourée, lue par les dessins)
   const sel = { key: null };
   const pick = (buttons, name, check) => new Promise((res) => {
@@ -68,7 +69,9 @@ export async function choose(app, o) {
       const prev = cur; cur = b; sel.key = b.dataset.key;
       if (prev) { prev.classList.remove("chosen"); prev.repaint(); }
       b.classList.add("chosen"); b.repaint(); pop(b); voice.stop(); voice.say(name(b.dataset.key));
-      if (!double) res(b.dataset.key);
+      // « simple » (décision du parent du 28 septembre) : le toucher valide ; l'image reste entourée un instant et son nom
+      // est dit jusqu'au bout (la consigne suivante attend dans la file de la voix)
+      if (!double) setTimeout(() => res(b.dataset.key), 300);
       else if (check) check.style.visibility = "visible";
     };
     buttons.forEach((b) => onTap(b, () => select(b)));
@@ -100,13 +103,14 @@ export async function choose(app, o) {
       } });
       b.dataset.key = String(it.key); b.dataset.conseille = it.conseille ? "1" : ""; b.dataset.valide = it.valide ? "1" : ""; els.push(b); return b;
     });
-    voice.stop(); voice.say(ex === "lecons" ? text.data.choixLecon : text.data.choixNiveau, { instruction: true });
+    if (double) voice.stop();
+    voice.say(ex === "lecons" ? text.data.choixLecon : text.data.choixNiveau, { instruction: true });
     const name = (k) => (ex === "ligne" ? text.data.choixLigne[k] : ex === "additions" ? text.data.choixFamille[k] : ex === "calcul" ? text.data.choixCalcul[k] : text.data.choixLeconNom[k] ?? k);
     const backP = new Promise((res) => onTap(back, () => { pop(back); res(null); }));
     const key = await Promise.race([pick(tiles, name, checkKey()), backP]);
     clear();
     if (key === null) continue;
-    voice.stop();
+    if (double) voice.stop();
     sprites.unload("choix"); app.choiceClear = null;
     if (ex === "ligne") return { module: 1, niveau: Number(key) };
     if (ex === "additions") return { module: 2, famille: Number(key) };

@@ -20,11 +20,12 @@ export class Turtle {
   seat(i) { const [x, y] = tickP(this.spec, i); return [x, this.spec.k > 0.3 ? this.spec.y - 29 : y - buoyR(this.spec) * 1.08 + 2]; }
   sitOn(spec, i) { this.spec = spec; this.at = i; this.pos = this.seat(i); this.clip = "tortue.repos"; this.anim = null; this.a.show(true); }
   hide() { this.a.show(false); this.anim = null; }
+  // (le temps ne recule jamais : un horodatage d'image plus ancien que le précédent donnait un indice négatif, lot 3, étape 5)
   tick(t) {
-    this.now = t;
+    t = Math.max(t, this.now ?? t); this.now = t;
     if (!this.a.vis) return;
     if (this.anim) { const done = this.anim(t); if (done) { const r = this.animDone; this.anim = null; this.clip = "tortue.repos"; this.t0 = t; r?.(); } }
-    const n = this.sp.atlas.sprites[this.clip].frames, f = this.clip === "tortue.saut" ? this.jf : Math.floor((t - this.t0) * FPS) % n;
+    const n = this.sp.atlas.sprites[this.clip].frames, f = this.clip === "tortue.saut" ? this.jf : Math.max(0, Math.floor((t - this.t0) * FPS)) % n;
     this.a.draw(f, this.clip);
     this.a.moveTo(this.pos[0], this.pos[1]);
   }
@@ -34,7 +35,7 @@ export class Turtle {
     const a = this.seat(this.at), b = this.seat(j), d = Math.abs(b[0] - a[0]), h = Math.min(70, 22 + d * 0.45), n = this.path.length;
     this.clip = "tortue.saut"; this.jf = 0; this.jumpS = 0; onTakeOff?.();
     return this.run((t) => {
-      const fps = FPS * this.speed, f = Math.min(n - 1, Math.floor((t - this.t0) * fps)), u = Math.min(n - 1, (t - this.t0) * fps), k = Math.floor(u), r = u - k;
+      const fps = FPS * this.speed, f = Math.max(0, Math.min(n - 1, Math.floor((t - this.t0) * fps))), u = Math.max(0, Math.min(n - 1, (t - this.t0) * fps)), k = Math.floor(u), r = u - k;
       const p0 = this.path[k], p1 = this.path[Math.min(n - 1, k + 1)], s = p0[0] + (p1[0] - p0[0]) * r, z = p0[1] + (p1[1] - p0[1]) * r;
       this.jf = f; this.pos = [a[0] + (b[0] - a[0]) * s, a[1] + (b[1] - a[1]) * s - z * h];
       this.jumpS = s;

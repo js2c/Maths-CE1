@@ -77,6 +77,18 @@ document.addEventListener("pointerdown", (e) => {
   const b = e.target.closest?.("#ui button");
   if (b && !b.matches(".answer, .shelltap, .touchband") && !b.disabled) sound.play("bouton");
 }, { capture: true });
+// lot 3, étape 5 : le journal des incidents techniques (erreur de page, image introuvable), avec leur contexte, dans la
+// console et dans l'espace parent (« Données et réglages », réglage journalErreurs : les 20 derniers)
+const journal = async (e) => {
+  try {
+    const ctx = { t: Date.now(), ecran: (() => { try { return mode; } catch { return null; } })(), etape: window.__app?.session?.progress?.etape ?? null, enPause: !!window.__app?.enPause, ...e };
+    console.warn("incident noté pour l'espace parent :", ctx);
+    const l = (await store.setting("journalErreurs")) ?? []; l.push(ctx); await store.setSetting("journalErreurs", l.slice(-20));
+  } catch { /* le journal ne doit jamais gêner l'enfant */ }
+};
+sprites.onMissing = (c) => journal({ type: "image introuvable", ...c });
+addEventListener("error", (ev) => journal({ type: "erreur de page", message: ev.message, source: `${(ev.filename ?? "").split("/").pop()}:${ev.lineno}`, pile: ev.error?.stack?.split("\n").slice(0, 4).join(" | ") ?? null }));
+addEventListener("unhandledrejection", (ev) => journal({ type: "erreur de page", message: String(ev.reason?.message ?? ev.reason), pile: ev.reason?.stack?.split("\n").slice(0, 4).join(" | ") ?? null }));
 const rewards = await new Rewards(store, cartes, calendrier).load();
 if (P.get("etoiles")) { rewards.st.total = Number(P.get("etoiles")); await rewards.save(); } // tests : un trésor de départ
 const app = { stage, sprites, ocean, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, line: new LineView(stage), mascotte: await store.setting("mascotte") };

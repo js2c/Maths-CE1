@@ -72,14 +72,19 @@ check((await page.evaluate(() => window.__app.hud.shown)) === db.etoiles.total, 
 check(!(await page.evaluate(() => window.__app.sprites.ready("cartes"))), "la planche des cartes est libérée après la récompense");
 
 // ---- 2. le récif
+// (décision du parent du 28 septembre) les phrases dites : aucune au retournement d'une carte en grand
+const saidN = () => page.evaluate(() => { const v = window.__app.voice; if (!v.__said) { v.__said = []; const say = v.say.bind(v); v.say = (t, o) => { v.__said.push(t); return say(t, o); }; } return v.__said.length; });
 await page.tap(".reefkey", { force: true });
 await page.waitForSelector(".creature", { timeout: 20000 }); await page.waitForTimeout(1200);
 await shot("6-recif");
 check((await page.locator(".creature").count()) === owned.length, "chaque carte a sa créature dans le récif");
 await page.tap(`.creature[data-id="${owned[0]}"]`, { force: true });
 await page.waitForSelector(".card", { timeout: 20000 }); await page.waitForTimeout(900); await shot("7-recif-carte");
+let n0 = await saidN();
 await page.tap(".card", { force: true }); await page.waitForTimeout(1000); await shot("8-recif-anecdote");
 check(await page.locator(".card.flipped").count() === 1, "toucher la carte la retourne (anecdote)");
+await page.tap(".card", { force: true }); await page.waitForTimeout(700);
+check(await page.locator(".card.flipped").count() === 0 && (await saidN()) === n0, `récif : retourner la carte dans les deux sens ne relance pas la voix (${(await saidN()) - n0} phrase(s))`);
 await page.tap(".check", { force: true }); await page.waitForTimeout(600);
 check(await page.locator(".card").count() === 0, "la coche range la carte");
 await page.tap(".homekey:not(.session-home)", { force: true }); await page.waitForTimeout(600);
@@ -104,7 +109,9 @@ await shot("11-album-depuis-le-recif");
 check((await page.locator(".album-page .album-card").count()) === 15 && (await page.locator(".album-card.got").count()) === 15, "album : le lagon complet, 15 cartes visibles");
 await page.tap(".album-card.got >> nth=2", { force: true }); await page.waitForSelector(".card", { timeout: 20000 }); await page.waitForTimeout(900);
 await shot("12-album-carte");
+n0 = await saidN();
 await page.tap(".card", { force: true }); await page.waitForTimeout(1000); await shot("13-album-verso");
+check((await saidN()) === n0, "album : retourner la carte ne relance pas la voix");
 await page.tap(".check", { force: true }); await page.waitForTimeout(600);
 await page.tap(".album-tab >> nth=2", { force: true }); await page.waitForTimeout(1200);
 await shot("14-album-zone-fermee");

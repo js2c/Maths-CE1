@@ -409,7 +409,7 @@ Retours du parent après le premier essai du lot 1 (26 septembre 2026).
 - l'inventaire des phrases est tiré automatiquement des fichiers de `app/content/` (consignes, encouragements, corrections, leçons, noms de la pieuvre, cartes et anecdotes) ;
 - les phrases qui contiennent un nombre sont générées **pour chaque valeur possible** (par exemple « Où est 37 ? » pour 0 à 100, les 66 additions sous leurs trois formes), plutôt que collées en morceaux ;
 - les nombres et symboles sont écrits en toutes lettres avant la synthèse (« trente-sept », « plus ») pour maîtriser la prononciation ;
-- format compressé adapté à la voix (Opus ou MP3 mono), budget total visé : moins de 15 Mo ;
+- format compressé adapté à la voix (Opus ou MP3 mono), budget total visé : moins de 15 Mo (relevé à 40 Mo au lot 2 pour les nombres jusqu'à 1 000, puis à **80 Mo** le 28 septembre 2026, lot 3 sous 60 Mo) ;
 - l'application joue le fichier correspondant ; si un fichier manque, la synthèse du navigateur prend le relais (secours) ;
 - le bouton « réécouter » rejoue le fichier.
 

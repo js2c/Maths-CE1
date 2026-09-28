@@ -433,6 +433,14 @@ export class ParentSpace {
     const rest = h("div", { class: "pa-card-box" }, h("h2", {}, "Restaurer une sauvegarde"), h("p", { class: "pa-note" }, "Sur une nouvelle tablette, ou après un effacement : choisissez le fichier JSON d'une sauvegarde complète."), input,
       h("button", { class: "pa-btn", onclick: () => input.click() }, "Choisir un fichier de sauvegarde…"), rmsg, h("div", { "data-restored": "" }));
     page.append(exp, rest, this.settingsBox());
+    // lot 3, étape 5 : les incidents techniques (une erreur de page, une image introuvable), avec leur contexte ; rien
+    // n'est affiché s'il n'y en a pas. Utile pour signaler un problème (la sauvegarde complète les contient aussi).
+    this.store.setting("journalErreurs").then((l) => {
+      if (!l?.length) return;
+      page.append(h("div", { class: "pa-card-box pa-incidents" }, h("h2", {}, "Incidents techniques"),
+        h("p", { class: "pa-note" }, "Ce que l'application a noté quand quelque chose ne s'est pas passé comme prévu (les 20 derniers). L'enfant n'a normalement rien vu : la séance continue. À signaler si cela revient souvent."),
+        h("ul", {}, [...l].reverse().map((e) => h("li", {}, `${D.fmtDay(e.t)} à ${D.fmtTime(e.t)} : ${e.type}${e.message ? ` (« ${e.message} »)` : ""}${e.sprite ? ` (image ${e.image} de « ${e.sprite} »)` : ""}${e.etape ? `, pendant l'étape « ${e.etape} »` : ""}${e.ecran ? `, écran « ${e.ecran} »` : ""}.`)))));
+    });
   }
   // les crans que l'enfant peut choisir au début de la séance : du plus facile autorisé au plus dur autorisé
   cransRow(row) {

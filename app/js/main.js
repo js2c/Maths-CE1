@@ -154,7 +154,7 @@ const handlers = {
     if (ctx.session.rec.module === 3) return notion3(ctx);
     const screen = app.lineScreen();
     // lot 3 : le niveau choisi par l'enfant (écran « choisir ») : toutes les questions à ce niveau
-    const runner = await new Module1Runner({ screen, store, content: module1, rnd, seance: ctx.session.id, offset: () => ctx.session.offset, cran: () => ctx.session.cran, choix: ctx.session.choix?.niveau ?? null }).load();
+    const runner = await new Module1Runner({ screen, store, content: module1, rnd, seance: ctx.session.id, variete: seance.variete, offset: () => ctx.session.offset, cran: () => ctx.session.cran, choix: ctx.session.choix?.niveau ?? null }).load();
     if (P.get("niveau")) { runner.st.niveau = Number(P.get("niveau")); runner.save = () => {}; }
     if (P.get("format")) runner.levels = runner.levels.map((c) => ({ ...c, formats: [P.get("format")] }));
     const step = { ...ctx.step, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}), ...(P.get("guides") ? { guides: Number(P.get("guides")) } : {}) };
@@ -179,7 +179,7 @@ const handlers = {
 // (L4 à L6), sinon deux exemples guidés ; une famille acquise rapporte une étoile arc-en-ciel
 async function notion2(ctx) {
   const { session } = ctx, screen = (app.facts ??= new FactsScreen(app, module2));
-  const runner = await new Module2Runner({ store, content: module2, rnd, seance: session.id, cran: () => session.cran, dejaNouveaux: session.nouveaux, choix: session.choix?.famille ?? null }).load();
+  const runner = await new Module2Runner({ store, content: module2, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, dejaNouveaux: session.nouveaux, choix: session.choix?.famille ?? null }).load();
   const conf = ctx.step.module2 ?? ctx.step, step = { ...ctx.step, ...conf, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}), ...(P.get("guides") ? { guides: Number(P.get("guides")) } : {}) };
   app.runner = runner; session.rec.famille = runner.famille; await session.save();
   await Promise.all([sprites.load("ermite"), sprites.load("aides")]);
@@ -204,7 +204,7 @@ async function notion3(ctx) {
   const { session } = ctx, conf = ctx.step.module3 ?? ctx.step;
   const step = { ...ctx.step, ...conf, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}) };
   const base = median((await store.setting("tempsDeBase"))?.mesures ?? []) ?? module2.base.defautS * 1000;
-  const runner = await new Module3Runner({ store, content: module3, content2: module2, rnd, seance: session.id, cran: () => session.cran, choix: session.choix?.module === 3 ? session.choix.niveau : null, baseMs: base }).load();
+  const runner = await new Module3Runner({ store, content: module3, content2: module2, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, choix: session.choix?.module === 3 ? session.choix.niveau : null, baseMs: base }).load();
   app.runner = runner; session.rec.niveauCalcul = runner.niveau; await session.save();
   await sprites.load("calcul");
   const fs = (app.facts ??= new FactsScreen(app, module2)); fs.show(true); fs.keys(false);

@@ -231,3 +231,8 @@ export function levelValues(cfg0) {
   for (const [a, b] of lines) for (const st of steps) for (let v = a; v <= b; v += st) out.add(v);
   return [...out].sort((x, y) => x - y);
 }
+
+// ---------------------------------------------------------------- lot 3 bis : une même question (docs/SPEC-LOT3BIS.md, §0)
+// ce qui fait qu'une question est « la même » : le format, la ligne et la cible (au format « sauter » : le départ et le
+// nombre de sauts) ; une dictée ou une estimation : le nombre
+export const questionKey = (q) => (q.format === "sauter" ? `sauter:${q.min}-${q.max}:${q.start}+${q.jumps}` : q.format === "ecrire" || q.format === "estimer" ? `${q.format}:${q.answer}` : `${q.format}:${q.min}-${q.max}:${q.answer}`);

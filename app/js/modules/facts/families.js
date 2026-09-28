@@ -15,7 +15,7 @@
 //    6 séances où elle était la notion du jour est « dépassée » : la suivante devient la famille en cours (elle
 //    s'ouvre si besoin, et joue sa leçon à sa première notion du jour) ; la famille dépassée reste travaillée en
 //    révision (échauffement, autres familles de la notion du jour) et peut encore être acquise.
-import { catalog, familyOf, ruleFacts } from "./facts.js";
+import { catalog, familyOf, ruleFacts, startOfDay } from "./facts.js";
 
 export const initialFamilies = (c, now = Date.now()) => ({ module: 2, ouvertes: [...c.famillesActives], ouvertures: c.famillesActives.map((id) => ({ famille: id, date: now })), acquises: [], trou: [], notion: [], lecons: [] });
 export const cfgOf = (c) => ({ ouverture: { part: 0.8, boite: 2 }, acquise: { part: 0.8, boite: 3 }, trou: { part: 0.5, boite: 3 }, stagnation: { seances: 6 }, ...(c.familles2 ?? {}) });
@@ -27,7 +27,22 @@ export function ruleShare(c, faits, id, boite) {
   const rule = ruleFacts(c, id), m = byKey(faits);
   return rule.length ? rule.filter((r) => (m.get(r.fait)?.boite ?? 0) >= boite).length / rule.length : 0;
 }
-export const isAcquired = (c, faits, id) => { const k = cfgOf(c).acquise; return ruleShare(c, faits, id, k.boite) >= k.part - 1e-9; };
+// lot 3 bis (docs/SPEC-LOT3BIS.md, A1) : une famille est acquise quand `part` (80 %) des faits de sa règle sont en boîte
+// `boite` (3) ou plus ET, pour les familles de `trouFamilles` (3 à 5), chacun de ces faits a été réussi au moins une fois
+// à une forme à trou ; ces réussites (les réussites à trou pour les familles 3 à 5, toutes les réussites sinon) sont
+// réparties sur au moins `jours` (2) jours différents : la voie rapide ne peut plus faire acquérir une famille en une
+// seule séance. `parent` : le point de départ du parent (la règle des boîtes seule).
+export function isAcquired(c, faits, id, { parent = false } = {}) {
+  const k = cfgOf(c).acquise;
+  if (parent || !(k.jours || k.trouFamilles)) return ruleShare(c, faits, id, k.boite) >= k.part - 1e-9;
+  const rule = ruleFacts(c, id), m = byKey(faits), trou = (k.trouFamilles ?? []).includes(id);
+  const wins = (f) => (f.historique ?? []).filter((h) => h.parent || (h.juste && (!trou || (h.forme && h.forme !== "directe"))));
+  const ok = rule.map((r) => m.get(r.fait)).filter((f) => f && (f.boite ?? 0) >= k.boite && wins(f).length);
+  if (!rule.length || ok.length < k.part * rule.length - 1e-9) return false;
+  // (les faits marqués connus par le parent ne comptent pas pour les jours)
+  const kid = ok.filter((f) => !wins(f).some((h) => h.parent));
+  return !kid.length || new Set(kid.flatMap((f) => wins(f).map((h) => startOfDay(h.t)))).size >= (k.jours ?? 1);
+}
 // la famille suivante peut-elle s'ouvrir ? (80 % des faits introduits en boîte 2 ou plus)
 export function canOpenNext(c, st, faits) {
   const next = c.familles.find((f) => !st.ouvertes.includes(f.id));
@@ -40,7 +55,7 @@ export function canOpenNext(c, st, faits) {
 export function updateFamilies(c, st0, faits, now = Date.now(), { parent = false, seance = null, open = true } = {}) {
   const st = structuredClone(st0), events = [], K = cfgOf(c);
   for (const id of st.ouvertes) {
-    if (!st.acquises.includes(id) && isAcquired(c, faits, id)) { st.acquises.push(id); (st.obtenus ??= []).push({ famille: id, date: now, ...(parent ? { parent: true } : {}) }); events.push({ type: "acquise", famille: id, ...(parent ? { parent: true } : {}) }); }
+    if (!st.acquises.includes(id) && isAcquired(c, faits, id, { parent })) { st.acquises.push(id); (st.obtenus ??= []).push({ famille: id, date: now, ...(parent ? { parent: true } : {}) }); events.push({ type: "acquise", famille: id, ...(parent ? { parent: true } : {}) }); }
     if (!st.trou.includes(id) && ruleShare(c, faits, id, K.trou.boite) >= K.trou.part - 1e-9) { st.trou.push(id); events.push({ type: "trou", famille: id }); }
   }
   const next = !open || (seance != null && st.ouvertures.at(-1)?.seance === seance) ? null : canOpenNext(c, st, faits);

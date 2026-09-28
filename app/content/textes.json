@@ -217,6 +217,8 @@
   "calcMoins": "{a} moins {b} ?",
   "calcTrouPlus": "{a} plus combien ? Ça fait {n}.",
   "calcTrouMoins": "{a} moins combien ? Ça fait {n}.",
+  "calcTrouDepartPlus": "Combien plus {b} ? Ça fait {n}.",
+  "calcTrouDepartMoins": "Combien moins {b} ? Ça fait {n}.",
   "calcPont": {
     "plus": "Plus {k}.",
     "moins": "Moins {k}."

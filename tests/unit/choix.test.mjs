@@ -29,7 +29,7 @@ const res = (q, ok, ms = 3000, code = ok ? null : "E1") => ({ q, value: ok ? q.a
 const mk1 = async (o = {}) => new Module1Runner({ screen: { generate: gen }, store: await open(), content: m1, rnd: rng(4), seance: 1, ...o }).load();
 async function notion(store, { n = 40, answer = () => true, cran = "conseille", choix = null } = {}) {
   const m = await new Module2Runner({ store, content: m2, rnd: rng(5), seance: 1, clock: () => NOW, cran: () => cran, choix }).load(), qs = [];
-  for (let i = 0; i < n; i++) { const { q, cfg } = m.next(), ok = answer(q); qs.push(q); await m.record({ q, value: ok ? expected(q) : 99, ok, ms: 2500, listens: 1 }, cfg); }
+  for (let i = 0; i < n; i++) { const x = m.next(); if (!x) break; const { q, cfg } = x, ok = answer(q); qs.push(q); await m.record({ q, value: ok ? expected(q) : 99, ok, ms: 2500, listens: 1 }, cfg); }
   return { m, qs };
 }
 
@@ -76,14 +76,16 @@ test("ligne graduée, niveau choisi au-dessus du conseillé : le réussir le val
   await B.finish(); assert.equal(B.st.niveau, 5);
 });
 
-test("additions, « jouer » : au moins 80 % des questions sur la famille en cours, même une petite famille (les doubles)", async () => {
+test("additions, « jouer » : au moins 80 % des questions sur la famille en cours ; une petite famille (les doubles) s'arrête à 3 passages par fait (lot 3 bis, §0)", async () => {
   const store = await open();
   for (const k of ["1+1", "2+1", "1+2", "3+1", "1+3", "4+1", "1+4", "5+1", "1+5"]) await store.put("faits", fact(k, 3));
   await store.put("niveaux", { ...initialFamilies(m2, NOW), ouvertes: [1, 2], acquises: [1] });
   const { m, qs } = await notion(store, { n: 40 });
   assert.equal(m.famille, 2);
   const rule = new Set(ruleFacts(m2, 2).map((f) => f.fait)), inFam = qs.filter((q) => rule.has(q.fait)).length;
-  assert.ok(inFam >= 0.8 * qs.length, `${inFam} sur ${qs.length} dans les doubles`);
+  const first = qs.slice(0, 15).filter((q) => rule.has(q.fait)).length; assert.ok(first >= 0.8 * 15, `${first} sur 15 dans les doubles`);
+  assert.equal(inFam, 15, "5 doubles, 3 passages chacun au plus");
+  const count = {}; qs.forEach((q) => { count[q.fait] = (count[q.fait] ?? 0) + 1; }); assert.ok(Object.values(count).every((x) => x <= 3), JSON.stringify(count));
   assert.ok(qs.every((q, i) => i < 1 || q.fait !== qs[i - 1].fait || q.revient), "jamais deux fois de suite le même fait");
   assert.equal(m2.notion.partFamille, 0.8, "le réglage est dans module2.json");
 });

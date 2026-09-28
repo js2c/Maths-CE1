@@ -19,6 +19,7 @@
 import { afterAnswer } from "../progress.js";
 import { calcKey, chemin, classifyCalc, makeCalc, unlocked } from "./calc.js";
 import { ruleShare } from "../facts/families.js";
+import { MANQUE, Variete } from "../variete.js";
 
 export const initialCalcState = (now = Date.now()) => ({ module: 3, acquis: [], obtenus: [{ niveau: 1, date: now }], vus: {}, fenetres: {}, lecons: [], seances: 0 });
 // le niveau conseillé : le plus bas des niveaux débloqués pas encore acquis ; un niveau débloqué le reste (`ouverts`), même
@@ -35,8 +36,9 @@ export const calcMastery = (c, st) => (st?.acquis?.length ?? 0) / c.niveaux.leng
 export class Module3Runner {
   // content : module3.json ; faits : les faits d'addition (le déblocage des niveaux 4 et 7) ; content2 : module2.json
   // baseMs : le temps de base mesuré à l'échauffement (C2)
-  constructor({ store, content, content2 = null, rnd, seance = null, cran = () => "conseille", choix = null, clock = () => Date.now(), baseMs = 3000 }) {
-    this.store = store; this.c = content; this.c2 = content2; this.rnd = rnd; this.seance = seance; this.cran = cran; this.choix = choix; this.clock = clock; this.baseMs = baseMs;
+  // variete : les règles de la réponse qui varie (lot 3 bis, content/seance.json, `variete`)
+  constructor({ store, content, content2 = null, rnd, seance = null, cran = () => "conseille", choix = null, clock = () => Date.now(), baseMs = 3000, variete = {} }) {
+    this.var = new Variete(variete); this.store = store; this.c = content; this.c2 = content2; this.rnd = rnd; this.seance = seance; this.cran = cran; this.choix = choix; this.clock = clock; this.baseMs = baseMs;
     this.replays = []; this.recent = []; this.errors = {}; this.played = new Set(); this.simpler = false; this.k = 0; this.count = 0; this.ok = 0; this.win = []; this.events = [];
   }
   async load() {
@@ -59,8 +61,8 @@ export class Module3Runner {
   // la question suivante ; `guide` (session/notion.js : exemples guidés après une leçon) : un calcul guidé
   next({ guide = false } = {}) {
     if (!guide) this.replays.forEach((r) => r.in--);
-    const due = guide ? -1 : this.replays.findIndex((r) => r.in <= 0);
-    if (due >= 0) { const r = this.replays.splice(due, 1)[0]; return { q: { ...r.q, revient: true, guide: false, remplir: false }, cfg: r.cfg }; }
+    const due = guide || this.simpler ? -1 : this.replays.findIndex((r) => r.in <= 0 && this.var.cost(this.cand(r.q), { retour: true }) < 50);
+    if (due >= 0) { const r = this.replays.splice(due, 1)[0]; return this.ret({ q: { ...r.q, revient: true, guide: false, remplir: false }, cfg: r.cfg }); }
     let n = this.niveau;
     // « jouer » : une question sur cinq (melange) dans un niveau déjà acquis (pas pendant le déroulé d'un nouveau niveau)
     const acquired = this.st.acquis.filter((x) => x !== n), vus = this.st.vus[n] ?? 0, D = this.c.deroule ?? { guides: 3, cheminAide: 3 };
@@ -68,8 +70,17 @@ export class Module3Runner {
     // plus simple (difficulté, finir sur une réussite) : un niveau acquis plus bas, sinon le même niveau
     if (this.simpler) { this.simpler = false; const low = this.st.acquis.filter((x) => x < n); if (low.length && this.choix == null) n = low.at(-1); }
     const cfg = this.cfg(n), e = this.effet;
-    const q = makeCalc(cfg, this.rnd, { eviter: this.recent.slice(-6), forme: e.trou ? "trou" : "directe" });
-    if (q.forme === "trou") q.forme = "trouDroite"; // (l'ardoise des additions : « 38 + ? = 43 »)
+    // lot 3 bis (docs/SPEC-LOT3BIS.md, A2) : aux niveaux à pas fixe (module3.json, trouDepart), le cran « très dur » alterne à
+    // parts égales la forme directe et le trou sur le nombre de départ (« ? + 10 = 57 ») ; ailleurs, le trou sur le second
+    // nombre (« 38 + ? = 43 ») là où il a un sens (trou) ; plusieurs tirages, le premier qui respecte la réponse qui varie (§0)
+    let forme = "directe";
+    if (e.trou && cfg.trouDepart) forme = (this.departK = (this.departK ?? 0) + 1) % 2 === 0 ? "trouGauche" : "directe";
+    else if (e.trou && cfg.trou) forme = "trouDroite";
+    const tries = [];
+    for (let i = 0; i < (this.tries ?? 24); i++) { const x = makeCalc(cfg, this.rnd, { eviter: i < 12 ? this.recent.slice(-6) : [] }); x.forme = forme; tries.push(x); }
+    const best = this.var.pick(tries.map((x) => this.cand(x)), (c) => ({ attente: this.replays.filter((r) => calcKey(r.q) === c.cle).length }));
+    if (best.cout >= MANQUE) return null;
+    const q = tries[best.i];
     q.chemin = chemin(q); q.cran = this.cran(); q.lentMs = this.lentMs;
     // les 3 premiers calculs d'un niveau (ou un exemple guidé) : l'enfant remplit chaque pont ; ensuite le chemin selon le cran
     const fill = n === this.niveau && (guide || (this.st.vus[n] ?? 0) < D.guides) && q.forme === "directe";
@@ -77,13 +88,16 @@ export class Module3Runner {
     else q.cheminMode = e.chemin ?? "coquillage"; // emblee | coquillage | non
     if (e.chemin === "emblee" && !fill) q.aideDEmblee = true;
     this.recent.push(calcKey(q)); this.k++;
-    return { q, cfg };
+    return this.ret({ q, cfg });
   }
+  // lot 3 bis : la question vue par les règles de la réponse qui varie ; une question posée
+  cand(q) { return { cle: calcKey(q), reponse: calcAnswer(q) }; }
+  ret(x) { this.var.note(this.cand(x.q)); return x; }
   // r : { q, value, ok, ms, listens, aide, nsp, correctionPassee, lent }
   async record(r, cfg) {
     const q = r.q, events = [], code = r.nsp ? "NSP" : r.ok ? (r.lent || r.ms > this.lentMs ? "C2" : null) : classifyCalc(q, r.value);
     await this.store?.add("reponses", {
-      t: Date.now(), seance: this.seance, module: 3, niveau: q.niveau, question: calcQuestion(q), forme: q.forme, donnee: r.value, attendue: q.forme === "trouDroite" ? q.b : q.n,
+      t: Date.now(), seance: this.seance, module: 3, niveau: q.niveau, question: calcQuestion(q), forme: q.forme, donnee: r.value, attendue: calcAnswer(q),
       juste: !!r.ok, tempsMs: r.ms, ecoutes: r.listens, aide: !!r.aide, ...(q.aideDEmblee ? { aideDEmblee: true } : {}), erreur: code, revient: !!q.revient, guide: !!q.guide, notion: true,
       ...(r.correctionPassee ? { correctionPassee: true } : {}), ...(this.libre ? { libre: true } : {}), ...(q.cran && q.cran !== "conseille" ? { cran: q.cran } : {}),
     });
@@ -91,7 +105,7 @@ export class Module3Runner {
     if (q.guide) { await this.save(); return { etoiles: r.ok ? 1 : 0, events }; }
     this.count++; if (r.ok) this.ok++;
     let etoiles = r.ok ? 1 : 0; if (r.ok && q.revient) etoiles += 1;
-    if (!r.ok && !q.revient) this.replays.push({ q, cfg, in: 3 });
+    if (!r.ok && !q.revient && this.var.times(calcKey(q)) < this.var.c.memeQuestionMax) this.replays.push({ q, cfg, in: 3 });
     const relaunch = (id, raison) => { if (id && !this.played.has(id)) { this.played.add(id); events.push({ type: "lecon", id, raison }); } };
     // la fenêtre du niveau (montée), sauf au cran « plus facile » (il consolide sans faire progresser) et pour un niveau déjà acquis
     if (q.cran !== "facile" && !this.st.acquis.includes(q.niveau)) {
@@ -118,4 +132,6 @@ export class Module3Runner {
   save() { return this.store?.put("niveaux", this.st); }
 }
 // la question telle que le parent la lira dans l'historique
-export const calcQuestion = (q) => (q.forme === "trouDroite" ? `${q.a} ${q.op === "-" ? "−" : "+"} ? = ${q.n}` : `${q.a} ${q.op === "-" ? "−" : "+"} ${q.b}`);
+export const calcQuestion = (q) => (q.forme === "trouDroite" ? `${q.a} ${q.op === "-" ? "−" : "+"} ? = ${q.n}` : q.forme === "trouGauche" ? `? ${q.op === "-" ? "−" : "+"} ${q.b} = ${q.n}` : `${q.a} ${q.op === "-" ? "−" : "+"} ${q.b}`);
+// la réponse attendue selon la forme : le résultat, le second nombre (« 38 + ? = 43 ») ou le nombre de départ (« ? + 10 = 57 »)
+export const calcAnswer = (q) => (q.forme === "trouDroite" ? q.b : q.forme === "trouGauche" ? q.a : q.n);

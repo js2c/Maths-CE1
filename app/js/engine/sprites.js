@@ -3,6 +3,8 @@
 // et @2x ; on prend la plus proche au-dessus de l'échelle d'affichage et, si elle ne tombe pas juste
 // (écran à 1,5 pixel par pixel logique, par exemple), on la réduit UNE fois au chargement : ensuite chaque
 // image est une copie pixel pour pixel, sans rééchantillonnage à chaque affichage.
+import { clock } from "./clock.js";
+
 const BASE = "assets/art/";
 
 export class Sprites {
@@ -24,20 +26,27 @@ export class Sprites {
       }));
       this.pages.set(sheet, { pages, r });
     })());
-    return this.loading.get(key);
+    return this.loading.get(key).then(clock.hold()); // (lot 3, étape 5 : la porte de l'activité qui charge)
   }
   ready(sheet) { return this.pages.has(sheet); }
+  // les planches chargées ou en cours de chargement
+  held() { return new Set([...this.pages.keys(), ...[...this.loading.keys()].map((k) => k.split("@")[0])]); }
   // libère une grande planche dont on n'a plus besoin (récif, cartes) : la mémoire décodée est rendue
+  // (lot 3, étape 5 : pendant une visite en pause, les planches de la séance sont épinglées, `pinned` : jamais libérées)
   unload(sheet) {
+    if (this.pinned?.has(sheet)) return;
     const p = this.pages.get(sheet); if (!p) return;
     p.pages.forEach((b) => b.close?.()); this.pages.delete(sheet);
     for (const k of [...this.loading.keys()]) if (k.startsWith(`${sheet}@`)) this.loading.delete(k);
   }
   // une image : la page, le rectangle source et le décalage depuis l'ancrage, en pixels d'écran
+  // (lot 3, étape 5 : l'indice est ramené dans la boucle, même négatif, non entier ou NaN, voir frameIndex ; si une image
+  // manque quand même, `onMissing` journalise le contexte au lieu de faire planter l'animation)
   frame(name, f = 0) {
     const s = this.atlas.sprites[name], sheet = this.pages.get(s.sheet);
     if (!sheet) return null;
-    const scale = s.rects[this.src] ? this.src : 1, q = s.rects[scale][f % s.rects[scale].length], r = sheet.r;
+    const scale = s.rects[this.src] ? this.src : 1, list = s.rects[scale], q = list?.[frameIndex(f, list.length)], r = sheet.r;
+    if (!q) { this.onMissing?.({ sprite: name, image: f, images: list?.length ?? 0 }); return null; }
     return { img: sheet.pages[q[0]], sx: q[1] * r, sy: q[2] * r, w: q[3] * r, h: q[4] * r, dx: q[5] * r, dy: q[6] * r };
   }
   // pose l'image f du sprite avec son ancrage en (x, y) logiques ; renvoie le rectangle touché (pixels d'écran)
@@ -48,5 +57,9 @@ export class Sprites {
     return [X, Y, q.w, q.h];
   }
 }
+
+// l'indice d'une image dans une boucle de n images : entier, de 0 à n - 1 (un temps qui recule donnait un indice négatif,
+// d'où « Cannot read properties of undefined (reading '0') » ; tests/unit/erreur-image.test.mjs)
+export const frameIndex = (f, n) => (n > 0 && Number.isFinite(f) ? ((Math.floor(f) % n) + n) % n : 0);
 
 export const loadAtlas = async () => (await fetch(BASE + "atlas.json")).json();

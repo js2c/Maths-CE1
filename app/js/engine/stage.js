@@ -34,8 +34,10 @@ export class Stage {
   // puis 2 : voir scene.js), et on remonte quand tout redevient fluide.
   start() {
     let last = performance.now();
-    const loop = (now) => {
-      const dt = Math.min(0.1, (now - last) / 1000); last = now;
+    // l'horodatage de requestAnimationFrame peut, rarement, être plus ancien que celui de l'image précédente : le temps
+    // donné aux animations ne recule jamais (sinon, indice d'image négatif : lot 3, étape 5)
+    const loop = (stamp) => {
+      const now = Math.max(stamp, last), dt = Math.min(0.1, (now - last) / 1000); last = now;
       requestAnimationFrame(loop);
       // en pause (espace parent ouvert par-dessus) : rien n'est dessiné ni mesuré
       if (this.paused) { this.resumed = true; return; }

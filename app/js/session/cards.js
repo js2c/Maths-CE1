@@ -108,8 +108,11 @@ export async function cardElement(app, card, { x, y, front = "recto", back = "do
   return el;
 }
 
-// UNE CARTE EN GRAND (récif, album) : au milieu, sur un voile ; la voix dit son nom et son anecdote ;
-// toucher la carte la retourne (le verso porte l'anecdote écrite) ; la coche verte ou le voile la range.
+// ce que dit la voix à l'ouverture d'une carte en grand : son nom, puis son anecdote
+export const cardLine = (text, c) => `${fill(text.data.recifCarte, { nom: c.nomLu ?? c.nom })} ${c.anecdote}`;
+// UNE CARTE EN GRAND (récif, album) : au milieu, sur un voile ; la voix dit son nom et son anecdote une seule fois, à
+// l'ouverture ; toucher la carte la retourne (le verso porte l'anecdote écrite), sans relancer la voix ; la coche verte
+// ou le voile la range.
 export class CardView {
   constructor(app) { this.app = app; this.card = null; this.tok = 0; }
   async show(c) {
@@ -124,10 +127,12 @@ export class CardView {
     el.classList.add("enter");
     const ok = spriteBox(app, { x: 1000 - 80, y: 560, w: 160, h: 160, cls: "bubble check", label: "c'est bon", paint: (ctx) => sprites.draw(ctx, "valider", 0, 80, 80) });
     this.card = { veil, el, ok };
-    const read = () => { voice.stop(); voice.say(`${fill(text.data.recifCarte, { nom: c.nomLu ?? c.nom })} ${c.anecdote}`, { instruction: true }); };
-    onTap(el, () => { el.flip(); app.sound?.play("carte"); read(); });
+    // la voix dit le nom et l'anecdote UNE fois, à l'ouverture (décision du parent du 28 septembre 2026) ; retourner la
+    // carte, dans un sens comme dans l'autre, ne la relance pas (si elle parle encore, elle continue) : seul le
+    // bruitage du retournement sonne
+    onTap(el, () => { el.flip(); app.sound?.play("carte"); });
     onTap(veil, () => this.close()); onTap(ok, () => this.close());
-    read();
+    voice.stop(); voice.say(cardLine(text, c), { instruction: true });
   }
   async close() {
     if (!this.card) return;

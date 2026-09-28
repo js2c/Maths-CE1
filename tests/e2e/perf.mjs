@@ -58,7 +58,22 @@ const mem = await page.evaluate(() => { const sp = window.__app.sprites; let px 
 // les captures, après la mesure : une réponse juste, puis une fausse
 await answer(true); await page.waitForTimeout(1500); await page.screenshot({ path: join(OUT, "3-juste.png") }); await next();
 await answer(false); await page.waitForTimeout(2200); await page.screenshot({ path: join(OUT, "4-faux.png") });
-const result = { date: new Date().toISOString(), ecran: "1280x800, densité 2, tactile", processeur: `ralenti ×${RATE}`, demarrage_ms: { froid: cold, chaud: warm }, intervalles_ms: stats(gaps), travail_par_image_ms: stats(work), niveau_allegement: perfLevel, sprites_decodes_Mo: mem, questions: k, images_lentes: slow.map(([t, d, c]) => `${d} ms (${c})`), erreurs: errors };
+// ---- lot 3, étape 5 : la mémoire décodée pendant une visite du récif depuis l'accueil en pause (les planches de la séance
+// restent chargées, épinglées ; le récif charge la sienne), puis après le retour et la reprise
+const memNow = () => page.evaluate(() => { const sp = window.__app.sprites; let px = 0; for (const { pages } of sp.pages.values()) for (const p of pages) px += p.width * p.height; return +(px * 4 / 1048576).toFixed(1); });
+await page.evaluate(async () => { const a = window.__app, ids = a.cartes.cartes.filter((c) => c.zone === "lagon").map((c) => c.id); await a.store.put("recompenses", { id: "cartes", cartes: Object.fromEntries(ids.map((id) => [id, { n: 1, premiere: Date.now() }])) }); await a.rewards.load(); });
+await next(); await page.tap(".session-home", { force: true }); await page.waitForSelector(".keep.reefkey", { timeout: 10000 });
+const memPause = await memNow();
+await page.tap(".keep.reefkey", { force: true }); await page.waitForSelector(".creature", { timeout: 30000 }); await page.waitForTimeout(1500);
+await page.evaluate(() => { window.__gaps = []; });
+await page.waitForTimeout(4000);
+const reefGaps = await page.evaluate(() => window.__gaps), memReef = await memNow();
+await page.screenshot({ path: join(OUT, "5-recif-en-pause.png") });
+await page.tap(".homekey:not(.session-home)", { force: true }); await page.waitForSelector(".keep.play", { timeout: 10000 }); await page.waitForTimeout(500);
+const memBack = await memNow();
+await page.tap(".keep.play", { force: true }); await page.waitForTimeout(800);
+console.log(`mémoire décodée des planches : en pause ${memPause} Mo, récif ouvert en pause ${memReef} Mo, après le retour ${memBack} Mo`);
+const result = { date: new Date().toISOString(), ecran: "1280x800, densité 2, tactile", processeur: `ralenti ×${RATE}`, demarrage_ms: { froid: cold, chaud: warm }, intervalles_ms: stats(gaps), travail_par_image_ms: stats(work), niveau_allegement: perfLevel, sprites_decodes_Mo: mem, questions: k, recif_en_pause: { memoire_en_pause_Mo: memPause, memoire_recif_ouvert_Mo: memReef, memoire_apres_retour_Mo: memBack, intervalles_ms: stats(reefGaps) }, images_lentes: slow.map(([t, d, c]) => `${d} ms (${c})`), erreurs: errors };
 console.log(JSON.stringify(result, null, 1));
 writeFileSync(join(OUT, `mesures-x${RATE}.json`), JSON.stringify(result, null, 1));
 await context.close();

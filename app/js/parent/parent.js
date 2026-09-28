@@ -246,6 +246,8 @@ export class ParentSpace {
       x.choix && h("span", {}, "Exercice choisi par l'enfant : ", h("b", {}, x.choix.module === 1 ? `ligne graduée, niveau ${x.choix.niveau}` : x.choix.module === 3 ? `calcul rapide, niveau ${x.choix.niveau}` : `additions, famille « ${this.module2.familles.find((f) => f.id === x.choix.famille)?.nom ?? x.choix.famille} »`)),
       x.echauffementPasse && h("span", {}, "Échauffement : ", h("b", {}, `passé par l'enfant après ${plural(x.echauffementPasse.apres, "question")}`)),
       (x.etapes ?? []).some((e) => e.sautee === "réglage du parent") && h("span", {}, "Échauffement : ", h("b", {}, "retiré (réglage « Échauffement : non »)")),
+      (x.etapes ?? []).some((e) => e.sautee === "déjà fait aujourd'hui") && h("span", {}, "Échauffement : ", h("b", {}, "pas refait (déjà fait ou passé plus tôt ce jour-là)")),
+      !x.terminee && !x.libre && (x.interruption || x.arreteeParParent) && h("span", {}, "Interrompue : ", h("b", {}, x.interruption?.raison ?? (x.interruption?.par === "enfant" ? "par l'enfant" : "terminée par le parent pendant une pause"))),
       x.defi && h("span", {}, "Défi record : ", h("b", {}, `${plural(x.defi.score, "bonne réponse")} sur ${x.defi.questions}${x.defi.nouveauRecord ? " (nouveau record !)" : x.defi.record ? ` (record : ${x.defi.record})` : ""}`)),
       h("span", {}, "Réponses justes : ", h("b", {}, `${x.justes ?? 0} sur ${x.questions ?? 0}`)),
       steps.length > 0 && h("span", {}, "Étapes : ", h("b", {}, steps.join(", "))),
@@ -433,6 +435,14 @@ export class ParentSpace {
     const rest = h("div", { class: "pa-card-box" }, h("h2", {}, "Restaurer une sauvegarde"), h("p", { class: "pa-note" }, "Sur une nouvelle tablette, ou après un effacement : choisissez le fichier JSON d'une sauvegarde complète."), input,
       h("button", { class: "pa-btn", onclick: () => input.click() }, "Choisir un fichier de sauvegarde…"), rmsg, h("div", { "data-restored": "" }));
     page.append(exp, rest, this.settingsBox());
+    // lot 3, étape 5 : les incidents techniques (une erreur de page, une image introuvable), avec leur contexte ; rien
+    // n'est affiché s'il n'y en a pas. Utile pour signaler un problème (la sauvegarde complète les contient aussi).
+    this.store.setting("journalErreurs").then((l) => {
+      if (!l?.length) return;
+      page.append(h("div", { class: "pa-card-box pa-incidents" }, h("h2", {}, "Incidents techniques"),
+        h("p", { class: "pa-note" }, "Ce que l'application a noté quand quelque chose ne s'est pas passé comme prévu (les 20 derniers). L'enfant n'a normalement rien vu : la séance continue. À signaler si cela revient souvent."),
+        h("ul", {}, [...l].reverse().map((e) => h("li", {}, `${D.fmtDay(e.t)} à ${D.fmtTime(e.t)} : ${e.type}${e.message ? ` (« ${e.message} »)` : ""}${e.sprite ? ` (image ${e.image} de « ${e.sprite} »)` : ""}${e.etape ? `, pendant l'étape « ${e.etape} »` : ""}${e.ecran ? `, écran « ${e.ecran} »` : ""}.`)))));
+    });
   }
   // les crans que l'enfant peut choisir au début de la séance : du plus facile autorisé au plus dur autorisé
   cransRow(row) {

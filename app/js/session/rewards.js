@@ -68,7 +68,7 @@ export function pickCard(cards, owned, { zones, poids, nouvelle = true }, rnd = 
 // parent du 27 septembre 2026 : plus de règle du 3e doublon).
 export function addCard(owned, card, now = Date.now(), tirage = false) {
   const had = owned[card.id], n = (had?.n ?? 0) + 1, shiny = !!had?.brillante || tirage;
-  return { owned: { ...owned, [card.id]: { n, premiere: had?.premiere ?? now, brillante: shiny } }, nouvelle: !had, devientBrillante: shiny && !had?.brillante, parTirage: tirage && !had?.brillante };
+  return { owned: { ...owned, [card.id]: { n, premiere: had?.premiere ?? now, derniere: now, brillante: shiny } }, nouvelle: !had, devientBrillante: shiny && !had?.brillante, parTirage: tirage && !had?.brillante };
 }
 // une carte prête : son illustration et son anecdote existent
 export const ready = (c) => !!(c.illustration && c.anecdote);

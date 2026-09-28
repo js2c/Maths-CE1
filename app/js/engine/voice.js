@@ -14,7 +14,10 @@
 //  - `misses` : les phrases dites sans fichier (vérifiées par les tests de parcours) ;
 //  - `pause()` / `resume()` (bouton « maison ») : la phrase en cours s'arrête, ce qui suit attend ; à la
 //    reprise, la phrase interrompue est redite depuis son début ; `abandon()` : tout ce qui était prévu est
-//    oublié sans jamais se terminer (l'activité quittée reste figée, voir engine/clock.js).
+//    oublié sans jamais se terminer (l'activité quittée reste figée, voir engine/clock.js) ;
+//  - `suspend()` / `restore(s)` (lot 3, étape 5) : pendant une pause, une visite (récif, album, choisir, leçon) parle
+//    avec une file neuve ; au retour, ce qu'elle disait est coupé et la séance retrouve sa voix en pause (la phrase
+//    interrompue, la file qui attend, la consigne que « réécouter » redit).
 import { sentences } from "./phrases.js";
 
 const GAP_MS = 140; // silence entre deux phrases d'un même texte
@@ -26,7 +29,7 @@ export class Voice {
     this.rate = rate; this.fast = fast; this.base = base; this.voice = null; this.unlocked = false; this.queue = Promise.resolve();
     this.instruction = null; this.listens = 0; this.speaking = false; this.gen = 0;
     this.index = null; this.misses = new Set(); this.files = 0; this.abort = null;
-    this.paused = false; this.held = []; this.cur = null; this.epoch = 0;
+    this.paused = false; this.held = []; this.cur = null; this.epoch = 0; this.seq = 0; this.stack = [];
     if (this.synth) { this.pick(); this.synth.addEventListener?.("voiceschanged", () => this.pick()); }
   }
   // l'index des fichiers (app/assets/voix/index.json) : { phrases: { phrase: [fichier, durée ms] } }
@@ -109,12 +112,20 @@ export class Voice {
     return this.queue;
   }
   // attend la fin d'une pause ; jamais si l'activité a été abandonnée
-  hold(ep) { return new Promise((res) => { const go = () => { if (ep === this.epoch) res(); }; if (this.paused) this.held.push(go); else go(); }); }
+  // (lot 3, étape 5 : un texte d'une activité mise de côté, qui arrive à son tour pendant une visite, attend avec elle)
+  hold(ep) { return new Promise((res) => { const go = () => { if (ep !== this.epoch) { this.stack.find((x) => x.epoch === ep)?.held.push(go); return; } if (this.paused) this.held.push(go); else res(); }; go(); }); }
   pause() { if (this.paused) return; this.paused = true; this.cur?.pause(); this.synth?.cancel(); }
   resume() { if (!this.paused) return; this.paused = false; this.cur?.resume(); const h = this.held; this.held = []; h.forEach((f) => f()); }
   // tout ce qui était prévu est oublié, sans jamais se terminer (engine/clock.js, `abandon`)
-  abandon() { this.epoch++; this.held = []; this.paused = false; const c = this.cur; this.cur = null; c?.pause(); this.abort = null; this.speaking = false; this.gen++; this.synth?.cancel(); this.queue = Promise.resolve(); }
+  abandon() { this.epoch = ++this.seq; this.held = []; this.paused = false; const c = this.cur; this.cur = null; c?.pause(); this.abort = null; this.speaking = false; this.gen = ++this.seq; this.synth?.cancel(); this.queue = Promise.resolve(); }
+  suspend() {
+    const s = { queue: this.queue, held: this.held, paused: this.paused, cur: this.cur, abort: this.abort, speaking: this.speaking, instruction: this.instruction, listens: this.listens, gen: this.gen, epoch: this.epoch };
+    this.stack.push(s);
+    this.queue = Promise.resolve(); this.held = []; this.paused = false; this.cur = null; this.abort = null; this.speaking = false; this.gen = ++this.seq; this.epoch = ++this.seq;
+    return s;
+  }
+  restore(s) { this.stack = this.stack.filter((x) => x !== s); this.epoch = ++this.seq; this.gen = ++this.seq; const c = this.cur; this.cur = null; c?.pause(); this.synth?.cancel(); Object.assign(this, s); }
   // coupe tout ce qui était prévu (changement d'écran, réponse donnée pendant la consigne)
-  stop() { this.gen++; this.abort?.(); this.synth?.cancel(); this.queue = Promise.resolve(); }
+  stop() { this.gen = ++this.seq; this.abort?.(); this.synth?.cancel(); this.queue = Promise.resolve(); }
   replay() { if (!this.instruction) return Promise.resolve(); this.stop(); this.listens++; return this.say(this.instruction); }
 }

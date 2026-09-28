@@ -1,6 +1,8 @@
 // LA LIGNE GRADUÉE À L'ÉCRAN. Elle est dessinée par un Worker (art/line-worker.js) dans une bande de la
 // scène, puis affichée par un canvas « bitmaprenderer » : afficher une image prête ne coûte presque rien
 // au fil principal, et le navigateur n'a pas à la recopier à chaque image.
+import { clock } from "./clock.js";
+
 export const BAND = [300, 310]; // haut et hauteur de la bande en px logiques (arcs de saut, bouées, poteaux, nombres)
 
 export class LineView {
@@ -24,7 +26,17 @@ export class LineView {
   fxDraw(fn) { const x = this.fxCtx, px = this.st.px; x.setTransform(px, 0, 0, px, 0, -BAND[0] * px); fn(x); this.fxUsed = true; }
   fxClear() { if (!this.fxUsed) return; this.fxCtx.setTransform(1, 0, 0, 1, 0, 0); this.fxCtx.clearRect(0, 0, this.fx.width, this.fx.height); this.fxUsed = false; }
   // prépare une ou plusieurs versions de la ligne ; renvoie leurs images (chacune s'affiche une fois)
-  render(specs) { const id = ++this.seq; return new Promise((res) => { this.wait.set(id, res); this.worker.postMessage({ id, px: this.st.px, band: BAND, specs }); }); }
+  render(specs) { const id = ++this.seq, g = clock.hold(); return new Promise((res) => { this.wait.set(id, res); this.worker.postMessage({ id, px: this.st.px, band: BAND, specs }); }).then(g); }
+  // (lot 3, étape 5) une leçon jouée pendant une pause dessine dans des calques neufs, posés sur ceux de la séance (qui
+  // gardent leur ligne, qu'on ne peut pas relire d'un canvas « bitmaprenderer ») ; `restore()` rend ceux de la séance
+  swap() {
+    const old = { c: this.c, ctx: this.ctx, fx: this.fx, fxCtx: this.fxCtx, fxUsed: this.fxUsed };
+    const c = old.c.cloneNode(false), fx = old.fx.cloneNode(false);
+    for (const e of [c, fx]) { e.classList.remove("stash"); e.style.opacity = ""; e.style.transition = ""; }
+    old.c.after(c); old.fx.after(fx);
+    Object.assign(this, { c, ctx: c.getContext("bitmaprenderer"), fx, fxCtx: fx.getContext("2d"), fxUsed: false }); this.place();
+    return () => { this.c.remove(); this.fx.remove(); Object.assign(this, old); };
+  }
   show(bitmap) { this.ctx.transferFromImageBitmap(bitmap); }
   clear() { this.ctx.transferFromImageBitmap(null); }
 }

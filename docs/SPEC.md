@@ -297,6 +297,7 @@ Une séance rapporte environ 35 à 50 étoiles, qu'elle réussisse bien ou moins
 
 - **La carte** est une illustration pleine page (portrait 3:4). L'application pose par-dessus un cadre fin aux coins arrondis dont la matière indique la rareté (nacre pour une commune, argent pour une rare, or pour une légendaire) et, en bas, un bandeau semi-transparent avec le nom de l'animal. Le dos de la carte porte l'anecdote.
 - **L'album** (bouton coquillage-livre depuis l'accueil et depuis le récif) montre les quatre zones, chacune avec ses **15 emplacements**. Une carte obtenue est visible ; une carte **pas encore découverte montre son dos** ; une zone pas encore ouverte montre ses dos assombris, avec un coquillage fermé. Sous chaque zone, 15 petites perles se remplissent au fil des cartes gagnées (pas de chiffre).
+- **La carte en grand** (toucher une créature dans le récif, toucher une carte dans l'album) : la voix dit le nom et l'anecdote **une seule fois**, à l'ouverture. Toucher la carte la retourne pour lire l'anecdote écrite, dans un sens comme dans l'autre, **sans relancer la voix** (le bruitage du retournement reste ; si la voix parle encore, elle continue). Décision du parent du 28 septembre 2026. L'ouverture d'un coquillage en fin de séance est inchangée.
 - Toucher un dos : la voix dit « Cette carte t'attend quelque part dans le lagon ! » ; pour une zone fermée : « Le grand large s'ouvrira quand tu auras gagné une étoile arc-en-ciel. » Les dos des légendaires sont dorés : on sait qu'elles existent, sans savoir lesquelles.
 - **Dos de cartes** : une image par zone (couleurs et motif de la zone) et une image dorée pour les légendaires, générées comme les illustrations, sans texte.
 
@@ -310,6 +311,15 @@ Une séance rapporte environ 35 à 50 étoiles, qu'elle réussisse bien ou moins
 | 4 · **Les abysses et les mers glacées** | poisson-lanterne, baudroie abyssale, poisson-vipère, isopode géant, pieuvre Dumbo, calmar vampire, requin-lutin, ver tubicole géant, cténophore | béluga, requin du Groenland, calmar géant | baleine bleue, cachalot, narval |
 
 Soit 40 communes, 15 rares et 5 légendaires. La progression va du familier (la plage) au spectaculaire (requins, orques, baleines).
+
+**Le récif en pages, une par zone** (décision du parent du 28 septembre 2026, pour éviter l'encombrement quand les zones 2 à 4 arriveront). Les zones et leur ordre sont ceux des cartes et de l'album ; au plus 15 créatures par page, chacune à sa place de sa zone.
+
+- Glisser le doigt à l'horizontale fait passer à la zone voisine : le décor et les créatures suivent le doigt, puis se calent sur la page au relâcher (au-delà d'environ un tiers de l'écran, ou d'un geste rapide ; sinon, retour). En bout de liste, un léger rebond. La pieuvre, guide de la visite, reste en place.
+- Un toucher bref sur une créature ouvre toujours sa carte, même pendant que la page se cale ; un glisser qui part d'une créature ne l'ouvre pas.
+- Une rangée de petites perles en bas (dessinées dans l'atelier, style A, sans texte ni chiffre, de la même main que celles de l'album) montre la page : pleine pour la page affichée ; toucher une perle mène à sa zone. Elle n'apparaît qu'à partir de deux pages.
+- Une zone a sa page seulement si elle est ouverte ET si au moins une de ses créatures a un dessin (atelier) et une place dans le récif (`app/content/cartes.json`). Aujourd'hui seul le lagon remplit ces conditions : le récif se comporte comme avant, avec le rebond. Le lot 4 ajoutera les décors et les créatures des zones 2 à 4 sans toucher au moteur (réglages `recifPages` et `zones[].recif.decor` de `cartes.json`).
+- À l'entrée, le récif s'ouvre sur la zone de la dernière carte gagnée (sinon le lagon). Les cadeaux (décors offerts) restent dans le lagon.
+- Mémoire : seule la planche de la zone affichée est chargée, plus celle de la voisine dès que le glisser commence ; les autres sont libérées quand la page est calée.
 
 **Règles de protection.**
 
@@ -383,8 +393,14 @@ Retours du parent après le premier essai du lot 1 (26 septembre 2026).
 **Navigation pendant la séance.**
 
 - Un bouton **« maison »** discret (coin haut gauche, zone tactile de 64 px au moins) ramène à l'accueil. La séance est mise en pause et reprend exactement où elle en était ; elle ne compte comme terminée qu'à la récompense (règle inchangée).
+- **L'accueil complet pendant une pause** (décision du parent du 28 septembre 2026 ; il remplace l'accueil réduit à « continuer » du lot 1 bis). Quelle que soit l'étape où l'enfant touche la maison (échauffement, notion du jour des trois modules, leçon, exemple guidé, correction, défi record), l'accueil montre :
+  - **« continuer »** à la place de « jouer » : la séance reprend exactement où elle en était (la même question, la même consigne redite, la même phrase de la leçon) ;
+  - **« choisir »** : l'écran de choix. Revenir sans valider (la maison) ramène à l'accueil en pause. Valider un **exercice** termine la séance en pause comme « Terminer la séance » du parent (enregistrée interrompue, avec la raison « autre exercice choisi par l'enfant », sans récompense ; ses réponses et ses étoiles restent : on ne perd jamais rien), puis lance l'exercice choisi comme séance du jour, avec étoiles ; si l'échauffement a déjà été fait ou passé ce jour-là, il n'est pas refait. Valider une **leçon** la joue, puis revient à l'accueil en pause, sans toucher à la séance ;
+  - **le récif et l'album** : visite libre, puis retour à l'accueil en pause, la séance intacte. Pendant ces visites, l'horloge, la voix et la musique de la séance restent en pause : le temps n'est pas compté ;
+  - **le logo de l'espace parent**, comme avant (« Terminer la séance » y reste).
+- La maison est présente pendant l'échauffement, la notion du jour (leçons, exemples guidés et corrections compris) et le défi record (le chronomètre s'arrête pendant la pause) ; pas pendant l'accueil ni la récompense.
 - Une **frise d'avancement** en haut de l'écran : un pictogramme par étape de la séance (accueil, échauffement, notion du jour, récompense), et dans l'étape en cours une rangée de petites bulles qui se remplissent à chaque question. Pas de chiffre, pas de chronomètre. Elle ne doit ressembler à aucun bouton (correctif du 27 septembre 2026) : pictogrammes plats et petits, sans disque blanc, sans contour épais ni ombre, enfilés sur une corde fine ; l'étape en cours se reconnaît à une lueur douce, les étapes à venir sont estompées. Elle ne réagit pas au toucher.
-- On ne choisit **pas** l'activité pendant la séance : la notion du jour reste choisie par l'application (sinon l'enfant évite ce qui est difficile). Le choix libre existe après la séance (voir « Encore ! »).
+- ~~On ne choisit pas l'activité pendant la séance.~~ Remplacé au lot 3 : l'enfant choisit l'exercice et le niveau dès l'accueil (`docs/SPEC-LOT3.md`, section 2), et depuis l'accueil en pause (ci-dessus).
 
 **Passer une explication** (révisé le 27 septembre 2026, après essai par le parent : la règle « à partir de la deuxième vue » est abandonnée partout).
 
@@ -409,7 +425,7 @@ Retours du parent après le premier essai du lot 1 (26 septembre 2026).
 - l'inventaire des phrases est tiré automatiquement des fichiers de `app/content/` (consignes, encouragements, corrections, leçons, noms de la pieuvre, cartes et anecdotes) ;
 - les phrases qui contiennent un nombre sont générées **pour chaque valeur possible** (par exemple « Où est 37 ? » pour 0 à 100, les 66 additions sous leurs trois formes), plutôt que collées en morceaux ;
 - les nombres et symboles sont écrits en toutes lettres avant la synthèse (« trente-sept », « plus ») pour maîtriser la prononciation ;
-- format compressé adapté à la voix (Opus ou MP3 mono), budget total visé : moins de 15 Mo ;
+- format compressé adapté à la voix (Opus ou MP3 mono), budget total visé : moins de 15 Mo (relevé à 40 Mo au lot 2 pour les nombres jusqu'à 1 000, puis à **80 Mo** le 28 septembre 2026, lot 3 sous 60 Mo) ;
 - l'application joue le fichier correspondant ; si un fichier manque, la synthèse du navigateur prend le relais (secours) ;
 - le bouton « réécouter » rejoue le fichier.
 
@@ -426,4 +442,4 @@ Retours du parent après le premier essai du lot 1 (26 septembre 2026).
 | 4 | Module 4, bilans périodiques, zones 2 à 4 du récif, 60 cartes, crabe |
 | 5 (optionnel) | Synchronisation Google Sheet |
 
-**État au 27 septembre 2026, 23 h 30** : lots 1, 1 bis et 2 en ligne ; lot 3 spécifié (`docs/SPEC-LOT3.md`), à lancer. Détail : `docs/AVANCEMENT.md` ; décisions : `docs/JOURNAL-CONCEPTION.md`.
+**État au 28 septembre 2026, soir** : lots 1, 1 bis et 2 en ligne ; **lot 3 terminé** (étapes 1 à 4 fusionnées, PR #19 ; étape 5 et décisions du 28 septembre : PR #20, à fusionner) ; bilan : `docs/BILAN-LOT3.md`. Prochain : essai sur la tablette, puis lot 4. Détail : `docs/AVANCEMENT.md` ; décisions : `docs/JOURNAL-CONCEPTION.md`.

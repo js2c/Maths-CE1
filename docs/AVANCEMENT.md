@@ -6,7 +6,7 @@ Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail 
 
 Spécification : `docs/SPEC-LOT3.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LOT2.md` et `docs/SPEC-COMPLEMENTS.md`) ; prompt : `docs/PROMPT-LOT3.md`. Deux parties : A (étapes 1 et 2, correctif du lot 2), B (étapes 3 à 5, calcul rapide).
 
-**Où en est-on (28 septembre 2026)** : lot 2 terminé et fusionné (PR #17). **Étapes 1 à 4 du lot 3 faites** (branche `claude/laughing-ritchie-cp777i`, https://github.com/js2c/Maths-CE1/pull/19), recette complète faite ; reste l'étape 5 (bilan du lot 3) et l'essai sur la tablette.
+**Où en est-on (28 septembre 2026, soir)** : **lot 3 terminé**. Étapes 1 à 4 fusionnées (PR #19) ; étape 5, élargie par les décisions du parent du 28 septembre (validation simple, voix à 80 Mo et calculs élargis, accueil complet pendant une pause, récif en pages, voix des cartes, erreur « reading '0' »), faite sur la branche `claude/intelligent-hawking-xwz6hw` (https://github.com/js2c/Maths-CE1/pull/20), avec le bilan `docs/BILAN-LOT3.md`. Reste : fusionner la PR #20 et essayer sur la tablette.
 
 | Étape | Partie | Contenu | État |
 | --- | --- | --- | --- |
@@ -14,7 +14,50 @@ Spécification : `docs/SPEC-LOT3.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LO
 | 2 | A | Difficulté à l'intérieur du niveau (ligne graduée, 13 niveaux × 4 crans ; additions) ; outil de sauvegardes de test ; guide du parent ; recette complète de la partie A | fait (même branche ; recette complète faite avec celle de l'étape 4, les étapes 1 à 4 étant enchaînées) |
 | 3 | B | Atelier : mur de corail, poisson sur le mur, ponts du chemin, pictogramme du calcul rapide pour l'écran de choix | fait (même branche) |
 | 4 | B | Module 3 : niveaux 1 à 9, générateurs, erreurs C1 à C5, déroulé d'un nouveau niveau, leçons L7 à L9, crans, choix du niveau, rotation dans « jouer », espace parent | fait (même branche ; recette complète des étapes 1 à 4 faite) |
-| 5 | B | Bilan : `docs/BILAN-LOT3.md`, guide du parent, recette complète sur l'année | à faire |
+| 5 | B | Bilan : `docs/BILAN-LOT3.md`, guide du parent, recette ; élargie le 28 septembre (décisions du parent, pause complète, récif en pages, voix des cartes, erreur « reading '0' ») | fait (branche `claude/intelligent-hawking-xwz6hw`, https://github.com/js2c/Maths-CE1/pull/20) |
+
+### Reprise de l'étape 5 du lot 3
+
+Pour reprendre si la session s'est arrêtée : branche `claude/intelligent-hawking-xwz6hw` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 3, étape 5 (en cours) ». L'étape 5 est élargie par la demande du parent du 28 septembre (neuf sous-parties : décisions du 28 septembre, accueil complet pendant une pause, récif en pages, voix des cartes, erreur « reading '0' », bilan, guide du parent, recette, clôture).
+
+**Sous-partie en cours :** aucune ; l'étape 5 est terminée, demande de fusion prête.
+
+**Fait :**
+
+- 1. Décisions du 28 septembre : validation « simple » (`seance.json`, `choice.js` : le nom est dit jusqu'au bout, la consigne suivante attend ; `choix.mjs` vérifie 3 touchers de l'accueil au sélecteur ; parcours `calcul`, `ergonomie`, `sauvegardes` adaptés) ; plafond de la voix 80 Mo (`voix.test.mjs`, SPEC) ; bornes du module 3 élargies (`module3.json` : 1 498 → 3 762 calculs ; niveau 1 : 10 à 99 ; 2 : 1 à 99 ; 3 : 10 à 99, ± 20 à ± 90 ; 4 : 11 à 98 ; 5 : 12 à 99 ; 6 : 11 à 89 ; 7 : 11 à 89 ; 8 : 11 à 88 et tous les seconds nombres à deux chiffres sans retenue ; 9 : 11 à 99) ; voix : **39,70 Mo avant, 50,96 Mo après** (2 230 phrases fabriquées) ; chemin du niveau 8 en deux ponts (dizaines, puis unités) ; long chemin décalé pour tenir à l'écran (captures regardées : 99 − 90, 10 + 80, 23 + 34) ; `ermite.repos` non touché ; SPEC-LOT3 (section 8), JOURNAL-CONCEPTION, ARCHITECTURE, SPEC.
+- 4 (fait en avance). La voix des cartes en grand : une seule fois, à l'ouverture (`cards.js`, `cardLine`) ; test `tests/unit/carte-voix.test.mjs` ; contrôles ajoutés dans `recompenses.mjs` et `cartes.mjs`.
+- 5 (fait en avance). Erreur « reading '0' » : cause trouvée par lecture du code (voir « Décisions prises (étape 5) ») ; corrigée (`stage.js`, `turtle.js`, `sprites.js` : `frameIndex`) avec le test `tests/unit/erreur-image.test.mjs`, qui reproduit le message avant la correction ; journal des incidents techniques (console et espace parent).
+
+- 2. Accueil complet pendant une pause : continuer, choisir, le récif, l'album, le logo (`main.js` : `pauseSession`, `showPauseHome`, `visitInPause`, `sandbox`, `pickInPause`, `startChosen`) ; horloge et voix mises de côté (`suspend`, `restore`, `park`) et porte d'activité (`clock.hold`) ; planches épinglées ; calques de la ligne remplacés le temps d'une leçon (`LineView.swap`), lecteur de leçons à part avec son propre écran de la ligne ; `choose` quittable (`choiceCancel`) ; séance interrompue avec sa raison (`Session.interrupt({ par, raison })`, espace parent, export) ; échauffement déjà fait ou passé non refait (`sansRaison`) ; maison pendant le défi record. Parcours `tests/e2e/pause.mjs` : pause depuis l'échauffement, la ligne, les additions, le calcul rapide, une leçon et le défi ; pour chacun, récif (une carte ouverte) puis album puis reprise exacte ; puis choisir sans valider, une leçon depuis la pause, un autre exercice : tout est bon. Mémoire : `perf.mjs` (densité 2, processeur ÷ 4), planches décodées : 180,6 Mo en pause pendant la ligne, 224,4 Mo avec le récif ouvert en pause (planche du récif et des cartes en plus), 180,6 Mo après le retour (rien ne reste) ; image moyenne 21,4 ms pendant la visite. `pause-parent`, `ergonomie`, `seance` : tout est bon. SPEC (« Navigation pendant la séance ») et ARCHITECTURE à jour ; guide du parent au point 7.
+
+- 3. Le récif en pages, une par zone : `session/reefpages.js` (fonctions pures), `session/reef.js` (glisser, calage, rebond, toucher ou glisser, perles, planches chargées et libérées), réglages `cartes.json` (`recifPages`), perle de page dessinée dans l'atelier (`recif.perle`, planche « petits »), `derniere` notée à chaque carte gagnée (page d'entrée). Tests : `tests/unit/recif-pages.test.mjs` ; parcours `tests/e2e/recif-pages.mjs` (contenu réel : une page, rebond, toucher ou glisser ; zone de test : entrée sur la zone de la dernière carte, glisser vers le lagon et retour, calage au tiers et au geste rapide, rebond, créature touchée pendant et après le calage, perle, planches libérées) : tout est bon ; captures regardées. Mémoire décodée des planches du récif (densité 2) : 43,8 Mo pour une zone, **87,6 Mo avec deux zones chargées** (pendant un glisser). `recompenses.mjs` et `cartes.mjs` : tout est bon, aucune phrase dite au retournement d'une carte (point 4 vérifié). SPEC (« Le récif », « La carte et l'album ») et ARCHITECTURE à jour.
+- 7. Guide du parent relu pour le lot 3 : choisir (un toucher), calcul rapide et ses bornes, échauffement passable et ses conséquences sur la révision espacée, maison pendant la séance, récif par zones, voix des cartes, incidents techniques, sauvegardes de test.
+
+- 6. `docs/BILAN-LOT3.md` : ce qui a changé pour l'enfant et pour le parent, étape par étape ; décisions et écarts ; tableaux de recette ; points à observer ; textes à valider ; à vérifier sur la tablette.
+- 8. Recette ciblée (tableau dans le bilan) : `npm test` (210) ; `seance.mjs` et `centaines.mjs` trois fois chacun, sans erreur ; `choix.mjs` ; `pause.mjs` (7 scénarios) ; `recif-pages.mjs` ; `ergonomie`, `pause-parent`, `recompenses`, `cartes` ; simulation (5 profils et rythmes, sur l'année) ; `recette.mjs --delai 4.5 --module 3` : 8 min 35 s ; `recette-durees.mjs --passer` : hors voix 1,0 s au plus ; `perf.mjs` : démarrage 1,8 s, récif en pause 224,4 Mo ; captures regardées. Tout est bon. Les consignes de l'écran « choisir » ont été réécrites pour la validation simple (« Touche une bulle. »), voix refabriquée, `choix.mjs` relancé.
+- 9. Avancement, ligne d'état de la SPEC, demande de fusion.
+
+**Reste :** l'essai sur la tablette.
+
+**Décisions prises (sous-partie 3) :**
+
+- *Les perles* : une perle de page dessinée pour l'occasion dans l'atelier (`recif.perle`, de la même main que celles de l'album, dans la petite planche « petits ») ; réutiliser la perle de l'album aurait chargé la planche des cartes (34 Mo) pour deux perles. Pleine et un peu plus grande pour la page affichée ; la rangée n'apparaît qu'à partir de deux pages (aujourd'hui : pas de perle).
+- *Ce qui suit le doigt* : le fond, le décor mobile (algues, poissons, reflets, bulles), les créatures et les cadeaux ; la pieuvre reste en place (guide de la visite). La page voisine montre une copie du fond, avec une ombre douce au bord de page (sinon la jonction faisait une cassure nette) ; au calage, le décor mobile revient en fondu.
+- *La page d'entrée* suit la dernière carte gagnée, doublons compris (`derniere`, nouvelle donnée ; pour les cartes gagnées avant, `premiere`).
+- *Touchers* : un glisser qui commence pendant un calage termine d'abord le calage ; la carte d'une créature s'ouvre même pendant un calage.
+
+**Décisions prises (sous-partie 2) :**
+
+- *« Fait ou passé »* : l'échauffement compte comme fait dès que son étape s'est terminée dans une séance du jour (toutes ses questions, le temps écoulé, ou « passer ») ; une séance interrompue au milieu de l'échauffement ne le compte pas : il est refait dans la séance choisie.
+- *Une leçon jouée depuis la pause* est rangée comme une leçon choisie seule (séance « libre », étoiles une fois par leçon et par jour), notée `pendantPause` ; la maison l'arrête sans rien noter et revient à l'accueil en pause.
+- *Porte d'activité* : trouvée par le parcours (une phrase de leçon avançait pendant une visite) ; elle change aussi une pause simple : un saut de la tortue déjà commencé se termine à l'écran, mais la suite attend la reprise (avant : elle pouvait continuer jusqu'à la prochaine attente).
+- *Pendant une visite*, « réécouter » redit la consigne de la visite (récif, album) ; au retour, celle de la séance.
+
+**Décisions prises (étape 5) :**
+
+- *Validation simple* : le toucher entoure l'image, dit son nom et valide 0,3 s plus tard ; le nom n'est plus coupé par la consigne suivante (elle attend dans la file de la voix).
+- *Bornes du calcul rapide* : les listes de seconds nombres des niveaux 4, 5, 7 et 9 (2 à 7, 3 à 8) sont gardées : ce sont des choix pédagogiques (le niveau 1 couvre ± 1 et ± 2, le niveau 6 couvre + 9), pas des bornes de voix. Au niveau 3, un pont par dizaine : jusqu'à 9 ponts (99 − 90), donc une correction plus longue sur le mur (à observer).
+- *Erreur « Cannot read properties of undefined (reading '0') »* : les images des boucles sont choisies d'après le temps de l'animation ; la tortue calcule `path[Math.floor(u)]` pendant un saut et `Math.floor((t - t0) * 12) % n` au repos ; si l'horodatage d'une image (requestAnimationFrame) est plus ancien que le précédent, l'indice devient négatif, `path[-1]` ou `rects[-1]` vaut undefined et `p0[0]` ou `q[0]` lève exactement ce message. La tortue est présente dans les deux parcours où l'erreur a été vue (ligne graduée). Le test reproduit le message avec un temps qui recule de 30 ms. Le déclencheur (un horodatage non monotone sous la charge de Chromium sans écran) est une hypothèse vraisemblable, pas observée directement. Corrections : temps monotone dans la boucle de la scène et dans la tortue, indice d'image ramené dans la boucle (`frameIndex`), et, si une image manque quand même, une garde qui journalise au lieu de planter (`Sprites.onMissing`). Toute erreur de page est aussi notée (réglage `journalErreurs`, les 20 dernières, avec l'écran et l'étape) et montrée dans l'espace parent, « Données et réglages », « Incidents techniques » (rien n'est affiché s'il n'y en a pas).
 
 ### Reprise des étapes 1 à 4 du lot 3
 

@@ -10,6 +10,7 @@
 // (exit). Pour lancer un geste, on amène d'abord le repos à sa phase d'entrée en jouant ses images à
 // vitesse triple, dans le sens le plus court (au plus une demi-seconde) : on dirait une petite
 // anticipation, pas un saut.
+import { clock } from "./clock.js";
 const SEEK_FPS = 36;
 
 export class Octopus {
@@ -41,7 +42,7 @@ export class Octopus {
     this.key = ""; // l'image suivante recompose tout (efface ce pixel)
   }
   // joue un geste une fois (saluer, rejouir, encourager) ; la promesse se résout quand il est fini
-  play(name) { return new Promise((res) => { this.pending = { name, res }; this.holding = false; }); }
+  play(name) { const g = clock.hold(); return new Promise((res) => { this.pending = { name, res }; this.holding = false; }).then(g); }
   // tient un geste qui a une boucle (montrer, reflechir) jusqu'à release()
   hold(name) { this.pending = { name, res: null }; this.holding = true; }
   release() { this.holding = false; }

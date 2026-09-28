@@ -44,7 +44,11 @@ test("le chemin des ponts : 38 → + 2 → 40 → + 3 → 43 ; 34 → + 10 → 4
   assert.equal(path(23, "+", 30, "dizaines"), "+10>33 +10>43 +10>53");
   assert.equal(path(23, "+", 14, "deuxNombres"), "+10>33 +4>37");
   assert.equal(path(47, "+", 2, "petit"), "+2>49");
-  for (let n = 1; n <= 9; n++) for (const c of calcsOf(cfg(n))) { const p = chemin({ ...c, type: cfg(n).type }); assert.equal(p.at(-1).a, c.n); assert.ok(p.length <= 4, `${c.a}${c.op}${c.b}`); }
+  for (let n = 1; n <= 9; n++) for (const c of calcsOf(cfg(n))) { const p = chemin({ ...c, type: cfg(n).type }); assert.equal(p.at(-1).a, c.n); assert.ok(p.length <= (cfg(n).type === "dizaines" ? c.b / 10 : 2), `${c.a}${c.op}${c.b}`); }
+  // bornes élargies (décision du parent du 28 septembre) : les exemples de docs/SPEC.md sont tous dans leur niveau
+  const has = (n, a, op, b) => calcsOf(cfg(n)).some((c) => c.a === a && c.op === op && c.b === b);
+  for (const [n, a, op, b] of [[1, 47, "+", 2], [1, 60, "-", 1], [2, 34, "+", 10], [2, 57, "-", 10], [3, 23, "+", 30], [3, 68, "-", 20], [4, 34, "+", 5], [4, 62, "+", 7], [5, 38, "-", 5], [5, 47, "-", 3], [6, 34, "+", 9], [6, 56, "+", 9], [7, 38, "+", 5], [8, 23, "+", 14], [9, 42, "-", 5]]) assert.ok(has(n, a, op, b), `niveau ${n} : ${a} ${op} ${b}`);
+  assert.equal(path(23, "+", 34, "deuxNombres"), "+30>53 +4>57");
 });
 
 test("erreurs C1, C3, C4, C5 reconnues ; forme à trou", () => {

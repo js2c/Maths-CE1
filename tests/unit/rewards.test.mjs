@@ -37,7 +37,7 @@ test("pas de doublon tant que la zone n'est pas complète ; ensuite des doublons
 test("une carte ne devient plus brillante au troisième doublon (décision du parent du 27 septembre 2026)", () => {
   const c = cartes.cartes[0]; let o = {}, r;
   for (let i = 1; i <= 4; i++) { r = addCard(o, c, 1000 * i); o = r.owned; assert.equal(r.devientBrillante, false); assert.equal(r.nouvelle, i === 1); }
-  assert.deepEqual(o[c.id], { n: 4, premiere: 1000, brillante: false });
+  assert.deepEqual(o[c.id], { n: 4, premiere: 1000, derniere: 4000, brillante: false }); // (lot 3, étape 5 : derniere, la date du dernier gain, pour la page d'entrée du récif)
 });
 
 test("la série : une séance par jour compte, un jour manqué ne la fait pas retomber, bonus toutes les 3 séances", () => {

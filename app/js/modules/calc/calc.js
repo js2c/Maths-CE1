@@ -38,7 +38,8 @@ export function chemin(q) {
     case "plus9": step("+", 10); step("-", 1); break;
     case "passerPlus": step("+", 10 - units(a)); step("+", b - (10 - units(a))); break;
     case "passerMoins": step("-", units(a)); step("-", b - units(a)); break;
-    case "deuxNombres": for (let i = 0; i < Math.floor(b / 10); i++) step("+", 10); if (units(b)) step("+", units(b)); break;
+    // (lot 3, étape 5 : les dizaines d'un seul pont, puis les unités : 23 + 34 → + 30 → 53 → + 4 → 57, comme 23 + 10 + 4)
+    case "deuxNombres": step("+", tens(b)); if (units(b)) step("+", units(b)); break;
     default: step(op, b);
   }
   return steps;

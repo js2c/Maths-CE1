@@ -19,7 +19,8 @@
 //  - lot 3 (docs/SPEC-LOT3.md, sections 2 et 4) : l'exercice choisi par l'enfant (écran « choisir » : `choix`,
 //    { module, niveau } ou { module, famille }) est la notion du jour de la séance, qui compte comme la séance du
 //    jour ; le module imposé par le parent n'est alors pas consommé (il vaut pour la prochaine séance « jouer ») ;
-//    `sans` : les étapes retirées par un réglage du parent (« Échauffement : non »), sautées et notées comme telles.
+//    `sans` : les étapes retirées par un réglage du parent (« Échauffement : non »), sautées et notées comme telles
+//    (lot 3, étape 5 : `sansRaison`, une autre raison, par exemple l'échauffement déjà fait ou passé ce jour-là).
 // Aucun accès au DOM ici : l'horloge et les gestionnaires sont injectés (tests : tests/unit/session.test.mjs).
 
 export const sameDay = (a, b) => { const x = new Date(a), y = new Date(b); return x.getFullYear() === y.getFullYear() && x.getMonth() === y.getMonth() && x.getDate() === y.getDate(); };
@@ -56,8 +57,8 @@ export class Session {
   // content : seance.json ; handlers : { accueil, echauffement, notion, defi, probleme, recompense } ;
   // rewards : les étoiles (rewards.js) ; clock : l'heure en ms
   // onCranDown(de, a) : la protection vient de redescendre d'un cran (la voix le dit)
-  constructor({ store, content, handlers, rewards = null, clock = () => Date.now(), paused = () => 0, onProgress = null, onCranDown = null, choix = null, sans = [], mastery = () => 0 }) {
-    this.choix = choix; this.sans = sans; this.mastery = mastery;
+  constructor({ store, content, handlers, rewards = null, clock = () => Date.now(), paused = () => 0, onProgress = null, onCranDown = null, choix = null, sans = [], sansRaison = {}, mastery = () => 0 }) {
+    this.choix = choix; this.sans = sans; this.sansRaison = sansRaison; this.mastery = mastery;
     this.store = store; this.c = content; this.handlers = handlers; this.rewards = rewards; this.clock = clock; this.paused = paused; this.onProgress = onProgress; this.onCranDown = onCranDown;
     this.rec = null; this.lastOk = null; this.progress = { etape: null, faites: 0, prevues: 0 };
     this.cranIdx = 1; this.frac = 0; this.win = []; this.nouveaux = 0;
@@ -121,7 +122,13 @@ export class Session {
   async notePause() { this.rec.pauses = (this.rec.pauses ?? 0) + 1; await this.save(); }
   // le parent termine la séance en pause (espace parent) : interrompue, sans récompense ; le déroulement en
   // cours est abandonné (main.js), plus rien n'est enregistré ensuite
-  async interrupt() { this.rec.terminee = false; this.rec.arreteeParParent = true; await this.save(); this.stopped = true; }
+  // (lot 3, étape 5) ou l'enfant, depuis l'accueil en pause, choisit un autre exercice : même effet, avec la raison, pour
+  // l'historique du parent (`par` : « parent » ou « enfant » ; `raison`)
+  async interrupt({ par = "parent", raison = null } = {}) {
+    this.rec.terminee = false; if (par === "parent") this.rec.arreteeParParent = true;
+    this.rec.interruption = { par, ...(raison ? { raison } : {}), t: this.clock() };
+    await this.save(); this.stopped = true;
+  }
   // des étoiles gagnées : aussitôt ajoutées au trésor (on ne perd jamais rien, même si la séance s'arrête)
   // les étoiles des bonnes réponses et des erreurs corrigées suivent le multiplicateur du cran
   async stars(n, raison) {
@@ -135,7 +142,7 @@ export class Session {
     for (const step of this.c.etapes) {
       const h = this.handlers[step.id], t0 = this.active();
       if (step.actif !== false && h && step.id === "defi" && !(await challengeReady(this.store, step))) { this.rec.etapes.push({ id: step.id, sautee: "pas encore" }); continue; }
-      if (this.sans.includes(step.id)) { this.rec.etapes.push({ id: step.id, sautee: "réglage du parent" }); continue; }
+      if (this.sans.includes(step.id)) { this.rec.etapes.push({ id: step.id, sautee: this.sansRaison[step.id] ?? "réglage du parent" }); continue; }
       if (step.actif === false || !h) { this.rec.etapes.push({ id: step.id, sautee: step.actif === false ? "désactivée" : "pas encore construite" }); continue; }
       const asks = step.id !== "accueil" && step.id !== "recompense";
       if (asks && this.over()) { this.rec.etapes.push({ id: step.id, sautee: "temps écoulé" }); continue; }

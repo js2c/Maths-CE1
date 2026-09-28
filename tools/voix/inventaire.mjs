@@ -88,7 +88,7 @@ function domaines(C) {
     // lot 3, étape 4 : le calcul rapide (modules/calc/calc.js : calcsOf, les calculs de chaque niveau de module3.json ; chemin :
     // les pas des ponts ; la forme à trou aux niveaux où elle a un sens ; C4 et C5 : les unités et le nombre ajouté ou retiré)
     ...(() => {
-      const M3 = C.module3?.niveaux ?? [], all = M3.flatMap((c) => calcsOf(c).map((x) => ({ ...x, type: c.type, trou: c.trou, trouDepart: c.trouDepart })));
+      const M3 = C.module3?.niveaux ?? [], all = M3.flatMap((c) => calcsOf(c).map((x) => ({ ...x, type: c.type, support: c.support, trou: c.trou, trouDepart: c.trouDepart })));
       const steps = all.flatMap((x) => chemin(x)), k = (op) => [...new Set([...steps.filter((s) => s.op === op).map((s) => s.k), ...all.filter((x) => x.op === op && x.b < 10).map((x) => x.b)])].sort((a, b) => a - b).map((v) => ({ k: v }));
       const u = (n) => n % 10;
       return {
@@ -99,6 +99,18 @@ function domaines(C) {
         "calcPont.plus": k("+"), "calcPont.moins": k("-"),
         "erreurCalc.C4": all.filter((x) => x.op === "+" && x.b < 10 && u(x.a) + x.b >= 10).map((x) => ({ u: u(x.a), b: x.b })),
         "erreurCalc.C5": all.filter((x) => x.op === "-" && x.b < 10 && u(x.a) < x.b).map((x) => ({ b: x.b, u: u(x.a) })),
+        // lot 3 bis (B4) : l'aide du coquillage dit le premier pas (calc/screen.js, help) : au mur, le poisson descend ou monte
+        // d'une ou plusieurs rangées ; sur un chemin de plusieurs ponts, « D'abord, on va jusqu'à 40 » ; d'un seul pont, le départ et le pas
+        ...(() => {
+          const first = all.map((x) => ({ x, s: chemin(x)[0], n: chemin(x).length })), mur = first.filter((f) => f.x.support === "mur" && f.s.k % 10 === 0 && f.s.k > 10);
+          const uniq = (xs) => [...new Map(xs.map((v) => [JSON.stringify(v), v])).values()];
+          return {
+            "aideMur.plusDizaines": uniq(mur.filter((f) => f.s.op === "+").map((f) => ({ k: f.s.k, r: f.s.k / 10 }))),
+            "aideMur.moinsDizaines": uniq(mur.filter((f) => f.s.op === "-").map((f) => ({ k: f.s.k, r: f.s.k / 10 }))),
+            aideCheminPont: uniq(first.filter((f) => f.x.support !== "mur" && f.n > 1).map((f) => ({ n: f.s.a }))),
+            aideChemin1: uniq(first.filter((f) => f.x.support !== "mur" && f.n === 1).map((f) => ({ a: f.x.a }))),
+          };
+        })(),
       };
     })(),
     // le défi record : « {n} bonnes réponses ! » (2 ou plus ; une seule : defiScoreUn), le record à battre (1 ou plus)

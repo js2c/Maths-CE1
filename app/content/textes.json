@@ -235,9 +235,21 @@
     "autre": "Regardons le chemin ensemble."
   },
   "notionCalcul": [
+    "Maintenant, le calcul rapide !",
+    "Au tour du calcul rapide !"
+  ],
+  "notionCalculMur": [
     "Maintenant, le calcul rapide, avec le petit poisson du mur de corail !",
     "Au tour du calcul rapide ! Le petit poisson va t'aider."
   ],
+  "aideMur": {
+    "plus10": "Plus dix : le poisson descend d'une rangée.",
+    "moins10": "Moins dix : le poisson monte d'une rangée.",
+    "plusDizaines": "Plus {k} : le poisson descend de {r} rangées.",
+    "moinsDizaines": "Moins {k} : le poisson monte de {r} rangées."
+  },
+  "aideCheminPont": "D'abord, on va jusqu'à {n}.",
+  "aideChemin1": "On part de {a}. Suis le pont.",
   "choixCalcul": {
     "1": "Plus un, plus deux, moins un, moins deux.",
     "2": "Plus dix et moins dix, sur le mur de corail.",

@@ -4,6 +4,8 @@
 //   choisir   — B1 : les trois écrans de niveaux aux trois formats (numéros, lueur, rien de coupé ni sur la pieuvre)
 //   legende   — B2 : la légende ouverte puis fermée par la croix et par un toucher dehors, sans rien lancer
 //   appui     — B3 : appui long de 0,8 s sur chaque pictogramme : étiquette, rien de lancé ; toucher bref : lancé
+//   calcul    — B4 : l'aide du coquillage (mur et poisson, premier pont dit), les corrections (mur : bonne réponse entourée ;
+//               chemin : rassurer, pont rejoué, C4 ou C5), les calculs guidés (l'ardoise garde le calcul), l'annonce du poisson
 // (les autres parties s'ajoutent au fil de l'étape 4)
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { mkdirSync } from "node:fs";
@@ -16,12 +18,12 @@ const ONLY = arg("--seul", null)?.split(","), want = (p) => !ONLY || ONLY.includ
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
-export const open = async (q = "", { prep = null, size = [1280, 800], scale = 2 } = {}) => {
+export const open = async (q = "", { prep = null, prepArg = null, size = [1280, 800], scale = 2 } = {}) => {
   const context = await browser.newContext({ viewport: { width: size[0], height: size[1] }, deviceScaleFactor: scale, hasTouch: true }), page = await context.newPage(), errors = [];
   page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
   await page.goto(url + "?nosw&voix=rapide&son=non"); await page.waitForFunction(() => window.__ready !== undefined);
   await page.evaluate(async () => { await window.__app.store.setSetting("mascotte", "Pili"); });
-  if (prep) await page.evaluate(prep);
+  if (prep) await page.evaluate(prep, prepArg);
   await page.goto(url + "?nosw&voix=rapide&son=non" + q); await page.waitForFunction(() => window.__ready !== undefined);
   return { page, context, errors };
 };
@@ -110,6 +112,82 @@ if (want("appui")) {
   await tap(page, '.choix-ex[aria-label="calcul"]'); await page.waitForSelector(".choix-tuile");
   check(true, "toucher bref sur « calcul » : ses niveaux s'ouvrent");
   check(!errors.length, `appui long : aucune erreur (${errors.join(" | ")})`); await context.close();
+}
+
+// ---------------------------------------------------------------- B4 : le calcul rapide
+const spy = (page) => page.evaluate(() => { const v = window.__app.voice, say = v.say.bind(v); window.__said = []; v.say = (t, o) => { window.__said.push(t); return say(t, o); }; });
+const said = (page) => page.evaluate(() => window.__said.join(" | "));
+const waitQ = (page) => page.waitForFunction(() => { const f = window.__app.facts; return f?.q && f.resolve && !f.locked; }, null, { timeout: 60000 });
+const typeN = async (page, n) => { for (const d of String(n)) { await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.waitForTimeout(170); } await page.tap('.key[data-key="valider"]', { force: true }); };
+const curQ = (page) => page.evaluate(() => { const f = window.__app.facts, q = f.q; return { a: q.a, op: q.op, b: q.b, n: q.n, forme: q.forme, pont: !!q.pont, niveau: q.niveau, type: q.type, support: q.support, parent: q.parent ? { a: q.parent.a, op: q.parent.op, b: q.parent.b, n: q.parent.n } : null, i: q.i, slateQ: f.slateQ ? { a: f.slateQ.a, b: f.slateQ.b } : null }; });
+const slate = (page) => page.evaluate(() => { const f = window.__app.facts; return { typed: f.typed, ring: f.ring, slateQ: !!f.slateQ }; });
+const calcOpen = (niveau, cran = "conseille", vus = { [niveau]: 10 }, extra = "&sansLecon") => open(`&cran=${cran}&choix=3:${niveau}${extra}`, { prepArg: vus, prep: async (vus) => { await window.__app.store.setSetting("echauffement", false); await window.__app.store.put("niveaux", { module: 3, acquis: [], obtenus: [], vus, fenetres: {}, lecons: ["L7", "L8", "L9"] }); } });
+if (want("calcul")) {
+  // l'annonce aux niveaux du mur (le poisson à l'écran) ; l'aide du coquillage au mur ; une erreur au mur
+  for (const niveau of [2, 6]) {
+    const { page, context, errors } = await open(`&cran=conseille&choix=3:${niveau}&sansLecon`, { prep: async () => { await window.__app.store.setSetting("echauffement", false); await window.__app.store.put("niveaux", { module: 3, acquis: [], obtenus: [], vus: { 2: 10, 6: 10 }, fenetres: {}, lecons: ["L7", "L8"] }); } });
+    await spy(page); await page.tap(".play", { force: true });
+    if (niveau === 2) {
+      await page.waitForFunction(() => window.__app.calc?.fish?.a.vis, null, { polling: 50, timeout: 20000 }).catch(() => {});
+      await page.waitForTimeout(500); await shot(page, "B4-annonce-mur");
+      const s0 = await said(page);
+      check(/poisson/.test(s0), `niveau 2 : l'annonce parle du poisson, montré à l'écran pendant la phrase (${s0})`);
+    }
+    await waitQ(page); const q = await curQ(page);
+    await page.tap(".bubble.help", { force: true });
+    await page.waitForFunction(() => window.__app.calc?.fish?.a.vis && window.__app.aidBoard, null, { polling: 50, timeout: 10000 }).catch(() => {});
+    await page.waitForTimeout(900); await shot(page, `B4-aide-mur-${niveau}`);
+    await waitQ(page); await page.waitForTimeout(300);
+    const s1 = await said(page);
+    check(/le poisson (descend|monte)/.test(s1), `niveau ${niveau}, coquillage : le mur, le poisson fait le premier pas, dit (« ${s1.split(" | ").filter((x) => /poisson/.test(x)).pop()} »)`);
+    await shot(page, `B4-aide-mur-${niveau}-apres`);
+    // une erreur : la bonne réponse entourée dès le début, jamais la fausse égalité
+    const wrong = q.op === "+" ? q.n + 1 : q.n - 1; await typeN(page, wrong);
+    await page.waitForFunction(() => window.__app.calc?.fish?.a.vis, null, { polling: 50, timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(400); const sl = await slate(page);
+    check(sl.ring && Number(sl.typed) === q.n, `niveau ${niveau}, correction au mur : la bonne réponse entourée (${sl.typed}), pas « ${q.a} ${q.op} ${q.b} = ${wrong} »`);
+    await shot(page, `B4-correction-mur-${niveau}`);
+    check(!errors.length, `niveau ${niveau} : aucune erreur (${errors.join(" | ")})`); await context.close();
+  }
+  // le chemin : l'aide dit le premier pont (niveau 7) ou le départ (niveau 1) ; une erreur au niveau 7 (C4)
+  for (const niveau of [1, 7, 9]) {
+    const { page, context, errors } = await calcOpen(niveau);
+    await spy(page); await page.tap(".play", { force: true }); await waitQ(page);
+    const s0 = await said(page);
+    check(!/poisson/.test(s0), `niveau ${niveau} (chemin) : l'annonce ne parle pas du poisson (${s0.split(" | ")[0]})`);
+    const q = await curQ(page);
+    await page.tap(".bubble.help", { force: true }); await waitQ(page); await page.waitForTimeout(400);
+    const s1 = await said(page);
+    check(niveau === 1 ? /On part de/.test(s1) : /D'abord, on va jusqu'à/.test(s1), `niveau ${niveau}, coquillage : ${niveau === 1 ? "« On part de … Suis le pont. »" : "« D'abord, on va jusqu'à … »"}`);
+    await shot(page, `B4-aide-chemin-${niveau}`);
+    if (niveau > 1) {
+      const wrong = niveau === 7 ? Math.floor(q.a / 10) * 10 + ((q.a % 10) + q.b) % 10 : Math.floor(q.a / 10) * 10 + (q.b - (q.a % 10));
+      await typeN(page, wrong);
+      await page.waitForSelector(".skip", { timeout: 10000 }); await page.waitForTimeout(1200); await shot(page, `B4-correction-chemin-${niveau}`);
+      await waitQ(page); const s = (await said(page)).split(" | "), i0 = s.lastIndexOf("Ce n'est pas grave, regardons ensemble."), i1 = s.findIndex((x, i) => i > i0 && /dépasse dix|casse une dizaine/.test(x));
+      check(i0 >= 0 && i1 > i0 && !s.slice(i0).includes(`C'était ${q.n}.`), `niveau ${niveau}, erreur ${niveau === 7 ? "C4" : "C5"} : « Ce n'est pas grave… », les ponts, puis « ${s[i1]} » (plus de « C'était ${q.n}. » seul)`);
+    }
+    check(!errors.length, `niveau ${niveau} : aucune erreur (${errors.join(" | ")})`); await context.close();
+  }
+  // les calculs guidés d'un nouveau niveau (7, puis 9) : l'ardoise garde le calcul ; une erreur puis « je ne sais pas » sur un caillou
+  for (const niveau of [7, 9]) {
+    const { page, context, errors } = await calcOpen(niveau, "conseille", {});
+    await spy(page);
+    await page.tap(".play", { force: true }); await waitQ(page); await page.waitForTimeout(300);
+    const q = await curQ(page);
+    check(q.pont && q.slateQ && q.slateQ.a === q.parent.a, `niveau ${niveau}, calcul guidé : l'ardoise garde « ${q.parent.a} ${q.parent.op} ${q.parent.b} = ? » pendant l'étape (${q.a} ${q.op} ${q.b})`);
+    await shot(page, `B4-guide-${niveau}-etape1`);
+    if (niveau === 7) await typeN(page, q.n + 1); else { await page.tap(".nsp", { force: true }); }
+    await page.waitForSelector(".skip", { timeout: 10000 }); await page.waitForTimeout(1300); await shot(page, `B4-guide-${niveau}-correction`);
+    await waitQ(page);
+    const s = await said(page);
+    check(/Ce n'est pas grave/.test(s) && (niveau === 7 ? /dépasse dix/ : /casse une dizaine/).test(s), `niveau ${niveau}, ${niveau === 7 ? "erreur" : "« je ne sais pas »"} sur un caillou : rassurer, le pont rejoué, puis ${niveau === 7 ? "C4" : "C5"}`);
+    const q2 = await curQ(page); await typeN(page, q2.n);
+    await page.waitForFunction(() => { const f = window.__app.facts; return f.ring && !f.slateQ; }, null, { polling: 50, timeout: 15000 }).catch(() => {});
+    const sl = await slate(page); await shot(page, `B4-guide-${niveau}-fin`);
+    check(sl.ring && Number(sl.typed) === q.parent.n, `niveau ${niveau} : à la fin, le résultat écrit dans la bulle (${sl.typed})`);
+    check(!errors.length, `guidé ${niveau} : aucune erreur (${errors.join(" | ")})`); await context.close();
+  }
 }
 
 await browser.close(); srv.close();

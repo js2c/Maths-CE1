@@ -210,7 +210,10 @@ async function notion3(ctx) {
   app.runner = runner; session.rec.niveauCalcul = runner.niveau; await session.save();
   await sprites.load("calcul");
   const fs = (app.facts ??= new FactsScreen(app, module2)); fs.show(true); fs.keys(false);
-  await voice.say(text.pick("notionCalcul"));
+  // (lot 3 bis, B4) « Le petit poisson va t'aider » n'est dit que s'il est à l'écran : aux niveaux du mur, le mur et le poisson
+  // sont montrés le temps de la phrase ; sinon, une phrase sans le poisson
+  if (module3.niveaux.find((c) => c.niveau === runner.niveau)?.support === "mur") await app.calc.introWall(text.pick("notionCalculMur"));
+  else await voice.say(text.pick("notionCalcul"));
   try {
     await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.calc.askNotion(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
   } finally { app.calc.leave(); sprites.unload("calcul"); }

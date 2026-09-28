@@ -49,17 +49,19 @@ export class FactsScreen {
     if (!this.q) return;
     ctx.setTransform(px, 0, 0, px, 0, 0);
     // (lot 3 : le calcul rapide, soustractions comprises : `q.op`, `q.n`)
-    const q = this.q, n = q.n ?? q.a + q.b, f = q.forme ?? "directe", sg = q.op === "-" ? "−" : "+";
+    // (lot 3 bis, B4 : pendant un calcul guidé, l'ardoise garde le calcul demandé, `slateQ`, avec « ? » : les étapes
+    // s'écrivent sur les cailloux du chemin)
+    const q = this.slateQ ?? this.q, n = q.n ?? q.a + q.b, f = q.forme ?? "directe", sg = q.op === "-" ? "−" : "+";
     const [left, right] = q.dictee ? ["", ""] : f === "trouDroite" ? [`${q.a} ${sg}`, `= ${n}`] : f === "trouGauche" ? ["", `${sg} ${q.b} = ${n}`] : [`${q.a} ${sg} ${q.b} =`, ""];
     // (lot 3 bis : l'écriture se resserre si elle dépasserait de l'ardoise, « ? + 10 = 57 », « ? − 2 = 45 »)
-    const slot = this.typed || "?", W = (x) => (x ? R.wordWidth(x) : 0), u = W(left) + (left ? 0.4 : 0) + Math.max(1.36, W(slot)) + (right ? 0.4 : 0) + W(right);
+    const slot = (this.slateQ ? "" : this.typed) || "?", W = (x) => (x ? R.wordWidth(x) : 0), u = W(left) + (left ? 0.4 : 0) + Math.max(1.36, W(slot)) + (right ? 0.4 : 0) + W(right);
     const em = Math.min(76, SLATE_W / u), lw = W(left) * em, rw = W(right) * em, sw = Math.max(1.36, W(slot)) * em, gap = 0.4 * em;
     const total = lw + (left ? gap : 0) + sw + (right ? gap : 0) + rw, x0 = 295 - total / 2;
     if (left) R.drawWord(ctx, left, x0 + lw / 2, 110 - em / 2, em, { w: 10, seed: 950 });
     const sx = x0 + lw + (left ? gap : 0) + sw / 2;
     if (right) R.drawWord(ctx, right, sx + sw / 2 + gap + rw / 2, 110 - em / 2, em, { w: 10, seed: 960 });
     if (this.ring) R.drawRing(ctx, sx, 110, 56);
-    R.drawNumber(ctx, slot, sx, 110 - em / 2, em, { w: 10.5, color: this.typed ? R.INK : R.RED, seed: 970 });
+    R.drawNumber(ctx, slot, sx, 110 - em / 2, em, { w: 10.5, color: slot !== "?" ? R.INK : R.RED, seed: 970 });
   }
   // lot 3 bis (A5) : la porte du pavé (un rebond de doigt sur la même touche est ignoré ; fermée pendant un retour)
   get gate() { return (this._gate ??= new TapGate(this.app.toucher ?? {})); }
@@ -241,7 +243,7 @@ export class FactsScreen {
   async showHelp() {
     if (this.locked || !this.q || this.q.base) return;
     // lot 3 : le coquillage du calcul rapide montre le chemin (les ponts), qui reste pendant la réponse
-    if (this.q.module === 3 && this.calc) { if (this.aide) return; this.aide = true; pop(this.help); this.calc.help(this.q); return; }
+    if (this.q.module === 3 && this.calc) { if (this.aide) return; this.aide = true; pop(this.help); return this.calc.showHelp(this.q); }
     const { voice } = this.app, q = this.q, kind = this.aidKind(q);
     this.locked = true; this.aide = true; pop(this.help); this.keys(false); voice.stop();
     await this.skippable("passer l'aide", async (g, dead) => {
@@ -273,7 +275,7 @@ export class FactsScreen {
   // (correctif du 28 septembre 2026) rien de ce qu'un exercice quitté en cours a posé sur l'écran ne doit survivre : le
   // rappel de la saisie (le chemin d'un calcul guidé, le tableau de la dictée) redessinait l'ancien chemin au premier
   // chiffre tapé dans l'exercice suivant ; la saisie, l'anneau, l'aide et le « passer » de l'échauffement sont remis à zéro
-  reset() { this.onTyped = null; this.beforeSubmit = null; this.typed = ""; this.ring = false; this.aide = false; this.locked = true; this.app.aidBoard?.clear(); this.slate?.repaint(); }
+  reset() { this.slateQ = null; this.onTyped = null; this.beforeSubmit = null; this.typed = ""; this.ring = false; this.aide = false; this.locked = true; this.app.aidBoard?.clear(); this.slate?.repaint(); }
 }
 
 // l'échauffement dans la séance : n faits (10 à 14), précédés, une séance sur cinq, des questions du temps de

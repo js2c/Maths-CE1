@@ -6,7 +6,7 @@
 // tests/sim-recette.mjs ; seuls les écrans sont remplacés par l'enfant simulée ci-dessous. Rien n'est jugé.
 //   node tests/recette-fonctionnelle/b-sequences.mjs [--seulement 1:5] (un seul exercice:niveau, pour essayer)
 import { execFileSync } from "node:child_process";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { IDBFactory } from "fake-indexeddb";
 import { Store } from "../../app/js/engine/store.js";
@@ -115,8 +115,9 @@ const piegesCalc = (q) => { if (q.forme === "trouDroite") return [q.n, q.b + 1];
 let dumpMois = null;
 function baseMois() {
   if (dumpMois) return dumpMois;
-  const f = join(OUT, "sauvegarde-un-mois.json");
-  execFileSync("node", ["tools/sauvegarde-test.mjs", "reel", "2", "4", "--sortie", f], { cwd: ROOT });
+  // (la même sauvegarde que les parties A, C et D : tests/recette-fonctionnelle/out/sauvegarde-un-mois.json)
+  const f = join(OUT, "..", "sauvegarde-un-mois.json");
+  if (!existsSync(f)) execFileSync("node", ["tools/sauvegarde-test.mjs", "reel", "2", "4", "--sortie", f], { cwd: ROOT });
   return (dumpMois = JSON.parse(readFileSync(f, "utf8")));
 }
 async function openBase(base) {
@@ -305,4 +306,8 @@ writeFileSync(join(OUT, "SYNTHESE.md"), [
   "## Étoiles : pressée comparée à appliquée", "", "### Base neuve", "", starTable("neuve"), "", "### Un mois", "", starTable("mois"), "",
   "## Toutes les séquences", "", ...synth, "",
 ].join("\n"));
+// l'index de la partie (INDEX.md le rassemble avec les autres : tests/recette-fonctionnelle/commun.mjs, ecrireIndex)
+const lignes = [["SYNTHESE.md", "une ligne par séance simulée (base × exercice × cran × comportement) : réponses différentes, répétitions, suites prévisibles, leçons, étoiles ; et le tableau des étoiles « pressée » comparées à « appliquée »"]];
+for (const base of Object.keys(BASES)) for (const f of readdirSync(join(OUT, base)).sort((a, b) => a.localeCompare(b, "fr", { numeric: true }))) lignes.push([`${base}/${f}`, `${BASES[base]} : ${f.replace(/\.md$/, "").replace(/-/g, " ")}, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun`]);
+writeFileSync(join(OUT, "_index.json"), JSON.stringify({ titre: "Partie B · les séquences de questions", intro: "Le texte des séances telles que le moteur les génère (runners de l'application, sans navigateur) : pour chaque exercice × niveau (ou famille) × cran, en base neuve et en « un mois », avec trois comportements de l'enfant. Commencer par `SYNTHESE.md`.", lignes }, null, 1));
 console.log("fini");

@@ -187,7 +187,19 @@ export class Module2Runner {
     const famTurn = !this.otherAllowed();
     const extra = famTurn ? [] : this.extraPool();
     if (!f) f = famTurn ? this.pickFamily() ?? this.pickOther() : (extra.length ? this.pickFamily(true, extra) : null) ?? this.pickOther() ?? this.pickFamily();
-    return f ?? this.pickOther() ?? this.pickNewOther();
+    return f ?? this.pickOther() ?? this.pickNewOther() ?? this.pickOverflow();
+  }
+  // lot 3 bis : la famille en cours n'a plus rien d'utilisable (ses faits connus déjà posés 3 fois, §0), la limite de faits
+  // nouveaux de la séance est atteinte (souvent par l'échauffement) et les autres familles aussi sont épuisées : un fait
+  // nouveau de la famille quand même, tant que la boîte 1 ne compte pas `boite1Max` faits RATÉS (la protection de l'enfant
+  // qui se trompe beaucoup ; les faits nouveaux de la séance, pas encore ratés, n'y comptent pas) ; comme pour une famille
+  // choisie (lot 3), plutôt que d'arrêter la notion du jour au bout de quelques minutes ou de tourner sur les mêmes faits
+  pickOverflow() {
+    const ratés = this.w.facts.filter((f) => f.boite === 1 && (f.historique ?? []).some((h) => h.juste === false)).length;
+    if (ratés >= this.c.boite1Max) return null;
+    const f0 = this.corePool().filter((f) => !this.stored(f.fait) && !this.asked.has(f.fait) && !this.tried?.has(f.fait)).sort((x, y) => this.rank(x) - this.rank(y))[0];
+    if (!f0) return null;
+    const { src, ...f } = f0; void src; return newFact(f, this.clock());
   }
   cand(q) { return { cle: `fait:${q.fait}`, reponse: expected(q) }; }
   next({ guide = false } = {}) {

@@ -5,16 +5,17 @@ const isFiniteNumber = (value) => typeof value === "number" && Number.isFinite(v
 const isPositive = (value) => isFiniteNumber(value) && value > 0;
 const isObject = (value) => value && typeof value === "object" && !Array.isArray(value);
 
-const safeAsset = (value) => typeof value === "string"
+const safePath = (value) => typeof value === "string"
   && value.trim().length > 0
   && !value.startsWith("/")
   && !value.includes("..")
   && !/^https?:/i.test(value);
 
 const hasVisualSource = (entry) => {
-  const hasAsset = safeAsset(entry.asset);
+  const hasAsset = safePath(entry.asset);
+  const hasBundle = safePath(entry.assetBundle);
   const hasPlaceholder = isObject(entry.placeholder) && typeof entry.placeholder.type === "string";
-  return hasAsset || hasPlaceholder;
+  return hasAsset || hasBundle || hasPlaceholder;
 };
 
 function validateEntry(entry, kind, seen, errors) {
@@ -29,8 +30,9 @@ function validateEntry(entry, kind, seen, errors) {
 
   if (!SCENE_SLOTS.includes(entry.slot)) errors.push(`${entry.id ?? kind}: slot inconnu (${entry.slot ?? "absent"})`);
   if (!isFiniteNumber(entry.depth)) errors.push(`${entry.id ?? kind}: depth doit être un nombre fini`);
-  if (!hasVisualSource(entry)) errors.push(`${entry.id ?? kind}: asset relatif sûr ou placeholder requis`);
-  if (entry.asset !== undefined && !safeAsset(entry.asset)) errors.push(`${entry.id ?? kind}: chemin d'asset invalide`);
+  if (!hasVisualSource(entry)) errors.push(`${entry.id ?? kind}: asset, assetBundle ou placeholder requis`);
+  if (entry.asset !== undefined && !safePath(entry.asset)) errors.push(`${entry.id ?? kind}: chemin d'asset invalide`);
+  if (entry.assetBundle !== undefined && !safePath(entry.assetBundle)) errors.push(`${entry.id ?? kind}: chemin d'assetBundle invalide`);
 
   for (const key of ["x", "y", "scale", "opacity", "parallax"]) {
     if (entry[key] !== undefined && !isFiniteNumber(entry[key])) errors.push(`${entry.id ?? kind}: ${key} doit être un nombre fini`);
@@ -38,7 +40,9 @@ function validateEntry(entry, kind, seen, errors) {
   for (const key of ["w", "h"]) {
     if (entry[key] !== undefined && !isPositive(entry[key])) errors.push(`${entry.id ?? kind}: ${key} doit être > 0`);
   }
-  if (entry.asset && (!isPositive(entry.w) || !isPositive(entry.h))) errors.push(`${entry.id}: w et h sont requis pour un asset raster`);
+  if ((entry.asset || entry.assetBundle) && (!isPositive(entry.w) || !isPositive(entry.h))) {
+    errors.push(`${entry.id}: w et h sont requis pour un asset raster`);
+  }
   if (entry.scale !== undefined && entry.scale <= 0) errors.push(`${entry.id ?? kind}: scale doit être > 0`);
   if (entry.opacity !== undefined && (entry.opacity < 0 || entry.opacity > 1)) errors.push(`${entry.id ?? kind}: opacity doit être compris entre 0 et 1`);
 
@@ -100,12 +104,5 @@ export function entriesByDepth(scene) {
 }
 
 export function normalizedEntry(entry) {
-  return {
-    x: 0,
-    y: 0,
-    scale: 1,
-    opacity: 1,
-    parallax: 0,
-    ...entry,
-  };
+  return { x: 0, y: 0, scale: 1, opacity: 1, parallax: 0, ...entry };
 }

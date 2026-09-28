@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "mime": "image/webp",
+  "encoding": "base64-chunks",
+  "sourceSize": { "width": 800, "height": 500 },
+  "designSize": { "width": 1280, "height": 800 },
+  "parts": [
+    "bg-b64/part-00.txt",
+    "bg-b64/part-01.txt",
+    "bg-b64/part-02.txt",
+    "bg-b64/part-03.txt",
+    "bg-b64/part-04.txt",
+    "bg-b64/part-05.txt",
+    "bg-b64/part-06.txt",
+    "bg-b64/part-07.txt",
+    "bg-b64/part-08.txt",
+    "bg-b64/part-09.txt",
+    "bg-b64/part-10.txt",
+    "bg-b64/part-11.txt"
+  ]
+}

@@ -4,44 +4,14 @@
   "design": { "width": 1280, "height": 800 },
   "layers": [
     {
-      "id": "background-00",
+      "id": "background-v2",
       "slot": "background",
       "depth": 0,
-      "asset": "assets/background-00.webp",
+      "assetBundle": "assets/background.bundle.json",
       "x": 0,
       "y": 0,
-      "w": 640,
-      "h": 400
-    },
-    {
-      "id": "background-01",
-      "slot": "background",
-      "depth": 0,
-      "asset": "assets/background-01.webp",
-      "x": 640,
-      "y": 0,
-      "w": 640,
-      "h": 400
-    },
-    {
-      "id": "background-10",
-      "slot": "background",
-      "depth": 0,
-      "asset": "assets/background-10.webp",
-      "x": 0,
-      "y": 400,
-      "w": 640,
-      "h": 400
-    },
-    {
-      "id": "background-11",
-      "slot": "background",
-      "depth": 0,
-      "asset": "assets/background-11.webp",
-      "x": 640,
-      "y": 400,
-      "w": 640,
-      "h": 400
+      "w": 1280,
+      "h": 800
     }
   ],
   "actors": [

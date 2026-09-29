@@ -38,7 +38,7 @@ import { FreeTraining } from "./session/free.js";
 import { allowedCrans, chooseCran } from "./session/selector.js";
 import { choose } from "./session/choice.js";
 import { clock } from "./engine/clock.js";
-import { pop, skipKey } from "./engine/ui.js";
+import { onBrief, pop, skipKey } from "./engine/ui.js";
 import { ParentSpace, parentLogo } from "./parent/parent.js";
 
 const T0 = performance.now();
@@ -49,7 +49,7 @@ const stage = new Stage(document.getElementById("stage"));
 // le désactivent), avec une seule résolution des planches d'images : celle que cet écran utilise (sprites.js)
 if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !location.search.includes("nosw")) navigator.serviceWorker.register(`sw.js?r=${stage.px > 1.2 ? 2 : 1}`).catch(() => {});
 const [atlas, module1, module2, textes, seance, lecons, cartes, calendrier, parentContent, voix] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/module2.json"), json("content/textes.json"), json("content/seance.json"), json("content/lecons.json"), json("content/cartes.json"), json("content/calendrier.json"), json("content/parent.json"), json("assets/voix/index.json").catch(() => null)]);
-const [sonContent, sonIndex, module3] = await Promise.all([json("content/son.json"), json("assets/son/index.json").catch(() => null), json("content/module3.json")]);
+const [sonContent, sonIndex, module3, legendes] = await Promise.all([json("content/son.json"), json("assets/son/index.json").catch(() => null), json("content/module3.json"), json("content/legendes.json")]);
 const sprites = new Sprites(atlas, stage.px);
 // la base locale ; au premier lancement, on demande au navigateur de ne jamais l'effacer de lui-même
 const store = await Store.open();
@@ -92,7 +92,7 @@ addEventListener("error", (ev) => journal({ type: "erreur de page", message: ev.
 addEventListener("unhandledrejection", (ev) => journal({ type: "erreur de page", message: String(ev.reason?.message ?? ev.reason), pile: ev.reason?.stack?.split("\n").slice(0, 4).join(" | ") ?? null }));
 const rewards = await new Rewards(store, cartes, calendrier).load();
 if (P.get("etoiles")) { rewards.st.total = Number(P.get("etoiles")); await rewards.save(); } // tests : un trésor de départ
-const app = { stage, sprites, ocean, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, line: new LineView(stage), mascotte: await store.setting("mascotte") };
+const app = { stage, sprites, ocean, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, legendes, line: new LineView(stage), mascotte: await store.setting("mascotte") };
 // la vitesse des animations des exemples guidés et des corrections (1 : la vitesse d'origine ; la voix garde son débit)
 app.vitesse = seance.vitesseAnimations ?? 1;
 app.toucher = seance.toucher ?? {}; // (lot 3 bis, A5 : le double toucher)
@@ -113,8 +113,20 @@ sprites.load("pieuvre-gestes").then(() => ocean.octo.warm("pieuvre-gestes"));
 sprites.load("aides"); // lot 2 : les aides visuelles du module 2 (petite planche : cadre de 10, maison, bulle dorée)
 
 // ---------------------------------------------------------------- en-tête : réécouter, étoiles de mer
-const speaker = spriteBox(app, { x: 1140, y: 8, w: 130, h: 130, cls: "hud speaker", label: "réécouter", paint: (ctx) => sprites.draw(ctx, "reecouter", 0, 65, 65) });
-onTap(speaker, () => { speaker.classList.remove("pop"); void speaker.offsetWidth; speaker.classList.add("pop"); voice.replay(); });
+// (lot 3 bis, R22) « réécouter » reste visible pendant la pause (`keep`) ; à l'accueil, il redit ce qu'on peut faire ; en
+// pause, il le dit aussi, avec une file de voix à part (la voix de la séance, en pause, est rendue intacte ensuite)
+const speaker = spriteBox(app, { x: 1140, y: 8, w: 130, h: 130, cls: "hud speaker keep", label: "réécouter", paint: (ctx) => sprites.draw(ctx, "reecouter", 0, 65, 65) });
+let pauseTalk = null;
+onTap(speaker, async () => {
+  speaker.classList.remove("pop"); void speaker.offsetWidth; speaker.classList.add("pop");
+  if (app.enPause && !visiting) {
+    if (pauseTalk) return;
+    pauseTalk = voice.suspend();
+    try { await voice.say(text.data.pauseConsigne); } finally { voice.restore(pauseTalk); pauseTalk = null; }
+    return;
+  }
+  voice.replay();
+});
 const hud = new StarHud(app, rewards);
 app.hud = hud;
 
@@ -185,7 +197,7 @@ async function notion2(ctx) {
   const conf = ctx.step.module2 ?? ctx.step, step = { ...ctx.step, ...conf, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}), ...(P.get("guides") ? { guides: Number(P.get("guides")) } : {}) };
   app.runner = runner; session.rec.famille = runner.famille; await session.save();
   await Promise.all([sprites.load("ermite"), sprites.load("aides")]);
-  const hermit = new Hermit(ocean, { x: 150, y: 795, scale: 0.85 });
+  const hermit = new Hermit(ocean, { x: 150, y: 776, scale: 0.85 }); // (lot 3 bis, R20 : un peu plus haut, il était coupé par le bas de l'écran)
   screen.hermit = hermit; screen.notion = true; app.hermit = hermit;
   hermit.show(true); hermit.play("sortir");
   screen.show(true); screen.keys(false);
@@ -210,7 +222,10 @@ async function notion3(ctx) {
   app.runner = runner; session.rec.niveauCalcul = runner.niveau; await session.save();
   await sprites.load("calcul");
   const fs = (app.facts ??= new FactsScreen(app, module2)); fs.show(true); fs.keys(false);
-  await voice.say(text.pick("notionCalcul"));
+  // (lot 3 bis, B4) « Le petit poisson va t'aider » n'est dit que s'il est à l'écran : aux niveaux du mur, le mur et le poisson
+  // sont montrés le temps de la phrase ; sinon, une phrase sans le poisson
+  if (module3.niveaux.find((c) => c.niveau === runner.niveau)?.support === "mur") await app.calc.introWall(text.pick("notionCalculMur"));
+  else await voice.say(text.pick("notionCalcul"));
   try {
     await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.calc.askNotion(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
   } finally { app.calc.leave(); sprites.unload("calcul"); }
@@ -231,7 +246,7 @@ const album = new Album(app);
 app.album = album;
 // l'espace parent : appui long sur le logo, puis le code (parent/parent.js) ; après une restauration ou un
 // effacement, l'application repart de zéro
-const parent = new ParentSpace(app, { content: parentContent, seance, module2, cartes, calendrier });
+const parent = new ParentSpace(app, { content: parentContent, seance, module2, cartes, calendrier, legendes });
 app.parent = parent;
 // l'espace parent coupe le son ; à la sortie, ses réglages (musique, volume, bruitages) sont relus
 // (pendant une pause, le parent peut terminer la séance : endPausedSession)
@@ -241,10 +256,13 @@ let homeEls = [];
 const clearHome = () => { homeEls.forEach((e) => e.remove()); homeEls = []; };
 async function showHome({ done, first = false }) {
   clearHome();
+  // (lot 3 bis, R22) ce que « réécouter » redit à l'accueil
+  voice.instruction = done ? text.data.accueilConsigneFaite : text.data.accueilConsigne;
   const reefKey = big("recif", HOME_X[2], 650, "le récif", "bubble reefkey"), albumKey = big("album", HOME_X[3], 650, "l'album", "bubble albumkey");
   homeEls.push(reefKey, albumKey, parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }));
   const visit = (place) => async () => { voice.unlock(); voice.stop(); clearHome(); await place.visit(); showHome({ done: await doneToday(store) }); };
-  onTap(reefKey, visit(reef)); onTap(albumKey, visit(album));
+  // (lot 3 bis, B3) les bulles de l'accueil : un toucher bref les lance, un appui long montre leur étiquette
+  onBrief(app, reefKey, visit(reef), "recif"); onBrief(app, albumKey, visit(album), "album");
   if (done) {
     // la séance du jour est faite : la lune (un décor) et « Encore ! », l'entraînement libre (le même écran « choisir »,
     // sans étoiles)
@@ -257,8 +275,9 @@ async function showHome({ done, first = false }) {
   // la séance du jour : « jouer » (la séance proposée par l'application) ou « choisir » (lot 3 : l'exercice et le niveau)
   const play = big("jouer", HOME_X[0], 650, "jouer", "bubble play"), pickKey = big("choisir", HOME_X[1], 650, "choisir", "bubble choisir");
   homeEls.push(play, pickKey);
-  play.addEventListener("pointerdown", async (e) => {
-    e.preventDefault(); voice.unlock(); clearHome();
+  let played = false;
+  onBrief(app, play, async () => {
+    if (played) return; played = true; voice.unlock(); clearHome();
     // pour les captures et les tests : ?lecon=L1 joue seulement cette leçon
     if (P.get("lecon")) { window.__lecon = await lessons.play(P.get("lecon")); return; }
     // ?module=2 (tests) : la notion du jour imposée pour cette séance
@@ -266,18 +285,19 @@ async function showHome({ done, first = false }) {
     // ?choix=1:8 ou ?choix=2:5 (tests, captures) : l'exercice choisi sans passer par l'écran « choisir »
     const ch = P.get("choix")?.split(":").map(Number);
     await runSession(ch ? (ch[0] === 2 ? { module: 2, famille: ch[1] } : { module: ch[0], niveau: ch[1] }) : null);
-  }, { once: true });
-  onTap(pickKey, async () => {
+  }, "jouer");
+  onBrief(app, pickKey, async () => {
     voice.unlock(); clearHome();
     mode = "choix"; homeKey.style.visibility = "visible";
     const c = await choose(app, { store, content: { module1, module2, module3, seance } });
     mode = null; homeKey.style.visibility = "hidden";
     if (c.lecon) return lessonAlone(c.lecon);
     await runSession(c);
-  });
+  }, "choisir");
 }
 // les bulles de l'accueil : jouer (ou « Encore ! »), choisir, le récif, l'album
-const HOME_X = [520, 740, 960, 1165];
+// (lot 3 bis, R20 : l'album était posé sur le rocher de droite ; les bulles se décalent vers la gauche, sous la pieuvre)
+const HOME_X = [390, 580, 770, 960];
 // une séance du jour : proposée par l'application (« jouer »), ou l'exercice choisi (`choix`, lot 3)
 async function runSession(choix = null) {
   // la durée maximale d'une séance est un réglage du parent (seance.json donne la valeur par défaut) ; « Échauffement :
@@ -355,10 +375,10 @@ function showPauseHome() {
   const reefKey = big("recif", HOME_X[2], 650, "le récif", "bubble reefkey keep"), albumKey = big("album", HOME_X[3], 650, "l'album", "bubble albumkey keep");
   const logo = parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }); logo.classList.add("keep");
   pausedEls = [resume, pickKey, reefKey, albumKey, logo];
-  onTap(resume, resumeSession);
-  onTap(reefKey, () => visitInPause(() => reef.visit()));
-  onTap(albumKey, () => visitInPause(() => album.visit()));
-  onTap(pickKey, () => visitInPause(pickInPause));
+  onBrief(app, resume, resumeSession, "jouer");
+  onBrief(app, reefKey, () => visitInPause(() => reef.visit()), "recif");
+  onBrief(app, albumKey, () => visitInPause(() => album.visit()), "album");
+  onBrief(app, pickKey, () => visitInPause(pickInPause), "choisir");
 }
 function resumeSession() {
   if (visiting) return;
@@ -434,6 +454,8 @@ function abandonActivity() {
   clock.abandon(); voice.abandon();
   app.choiceClear?.(); app.choiceClear = null; if (app.facts) app.facts.notion = false; app.calc?.fishDone(); // (lot 3 : l'écran « choisir », les additions libres, le poisson du mur)
   app.screen?.leave(); app.facts?.leave(); app.dictation?.hide?.(); lessons.abandon();
+  // (correctif du 28 septembre 2026) le défi record quitté en cours : sa bulle-sablier et ses perles restaient à l'écran
+  if (app.challenge) { app.challenge.remove(); app.challenge = null; sprites.unload("defi"); }
   for (const s of [app.screen, app.facts]) if (s) { s.resolve = null; s.locked = true; }
   // le bernard-l'ermite de la notion du jour sur les additions (notion2)
   if (app.hermit) { app.hermit.remove(); app.hermit = null; if (app.facts) { app.facts.notion = false; app.facts.hermit = null; } sprites.unload("ermite"); }

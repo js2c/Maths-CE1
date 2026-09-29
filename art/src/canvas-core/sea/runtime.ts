@@ -4,7 +4,7 @@
 // (corde, bouées, poteaux ou ligne d'école, graduations, nombres) et les chiffres encrés des réponses.
 // Mêmes primitives que la scène de référence : encre `ink` de gallery.ts, chiffres de `ocean.ts`,
 // aplats + ombre nette de `oceanMarker.ts`. Aucun accès au DOM : l'application fournit le contexte.
-import type { Gfx, P } from "../core";
+import { rng, type Gfx, type P } from "../core";
 import { blob, clipped, fillShape, ink, lerpP, mix, smooth } from "../gallery";
 import { numberStrokes, taper } from "../ocean";
 import { cel, contour, INK } from "../oceanMarker";
@@ -45,6 +45,7 @@ export type LineSpec = {
   lit?: number[]; // graduations allumées (retours, leçons)
   marks?: { t: number; label?: string; color?: string }[]; // repères posés hors graduation (estimer) : t de 0 à 1
   centaines?: number[]; // lot 2, étape 8 : graduations des centaines (un petit chalut au-dessus)
+  geant?: boolean; // lot 3 bis (B9) : les bouées géantes de la leçon L2 (un saut vaut dix), nettement plus grosses que celles de L1
 };
 export const LABEL_DY = 80, LABEL_EM = 36;
 // la corde pend un peu entre ses deux poteaux ; la ligne d'école est droite
@@ -52,16 +53,18 @@ export const lineY = (L: LineSpec, x: number) => L.y + 9 * (1 - L.k) * (1 - Math
 // abscisse de la graduation i : la première et la dernière à 40 px des poteaux, comme la référence
 export const tickX = (L: LineSpec, i: number) => { const a = L.x0 + 40, b = L.x1 - 40; return L.n > 1 ? a + ((b - a) * i) / (L.n - 1) : a; };
 export const tickP = (L: LineSpec, i: number): P => { const x = tickX(L, i); return [x, lineY(L, x)]; };
-export const buoyR = (L: LineSpec) => { const gap = L.n > 1 ? (L.x1 - L.x0 - 80) / (L.n - 1) : 90; return Math.min(15, gap * 0.3) * (1 - 0.55 * L.k); };
+export const buoyR = (L: LineSpec) => { const gap = L.n > 1 ? (L.x1 - L.x0 - 80) / (L.n - 1) : 90; return L.geant ? Math.min(28, gap * 0.34) : Math.min(15, gap * 0.3) * (1 - 0.55 * L.k); };
 
 const shiftP = (pts: P[], dx: number, dy: number): P[] => pts.map(([x, y]) => [x + dx, y + dy]);
 // une bouée de la corde (rouge, ou allumée en jaune), à la graduation i
 const buoy = (g: Gfx, L: LineSpec, i: number, lit: boolean) => {
   const [x, y] = tickP(L, i), r = buoyR(L), s = blob(x, y, r, r * 1.08, 40 + i, 0.03, 16), bandB = smooth([[x - r, y - r * 0.27], [x + r, y - r * 0.27], [x + r, y + r * 0.27], [x - r, y + r * 0.27]], true, 3);
   fillShape(g, shiftP(s, 7, 10), "#0a3f49", 0.3);
-  cel(g, s, lit ? "#ffe45c" : "#ff5a45", lit ? "#e0a21c" : "#c0302a", 5);
-  clipped(g, s, () => { fillShape(g, bandB, "#e6ecf0"); fillShape(g, shiftP(bandB, -3, -2), "#ffffff"); fillShape(g, blob(x - 5, y - 7, 4, 2.6, 60 + i, 0.1, 8), "#ffffff", 0.9); });
-  contour(g, s, 3.2, 70 + i);
+  // (lot 3 bis : la bouée géante porte un anneau d'amarrage sur le dessus)
+  if (L.geant) { const ring = blob(x, y - r - 4, r * 0.32, r * 0.26, 80 + i, 0.03, 12); ink(g, ring, INK, { w: 5, closed: true, shadow: 0, seed: 82 + i }); ink(g, ring, "#c9d3d8", { w: 2.6, closed: true, shadow: 0, seed: 84 + i }); }
+  cel(g, s, lit ? "#ffe45c" : "#ff5a45", lit ? "#e0a21c" : "#c0302a", L.geant ? 8 : 5);
+  clipped(g, s, () => { fillShape(g, bandB, "#e6ecf0"); fillShape(g, shiftP(bandB, -3, -2), "#ffffff"); fillShape(g, blob(x - r * 0.33, y - r * 0.47, r * 0.27, r * 0.17, 60 + i, 0.1, 8), "#ffffff", 0.9); });
+  contour(g, s, L.geant ? 4.4 : 3.2, 70 + i);
 };
 // allume une graduation par-dessus la ligne déjà dessinée (leçons) : la bouée devient jaune ; sur la
 // ligne d'école, une pastille jaune sous le trait
@@ -255,4 +258,68 @@ export const drawBridge = (ctx: CanvasRenderingContext2D, a: P, b: P, label: str
   fillShape(g, shiftP2(plate, 3, 4), "#0a3f49", 0.25);
   cel(g, plate, o.lit ? "#fff3b8" : "#fffaf0", "#e3d6bb", 3); contour(g, plate, 2.6, seed + 40);
   drawWord(ctx, label, mx, my - ph - em * 0.6 + em * 0.17, em, { color: INK, w: em * 0.147, seed: seed + 41 });
+};
+
+// ---------------------------------------------------------------- lot 3 bis (docs/SPEC-LOT3BIS.md, B2, B3)
+// LE PANNEAU de la légende des niveaux (pour le parent) : une grande plaque de nacre posée par-dessus l'écran, une ombre
+// nette, un fil d'or à l'intérieur du bord ; le texte (un tableau) est posé dessus par l'application. Dessiné une fois,
+// à la taille voulue, quand on l'ouvre.
+export const drawPanel = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) => {
+  const g = shim(ctx), s = rr(x, y, w, h, 28), inner = rr(x + 12, y + 12, w - 24, h - 24, 18);
+  fillShape(g, shiftP2(s, 12, 14), "#0a3f49", 0.35);
+  cel(g, s, "#fffaf0", "#e8dcc4", 10, [smooth([[x + 30, y + 16], [x + w * 0.45, y + 12], [x + w * 0.42, y + 24], [x + 32, y + 28]], true, 5), "#ffffff"]);
+  ink(g, inner, "#e0b43a", { w: 2.4, closed: true, shadow: 0, seed: 8400 }, 0.8);
+  contour(g, s, 4.4, 8401);
+};
+// L'ÉTIQUETTE d'un appui long sur un pictogramme : une plaque de nacre à la pointe tournée vers le pictogramme (en bas,
+// au milieu), le texte écrit au feutre, de la même main que les nombres ; une à trois lignes. (cx, bottom) : la pointe.
+// Renvoie la boîte occupée [x, y, w, h], pour que l'application la garde dans l'écran.
+export const TAG_EM = 22, TAG_LH = 1.62, TAG_PAD = 18;
+export const labelSize = (lines: string[], em = TAG_EM) => ({ w: Math.max(...lines.map((l) => wordWidth(l))) * em + 2 * TAG_PAD, h: lines.length * em * TAG_LH + 2 * TAG_PAD - em * (TAG_LH - 1) + 6 });
+export const drawLabel = (ctx: CanvasRenderingContext2D, cx: number, bottom: number, lines: string[], o: { em?: number; dx?: number } = {}) => {
+  const g = shim(ctx), em = o.em ?? TAG_EM, { w, h } = labelSize(lines, em), tip = 16, x = cx - w / 2 + (o.dx ?? 0), y = bottom - tip - h;
+  const px = Math.max(x + 26, Math.min(x + w - 26, cx)), plate = [...rr(x, y, w, h, 16)];
+  // la plaque et sa pointe, d'un seul contour : la pointe est insérée dans le côté du bas
+  const k = plate.findIndex(([, py], i) => i > 0 && py >= y + h - 0.5 && plate[i - 1][1] >= y + h - 0.5 && plate[i][0] < px);
+  const shape: P[] = k > 0 ? [...plate.slice(0, k), [px + 12, y + h], [px, y + h + tip], [px - 12, y + h], ...plate.slice(k)] : plate;
+  fillShape(g, shiftP2(shape, 5, 6), "#0a3f49", 0.3);
+  cel(g, shape, "#fffaf0", "#e8dcc4", 4); contour(g, shape, 3, 8410);
+  lines.forEach((l, i) => drawWord(ctx, l, x + w / 2, y + TAG_PAD + 3 + i * em * TAG_LH, em, { w: em * 0.12, seed: 8420 + i * 7 }));
+  return [x - 2, y - 2, w + 10, h + tip + 10];
+};
+// coupe un texte en lignes d'au plus `max` em de large (les mots entiers)
+export const wrapWords = (text: string, max: number) => { const out: string[] = []; let cur = ""; for (const wd of text.split(" ")) { const t = cur ? `${cur} ${wd}` : wd; if (cur && wordWidth(t) > max) { out.push(cur); cur = wd; } else cur = t; } if (cur) out.push(cur); return out; };
+
+// ---------------------------------------------------------------- lot 3 bis (B1) : le chemin de cailloux des neuf niveaux
+// Les neuf plaques sont posées dans l'ordre sur un chemin de galets, en trois rangées qui serpentent (1 2 3 vers la
+// droite, 6 5 4 au retour, 7 8 9) : on suit le chemin comme sur un jeu de l'oie. CALC_STOPS : le centre de chaque plaque
+// par rapport à l'ancrage du chemin (le centre de la plaque 1) ; l'application pose le chemin, puis les plaques dessus.
+export const CALC_PITCH: P = [216, 186];
+export const CALC_STOPS: P[] = Array.from({ length: 9 }, (_, i) => { const r = Math.floor(i / 3), c = i % 3; return [(r === 1 ? 2 - c : c) * CALC_PITCH[0], r * CALC_PITCH[1]]; });
+// le tracé du chemin : de plaque en plaque, avec un demi-tour arrondi au bout de chaque rangée
+const pathSpine = (ox: number, oy: number): P[] => {
+  const [px, py] = CALC_PITCH, out: P[] = [], at = (i: number): P => [ox + CALC_STOPS[i][0], oy + CALC_STOPS[i][1]];
+  const seg = (a: P, b: P) => { const n = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 6); for (let k = 0; k < n; k++) out.push([a[0] + ((b[0] - a[0]) * k) / n, a[1] + ((b[1] - a[1]) * k) / n + 6 * Math.sin((Math.PI * k) / n)]); };
+  const turn = (a: P, b: P, side: 1 | -1) => { const cx = a[0], cy = (a[1] + b[1]) / 2, r = (b[1] - a[1]) / 2; for (let k = 0; k < 24; k++) { const t = -Math.PI / 2 + (Math.PI * k) / 24; out.push([cx + side * Math.cos(t) * (px * 0.55), cy + Math.sin(t) * r]); } };
+  seg(at(0), at(1)); seg(at(1), at(2)); turn(at(2), at(3), 1); seg(at(3), at(4)); seg(at(4), at(5)); turn(at(5), at(6), -1); seg(at(6), at(7)); seg(at(7), at(8)); out.push(at(8));
+  return out;
+};
+export const CALC_PATH_BOX = { x0: -150, y0: -110, x1: 2 * CALC_PITCH[0] + 150, y1: 2 * CALC_PITCH[1] + 110 };
+// des galets plats le long du tracé : tailles et teintes variées, espacés à la main (graine fixe), une ombre nette chacun
+export const drawStonePath = (ctx: CanvasRenderingContext2D, ox: number, oy: number) => {
+  const g = shim(ctx), spine = pathSpine(ox, oy), r = rng(7700);
+  // le sable foulé sous le chemin : une bande plus claire, sans contour
+  ink(g, spine, "#fbe9c0", { w: 46, shadow: 0, taper: [0.02, 0.02], seed: 7701 }, 0.55);
+  let d = 0;
+  for (let i = 1; i < spine.length; i++) {
+    d += Math.hypot(spine[i][0] - spine[i - 1][0], spine[i][1] - spine[i - 1][1]);
+    if (d < 30 + r() * 10) continue;
+    d = 0;
+    const [x, y] = spine[i], side = (r() - 0.5) * 16, rx = 10 + r() * 7, ry = rx * (0.62 + r() * 0.2), rot = (r() - 0.5) * 0.8;
+    const stone = blob(x + side * 0.3, y + side, rx, ry, 7710 + i, 0.08, 12, rot);
+    const tint = ["#c3cfd3", "#b6c4c9", "#d3d9d4", "#c9c0b3"][Math.floor(r() * 4)];
+    fillShape(g, shiftP2(stone, 3, 4), "#0a3f49", 0.28);
+    cel(g, stone, tint, mix(tint, "#5d7078", 0.45), 2.5, [blob(x + side * 0.3 - rx * 0.35, y + side - ry * 0.4, rx * 0.35, ry * 0.2, 7720 + i, 0.1, 6), "#ffffff"]);
+    contour(g, stone, 2.2, 7730 + i);
+  }
 };

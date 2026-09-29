@@ -110,11 +110,15 @@ export async function reward(app, { session, hud }) {
   } });
   tally.classList.add("pop");
   ocean.octo.play("rejouir");
-  const said = voice.say(fill(text.pick("recompense"), { etoiles: phrase(earned) }));
+  // (lot 3 bis, R21 : jamais « tu as gagné 0 étoiles » : une séance sans étoile est saluée sans nombre)
+  const said = voice.say(earned ? fill(text.pick("recompense"), { etoiles: phrase(earned) }) : text.data.recompenseZero);
   for (let i = 1; i <= 20 && shown < earned; i++) { shown = Math.round((earned * i) / 20); tally.repaint(); await wait(60); }
   shown = earned; tally.repaint();
   await said;
   await session.stars(E.seanceTerminee, "séance terminée");
+  // (lot 3 bis, B6) la grande planche des cartes se charge pendant le bilan et les bonus : le coquillage est à toucher dès
+  // que la voix a fini (avant, son chargement laissait jusqu'à 1,5 s sans rien à toucher ni à entendre)
+  if (wantsCards(app)) app.sprites.load("cartes");
   const flown = hud.fly(E.seanceTerminee, [635, 305]);
   await voice.say(text.pick("seanceFinie")); await flown;
   await wait(400);
@@ -136,21 +140,60 @@ async function bonuses(app, { session }) {
   if (goldenStar([...others, session.rec.debut], session.rec.debut, rewards.c.semaine)) { await rewards.special("dorees"); session.rec.doree = true; await session.save(); specials.push(["etoile.doree", text.data.etoileDoree]); }
   const libres = await rewards.collectFree();
   if (libres) { session.rec.arcLibre = libres; await session.save(); }
-  for (let i = 0; i < (session.rec.arcEnCiel ?? 0) + libres; i++) specials.push(["etoile.arc", text.data.etoileArc]);
   for (const [i, [sprite, say]] of specials.entries()) {
     spriteBox(app, { x: 640 - 60 + (i - (specials.length - 1) / 2) * 130, y: 440, w: 120, h: 120, cls: "hud special pop", still: true, paint: (ctx) => app.sprites.draw(ctx, sprite, 0, 60, 60) });
     ocean.octo.play("rejouir"); await voice.say(say); await wait(500);
   }
+  // (lot 3 bis, B6 ; R13) les étoiles arc-en-ciel : une seule phrase, au pluriel s'il y en a plusieurs ; elles apparaissent
+  // sous le bilan puis volent, avec leur traînée, jusqu'à l'album (en bas à droite), pendant que la voix parle ; le
+  // coquillage est à toucher tout de suite après
+  const arcs = (session.rec.arcEnCiel ?? 0) + libres;
+  if (arcs) {
+    ocean.octo.play("rejouir");
+    const said = voice.say(arcs === 1 ? text.data.etoileArc : fill(text.data.etoilesArc, { n: arcs }));
+    await flyRainbowStars(app, arcs, { from: [640, 500 + (specials.length ? 90 : 0)] });
+    await said;
+  }
+}
+// les étoiles arc-en-ciel qui volent vers l'album : chacune avec sa traînée (sprite « etoile.trainee », ancrée à la tête),
+// tournée dans le sens du vol ; composé par le navigateur (animations CSS), rien n'est redessiné pendant le vol
+export const ALBUM_AT = [1165, 650];
+export async function flyRainbowStars(app, n, { from = [640, 500], to = ALBUM_AT, gap = 110, k = app.vitesse ?? 1 } = {}) {
+  const { sprites } = app, W = 240, H = 130, hx = 180, hy = 65, els = [];
+  const shown = Math.min(n, 9);
+  for (let i = 0; i < shown; i++) {
+    const x = from[0] + (i - (shown - 1) / 2) * Math.min(gap, 900 / shown), y = from[1], a = Math.atan2(to[1] - y, to[0] - x);
+    // d'abord l'étoile seule ; la traînée est ajoutée au départ du vol
+    const el = spriteBox(app, { x: x - hx, y: y - hy, w: W, h: H, cls: "hud special etoile-vol", still: true, paint: (ctx) => sprites.draw(ctx, "etoile.arc", 0, hx, hy) });
+    el.style.transformOrigin = `${hx}px ${hy}px`; el.style.opacity = "0";
+    el.fly = { dx: to[0] - x, dy: to[1] - y, a };
+    els.push(el);
+  }
+  // elles apparaissent une à une
+  for (const el of els) {
+    el.animate([{ transform: `rotate(${el.fly.a}rad) scale(0.3)`, opacity: 0 }, { transform: `rotate(${el.fly.a}rad) scale(1)`, opacity: 1 }], { duration: 260 / k, easing: "ease-out", fill: "forwards" });
+    await wait(130 / k);
+  }
+  await wait(450 / k);
+  els.forEach((el) => el.repaint((ctx) => { sprites.draw(ctx, "etoile.trainee", 0, hx, hy); sprites.draw(ctx, "etoile.arc", 0, hx, hy); }));
+  const flights = els.map((el, i) => el.animate([
+    { transform: `translate(0px, 0px) rotate(${el.fly.a}rad) scale(1)`, opacity: 1 },
+    { transform: `translate(${el.fly.dx}px, ${el.fly.dy}px) rotate(${el.fly.a}rad) scale(0.45)`, opacity: 0.15 },
+  ], { duration: 900 / k, delay: (i * 120) / k, easing: "cubic-bezier(.5,0,.8,.6)", fill: "forwards" }).finished.catch(() => {}));
+  await Promise.all(flights);
+  els.forEach((e) => e.remove());
 }
 
 // les coquillages : d'abord la zone suivante si elle peut s'ouvrir, puis au plus un coquillage doré (une
 // étoile dorée, une légendaire), puis les coquillages ordinaires tant qu'il y a assez d'étoiles (au plus
 // `parSeance`) ; une zone qui se complète pendant ce temps s'ouvre avant le coquillage suivant
+// les coquillages auront-ils lieu ? (une carte à ouvrir, un coquillage doré ou une zone à ouvrir)
+const wantsCards = (app) => { const r = app.rewards; return !!r.c && (r.canOpen() || r.goldenCard(Date.now()) || (r.nextZone() && r.arcDispo > 0)); };
 export async function shells(app, { session, hud }) {
   const { rewards, sprites } = app, now = () => Date.now();
   if (!rewards.c) return;
   // la planche des cartes (grande) n'est chargée que si elle sert
-  if (!(rewards.canOpen() || rewards.goldenCard(now()) || (rewards.nextZone() && rewards.arcDispo > 0))) return;
+  if (!wantsCards(app)) return;
   await sprites.load("cartes");
   const zone = async () => { const z = await rewards.openZone(now()); if (z) { (session.rec.zones ??= []).push(z.id); await session.save(); await zoneCeremony(app, { zone: z, hud }); } };
   await zone();
@@ -235,12 +278,14 @@ export async function openShell(app, { session, hud, first = true, gold = false,
   ocean.octo.play("rejouir"); await wait(800);
   const inReef = !!(got.carte.recif && sprites.atlas.sprites[`creature.${got.carte.id}`]);
   // (lot 3 bis, A6 : le décor offert par un doublon apparaît à côté de la carte pendant que la voix l'annonce)
-  const decor = got.decor && sprites.atlas.sprites[got.decor.sprite] ? spriteBox(app, { x: C[0] + 230, y: 300, w: 200, h: 180, cls: "hud gift pop", still: true, paint: (ctx) => sprites.draw(ctx, got.decor.sprite, 0, 100, 160) }) : null;
+  // (lot 3 bis, étape 3 : les quinze décors dessinés, sur leur planche « decors », chargée le temps de le montrer)
+  if (got.decor && sprites.atlas.sprites[got.decor.sprite]) await sprites.load(sprites.sheetOf(got.decor.sprite));
+  const decor = got.decor && sprites.atlas.sprites[got.decor.sprite] ? spriteBox(app, { x: C[0] + 200, y: 260, w: 280, h: 250, cls: "hud gift pop", still: true, paint: (ctx) => sprites.draw(ctx, got.decor.sprite, 0, 140, 214) }) : null;
   await voice.say(cardSpeech(text, got, inReef), { instruction: true });
   const ok = spriteBox(app, { x: 1000 - 80, y: 560, w: 160, h: 160, cls: "bubble check invite", label: "c'est bon", paint: (ctx) => sprites.draw(ctx, "valider", 0, 80, 80) });
   await Promise.race([new Promise((r) => onTap(ok, r)), wait(20000)]);
   ok.remove(); voice.stop();
-  if (decor) { decor.classList.add("away"); setTimeout(() => decor.remove(), 1000); }
+  if (decor) { decor.classList.add("away"); setTimeout(() => { decor.remove(); if (sprites.sheetOf(got.decor.sprite) === "decors" && !app.reef?.open) sprites.unload("decors"); }, 1000); }
   el.classList.add("leave"); await wait(650); el.remove();
   ocean.front.splice(ocean.front.indexOf(tick), 1); shell.show(false); glint.show(false); shell.remove(); glint.remove();
   ocean.actors.splice(ocean.actors.indexOf(shell), 1); ocean.actors.splice(ocean.actors.indexOf(glint), 1);

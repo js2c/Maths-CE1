@@ -138,6 +138,87 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 
 **Les incidents techniques.** Si l'application rencontre un problème (une erreur de page, une image introuvable), elle le note sans gêner l'enfant. Ces notes apparaissent, s'il y en a, en bas de **Données et réglages**, dans un encadré **Incidents techniques** (les 20 derniers, avec l'heure et l'étape de la séance). Si cela revient souvent, signalez-le en joignant une sauvegarde complète.
 
+## d ter) Lot 3 bis : les plaques numérotées, la légende, l'appui long, les décors du récif, et ce qui change dans les exercices
+
+**Les plaques numérotées.** À l'écran « choisir », chaque niveau porte maintenant son **numéro en grand** (la ligne graduée de 1 à 13, les additions de 1 à 7, le calcul rapide de 1 à 9), avec l'ancienne vignette en petit dessous : vous pouvez dire « fais le 7 » quel que soit l'exercice. Les neuf niveaux du calcul rapide sont posés dans l'ordre sur un **chemin de cailloux**. Le niveau conseillé est entouré d'un halo doré qui respire doucement ; un niveau validé porte une petite étoile dans le coin de sa plaque. Un toucher dit le nom du niveau et le lance, comme avant.
+
+**La légende des niveaux (pour vous).** Sur chaque écran de niveaux, et sur celui des leçons, un petit bouton en forme de **livre ouvert**, en haut à droite, sous le haut-parleur, ouvre un panneau qui dit, pour chaque niveau, ce qui est travaillé et un exemple. La croix, ou un toucher à côté du panneau, le referme. Ouvrir ou fermer la légende ne lance rien, et la voix ne la lit pas. Le même texte est dans l'espace parent (onglet **Progression**, « Les niveaux de « choisir », en bref ») et ci-dessous ; il est rangé une seule fois dans l'application (`app/content/legendes.json`).
+
+**La ligne graduée**
+
+| Niveau | Ce qui est travaillé | Exemple |
+| --- | --- | --- |
+| 1 | Compter les sauts de 1 en 1 sur une corde de 0 à 10. | La tortue part de 2 et fait 3 sauts, 5 |
+| 2 | Lire et placer un nombre de 0 à 10, avec seulement 0, 5 et 10 écrits. | Place 8 |
+| 3 | Lire et placer un nombre de 0 à 20. | L'étoile est sur 14 |
+| 4 | Une ligne qui ne commence pas à 0. | De 30 à 40, l'étoile est sur 34 |
+| 5 | De 0 à 100, de 10 en 10, chaque saut vaut dix. | L'étoile est sur 70 |
+| 6 | Un morceau de ligne, seules les dizaines sont écrites. | De 30 à 50, où est 37 ? |
+| 7 | Trouver de combien on saute, 1 ou 10. | 40, 50, puis deux sauts, 70 |
+| 8 | Deviner où va un nombre sur une ligne sans graduations, de 0 à 100. | Où mettrais-tu 25 ? |
+| 9 | De 0 à 1000, de 100 en 100. | L'étoile est sur 700 |
+| 10 | Une centaine, de 10 en 10. | De 300 à 400, l'étoile est sur 370 |
+| 11 | Des grands nombres, un par un, sur un morceau de ligne. | De 340 à 360, où est 347 ? |
+| 12 | Écrire en chiffres un grand nombre entendu. | Trois cent sept, 307 |
+| 13 | Deviner où va un nombre sur une ligne sans graduations, de 0 à 1000. | Où mettrais-tu 500 ? |
+
+**Les additions**
+
+| Famille | Ce qui est travaillé | Exemple |
+| --- | --- | --- |
+| 1 | Ajouter 1 ou 2, la tortue fait les sauts. | 6 + 2 |
+| 2 | Les doubles, jusqu'à 5 + 5. | 4 + 4 |
+| 3 | Les amis de 10, ce qui manque pour faire 10. | 7 + ? = 10 |
+| 4 | Les maisons de 5, 6 et 7, deux nombres qui font le nombre du toit. | 5 + ? = 7 |
+| 5 | Les maisons de 8 et 9, avec le cadre de 10. | 6 + ? = 9 |
+| 6 | Les presque-doubles, un double et encore 1. | 3 + 4 = 3 + 3 + 1 |
+| 7 | Le mélange de toutes les additions déjà rencontrées. | 5 + 3, 4 + 4, 7 + 3 |
+
+**Le calcul rapide**
+
+| Niveau | Ce qui est travaillé | Exemple |
+| --- | --- | --- |
+| 1 | Ajouter ou retirer 1 ou 2. | 47 + 2 |
+| 2 | Ajouter ou retirer 10, on descend ou on monte d'une rangée sur le mur. | 34 + 10 |
+| 3 | Ajouter ou retirer des dizaines rondes, 20, 30. | 23 + 30 |
+| 4 | Ajouter un petit nombre sans changer de dizaine. | 34 + 5 |
+| 5 | Retirer un petit nombre sans changer de dizaine. | 38 - 5 |
+| 6 | Ajouter 9, on ajoute 10, puis on retire 1. | 34 + 9 |
+| 7 | Ajouter en passant la dizaine, on complète d'abord jusqu'à 10. | 38 + 5 = 38 + 2 + 3 |
+| 8 | Ajouter deux nombres à deux chiffres, sans retenue. | 23 + 14 = 23 + 10 + 4 |
+| 9 | Retirer en passant la dizaine. | 42 - 5 = 42 - 2 - 3 |
+
+**Les leçons**
+
+| Leçon | Ce qui est travaillé | Exemple |
+| --- | --- | --- |
+| L1 | On compte les sauts, pas les traits. | De 0 à 3, 3 sauts |
+| L2 | Un saut peut valoir dix. | 10, 20, 30 |
+| L3 | Une ligne ne commence pas toujours à 0. | 30, 31, 32 |
+| L4 | Les doubles, deux fois le même nombre. | 3 + 3 |
+| L5 | Les amis de 10, remplir le cadre de 10. | 7 + 3 |
+| L6 | La maison des nombres, deux pièces et le toit. | 5 + 2 = 7 |
+| L10 | Les centaines, cent, c'est dix dizaines. | 100, 200, 307 |
+| L7 | Plus 10 sur le mur de corail, on descend d'une rangée. | 34 + 10 |
+| L8 | L'astuce du 9, plus 10, puis moins 1. | 34 + 9 |
+| L9 | Passer la dizaine, on complète d'abord jusqu'à 10. | 38 + 5 |
+
+**L'appui long sur les pictogrammes.** Garder le doigt environ **une demi-seconde** sur une bulle de l'accueil (jouer, choisir, le récif, l'album) ou sur un exercice de l'écran « choisir » (la ligne, les additions, le calcul rapide, les leçons) fait apparaître une **étiquette** au-dessus, qui reste tant que le doigt est posé, puis 2 secondes. Relâcher après un appui long **ne lance rien** ; seul un toucher bref lance. La voix ne lit pas l'étiquette. La durée se règle dans `app/content/legendes.json` (`appuiLong`).
+
+**L'espace parent, rappel.** L'appui long sur le logo de la pieuvre, en bas à gauche de l'accueil, dure **2 secondes** (un anneau clair se remplit) ; il est différent de l'appui court sur les pictogrammes.
+
+**Les décors du récif.** Quand un coquillage donne une carte déjà gagnée (un doublon), la voix le dit et offre un **décor** pour le récif, dans cet ordre : un corail branchu, une anémone, une gorgone, un coquillage géant, une étoile de mer, un oursin, un herbier, une amphore, une ancre, un coffre, un corail cerveau, une éponge, une arche de pierre, une algue rouge, un gouvernail. Les décors se posent dans le lagon, derrière les créatures. Quand les quinze sont gagnés, un doublon redevient un simple doublon. La probabilité qu'un doublon devienne brillant reste de 5 %.
+
+**Ce qui change dans les exercices.**
+
+- **Amis de 10 et maisons** : les questions sont posées « à trou » (« 3 + ? = 10 »), puisque la réponse de la forme directe était toujours la même. Une famille n'est acquise que si chaque fait a été réussi à trou, sur au moins deux jours différents. Dans l'espace parent, « acquise » s'accompagne de sa date et de l'état d'aujourd'hui, par exemple « acquise le 17/09 (depuis, 19 sur 30) » : une famille acquise le reste, même si des faits redescendent ensuite.
+- **Calcul rapide « très dur »** : aux niveaux où l'on ajoute toujours le même pas (1, 2, 3 et 6), le nombre qui manque est celui du départ (« ? + 10 = 57 »), pour que la réponse change à chaque question.
+- **Aides** : aux additions, l'aide de la tortue ne donne plus la réponse (elle saute jusqu'au total demandé, sans dire combien de sauts) ; les maisons montrent les poissons des deux nombres, qui montent sous le toit (et, pour les maisons de 8 et 9, le cadre de 10). Au calcul rapide, le coquillage montre le mur de corail et le poisson qui fait le premier pas, ou dit le premier pont du chemin. Les corrections du chemin rassurent et rejouent le pont en cause ; la bonne réponse est entourée, jamais une égalité fausse.
+- **Fins** : les étoiles arc-en-ciel sont dites en une seule phrase et volent vers l'album ; la fin du défi record range le pavé, fait avancer les perles, plante le drapeau et dit le résultat (« Nouveau record ! », « Record égalé ! » ou « Presque ! »).
+- **« Placer »** : le nombre à placer est écrit sur l'étiquette que porte le poisson ; on peut toucher la corde ou faire glisser le poisson.
+- **« Réécouter »** reste visible pendant la pause et répond aussi à l'accueil.
+- **Journal des erreurs** (espace parent) : plus de sigles ; chaque erreur est une phrase, et les erreurs d'additions sont détaillées (se trompe de 1, a répondu l'un des deux nombres, a fait une soustraction, autre).
+
 ## e) Ce qui reste approximatif ou à ajuster
 
 **À vérifier sur la vraie tablette.** Écouter la voix (aucune phrase n'a été écoutée par une personne, la vérification a été automatique) et regarder les illustrations des cartes en grand. Toutes les mesures ont été faites sur un ordinateur, en ralentissant le processeur 4 fois pour imiter une tablette : démarrage en moins de 1,5 s, animation à 50 à 60 images par seconde la plupart du temps, avec des baisses vers 30 pendant certaines animations (l'application allège alors d'elle-même le décor). Il faut confirmer que tout reste fluide sur la tablette.

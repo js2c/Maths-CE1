@@ -73,22 +73,27 @@ function domaines(C) {
     estimer: [...TOUS, ...estimer1000].map((n) => ({ n })),
     guideDepart: [...TOUS, ...lignes1000.filter((v) => v % 10 === 0)].map((a) => ({ a })),
     guideMilieu: [...milieux, ...(N(13) ? [{ n: (N(13).min + N(13).max) / 2 }] : [])],
-    recompense: range(0, ETOILES_MAX).map((n) => ({ etoiles: etoiles(n) })),
+    recompense: range(1, ETOILES_MAX).map((n) => ({ etoiles: etoiles(n) })),
     serieBonus: [{ n: C.cartes.serie.bonus }],
+    // lot 3 bis (B6) : plusieurs étoiles arc-en-ciel à la récompense, une seule phrase (au plus un niveau par question)
+    etoilesArc: range(2, 20).map((n) => ({ n })),
     fait: faits, faitTrouDroite: faits, faitTrouGauche: faits, faitCorrection: faits,
     // l'aide de la famille 1 : la tortue part du grand nombre et fait 1 ou 2 sauts (facts/screen.js)
     aideLigne: faits.filter(({ a, b }) => Math.min(a, b) === 1 || Math.min(a, b) === 2).map(({ a, b }) => ({ a: Math.max(a, b), sauts: sautsDe(Math.min(a, b)) })),
     // l'aide des doubles jusqu'à 5 : a poissons et leur reflet
-    aideReflet: range(1, 5).map((a) => ({ a })),
+    aideReflet: range(2, 5).map((a) => ({ a })),
+    // lot 3 bis (B5) : la famille 1 à trou (la tortue saute jusqu'au total), la maison à trou (les places sous le toit)
+    aideLigneTrou: range(1, C.module2.sommeMax).map((n) => ({ n })),
+    aideMaisonTrou: range(2, C.module2.sommeMax).map((n) => ({ n })),
     // lot 2, étape 6 : le cadre de 10 (le nombre de poissons déjà dans la boîte), le double + 1 (le double)
-    aideCadre: range(1, 9).map((k) => ({ k })),
+    aideCadre: range(2, 9).map((k) => ({ k })),
     aideDoublePlus: range(1, 4).map((d) => ({ d })),
     // lot 3 : chaque question des presque-doubles rappelle le double (facts/runner.js, q.rappel : d, le petit nombre)
     rappelDouble: faits.filter(({ a, b }) => Math.abs(a - b) === 1 && Math.max(a, b) <= 5).map(({ a, b }) => ({ a, b, d: Math.min(a, b) })),
     // lot 3, étape 4 : le calcul rapide (modules/calc/calc.js : calcsOf, les calculs de chaque niveau de module3.json ; chemin :
     // les pas des ponts ; la forme à trou aux niveaux où elle a un sens ; C4 et C5 : les unités et le nombre ajouté ou retiré)
     ...(() => {
-      const M3 = C.module3?.niveaux ?? [], all = M3.flatMap((c) => calcsOf(c).map((x) => ({ ...x, type: c.type, trou: c.trou, trouDepart: c.trouDepart })));
+      const M3 = C.module3?.niveaux ?? [], all = M3.flatMap((c) => calcsOf(c).map((x) => ({ ...x, type: c.type, support: c.support, trou: c.trou, trouDepart: c.trouDepart })));
       const steps = all.flatMap((x) => chemin(x)), k = (op) => [...new Set([...steps.filter((s) => s.op === op).map((s) => s.k), ...all.filter((x) => x.op === op && x.b < 10).map((x) => x.b)])].sort((a, b) => a - b).map((v) => ({ k: v }));
       const u = (n) => n % 10;
       return {
@@ -99,11 +104,24 @@ function domaines(C) {
         "calcPont.plus": k("+"), "calcPont.moins": k("-"),
         "erreurCalc.C4": all.filter((x) => x.op === "+" && x.b < 10 && u(x.a) + x.b >= 10).map((x) => ({ u: u(x.a), b: x.b })),
         "erreurCalc.C5": all.filter((x) => x.op === "-" && x.b < 10 && u(x.a) < x.b).map((x) => ({ b: x.b, u: u(x.a) })),
+        // lot 3 bis (B4) : l'aide du coquillage dit le premier pas (calc/screen.js, help) : au mur, le poisson descend ou monte
+        // d'une ou plusieurs rangées ; sur un chemin de plusieurs ponts, « D'abord, on va jusqu'à 40 » ; d'un seul pont, le départ et le pas
+        ...(() => {
+          const first = all.map((x) => ({ x, s: chemin(x)[0], n: chemin(x).length })), mur = first.filter((f) => f.x.support === "mur" && f.s.k % 10 === 0 && f.s.k > 10);
+          const uniq = (xs) => [...new Map(xs.map((v) => [JSON.stringify(v), v])).values()];
+          return {
+            "aideMur.plusDizaines": uniq(mur.filter((f) => f.s.op === "+").map((f) => ({ k: f.s.k, r: f.s.k / 10 }))),
+            "aideMur.moinsDizaines": uniq(mur.filter((f) => f.s.op === "-").map((f) => ({ k: f.s.k, r: f.s.k / 10 }))),
+            aideCheminPont: uniq(first.filter((f) => f.x.support !== "mur" && f.n > 1).map((f) => ({ n: f.s.a }))),
+            aideChemin1: uniq(first.filter((f) => f.x.support !== "mur" && f.n === 1).map((f) => ({ a: f.x.a }))),
+          };
+        })(),
       };
     })(),
-    // le défi record : « {n} bonnes réponses ! » (2 ou plus ; une seule : defiScoreUn), le record à battre (1 ou plus)
-    defiScore: range(2, DEFI_MAX).map((n) => ({ n })),
-    defiPasRecord: range(1, DEFI_MAX).map((n) => ({ n })),
+    // le défi record (lot 3 bis, B6) : le score en perles, 2 ou plus (une seule : les phrases « …Un »)
+    defiNouveauRecord: range(2, DEFI_MAX).map((n) => ({ n })),
+    defiEgal: range(2, DEFI_MAX).map((n) => ({ n })),
+    defiPresque: range(2, DEFI_MAX).map((n) => ({ n })),
     carteNouvelle: cartes, carteDoublon: cartes, recifCarte: cartes,
     // lot 3 bis (A6) : le doublon et son décor pour le récif (cartes.json, decors.liste : chaque décor avec chaque carte)
     carteDoublonDecor: cartes.flatMap((c) => (C.cartes.decors?.liste ?? []).map((x) => ({ ...c, decor: x.nomLu }))),

@@ -117,7 +117,7 @@ export const shinyChance = (content, owned, card) => (owned[card.id] ? content.b
 // d'une zone du récif, les décors des doublons et (dans la première zone) les cadeaux de la surprise : [{ id, sprite, at }]
 export const nextDecor = (c, ids) => (c?.decors?.liste ?? []).find((d) => !ids.includes(d.id)) ?? null;
 export function reefDecor(c, { decors = [], gifts = [] }, zone, giftSpots = {}) {
-  const out = (c?.decors?.liste ?? []).filter((d) => decors.includes(d.id) && d.zone === zone).map((d) => ({ id: d.id, sprite: d.sprite, at: d.place }));
+  const out = (c?.decors?.liste ?? []).filter((d) => decors.includes(d.id) && d.zone === zone).map((d) => ({ id: d.id, sprite: d.sprite, at: d.place, s: Math.min(1, d.echelle ?? 1) }));
   if (zone === c?.zones?.[0]?.id) for (const id of gifts) if (giftSpots[id]) out.push({ id, sprite: `cadeau.${id}`, at: giftSpots[id] });
   return out;
 }

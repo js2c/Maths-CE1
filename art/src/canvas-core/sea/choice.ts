@@ -23,7 +23,19 @@ import { drawJumpArc, drawLine, drawNumber, type LineSpec, RED, tickP } from "./
 
 const SH = "#0a3f49", NACRE = "#fffaf0", NACRE_S = "#e3d6bb", SEA = "#35b3c1", GOLD = "#ffd23a";
 // une vignette : plaque de nacre de TILE_W × TILE_H, centrée
-export const TILE_W = 150, TILE_H = 120, TILE_R = 22;
+export const TILE_W = 150, TILE_H = 136, TILE_R = 22;
+// lot 3 bis (docs/SPEC-LOT3BIS.md, B1) : chaque plaque porte son NUMÉRO en grand, en haut (le parent peut dire « fais le 7 »
+// quel que soit l'exercice) ; la vignette du niveau est posée en petit dessous, dans la moitié basse (VIGN_Y : son centre,
+// VIGN_S : sa réduction par rapport à la vignette du lot 3)
+export const NUM_EM = 40, NUM_TOP = -TILE_H / 2 + 9, VIGN_Y = 30, VIGN_S = 0.8;
+// le numéro d'une plaque : l'encre la plus sombre de l'écran, un trait épais
+export const drawTileNumber = (g: Gfx, cx: number, cy: number, n: number) => {
+  const ctx = g.cur as CanvasRenderingContext2D, t = String(n), em = NUM_EM;
+  drawNumber(ctx, t, cx, cy + NUM_TOP, em, { color: INK, w: em * 0.17, seed: 5860 + n });
+  g.mark([[cx - 30, cy + NUM_TOP], [cx + 30, cy + NUM_TOP + em + 4]]);
+};
+// un filet clair sous le numéro, qui sépare le numéro de la vignette
+const underline = (g: Gfx, cx: number, cy: number, seed: number) => ink(g, smooth([[cx - 44, cy + NUM_TOP + NUM_EM + 9], [cx, cy + NUM_TOP + NUM_EM + 7], [cx + 44, cy + NUM_TOP + NUM_EM + 9]], false, 6), NACRE_S, { w: 2.4, shadow: 0, taper: [0.3, 0.3], seed }, 0.9);
 const plaque = (g: Gfx, cx: number, cy: number, seed: number) => g.group("plain", () => {
   const s = rrect(cx - TILE_W / 2, cy - TILE_H / 2, TILE_W, TILE_H, TILE_R);
   fillShape(g, shift(s, 6, 8), SH, 0.28);
@@ -89,9 +101,12 @@ const drawOpenBook = (g: Gfx, cx: number, cy: number, k: number, seed: number) =
 });
 
 // ---------------------------------------------------------------- la lueur du conseillé
-export const GLOW_PAD = 18;
+// (lot 3 bis, B1 : la lueur du lot 3 se voyait à peine ; elle est désormais un halo épais, doré au bord de la plaque et qui
+// s'éteint vers l'extérieur, cerné d'un fil d'or ; l'application la fait respirer doucement, en opacité et en taille)
+export const GLOW_PAD = 26;
 export const drawTileGlow = (g: Gfx, cx: number, cy: number) => g.group("plain", () => {
-  for (let i = 14; i >= 0; i--) fillShape(g, rrect(cx - TILE_W / 2 - i, cy - TILE_H / 2 - i, TILE_W + 2 * i, TILE_H + 2 * i, TILE_R + i), "#fff3b8", 0.07);
+  for (let i = GLOW_PAD; i >= 0; i--) fillShape(g, rrect(cx - TILE_W / 2 - i, cy - TILE_H / 2 - i, TILE_W + 2 * i, TILE_H + 2 * i, TILE_R + i), i > 12 ? "#fff3b8" : "#ffe066", i > 12 ? 0.1 : 0.16);
+  ink(g, rrect(cx - TILE_W / 2 - 7, cy - TILE_H / 2 - 7, TILE_W + 14, TILE_H + 14, TILE_R + 7), "#ffd23a", { w: 7, closed: true, shadow: 0, seed: 5801 }, 0.95);
 });
 
 // ---------------------------------------------------------------- les niveaux de la ligne graduée
@@ -116,12 +131,14 @@ export const drawLineTile = (g: Gfx, cx: number, cy: number, level: number) => {
   plaque(g, cx, cy, 5700 + level);
   g.group("plain", () => {
     clipped(g, inside(cx, cy), () => {
-      if (level === 12) return dictationTile(g, cx, cy);
-      // la ligne tient dans la plaque, centrée : 300 de large (108 à l'écran), de la réglette (-30) au bas des nombres
-      // (+116) ; la corde garde ses poteaux
-      const spec = LINE_TILES[level], s = 0.36;
-      scaled(g, cx - 150 * s, cy - 15, s, () => drawLine(g.cur as CanvasRenderingContext2D, spec));
+      underline(g, cx, cy, 5840 + level);
+      if (level === 12) return scaled(g, cx, cy + VIGN_Y + 2, 0.72, () => dictationTile(g, 0, 0));
+      // la ligne tient dans la moitié basse de la plaque, centrée : 300 de large (114 à l'écran), de la réglette (-30) au bas
+      // des nombres (+116) ; la corde garde ses poteaux
+      const spec = LINE_TILES[level], s = 0.38;
+      scaled(g, cx - 150 * s, cy + VIGN_Y - 21, s, () => drawLine(g.cur as CanvasRenderingContext2D, spec));
     });
+    drawTileNumber(g, cx, cy, level);
     g.mark([[cx - TILE_W / 2, cy - TILE_H / 2], [cx + TILE_W / 2, cy + TILE_H / 2]]);
   });
 };
@@ -139,7 +156,8 @@ const dictationTile = (g: Gfx, cx: number, cy: number) => {
 export const drawFamilyTile = (g: Gfx, cx: number, cy: number, fam: number) => {
   plaque(g, cx, cy, 5740 + fam);
   g.group("plain", () => {
-    clipped(g, inside(cx, cy), () => FAMILY[fam]?.(g, cx, cy));
+    clipped(g, inside(cx, cy), () => { underline(g, cx, cy, 5850 + fam); scaled(g, cx, cy + VIGN_Y + 2, 0.7, () => FAMILY[fam]?.(g, 0, 0)); });
+    drawTileNumber(g, cx, cy, fam);
     g.mark([[cx - TILE_W / 2, cy - TILE_H / 2], [cx + TILE_W / 2, cy + TILE_H / 2]]);
   });
 };
@@ -189,7 +207,7 @@ const FAMILY: Record<number, (g: Gfx, cx: number, cy: number) => void> = {
 // une plaque avec le livre en petit, en haut ; l'application écrit dessous les nombres de la leçon
 export const drawLessonTile = (g: Gfx, cx: number, cy: number) => {
   plaque(g, cx, cy, 5799);
-  drawOpenBook(g, cx, cy - 24, 0.62, 5800);
+  drawOpenBook(g, cx, cy - 30, 0.62, 5800);
 };
 
 // un « ? » rouge et des nombres encrés : repris de runtime.ts (RED) pour rester dans la même main

@@ -67,17 +67,21 @@ export async function runChallenge({ session, step, warmup, screen, view, say, o
   const { st, premier, nouveau, egal, ancien } = nextRecord(prev, score, { now: Date.now(), seance: session.id });
   await store.put("recompenses", st);
   session.rec.defi = { score, questions: posees, record: st.record, ancien, nouveauRecord: nouveau }; await session.save();
-  await say("defiFini");
+  // (lot 3 bis, B6 ; R14) la fin est dite et montrée : le pavé est rangé, les perles avancent jusqu'au score, le drapeau du
+  // record est planté ; « Nouveau record ! 12 perles ! », « Record égalé ! », ou « Presque ! Tu as fait 9 perles. »
+  const fini = say("defiFini");
+  const shown = view.finale?.(score, nouveau ? score : ancien ?? null);
+  await fini; await shown;
+  const un = score === 1;
   if (nouveau) {
     octo?.play("rejouir"); view.record(score, true);
-    await say(score === 1 ? "defiScoreUn" : "defiScore", { n: score });
-    await say(premier ? "defiPremierRecord" : "defiRecord");
+    await say(un ? "defiNouveauRecordUn" : "defiNouveauRecord", { n: score });
+    if (premier) await say("defiPremierRecord");
     await session.stars(stars.nouveauRecord ?? 5, "nouveau record");
   } else if (score === 0) await say("defiZero");
   else {
     octo?.play(egal ? "rejouir" : "encourager");
-    await say(score === 1 ? "defiScoreUn" : "defiScore", { n: score });
-    await say(egal ? "defiEgal" : "defiPasRecord", { n: ancien });
+    await say(egal ? (un ? "defiEgalUn" : "defiEgal") : (un ? "defiPresqueUn" : "defiPresque"), { n: score });
   }
   await pause(600);
   view.show(false); screen.leave();

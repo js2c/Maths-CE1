@@ -89,16 +89,16 @@ test("déroulement : seuls les faits en boîte 3 ou plus sont posés, le score e
   assert.equal((await store.get("recompenses", "defi")).record, res.score);
 });
 
-test("premier record : 5 étoiles ; pas battu : pas d'étoiles de record, la voix dit le record ; battu : 5 étoiles", async () => {
+test("premier record : 5 étoiles ; pas battu : pas d'étoiles de record, « Presque ! » et le score ; battu : « Nouveau record ! » et 5 étoiles (lot 3 bis, B6)", async () => {
   let p = await play();
   assert.ok(p.said.some(([k]) => k === "defiIntroPremier") && p.said.some(([k]) => k === "defiPremierRecord"));
   assert.deepEqual(p.stars.filter(([, r]) => r === "nouveau record"), [[5, "nouveau record"]]);
   assert.equal(p.stars.filter(([, r]) => r === "bonne réponse").length, p.res.score);
   p = await play({ record: 99 });
-  assert.equal(p.res.nouveau, false); assert.ok(p.said.some(([k, n]) => k === "defiPasRecord" && n === 99)); assert.ok(p.said.some(([k]) => k === "defiIntro"));
+  assert.equal(p.res.nouveau, false); assert.ok(p.said.some(([k, n]) => (k === "defiPresque" && n === p.res.score) || (k === "defiPresqueUn" && p.res.score === 1)), "« Presque ! Tu as fait 9 perles. »"); assert.ok(p.said.some(([k]) => k === "defiIntro"));
   assert.equal(p.stars.filter(([, r]) => r === "nouveau record").length, 0);
   p = await play({ record: 1 });
-  assert.equal(p.res.nouveau, true); assert.ok(p.said.some(([k]) => k === "defiRecord")); assert.equal(p.stars.filter(([, r]) => r === "nouveau record").length, 1);
+  assert.equal(p.res.nouveau, true); assert.ok(p.said.some(([k, n]) => k === "defiNouveauRecord" && n === p.res.score), "« Nouveau record ! 12 perles ! »"); assert.equal(p.stars.filter(([, r]) => r === "nouveau record").length, 1);
 });
 
 test("révision espacée : une bonne réponse rapide fait monter le fait d'une boîte au plus dans la séance ; une erreur le fait redescendre ; pas de protection du cran", async () => {

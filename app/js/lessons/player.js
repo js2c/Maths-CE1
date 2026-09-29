@@ -23,7 +23,8 @@ const ease = (u) => 1 - Math.pow(1 - u, 3);
 // une animation de `ms` millisecondes, f(u) à chaque image, u de 0 à 1
 const tween = (ms, f) => { const g = clock.hold(); return new Promise((res) => { const t0 = performance.now(), step = (now) => { const u = Math.min(1, (now - t0) / ms); f(u); if (u < 1) requestAnimationFrame(step); else res(); }; requestAnimationFrame(step); }).then(g); };
 const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };
-const REPLAY_AT = [1180, 712], COUNTER = [700, 172]; // « rejouer » en bas à droite ; « passer » : engine/ui.js
+// (lot 3 bis, R23 : « rejouer » monte sous « passer », en haut à droite : en bas, il prenait la place de « je ne sais pas »)
+const REPLAY_AT = [1205, 372], COUNTER = [700, 172]; // « rejouer » sous « passer » (engine/ui.js), en haut à droite
 const NET_W = 62, NET_H = 34;
 
 export class LessonPlayer {
@@ -131,7 +132,7 @@ export class LessonPlayer {
         for (const v of [].concat(arg)) {
           const i = tickOf(L, v), n = this.net(i); if (this.S.filets.includes(i)) continue;
           n.a.show(true);
-          await g(tween(700, (u) => { const e = ease(u); n.a.moveTo(n.x + 70 * (1 - e), n.y - 30 * (1 - e) * (1 - e), 1, Math.round(e * 20) / 20); }));
+          await g(tween(700, (u) => { const e = ease(u); n.a.moveTo(n.x + 70 * (1 - e), n.y - 30 * (1 - e) * (1 - e), n.s, Math.round(e * 20) / 20); }));
           this.S = { ...this.S, filets: [...this.S.filets, i] };
         }
         return done();
@@ -160,8 +161,8 @@ export class LessonPlayer {
     this.S = S; this.flash = 0; this.hideArcs = false; this.lensRing = null; this.lens?.show(false);
     this.app.line.c.style.opacity = S.ligne ? "1" : "0";
     if (S.tortue === null) T.hide(); else T.sitOn(this.spec, S.tortue);
-    this.nets.forEach((n, i) => { n.a.show(S.filets.includes(i)); n.a.moveTo(n.x, n.y); });
-    S.filets.forEach((i) => { const n = this.net(i); n.a.show(true); n.a.moveTo(n.x, n.y); });
+    this.nets.forEach((n, i) => { n.a.show(S.filets.includes(i)); n.a.moveTo(n.x, n.y, n.s); });
+    S.filets.forEach((i) => { const n = this.net(i); n.a.show(true); n.a.moveTo(n.x, n.y, n.s); });
     this.paint();
   }
   // repeint ce qui dépend de l'état : l'étoile, les arcs finis, le calque d'effets, le compteur
@@ -194,16 +195,24 @@ export class LessonPlayer {
     this.counter.value = v;
   }
   // un filet de dix poissons, suspendu sous la corde entre la graduation i et la suivante (dessiné une fois)
+  // (lot 3 bis, B9 ; R18) sur la corde aux bouées géantes (L2), le grand filet de l'atelier (« aide.filet.haut » : dix poissons
+  // en deux colonnes, lisibles sur la tablette), suspendu AU-DESSUS de la corde par son nœud (dessous, il cachait les nombres)
   net(i) {
     if (this.nets.has(i)) return this.nets.get(i);
     const { stage, ocean, sprites } = this.app, spec = this.spec, mx = (R.tickX(spec, i) + R.tickX(spec, i + 1)) / 2;
+    if (spec.geant) {
+      const M = this.app.atlas.sprites["aide.filet.haut"].meta, s = Math.min(0.8, (R.tickX(spec, i + 1) - R.tickX(spec, i) - 8) / M.w), a = ocean.spriteActor(ocean.frontEl, "aide.filet.haut");
+      ocean.frontEl.prepend(a.c); a.draw(0);
+      const n = { a, x: mx, y: R.lineY(spec, mx) - R.buoyR(spec) - 14 - M.h * s, s };
+      a.show(false); this.nets.set(i, n); return n;
+    }
     const a = new Actor(stage, ocean.frontEl, NET_W + 8, NET_H + 8, (NET_W + 8) / 2, 0); ocean.frontEl.prepend(a.c); ocean.actors.push(a);
     a.paint("filet", (ctx) => {
       const px = stage.px; ctx.setTransform(px, 0, 0, px, 0, 0); R.drawNet(ctx, 4, 3, NET_W, NET_H, 30 + i);
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       for (let k = 0; k < 10; k++) { const q = sprites.frame(`poisson.${k % 3}.${k % 2 ? "g" : "d"}`, (k * 5) % 12), s = 0.2, cx = (4 + 7 + (k % 5) * 12) * px, cy = (3 + 10 + Math.floor(k / 5) * 15) * px; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, Math.round(cx + q.dx * s), Math.round(cy + q.dy * s), Math.round(q.w * s), Math.round(q.h * s)); }
     });
-    const n = { a, x: mx, y: R.lineY(spec, mx) + 17 };
+    const n = { a, x: mx, y: R.lineY(spec, mx) + 17, s: 1 };
     a.show(false); this.nets.set(i, n); return n;
   }
   // la loupe de L3 : le nombre de la graduation i, en grand, sous la ligne à droite de ce nombre

@@ -15,8 +15,10 @@ import { DEFI_N, drawRecordFlag, drawScorePearl, drawStepChallenge, drawTimerBub
 import { drawHermit, HERMIT_CLIPS, HERMIT_FPS, HERMIT_REST } from "./hermit";
 import { drawBonusBubble, drawCellGlow, drawHouseBase, drawHouseFloor, drawHouseRoof, drawTenFrame, HOUSE, TEN, TEN_H, TEN_W, tenCell } from "./aids";
 import { drawCalcTile, drawExerciseCalc, drawStepCalc, drawWallFish, WALL_FISH_N } from "./calc";
-import { drawChooseKey, drawExerciseLessons, drawExerciseLine, drawFamilyTile, drawLessonTile, drawLineTile, drawTileGlow, TILE_H, TILE_W } from "./choice";
-import { drawAgainKey, drawAlbumKey, drawDontKnowKey, drawFreeFacts, drawFreeLessons, drawFreeLine, drawMoonDecor, drawPagePearl, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepGlow, drawStepShell, GLOW_R, STEP_R } from "./ui";
+import { GLOW_PAD, drawChooseKey, drawExerciseLessons, drawExerciseLine, drawFamilyTile, drawLessonTile, drawLineTile, drawTileGlow, TILE_H, TILE_W } from "./choice";
+import { drawBigFlag, drawCloseKey, drawHintKey, drawLegendKey, drawShrugKey, drawSmallFish, drawStarTrail, drawTagFish, drawTallNet, drawZoneTab, FLAG_N, HOUSE_FISH, LEGEND_R, NETV_H, NETV_W, TAG, TAG_FISH_N, TRAIL_H, TRAIL_W, ZONE_TAB_R } from "./lot3bis";
+import { DECOR_H, DECOR_ORIGIN, DECOR_W, DECORS, drawDecor } from "./reefdecor";
+import { drawAgainKey, drawAlbumKey, drawFreeFacts, drawFreeLessons, drawFreeLine, drawMoonDecor, drawPagePearl, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepGlow, drawStepShell, GLOW_R, STEP_R } from "./ui";
 
 // la tortue dans l'application : longueur ~110 px logiques, assez petite pour tenir sur une bouée
 export const TURTLE_S = 1;
@@ -84,7 +86,8 @@ export const SPECS: Spec[] = [
   { name: "bilan", sheet: "petits", W: TALLY_W + 50, H: TALLY_H + 50, origin: [TALLY_W / 2 + 20, TALLY_H / 2 + 20], frames: 1, draw: (g) => drawTally(g, TALLY_W / 2 + 20, TALLY_H / 2 + 20) },
   { name: "ardoise", sheet: "petits", W: SLATE_W + 50, H: SLATE_H + 50, origin: [SLATE_W / 2 + 20, SLATE_H / 2 + 20], frames: 1, draw: (g) => drawSlate(g, SLATE_W / 2 + 20, SLATE_H / 2 + 20) },
   { name: "effacer", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawEraseKey(g, 70, 70) },
-  { name: "aide", sheet: "petits", W: 150, H: 150, origin: [75, 75], frames: 1, draw: (g) => drawShellKey(g, 75, 75) },
+  // (lot 3 bis, R23 : le coquillage d'aide est un triton bleu-violet, pour ne plus ressembler au coquillage rose de la récompense)
+  { name: "aide", sheet: "petits", W: 150, H: 150, origin: [75, 75], frames: 1, draw: (g) => drawHintKey(g, 75, 75) },
   { name: "valider", sheet: "petits", W: 160, H: 160, origin: [80, 80], frames: 1, draw: (g) => drawCheck(g, 80, 80) },
   { name: "rejouer", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawReplayKey(g, 70, 70) },
   { name: "etoile.doree", sheet: "petits", W: 120, H: 120, origin: [60, 60], frames: 1, draw: (g) => drawGoldStar(g, 60, 60, 44) },
@@ -93,7 +96,8 @@ export const SPECS: Spec[] = [
   { name: "recif", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawReefKey(g, 90, 90) },
   { name: "maison", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawHomeKey(g, 70, 70) },
   // lot 1 bis : « je ne sais pas », « passer », « Encore ! », l'album, la frise, la lune-décor, l'entraînement libre
-  { name: "nsp", sheet: "petits", W: 150, H: 150, origin: [75, 75], frames: 1, draw: (g) => drawDontKnowKey(g, 75, 75) },
+  // (lot 3 bis, R23 : « je ne sais pas » est la pieuvre qui hausse les bras ; l'ancien « ? » se confondait avec celui de la question)
+  { name: "nsp", sheet: "petits", W: 150, H: 150, origin: [75, 75], frames: 1, draw: (g) => drawShrugKey(g, 75, 75) },
   { name: "passer", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawSkipKey(g, 70, 70) },
   { name: "encore", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawAgainKey(g, 90, 90) },
   { name: "album", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawAlbumKey(g, 90, 90) },
@@ -150,6 +154,7 @@ export const SPECS: Spec[] = [
   { name: "aide.cadre.lueur", sheet: "aides", W: TEN.cell + 24, H: TEN.cell + 24, origin: [TEN.cell / 2 + 12, TEN.cell / 2 + 12], frames: 1, draw: (g) => drawCellGlow(g, TEN.cell / 2 + 12, TEN.cell / 2 + 12) },
   { name: "aide.maison.toit", sheet: "aides", W: HOUSE.w + 70, H: HOUSE.roof + 40, origin: [HOUSE.w / 2 + 30, HOUSE.roof + 14], frames: 1, draw: (g) => drawHouseRoof(g, HOUSE.w / 2 + 30, HOUSE.roof + 14), meta: { ...HOUSE } },
   { name: "aide.maison.etage", sheet: "aides", W: HOUSE.w + 30, H: HOUSE.floor + 20, origin: [HOUSE.w / 2 + 10, 4], frames: 1, draw: (g) => drawHouseFloor(g, HOUSE.w / 2 + 10, 4) },
+  { name: "aide.maison.etage.vide", sheet: "aides", W: HOUSE.w + 30, H: HOUSE.floor + 20, origin: [HOUSE.w / 2 + 10, 4], frames: 1, draw: (g) => drawHouseFloor(g, HOUSE.w / 2 + 10, 4, false) },
   // (lot 3 : le seuil sortait de son calque à gauche, à droite et en bas ; dessin resserré, calque élargi avec une marge)
   { name: "aide.maison.seuil", sheet: "aides", W: HOUSE.w + 70, H: HOUSE.base + 36, origin: [HOUSE.w / 2 + 30, 10], frames: 1, draw: (g) => drawHouseBase(g, HOUSE.w / 2 + 30, 10) },
   // lot 2, étape 8 : les centaines (leçon L10, retours E6 et E7) : le filet de dix poissons (ancrage : coin haut
@@ -171,7 +176,7 @@ export const SPECS: Spec[] = [
   ...Array.from({ length: 13 }, (_, i): Spec => ({ name: `choix.ligne.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawLineTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
   ...Array.from({ length: 7 }, (_, i): Spec => ({ name: `choix.famille.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawFamilyTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
   { name: "choix.lecon", sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawLessonTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12) },
-  { name: "choix.lueur", sheet: "choix", W: TILE_W + 40, H: TILE_H + 40, origin: [TILE_W / 2 + 20, TILE_H / 2 + 20], frames: 1, draw: (g) => drawTileGlow(g, TILE_W / 2 + 20, TILE_H / 2 + 20) },
+  { name: "choix.lueur", sheet: "choix", W: TILE_W + 2 * GLOW_PAD + 12, H: TILE_H + 2 * GLOW_PAD + 12, origin: [TILE_W / 2 + GLOW_PAD + 6, TILE_H / 2 + GLOW_PAD + 6], frames: 1, draw: (g) => drawTileGlow(g, TILE_W / 2 + GLOW_PAD + 6, TILE_H / 2 + GLOW_PAD + 6) },
   // lot 3, étape 3 : le calcul rapide. Le pictogramme de l'écran « choisir » et les neuf plaques de niveaux (planche
   // « choix ») ; celui de la frise (« petits », comme les autres étapes) ; le petit poisson jaune du mur de corail,
   // vers la droite et vers la gauche, sa queue battant en 12 images (planche « calcul », chargée le temps du module 3 ;
@@ -182,4 +187,20 @@ export const SPECS: Spec[] = [
   ...([1, -1] as const).map((dir): Spec => ({ name: `mur.poisson.${dir > 0 ? "d" : "g"}`, sheet: "calcul", W: 80, H: 60, origin: [40, 30], frames: WALL_FISH_N, fps: 12, loop: [0, WALL_FISH_N], draw: (g, f) => drawWallFish(g, f, 40, 30, dir, 40) })),
   // les cadeaux du récif (la surprise) : ancrés au milieu de leur base, posés sur le sable
   ...GIFTS.map((id): Spec => ({ name: `cadeau.${id}`, sheet: "petits", W: 200, H: 180, origin: [100, 160], frames: 1, draw: (g) => drawGift(g, id, 100, 160) })),
+  // lot 3 bis, partie B (docs/SPEC-LOT3BIS.md, B8 ; sea/lot3bis.ts, sea/reefdecor.ts). Sur « petits » (toujours chargée) : le
+  // bouton de la légende et la croix du panneau, la traînée d'une étoile arc-en-ciel qui vole (ancrage : la tête), le filet
+  // haut de la leçon L2 (ancrage : le nœud) ; sur « aides » : les poissons des maisons, orange (premier nombre) et bleu
+  // (second) ; sur « poissons » (toujours chargée) : le poisson porteur d'étiquette du format « placer » (ancrage : la pointe
+  // de l'étiquette ; meta.tag : le centre de l'étiquette, sa largeur et sa hauteur) ; sur « defi » : le grand drapeau du
+  // record (ancrage : le pied du mât) ; sur « decors » (chargée avec le
+  // récif et quand un doublon apporte un décor) : les quinze décors (ancrage : le milieu de leur base) ; les onglets de zone de l'album vont aussi sur « petits » (sur « cartes », ils faisaient passer sa planche de 34 à 47 Mo)
+  { name: "legende", sheet: "petits", W: 2 * LEGEND_R + 30, H: 2 * LEGEND_R + 30, origin: [LEGEND_R + 12, LEGEND_R + 12], frames: 1, draw: (g) => drawLegendKey(g, LEGEND_R + 12, LEGEND_R + 12) },
+  { name: "fermer", sheet: "petits", W: 130, H: 130, origin: [62, 62], frames: 1, draw: (g) => drawCloseKey(g, 62, 62) },
+  { name: "etoile.trainee", sheet: "petits", W: TRAIL_W + 20, H: TRAIL_H + 30, origin: [TRAIL_W + 5, TRAIL_H / 2 + 10], frames: 1, draw: (g) => drawStarTrail(g, TRAIL_W + 5, TRAIL_H / 2 + 10) },
+  { name: "aide.filet.haut", sheet: "petits", W: NETV_W + 30, H: NETV_H + 30, origin: [NETV_W / 2 + 10, 4], frames: 1, draw: (g) => drawTallNet(g, NETV_W / 2 + 10, 4), meta: { w: NETV_W, h: NETV_H } },
+  ...HOUSE_FISH.map((pal, k): Spec => ({ name: `aide.poisson.${k}`, sheet: "aides", W: 70, H: 44, origin: [36, 22], frames: 1, draw: (g) => drawSmallFish(g, 36, 22, 38, pal, 9800 + k * 10) })),
+  { name: "placer.poisson", sheet: "poissons", W: 210, H: 190, origin: [120, 180], frames: TAG_FISH_N, fps: 12, loop: [0, TAG_FISH_N], draw: (g, f) => drawTagFish(g, f, 120, 180), meta: { tag: { ...TAG } } },
+  { name: "defi.drapeau", sheet: "defi", W: 170, H: 200, origin: [50, 186], frames: FLAG_N, fps: 8, loop: [0, FLAG_N], draw: (g, f) => drawBigFlag(g, 50, 186, f) },
+  ...["lagon", "corail", "large", "abysses"].map((z): Spec => ({ name: `album.zone.${z}`, sheet: "petits", W: 2 * ZONE_TAB_R + 24, H: 2 * ZONE_TAB_R + 24, origin: [ZONE_TAB_R + 10, ZONE_TAB_R + 10], frames: 1, draw: (g) => drawZoneTab(g, ZONE_TAB_R + 10, ZONE_TAB_R + 10, z) })),
+  ...Object.keys(DECORS).map((id): Spec => ({ name: `decor.${id}`, sheet: "decors", W: DECOR_W + 40, H: DECOR_H + 24, origin: [DECOR_ORIGIN[0] + 20, DECOR_ORIGIN[1]], frames: 1, draw: (g) => drawDecor(g, id, DECOR_ORIGIN[0] + 20, DECOR_ORIGIN[1]) })),
 ];

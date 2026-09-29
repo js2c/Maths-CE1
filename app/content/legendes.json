@@ -1,0 +1,62 @@
+{
+  "_doc": "Lot 3 bis (docs/SPEC-LOT3BIS.md, B2, B3). La légende des niveaux, pour le parent : une ligne par niveau (ce qui est travaillé, en une phrase simple, et un exemple), affichée par le bouton du petit livre sur les écrans de niveaux de « choisir » et sur l'écran des leçons ; l'espace parent et le guide du parent reprennent ce même texte. Écrit au feutre à l'écran : pas de deux-points, de parenthèses ni de guillemets ; « - » pour moins ; une espace insécable devant « ? » (le point d'interrogation ne va jamais seul à la ligne). etiquettes : le texte montré par un appui long sur un pictogramme (la voix ne le lit pas). appuiLong.ms : la durée de l'appui qui montre l'étiquette ; appuiLong.gardeMs : combien de temps elle reste affichée après qu'on a levé le doigt.",
+  "appuiLong": { "ms": 500, "gardeMs": 2000 },
+  "etiquettes": {
+    "jouer": "La séance du jour, préparée par l'application.",
+    "choisir": "Choisir soi-même l'exercice et le niveau.",
+    "recif": "Le récif, les créatures des cartes gagnées.",
+    "album": "L'album des cartes.",
+    "ligne": "Lire, placer et sauter sur une ligne de nombres.",
+    "additions": "Les additions à savoir par cœur, famille par famille.",
+    "calcul": "Des astuces pour calculer sans compter un par un.",
+    "lecons": "Revoir une leçon animée."
+  },
+  "titres": { "travail": "Ce qui est travaillé", "exemple": "Exemple" },
+  "ligne": [
+    { "n": 1, "travail": "Compter les sauts de 1 en 1 sur une corde de 0 à 10.", "exemple": "La tortue part de 2 et fait 3 sauts, 5" },
+    { "n": 2, "travail": "Lire et placer un nombre de 0 à 10, avec seulement 0, 5 et 10 écrits.", "exemple": "Place 8" },
+    { "n": 3, "travail": "Lire et placer un nombre de 0 à 20.", "exemple": "L'étoile est sur 14" },
+    { "n": 4, "travail": "Une ligne qui ne commence pas à 0.", "exemple": "De 30 à 40, l'étoile est sur 34" },
+    { "n": 5, "travail": "De 0 à 100, de 10 en 10, chaque saut vaut dix.", "exemple": "L'étoile est sur 70" },
+    { "n": 6, "travail": "Un morceau de ligne, seules les dizaines sont écrites.", "exemple": "De 30 à 50, où est 37 ?" },
+    { "n": 7, "travail": "Trouver de combien on saute, 1 ou 10.", "exemple": "40, 50, puis deux sauts, 70" },
+    { "n": 8, "travail": "Deviner où va un nombre sur une ligne sans graduations, de 0 à 100.", "exemple": "Où mettrais-tu 25 ?" },
+    { "n": 9, "travail": "De 0 à 1000, de 100 en 100.", "exemple": "L'étoile est sur 700" },
+    { "n": 10, "travail": "Une centaine, de 10 en 10.", "exemple": "De 300 à 400, l'étoile est sur 370" },
+    { "n": 11, "travail": "Des grands nombres, un par un, sur un morceau de ligne.", "exemple": "De 340 à 360, où est 347 ?" },
+    { "n": 12, "travail": "Écrire en chiffres un grand nombre entendu.", "exemple": "Trois cent sept, 307" },
+    { "n": 13, "travail": "Deviner où va un nombre sur une ligne sans graduations, de 0 à 1000.", "exemple": "Où mettrais-tu 500 ?" }
+  ],
+  "additions": [
+    { "n": 1, "travail": "Ajouter 1 ou 2, la tortue fait les sauts.", "exemple": "6 + 2" },
+    { "n": 2, "travail": "Les doubles, jusqu'à 5 + 5.", "exemple": "4 + 4" },
+    { "n": 3, "travail": "Les amis de 10, ce qui manque pour faire 10.", "exemple": "7 + ? = 10" },
+    { "n": 4, "travail": "Les maisons de 5, 6 et 7, deux nombres qui font le nombre du toit.", "exemple": "5 + ? = 7" },
+    { "n": 5, "travail": "Les maisons de 8 et 9, avec le cadre de 10.", "exemple": "6 + ? = 9" },
+    { "n": 6, "travail": "Les presque-doubles, un double et encore 1.", "exemple": "3 + 4 = 3 + 3 + 1" },
+    { "n": 7, "travail": "Le mélange de toutes les additions déjà rencontrées.", "exemple": "5 + 3, 4 + 4, 7 + 3" }
+  ],
+  "calcul": [
+    { "n": 1, "travail": "Ajouter ou retirer 1 ou 2.", "exemple": "47 + 2" },
+    { "n": 2, "travail": "Ajouter ou retirer 10, on descend ou on monte d'une rangée sur le mur.", "exemple": "34 + 10" },
+    { "n": 3, "travail": "Ajouter ou retirer des dizaines rondes, 20, 30.", "exemple": "23 + 30" },
+    { "n": 4, "travail": "Ajouter un petit nombre sans changer de dizaine.", "exemple": "34 + 5" },
+    { "n": 5, "travail": "Retirer un petit nombre sans changer de dizaine.", "exemple": "38 - 5" },
+    { "n": 6, "travail": "Ajouter 9, on ajoute 10, puis on retire 1.", "exemple": "34 + 9" },
+    { "n": 7, "travail": "Ajouter en passant la dizaine, on complète d'abord jusqu'à 10.", "exemple": "38 + 5 = 38 + 2 + 3" },
+    { "n": 8, "travail": "Ajouter deux nombres à deux chiffres, sans retenue.", "exemple": "23 + 14 = 23 + 10 + 4" },
+    { "n": 9, "travail": "Retirer en passant la dizaine.", "exemple": "42 - 5 = 42 - 2 - 3" }
+  ],
+  "lecons": [
+    { "n": "L1", "travail": "On compte les sauts, pas les traits.", "exemple": "De 0 à 3, 3 sauts" },
+    { "n": "L2", "travail": "Un saut peut valoir dix.", "exemple": "10, 20, 30" },
+    { "n": "L3", "travail": "Une ligne ne commence pas toujours à 0.", "exemple": "30, 31, 32" },
+    { "n": "L4", "travail": "Les doubles, deux fois le même nombre.", "exemple": "3 + 3" },
+    { "n": "L5", "travail": "Les amis de 10, remplir le cadre de 10.", "exemple": "7 + 3" },
+    { "n": "L6", "travail": "La maison des nombres, deux pièces et le toit.", "exemple": "5 + 2 = 7" },
+    { "n": "L10", "travail": "Les centaines, cent, c'est dix dizaines.", "exemple": "100, 200, 307" },
+    { "n": "L7", "travail": "Plus 10 sur le mur de corail, on descend d'une rangée.", "exemple": "34 + 10" },
+    { "n": "L8", "travail": "L'astuce du 9, plus 10, puis moins 1.", "exemple": "34 + 9" },
+    { "n": "L9", "travail": "Passer la dizaine, on complète d'abord jusqu'à 10.", "exemple": "38 + 5" }
+  ]
+}

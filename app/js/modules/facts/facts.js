@@ -147,4 +147,15 @@ export function formFor(f, trouDesBoite, rnd, { trouFamille = false, directe = f
 }
 // ce que l'enfant doit trouver, selon la forme
 // (lot 3 : le calcul rapide, `q.op` « - » : une soustraction ; la forme à trou « 38 + ? = 43 » attend le second nombre)
+// (lot 3 bis, B10 ; R19) l'erreur d'une addition, décidée par le moteur (le parent lit la phrase de content/parent.json) :
+// « soustraction » (a fait a − b au lieu de a + b ; à trou : a donné le total), « unDesNombres » (a répondu l'un des deux
+// nombres de la question), « plusOuMoins1 » (se trompe de 1), sinon « autre »
+export function classifyFact(q, v) {
+  const f = q.forme ?? "directe", exp = expected(q);
+  if (v === null || v === undefined || Number.isNaN(v) || v === exp) return v === exp ? null : "autre";
+  if (f === "directe" ? v === Math.abs(q.a - q.b) && q.a !== q.b : v === q.a + q.b) return "soustraction";
+  if (f === "directe" ? v === q.a || v === q.b : v === (f === "trouDroite" ? q.a : q.b)) return "unDesNombres";
+  if (Math.abs(v - exp) === 1) return "plusOuMoins1";
+  return "autre";
+}
 export const expected = (q) => (q.forme === "trouDroite" ? q.b : q.forme === "trouGauche" ? q.a : q.op === "-" ? q.a - q.b : q.a + q.b);

@@ -16,9 +16,10 @@ export class AidBoard {
     this.used = false; this.place(); st.onResize(() => this.place());
   }
   place() { const { px, k } = this.app.stage; this.c.width = Math.round(1280 * px); this.c.height = Math.round(800 * px); Object.assign(this.c.style, { width: `${1280 * k}px`, height: `${800 * k}px` }); this.used = false; }
-  // dessine en coordonnées de la scène (px logiques) ; efface d'abord
-  draw(fn) { const x = this.c.getContext("2d"), px = this.app.stage.px; x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, this.c.width, this.c.height); x.setTransform(px, 0, 0, px, 0, 0); fn(x); this.used = true; }
-  clear() { if (!this.used) return; const x = this.c.getContext("2d"); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, this.c.width, this.c.height); this.used = false; }
+  // dessine en coordonnées de la scène (px logiques) ; efface d'abord. Renvoie le numéro du dessin (`gen`) : une animation
+  // s'arrête dès qu'un autre dessin ou un effacement l'a remplacé
+  draw(fn) { const x = this.c.getContext("2d"), px = this.app.stage.px; x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, this.c.width, this.c.height); x.setTransform(px, 0, 0, px, 0, 0); fn(x); this.used = true; return (this.gen = (this.gen ?? 0) + 1); }
+  clear() { this.gen = (this.gen ?? 0) + 1; if (!this.used) return; const x = this.c.getContext("2d"); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, this.c.width, this.c.height); this.used = false; }
 }
 
 // pose un sprite dans un contexte déjà en px logiques (sprites.draw travaille en pixels d'écran)
@@ -29,10 +30,11 @@ export const num = (ctx, v, x, y, em = 36, color) => R.drawNumber(ctx, String(v)
 // ---------------------------------------------------------------- le cadre de 10
 // (x, y) : coin haut gauche du cadre ; n : poissons posés dans les alvéoles, dans l'ordre (rangée du haut,
 // puis du bas) ; glow : alvéoles entourées de lumière ; extra : poissons d'une autre couleur après les n premiers
-export function paintTenFrame(ctx, sprites, x, y, { n = 0, glow = [], extra = 0 } = {}) {
+// (lot 3 bis : `fish`, les deux sprites des poissons ; la maison aux poissons y met les siens, orange puis bleus)
+export function paintTenFrame(ctx, sprites, x, y, { n = 0, glow = [], extra = 0, fish = ["poisson.2.d", "poisson.1.d"] } = {}) {
   const m = sprites.atlas.sprites["aide.cadre10"].meta;
   put(ctx, sprites, "aide.cadre10", x, y);
-  for (let i = 0; i < Math.min(10, n + extra); i++) { const [cx, cy] = m.cells[i]; put(ctx, sprites, i < n ? "poisson.2.d" : "poisson.1.d", x + cx, y + cy); }
+  for (let i = 0; i < Math.min(10, n + extra); i++) { const [cx, cy] = m.cells[i]; put(ctx, sprites, i < n ? fish[0] : fish[1], x + cx, y + cy); }
   for (const i of glow) { const [cx, cy] = m.cells[i]; put(ctx, sprites, "aide.cadre.lueur", x + cx, y + cy); }
   return { w: m.w, h: m.h, cell: (i) => [x + m.cells[i][0], y + m.cells[i][1]] };
 }
@@ -48,6 +50,37 @@ export function paintHouse(ctx, sprites, cx, top, total, rows) {
   num(ctx, total, cx, top - H.roof * 0.5, 44);
   const slots = rows.map(([a, b], k) => { const y = top + k * H.floor + H.floor / 2; for (const [v, x] of [[a, cx - q], [b, cx + q]]) if (v !== null && v !== undefined) num(ctx, v, x, y, 36, v === "?" ? R.RED : undefined); return [[cx - q, y], [cx + q, y]]; });
   return { height: H.roof + rows.length * H.floor + H.base, slots, roof: [cx, top - H.roof * 0.5] };
+}
+// (lot 3 bis, B5 ; R5) LA MAISON AUX POISSONS (familles 4 et 5) : l'étage sans plaques, agrandi (`s`), les poissons du
+// premier nombre (orange) dans la pièce de gauche, ceux du second (bleus) dans celle de droite ; « ? » rouge dans la
+// pièce du nombre qui manque (formes à trou). `t` (0 à 1) : les poissons montent se ranger sous le toit, en une rangée ;
+// aux formes à trou, la rangée a `total` places et celles qui restent vides s'allument (ce sont elles qu'on compte).
+// (cx, top) : milieu, bas du toit. Renvoie la place occupée.
+export const HOUSE_FISH_K = 1;
+export function paintFishHouse(ctx, sprites, cx, top, { a, b, total, forme = "directe", t = 0, s = 1.3, roofLabel = "?" }) {
+  const H = sprites.atlas.sprites["aide.maison.toit"].meta, q = (H.w / 4) * s, floorY = top, roomW = (H.w / 2) * s - 20, roomH = H.floor * s;
+  putScaled(ctx, sprites, "aide.maison.etage.vide", cx, floorY, s);
+  putScaled(ctx, sprites, "aide.maison.seuil", cx, floorY + roomH, s);
+  putScaled(ctx, sprites, "aide.maison.toit", cx, top, s);
+  num(ctx, roofLabel, cx, top - H.roof * s * 0.5, 50, roofLabel === "?" ? R.RED : undefined);
+  const known = forme === "trouDroite" ? [a, 0] : forme === "trouGauche" ? [0, b] : [a, b];
+  // les places dans une pièce : 3 colonnes, jusqu'à 3 rangées, posées sur le sol
+  // (dans les pièces, les poissons à leur taille ; sous le toit, réduits juste assez pour tenir en une rangée)
+  const k = HOUSE_FISH_K, fw = 56 * k, room = (side, i) => [cx + side * q + ((i % 3) - 1) * fw * 1.04, floorY + roomH - 22 * k - 8 - Math.floor(i / 3) * 36 * k];
+  // les places sous le toit : une rangée de `total` places au bas de la coquille
+  // (la bande libre entre la plaque du total et la charnière du toit)
+  const n = forme === "directe" ? a + b : total, span = Math.min(n * fw * 0.98, H.w * s * 0.95), kr = Math.min(k, span / (n * 56)), fr = 56 * kr, roofY = top - 32;
+  const slot = (j) => [cx - span / 2 + fr / 2 + (n > 1 ? j * ((span - fr) / (n - 1)) : 0), roofY];
+  const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+  const fish = (name, from, to) => { const x = from[0] + (to[0] - from[0]) * ease, y = from[1] + (to[1] - from[1]) * ease - Math.sin(Math.PI * ease) * 40; putScaled(ctx, sprites, name, x, y, k + (kr - k) * ease); };
+  // les places vides sous le toit (formes à trou), allumées une fois les poissons rangés
+  if (forme !== "directe" && t >= 1) { const first = forme === "trouDroite" ? a : 0, count = total - known[0] - known[1]; for (let j = 0; j < count; j++) putScaled(ctx, sprites, "aide.cadre.lueur", ...slot(first + j), Math.min(0.55, kr * 0.62)); }
+  for (let i = 0; i < known[0]; i++) fish("aide.poisson.0", room(-1, i), slot(i));
+  const startB = forme === "trouGauche" ? total - b : known[0];
+  for (let i = 0; i < known[1]; i++) fish("aide.poisson.1", room(1, i), slot(startB + i));
+  if (forme === "trouDroite") num(ctx, "?", cx + q, floorY + roomH / 2, 44, R.RED);
+  if (forme === "trouGauche") num(ctx, "?", cx - q, floorY + roomH / 2, 44, R.RED);
+  return { w: H.w * s, h: (H.roof + H.floor + H.base) * s };
 }
 export const houseHeight = (sprites, floors) => { const H = sprites.atlas.sprites["aide.maison.toit"].meta; return H.roof + floors * H.floor + H.base; };
 
@@ -65,20 +98,30 @@ export function paintDoublePlus(ctx, sprites, a, { cx = 640, y = 360, gap = 92, 
 
 // ---------------------------------------------------------------- les centaines (lot 2, étape 8)
 // un sprite à l'échelle k (le chalut et le filet sont grands : on les réduit pour en aligner plusieurs)
+// (lot 3 bis : le dessin se fait en pixels d'écran, transformation remise à zéro puis rendue ; avant, sur un écran de
+// densité 2 comme la tablette, les chaluts et filets étaient dessinés deux fois trop grands et trop loin)
 export const putScaled = (ctx, sprites, name, x, y, k, f = 0) => {
   const q = sprites.frame(name, f), m = ctx.getTransform(), s = 1 / sprites.px;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, m.a * x + m.e + q.dx * k * m.a * s, m.d * y + m.f + q.dy * k * m.d * s, q.w * k * m.a * s, q.h * k * m.d * s);
+  ctx.setTransform(m);
 };
 // un nombre décomposé (docs/SPEC-COMPLEMENTS.md, partie A) : c chaluts pleins (des centaines), d filets de dix
 // poissons (des dizaines), u poissons seuls (des unités), chaque groupe au-dessus de son chiffre ; `lit` : la
 // place dont le chiffre est écrit en couleur (0 centaines, 1 dizaines, 2 unités) ; `vides` : écrire le 0 des
 // places vides. Planche « centaines » (chargée avant). (cx, top) : milieu, haut du dessin
-export function paintHundreds(ctx, sprites, n, cx = 640, top = 330, { lit = null, width = 1000, digits = true, kMax = 0.5 } = {}) {
+// (lot 3 bis, R20 : `fit` = [gauche, droite] : le dessin tient entre ces deux abscisses, les chaluts rapetissent s'il le faut ;
+// sans lui, « 408 » et « 307 » débordaient jusque sur le rocher de droite)
+export function paintHundreds(ctx, sprites, n, cx = 640, top = 330, { lit = null, width = 1000, digits = true, kMax = 0.5, fit = null } = {}) {
   const c = Math.floor(n / 100), d = Math.floor(n / 10) % 10, u = n % 10;
   const T = sprites.atlas.sprites["aide.chalut"].meta, N = sprites.atlas.sprites["aide.filet"].meta;
-  const perRow = c > 5 ? Math.ceil(c / 2) : c, kc = Math.min(kMax, (width * 0.5) / Math.max(1, perRow * (T.w + 20))), kn = 0.55;
-  const wc = perRow * (T.w + 20) * kc, wd = Math.max(110, Math.ceil(d / 5) * (N.w + 14) * kn), wu = Math.max(110, Math.ceil(u / 5) * 64);
-  const gap = 60, total = wc + wd + wu + gap * 2, x0 = cx - total / 2, colX = [x0 + wc / 2, x0 + wc + gap + wd / 2, x0 + wc + wd + 2 * gap + wu / 2];
+  const perRow = c > 5 ? Math.ceil(c / 2) : c, kn = 0.55, gap = fit ? 40 : 60;
+  const wd = Math.max(110, Math.ceil(d / 5) * (N.w + 14) * kn), wu = Math.max(110, Math.ceil(u / 5) * 64);
+  let kc = Math.min(kMax, (width * 0.5) / Math.max(1, perRow * (T.w + 20)));
+  if (fit) kc = Math.max(0.12, Math.min(kc, (fit[1] - fit[0] - wd - wu - gap * 2) / Math.max(1, perRow * (T.w + 20))));
+  const wc = perRow * (T.w + 20) * kc, total = wc + wd + wu + gap * 2;
+  if (fit) cx = Math.min(fit[1] - total / 2, Math.max(fit[0] + total / 2, cx));
+  const x0 = cx - total / 2, colX = [x0 + wc / 2, x0 + wc + gap + wd / 2, x0 + wc + wd + 2 * gap + wu / 2];
   for (let i = 0; i < c; i++) putScaled(ctx, sprites, "aide.chalut", x0 + ((i % perRow) + 0.5) * (T.w + 20) * kc, top + Math.floor(i / perRow) * (T.h + 40) * kc, kc, 10);
   const fy = top + 20;
   for (let i = 0; i < d; i++) putScaled(ctx, sprites, "aide.filet", x0 + wc + gap + Math.floor(i / 5) * (N.w + 14) * kn, fy + (i % 5) * (N.h + 8) * kn, kn);

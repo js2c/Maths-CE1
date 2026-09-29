@@ -4,7 +4,7 @@
 // Sous l'ardoise, une rangée de perles d'or : une par bonne réponse ; le drapeau rouge marque le record à battre
 // (après la perle du record). Planche « defi », chargée le temps du défi (main.js).
 import { spriteBox } from "../../engine/ui.js";
-import { clock } from "../../engine/clock.js";
+import { clock, wait } from "../../engine/clock.js";
 
 const TIMER = [215, 585], ROW = { x0: 470, x1: 1110, y: 410 }, GAP = 34;
 
@@ -20,8 +20,25 @@ export class ChallengeView {
   show(v, { record = null } = {}) {
     if (v) { this.rec = record; this.n = 0; this.f = 0; this.row.repaint(); this.timer.repaint(); }
     for (const e of [this.timer, this.row]) e.style.visibility = v ? "visible" : "hidden";
+    if (!v) this.dropFlag();
   }
-  remove() { this.stop(); this.timer.remove(); this.row.remove(); }
+  remove() { this.stop(); this.dropFlag(); this.timer.remove(); this.row.remove(); }
+  // (lot 3 bis, B6 ; R14) LA FIN DU DÉFI : la bulle-sablier est rangée, les perles avancent une à une jusqu'au score, puis le
+  // grand drapeau du record (« defi.drapeau », 8 images) est planté à la place du record (après la dernière perle s'il est
+  // battu) ; il flotte jusqu'à la fin de l'étape. `rec` : le record à montrer (null : aucun)
+  async finale(score, rec, { k = this.app.vitesse ?? 1 } = {}) {
+    this.timer.style.visibility = "hidden"; this.big = true; this.rec = rec;
+    const step = Math.min(90, 1400 / Math.max(1, score)) / k;
+    for (let i = 0; i <= score; i++) { this.n = i; this.row.repaint(); if (i < score) await wait(step); }
+    if (!rec) return;
+    const x = this.slots(), gap = x(1) - x(0), fx = ROW.x0 - 30 + x(rec - 1) + gap / 2, fy = ROW.y + 14, t0 = performance.now();
+    let f = -1;
+    this.flag = spriteBox(this.app, { x: fx - 60, y: fy - 200, w: 190, h: 216, cls: "hud defi-drapeau pop", still: true, paint: (ctx) => this.app.sprites.draw(ctx, "defi.drapeau", Math.max(0, f), 60, 200) });
+    this.flagTick = () => { const g = Math.floor(((performance.now() - t0) / 1000) * 8) % 8; if (g !== f) { f = g; this.flag.repaint(); } };
+    this.app.stage.ticks.add(this.flagTick);
+    await wait(500 / k);
+  }
+  dropFlag() { if (this.flagTick) this.app.stage.ticks.delete(this.flagTick); this.flagTick = null; this.flag?.remove(); this.flag = null; this.big = false; }
   // l'eau baisse : l'image suit le temps écoulé (horloge active : la pause l'arrêterait)
   start(t0, dur) {
     const N = this.frames;
@@ -38,6 +55,6 @@ export class ChallengeView {
   paintRow(ctx) {
     const { sprites } = this.app, x = this.slots(), gap = x(1) - x(0), y = 80;
     for (let i = 0; i < this.n; i++) sprites.draw(ctx, "defi.perle", 0, x(i), y);
-    if (this.rec) sprites.draw(ctx, "defi.record", 0, x(this.rec - 1) + gap / 2, y + 18);
+    if (this.rec && !this.big) sprites.draw(ctx, "defi.record", 0, x(this.rec - 1) + gap / 2, y + 18);
   }
 }

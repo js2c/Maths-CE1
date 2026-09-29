@@ -14,7 +14,7 @@ import { cel, contour, INK, shift } from "../oceanMarker";
 import { drawAnswerBubble } from "./decor";
 import { rrect } from "./treasure";
 import { drawWord, wordWidth } from "./runtime";
-import { TILE_H, TILE_R, TILE_W } from "./choice";
+import { drawTileNumber, TILE_H, TILE_R, TILE_W, VIGN_Y } from "./choice";
 
 const SH = "#0a3f49", YELLOW: [string, string] = ["#ffd84a", "#e0a21c"], CORAL = "#ff8f70", CORAL_S = "#d0573f", CELL = "#fff4e6";
 export const WALL_FISH_N = 12;
@@ -64,10 +64,15 @@ export const drawCalcTile = (g: Gfx, cx: number, cy: number, level: number) => {
   g.group("plain", () => {
     const s = rrect(cx - TILE_W / 2, cy - TILE_H / 2, TILE_W, TILE_H, TILE_R);
     fillShape(g, shift(s, 6, 8), SH, 0.28); cel(g, s, "#fffaf0", "#e3d6bb", 6); contour(g, s, 3.6, 7670 + level);
-    const sl = rrect(cx - 62, cy - 34, 124, 68, 12);
-    fillShape(g, shift(sl, 3, 4), SH, 0.25); cel(g, sl, "#2f6d78", "#21545d", 3); contour(g, sl, 3, 7680 + level);
-    const t = CALC_EXAMPLES[level - 1], em = Math.min(34, 104 / wordWidth(t));
-    drawWord(g.cur as CanvasRenderingContext2D, t, cx, cy - em / 2, em, { color: "#fffaf0", w: em * 0.14, seed: 7690 + level });
+    // lot 3 bis (B1) : le numéro en grand en haut, l'exemple en petit sur l'ardoise, dessous
+    const sy = cy + VIGN_Y + 4, sl = rrect(cx - 56, sy - 22, 112, 44, 10);
+    fillShape(g, shift(sl, 3, 4), SH, 0.25); cel(g, sl, "#2f6d78", "#21545d", 3); contour(g, sl, 2.6, 7680 + level);
+    const t = CALC_EXAMPLES[level - 1], em = Math.min(24, 94 / wordWidth(t));
+    drawWord(g.cur as CanvasRenderingContext2D, t, cx, sy - em / 2, em, { color: "#fffaf0", w: em * 0.14, seed: 7690 + level });
+    drawTileNumber(g, cx, cy, level);
     g.mark([[cx - TILE_W / 2, cy - TILE_H / 2], [cx + TILE_W / 2, cy + TILE_H / 2]]);
   });
 };
+
+// lot 3 bis (B1) : le chemin de cailloux des neuf niveaux est dessiné en direct (runtime.ts, drawStonePath, CALC_STOPS)
+export { CALC_PITCH, CALC_STOPS, drawStonePath } from "./runtime";

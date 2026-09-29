@@ -10,7 +10,7 @@ import { fill } from "../numberline/screen.js";
 import { clock, wait } from "../../engine/clock.js";
 import { skipKey } from "../../engine/ui.js";
 import { aidFor, expected } from "./facts.js";
-import { AidBoard, paintDoublePlus, paintHouse, paintTenFrame } from "./aids.js";
+import { AidBoard, paintDoublePlus, paintFishHouse, paintTenFrame } from "./aids.js";
 
 const SKIPPED = Symbol("correction passée");
 
@@ -49,17 +49,19 @@ export class FactsScreen {
     if (!this.q) return;
     ctx.setTransform(px, 0, 0, px, 0, 0);
     // (lot 3 : le calcul rapide, soustractions comprises : `q.op`, `q.n`)
-    const q = this.q, n = q.n ?? q.a + q.b, f = q.forme ?? "directe", sg = q.op === "-" ? "−" : "+";
+    // (lot 3 bis, B4 : pendant un calcul guidé, l'ardoise garde le calcul demandé, `slateQ`, avec « ? » : les étapes
+    // s'écrivent sur les cailloux du chemin)
+    const q = this.slateQ ?? this.q, n = q.n ?? q.a + q.b, f = q.forme ?? "directe", sg = q.op === "-" ? "−" : "+";
     const [left, right] = q.dictee ? ["", ""] : f === "trouDroite" ? [`${q.a} ${sg}`, `= ${n}`] : f === "trouGauche" ? ["", `${sg} ${q.b} = ${n}`] : [`${q.a} ${sg} ${q.b} =`, ""];
     // (lot 3 bis : l'écriture se resserre si elle dépasserait de l'ardoise, « ? + 10 = 57 », « ? − 2 = 45 »)
-    const slot = this.typed || "?", W = (x) => (x ? R.wordWidth(x) : 0), u = W(left) + (left ? 0.4 : 0) + Math.max(1.36, W(slot)) + (right ? 0.4 : 0) + W(right);
+    const slot = (this.slateQ ? "" : this.typed) || "?", W = (x) => (x ? R.wordWidth(x) : 0), u = W(left) + (left ? 0.4 : 0) + Math.max(1.36, W(slot)) + (right ? 0.4 : 0) + W(right);
     const em = Math.min(76, SLATE_W / u), lw = W(left) * em, rw = W(right) * em, sw = Math.max(1.36, W(slot)) * em, gap = 0.4 * em;
     const total = lw + (left ? gap : 0) + sw + (right ? gap : 0) + rw, x0 = 295 - total / 2;
     if (left) R.drawWord(ctx, left, x0 + lw / 2, 110 - em / 2, em, { w: 10, seed: 950 });
     const sx = x0 + lw + (left ? gap : 0) + sw / 2;
     if (right) R.drawWord(ctx, right, sx + sw / 2 + gap + rw / 2, 110 - em / 2, em, { w: 10, seed: 960 });
     if (this.ring) R.drawRing(ctx, sx, 110, 56);
-    R.drawNumber(ctx, slot, sx, 110 - em / 2, em, { w: 10.5, color: this.typed ? R.INK : R.RED, seed: 970 });
+    R.drawNumber(ctx, slot, sx, 110 - em / 2, em, { w: 10.5, color: slot !== "?" ? R.INK : R.RED, seed: 970 });
   }
   // lot 3 bis (A5) : la porte du pavé (un rebond de doigt sur la même touche est ignoré ; fermée pendant un retour)
   get gate() { return (this._gate ??= new TapGate(this.app.toucher ?? {})); }
@@ -140,15 +142,39 @@ export class FactsScreen {
     this.keys(false); this.hermit?.play("montrer", { hold: 2500 });
     this.board.draw((ctx) => {
       if (kind === "cadre") { const k = f === "trouGauche" ? q.b : q.a, rest = n - k; paintTenFrame(ctx, sprites, 700 - 228, 495, { n: k, extra: solved || f === "directe" ? rest : 0, glow: solved || f === "directe" ? [] : Array.from({ length: rest }, (_, i) => k + i) }); }
-      else if (kind === "maison") paintHouse(ctx, sprites, 700, 580, N, [[A, B]]);
+      else if (kind === "maison") this.paintHouseAid(ctx, q, solved, 0);
       else if (kind === "doublePlus") paintDoublePlus(ctx, sprites, Math.min(q.a, q.b), { cx: 700, y: 500 });
       else paintDoublePlus(ctx, sprites, q.a, { cx: 700, y: 500, bonus: false });
     });
+    if (kind === "maison") this.animateHouse(q, solved);
     return kind;
   }
-  aidSpeech(q, kind) {
+  // (lot 3 bis, B5 ; R5) la maison aux poissons : les poissons des deux nombres dans leurs pièces, puis ils montent se ranger
+  // sous le toit (les places vides s'allument aux formes à trou) ; la famille 5 (et le mélange, à partir de 8) reçoit en
+  // plus le cadre de 10, à droite de la maison, avec les mêmes poissons (docs/SPEC.md, « Maison et cadre de 10 »)
+  withFrame(q) { const fam = this.c.familles.find((f) => f.id === q.famille); return !!fam?.cadreAussi || (fam?.aide === "fait" && q.a + q.b >= 8); }
+  paintHouseAid(ctx, q, solved, t) {
+    const { sprites } = this.app, f = solved ? "directe" : q.forme ?? "directe", n = q.a + q.b, frame = this.withFrame(q), cx = frame ? 470 : 700;
+    paintFishHouse(ctx, sprites, cx, 545, { a: q.a, b: q.b, total: n, forme: f, t, roofLabel: f === "directe" && !solved ? "?" : n });
+    if (frame) {
+      const k = f === "trouGauche" ? q.b : q.a, known = f === "directe" ? n : k;
+      paintTenFrame(ctx, sprites, 740, 450, { n: f === "trouGauche" ? 0 : q.a, extra: f === "directe" ? q.b : f === "trouGauche" ? q.b : 0, glow: f === "directe" ? [] : Array.from({ length: n - known }, (_, i) => known + i), fish: ["aide.poisson.0", "aide.poisson.1"] });
+    }
+  }
+  async animateHouse(q, solved) {
+    const k = this.app.vitesse ?? 1;
+    let gen = this.board.gen;
+    await wait(700 / k);
+    for (let i = 1; i <= 20; i++) {
+      if (this.board.gen !== gen) return;
+      gen = this.board.draw((ctx) => this.paintHouseAid(ctx, q, solved, i / 20));
+      await wait(55 / k);
+    }
+  }
+  aidSpeech(q, kind, solved = false) {
     const t = this.app.text.data, k = q.forme === "trouGauche" ? q.b : q.a;
-    return kind === "cadre" ? fill(t.aideCadre, { k }) : kind === "maison" ? t.aideMaison : kind === "doublePlus" ? fill(t.aideDoublePlus, { d: Math.min(q.a, q.b) }) : fill(t.aideReflet, { a: q.a });
+    // (lot 3 bis, R21 : « un poisson », jamais « 1 poissons »)
+    return kind === "cadre" ? (k === 1 ? t.aideCadreUn : fill(t.aideCadre, { k })) : kind === "maison" ? (solved || (q.forme ?? "directe") === "directe" ? t.aideMaison : fill(t.aideMaisonTrou, { n: q.a + q.b })) : kind === "doublePlus" ? fill(t.aideDoublePlus, { d: Math.min(q.a, q.b) }) : q.a === 1 ? t.aideRefletUn : fill(t.aideReflet, { a: q.a });
   }
   // l'aide (coquillage, aide affichée d'emblée) peut être passée dès qu'elle commence (décision du parent du
   // 27 septembre) : le bouton « passer » habituel ; un toucher coupe la voix et l'animation, range l'appui et
@@ -178,7 +204,7 @@ export class FactsScreen {
     try {
       const kind = this.aidKind(q);
       if (kind === "ligne") await g(this.lineAid(q, true, { g }));
-      else { this.paintAid(q, true); await g(voice.say(this.aidSpeech(q, kind))); }
+      else { this.paintAid(q, true); await g(voice.say(this.aidSpeech(q, kind, true))); }
       await g(voice.say(fill(text.data.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b })));
       await g(wait(500 / k));
       await g(voice.say(text.data.aToiFait));
@@ -224,7 +250,7 @@ export class FactsScreen {
         if (nsp) await g(voice.say(text.data.faitNSP)); else { pop(this.slate, "shake"); await g(wait(500 / k)); }
         answer();
         // en notion du jour (lot 2, étape 6) : l'appui visuel de la famille, avec la réponse
-        if (this.notion && !q.base) { const kind = this.aidKind(q); if (kind === "ligne") await g(this.lineAid(q, false, { g })); else { this.paintAid(q, true); await g(voice.say(this.aidSpeech(q, kind))); } }
+        if (this.notion && !q.base) { const kind = this.aidKind(q); if (kind === "ligne") await g(this.lineAid(q, false, { g })); else { this.paintAid(q, true); await g(voice.say(this.aidSpeech(q, kind, true))); } }
         await g(voice.say(fill(text.data.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b })));
         await g(wait(700 / k));
       } catch (e) {
@@ -241,7 +267,7 @@ export class FactsScreen {
   async showHelp() {
     if (this.locked || !this.q || this.q.base) return;
     // lot 3 : le coquillage du calcul rapide montre le chemin (les ponts), qui reste pendant la réponse
-    if (this.q.module === 3 && this.calc) { if (this.aide) return; this.aide = true; pop(this.help); this.calc.help(this.q); return; }
+    if (this.q.module === 3 && this.calc) { if (this.aide) return; this.aide = true; pop(this.help); return this.calc.showHelp(this.q); }
     const { voice } = this.app, q = this.q, kind = this.aidKind(q);
     this.locked = true; this.aide = true; pop(this.help); this.keys(false); voice.stop();
     await this.skippable("passer l'aide", async (g, dead) => {
@@ -254,22 +280,35 @@ export class FactsScreen {
   }
   // la tortue part du grand nombre et fait 1 ou 2 sauts (la ligne de 0 à 10, tous les nombres écrits) ;
   // `g`, `dead` : l'aide passée (skippable) arrête la voix, les sauts et range la ligne aussitôt
+  // (lot 3 bis, B5 ; R5) aux formes à trou, l'aide ne donne plus la réponse : la tortue part du nombre connu et saute jusqu'au
+  // total demandé (« Compte les sauts avec la tortue jusqu'à 10. »), un « Hop ! » par saut, sans dire combien il y en a ;
+  // à la forme directe, elle fait les sauts et l'enfant lit où elle arrive
   async lineAid(q, solved, { g = (p) => p, dead = () => false } = {}) {
-    const { voice, text, line } = this.app, nl = this.app.lineScreen(), big = Math.max(q.a, q.b), small = Math.min(q.a, q.b);
+    const { voice, text, line } = this.app, nl = this.app.lineScreen(), f = solved ? "directe" : q.forme ?? "directe";
+    const trou = f !== "directe", big = trou ? (f === "trouDroite" ? q.a : q.b) : Math.max(q.a, q.b), small = trou ? q.a + q.b - big : Math.min(q.a, q.b), n = q.a + q.b;
     this.keys(false); this.hermit?.play("montrer", { hold: 2000 });
-    const spec = { x0: 150, x1: 1134, y: 452, n: 11, labels: Array.from({ length: 11 }, (_, i) => String(i)), k: 0, lit: [big] };
+    const spec = { x0: 150, x1: 1134, y: 452, n: 11, labels: Array.from({ length: 11 }, (_, i) => String(i)), k: 0, lit: trou ? [big, n] : [big] };
     const [bmp] = await g(line.render([spec])); line.show(bmp);
     nl.spec = spec; nl.q = { min: 0, max: 10, step: 1 }; nl.arcs = []; nl.overlay = []; line.fxClear();
     nl.turtle.sitOn(spec, big);
     try {
-      await g(voice.say(fill(text.data.aideLigne, { a: big, sauts: small === 1 ? text.data.unSaut : `${small} ${text.data.sauts}` })));
-      await g(nl.countJumps(big, big + small, { label: (k) => `+${k}`, say: (k) => String(k), stop: dead, guard: g }));
+      if (trou) {
+        await g(voice.say(fill(text.data.aideLigneTrou, { n })));
+        await g(nl.countJumps(big, n, { label: () => "+1", say: () => text.data.hop, stop: dead, guard: g }));
+      } else {
+        await g(voice.say(fill(text.data.aideLigne, { a: big, sauts: small === 1 ? text.data.unSaut : `${small} ${text.data.sauts}` })));
+        await g(nl.countJumps(big, big + small, { label: (k) => `+${k}`, say: (k) => String(k), stop: dead, guard: g }));
+      }
       await g(wait(solved ? 600 : 1600));
     } finally { nl.turtle.hide(); nl.arcs = []; line.fxClear(); line.clear(); }
   }
   // lot 3 : l'échauffement est passé pendant une question : elle est abandonnée (plus de réponse attendue)
-  abandon() { this.locked = true; this.resolve = null; this.app.voice.stop(); this.app.aidBoard?.clear(); }
-  leave() { this.show(false); this.q = null; this.defi = null; this.dictee = null; this.app.aidBoard?.clear(); }
+  abandon() { this.locked = true; this.resolve = null; this.app.voice.stop(); this.reset(); }
+  leave() { this.show(false); this.q = null; this.defi = null; this.dictee = null; this.reset(); }
+  // (correctif du 28 septembre 2026) rien de ce qu'un exercice quitté en cours a posé sur l'écran ne doit survivre : le
+  // rappel de la saisie (le chemin d'un calcul guidé, le tableau de la dictée) redessinait l'ancien chemin au premier
+  // chiffre tapé dans l'exercice suivant ; la saisie, l'anneau, l'aide et le « passer » de l'échauffement sont remis à zéro
+  reset() { this.slateQ = null; this.onTyped = null; this.beforeSubmit = null; this.typed = ""; this.ring = false; this.aide = false; this.locked = true; this.app.aidBoard?.clear(); this.slate?.repaint(); }
 }
 
 // l'échauffement dans la séance : n faits (10 à 14), précédés, une séance sur cinq, des questions du temps de

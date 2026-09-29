@@ -12,6 +12,9 @@ dans `out/`, une partie par dossier. Le relecteur commence par `out/INDEX.md`.
 | `c-toucher.mjs` | C | `out/C-toucher/` : planches avant/après et journal des touchers |
 | `d-vitesse-reelle.mjs` | D | `out/D-vitesse-reelle/` : chronologies des séances jouées à vitesse réelle (`--cas ligne|additions|calcul|famille3`) |
 | `d-index.mjs` | D | la synthèse de la partie D (avec les relevés de `tests/e2e/recette.mjs --delai 4.5`, copiés en `recette-moduleN.json`) |
+| `e-lot3bis.mjs` | E | (lot 3 bis) `E-lot3bis/` : planches des écrans nouveaux du lot 3 bis, d'après les captures de `node tests/e2e/lot3bis-b.mjs` |
+
+Lot 3 bis : la variable `RECETTE_OUT` range le matériel dans un autre dossier (la recette de contrôle : `RECETTE_OUT=tests/recette-fonctionnelle/out-lot3bis`), sans toucher à `out/`, jugé dans `docs/RECETTE-LOT3.md`.
 
 Préalable : `npm install` à la racine et dans `art/` (Playwright, Chromium préinstallé).
 

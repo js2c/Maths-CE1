@@ -125,10 +125,10 @@ test("cartes (lot 2) : cartes et brillantes, quota restant, zone suivante et ce 
   assert.deepEqual([K.cartes, K.brillantes, K.quota, K.gagnables], [13, 2, 14, 1]);
   assert.equal(K.semaines, 2); assert.equal(K.prochaineDoree, 2);
   assert.equal(K.zones[0].gagnees, 13); assert.equal(K.zones[0].ouverte, true); assert.equal(K.zones[1].pret, true); assert.equal(K.zones[2].pret, false);
-  assert.match(K.suivante.attend, /il reste 2 cartes/);
+  assert.match(K.suivante.attend, /que les 2 cartes \(communes et rares\) qui restent/);
   const all = Object.fromEntries(L.map((c) => [c.id, { n: 1 }]));
   assert.match(cardsSummary({ ...R, cartes: { cartes: all } }, cartes, cal, seances, at("2026-10-07")).suivante.attend, /étoile arc-en-ciel/);
-  assert.match(cardsSummary({ ...R, cartes: { cartes: all }, zones: { ouvertes: ["lagon", "corail"] } }, cartes, cal, seances).suivante.attend, /il reste 15/);
+  assert.match(cardsSummary({ ...R, cartes: { cartes: all }, zones: { ouvertes: ["lagon", "corail"] } }, cartes, cal, seances).suivante.attend, /que les 15 cartes/);
 });
 
 // lot 2, étape 2 : le point de départ du parent, le cran dans l'historique et l'export

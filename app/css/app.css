@@ -28,6 +28,7 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 
 /* la bande tactile de la ligne (placer, estimer) : toute la hauteur de la ligne et de ses nombres */
 .touchband { position: absolute; top: 380px; height: 230px; display: none; touch-action: none; cursor: pointer; }
+.fishhit { position: absolute; display: none; touch-action: none; cursor: grab; } /* lot 3 bis (B7) : le poisson du format « placer » se touche et se fait glisser */
 .answer.still { pointer-events: none; }
 
 /* séance : choix du nom, coche, lune, bilan des étoiles */
@@ -88,6 +89,7 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .album-card.closed { filter: brightness(0.42) saturate(0.55) drop-shadow(4px 6px 0 rgba(3, 20, 26, 0.45)); }
 .album-tab.sel { filter: drop-shadow(0 0 5px #ffe45c) drop-shadow(0 0 12px #ffd23a); }
 .album-tab.closed.sel { filter: brightness(0.6) saturate(0.6) drop-shadow(0 0 5px #ffe45c) drop-shadow(0 0 12px #ffd23a); }
+.album-tab.closed { filter: brightness(0.6) saturate(0.6); }
 .album-card.shiny { filter: drop-shadow(0 0 6px #fff6c8) drop-shadow(4px 6px 0 rgba(3, 20, 26, 0.45)); }
 .album-lock, .pearls { pointer-events: none !important; }
 
@@ -101,4 +103,14 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .cran { transform: scale(0.84); transition: transform 0.2s ease-out; }
 .cran.chosen { transform: scale(1); }
 .cran-glow { pointer-events: none; }
-.choix-lueur { pointer-events: none; }
+.choix-lueur { pointer-events: none; animation: breathe 2.4s ease-in-out infinite; }
+@keyframes breathe { 0%, 100% { opacity: 0.75; transform: scale(0.97); } 50% { opacity: 1; transform: scale(1.03); } }
+.choix-chemin { pointer-events: none; }
+/* lot 3 bis (B2, B3) : l'étiquette d'un appui long, la légende des niveaux (voile, panneau, tableau qui défile, croix) */
+.etiquette { pointer-events: none; z-index: 30; animation: pop 0.25s ease-out; }
+.legende-voile { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; background: rgba(6, 38, 46, 0.45); z-index: 40; }
+.legende-panneau { z-index: 41; }
+.legende-tete { pointer-events: none; z-index: 42; }
+.legende-defile { position: absolute; z-index: 42; overflow-y: auto; overflow-x: hidden; touch-action: pan-y; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #d8c9a8 transparent; }
+.legende-ligne { display: block; }
+.legende-fermer { z-index: 43; }

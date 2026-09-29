@@ -150,7 +150,7 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
     const fam = await store.get("niveaux", 2); log.fOuvertes = [...(fam?.ouvertes ?? [])]; log.fAcquises = [...(fam?.acquises ?? [])]; log.fTrou = [...(fam?.trou ?? [])]; log.fDepassees = (fam?.depassees ?? []).map((d) => d.famille);
     // lot 3 ter (T2) : les ouvertures de familles, l'évaluation de fin d'échauffement, les réponses attendues à l'échauffement
     log.fOuvertures = structuredClone(fam?.ouvertures ?? []); log.opening = log.warm?.opening ?? null; delete log.warm;
-    log.chauffe = (await store.all("reponses")).filter((r) => r.seance === rec.id && r.module === 2 && !r.notion && !r.defi && r.forme !== "base").sort((a, b) => a.t - b.t).map((r) => r.attendue);
+    { const ch = (await store.all("reponses")).filter((r) => r.seance === rec.id && r.module === 2 && !r.notion && !r.defi && r.forme !== "base").sort((a, b) => a.t - b.t); log.chauffe = ch.map((r) => r.attendue); log.chauffeTxt = ch.map((r) => `${r.question}${r.juste ? "" : r.erreur === "NSP" ? " (ne sait pas)" : ` (${r.donnee} ✗)`}`); log.echauffementPasse = !!rec.echauffementPasse; }
     const faits = await store.all("faits"); log.boites = [1, 2, 3, 4, 5].map((b) => faits.filter((f) => f.boite === b).length); log.faitsVus = faits.length;
     // lot 3 bis (A1) : les familles dont un fait de la règle a été réussi dans cette séance (acquisition sur deux séances au moins)
     { const d0 = startOfDay(t), by = new Map(faits.map((f) => [f.fait, f])); log.fPratique = [1, 2, 3, 4, 5, 6].filter((id) => ruleFacts(module2, id).some((r) => (by.get(r.fait)?.historique ?? []).some((h) => h.juste && h.t >= d0))); }

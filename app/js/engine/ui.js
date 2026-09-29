@@ -46,7 +46,7 @@ export function showLabel(app, el, text, inMs = 0) {
   const left = Math.max(8, Math.min(1272 - bw, cx - bw / 2)), y = Math.max(8, top - bh + 6);
   const lab = spriteBox(app, { x: left, y, w: bw, h: bh, cls: "hud etiquette", still: true, paint: (ctx, px) => { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawLabel(ctx, cx - left, bh - 8, lines, { dx: bw / 2 - (cx - left) }); } });
   lab.dataset.pour = el.getAttribute("aria-label") ?? ""; el.__label = lab;
-  if (inMs) { lab.style.opacity = "0"; lab.style.transition = `opacity ${inMs}ms ease-out`; requestAnimationFrame(() => requestAnimationFrame(() => { lab.style.opacity = "1"; })); }
+  if (inMs) lab.style.animation = `etiquette-entree ${inMs}ms ease-out both`; // (app.css : le fondu, joué par le compositeur)
   const off = new MutationObserver(() => { if (!el.isConnected) { hideLabel(el); off.disconnect(); } });
   off.observe(app.stage.ui, { childList: true });
   return lab;
@@ -56,7 +56,7 @@ export function hideLabel(el, outMs = 0) {
   const lab = el.__label; el.__label = null;
   if (!lab) return;
   if (!outMs || !lab.style) return lab.remove();
-  lab.dataset.sortie = "1"; lab.style.transition = `opacity ${Math.round(outMs * 0.8)}ms ease-in`; lab.style.opacity = "0";
+  lab.dataset.sortie = "1"; lab.style.animation = `etiquette-sortie ${Math.round(outMs * 0.8)}ms ease-in both`;
   setTimeout(() => lab.remove(), outMs);
 }
 export const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };

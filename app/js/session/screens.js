@@ -116,6 +116,9 @@ export async function reward(app, { session, hud }) {
   shown = earned; tally.repaint();
   await said;
   await session.stars(E.seanceTerminee, "séance terminée");
+  // (lot 3 bis, B6) la grande planche des cartes se charge pendant le bilan et les bonus : le coquillage est à toucher dès
+  // que la voix a fini (avant, son chargement laissait jusqu'à 1,5 s sans rien à toucher ni à entendre)
+  if (wantsCards(app)) app.sprites.load("cartes");
   const flown = hud.fly(E.seanceTerminee, [635, 305]);
   await voice.say(text.pick("seanceFinie")); await flown;
   await wait(400);
@@ -184,11 +187,13 @@ export async function flyRainbowStars(app, n, { from = [640, 500], to = ALBUM_AT
 // les coquillages : d'abord la zone suivante si elle peut s'ouvrir, puis au plus un coquillage doré (une
 // étoile dorée, une légendaire), puis les coquillages ordinaires tant qu'il y a assez d'étoiles (au plus
 // `parSeance`) ; une zone qui se complète pendant ce temps s'ouvre avant le coquillage suivant
+// les coquillages auront-ils lieu ? (une carte à ouvrir, un coquillage doré ou une zone à ouvrir)
+const wantsCards = (app) => { const r = app.rewards; return !!r.c && (r.canOpen() || r.goldenCard(Date.now()) || (r.nextZone() && r.arcDispo > 0)); };
 export async function shells(app, { session, hud }) {
   const { rewards, sprites } = app, now = () => Date.now();
   if (!rewards.c) return;
   // la planche des cartes (grande) n'est chargée que si elle sert
-  if (!(rewards.canOpen() || rewards.goldenCard(now()) || (rewards.nextZone() && rewards.arcDispo > 0))) return;
+  if (!wantsCards(app)) return;
   await sprites.load("cartes");
   const zone = async () => { const z = await rewards.openZone(now()); if (z) { (session.rec.zones ??= []).push(z.id); await session.save(); await zoneCeremony(app, { zone: z, hud }); } };
   await zone();

@@ -56,7 +56,7 @@ export function paintHouse(ctx, sprites, cx, top, total, rows) {
 // pièce du nombre qui manque (formes à trou). `t` (0 à 1) : les poissons montent se ranger sous le toit, en une rangée ;
 // aux formes à trou, la rangée a `total` places et celles qui restent vides s'allument (ce sont elles qu'on compte).
 // (cx, top) : milieu, bas du toit. Renvoie la place occupée.
-export const HOUSE_FISH_K = 0.8;
+export const HOUSE_FISH_K = 1;
 export function paintFishHouse(ctx, sprites, cx, top, { a, b, total, forme = "directe", t = 0, s = 1.3, roofLabel = "?" }) {
   const H = sprites.atlas.sprites["aide.maison.toit"].meta, q = (H.w / 4) * s, floorY = top, roomW = (H.w / 2) * s - 20, roomH = H.floor * s;
   putScaled(ctx, sprites, "aide.maison.etage.vide", cx, floorY, s);
@@ -65,15 +65,16 @@ export function paintFishHouse(ctx, sprites, cx, top, { a, b, total, forme = "di
   num(ctx, roofLabel, cx, top - H.roof * s * 0.5, 50, roofLabel === "?" ? R.RED : undefined);
   const known = forme === "trouDroite" ? [a, 0] : forme === "trouGauche" ? [0, b] : [a, b];
   // les places dans une pièce : 3 colonnes, jusqu'à 3 rangées, posées sur le sol
-  const k = HOUSE_FISH_K, fw = 56 * k, room = (side, i) => [cx + side * q + ((i % 3) - 1) * fw * 1.04, floorY + roomH - 22 * k - 8 - Math.floor(i / 3) * 34 * k];
+  // (dans les pièces, les poissons à leur taille ; sous le toit, réduits juste assez pour tenir en une rangée)
+  const k = HOUSE_FISH_K, fw = 56 * k, room = (side, i) => [cx + side * q + ((i % 3) - 1) * fw * 1.04, floorY + roomH - 22 * k - 8 - Math.floor(i / 3) * 36 * k];
   // les places sous le toit : une rangée de `total` places au bas de la coquille
   // (la bande libre entre la plaque du total et la charnière du toit)
-  const n = forme === "directe" ? a + b : total, span = Math.min(n * fw * 0.98, H.w * s * 0.95), roofY = top - 32;
-  const slot = (j) => [cx - span / 2 + fw / 2 + (n > 1 ? j * ((span - fw) / (n - 1)) : 0), roofY];
+  const n = forme === "directe" ? a + b : total, span = Math.min(n * fw * 0.98, H.w * s * 0.95), kr = Math.min(k, span / (n * 56)), fr = 56 * kr, roofY = top - 32;
+  const slot = (j) => [cx - span / 2 + fr / 2 + (n > 1 ? j * ((span - fr) / (n - 1)) : 0), roofY];
   const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-  const fish = (name, from, to) => { const x = from[0] + (to[0] - from[0]) * ease, y = from[1] + (to[1] - from[1]) * ease - Math.sin(Math.PI * ease) * 40; putScaled(ctx, sprites, name, x, y, k); };
+  const fish = (name, from, to) => { const x = from[0] + (to[0] - from[0]) * ease, y = from[1] + (to[1] - from[1]) * ease - Math.sin(Math.PI * ease) * 40; putScaled(ctx, sprites, name, x, y, k + (kr - k) * ease); };
   // les places vides sous le toit (formes à trou), allumées une fois les poissons rangés
-  if (forme !== "directe" && t >= 1) { const first = forme === "trouDroite" ? a : 0, count = total - known[0] - known[1]; for (let j = 0; j < count; j++) putScaled(ctx, sprites, "aide.cadre.lueur", ...slot(first + j), 0.5); }
+  if (forme !== "directe" && t >= 1) { const first = forme === "trouDroite" ? a : 0, count = total - known[0] - known[1]; for (let j = 0; j < count; j++) putScaled(ctx, sprites, "aide.cadre.lueur", ...slot(first + j), Math.min(0.55, kr * 0.62)); }
   for (let i = 0; i < known[0]; i++) fish("aide.poisson.0", room(-1, i), slot(i));
   const startB = forme === "trouGauche" ? total - b : known[0];
   for (let i = 0; i < known[1]; i++) fish("aide.poisson.1", room(1, i), slot(startB + i));

@@ -29,7 +29,7 @@ import { runChallenge } from "../../app/js/modules/facts/challenge.js";
 const ROOT = new URL("../../", import.meta.url).pathname;
 const load = (f) => JSON.parse(readFileSync(join(ROOT, "app/content", f), "utf8"));
 const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), module3 = load("module3.json"), cartes = load("cartes.json"), calendrier = load("calendrier.json"), T = load("textes.json"), lecons = load("lecons.json");
-const OUT = join(ROOT, "tests/recette-fonctionnelle/out/B-sequences");
+const OUT = join(ROOT, process.env.RECETTE_OUT ?? "tests/recette-fonctionnelle/out", "B-sequences");
 mkdirSync(OUT, { recursive: true });
 // --test (lot 3 bis, docs/SPEC-LOT3BIS.md, §0) : rien n'est écrit ; les quatre règles de la réponse qui varie sont vérifiées
 // sur chaque séance (bases neuve et « un mois », comportements « appliquée » et « réelle ») ; code de sortie 1 si une

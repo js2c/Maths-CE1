@@ -11,7 +11,8 @@ import { join } from "node:path";
 import { serve } from "../serve.mjs";
 
 export const ROOT = new URL("../../", import.meta.url).pathname;
-export const OUT = join(ROOT, "tests/recette-fonctionnelle/out");
+// (lot 3 bis : RECETTE_OUT=tests/recette-fonctionnelle/out-lot3bis range le nouveau matériel à part, sans toucher à celui du rapport)
+export const OUT = join(ROOT, process.env.RECETTE_OUT ?? "tests/recette-fonctionnelle/out");
 export const argv = process.argv.slice(2), opt = (k, d) => (argv.includes(k) ? argv[argv.indexOf(k) + 1] : d);
 
 // ---------------------------------------------------------------- la base « un mois »

@@ -17,6 +17,8 @@
 //               d'additions détaillées, « acquise le … (depuis, n sur m) », la légende des niveaux
 //   cosmetique — B11 : accueil (bulles hors du rocher), album (médaillons), « réécouter » à l'accueil et en pause, L1 (« 0 saut »),
 //               L10 (rien sur le rocher, « 100 » une fois), bulles « 800 », « 900 », le bernard-l'ermite entier, « rejouer »
+//   reprise   — R12 : calcul guidé (niveau 7), la maison pendant le « bravo » d'un caillou, visite du récif, « continuer » :
+//               la consigne est redite (« On continue ! Plus 1 ? »)
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -386,6 +388,23 @@ if (want("cosmetique")) {
     await page.tap(".play", { force: true }); await page.waitForSelector(".answer"); await page.waitForTimeout(600); await shot(page, "B11-bulles-centaines");
     check(!errors.length, `bulles : aucune erreur (${errors.join(" | ")})`); await context.close();
   }
+}
+
+// ---------------------------------------------------------------- R12 : la reprise d'un calcul guidé après une visite du récif
+if (want("reprise")) {
+  const { page, context, errors } = await calcOpen(7, "conseille", {});
+  await spy(page); await page.tap(".play", { force: true });
+  await page.waitForFunction(() => { const f = window.__app.facts; return f?.q?.pont && f.resolve && !f.locked; }, null, { timeout: 30000 });
+  const n = await page.evaluate(() => window.__app.facts.q.n); await typeN(page, n);
+  await page.waitForTimeout(250); await page.tap(".session-home", { force: true }); await page.waitForSelector(".reefkey.keep");
+  await page.tap(".reefkey.keep", { force: true }); await page.waitForTimeout(2500);
+  await page.tap(".homekey:not(.session-home)", { force: true }); await page.waitForSelector(".play.keep");
+  await page.evaluate(() => { window.__said = []; });
+  await page.tap(".play.keep", { force: true }); await page.waitForTimeout(3000);
+  const s = await said(page);
+  check(/^On continue ! Plus \d+ \?/.test(s), `calcul guidé, pause pendant le « bravo », visite du récif, « continuer » : la consigne est redite (« ${s} »)`);
+  await shot(page, "R12-reprise-calcul-guide");
+  check(!errors.length, `reprise : aucune erreur (${errors.join(" | ")})`); await context.close();
 }
 
 await browser.close(); srv.close();

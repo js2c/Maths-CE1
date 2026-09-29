@@ -6,7 +6,7 @@ Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail 
 
 Spécification : `docs/SPEC-LOT3BIS.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LOT2.md`, `docs/SPEC-LOT3.md` et `docs/SPEC-COMPLEMENTS.md`) ; rapport qui la motive : `docs/RECETTE-LOT3.md` (constats R1 à R25) ; prompt : `docs/PROMPT-LOT3BIS.md`. Deux parties : A (étapes 1 et 2, moteur et contenu), B (étapes 3 à 5, visuel, atelier et parent).
 
-**Où en est-on (28 septembre 2026, soir)** : partie A du lot 3 bis fusionnée (https://github.com/js2c/Maths-CE1/pull/22) ; **partie B en cours** (étapes 3 à 5), branche `claude/eloquent-ptolemy-v1l9qg` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 3 bis, étapes 3 à 5 (en cours) ».
+**Où en est-on (29 septembre 2026)** : partie A du lot 3 bis fusionnée (https://github.com/js2c/Maths-CE1/pull/22) ; **partie B terminée** (étapes 3 à 5, recette complète faite), branche `claude/eloquent-ptolemy-v1l9qg`, demande de fusion « Lot 3 bis, étapes 3 à 5 » (https://github.com/js2c/Maths-CE1/pull/23), prête. Reste : la fusionner, essayer sur la tablette, puis la session relecteur limitée (`docs/PROMPT-LOT3BIS.md`).
 
 | Étape | Partie | Contenu | État |
 | --- | --- | --- | --- |
@@ -14,13 +14,13 @@ Spécification : `docs/SPEC-LOT3BIS.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC
 | 2 | A | A3 (ligne : « plus facile », tirage sans remise, niveau 1, L3) ; A5 (toucher et reprise) ; A6 (décors : logique et voix, dessin provisoire) ; recette de la partie A | fait |
 | 3 | B | B8 : atelier (plaques numérotées, numéros des tuiles, légende, étiquette, décors, poissons des maisons, poisson étiqueté, étoiles volantes, fin du défi, bouées de L2) | fait |
 | 4 | B | B1 à B7, B9 à B12 : intégration (choisir, légende, appui long, aides et corrections, fins, « placer », leçons L2, L8, L9, espace parent, cosmétique, guide du parent) | fait |
-| 5 | B | Recette complète du lot 3 bis et relance des parties B et C de la recette fonctionnelle | en cours |
+| 5 | B | Recette complète du lot 3 bis et relance des parties B et C de la recette fonctionnelle | fait |
 
 ### Reprise des étapes 3 à 5 du lot 3 bis
 
 Pour reprendre si la session s'est arrêtée : branche `claude/eloquent-ptolemy-v1l9qg`, demande de fusion en brouillon « Lot 3 bis, étapes 3 à 5 (en cours) ».
 
-**Étape en cours :** étape 5 (recette complète). Étape 4 terminée le 28 septembre 2026 (reprise sur la même branche, à la demande du parent : tout le lot 3 bis dans la même session). Points d'entrée pour l'étape 4 : `app/js/session/choice.js` (disposition 4 colonnes x 457 à 1121 pour éviter pieuvre et algues ; plaques 150 × 136 ; `choix.lueur` a changé de taille : `GLOW_PAD` ; chemin `R.drawStonePath` et `R.CALC_STOPS` pour le calcul) ; filets de L2 à poser AU-DESSUS de la corde (sous elle, ils cachent les nombres) ; `placer.poisson` (ancrage : pointe de l'étiquette, `meta.tag`) à la place de `poisson.0.d` dans `numberline/screen.js`.
+**Étape en cours :** aucune ; étapes 3 à 5 terminées le 29 septembre 2026 (reprise sur la même branche, à la demande du parent : tout le lot 3 bis dans la même session). Demande de fusion prête ; ensuite, la session relecteur limitée (`docs/PROMPT-LOT3BIS.md`). Points d'entrée pour l'étape 4 : `app/js/session/choice.js` (disposition 4 colonnes x 457 à 1121 pour éviter pieuvre et algues ; plaques 150 × 136 ; `choix.lueur` a changé de taille : `GLOW_PAD` ; chemin `R.drawStonePath` et `R.CALC_STOPS` pour le calcul) ; filets de L2 à poser AU-DESSUS de la corde (sous elle, ils cachent les nombres) ; `placer.poisson` (ancrage : pointe de l'étiquette, `meta.tag`) à la place de `poisson.0.d` dans `numberline/screen.js`.
 
 **Fait :**
 
@@ -38,11 +38,42 @@ Pour reprendre si la session s'est arrêtée : branche `claude/eloquent-ptolemy-
 - Étape 4, B11 (R20 à R24) : bulles-réponses dont l'écriture se resserre (« 900 » tient dans sa bulle) ; lignes jusqu'à 1 000 arrêtées à x 1104 (« 1000 » ne touche plus les algues) ; les étiquettes des sauts ne sont plus écrites sur des graduations serrées (< 60 px : elles passaient sous la tortue ; la voix compte) ; décomposition des centaines (`paintHundreds`, `fit`) tenue entre deux abscisses : plus rien sur le rocher (dictée, L10) ; **défaut trouvé** : `putScaled` dessinait les chaluts et les filets deux fois trop grands et trop loin sur un écran de densité 2 (celle de la tablette ; les parcours en densité 1 le cachaient) : corrigé ; égalités et nombre en grand des leçons posés sur une plaque de nacre (les poissons du décor passent derrière) ; bernard-l'ermite remonté (y 776) ; bulles de l'accueil décalées à gauche (x 390 à 960), hors du rocher ; « a » de l'écriture au feutre redessiné (jambe détachée : « 0 saut » ne se lit plus « 0 sout ») ; « un poisson » au lieu de « 1 poissons » (cadre de 10, reflet) ; « Tu as bien travaillé ! » sans « 0 étoiles » (B6) ; « réécouter » visible en pause et qui répond (« C'est la pause. Touche la grande bulle pour continuer. », file de voix à part), et à l'accueil (« Touche une bulle : jouer, choisir, le récif ou l'album. ») ; onglets de l'album en médaillons ronds ; « rejouer la leçon » sous « passer », en haut à droite ; R24 : les étoiles volaient déjà du compteur au coquillage (`hud.spend`), vérifié à la capture. Parcours `lot3bis-b.mjs --seul cosmetique` : tout est bon ; captures regardées.
 - Étape 4, B12 (`docs/GUIDE-PARENT.md`, rubrique « d ter ») : plaques numérotées et légende (les tableaux des quatre exercices, le même texte que `legendes.json`, vérifié par un test), appui long sur les pictogrammes (une demi-seconde, rien de lancé), appui long sur le logo (2 secondes, R25), décors du récif, amis de 10 et calcul « très dur », aides, fins, « placer », « réécouter », journal des erreurs.
 - Recette allégée de l'étape 4 : `npm test` : 234, tout est bon ; `b-sequences.mjs --test` : 0 séance en défaut sur 464 ; `sim-seances.mjs` : aucune famille acquise en une seule séance, 7 décors en un mois à 2 séances par semaine ; parcours `lot3bis-b.mjs` (toutes les parties) : tout est bon ; captures regardées (`tests/e2e/out/lot3bis-b/`).
+- Étape 5 : la recette complète (ci-dessous) ; relance des parties B et C de la recette fonctionnelle et planches des écrans modifiés (partie A refaite pour ces écrans, partie E nouvelle : `tests/recette-fonctionnelle/e-lot3bis.mjs`), dans `tests/recette-fonctionnelle/out-lot3bis/` (`INDEX.md` en tête ; les outils rangent leur matériel ailleurs avec `RECETTE_OUT`). Pendant la recette : la planche des cartes se charge dès le bilan de la récompense (son chargement laissait jusqu'à 1,5 s sans rien à toucher ni à entendre avant le coquillage) ; les poissons des maisons agrandis dans les pièces ; un parcours de plus (`lot3bis-b.mjs --seul reprise`, voir « Décisions »).
 
-**Reste :** étape 5 (recette complète, relance des parties B et C de la recette fonctionnelle, planches dans `tests/recette-fonctionnelle/out-lot3bis/`), puis la demande de fusion à compléter.
+**Recette complète du lot 3 bis (29 septembre 2026) :**
+
+| Critère (`docs/SPEC-LOT3BIS.md`, « Recette du lot 3 bis ») | Mesure | Tenu |
+| --- | --- | --- |
+| Réponse qui varie (§0) | `b-sequences.mjs --test` : les 4 règles sur les 116 combinaisons, bases neuve et « un mois », « appliquée » et « réelle » : 0 séance en défaut sur 464 | oui |
+| Amis de 10 et maisons (A1) | famille 3 : toutes les questions à trou, à tous les crans (parcours `lot3bis.mjs` ; séquences) ; aucune famille acquise en une seule séance (simulation sur l'année, 5 profils, 2 et 5 séances par semaine) | oui |
+| Calcul rapide « très dur » (A2) | niveaux 1, 2, 3, 6 : au moins 5 réponses différentes (0 défaut, `b-sequences --test`) ; « pressée » : 9 à 19 % des étoiles de « appliquée » (seuil 50 %) | oui |
+| Ligne (A3) | niveaux 2, 5, 9 « plus facile » : 6 cibles, jamais le même ordre sur deux tours ; niveau 1 : cible et voisins cachés ; E3 en « sauter » ne relance pas L3 (tests unitaires, parcours `lot3bis.mjs`) | oui |
+| Toucher (A5) | parcours `lot3bis.mjs` : chiffre tapé pendant le « bravo » ignoré ; double toucher à 60 ms : un seul chiffre ; consigne redite après la reprise dans les trois modules ; `lot3bis-b.mjs --seul reprise` : calcul guidé, visite du récif en pause, « On continue ! Plus 1 ? » | oui |
+| Décors (A6) | simulation d'un mois à 2 séances par semaine : 7 décors (« appliquée » et « réelle »), 8 (« très dur »), 4 (« plus facile ») ; brillante inchangée (tirage de contrôle, test unitaire) | oui |
+| Choisir, légende, appui long (B1 à B3) | `lot3bis-b.mjs` : les quatre écrans aux formats 1280 × 800, 1920 × 1200, 1340 × 800 (rien de coupé, hors de la pieuvre et des algues, sans chevauchement) ; légende ouverte, fermée par la croix et par un toucher dehors, rien de lancé ; appui long de 0,8 s sur les 8 pictogrammes : étiquette, rien de lancé ; toucher bref : lancé | oui |
+| Aides et corrections (B4, B5) | une capture de chaque aide et correction (partie E, planches E04 et E05 ; partie A refaite) ; plus de « C'était N. » seul sur le chemin (parcours) | oui |
+| Fins (B6) | `recette-durees.mjs --passer` : attente sans commande hors voix 1,0 s au plus ; récompense (`recette.mjs`) : plus aucun instant sans voix ni commande avant le coquillage ; une seule phrase pour 3 étoiles arc-en-ciel ; fin du défi dite et montrée (`defi.mjs` : « Nouveau record ! 11 perles ! », « Presque ! Tu as fait 8 perles. », drapeau planté, pavé rangé) | oui |
+| Leçons (B9) | une capture par phrase de L2, L8, L9 (partie E, planche E08 ; partie A) ; L2 : écart voix → saut de 0 ms pour « dix », « vingt », « trente » ; L8 : 33 s ; L9 : deux tableaux | oui |
+| Non-régression | ce que le rapport range dans « Ce qui fonctionne bien » (§5) : parcours tous bons (premier lancement, accueil, corrections E1 à E7, C1 et C3, leçons, pause et reprise, récompense, récif, album, espace parent) ; voie rapide : plusieurs niveaux dans la première séance (`recette.mjs`) | oui |
+
+| Recettes des lots précédents | Mesure |
+| --- | --- |
+| `sim-seances.mjs`, 5 profils, 2 et 5 séances par semaine, sur l'année | 60 cartes du 15 au 17 juin 2027, légendaires comprises ; quota jamais dépassé ; séances estimées 8,7 à 9,5 min ; aucune famille acquise en une seule séance ; part de la famille en cours 72 à 100 % en moyenne (72 % : « en difficulté » à 2 par semaine, comme à la partie A) |
+| `recette.mjs --delai 4.5` | ligne graduée 8 min 27 s ; additions 8 min 11 s ; calcul rapide 8 min 37 s ; aucune erreur |
+| `recette-durees.mjs` | sans « passer » : attente sans commande hors voix 1,0 s au plus ; avec « passer » : 1,0 s au plus |
+| Parcours Playwright | les 27 parcours (sauf `video`), un par un : tout est bon (`perf` : démarrage 1,95 s processeur ÷ 4, 18,5 ms par image en moyenne) |
+| `npm test` | 234 tests, tout est bon |
 
 **Décisions prises :**
 
+- *Étape 4 reprise dans la même session que l'étape 3* (demande du parent : « termine le lot 3 bis dans cette session ») : la règle d'arrêt propre à la moitié du contexte n'a pas été appliquée entre les étapes 4 et 5.
+- *Additions, erreurs détaillées* : l'ordre des cas est « soustraction » (a − b, ou le total à une forme à trou), puis « un des deux nombres », puis « se trompe de 1 », puis « autre » (« 5 + 1 = 5 » est « un des deux nombres », pas « se trompe de 1 »).
+- *Aide du mur (B4)* : aux niveaux du mur à un seul pas (niveau 2), le premier pas du poisson est aussi la réponse : la spécification le demande ; la question est comptée « avec aide » (ne fait pas monter de boîte).
+- *Aide du chemin d'un seul pont (niveaux 1, 4, 5)* : la spécification ne dit rien ; la voix dit « On part de 47. Suis le pont. Plus 2. » (sans donner l'arrivée).
+- *Placer (B7)* : le même poisson à étiquette sert au format « estimer » (le nombre à placer ressemblait aussi à une bulle-réponse).
+- *Rejouer la leçon (R23)* : sous « passer », en haut à droite (x 1205, y 372).
+- *R12, calcul niveau 7 dans la partie C relancée* : l'outil n'a relevé aucune phrase après « continuer » ; rejoué à la main et par un parcours (`lot3bis-b.mjs --seul reprise`), la consigne est redite. À regarder sur la tablette.
+- *Défaut trouvé pendant le lot, d'avant le lot 3 bis* : sur un écran de densité 2 (la tablette), `putScaled` dessinait les chaluts et les filets deux fois trop grands et trop loin (leçon L10, dictée, correction E6) ; les parcours en densité 1 le cachaient. Corrigé.
 - *Chemin de cailloux* : dessiné en direct (une fois par ouverture de l'écran) plutôt que fabriqué : la planche aurait pesé 7 Mo décodés pour un décor fixe ; mêmes primitives que les cailloux du chemin du calcul.
 - *Poisson de « placer »* : l'étiquette pend à un fil tenu dans la bouche du poisson, en forme de goutte dont la pointe touche la ligne à la graduation : le nombre est bien « porté » par le poisson et la pointe dit où il est posé.
 - *Décors* : réduits dans le récif (échelle 0,5 à 0,72, réglée dans le contenu) et posés derrière les créatures, pour que quinze décors tiennent avec quinze créatures sans rien cacher d'important ; un oursin, une anémone et une étoile de mer décors coexistent avec les créatures du même nom (liste du parent) : couleurs différentes (violet, rose clair, rouge).

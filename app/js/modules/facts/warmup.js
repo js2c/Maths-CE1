@@ -6,7 +6,7 @@
 // faits nouveaux en plus et des formes à trou. Chaque réponse est enregistrée (magasins « reponses » et
 // « faits ») ; le temps de base est rangé dans les réglages (« tempsDeBase »).
 import { afterFact, catalog, classifyFact, expected, formFor, key, median, newFact, plan, pool, roomForNew, threshold, trouPartOf, trouTurn } from "./facts.js";
-import { initialFamilies, trouOpenFor, updateFamilies, withOpen } from "./families.js";
+import { initialFamilies, openByWarmup, trouOpenFor, updateFamilies, warmupOpening, withOpen } from "./families.js";
 
 export class Warmup {
   // cran : () => le nom du cran en cours (« facile », « conseille », « dur », « tresdur ») ; nouveaux : faits
@@ -60,8 +60,16 @@ export class Warmup {
   }
   // fin de l'étape : les familles (ouverture de la suivante, famille acquise, formes à trou) ; renvoie les
   // événements (une famille acquise rapporte une étoile arc-en-ciel, session.levelUp)
+  // lot 3 ter (docs/SPEC-LOT3TER.md, T2) : l'échauffement d'une séance n'ouvre plus la famille suivante par la règle du lot 2
+  // (80 % des faits introduits en boîte 2) mais par les trois conditions de `warmupOpening` (tous les faits des familles
+  // ouvertes introduits et 80 % en boîte 2 ; 12 dernières réponses d'échauffement à 90 % justes et rapides ; au plus une
+  // famille par jour) ; l'entraînement libre n'ouvre plus de famille (familles acquises et formes à trou : inchangé)
   async families(now = this.clock()) {
-    const { st, events } = updateFamilies(this.c0, this.fam, this.facts, now, { seance: this.libre ? null : this.seance });
+    let { st, events } = updateFamilies(this.c0, this.fam, this.facts, now, { seance: this.libre ? null : this.seance, open: false });
+    if (!this.libre && !this.notion && !this.defi) {
+      this.opening = warmupOpening(this.c0, st, this.facts, await this.store.all("reponses"), now, { limitMs: this.limitMs });
+      if (this.opening.famille != null) { st = openByWarmup(st, this.opening.famille, now, this.seance); events = [...events, { type: "ouverte", famille: this.opening.famille, echauffement: true }]; }
+    }
     this.fam = st; this.c = withOpen(this.c0, st);
     await this.store.put("niveaux", st);
     return events;
@@ -74,7 +82,7 @@ export class Warmup {
   async record(q, r, rest) {
     const now = this.clock(), forme = q.base ? "base" : q.forme ?? "directe", juste = r.value === expected({ ...q, forme });
     await this.store.add("reponses", {
-      t: now, seance: this.seance, module: 2, niveau: q.famille ?? 0, question: describeFact(q, forme), forme, donnee: r.value, attendue: expected({ ...q, forme }),
+      t: now, seance: this.seance, module: 2, niveau: q.famille ?? 0, question: describeFact(q, forme), forme, ...(q.base ? {} : { fait: q.fait ?? key(q.a, q.b) }), donnee: r.value, attendue: expected({ ...q, forme }),
       juste, tempsMs: r.ms, ecoutes: r.listens, aide: !!r.aide, ...(r.aideDEmblee ? { aideDEmblee: true } : {}), erreur: juste ? null : r.nsp ? "NSP" : classifyFact({ ...q, forme }, r.value), revient: !!q.revient, anticipe: !!q.anticipe,
       ...(r.correctionPassee ? { correctionPassee: true } : {}), ...(this.libre ? { libre: true } : {}), ...(q.guide ? { guide: true } : {}), ...(q.passe ? { passe: true } : {}), ...(this.notion ? { notion: true } : {}), ...(this.defi ? { defi: true } : {}), ...(this.cran() !== "conseille" ? { cran: this.cran() } : {}),
     });

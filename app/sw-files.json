@@ -1,5 +1,5 @@
 {
- "version": "c4f3a121fcb2",
+ "version": "6d51502045ae",
  "files": [
   "./",
   "assets/art/aides@1x.webp",
@@ -1895,6 +1895,7 @@
   "assets/voix/3451e86f85fb.ogg",
   "assets/voix/34525f83a096.ogg",
   "assets/voix/34622cf259a6.ogg",
+  "assets/voix/3466efd2df86.ogg",
   "assets/voix/346c4bbd37cf.ogg",
   "assets/voix/346ee16ba19e.ogg",
   "assets/voix/347952e10dbe.ogg",
@@ -3357,6 +3358,7 @@
   "assets/voix/5ecbff116d0c.ogg",
   "assets/voix/5ed2e7a96ce6.ogg",
   "assets/voix/5ed3d68d221c.ogg",
+  "assets/voix/5edf07360c3d.ogg",
   "assets/voix/5ee3aa349973.ogg",
   "assets/voix/5ee41f8f0a5e.ogg",
   "assets/voix/5eea72188360.ogg",
@@ -8691,6 +8693,7 @@
   "js/modules/facts/runner.js",
   "js/modules/facts/screen.js",
   "js/modules/facts/warmup.js",
+  "js/modules/facts/warmupskip.js",
   "js/modules/numberline/dictation.js",
   "js/modules/numberline/generator.js",
   "js/modules/numberline/runner.js",

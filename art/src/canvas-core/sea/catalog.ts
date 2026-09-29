@@ -18,6 +18,7 @@ import { drawCalcTile, drawExerciseCalc, drawStepCalc, drawWallFish, WALL_FISH_N
 import { GLOW_PAD, drawChooseKey, drawExerciseLessons, drawExerciseLine, drawFamilyTile, drawLessonTile, drawLineTile, drawTileGlow, TILE_H, TILE_W } from "./choice";
 import { drawBigFlag, drawCloseKey, drawHintKey, drawLegendKey, drawShrugKey, drawSmallFish, drawStarTrail, drawTagFish, drawTallNet, drawZoneTab, FLAG_N, HOUSE_FISH, LEGEND_R, NETV_H, NETV_W, TAG, TAG_FISH_N, TRAIL_H, TRAIL_W, ZONE_TAB_R } from "./lot3bis";
 import { DECOR_H, DECOR_ORIGIN, DECOR_W, DECORS, drawDecor } from "./reefdecor";
+import { drawWarmupSkipKey } from "./lot3ter";
 import { drawAgainKey, drawAlbumKey, drawFreeFacts, drawFreeLessons, drawFreeLine, drawMoonDecor, drawPagePearl, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepGlow, drawStepShell, GLOW_R, STEP_R } from "./ui";
 
 // la tortue dans l'application : longueur ~110 px logiques, assez petite pour tenir sur une bouée
@@ -99,6 +100,8 @@ export const SPECS: Spec[] = [
   // (lot 3 bis, R23 : « je ne sais pas » est la pieuvre qui hausse les bras ; l'ancien « ? » se confondait avec celui de la question)
   { name: "nsp", sheet: "petits", W: 150, H: 150, origin: [75, 75], frames: 1, draw: (g) => drawShrugKey(g, 75, 75) },
   { name: "passer", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawSkipKey(g, 70, 70) },
+  // lot 3 ter (T1) : « passer l'échauffement », son propre pictogramme (une vague franchie par une flèche dorée)
+  { name: "passer.echauffement", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawWarmupSkipKey(g, 70, 70) },
   { name: "encore", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawAgainKey(g, 90, 90) },
   { name: "album", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawAlbumKey(g, 90, 90) },
   ...([["accueil", drawStepHello], ["echauffement", drawStepPlus], ["notion", drawStepLine], ["defi", drawStepChallenge], ["recompense", drawStepShell]] as const).map(([id, f]): Spec => ({ name: `frise.${id}`, sheet: "petits", W: 2 * STEP_R + 24, H: 2 * STEP_R + 24, origin: [STEP_R + 10, STEP_R + 10], frames: 1, draw: (g) => f(g, STEP_R + 10, STEP_R + 10) })),

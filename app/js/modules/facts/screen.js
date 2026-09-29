@@ -182,8 +182,9 @@ export class FactsScreen {
   async skippable(label, body) {
     let abort = null, dead = false; const abortP = new Promise((_, rej) => { abort = () => { dead = true; rej(SKIPPED); }; }); abortP.catch(() => {});
     const g = (p) => Promise.race([p, abortP]), skip = skipKey(this.app, () => abort(), label);
+    this.abortAid = () => abort(); // (lot 3 ter : l'échauffement passé pendant l'aide l'arrête, abandon)
     try { await body(g, () => dead); } catch (e) { if (e !== SKIPPED) throw e; this.app.voice.stop(); }
-    finally { skip.remove(); this.board.clear(); }
+    finally { this.abortAid = null; skip.remove(); this.board.clear(); }
   }
   // cran « plus facile » : l'appui est montré d'emblée (sans la réponse), puis le pavé revient ; un fait réussi
   // ainsi ne change pas de boîte (runner.js, `aideDEmblee`) ; « passer » rend le pavé aussitôt
@@ -235,7 +236,7 @@ export class FactsScreen {
     if (this.q?.dictee) { this.locked = true; this.app.voice.stop(); const done = this.resolve; this.resolve = null; return done?.({ value: nsp ? null : Number(this.typed), ms: Math.round(clock.now() - this.t0), listens: this.app.voice.listens, nsp }); }
     const { voice, text, ocean } = this.app, q = this.q, value = nsp ? null : Number(this.typed), ok = value === expected(q), ms = Math.round(clock.now() - this.t0), k = this.app.vitesse ?? 1;
     this.locked = true; voice.stop();
-    const r = { value, ms, listens: voice.listens, aide: this.aide, nsp };
+    const r = { value, ms, listens: voice.listens, aide: this.aide, nsp }, tok = this.tok;
     // lot 3 : le calcul rapide a sa correction (le chemin, le mur de corail et le poisson) et son retour « juste mais lent »
     if (q.module === 3 && this.calc) { await this.calc.feedback(q, r, ok); this.app.aidBoard?.clear(); const done = this.resolve; this.resolve = null; return done?.(r); }
     ocean.octo.play(ok ? "rejouir" : "encourager");
@@ -246,6 +247,7 @@ export class FactsScreen {
       let abort = null;
       const abortP = new Promise((_, rej) => { abort = () => rej(SKIPPED); }); abortP.catch(() => {});
       const g = (p) => Promise.race([p, abortP]), skip = skipKey(this.app, () => abort(), "passer la correction");
+      this.abortFix = () => abort(); // (lot 3 ter : l'échauffement passé pendant une correction l'arrête, abandon)
       try {
         if (nsp) await g(voice.say(text.data.faitNSP)); else { pop(this.slate, "shake"); await g(wait(500 / k)); }
         answer();
@@ -255,11 +257,12 @@ export class FactsScreen {
         await g(wait(700 / k));
       } catch (e) {
         if (e !== SKIPPED) throw e;
-        voice.stop(); r.correctionPassee = true; answer(); pop(this.slate);
-        await wait(1000);
+        voice.stop();
+        if (tok === this.tok) { r.correctionPassee = true; answer(); pop(this.slate); await wait(1000); }
       }
-      skip.remove();
+      this.abortFix = null; skip.remove();
     }
+    if (tok !== this.tok) return; // l'échauffement a été passé pendant le retour : rien de plus à l'écran
     this.app.aidBoard?.clear();
     const done = this.resolve; this.resolve = null; done?.(r);
   }
@@ -268,13 +271,13 @@ export class FactsScreen {
     if (this.locked || !this.q || this.q.base) return;
     // lot 3 : le coquillage du calcul rapide montre le chemin (les ponts), qui reste pendant la réponse
     if (this.q.module === 3 && this.calc) { if (this.aide) return; this.aide = true; pop(this.help); return this.calc.showHelp(this.q); }
-    const { voice } = this.app, q = this.q, kind = this.aidKind(q);
+    const { voice } = this.app, q = this.q, kind = this.aidKind(q), tok = this.tok;
     this.locked = true; this.aide = true; pop(this.help); this.keys(false); voice.stop();
     await this.skippable("passer l'aide", async (g, dead) => {
       if (kind === "ligne") return this.lineAid(q, false, { g, dead });
       this.paintAid(q, false); await g(voice.say(this.aidSpeech(q, kind))); await g(wait(2200));
     });
-    if (this.q !== q) return;
+    if (this.q !== q || tok !== this.tok) return;
     this.keys(true); this.locked = false;
     voice.say(this.consigne(q));
   }
@@ -303,7 +306,9 @@ export class FactsScreen {
     } finally { nl.turtle.hide(); nl.arcs = []; line.fxClear(); line.clear(); }
   }
   // lot 3 : l'échauffement est passé pendant une question : elle est abandonnée (plus de réponse attendue)
-  abandon() { this.locked = true; this.resolve = null; this.app.voice.stop(); this.reset(); }
+  // (lot 3 ter : l'échauffement peut être passé à tout moment ; une correction ou une aide en cours s'arrête aussitôt, et
+  // ce qui la suivait ne touche plus à l'écran : `tok`)
+  abandon() { this.tok = (this.tok ?? 0) + 1; this.locked = true; this.resolve = null; this.abortFix?.(); this.abortAid?.(); this.app.voice.stop(); this.reset(); }
   leave() { this.show(false); this.q = null; this.defi = null; this.dictee = null; this.reset(); }
   // (correctif du 28 septembre 2026) rien de ce qu'un exercice quitté en cours a posé sur l'écran ne doit survivre : le
   // rappel de la saisie (le chemin d'un calcul guidé, le tableau de la dictée) redessinait l'ancien chemin au premier
@@ -314,14 +319,14 @@ export class FactsScreen {
 // l'échauffement dans la séance : n faits (10 à 14), précédés, une séance sur cinq, des questions du temps de
 // base ; la voie rapide peut en ajouter à la fin ; si la protection fait redescendre le cran, les faits
 // nouveaux « bonus » du cran pas encore posés sont retirés (et les formes à trou suivent le nouveau cran)
-// lot 3 (docs/SPEC-LOT3.md, section 4) : `skip(onSkip)` crée le bouton « passer » habituel, montré au début de
-// l'échauffement (consigne et première question) ; un toucher l'arrête aussitôt et la séance enchaîne sur
-// l'exercice (noté `echauffementPasse` dans l'enregistrement de la séance)
+// lot 3 (docs/SPEC-LOT3.md, section 4) : `skip(onSkip)` crée le bouton qui passe l'échauffement ; la séance enchaîne sur
+// l'exercice (noté `echauffementPasse` dans l'enregistrement de la séance). Lot 3 ter (T1) : un bouton dédié, présent
+// pendant TOUT l'échauffement (il ne disparaît plus à la première réponse), avec une confirmation par la coche
+// (modules/facts/warmupskip.js) : `onSkip` n'est appelé qu'une fois la coche touchée
 export async function runWarmup({ session, step, end, warmup, screen, intro, rnd = Math.random, skip = null }) {
   const [a, b] = step.questions, n = a + Math.floor(rnd() * (b - a + 1)), rest = warmup.questions(n, a);
   let skipped = false, abort = null; const abortP = new Promise((res) => { abort = res; });
   const btn = skip?.(() => { skipped = true; abort(); }), g = (p) => (btn ? Promise.race([p, abortP]) : p);
-  if (btn) screen.beforeSubmit = () => { btn.remove(); screen.beforeSubmit = null; };
   screen.show(true); screen.keys(false);
   session.expect?.(rest.length);
   await g(intro?.(() => skipped));
@@ -338,7 +343,7 @@ export async function runWarmup({ session, step, end, warmup, screen, intro, rnd
     if (session.cranDown) warmup.drop(rest);
     await session.stars(res.etoiles, q.revient && res.juste ? "erreur corrigée" : "bonne réponse");
   }
-  btn?.remove(); screen.beforeSubmit = null;
+  btn?.remove();
   if (skipped) { screen.abandon?.(); if (session.rec) session.rec.echauffementPasse = { apres: session.progress.faites }; }
   session.nouveaux = warmup.nouveaux; if (session.rec) session.rec.faitsNouveaux = warmup.nouveaux;
   // lot 2, étape 6 : une famille acquise est un niveau franchi (étoile arc-en-ciel) ; ouverture de la suivante

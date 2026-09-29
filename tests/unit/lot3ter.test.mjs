@@ -170,3 +170,76 @@ test("T2, recette : à l'échauffement, jamais 3 fois de suite la même réponse
   assert.equal(q.forme, "trouDroite", "« ? + 8 = 9 » après deux 1 devient « 1 + ? = 9 »");
   assert.equal(vary(f(1, 8, { forme: "directe" }), [1, 1]).forme, "directe");
 });
+
+// ---------------------------------------------------------------- T3 : l'appui long, partout
+const { onBrief } = await import("../../app/js/engine/ui.js");
+const legendes = json("legendes.json"), cartes = json("cartes.json"), m1 = json("module1.json"), m3 = json("module3.json");
+const brief = (key, o = {}) => {
+  const el = new EventTarget(), log = { f: 0, shown: [], hidden: [] };
+  onBrief({ legendes }, el, () => log.f++, key, { show: (a, e, t, inMs) => { log.shown.push([t, inMs]); return { t }; }, hide: (e, outMs) => { log.hidden.push(outMs); e.__label = null; }, ...o });
+  const ev = (type) => el.dispatchEvent(new Event(type, { cancelable: true }));
+  return { el, log, ev };
+};
+
+test("T3 : réglages (500 ms, fondu d'entrée 200 ms, disparue 500 ms après le lever du doigt ; plus de gardeMs)", () => {
+  assert.deepEqual(legendes.appuiLong, { ms: 500, fonduEntreeMs: 200, sortieMs: 500 });
+});
+
+test("T3 : un toucher bref valide au lever du doigt, jamais au premier contact", () => {
+  mock.timers.enable({ apis: ["setTimeout"] });
+  try {
+    const { log, ev } = brief("aide");
+    ev("pointerdown"); assert.equal(log.f, 0); mock.timers.tick(499); assert.equal(log.f, 0);
+    ev("pointerup"); assert.equal(log.f, 1); assert.equal(log.shown.length, 0);
+    ev("pointerup"); assert.equal(log.f, 1, "un lever sans toucher ne fait rien");
+  } finally { mock.timers.reset(); }
+});
+
+test("T3 : un appui long montre l'étiquette et ne lance jamais rien, avec ou sans étiquette", () => {
+  mock.timers.enable({ apis: ["setTimeout"] });
+  try {
+    for (const key of ["nsp", "passerEchauffement", () => "Le lagon", null]) {
+      const { log, ev } = brief(key);
+      ev("pointerdown"); mock.timers.tick(800);
+      const t = typeof key === "function" ? key() : key ? legendes.etiquettes[key] : null;
+      assert.deepEqual(log.shown, t ? [[t, 200]] : [], String(key));
+      ev("pointerup"); mock.timers.tick(2000);
+      assert.equal(log.f, 0, `${key} : rien de lancé`);
+      assert.deepEqual(log.hidden, t ? [500] : []);
+    }
+  } finally { mock.timers.reset(); }
+});
+
+test("T3, exception : les touches du pavé et les bulles-réponses répondent au premier contact ; un appui long compte comme une réponse", async () => {
+  mock.timers.enable({ apis: ["setTimeout"] });
+  try {
+    // « effacer » et la coche du pavé : `first` (au premier contact), l'étiquette en plus à l'appui long
+    const { log, ev } = brief("valider", { first: true });
+    ev("pointerdown"); assert.equal(log.f, 1, "au premier contact"); mock.timers.tick(900); ev("pointerup");
+    assert.equal(log.f, 1, "une seule fois"); assert.deepEqual(log.shown, [[legendes.etiquettes.valider, 200]]);
+  } finally { mock.timers.reset(); }
+  // les chiffres du pavé et les bulles-réponses : écouteurs du premier contact (pointerdown), sans onBrief
+  const facts = readFileSync(new URL("../../app/js/modules/facts/screen.js", import.meta.url), "utf8"), line = readFileSync(new URL("../../app/js/modules/numberline/screen.js", import.meta.url), "utf8");
+  assert.match(facts, /onTap\(b, \(\) => this\.type\(String\(d\), b\)\)/);
+  assert.match(facts, /onBrief\(app, del, [^\n]*"effacer", \{ first: true \}\)/); assert.match(facts, /onBrief\(app, ok, [^\n]*"valider", \{ first: true \}\)/);
+  assert.match(line, /b\.addEventListener\("pointerdown", \(e\) => \{ e\.preventDefault\(\); this\.answer\(c\.value, b\); \}\)/);
+});
+
+test("T3 : chaque bouton recensé a son étiquette, écrite au feutre (caractères que l'atelier sait tracer)", async () => {
+  const { tileLabel } = await import("../../app/js/session/choice.js");
+  const E = legendes.etiquettes, ok = /^[A-Za-z0-9éèêëàâùûîïôçÉÈœ +=\-'!.,?·\u00a0]*$/;
+  for (const k of ["jouer", "choisir", "recif", "album", "ligne", "additions", "calcul", "lecons", "continuer", "encore", "aide", "nsp", "reecouter", "passer", "passerEchauffement", "ouiPasserEchauffement", "rejouer", "effacer", "valider", "maison", "pause", "legende", "fermer", "retourExercices", "validerChoix", "cestBon", "coquillage", "retourner", "carteADecouvrir", ...["facile", "conseille", "dur", "tresdur"].flatMap((c) => [`cran.${c}`, `cranLibre.${c}`])]) assert.ok(E[k]?.length > 3, k);
+  // les textes de la spécification
+  assert.equal(E.aide, "Un indice"); assert.equal(E.nsp, "Je ne sais pas, on regarde ensemble"); assert.equal(E.reecouter, "Réécouter la consigne"); assert.equal(E.passer, "Passer");
+  assert.equal(E.passerEchauffement, "Passer l'échauffement"); assert.equal(E.rejouer, "Revoir la leçon"); assert.equal(E.effacer, "Effacer le dernier chiffre"); assert.equal(E.valider, "Valider ma réponse");
+  assert.equal(E.maison, "Revenir à l'accueil"); assert.equal(E.pause, "Faire une pause"); assert.equal(E.legende, "La légende des niveaux"); assert.equal(E.carteADecouvrir, "Carte à découvrir");
+  for (const c of ["facile", "conseille", "dur", "tresdur"]) assert.match(E[`cran.${c}`], { facile: /^Plus facile\. /, conseille: /^Conseillé\. /, dur: /^Plus dur\. /, tresdur: /^Très dur\. / }[c]);
+  for (const t of Object.values(E)) assert.match(t, ok, t);
+  // les tuiles : la ligne de la légende
+  assert.equal(tileLabel(legendes, "calcul", "7"), `7 · ${legendes.calcul.find((r) => r.n === 7).travail.replace(/\.$/, "")}`);
+  const all = [...m1.niveaux.map((n) => ["ligne", n.niveau]), ...m2.familles.map((f) => ["additions", f.id]), ...m3.niveaux.map((n) => ["calcul", n.niveau]), ...seance.choix.lecons.map((l) => ["lecons", l])];
+  for (const [ex, k] of all) { const t = tileLabel(legendes, ex, k); assert.ok(t, `${ex} ${k}`); assert.match(t, ok, t); }
+  // les onglets de zone et les cartes : leur nom
+  for (const z of cartes.zones) assert.match(z.nom, ok, z.nom);
+  for (const c of cartes.cartes) assert.match(c.nom, ok, c.nom);
+});

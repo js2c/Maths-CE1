@@ -13,7 +13,8 @@
 // Mémoire : seule la planche de la page affichée est chargée, plus celle de la voisine dès que le glisser commence ; les
 // autres sont libérées quand la page est calée. La pieuvre, guide de la visite, ne suit pas le doigt.
 import { CardView, forgetPictures } from "./cards.js";
-import { onTap, spriteBox } from "./screens.js";
+import { spriteBox } from "./screens.js";
+import { onBrief } from "../engine/ui.js";
 import { GIFT_SPOTS } from "./surprise.js";
 import { reefDecor } from "./rewards.js";
 import { dragShift, entryZone, isDrag, isTap, pageCreatures, pageSheets, pagesConf, reefPages, settleTarget } from "./reefpages.js";
@@ -55,13 +56,14 @@ export class Reef {
     const home = spriteBox(app, { x: 90 - 70, y: 712 - 70, w: 140, h: 140, cls: "bubble homekey", label: "revenir", paint: (ctx) => sprites.draw(ctx, "maison", 0, 70, 70) });
     // l'album, par-dessus le récif (docs/SPEC.md : « depuis l'accueil et depuis le récif »)
     const book = spriteBox(app, { x: 90 - 70, y: 560 - 70, w: 140, h: 140, cls: "bubble albumkey", label: "l'album", paint: (ctx) => { const q = sprites.frame("album", 0), k = 140 / 180, px = sprites.px; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 70 * px + q.dx * k, 70 * px + q.dy * k, q.w * k, q.h * k); } });
-    onTap(book, async () => { pop(book); await this.view.close(); if (app.album && !app.album.open) { await app.album.visit(); voice.say(text.data.recifBienvenue, { instruction: true }); } });
+    // (lot 3 ter, T3 : les boutons de navigation valident au lever du doigt ; l'appui long montre leur nom)
+    onBrief(app, book, async () => { pop(book); await this.view.close(); if (app.album && !app.album.open) { await app.album.visit(); voice.say(text.data.recifBienvenue, { instruction: true }); } }, "album");
     this.els.push(home, book);
     this.pearls();
     ocean.octo.play("saluer");
     const any = [...this.zones.values()].some((z) => z.beings.length) || this.gifts?.length;
     voice.stop(); voice.say(text.data[any ? "recifBienvenue" : "recifVide"], { instruction: true });
-    await new Promise((r) => onTap(home, () => { if (app.album?.open) return; pop(home); r(); }));
+    await new Promise((r) => onBrief(app, home, () => { if (app.album?.open) return; pop(home); r(); }, "maison"));
     await this.view.close();
     voice.stop(); this.leave();
   }
@@ -204,7 +206,7 @@ export class Reef {
     const { app } = this, n = this.pages.length, x0 = 640 - ((n - 1) * PEARL.gap) / 2;
     this.pages.forEach((zone, i) => {
       const b = spriteBox(app, { x: x0 + i * PEARL.gap - PEARL.size / 2, y: PEARL.y - PEARL.size / 2, w: PEARL.size, h: PEARL.size, cls: "bubble reef-pearl", label: app.cartes.zones.find((z) => z.id === zone)?.nom ?? zone, paint: (ctx, px) => this.paintPearl(ctx, px, i) });
-      b.dataset.zone = zone; onTap(b, () => { pop(b); this.goTo(i); });
+      b.dataset.zone = zone; onBrief(app, b, () => { pop(b); this.goTo(i); }, () => app.cartes.zones.find((z) => z.id === zone)?.nom ?? null);
       this.els.push(b); this.pearlEls.push(b);
     });
     this.paintPearls();

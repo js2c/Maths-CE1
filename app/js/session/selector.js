@@ -7,7 +7,7 @@
 // bulles sans étoiles (pas de multiplicateur).
 import * as R from "../art/runtime.js";
 import { CRANS } from "./session.js";
-import { onTap, pop, spriteBox } from "../engine/ui.js";
+import { onBrief, pop, spriteBox } from "../engine/ui.js";
 
 export const CRAN_ROW = { y: 420, cx: 810, gap: 220 } /* à droite de la pieuvre */, CRAN_BOX = 240, CHECK_AT = [810, 668];
 // les crans que le parent autorise, dans l'ordre (au moins un) ; réglage { min, max } par noms de crans
@@ -43,8 +43,9 @@ export async function chooseCran(app, { allowed = CRANS, stars = true, attenteS 
   const name = await new Promise((res) => {
     let timer = null;
     const arm = () => { clearTimeout(timer); timer = setTimeout(() => res(cur), attenteS * 1000); };
-    bubbles.forEach((b) => onTap(b, () => { cur = b.dataset.cran; pop(b); show(); voice.stop(); voice.say(said(cur)); arm(); }));
-    onTap(check, () => { clearTimeout(timer); pop(check); res(cur); });
+    // (lot 3 ter, T3 : au lever du doigt ; l'appui long montre ce que change le cran, sans étoiles dans l'entraînement libre)
+    bubbles.forEach((b) => onBrief(app, b, () => { cur = b.dataset.cran; pop(b); show(); voice.stop(); voice.say(said(cur)); arm(); }, `${stars ? "cran" : "cranLibre"}.${b.dataset.cran}`));
+    onBrief(app, check, () => { clearTimeout(timer); pop(check); res(cur); }, "validerChoix");
     arm();
   });
   voice.stop();

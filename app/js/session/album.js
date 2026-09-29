@@ -8,7 +8,7 @@
 //  - toucher une carte obtenue la montre en grand (cards.js, CardView) ; toucher un dos fait dire où elle
 //    attend (cartes.json, zones[].dosLu, legendaireLu) ; une zone fermée, quand elle s'ouvrira (fermeeLu).
 // Les vignettes sont dessinées une fois ; les images sont décodées à leur taille (cards.js, picture).
-import { onTap, pop, spriteBox } from "../engine/ui.js";
+import { onBrief, pop, spriteBox } from "../engine/ui.js";
 import { CARD, CardView, forgetPictures, paintFace, shine } from "./cards.js";
 
 const K = 0.36, TW = CARD.W * K, TH = CARD.H * K; // une vignette : 119 × 158
@@ -27,7 +27,7 @@ export class Album {
     // une zone fermée, assombrie)
     this.tabs = cartes.zones.map((z, i) => {
       const t = spriteBox(app, { x: TAB.x - 56, y: TAB.y + i * TAB.pitch - 56, w: 112, h: 112, cls: `bubble album-tab${app.rewards.zoneOpen(z.id) ? "" : " closed"}`, label: z.nom, paint: (ctx) => sprites.draw(ctx, `album.zone.${z.id}`, 0, 56, 56) });
-      onTap(t, () => { pop(t); this.showZone(z.id, { say: true }); });
+      onBrief(app, t, () => { pop(t); this.showZone(z.id, { say: true }); }, () => z.nom);
       this.els.push(t); return t;
     });
     const home = spriteBox(app, { x: 90 - 70, y: 712 - 70, w: 140, h: 140, cls: "bubble homekey", label: "revenir", paint: (ctx) => sprites.draw(ctx, "maison", 0, 70, 70) });
@@ -35,7 +35,7 @@ export class Album {
     const first = zone ?? cartes.zones.find((z) => app.rewards.zoneOpen(z.id))?.id ?? cartes.zones[0].id;
     await this.showZone(first);
     voice.stop(); voice.say(text.data.album, { instruction: true });
-    await new Promise((r) => onTap(home, () => { pop(home); r(); }));
+    await new Promise((r) => onBrief(app, home, () => { pop(home); r(); }, "maison"));
     await this.view.close();
     voice.stop(); this.leave();
   }
@@ -59,11 +59,11 @@ export class Album {
       const t = this.thumb(got ? { ...c, ...owned[c.id] } : c, got ? "recto" : "dos", x, y, K, { cls: `${got ? "got" : "back"}${open ? "" : " closed"}${got && owned[c.id].brillante ? " shiny" : ""}`, label: got ? c.nom : "carte à découvrir" });
       t.dataset.id = c.id; ready.push(t.ready);
       if (got && owned[c.id].brillante) t.ready.then(() => shine(app, t, { k: K }));
-      onTap(t, () => {
+      onBrief(app, t, () => {
         pop(t);
         if (got) return this.view.show({ ...c, ...owned[c.id] });
         voice.stop(); voice.say(!open ? z.fermeeLu : c.rarete === "legendaire" ? cartes.legendaireLu : z.dosLu, { instruction: true });
-      });
+      }, () => (got ? c.nom : app.legendes?.etiquettes?.carteADecouvrir));
     });
     // une zone fermée : un coquillage fermé posé sur ses dos
     if (!open) {

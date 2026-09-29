@@ -18,7 +18,8 @@ class El {
   addEventListener(t, f) { (this.listeners[t] ??= []).push(f); }
   getContext() { const c = ctx2d(); c.canvas = this; return c; }
   get offsetWidth() { return 0; }
-  tap() { for (const f of this.listeners.pointerdown ?? []) f({ preventDefault() {} }); }
+  // (lot 3 ter, T3 : un toucher bref, le doigt posé puis levé ; la carte se retourne au lever du doigt)
+  tap() { for (const t of ["pointerdown", "pointerup"]) for (const f of this.listeners[t] ?? []) f({ preventDefault() {} }); }
 }
 globalThis.document = { createElement: (t) => new El(t) };
 const find = (root, pred) => { if (pred(root)) return root; for (const c of root.children) { const r = find(c, pred); if (r) return r; } return null; };

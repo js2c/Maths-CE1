@@ -9,7 +9,7 @@
 // Renvoie { module: 1, niveau } | { module: 2, famille } | { lecon } (| null : quitté sans valider, `app.choiceCancel`). Fonctions pures (`levelItems`) testées par
 // tests/unit/choix.test.mjs.
 import * as R from "../art/runtime.js";
-import { onBrief, onTap, pop, spriteBox } from "../engine/ui.js";
+import { onBrief, pop, spriteBox } from "../engine/ui.js";
 import { closeLegend, legendKey } from "./legend.js";
 import { currentFamily, initialFamilies, ruleShare } from "../modules/facts/families.js";
 import { initialCalcState, recommended } from "../modules/calc/runner.js";
@@ -48,6 +48,12 @@ export function levelItems(ex, { st1 = null, st2 = null, st3 = null, module1, mo
   const seen = new Set([...(st1?.lecons ?? []), ...(st2?.lecons ?? []), ...(st3?.lecons ?? [])]);
   return lecons.map((id) => ({ key: id, sprite: "choix.lecon", conseille: false, valide: seen.has(id), label: LESSON_LABELS[id] ?? id }));
 }
+// (lot 3 ter, T3) l'étiquette d'une tuile de niveau, de famille ou de leçon : sa ligne de la légende (legendes.json),
+// « 7 · Ajouter en passant la dizaine, on complète d'abord jusqu'à 10 », sans le point final
+export function tileLabel(legendes, ex, k) {
+  const row = (legendes?.[ex] ?? []).find((r) => String(r.n) === String(k));
+  return row ? `${k} · ${row.travail.replace(/\.$/, "")}` : null;
+}
 // où va la vignette i sur n : rangées de `cols`, centrées ; le calcul rapide : sur le chemin de cailloux (R.CALC_STOPS)
 export function tilePos(i, n, T = TILE, ex = null, stops = null) {
   if (ex === "calcul" && stops?.[i]) return [CALC_AT[0] + stops[i][0], CALC_AT[1] + stops[i][1]];
@@ -70,8 +76,9 @@ export async function choose(app, o) {
   // « simple » : le premier toucher nomme et valide
   // (sel.key : la clé de l'image entourée, lue par les dessins)
   const sel = { key: null };
-  // (lot 3 bis, B3 : les pictogrammes des exercices, `brief` : un toucher bref valide, un appui long montre l'étiquette)
-  const pick = (buttons, name, check, brief = false) => new Promise((res) => {
+  // (lot 3 bis, B3 : les pictogrammes des exercices ; lot 3 ter, T3 : toutes les tuiles, la coche et le retour : un toucher
+  // bref valide au lever du doigt, un appui long montre l'étiquette et ne lance rien ; `label(clé)` : le texte de l'étiquette)
+  const pick = (buttons, name, check, label = (k) => k) => new Promise((res) => {
     let cur = null; sel.key = null;
     const select = (b) => {
       if (cur === b && double) return res(b.dataset.key);
@@ -83,8 +90,8 @@ export async function choose(app, o) {
       if (!double) setTimeout(() => res(b.dataset.key), 300);
       else if (check) check.style.visibility = "visible";
     };
-    buttons.forEach((b) => (brief ? onBrief(app, b, () => select(b), b.dataset.key) : onTap(b, () => select(b))));
-    if (check) onTap(check, () => { if (cur) { pop(check); res(cur.dataset.key); } });
+    buttons.forEach((b) => onBrief(app, b, () => select(b), () => label(b.dataset.key)));
+    if (check) onBrief(app, check, () => { if (cur) { pop(check); res(cur.dataset.key); } }, "validerChoix");
   });
   const checkKey = () => { const c = spriteBox(app, { x: CHECK[0] - 80, y: CHECK[1] - 80, w: 160, h: 160, cls: "bubble check choix-ok", label: "valider", paint: (ctx) => sprites.draw(ctx, "valider", 0, 80, 80) }); c.style.visibility = "hidden"; els.push(c); return c; };
   for (;;) {
@@ -94,7 +101,7 @@ export async function choose(app, o) {
       b.dataset.key = e.id; els.push(b); return b;
     });
     voice.stop(); voice.say(text.data.choixExercice, { instruction: true });
-    const ex = await Promise.race([pick(exBtn, (k) => text.data.choixNom[k], checkKey(), true), cancelled]);
+    const ex = await Promise.race([pick(exBtn, (k) => text.data.choixNom[k], checkKey(), (k) => app.legendes?.etiquettes?.[k]), cancelled]);
     if (ex === CANCEL) return done();
     clear();
     // 2. le niveau, la famille ou la leçon
@@ -121,8 +128,8 @@ export async function choose(app, o) {
     if (double) voice.stop();
     voice.say(ex === "lecons" ? text.data.choixLecon : text.data.choixNiveau, { instruction: true });
     const name = (k) => (ex === "ligne" ? text.data.choixLigne[k] : ex === "additions" ? text.data.choixFamille[k] : ex === "calcul" ? text.data.choixCalcul[k] : text.data.choixLeconNom[k] ?? k);
-    const backP = new Promise((res) => onTap(back, () => { pop(back); res(null); }));
-    const key = await Promise.race([pick(tiles, name, checkKey()), backP, cancelled]);
+    const backP = new Promise((res) => onBrief(app, back, () => { pop(back); res(null); }, "retourExercices"));
+    const key = await Promise.race([pick(tiles, name, checkKey(), (k) => tileLabel(app.legendes, ex, k)), backP, cancelled]);
     if (key === CANCEL) return done();
     clear();
     if (key === null) continue;

@@ -12,6 +12,7 @@
 import * as R from "../art/runtime.js";
 import { Actor } from "../engine/actor.js";
 import { arcHeight } from "../engine/turtle.js";
+import { onBrief } from "../engine/ui.js";
 import { onTap, spriteBox } from "../session/screens.js";
 import { skipKey } from "../engine/ui.js";
 import { actions, countLabel, lessonLineSpec, settle, stateAt, tickOf } from "./script.js";
@@ -46,7 +47,7 @@ export class LessonPlayer {
     this.p = 0; this.skipped = false; this.abort = null; this.goto = undefined;
     const jump = (to) => { this.goto = to; app.voice.stop(); if (this.abort) this.abort(); else this.p = to; };
     const again = spriteBox(app, { x: REPLAY_AT[0] - 70, y: REPLAY_AT[1] - 70, w: 140, h: 140, cls: "bubble lessonkey rejouer", label: "rejouer la leçon", paint: (ctx) => app.sprites.draw(ctx, "rejouer", 0, 70, 70) });
-    onTap(again, () => { if (!this.abort) return; pop(again); stats.rejouees++; jump(0); });
+    onBrief(this.app, again, () => { if (!this.abort) return; pop(again); stats.rejouees++; jump(0); }, "rejouer");
     const skip = skipKey(app, () => { this.skipped = true; jump(lesson.phrases.length); }, "passer la leçon");
     skip.classList.add("lessonkey");
     const keys = [again, skip]; this.keys = keys;

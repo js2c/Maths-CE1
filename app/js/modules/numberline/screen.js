@@ -15,7 +15,7 @@ import { arcHeight, Turtle } from "../../engine/turtle.js";
 import { classify, lineSpec, makeEstimate, makeJump, makePlace, makeRead, makeWrite } from "./generator.js";
 import { paintHundreds } from "../facts/aids.js";
 import { clock, wait } from "../../engine/clock.js";
-import { onTap, pop, skipKey, SKIP_AT, spriteBox } from "../../engine/ui.js";
+import { onBrief, onTap, pop, skipKey, SKIP_AT, spriteBox } from "../../engine/ui.js";
 
 const ANSWER_Y = 700, BUB = 140; // centre des bulles, taille de leur calque (px logiques)
 // (lot 3 bis, B7 ; R16) le nombre à placer est écrit sur l'étiquette que porte le poisson (« placer.poisson », ancré à la
@@ -91,7 +91,7 @@ export class NumberLineScreen {
     // « je ne sais pas » : visible tant qu'on attend une réponse ; compte comme une erreur (code NSP)
     this.nsp = spriteBox(app, { x: NSP_AT[0] - 75, y: NSP_AT[1] - 75, w: 150, h: 150, cls: "bubble nsp", label: "je ne sais pas", paint: (ctx) => app.sprites.draw(ctx, "nsp", 0, 75, 75) });
     this.nsp.style.visibility = "hidden";
-    onTap(this.nsp, () => { if (this.locked) return; pop(this.nsp); this.answer(null, null, { nsp: true }); });
+    onBrief(this.app, this.nsp, () => { if (this.locked) return; pop(this.nsp); this.answer(null, null, { nsp: true }); }, "nsp");
   }
   // lot 2 (docs/SPEC-LOT2.md, section 4 : la tortue devant la pieuvre) : pendant un exemple guidé ou une
   // correction, la pieuvre s'écarte un peu vers la gauche (sans monter : la frise est juste au-dessus) pour dégager le début de la ligne ; la

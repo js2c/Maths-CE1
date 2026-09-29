@@ -29,7 +29,7 @@ import { Dictation } from "./modules/numberline/dictation.js";
 import { AidBoard } from "./modules/facts/aids.js";
 import { ChallengeView } from "./modules/facts/challengeView.js";
 import { Rewards } from "./session/rewards.js";
-import { chooseName, goodNight, onTap, reward, spriteBox, StarHud } from "./session/screens.js";
+import { chooseName, goodNight, reward, spriteBox, StarHud } from "./session/screens.js";
 import { challengeReady, doneToday, sameDay, Session } from "./session/session.js";
 import { Reef } from "./session/reef.js";
 import { drawSurprise, playSurprise, previousSession } from "./session/surprise.js";
@@ -118,7 +118,7 @@ sprites.load("aides"); // lot 2 : les aides visuelles du module 2 (petite planch
 // pause, il le dit aussi, avec une file de voix à part (la voix de la séance, en pause, est rendue intacte ensuite)
 const speaker = spriteBox(app, { x: 1140, y: 8, w: 130, h: 130, cls: "hud speaker keep", label: "réécouter", paint: (ctx) => sprites.draw(ctx, "reecouter", 0, 65, 65) });
 let pauseTalk = null;
-onTap(speaker, async () => {
+onBrief(app, speaker, async () => {
   speaker.classList.remove("pop"); void speaker.offsetWidth; speaker.classList.add("pop");
   if (app.enPause && !visiting) {
     if (pauseTalk) return;
@@ -127,7 +127,7 @@ onTap(speaker, async () => {
     return;
   }
   voice.replay();
-});
+}, "reecouter");
 const hud = new StarHud(app, rewards);
 app.hud = hud;
 
@@ -263,8 +263,8 @@ function warmupSkipKey(onSkip) {
     },
     confirm: () => { back(); voice.stop(); clock.resume(); voice.resume(); onSkip(); },
   });
-  onTap(key, () => ws.tap());
-  onTap(check, () => { pop(check); ws.check(); });
+  onBrief(app, key, () => ws.tap(), "passerEchauffement");
+  onBrief(app, check, () => { pop(check); ws.check(); }, "ouiPasserEchauffement");
   app.warmupSkip = ws;
   return { remove() { ws.stop(); key.remove(); check.remove(); if (app.warmupSkip === ws) app.warmupSkip = null; } };
 }
@@ -306,7 +306,7 @@ async function showHome({ done, first = false }) {
     // sans étoiles)
     const again = big("encore", HOME_X[0] + 55, 650, "encore", "bubble play again");
     homeEls.push(again);
-    onTap(again, () => { voice.unlock(); clearHome(); freeTraining(); });
+    onBrief(app, again, () => { voice.unlock(); clearHome(); freeTraining(); }, "encore");
     homeEls.push(await goodNight(app, { first }));
     return;
   }
@@ -413,7 +413,7 @@ function showPauseHome() {
   const reefKey = big("recif", HOME_X[2], 650, "le récif", "bubble reefkey keep"), albumKey = big("album", HOME_X[3], 650, "l'album", "bubble albumkey keep");
   const logo = parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }); logo.classList.add("keep");
   pausedEls = [resume, pickKey, reefKey, albumKey, logo];
-  onBrief(app, resume, resumeSession, "jouer");
+  onBrief(app, resume, resumeSession, "continuer");
   onBrief(app, reefKey, () => visitInPause(() => reef.visit()), "recif");
   onBrief(app, albumKey, () => visitInPause(() => album.visit()), "album");
   onBrief(app, pickKey, () => visitInPause(pickInPause), "choisir");
@@ -513,7 +513,8 @@ async function endPausedSession({ par = "parent", raison = null, home = true } =
   abandonActivity(); frieze.show(false); stage.root.classList.remove("paused"); sound.pauseLevel(false);
   if (home) showHome({ done: await doneToday(store) });
 }
-onTap(homeKey, () => {
+// (lot 3 ter, T3) la maison : au lever du doigt ; pendant la séance, elle met en pause (« Faire une pause »)
+onBrief(app, homeKey, () => {
   pop(homeKey);
   if (mode === "seance") { if (app.warmupSkip?.pending) app.warmupSkip.timeout(); if (!app.enPause) pauseSession(); }
   else if (mode === "libre") quitFree();
@@ -521,7 +522,7 @@ onTap(homeKey, () => {
   // (lot 3, étape 5) depuis l'accueil en pause : l'écran « choisir » ou la leçon seule, quittés sans rien toucher à la séance
   else if (mode === "pause-choix") app.choiceCancel?.();
   else if (mode === "pause-lecon") app.lessonCancel?.();
-});
+}, () => app.legendes.etiquettes[mode === "seance" && !app.enPause ? "pause" : "maison"]);
 async function freeTraining() {
   mode = "libre"; homeKey.style.visibility = "visible"; sound.startMusic(pickMusic(sonIndex, rnd));
   const free = new FreeTraining(app, { store, module1, module2, module3, rnd, seance });

@@ -8,7 +8,7 @@ import * as R from "../../art/runtime.js";
 import { onTap, spriteBox } from "../../session/screens.js";
 import { fill } from "../numberline/screen.js";
 import { clock, wait } from "../../engine/clock.js";
-import { skipKey } from "../../engine/ui.js";
+import { onBrief, skipKey } from "../../engine/ui.js";
 import { aidFor, expected } from "./facts.js";
 import { vary, varyIndex } from "./warmup.js";
 import { AidBoard, paintDoublePlus, paintFishHouse, paintTenFrame } from "./aids.js";
@@ -32,13 +32,15 @@ export class FactsScreen {
       const b = key(COLS[d % 5], ROWS[Math.floor(d / 5)], String(d), (ctx, px) => { small("reponse", 0.9)(ctx, px); ctx.setTransform(px, 0, 0, px, 0, 0); R.drawNumber(ctx, String(d), KEY / 2, KEY / 2 - 25, 50, { w: 7, seed: 900 + d }); });
       onTap(b, () => this.type(String(d), b));
     }
-    const del = key(SIDE, ROWS[0], "effacer", small("effacer", 0.8)); onTap(del, () => { if (!this.typed || !this.tap("effacer")) return; pop(del); this.typed = this.typed.slice(0, -1); this.slate.repaint(); this.onTyped?.(this.typed); });
-    const ok = key(SIDE, ROWS[1], "valider", small("valider", 0.7)); ok.classList.add("check"); onTap(ok, () => { if (!this.typed || !this.tap("valider")) return; pop(ok); this.submit(); });
+    const del = key(SIDE, ROWS[0], "effacer", small("effacer", 0.8)); onBrief(app, del, () => { if (!this.typed || !this.tap("effacer")) return; pop(del); this.typed = this.typed.slice(0, -1); this.slate.repaint(); this.onTyped?.(this.typed); }, "effacer", { first: true });
+    const ok = key(SIDE, ROWS[1], "valider", small("valider", 0.7)); ok.classList.add("check"); onBrief(app, ok, () => { if (!this.typed || !this.tap("valider")) return; pop(ok); this.submit(); }, "valider", { first: true });
+    // (lot 3 ter, T3 : le pavé répond toujours au premier contact ; « effacer » et la coche montrent en plus leur étiquette à
+    // l'appui long ; « je ne sais pas » et le coquillage d'aide valident au lever du doigt)
     // « je ne sais pas » (lot 1 bis) : compte comme une erreur (code NSP), montre la réponse, le fait revient
     this.nsp = spriteBox(app, { x: 1165 - 75, y: 604 - 75, w: 150, h: 150, cls: "bubble nsp", label: "je ne sais pas", paint: (ctx) => sprites.draw(ctx, "nsp", 0, 75, 75) });
-    onTap(this.nsp, () => { if (this.locked) return; pop(this.nsp); this.submit({ nsp: true }); });
+    onBrief(app, this.nsp, () => { if (this.locked) return; pop(this.nsp); this.submit({ nsp: true }); }, "nsp");
     this.help = spriteBox(app, { x: 222 - 75, y: 580 - 75, w: 150, h: 150, cls: "bubble help", label: "aide", paint: (ctx) => sprites.draw(ctx, "aide", 0, 75, 75) });
-    onTap(this.help, () => this.showHelp());
+    onBrief(app, this.help, () => this.showHelp(), "aide");
     this.show(false);
   }
   show(v) { for (const e of [this.slate, this.help, this.nsp, ...this.els]) e.style.visibility = v ? "visible" : "hidden"; }

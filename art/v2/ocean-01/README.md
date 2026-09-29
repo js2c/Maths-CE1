@@ -1,42 +1,41 @@
-# ocean-01 — étape 2
+# ocean-01 — étapes 2 et 3
 
-Cette scène est un **prototype séparé** : elle reste sous `art/v2/`, n'est pas copiée dans `app/` et ne change donc ni l'application publiée ni le mode hors ligne existant.
+Cette scène est un prototype séparé : elle reste sous art/v2/, n'est pas copiée dans app/ et ne modifie donc pas le jeu publié.
 
-## Ce que valide cette étape
+## Étape 2 — décor
 
-- profondeur perceptible sans filtre temps réel ;
-- décor riche avant même d'ajouter les personnages ;
-- ruines, reliefs, lumière, coraux et sol dans le repère 1280 × 800 ;
-- place libre au centre et dans la zone de jeu pour les futurs éléments pédagogiques ;
-- manifeste V2 capable de référencer un vrai visuel raster.
+Le décor V2 valide la profondeur, les ruines, la lumière, les coraux et le sol dans le repère logique 1280 × 800. Le fond de revue est actuellement conditionné en fragments Base64 uniquement pour faciliter son transport dans cette branche de prototype. Ce conditionnement ne sera pas repris dans l'application finale.
 
-Les acteurs restent volontairement des placeholders. Le bouton **Voir les placements** du prototype vérifie leurs positions sans les confondre avec les futurs personnages définitifs.
+## Étape 3 — mascotte animée
 
-## Format du fond dans ce prototype
+La pieuvre n'est plus un placeholder. Le prototype charge actors/octopus-v2.svg et combine deux niveaux de mouvement :
 
-Le visuel de revue est un WebP 800 × 500 redimensionné par le navigateur dans le repère 1280 × 800. Pour conserver ce prototype dans la branche avec le canal d'écriture actuel, ses octets sont stockés en 12 fragments Base64 référencés par `assets/background.bundle.json`.
+- animation interne continue : huit tentacules déphasés, respiration, clignement, déplacement des pupilles, joues et bulles ;
+- animation de l'acteur dans la scène : flottement vertical et micro-rotation pilotés par demo.js.
 
-Ce conditionnement est **temporaire et propre au prototype de revue**. Après validation artistique, l'intégration finale utilisera des WebP binaires normaux, en densité adaptée à la tablette ; les fragments Base64 ne seront pas repris dans `app/`.
+Trois états sont visibles depuis la barre de revue :
+
+- Repos : animation ambiante normale ;
+- Bonne réponse : expression heureuse et rythme légèrement plus énergique ;
+- Explique : bouche dédiée et tentacule de pointage animé.
+
+Le prototype respecte prefers-reduced-motion et coupe les animations internes lorsque cette préférence est activée.
 
 ## Voir localement
 
 Depuis la racine du dépôt :
 
-```bash
-python -m http.server 8080
-```
+    python -m http.server 8080
 
 Puis ouvrir :
 
-```
-http://localhost:8080/art/v2/demo.html
-```
+    http://localhost:8080/art/v2/demo.html
 
-Aucun build ni aucune dépendance supplémentaire n'est nécessaire.
+Le bouton Voir les placements affiche encore les acteurs secondaires en placeholders. Ils seront remplacés seulement après validation de la mascotte.
 
-## Suite après validation visuelle
+## Hors périmètre pour l'instant
 
-1. séparer uniquement les éléments de premier plan qui gagnent réellement à bouger ;
-2. refaire la pieuvre comme personnage étalon ;
-3. remplacer progressivement les placeholders secondaires ;
-4. seulement ensuite préparer l'intégration dans le moteur de `app/`.
+- aucun changement de app/ ;
+- aucun changement pédagogique ;
+- aucun changement IndexedDB, audio ou PWA ;
+- aucune fusion vers main.

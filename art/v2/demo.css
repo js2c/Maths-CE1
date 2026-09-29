@@ -3,10 +3,12 @@ body { overflow: hidden; }
 #scene { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; transform-origin: 0 0; overflow: hidden; background: #0c6985; box-shadow: 0 24px 80px rgba(0,0,0,.45); }
 .v2-entry { position: absolute; transform-origin: center; pointer-events: none; }
 .v2-asset { display: block; max-width: none; image-rendering: auto; }
+.v2-actor-asset { overflow: visible; filter: drop-shadow(0 13px 14px rgba(3,40,50,.18)); }
 .v2-placeholder { display: none; outline: 2px dashed rgba(255,255,255,.9); box-shadow: 0 0 0 2px rgba(7,28,39,.35); }
 .show-guides .v2-placeholder { display: block; }
 .v2-label { position: absolute; left: 5px; top: 5px; padding: 3px 7px; border-radius: 999px; font-size: 12px; line-height: 1; background: rgba(2,22,28,.72); color: #fff; white-space: nowrap; }
-#toolbar { position: fixed; z-index: 1000; left: 14px; top: 14px; display: flex; gap: 8px; padding: 8px; border-radius: 14px; background: rgba(2,22,28,.78); backdrop-filter: blur(6px); }
+#toolbar { position: fixed; z-index: 1000; left: 14px; top: 14px; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; max-width: calc(100vw - 28px); padding: 8px; border-radius: 14px; background: rgba(2,22,28,.78); backdrop-filter: blur(6px); }
 #toolbar button { border: 1px solid rgba(255,255,255,.25); border-radius: 999px; background: rgba(255,255,255,.08); color: white; padding: 8px 12px; font: inherit; cursor: pointer; }
 #toolbar button.active { background: #f3c85b; color: #14232b; border-color: #ffe29b; font-weight: 700; }
+.toolbar-separator { width: 1px; height: 26px; margin: 0 2px; background: rgba(255,255,255,.25); }
 #status { position: fixed; z-index: 1000; left: 14px; bottom: 14px; padding: 8px 11px; border-radius: 9px; background: rgba(2,22,28,.72); font-size: 13px; pointer-events: none; }

@@ -60,11 +60,13 @@
       "id": "octopus",
       "slot": "octo",
       "depth": 40,
-      "x": 308,
-      "y": 255,
-      "placeholder": { "type": "ellipse", "x": 0, "y": 0, "w": 345, "h": 300, "fill": "#e85d55" },
-      "motion": { "float": { "amplitude": 7, "periodMs": 3200, "rotateDeg": 1.1 } },
-      "animation": { "clip": "idle", "fps": 10 }
+      "x": 300,
+      "y": 285,
+      "w": 390,
+      "h": 390,
+      "asset": "actors/octopus-v2.svg",
+      "motion": { "float": { "amplitude": 9, "periodMs": 3300, "rotateDeg": 0.8 } },
+      "animation": { "clip": "idle", "fps": 60 }
     }
   ]
 }

@@ -3,16 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Maths CE1 — décor V2, étape 2</title>
+  <title>Maths CE1 — pieuvre animée V2, étape 3</title>
   <link rel="stylesheet" href="demo.css">
 </head>
 <body>
   <div id="scene"></div>
   <div id="toolbar" aria-label="Options de revue">
-    <button type="button" data-guides="false" class="active">Décor V2</button>
+    <button type="button" data-octo-state="idle" class="active">Repos</button>
+    <button type="button" data-octo-state="happy">Bonne réponse</button>
+    <button type="button" data-octo-state="explain">Explique</button>
+    <span class="toolbar-separator" aria-hidden="true"></span>
+    <button type="button" data-guides="false" class="active">Scène</button>
     <button type="button" data-guides="true">Voir les placements</button>
   </div>
-  <div id="status">Décor V2 seul — étape 2.</div>
+  <div id="status">Chargement de la pieuvre animée…</div>
   <script type="module" src="demo.js"></script>
 </body>
 </html>

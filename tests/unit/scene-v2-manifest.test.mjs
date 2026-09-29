@@ -7,6 +7,7 @@ import { DESIGN_SIZE, entriesByDepth, validateScene } from "../../art/v2/scene-m
 const scenePath = fileURLToPath(new URL("../../art/v2/ocean-01/scene.json", import.meta.url));
 const scene = JSON.parse(await readFile(scenePath, "utf8"));
 const bundlePath = fileURLToPath(new URL("../../art/v2/ocean-01/assets/background.bundle.json", import.meta.url));
+const octopusPath = fileURLToPath(new URL("../../art/v2/ocean-01/actors/octopus-v2.svg", import.meta.url));
 
 test("le manifeste ocean-01 est valide et reste dans le repère du moteur", () => {
   assert.deepEqual(validateScene(scene), []);
@@ -28,6 +29,20 @@ test("le bundle reconstruit un vrai WebP", async () => {
   assert.equal(bytes.length, 52210);
   assert.equal(bytes.subarray(0, 4).toString("ascii"), "RIFF");
   assert.equal(bytes.subarray(8, 12).toString("ascii"), "WEBP");
+});
+
+test("la pieuvre de l'étape 3 est un vrai asset animé et non un placeholder", async () => {
+  const octopus = scene.actors.find((x) => x.id === "octopus");
+  assert.equal(octopus.asset, "actors/octopus-v2.svg");
+  assert.equal(octopus.placeholder, undefined);
+  assert.ok(octopus.w >= 350 && octopus.h >= 350);
+  assert.ok(octopus.motion.float.amplitude > 0);
+
+  const source = await readFile(octopusPath, "utf8");
+  assert.match(source, /@keyframes wave1/);
+  assert.match(source, /@keyframes blink/);
+  assert.match(source, /data-state="happy"/);
+  assert.match(source, /data-state="explain"/);
 });
 
 test("les entrées sont uniques et triables par profondeur", () => {

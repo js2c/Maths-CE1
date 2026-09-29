@@ -37,7 +37,28 @@ Simulation (`sim-seances.mjs`, 30 séances à 2 par semaine, base neuve) :
 
 Jamais deux familles ouvertes le même jour. À chaque ouverture par l'échauffement : 86 à 100 % des faits en boîte 2, 12 réponses à 92 % ou 100 %, médiane 3,1 à 5,2 s (seuil 6,4 à 7,1 s).
 
-**Reste :** étape 2 (T3 et la recette complète).
+- Étape 2, T3 (l'appui long, partout) : `engine/ui.js`, `onBrief` : validation au lever du doigt (moins de 500 ms), étiquette en fondu (0,2 s) tant que le doigt est posé, disparue 0,5 s après le lever, rien de lancé ; `legendes.json`, `appuiLong` (`ms`, `fonduEntreeMs`, `sortieMs` ; `gardeMs` supprimé) et 31 étiquettes nouvelles ; les tuiles prennent leur ligne de la légende (`tileLabel`) ; le point médian « · » ajouté à l'écriture au feutre. Tous les `onTap` des boutons de choix et de commande remplacés (liste ci-dessous) ; seuls les chiffres du pavé gardent le premier contact. Tests `lot3ter.test.mjs` (T3), `lot3bis-partieB.test.mjs` et `carte-voix.test.mjs` adaptés ; parcours `lot3ter.mjs --seul appui` : 101 boutons, tout est bon ; captures regardées (tuile du calcul 7, leçon L2, cran « plus dur », passer l'échauffement…).
+
+**Les boutons recensés (T3)** — validés au lever du doigt, étiquette à l'appui long (texte de `legendes.json`) :
+
+| Écran | Boutons | Étiquette |
+| --- | --- | --- |
+| Accueil | jouer, choisir, le récif, l'album ; « Encore ! » (séance faite) | inchangées (lot 3 bis) ; « S'entraîner encore, sans étoiles. » |
+| Accueil en pause | continuer, choisir, le récif, l'album | « Continuer la séance. » ; les autres inchangées |
+| Premier lancement | les six noms de la pieuvre ; « c'est bon » | le nom ; « C'est bon » |
+| Choisir | 4 exercices ; 13 tuiles de la ligne, 7 familles, 9 niveaux du calcul, 10 leçons ; retour aux exercices ; coche (validation « double » seulement, réglage actuel « simple » : absente) | inchangées ; « 7 · Ajouter en passant la dizaine, on complète d'abord jusqu'à 10 » (la ligne de la légende) ; « Revenir aux exercices » ; « Valider ce choix » |
+| Légende | petit livre ; croix ; toucher dehors (le voile) | « La légende des niveaux » ; « Fermer » ; aucune (le voile n'est pas un bouton) |
+| Sélecteur de difficulté | 4 crans ; coche | « Plus facile. Plus d'aide, des questions plus simples, moins d'étoiles. », « Conseillé. Le niveau préparé pour toi. », « Plus dur. Des questions plus difficiles, plus d'étoiles. », « Très dur. Les questions les plus difficiles, deux fois plus d'étoiles. » (sans les étoiles dans l'entraînement libre) ; « Valider ce choix » |
+| Séance | réécouter ; maison ; passer l'échauffement et sa coche ; coquillage d'aide ; je ne sais pas (ligne, additions, calcul) ; passer (aide, exemple, correction, leçon) ; rejouer la leçon | « Réécouter la consigne » ; « Faire une pause » (pendant la séance), « Revenir à l'accueil » (ailleurs) ; « Passer l'échauffement », « Oui, passer l'échauffement » ; « Un indice » ; « Je ne sais pas, on regarde ensemble » ; « Passer » ; « Revoir la leçon » |
+| Pavé (exception) | effacer, coche : au premier contact, étiquette en plus à l'appui long ; chiffres : au premier contact, sans étiquette | « Effacer le dernier chiffre », « Valider ma réponse » |
+| Réponses (exception) | bulles-réponses (premier contact) ; corde et poisson de « placer » (réponse par le toucher ou le glisser, inchangés) | aucune |
+| Récompense | le coquillage à toucher ; « c'est bon » | « Ouvrir le coquillage » ; « C'est bon » |
+| Carte en grand | la carte (la retourner) ; « c'est bon » ; toucher dehors | « Retourner la carte » ; « C'est bon » ; aucune |
+| Album | 4 onglets de zone ; les cartes ; maison | le nom de la zone ; le nom de la créature ou « Carte à découvrir » ; « Revenir à l'accueil » |
+| Récif | maison ; album ; perles de zone (à partir de deux pages) | « Revenir à l'accueil » ; « L'album des cartes. » ; le nom de la zone |
+| Inchangés | le logo (appui long de 2 s : espace parent) ; les créatures du récif (déjà validées au relâcher, un appui long n'y lance rien ; le récif n'est pas touché) ; l'espace parent (pages de texte pour le parent, clics ordinaires) ; la frise (pas un bouton) | — |
+
+**Reste :** la recette complète de l'étape 2 et la relance des parties B et C (`out-lot3ter/`).
 
 **Décisions prises :**
 
@@ -45,10 +66,17 @@ Jamais deux familles ouvertes le même jour. À chaque ouverture par l'échauffe
 - *Place du bouton* : (1205, 400), à droite, entre « passer » (aides, corrections) et « je ne sais pas », sur les algues ; la coche prend sa place. Zone tactile de 140 px.
 - *Maison pendant l'attente* : l'échauffement reprend d'abord (la coche s'en va), puis la pause ; « continuer » redit la consigne comme d'habitude.
 - *« Réécouter » pendant l'attente* : redit la question de confirmation.
+- *Effacer et coche du pavé (T3)* : la spécification leur donne une étiquette et garde l'exception du pavé ; ils agissent donc au premier contact (comme les chiffres) et montrent en plus leur étiquette à l'appui long : une réponse n'est jamais retenue par un doigt qui traîne.
+- *Maison (T3)* : une seule maison ; pendant la séance, elle met en pause (« Faire une pause ») ; ailleurs (choisir, récif, album, entraînement libre), elle revient à l'accueil (« Revenir à l'accueil »). Il n'y a pas d'autre bouton « pause ».
+- *Étiquettes des tuiles (T3)* : la ligne entière de la légende, sans le point final (« 7 · Ajouter en passant la dizaine, on complète d'abord jusqu'à 10 ») ; l'exemple de la spécification la coupait à la virgule, mais couper à la première virgule abîme d'autres lignes (« Les maisons de 5 »).
+- *Voile (T3)* : fermer la légende ou la carte en grand en touchant dehors se fait aussi au lever du doigt ; un appui long dehors ne ferme rien (sans étiquette).
+- *Crans dans l'entraînement libre* : étiquettes sans les étoiles (il n'y en a pas).
 - *Règle d'ouverture à l'échauffement* : elle **remplace**, à l'échauffement, la règle du lot 2 (80 % des faits introduits en boîte 2, sans condition de réussite) ; la notion du jour des additions garde la sienne. L'entraînement libre n'ouvre plus de famille (il ne compte pas comme « un échauffement » de séance). Réponses comptées « justes » : justes et sans aide ; réponses d'échauffement : ni notion du jour, ni défi, ni entraînement libre, ni temps de base.
 - *Variété à l'échauffement* : la simulation a montré que l'échauffement ne respectait pas la règle du lot 3 bis (§0) « jamais 3 fois de suite la même réponse » (défaut d'avant ce lot : le §0 ne visait que la notion du jour) ; corrigé sans toucher au plan des faits : la question suivante est la première de la file qui ne peut pas redonner la même réponse, et une forme à trou peut changer de côté. Reste : 0 à 4 échauffements sur 30 selon les profils, en fin d'échauffement quand la file ne contient plus que le même fait (« 8 + 1 », « 1 + 8 » repassés). « Au moins 5 réponses différentes » n'est pas tenu par les tout premiers échauffements (6 à 11 questions sur 2 ou 3 faits et leurs inverses).
 
 **Questions ouvertes (valeur par défaut prise, à trancher par le parent) :**
+
+- *Le pictogramme de la vague* : le sélecteur de difficulté dessine déjà ses crans avec des vagues (de plus en plus grosses). La flèche dorée qui franchit la vague distingue « passer l'échauffement », mais une enfant pourrait associer les deux. À regarder sur la tablette ; autre idée si besoin : une flèche qui saute par-dessus un rocher.
 
 - *« Le profil « sait » atteint les amis de 10 à l'échauffement en 4 séances au plus »* : **pas tenu** (6e séance). La condition 1 (tous les faits des familles ouvertes introduits : 33 faits pour « + 1 et + 2 » et les doubles) et la limite existante de 6 faits nouveaux par séance ne le permettent pas avant la 6e séance, quel que soit le profil. Pour tenir 4 séances, il faudrait soit relever la limite de faits nouveaux pour une enfant qui passe tout par la voie rapide, soit assouplir la condition 1 (par exemple 80 % des faits introduits). Rien n'a été changé.
 - *Variété à l'échauffement* : faut-il aussi viser 5 réponses différentes dans les premiers échauffements (ce qui changerait l'ordre d'introduction des faits nouveaux, décidé au lot 3 bis : les deux ordres des termes à la suite) ?

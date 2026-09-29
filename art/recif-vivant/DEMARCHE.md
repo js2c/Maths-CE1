@@ -47,7 +47,7 @@ Le peuplement vise à éviter une scène vide sans transformer l'écran en aquar
 
 Les algues du lagon sont détourées. Leur pied reste fixe et l'amplitude augmente vers le sommet.
 
-Des éléments supplémentaires fournis sur fond uni ont été intégrés dans le récif : gorgones, anémones et coraux. Les éléments souples sont déformés par bandes horizontales ; les masses rigides restent presque fixes.
+Gorgones, anémones et coraux supplémentaires sont posés par leur pied à des emplacements choisis sur le panorama : en arrière du premier plan quand ils poussent sur le massif (le récif cache leur pied), devant lui quand ils sont posés sur le sable. Une houle commune traverse le récif ; les gorgones plient d'un bloc depuis un pied rigide, les anémones gardent leur colonne immobile et agitent leurs tentacules. Voir le README pour le détail.
 
 L'objectif est un mouvement perceptible mais lent : le décor ne doit pas détourner l'attention de l'activité de mathématiques.
 
@@ -70,22 +70,7 @@ Leur rythme a ensuite été accéléré de **30 %**.
 
 ## Grande faune du grand large
 
-La zone entre le récif et les abysses accueille désormais des présences très lointaines :
-
-- dauphins ;
-- groupe de requins ;
-- marlin / espadon ;
-- congre / anguille ;
-- requin blanc ;
-- orque ;
-- requin-marteau ;
-- baleine.
-
-Elles ne sont pas traitées comme les poissons du premier plan. Ce sont des **ombres de profondeur** : faible opacité, vitesse lente, apparition et disparition par fondu, position renouvelée à chaque cycle.
-
-Les dimensions sont différentes selon l'espèce. La baleine domine nettement, puis viennent l'orque et les grands requins ; les dauphins, le marlin et le congre sont plus petits.
-
-Pour les images fournies sur fond bleu, la maquette fabrique au chargement un masque de silhouette à partir de la luminance ou du contraste local, filtre les composantes parasites puis remplit les formes. Les images déjà détourées sont utilisées telles quelles.
+La zone entre le récif et les abysses accueille des **ombres de profondeur** : baleine, orques, dauphins, requin blanc, requins-marteaux, petits requins, marlin, congre. Chaque fichier source a été identifié (nom et forme), détouré et ramené à une échelle commune fondée sur la longueur réelle de l'animal. Chaque espèce a sa nage (battement vertical des cétacés, balayage de la queue des requins et du marlin, onde du congre), sa profondeur, sa taille de groupe et sa vitesse. Les animaux apparaissent dans la brume ou remontent du fond, et disparaissent dans la brume ou en plongeant. Voir le README.
 
 ## Principes de performance
 

@@ -5,7 +5,7 @@
 // « jouer » (la notion du jour tourne) et « l'enfant choisit toujours la ligne » (seul l'échauffement ouvre des familles).
 // Rien n'est jugé. Écrit B-sequences/ECHAUFFEMENTS.md.
 //   node tests/recette-fonctionnelle/b-echauffements.mjs
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { simulate, PROFILS } from "../sim-recette.mjs";
 
@@ -31,4 +31,7 @@ for (const [mode, choix] of [["« jouer » (la notion du jour tourne entre les t
   }
 }
 writeFileSync(join(OUT, "ECHAUFFEMENTS.md"), out.join("\n") + "\n");
+// la ligne de l'index de la partie B (après b-sequences.mjs, qui l'écrit)
+const ix = join(OUT, "_index.json");
+if (existsSync(ix)) { const j = JSON.parse(readFileSync(ix, "utf8")); j.lignes = [j.lignes[0], ["ECHAUFFEMENTS.md", "(lot 3 ter) les échauffements d'un mois, profil par profil (5 profils, « jouer » et « toujours la ligne ») : les additions posées, les erreurs, et chaque famille ouverte par l'échauffement avec les mesures de ses trois conditions"], ...j.lignes.slice(1).filter((l) => l[0] !== "ECHAUFFEMENTS.md")]; writeFileSync(ix, JSON.stringify(j, null, 1)); }
 console.log(`écrit : ${join(OUT, "ECHAUFFEMENTS.md")}`);

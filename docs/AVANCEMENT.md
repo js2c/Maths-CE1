@@ -6,18 +6,18 @@ Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail 
 
 Spécification : `docs/SPEC-LOT3TER.md` (prévaut sur toutes les spécifications précédentes) ; prompt : `docs/PROMPT-LOT3TER.md`. Une session, deux étapes, une demande de fusion. Ne touche pas au récif.
 
-**Où en est-on (29 septembre 2026)** : lot 3 bis fusionné (https://github.com/js2c/Maths-CE1/pull/23). Lot 3 ter : étape 1 faite, étape 2 en cours ; branche `claude/focused-bohr-07vtgr` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 3 ter (en cours) » (https://github.com/js2c/Maths-CE1/pull/25).
+**Où en est-on (29 septembre 2026)** : lot 3 bis fusionné (https://github.com/js2c/Maths-CE1/pull/23). Lot 3 ter : **étapes 1 et 2 faites, recette complète faite** ; branche `claude/focused-bohr-07vtgr` (nom imposé par l'environnement), demande de fusion « Lot 3 ter » (https://github.com/js2c/Maths-CE1/pull/25), prête. Reste : la fusionner, essayer sur la tablette, puis la session relecteur (`docs/PROMPT-LOT3TER.md`), qui fait la recette de contrôle des lots 3 bis et 3 ter.
 
 | Étape | Contenu | État |
 | --- | --- | --- |
 | 1 | T1 (passer l'échauffement : bouton dédié, pictogramme à l'atelier, confirmation par la coche) ; T2 (ouverture automatique des familles à l'échauffement) ; recette allégée | fait |
-| 2 | T3 (appui long sur tous les boutons de choix et de commande, fondus) ; recette complète et relance des parties B et C de la recette fonctionnelle (`out-lot3ter/`) | en cours |
+| 2 | T3 (appui long sur tous les boutons de choix et de commande, fondus) ; recette complète et relance des parties B et C de la recette fonctionnelle (`out-lot3ter/`) | fait |
 
 ### Reprise du lot 3 ter
 
 Pour reprendre si la session s'est arrêtée : branche `claude/focused-bohr-07vtgr`, demande de fusion en brouillon « Lot 3 ter (en cours) » (https://github.com/js2c/Maths-CE1/pull/25).
 
-**Étape en cours :** étape 2 (T3, puis la recette complète).
+**Étape en cours :** aucune ; étapes 1 et 2 terminées le 29 septembre 2026, recette complète faite, demande de fusion prête.
 
 **Fait :**
 
@@ -58,7 +58,25 @@ Jamais deux familles ouvertes le même jour. À chaque ouverture par l'échauffe
 | Récif | maison ; album ; perles de zone (à partir de deux pages) | « Revenir à l'accueil » ; « L'album des cartes. » ; le nom de la zone |
 | Inchangés | le logo (appui long de 2 s : espace parent) ; les créatures du récif (déjà validées au relâcher, un appui long n'y lance rien ; le récif n'est pas touché) ; l'espace parent (pages de texte pour le parent, clics ordinaires) ; la frise (pas un bouton) | — |
 
-**Reste :** la recette complète de l'étape 2 et la relance des parties B et C (`out-lot3ter/`).
+- Recette complète (ci-dessous) et relance des parties B et C de la recette fonctionnelle, avec les parcours nouveaux, dans `tests/recette-fonctionnelle/out-lot3ter/` (`INDEX.md` en tête) : partie B refaite, plus `B-sequences/ECHAUFFEMENTS.md` (les échauffements d'un mois, cinq profils, `b-echauffements.mjs`) ; partie C refaite, plus `C6-passer-echauffement` (voix réelle, `c-toucher.mjs --seulement passerEchauffement`) et `C7-appui-long.md` (101 boutons, `c-appui-long.mjs`) ; partie E nouvelle (`e-lot3ter.mjs`). Anciens parcours adaptés au lever du doigt : `recette-durees.mjs` (les touchers simulés posent puis lèvent le doigt), `lot3bis-b.mjs` (l'étiquette disparaît 0,5 s après, et non plus 2 s).
+
+**Recette complète du lot 3 ter (29 septembre 2026) :**
+
+| Critère (`docs/SPEC-LOT3TER.md`, « Recette du lot 3 ter ») | Mesure | Tenu |
+| --- | --- | --- |
+| Passer l'échauffement (T1) | `lot3ter.mjs --seul passer` : bouton présent dès la phrase d'introduction et à chacune des questions (4 sur 4), pendant le retour et pendant une correction ; toucher : la voix demande « Tu veux passer l'échauffement ? Touche la coche pour dire oui. », le pavé et « je ne sais pas » se ferment, la question reste, la coche remplace le bouton ; sans toucher : la coche part 5,1 s après le toucher (la question lue, puis 5 s), reprise sur la même question, consigne redite ; coche touchée : la notion du jour commence 61 à 92 ms après, « échauffement passé » noté ; passé pendant une correction : rien d'elle ne continue ; la maison pendant l'attente : reprise puis pause ; pictogramme distinct de « passer » (captures `t1-2-correction-deux-boutons`, `t1-2b-deux-boutons`, planche `lot3terSheet` à 2 × et 6 ×). En voix réelle (partie C6) : même déroulé | oui |
+| Échauffement qui s'ajuste (T2) | `sim-seances.mjs`, base neuve, 5 profils, 2 et 5 séances par semaine sur l'année, avec « jouer » ; et 30 séances « toujours la ligne » (`--choix 1:5`) : séance d'ouverture de chaque famille (tableau de l'étape 1) ; jamais deux familles ouvertes le même jour (0 sur 10 simulations d'un an) ; « diff » n'ouvre aucune famille par l'échauffement (sur l'année : uniquement la notion du jour ou la stagnation) ; « réel » à 2 par semaine : 0,50 famille par semaine le premier mois (dont 0 par l'échauffement), à 5 par semaine 1,25 (dont 0,25 par l'échauffement ; le reste par la notion du jour, règle du lot 2 inchangée) ; « sait » atteint les amis de 10 par l'échauffement à la **6e** séance (attendu : 4 au plus, voir « Questions ouvertes ») ; variété à l'échauffement : 3 fois de suite la même réponse dans 0 à 4 échauffements sur 64 à 160 selon le profil (fins d'échauffement sans issue), moins de 5 réponses différentes dans 1 à 3 (les premiers) | en partie (le délai de 4 séances) |
+| Appui long (T3) | `lot3ter.mjs --seul appui` : **101 boutons** recensés ; appui de 0,8 s : étiquette visible et dans l'écran sur 99 (les deux autres sont les chiffres du pavé et une bulle-réponse, sans étiquette), rien de lancé sur tous ; au lever du doigt : rien de lancé, étiquette invisible 0,5 s après (101 sur 101) ; toucher bref : action lancée (27 boutons essayés, chacun d'un type différent) ; pavé et bulles-réponses : réponse au premier contact (un chiffre, une bulle tenue 0,9 s), « effacer » et coche du pavé au premier contact, l'étiquette en plus | oui |
+| Non-régression | voir ci-dessous | oui |
+
+| Recettes des lots précédents | Mesure |
+| --- | --- |
+| `sim-seances.mjs`, 5 profils, 2 et 5 séances par semaine, sur l'année | 60 cartes du 15 au 17 juin 2027, légendaires comprises ; quota jamais dépassé ; séances estimées 8,9 à 9,5 min (10 premières séances) ; aucune famille acquise en une seule séance ; part de la famille en cours 75 à 100 % en moyenne (75 % : « en difficulté » à 2 par semaine ; 72 % au lot 3 bis) ; 7 décors en un mois à 2 séances par semaine |
+| `b-sequences.mjs --test` | 0 séance en défaut sur 464 |
+| `recette.mjs --delai 4.5` | ligne graduée 8 min 40 s ; additions 8 min 20 s ; calcul rapide 8 min 42 s ; aucune erreur |
+| `recette-durees.mjs` | sans « passer » : attente sans commande hors voix 1,0 s au plus ; avec « passer » : 1,0 s au plus |
+| Parcours Playwright | les 27 parcours (sauf `video`), un par un : tout est bon (`lot3bis` compris : le double toucher passe cette fois) ; `perf` : démarrage 1,9 à 2,2 s (processeur ÷ 4), 22,8 à 27,4 ms par image en moyenne, **comme `main` mesuré le même jour sur la même machine** (24,8 et 26,5 ms ; 18,5 ms au lot 3 bis, un autre jour) : pas de régression, la machine est plus lente aujourd'hui ; travail par image 4,3 à 5 ms |
+| `npm test` | 251 tests, tout est bon |
 
 **Décisions prises :**
 

@@ -31,4 +31,7 @@ const out = [
   "## Captures (l'étiquette pendant l'appui)", "", ...done.map(([f, what]) => `- \`${f}\` : ${what}`), "",
 ];
 writeFileSync(join(OUT, "C7-appui-long.md"), out.join("\n"));
+// les lignes de l'index de la partie C (écrit par c-toucher.mjs)
+const ix = join(OUT, "_index.json");
+if (existsSync(ix)) { const j = JSON.parse(readFileSync(ix, "utf8")); j.lignes = [...j.lignes.filter((l) => !l[0].startsWith("C7-")), ["C7-appui-long.md", `(lot 3 ter) l'appui long de 0,8 s sur chacun des ${rows.length} boutons recensés, puis le toucher bref : une ligne par bouton`], ...done.map(([f, what]) => [f, `(lot 3 ter) l'étiquette pendant l'appui long : ${what}`])]; writeFileSync(ix, JSON.stringify(j, null, 1)); }
 console.log(`écrit : ${join(OUT, "C7-appui-long.md")} (${rows.length} boutons, ${done.length} captures)`);

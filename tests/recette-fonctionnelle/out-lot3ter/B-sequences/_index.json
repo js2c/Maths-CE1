@@ -1,0 +1,246 @@
+{
+ "titre": "Partie B · les séquences de questions",
+ "intro": "Le texte des séances telles que le moteur les génère (runners de l'application, sans navigateur) : pour chaque exercice × niveau (ou famille) × cran, en base neuve et en « un mois », avec trois comportements de l'enfant. Commencer par `SYNTHESE.md`.",
+ "lignes": [
+  [
+   "SYNTHESE.md",
+   "une ligne par séance simulée (base × exercice × cran × comportement) : réponses différentes, répétitions, suites prévisibles, leçons, étoiles ; et le tableau des étoiles « pressée » comparées à « appliquée »"
+  ],
+  [
+   "ECHAUFFEMENTS.md",
+   "(lot 3 ter) les échauffements d'un mois, profil par profil (5 profils, « jouer » et « toujours la ligne ») : les additions posées, les erreurs, et chaque famille ouverte par l'échauffement avec les mesures de ses trois conditions"
+  ],
+  [
+   "neuve/additions-famille-1.md",
+   "base neuve (premier lancement) : additions famille 1, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/additions-famille-2.md",
+   "base neuve (premier lancement) : additions famille 2, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/additions-famille-3.md",
+   "base neuve (premier lancement) : additions famille 3, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/additions-famille-4.md",
+   "base neuve (premier lancement) : additions famille 4, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/additions-famille-5.md",
+   "base neuve (premier lancement) : additions famille 5, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/additions-famille-6.md",
+   "base neuve (premier lancement) : additions famille 6, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/additions-famille-7.md",
+   "base neuve (premier lancement) : additions famille 7, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/calcul-1.md",
+   "base neuve (premier lancement) : calcul 1, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/calcul-2.md",
+   "base neuve (premier lancement) : calcul 2, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/calcul-3.md",
+   "base neuve (premier lancement) : calcul 3, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/calcul-4.md",
+   "base neuve (premier lancement) : calcul 4, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/calcul-5.md",
+   "base neuve (premier lancement) : calcul 5, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/calcul-6.md",
+   "base neuve (premier lancement) : calcul 6, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/calcul-7.md",
+   "base neuve (premier lancement) : calcul 7, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/calcul-8.md",
+   "base neuve (premier lancement) : calcul 8, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/calcul-9.md",
+   "base neuve (premier lancement) : calcul 9, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/ligne-01.md",
+   "base neuve (premier lancement) : ligne 01, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/ligne-02.md",
+   "base neuve (premier lancement) : ligne 02, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/ligne-03.md",
+   "base neuve (premier lancement) : ligne 03, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/ligne-04.md",
+   "base neuve (premier lancement) : ligne 04, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/ligne-05.md",
+   "base neuve (premier lancement) : ligne 05, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/ligne-06.md",
+   "base neuve (premier lancement) : ligne 06, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/ligne-07.md",
+   "base neuve (premier lancement) : ligne 07, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/ligne-08.md",
+   "base neuve (premier lancement) : ligne 08, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/ligne-09.md",
+   "base neuve (premier lancement) : ligne 09, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/ligne-10.md",
+   "base neuve (premier lancement) : ligne 10, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/ligne-11.md",
+   "base neuve (premier lancement) : ligne 11, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/ligne-12.md",
+   "base neuve (premier lancement) : ligne 12, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/ligne-13.md",
+   "base neuve (premier lancement) : ligne 13, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/additions-famille-1.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : additions famille 1, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/additions-famille-2.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : additions famille 2, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/additions-famille-3.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : additions famille 3, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/additions-famille-4.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : additions famille 4, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/additions-famille-5.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : additions famille 5, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/additions-famille-6.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : additions famille 6, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/additions-famille-7.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : additions famille 7, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/calcul-1.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : calcul 1, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/calcul-2.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : calcul 2, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/calcul-3.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : calcul 3, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/calcul-4.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : calcul 4, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/calcul-5.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : calcul 5, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/calcul-6.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : calcul 6, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/calcul-7.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : calcul 7, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/calcul-8.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : calcul 8, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/calcul-9.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : calcul 9, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/ligne-01.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : ligne 01, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/ligne-02.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : ligne 02, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/ligne-03.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : ligne 03, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/ligne-04.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : ligne 04, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/ligne-05.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : ligne 05, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/ligne-06.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : ligne 06, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/ligne-07.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : ligne 07, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/ligne-08.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : ligne 08, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/ligne-09.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : ligne 09, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/ligne-10.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : ligne 10, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/ligne-11.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : ligne 11, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/ligne-12.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : ligne 12, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/ligne-13.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : ligne 13, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ]
+ ]
+}

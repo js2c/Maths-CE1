@@ -51,8 +51,85 @@ const algues = A.algues.map((a,i) => ({...a, img:loadImg(a.src), ph:i*2.1+0.7, p
 const spr = {}; for (const k in A.fish) spr[k] = {img:loadImg(A.fish[k].src), w:A.fish[k].w, h:A.fish[k].h};
 const decorSpr = {}; for (const k in A.decorSprites) decorSpr[k] = {img:loadImg(A.decorSprites[k].src), w:A.decorSprites[k].w, h:A.decorSprites[k].h};
 const decor = A.decorItems.map((d,i) => ({...d, ph:i*1.91+0.35, ph2:i*1.13+1.1, baseY:0}));
-const largeSpr = {}; for (const k in A.largeSprites) largeSpr[k] = {img:loadImg(A.largeSprites[k].src), w:A.largeSprites[k].w, h:A.largeSprites[k].h};
+const largeSpr = {}; for (const k in A.largeSprites) largeSpr[k] = {img:loadImg(A.largeSprites[k].src), w:A.largeSprites[k].w, h:A.largeSprites[k].h, shadow:null};
 const largeFaunaMeta = A.largeFauna.map((d,i) => ({...d, ph:i*1.73+0.2, ph2:i*0.93+1.7}));
+const LARGE_MASK = {
+  dauphins_groupe:{mode:'lum',thr:52,keep:4,minArea:200},
+  requins_groupe:{mode:'rowabs',thr:3,keep:4,minArea:70},
+  marlin_espadon:{mode:'lum',thr:70,keep:1,minArea:500},
+  anguille:{mode:'rowabs',thr:3,keep:1,minArea:80},
+  baleine:{mode:'lum',thr:34,keep:1,minArea:1000}
+};
+function largeShadowTexture(key, sp){
+  if (sp.shadow) return sp.shadow;
+  if (!sp.img.complete || !sp.img.naturalWidth) return null;
+  const cfg = LARGE_MASK[key];
+  if (!cfg) return sp.img; // les silhouettes sur fond vert ont déjà été détourées dans le kit
+  const w=sp.img.naturalWidth, h=sp.img.naturalHeight, n=w*h;
+  const src=document.createElement('canvas'); src.width=w; src.height=h;
+  const sg=src.getContext('2d',{willReadFrequently:true}); sg.drawImage(sp.img,0,0);
+  const id=sg.getImageData(0,0,w,h), d=id.data, lum=new Float32Array(n);
+  for(let i=0;i<n;i++){ const o=i*4; lum[i]=0.2126*d[o]+0.7152*d[o+1]+0.0722*d[o+2]; }
+  const mask=new Uint8Array(n);
+  if(cfg.mode==='lum'){
+    for(let i=0;i<n;i++) if(lum[i]<cfg.thr) mask[i]=1;
+  } else {
+    const edge=Math.max(5,Math.floor(w/8));
+    for(let y=0;y<h;y++){
+      const vals=[];
+      for(let x=0;x<edge;x++) vals.push(lum[y*w+x]);
+      for(let x=w-edge;x<w;x++) vals.push(lum[y*w+x]);
+      vals.sort((a,b)=>a-b);
+      const bg=vals[Math.floor(vals.length/2)];
+      for(let x=0;x<w;x++) if(Math.abs(bg-lum[y*w+x])>cfg.thr) mask[y*w+x]=1;
+    }
+  }
+  // Ferme de petites coupures dans les contours avant de chercher les silhouettes.
+  const morph=(input,dilate)=>{
+    const out=new Uint8Array(n), r=2;
+    for(let y=0;y<h;y++) for(let x=0;x<w;x++){
+      let v=dilate?0:1;
+      outer: for(let yy=Math.max(0,y-r);yy<=Math.min(h-1,y+r);yy++) for(let xx=Math.max(0,x-r);xx<=Math.min(w-1,x+r);xx++){
+        const q=input[yy*w+xx];
+        if(dilate ? q : !q){ v=dilate?1:0; break outer; }
+      }
+      out[y*w+x]=v;
+    }
+    return out;
+  };
+  let m=mask;
+  for(let k=0;k<2;k++) m=morph(m,true);
+  for(let k=0;k<2;k++) m=morph(m,false);
+  const labels=new Int32Array(n), areas=[0]; let next=0;
+  const stack=[];
+  for(let i=0;i<n;i++){
+    if(!m[i]||labels[i]) continue;
+    const lab=++next; let area=0; labels[i]=lab; stack.push(i);
+    while(stack.length){
+      const p=stack.pop(); area++; const x=p%w, y=(p/w)|0;
+      if(x>0){const q=p-1;if(m[q]&&!labels[q]){labels[q]=lab;stack.push(q);}}
+      if(x<w-1){const q=p+1;if(m[q]&&!labels[q]){labels[q]=lab;stack.push(q);}}
+      if(y>0){const q=p-w;if(m[q]&&!labels[q]){labels[q]=lab;stack.push(q);}}
+      if(y<h-1){const q=p+w;if(m[q]&&!labels[q]){labels[q]=lab;stack.push(q);}}
+    }
+    areas[lab]=area;
+  }
+  const kept=[];
+  for(let lab=1;lab<=next;lab++) if(areas[lab]>=cfg.minArea) kept.push(lab);
+  kept.sort((a,b)=>areas[b]-areas[a]); kept.length=Math.min(cfg.keep,kept.length);
+  const slot=new Int16Array(next+1); slot.fill(-1); kept.forEach((lab,i)=>slot[lab]=i);
+  const minX=Array.from({length:kept.length},()=>new Int32Array(h).fill(w));
+  const maxX=Array.from({length:kept.length},()=>new Int32Array(h).fill(-1));
+  for(let p=0;p<n;p++){ const k=slot[labels[p]]; if(k<0) continue; const x=p%w,y=(p/w)|0; if(x<minX[k][y])minX[k][y]=x;if(x>maxX[k][y])maxX[k][y]=x; }
+  const out=document.createElement('canvas'); out.width=w; out.height=h;
+  const og=out.getContext('2d'), oi=og.createImageData(w,h), od=oi.data;
+  for(let k=0;k<kept.length;k++) for(let y=0;y<h;y++){
+    if(maxX[k][y]<0) continue;
+    for(let x=minX[k][y];x<=maxX[k][y];x++){ const o=(y*w+x)*4; od[o]=12;od[o+1]=22;od[o+2]=58;od[o+3]=255; }
+  }
+  og.putImageData(oi,0,0);
+  return sp.shadow=out;
+}
 const TOP = A.top;
 const topAt = x => x < 0 ? TOP[0] : (x >= 5800 ? H : TOP[Math.min(TOP.length-1, Math.round(x/20))]);
 function ceilAhead(x, dir, span){ let m = H; for (let d = 0; d <= span; d += 40) m = Math.min(m, topAt(x + dir*d)); return m; }
@@ -277,11 +354,11 @@ function resetLargeShadow(s, first=false){
   s.dir = rnd() < 0.5 ? -1 : 1;
   s.len = meta.longueur * R(0.88, 1.14);
   s.y = R(meta.yMin, meta.yMax);
-  s.speed = R(meta.vitesseMin, meta.vitesseMax) * (rnd() < 0.5 ? 1 : 1.05);
-  s.x = first ? R(OPEN_SEA.x0 + 120, OPEN_SEA.x1 - 120) : (s.dir > 0 ? OPEN_SEA.x0 - s.len*0.65 : OPEN_SEA.x1 + s.len*0.65);
-  if (first) s.x += R(-220, 220);
-  s.age = first ? R(0, 0.7) : 0;
+  s.speed = R(meta.vitesseMin, meta.vitesseMax);
+  const margin = Math.min(420, s.len*0.22);
+  s.x = R(OPEN_SEA.x0 + margin, OPEN_SEA.x1 - margin);
   s.life = R(20, 34);
+  s.age = first ? R(s.life*0.12, s.life*0.82) : 0;
   s.alpha = meta.alpha * R(0.9, 1.08);
   s.driftY = R(-12, 12);
   s.bob = R(8, 24);
@@ -294,14 +371,15 @@ function stepLargeShadows(dt, t){
     s.age += dt;
     s.x += s.dir * s.speed * dt;
     s.y += Math.sin(t*0.09 + s.ph) * 0.10 * dt + Math.sin(t*0.19 + s.ph2) * 0.06 * dt;
-    if (s.age > s.life || s.x < OPEN_SEA.x0 - s.len*1.2 || s.x > OPEN_SEA.x1 + s.len*1.2) resetLargeShadow(s, false);
+    if (s.age > s.life || s.x < OPEN_SEA.x0 - s.len*0.55 || s.x > OPEN_SEA.x1 + s.len*0.55) resetLargeShadow(s, false);
   }
 }
 function drawLargeShadows(t, sc, camX, viewW){
   for (const s of largeShadows){
     const sp = largeSpr[s.key];
     if (!sp || !sp.img.complete) continue;
-    const drawW = s.len, drawH = drawW * sp.h / sp.w;
+    const tex = largeShadowTexture(s.key, sp); if (!tex) continue;
+    const drawW = s.len, drawH = drawW * tex.height / tex.width;
     const left = s.x - drawW*0.5;
     if (left + drawW < camX - 60 || left > camX + viewW + 60) continue;
     const u = clamp(s.age / s.life, 0, 1);
@@ -313,7 +391,7 @@ function drawLargeShadows(t, sc, camX, viewW){
     ctx.globalAlpha = alpha;
     ctx.translate((s.x - camX)*sc, (s.y + bob)*sc);
     if (s.dir < 0){ ctx.scale(-1, 1); }
-    ctx.drawImage(sp.img, -drawW*sc/2, -drawH*sc/2, drawW*sc, drawH*sc);
+    ctx.drawImage(tex, -drawW*sc/2, -drawH*sc/2, drawW*sc, drawH*sc);
     ctx.restore();
   }
 }
@@ -499,6 +577,7 @@ function frame(now){
   for (const g of groups) stepGroup(g, dt, t);
   for (let i = groups.length - 1; i >= 0; i--) if (finished(groups[i])) groups.splice(i, 1);
   spawnT -= dt; if (spawnT < 0){ spawnTick(); spawnT = R(0.8, 2.2); }
+  stepLargeShadows(dt, t);
   stepAbyssParticles(dt);
   ctx.setTransform(1,0,0,1,0,0);
   ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';

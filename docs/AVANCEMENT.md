@@ -2,6 +2,29 @@
 
 Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail dans une nouvelle session : lire ce fichier, puis `CLAUDE.md`, `docs/SPEC.md` et `docs/ARCHITECTURE.md`.
 
+## Lot 3 ter
+
+Spécification : `docs/SPEC-LOT3TER.md` (prévaut sur toutes les spécifications précédentes) ; prompt : `docs/PROMPT-LOT3TER.md`. Une session, deux étapes, une demande de fusion. Ne touche pas au récif.
+
+**Où en est-on (29 septembre 2026)** : lot 3 bis fusionné (https://github.com/js2c/Maths-CE1/pull/23). Lot 3 ter commencé : branche `claude/focused-bohr-07vtgr` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 3 ter (en cours) ».
+
+| Étape | Contenu | État |
+| --- | --- | --- |
+| 1 | T1 (passer l'échauffement : bouton dédié, pictogramme à l'atelier, confirmation par la coche) ; T2 (ouverture automatique des familles à l'échauffement) ; recette allégée | à faire |
+| 2 | T3 (appui long sur tous les boutons de choix et de commande, fondus) ; recette complète et relance des parties B et C de la recette fonctionnelle (`out-lot3ter/`) | à faire |
+
+### Reprise du lot 3 ter
+
+Pour reprendre si la session s'est arrêtée : branche `claude/focused-bohr-07vtgr`, demande de fusion en brouillon « Lot 3 ter (en cours) ».
+
+**Étape en cours :** étape 1.
+
+**Fait :** rien encore.
+
+**Reste :** étapes 1 et 2.
+
+**Décisions prises :** aucune encore.
+
 ## Lot 3 bis
 
 Spécification : `docs/SPEC-LOT3BIS.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LOT2.md`, `docs/SPEC-LOT3.md` et `docs/SPEC-COMPLEMENTS.md`) ; rapport qui la motive : `docs/RECETTE-LOT3.md` (constats R1 à R25) ; prompt : `docs/PROMPT-LOT3BIS.md`. Deux parties : A (étapes 1 et 2, moteur et contenu), B (étapes 3 à 5, visuel, atelier et parent).

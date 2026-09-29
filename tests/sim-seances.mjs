@@ -55,6 +55,22 @@ console.log(`séances d'additions : ${moy(m2.map((r) => r.add.filter((x) => !x.i
   console.log(`\n## lot 3 bis : acquisition des familles (${PROFILS[profil].nom})`);
   console.log(`familles acquises (séance, séances où elle a été réussie jusque-là) : ${acq.map((a) => `${a.id} (${a.n}, ${a.avant})`).join(" ; ") || "aucune"} ; acquise en une seule séance : ${une.length ? une.map((a) => a.id).join(", ") + " (ERREUR)" : "aucune"}`);
 }
+// lot 3 ter (docs/SPEC-LOT3TER.md, T2) : l'échauffement s'ajuste seul (familles ouvertes par l'échauffement)
+{
+  const last = res.at(-1).fOuvertures ?? [], day = (t) => new Date(t).toDateString(), src = (o) => (o.echauffement ? "échauffement" : o.choix ? "choix" : o.parent ? "parent" : o.stagnation ? "stagnation" : "notion du jour");
+  const opened = last.filter((o) => ![1, 2].includes(o.famille)).map((o) => ({ ...o, n: res.find((r) => (r.fOuvertures ?? []).some((x) => x.famille === o.famille))?.n, src: src(o) }));
+  const byDay = new Map(); for (const o of opened) byDay.set(day(o.date), [...(byDay.get(day(o.date)) ?? []), o.famille]);
+  const deux = [...byDay.entries()].filter(([, f]) => f.length > 1);
+  const month = res[0] ? new Date(res[0].date.split("/").reverse().join("-")).getTime() : 0, firstMonth = opened.filter((o) => o.date < month + 28 * 864e5);
+  const fmt = (r) => r.opening ? `${Math.round(r.opening.mesures.part * 100)} % en boîte 2, ${r.opening.mesures.reponses} réponses à ${Math.round(r.opening.mesures.justes * 100)} %, médiane ${(r.opening.mesures.medianeMs / 1000).toFixed(1)} s (seuil ${(r.opening.mesures.limitMs / 1000).toFixed(1)} s)` : "";
+  const warm = res.filter((r) => r.chauffe?.length), trois = warm.filter((r) => r.chauffe.some((v, i) => i >= 2 && v === r.chauffe[i - 1] && v === r.chauffe[i - 2])), peu = warm.filter((r) => new Set(r.chauffe).size < 5);
+  console.log(`\n## lot 3 ter : l'échauffement s'ajuste (${PROFILS[profil].nom})`);
+  console.log(`familles ouvertes (séance, par quoi) : ${opened.map((o) => `${o.famille} (${o.n}, ${o.src})`).join(" ; ") || "aucune"}`);
+  for (const o of opened.filter((x) => x.echauffement)) { const r = res.find((x) => x.n === o.n); console.log(`  famille ${o.famille} ouverte par l'échauffement à la séance ${o.n} : ${fmt(r)}`); }
+  console.log(`amis de 10 (famille 3) ouverts à la séance ${opened.find((o) => o.famille === 3)?.n ?? "jamais"} ; deux familles ouvertes le même jour : ${deux.length ? deux.map(([d, f]) => `${d} (${f.join(", ")})`).join(" ; ") + " (ERREUR)" : "jamais"}`);
+  console.log(`premier mois : ${firstMonth.length} famille(s) ouverte(s), ${(firstMonth.length / 4).toFixed(2)} par semaine`);
+  console.log(`variété à l'échauffement, ${warm.length} échauffements : 3 fois de suite la même réponse : ${trois.length ? `${trois.length} (${trois.slice(0, 3).map((r) => `séance ${r.n} [${r.chauffe.join(" ")}]`).join(" ; ")})` : "jamais"} ; moins de 5 réponses différentes : ${peu.length ? `${peu.length} (${peu.slice(0, 3).map((r) => `séance ${r.n} [${r.chauffe.join(" ")}]`).join(" ; ")})` : "jamais"}`);
+}
 // lot 3, étape 4 : le calcul rapide
 {
   const m3 = res.filter((r) => r.module === 3), acq = (n) => res.find((r) => (r.acquis3 ?? []).includes(n))?.n ?? "jamais", last3 = [...res].reverse().find((r) => r.acquis3);

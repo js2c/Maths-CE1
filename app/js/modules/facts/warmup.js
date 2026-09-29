@@ -112,6 +112,26 @@ export class Warmup {
     return { juste, rapide: juste && r.ms < limit, etoiles: juste ? (q.revient ? 2 : 1) : 0, ajoutes };
   }
 }
+// lot 3 ter (recette de T2 : la variété du lot 3 bis, §0, à l'échauffement) : jamais 3 fois de suite la même réponse. Si les
+// deux dernières réponses attendues sont égales à v, la prochaine question est la première de la file qui ne peut pas
+// donner v (ni a, ni b, ni a + b : sa forme n'est tirée qu'au moment de la poser), sinon la première dont le total diffère,
+// sinon la file dans l'ordre ; `answers` : les réponses attendues des questions déjà posées (hors temps de base).
+// `vary(q, answers)` : une question à trou qui donnerait encore v prend l'autre forme à trou (« 1 + ? = 9 » au lieu de
+// « ? + 8 = 9 »). Il reste des cas sans issue (la file ne contient plus que ce fait) : la simulation les compte.
+export function varyIndex(rest, answers) {
+  const n = answers.length, v = answers[n - 1];
+  if (n < 2 || v !== answers[n - 2]) return 0;
+  let i = rest.findIndex((q) => q.base || (q.a !== v && q.b !== v && q.a + q.b !== v));
+  if (i < 0) i = rest.findIndex((q) => q.a + q.b !== v);
+  return i < 0 ? 0 : i;
+}
+export function vary(q, answers) {
+  const n = answers.length, v = answers[n - 1];
+  if (q.base || n < 2 || v !== answers[n - 2] || expected(q) !== v || !["trouDroite", "trouGauche"].includes(q.forme)) return q;
+  const alt = q.forme === "trouDroite" ? "trouGauche" : "trouDroite";
+  if (expected({ ...q, forme: alt }) !== v) q.forme = alt;
+  return q;
+}
 // la question telle que le parent la lira dans l'historique
 export const describeFact = (q, forme = q.forme) => (forme === "trouDroite" ? `${q.a} + ? = ${q.a + q.b}` : forme === "trouGauche" ? `? + ${q.b} = ${q.a + q.b}` : `${q.a} + ${q.b}`);
 export { catalog };

@@ -127,15 +127,19 @@ if (part("passer")) {
 }
 
 if (part("parent")) {
-  // une famille ouverte par l'échauffement, vue dans l'espace parent
+  // une famille ouverte par l'échauffement, vue dans l'espace parent (onglet Progression, tableau des familles)
   const { page, context, errors } = await open("", async () => {
     const s = window.__app.store, now = Date.now();
-    await s.put("niveaux", { module: 2, ouvertes: [1, 2, 3], ouvertures: [{ famille: 1, date: now - 9e8 }, { famille: 2, date: now - 9e8 }, { famille: 3, date: now - 864e5, echauffement: true }], acquises: [], trou: [], notion: [], lecons: [] });
+    await s.put("niveaux", { module: 2, ouvertes: [1, 2, 3], ouvertures: [{ famille: 1, date: now - 9e8 }, { famille: 2, date: now - 9e8 }, { famille: 3, date: now - 864e5, echauffement: true, seance: 4 }], acquises: [], trou: [], notion: [], lecons: [] });
     await s.setSetting("codeParent", "1234");
   });
-  await page.evaluate(() => window.__openParent?.());
-  const ok = await page.evaluate(async () => { const { familiesSummary } = await import("./js/parent/data.js"); const c = await (await fetch("content/module2.json")).json(); return familiesSummary(c, await window.__app.store.get("niveaux", 2), []).familles.find((f) => f.id === 3).ouverteEchauffement; });
-  check(ok, "la famille 3 est marquée « ouverte par l'échauffement »");
+  page.evaluate(() => window.__app.parent.open()).catch(() => {}); await page.waitForSelector(".pa-keys", { timeout: 10000 });
+  for (const d of "1234") { await page.dispatchEvent(`.pa-keys button[data-key="${d}"]`, "pointerdown"); await page.waitForTimeout(80); }
+  await page.waitForTimeout(600); await page.click('.pa-tabs button:has-text("Progression")'); await page.waitForTimeout(800);
+  const cells = await page.evaluate(() => [...document.querySelectorAll(".pa-fam td")].map((t) => t.innerText));
+  check(cells.some((t) => /^ouverte par l'échauffement le \d\d\/\d\d$/.test(t)), `familles : « ouverte par l'échauffement le … » (${cells.filter((t) => /échauffement/.test(t)).join(" ; ") || "absent"})`);
+  await page.evaluate(() => { document.querySelector(".pa-fam")?.scrollIntoView({ block: "start" }); document.querySelector(".pa-sheet")?.scrollBy?.(0, -90); });
+  await page.waitForTimeout(300); await page.screenshot({ path: join(OUT, "t2-parent-familles.png") });
   check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
 }
 

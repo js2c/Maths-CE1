@@ -121,7 +121,7 @@ if (!ONLY || ONLY === "choisir") {
   const { page, context, errors } = await open("&cran=conseille&module=1&sansLecon&guides=0");
   await tap(page, ".play", 300);
   await page.waitForFunction(() => window.__app.session?.progress.etape === "echauffement" && window.__app.facts?.resolve, null, { timeout: 60000 });
-  await page.waitForTimeout(400); await tap(page, ".skip", 300); // l'échauffement passé
+  await page.waitForTimeout(400); await tap(page, ".skip-warmup", 300); await tap(page, ".check-warmup", 300); // l'échauffement passé (lot 3 ter : le bouton dédié, puis la coche)
   await page.waitForFunction(() => window.__app.screen?.q && window.__app.screen.resolve && !window.__app.screen.locked, null, { timeout: 60000 }); await page.waitForTimeout(400);
   await tap(page, ".session-home", 700);
   const s0 = await state(page), old = await page.evaluate(() => ({ id: window.__app.session.id, etoiles: window.__app.session.rec.etoiles }));

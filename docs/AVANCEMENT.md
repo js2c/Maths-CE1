@@ -6,24 +6,52 @@ Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail 
 
 Spécification : `docs/SPEC-LOT3TER.md` (prévaut sur toutes les spécifications précédentes) ; prompt : `docs/PROMPT-LOT3TER.md`. Une session, deux étapes, une demande de fusion. Ne touche pas au récif.
 
-**Où en est-on (29 septembre 2026)** : lot 3 bis fusionné (https://github.com/js2c/Maths-CE1/pull/23). Lot 3 ter commencé : branche `claude/focused-bohr-07vtgr` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 3 ter (en cours) ».
+**Où en est-on (29 septembre 2026)** : lot 3 bis fusionné (https://github.com/js2c/Maths-CE1/pull/23). Lot 3 ter : étape 1 faite, étape 2 en cours ; branche `claude/focused-bohr-07vtgr` (nom imposé par l'environnement), demande de fusion en brouillon « Lot 3 ter (en cours) » (https://github.com/js2c/Maths-CE1/pull/25).
 
 | Étape | Contenu | État |
 | --- | --- | --- |
-| 1 | T1 (passer l'échauffement : bouton dédié, pictogramme à l'atelier, confirmation par la coche) ; T2 (ouverture automatique des familles à l'échauffement) ; recette allégée | à faire |
-| 2 | T3 (appui long sur tous les boutons de choix et de commande, fondus) ; recette complète et relance des parties B et C de la recette fonctionnelle (`out-lot3ter/`) | à faire |
+| 1 | T1 (passer l'échauffement : bouton dédié, pictogramme à l'atelier, confirmation par la coche) ; T2 (ouverture automatique des familles à l'échauffement) ; recette allégée | fait |
+| 2 | T3 (appui long sur tous les boutons de choix et de commande, fondus) ; recette complète et relance des parties B et C de la recette fonctionnelle (`out-lot3ter/`) | en cours |
 
 ### Reprise du lot 3 ter
 
-Pour reprendre si la session s'est arrêtée : branche `claude/focused-bohr-07vtgr`, demande de fusion en brouillon « Lot 3 ter (en cours) ».
+Pour reprendre si la session s'est arrêtée : branche `claude/focused-bohr-07vtgr`, demande de fusion en brouillon « Lot 3 ter (en cours) » (https://github.com/js2c/Maths-CE1/pull/25).
 
-**Étape en cours :** étape 1.
+**Étape en cours :** étape 2 (T3, puis la recette complète).
 
-**Fait :** rien encore.
+**Fait :**
 
-**Reste :** étapes 1 et 2.
+- Étape 1, T1 (passer l'échauffement) : pictogramme dessiné à l'atelier (`sea/lot3ter.ts`, `drawWarmupSkipKey` : une vague à la lèvre d'écume dans la mer qui remplit le bas de la bulle, franchie par une flèche dorée en arc qui retombe sur l'eau calme ; regardé à 6 × : jonction de la tête et du corps de la flèche reprise, nœud d'encre du rouleau supprimé), sprite `passer.echauffement` (« petits ») ; bouton `.skip-warmup` à (1205, 400), entre le « passer » des aides et corrections (1205, 218) et « je ne sais pas », présent de la phrase d'introduction à la dernière question ; un toucher met l'échauffement en attente (horloge et voix de la séance en pause puis de côté, pavé fermé, question affichée, autres « passer » masqués), la voix demande « Tu veux passer l'échauffement ? Touche la coche pour dire oui. » (2 phrases fabriquées), la coche remplace le bouton ; coche touchée : la séance passe à la suite (`echauffementPasse` comme avant) ; sans toucher 5 s après la question lue : reprise sur la même question, consigne redite. Passé pendant une correction ou une aide : elle s'arrête, rien d'elle ne continue ensuite (`FactsScreen.abandon`, jeton `tok`). Réglages `seance.json`, `passerEchauffement`.
+- Étape 1, T2 (l'échauffement s'ajuste) : `families.js`, `warmupOpening` (les trois conditions), `openByWarmup` ; réglages `module2.json`, `familles2.echauffement` ; espace parent « ouverte par l'échauffement le 28/09 ». Recette : `sim-seances.mjs` rubrique « lot 3 ter » ; variété à l'échauffement (`varyIndex`, `vary`).
+- Tests : `tests/unit/lot3ter.test.mjs` (12 tests : bouton pendant tout l'échauffement, attente, confirmation, reprise après 5 s, les trois conditions, le plafond d'une famille par jour, l'entraînement libre, la variété) ; parcours `tests/e2e/lot3ter.mjs --seul passer,parent` ; anciens parcours adaptés au nouveau bouton (`choix.mjs`, `pause.mjs`, `recette-fonctionnelle/a-ecrans.mjs`).
 
-**Décisions prises :** aucune encore.
+**Recette allégée de l'étape 1 (29 septembre 2026) :** `npm test` : 246, tout est bon ; `b-sequences.mjs --test` : 0 séance en défaut sur 464 ; parcours `lot3ter.mjs`, `choix.mjs`, `pause.mjs`, `seance.mjs`, `ergonomie.mjs`, `etat-quitte.mjs` : tout est bon ; `lot3bis.mjs` : tout est bon sauf le double toucher à 60 ms, qui échoue **aussi sur `main`** dans ce conteneur (écart mesuré 154 ms, au-delà des 150 ms du réglage : Chromium sans écran espace les deux touchers ; bon au second passage sur la branche, 145 ms) ; captures regardées (`tests/e2e/out/lot3ter/` : question avec le bouton, correction avec les deux boutons, attente avec la coche, reprise, suite, espace parent).
+
+Simulation (`sim-seances.mjs`, 30 séances à 2 par semaine, base neuve) :
+
+| Profil | « jouer » : familles ouvertes (séance, par quoi) | l'enfant choisit toujours la ligne (`--choix 1:5`) |
+| --- | --- | --- |
+| sait | 3 (2, notion), 4 (4, notion), 5 (7, notion), 6 (9, échauffement), 7 (10, échauffement) | 3 (6), 4 (8), 5 (9), 6 (11), 7 (12), toutes par l'échauffement |
+| réel | 3 (2), 4 (6), 5 (8), 6 (10) par la notion ; 7 (11, échauffement) | 3 (6), 4 (8), 5 (9), 6 (19), 7 (24) ; premier mois : 0,25 famille par semaine |
+| diff | 3 (4), 4 (8), 5 (16) par la notion du jour | aucune en 30 séances (jamais les 90 % de réussite rapide) |
+
+Jamais deux familles ouvertes le même jour. À chaque ouverture par l'échauffement : 86 à 100 % des faits en boîte 2, 12 réponses à 92 % ou 100 %, médiane 3,1 à 5,2 s (seuil 6,4 à 7,1 s).
+
+**Reste :** étape 2 (T3 et la recette complète).
+
+**Décisions prises :**
+
+- *Délai de la coche* : les 5 s partent de la fin de la question lue (« … Touche la coche pour dire oui. »), pas du toucher : sinon, la question lue (environ 3 s) mangerait la moitié du délai.
+- *Place du bouton* : (1205, 400), à droite, entre « passer » (aides, corrections) et « je ne sais pas », sur les algues ; la coche prend sa place. Zone tactile de 140 px.
+- *Maison pendant l'attente* : l'échauffement reprend d'abord (la coche s'en va), puis la pause ; « continuer » redit la consigne comme d'habitude.
+- *« Réécouter » pendant l'attente* : redit la question de confirmation.
+- *Règle d'ouverture à l'échauffement* : elle **remplace**, à l'échauffement, la règle du lot 2 (80 % des faits introduits en boîte 2, sans condition de réussite) ; la notion du jour des additions garde la sienne. L'entraînement libre n'ouvre plus de famille (il ne compte pas comme « un échauffement » de séance). Réponses comptées « justes » : justes et sans aide ; réponses d'échauffement : ni notion du jour, ni défi, ni entraînement libre, ni temps de base.
+- *Variété à l'échauffement* : la simulation a montré que l'échauffement ne respectait pas la règle du lot 3 bis (§0) « jamais 3 fois de suite la même réponse » (défaut d'avant ce lot : le §0 ne visait que la notion du jour) ; corrigé sans toucher au plan des faits : la question suivante est la première de la file qui ne peut pas redonner la même réponse, et une forme à trou peut changer de côté. Reste : 0 à 4 échauffements sur 30 selon les profils, en fin d'échauffement quand la file ne contient plus que le même fait (« 8 + 1 », « 1 + 8 » repassés). « Au moins 5 réponses différentes » n'est pas tenu par les tout premiers échauffements (6 à 11 questions sur 2 ou 3 faits et leurs inverses).
+
+**Questions ouvertes (valeur par défaut prise, à trancher par le parent) :**
+
+- *« Le profil « sait » atteint les amis de 10 à l'échauffement en 4 séances au plus »* : **pas tenu** (6e séance). La condition 1 (tous les faits des familles ouvertes introduits : 33 faits pour « + 1 et + 2 » et les doubles) et la limite existante de 6 faits nouveaux par séance ne le permettent pas avant la 6e séance, quel que soit le profil. Pour tenir 4 séances, il faudrait soit relever la limite de faits nouveaux pour une enfant qui passe tout par la voie rapide, soit assouplir la condition 1 (par exemple 80 % des faits introduits). Rien n'a été changé.
+- *Variété à l'échauffement* : faut-il aussi viser 5 réponses différentes dans les premiers échauffements (ce qui changerait l'ordre d'introduction des faits nouveaux, décidé au lot 3 bis : les deux ordres des termes à la suite) ?
 
 ## Lot 3 bis
 

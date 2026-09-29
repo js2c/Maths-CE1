@@ -158,3 +158,15 @@ test("T2 : l'échauffement de la séance ouvre la famille (notée « par l'écha
     else { assert.deepEqual(st.ouvertes, [1, 2, 3]); assert.ok(events.some((e) => e.type === "ouverte" && e.famille === 3 && e.echauffement)); assert.ok(st.ouvertures.at(-1).echauffement); }
   }
 });
+
+test("T2, recette : à l'échauffement, jamais 3 fois de suite la même réponse quand la file permet de l'éviter", async () => {
+  const { varyIndex, vary } = await import("../../app/js/modules/facts/warmup.js");
+  const f = (a, b, o = {}) => ({ a, b, fait: `${a}+${b}`, ...o });
+  assert.equal(varyIndex([f(8, 1), f(3, 3)], [9, 5]), 0, "les deux dernières diffèrent : la file dans l'ordre");
+  assert.equal(varyIndex([f(8, 1), f(1, 8), f(2, 3)], [9, 9]), 2, "9 puis 9 : la première question qui ne peut pas donner 9");
+  assert.equal(varyIndex([f(4, 5), f(1, 3), f(3, 2)], [4, 4]), 2, "« 4 + 5 » et « 1 + 3 » pourraient donner 4 : écartées");
+  assert.equal(varyIndex([f(8, 1), f(1, 8)], [9, 9]), 0, "sans issue : la file dans l'ordre");
+  const q = vary(f(1, 8, { forme: "trouGauche" }), [1, 1]);
+  assert.equal(q.forme, "trouDroite", "« ? + 8 = 9 » après deux 1 devient « 1 + ? = 9 »");
+  assert.equal(vary(f(1, 8, { forme: "directe" }), [1, 1]).forme, "directe");
+});

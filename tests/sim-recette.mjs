@@ -91,7 +91,7 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
     const [n1, n2, n3] = await Promise.all([1, 2, 3].map((k) => store.get("niveaux", k))), mast = { 1: ((n1?.niveau ?? 1) - 1) / module1.niveaux.length, 2: (n2?.acquises?.length ?? 0) / module2.familles.length, 3: calcMastery(module3, n3) };
     const s = new Session({ store, content: seance, rewards, clock, choix, mastery: (m) => mast[m] ?? 0, onCranDown: async () => { log.descentes++; add(3000); }, handlers: {
       accueil: async ({ session }) => { add(20000); await session.setCran(P.cran ?? "conseille"); add(8000); const sp = drawSurprise(R, cartes.surprise, previousSession(await store.all("seances"), session.id), rewards.gifts); if (sp) { session.rec.surprise = sp; log.surprise = `${sp.type}:${sp.id}`; if (sp.type === "cadeau") await rewards.giveGift(sp.id); add(5000); } },
-      echauffement: async (ctx) => { const w = await new Warmup({ store, content: module2, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load(); await runWarmup({ ...ctx, warmup: w, screen: warmScreen, rnd: R }); },
+      echauffement: async (ctx) => { const w = await new Warmup({ store, content: module2, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load(); log.warm = w; await runWarmup({ ...ctx, warmup: w, screen: warmScreen, rnd: R }); },
       notion: async (ctx) => {
         // lot 3, étape 4 : le calcul rapide
         if (ctx.session.rec.module === 3) {
@@ -148,6 +148,9 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
     Object.assign(log, { cran: rec.cran, cranDepart: rec.cranDepart, reussite: rec.reussite, questions: rec.questions, etoiles: rec.etoiles, duree: Math.round(rec.dureeS / 60 * 10) / 10, arc: rec.arcEnCiel ?? 0, reste: rewards.total, nbCartes: rewards.count, brillantes: Object.values(rewards.owned).filter((o) => o.brillante).length, legendaires: cartes.cartes.filter((c) => c.rarete === "legendaire" && rewards.owned[c.id]).length, ouvertes: [...rewards.zones.ouvertes], doreesDispo: rewards.doreesDispo, arcDispo: rewards.arcDispo });
     log.defiSaute = rec.etapes.find((e) => e.id === "defi")?.sautee ?? null;
     const fam = await store.get("niveaux", 2); log.fOuvertes = [...(fam?.ouvertes ?? [])]; log.fAcquises = [...(fam?.acquises ?? [])]; log.fTrou = [...(fam?.trou ?? [])]; log.fDepassees = (fam?.depassees ?? []).map((d) => d.famille);
+    // lot 3 ter (T2) : les ouvertures de familles, l'évaluation de fin d'échauffement, les réponses attendues à l'échauffement
+    log.fOuvertures = structuredClone(fam?.ouvertures ?? []); log.opening = log.warm?.opening ?? null; delete log.warm;
+    log.chauffe = (await store.all("reponses")).filter((r) => r.seance === rec.id && r.module === 2 && !r.notion && !r.defi && r.forme !== "base").sort((a, b) => a.t - b.t).map((r) => r.attendue);
     const faits = await store.all("faits"); log.boites = [1, 2, 3, 4, 5].map((b) => faits.filter((f) => f.boite === b).length); log.faitsVus = faits.length;
     // lot 3 bis (A1) : les familles dont un fait de la règle a été réussi dans cette séance (acquisition sur deux séances au moins)
     { const d0 = startOfDay(t), by = new Map(faits.map((f) => [f.fait, f])); log.fPratique = [1, 2, 3, 4, 5, 6].filter((id) => ruleFacts(module2, id).some((r) => (by.get(r.fait)?.historique ?? []).some((h) => h.juste && h.t >= d0))); }

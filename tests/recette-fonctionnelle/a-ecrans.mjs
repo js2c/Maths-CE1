@@ -82,8 +82,8 @@ async function questions() {
   await toucher(s.page, ".play"); await attendre(s.page, () => document.querySelector(".cran")); await pause(s.page, 800);
   await S.shot(s.page, { ecran: "sélecteur de difficulté", etat: "base neuve (4 crans, rien de touché)" });
   await toucher(s.page, '.cran[aria-label="conseille"]'); await toucher(s.page, ".cran-ok");
-  await attendre(s.page, () => document.querySelector(".skip")); await pause(s.page, 500);
-  await S.shot(s.page, { ecran: "échauffement", etat: "base neuve, la consigne d'entrée (« passer » visible)" });
+  await attendre(s.page, () => document.querySelector(".skip-warmup")); await pause(s.page, 500);
+  await S.shot(s.page, { ecran: "échauffement", etat: "base neuve, la consigne d'entrée (« passer l'échauffement » visible)" });
   await question(s.page); await pause(s.page, 700);
   await S.shot(s.page, { ecran: "échauffement", etat: "base neuve, première question (temps de base)" });
   await s.context.close();

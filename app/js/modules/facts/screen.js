@@ -10,6 +10,7 @@ import { fill } from "../numberline/screen.js";
 import { clock, wait } from "../../engine/clock.js";
 import { skipKey } from "../../engine/ui.js";
 import { aidFor, expected } from "./facts.js";
+import { vary, varyIndex } from "./warmup.js";
 import { AidBoard, paintDoublePlus, paintFishHouse, paintTenFrame } from "./aids.js";
 
 const SKIPPED = Symbol("correction passée");
@@ -331,11 +332,14 @@ export async function runWarmup({ session, step, end, warmup, screen, intro, rnd
   session.expect?.(rest.length);
   await g(intro?.(() => skipped));
   if (!skipped) screen.keys(true);
+  const answers = []; // (lot 3 ter : jamais 3 fois de suite la même réponse, warmup.js, varyIndex)
   while (!skipped && rest.length && !session.over(end)) {
-    const q = warmup.prepare(rest.shift());
+    const q = warmup.prepare(rest.splice(varyIndex(rest, answers), 1)[0]);
+    if (q) vary(q, answers);
     if (!q) { session.expect?.(session.progress.faites + rest.length); continue; }
     const r = await g(screen.ask(q));
     if (skipped) break;
+    if (!q.base) answers.push(expected(q));
     const res = await warmup.record(q, r, rest);
     session.expect?.(session.progress.faites + 1 + rest.length); // un fait raté revient, la voie rapide en ajoute : des bulles de plus
     session.cranDown = false;

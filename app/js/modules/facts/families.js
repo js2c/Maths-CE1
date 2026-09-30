@@ -15,7 +15,7 @@
 //    6 séances où elle était la notion du jour est « dépassée » : la suivante devient la famille en cours (elle
 //    s'ouvre si besoin, et joue sa leçon à sa première notion du jour) ; la famille dépassée reste travaillée en
 //    révision (échauffement, autres familles de la notion du jour) et peut encore être acquise.
-import { catalog, familyOf, ruleFacts, startOfDay } from "./facts.js";
+import { catalog, familyOf, median, ruleFacts, startOfDay } from "./facts.js";
 
 export const initialFamilies = (c, now = Date.now()) => ({ module: 2, ouvertes: [...c.famillesActives], ouvertures: c.famillesActives.map((id) => ({ famille: id, date: now })), acquises: [], trou: [], notion: [], lecons: [] });
 export const cfgOf = (c) => ({ ouverture: { part: 0.8, boite: 2 }, acquise: { part: 0.8, boite: 3 }, trou: { part: 0.5, boite: 3 }, stagnation: { seances: 6 }, ...(c.familles2 ?? {}) });
@@ -61,6 +61,46 @@ export function updateFamilies(c, st0, faits, now = Date.now(), { parent = false
   const next = !open || (seance != null && st.ouvertures.at(-1)?.seance === seance) ? null : canOpenNext(c, st, faits);
   if (next) { st.ouvertes.push(next); st.ouvertures.push({ famille: next, date: now, ...(parent ? { parent: true } : {}), ...(seance != null ? { seance } : {}) }); events.push({ type: "ouverte", famille: next }); }
   return { st, events };
+}
+// LOT 3 TER (docs/SPEC-LOT3TER.md, T2 ; décision du parent) : L'ÉCHAUFFEMENT S'AJUSTE SEUL. À la fin d'un échauffement de
+// séance, la famille suivante (dans l'ordre des familles) s'ouvre si (réglages module2.json, `familles2.echauffement`) :
+//  1. tous les faits des familles ouvertes ont été introduits, et au moins `part` (80 %) d'entre eux sont en boîte `boite`
+//     (2) ou plus ;
+//  2. sur les `dernieres` (12) dernières réponses d'échauffement portant sur les familles ouvertes, au moins `justes` (90 %)
+//     sont justes (sans aide), et leur temps médian est sous le seuil « rapide » (`limitMs`, celui de la voie rapide) ;
+//  3. aucune famille ne s'est ouverte ainsi le même jour (`parJour` : 1).
+// Elle est ensuite une famille ouverte comme les autres (notée `echauffement: true` dans les ouvertures) ; aucune leçon
+// n'est imposée ; pas de fermeture automatique. `reponses` : le magasin « reponses » (ou une partie, la plus récente).
+// Renvoie { famille (ou null), conditions: [1, 2, 3 remplies ?], mesures } : la simulation et les tests lisent le détail.
+export const warmupCfg = (c) => ({ part: 0.8, boite: 2, dernieres: 12, justes: 0.9, parJour: 1, ...(c.familles2?.echauffement ?? {}) });
+// une réponse est-elle une réponse d'échauffement ? (ni notion du jour, ni défi, ni entraînement libre, ni temps de base)
+export const isWarmupAnswer = (r) => r.module === 2 && !r.notion && !r.defi && !r.libre && !r.guide && r.forme !== "base";
+// le fait d'une réponse : `fait` (depuis le lot 3 ter), sinon relu dans la question (« 3 + 4 », « 3 + ? = 7 », « ? + 4 = 7 »)
+export function answerFact(r) {
+  if (r.fait) return r.fait;
+  const m = /^(\?|\d+) \+ (\?|\d+)(?: = (\d+))?$/.exec(r.question ?? "");
+  if (!m) return null;
+  const n = Number(m[3]), a = m[1] === "?" ? n - Number(m[2]) : Number(m[1]), b = m[2] === "?" ? n - Number(m[1]) : Number(m[2]);
+  return `${a}+${b}`;
+}
+export function warmupOpening(c, st, faits, reponses, now, { limitMs = Infinity } = {}) {
+  const K = warmupCfg(c), next = c.familles.find((f) => !st.ouvertes.includes(f.id)) ?? null;
+  const cat = catalog(c), famOf = new Map(cat.map((f) => [f.fait, f.famille])), open = cat.filter((f) => st.ouvertes.includes(f.famille));
+  const by = byKey(faits), met = open.filter((f) => by.get(f.fait)?.boite);
+  const part = open.length ? met.filter((f) => by.get(f.fait).boite >= K.boite).length / open.length : 0;
+  const c1 = met.length === open.length && part >= K.part - 1e-9;
+  const last = reponses.filter((r) => isWarmupAnswer(r) && st.ouvertes.includes(famOf.get(answerFact(r)))).sort((x, y) => x.t - y.t).slice(-K.dernieres);
+  const justes = last.length ? last.filter((r) => r.juste && !r.aide).length / last.length : 0, med = median(last.map((r) => r.tempsMs)) ?? Infinity;
+  const c2 = last.length >= K.dernieres && justes >= K.justes - 1e-9 && med < limitMs;
+  const today = (st.ouvertures ?? []).filter((o) => o.echauffement && startOfDay(o.date) === startOfDay(now)).length;
+  const c3 = today < K.parJour;
+  return { famille: next && c1 && c2 && c3 ? next.id : null, conditions: [c1, c2, c3], mesures: { introduits: met.length, faits: open.length, part, reponses: last.length, justes, medianeMs: med, limitMs } };
+}
+// la famille ouverte par l'échauffement, rangée dans l'état (une ouverture comme les autres, marquée `echauffement`)
+export function openByWarmup(st0, id, now, seance = null) {
+  const st = structuredClone(st0);
+  st.ouvertes.push(id); st.ouvertures.push({ famille: id, date: now, echauffement: true, ...(seance != null ? { seance } : {}) });
+  return st;
 }
 // la famille en cours : la plus basse ouverte pas encore acquise ni dépassée, sinon la dernière (le mélange)
 const passed = (st) => (st.depassees ?? []).map((d) => d.famille);

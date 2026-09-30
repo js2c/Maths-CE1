@@ -305,7 +305,7 @@ export class ParentSpace {
         h("thead", {}, h("tr", {}, ["Famille", "Ouverte", "Faits bien sus", "Acquise", "Formes à trou"].map((t, i) => h("th", { class: i === 2 ? "num" : "" }, t)))),
         h("tbody", {}, FS.familles.map((f) => h("tr", { class: f.enCours ? "cur" : f.ouverte ? "" : "off" },
           h("td", {}, `${f.id} · ${f.nom}${f.enCours ? " (en cours)" : f.depassee && !f.acquise ? " (en révision)" : ""}`),
-          h("td", {}, f.ouverte ? (f.ouverteLe ? `${D.fmtShortDay(f.ouverteLe)}${f.ouverteParent ? " (parent)" : ""}` : "dès le départ") : "pas encore"),
+          h("td", {}, f.ouverte ? (f.ouverteLe ? (f.ouverteEchauffement ? `ouverte par l'échauffement le ${D.fmtShortDay(f.ouverteLe)}` : `${D.fmtShortDay(f.ouverteLe)}${f.ouverteParent ? " (parent)" : ""}`) : "dès le départ") : "pas encore"),
           h("td", { class: "num" }, `${f.bienSus} / ${f.total}`),
           // (lot 3 bis, B10 ; R19) la date et l'état actuel : « acquise le 17/09 (depuis, 20 sur 30) »
           h("td", {}, f.acquise ? `${f.acquiseLe ? `acquise le ${D.fmtShortDay(f.acquiseLe)}` : "acquise"}${f.acquiseParent ? " (point de départ)" : ""} (depuis, ${f.bienSus} sur ${f.total})` : "—"),

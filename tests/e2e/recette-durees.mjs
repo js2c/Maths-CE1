@@ -1,6 +1,7 @@
 // RECETTE : durées réelles (voix normale) de ce que l'enfant regarde sans pouvoir agir, niveau par niveau :
 // leçon d'entrée, exemples guidés, correction après « je ne sais pas », correction après une erreur ; puis
 // (décision du parent du 27 septembre) l'aide des additions (coquillage, aide affichée d'emblée du cran « plus
+// (lot 3 ter, T3 : « passer » et « je ne sais pas » valident au lever du doigt : chaque toucher simulé pose puis lève le doigt)
 // facile ») ; pour chaque parcours, la plus longue attente SANS AUCUNE COMMANDE (ni « passer », ni question
 // ouverte, ni bouton de leçon) : en tout, et hors voix (la voix parle : consigne, bravo, correction dite).
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
@@ -32,7 +33,7 @@ for (const niveau of [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]) {
   // (niveau 12, la dictée : la question est posée au pavé des additions, window.__app.facts)
   const open = () => page.waitForFunction(() => [window.__app.screen, window.__app.facts].some((s) => s?.q && s.resolve && !s.locked), null, { timeout: 240000, polling: 100 });
   const ev = []; let t = Date.now();
-  if (PASSER) await page.evaluate(() => { window.__passes = 0; setInterval(() => { const b = document.querySelector(".skip"); if (b && getComputedStyle(b).visibility !== "hidden") { b.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })); window.__passes++; } }, 150); });
+  if (PASSER) await page.evaluate(() => { window.__passes = 0; setInterval(() => { const b = document.querySelector(".skip"); if (b && getComputedStyle(b).visibility !== "hidden") { (b.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })), b.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }))); window.__passes++; } }, 150); });
   for (let k = 0; k < 5; k++) {
     await open(); const now = Date.now(), dict = await page.evaluate(() => !!(window.__app.facts?.q?.dictee && window.__app.facts.resolve && !window.__app.facts.locked)), q = dict ? await page.evaluate(() => ({ f: "ecrire", a: window.__app.facts.q.answer ?? window.__app.facts.q.value })) : await page.evaluate(() => ({ f: window.__app.screen.q.format, a: window.__app.screen.q.answer, g: !!window.__app.screen.q.guide }));
     ev.push(`${k === 0 ? "avant la 1re question (accueil, leçon, exemple)" : "attente"} ${((now - t) / 1000).toFixed(1)} s`);
@@ -65,13 +66,13 @@ for (const famille of [1, 3, 4, 5, 6]) {
   await page.tap(".play", { force: true });
   const open = () => page.waitForFunction(() => { const s = window.__app.facts; return s?.q && s.resolve && !s.locked; }, null, { timeout: 240000, polling: 100 });
   const ev = []; let t = Date.now();
-  if (PASSER) await page.evaluate(() => { window.__passes = 0; setInterval(() => { const b = document.querySelector(".skip"); if (b && getComputedStyle(b).visibility !== "hidden") { b.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })); window.__passes++; } }, 150); });
+  if (PASSER) await page.evaluate(() => { window.__passes = 0; setInterval(() => { const b = document.querySelector(".skip"); if (b && getComputedStyle(b).visibility !== "hidden") { (b.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })), b.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }))); window.__passes++; } }, 150); });
   const typeIn = async (n) => { for (const d of String(n)) { await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.waitForTimeout(170); } await page.tap('.key[data-key="valider"]', { force: true }); };
   for (let k = 0; k < 5; k++) {
     await open(); const now = Date.now(), q = await page.evaluate(() => { const f = window.__app.facts.q; return { v: f.forme === "trouDroite" ? f.b : f.forme === "trouGauche" ? f.a : f.a + f.b, g: !!f.guide, appui: f.appui }; });
     ev.push(`${k === 0 ? "avant la 1re question (leçon, exemple)" : "attente"} ${((now - t) / 1000).toFixed(1)} s`);
     await page.waitForTimeout(800); t = Date.now();
-    if (k === 2) { await page.evaluate(() => { const b = [...document.querySelectorAll(".nsp")].find((x) => getComputedStyle(x).visibility !== "hidden"); b?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })); }); ev.push(`[NSP ${q.appui}]`); }
+    if (k === 2) { await page.evaluate(() => { const b = [...document.querySelectorAll(".nsp")].find((x) => getComputedStyle(x).visibility !== "hidden"); (b?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })), b?.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }))); }); ev.push(`[NSP ${q.appui}]`); }
     else if (k === 3) { await typeIn(q.v === 9 ? 8 : q.v + 1); ev.push(`[erreur ${q.appui}]`); }
     else await typeIn(q.v);
   }
@@ -90,7 +91,7 @@ for (const niveau of [1, 2, 6, 7, 9]) {
   await page.tap(".play", { force: true });
   const open = () => page.waitForFunction(() => { const s = window.__app.facts; return s?.q && s.resolve && !s.locked; }, null, { timeout: 240000, polling: 100 });
   const ev = []; let t = Date.now(), nq = 0;
-  if (PASSER) await page.evaluate(() => { window.__passes = 0; setInterval(() => { const b = document.querySelector(".skip"); if (b && getComputedStyle(b).visibility !== "hidden") { b.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })); window.__passes++; } }, 150); });
+  if (PASSER) await page.evaluate(() => { window.__passes = 0; setInterval(() => { const b = document.querySelector(".skip"); if (b && getComputedStyle(b).visibility !== "hidden") { (b.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })), b.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }))); window.__passes++; } }, 150); });
   const typeIn = async (n) => { for (const d of String(n)) { await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.waitForTimeout(170); } await page.tap('.key[data-key="valider"]', { force: true }); };
   for (let k = 0; k < 14 && nq < 4; k++) {
     await open(); const now = Date.now(), q = await page.evaluate(() => { const f = window.__app.facts.q; return { v: f.forme === "trouDroite" ? f.b : f.n, pont: !!f.pont }; });
@@ -98,7 +99,7 @@ for (const niveau of [1, 2, 6, 7, 9]) {
     await page.waitForTimeout(800); t = Date.now();
     if (q.pont) { await typeIn(q.v); continue; }
     nq++;
-    if (nq === 2) { await page.evaluate(() => { const b = [...document.querySelectorAll(".nsp")].find((x) => getComputedStyle(x).visibility !== "hidden"); b?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })); }); ev.push("[NSP]"); }
+    if (nq === 2) { await page.evaluate(() => { const b = [...document.querySelectorAll(".nsp")].find((x) => getComputedStyle(x).visibility !== "hidden"); (b?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })), b?.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }))); }); ev.push("[NSP]"); }
     else if (nq === 3) { await typeIn(q.v + 1); ev.push("[erreur]"); }
     else await typeIn(q.v);
   }

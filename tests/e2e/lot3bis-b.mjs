@@ -112,8 +112,8 @@ if (want("appui")) {
     const st = await page.evaluate(() => ({ lab: !!document.querySelector(".etiquette"), home: !!document.querySelector(".choisir"), choix: !!document.querySelector(".choix-ex"), session: !!window.__app.session }));
     check(st.lab && st.home && !st.choix && !st.session && (await inScreen(page, ".etiquette")), `accueil, appui long de 0,8 s sur « ${key} » : étiquette visible (dans l'écran), rien de lancé`);
     await shot(page, `B3-appui-${key}`);
-    await page.waitForTimeout(2300);
-    check(!(await page.locator(".etiquette").count()), `« ${key} » : l'étiquette disparaît 2 s après`);
+    await page.waitForTimeout(600);
+    check(!(await page.locator(".etiquette").count()), `« ${key} » : l'étiquette a disparu 0,5 s après le lever du doigt (lot 3 ter, T3)`);
   }
   await tap(page, ".choisir"); await page.waitForSelector(".choix-ex");
   check(true, "accueil, toucher bref sur « choisir » : l'écran des exercices s'ouvre");

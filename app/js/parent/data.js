@@ -148,7 +148,7 @@ export function familiesSummary(c, st, faits) {
     enCours: cur,
     familles: c.familles.map((f) => {
       const rule = ruleFacts(c, f.id), ouv = (st.ouvertures ?? []).find((o) => o.famille === f.id), acq = (st.obtenus ?? []).find((o) => o.famille === f.id);
-      return { id: f.id, nom: f.nom, ouverte: st.ouvertes.includes(f.id), ouverteLe: ouv?.date ?? null, ouverteParent: !!ouv?.parent, acquise: st.acquises.includes(f.id), acquiseLe: acq?.date ?? null, acquiseParent: !!acq?.parent, trou: (st.trou ?? []).includes(f.id), bienSus: rule.filter((r) => (by.get(r.fait)?.boite ?? 0) >= K.boite).length, total: rule.length, enCours: f.id === cur, depassee: (st.depassees ?? []).some((d) => d.famille === f.id), seancesNotion: st.seancesNotion?.[f.id] ?? 0 };
+      return { id: f.id, nom: f.nom, ouverte: st.ouvertes.includes(f.id), ouverteLe: ouv?.date ?? null, ouverteParent: !!ouv?.parent, ouverteEchauffement: !!ouv?.echauffement, acquise: st.acquises.includes(f.id), acquiseLe: acq?.date ?? null, acquiseParent: !!acq?.parent, trou: (st.trou ?? []).includes(f.id), bienSus: rule.filter((r) => (by.get(r.fait)?.boite ?? 0) >= K.boite).length, total: rule.length, enCours: f.id === cur, depassee: (st.depassees ?? []).some((d) => d.famille === f.id), seancesNotion: st.seancesNotion?.[f.id] ?? 0 };
     }),
   };
 }

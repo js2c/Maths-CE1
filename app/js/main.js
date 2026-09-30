@@ -18,6 +18,7 @@ import { fill, ReadScreen } from "./modules/numberline/screen.js";
 import { runNotion } from "./session/notion.js";
 import { FactsScreen, runWarmup } from "./modules/facts/screen.js";
 import { Warmup } from "./modules/facts/warmup.js";
+import { WarmupSkip } from "./modules/facts/warmupskip.js";
 import { Module2Runner } from "./modules/facts/runner.js";
 import { calcMastery, Module3Runner } from "./modules/calc/runner.js";
 import { CalcScreen } from "./modules/calc/screen.js";
@@ -28,7 +29,7 @@ import { Dictation } from "./modules/numberline/dictation.js";
 import { AidBoard } from "./modules/facts/aids.js";
 import { ChallengeView } from "./modules/facts/challengeView.js";
 import { Rewards } from "./session/rewards.js";
-import { chooseName, goodNight, onTap, reward, spriteBox, StarHud } from "./session/screens.js";
+import { chooseName, goodNight, reward, spriteBox, StarHud } from "./session/screens.js";
 import { challengeReady, doneToday, sameDay, Session } from "./session/session.js";
 import { Reef } from "./session/reef.js";
 import { drawSurprise, playSurprise, previousSession } from "./session/surprise.js";
@@ -117,7 +118,7 @@ sprites.load("aides"); // lot 2 : les aides visuelles du module 2 (petite planch
 // pause, il le dit aussi, avec une file de voix à part (la voix de la séance, en pause, est rendue intacte ensuite)
 const speaker = spriteBox(app, { x: 1140, y: 8, w: 130, h: 130, cls: "hud speaker keep", label: "réécouter", paint: (ctx) => sprites.draw(ctx, "reecouter", 0, 65, 65) });
 let pauseTalk = null;
-onTap(speaker, async () => {
+onBrief(app, speaker, async () => {
   speaker.classList.remove("pop"); void speaker.offsetWidth; speaker.classList.add("pop");
   if (app.enPause && !visiting) {
     if (pauseTalk) return;
@@ -126,7 +127,7 @@ onTap(speaker, async () => {
     return;
   }
   voice.replay();
-});
+}, "reecouter");
 const hud = new StarHud(app, rewards);
 app.hud = hud;
 
@@ -158,8 +159,8 @@ const handlers = {
     const screen = (app.facts ??= new FactsScreen(app, module2)), warmup = await new Warmup({ store, content: module2, rnd, seance: ctx.session.id, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load();
     const step = { ...ctx.step, ...(P.get("faits") ? { questions: [Number(P.get("faits")), Number(P.get("faits"))] } : {}) };
     app.warmup = warmup;
-    // lot 3 : le bouton « passer » habituel, au début de l'échauffement, l'arrête et enchaîne sur l'exercice
-    const skip = (onSkip) => skipKey(app, () => { voice.stop(); onSkip(); }, "passer l'échauffement");
+    // lot 3 ter (T1) : le bouton « passer l'échauffement », présent pendant tout l'échauffement, confirmé par la coche
+    const skip = (onSkip) => warmupSkipKey(onSkip);
     await runWarmup({ ...ctx, step, warmup, screen, rnd, skip, intro: async (skipped) => { await voice.say(text.pick("echauffement")); if (!warmup.base.mesures.length && !skipped()) await voice.say(text.data.pave); } });
   },
   notion: async (ctx) => {
@@ -230,6 +231,43 @@ async function notion3(ctx) {
     await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.calc.askNotion(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
   } finally { app.calc.leave(); sprites.unload("calcul"); }
 }
+// LOT 3 TER (docs/SPEC-LOT3TER.md, T1 ; décision du parent) : « PASSER L'ÉCHAUFFEMENT ». Un bouton dédié (son propre
+// pictogramme, `passer.echauffement`), présent pendant tout l'échauffement, hors du pavé (content/seance.json,
+// `passerEchauffement`). Touché, l'échauffement est EN ATTENTE : l'horloge et la voix de la séance sont mises en pause puis
+// de côté (comme pour une visite depuis l'accueil en pause), le pavé se ferme, la question reste affichée, les autres
+// « passer » sont masqués ; la voix demande de toucher la coche, qui remplace le bouton. La coche touchée : l'échauffement
+// est passé (`onSkip`). Rien pendant `attenteMs` : la coche s'en va, le bouton revient, tout reprend où c'en était et la
+// consigne de la question en cours est redite. La règle (états, délai) : modules/facts/warmupskip.js.
+function warmupSkipKey(onSkip) {
+  const C = seance.passerEchauffement ?? {}, [x, y] = C.place ?? [1205, 400], S = C.taille ?? 140;
+  const key = spriteBox(app, { x: x - S / 2, y: y - S / 2, w: S, h: S, cls: "bubble skip-warmup", label: "passer l'échauffement", paint: (ctx) => sprites.draw(ctx, "passer.echauffement", 0, S / 2, S / 2) });
+  const check = spriteBox(app, { x: x - 80, y: y - 80, w: 160, h: 160, cls: "bubble check-warmup", label: "oui, passer l'échauffement", paint: (ctx) => sprites.draw(ctx, "valider", 0, 80, 80) });
+  let cs = null, vs = null, vis = [];
+  const pad = () => (app.facts ? [app.facts.help, app.facts.nsp, ...app.facts.els] : []);
+  // la séance retrouve son horloge et sa voix (toujours en pause) ; ce que disait la question de confirmation est coupé
+  const back = () => { voice.stop(); voice.restore(vs); clock.restore(cs); stage.root.classList.remove("attente-passer"); app.warmupPending = false; };
+  const ws = new WarmupSkip({
+    attenteMs: C.attenteMs ?? 5000,
+    showKey: (v) => { key.style.visibility = v ? "visible" : "hidden"; if (v) pop(key); },
+    showCheck: (v) => { check.style.visibility = v ? "visible" : "hidden"; if (v) pop(check); },
+    pause: () => {
+      clock.pause(); voice.pause(); stage.root.classList.add("attente-passer"); app.warmupPending = true;
+      vis = pad().map((e) => [e, e.style.visibility]); app.facts?.keys(false);
+      cs = clock.suspend(); vs = voice.suspend();
+    },
+    ask: () => voice.say(text.data.passerEchauffementQuestion, { instruction: true }),
+    resume: () => {
+      back(); for (const [e, v] of vis) e.style.visibility = v;
+      clock.resume(); voice.resume();
+      if (awaiting() && voice.instruction) { if (voice.cur) voice.stop(); voice.say(voice.instruction); }
+    },
+    confirm: () => { back(); voice.stop(); clock.resume(); voice.resume(); onSkip(); },
+  });
+  onBrief(app, key, () => ws.tap(), "passerEchauffement");
+  onBrief(app, check, () => { pop(check); ws.check(); }, "ouiPasserEchauffement");
+  app.warmupSkip = ws;
+  return { remove() { ws.stop(); key.remove(); check.remove(); if (app.warmupSkip === ws) app.warmupSkip = null; } };
+}
 // pour les mesures : ?sans=echauffement (ou une autre étape) la saute
 for (const id of (P.get("sans") ?? "").split(",").filter(Boolean)) delete handlers[id];
 // chaque gain d'étoiles pendant les questions : les étoiles s'envolent des bulles-réponses vers le compteur
@@ -268,7 +306,7 @@ async function showHome({ done, first = false }) {
     // sans étoiles)
     const again = big("encore", HOME_X[0] + 55, 650, "encore", "bubble play again");
     homeEls.push(again);
-    onTap(again, () => { voice.unlock(); clearHome(); freeTraining(); });
+    onBrief(app, again, () => { voice.unlock(); clearHome(); freeTraining(); }, "encore");
     homeEls.push(await goodNight(app, { first }));
     return;
   }
@@ -375,7 +413,7 @@ function showPauseHome() {
   const reefKey = big("recif", HOME_X[2], 650, "le récif", "bubble reefkey keep"), albumKey = big("album", HOME_X[3], 650, "l'album", "bubble albumkey keep");
   const logo = parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }); logo.classList.add("keep");
   pausedEls = [resume, pickKey, reefKey, albumKey, logo];
-  onBrief(app, resume, resumeSession, "jouer");
+  onBrief(app, resume, resumeSession, "continuer");
   onBrief(app, reefKey, () => visitInPause(() => reef.visit()), "recif");
   onBrief(app, albumKey, () => visitInPause(() => album.visit()), "album");
   onBrief(app, pickKey, () => visitInPause(pickInPause), "choisir");
@@ -475,15 +513,16 @@ async function endPausedSession({ par = "parent", raison = null, home = true } =
   abandonActivity(); frieze.show(false); stage.root.classList.remove("paused"); sound.pauseLevel(false);
   if (home) showHome({ done: await doneToday(store) });
 }
-onTap(homeKey, () => {
+// (lot 3 ter, T3) la maison : au lever du doigt ; pendant la séance, elle met en pause (« Faire une pause »)
+onBrief(app, homeKey, () => {
   pop(homeKey);
-  if (mode === "seance") { if (!app.enPause) pauseSession(); }
+  if (mode === "seance") { if (app.warmupSkip?.pending) app.warmupSkip.timeout(); if (!app.enPause) pauseSession(); }
   else if (mode === "libre") quitFree();
   else if (mode === "choix" || mode === "lecon") { abandonActivity(); showHome({ done: false }); }
   // (lot 3, étape 5) depuis l'accueil en pause : l'écran « choisir » ou la leçon seule, quittés sans rien toucher à la séance
   else if (mode === "pause-choix") app.choiceCancel?.();
   else if (mode === "pause-lecon") app.lessonCancel?.();
-});
+}, () => app.legendes.etiquettes[mode === "seance" && !app.enPause ? "pause" : "maison"]);
 async function freeTraining() {
   mode = "libre"; homeKey.style.visibility = "visible"; sound.startMusic(pickMusic(sonIndex, rnd));
   const free = new FreeTraining(app, { store, module1, module2, module3, rnd, seance });

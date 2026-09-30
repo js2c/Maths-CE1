@@ -97,6 +97,7 @@
     "D'abord, un petit échauffement : des additions !"
   ],
   "pave": "Tape la réponse, puis touche la coche verte.",
+  "passerEchauffementQuestion": "Tu veux passer l'échauffement ? Touche la coche pour dire oui.",
   "fait": [
     "{a} plus {b} ?",
     "Combien font {a} plus {b} ?"

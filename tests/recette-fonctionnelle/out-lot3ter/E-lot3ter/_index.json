@@ -1,0 +1,38 @@
+{
+ "titre": "Partie E · lot 3 ter : les écrans que le lot change",
+ "intro": "Captures du parcours `tests/e2e/lot3ter.mjs` (1280 × 800, densité 2, vrai toucher, voix accélérée), réduites en JPEG ; l'étiquette de l'appui long sur chaque bouton est en partie C (`C-toucher/C7-appui-long.md`).",
+ "lignes": [
+  [
+   "E-lot3ter-01.jpg",
+   "T1 · échauffement : une question, le bouton « passer l'échauffement » (la vague et la flèche) à droite, au-dessus de « je ne sais pas »"
+  ],
+  [
+   "E-lot3ter-02.jpg",
+   "T1 · une correction : « passer » (la correction, deux triangles) et « passer l'échauffement » en même temps"
+  ],
+  [
+   "E-lot3ter-03.jpg",
+   "T1 · les deux boutons de près"
+  ],
+  [
+   "E-lot3ter-04.jpg",
+   "T1 · le bouton touché : la voix a demandé « Tu veux passer l'échauffement ? Touche la coche pour dire oui. » ; le pavé est fermé, la question reste, la coche remplace le bouton"
+  ],
+  [
+   "E-lot3ter-05.jpg",
+   "T1 · rien touché pendant 5 s : la coche s'en va, le bouton et le pavé reviennent, la consigne est redite"
+  ],
+  [
+   "E-lot3ter-06.jpg",
+   "T1 · la coche touchée : la notion du jour commence (plus de bouton ni de coche)"
+  ],
+  [
+   "E-lot3ter-07.jpg",
+   "T2 · espace parent, Progression : « ouverte par l'échauffement le 28/09 »"
+  ],
+  [
+   "E-lot3ter-08.jpg",
+   "T1 · atelier, planche spécimen : le pictogramme à la taille de l'écran, à côté de « passer » (inchangé), de la coche et de « je ne sais pas »"
+  ]
+ ]
+}

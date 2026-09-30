@@ -6,7 +6,7 @@ import { fill } from "../modules/numberline/screen.js";
 import { CARD, cardElement } from "./cards.js";
 import { goldenStar } from "./rewards.js";
 import { wait } from "../engine/clock.js";
-import { onTap, spriteBox } from "../engine/ui.js";
+import { onBrief, onTap, spriteBox } from "../engine/ui.js";
 
 export { onTap, spriteBox };
 const ease = (u) => 1 - Math.pow(1 - u, 3);
@@ -85,14 +85,14 @@ export function chooseName(app, names) {
       const cx = cols[i % 3], cy = rows[Math.floor(i / 3)];
       const b = spriteBox(app, { x: cx - W / 2 - 20, y: cy - H / 2 - 20, w: W + 40, h: H + 40, cls: "bubble name", label: name, paint: paintTag(name) });
       b.dataset.value = name; boxes.push(b);
-      onTap(b, () => {
+      onBrief(app, b, () => {
         chosen = name; boxes.forEach((o) => o.classList.toggle("chosen", o === b)); pop(b);
         voice.stop(); voice.say(fill(text.data.nomTouche, { nom: name }));
         if (!told) { told = true; voice.say(fill(text.data.nomValider, { nom: name })); }
         ok.style.visibility = "visible"; ok.classList.add("invite");
-      });
+      }, () => name);
     });
-    onTap(ok, () => { if (!chosen) return; voice.stop(); [...boxes, ok].forEach((e) => e.remove()); resolve(chosen); });
+    onBrief(app, ok, () => { if (!chosen) return; voice.stop(); [...boxes, ok].forEach((e) => e.remove()); resolve(chosen); }, "cestBon");
   });
 }
 
@@ -265,7 +265,7 @@ export async function openShell(app, { session, hud, first = true, gold = false,
   // toucher le coquillage (ou attendre)
   const tap = document.createElement("button"); tap.className = "bubble shelltap invite"; tap.setAttribute("aria-label", "ouvrir le coquillage");
   Object.assign(tap.style, { left: `${C[0] - 130}px`, top: `${C[1] - 110}px`, width: "260px", height: "200px" }); app.stage.ui.append(tap);
-  await Promise.race([new Promise((r) => onTap(tap, r)), wait(9000)]);
+  await Promise.race([new Promise((r) => onBrief(app, tap, r, "coquillage")), wait(9000)]);
   tap.remove(); wob = false; voice.stop(); voice.unlock();
   const opened = voice.say(text.data.coquillageOuvre); app.sound?.play("coquillage");
   for (let f = 1; f < 12; f++) { frame = f; await wait(1000 / 12); }
@@ -283,7 +283,7 @@ export async function openShell(app, { session, hud, first = true, gold = false,
   const decor = got.decor && sprites.atlas.sprites[got.decor.sprite] ? spriteBox(app, { x: C[0] + 200, y: 260, w: 280, h: 250, cls: "hud gift pop", still: true, paint: (ctx) => sprites.draw(ctx, got.decor.sprite, 0, 140, 214) }) : null;
   await voice.say(cardSpeech(text, got, inReef), { instruction: true });
   const ok = spriteBox(app, { x: 1000 - 80, y: 560, w: 160, h: 160, cls: "bubble check invite", label: "c'est bon", paint: (ctx) => sprites.draw(ctx, "valider", 0, 80, 80) });
-  await Promise.race([new Promise((r) => onTap(ok, r)), wait(20000)]);
+  await Promise.race([new Promise((r) => onBrief(app, ok, r, "cestBon")), wait(20000)]);
   ok.remove(); voice.stop();
   if (decor) { decor.classList.add("away"); setTimeout(() => { decor.remove(); if (sprites.sheetOf(got.decor.sprite) === "decors" && !app.reef?.open) sprites.unload("decors"); }, 1000); }
   el.classList.add("leave"); await wait(650); el.remove();

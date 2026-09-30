@@ -6,7 +6,7 @@
 // faits nouveaux en plus et des formes à trou. Chaque réponse est enregistrée (magasins « reponses » et
 // « faits ») ; le temps de base est rangé dans les réglages (« tempsDeBase »).
 import { afterFact, catalog, classifyFact, expected, formFor, key, median, newFact, plan, pool, roomForNew, threshold, trouPartOf, trouTurn } from "./facts.js";
-import { initialFamilies, trouOpenFor, updateFamilies, withOpen } from "./families.js";
+import { initialFamilies, openByWarmup, trouOpenFor, updateFamilies, warmupOpening, withOpen } from "./families.js";
 
 export class Warmup {
   // cran : () => le nom du cran en cours (« facile », « conseille », « dur », « tresdur ») ; nouveaux : faits
@@ -60,8 +60,16 @@ export class Warmup {
   }
   // fin de l'étape : les familles (ouverture de la suivante, famille acquise, formes à trou) ; renvoie les
   // événements (une famille acquise rapporte une étoile arc-en-ciel, session.levelUp)
+  // lot 3 ter (docs/SPEC-LOT3TER.md, T2) : l'échauffement d'une séance n'ouvre plus la famille suivante par la règle du lot 2
+  // (80 % des faits introduits en boîte 2) mais par les trois conditions de `warmupOpening` (tous les faits des familles
+  // ouvertes introduits et 80 % en boîte 2 ; 12 dernières réponses d'échauffement à 90 % justes et rapides ; au plus une
+  // famille par jour) ; l'entraînement libre n'ouvre plus de famille (familles acquises et formes à trou : inchangé)
   async families(now = this.clock()) {
-    const { st, events } = updateFamilies(this.c0, this.fam, this.facts, now, { seance: this.libre ? null : this.seance });
+    let { st, events } = updateFamilies(this.c0, this.fam, this.facts, now, { seance: this.libre ? null : this.seance, open: false });
+    if (!this.libre && !this.notion && !this.defi) {
+      this.opening = warmupOpening(this.c0, st, this.facts, await this.store.all("reponses"), now, { limitMs: this.limitMs });
+      if (this.opening.famille != null) { st = openByWarmup(st, this.opening.famille, now, this.seance); events = [...events, { type: "ouverte", famille: this.opening.famille, echauffement: true }]; }
+    }
     this.fam = st; this.c = withOpen(this.c0, st);
     await this.store.put("niveaux", st);
     return events;
@@ -74,7 +82,7 @@ export class Warmup {
   async record(q, r, rest) {
     const now = this.clock(), forme = q.base ? "base" : q.forme ?? "directe", juste = r.value === expected({ ...q, forme });
     await this.store.add("reponses", {
-      t: now, seance: this.seance, module: 2, niveau: q.famille ?? 0, question: describeFact(q, forme), forme, donnee: r.value, attendue: expected({ ...q, forme }),
+      t: now, seance: this.seance, module: 2, niveau: q.famille ?? 0, question: describeFact(q, forme), forme, ...(q.base ? {} : { fait: q.fait ?? key(q.a, q.b) }), donnee: r.value, attendue: expected({ ...q, forme }),
       juste, tempsMs: r.ms, ecoutes: r.listens, aide: !!r.aide, ...(r.aideDEmblee ? { aideDEmblee: true } : {}), erreur: juste ? null : r.nsp ? "NSP" : classifyFact({ ...q, forme }, r.value), revient: !!q.revient, anticipe: !!q.anticipe,
       ...(r.correctionPassee ? { correctionPassee: true } : {}), ...(this.libre ? { libre: true } : {}), ...(q.guide ? { guide: true } : {}), ...(q.passe ? { passe: true } : {}), ...(this.notion ? { notion: true } : {}), ...(this.defi ? { defi: true } : {}), ...(this.cran() !== "conseille" ? { cran: this.cran() } : {}),
     });
@@ -103,6 +111,26 @@ export class Warmup {
     }
     return { juste, rapide: juste && r.ms < limit, etoiles: juste ? (q.revient ? 2 : 1) : 0, ajoutes };
   }
+}
+// lot 3 ter (recette de T2 : la variété du lot 3 bis, §0, à l'échauffement) : jamais 3 fois de suite la même réponse. Si les
+// deux dernières réponses attendues sont égales à v, la prochaine question est la première de la file qui ne peut pas
+// donner v (ni a, ni b, ni a + b : sa forme n'est tirée qu'au moment de la poser), sinon la première dont le total diffère,
+// sinon la file dans l'ordre ; `answers` : les réponses attendues des questions déjà posées (hors temps de base).
+// `vary(q, answers)` : une question à trou qui donnerait encore v prend l'autre forme à trou (« 1 + ? = 9 » au lieu de
+// « ? + 8 = 9 »). Il reste des cas sans issue (la file ne contient plus que ce fait) : la simulation les compte.
+export function varyIndex(rest, answers) {
+  const n = answers.length, v = answers[n - 1];
+  if (n < 2 || v !== answers[n - 2]) return 0;
+  let i = rest.findIndex((q) => q.base || (q.a !== v && q.b !== v && q.a + q.b !== v));
+  if (i < 0) i = rest.findIndex((q) => q.a + q.b !== v);
+  return i < 0 ? 0 : i;
+}
+export function vary(q, answers) {
+  const n = answers.length, v = answers[n - 1];
+  if (q.base || n < 2 || v !== answers[n - 2] || expected(q) !== v || !["trouDroite", "trouGauche"].includes(q.forme)) return q;
+  const alt = q.forme === "trouDroite" ? "trouGauche" : "trouDroite";
+  if (expected({ ...q, forme: alt }) !== v) q.forme = alt;
+  return q;
 }
 // la question telle que le parent la lira dans l'historique
 export const describeFact = (q, forme = q.forme) => (forme === "trouDroite" ? `${q.a} + ? = ${q.a + q.b}` : forme === "trouGauche" ? `? + ${q.b} = ${q.a + q.b}` : `${q.a} + ${q.b}`);

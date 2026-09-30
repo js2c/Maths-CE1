@@ -19,7 +19,8 @@ const etat = (page) => page.evaluate(async () => {
   const A = window.__app, f = A.facts, l = A.screen, n = (await A.store.all("reponses")).length;
   const inF = !!(f?.q && f.resolve && !f.locked), inL = !!(l?.q && l.resolve && !l.locked);
   const q = inL ? `ligne ${l.q.min}–${l.q.max} ${l.q.format} ${l.q.answer}` : inF ? `${f.q.a} ${f.q.op === "-" ? "−" : "+"} ${f.q.b}${f.q.forme && f.q.forme !== "directe" ? ` (${f.q.forme})` : ""}` : null;
-  return { etape: A.frieze?.p?.etape ?? null, question: q, attend: inF || inL, tape: inF ? f.typed ?? "" : null, voix: A.voice.speaking, pause: !!A.enPause, reponses: n, etoiles: A.rewards.total };
+  const vis = (s) => { const e = document.querySelector(s); return !!e && getComputedStyle(e).visibility !== "hidden"; };
+  return { etape: A.frieze?.p?.etape ?? null, question: q, attend: inF || inL, tape: inF ? f.typed ?? "" : null, voix: A.voice.speaking, pause: !!A.enPause, reponses: n, etoiles: A.rewards.total, coche: vis(".check-warmup"), passerEch: vis(".skip-warmup"), etiquette: !!document.querySelector(".etiquette:not([data-sortie])") };
 });
 const diff = (a, b) => {
   const out = [];
@@ -31,6 +32,10 @@ const diff = (a, b) => {
   if (b.etoiles !== a.etoiles) out.push(`étoiles ${a.etoiles} → ${b.etoiles}`);
   if (a.pause !== b.pause) out.push(b.pause ? "en pause" : "reprise");
   if (a.voix !== b.voix) out.push(b.voix ? "la voix parle" : "la voix s'est tue");
+  // (lot 3 ter) le bouton « passer l'échauffement », sa coche, l'étiquette de l'appui long
+  if (a.coche !== b.coche) out.push(b.coche ? "la coche apparaît" : "la coche disparaît");
+  if (a.passerEch !== b.passerEch) out.push(b.passerEch ? "le bouton « passer l'échauffement » apparaît" : "le bouton « passer l'échauffement » disparaît");
+  if (a.etiquette !== b.etiquette) out.push(b.etiquette ? "une étiquette apparaît" : "l'étiquette disparaît");
   return out.length ? out.join(" ; ") : "rien ne change";
 };
 const ditDepuis = async (page) => page.evaluate(() => { const d = window.__dit ?? [], i = window.__vu2 ?? 0; window.__vu2 = d.length; return d.slice(i).map((x) => `« ${x.t} »`).join(" "); });
@@ -237,7 +242,29 @@ async function passer() {
   for (const p of await S.planches(nav)) index.push([p.file, `« passer » partout : ${p.contenu}`]);
 }
 
-const ESSAIS = { touchers, maison, appuiLong, rien, passer };
+// ---------------------------------------------------------------- 8. (lot 3 ter, T1) passer l'échauffement
+// le bouton dédié (la vague et la flèche) : toucher, la question de la voix et la coche ; rien pendant 5 s : la reprise ;
+// toucher, puis la coche : la suite ; et la même chose pendant une correction. Voix réelle.
+async function passerEchauffement() {
+  const S = new Serie(DIR, "C6-passer-echauffement", "Partie C · lot 3 ter : passer l'échauffement (le bouton, la coche, la reprise)");
+  for (const pendant of ["question", "correction"]) {
+    const s = await ouvrir(nav, { base: "mois", nom: true, voix: "", params: "cran=conseille&module=1&sansLecon" }), page = s.page;
+    await toucher(page, ".play"); await question(page); await pause(page, 2500);
+    await essai(S, s, { essai: "passer l'échauffement", exo: `échauffement (${pendant === "question" ? "une question" : "une question, puis une erreur"})`, geste: "rien encore : le bouton de la vague est là", attente: 500, action: async () => {} });
+    if (pendant === "correction") { await page.evaluate(() => { const f = window.__app.facts; f.typed = String((f.q.forme === "trouDroite" ? f.q.b : f.q.forme === "trouGauche" ? f.q.a : f.q.a + f.q.b) + 1); }); await toucher(page, '.key[data-key="valider"]'); await pause(page, 1200); }
+    await essai(S, s, { essai: "passer l'échauffement", exo: pendant === "question" ? "échauffement, une question" : "échauffement, pendant la correction", geste: "le bouton « passer l'échauffement » touché", attente: 4000, action: async (p) => { const c = await centre(p, ".skip-warmup"); if (c) await tap(p, ...c); } });
+    if (pendant === "question") {
+      await essai(S, s, { essai: "passer l'échauffement", exo: "échauffement, en attente", geste: "rien pendant 6 s", attente: 6000, action: async () => {} });
+      await question(page); await pause(page, 1500);
+      await essai(S, s, { essai: "passer l'échauffement", exo: "échauffement, après la reprise", geste: "le bouton touché de nouveau", attente: 3500, action: async (p) => { const c = await centre(p, ".skip-warmup"); if (c) await tap(p, ...c); } });
+    }
+    await essai(S, s, { essai: "passer l'échauffement", exo: "échauffement, en attente", geste: "la coche touchée", attente: 4000, action: async (p) => { const c = await centre(p, ".check-warmup"); if (c) await tap(p, ...c); } });
+    await s.context.close();
+  }
+  for (const p of await S.planches(nav)) index.push([p.file, `passer l'échauffement : ${p.contenu}`]);
+}
+
+const ESSAIS = { touchers, maison, appuiLong, rien, passer, passerEchauffement };
 const only = opt("--seulement", null)?.split(",");
 for (const [k, f] of Object.entries(ESSAIS)) if (!only || only.includes(k)) { console.log("—", k); try { await f(); } catch (e) { console.log("ÉCHEC", k, e.stack); journal.push({ essai: k, exo: "", geste: "", resultat: `l'outil a échoué : ${e.message.split("\n")[0]}`, dit: "", erreurs: "", capture: "" }); } }
 // le journal (fusionné avec celui d'un lancement précédent pour les essais relancés seuls)

@@ -89,14 +89,15 @@ const pick = async (page, sel) => { await page.waitForSelector(sel, { timeout: 1
   check(s?.leconChoisie && s.lecons?.[0]?.id === "L4" && s.lecons[0].passee && s.libre, "la leçon passée est notée (séance « libre », pas la séance du jour)");
   check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
 }
-// 4. « passer » l'échauffement : la notion du jour commence moins de 2 s après
+// 4. « passer » l'échauffement (lot 3 ter, T1 : le bouton dédié, puis la coche) : la notion du jour commence moins de 2 s après la coche
 {
   const { page, context, errors } = await open("&cran=conseille&module=1&sansLecon");
   await tap(page, ".play");
   await page.waitForFunction(() => window.__app.session?.progress.etape === "echauffement", null, { timeout: 30000 });
-  await page.waitForSelector(".skip", { timeout: 5000 }); await page.waitForTimeout(600);
+  await page.waitForSelector(".skip-warmup", { timeout: 5000 }); await page.waitForTimeout(600);
   await page.screenshot({ path: join(OUT, "10-echauffement-passer.png") });
-  const t0 = Date.now(); await tap(page, ".skip");
+  await tap(page, ".skip-warmup"); await page.waitForSelector(".check-warmup", { state: "visible", timeout: 5000 });
+  const t0 = Date.now(); await tap(page, ".check-warmup");
   await page.waitForFunction(() => window.__app.session?.progress.etape === "notion", null, { timeout: 10000 });
   const dt = Date.now() - t0; check(dt < 2000, `la notion du jour commence ${dt} ms après « passer »`);
   check(!!(await page.evaluate(() => window.__app.session.rec.echauffementPasse)), "noté « échauffement passé »");

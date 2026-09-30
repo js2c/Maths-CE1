@@ -6,7 +6,7 @@
 // un toucher en dehors du panneau, le ferme. Ouvrir ou fermer ne choisit rien, ne lance rien, et la voix ne lit rien :
 // la légende est pour le parent. Texte : content/legendes.json (repris par l'espace parent et le guide du parent).
 import * as R from "../art/runtime.js";
-import { onTap, pop, spriteBox } from "../engine/ui.js";
+import { onBrief, pop, spriteBox } from "../engine/ui.js";
 
 export const LEGEND_AT = [1218, 214], PANEL = { x: 130, y: 44, w: 1020, h: 730 };
 const COL = { vign: 70, travail: 160, exemple: 670, fin: 925 }, EM = 23, EX_EM = 23, ROW_PAD = 16;
@@ -24,7 +24,7 @@ export function legendKey(app, ex, { keys = null, labels = {}, els }) {
   const { sprites } = app, r = 40;
   const b = spriteBox(app, { x: LEGEND_AT[0] - r - 12, y: LEGEND_AT[1] - r - 12, w: 2 * r + 24, h: 2 * r + 24, cls: "bubble legende", label: "légende", paint: (ctx) => sprites.draw(ctx, "legende", 0, r + 12, r + 12) });
   els.push(b);
-  onTap(b, () => { pop(b); openLegend(app, ex, { keys, labels, els }); });
+  onBrief(app, b, () => { pop(b); openLegend(app, ex, { keys, labels, els }); }, "legende");
   return b;
 }
 
@@ -64,8 +64,8 @@ export function openLegend(app, ex, { keys = null, labels = {}, els = [] } = {})
   const all = [veil, panel, head, scroll, close];
   app.legendOpen = { els: all };
   els.push(...all);
-  onTap(close, () => closeLegend(app));
-  onTap(veil, () => closeLegend(app));
+  onBrief(app, close, () => closeLegend(app), "fermer");
+  onBrief(app, veil, () => closeLegend(app)); // (lot 3 ter : un toucher dehors ferme aussi au lever du doigt, jamais un appui long)
   return app.legendOpen;
 }
 export function closeLegend(app) { app.legendOpen?.els.forEach((e) => e.remove()); app.legendOpen = null; }

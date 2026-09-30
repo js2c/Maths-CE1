@@ -9,7 +9,7 @@
 // On ne l'agrandit jamais au-delà de sa taille. Les images sont décodées directement à la taille voulue.
 import * as R from "../art/runtime.js";
 import { wait } from "../engine/clock.js";
-import { onTap, spriteBox } from "../engine/ui.js";
+import { onBrief, spriteBox } from "../engine/ui.js";
 import { fill } from "../engine/phrases.js";
 
 export const CARD = { W: 330, H: 440, R: 20, FRAME: 9, BANNER: 64 };
@@ -130,8 +130,8 @@ export class CardView {
     // la voix dit le nom et l'anecdote UNE fois, à l'ouverture (décision du parent du 28 septembre 2026) ; retourner la
     // carte, dans un sens comme dans l'autre, ne la relance pas (si elle parle encore, elle continue) : seul le
     // bruitage du retournement sonne
-    onTap(el, () => { el.flip(); app.sound?.play("carte"); });
-    onTap(veil, () => this.close()); onTap(ok, () => this.close());
+    onBrief(app, el, () => { el.flip(); app.sound?.play("carte"); }, "retourner");
+    onBrief(app, veil, () => this.close()); onBrief(app, ok, () => this.close(), "cestBon");
     voice.stop(); voice.say(cardLine(text, c), { instruction: true });
   }
   async close() {

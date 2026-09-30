@@ -19,6 +19,7 @@
 // couleurs true|false (les dizaines en corail, les unités en bleu) ; ligne { min, max } (une ligne de 1 en 1) ; sauts n
 // (le poisson saute de graduation en graduation jusqu'à n, un arc par saut) ; pont n (lot 3 bis : un seul grand saut jusqu'à n, marqué « + k »).
 import * as R from "../art/runtime.js";
+import { onBrief } from "../engine/ui.js";
 import { onTap, spriteBox } from "../session/screens.js";
 import { skipKey } from "../engine/ui.js";
 import { wait } from "../engine/clock.js";
@@ -55,7 +56,7 @@ export class Lesson2Player {
     this.p = 0; this.skipped = false; this.abort = null; this.goto = undefined;
     const jump = (to) => { this.goto = to; app.voice.stop(); if (this.abort) this.abort(); else this.p = to; };
     const again = spriteBox(app, { x: REPLAY_AT[0] - 70, y: REPLAY_AT[1] - 70, w: 140, h: 140, cls: "bubble lessonkey rejouer", label: "rejouer la leçon", paint: (ctx) => app.sprites.draw(ctx, "rejouer", 0, 70, 70) });
-    onTap(again, () => { if (!this.abort) return; pop(again); stats.rejouees++; jump(0); });
+    onBrief(this.app, again, () => { if (!this.abort) return; pop(again); stats.rejouees++; jump(0); }, "rejouer");
     const skip = skipKey(app, () => { this.skipped = true; jump(lesson.phrases.length); }, "passer la leçon");
     skip.classList.add("lessonkey");
     this.keys = [again, skip];

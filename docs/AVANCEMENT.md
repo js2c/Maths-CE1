@@ -2,6 +2,103 @@
 
 Tenu à jour à chaque étape (un commit par étape). Pour reprendre le travail dans une nouvelle session : lire ce fichier, puis `CLAUDE.md`, `docs/SPEC.md` et `docs/ARCHITECTURE.md`.
 
+## Lot 3 ter
+
+Spécification : `docs/SPEC-LOT3TER.md` (prévaut sur toutes les spécifications précédentes) ; prompt : `docs/PROMPT-LOT3TER.md`. Une session, deux étapes, une demande de fusion. Ne touche pas au récif.
+
+**Où en est-on (29 septembre 2026)** : lot 3 bis fusionné (https://github.com/js2c/Maths-CE1/pull/23). Lot 3 ter : **étapes 1 et 2 faites, recette complète faite** ; branche `claude/focused-bohr-07vtgr` (nom imposé par l'environnement), demande de fusion « Lot 3 ter » (https://github.com/js2c/Maths-CE1/pull/25), prête. Reste : la fusionner, essayer sur la tablette, puis la session relecteur (`docs/PROMPT-LOT3TER.md`), qui fait la recette de contrôle des lots 3 bis et 3 ter.
+
+| Étape | Contenu | État |
+| --- | --- | --- |
+| 1 | T1 (passer l'échauffement : bouton dédié, pictogramme à l'atelier, confirmation par la coche) ; T2 (ouverture automatique des familles à l'échauffement) ; recette allégée | fait |
+| 2 | T3 (appui long sur tous les boutons de choix et de commande, fondus) ; recette complète et relance des parties B et C de la recette fonctionnelle (`out-lot3ter/`) | fait |
+
+### Reprise du lot 3 ter
+
+Pour reprendre si la session s'est arrêtée : branche `claude/focused-bohr-07vtgr`, demande de fusion en brouillon « Lot 3 ter (en cours) » (https://github.com/js2c/Maths-CE1/pull/25).
+
+**Étape en cours :** aucune ; étapes 1 et 2 terminées le 29 septembre 2026, recette complète faite, demande de fusion prête.
+
+**Fait :**
+
+- Étape 1, T1 (passer l'échauffement) : pictogramme dessiné à l'atelier (`sea/lot3ter.ts`, `drawWarmupSkipKey` : une vague à la lèvre d'écume dans la mer qui remplit le bas de la bulle, franchie par une flèche dorée en arc qui retombe sur l'eau calme ; regardé à 6 × : jonction de la tête et du corps de la flèche reprise, nœud d'encre du rouleau supprimé), sprite `passer.echauffement` (« petits ») ; bouton `.skip-warmup` à (1205, 400), entre le « passer » des aides et corrections (1205, 218) et « je ne sais pas », présent de la phrase d'introduction à la dernière question ; un toucher met l'échauffement en attente (horloge et voix de la séance en pause puis de côté, pavé fermé, question affichée, autres « passer » masqués), la voix demande « Tu veux passer l'échauffement ? Touche la coche pour dire oui. » (2 phrases fabriquées), la coche remplace le bouton ; coche touchée : la séance passe à la suite (`echauffementPasse` comme avant) ; sans toucher 5 s après la question lue : reprise sur la même question, consigne redite. Passé pendant une correction ou une aide : elle s'arrête, rien d'elle ne continue ensuite (`FactsScreen.abandon`, jeton `tok`). Réglages `seance.json`, `passerEchauffement`.
+- Étape 1, T2 (l'échauffement s'ajuste) : `families.js`, `warmupOpening` (les trois conditions), `openByWarmup` ; réglages `module2.json`, `familles2.echauffement` ; espace parent « ouverte par l'échauffement le 28/09 ». Recette : `sim-seances.mjs` rubrique « lot 3 ter » ; variété à l'échauffement (`varyIndex`, `vary`).
+- Tests : `tests/unit/lot3ter.test.mjs` (12 tests : bouton pendant tout l'échauffement, attente, confirmation, reprise après 5 s, les trois conditions, le plafond d'une famille par jour, l'entraînement libre, la variété) ; parcours `tests/e2e/lot3ter.mjs --seul passer,parent` ; anciens parcours adaptés au nouveau bouton (`choix.mjs`, `pause.mjs`, `recette-fonctionnelle/a-ecrans.mjs`).
+
+**Recette allégée de l'étape 1 (29 septembre 2026) :** `npm test` : 246, tout est bon ; `b-sequences.mjs --test` : 0 séance en défaut sur 464 ; parcours `lot3ter.mjs`, `choix.mjs`, `pause.mjs`, `seance.mjs`, `ergonomie.mjs`, `etat-quitte.mjs` : tout est bon ; `lot3bis.mjs` : tout est bon sauf le double toucher à 60 ms, qui échoue **aussi sur `main`** dans ce conteneur (écart mesuré 154 ms, au-delà des 150 ms du réglage : Chromium sans écran espace les deux touchers ; bon au second passage sur la branche, 145 ms) ; captures regardées (`tests/e2e/out/lot3ter/` : question avec le bouton, correction avec les deux boutons, attente avec la coche, reprise, suite, espace parent).
+
+Simulation (`sim-seances.mjs`, 30 séances à 2 par semaine, base neuve) :
+
+| Profil | « jouer » : familles ouvertes (séance, par quoi) | l'enfant choisit toujours la ligne (`--choix 1:5`) |
+| --- | --- | --- |
+| sait | 3 (2, notion), 4 (4, notion), 5 (7, notion), 6 (9, échauffement), 7 (10, échauffement) | 3 (6), 4 (8), 5 (9), 6 (11), 7 (12), toutes par l'échauffement |
+| réel | 3 (2), 4 (6), 5 (8), 6 (10) par la notion ; 7 (11, échauffement) | 3 (6), 4 (8), 5 (9), 6 (19), 7 (24) ; premier mois : 0,25 famille par semaine |
+| diff | 3 (4), 4 (8), 5 (16) par la notion du jour | aucune en 30 séances (jamais les 90 % de réussite rapide) |
+
+Jamais deux familles ouvertes le même jour. À chaque ouverture par l'échauffement : 86 à 100 % des faits en boîte 2, 12 réponses à 92 % ou 100 %, médiane 3,1 à 5,2 s (seuil 6,4 à 7,1 s).
+
+- Étape 2, T3 (l'appui long, partout) : `engine/ui.js`, `onBrief` : validation au lever du doigt (moins de 500 ms), étiquette en fondu (0,2 s) tant que le doigt est posé, disparue 0,5 s après le lever, rien de lancé ; `legendes.json`, `appuiLong` (`ms`, `fonduEntreeMs`, `sortieMs` ; `gardeMs` supprimé) et 31 étiquettes nouvelles ; les tuiles prennent leur ligne de la légende (`tileLabel`) ; le point médian « · » ajouté à l'écriture au feutre. Tous les `onTap` des boutons de choix et de commande remplacés (liste ci-dessous) ; seuls les chiffres du pavé gardent le premier contact. Tests `lot3ter.test.mjs` (T3), `lot3bis-partieB.test.mjs` et `carte-voix.test.mjs` adaptés ; parcours `lot3ter.mjs --seul appui` : 101 boutons, tout est bon ; captures regardées (tuile du calcul 7, leçon L2, cran « plus dur », passer l'échauffement…).
+
+**Les boutons recensés (T3)** — validés au lever du doigt, étiquette à l'appui long (texte de `legendes.json`) :
+
+| Écran | Boutons | Étiquette |
+| --- | --- | --- |
+| Accueil | jouer, choisir, le récif, l'album ; « Encore ! » (séance faite) | inchangées (lot 3 bis) ; « S'entraîner encore, sans étoiles. » |
+| Accueil en pause | continuer, choisir, le récif, l'album | « Continuer la séance. » ; les autres inchangées |
+| Premier lancement | les six noms de la pieuvre ; « c'est bon » | le nom ; « C'est bon » |
+| Choisir | 4 exercices ; 13 tuiles de la ligne, 7 familles, 9 niveaux du calcul, 10 leçons ; retour aux exercices ; coche (validation « double » seulement, réglage actuel « simple » : absente) | inchangées ; « 7 · Ajouter en passant la dizaine, on complète d'abord jusqu'à 10 » (la ligne de la légende) ; « Revenir aux exercices » ; « Valider ce choix » |
+| Légende | petit livre ; croix ; toucher dehors (le voile) | « La légende des niveaux » ; « Fermer » ; aucune (le voile n'est pas un bouton) |
+| Sélecteur de difficulté | 4 crans ; coche | « Plus facile. Plus d'aide, des questions plus simples, moins d'étoiles. », « Conseillé. Le niveau préparé pour toi. », « Plus dur. Des questions plus difficiles, plus d'étoiles. », « Très dur. Les questions les plus difficiles, deux fois plus d'étoiles. » (sans les étoiles dans l'entraînement libre) ; « Valider ce choix » |
+| Séance | réécouter ; maison ; passer l'échauffement et sa coche ; coquillage d'aide ; je ne sais pas (ligne, additions, calcul) ; passer (aide, exemple, correction, leçon) ; rejouer la leçon | « Réécouter la consigne » ; « Faire une pause » (pendant la séance), « Revenir à l'accueil » (ailleurs) ; « Passer l'échauffement », « Oui, passer l'échauffement » ; « Un indice » ; « Je ne sais pas, on regarde ensemble » ; « Passer » ; « Revoir la leçon » |
+| Pavé (exception) | effacer, coche : au premier contact, étiquette en plus à l'appui long ; chiffres : au premier contact, sans étiquette | « Effacer le dernier chiffre », « Valider ma réponse » |
+| Réponses (exception) | bulles-réponses (premier contact) ; corde et poisson de « placer » (réponse par le toucher ou le glisser, inchangés) | aucune |
+| Récompense | le coquillage à toucher ; « c'est bon » | « Ouvrir le coquillage » ; « C'est bon » |
+| Carte en grand | la carte (la retourner) ; « c'est bon » ; toucher dehors | « Retourner la carte » ; « C'est bon » ; aucune |
+| Album | 4 onglets de zone ; les cartes ; maison | le nom de la zone ; le nom de la créature ou « Carte à découvrir » ; « Revenir à l'accueil » |
+| Récif | maison ; album ; perles de zone (à partir de deux pages) | « Revenir à l'accueil » ; « L'album des cartes. » ; le nom de la zone |
+| Inchangés | le logo (appui long de 2 s : espace parent) ; les créatures du récif (déjà validées au relâcher, un appui long n'y lance rien ; le récif n'est pas touché) ; l'espace parent (pages de texte pour le parent, clics ordinaires) ; la frise (pas un bouton) | — |
+
+- Recette complète (ci-dessous) et relance des parties B et C de la recette fonctionnelle, avec les parcours nouveaux, dans `tests/recette-fonctionnelle/out-lot3ter/` (`INDEX.md` en tête) : partie B refaite, plus `B-sequences/ECHAUFFEMENTS.md` (les échauffements d'un mois, cinq profils, `b-echauffements.mjs`) ; partie C refaite, plus `C6-passer-echauffement` (voix réelle, `c-toucher.mjs --seulement passerEchauffement`) et `C7-appui-long.md` (101 boutons, `c-appui-long.mjs`) ; partie E nouvelle (`e-lot3ter.mjs`). Anciens parcours adaptés au lever du doigt : `recette-durees.mjs` (les touchers simulés posent puis lèvent le doigt), `lot3bis-b.mjs` (l'étiquette disparaît 0,5 s après, et non plus 2 s).
+
+**Recette complète du lot 3 ter (29 septembre 2026) :**
+
+| Critère (`docs/SPEC-LOT3TER.md`, « Recette du lot 3 ter ») | Mesure | Tenu |
+| --- | --- | --- |
+| Passer l'échauffement (T1) | `lot3ter.mjs --seul passer` : bouton présent dès la phrase d'introduction et à chacune des questions (4 sur 4), pendant le retour et pendant une correction ; toucher : la voix demande « Tu veux passer l'échauffement ? Touche la coche pour dire oui. », le pavé et « je ne sais pas » se ferment, la question reste, la coche remplace le bouton ; sans toucher : la coche part 5,1 s après le toucher (la question lue, puis 5 s), reprise sur la même question, consigne redite ; coche touchée : la notion du jour commence 61 à 92 ms après, « échauffement passé » noté ; passé pendant une correction : rien d'elle ne continue ; la maison pendant l'attente : reprise puis pause ; pictogramme distinct de « passer » (captures `t1-2-correction-deux-boutons`, `t1-2b-deux-boutons`, planche `lot3terSheet` à 2 × et 6 ×). En voix réelle (partie C6) : même déroulé | oui |
+| Échauffement qui s'ajuste (T2) | `sim-seances.mjs`, base neuve, 5 profils, 2 et 5 séances par semaine sur l'année, avec « jouer » ; et 30 séances « toujours la ligne » (`--choix 1:5`) : séance d'ouverture de chaque famille (tableau de l'étape 1) ; jamais deux familles ouvertes le même jour (0 sur 10 simulations d'un an) ; « diff » n'ouvre aucune famille par l'échauffement (sur l'année : uniquement la notion du jour ou la stagnation) ; « réel » à 2 par semaine : 0,50 famille par semaine le premier mois (dont 0 par l'échauffement), à 5 par semaine 1,25 (dont 0,25 par l'échauffement ; le reste par la notion du jour, règle du lot 2 inchangée) ; « sait » atteint les amis de 10 par l'échauffement à la **6e** séance (attendu : 4 au plus, voir « Questions ouvertes ») ; variété à l'échauffement : 3 fois de suite la même réponse dans 0 à 4 échauffements sur 64 à 160 selon le profil (fins d'échauffement sans issue), moins de 5 réponses différentes dans 1 à 3 (les premiers) | en partie (le délai de 4 séances) |
+| Appui long (T3) | `lot3ter.mjs --seul appui` : **101 boutons** recensés ; appui de 0,8 s : étiquette visible et dans l'écran sur 99 (les deux autres sont les chiffres du pavé et une bulle-réponse, sans étiquette), rien de lancé sur tous ; au lever du doigt : rien de lancé, étiquette invisible 0,5 s après (101 sur 101) ; toucher bref : action lancée sur les 34 boutons essayés (au moins un de chaque sorte) ; pavé et bulles-réponses : réponse au premier contact (un chiffre, une bulle tenue 0,9 s), « effacer » et coche du pavé au premier contact, l'étiquette en plus | oui |
+| Non-régression | voir ci-dessous | oui |
+
+| Recettes des lots précédents | Mesure |
+| --- | --- |
+| `sim-seances.mjs`, 5 profils, 2 et 5 séances par semaine, sur l'année | 60 cartes du 15 au 17 juin 2027, légendaires comprises ; quota jamais dépassé ; séances estimées 8,9 à 9,5 min (10 premières séances) ; aucune famille acquise en une seule séance ; part de la famille en cours 75 à 100 % en moyenne (75 % : « en difficulté » à 2 par semaine ; 72 % au lot 3 bis) ; 7 décors en un mois à 2 séances par semaine |
+| `b-sequences.mjs --test` | 0 séance en défaut sur 464 |
+| `recette.mjs --delai 4.5` | ligne graduée 8 min 40 s ; additions 8 min 20 s ; calcul rapide 8 min 42 s ; aucune erreur |
+| `recette-durees.mjs` | sans « passer » : attente sans commande hors voix 1,0 s au plus ; avec « passer » : 1,0 s au plus |
+| Parcours Playwright | les 27 parcours (sauf `video`), un par un : tout est bon (`lot3bis` compris : le double toucher passe cette fois) ; `perf` : démarrage 1,9 à 2,2 s (processeur ÷ 4), 22,8 à 27,4 ms par image en moyenne, **comme `main` mesuré le même jour sur la même machine** (24,8 et 26,5 ms ; 18,5 ms au lot 3 bis, un autre jour) : pas de régression, la machine est plus lente aujourd'hui ; travail par image 4,3 à 5 ms |
+| `npm test` | 251 tests, tout est bon |
+
+**Décisions prises :**
+
+- *Délai de la coche* : les 5 s partent de la fin de la question lue (« … Touche la coche pour dire oui. »), pas du toucher : sinon, la question lue (environ 3 s) mangerait la moitié du délai.
+- *Place du bouton* : (1205, 400), à droite, entre « passer » (aides, corrections) et « je ne sais pas », sur les algues ; la coche prend sa place. Zone tactile de 140 px.
+- *Maison pendant l'attente* : l'échauffement reprend d'abord (la coche s'en va), puis la pause ; « continuer » redit la consigne comme d'habitude.
+- *« Réécouter » pendant l'attente* : redit la question de confirmation.
+- *Effacer et coche du pavé (T3)* : la spécification leur donne une étiquette et garde l'exception du pavé ; ils agissent donc au premier contact (comme les chiffres) et montrent en plus leur étiquette à l'appui long : une réponse n'est jamais retenue par un doigt qui traîne.
+- *Maison (T3)* : une seule maison ; pendant la séance, elle met en pause (« Faire une pause ») ; ailleurs (choisir, récif, album, entraînement libre), elle revient à l'accueil (« Revenir à l'accueil »). Il n'y a pas d'autre bouton « pause ».
+- *Étiquettes des tuiles (T3)* : la ligne entière de la légende, sans le point final (« 7 · Ajouter en passant la dizaine, on complète d'abord jusqu'à 10 ») ; l'exemple de la spécification la coupait à la virgule, mais couper à la première virgule abîme d'autres lignes (« Les maisons de 5 »).
+- *Voile (T3)* : fermer la légende ou la carte en grand en touchant dehors se fait aussi au lever du doigt ; un appui long dehors ne ferme rien (sans étiquette).
+- *Crans dans l'entraînement libre* : étiquettes sans les étoiles (il n'y en a pas).
+- *Règle d'ouverture à l'échauffement* : elle **remplace**, à l'échauffement, la règle du lot 2 (80 % des faits introduits en boîte 2, sans condition de réussite) ; la notion du jour des additions garde la sienne. L'entraînement libre n'ouvre plus de famille (il ne compte pas comme « un échauffement » de séance). Réponses comptées « justes » : justes et sans aide ; réponses d'échauffement : ni notion du jour, ni défi, ni entraînement libre, ni temps de base.
+- *Variété à l'échauffement* : la simulation a montré que l'échauffement ne respectait pas la règle du lot 3 bis (§0) « jamais 3 fois de suite la même réponse » (défaut d'avant ce lot : le §0 ne visait que la notion du jour) ; corrigé sans toucher au plan des faits : la question suivante est la première de la file qui ne peut pas redonner la même réponse, et une forme à trou peut changer de côté. Reste : 0 à 4 échauffements sur 30 selon les profils, en fin d'échauffement quand la file ne contient plus que le même fait (« 8 + 1 », « 1 + 8 » repassés). « Au moins 5 réponses différentes » n'est pas tenu par les tout premiers échauffements (6 à 11 questions sur 2 ou 3 faits et leurs inverses).
+
+**Questions ouvertes (valeur par défaut prise, à trancher par le parent) :**
+
+- *Le pictogramme de la vague* : le sélecteur de difficulté dessine déjà ses crans avec des vagues (de plus en plus grosses). La flèche dorée qui franchit la vague distingue « passer l'échauffement », mais une enfant pourrait associer les deux. À regarder sur la tablette ; autre idée si besoin : une flèche qui saute par-dessus un rocher.
+
+- *« Le profil « sait » atteint les amis de 10 à l'échauffement en 4 séances au plus »* : **pas tenu** (6e séance). La condition 1 (tous les faits des familles ouvertes introduits : 33 faits pour « + 1 et + 2 » et les doubles) et la limite existante de 6 faits nouveaux par séance ne le permettent pas avant la 6e séance, quel que soit le profil. Pour tenir 4 séances, il faudrait soit relever la limite de faits nouveaux pour une enfant qui passe tout par la voie rapide, soit assouplir la condition 1 (par exemple 80 % des faits introduits). Rien n'a été changé.
+- *Variété à l'échauffement* : faut-il aussi viser 5 réponses différentes dans les premiers échauffements (ce qui changerait l'ordre d'introduction des faits nouveaux, décidé au lot 3 bis : les deux ordres des termes à la suite) ?
+
 ## Lot 3 bis
 
 Spécification : `docs/SPEC-LOT3BIS.md` (prévaut sur `docs/SPEC.md`, `docs/SPEC-LOT2.md`, `docs/SPEC-LOT3.md` et `docs/SPEC-COMPLEMENTS.md`) ; rapport qui la motive : `docs/RECETTE-LOT3.md` (constats R1 à R25) ; prompt : `docs/PROMPT-LOT3BIS.md`. Deux parties : A (étapes 1 et 2, moteur et contenu), B (étapes 3 à 5, visuel, atelier et parent).

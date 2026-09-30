@@ -1,70 +1,100 @@
 # Idées et questions ouvertes
 
-Tout ce qui n'est pas décidé : idées d'amélioration, questions laissées avec une valeur par défaut, points à observer avec l'enfant. Tenu en conception. Quand un point est tranché, la règle va dans `docs/SPEC.md`, la raison dans `docs/JOURNAL-CONCEPTION.md`, et la ligne est retirée d'ici.
+Tout ce qui n'est pas décidé : idées d'amélioration, concepts d'exercices à maquetter, questions laissées avec une valeur par défaut, points à observer avec l'enfant. Tenu en conception. Quand un point est tranché, la règle va dans `docs/SPEC.md`, la raison dans `docs/JOURNAL-CONCEPTION.md`, et la ligne est retirée d'ici.
 
-Dernière mise à jour : 30 septembre 2026, après la fusion du lot 3 ter (PR 25).
+Dernière mise à jour : 30 septembre 2026, soir, après la revue du programme de CE1 avec le parent.
 
-## 1. À faire ensuite (dans l'ordre proposé)
+## 1. La feuille de route (décision du parent du 30 septembre)
 
-1. **Essai sur la tablette** du lot 3 ter (parent).
-2. **Session relecteur de contrôle** des lots 3 bis et 3 ter (`docs/PROMPTS.md`, « Relecteur ») : les constats R1 à R25 de la première recette fonctionnelle sont-ils levés, et y a-t-il des régressions ? Jamais faite, reportée deux fois.
-3. **Confrontation de `docs/SPEC.md` avec le code** (`docs/PROMPTS.md`, « Confrontation ») : la liste des écarts, à trancher par le parent.
-4. **Revue de périmètre** (section 2), puis le lot suivant.
+**Règle** : aucun exercice nouveau n'est lancé en code avant que le parent ait validé **une maquette de son rendu final** (écrans clés, gestes, ce que dit la voix). Un exercice mal conçu est impossible à corriger ensuite.
 
-## 2. Revue de périmètre : questions à trancher avant le prochain lot
+**Avant tout** : essai du lot 3 ter sur la tablette ; session relecteur (`docs/PROMPTS.md`) ; confrontation de la spécification avec le code (`docs/PROMPTS.md`).
 
-- **L'échauffement quand un exercice est choisi** : aujourd'hui il reste, sauf si on le passe. Le garder, le supprimer, ou le réduire quand l'enfant a choisi ?
-- **Le nombre de crans de difficulté** : quatre crans sur chaque exercice multiplient les cas à tester (116 combinaisons pour la seule vérification des séquences). En garder quatre, ou passer à trois ?
-- **L'ordre des prochains lots.** Proposition de conception (30 septembre) :
-  1. un lot court avec les **sommes jusqu'à 20** et les **bilans périodiques** (la mesure objective des progrès) ;
-  2. **l'heure et la monnaie**, au moment où la classe les aborde (d'où la question à l'enseignante, section 5) ;
-  3. **les problèmes et le dénombrement** (compétences presque acquises : entretien) ;
-  4. comparer, doubles et moitiés, pair et impair.
+**Phase 1, maintenant** — ordre proposé (un lot court chacun) :
+
+1. Les leçons (`docs/SPEC.md`, section 3, « Les leçons ») : bulle à l'accueil, menu refait, leçon suivie de son exercice, table d'addition à consulter ; correction des filets de la leçon L10 (10 poissons).
+2. Les problèmes de la vie courante (`docs/SPEC.md`, section 13) : l'essentiel du travail est la banque d'énoncés, rédigée en conception.
+3. La pêche (section 2 ci-dessous).
+4. Le banc de poissons (section 2).
+5. Suites et rangs (section 2).
+6. Les sommes jusqu'à 30 (`docs/SPEC.md`, section 13).
+
+**Phase 2, d'ici quelques semaines** : les fractions (le programme les attend **au plus tard en période 2**, avant les vacances de Noël : à mettre en tête de phase 2) ; la multiplication (addition répétée, signe ×, commutativité, rangées) et les tables ; le partage (valeur d'une part, nombre de parts) ; l'addition et la soustraction posées jusqu'à 3 chiffres, avec retenues (la méthode de soustraction, par cassage ou par compensation, **à demander à l'enseignante** : l'école en choisit une du CE1 au CM2) ; ± centaines entières et calculs à 3 chiffres (234 + 60, 765 − 200) ; × 10 d'un nombre inférieur à 100.
+
+**Phase 3** : l'heure, la monnaie (le programme demande les **centimes** en période 2 et l'**écriture à virgule** dès la période 3 : la spécification actuelle, en euros entiers, est à revoir), les longueurs, les masses.
+
+**Exclu** : écrire les nombres en lettres.
+
+**Non placés** : comparer, doubles et moitiés, pair et impair (`docs/SPEC.md`, section 13) ; proposition : comparer fusionné dans le banc de poissons (phase 1), doubles et moitiés, pair et impair avec la multiplication et le partage (phase 2). Géométrie, repérage dans l'espace, données : hors du plan (le codage de déplacements, « avance, pivote d'un quart de tour », irait bien avec la tortue).
+
+## 2. Concepts d'exercices à maquetter (phase 1)
+
+Retenus dans leur principe par le parent le 30 septembre ; chacun doit passer par une maquette validée avant d'être spécifié dans `docs/SPEC.md`.
+
+**La pêche** (centaines, dizaines, unités ; « 23 dizaines et 5 unités », 600 + 30 + 5). Trois réserves au bord d'un bateau : chaluts (100 poissons), filets (10), poissons seuls. La voix : « Pêche 235 poissons » ; l'enfant fait glisser chaluts, filets et poissons dans la cale, puis valide. Variantes, de la plus simple à la plus difficile :
+
+1. Construire : la voix donne le nombre, l'enfant assemble la pêche.
+2. Lire : une pêche est montrée, l'enfant tape le nombre.
+3. Sans chalut : « Il n'y a plus de chaluts ! » Faire 235 avec 23 filets et 5 poissons.
+4. Échanger : ouvrir un filet pour obtenir 10 poissons seuls (prépare la soustraction posée par cassage).
+
+Au cran « plus facile », l'écriture 600 + 30 + 5 s'affiche sous la cale. Un filet montre toujours 10 poissons (2 rangées de 5). Pourrait remplacer le dénombrement prévu (limité à 40 objets).
+
+**Le banc de poissons** (encadrer, intercaler, comparer, « compris entre »). Une portion de ligne bornée par deux bouées (340 et 350) ; des poissons portant un nombre arrivent en nageant ; l'enfant fait glisser chacun dans la bonne zone : avant, entre, après. Dynamique par le mouvement, sans chronomètre. Autres formes : « Entre quelles dizaines est 347 ? » (toucher deux bouées) ; « Donne un nombre compris entre 340 et 350 » (au pavé). « Comparer et ranger » (signes <, >, =, ranger jusqu'à 5 nombres) pourrait y être fusionné.
+
+**Suites et rangs** (le collier de coquillages). Suites : une rangée de coquillages et de perles avec un ou deux trous ; suites répétitives complétées en choisissant un élément (rouge, bleu, bleu, ?), suites de nombres au pavé (5, 10, 15, ? ; 97, 98, 99, ? ; 340, 350, 360, ?) ; à un cran plus difficile, prolonger de deux éléments. Rangs : une file de poissons devant une grotte ; « Touche le 7e poisson » ; « Combien de poissons sont devant le 5e ? » (réponse 4 ; l'erreur classique est 5).
+
+**La table d'addition à consulter** (et plus tard celle de multiplication) : une grille, toucher une case dit et montre le calcul avec l'appui de la famille. Taille à décider (jusqu'à 10 + 10 avec les sommes jusqu'à 30 ?).
+
+## 3. Questions à trancher
+
+- **Les problèmes** : une étape courte de chaque séance (recommandation de conception : un ou deux problèmes par soir, c'est une compétence d'usage) ou un exercice qu'on choisit ?
+- **La banque de problèmes** : chaque phrase lue est fabriquée à l'avance (plafond 80 Mo, 51 Mo utilisés) ; des énoncés à nombres variables multiplieraient les fichiers. Recommandation : une banque fixe de 150 à 200 énoncés rédigés en conception et relus par le parent (quelques Mo de voix).
+- **Les illustrations des problèmes** : 150 à 200 scènes de la vie courante ne sont pas dessinables en code à un coût raisonnable ; Nano Banana, une image fixe par énoncé (ou par contexte réutilisé), dans un style fixé par une image de référence. Point de vigilance : un générateur d'images compte mal (« 3 sachets de 6 » ne sera pas exact) ; l'image montre le contexte, les quantités sont dessinées par l'application (objets à grouper) ou dites par la voix.
+- **Les sommes jusqu'à 30** : les tables d'addition du CE1 vont jusqu'à 9 + 9 = 18 ; au-delà (17 + 8, 21 + 9), c'est du calcul réfléchi (passer la dizaine), déjà en partie au calcul rapide (niveau 7). Proposition : faits jusqu'à 9 + 9 à mémoriser (révision espacée, formes à trou), sommes de 19 à 30 par procédure. À confirmer par le parent.
+- **L'échauffement quand un exercice est choisi** : aujourd'hui il reste, sauf si on le passe. Le garder, le supprimer, ou le réduire ?
+- **Le nombre de crans de difficulté** : quatre crans multiplient les cas à tester (116 combinaisons pour la seule vérification des séquences). En garder quatre, ou passer à trois ?
 - **Le crabe**, prévu comme personnage des problèmes : au vu de ce que le bernard-l'ermite a apporté (rien de pédagogique, avis du parent), le laisser de côté ?
-- **Le « problème du jour »** : une étape fixe de chaque séance (prévu à l'origine) ou un exercice qu'on choisit comme les autres ?
+- **+ 19, + 29, − 9** (programme) : extension peu coûteuse du niveau 6 du calcul rapide (L8 enseigne déjà « + 10 puis un pas en arrière »), aujourd'hui limité à + 9.
 
-## 3. Questions laissées avec une valeur par défaut
+## 4. Questions laissées avec une valeur par défaut
 
 - **Part de la famille en cours pour une petite famille** (lot 3 bis) : avec la limite de 3 passages par fait, les doubles et les presque-doubles n'atteignent pas 80 % de la notion du jour pour une enfant en difficulté (62 % en moyenne, 32 à 41 % au plus bas, en simulation). L'accepter, ou relâcher la limite pour les petites familles ?
 - **Pictogramme « passer l'échauffement »** (lot 3 ter) : une vague franchie par une flèche. L'enfant peut le confondre avec les vagues du sélecteur de difficulté. Autre idée : une flèche qui saute un rocher. À juger sur la tablette.
-- **Ouverture d'une famille par l'échauffement** (lot 3 ter) : une enfant à l'aise atteint les amis de 10 à la 6e séance, pas à la 4e visée. Pour tenir 4 séances : relever la limite de faits nouveaux pour une enfant qui passe tout par la voie rapide, ou assouplir la condition « tous les faits introduits ». Rien n'a été changé.
-- **Variété des tout premiers échauffements** : ils tournent sur 2 ou 3 faits et leurs inverses. Viser 5 réponses différentes changerait l'ordre d'introduction des faits (les deux ordres des termes à la suite).
+- **Ouverture d'une famille par l'échauffement** (lot 3 ter) : une enfant à l'aise atteint les amis de 10 à la 6e séance, pas à la 4e visée. Rien n'a été changé.
+- **Variété des tout premiers échauffements** : ils tournent sur 2 ou 3 faits et leurs inverses.
 - **Débit des musiques** : 64 kbit/s (3,7 Mo) par défaut, ou 48 kbit/s (2,7 Mo) : à l'écoute.
 
-## 4. Idées d'amélioration (non décidées)
-
-**Contenu**
-
-- **Sommes jusqu'à 20** : attendu de CE1, suite directe des additions ; prévu « après maîtrise » mais dans aucun lot.
-- **Géométrie et mesures** (longueurs, masses) : domaines du programme de cycle 2 absents de tout le plan. Choix de départ (l'application vise les trois compétences faibles), à reconsidérer une fois les modules actuels en place.
+## 5. Idées d'amélioration (non décidées)
 
 **Pédagogie et ergonomie** (issues de la relecture extérieure du 27 septembre, non retenues à l'époque)
 
-- **« Je ne sais pas » en deux temps** : une correction courte par défaut, la correction animée complète seulement après une deuxième erreur du même type. Le bouton « passer » existe déjà ; à reconsidérer si l'enfant vit « je ne sais pas » comme une pénalité.
-- **Deux indicateurs de séance** pour le parent : la durée réelle et le nombre de questions « utiles » (une séance de 8 minutes et 20 questions bien choisies peut valoir mieux que 40 questions répétitives).
-- **Récompenses liées à l'effort adapté** plutôt qu'à la difficulté brute : aujourd'hui « très dur » double les étoiles. C'est voulu (inciter à choisir plus dur), mais cela peut pousser à un cran inadapté. À observer.
+- **« Je ne sais pas » en deux temps** : une correction courte par défaut, la correction animée complète seulement après une deuxième erreur du même type.
+- **Deux indicateurs de séance** pour le parent : la durée réelle et le nombre de questions « utiles ».
+- **Récompenses liées à l'effort adapté** plutôt qu'à la difficulté brute : aujourd'hui « très dur » double les étoiles. À observer.
 - **Espace parent regroupé en trois ensembles** : séance et difficulté ; son et interface ; données et maintenance.
 
 **Récompenses**
 
-- **Cartes animées** (idée du parent, 27 septembre) : remplacer la version brillante par une courte vidéo en boucle (6 s). Faisable : WebM (VP9) ou MP4 (H.264) sans son, 3:4 (720 × 960 ou 600 × 800), 24 images/s, 0,3 à 0,8 Mo par carte ; l'image fixe garde son rôle d'affiche et d'album ; une seule vidéo jouée à la fois ; téléchargement à la demande plutôt que tout en cache. Une vidéo générée en 9:16 se recadre en 3:4 en gardant toute la largeur et 75 % de la hauteur. Non décidé.
+- **Cartes animées** (idée du parent, 27 septembre) : remplacer la version brillante par une courte vidéo en boucle (6 s), WebM ou MP4 sans son, 3:4, 0,3 à 0,8 Mo par carte, téléchargée à la demande. Non décidé.
 
-**Graphisme** (projet parallèle, hors de ce fichier) : le récif vivant (mer continue, kit `kit-recif-vivant.zip`), la refonte graphique (PR 24 et 26).
+**Graphisme** (projet parallèle, hors de ce fichier) : le récif vivant, la refonte graphique (PR 24 et 26). Piste notée le 30 septembre, après le constat sur la leçon L10 (rendu daté) : **composition hybride** — les éléments (un poisson, un filet, un chalut, un sac) générés isolément par Nano Banana sur fond uni, détourés, puis **posés et comptés par le code** (le code garantit les quantités exactes, l'image la qualité). C'est la démarche déjà retenue pour le récif vivant.
 
-## 5. À observer avec l'enfant, à vérifier sur la tablette
+## 6. À observer avec l'enfant, à vérifier sur la tablette
 
-- **Écouter** les phrases nouvelles depuis le lot 3, jamais écoutées par une personne : noms des niveaux de « choisir », consignes et corrections du calcul rapide (en particulier les grands nombres, « 99 moins 90 ? »), leçons L7 à L9, « Tu veux passer l'échauffement ? ». Listes dans `docs/archives/BILAN-LOT3.md` (« Textes nouveaux à valider à l'écoute ») et `docs/archives/AVANCEMENT-lots-1-a-3ter.md`.
+- **Écouter** les phrases nouvelles depuis le lot 3, jamais écoutées par une personne : noms des niveaux de « choisir », consignes et corrections du calcul rapide (« 99 moins 90 ? »), leçons L7 à L9, « Tu veux passer l'échauffement ? ». Listes dans `docs/archives/BILAN-LOT3.md` et `docs/archives/AVANCEMENT-lots-1-a-3ter.md`.
 - **Durée réelle** d'une séance, surtout de calcul rapide avec le défi (10,6 min en simulation) ; le niveau 3 du calcul rapide, dont une correction peut montrer jusqu'à 9 ponts.
-- **La leçon L8** revient-elle trop souvent chez une enfant en difficulté (relancée par la difficulté persistante au niveau 6) ?
-- **Le calcul rapide revient rarement** chez une enfant rapide avec « jouer » (la rotation prend l'exercice le moins avancé) : « choisir » ou l'exercice imposé y ramènent.
-- **La pause** : choisir un autre exercice depuis la pause devient-il une façon d'éviter ce qui est difficile ? L'historique le montre (« autre exercice choisi par l'enfant »).
-- **Les aides passables** : les deux triangles jaunes poussent-ils l'enfant à tout passer ? L'historique compte les aides et les corrections passées.
-- **Choisir en un toucher** : l'enfant ne valide-t-elle pas par erreur ? Entend-elle le nom avant l'écran suivant ?
+- **La leçon L8** revient-elle trop souvent chez une enfant en difficulté ?
+- **Le calcul rapide revient rarement** chez une enfant rapide avec « jouer ».
+- **La pause** : choisir un autre exercice depuis la pause devient-il une façon d'éviter ce qui est difficile ?
+- **Les aides passables** : les deux triangles jaunes poussent-ils l'enfant à tout passer ?
+- **Choisir en un toucher** : l'enfant ne valide-t-elle pas par erreur ?
 - **Le défi** : la bulle qui se vide se lit-elle comme un temps ?
-- **Fluidité et mémoire** : jusqu'à 224 Mo de planches décodées (récif ouvert pendant une pause, mesure sur ordinateur) ; 51 Mo de voix à télécharger la première fois. Modèle de la tablette inconnu.
+- **Fluidité et mémoire** : jusqu'à 224 Mo de planches décodées ; 51 Mo de voix à télécharger la première fois. Modèle de la tablette inconnu.
 
-## 6. À demander, à préparer
+## 7. À demander, à préparer
 
-- **À l'enseignante** : la progression de la classe (centaines, heure, monnaie), pour caler l'ordre des lots ; son vocabulaire (« amis de 10 », « maison des nombres », « mur ») pour l'aligner.
-- **Cartes** : illustrations et anecdotes du grand large **avant début février 2027**, des abysses **avant fin avril 2027** (méthode et prompts dans `docs/JOURNAL-CONCEPTION.md`). Question d'échelle dans le récif pour les très grands animaux (baleines).
+- **À l'enseignante** : la progression de la classe (fractions, soustraction posée et sa méthode, heure, monnaie), pour caler les phases ; son vocabulaire (« amis de 10 », « maison des nombres », « mur ») pour l'aligner.
+- **Cartes** : illustrations et anecdotes du grand large **avant début février 2027**, des abysses **avant fin avril 2027**.
 - **Calendrier scolaire 2027-2028** dans `app/content/calendrier.json`, avant la rentrée 2027.
+- **Vérifier le programme** : la synthèse du programme 2024 transmise par le parent est une reformulation (incohérence sur 1/10) ; vérifier les indicateurs de fluence dans l'annexe 4 officielle avant d'en faire des objectifs chiffrés.

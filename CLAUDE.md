@@ -17,7 +17,7 @@ Application d'entraînement aux mathématiques pour une élève de CE1, utilisé
 | `app/content/` | Tout le contenu éditable, en JSON, séparé du code : niveaux et paramètres de génération, textes lus (consignes, retours d'erreur, scripts des leçons), cartes et anecdotes, seuils et réglages. Un changement de contenu ne doit jamais demander de toucher au moteur. |
 | `art/` | L'**atelier graphique** : le moteur anidoodle (TypeScript, esbuild, Playwright) et les modules de dessin de l'application. Il ne tourne jamais sur la tablette ; il fabrique les images de `app/assets/art/`. |
 | `.claude/skills/anidoodle/` | La compétence anidoodle (copie figée, licence Apache 2.0, voir `VENDORED.txt`). La lire avant tout travail graphique. |
-| `docs/` | `SPEC.md` (contenu pédagogique), `SPEC-LOT2.md` (lot 2), `SPEC-LOT3.md` (lot 3, prévaut sur les précédentes en cas de contradiction), `maquettes/` (références visuelles validées). |
+| `docs/` | `SPEC.md` (la **spécification unique** : ce que fait l'application, modifiée en place à chaque lot), `IDEES.md` (idées et questions ouvertes), `PROMPTS.md` (prompts des sessions), `AVANCEMENT.md`, `ARCHITECTURE.md`, `GUIDE-PARENT.md`, `JOURNAL-CONCEPTION.md` (les raisons des décisions), `maquettes/` (références visuelles validées), `archives/` (anciennes spécifications, prompts, bilans et recettes des lots 1 à 3 ter : les renvois du code vers `docs/SPEC-LOT2.md`, `docs/SPEC-LOT3BIS.md`… y renvoient ; en cas d'écart, `docs/SPEC.md` fait foi). |
 | `tests/` | Tests unitaires (`node --test`) et parcours Playwright. |
 
 ## Direction graphique (validée)
@@ -38,7 +38,7 @@ Budget à tenir sur la tablette : démarrage en moins de 3 s, animation à 30 im
 
 ## Personnages
 
-La pieuvre (mascotte, présente partout) et un personnage guide par module : tortue de mer (ligne graduée, lot 1), bernard-l'ermite (faits d'addition, lot 2), crabe (problèmes, lot 4) ; pas de dauphin : le calcul rapide (lot 3) se contente de la tortue et du petit poisson du mur de corail (décision du parent, `docs/SPEC-LOT3.md`). Chaque personnage est un module de l'atelier, dessiné une fois et seulement posé ensuite (`references/workflows/character-consistency.md`) ; ses gestes sont des boucles fabriquées.
+La pieuvre (mascotte, présente partout) et un personnage guide par module : tortue de mer (ligne graduée, lot 1), bernard-l'ermite (faits d'addition, lot 2), crabe (problèmes, à décider : `docs/IDEES.md`) ; pas de dauphin : le calcul rapide (lot 3) se contente de la tortue et du petit poisson du mur de corail (décision du parent du 27 septembre 2026). Chaque personnage est un module de l'atelier, dessiné une fois et seulement posé ensuite (`references/workflows/character-consistency.md`) ; ses gestes sont des boucles fabriquées.
 
 ## Contraintes techniques de l'application
 
@@ -62,10 +62,10 @@ Chromium est préinstallé dans l'environnement de Claude Code (ne pas lancer `p
 ## Méthode de travail
 
 - Avancer par étapes courtes et vérifiables. Après chaque étape : lancer les tests, faire des captures d'écran avec Playwright, les regarder, corriger ce qui est laid ou illisible avant de continuer.
-- **Recette à chaque étape** (depuis le lot 2) : simulation de séances par profil d'enfant et séance jouée à vitesse réelle (`tests/sim-seances.mjs`, `tests/e2e/recette.mjs`, `tests/e2e/recette-durees.mjs`), critères et mesures dans la demande de fusion ; voir `docs/SPEC-LOT2.md`, section 8.
+- **Recette à chaque étape** (depuis le lot 2) : simulation de séances par profil d'enfant et séance jouée à vitesse réelle (`tests/sim-seances.mjs`, `tests/e2e/recette.mjs`, `tests/e2e/recette-durees.mjs`), `tests/recette-fonctionnelle/b-sequences.mjs --test`, critères et mesures dans la demande de fusion ; voir `docs/SPEC.md`, section 14.
 - Un commit par étape, message en français.
 - La qualité graphique est un critère de réussite : un écran fonctionnel mais pauvre n'est pas terminé.
-- Ne pas simplifier silencieusement le contenu de `docs/SPEC.md` ; signaler tout écart et sa raison.
+- Ne pas simplifier silencieusement le contenu de `docs/SPEC.md` ; signaler tout écart et sa raison. Un lot met `docs/SPEC.md` à jour dans sa propre demande de fusion ; il ne crée pas de nouvelle spécification.
 
 ## Confidentialité
 

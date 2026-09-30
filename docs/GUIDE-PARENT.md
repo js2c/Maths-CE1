@@ -1,6 +1,6 @@
 # Guide du parent
 
-Ce guide explique, sans connaissances techniques, comment mettre l'application en ligne, l'installer sur la tablette et suivre la progression. Il correspond aux lots 1, 1 bis, 2 et 3 (septembre 2026), avec les décisions du 27 et du 28 septembre 2026. Les bilans sont dans `docs/BILAN-LOT2.md` et `docs/BILAN-LOT3.md`. Les nouveautés du lot 3 sont regroupées dans la partie **d bis**.
+Ce guide explique, sans connaissances techniques, comment mettre l'application en ligne, l'installer sur la tablette et suivre la progression. Il correspond aux lots 1, 1 bis, 2 et 3 (septembre 2026), avec les décisions du 27 et du 28 septembre 2026. Les bilans sont dans `docs/archives/BILAN-LOT2.md` et `docs/archives/BILAN-LOT3.md`. Les nouveautés du lot 3 sont regroupées dans la partie **d bis**.
 
 ## a) L'adresse de l'application
 
@@ -104,7 +104,7 @@ Le dépôt est public : l'application et son code sont visibles par tous, mais *
 
 **Les leçons collent à l'exercice.** Une leçon d'additions n'est jouée que pour la famille travaillée : les doubles (L4) pour les doubles, les amis de 10 (L5) pour les amis de 10, la maison (L6) pour les maisons ; les maisons de 8 et 9 rejouent la maison, et les presque-doubles les doubles, seulement si elles n'ont jamais été vues ; le mélange n'en joue aucune. Au moins 80 % des questions portent sur la famille du jour. Pour les presque-doubles, chaque question rappelle le double (« 3 plus 4, c'est 3 plus 3, et encore 1 »).
 
-**La difficulté à l'intérieur du niveau.** Quand l'enfant a choisi son niveau, les vagues du début de séance ne changent plus de niveau : elles rendent **le même niveau** plus facile ou plus exigeant, avec les mêmes étoiles qu'avant (une demi-étoile à « plus facile », deux à « très dur »). Par exemple, pour la ligne de 0 à 100 (niveau 5) : plus facile, les dizaines paires sont écrites ; plus dur, seulement 0 et 100 ; très dur, 0 et 100 et il faut placer le poisson. Pour les additions : plus facile, l'aide est montrée d'emblée ; plus dur, une question sur deux avec un nombre caché (« 3 plus combien, ça fait 7 ? ») ; très dur, toutes. Comme avant, « plus facile » fait réviser sans faire monter de niveau. Avec **jouer**, les vagues gardent leur effet d'avant (un niveau au-dessus ou en dessous du conseillé). Le détail, niveau par niveau, est dans `docs/SPEC-LOT3.md`, section 3.
+**La difficulté à l'intérieur du niveau.** Quand l'enfant a choisi son niveau, les vagues du début de séance ne changent plus de niveau : elles rendent **le même niveau** plus facile ou plus exigeant, avec les mêmes étoiles qu'avant (une demi-étoile à « plus facile », deux à « très dur »). Par exemple, pour la ligne de 0 à 100 (niveau 5) : plus facile, les dizaines paires sont écrites ; plus dur, seulement 0 et 100 ; très dur, 0 et 100 et il faut placer le poisson. Pour les additions : plus facile, l'aide est montrée d'emblée ; plus dur, une question sur deux avec un nombre caché (« 3 plus combien, ça fait 7 ? ») ; très dur, toutes. Comme avant, « plus facile » fait réviser sans faire monter de niveau. Avec **jouer**, les vagues gardent leur effet d'avant (un niveau au-dessus ou en dessous du conseillé). Le détail, niveau par niveau, est dans `docs/archives/SPEC-LOT3.md`, section 3.
 
 **Les sauvegardes de test (pour essayer, pas pour l'enfant).** Pour voir à quoi ressemble l'application après un mois ou trois mois d'usage, ou avec une enfant en difficulté, sans attendre : sur un ordinateur où le dépôt est installé, lancer par exemple
 
@@ -236,7 +236,7 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 - les deux exemples guidés montrés par la tortue avant les questions, et le déroulé exact des leçons L1 à L3 ;
 - la liste des 15 cartes du lagon et leurs anecdotes, à relire (fichier `app/content/cartes.json`) ;
 - les règles de la série (5 étoiles toutes les 3 séances, jamais de remise à zéro) et de l'étoile dorée ;
-- lot 1 bis (détail dans `docs/BILAN-LOT1BIS.md`) : le coquillage à 25 étoiles au lieu de 40, les phrases des zones fermées de l'album, les nouvelles phrases (reprise, « Encore ! », album), et le fait qu'une leçon passée soit suivie de son exercice guidé.
+- lot 1 bis (détail dans `docs/archives/BILAN-LOT1BIS.md`) : le coquillage à 25 étoiles au lieu de 40, les phrases des zones fermées de l'album, les nouvelles phrases (reprise, « Encore ! », album), et le fait qu'une leçon passée soit suivie de son exercice guidé.
 
 **Défauts connus, sans gravité.**
 

@@ -1,6 +1,6 @@
 # Lot 2 — spécification
 
-Version du 27 septembre 2026, rédigée en conception après la recette du lot 1 bis et les décisions du parent du même jour. Ce document complète `docs/SPEC.md` et reprend la partie A de `docs/SPEC-COMPLEMENTS.md` (nombres jusqu'à 1 000). **En cas de contradiction, ce document prévaut.** Le prompt est dans `docs/PROMPT-LOT2.md`.
+Version du 27 septembre 2026, rédigée en conception après la recette du lot 1 bis et les décisions du parent du même jour. Ce document complète `docs/SPEC.md` et reprend la partie A de `docs/archives/SPEC-COMPLEMENTS.md` (nombres jusqu'à 1 000). **En cas de contradiction, ce document prévaut.** Le prompt est dans `docs/archives/PROMPT-LOT2.md`.
 
 ## 1. Pourquoi ce lot : ce que la recette a montré
 
@@ -108,7 +108,7 @@ Selon la SPEC : 1 minute, faits en boîte 3 ou plus seulement, pavé numérique,
 
 - **Voie rapide** : elle doit pouvoir faire franchir **plusieurs niveaux dans une même séance** (avec la leçon d'entrée du niveau quand elle existe). À vérifier et corriger si ce n'est pas le cas.
 - **Leçon relancée au plus une fois par séance** (même leçon). Si la difficulté persiste ensuite : les questions suivantes de la séance sont prises au niveau inférieur, et la prochaine erreur est corrigée à vitesse 1 (plus lente) au lieu de relancer la leçon.
-- **Nombres jusqu'à 1 000** : niveaux 9 à 13, format « écrire » (dictée au pavé numérique), erreurs E6 et E7, chalut de 100 dans l'atelier, leçon L10 : **tout ce qui est décrit dans `docs/SPEC-COMPLEMENTS.md`, partie A**. Ouverture quand le niveau 8 est acquis, ou par le « point de départ » du parent.
+- **Nombres jusqu'à 1 000** : niveaux 9 à 13, format « écrire » (dictée au pavé numérique), erreurs E6 et E7, chalut de 100 dans l'atelier, leçon L10 : **tout ce qui est décrit dans `docs/archives/SPEC-COMPLEMENTS.md`, partie A**. Ouverture quand le niveau 8 est acquis, ou par le « point de départ » du parent.
 - **Voix des grands nombres (contrainte réelle)** : aujourd'hui, les phrases qui contiennent un nombre sont fabriquées pour chaque valeur de 0 à 100. Les étendre à 1 000 pour chaque type de phrase coûterait environ 5 000 phrases et 25 à 30 Mo de plus, au-dessus du plafond actuel de 15 Mo (la voix en fait déjà 9,4). Règle : fabriquer **seulement les valeurs que les générateurs des niveaux 9 à 13 peuvent produire**, et porter le plafond du test à **40 Mo**. Si l'estimation dépasse encore 40 Mo, s'arrêter et le signaler avant de fabriquer (solution de repli à faire valider par le parent : une phrase courte suivie du nombre seul, dans un second fichier).
 - **Tortue devant la pieuvre** : la tortue, les arcs numérotés et les filets de bulles des retours (E1 à E5) ne passent jamais derrière la pieuvre. Soit la pieuvre s'écarte ou remonte pendant ces animations (comme pendant les leçons), soit la tortue et le calque d'effets passent au-dessus d'elle ; au choix, à vérifier sur capture.
 - **La pieuvre montre la cible** : le geste « montrer » vise la cible de la question (au moins trois orientations : bas, bas-droite, droite).

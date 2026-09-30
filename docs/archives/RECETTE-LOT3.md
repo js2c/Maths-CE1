@@ -1,6 +1,6 @@
 # Recette fonctionnelle du lot 3 : rapport du relecteur
 
-Session 2 de `docs/PROMPT-RECETTE-LOT3.md`, le 28 septembre 2026. Matériel jugé : `tests/recette-fonctionnelle/out/` (planches A, séquences B, journal C, séances D ; voir `INDEX.md`). Les chemins des planches et des fichiers sont relatifs à ce dossier. Phase 1 menée sans lire les spécifications, le journal ni le code ; la qualification (phase 2) a été ajoutée ensuite, d'après `docs/SPEC.md`, `docs/SPEC-LOT2.md` et `docs/SPEC-LOT3.md`. Rien n'a été corrigé.
+Session 2 de `docs/archives/PROMPT-RECETTE-LOT3.md`, le 28 septembre 2026. Matériel jugé : `tests/recette-fonctionnelle/out/` (planches A, séquences B, journal C, séances D ; voir `INDEX.md`). Les chemins des planches et des fichiers sont relatifs à ce dossier. Phase 1 menée sans lire les spécifications, le journal ni le code ; la qualification (phase 2) a été ajoutée ensuite, d'après `docs/SPEC.md`, `docs/archives/SPEC-LOT2.md` et `docs/archives/SPEC-LOT3.md`. Rien n'a été corrigé.
 
 Légende de la qualification : **spécification** = conforme, mais mauvais pour l'enfant ; **réalisation** = non conforme ; **question** = la spécification ne tranche pas.
 
@@ -25,7 +25,7 @@ Légende de la qualification : **spécification** = conforme, mais mauvais pour 
 - **Personne** : l'enfant.
 - **Observé** : à la forme directe, « 2 + 8 = ? », « 7 + 3 = ? », « 4 + 6 = ? »… ont toutes pour réponse 10 ; aux maisons de 8 et 9, toutes les réponses valent 8 ou 9.
 - **Pourquoi c'est un problème** : elle repère très bien une réponse qui revient toujours. Après deux questions, elle tape « 10 » sans regarder, gagne ses étoiles, et la famille est validée (étoile arc-en-ciel) sans qu'elle ait appris un seul complément à 10. C'est l'inverse de la compétence visée (« 3 + ? = 10 »).
-- **Qualification** : **spécification**. `docs/SPEC.md` (module 2) ouvre les formes à trou seulement « quand la forme directe d'un groupe est acquise », et `docs/SPEC-LOT3.md` §3 limite « plus facile » aux formes directes ; pour une famille à somme fixe, la forme directe n'a qu'une seule réponse.
+- **Qualification** : **spécification**. `docs/SPEC.md` (module 2) ouvre les formes à trou seulement « quand la forme directe d'un groupe est acquise », et `docs/archives/SPEC-LOT3.md` §3 limite « plus facile » aux formes directes ; pour une famille à somme fixe, la forme directe n'a qu'une seule réponse.
 - **Piste** : pour les amis de 10 et les maisons, poser d'emblée les formes à trou (ou mêler des sommes différentes), et ne compter pour l'acquisition que les réponses à des questions dont la réponse varie.
 
 ### R2 · Calcul rapide « très dur » : la même réponse à chaque question
@@ -34,7 +34,7 @@ Légende de la qualification : **spécification** = conforme, mais mauvais pour 
 - **Personne** : l'enfant.
 - **Observé** : la forme à trou d'une procédure à pas fixe a une réponse fixe (le pas). Le niveau est validé à la 5e question (« MONTÉE (niveau 2 acquis) ; étoile arc-en-ciel »), et chaque bonne réponse rapporte 2 étoiles (cran × 2) : jusqu'à 99 à 114 étoiles par séance.
 - **Pourquoi c'est un problème** : le cran présenté comme le plus exigeant devient le plus facile et le plus payant ; elle le choisira pour les étoiles, tapera « 10 » ou « 9 » sans calculer, et le niveau sera validé sans travail.
-- **Qualification** : **spécification**. `docs/SPEC-LOT3.md` §6 : « très dur = sans chemin et formes à trou […] aux niveaux où la forme à trou a un sens (1 à 8) » ; aux niveaux 1, 2 (et 3 en partie) et 6, elle n'en a pas.
+- **Qualification** : **spécification**. `docs/archives/SPEC-LOT3.md` §6 : « très dur = sans chemin et formes à trou […] aux niveaux où la forme à trou a un sens (1 à 8) » ; aux niveaux 1, 2 (et 3 en partie) et 6, elle n'en a pas.
 - **Piste** : aux niveaux à pas fixe, remplacer la forme à trou par le trou sur le nombre de départ (« ? + 10 = 57 ») ou par un mélange avec les niveaux acquis.
 
 ### R3 · Ligne graduée « plus facile » : 4 questions qui reviennent en boucle
@@ -43,7 +43,7 @@ Légende de la qualification : **spécification** = conforme, mais mauvais pour 
 - **Personne** : l'enfant.
 - **Observé** : au cran « plus facile », presque toutes les graduations sont écrites (0, 2, 4, 5, 6, 8, 10) ; il ne reste que 4 cibles possibles, et les questions tournent dans le même ordre avec les mêmes propositions.
 - **Pourquoi c'est un problème** : dès le deuxième tour, elle répond de mémoire (« l'étoile juste avant 10, c'est 9 ») ; la séance ne travaille plus la lecture de la ligne.
-- **Qualification** : **spécification** pour le petit nombre de cibles (`docs/SPEC-LOT3.md` §3, tableau : « aussi 2, 4, 6, 8 écrits », « plus les dizaines paires », « aussi 200, 400, 600, 800 ») ; **réalisation** pour la boucle strictement répétée, contraire à `docs/SPEC.md`, module 1 : « Les exercices sont tirés au hasard […] Ainsi, elle ne peut pas apprendre les réponses par cœur. »
+- **Qualification** : **spécification** pour le petit nombre de cibles (`docs/archives/SPEC-LOT3.md` §3, tableau : « aussi 2, 4, 6, 8 écrits », « plus les dizaines paires », « aussi 200, 400, 600, 800 ») ; **réalisation** pour la boucle strictement répétée, contraire à `docs/SPEC.md`, module 1 : « Les exercices sont tirés au hasard […] Ainsi, elle ne peut pas apprendre les réponses par cœur. »
 - **Piste** : au cran « plus facile », écrire un repère de plus sans vider les cibles (par exemple seulement 5 au niveau 2), et tirer les cibles au hasard avec des propositions renouvelées.
 
 ## 3. Constats gênants
@@ -72,7 +72,7 @@ Légende de la qualification : **spécification** = conforme, mais mauvais pour 
 - **Personne** : l'enfant.
 - **Observé** : l'aide du coquillage fait apparaître un chemin de cailloux (« − 10 », « + 10 − 1 ») sans un mot ; le mur de corail et le petit poisson, annoncés par la voix et vus en leçon L7, n'apparaissent qu'aux corrections.
 - **Pourquoi c'est un problème** : elle ne lit pas « + 10 » écrit en petit sous la bulle ; sans voix, l'aide ne lui dit pas quoi faire. La promesse « le petit poisson va t'aider » n'est pas tenue, et le lien avec la leçon L7 se perd.
-- **Qualification** : **réalisation** pour le mur (`docs/SPEC-LOT3.md` §6 : « le mur est composé une fois par question dans un canvas mis en cache, comme la ligne ») ; **question** pour la voix de l'aide (la spécification ne dit pas ce que dit l'aide du chemin).
+- **Qualification** : **réalisation** pour le mur (`docs/archives/SPEC-LOT3.md` §6 : « le mur est composé une fois par question dans un canvas mis en cache, comme la ligne ») ; **question** pour la voix de l'aide (la spécification ne dit pas ce que dit l'aide du chemin).
 - **Piste** : aux niveaux du mur, montrer le mur et le poisson à l'aide, et faire dire le premier pas (« Plus dix : le poisson descend d'une rangée »).
 
 ### R7 · Calcul rapide : corrections sans « pourquoi »
@@ -99,7 +99,7 @@ Légende de la qualification : **spécification** = conforme, mais mauvais pour 
 - **Personne** : l'enfant, et le parent qui a choisi « mélange ».
 - **Observé** : sur une base neuve, le mélange ne contient que les « + 1 » ; les questions tournent dans un cycle de trois.
 - **Pourquoi c'est un problème** : 40 fois « 1 + 1, 2 + 1, 1 + 2 » : elle s'ennuie et répond par le motif ; le parent a demandé un mélange et obtient autre chose.
-- **Qualification** : **réalisation** pour la répétition (`docs/SPEC-LOT2.md` §3 : « Un même fait ne revient pas plus de 3 fois dans la séance ») ; **question** pour le contenu du mélange choisi avant que les familles soient ouvertes (`docs/SPEC-LOT2.md` : « tous les faits introduits » ; `docs/SPEC-LOT3.md` §2 ne dit pas quoi faire pour le mélange).
+- **Qualification** : **réalisation** pour la répétition (`docs/archives/SPEC-LOT2.md` §3 : « Un même fait ne revient pas plus de 3 fois dans la séance ») ; **question** pour le contenu du mélange choisi avant que les familles soient ouvertes (`docs/archives/SPEC-LOT2.md` : « tous les faits introduits » ; `docs/archives/SPEC-LOT3.md` §2 ne dit pas quoi faire pour le mélange).
 - **Piste** : quand le mélange est choisi sur une base neuve, y introduire des faits des familles suivantes (comme pour une famille choisie), et tenir la limite de 3 passages.
 
 ### R10 · Récompenses : répondre au hasard donne les mêmes cartes
@@ -108,7 +108,7 @@ Légende de la qualification : **spécification** = conforme, mais mauvais pour 
 - **Personne** : l'enfant (et le parent qui veut récompenser l'effort).
 - **Observé** : en étoiles, répondre au hasard rapporte 10 à 70 % de ce que rapporte l'application (plus au cran « plus facile ») ; mais les cartes nouvelles sont plafonnées à 2 par semaine, et la « pressée » ouvre un coquillage presque à chaque séance. S'appliquer ne donne que des doublons de plus, sans rien en échange (« Tu avais déjà cette carte »).
 - **Pourquoi c'est un problème** : elle veut des cartes ; elle constate vite qu'elle en a autant en répondant n'importe quoi, et un doublon après une belle séance est une déception.
-- **Qualification** : **spécification** (`docs/SPEC-LOT2.md` §5 : quota de 2 cartes nouvelles par semaine, prix à 25 étoiles ; `docs/SPEC.md` : 10 étoiles pour une séance terminée).
+- **Qualification** : **spécification** (`docs/archives/SPEC-LOT2.md` §5 : quota de 2 cartes nouvelles par semaine, prix à 25 étoiles ; `docs/SPEC.md` : 10 étoiles pour une séance terminée).
 - **Piste** : réserver la carte nouvelle aux séances où les bonnes réponses dépassent un seuil, ou donner au doublon une contrepartie visible (perle, décor, pas vers une brillante).
 
 ### R11 · Toucher pendant le retour, toucher double, appui long
@@ -135,7 +135,7 @@ Légende de la qualification : **spécification** = conforme, mais mauvais pour 
 - **Personne** : l'enfant.
 - **Observé** : quand plusieurs niveaux sont franchis dans la séance (voie rapide), chaque étoile arc-en-ciel a sa phrase ; l'enfant attend 30 à 45 s avec seulement « réécouter ». Ces étoiles ne sont montrées nulle part.
 - **Pourquoi c'est un problème** : c'est le moment qu'elle attend (la carte) ; six fois la même phrase sur une chose qu'elle ne voit pas, c'est là qu'une enfant de 7 ans décroche ou tapote partout.
-- **Qualification** : **question** (la cérémonie de l'étoile arc-en-ciel n'est décrite qu'à l'ouverture d'une zone, `docs/SPEC-LOT2.md` §5 ; les critères d'attente de `docs/SPEC-LOT2.md` §8 excluent la voix).
+- **Qualification** : **question** (la cérémonie de l'étoile arc-en-ciel n'est décrite qu'à l'ouverture d'une zone, `docs/archives/SPEC-LOT2.md` §5 ; les critères d'attente de `docs/archives/SPEC-LOT2.md` §8 excluent la voix).
 - **Piste** : une seule phrase au pluriel (« Trois étoiles arc-en-ciel ! ») avec les étoiles dessinées qui volent vers l'album, et le coquillage à toucher tout de suite.
 
 ### R14 · Fin du défi record : rien n'est dit ni montré
@@ -144,7 +144,7 @@ Légende de la qualification : **spécification** = conforme, mais mauvais pour 
 - **Personne** : l'enfant.
 - **Observé** : quand la bulle est vide, l'écran garde une question et le pavé ; aucune phrase ne dit le score ni si le drapeau est dépassé.
 - **Pourquoi c'est un problème** : elle ne sait pas que le défi est fini, continue à taper, et ne sait pas si elle a battu son record, qui est tout l'intérêt du défi.
-- **Qualification** : **question** (`docs/SPEC.md` et `docs/SPEC-LOT2.md` §3 décrivent le défi, pas sa fin).
+- **Qualification** : **question** (`docs/SPEC.md` et `docs/archives/SPEC-LOT2.md` §3 décrivent le défi, pas sa fin).
 - **Piste** : ranger le pavé, faire avancer les perles jusqu'au drapeau et dire « Nouveau record ! » ou « Presque ! Tu as fait 9 perles ».
 
 ### R15 · Écran « choisir » : ni l'enfant ni le parent ne savent ce que montre une tuile
@@ -153,7 +153,7 @@ Légende de la qualification : **spécification** = conforme, mais mauvais pour 
 - **Personne** : le parent surtout, l'enfant aussi.
 - **Observé** : 13 tuiles de ligne graduée à dessins minuscules (« 30 ? 40 », « 0 ? 1000 ») ; 7 familles d'additions en vignettes (poissons, maison 7, maison 9) ; 9 calculs écrits (« 34+5 », « 38+5 », « 34+9 », très proches). La lueur du conseillé est à peine visible, les petites étoiles des niveaux validés débordent sur les tuiles voisines. Avec la validation simple, le premier toucher dit le nom **et** lance le niveau : pas moyen d'écouter avant de choisir.
 - **Pourquoi c'est un problème** : à « qu'est-ce que je choisis ? », le parent ne peut pas répondre en dix secondes sans ouvrir l'espace parent ; à « ça veut dire quoi, 38 + 5 ? », il n'a rien. Un essai pour écouter lance une séance.
-- **Qualification** : **spécification** (validation simple décidée le 28 septembre, `docs/SPEC-LOT3.md` §8) ; **réalisation** pour la lueur du conseillé, trop faible pour être vue (`docs/SPEC-LOT3.md` §2 : « entouré d'une lueur »).
+- **Qualification** : **spécification** (validation simple décidée le 28 septembre, `docs/archives/SPEC-LOT3.md` §8) ; **réalisation** pour la lueur du conseillé, trop faible pour être vue (`docs/archives/SPEC-LOT3.md` §2 : « entouré d'une lueur »).
 - **Piste** : un toucher dit le nom et agrandit la tuile, la coche valide ; une lueur plus franche sur le conseillé ; un guide d'une page pour le parent (« 38 + 5 : passer la dizaine »).
 
 ### R16 · Ligne graduée « placer » : le nombre cible ressemble à une bulle-réponse
@@ -189,7 +189,7 @@ Légende de la qualification : **spécification** = conforme, mais mauvais pour 
 - **Personne** : le parent.
 - **Observé** : sigles et vocabulaire internes ; la plupart des erreurs d'additions et de calcul tombent dans « autre erreur » ; « acquise » avec 67 % des faits bien sus, alors que la règle affichée dit 80 %.
 - **Pourquoi c'est un problème** : le parent n'est pas technicien ; il ne peut pas en tirer « ce qu'elle doit revoir ».
-- **Qualification** : **réalisation** pour « SPEC » et « l'une des deux » (`CLAUDE.md` du projet : instructions en français simple) ; **spécification** pour « autre erreur » (aucun type d'erreur n'est prévu pour les additions) ; **question** pour « acquise » (acquisition définitive, `docs/SPEC-LOT2.md` §3, sans que l'écran l'explique).
+- **Qualification** : **réalisation** pour « SPEC » et « l'une des deux » (`CLAUDE.md` du projet : instructions en français simple) ; **spécification** pour « autre erreur » (aucun type d'erreur n'est prévu pour les additions) ; **question** pour « acquise » (acquisition définitive, `docs/archives/SPEC-LOT2.md` §3, sans que l'écran l'explique).
 - **Piste** : des phrases (« se trompe d'une unité », « compte au lieu de savoir »), et « acquise le 17/09 (depuis, 20 sur 30) ».
 
 ## 4. Constats cosmétiques
@@ -212,7 +212,7 @@ Légende de la qualification : **spécification** = conforme, mais mauvais pour 
 ### R23 · Deux choses qui se ressemblent
 
 - Le « ? » rouge de la question et le « ? » du bouton « je ne sais pas » (`A01-accueil-02.jpg` n° 6) ; le coquillage d'aide et le coquillage de la récompense (`A03-questions-04.jpg` n° 16, `A08-recompense-01.jpg` n° 2) ; les onglets de zone de l'album, dessinés comme des cartes (`A09-recif-album-01.jpg` n° 2) ; la demi-étoile du cran « plus facile », qui se lit comme une étoile vide (`A01-accueil-01.jpg` n° 4) ; « rejouer la leçon » à la place du bouton « je ne sais pas » (`A06-lecon-L1-01.jpg`).
-- **Qualification** : **question** (non décrit), sauf les étoiles du sélecteur (**spécification**, `docs/SPEC-LOT2.md` §2).
+- **Qualification** : **question** (non décrit), sauf les étoiles du sélecteur (**spécification**, `docs/archives/SPEC-LOT2.md` §2).
 
 ### R24 · Le compteur d'étoiles baisse sous ses yeux
 

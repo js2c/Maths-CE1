@@ -1,6 +1,6 @@
 # Bilan du lot 2 — séance, cartes, son, module 2, nombres jusqu'à 1 000
 
-Lot décidé le 27 septembre 2026 après la recette du lot 1 bis (spécification : `docs/SPEC-LOT2.md` ; prompt : `docs/PROMPT-LOT2.md`). Neuf étapes, du 27 septembre 2026, en quatre demandes de fusion : étapes 1 (PR #11), 2 (PR #13), 3 (PR #14), 4 à 6 (PR #16), 7 à 9 (PR #17). Le détail de chaque étape (décisions prises, écarts, recettes allégées) est dans `docs/AVANCEMENT.md`.
+Lot décidé le 27 septembre 2026 après la recette du lot 1 bis (spécification : `docs/archives/SPEC-LOT2.md` ; prompt : `docs/archives/PROMPT-LOT2.md`). Neuf étapes, du 27 septembre 2026, en quatre demandes de fusion : étapes 1 (PR #11), 2 (PR #13), 3 (PR #14), 4 à 6 (PR #16), 7 à 9 (PR #17). Le détail de chaque étape (décisions prises, écarts, recettes allégées) est dans `docs/AVANCEMENT.md`.
 
 ## Ce qui est fait
 

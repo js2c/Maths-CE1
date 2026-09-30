@@ -1,6 +1,6 @@
 # Lot 3 bis : correctif issu de la recette fonctionnelle
 
-Rédigé en conception le 28 septembre 2026, à partir du rapport de la recette fonctionnelle (`docs/RECETTE-LOT3.md`, constats R1 à R25), des essais du parent et de ses décisions du même jour (`docs/JOURNAL-CONCEPTION.md`, « Décisions prises »). Cette spécification **prévaut** sur `docs/SPEC.md`, `docs/SPEC-LOT2.md`, `docs/SPEC-LOT3.md` et `docs/SPEC-COMPLEMENTS.md` en cas de contradiction.
+Rédigé en conception le 28 septembre 2026, à partir du rapport de la recette fonctionnelle (`docs/archives/RECETTE-LOT3.md`, constats R1 à R25), des essais du parent et de ses décisions du même jour (`docs/JOURNAL-CONCEPTION.md`, « Décisions prises »). Cette spécification **prévaut** sur `docs/SPEC.md`, `docs/archives/SPEC-LOT2.md`, `docs/archives/SPEC-LOT3.md` et `docs/archives/SPEC-COMPLEMENTS.md` en cas de contradiction.
 
 Chaque point renvoie au constat du rapport (R…). Le rapport donne les planches et les séquences qui le montrent. Les points marqués **(décision du parent)** ne se rediscutent pas. Les autres ont une valeur par défaut que Claude Code peut ajuster s'ils rendent un exercice infaisable, en le notant dans `docs/AVANCEMENT.md` avec la raison.
 
@@ -13,7 +13,7 @@ La recette a montré qu'un exercice peut être conforme et ne rien faire travail
 - dans la notion du jour, la réponse attendue prend **au moins 5 valeurs différentes** sur une séance, ou toutes les valeurs possibles du niveau s'il y en a moins (et alors le niveau doit être revu) ;
 - **jamais plus de 2 fois de suite la même réponse** ;
 - **pas de suite prévisible de plus de 3 questions** (réponses qui avancent d'un même pas, cibles dans le même ordre qu'au tour précédent) ;
-- un même fait ou une même question ne revient **pas plus de 3 fois** dans la séance (règle existante de `docs/SPEC-LOT2.md` §3, étendue aux trois modules).
+- un même fait ou une même question ne revient **pas plus de 3 fois** dans la séance (règle existante de `docs/archives/SPEC-LOT2.md` §3, étendue aux trois modules).
 
 **Test automatique** : l'outil de séquences de la recette (`tests/recette-fonctionnelle/b-sequences.mjs`) devient un test de la recette de chaque lot. Il vérifie ces quatre règles sur les 116 combinaisons exercice × niveau (ou famille) × cran, en base neuve et en base « un mois », pour les comportements « appliquée » et « réelle ».
 
@@ -23,7 +23,7 @@ La recette a montré qu'un exercice peut être conforme et ne rien faire travail
 
 ### A1. Amis de 10 et maisons des nombres (R1)
 
-Les familles définies par leur résultat (3 : amis de 10 ; 4 : maisons de 5 à 7 ; 5 : maisons de 8 et 9) ne passent plus par la forme directe d'abord. Ce point **remplace**, pour ces trois familles, la règle « formes à trou ouvertes quand la forme directe est acquise » (`docs/SPEC.md`, module 2) et le tableau des crans des additions (`docs/SPEC-LOT3.md` §3).
+Les familles définies par leur résultat (3 : amis de 10 ; 4 : maisons de 5 à 7 ; 5 : maisons de 8 et 9) ne passent plus par la forme directe d'abord. Ce point **remplace**, pour ces trois familles, la règle « formes à trou ouvertes quand la forme directe est acquise » (`docs/SPEC.md`, module 2) et le tableau des crans des additions (`docs/archives/SPEC-LOT3.md` §3).
 
 | Famille | Plus facile | Conseillé | Plus dur | Très dur |
 | --- | --- | --- | --- | --- |
@@ -60,7 +60,7 @@ Aux niveaux 4, 5, 7, 8 et 9, la forme à trou sur le second nombre reste possibl
 | 5 · 0 à 100 de 10 en 10 | 0, 50, 100, et aussi 20 et 80 |
 | 9 · 0 à 1 000 de 100 en 100 | 0, 500, 1 000, et aussi 200 et 800 |
 
-Vérifier les autres cases du tableau de `docs/SPEC-LOT3.md` §3 avec la règle du §0, et les corriger de la même manière si besoin.
+Vérifier les autres cases du tableau de `docs/archives/SPEC-LOT3.md` §3 avec la règle du §0, et les corriger de la même manière si besoin.
 
 **Tirage des cibles** (défaut de réalisation, R3) : les cibles sont tirées au hasard **sans remise** parmi les cibles possibles. Quand elles sont épuisées, on recommence dans un nouvel ordre, sans que la première du nouveau tour soit la dernière du précédent. Les propositions pièges sont reconstruites à chaque question. Le principe est celui de `docs/SPEC.md`, module 1 : elle ne doit pas pouvoir apprendre les réponses par cœur.
 
@@ -224,7 +224,7 @@ Tout est dessiné dans l'atelier, en style A, craft bar du projet, et regardé �
   - les onglets de zone de l'album ne ressemblent plus à des cartes ;
   - « rejouer la leçon » n'occupe pas la place de « je ne sais pas ».
   
-  Les étoiles du sélecteur (demi-étoile du cran « plus facile ») sont inchangées : c'est un choix de `docs/SPEC-LOT2.md`.
+  Les étoiles du sélecteur (demi-étoile du cran « plus facile ») sont inchangées : c'est un choix de `docs/archives/SPEC-LOT2.md`.
 - **Compteur d'étoiles** (R24) : à l'échange contre un coquillage, les étoiles **volent** du compteur vers le coquillage au lieu de disparaître d'un coup.
 
 ### B12. Guide du parent
@@ -240,7 +240,7 @@ Tout est dessiné dans l'atelier, en style A, craft bar du projet, et regardé �
 
 ## Recette du lot 3 bis
 
-Mêmes outils que les lots précédents (`docs/SPEC-LOT2.md` §8, `docs/SPEC-LOT3.md` §7), plus ces critères.
+Mêmes outils que les lots précédents (`docs/archives/SPEC-LOT2.md` §8, `docs/archives/SPEC-LOT3.md` §7), plus ces critères.
 
 | Critère | Mesure |
 | --- | --- |
@@ -257,5 +257,5 @@ Mêmes outils que les lots précédents (`docs/SPEC-LOT2.md` §8, `docs/SPEC-LOT
 | Non-régression | ce que le rapport range dans « Ce qui fonctionne bien » (§5) est intact |
 
 **Recette fonctionnelle de contrôle**, à la fin du lot :
-- relancer les parties B et C de la recette fonctionnelle (`docs/PROMPT-RECETTE-LOT3.md`, session 1), et refaire les planches des écrans modifiés ;
-- puis une **session relecteur limitée**, dont le prompt est dans `docs/PROMPT-LOT3BIS.md`, vérifie chaque constat R1 à R25 et cherche les régressions.
+- relancer les parties B et C de la recette fonctionnelle (`docs/archives/PROMPT-RECETTE-LOT3.md`, session 1), et refaire les planches des écrans modifiés ;
+- puis une **session relecteur limitée**, dont le prompt est dans `docs/archives/PROMPT-LOT3BIS.md`, vérifie chaque constat R1 à R25 et cherche les régressions.

@@ -1,6 +1,6 @@
 # Prompt du lot 3 bis (à coller dans Claude Code)
 
-Spécification : `docs/SPEC-LOT3BIS.md`. Elle prévaut sur `docs/SPEC.md`, `docs/SPEC-LOT2.md`, `docs/SPEC-LOT3.md` et `docs/SPEC-COMPLEMENTS.md` en cas de contradiction. Rapport de recette qui la motive : `docs/RECETTE-LOT3.md`. Rédigé en conception le 28 septembre 2026.
+Spécification : `docs/archives/SPEC-LOT3BIS.md`. Elle prévaut sur `docs/SPEC.md`, `docs/archives/SPEC-LOT2.md`, `docs/archives/SPEC-LOT3.md` et `docs/archives/SPEC-COMPLEMENTS.md` en cas de contradiction. Rapport de recette qui la motive : `docs/archives/RECETTE-LOT3.md`. Rédigé en conception le 28 septembre 2026.
 
 ## Comment s'en servir
 
@@ -11,7 +11,7 @@ Spécification : `docs/SPEC-LOT3BIS.md`. Elle prévaut sur `docs/SPEC.md`, `docs
 - Chaque partie s'enchaîne dans une session, avec le prompt « enchaîner » ci-dessous (réflexion « élevé »). Si la session s'arrête d'elle-même, la relancer avec le prompt de reprise.
 - À la fin : une **session relecteur limitée**, distincte (prompt en bas de ce fichier).
 
-| Étape | Partie | Contenu (`docs/SPEC-LOT3BIS.md`) | Réflexion | Coût estimé |
+| Étape | Partie | Contenu (`docs/archives/SPEC-LOT3BIS.md`) | Réflexion | Coût estimé |
 | --- | --- | --- | --- | --- |
 | 1 | A | §0 (réponse qui varie : règles et test sur les 116 combinaisons) ; A1 (amis de 10 et maisons, faits tirés au hasard, acquisition) ; A2 (calcul rapide « très dur ») ; A4 (mélange) | élevé | 10 à 18 $ |
 | 2 | A | A3 (ligne : « plus facile », tirage sans remise, niveau 1, L3) ; A5 (toucher et reprise) ; A6 (décors : logique et voix, dessin provisoire) ; recette de la partie A | élevé | 10 à 17 $ |
@@ -26,9 +26,9 @@ Total estimé : **55 à 95 $**, relecteur compris, avec une incertitude d'enviro
 
 ## Prompt pour enchaîner les étapes N à M
 
-Lis CLAUDE.md, docs/SPEC.md, docs/SPEC-LOT2.md, docs/SPEC-LOT3.md, docs/SPEC-LOT3BIS.md (elle prévaut en cas de contradiction), docs/RECETTE-LOT3.md, docs/ARCHITECTURE.md et docs/AVANCEMENT.md. Réalise **les étapes N à M du lot 3 bis, dans l'ordre, sans t'arrêter entre elles**, telles que décrites dans le tableau de docs/PROMPT-LOT3BIS.md et détaillées dans docs/SPEC-LOT3BIS.md.
+Lis CLAUDE.md, docs/SPEC.md, docs/archives/SPEC-LOT2.md, docs/archives/SPEC-LOT3.md, docs/archives/SPEC-LOT3BIS.md (elle prévaut en cas de contradiction), docs/archives/RECETTE-LOT3.md, docs/ARCHITECTURE.md et docs/AVANCEMENT.md. Réalise **les étapes N à M du lot 3 bis, dans l'ordre, sans t'arrêter entre elles**, telles que décrites dans le tableau de docs/archives/PROMPT-LOT3BIS.md et détaillées dans docs/archives/SPEC-LOT3BIS.md.
 
-**Le sens du lot.** Chaque point corrige un constat de docs/RECETTE-LOT3.md (R1 à R25). Avant de considérer un point comme fait, regarde la planche ou la séquence du rapport qui le montrait, et vérifie avec le même outil que le problème a disparu **du point de vue de l'enfant**, pas seulement que le code suit la spécification. Ne casse rien de ce que le rapport range dans « Ce qui fonctionne bien » (§5).
+**Le sens du lot.** Chaque point corrige un constat de docs/archives/RECETTE-LOT3.md (R1 à R25). Avant de considérer un point comme fait, regarde la planche ou la séquence du rapport qui le montrait, et vérifie avec le même outil que le problème a disparu **du point de vue de l'enfant**, pas seulement que le code suit la spécification. Ne casse rien de ce que le rapport range dans « Ce qui fonctionne bien » (§5).
 
 **Méthode**
 
@@ -55,13 +55,13 @@ Lis CLAUDE.md, docs/SPEC.md, docs/SPEC-LOT2.md, docs/SPEC-LOT3.md, docs/SPEC-LOT
   - commit « Lot 3 bis, étape k : … » poussé ;
   - puis passe à l'étape suivante sans attendre.
 - **Arrêt propre.** Si, à la fin d'une étape, le contexte dépasse environ la moitié, ne commence pas la suivante. Pousse tout, mets à jour la rubrique de reprise (« reprendre à l'étape k+1 »), et arrête-toi en le disant.
-- **Décisions manquantes.** Si un point bute sur une question que docs/SPEC-LOT3BIS.md ne tranche pas, prends la valeur par défaut indiquée, note la question dans la demande de fusion et dans docs/AVANCEMENT.md, et continue. S'il n'y a pas de valeur par défaut raisonnable, arrête-toi et pose la question. **Ne touche pas aux décisions du parent** : validation simple à l'écran « choisir », pas de seuil de bonnes réponses pour les cartes, probabilité de brillante d'un doublon à 5 %, pas de règle du 3e doublon.
+- **Décisions manquantes.** Si un point bute sur une question que docs/archives/SPEC-LOT3BIS.md ne tranche pas, prends la valeur par défaut indiquée, note la question dans la demande de fusion et dans docs/AVANCEMENT.md, et continue. S'il n'y a pas de valeur par défaut raisonnable, arrête-toi et pose la question. **Ne touche pas aux décisions du parent** : validation simple à l'écran « choisir », pas de seuil de bonnes réponses pour les cartes, probabilité de brillante d'un doublon à 5 %, pas de règle du 3e doublon.
 - **Recette complète à la fin de l'étape M** :
-  - le tableau « Recette du lot 3 bis » de docs/SPEC-LOT3BIS.md, avec les mesures ;
+  - le tableau « Recette du lot 3 bis » de docs/archives/SPEC-LOT3BIS.md, avec les mesures ;
   - les recettes des lots précédents : `node tests/sim-seances.mjs` (tous les profils, 2 et 5 séances par semaine, sur l'année), `node tests/e2e/recette.mjs --delai 4.5`, `node tests/e2e/recette-durees.mjs` avec et sans `--passer`, et tous les parcours Playwright (un par un s'ils échouent sous la charge) ;
   - les captures, regardées.
   
-  **À la fin de l'étape 5 seulement** : relance les parties B et C de la recette fonctionnelle (docs/PROMPT-RECETTE-LOT3.md, session 1) et refais les planches des écrans modifiés, dans `tests/recette-fonctionnelle/out-lot3bis/`, avec leur `INDEX.md`.
+  **À la fin de l'étape 5 seulement** : relance les parties B et C de la recette fonctionnelle (docs/archives/PROMPT-RECETTE-LOT3.md, session 1) et refais les planches des écrans modifiés, dans `tests/recette-fonctionnelle/out-lot3bis/`, avec leur `INDEX.md`.
 - **À la fin** :
   - complète la description de la demande de fusion : pour chaque constat R traité, ce qui change pour l'enfant et pour le parent ; le tableau de recette ; les questions restées ouvertes ; ce qui reste à vérifier sur la tablette ;
   - retire « (en cours) » du titre et sors la demande de fusion du mode brouillon ;
@@ -69,13 +69,13 @@ Lis CLAUDE.md, docs/SPEC.md, docs/SPEC-LOT2.md, docs/SPEC-LOT3.md, docs/SPEC-LOT
 
 ## Prompt de reprise (enchaînement interrompu)
 
-Reprise des étapes N à M du lot 3 bis, interrompues. Récupère la branche de la demande de fusion en brouillon « Lot 3 bis, étapes N à M (en cours) », lis la rubrique « Reprise des étapes N à M du lot 3 bis » de docs/AVANCEMENT.md sur cette branche, et relance les tests pour vérifier l'état. Continue ensuite là où le travail s'est arrêté, sans refaire ce qui est fait, avec les mêmes règles (section « Prompt pour enchaîner les étapes N à M » de docs/PROMPT-LOT3BIS.md).
+Reprise des étapes N à M du lot 3 bis, interrompues. Récupère la branche de la demande de fusion en brouillon « Lot 3 bis, étapes N à M (en cours) », lis la rubrique « Reprise des étapes N à M du lot 3 bis » de docs/AVANCEMENT.md sur cette branche, et relance les tests pour vérifier l'état. Continue ensuite là où le travail s'est arrêté, sans refaire ce qui est fait, avec les mêmes règles (section « Prompt pour enchaîner les étapes N à M » de docs/archives/PROMPT-LOT3BIS.md).
 
 ---
 
 ## Prompt de la session relecteur limitée (après la fusion de la partie B)
 
-Tu es relecteur d'une application de mathématiques pour une enfant de CE1. Lis la section « Les deux personnes à incarner » de docs/PROMPT-RECETTE-LOT3.md, le rapport docs/RECETTE-LOT3.md, puis `tests/recette-fonctionnelle/out-lot3bis/INDEX.md`.
+Tu es relecteur d'une application de mathématiques pour une enfant de CE1. Lis la section « Les deux personnes à incarner » de docs/archives/PROMPT-RECETTE-LOT3.md, le rapport docs/archives/RECETTE-LOT3.md, puis `tests/recette-fonctionnelle/out-lot3bis/INDEX.md`.
 
 **Ta mission**
 
@@ -85,7 +85,7 @@ Tu es relecteur d'une application de mathématiques pour une enfant de CE1. Lis 
    - **non levé** ;
    
    avec ce que l'enfant voit maintenant, et la planche ou la séquence qui le montre.
-2. Parcours les écrans modifiés avec les dix questions de la grille (docs/PROMPT-RECETTE-LOT3.md, session 2, phase 1), à la recherche de **régressions** et de problèmes nouveaux créés par le correctif : légende, appui long, numéros, décors, nouvelles aides, fins de séquence.
+2. Parcours les écrans modifiés avec les dix questions de la grille (docs/archives/PROMPT-RECETTE-LOT3.md, session 2, phase 1), à la recherche de **régressions** et de problèmes nouveaux créés par le correctif : légende, appui long, numéros, décors, nouvelles aides, fins de séquence.
 3. Vérifie que ce que le rapport rangeait dans « Ce qui fonctionne bien » (§5) l'est toujours.
 
 Écris `docs/RECETTE-LOT3BIS.md` dans cet ordre :

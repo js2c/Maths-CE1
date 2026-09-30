@@ -1,6 +1,6 @@
 # Bilan du lot 1 bis — ergonomie et voix
 
-Lot demandé après le premier essai du lot 1 par le parent (docs/SPEC.md, « Ergonomie et voix (lot 1 bis) » ; prompt : docs/PROMPT-LOT1BIS.md). Quatre étapes, du 26 au 27 septembre 2026, sur la branche `claude/blissful-hamilton-vnwgme`. Le détail de chaque étape est dans docs/AVANCEMENT.md.
+Lot demandé après le premier essai du lot 1 par le parent (docs/SPEC.md, « Ergonomie et voix (lot 1 bis) » ; prompt : docs/archives/PROMPT-LOT1BIS.md). Quatre étapes, du 26 au 27 septembre 2026, sur la branche `claude/blissful-hamilton-vnwgme`. Le détail de chaque étape est dans docs/AVANCEMENT.md.
 
 ## Ce qui est fait
 

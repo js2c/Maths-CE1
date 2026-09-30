@@ -4,7 +4,7 @@
 
 ---
 
-Lis CLAUDE.md, docs/SPEC.md, docs/SPEC-COMPLEMENTS.md et docs/AVANCEMENT.md. Réalise le lot « Compléments » décrit dans docs/SPEC-COMPLEMENTS.md, en réutilisant les mécaniques existantes (générateurs, adaptation, révision espacée, leçons, récompenses) plutôt qu'en les réécrivant.
+Lis CLAUDE.md, docs/SPEC.md, docs/archives/SPEC-COMPLEMENTS.md et docs/AVANCEMENT.md. Réalise le lot « Compléments » décrit dans docs/archives/SPEC-COMPLEMENTS.md, en réutilisant les mécaniques existantes (générateurs, adaptation, révision espacée, leçons, récompenses) plutôt qu'en les réécrivant.
 
 Découpe le lot en étapes et inscris-les dans docs/AVANCEMENT.md avant de commencer :
 1. *(Fait au lot 2, étape 8 : ne pas refaire.)* A · Nombres jusqu'à 1 000 : niveaux 9 à 13 du module 1 (paramètres dans app/content), format « écrire » (dictée), erreurs E6 et E7, chalut de 100 dans l'atelier, leçon L10.
@@ -18,4 +18,4 @@ Règles de travail pour ce lot :
 - Une étape par session. À la fin de chaque étape : mets à jour docs/AVANCEMENT.md, fais le commit, pousse la branche, puis arrête-toi.
 - Vérifications visuelles limitées aux écrans nouveaux (une capture par nouvel écran, un agrandissement des nouveaux dessins) ; pas de vidéo sauf pour les leçons.
 - Tests unitaires pour chaque générateur et chaque détection d'erreur.
-- Signale tout écart avec docs/SPEC-COMPLEMENTS.md et sa raison.
+- Signale tout écart avec docs/archives/SPEC-COMPLEMENTS.md et sa raison.

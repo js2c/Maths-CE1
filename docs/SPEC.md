@@ -21,7 +21,7 @@ Mode d'emploi :
 
 ### L'accueil
 
-Quatre bulles : **jouer**, **choisir**, **le récif**, **l'album**, plus le logo (appui long, espace parent). Après la séance du jour : la lune « à demain » (un décor, pas un bouton), **Encore !**, le récif, l'album.
+Quatre bulles : **jouer**, **choisir**, **le récif**, **l'album**, plus le logo (appui long, espace parent). **(à construire)** Une cinquième bulle, **les leçons**, sort les leçons de l'écran « choisir » (section 3, « Les leçons »). Après la séance du jour : la lune « à demain » (un décor, pas un bouton), **Encore !**, le récif, l'album.
 
 - **jouer** : la séance préparée par l'application (notion du jour choisie par la rotation, section 3).
 - **choisir** : l'enfant, ou le parent pour elle, choisit l'exercice puis le niveau (section 3). L'exercice choisi **est la séance du jour**, avec étoiles, coquillages et cartes.
@@ -63,7 +63,27 @@ Quatre bulles : **jouer**, **choisir**, **le récif**, **l'album**, plus le logo
   - Chaque tuile porte **son numéro en grand** (le parent peut dire « fais le 7 »), avec sa vignette en petit.
   - Le niveau conseillé a un **halo épais et animé** ; un niveau validé porte une petite étoile, à l'intérieur de sa tuile.
   - Aucune tuile coupée par un bord d'écran, ni posée sur la pieuvre ou les algues.
-- **Écran des leçons** : toutes les leçons existantes, vues ou non. Une leçon choisie seule n'est pas une séance : elle se joue, puis revient à l'accueil ; 3 étoiles si elle est regardée jusqu'au bout, une fois par leçon et par jour.
+- **Écran des leçons** (aujourd'hui, quatrième image du premier écran) : toutes les leçons existantes, vues ou non. Une leçon choisie seule n'est pas une séance : elle se joue, puis revient à l'accueil ; 3 étoiles si elle est regardée jusqu'au bout, une fois par leçon et par jour. Les tuiles portent un exemple (« 1 2 3 », « 10 20 », « 100 »…) sans numéro : **incompréhensibles** (constat du parent du 30 septembre), à refaire ci-dessous.
+
+### Les leçons (à construire)
+
+- **Accès** : depuis l'accueil (bulle « les leçons »), plus depuis l'écran « choisir ».
+- **Menu refait** : les leçons rangées par exercice (la ligne, les additions, le calcul rapide), chaque tuile avec **son numéro en grand** et une **vignette qui montre le moment clé de la leçon** (la tortue et ses sauts comptés, le poisson et son reflet, le cadre de 10…), pas un exemple de calcul ; le nom dit au toucher ; la légende du parent inchangée. Maquette à valider par le parent avant le lot.
+- **Les tables à consulter** : dans le menu des leçons, la **table d'addition** (et la table de multiplication quand la multiplication arrivera, phase 2). Présentation à maquetter : une grille où toucher une case dit et montre le calcul (« 7 plus 5, 12 »), avec l'appui visuel de la famille.
+- **La leçon suivie de son exercice** : à la fin d'une leçon, regardée jusqu'au bout **ou passée**, deux bulles : **« À toi ! »** (la vignette de l'exercice associé) et la maison. « À toi ! » enchaîne sur les exemples guidés puis les questions de l'exercice associé, **sans échauffement** ni leçon d'entrée (elle vient d'être vue) ; c'est la **séance du jour** si aucune n'a été terminée aujourd'hui, de l'**entraînement libre** sinon (même règle que « choisir » et « Encore ! »). Sélecteur de difficulté comme pour « choisir ».
+
+| Leçon | Exercice associé |
+| --- | --- |
+| L1 · On compte les sauts | ligne, niveau 1 |
+| L2 · Un saut peut valoir 10 | ligne, niveau 5 |
+| L3 · La ligne ne commence pas toujours à 0 | ligne, niveau 4 |
+| L10 · Les centaines | ligne, niveau 9 |
+| L4 · Les doubles | additions, famille 2 |
+| L5 · Les amis de 10 | additions, famille 3 |
+| L6 · La maison des nombres | additions, famille 4 |
+| L7 · + 10 sur le mur de corail | calcul rapide, niveau 2 |
+| L8 · L'astuce du 9 | calcul rapide, niveau 6 |
+| L9 · Passer la dizaine | calcul rapide, niveau 7 |
 - **La légende des niveaux**, pour le parent : sur chaque écran de niveaux et celui des leçons, un bouton discret (un petit livre) ouvre un panneau par-dessus ; une ligne par niveau (numéro, vignette, ce qui est travaillé en une phrase simple, un exemple) ; fermé par une croix ou un toucher en dehors ; ne choisit et ne lance rien ; pas lue par la voix. Texte rangé une seule fois (`legendes.json`), repris par le guide et l'espace parent.
 
 ### Ce qu'entraîne un choix
@@ -298,7 +318,7 @@ Les niveaux 9 à 13 s'ouvrent avec « jouer » quand le niveau 8 est acquis ; av
 | L7 · + 10 sur le mur de corail | calcul | le poisson descend d'une rangée ; seules les dizaines changent |
 | L8 · L'astuce du 9 | calcul | + 10 puis un pas en arrière, deux exemples (34 + 9, puis 56 + 9) |
 | L9 · Passer la dizaine | calcul | deux tableaux successifs : le cadre de 10 qui se complète (8 + 2), puis la ligne et ses deux ponts (38 → 40 → 43) ; rien ne se superpose |
-| L10 · Les centaines | ligne | dix filets dans un chalut, 300, puis 307 et le zéro des dizaines |
+| L10 · Les centaines | ligne | dix filets dans un chalut, 300, puis 307 et le zéro des dizaines. **À corriger** (constat du parent du 30 septembre) : dans le chalut, chaque petit filet ne montre que 5 poissons ; **un filet montre toujours 10 poissons**, en deux rangées de 5 comme le cadre de 10. Le rendu, jugé daté, relève du chantier graphique |
 
 Le vocabulaire (« amis de 10 », « maison », « mur ») est à aligner sur celui de la classe si l'enseignante en utilise un autre.
 
@@ -441,22 +461,28 @@ Le fond dessiné d'origine (le sprite « fond », ses rayons, ses reflets, ses a
 
 ## 13. Ce qui reste à construire
 
-L'ordre n'est pas fixé : voir la revue de périmètre dans `docs/IDEES.md`. Chaque élément sera précisé ici, dans ce document, au moment de son lot.
+L'ordre est fixé par phases (décision du parent du 30 septembre, détail dans `docs/IDEES.md`, section 1) : **phase 1**, les leçons (section 3), les problèmes, les sommes jusqu'à 30 et trois nouveaux exercices de numération ; **phase 2**, fractions, multiplication et partage, opérations posées, calculs à trois chiffres ; **phase 3**, heure, monnaie, longueurs et masses. **Exclu** : écrire les nombres en lettres. Chaque élément est précisé ici au moment de son lot, **après validation par le parent d'une maquette de son rendu** ; les concepts non encore validés sont dans `docs/IDEES.md`, section 2.
 
 ### Bilans périodiques (à construire)
 
 Toutes les deux semaines, un bilan remplace la notion du jour, au format officiel d'un exercice à la fois, en tournant : 15 questions de ligne graduée en 5 minutes (paliers officiels 0–4, 5–8, 9–15) ; 20 additions en 1 minute (0–5, 6–7, 8–20) ; 30 calculs en 3 minutes (0–8, 9–17, 18–30). Pour l'enfant, une « grande exploration » qui rapporte des étoiles comme une séance ; pour le parent, les scores bruts comparés aux paliers et au point de départ de septembre. Source des paliers : fiches descriptives Repères CE1, https://www.education.gouv.fr/l-evaluation-des-acquis-des-eleves-en-cp-ce1-ce2-cm1-et-cm2-fiches-descriptives-des-exercices-342046
 
-### Sommes jusqu'à 20 (à construire, non programmé)
+### Sommes jusqu'à 30 (à construire, phase 1)
 
-Suite du module 2 prévue « après maîtrise » : doubles jusqu'à 10 + 10, presque-doubles, passage de la dizaine par 10 (8 + 5 = 8 + 2 + 3). À spécifier.
+Suite du module 2, décidée en phase 1 (décision du parent du 30 septembre : jusqu'à 30, pas 20). Au moins : doubles jusqu'à 10 + 10, presque-doubles, passage de la dizaine par 10 (8 + 5 = 8 + 2 + 3), sommes dont le résultat va jusqu'à 30. Partage entre faits à mémoriser et calculs à faire : question ouverte (`docs/IDEES.md`). À spécifier après maquette.
 
-### Problèmes et dénombrement (à construire)
+### Problèmes (à construire, phase 1)
 
-Compétences presque acquises en septembre : le module les entretient. Un problème par séance, remplacé par un dénombrement une fois sur quatre.
+**Situations de la vie courante** (décision du parent du 30 septembre : le thème marin serait trop restrictif), par exemple : « Papa vide trois sachets de gourmandises dans la gamelle du chien. Chaque sachet contient 6 gourmandises. », « La maîtresse fabrique des carnets. Elle a 28 pages. Elle utilise 4 pages pour chaque carnet. », « Les enfants ont rangé les 17 ballons de l'école. La maîtresse en achète 8 nouveaux. ».
 
-- **Problèmes** : lus à voix haute, illustrés d'une scène marine ; à partir de la 3e semaine, l'image montre le contexte mais plus les quantités. Nombres jusqu'à 20, puis dizaines entières jusqu'à 100. Sept structures en rotation (davantage de moyens et difficiles quand les faciles sont réussis) : réunion (tout ou partie inconnue), transformation (fin, changement ou début inconnu), comparaison (valeur ou écart inconnu). Aide après une erreur : un schéma en barres (le tout et ses parties) à compléter.
-- **Dénombrement** : collections organisées (filets de 10 et poissons seuls : 3 filets + 7 = 37) ; en vrac jusqu'à 40 objets, que l'enfant peut marquer et entourer par 10 ; on enregistre si elle a regroupé par 10.
+- Lus à voix haute (l'énoncé n'est pas à lire), illustrés ; « réécouter » toujours disponible ; réponse au pavé.
+- **Structures** : additives (réunion, transformation avec début, changement ou fin inconnu, comparaison), et dès le départ, avec de petits nombres, **multiplicatives** (groupes égaux) et de **partage** (valeur d'une part, nombre de parts), résolues sans le signe × en groupant des objets ou par additions répétées ; problèmes en deux étapes ensuite.
+- **Aide après une erreur** : le schéma en barres (le tout et ses parties) pour les problèmes additifs ; des objets à grouper pour les autres.
+- Place dans la séance (étape fixe ou exercice à choisir), banque d'énoncés, illustrations : `docs/IDEES.md`.
+
+### Dénombrement (à construire)
+
+Collections organisées (filets de 10 et poissons seuls : 3 filets + 7 = 37) ; en vrac jusqu'à 40 objets, que l'enfant peut marquer et entourer par 10 ; on enregistre si elle a regroupé par 10. Pourrait être remplacé par le jeu de la pêche (`docs/IDEES.md`), qui va jusqu'aux centaines.
 
 ### Comparer, doubles et moitiés, pair et impair (à construire)
 

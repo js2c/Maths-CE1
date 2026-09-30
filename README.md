@@ -4,7 +4,7 @@ Application d'entraînement aux mathématiques pour une élève de CE1 : 10 à 1
 
 - **Pour le parent** (adresse, installation sur la tablette, espace parent) : [`docs/GUIDE-PARENT.md`](docs/GUIDE-PARENT.md)
 - Application en ligne : https://js2c.github.io/Maths-CE1/
-- Contenu pédagogique : [`docs/SPEC.md`](docs/SPEC.md) ; avancement : [`docs/AVANCEMENT.md`](docs/AVANCEMENT.md) ; bilan du lot 1 bis : [`docs/BILAN-LOT1BIS.md`](docs/BILAN-LOT1BIS.md)
+- Contenu pédagogique : [`docs/SPEC.md`](docs/SPEC.md) ; avancement : [`docs/AVANCEMENT.md`](docs/AVANCEMENT.md) ; bilan du lot 1 bis : [`docs/archives/BILAN-LOT1BIS.md`](docs/archives/BILAN-LOT1BIS.md)
 - Conventions techniques : [`CLAUDE.md`](CLAUDE.md)
 - Maquettes validées : [`docs/maquettes/`](docs/maquettes/)
 - Atelier graphique : [`art/`](art/), basé sur [anidoodle](https://github.com/alexgreensh/anidoodle) (Apache 2.0), copie dans [`.claude/skills/anidoodle/`](.claude/skills/anidoodle/)

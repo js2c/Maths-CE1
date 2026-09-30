@@ -43,7 +43,7 @@ Le total estimé est de 18 à 35 $, avec une incertitude d'environ ± 50 %. Lanc
 
 ## Prompt de la session 1 · Matériel
 
-Lis CLAUDE.md, docs/ARCHITECTURE.md et docs/AVANCEMENT.md, puis docs/PROMPT-RECETTE-LOT3.md (ce fichier, section « Session 1 »). Tu prépares le **matériel** d'une recette fonctionnelle. Tu ne juges rien et tu ne modifies pas l'application. Tu écris seulement des outils de test, dans `tests/recette-fonctionnelle/`.
+Lis CLAUDE.md, docs/ARCHITECTURE.md et docs/AVANCEMENT.md, puis docs/archives/PROMPT-RECETTE-LOT3.md (ce fichier, section « Session 1 »). Tu prépares le **matériel** d'une recette fonctionnelle. Tu ne juges rien et tu ne modifies pas l'application. Tu écris seulement des outils de test, dans `tests/recette-fonctionnelle/`.
 
 **Méthode**
 
@@ -132,7 +132,7 @@ Lancer `node tests/e2e/recette.mjs --delai 4.5` pour chaque module, et en plus p
 ## Prompt de la session 2 · Relecteur
 
 Tu es relecteur d'une application de mathématiques pour une enfant de CE1. Lis **seulement**, pour commencer :
-- la section « Les deux personnes à incarner » de docs/PROMPT-RECETTE-LOT3.md, puis sa section « Session 2 » ;
+- la section « Les deux personnes à incarner » de docs/archives/PROMPT-RECETTE-LOT3.md, puis sa section « Session 2 » ;
 - `tests/recette-fonctionnelle/out/INDEX.md` sur la branche de la demande de fusion « Recette fonctionnelle du lot 3 (matériel) ».
 
 **Ne lis ni la spécification, ni le journal de conception, ni le code avant d'avoir terminé la phase 1** : tu dois juger ce que l'enfant voit, pas ce qui était prévu.
@@ -170,7 +170,7 @@ Note aussi ce qui fonctionne bien, en quelques lignes : le correctif ne doit pas
 
 ### Phase 2 · Qualifier
 
-Lis ensuite docs/SPEC.md, docs/SPEC-LOT2.md et docs/SPEC-LOT3.md. Pour chaque constat, indique s'il s'agit :
+Lis ensuite docs/SPEC.md, docs/archives/SPEC-LOT2.md et docs/archives/SPEC-LOT3.md. Pour chaque constat, indique s'il s'agit :
 - d'un **défaut de spécification** (conforme, mais mauvais pour l'enfant) ;
 - d'un **défaut de réalisation** (non conforme) ;
 - ou d'une **question** que la spécification ne tranche pas.
@@ -179,7 +179,7 @@ Tu peux proposer une piste de correction en une phrase. La décision reviendra �
 
 ### Le rapport
 
-Écris `docs/RECETTE-LOT3.md`, dans cet ordre :
+Écris `docs/archives/RECETTE-LOT3.md`, dans cet ordre :
 1. une synthèse en dix lignes : ce qui empêche l'enfant d'apprendre, ce qui la perd, ce qui marche ;
 2. les constats bloquants ;
 3. les constats gênants ;

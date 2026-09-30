@@ -1,6 +1,6 @@
 # Lot 3 ter : l'échauffement et l'appui long
 
-Rédigé en conception le 29 septembre 2026, à partir des essais du parent sur la tablette après la fusion du lot 3 bis (PR 23). Cette spécification **prévaut** sur `docs/SPEC.md`, `docs/SPEC-LOT2.md`, `docs/SPEC-LOT3.md` et `docs/SPEC-LOT3BIS.md` en cas de contradiction.
+Rédigé en conception le 29 septembre 2026, à partir des essais du parent sur la tablette après la fusion du lot 3 bis (PR 23). Cette spécification **prévaut** sur `docs/SPEC.md`, `docs/archives/SPEC-LOT2.md`, `docs/archives/SPEC-LOT3.md` et `docs/archives/SPEC-LOT3BIS.md` en cas de contradiction.
 
 Le lot est volontairement **court** : une seule session, deux étapes. Il ne touche pas au récif. La mer continue et vivante fait l'objet d'un chantier graphique séparé, qui aura sa propre demande de fusion. En particulier, le récif en pages n'est pas modifié ici, et son rebond de fin de liste reste en l'état.
 
@@ -99,4 +99,4 @@ Les points marqués **(décision du parent)** ne se rediscutent pas. Les autres 
 | Appui long (T3) | Parcours Playwright sur **chaque** bouton recensé : appui de 800 ms, étiquette visible et rien de lancé ; au lever du doigt, rien de lancé et l'étiquette a disparu en 0,5 s ; toucher bref, action lancée. Pavé et bulles-réponses : réponse au premier contact, inchangée |
 | Non-régression | Les recettes des lots précédents (`sim-seances.mjs` tous profils, `e2e/recette.mjs --delai 4.5`, `recette-durees.mjs` avec et sans `--passer`, tous les parcours Playwright), et `b-sequences.mjs` en mode test |
 
-**Recette fonctionnelle de contrôle.** La session relecteur limitée du lot 3 bis n'a pas été faite. Elle est faite **à la fin de ce lot**, et couvre à la fois les constats R1 à R25 du lot 3 bis et les trois points de ce lot. Le prompt est dans `docs/PROMPT-LOT3TER.md`.
+**Recette fonctionnelle de contrôle.** La session relecteur limitée du lot 3 bis n'a pas été faite. Elle est faite **à la fin de ce lot**, et couvre à la fois les constats R1 à R25 du lot 3 bis et les trois points de ce lot. Le prompt est dans `docs/archives/PROMPT-LOT3TER.md`.

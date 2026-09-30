@@ -1,6 +1,6 @@
 # Bilan du lot 3 — choisir l'exercice et le niveau, difficulté dans le niveau, calcul rapide, pause complète, récif par zones
 
-Lot décidé le 27 septembre 2026 au soir, après les premiers essais du lot 2 par le parent (spécification : `docs/SPEC-LOT3.md`, qui prévaut sur les précédentes ; prompt : `docs/PROMPT-LOT3.md`). Cinq étapes, en deux demandes de fusion : étapes 1 à 4 (PR #19, fusionnée), étape 5 élargie par les décisions du parent du 28 septembre (PR #20). Le détail de chaque étape (décisions prises, écarts, recettes allégées) est dans `docs/AVANCEMENT.md`.
+Lot décidé le 27 septembre 2026 au soir, après les premiers essais du lot 2 par le parent (spécification : `docs/archives/SPEC-LOT3.md`, qui prévaut sur les précédentes ; prompt : `docs/archives/PROMPT-LOT3.md`). Cinq étapes, en deux demandes de fusion : étapes 1 à 4 (PR #19, fusionnée), étape 5 élargie par les décisions du parent du 28 septembre (PR #20). Le détail de chaque étape (décisions prises, écarts, recettes allégées) est dans `docs/AVANCEMENT.md`.
 
 ## Ce qui est fait
 
@@ -33,7 +33,7 @@ Lot décidé le 27 septembre 2026 au soir, après les premiers essais du lot 2 p
 
 ## Les décisions prises (et pourquoi)
 
-Décisions du parent : voir `docs/SPEC-LOT3.md` (sections 1 à 6, et section 8 pour celles du 28 septembre) et `docs/JOURNAL-CONCEPTION.md`. Décisions prises pendant la réalisation, quand la SPEC ne tranchait pas (détail et raisons dans `docs/AVANCEMENT.md`) :
+Décisions du parent : voir `docs/archives/SPEC-LOT3.md` (sections 1 à 6, et section 8 pour celles du 28 septembre) et `docs/JOURNAL-CONCEPTION.md`. Décisions prises pendant la réalisation, quand la SPEC ne tranchait pas (détail et raisons dans `docs/AVANCEMENT.md`) :
 
 | Sujet | Décision |
 | --- | --- |

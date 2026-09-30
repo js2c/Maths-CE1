@@ -1,6 +1,6 @@
 # Lot 3 — spécification
 
-Rédigée en conception le 27 septembre 2026 (soir), après les premiers essais du lot 2 par le parent. Elle complète `docs/SPEC.md`, `docs/SPEC-LOT2.md` et `docs/SPEC-COMPLEMENTS.md` et, **en cas de contradiction, elle prévaut** sur eux. Prompt : `docs/PROMPT-LOT3.md`.
+Rédigée en conception le 27 septembre 2026 (soir), après les premiers essais du lot 2 par le parent. Elle complète `docs/SPEC.md`, `docs/archives/SPEC-LOT2.md` et `docs/archives/SPEC-COMPLEMENTS.md` et, **en cas de contradiction, elle prévaut** sur eux. Prompt : `docs/archives/PROMPT-LOT3.md`.
 
 Le lot 3 a deux parties :
 
@@ -17,7 +17,7 @@ Le lot 3 a deux parties :
 
 ## 2. Choisir l'exercice et le niveau dès l'accueil (étape 1)
 
-**Décision du parent** : elle remplace la règle « on ne choisit pas l'activité pendant la séance » (`docs/SPEC.md`, « Navigation pendant la séance ») et l'alternance imposée de `docs/SPEC-LOT2.md`, section 2, qui ne vaut plus que pour « jouer ».
+**Décision du parent** : elle remplace la règle « on ne choisit pas l'activité pendant la séance » (`docs/SPEC.md`, « Navigation pendant la séance ») et l'alternance imposée de `docs/archives/SPEC-LOT2.md`, section 2, qui ne vaut plus que pour « jouer ».
 
 **L'accueil** montre quatre bulles : « jouer » (la séance proposée par l'application, inchangée), **« choisir »** (nouvelle), le récif, l'album. Après la séance du jour : la lune, « Encore ! » (qui ouvre le même écran de choix, sans étoiles), le récif, l'album.
 
@@ -42,7 +42,7 @@ Le lot 3 a deux parties :
 
 ## 3. La difficulté à l'intérieur du niveau (étape 2)
 
-**Décision du parent** : le niveau et la difficulté se choisissent **séparément**. Quand le niveau est choisi, le curseur à 4 crans ne décale plus le niveau : il rend **le même niveau** plus facile ou plus exigeant. Le multiplicateur d'étoiles (× 0,5, × 1, × 1,5, × 2), la protection et la règle « plus facile consolide sans faire progresser » (`docs/SPEC-LOT2.md`, section 2) sont inchangés. Avec « jouer », le curseur garde son effet actuel (décaler le niveau conseillé), l'enfant n'ayant pas choisi de niveau.
+**Décision du parent** : le niveau et la difficulté se choisissent **séparément**. Quand le niveau est choisi, le curseur à 4 crans ne décale plus le niveau : il rend **le même niveau** plus facile ou plus exigeant. Le multiplicateur d'étoiles (× 0,5, × 1, × 1,5, × 2), la protection et la règle « plus facile consolide sans faire progresser » (`docs/archives/SPEC-LOT2.md`, section 2) sont inchangés. Avec « jouer », le curseur garde son effet actuel (décaler le niveau conseillé), l'enfant n'ayant pas choisi de niveau.
 
 **Principe commun** : « plus facile » ajoute une aide d'emblée ou un repère ; « conseillé » est le niveau tel que `docs/SPEC.md` le décrit ; « plus dur » retire un repère ; « très dur » retire les repères jusqu'au minimum qui laisse le niveau faisable, ou resserre la tolérance. On ne supprime jamais le bouton « réécouter », les corrections ni « je ne sais pas ».
 
@@ -110,7 +110,7 @@ Contenu de `docs/SPEC.md`, « Module 3 — Calcul rapide » (niveaux 1 à 9, pro
 
 ## 7. Recette
 
-Mêmes outils et même méthode que `docs/SPEC-LOT2.md`, section 8, plus ces critères :
+Mêmes outils et même méthode que `docs/archives/SPEC-LOT2.md`, section 8, plus ces critères :
 
 | Critère | Mesure |
 | --- | --- |

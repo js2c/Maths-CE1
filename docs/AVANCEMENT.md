@@ -22,3 +22,11 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 ## Reprise
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
+
+### Reprise du lot « Lagon en fond d'exercices »
+
+- Branche `claude/clever-euler-p678bp`, partie de `main` (e02b7db0). Demande de fusion : pas encore ouverte.
+- **Étape 1 (faite)** : le lot est décrit dans `docs/SPEC.md`, section 11, « Le lagon en fond d'exercices (à construire) ». Arrêt demandé par le parent après cette étape.
+- **Étape 2 (attend l'accord du parent)** : extraction du fond, des algues et des poissons depuis la maquette (non modifiée), moteur du lagon dans l'application, allègement automatique, captures de chaque exercice, temps d'image avant et après.
+- Mesure de référence avant le lot (`tests/e2e/perf.mjs`, conteneur sans processeur graphique, processeur ÷4, 1280 × 800, densité 2) : intervalle moyen entre images 27,3 ms (p95 50 ms), travail par image 4,7 ms en moyenne, allègement déjà au niveau 2, planches décodées 189,6 Mo.
+- Constat hors lot : sur `main`, `app/sw-files.json` n'est pas à jour depuis la nouvelle voix (`node tools/precache.mjs --check` échoue) ; le déploiement refait la liste, donc la tablette n'est pas touchée. Sera corrigé au premier `node tools/precache.mjs` de l'étape 2.

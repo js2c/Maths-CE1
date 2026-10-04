@@ -10,6 +10,8 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 /* les acteurs : un petit canvas chacun, déplacé par le compositeur (actor.js) */
 .actors { position: absolute; inset: 0; pointer-events: none; }
 .actor { position: absolute; left: 0; top: 0; will-change: transform; pointer-events: none; }
+/* le lagon (engine/lagon.js) : le miroitement (bande du haut, WebGL) et les faisceaux, sous la ligne graduée */
+#lagon > canvas { position: absolute; left: 0; top: 0; pointer-events: none; }
 #ui { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; transform-origin: 0 0; }
 
 /* bulles et boutons : un calque dessiné par l'atelier, sans bord ni fond de navigateur */

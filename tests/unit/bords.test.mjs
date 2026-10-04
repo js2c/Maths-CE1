@@ -10,8 +10,10 @@ import { readFileSync } from "node:fs";
 const atlas = JSON.parse(readFileSync(new URL("../../app/assets/art/atlas.json", import.meta.url), "utf8"));
 // les exceptions, avec leur raison
 export const EXCEPTIONS = {
-  fond: "le fond de la scène, plein écran",
-  rayons: "les rayons de lumière, plein écran : ils entrent par le haut de l'image",
+  "lagon.fond": "le fond de la scène, plein écran (le lagon du récif vivant)",
+  "lagon.algue.0": "algue extraite telle quelle de la maquette du récif vivant, recadrée au ras du dessin (le pied est caché par le sable, quelques bouts de feuilles touchent le bord de l'image d'origine)",
+  "lagon.algue.1": "algue extraite telle quelle de la maquette du récif vivant, recadrée au ras du dessin (le pied est caché par le sable, quelques bouts de feuilles touchent le bord de l'image d'origine)",
+  "lagon.algue.2": "algue extraite telle quelle de la maquette du récif vivant, recadrée au ras du dessin (le pied est caché par le sable, quelques bouts de feuilles touchent le bord de l'image d'origine)",
   "carte.dos": "image pleine page d'une carte : le dos va jusqu'au bord de la carte (en haut et à gauche, l'ombre est à droite et en bas)",
   "carte.fond": "image pleine page d'une carte : le fond d'eau remplit toute la carte",
   "carte.cadre.commune": "image pleine page d'une carte : le cadre en suit le bord",

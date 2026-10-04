@@ -126,9 +126,10 @@ export class Reef {
       }
       for (const g of z.gifts) { g.a.show(on); g.a.moveTo(g.at[0] + off, g.at[1], g.s); }
     }
-    // le fond et le décor mobile (algues, poissons, reflets, bulles) suivent la page affichée ; la copie du fond montre la voisine
+    // le fond et le décor mobile (le lagon : poissons, algues, faisceaux, miroitement ; les visiteurs) suivent la page affichée ;
+    // la copie du fond montre la voisine
     const css = s ? `translateX(${Math.round(s * k * 100) / 100}px)` : "";
-    for (const el of [this.app.stage.bg, this.app.ocean.backEl]) if (el.style.transform !== css) el.style.transform = css;
+    for (const el of this.moving()) if (el.style.transform !== css) el.style.transform = css;
     if (this.bgCopy) { this.bgCopy.style.visibility = s ? "visible" : "hidden"; if (s) this.bgCopy.style.transform = `translateX(${Math.round((s - Math.sign(s) * W) * k * 100) / 100}px)`; }
   }
   // ---------------------------------------------------------------- toucher et glisser
@@ -185,7 +186,7 @@ export class Reef {
     if (!a.dir) return;
     const old = this.pages[this.idx]; this.idx += a.dir;
     // la page affichée a changé : le décor mobile revient en douceur, les autres pages sont libérées
-    const back = this.app.ocean.backEl; back.style.transition = "none"; back.style.opacity = "0"; void back.offsetWidth; back.style.transition = "opacity 0.5s"; back.style.opacity = "";
+    for (const back of this.moving().slice(1)) { back.style.transition = "none"; back.style.opacity = "0"; void back.offsetWidth; back.style.transition = "opacity 0.5s"; back.style.opacity = ""; }
     for (const zone of [...this.zones.keys()]) if (zone !== this.pages[this.idx]) this.drop(zone);
     this.paintPearls(); void old;
     this.app.sound?.play("bouton");
@@ -215,14 +216,15 @@ export class Reef {
   // et un peu plus grande pour la page affichée, vide pour les autres
   paintPearl(ctx, px, i) { this.app.sprites.draw(ctx, "recif.perle", i === this.idx ? 1 : 0, PEARL.size / 2, PEARL.size / 2); void px; }
   paintPearls() { this.pearlEls?.forEach((b) => { b.classList.toggle("sel", b.dataset.zone === this.pages[this.idx]); b.repaint(); }); }
-  // le fond fixe (eau, sable, rayons), recopié dans un canvas posé à côté du vrai
+  // ce qui suit la page affichée : le fond, le lagon vivant (lagon.js), les visiteurs
+  moving() { return [this.app.stage.bg, this.app.lagon?.el, this.app.ocean.backEl].filter(Boolean); }
+  // le fond fixe (le lagon), recopié dans un canvas posé à côté du vrai
   copyBackground() {
     const { stage, sprites } = this.app;
     const c = document.createElement("canvas"); c.className = "reef-bgcopy"; c.width = stage.bg.width; c.height = stage.bg.height;
     Object.assign(c.style, { position: "absolute", left: "0", top: "0", width: "100%", height: "100%", visibility: "hidden" });
-    const ctx = c.getContext("2d"), q = sprites.frame("fond", 0), r = sprites.frame("rayons", 0);
+    const ctx = c.getContext("2d"), q = sprites.frame("lagon.fond", 0);
     if (q) ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 0, 0, c.width, c.height);
-    if (r) ctx.drawImage(r.img, r.sx, r.sy, r.w, r.h, 0, 0, c.width, c.height);
     // le bord de la page : une ombre douce de chaque côté, là où elle touche la page affichée (sinon, une cassure nette)
     for (const [x0, x1] of [[0, 48], [c.width, c.width - 48]]) { const g = ctx.createLinearGradient(x0 * 1, 0, x0 + (x1 - x0) * stage.px, 0); g.addColorStop(0, "rgba(6, 34, 44, 0.38)"); g.addColorStop(1, "rgba(6, 34, 44, 0)"); ctx.fillStyle = g; ctx.fillRect(Math.min(x0, x0 + (x1 - x0) * stage.px), 0, 48 * stage.px, c.height); }
     stage.bg.after(c);
@@ -234,7 +236,7 @@ export class Reef {
     if (this.anim) this.anim.done = true; this.anim = null; this.gesture = null;
     ocean.front.splice(ocean.front.indexOf(this.tick), 1);
     for (const zone of [...this.zones.keys()]) this.drop(zone);
-    this.shift = 0; for (const el of [this.app.stage.bg, ocean.backEl]) { el.style.transform = ""; el.style.opacity = ""; el.style.transition = ""; }
+    this.shift = 0; for (const el of this.moving()) { el.style.transform = ""; el.style.opacity = ""; el.style.transition = ""; }
     this.bgCopy?.remove(); this.bgCopy = null;
     this.els.forEach((e) => e.remove()); this.gifts = []; this.open = false;
     sprites.unload("recif"); sprites.unload("cartes"); sprites.unload("decors"); forgetPictures();

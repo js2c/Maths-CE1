@@ -6,6 +6,7 @@
 // à gauche) la met en pause ; la frise d'avancement montre où l'on en est.
 import { repriseText } from "./engine/toucher.js";
 import { Ocean, rng } from "./engine/ocean.js";
+import { Lagon } from "./engine/lagon.js";
 import { LineView } from "./engine/line.js";
 import { persist, Store } from "./engine/store.js";
 import { loadAtlas, Sprites } from "./engine/sprites.js";
@@ -55,10 +56,12 @@ const sprites = new Sprites(atlas, stage.px);
 // la base locale ; au premier lancement, on demande au navigateur de ne jamais l'effacer de lui-même
 const store = await Store.open();
 if (!(await store.setting("premierLancement"))) { await store.setSetting("premierLancement", new Date().toISOString()); await store.setSetting("stockagePersistant", await persist()); }
-await Promise.all(["fond", "rayons", "pieuvre", "algues", "poissons", "petits", "tortue"].map((s) => sprites.load(s)));
+await Promise.all(["lagon", "lagon-vie", "pieuvre", "poissons", "petits", "tortue"].map((s) => sprites.load(s)));
+// le fond de toute l'application : le lagon du récif vivant (engine/lagon.js) ; par-dessus, la pieuvre et les acteurs
+const lagon = new Lagon(stage, sprites, atlas);
+lagon.paintStatic();
 const ocean = new Ocean(stage, sprites, atlas);
-ocean.paintStatic();
-stage.ticks.add((t, dt) => { ocean.update(t, dt); ocean.render(); });
+stage.ticks.add((t, dt) => { lagon.update(t, dt); lagon.render(); ocean.update(t, dt); ocean.render(); });
 stage.start();
 // un changement d'échelle (rotation, fenêtre) demanderait d'autres planches : on recharge simplement
 stage.onResize(() => { if (Math.abs(stage.px - sprites.px) > 0.01) location.reload(); });
@@ -93,7 +96,7 @@ addEventListener("error", (ev) => journal({ type: "erreur de page", message: ev.
 addEventListener("unhandledrejection", (ev) => journal({ type: "erreur de page", message: String(ev.reason?.message ?? ev.reason), pile: ev.reason?.stack?.split("\n").slice(0, 4).join(" | ") ?? null }));
 const rewards = await new Rewards(store, cartes, calendrier).load();
 if (P.get("etoiles")) { rewards.st.total = Number(P.get("etoiles")); await rewards.save(); } // tests : un trésor de départ
-const app = { stage, sprites, ocean, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, legendes, line: new LineView(stage), mascotte: await store.setting("mascotte") };
+const app = { stage, sprites, ocean, lagon, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, legendes, line: new LineView(stage), mascotte: await store.setting("mascotte") };
 // la vitesse des animations des exemples guidés et des corrections (1 : la vitesse d'origine ; la voix garde son débit)
 app.vitesse = seance.vitesseAnimations ?? 1;
 app.toucher = seance.toucher ?? {}; // (lot 3 bis, A5 : le double toucher)
@@ -458,7 +461,7 @@ async function startChosen(c) {
 // (`suspend`) ; une leçon dessine dans des calques neufs (ligne, effets, aides) avec son propre écran de la ligne. Au
 // retour, tout ce que la visite a ajouté (éléments, acteurs, rappels d'image, planches) est retiré, et la séance
 // retrouve exactement sa pause.
-const ALWAYS = new Set(["fond", "rayons", "pieuvre", "algues", "poissons", "petits", "tortue", "pieuvre-gestes", "aides"]);
+const ALWAYS = new Set(["lagon", "lagon-vie", "pieuvre", "poissons", "petits", "tortue", "pieuvre-gestes", "aides"]);
 function sandbox() {
   const o = ocean, st = stage, kids = (el) => new Set(el.children);
   const ui = kids(st.ui), front = kids(o.frontEl), root = kids(st.root);

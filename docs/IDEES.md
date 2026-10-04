@@ -27,6 +27,7 @@ Dernière mise à jour : 30 septembre 2026, après la fusion du lot 3 ter (PR 25
   - le rocher de gauche est sous le poteau et le « 0 » ; le rocher de droite et ses algues sous les nombres 7 à 9 (ligne de 0 à 10) et sous les touches 3, 4, 8, 9 et la coche du pavé ; les algues passent derrière les nombres (décision du parent) ;
   - une étoile de mer peinte dans le sable, au milieu de l'écran, entre les bulles-réponses, à côté de l'étiquette du poisson en « placer » et « estimer », entre les touches 8 et 9 : le même animal que la cible du format « lire » ;
   - le corail de droite sous le bout de la ligne, sous « je ne sais pas » ; le miroitement derrière la frise ;
+  - leçons : en L9, l'étoile de mer du sable est juste sous « 40 41 » ; en L10, le « 0 » et le « 7 » de 307 décomposé sont écrits sur le rocher de droite ; en L3 et au niveau 11, le « ? » rouge est traversé par les feuilles d'une algue (derrière lui) ;
   - écran « choisir » : les tuiles 10, 11 et 13 de la ligne sont posées devant les algues et les rochers (la règle de la section 3 dit « ni posée sur la pieuvre ou les algues ») : garder ainsi, ou déplacer les tuiles ?
 
 ## 3. Questions laissées avec une valeur par défaut

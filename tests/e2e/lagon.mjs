@@ -6,7 +6,7 @@
 //   - aucune erreur dans la page.
 //   node tests/e2e/lagon.mjs [--out dossier] [--seul 1280|1920]
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
 
@@ -17,6 +17,7 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? 
 const fail = [], check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 const BASE = "?nosw&voix=rapide&son=non&sansLecon&guides=0";
 const DAY = 86400000;
+const lecons = JSON.parse(readFileSync(new URL("../../app/content/lecons.json", import.meta.url)));
 
 // l'état du décor, vu de la page
 const decor = (page) => page.evaluate(() => {
@@ -91,8 +92,11 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   for (const L of ["L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8", "L9", "L10"]) {
     await page.goto(url + `?nosw&voix=rapide&son=non&lecon=${L}`); await page.waitForFunction(() => window.__ready !== undefined);
     await page.tap(".play", { force: true });
-    await page.waitForFunction(() => (window.__app.lessons?.p ?? 0) >= 2 || window.__lecon, null, { timeout: 60000 }).catch(() => {});
-    await page.waitForTimeout(700); await shot(`40-lecon-${L}`); await exercice(page, `${W} leçon ${L}`);
+    // au milieu de la leçon (les leçons des additions, du calcul et L10 sont jouées par lessons/player2.js : `p2`)
+    const mid = Math.floor(lecons[L].phrases.length / 2);
+    const ok = await page.waitForFunction((m) => { const l = window.__app.lessons; return (l.p2?.p ?? l.p ?? 0) >= m && !window.__lecon; }, mid, { timeout: 90000 }).then(() => true, () => false);
+    check(ok, `${W} leçon ${L} : capturée en cours (phrase ${mid + 1})`);
+    await page.waitForTimeout(500); await shot(`40-lecon-${L}`); await exercice(page, `${W} leçon ${L}`);
   }
 
   // ---- le récif et l'album (les quinze créatures du lagon gagnées), « à demain »

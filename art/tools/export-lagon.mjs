@@ -61,6 +61,9 @@ const PAGE = async ({ A, W, H, fondQ, vieQ, EDGE, sceneW, sceneH }) => {
     g.drawImage(c, f.x, f.y);
   }
   for (const d of decor.filter((d) => d.layer === "front")) await put(d);
+  // les 6 premières colonnes du panorama sont abîmées (un liseré sombre) : la maquette ne les montre jamais (son
+  // programme de surface lit au plus tôt la colonne 6, « max(wx + dx, 6.0) ») ; on fait de même : colonne 6 recopiée
+  for (let x = 0; x < 6; x++) g.drawImage(pan, 6, 0, 1, PH, x, 0, 1, PH);
   const fond = new OffscreenCanvas(W, H), gf = fond.getContext("2d");
   gf.imageSmoothingQuality = "high"; gf.drawImage(pan, 0, 0, VUE, PH, 0, 0, W, H);
   // 2. ce qui bouge : chaque image à sa taille dans la planche (algues et poissons réduits de k), avec la

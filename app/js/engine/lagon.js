@@ -109,6 +109,9 @@ export class Lagon {
       const U = {}; for (const n of ["tex", "res", "toPan", "t", "texW", "texH"]) U[n] = gl.getUniformLocation(prog, n);
       this.gl = { gl, U, tex: null };
     } catch { return null; }
+    // opaque : masquée tant qu'elle n'a pas été dessinée (texture en chargement), et pour de bon si le contexte est perdu
+    c.style.visibility = "hidden";
+    c.addEventListener("webglcontextlost", () => { c.remove(); this.surface = null; this.gl = null; });
     this.el.append(c);
     return c;
   }
@@ -131,6 +134,7 @@ export class Lagon {
     gl.uniform1f(U.texW, W / this.k); gl.uniform1f(U.texH, S.texRows / this.k); gl.uniform1i(U.tex, 0);
     gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, S.tex);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
+    if (!this.surfaceShown) { this.surfaceShown = true; c.style.visibility = this.level === 2 ? "hidden" : ""; }
   }
 
   // ------------------------------------------------------------------ les faisceaux (maquette : « faisceaux de lumière »)
@@ -289,7 +293,7 @@ export class Lagon {
   drop(m) { if (m.a) { m.a.remove(); m.a = null; } }
   render() {
     const t = this.t, lvl = this.st.perf.level;
-    if (lvl !== this.level) { this.level = lvl; this.keys = {}; this.paintStatic(); this.rays.style.visibility = lvl === 2 ? "hidden" : ""; if (this.surface) this.surface.style.visibility = lvl === 2 ? "hidden" : ""; }
+    if (lvl !== this.level) { this.level = lvl; this.keys = {}; this.paintStatic(); this.rays.style.visibility = lvl === 2 ? "hidden" : ""; if (this.surface && this.surfaceShown) this.surface.style.visibility = lvl === 2 ? "hidden" : ""; }
     // le miroitement
     if (this.surface && lvl < 2) { const q = this.due("surface", t); if (q !== null) this.drawSurface(q); }
     // les faisceaux

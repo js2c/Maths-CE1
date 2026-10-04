@@ -1,6 +1,8 @@
 // MESURES ET CAPTURES dans Chromium : tablette simulée 1280 × 800, densité 2, écran tactile,
 // processeur ralenti 4 fois (CDP Emulation.setCPUThrottlingRate).
-//   node tests/e2e/perf.mjs [--video] [--out dossier] [--throttle 4] [--seconds 12]
+//   node tests/e2e/perf.mjs [--video] [--out dossier] [--throttle 4] [--seconds 12] [--niveau 0|1|2] [--webgl]
+//   --niveau N : l'allègement automatique est tenu au niveau N pendant la mesure (comparer deux versions au même niveau)
+//   --webgl    : WebGL logiciel (SwiftShader) dans Chromium sans processeur graphique (le miroitement du lagon)
 // Mesure :
 //   - démarrage : du début de la navigation à « premier écran prêt » (planches du premier écran
 //     décodées et deux images dessinées : repère performance « app-ready »), à froid puis à chaud ;
@@ -13,10 +15,10 @@ import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
-const OUT = resolve(opt("--out", "tests/e2e/out")), RATE = Number(opt("--throttle", 4)), SECONDS = Number(opt("--seconds", 12)), VIDEO = args.includes("--video");
+const OUT = resolve(opt("--out", "tests/e2e/out")), RATE = Number(opt("--throttle", 4)), SECONDS = Number(opt("--seconds", 12)), VIDEO = args.includes("--video"), NIVEAU = opt("--niveau", null), WEBGL = args.includes("--webgl");
 mkdirSync(OUT, { recursive: true });
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", ...(WEBGL ? ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] : [])] });
 const stats = (a) => { const s = [...a].sort((x, y) => x - y), q = (p) => s[Math.min(s.length - 1, Math.floor(p * s.length))]; return { n: a.length, moyenne: +(a.reduce((x, y) => x + y, 0) / a.length).toFixed(1), p50: +q(0.5).toFixed(1), p95: +q(0.95).toFixed(1), max: +s[s.length - 1].toFixed(1), plusDe33ms: a.filter((x) => x > 33.4).length }; };
 
 const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 2, hasTouch: true, isMobile: false, ...(VIDEO ? { recordVideo: { dir: OUT, size: { width: 1280, height: 800 } } } : {}) });
@@ -43,6 +45,8 @@ await page.waitForTimeout(1200);
 await page.screenshot({ path: join(OUT, "2-question.png") });
 await page.waitForTimeout(500);
 await page.evaluate(() => { window.__gaps = []; window.__slow = []; let last = performance.now(); const f = (t) => { window.__gaps.push(t - last); if (t - last > 33.4) window.__slow.push([Math.round(t), Math.round(t - last), window.__app.ocean.octo.clip]); last = t; requestAnimationFrame(f); }; requestAnimationFrame(f); window.__app.stage.perf.work.length = 0; window.__work = []; const s = window.__app.stage, m = s.measure.bind(s); s.measure = (w, g) => { window.__work.push(w); m(w, g); }; });
+// --niveau : le niveau d'allègement est fixé (la mesure n'en change plus)
+if (NIVEAU !== null) await page.evaluate((n) => { const s = window.__app.stage; s.perf.level = n; s.measure = (w) => { window.__work.push(w); }; }, Number(NIVEAU));
 
 const answer = async (right) => {
   const v = await page.evaluate((r) => { const q = window.__app.screen?.q ?? null; return q ? (r ? q.answer : q.choices.find((c) => c.value !== q.answer).value) : null; }, right);
@@ -73,7 +77,7 @@ await page.tap(".homekey:not(.session-home)", { force: true }); await page.waitF
 const memBack = await memNow();
 await page.tap(".keep.play", { force: true }); await page.waitForTimeout(800);
 console.log(`mémoire décodée des planches : en pause ${memPause} Mo, récif ouvert en pause ${memReef} Mo, après le retour ${memBack} Mo`);
-const result = { date: new Date().toISOString(), ecran: "1280x800, densité 2, tactile", processeur: `ralenti ×${RATE}`, demarrage_ms: { froid: cold, chaud: warm }, intervalles_ms: stats(gaps), travail_par_image_ms: stats(work), niveau_allegement: perfLevel, sprites_decodes_Mo: mem, questions: k, recif_en_pause: { memoire_en_pause_Mo: memPause, memoire_recif_ouvert_Mo: memReef, memoire_apres_retour_Mo: memBack, intervalles_ms: stats(reefGaps) }, images_lentes: slow.map(([t, d, c]) => `${d} ms (${c})`), erreurs: errors };
+const result = { date: new Date().toISOString(), ecran: "1280x800, densité 2, tactile", processeur: `ralenti ×${RATE}`, niveau_fixe: NIVEAU, webgl: await page.evaluate(() => !!document.createElement("canvas").getContext("webgl")), demarrage_ms: { froid: cold, chaud: warm }, intervalles_ms: stats(gaps), travail_par_image_ms: stats(work), niveau_allegement: perfLevel, sprites_decodes_Mo: mem, questions: k, recif_en_pause: { memoire_en_pause_Mo: memPause, memoire_recif_ouvert_Mo: memReef, memoire_apres_retour_Mo: memBack, intervalles_ms: stats(reefGaps) }, images_lentes: slow.map(([t, d, c]) => `${d} ms (${c})`), erreurs: errors };
 console.log(JSON.stringify(result, null, 1));
 writeFileSync(join(OUT, `mesures-x${RATE}.json`), JSON.stringify(result, null, 1));
 await context.close();

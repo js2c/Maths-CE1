@@ -22,6 +22,12 @@ Dernière mise à jour : 30 septembre 2026, après la fusion du lot 3 ter (PR 25
   4. comparer, doubles et moitiés, pair et impair.
 - **Le crabe**, prévu comme personnage des problèmes : au vu de ce que le bernard-l'ermite a apporté (rien de pédagogique, avis du parent), le laisser de côté ?
 - **Le « problème du jour »** : une étape fixe de chaque séance (prévu à l'origine) ou un exercice qu'on choisit comme les autres ?
+- **Le lagon sous les exercices** (lot « Lagon en fond d'exercices », octobre 2026). Décision du parent : aucune adaptation de lisibilité. Relevé, pour mémoire, de ce que le fond met sous l'exercice (captures : `node tests/e2e/lagon.mjs`) :
+  - les nombres de la ligne graduée sont écrits sur le sable du panorama, dont les rides sont des traits d'encre aussi épais que les chiffres ; le bord du sable passe au ras du haut des nombres à gauche ;
+  - le rocher de gauche est sous le poteau et le « 0 » ; le rocher de droite et ses algues sous les nombres 7 à 9 (ligne de 0 à 10) et sous les touches 3, 4, 8, 9 et la coche du pavé ; les algues passent derrière les nombres (décision du parent) ;
+  - une étoile de mer peinte dans le sable, au milieu de l'écran, entre les bulles-réponses, à côté de l'étiquette du poisson en « placer » et « estimer », entre les touches 8 et 9 : le même animal que la cible du format « lire » ;
+  - le corail de droite sous le bout de la ligne, sous « je ne sais pas » ; le miroitement derrière la frise ;
+  - écran « choisir » : les tuiles 10, 11 et 13 de la ligne sont posées devant les algues et les rochers (la règle de la section 3 dit « ni posée sur la pieuvre ou les algues ») : garder ainsi, ou déplacer les tuiles ?
 
 ## 3. Questions laissées avec une valeur par défaut
 

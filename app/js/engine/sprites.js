@@ -33,8 +33,11 @@ export class Sprites {
   held() { return new Set([...this.pages.keys(), ...[...this.loading.keys()].map((k) => k.split("@")[0])]); }
   // libère une grande planche dont on n'a plus besoin (récif, cartes) : la mémoire décodée est rendue
   // (lot 3, étape 5 : pendant une visite en pause, les planches de la séance sont épinglées, `pinned` : jamais libérées)
+  // (correctif du 5 octobre 2026) les planches permanentes (`keep`, celles des boutons, de la pieuvre, du décor : main.js,
+  // ALWAYS) ne sont jamais libérées : le récif libérait « petits » quand un cadeau de la surprise y était posé, et les
+  // boutons de l'accueil se redessinaient à vide (présents, cliquables, invisibles)
   unload(sheet) {
-    if (this.pinned?.has(sheet)) return;
+    if (this.pinned?.has(sheet) || this.keep?.has(sheet)) return;
     const p = this.pages.get(sheet); if (!p) return;
     p.pages.forEach((b) => b.close?.()); this.pages.delete(sheet);
     for (const k of [...this.loading.keys()]) if (k.startsWith(`${sheet}@`)) this.loading.delete(k);

@@ -462,6 +462,7 @@ async function startChosen(c) {
 // retour, tout ce que la visite a ajouté (éléments, acteurs, rappels d'image, planches) est retiré, et la séance
 // retrouve exactement sa pause.
 const ALWAYS = new Set(["lagon", "lagon-vie", "pieuvre", "poissons", "petits", "tortue", "pieuvre-gestes", "aides"]);
+sprites.keep = ALWAYS; // jamais libérées (engine/sprites.js, unload)
 function sandbox() {
   const o = ocean, st = stage, kids = (el) => new Set(el.children);
   const ui = kids(st.ui), front = kids(o.frontEl), root = kids(st.root);

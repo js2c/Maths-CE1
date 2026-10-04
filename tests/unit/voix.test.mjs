@@ -11,10 +11,10 @@ import { fill, sentences } from "../../app/js/engine/phrases.js";
 import { Voice } from "../../app/js/engine/voice.js";
 
 test("les nombres de 0 à 100 en lettres", () => {
-  const attendu = { 0: "zéro", 1: "un", 7: "sept", 10: "dix", 11: "onze", 16: "seize", 17: "dix-sept", 20: "vingt", 21: "vingt et un", 22: "vingt-deux", 37: "trente-sept", 41: "quarante et un", 60: "soixante", 69: "soixante-neuf", 70: "soixante-dix", 71: "soixante et onze", 72: "soixante-douze", 79: "soixante-dix-neuf", 80: "quatre-vingts", 81: "quatre-vingt-un", 88: "quatre-vingt-huit", 90: "quatre-vingt-dix", 91: "quatre-vingt-onze", 97: "quatre-vingt-dix-sept", 99: "quatre-vingt-dix-neuf", 100: "cent" };
+  const attendu = { 0: "zéro", 1: "un", 7: "sept", 10: "dix", 11: "onze", 16: "seize", 17: "dix-sept", 20: "vingt", 21: "vingt-et-un", 22: "vingt-deux", 37: "trente-sept", 41: "quarante-et-un", 60: "soixante", 69: "soixante-neuf", 70: "soixante-dix", 71: "soixante-et-onze", 72: "soixante-douze", 79: "soixante-dix-neuf", 80: "quatre-vingts", 81: "quatre-vingt-un", 88: "quatre-vingt-huit", 90: "quatre-vingt-dix", 91: "quatre-vingt-onze", 97: "quatre-vingt-dix-sept", 99: "quatre-vingt-dix-neuf", 100: "cent" };
   for (const [n, s] of Object.entries(attendu)) assert.equal(enLettres(Number(n)), s, `${n}`);
   assert.equal(enLettres(200), "deux cents"); assert.equal(enLettres(201), "deux cent un"); assert.equal(enLettres(1000), "mille");
-  assert.equal(enLettres(21, { feminin: true }), "vingt et une"); assert.equal(enLettres(81, { feminin: true }), "quatre-vingt-une"); assert.equal(enLettres(11, { feminin: true }), "onze");
+  assert.equal(enLettres(21, { feminin: true }), "vingt-et-une"); assert.equal(enLettres(81, { feminin: true }), "quatre-vingt-une"); assert.equal(enLettres(11, { feminin: true }), "onze");
   // chaque nombre de 0 à 100 a une écriture sans chiffre, et deux nombres différents s'écrivent différemment
   const toutes = Array.from({ length: 101 }, (_, n) => enLettres(n));
   assert.ok(toutes.every((s) => !/\d/.test(s))); assert.equal(new Set(toutes).size, 101);
@@ -22,13 +22,15 @@ test("les nombres de 0 à 100 en lettres", () => {
 });
 
 test("une phrase pour la voix : nombres, symboles, féminin", () => {
-  assert.equal(pourLaVoix("0 plus 6 ?"), "zéro plus six ?"); // l'exemple mal lu par la synthèse (docs/SPEC.md)
+  assert.equal(pourLaVoix("0 plus 6 ?"), "zéro plusse six ?"); // l'exemple mal lu par la synthèse (docs/SPEC.md)
   assert.equal(pourLaVoix("Place le poisson sur le nombre 37."), "Place le poisson sur le nombre trente-sept.");
-  assert.equal(pourLaVoix("5 + 2 = ?"), "cinq plus deux égale combien");
-  assert.equal(pourLaVoix("3 + ? = 7"), "trois plus combien égale sept");
-  assert.equal(pourLaVoix("? + 4 = 6"), "Combien plus quatre égale six");
-  assert.equal(pourLaVoix("6 × 7 − 2"), "six fois sept moins deux");
-  assert.equal(pourLaVoix("Ce soir, tu as gagné 21 étoiles de mer."), "Ce soir, tu as gagné vingt et une étoiles de mer.");
+  assert.equal(pourLaVoix("5 + 2 = ?"), "cinque plusse deux égale combien");
+  assert.equal(pourLaVoix("3 + ? = 7"), "trois plusse combien égale sept");
+  assert.equal(pourLaVoix("26 plus 10 ?"), "vingt-sisse plusse dix ?"); assert.equal(pourLaVoix("Combien font 8 plus 7 ?"), "Combien font huite plusse sept ?"); // la forme pleine devant une opération
+  assert.equal(pourLaVoix("70 moins 20 ?"), "soixante-disse moins vingt ?"); assert.equal(pourLaVoix("6 poissons et 8 perles, ça fait 14."), "six poissons et huit perles, ça fait quatorze.");
+  assert.equal(pourLaVoix("? + 4 = 6"), "Combien plusse quatre égale six");
+  assert.equal(pourLaVoix("6 × 7 − 2"), "sisse fois sept moins deux");
+  assert.equal(pourLaVoix("Ce soir, tu as gagné 21 étoiles de mer."), "Ce soir, tu as gagné vingt-et-une étoiles de mer.");
   assert.equal(pourLaVoix("1 dizaine et 1 unité."), "une dizaine et une unité.");
   assert.equal(pourLaVoix("La tortue est sur 1."), "La tortue est sur un.");
   assert.equal(pourLaVoix("La tortue est sur 7 et fait 2 sauts. Où arrive-t-elle ?"), "La tortue est sur sept et fait deux sauts. Où arrive-t-elle ?");

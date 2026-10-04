@@ -3,7 +3,7 @@
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const ROOT = fileURLToPath(new URL("../app/", import.meta.url)), PREFIX = "/Maths-CE1/";
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".mjs": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".json": "application/json", ".webmanifest": "application/manifest+json", ".webp": "image/webp", ".png": "image/png", ".svg": "image/svg+xml", ".jpg": "image/jpeg", ".ogg": "audio/ogg" };
@@ -18,4 +18,4 @@ export const serve = (port = 0) => new Promise((res) => {
   });
   srv.listen(port, "127.0.0.1", () => res({ srv, url: `http://127.0.0.1:${srv.address().port}${PREFIX}` }));
 });
-if (import.meta.url === `file://${process.argv[1]}`) { const { url } = await serve(Number(process.argv[2] ?? 8080)); console.log(`app servie sur ${url}`); }
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) { const { url } = await serve(Number(process.argv[2] ?? 8080)); console.log(`app servie sur ${url}`); }

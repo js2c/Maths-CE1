@@ -6,7 +6,7 @@
 import { createHash } from "node:crypto";
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join, relative, sep } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const APP = fileURLToPath(new URL("../app/", import.meta.url)), SKIP = new Set(["sw.js", "sw-files.json"]);
 const walk = (d) => readdirSync(d).flatMap((n) => { const p = join(d, n); return statSync(p).isDirectory() ? walk(p) : [p]; });
@@ -16,7 +16,7 @@ export const compute = () => {
   const version = h.digest("hex").slice(0, 12);
   return { version, files: ["./", ...files] };
 };
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) { // (comparaison valable aussi sous Windows)
   const c = compute(), jsonPath = join(APP, "sw-files.json"), swPath = join(APP, "sw.js");
   const json = JSON.stringify(c, null, 1) + "\n", sw = readFileSync(swPath, "utf8").replace(/^const VERSION = ".*";$/m, `const VERSION = "${c.version}";`);
   if (process.argv.includes("--check")) {

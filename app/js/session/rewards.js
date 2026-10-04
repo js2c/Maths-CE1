@@ -12,7 +12,8 @@
 //            cette version, ou après « tout effacer ») ;
 //   zones    { ouvertes: [id], dates: { id: t } } : les zones ouvertes (au départ, celles que cartes.json
 //            marque `ouverte`) ;
-//   cadeaux  { ids: [id] } : les décors offerts par la surprise (session/surprise.js), posés dans le récif.
+//   cadeaux, decors : les décors du récif (cadeaux de la surprise, décors des doublons) ; supprimés le 5 octobre 2026
+//            (décision du parent), ces fiches restent dans les données mais ne sont plus lues.
 // Les règles (prix d'un coquillage, poids des raretés, quota, brillantes, série, semaines réussies) viennent
 // de content/cartes.json ; les semaines d'école, de content/calendrier.json. Les fonctions pures sont
 // testées par tests/unit/rewards.test.mjs et tests/unit/cartes.test.mjs.
@@ -51,21 +52,22 @@ const weighted = (pool, poids, rnd) => {
   for (let i = 0; i < pool.length; i++) { x -= w[i]; if (x < 0) return pool[i]; }
   return pool.at(-1);
 };
-// la carte d'un coquillage ordinaire : jamais une légendaire (elles viennent des coquillages dorés).
-//  - `nouvelle` (sous le quota), ou aucune carte possédée : une carte pas encore obtenue d'une zone ouverte ;
-//  - sinon, ou s'il n'en reste aucune à gagner dans les zones ouvertes : un doublon d'une carte déjà
-//    obtenue, de préférence une carte qui n'est pas encore brillante.
+// ce que donne un coquillage ordinaire (décision du parent du 5 octobre 2026 : jamais de doublon) :
+//  - `nouvelle` (sous le quota), ou aucune carte possédée : une créature pas encore obtenue d'une zone ouverte,
+//    jamais une légendaire (elles viennent des coquillages dorés) → { carte, sorte: "nouvelle" } ;
+//  - sinon, ou s'il n'en reste aucune à gagner : une créature déjà possédée qui n'est pas encore brillante, et qui le
+//    devient → { carte, sorte: "brillante" } ;
+//  - sinon (toutes les créatures possédées sont brillantes) : null, le coquillage attend.
 // Tirage pondéré par la rareté (poids de content/cartes.json).
-export function pickCard(cards, owned, { zones, poids, nouvelle = true }, rnd = Math.random) {
-  const open = cards.filter((c) => zones.includes(c.zone) && c.rarete !== "legendaire");
-  const fresh = open.filter((c) => !owned[c.id]), mine = cards.filter((c) => owned[c.id] && c.rarete !== "legendaire");
-  if ((nouvelle || !mine.length) && fresh.length) return weighted(fresh, poids, rnd);
+export function pickShell(cards, owned, { zones, poids, nouvelle = true }, rnd = Math.random) {
+  const fresh = cards.filter((c) => zones.includes(c.zone) && c.rarete !== "legendaire" && !owned[c.id]), mine = cards.filter((c) => owned[c.id]);
+  if ((nouvelle || !mine.length) && fresh.length) return { carte: weighted(fresh, poids, rnd), sorte: "nouvelle" };
   const dull = mine.filter((c) => !owned[c.id].brillante);
-  return weighted(dull.length ? dull : mine, poids, rnd);
+  return dull.length ? { carte: weighted(dull, poids, rnd), sorte: "brillante" } : null;
 }
 // range une carte dans la collection. Elle est brillante si elle l'était déjà (une brillante le reste) ou si
-// le tirage `tirage` l'a rendue brillante (cartes.json : brillanteNouvelle, brillanteDoublon ; décision du
-// parent du 27 septembre 2026 : plus de règle du 3e doublon).
+// le tirage `tirage` l'a rendue brillante (cartes.json : brillanteNouvelle ; une créature possédée devient
+// brillante par un coquillage au-dessus du quota : `pickShell`, sorte « brillante »).
 export function addCard(owned, card, now = Date.now(), tirage = false) {
   const had = owned[card.id], n = (had?.n ?? 0) + 1, shiny = !!had?.brillante || tirage;
   return { owned: { ...owned, [card.id]: { n, premiere: had?.premiere ?? now, derniere: now, brillante: shiny } }, nouvelle: !had, devientBrillante: shiny && !had?.brillante, parTirage: tirage && !had?.brillante };
@@ -106,27 +108,17 @@ export function goldenStar(debuts, now, rules) {
   if (debuts.filter((t) => weekStart(t) === w).length !== rules.seances) return false;
   return goodWeeks(debuts, rules) % rules.semainesParDoree === 0;
 }
-// une carte sort-elle brillante ? `p` : sa chance (20 % pour une carte nouvelle, 5 % pour un doublon)
+// une carte nouvelle sort-elle brillante ? `p` : sa chance (cartes.json, brillanteNouvelle : 20 %)
 export const shinyDraw = (rnd, p) => rnd() < p;
-// la chance qu'une carte gagnée sorte brillante : carte nouvelle ou doublon (cartes.json)
-export const shinyChance = (content, owned, card) => (owned[card.id] ? content.brillanteDoublon : content.brillanteNouvelle) ?? 0;
+export const shinyChance = (content) => content.brillanteNouvelle ?? 0;
 
 // ---------------------------------------------------------------- le trésor
-// lot 3 bis (docs/SPEC-LOT3BIS.md, A6) : les décors du récif gagnés par les doublons (cartes.json, decors.liste, dans
-// l'ordre) ; `nextDecor` : le suivant, ou null quand la collection est complète ; `reefDecor` : ce qui est posé sur la page
-// d'une zone du récif, les décors des doublons et (dans la première zone) les cadeaux de la surprise : [{ id, sprite, at }]
-export const nextDecor = (c, ids) => (c?.decors?.liste ?? []).find((d) => !ids.includes(d.id)) ?? null;
-export function reefDecor(c, { decors = [], gifts = [] }, zone, giftSpots = {}) {
-  const out = (c?.decors?.liste ?? []).filter((d) => decors.includes(d.id) && d.zone === zone).map((d) => ({ id: d.id, sprite: d.sprite, at: d.place, s: Math.min(1, d.echelle ?? 1) }));
-  if (zone === c?.zones?.[0]?.id) for (const id of gifts) if (giftSpots[id]) out.push({ id, sprite: `cadeau.${id}`, at: giftSpots[id] });
-  return out;
-}
 export class Rewards {
   // content : cartes.json ; calendrier : calendrier.json (quota des cartes nouvelles ; sans lui, pas de quota)
   constructor(store, content = null, calendrier = null) {
     this.store = store; this.c = content; this.cal = calendrier; this.listeners = new Set();
     this.st = { id: "etoiles", total: 0, cumul: 0, dorees: 0, doreesDepensees: 0, arcEnCiel: 0, arcDepensees: 0, arcLibre: 0, coquillages: 0, coquillagesDores: 0 };
-    this.owned = {}; this.serie = null; this.base = null; this.zones = null; this.gifts = [];
+    this.owned = {}; this.serie = null; this.base = null; this.zones = null;
   }
   async load(now = Date.now()) {
     this.st = { ...this.st, ...((await this.store.get("recompenses", "etoiles")) ?? {}) };
@@ -137,8 +129,6 @@ export class Rewards {
     if (!this.base) { this.base = { id: "quota", date: now, cartes: Object.keys(this.owned).length }; await this.store.put("recompenses", this.base); }
     this.zones = await this.store.get("recompenses", "zones");
     if (!this.zones) this.zones = { id: "zones", ouvertes: (this.c?.zones ?? []).filter((z) => z.ouverte).map((z) => z.id), dates: {} };
-    this.gifts = (await this.store.get("recompenses", "cadeaux"))?.ids ?? [];
-    this.decors = (await this.store.get("recompenses", "decors"))?.ids ?? [];
     return this;
   }
   get total() { return this.st.total; }
@@ -156,10 +146,6 @@ export class Rewards {
   quota(now = Date.now()) { return quotaAt(this.base, this.cal, now, this.c.quota); }
   // les zones ouvertes
   zoneOpen(id) { return this.zones.ouvertes.includes(id); }
-  // un cadeau de la surprise rejoint le récif
-  async giveGift(id) { if (!this.gifts.includes(id)) { this.gifts = [...this.gifts, id]; await this.store.put("recompenses", { id: "cadeaux", ids: this.gifts }); } }
-  // lot 3 bis (A6) : le décor que le prochain doublon apporterait (le premier de la liste pas encore gagné), ou null
-  nextDecor() { return nextDecor(this.c, this.decors); }
   // ---------------------------------------------------------------- entraînement libre
   // un niveau franchi pendant l'entraînement libre : l'étoile arc-en-ciel attend la séance suivante
   async arcFromFree() { await this.special("arcLibre"); }
@@ -178,28 +164,34 @@ export class Rewards {
     return z;
   }
   // ---------------------------------------------------------------- coquillages
-  // peut-on ouvrir un coquillage ?
-  canOpen() { return !!this.c && this.st.total >= this.c.coquillage.prix; }
+  // ce qu'un coquillage ordinaire donnerait maintenant : une créature nouvelle (sous le quota), sinon une créature
+  // possédée à rendre brillante, sinon rien (pickShell)
+  shellKind(now = Date.now()) { return this.c ? pickShell(this.c.cartes, this.owned, { zones: this.zones.ouvertes, poids: this.c.poids, nouvelle: this.count < this.quota(now) }, () => 0)?.sorte ?? null : null; }
+  // peut-on ouvrir un coquillage ? Assez d'étoiles, et quelque chose à donner (sinon il attend : rien n'est perdu)
+  canOpen(now = Date.now()) { return !!this.c && this.st.total >= this.c.coquillage.prix && !!this.shellKind(now); }
   // range une carte gagnée (tirage de la brillante compris) et renvoie ce qu'il faut montrer
   async win(card, rnd, now) {
-    const r = addCard(this.owned, card, now, shinyDraw(rnd, shinyChance(this.c, this.owned, card)));
+    const r = addCard(this.owned, card, now, shinyDraw(rnd, shinyChance(this.c)));
     this.owned = r.owned;
     await this.store.put("recompenses", { id: "cartes", cartes: this.owned });
-    // lot 3 bis (A6) : un doublon apporte le décor suivant de la liste pour le récif, tant qu'il en reste (le tirage de la
-    // brillante, fait avant, ne change pas)
-    const decor = r.nouvelle ? null : this.nextDecor();
-    if (decor) { this.decors = [...this.decors, decor.id]; await this.store.put("recompenses", { id: "decors", ids: this.decors }); }
-    return { carte: card, nouvelle: r.nouvelle, devientBrillante: r.devientBrillante, parTirage: r.parTirage, brillante: this.owned[card.id].brillante, n: this.owned[card.id].n, ...(decor ? { decor } : {}) };
+    return { carte: card, nouvelle: r.nouvelle, devientBrillante: r.devientBrillante, parTirage: r.parTirage, brillante: this.owned[card.id].brillante, n: this.owned[card.id].n };
   }
-  // ouvre un coquillage : dépense son prix, tire une carte (nouvelle sous le quota, sinon un doublon) et la
-  // range ; renvoie { carte, nouvelle, devientBrillante, parTirage, brillante, n }
+  // une créature possédée devient brillante (un coquillage au-dessus du quota)
+  async shine(card, now) {
+    const had = this.owned[card.id];
+    this.owned = { ...this.owned, [card.id]: { ...had, brillante: true, brillanteLe: now } };
+    await this.store.put("recompenses", { id: "cartes", cartes: this.owned });
+    return { carte: card, nouvelle: false, devientBrillante: true, parTirage: false, brillante: true, rendueBrillante: true, n: had.n };
+  }
+  // ouvre un coquillage : dépense son prix, puis une créature nouvelle (sous le quota) ou une créature possédée qui
+  // devient brillante ; renvoie { carte, nouvelle, devientBrillante, parTirage, brillante, n, rendueBrillante? }, ou null
   async openShell(rnd = Math.random, now = Date.now()) {
-    if (!this.canOpen()) return null;
-    const c = this.c, card = pickCard(c.cartes, this.owned, { zones: this.zones.ouvertes, poids: c.poids, nouvelle: this.count < this.quota(now) }, rnd);
-    if (!card) return null;
+    if (!this.canOpen(now)) return null;
+    const c = this.c, got = pickShell(c.cartes, this.owned, { zones: this.zones.ouvertes, poids: c.poids, nouvelle: this.count < this.quota(now) }, rnd);
+    if (!got) return null;
     this.st = { ...this.st, total: this.st.total - c.coquillage.prix, coquillages: this.st.coquillages + 1 };
     await this.save();
-    return this.win(card, rnd, now);
+    return got.sorte === "nouvelle" ? this.win(got.carte, rnd, now) : this.shine(got.carte, now);
   }
   // la légendaire qu'un coquillage doré donnerait maintenant (une étoile dorée en réserve, une place sous le
   // quota, une légendaire gagnable), ou null

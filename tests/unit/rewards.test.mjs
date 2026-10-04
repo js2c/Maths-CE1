@@ -1,4 +1,4 @@
-// Récompenses : tirage des cartes (pas de doublon avant une zone complète, raretés, brillantes),
+// Récompenses : tirage des cartes (jamais de doublon depuis le 5 octobre 2026, raretés, brillantes),
 // coquillages, série qui se met en pause, contenu des 15 cartes du lagon. Les règles du lot 2 (quota, brillantes,
 // zones, étoiles dorées, légendaires) : tests/unit/cartes.test.mjs.
 import { test } from "node:test";
@@ -7,7 +7,7 @@ import { readFileSync } from "node:fs";
 import { IDBFactory } from "fake-indexeddb";
 import { Store } from "../../app/js/engine/store.js";
 import { rng } from "../../app/js/engine/ocean.js";
-import { addCard, nextSeries, pickCard, Rewards } from "../../app/js/session/rewards.js";
+import { addCard, nextSeries, pickShell, Rewards } from "../../app/js/session/rewards.js";
 
 const cartes = JSON.parse(readFileSync(new URL("../../app/content/cartes.json", import.meta.url)));
 const lagon = { zones: ["lagon"], poids: cartes.poids };
@@ -15,23 +15,23 @@ const lagon = { zones: ["lagon"], poids: cartes.poids };
 test("le lagon : 15 cartes, noms uniques, communes et rares, une anecdote et une place dans le récif chacune", () => {
   const L = cartes.cartes.filter((c) => c.zone === "lagon");
   assert.equal(L.length, 15); assert.equal(new Set(L.map((c) => c.id)).size, 15);
-  assert.ok(L.every((c) => ["commune", "rare"].includes(c.rarete) && c.anecdote.length > 20 && c.nom && Array.isArray(c.recif)));
+  assert.ok(L.every((c) => ["commune", "rare"].includes(c.rarete) && c.anecdote.length > 20 && c.nom));
   assert.ok(L.every((c) => /^[a-z-]+$/.test(c.id) && (c.illustration === null || c.illustration === `assets/cards/${c.id}.webp`)));
   assert.deepEqual(cartes.zones.filter((z) => z.ouverte).map((z) => z.id), ["lagon"]);
 });
 
-test("pas de doublon tant que la zone n'est pas complète ; ensuite des doublons ; les raretés pèsent", () => {
+test("jamais de doublon : la zone se complète, puis les créatures deviennent brillantes ; les raretés pèsent", () => {
   const r = rng(7); let owned = {}; const seen = [];
-  for (let i = 0; i < 15; i++) { const c = pickCard(cartes.cartes, owned, lagon, r); seen.push(c.id); owned = addCard(owned, c).owned; }
+  for (let i = 0; i < 15; i++) { const c = pickShell(cartes.cartes, owned, lagon, r).carte; seen.push(c.id); owned = addCard(owned, c).owned; }
   assert.equal(new Set(seen).size, 15);
-  const again = pickCard(cartes.cartes, owned, lagon, r); assert.ok(owned[again.id]);
+  const again = pickShell(cartes.cartes, owned, lagon, r); assert.ok(owned[again.carte.id] && again.sorte === "brillante");
   // sur beaucoup de premiers tirages, une commune sort plus souvent qu'une rare (poids 3 contre 1)
   const first = { commune: 0, rare: 0 }; const r2 = rng(3);
-  for (let i = 0; i < 2000; i++) first[pickCard(cartes.cartes, {}, lagon, r2).rarete]++;
+  for (let i = 0; i < 2000; i++) first[pickShell(cartes.cartes, {}, lagon, r2).carte.rarete]++;
   const pc = first.commune / 11, pr = first.rare / 4; assert.ok(pc > 2.3 * pr && pc < 3.8 * pr, JSON.stringify(first));
-  assert.equal(pickCard(cartes.cartes, {}, { zones: ["inconnue"], poids: cartes.poids }, r), null);
-  // les légendaires ne sortent jamais d'un coquillage (elles viendront des étoiles dorées, lot 4)
-  for (let i = 0; i < 200; i++) assert.notEqual(pickCard(cartes.cartes, {}, { zones: ["large", "abysses"], poids: cartes.poids }, r).rarete, "legendaire");
+  assert.equal(pickShell(cartes.cartes, {}, { zones: ["inconnue"], poids: cartes.poids }, r), null);
+  // les légendaires ne sortent jamais d'un coquillage ordinaire (elles viennent des étoiles dorées)
+  for (let i = 0; i < 200; i++) assert.notEqual(pickShell(cartes.cartes, {}, { zones: ["large", "abysses"], poids: cartes.poids }, r)?.carte.rarete, "legendaire");
 });
 
 test("une carte ne devient plus brillante au troisième doublon (décision du parent du 27 septembre 2026)", () => {

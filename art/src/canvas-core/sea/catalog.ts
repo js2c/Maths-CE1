@@ -4,7 +4,7 @@
 // image à l'échelle 1 et 2, la recadre au plus juste, et range tout en planches WebP + `atlas.json`.
 // Les positions dans l'atlas sont relatives à l'ancrage : l'application pose un sprite par son ancrage.
 import type { Gfx, P } from "../core";
-import { BUBBLE_R, drawAnswerBubble, drawBackground, drawBubble, drawCheck, drawFish, drawMoon, drawEraseKey, drawNameTag, drawShellKey, drawSlate, drawReplayKey, drawTally, SLATE_H, SLATE_W, NAME_H, NAME_W, TALLY_H, TALLY_W, drawRays, drawPlay, drawShimmer, drawSpeaker, drawStar, drawWeed, FISH_KINDS, FISH_N, SHIMMER_N, WEEDS } from "./decor";
+import { BUBBLE_R, drawAnswerBubble, drawBubble, drawCheck, drawFish, drawMoon, drawEraseKey, drawNameTag, drawShellKey, drawSlate, drawReplayKey, drawTally, SLATE_H, SLATE_W, NAME_H, NAME_W, TALLY_H, TALLY_W, drawPlay, drawSpeaker, drawStar, FISH_KINDS, FISH_N } from "./decor";
 import { IDLE_N, OCTO_CLIPS, OCTO_FPS, octoParts, type Part, RING_Y } from "./octopus";
 import { drawTurtle, TURTLE_CLIPS, TURTLE_FPS } from "./turtle";
 import { CREATURE_FPS, CREATURE_N, CREATURES } from "./creatures";
@@ -64,16 +64,14 @@ const octoSpecs: Spec[] = Object.entries(partFrames).map(([name, list]) => ({
 }));
 
 export const SPECS: Spec[] = [
-  { name: "fond", sheet: "fond", W: 1280, H: 800, origin: [0, 0], frames: 1, full: true, draw: (g) => drawBackground(g) },
-  { name: "rayons", sheet: "rayons", W: 1280, H: 800, origin: [0, 0], frames: 1, full: true, scales: [1], draw: (g) => drawRays(g) },
+  // (lot « Lagon en fond d'exercices » : le fond, ses rayons, ses algues et ses reflets ne sont plus fabriqués ici ; le fond de
+  // l'application est le lagon du récif vivant, extrait par tools/export-lagon.mjs)
   ...octoSpecs,
-  ...WEEDS.map((w, i): Spec => ({ name: `algue.${i}`, sheet: "algues", W: 1280, H: 800, origin: [w.x, w.y], frames: 1, draw: (g) => drawWeed(g, w, i), meta: { ...w } })),
   ...FISH_KINDS.flatMap((_, k) => ([-1, 1] as const).map((dir): Spec => ({
     name: `poisson.${k}.${dir < 0 ? "g" : "d"}`, sheet: "poissons", W: 200, H: 120, origin: [100, 60], frames: FISH_N, fps: 12,
     draw: (g, f) => drawFish(g, k, dir, f, 100, 60), loop: [0, FISH_N],
   }))),
   ...BUBBLE_R.map((r, i): Spec => ({ name: `bulle.${r}`, sheet: "petits", W: 40, H: 40, origin: [20, 20], frames: 1, draw: (g) => drawBubble(g, r, 20, 20, i) })),
-  ...Array.from({ length: SHIMMER_N }, (_, i): Spec => ({ name: `reflet.${i}`, sheet: "petits", W: 260, H: 40, origin: [130, 20], frames: 1, draw: (g) => drawShimmer(g, i, 130, 20) })),
   // la tortue : une boucle par clip ; ancrage = sous son ventre, là où elle se pose sur la bouée.
   // meta.path (saut) : par image, [avancée 0..1 entre les deux bouées, hauteur 0..1 de l'arc]
   ...TURTLE_CLIPS.map((c): Spec => ({

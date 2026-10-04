@@ -10,12 +10,15 @@
 //   node tools/export-app.mjs --only pieuvre  seulement les planches dont le nom contient « pieuvre »
 //   node tools/export-app.mjs --no-check      sans le second rendu de contrôle
 //   node tools/export-app.mjs --runtime       seulement app/js/art/runtime.js
+// Le fond de l'application, le lagon, n'est pas dessiné ici : il est extrait de la maquette du récif vivant par
+// tools/export-lagon.mjs, appelé à la fin (planches « lagon » et « lagon-vie »).
 import { build } from "esbuild";
 import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync, existsSync, readdirSync, unlinkSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { detect } from "./detect.mjs";
+import { exportLagon } from "./export-lagon.mjs";
 
 const args = process.argv.slice(2), opt = (k) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : undefined; };
 const only = opt("--only"), check = !args.includes("--no-check");
@@ -47,7 +50,7 @@ mkdirSync(OUT, { recursive: true });
 const atlasPath = join(OUT, "atlas.json");
 const atlas = existsSync(atlasPath) && only ? JSON.parse(readFileSync(atlasPath, "utf8")) : { version: 1, generated: "art/tools/export-app.mjs", sheets: {}, sprites: {} };
 if (sheets.some((s) => s.startsWith("pieuvre"))) atlas.octo = await pg.evaluate(() => window.EXPORT.octo());
-if (!only) for (const f of readdirSync(OUT)) if (f.endsWith(".webp") && !sheets.some((s) => f.startsWith(`${s}@`))) unlinkSync(join(OUT, f)); // planches qui n'existent plus
+if (!only) for (const f of readdirSync(OUT)) if (f.endsWith(".webp") && !f.startsWith("lagon") && !sheets.some((s) => f.startsWith(`${s}@`))) unlinkSync(join(OUT, f)); // planches qui n'existent plus (le lagon : plus bas)
 let bad = 0;
 const report = [];
 for (const sheet of sheets) {
@@ -80,6 +83,8 @@ for (const sheet of sheets) {
     console.log(`${`${sheet}@${scale}x`.padEnd(26)} ${names.length} page(s) ${report.at(-1).taille.padEnd(20)} ${report.at(-1).fichier.padStart(8)}  décodé ${report.at(-1).memoire.padStart(8)}  ${same}`);
   }
 }
+// le lagon (tools/export-lagon.mjs) : avec l'export complet, ou avec --only lagon ; sinon ses entrées restent dans l'atlas
+if (!only || only.includes("lagon")) bad += await exportLagon({ browser, atlas, OUT, check });
 atlas.hash = createHash("md5").update(JSON.stringify(atlas.sprites)).digest("hex").slice(0, 10);
 writeFileSync(atlasPath, JSON.stringify(atlas));
 console.log(`atlas    -> ${atlasPath} (${Object.keys(atlas.sprites).length} sprites, empreinte ${atlas.hash})`);

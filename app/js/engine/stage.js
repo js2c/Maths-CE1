@@ -4,9 +4,10 @@
 //
 // Couches, de bas en haut (voir docs/ARCHITECTURE.md). Le moins possible de calques plein écran : sans
 // processeur graphique, le navigateur doit les superposer lui-même à chaque image.
-//   #bg     le fixe : eau, rayons, sable, rochers (une image, composée une fois)
+//   #bg     le fixe : le lagon du récif vivant (une image, composée une fois ; lagon.js)
+//   #lagon  ce qui vit dans le lagon : miroitement, poissons, algues, faisceaux (lagon.js)
 //   #line   la ligne graduée de la question, dessinée par un Worker dans une bande (line.js)
-//   #back   le décor mobile : reflets, algues, poissons, bulles (des acteurs, voir actor.js)
+//   #back   les visiteurs de la surprise de l'accueil (des acteurs, voir actor.js)
 //   #octo   la pieuvre, recomposée 12 fois/s, inclinée et déplacée par le compositeur (transform CSS)
 //   #front  le premier plan : étoile de mer, tortue, surbrillances (des acteurs)
 //   #ui     les boutons (réponses, réécouter), en éléments HTML
@@ -31,7 +32,7 @@ export class Stage {
   onResize(f) { this.listeners.add(f); }
   // la boucle d'animation : chaque rappel reçoit (t en s, dt en s). On mesure le temps de travail de
   // chaque image et l'intervalle entre deux images ; si la moyenne dépasse 20 ms, on allège (niveau 1
-  // puis 2 : voir scene.js), et on remonte quand tout redevient fluide.
+  // puis 2 : voir lagon.js), et on remonte quand tout redevient fluide.
   start() {
     let last = performance.now();
     // l'horodatage de requestAnimationFrame peut, rarement, être plus ancien que celui de l'image précédente : le temps

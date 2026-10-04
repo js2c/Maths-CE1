@@ -14,16 +14,17 @@ src/canvas-core/sea/                        │
   decor.ts     fond, algues, poissons…      │                        ▶ js/art/runtime.js (généré)
   catalog.ts   ce qui est fabriqué          │
   runtime.ts   dessin en direct (ligne)    ─┘
+recif-vivant/index.html (maquette, lue seulement) ── tools/export-lagon.mjs ─▶ assets/art/lagon*.webp + atlas.json
 ```
 
-Une seule source pour chaque dessin : l'atelier. L'application ne contient aucune géométrie de personnage ; elle pose des images fabriquées et dessine seulement ce qui change à chaque question (la ligne graduée, les chiffres des réponses), avec le module `runtime.js` généré depuis `runtime.ts`, qui réutilise l'encre et les chiffres de la scène de référence.
+Une seule source pour chaque dessin : l'atelier. Une exception depuis le lot « Lagon en fond d'exercices » (octobre 2026) : le fond de l'application est le lagon de la maquette du récif vivant, des images extraites telles quelles (voir « Le lagon » plus bas). L'application ne contient aucune géométrie de personnage ; elle pose des images fabriquées et dessine seulement ce qui change à chaque question (la ligne graduée, les chiffres des réponses), avec le module `runtime.js` généré depuis `runtime.ts`, qui réutilise l'encre et les chiffres de la scène de référence.
 
 ## Les trois niveaux de l'animation
 
 | Niveau | Quoi | Où |
 | --- | --- | --- |
-| Fabriqué à l'avance | fond, rayons, pièces de la pieuvre, algues au repos, poissons (battement de queue), bulles, reflets, étoile de mer, bulles-réponses, boutons | `art/` → `app/assets/art/` |
-| Composé en direct | frise des gestes de la pieuvre, flottement, nage des poissons, ondulation des algues (décalage de bandes de pixels), montée des bulles, dérive des reflets | `app/js/engine/` |
+| Fabriqué à l'avance | pièces de la pieuvre, étoile de mer, bulles-réponses, boutons… ; extrait de la maquette du récif vivant : le fond du lagon, ses algues, ses poissons en silhouette, les textures des faisceaux | `art/` → `app/assets/art/` |
+| Composé en direct | frise des gestes de la pieuvre, flottement ; le lagon : nage et ondulation des poissons, ondulation des algues (décalage de bandes de pixels), faisceaux qui dérivent et respirent, miroitement de la surface (WebGL) | `app/js/engine/` |
 | Dessiné en direct | la ligne graduée (une fois par question), les chiffres des réponses, les anneaux de surbrillance, les arcs de saut | `app/js/art/runtime.js` |
 
 ## La pieuvre : des pièces et une frise
@@ -38,19 +39,28 @@ Enchaînements : chaque geste part d'une phase connue du repos (`entry`) et y re
 
 De bas en haut, dans une scène logique de 1280 × 800 mise à l'échelle de l'écran (`js/engine/stage.js`) :
 
-1. `#bg` : fond fixe (eau, rayons, sable, rochers), composé une fois hors écran et affiché par un canvas `bitmaprenderer`.
-2. `#line` : la ligne graduée de la question, dans une bande de la scène, dessinée par un **Worker** (`js/art/line-worker.js`, qui exécute `runtime.js`) ; la version « question » et la version « correction » sont préparées ensemble.
-3. `#back` : le décor mobile, en **acteurs** (`js/engine/actor.js`) : reflets, algues, poissons, bulles.
-4. `#octo` : la pieuvre.
-5. `#fx` : calque d'effets de la bande de la ligne (arcs de saut numérotés), dessiné seulement pendant un retour ou une leçon.
-6. `#front` : premier plan en acteurs (étoile de mer, tortue).
-7. `#ui` : boutons HTML (bulles-réponses, réécouter, jouer), chacun portant un petit canvas dessiné une fois.
+1. `#bg` : le fond fixe, le lagon (`lagon.fond`), composé une fois hors écran et affiché par un canvas `bitmaprenderer`.
+2. `#lagon` : ce qui vit dans le lagon (`js/engine/lagon.js`) : le miroitement (canvas WebGL limité à la bande du haut où la surface ondule, 196 px), les poissons et les algues en **acteurs** (`js/engine/actor.js`), les faisceaux (un canvas à la résolution 1x). Sous la ligne graduée.
+3. `#line` : la ligne graduée de la question, dans une bande de la scène, dessinée par un **Worker** (`js/art/line-worker.js`, qui exécute `runtime.js`) ; la version « question » et la version « correction » sont préparées ensemble.
+4. `#back` : les visiteurs de la surprise de l'accueil (acteurs).
+5. `#octo` : la pieuvre.
+6. `#fx` : calque d'effets de la bande de la ligne (arcs de saut numérotés), dessiné seulement pendant un retour ou une leçon.
+7. `#front` : premier plan en acteurs (étoile de mer, tortue).
+8. `#ui` : boutons HTML (bulles-réponses, réécouter, jouer), chacun portant un petit canvas dessiné une fois.
 
 **Pourquoi des acteurs et pas un grand canvas animé.** Mesuré dans Chromium sans processeur graphique, processeur ralenti ×4 : un canvas modifié est recopié en entier vers le compositeur à chaque image ; un canvas animé plein écran (2560 × 1600) coûtait ~880 ms de copie par seconde, et un canvas 2D fixe plein écran était lui aussi recopié à chaque image (~11 ms). Chaque acteur a donc son petit canvas, redessiné seulement quand son image change (12 à 15 fois par seconde au plus), et ses déplacements, sa réduction (jamais d'agrandissement) et son opacité sont des `transform` CSS. Les algues ondulent en décalant les bandes horizontales du brin au repos, 15 fois par seconde. Sur une tablette avec processeur graphique, ces copies sont presque gratuites ; cette organisation protège surtout les appareils où Chrome dessine sans lui.
 
-Les planches existent en @1x et @2x ; le service worker ne met en cache que celle de l'écran (`sw.js?r=1` ou `?r=2`, choisi par `main.js` comme `sprites.js`). L'application prend la plus proche au-dessus de son échelle d'affichage et, si l'échelle ne tombe pas juste (écran à 1,5 pixel par pixel logique), réduit la planche une seule fois au chargement : chaque image affichée est ensuite une copie pixel pour pixel. Aucune image n'est agrandie, sauf les rayons (fournis en @1x, aplats à 10 % d'opacité).
+Les planches existent en @1x et @2x ; le service worker ne met en cache que celle de l'écran (`sw.js?r=1` ou `?r=2`, choisi par `main.js` comme `sprites.js`). L'application prend la plus proche au-dessus de son échelle d'affichage et, si l'échelle ne tombe pas juste (écran à 1,5 pixel par pixel logique), réduit la planche une seule fois au chargement : chaque image affichée est ensuite une copie pixel pour pixel. Aucune image n'est agrandie, sauf les textures des faisceaux du lagon (96 × 512, étirées : une lumière floue).
 
-**Allègement automatique** : la scène mesure l'intervalle moyen entre images (hors 3 premières secondes) ; au-delà de 20 ms elle passe au niveau 1 (algues à 8 images/s, moitié moins de reflets), puis au niveau 2 (algues figées, pas de reflets, un poisson de moins). Elle remonte quand tout redevient fluide.
+**Allègement automatique** : la scène mesure l'intervalle moyen entre images (hors 3 premières secondes) ; au-delà de 20 ms elle passe au niveau 1 (algues et ondulation des poissons à 8 images/s, miroitement à 15 images/s, un faisceau sur deux), puis au niveau 2 (algues, miroitement et faisceaux figés, les faisceaux fondus une fois dans le fond, poissons sans ondulation, au plus trois groupes à l'écran). Elle remonte quand tout redevient fluide.
+
+## Le lagon (lot « Lagon en fond d'exercices »)
+
+Le fond de toute l'application est le début du panorama de la maquette du récif vivant (`art/recif-vivant/index.html`), ramené à la hauteur de l'écran : 2 838,4 px du panorama (1 774 px de haut) pour les 1 280 px de la scène, soit k = 800 / 1 774 px de la scène par px du panorama. La maquette n'est jamais modifiée.
+
+- *Extraction* (`art/tools/export-lagon.mjs`, appelé par `export-app.mjs`, ou seul) : lit l'objet `A` du script de la maquette (une ligne de JSON) et ses tableaux `HEAD`, `SOLOS`, `SCHOOLS` ; compose le fond à la résolution du panorama (tuiles, plan arrière de la flore, premier plan masqué, plan avant : la gorgone violette et l'anémone blanche du bord droit, immobiles), le réduit à 1280 × 800 et 2560 × 1600 (planche « lagon », WebP avec perte, qualité 0,9 : l'image d'origine l'est déjà) ; range les 3 algues, les 22 poissons (réduits de k, 1 px de marge) et les 6 textures de faisceau (le procédé `makeShaft` de la maquette, graine fixe) dans la planche « lagon-vie » (WebP avec perte, qualité 0,9 ; sans perte, 572 Ko au lieu de 230 en @2x). Le relief du récif (`top`), le sens de la tête et la composition des bancs vont dans `meta` de `lagon.fond`, avec l'empreinte de la maquette (contrôlée par `tests/unit/lagon.test.mjs`). Seconde extraction dans une page neuve : empreintes des pixels et des fichiers identiques.
+- *Moteur* (`app/js/engine/lagon.js`) : le code de la maquette, mêmes réglages, en px du panorama. Les poissons : tout le peuplement de la maquette est simulé (13 groupes environ sur tout le panorama, arrivées par la gauche, depuis le large, ou remontant du récif) ; seuls les poissons de la partie visible ont un acteur, créé à l'entrée et retiré à la sortie, rangé du plus petit au plus grand ; l'ondulation (14 bandes verticales décalées) et l'inclinaison sont dessinées dans le canvas de l'acteur à 15 images/s, le déplacement est une translation du compositeur. Les algues : bandes horizontales décalées (formule de la maquette), 15 images/s. Les faisceaux : la formule de la maquette (bandes de lumière qui voyagent, respiration, dérive, balancement), dessinés en `screen` dans un canvas à la résolution 1x, 15 images/s. Le miroitement : le programme WebGL de la maquette, sur la bande du haut (texture : cette bande du fond à la résolution de l'écran), 30 images/s ; sans WebGL, la bande n'existe pas et le fond reste fixe.
+- *Récif en pages* (`session/reef.js`, `moving`) : le fond, le calque du lagon et celui des visiteurs suivent la page ; la copie de la page voisine montre le lagon.
 
 ## Fabriquer les images
 
@@ -59,6 +69,7 @@ cd art && npm install
 node tools/export-app.mjs                # tout : planches, atlas, runtime.js, contrôles
 node tools/export-app.mjs --only pieuvre # une partie
 node tools/export-app.mjs --runtime      # seulement app/js/art/runtime.js
+node tools/export-lagon.mjs              # seulement le lagon (extrait de la maquette du récif vivant)
 node tools/still.mjs octoSheet --frame 18 --out out/pieuvre.png --scale 2   # planche de modèle de la pieuvre
 node tools/still.mjs creaturesSheet --frame 0 --out out/creatures.png --scale 2   # les 15 créatures du lagon
 node tools/still.mjs treasureSheet --frame 0 --out out/tresor.png --scale 1       # coquillage, étoiles, cartes
@@ -291,6 +302,7 @@ node tests/e2e/cartes.mjs          # lot 2 : ouverture d'une zone, brillantes, q
 node tests/e2e/ergonomie.mjs       # frise, « je ne sais pas », pause et reprise, « passer » (leçon, exemple, correction), « Encore ! » et entraînement libre
 node tests/e2e/frise.mjs           # la frise d'avancement en images (densité 2), sans réaction au toucher
 node tests/e2e/parent.mjs         # espace parent : appui long, code, onglets, exports, code oublié, restauration
-node tests/e2e/perf.mjs            # mesures (processeur ralenti ×4, 1280 × 800, densité 2) et captures
+node tests/e2e/perf.mjs            # mesures (processeur ralenti ×4, 1280 × 800, densité 2) et captures ; --niveau 0|1|2 : allègement tenu à ce niveau ; --webgl : WebGL logiciel
+node tests/e2e/lagon.mjs           # lot « Lagon » : chaque écran et chaque exercice sur le lagon, à 1280 × 800 et 1920 × 1200 ; pas de créature à gagner pendant les exercices, rien de l'ancien décor
 FFMPEG=/chemin/ffmpeg node tests/e2e/video.mjs   # vidéo d'une séance (MP4)
 ```

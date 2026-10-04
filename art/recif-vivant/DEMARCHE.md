@@ -68,6 +68,27 @@ Les points lumineux statiques du fond sont remplacés par des particules procéd
 
 Leur rythme a ensuite été accéléré de **30 %**.
 
+Les petites cheminées du panorama ont d'abord reçu des fumerolles en ruban ondulant. Retour du parent : cela ressemblait à un fluide qui s'échappe, pas à une fumée sous-marine, et les cheminées étaient trop petites. Deux reprises :
+
+- un **massif de cheminées hydrothermales** dessiné en code d'après l'image d'inspiration, assombri, qui recouvre les anciennes ;
+- une **fumée en bouffées** : des volutes rondes qui gonflent en montant et se défont au sommet, cernées d'encre.
+
+La fumée reste dessinée en direct plutôt que fabriquée en boucle d'images : quelques dizaines de disques par panache, comme les bulles ou le miroitement. Voir le README.
+
+## Sous-marin
+
+Un sous-marin traverse le grand large et les abysses sans demi-tour. Vers la gauche, il s'éloigne dans le fond et disparaît derrière le tombant du récif ; vers la droite, il sort par le bord du panorama. Ses phares s'allument en entrant dans les abysses : faisceaux en cônes doux, poussières révélées par la lumière, tache sur le fond. Le dessin vient d'une image fournie par le parent, détourée à l'avance comme la grande faune ; seul le calque des lampes allumées s'y ajoute. Voir le README.
+
+Après essai, le parent a demandé que le sous-marin ne rapetisse que peu avant le récif, et moins : le rapetissement est désormais tardif (les 800 derniers px) et limité à 50 %.
+
+## Poissons des abysses
+
+Les abysses reçoivent leurs propres nageurs, quatre poissons des grands fonds fournis par le parent, animés comme ceux du récif (ondulation, pas de demi-tour). Contrainte posée : ils ne vont pas dans le grand large. Plutôt que de les arrêter à une frontière, ils **s'éloignent dans le fond** avant de l'atteindre : ils rapetissent et se fondent dans le bleu sombre. À droite, ils peuvent sortir par le bord du panorama. La baudroie porte une lueur vivante au bout de son leurre. Voir le README.
+
+## Créatures à gagner : images générées, mouvement par le code
+
+Le parent n'était pas satisfait du rendu des créatures dessinées en code et a proposé des images générées. Question posée : faut-il des vidéos courtes pour en tirer du mouvement ? Parti pris retenu pour l'essai : **une seule image par créature, animée par le code** (bandes décalées, comme les poissons et les algues), parce qu'une vidéo générée fait trembler le trait, demande un détourage image par image et pèse lourd hors ligne. Les 15 créatures du lagon servent de pilote. Les créatures articulées (crabe, crevette, bernard-l'ermite) montrent la limite de l'image unique ; 2 à 4 poses seraient l'étape suivante. Voir le README.
+
 ## Grande faune du grand large
 
 La zone entre le récif et les abysses accueille des **ombres de profondeur** : baleine, orques, dauphins, requin blanc, requins-marteaux, petits requins, marlin, congre. Chaque fichier source a été identifié (nom et forme), détouré et ramené à une échelle commune fondée sur la longueur réelle de l'animal. Chaque espèce a sa nage (battement vertical des cétacés, balayage de la queue des requins et du marlin, onde du congre), sa profondeur, sa taille de groupe et sa vitesse. Les animaux apparaissent dans la brume ou remontent du fond, et disparaissent dans la brume ou en plongeant. Voir le README.

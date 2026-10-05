@@ -379,9 +379,9 @@ Principe : la progression visible récompense **l'effort et la régularité** ; 
 - **Contenu à livrer** : lagon et récif de corail faits ; grand large **avant début février 2027** ; abysses **avant fin avril 2027**. Une zone sans contenu ne s'ouvre pas (au-dessus du quota, les coquillages rendent des créatures brillantes).
 - **La carte en grand** (toucher une créature du récif ou une carte de l'album) : la voix dit le nom et l'anecdote **une seule fois**, à l'ouverture ; toucher la carte la retourne, sans relancer la voix.
 - **L'album** : les quatre zones, 15 emplacements chacune ; carte obtenue visible, carte à découvrir montrée **de dos** ; zone fermée : dos assombris et coquillage fermé ; 15 perles sous chaque zone (pas de chiffre). Toucher un dos : « Cette carte t'attend quelque part dans le lagon ! » ; zone fermée : « … s'ouvrira un jour, grâce à tes étoiles arc-en-ciel. » ; dos doré d'une légendaire : « C'est une carte légendaire ! Elle se gagne avec les étoiles dorées. ». Les onglets de zone ne ressemblent pas à des cartes.
-- **Le récif vivant** **(à construire)** : la collection où vivent les créatures obtenues. C'est la maquette du récif vivant (`art/recif-vivant/index.html`), validée par le parent, intégrée telle quelle ; elle remplace le récif en pages (décisions du parent des 4 et 5 octobre 2026). Détail ci-dessous.
+- **Le récif vivant** : la collection où vivent les créatures obtenues. C'est la maquette du récif vivant (`art/recif-vivant/index.html`), validée par le parent, intégrée telle quelle ; elle remplace le récif en pages (décisions du parent des 4 et 5 octobre 2026). Détail ci-dessous.
 
-### Le récif vivant (à construire)
+### Le récif vivant
 
 - **Une mer continue** : le panorama de la maquette (10 874 × 1 774 px, à la hauteur de l'écran) : le lagon, le récif de corail, le grand large, les abysses. On le parcourt en glissant à l'horizontale (avec élan) ; **on entre toujours par le lagon**. Les zones pas encore ouvertes se visitent aussi : la mer y est, sans créature de la collection.
 - **Ce qui vit**, comme dans la maquette : poissons et bancs, algues du lagon, flore du récif (gorgones, anémones, coraux), faisceaux de lumière, miroitement de la surface, grande faune du large en ombres lointaines, sous-marin, cheminées et leurs fumées, particules et poissons des abysses.
@@ -471,7 +471,6 @@ Compétences presque acquises en septembre : le module les entretient. Un probl�
 
 ### Autres
 
-- **Le récif vivant** : voir section 10 (à construire).
 - **Synchronisation vers un Google Sheet** (facultatif).
 - **Calendrier scolaire 2027-2028** à ajouter dans `calendrier.json` avant la rentrée 2027.
 

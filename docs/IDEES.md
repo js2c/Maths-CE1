@@ -30,6 +30,12 @@ Dernière mise à jour : 30 septembre 2026, après la fusion du lot 3 ter (PR 25
   - leçons : en L9, l'étoile de mer du sable est juste sous « 40 41 » ; en L10, le « 0 » et le « 7 » de 307 décomposé sont écrits sur le rocher de droite ; en L3 et au niveau 11, le « ? » rouge est traversé par les feuilles d'une algue (derrière lui) ;
   - écran « choisir » : les tuiles 10, 11 et 13 de la ligne sont posées devant les algues et les rochers (la règle de la section 3 dit « ni posée sur la pieuvre ou les algues ») : garder ainsi, ou déplacer les tuiles ?
 
+- **Les coquillages qui attendent** (récompenses sans doublon, 5 octobre 2026). Simulation de l'année, profil « reel », zones 3 et 4 prêtes (`node tests/sim-seances.mjs reel 5 annee`) : à **2 séances par semaine**, 107 coquillages (60 créatures nouvelles, 47 rendues brillantes), 6 séances sur 64 sans coquillage, 19 coquillages qui attendent, 1 261 étoiles au compteur en fin d'année ; à **5 séances par semaine**, 105 coquillages, **103 séances sur 160 sans coquillage**, 116 coquillages qui attendent, **7 331 étoiles** au compteur. Dans les deux cas, toutes les créatures finissent brillantes. Le quota (une semaine d'école = 3 créatures nouvelles) bride la collection ; au-dessus, la brillance s'épuise vite. Pistes, non décidées : un prix du coquillage qui monte, un autre usage des étoiles, un quota par séance plutôt que par semaine, ou accepter que les étoiles s'accumulent.
+- **Le récif vivant** (5 octobre 2026), relevé des chevauchements, pour mémoire (captures : `node tests/e2e/recif-vivant.mjs`) :
+  - la maison et l'album, posés à gauche par-dessus la mer, couvrent selon l'endroit un rocher du lagon, le bénitier du récif de corail, le poisson-lune ou une baudroie ; « réécouter », en haut à droite, couvre parfois un requin qui passe ;
+  - dans le grand large, quand toute la collection est là, les nageuses se croisent en grappe devant le sous-marin (baleine à bosse, otarie, requin bleu, thon rouge) : ce sont les rondes de la maquette ;
+  - dans une zone pas encore ouverte, la mer n'est pas tout à fait vide : les poissons d'ambiance de la maquette y passent ; dans les abysses, une baudroie lumineuse d'ambiance ressemble à la baudroie abyssale de la collection.
+
 ## 3. Questions laissées avec une valeur par défaut
 
 - **Part de la famille en cours pour une petite famille** (lot 3 bis) : avec la limite de 3 passages par fait, les doubles et les presque-doubles n'atteignent pas 80 % de la notion du jour pour une enfant en difficulté (62 % en moyenne, 32 à 41 % au plus bas, en simulation). L'accepter, ou relâcher la limite pour les petites familles ?
@@ -56,7 +62,7 @@ Dernière mise à jour : 30 septembre 2026, après la fusion du lot 3 ter (PR 25
 
 - **Cartes animées** (idée du parent, 27 septembre) : remplacer la version brillante par une courte vidéo en boucle (6 s). Faisable : WebM (VP9) ou MP4 (H.264) sans son, 3:4 (720 × 960 ou 600 × 800), 24 images/s, 0,3 à 0,8 Mo par carte ; l'image fixe garde son rôle d'affiche et d'album ; une seule vidéo jouée à la fois ; téléchargement à la demande plutôt que tout en cache. Une vidéo générée en 9:16 se recadre en 3:4 en gardant toute la largeur et 75 % de la hauteur. Non décidé.
 
-**Graphisme** (projet parallèle, hors de ce fichier) : le récif vivant (mer continue, kit `kit-recif-vivant.zip`), la refonte graphique (PR 24 et 26).
+**Graphisme** (projet parallèle, hors de ce fichier) : la refonte graphique (PR 24 et 26). Le récif vivant est intégré comme collection depuis le 5 octobre 2026 (`docs/SPEC.md`, section 10).
 
 ## 5. À observer avec l'enfant, à vérifier sur la tablette
 
@@ -68,7 +74,7 @@ Dernière mise à jour : 30 septembre 2026, après la fusion du lot 3 ter (PR 25
 - **Les aides passables** : les deux triangles jaunes poussent-ils l'enfant à tout passer ? L'historique compte les aides et les corrections passées.
 - **Choisir en un toucher** : l'enfant ne valide-t-elle pas par erreur ? Entend-elle le nom avant l'écran suivant ?
 - **Le défi** : la bulle qui se vide se lit-elle comme un temps ?
-- **Fluidité et mémoire** : jusqu'à 224 Mo de planches décodées (récif ouvert pendant une pause, mesure sur ordinateur) ; 51 Mo de voix à télécharger la première fois. Modèle de la tablette inconnu.
+- **Fluidité et mémoire** : jusqu'à 224 Mo de planches décodées (ancien récif ouvert pendant une pause, mesure sur ordinateur ; à remesurer avec le récif vivant, dont les images ne sont plus des planches) ; le récif vivant (WebGL et grandes images) sur la tablette ; 51 Mo de voix à télécharger la première fois. Modèle de la tablette inconnu.
 
 ## 6. À demander, à préparer
 

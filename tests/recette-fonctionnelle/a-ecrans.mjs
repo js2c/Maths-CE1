@@ -241,7 +241,9 @@ async function recompense() {
   const S = new Serie(DIR, "A08-recompense", "Partie A · la récompense (étoiles, coquillage, carte nouvelle, créature rendue brillante, brillante)");
   const cas = [
     ["carte nouvelle", "neuve", 30, null],
-    ["quota atteint : une créature rendue brillante", "mois", 30, () => { const R = window.__app.rewards; R.quota = () => 0; }],
+    // (au bout d'un mois, les créatures possédées sont souvent déjà toutes brillantes : on en ternit une pour la capture)
+    ["quota atteint : une créature rendue brillante", "mois", 30, () => { const R = window.__app.rewards, k = Object.keys(R.owned)[0]; R.quota = () => 0; R.owned = { ...R.owned, [k]: { ...R.owned[k], brillante: false } }; }],
+    ["quota atteint, toutes brillantes : le coquillage attend", "mois", 30, () => { const R = window.__app.rewards; R.quota = () => 0; R.owned = Object.fromEntries(Object.entries(R.owned).map(([k, o]) => [k, { ...o, brillante: true }])); }],
     ["brillante", "neuve", 30, () => { const R = window.__app.rewards, o = R.openShell.bind(R); R.openShell = (r, t) => o(() => 0.01, t); }],
   ];
   for (const [nom, base, etoiles, prep] of cas) {

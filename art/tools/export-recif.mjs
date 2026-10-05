@@ -21,12 +21,25 @@ const MAQUETTE = join(HERE, "recif-vivant/index.html"), APP = resolve(HERE, "../
 const OUT_IMG = join(APP, "assets/recif"), OUT_JS = join(APP, "js/recif/recif-vivant.js");
 const DONNEES = ["A", "SUB", "ABYSS_FISH", "LAGON_SPR", "CORAIL_SPR", "LARGE_SPR", "ABYSSES_SPR"];
 
+// LE GRAND LARGE (décision du parent du 5 octobre 2026) : dans la maquette, neuf des quinze nageuses tournent entre 175 et
+// 900 px du panorama (de haut 1 774), là où croise le sous-marin (550 à 850), et se croisent en grappe devant lui. Elles
+// sont réparties sur toute la hauteur : le poisson volant et le dauphin gardent leur place près de la surface, les treize
+// autres vont dans des couloirs réguliers de 340 à 1 570 px (pas de 103 px). Quelle nageuse dans quel couloir : cherché par
+// tools/grand-large.mjs, qui simule une heure de rondes. Gain mesuré (moyennes) : recouvrements francs entre nageuses
+// 4,44 → 3,72 ; avec le sous-marin 0,48 → 0,40 ; une grappe d'au moins trois nageuses 95 % → 69 % du temps ; la pire
+// grappe 9 → 5 nageuses. Seule la profondeur change ; la ronde, la vitesse, le sens et la taille restent ceux de la maquette.
+export const PROFONDEURS = {
+  "poisson-volant": 175, dauphin: 235, otarie: 340, "raie-manta": 445, "thon-rouge": 545, espadon: 650, "requin-bleu": 750,
+  "requin-marteau": 855, "requin-baleine": 955, "grand-requin-blanc": 1060, orque: 1160, "poisson-lune": 1265,
+  "baleine-a-bosse": 1365, meduse: 1470, "tortue-luth": 1570,
+};
+
 // les raccords : [ce que dit la maquette, ce que dit l'application, pourquoi]
 const RETOUCHES = [
   ["const cv = document.getElementById('c'), ctx = cv.getContext('2d');", "const cv = OPTS.cv, ctx = cv.getContext('2d');", "le canvas du dessin est fourni par l'application"],
   ["const glc = document.getElementById('gl');", "const glc = OPTS.glc;", "le canvas WebGL du fond aussi"],
   ["const lagImg = {}; for (const k in LAGON_SPR) lagImg[k] = loadImg(LAGON_SPR[k].src);", "const lagImg = {}; for (const k in LAGON_SPR) if (OPTS.owned.has(k)) lagImg[k] = loadImg(LAGON_SPR[k].src);", "seules les images des créatures possédées sont chargées"],
-  ["const lagOrder = LAGON.slice()", "const lagOrder = LAGON.filter((c) => OPTS.owned.has(c.id)).slice()", "seules les créatures possédées vivent dans le récif"],
+  ["const lagOrder = LAGON.slice()", "for (const c of LAGON) if (OPTS.donnees.PROFONDEURS?.[c.id] != null) c.y = OPTS.donnees.PROFONDEURS[c.id];\nconst lagOrder = LAGON.filter((c) => OPTS.owned.has(c.id)).slice()", "seules les créatures possédées vivent dans le récif ; les nageuses du grand large à leur profondeur (PROFONDEURS)"],
   ["    lagBlit(c, img, t, X0, Y0, 0.7);\n", "    lagBlit(c, img, t, X0, Y0, 0.7);\n    if (OPTS.brillantes.has(c.id)) OPTS.scintille(ctx, c, X0, Y0, t, sc*c.k);\n", "une créature brillante scintille"],
   ["const dpr = Math.min(2, window.devicePixelRatio || 1);", "const dpr = OPTS.dpr();", "la densité est choisie par l'application (allègement)"],
   ["addEventListener('resize', resize); resize();", "OPTS.on(window, 'resize', resize); resize();", "écouteurs de la fenêtre retirés en sortant"],
@@ -76,7 +89,9 @@ export function exportRecif({ log = console.log } = {}) {
   // la fiche de la maquette (noms et anecdotes) : celle de l'application la remplace
   js = js.replace(/^const FICHES = \{.*\};$/m, "const FICHES = {};");
   for (const f of readdirSync(OUT_IMG)) if (f !== "donnees.json" && !ecrits.has(f)) unlinkSync(join(OUT_IMG, f));
-  writeFileSync(join(OUT_IMG, "donnees.json"), JSON.stringify({ source: `art/recif-vivant/index.html (empreinte ${empreinte})`, ...donnees }));
+  // les profondeurs du grand large : chacune doit nommer une nageuse de la maquette
+  for (const id of Object.keys(PROFONDEURS)) if (!new RegExp(`\\{id:'${id}', x:\\d+, y:\\d+,[^\\n]*ronde:\\{x0:5950`).test(js)) throw new Error(`export-recif : ${id} n'est pas une nageuse du grand large de la maquette`);
+  writeFileSync(join(OUT_IMG, "donnees.json"), JSON.stringify({ source: `art/recif-vivant/index.html (empreinte ${empreinte})`, ...donnees, PROFONDEURS }));
   // 2. les raccords
   for (const [a, b, pourquoi] of RETOUCHES) {
     const n = js.split(a).length - 1; if (n !== 1) throw new Error(`export-recif : retouche « ${pourquoi} » : ${n} occurrence(s) au lieu d'une ; la maquette a changé`);

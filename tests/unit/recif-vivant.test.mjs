@@ -70,3 +70,17 @@ test("l'allègement : après 3 s, au-delà de 20 ms d'intervalle moyen, même qu
   assert.equal(alleger(n(5, 350), 4200), false, "trop peu de mesures");
   assert.ok(garderIntervalle(350) && !garderIntervalle(4000), "un onglet caché (plusieurs secondes) n'est pas compté");
 });
+
+test("le grand large : les nageuses réparties sur toute la hauteur, moins de grappes (art/tools/grand-large.mjs)", async () => {
+  const { NAGEUSES, mesure } = await import("../../art/tools/grand-large.mjs");
+  const P = donnees.PROFONDEURS;
+  assert.deepEqual(Object.keys(P).sort(), NAGEUSES.map((c) => c.id).sort(), "une profondeur pour chacune des 15 nageuses du grand large");
+  assert.match(moduleJs, /c\.y = OPTS\.donnees\.PROFONDEURS\[c\.id\]/, "le module applique les profondeurs");
+  const ys = Object.values(P).sort((a, b) => a - b);
+  assert.ok(ys[0] <= 240 && ys.at(-1) >= 1550, `de la surface au fond (${ys[0]} à ${ys.at(-1)})`);
+  const pas = ys.slice(3).map((y, i) => y - ys[i + 2]);
+  assert.ok(pas.every((d) => d >= 95 && d <= 110), `couloirs réguliers sous la surface (${pas.join(", ")})`);
+  for (const c of NAGEUSES) assert.ok(P[c.id] - c.h / 2 >= 80 && P[c.id] + c.h / 2 <= 1700, `${c.id} reste dans l'eau`);
+  const avant = mesure(), apres = mesure(P);
+  assert.ok(apres.francs < avant.francs && apres.sousMarin < avant.sousMarin && apres.grappes < avant.grappes && apres.pire < avant.pire, `moins encombré : ${JSON.stringify(avant)} → ${JSON.stringify(apres)}`);
+});

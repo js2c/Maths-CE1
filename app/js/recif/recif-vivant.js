@@ -1418,6 +1418,7 @@ for (const c of LAGON){
   if (c.col && c.row){ c.cv = document.createElement('canvas'); c.cv.width = sp.w + 2*c.pad; c.cv.height = sp.h + 2*c.pad; c.g = c.cv.getContext('2d'); }
   c.m = sp.m || 0; c.k = c.len*(c.sol ? lagPersp(c.y) : 1)/(sp.w - 2*c.m); c.pas = 0; c.x0 = c.x; c.halo = 0; c.vis = false; c.dragX = null;
 }
+for (const c of LAGON) if (OPTS.donnees.PROFONDEURS?.[c.id] != null) c.y = OPTS.donnees.PROFONDEURS[c.id];
 const lagOrder = LAGON.filter((c) => OPTS.owned.has(c.id)).slice().sort((a, b) => (a.sol ? 1e6 + a.y : -a.len) - (b.sol ? 1e6 + b.y : -b.len));   // les nageuses d'abord (les plus grandes derrière), puis les posées, du fond vers l'avant
 let showCreatures = true, hoverC = null, holdC = null, lagT = 0;
 // dessine l'image src (l'image de la créature ou son halo, de mêmes dimensions) avec la déformation de la créature

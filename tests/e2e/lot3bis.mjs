@@ -191,44 +191,7 @@ if (run("ligne")) {
   check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
 }
 
-// ---------------------------------------------------------------- étape 2 : le doublon offre un décor (A6)
-if (run("decors")) {
-  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 2, hasTouch: true }), page = await context.newPage(), errors = [];
-  page.on("pageerror", (e) => errors.push(e.message));
-  const Q = "?nosw&voix=rapide&son=non&sansLecon&sans=echauffement&questions=2&guides=0&cran=conseille";
-  await page.goto(url + Q); await page.waitForFunction(() => window.__ready !== undefined);
-  await page.evaluate(async () => {
-    const s = window.__app.store, ids = window.__app.cartes.cartes.filter((c) => c.zone === "lagon").slice(0, 10).map((c) => c.id);
-    await s.setSetting("mascotte", "Pili");
-    await s.put("recompenses", { id: "cartes", cartes: Object.fromEntries(ids.map((id) => [id, { n: 1, premiere: 1, brillante: false }])) });
-    await s.put("recompenses", { id: "quota", date: Date.now() - 3600000, cartes: 8 });
-    await s.put("recompenses", { id: "etoiles", total: 30, cumul: 30, arcEnCiel: 0, dorees: 0, coquillages: 8 });
-    await s.put("recompenses", { id: "decors", ids: window.__app.cartes.decors.liste.slice(0, 9).map((d) => d.id) });
-  });
-  await page.goto(url + Q); await page.waitForFunction(() => window.__ready !== undefined);
-  await page.evaluate(() => { const v = window.__app.voice, say = v.say.bind(v); window.__said = []; v.say = (t, o) => { window.__said.push(t); return say(t, o); }; });
-  await page.tap(".play", { force: true });
-  let shot1 = false;
-  for (const until = Date.now() + 150000; Date.now() < until;) {
-    const st = await page.evaluate(() => { const s = window.__app.screen; return { q: !!(s?.q && !s.locked && s.resolve), shell: !!document.querySelector(".shelltap"), check: !!document.querySelector(".check"), card: !!document.querySelector(".card"), gift: !!document.querySelector(".gift"), moon: !!document.querySelector(".moon") }; });
-    if (st.moon) break;
-    if (st.q) { await lineAnswer(page); await page.waitForTimeout(200); continue; }
-    if (st.shell) { await page.tap(".shelltap", { force: true }); await page.waitForTimeout(300); continue; }
-    if (st.card && st.check) { if (!shot1 && st.gift) { shot1 = true; await page.waitForTimeout(600); await shot(page, "10-doublon-decor"); } await page.tap(".check", { force: true }); await page.waitForTimeout(800); continue; }
-    await page.waitForTimeout(150);
-  }
-  const s = await page.evaluate(() => window.__said.join(" | "));
-  check(/elle t'offre un coffre pour ton récif/.test(s), "le doublon offre le 10e décor (un coffre), dit par la voix");
-  if (!/elle t'offre/.test(s)) console.log("DBG", s.slice(-600), await page.evaluate(() => JSON.stringify({ rec: window.__app.session?.rec?.cartes, moon: !!document.querySelector(".moon"), total: window.__app.rewards.total, q: window.__app.rewards.quota(), n: window.__app.rewards.count })));
-  check(shot1, "le décor est montré à côté de la carte");
-  const n = await page.evaluate(async () => (await window.__app.store.get("recompenses", "decors")).ids.length);
-  check(n >= 10, `décors rangés dans la base (${n})`);
-  await page.tap(".reefkey", { force: true }); await page.waitForTimeout(2500); await shot(page, "11-recif-decors");
-  await page.evaluate(async () => { const p = window.__app.parent; p.tab = "progression"; p.open(); await p.dashboard(); }); await page.waitForTimeout(500);
-  const box = page.locator(".pa-card-box", { has: page.locator("h2", { hasText: /^Cartes$/ }) }); await box.scrollIntoViewIfNeeded(); await box.screenshot({ path: join(OUT, "12-parent-decors.png") });
-  check(/\d+ \/ 15\s*décors du récif/.test(await box.textContent()), "l'espace parent donne le nombre de décors");
-  check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
-}
+// (étape 2, A6 : le doublon offrait un décor ; retiré le 5 octobre 2026, décision du parent : plus de doublon ni de décor)
 
 await browser.close(); srv.close();
 console.log(fail.length ? `\n${fail.length} échec(s)` : "\ntout est bon");

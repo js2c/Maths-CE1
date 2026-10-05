@@ -7,8 +7,7 @@ import type { Gfx, P } from "../core";
 import { BUBBLE_R, drawAnswerBubble, drawBubble, drawCheck, drawFish, drawMoon, drawEraseKey, drawNameTag, drawShellKey, drawSlate, drawReplayKey, drawTally, SLATE_H, SLATE_W, NAME_H, NAME_W, TALLY_H, TALLY_W, drawPlay, drawSpeaker, drawStar, FISH_KINDS, FISH_N } from "./decor";
 import { IDLE_N, OCTO_CLIPS, OCTO_FPS, octoParts, type Part, RING_Y } from "./octopus";
 import { drawTurtle, TURTLE_CLIPS, TURTLE_FPS } from "./turtle";
-import { CREATURE_FPS, CREATURE_N, CREATURES } from "./creatures";
-import { CARD_H, CARD_W, drawBigShell, drawGift, drawShinySweep, GIFTS, SWEEP_H, SWEEP_W, drawCardBack, drawCardBanner, drawCardFrame, drawCardVerso, drawCardWater, drawGlint, drawGoldStar, drawHomeKey, drawRainbowStar, drawReefKey, SHELL_N } from "./treasure";
+import { CARD_H, CARD_W, drawBigShell, drawShinySweep, SWEEP_H, SWEEP_W, drawCardBack, drawCardBanner, drawCardFrame, drawCardVerso, drawCardWater, drawGlint, drawGoldStar, drawHomeKey, drawRainbowStar, drawReefKey, SHELL_N } from "./treasure";
 import { CRAN_W, drawCranGlow, drawCranKey, GLOW_CR } from "./selector";
 import { drawFishNet, drawTrawl, NET_H, NET_W, TRAWL } from "./hundreds";
 import { DEFI_N, drawRecordFlag, drawScorePearl, drawStepChallenge, drawTimerBubble, TIMER_W } from "./challenge";
@@ -17,9 +16,8 @@ import { drawBonusBubble, drawCellGlow, drawHouseBase, drawHouseFloor, drawHouse
 import { drawCalcTile, drawExerciseCalc, drawStepCalc, drawWallFish, WALL_FISH_N } from "./calc";
 import { GLOW_PAD, drawChooseKey, drawExerciseLessons, drawExerciseLine, drawFamilyTile, drawLessonTile, drawLineTile, drawTileGlow, TILE_H, TILE_W } from "./choice";
 import { drawBigFlag, drawCloseKey, drawHintKey, drawLegendKey, drawShrugKey, drawSmallFish, drawStarTrail, drawTagFish, drawTallNet, drawZoneTab, FLAG_N, HOUSE_FISH, LEGEND_R, NETV_H, NETV_W, TAG, TAG_FISH_N, TRAIL_H, TRAIL_W, ZONE_TAB_R } from "./lot3bis";
-import { DECOR_H, DECOR_ORIGIN, DECOR_W, DECORS, drawDecor } from "./reefdecor";
 import { drawWarmupSkipKey } from "./lot3ter";
-import { drawAgainKey, drawAlbumKey, drawFreeFacts, drawFreeLessons, drawFreeLine, drawMoonDecor, drawPagePearl, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepGlow, drawStepShell, GLOW_R, STEP_R } from "./ui";
+import { drawAgainKey, drawAlbumKey, drawFreeFacts, drawFreeLessons, drawFreeLine, drawMoonDecor, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepGlow, drawStepShell, GLOW_R, STEP_R } from "./ui";
 
 // la tortue dans l'application : longueur ~110 px logiques, assez petite pour tenir sur une bouée
 export const TURTLE_S = 1;
@@ -65,7 +63,9 @@ const octoSpecs: Spec[] = Object.entries(partFrames).map(([name, list]) => ({
 
 export const SPECS: Spec[] = [
   // (lot « Lagon en fond d'exercices » : le fond, ses rayons, ses algues et ses reflets ne sont plus fabriqués ici ; le fond de
-  // l'application est le lagon du récif vivant, extrait par tools/export-lagon.mjs)
+  // l'application est le lagon du récif vivant, extrait par tools/export-lagon.mjs. Récif vivant, 5 octobre 2026 : plus de
+  // créatures dessinées en code (planche « recif »), de décors des doublons (« decors »), de cadeaux ni de perles de page ;
+  // les créatures sont les images de la maquette, extraites par tools/export-recif.mjs)
   ...octoSpecs,
   ...FISH_KINDS.flatMap((_, k) => ([-1, 1] as const).map((dir): Spec => ({
     name: `poisson.${k}.${dir < 0 ? "g" : "d"}`, sheet: "poissons", W: 200, H: 120, origin: [100, 60], frames: FISH_N, fps: 12,
@@ -109,7 +109,6 @@ export const SPECS: Spec[] = [
   ...([["ligne", drawFreeLine], ["faits", drawFreeFacts], ["lecons", drawFreeLessons]] as const).map(([id, f]): Spec => ({ name: `libre.${id}`, sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => f(g, 90, 90) })),
   { name: "reecouter", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawSpeaker(g, 70, 70) },
   // les créatures du lagon, animées (le récif) : chargées seulement quand on visite le récif
-  ...CREATURES.map((c): Spec => ({ name: `creature.${c.id}`, sheet: "recif", W: c.W, H: c.H, origin: c.origin, frames: CREATURE_N, fps: CREATURE_FPS, loop: [0, CREATURE_N], draw: (g, f) => c.draw(g, f / CREATURE_N, c.origin[0], c.origin[1]), meta: { ground: c.ground } })),
   // les cartes et le coquillage : chargés pour la récompense, l'album et quand on regarde une carte dans le
   // récif. Origine : le coin haut gauche de la carte. L'illustration (image générée) est posée par
   // l'application sous le cadre et le bandeau ; « carte.fond » la remplace si elle manque.
@@ -121,7 +120,6 @@ export const SPECS: Spec[] = [
     { name: `carte.verso.${r}`, sheet: "cartes", W: CARD_W + 16, H: CARD_H + 16, origin: [0, 0], frames: 1, draw: (g) => drawCardVerso(g, 0, 0, r) },
   ]),
   // lot 3, étape 5 : la perle d'une page du récif (0 : vide ; 1 : la page affichée), dans une petite planche toujours chargée
-  { name: "recif.perle", sheet: "petits", W: 44, H: 44, origin: [22, 22], frames: 2, draw: (g, f) => drawPagePearl(g, 22, 22, f === 1) },
   { name: "perle", sheet: "cartes", W: 30, H: 30, origin: [15, 15], frames: 2, draw: (g, f) => drawPearl(g, 15, 15, f === 1) },
   { name: "coquillage", sheet: "cartes", W: 300, H: 280, origin: [150, 150], frames: SHELL_N, fps: 12, draw: (g, f) => drawBigShell(g, 1 - Math.pow(1 - f / (SHELL_N - 1), 2.2), 150, 150) },
   // lot 2 : le coquillage doré (une étoile dorée, une légendaire) et le reflet irisé des cartes brillantes
@@ -186,8 +184,6 @@ export const SPECS: Spec[] = [
   ...Array.from({ length: 9 }, (_, i): Spec => ({ name: `choix.calcul.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawCalcTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
   { name: "frise.calcul", sheet: "petits", W: 2 * STEP_R + 24, H: 2 * STEP_R + 24, origin: [STEP_R + 10, STEP_R + 10], frames: 1, draw: (g) => drawStepCalc(g, STEP_R + 10, STEP_R + 10) },
   ...([1, -1] as const).map((dir): Spec => ({ name: `mur.poisson.${dir > 0 ? "d" : "g"}`, sheet: "calcul", W: 80, H: 60, origin: [40, 30], frames: WALL_FISH_N, fps: 12, loop: [0, WALL_FISH_N], draw: (g, f) => drawWallFish(g, f, 40, 30, dir, 40) })),
-  // les cadeaux du récif (la surprise) : ancrés au milieu de leur base, posés sur le sable
-  ...GIFTS.map((id): Spec => ({ name: `cadeau.${id}`, sheet: "petits", W: 200, H: 180, origin: [100, 160], frames: 1, draw: (g) => drawGift(g, id, 100, 160) })),
   // lot 3 bis, partie B (docs/SPEC-LOT3BIS.md, B8 ; sea/lot3bis.ts, sea/reefdecor.ts). Sur « petits » (toujours chargée) : le
   // bouton de la légende et la croix du panneau, la traînée d'une étoile arc-en-ciel qui vole (ancrage : la tête), le filet
   // haut de la leçon L2 (ancrage : le nœud) ; sur « aides » : les poissons des maisons, orange (premier nombre) et bleu
@@ -203,5 +199,4 @@ export const SPECS: Spec[] = [
   { name: "placer.poisson", sheet: "poissons", W: 210, H: 190, origin: [120, 180], frames: TAG_FISH_N, fps: 12, loop: [0, TAG_FISH_N], draw: (g, f) => drawTagFish(g, f, 120, 180), meta: { tag: { ...TAG } } },
   { name: "defi.drapeau", sheet: "defi", W: 170, H: 200, origin: [50, 186], frames: FLAG_N, fps: 8, loop: [0, FLAG_N], draw: (g, f) => drawBigFlag(g, 50, 186, f) },
   ...["lagon", "corail", "large", "abysses"].map((z): Spec => ({ name: `album.zone.${z}`, sheet: "petits", W: 2 * ZONE_TAB_R + 24, H: 2 * ZONE_TAB_R + 24, origin: [ZONE_TAB_R + 10, ZONE_TAB_R + 10], frames: 1, draw: (g) => drawZoneTab(g, ZONE_TAB_R + 10, ZONE_TAB_R + 10, z) })),
-  ...Object.keys(DECORS).map((id): Spec => ({ name: `decor.${id}`, sheet: "decors", W: DECOR_W + 40, H: DECOR_H + 24, origin: [DECOR_ORIGIN[0] + 20, DECOR_ORIGIN[1]], frames: 1, draw: (g) => drawDecor(g, id, DECOR_ORIGIN[0] + 20, DECOR_ORIGIN[1]) })),
 ];

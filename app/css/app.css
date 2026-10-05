@@ -12,6 +12,15 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .actor { position: absolute; left: 0; top: 0; will-change: transform; pointer-events: none; }
 /* le lagon (engine/lagon.js) : le miroitement (bande du haut, WebGL) et les faisceaux, sous la ligne graduée */
 #lagon > canvas { position: absolute; left: 0; top: 0; pointer-events: none; }
+/* le récif vivant (session/reef.js) : ses deux canvas couvrent la scène ; on glisse et on touche sur le dessin, les boutons
+   restent au-dessus (le calque des boutons laisse passer le doigt ailleurs) */
+#stage > canvas.recif-vivant { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; }
+#stage > canvas.recif-gl { pointer-events: none; }
+#stage > canvas.recif-dessin { pointer-events: auto; cursor: grab; }
+#stage > canvas.recif-dessin.drag { cursor: grabbing; }
+#ui.ui-recif { pointer-events: none; }
+#ui.ui-recif > * { pointer-events: auto; }
+.recif-masque { visibility: hidden !important; }
 #ui { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; transform-origin: 0 0; }
 
 /* bulles et boutons : un calque dessiné par l'atelier, sans bord ni fond de navigateur */
@@ -83,9 +92,7 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 /* lot 3 ter (T1) : l'échauffement en attente de la coche ; les « passer » d'une aide ou d'une correction en cours sont masqués */
 #stage.attente-passer #ui > .skip { visibility: hidden !important; pointer-events: none !important; }
 /* lot 3, étape 5 : le récif en pages ; la surface du glisser (sous les créatures) et les perles des pages */
-.reef-swipe { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; touch-action: none; }
 .creature { touch-action: none; }
-.reef-pearl { touch-action: manipulation; }
 
 /* l'album : un voile sombre, les vignettes des cartes, les onglets des zones */
 .album-veil { background: rgba(6, 34, 44, 0.84); }

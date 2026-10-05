@@ -12,6 +12,7 @@ import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
+import { recifOuvert, toucherCreature } from "./recif-commun.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const OUT = resolve(opt("--out", "tests/e2e/out/recompenses"));
@@ -75,10 +76,10 @@ check(!(await page.evaluate(() => window.__app.sprites.ready("cartes"))), "la pl
 // (décision du parent du 28 septembre) les phrases dites : aucune au retournement d'une carte en grand
 const saidN = () => page.evaluate(() => { const v = window.__app.voice; if (!v.__said) { v.__said = []; const say = v.say.bind(v); v.say = (t, o) => { v.__said.push(t); return say(t, o); }; } return v.__said.length; });
 await page.tap(".reefkey", { force: true });
-await page.waitForSelector(".creature", { timeout: 20000 }); await page.waitForTimeout(1200);
+let vivantes = await recifOuvert(page);
 await shot("6-recif");
-check((await page.locator(".creature").count()) === owned.length, "chaque carte a sa créature dans le récif");
-await page.tap(`.creature[data-id="${owned[0]}"]`, { force: true });
+check(vivantes.length === owned.length, `chaque carte a sa créature dans le récif (${vivantes.join(", ")})`);
+await toucherCreature(page, owned[0]);
 await page.waitForSelector(".card", { timeout: 20000 }); await page.waitForTimeout(900); await shot("7-recif-carte");
 let n0 = await saidN();
 await page.tap(".card", { force: true }); await page.waitForTimeout(1000); await shot("8-recif-anecdote");
@@ -88,17 +89,19 @@ check(await page.locator(".card.flipped").count() === 0 && (await saidN()) === n
 await page.tap(".check", { force: true }); await page.waitForTimeout(600);
 check(await page.locator(".card").count() === 0, "la coche range la carte");
 await page.tap(".homekey:not(.session-home)", { force: true }); await page.waitForTimeout(600);
-check((await page.locator(".moon").count()) === 1 && (await page.locator(".creature").count()) === 0 && !(await page.evaluate(() => window.__app.sprites.ready("recif"))), "la maison ramène à la lune ; le récif est libéré");
+check((await page.locator(".moon").count()) === 1 && (await page.locator("canvas.recif-vivant").count()) === 0 && !(await page.evaluate(() => window.__app.reef.open)), "la maison ramène à la lune ; le récif est libéré");
+// (correctif du 5 octobre) chaque bouton de l'accueil a des pixels peints, pas seulement une place
+check(await page.evaluate(() => { const cs = [...document.querySelectorAll("button.bubble canvas")]; return cs.length > 0 && !document.querySelector("#ui.ui-recif") && cs.every((c) => { const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < d.length; i += 4) if (d[i] > 0) return true; return false; }); }), "les boutons de l'accueil sont dessinés au retour du récif");
 
 await voixOk("séance et récompense");
 
 // ---- 3. un récif complet
 await page.evaluate(async (ids) => { const o = {}; ids.forEach((id, i) => { o[id] = { n: id === "hippocampe" ? 4 : 1, premiere: Date.now(), brillante: id === "hippocampe" }; }); await window.__app.store.put("recompenses", { id: "cartes", cartes: o }); }, cartes.cartes.filter((c) => c.zone === "lagon").map((c) => c.id));
 await page.reload(); await page.waitForFunction(() => window.__ready !== undefined); await page.waitForTimeout(500);
-await page.tap(".reefkey", { force: true }); await page.waitForSelector(".creature", { timeout: 20000 }); await page.waitForTimeout(1500);
+await page.tap(".reefkey", { force: true }); vivantes = await recifOuvert(page);
 await shot("9-recif-complet");
-check((await page.locator(".creature").count()) === 15, "récif complet : 15 créatures");
-await page.tap('.creature[data-id="hippocampe"]', { force: true }); await page.waitForSelector(".card.shiny", { timeout: 20000 }); await page.waitForTimeout(1000);
+check(vivantes.length === 15, "récif complet : 15 créatures");
+await toucherCreature(page, "hippocampe"); await page.waitForSelector(".card.shiny", { timeout: 20000 }); await page.waitForTimeout(1000);
 await shot("10-carte-brillante");
 await voixOk("récif complet");
 await page.tap(".check", { force: true }); await page.waitForTimeout(600);
@@ -117,7 +120,7 @@ await page.tap(".album-tab >> nth=2", { force: true }); await page.waitForTimeou
 await shot("14-album-zone-fermee");
 check((await page.locator(".album-page .album-card.closed").count()) === 15, "album : le grand large, fermé, montre 15 dos assombris");
 await page.tap(".homekey:not(.session-home) >> nth=-1", { force: true }); await page.waitForTimeout(600);
-check((await page.locator(".album-page").count()) === 0 && (await page.locator(".creature").count()) === 15, "la maison de l'album ramène au récif");
+check((await page.locator(".album-page").count()) === 0 && (await page.evaluate(() => window.__app.reef.open && window.__app.reef.api.vivantes().length)) === 15, "la maison de l'album ramène au récif");
 await page.tap(".homekey:not(.session-home)", { force: true }); await page.waitForTimeout(600);
 // l'album depuis l'accueil, avec quelques cartes seulement : des dos à découvrir
 await page.evaluate(async () => { await window.__app.store.put("recompenses", { id: "cartes", cartes: { crabe: { n: 1, premiere: Date.now() }, hippocampe: { n: 1, premiere: Date.now() }, "poisson-clown": { n: 1, premiere: Date.now() } } }); });

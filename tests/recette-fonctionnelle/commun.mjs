@@ -66,7 +66,7 @@ export const touchables = (page) => page.evaluate(() => {
   // (un élément recouvert par un autre, par exemple l'accueil sous l'espace parent ou sous une carte ouverte, ne reçoit pas
   // le toucher : on garde ceux dont le centre, ou l'un des quatre points à mi-chemin des bords, est bien le leur)
   const onTop = (e) => { const r = e.getBoundingClientRect(); return [[0.5, 0.5], [0.3, 0.5], [0.7, 0.5], [0.5, 0.3], [0.5, 0.7]].some(([fx, fy]) => { const x = r.left + r.width * fx, y = r.top + r.height * fy; if (x < 0 || y < 0 || x >= innerWidth || y >= innerHeight) return false; const t = document.elementFromPoint(x, y); return !!t && (t === e || e.contains(t)); }); };
-  const els = [...document.querySelectorAll("button, .touchband, .reef-swipe, .card, [role=tab], .pa-root a, input, select")].filter(vis).filter(onTop);
+  const els = [...document.querySelectorAll("button, .touchband, canvas.recif-dessin, .card, [role=tab], .pa-root a, input, select")].filter(vis).filter(onTop);
   const groups = new Map(), add = (g, v) => { if (!groups.has(g)) groups.set(g, []); if (v != null && !groups.get(g).includes(v)) groups.get(g).push(v); };
   for (const e of els) {
     const cl = e.classList, lab = e.getAttribute("aria-label");
@@ -74,10 +74,9 @@ export const touchables = (page) => page.evaluate(() => {
     else if (cl.contains("answer")) add("bulles-réponses", e.dataset.value);
     else if (cl.contains("choix-tuile")) add("tuiles", `${e.dataset.key}${e.dataset.conseille === "1" ? " (conseillé)" : ""}${e.dataset.valide === "1" ? " (validé)" : ""}`);
     else if (cl.contains("album-card")) add(cl.contains("album-tab") ? "onglets de zone de l'album" : "cartes de l'album", lab || "?");
-    else if (cl.contains("creature")) add("créatures du récif", lab);
     else if (cl.contains("card")) add("la carte (la retourner)");
     else if (cl.contains("touchband")) add("bande de la ligne (poser le poisson)");
-    else if (cl.contains("reef-swipe")) add("fond du récif (glisser)");
+    else if (cl.contains("recif-dessin")) add("le récif vivant (glisser la mer, toucher ou déplacer une créature)");
     else if (e.getAttribute("role") === "tab") add("onglets", e.textContent.trim());
     else if (cl.contains("name")) add("noms proposés", e.dataset.value ?? lab);
     else if (cl.contains("cran")) add("crans", lab);
@@ -125,7 +124,7 @@ export function ecrireIndex() {
   const L = ["# Matériel de la recette fonctionnelle du lot 3 : index", "", "Produit par les outils de `tests/recette-fonctionnelle/` (session 1 de `docs/PROMPT-RECETTE-LOT3.md`). Aucun jugement ici : seulement ce que l'application montre, dit et génère. Captures au format de la tablette (1280 × 800, densité 1), en JPEG qualité 80, regroupées en planches de 4 (2 × 2) ; chaque légende donne l'écran, l'état, ce que dit la voix à ce moment (les dernières phrases dites depuis la capture précédente) et tout ce qui est touchable.", "", "Bases de départ : **base neuve** (premier lancement) et **un mois** (`node tools/sauvegarde-test.mjs reel 2 4`, fichier `sauvegarde-un-mois.json`).", ""];
   L.push("## Notes de production (à lire avant les planches)", "",
     "- **Ordre de lecture proposé** : partie A dans l'ordre des numéros (A01 accueil → A10 espace parent), puis `B-sequences/SYNTHESE.md`, `C-toucher/JOURNAL.md`, `D-vitesse-reelle/SYNTHESE.md` ; les fichiers détaillés au besoin.",
-    "- **Pilotage** : l'application n'est pas modifiée. Les outils utilisent ses réglages de test (`?choix=module:niveau`, `?cran`, `?sans=echauffement,defi…`, `?sansLecon`, `?guides=0`, `?lecon=Lx`, `?etoiles=N`, `?voix=rapide`, `?son=non`) et `window.__app` (lecture de l'état, réponses juste ou fausse données comme l'écran les reçoit). Pour la récompense, deux états sont forcés dans la page : le doublon (quota de cartes mis à 0) et la brillante (tirage au plus bas) ; entre deux essais au pavé (partie C), l'ardoise est vidée par l'outil.",
+    "- **Pilotage** : l'application n'est pas modifiée. Les outils utilisent ses réglages de test (`?choix=module:niveau`, `?cran`, `?sans=echauffement,defi…`, `?sansLecon`, `?guides=0`, `?lecon=Lx`, `?etoiles=N`, `?voix=rapide`, `?son=non`) et `window.__app` (lecture de l'état, réponses juste ou fausse données comme l'écran les reçoit). Pour la récompense, deux états sont forcés dans la page : la créature rendue brillante (quota de cartes mis à 0 : jamais de doublon) et la brillante (tirage au plus bas) ; entre deux essais au pavé (partie C), l'ardoise est vidée par l'outil.",
     "- **Voix** : accélérée pour les captures de la partie A (sauf les leçons, en voix réelle) ; réelle pour les parties C et D. La légende « Voix » donne les dernières phrases commencées depuis la capture précédente de la même page (« (silence) » : aucune).",
     "- **Touchable** : les boutons, bulles, touches, bandes et onglets visibles et non recouverts à l'instant de la capture. Un élément affiché mais bloqué (bulles et pavé pendant une correction) y figure : c'est la partie C qui dit ce que fait un toucher.",
     "- **Format** : planches de 4 captures réduites de moitié (2 × 2) ; exception : l'espace parent, 2 captures par planche à pleine taille, sinon son texte serait illisible.",

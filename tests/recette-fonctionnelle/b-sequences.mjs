@@ -227,7 +227,7 @@ async function uneSeance({ base, choix, cran, comp }) {
         if (goldenStar([...others, session.rec.debut], session.rec.debut, cartes.semaine)) { await rewards.special("dorees"); suite("étoile dorée"); }
         await rewards.collectFree();
         const zone = async () => { const z = await rewards.openZone(t); if (z) suite(`zone ouverte : ${z.id}`); };
-        const won = (g, dore = false) => suite(`carte ${g.carte.id}${dore ? " (coquillage doré)" : ""}${g.nouvelle ? " (nouvelle)" : " (doublon)"}${g.brillante && (g.parTirage || g.devientBrillante) ? " (brillante)" : ""}`);
+        const won = (g, dore = false) => suite(`carte ${g.carte.id}${dore ? " (coquillage doré)" : ""}${g.nouvelle ? " (nouvelle)" : " (rendue brillante)"}${g.brillante && (g.parTirage || g.devientBrillante) ? " (brillante)" : ""}`);
         await zone();
         if (rewards.goldenCard(t)) won(await rewards.openGolden(R, t), true);
         for (let k = 0; k < cartes.coquillage.parSeance && rewards.canOpen(); k++) { if (k) await zone(); const g = await rewards.openShell(R, t); if (!g) break; won(g); }

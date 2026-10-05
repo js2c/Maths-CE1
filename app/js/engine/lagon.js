@@ -284,7 +284,10 @@ export class Lagon {
   }
   // `due(nom, t)` : l'instant quantifié à la cadence du niveau, ou null si rien à redessiner (cadence nulle : figé)
   due(name, t) { const fps = FPS[name][this.level]; if (!fps) return this.keys[name] === undefined ? (this.keys[name] = t) : null; const q = Math.floor(t * fps) / fps; if (this.keys[name] === q) return null; this.keys[name] = q; return q; }
+  // en pause pendant la visite du récif vivant (session/reef.js), qui le recouvre : plus rien n'est calculé ni dessiné
+  pause(v) { this.paused = v; this.el.style.visibility = v ? "hidden" : ""; }
   update(t, dt) {
+    if (this.paused) return;
     dt = Math.min(0.05, dt); this.t = t;
     for (const g of this.groups) this.stepGroup(g, dt, t);
     for (let i = this.groups.length - 1; i >= 0; i--) if (this.finished(this.groups[i])) { for (const m of this.groups[i].members) this.drop(m); this.groups.splice(i, 1); }
@@ -292,6 +295,7 @@ export class Lagon {
   }
   drop(m) { if (m.a) { m.a.remove(); m.a = null; } }
   render() {
+    if (this.paused) return;
     const t = this.t, lvl = this.st.perf.level;
     if (lvl !== this.level) { this.level = lvl; this.keys = {}; this.paintStatic(); this.rays.style.visibility = lvl === 2 ? "hidden" : ""; if (this.surface && this.surfaceShown) this.surface.style.visibility = lvl === 2 ? "hidden" : ""; }
     // le miroitement

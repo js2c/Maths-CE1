@@ -28,12 +28,12 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 ### Reprise du lot « Récif vivant et récompenses sans doublon »
 
-- Branche `claude/clever-euler-p678bp` (repartie de `main` après la fusion de la PR #30), demande de fusion : RECETTE_PR.
+- Branche `claude/clever-euler-p678bp` (repartie de `main` après la fusion de la PR #30), demande de fusion https://github.com/js2c/Maths-CE1/pull/31.
 - **Décisions du parent (4 et 5 octobre)** : le récif est la maquette du récif vivant ; on y entre par le lagon, on glisse vers les autres zones (les zones fermées se visitent, sans créature) ; les créatures se déplacent au doigt, oublié d'une visite à l'autre ; les créatures dessinées en code sont remplacées par les images ; jamais de doublon : au-dessus du quota, une créature possédée devient brillante (option C), la chance de 20 % qu'une créature nouvelle sorte brillante reste ; décors et cadeaux supprimés (les fiches restent dans la base, ignorées).
 - **Fait** :
   - correctif : les boutons de l'accueil invisibles après le récif (défaut présent depuis le lot 3, étape 5 : le récif libérait les planches du démarrage) ; planches permanentes (`sprites.keep`), test `planches-permanentes.test.mjs` ;
   - récompenses sans doublon (`pickShell`, `Rewards.shine`, coquillage qui attend) ; simulées puis codées ; test `recompenses-sans-doublon.test.mjs` ;
   - le récif vivant (`art/tools/export-recif.mjs`, `app/js/recif/recif-vivant.js` généré, `session/reef.js`) ; test `recif-vivant.test.mjs`, parcours `tests/e2e/recif-vivant.mjs` (nouveau) ; parcours `recompenses`, `cartes`, `lagon`, `pause`, `perf`, `lot3bis`, recette fonctionnelle mis à jour ;
   - `docs/SPEC.md` (section 10), `docs/ARCHITECTURE.md`, `docs/JOURNAL-CONCEPTION.md`, `docs/IDEES.md` (coquillages qui attendent, chevauchements du récif), `CLAUDE.md`.
-- **Recette** : RECETTE_RESUME
+- **Recette** (détail dans la demande de fusion) : `npm test` 262 verts ; simulation sans doublon ; séquences sans défaut ; séance réelle 8,6 min ; attentes hors voix 1,3 s au plus ; `recif-vivant`, `lagon` et 21 autres parcours : tout est bon. Échecs qui existent aussi sur `main` : `lot3bis` (double toucher à 60 ms), `pwa`, `defi`, `lot3ter` (étiquettes trop lentes dans ce conteneur sans processeur graphique). Propre à la branche : dans `lot3ter`, l'étiquette d'appui long de la maison et de l'album du récif arrive après 0,8 s (le récif dessine lentement ici ; allègement corrigé pour se déclencher quand même).
 - **Reste** : l'essai sur la tablette (fluidité du récif vivant en WebGL, mémoire) ; la question des coquillages qui attendent (`docs/IDEES.md`, section 2).

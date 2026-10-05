@@ -67,7 +67,7 @@ stage.start();
 stage.onResize(() => { if (Math.abs(stage.px - sprites.px) > 0.01) location.reload(); });
 
 const rnd = rng(Date.now() & 0xffffffff);
-// pour les tests et les captures : ?module=2 ?cran=dur ?surprise=cadeau:corail ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape ?sansLecon ?lecon=L1 ?etoiles=N
+// pour les tests et les captures : ?module=2 ?cran=dur ?surprise=visite:tortue ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape ?sansLecon ?lecon=L1 ?etoiles=N
 const P = new URLSearchParams(location.search);
 const text = { data: textes, pick: (k, v = {}) => { const e = textes[k]; return fill(Array.isArray(e) ? e[Math.floor(rnd() * e.length)] : e, { mascotte: app.mascotte, ...v }); } };
 // les phrases fabriquées à l'avance (assets/voix/) ; ?voix=synthese : seulement la synthèse du navigateur (comparaison)
@@ -150,9 +150,9 @@ const handlers = {
       app.mascotte = await chooseName(app, seance.noms); await store.setSetting("mascotte", app.mascotte);
       ocean.octo.play("rejouir"); await voice.say(text.pick("nomChoisi"));
     } else { ocean.octo.play("saluer"); await voice.say(text.pick("accueil")); }
-    // une séance sur cinq environ : une surprise (un visiteur, ou un cadeau pour le récif) ; ?surprise=cadeau:corail|visite:tortue (tests)
+    // une séance sur cinq environ : une surprise (un visiteur) ; ?surprise=visite:tortue|visite:poissons (tests)
     const forced = P.get("surprise")?.split(":"), prev = previousSession(await store.all("seances"), session.id);
-    const s = forced ? { type: forced[0], id: forced[1] } : drawSurprise(rnd, cartes.surprise, prev, rewards.gifts);
+    const s = forced ? { type: forced[0], id: forced[1] } : drawSurprise(rnd, cartes.surprise, prev);
     if (s) { session.rec.surprise = s; await session.save(); await playSurprise(app, s); }
     // lot 2 : le sélecteur de difficulté (?cran=dur pour les tests : sans l'écran)
     if (seance.selecteur?.actif) await session.setCran(P.get("cran") ?? await chooseCran(app, { allowed: allowedCrans(await store.setting("cransAutorises")), attenteS: seance.selecteur.attenteS }));
@@ -462,6 +462,7 @@ async function startChosen(c) {
 // retour, tout ce que la visite a ajouté (éléments, acteurs, rappels d'image, planches) est retiré, et la séance
 // retrouve exactement sa pause.
 const ALWAYS = new Set(["lagon", "lagon-vie", "pieuvre", "poissons", "petits", "tortue", "pieuvre-gestes", "aides"]);
+sprites.keep = ALWAYS; // jamais libérées (engine/sprites.js, unload)
 function sandbox() {
   const o = ocean, st = stage, kids = (el) => new Set(el.children);
   const ui = kids(st.ui), front = kids(o.frontEl), root = kids(st.root);

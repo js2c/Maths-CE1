@@ -237,8 +237,9 @@ export async function zoneCeremony(app, { zone, hud }) {
 export function cardSpeech(text, got, inReef) {
   const nom = got.carte.nomLu ?? got.carte.nom, d = text.data;
   const shiny = got.devientBrillante ? d.carteBrillanteTirage : null;
-  // (lot 3 bis, A6 : un doublon offre un décor pour le récif, tant qu'il en reste)
-  if (!got.nouvelle) return [got.decor ? fill(d.carteDoublonDecor, { nom, decor: got.decor.nomLu }) : fill(d.carteDoublon, { nom }), shiny].filter(Boolean).join(" ");
+  // (décision du parent du 5 octobre 2026 : jamais de doublon) une créature possédée qui devient brillante : « C'est le
+  // crabe ! Oh ! Elle est brillante ! » (des phrases dont la voix existe déjà)
+  if (!got.nouvelle) return [fill(d.carteNouvelle, { nom }), shiny].filter(Boolean).join(" ");
   return [got.carte.rarete === "legendaire" ? d.carteLegendaire : null, fill(d.carteNouvelle, { nom }), shiny, got.carte.anecdote, inReef ? d.carteRecif : d.carteAlbum].filter(Boolean).join(" ");
 }
 // un coquillage : les étoiles de son prix s'y envolent (un coquillage doré ne coûte qu'une étoile dorée) ;
@@ -276,16 +277,12 @@ export async function openShell(app, { session, hud, first = true, gold = false,
   el.classList.add("enter"); await wait(900); await opened;
   el.flip(true); app.sound?.play("carte"); if (owned.brillante) setTimeout(() => app.sound?.play("brillante"), 350);
   ocean.octo.play("rejouir"); await wait(800);
-  const inReef = !!(got.carte.recif && sprites.atlas.sprites[`creature.${got.carte.id}`]);
-  // (lot 3 bis, A6 : le décor offert par un doublon apparaît à côté de la carte pendant que la voix l'annonce)
-  // (lot 3 bis, étape 3 : les quinze décors dessinés, sur leur planche « decors », chargée le temps de le montrer)
-  if (got.decor && sprites.atlas.sprites[got.decor.sprite]) await sprites.load(sprites.sheetOf(got.decor.sprite));
-  const decor = got.decor && sprites.atlas.sprites[got.decor.sprite] ? spriteBox(app, { x: C[0] + 200, y: 260, w: 280, h: 250, cls: "hud gift pop", still: true, paint: (ctx) => sprites.draw(ctx, got.decor.sprite, 0, 140, 214) }) : null;
+  // toutes les créatures vivent dans le récif vivant (session/recif.js) : « Cette créature va vivre dans ton récif ! »
+  const inReef = true;
   await voice.say(cardSpeech(text, got, inReef), { instruction: true });
   const ok = spriteBox(app, { x: 1000 - 80, y: 560, w: 160, h: 160, cls: "bubble check invite", label: "c'est bon", paint: (ctx) => sprites.draw(ctx, "valider", 0, 80, 80) });
   await Promise.race([new Promise((r) => onBrief(app, ok, r, "cestBon")), wait(20000)]);
   ok.remove(); voice.stop();
-  if (decor) { decor.classList.add("away"); setTimeout(() => { decor.remove(); if (sprites.sheetOf(got.decor.sprite) === "decors" && !app.reef?.open) sprites.unload("decors"); }, 1000); }
   el.classList.add("leave"); await wait(650); el.remove();
   ocean.front.splice(ocean.front.indexOf(tick), 1); shell.show(false); glint.show(false); shell.remove(); glint.remove();
   ocean.actors.splice(ocean.actors.indexOf(shell), 1); ocean.actors.splice(ocean.actors.indexOf(glint), 1);

@@ -11,6 +11,7 @@ import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
+import { recifOuvert, toucherCreature } from "./recif-commun.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const OUT = resolve(opt("--out", "tests/e2e/out/pause")), ONLY = opt("--seul", null); mkdirSync(OUT, { recursive: true });
@@ -59,10 +60,10 @@ async function visits(page, name, errors, { shots = false } = {}) {
   if (shots) await page.screenshot({ path: join(OUT, "1-accueil-en-pause.png") });
   const s0 = await state(page), t0 = await page.evaluate(() => window.__app.clock.pausedTotal()), w0 = Date.now();
   await tap(page, ".keep.reefkey", 1200);
-  await page.waitForSelector(".creature", { timeout: 20000 }); await page.waitForTimeout(600);
-  check(await vis(page, ".creature") && !(await vis(page, ".key, .answer, .nsp, .slate, .skip")), `${name} : le récif en pause, la créature visible, rien de la séance à l'écran`);
+  const viv = await recifOuvert(page);
+  check(viv.length > 0 && await vis(page, "canvas.recif-dessin") && !(await vis(page, ".key, .answer, .nsp, .slate, .skip")), `${name} : le récif en pause, la créature visible, rien de la séance à l'écran`);
   if (shots) await page.screenshot({ path: join(OUT, "2-recif-en-pause.png") });
-  await tap(page, ".creature", 1200); await page.waitForSelector(".card", { timeout: 20000 });
+  await toucherCreature(page, viv[0]); await page.waitForTimeout(1200); await page.waitForSelector(".card", { timeout: 20000 });
   if (shots) await page.screenshot({ path: join(OUT, "3-recif-carte-en-pause.png") });
   await tap(page, ".check:not(.key):not(.stash)", 700);
   if (name === "ligne") await measure(page);

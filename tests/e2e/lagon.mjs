@@ -1,7 +1,7 @@
 // LOT « LAGON EN FOND D'EXERCICES » (docs/SPEC.md, section 11, « Le lagon, fond de toute l'application ») : captures de
 // chaque écran et de chaque type d'exercice sur le lagon, à 1280 × 800 (densité 2) et 1920 × 1200 (densité 1), et contrôles :
 //   - le lagon est là (fond, algues, poissons, faisceaux ; miroitement si WebGL), sous la ligne graduée ;
-//   - pendant les exercices : aucune créature à gagner (ni bouton de créature, ni planche du récif), aucun sous-marin ;
+//   - pendant les exercices : aucune créature à gagner (le récif vivant est fermé, ses canvas absents), aucun sous-marin ;
 //   - rien de l'ancien décor (ses sprites n'existent plus ; aucun acteur dans le calque des visiteurs hors surprise) ;
 //   - aucune erreur dans la page.
 //   node tests/e2e/lagon.mjs [--out dossier] [--seul 1280|1920]
@@ -9,6 +9,7 @@ import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
+import { recifOuvert } from "./recif-commun.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const OUT = resolve(opt("--out", "tests/e2e/out/lagon")), SEUL = opt("--seul", null);
@@ -25,7 +26,7 @@ const decor = (page) => page.evaluate(() => {
   return {
     lagon: !!l, ordre: kids.indexOf("lagon") > kids.indexOf("bg") && kids.indexOf("lagon") < kids.indexOf("line"),
     poissons: l.fishEl.children.length, algues: l.weeds.length, miroitement: !!l.surface, niveau: a.stage.perf.level,
-    creatures: document.querySelectorAll(".creature").length, recif: a.sprites.ready("recif"),
+    creatures: document.querySelectorAll("canvas.recif-vivant").length, recif: !!a.reef?.open,
     visiteurs: a.ocean.backEl.children.length, ancien: ["fond", "rayons", "algue.0", "reflet.0"].filter((n) => a.atlas.sprites[n]),
   };
 });
@@ -101,8 +102,8 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
 
   // ---- le récif et l'album (les quinze créatures du lagon gagnées), « à demain »
   await go(""); await page.evaluate(async () => { const a = window.__app, ids = a.cartes.cartes.filter((c) => c.zone === "lagon").map((c) => c.id); await a.store.put("recompenses", { id: "cartes", cartes: Object.fromEntries(ids.map((id) => [id, { n: 1, premiere: Date.now() }])) }); await a.rewards.load(); });
-  await go(""); await page.tap(".reefkey", { force: true }); await page.waitForSelector(".creature", { timeout: 30000 }); await page.waitForTimeout(1500); await shot("50-recif");
-  { const d = await decor(page); check(d.lagon && d.creatures > 0, `${W} récif : les créatures gagnées sur le lagon`); }
+  await go(""); await page.tap(".reefkey", { force: true }); const viv = await recifOuvert(page); await shot("50-recif");
+  check(viv.length === 15, `${W} récif vivant : les 15 créatures gagnées (${viv.length})`);
   await go(""); await page.tap(".albumkey", { force: true }); await page.waitForTimeout(2000); await shot("51-album");
   check(errors.length === 0, `${W} : aucune erreur dans la page (${errors.slice(0, 3).join(" | ")})`);
   await context.close();

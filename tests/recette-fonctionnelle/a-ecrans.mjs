@@ -6,6 +6,7 @@
 import { join } from "node:path";
 import { readFileSync } from "node:fs";
 import { OUT, Serie, attendre, ecrireIndex, indexPartie, navigateur, opt, ouvrir, silence, toucher } from "./commun.mjs";
+import { recifOuvert, toucherCreature } from "../e2e/recif-commun.mjs";
 
 const DIR = join(OUT, "A-ecrans");
 const nav = await navigateur();
@@ -235,12 +236,14 @@ async function defi() {
 }
 
 // ---------------------------------------------------------------- 8. la récompense
-// une séance réduite à la récompense (?sans), avec un trésor de départ ; `prep` : ce qu'il faut forcer (doublon, brillante)
+// une séance réduite à la récompense (?sans), avec un trésor de départ ; `prep` : ce qu'il faut forcer (quota atteint, brillante)
 async function recompense() {
-  const S = new Serie(DIR, "A08-recompense", "Partie A · la récompense (étoiles, coquillage, carte nouvelle, doublon, brillante)");
+  const S = new Serie(DIR, "A08-recompense", "Partie A · la récompense (étoiles, coquillage, carte nouvelle, créature rendue brillante, brillante)");
   const cas = [
     ["carte nouvelle", "neuve", 30, null],
-    ["doublon", "mois", 30, () => { const R = window.__app.rewards; R.quota = () => 0; }],
+    // (au bout d'un mois, les créatures possédées sont souvent déjà toutes brillantes : on en ternit une pour la capture)
+    ["quota atteint : une créature rendue brillante", "mois", 30, () => { const R = window.__app.rewards, k = Object.keys(R.owned)[0]; R.quota = () => 0; R.owned = { ...R.owned, [k]: { ...R.owned[k], brillante: false } }; }],
+    ["quota atteint, toutes brillantes : le coquillage attend", "mois", 30, () => { const R = window.__app.rewards; R.quota = () => 0; R.owned = Object.fromEntries(Object.entries(R.owned).map(([k, o]) => [k, { ...o, brillante: true }])); }],
     ["brillante", "neuve", 30, () => { const R = window.__app.rewards, o = R.openShell.bind(R); R.openShell = (r, t) => o(() => 0.01, t); }],
   ];
   for (const [nom, base, etoiles, prep] of cas) {
@@ -271,7 +274,8 @@ async function recifAlbum() {
     let s = await ouvrir(nav, { base, nom: true });
     await toucher(s.page, ".reefkey"); await pause(s.page, 3000);
     await S.shot(s.page, { ecran: "le récif", etat: B });
-    if (await toucher(s.page, ".creature")) { await pause(s.page, 2500); await S.shot(s.page, { ecran: "le récif", etat: `${B}, une créature touchée : sa carte` }); await toucher(s.page, ".card"); await pause(s.page, 2000); await S.shot(s.page, { ecran: "le récif", etat: `${B}, la carte touchée (retournée)` }); }
+    const viv = await recifOuvert(s.page);
+    if (viv.length) { await toucherCreature(s.page, viv[0]); await pause(s.page, 2500); await S.shot(s.page, { ecran: "le récif", etat: `${B}, une créature touchée : sa carte` }); await toucher(s.page, ".card"); await pause(s.page, 2000); await S.shot(s.page, { ecran: "le récif", etat: `${B}, la carte touchée (retournée)` }); }
     await s.context.close();
     s = await ouvrir(nav, { base, nom: true });
     await toucher(s.page, ".albumkey"); await pause(s.page, 2500);

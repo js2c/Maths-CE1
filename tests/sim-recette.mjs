@@ -90,7 +90,7 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
     // lot 3 : la rotation de « jouer », le moins maîtrisé d'abord (comme main.js)
     const [n1, n2, n3] = await Promise.all([1, 2, 3].map((k) => store.get("niveaux", k))), mast = { 1: ((n1?.niveau ?? 1) - 1) / module1.niveaux.length, 2: (n2?.acquises?.length ?? 0) / module2.familles.length, 3: calcMastery(module3, n3) };
     const s = new Session({ store, content: seance, rewards, clock, choix, mastery: (m) => mast[m] ?? 0, onCranDown: async () => { log.descentes++; add(3000); }, handlers: {
-      accueil: async ({ session }) => { add(20000); await session.setCran(P.cran ?? "conseille"); add(8000); const sp = drawSurprise(R, cartes.surprise, previousSession(await store.all("seances"), session.id), rewards.gifts); if (sp) { session.rec.surprise = sp; log.surprise = `${sp.type}:${sp.id}`; if (sp.type === "cadeau") await rewards.giveGift(sp.id); add(5000); } },
+      accueil: async ({ session }) => { add(20000); await session.setCran(P.cran ?? "conseille"); add(8000); const sp = drawSurprise(R, cartes.surprise, previousSession(await store.all("seances"), session.id)); if (sp) { session.rec.surprise = sp; log.surprise = `${sp.type}:${sp.id}`; add(5000); } },
       echauffement: async (ctx) => { const w = await new Warmup({ store, content: module2, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load(); log.warm = w; await runWarmup({ ...ctx, warmup: w, screen: warmScreen, rnd: R }); },
       notion: async (ctx) => {
         // lot 3, étape 4 : le calcul rapide
@@ -137,12 +137,12 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
         await rewards.collectFree();
         log.cartes = []; log.zones = []; log.quota = rewards.quota(t);
         const zone = async () => { const z = await rewards.openZone(t); if (z) log.zones.push(z.id); };
-        const won = (g, dore = false) => { log.cartes.push(g.carte.id + (dore ? "(doré)" : "") + (g.nouvelle ? "" : "(doublon)") + (g.brillante && (g.parTirage || g.devientBrillante) ? "(brillante)" : "")); if (g.nouvelle) log.nouvelles = (log.nouvelles ?? 0) + 1; };
+        const won = (g, dore = false) => { log.cartes.push(g.carte.id + (dore ? "(doré)" : "") + (g.rendueBrillante ? "(rendue brillante)" : g.brillante && g.parTirage ? "(brillante)" : "")); if (g.nouvelle) log.nouvelles = (log.nouvelles ?? 0) + 1; };
         await zone();
         if (rewards.goldenCard(t)) won(await rewards.openGolden(R, t), true);
-        for (let k = 0; k < cartes.coquillage.parSeance && rewards.canOpen(); k++) { if (k) await zone(); const g = await rewards.openShell(R, t); if (!g) break; won(g); }
+        for (let k = 0; k < cartes.coquillage.parSeance; k++) { if (k) await zone(); if (!rewards.canOpen(t)) { if (rewards.total >= cartes.coquillage.prix) log.attentes = (log.attentes ?? 0) + 1; break; } const g = await rewards.openShell(R, t); if (!g) break; won(g); }
         await zone();
-        log.depasse = rewards.count > rewards.quota(t); log.decors = rewards.decors?.length ?? 0; },
+        log.depasse = rewards.count > rewards.quota(t); log.reserve = rewards.total; },
     } });
     const rec = await s.run();
     Object.assign(log, { cran: rec.cran, cranDepart: rec.cranDepart, reussite: rec.reussite, questions: rec.questions, etoiles: rec.etoiles, duree: Math.round(rec.dureeS / 60 * 10) / 10, arc: rec.arcEnCiel ?? 0, reste: rewards.total, nbCartes: rewards.count, brillantes: Object.values(rewards.owned).filter((o) => o.brillante).length, legendaires: cartes.cartes.filter((c) => c.rarete === "legendaire" && rewards.owned[c.id]).length, ouvertes: [...rewards.zones.ouvertes], doreesDispo: rewards.doreesDispo, arcDispo: rewards.arcDispo });

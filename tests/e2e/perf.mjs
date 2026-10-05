@@ -13,6 +13,7 @@ import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { mkdirSync, writeFileSync, renameSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
+import { recifOuvert } from "./recif-commun.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const OUT = resolve(opt("--out", "tests/e2e/out")), RATE = Number(opt("--throttle", 4)), SECONDS = Number(opt("--seconds", 12)), VIDEO = args.includes("--video"), NIVEAU = opt("--niveau", null), WEBGL = args.includes("--webgl");
@@ -68,7 +69,7 @@ const memNow = () => page.evaluate(() => { const sp = window.__app.sprites; let 
 await page.evaluate(async () => { const a = window.__app, ids = a.cartes.cartes.filter((c) => c.zone === "lagon").map((c) => c.id); await a.store.put("recompenses", { id: "cartes", cartes: Object.fromEntries(ids.map((id) => [id, { n: 1, premiere: Date.now() }])) }); await a.rewards.load(); });
 await next(); await page.tap(".session-home", { force: true }); await page.waitForSelector(".keep.reefkey", { timeout: 10000 });
 const memPause = await memNow();
-await page.tap(".keep.reefkey", { force: true }); await page.waitForSelector(".creature", { timeout: 30000 }); await page.waitForTimeout(1500);
+await page.tap(".keep.reefkey", { force: true }); await recifOuvert(page);
 await page.evaluate(() => { window.__gaps = []; });
 await page.waitForTimeout(4000);
 const reefGaps = await page.evaluate(() => window.__gaps), memReef = await memNow();

@@ -96,6 +96,15 @@ const touch = async (page, sel, ms = 40) => {
   return true;
 };
 const said = (page) => page.evaluate(() => window.__said.slice());
+// deux touchers sur un élément, envoyés depuis la page à `gapMs` d'écart (pointerdown puis pointerup, chacun). Le toucher
+// réel de Chromium (ci-dessus) met ici 170 à 200 ms entre deux appuis, quelle que soit l'attente demandée : trop lent
+// pour éprouver la porte du pavé (150 ms). Renvoie l'écart réellement mesuré entre les deux pointerdown.
+const doubleTouch = (page, sel, gapMs) => page.evaluate(({ sel, gapMs }) => new Promise((done) => {
+  const el = document.querySelector(sel), r = el.getBoundingClientRect(), t = [];
+  const o = { bubbles: true, cancelable: true, pointerId: 7, pointerType: "touch", isPrimary: true, clientX: r.x + r.width / 2, clientY: r.y + r.height / 2 };
+  const hit = () => { t.push(performance.now()); el.dispatchEvent(new PointerEvent("pointerdown", o)); el.dispatchEvent(new PointerEvent("pointerup", o)); };
+  hit(); setTimeout(() => { hit(); done(Math.round(t[1] - t[0])); }, gapMs);
+}), { sel, gapMs });
 const pauseResume = async (page) => { await touch(page, ".session-home"); await page.waitForTimeout(700); await page.evaluate(() => { window.__said = []; }); await touch(page, ".play"); await page.waitForTimeout(900); return said(page); };
 if (run("toucher")) {
   // la reprise redit la consigne : ligne (niveau 5), additions (famille 3), calcul rapide (niveau 7)
@@ -132,12 +141,25 @@ if (run("toucher")) {
   const after = await page.evaluate(() => ({ typed: window.__app.facts.typed, q: window.__app.facts.q.fait, said: window.__said.slice(-2) }));
   check(after.typed === "", `un chiffre tapé pendant le « bravo » n'est pas dans la question suivante (ardoise « ${after.typed} »)`);
   check(after.said.some((x) => x !== c2 && /combien|plus/i.test(x)), `la consigne suivante est dite (${after.said.join(" | ")})`);
-  await page.evaluate(() => { window.__taps = []; document.addEventListener("pointerdown", () => window.__taps.push(performance.now()), { capture: true }); });
-  await touch(page, '.key[data-key="7"]', 20); await page.waitForTimeout(20); await touch(page, '.key[data-key="7"]', 20); await page.waitForTimeout(200);
-  const gap = await page.evaluate(() => Math.round(window.__taps[1] - window.__taps[0])); console.log(`     (écart mesuré entre les deux touchers : ${gap} ms)`);
-  const typed = await page.evaluate(() => window.__app.facts.typed);
-  check(typed === "7", `deux touchers à 60 ms sur la même touche : un seul chiffre (« ${typed} »)`);
+  // la porte du pavé (seance.json, toucher.doubleMs) : deux touchers à 60 ms sur la même touche ne tapent qu'un chiffre ;
+  // à plus de doubleMs, deux chiffres (une enfant qui tape « 11 »). L'écart est mesuré : sous une machine trop chargée, un
+  // essai dont l'écart n'est pas du bon côté du seuil est refait (trois fois au plus), jamais compté pour bon.
+  const doubleMs = await page.evaluate(() => window.__app.facts.gate.doubleMs);
+  const vider = async () => { for (let k = 0; k < 4 && (await page.evaluate(() => window.__app.facts.typed)); k++) { await doubleTouch(page, '.key[data-key="effacer"]', 0); await page.waitForTimeout(doubleMs + 60); } };
+  const essai = async (key, gapMs, ok) => {
+    for (let k = 0; k < 3; k++) {
+      await vider(); await page.waitForTimeout(doubleMs + 60);
+      const gap = await doubleTouch(page, `.key[data-key="${key}"]`, gapMs); await page.waitForTimeout(150);
+      if (ok(gap)) return { gap, typed: await page.evaluate(() => window.__app.facts.typed) };
+      console.log(`     (essai refait : écart mesuré ${gap} ms)`);
+    }
+    return { gap: null, typed: null };
+  };
+  const vite = await essai("7", 60, (g) => g < doubleMs);
+  check(vite.gap !== null && vite.typed === "7", `deux touchers à ${vite.gap ?? "?"} ms sur la même touche : un seul chiffre (« ${vite.typed} ») ; seuil ${doubleMs} ms`);
   await shot(page, "7-double-toucher");
+  const lent = await essai("1", doubleMs + 100, (g) => g > doubleMs);
+  check(lent.gap !== null && lent.typed === "11", `deux touchers à ${lent.gap ?? "?"} ms sur la même touche : deux chiffres (« ${lent.typed} »)`);
   check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
 }
 if (run("toucher")) {
@@ -191,44 +213,7 @@ if (run("ligne")) {
   check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
 }
 
-// ---------------------------------------------------------------- étape 2 : le doublon offre un décor (A6)
-if (run("decors")) {
-  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 2, hasTouch: true }), page = await context.newPage(), errors = [];
-  page.on("pageerror", (e) => errors.push(e.message));
-  const Q = "?nosw&voix=rapide&son=non&sansLecon&sans=echauffement&questions=2&guides=0&cran=conseille";
-  await page.goto(url + Q); await page.waitForFunction(() => window.__ready !== undefined);
-  await page.evaluate(async () => {
-    const s = window.__app.store, ids = window.__app.cartes.cartes.filter((c) => c.zone === "lagon").slice(0, 10).map((c) => c.id);
-    await s.setSetting("mascotte", "Pili");
-    await s.put("recompenses", { id: "cartes", cartes: Object.fromEntries(ids.map((id) => [id, { n: 1, premiere: 1, brillante: false }])) });
-    await s.put("recompenses", { id: "quota", date: Date.now() - 3600000, cartes: 8 });
-    await s.put("recompenses", { id: "etoiles", total: 30, cumul: 30, arcEnCiel: 0, dorees: 0, coquillages: 8 });
-    await s.put("recompenses", { id: "decors", ids: window.__app.cartes.decors.liste.slice(0, 9).map((d) => d.id) });
-  });
-  await page.goto(url + Q); await page.waitForFunction(() => window.__ready !== undefined);
-  await page.evaluate(() => { const v = window.__app.voice, say = v.say.bind(v); window.__said = []; v.say = (t, o) => { window.__said.push(t); return say(t, o); }; });
-  await page.tap(".play", { force: true });
-  let shot1 = false;
-  for (const until = Date.now() + 150000; Date.now() < until;) {
-    const st = await page.evaluate(() => { const s = window.__app.screen; return { q: !!(s?.q && !s.locked && s.resolve), shell: !!document.querySelector(".shelltap"), check: !!document.querySelector(".check"), card: !!document.querySelector(".card"), gift: !!document.querySelector(".gift"), moon: !!document.querySelector(".moon") }; });
-    if (st.moon) break;
-    if (st.q) { await lineAnswer(page); await page.waitForTimeout(200); continue; }
-    if (st.shell) { await page.tap(".shelltap", { force: true }); await page.waitForTimeout(300); continue; }
-    if (st.card && st.check) { if (!shot1 && st.gift) { shot1 = true; await page.waitForTimeout(600); await shot(page, "10-doublon-decor"); } await page.tap(".check", { force: true }); await page.waitForTimeout(800); continue; }
-    await page.waitForTimeout(150);
-  }
-  const s = await page.evaluate(() => window.__said.join(" | "));
-  check(/elle t'offre un coffre pour ton récif/.test(s), "le doublon offre le 10e décor (un coffre), dit par la voix");
-  if (!/elle t'offre/.test(s)) console.log("DBG", s.slice(-600), await page.evaluate(() => JSON.stringify({ rec: window.__app.session?.rec?.cartes, moon: !!document.querySelector(".moon"), total: window.__app.rewards.total, q: window.__app.rewards.quota(), n: window.__app.rewards.count })));
-  check(shot1, "le décor est montré à côté de la carte");
-  const n = await page.evaluate(async () => (await window.__app.store.get("recompenses", "decors")).ids.length);
-  check(n >= 10, `décors rangés dans la base (${n})`);
-  await page.tap(".reefkey", { force: true }); await page.waitForTimeout(2500); await shot(page, "11-recif-decors");
-  await page.evaluate(async () => { const p = window.__app.parent; p.tab = "progression"; p.open(); await p.dashboard(); }); await page.waitForTimeout(500);
-  const box = page.locator(".pa-card-box", { has: page.locator("h2", { hasText: /^Cartes$/ }) }); await box.scrollIntoViewIfNeeded(); await box.screenshot({ path: join(OUT, "12-parent-decors.png") });
-  check(/\d+ \/ 15\s*décors du récif/.test(await box.textContent()), "l'espace parent donne le nombre de décors");
-  check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
-}
+// (étape 2, A6 : le doublon offrait un décor ; retiré le 5 octobre 2026, décision du parent : plus de doublon ni de décor)
 
 await browser.close(); srv.close();
 console.log(fail.length ? `\n${fail.length} échec(s)` : "\ntout est bon");

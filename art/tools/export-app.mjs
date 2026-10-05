@@ -19,6 +19,7 @@ import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { detect } from "./detect.mjs";
 import { exportLagon } from "./export-lagon.mjs";
+import { exportRecif } from "./export-recif.mjs";
 
 const args = process.argv.slice(2), opt = (k) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : undefined; };
 const only = opt("--only"), check = !args.includes("--no-check");
@@ -85,6 +86,9 @@ for (const sheet of sheets) {
 }
 // le lagon (tools/export-lagon.mjs) : avec l'export complet, ou avec --only lagon ; sinon ses entrées restent dans l'atlas
 if (!only || only.includes("lagon")) bad += await exportLagon({ browser, atlas, OUT, check });
+// le récif vivant (tools/export-recif.mjs : ses images dans assets/recif/, son module dans js/recif/) : avec l'export complet,
+// ou avec --only recif
+if (!only || only.includes("recif")) exportRecif();
 atlas.hash = createHash("md5").update(JSON.stringify(atlas.sprites)).digest("hex").slice(0, 10);
 writeFileSync(atlasPath, JSON.stringify(atlas));
 console.log(`atlas    -> ${atlasPath} (${Object.keys(atlas.sprites).length} sprites, empreinte ${atlas.hash})`);

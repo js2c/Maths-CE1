@@ -1,11 +1,12 @@
 // LES CARTES DU LOT 2 dans Chromium (tablette 1280 × 800, tactile), voix accélérée (docs/SPEC-LOT2.md, section 5).
 //  1. Le lagon complet et une étoile arc-en-ciel en réserve : à la récompense, le récif de corail s'ouvre
 //     (cérémonie), puis les coquillages donnent des cartes du récif de corail, brillantes (tirage forcé) :
-//     reflet irisé, « Oh ! Elle est brillante ! », « Tu la retrouveras dans ton album ! » ; l'album les montre.
-//  2. Le quota atteint : un coquillage donne un doublon (même si la zone est incomplète).
+//     reflet irisé, « Oh ! Elle est brillante ! », « Cette créature va vivre dans ton récif ! » (le récif vivant montre
+//     toutes les zones, décision du parent du 5 octobre 2026) ; l'album les montre, et le récif aussi.
+//  2. Le quota atteint : jamais de doublon ; un coquillage rend brillante une créature déjà possédée.
 //  3. Une étoile dorée et le grand large complet (contenu fictif pour la capture) : le coquillage doré donne
 //     une légendaire, sans dépenser d'étoiles de mer.
-//  4. La surprise : un cadeau (puis dans le récif), la tortue qui traverse, le banc de poissons.
+//  4. La surprise : la tortue qui traverse, le banc de poissons (plus de cadeau depuis le 5 octobre 2026).
 //  5. L'espace parent : le bloc « Cartes ».
 // Captures dans tests/e2e/out/cartes/ ; échoue si une vérification échoue ou si la page a une erreur.
 //   node tests/e2e/cartes.mjs [--out dossier]
@@ -13,6 +14,7 @@ import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
+import { recifOuvert } from "./recif-commun.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const OUT = resolve(opt("--out", "tests/e2e/out/cartes")); mkdirSync(OUT, { recursive: true });
@@ -57,7 +59,7 @@ async function playToReward(page, { onCeremony, atShell, atCard } = {}) {
 // ---- 1. ouverture du récif de corail, cartes brillantes, album
 {
   const { context, page } = await fresh([owned(lagon), { id: "quota", date: Date.now() - 3600000, cartes: 15 }, { id: "etoiles", total: 60, cumul: 60, arcEnCiel: 1, dorees: 0, coquillages: 15 }], Q, 2);
-  await page.evaluate(() => { window.__app.rewards.c = { ...window.__app.rewards.c, brillanteNouvelle: 1, brillanteDoublon: 1 }; });
+  await page.evaluate(() => { window.__app.rewards.c = { ...window.__app.rewards.c, brillanteNouvelle: 1 }; });
   await playToReward(page, {
     onCeremony: async () => { await page.waitForTimeout(1000); await page.screenshot({ path: join(OUT, "1-zone-fermee.png") }); await page.waitForFunction(() => !document.querySelector(".card.zone-closed"), null, { timeout: 20000 }); await page.waitForTimeout(700); await page.screenshot({ path: join(OUT, "2-zone-ouverte.png") }); },
     atShell: async (n) => { if (n === 1) await page.screenshot({ path: join(OUT, "3-coquillage.png") }); },
@@ -72,8 +74,13 @@ async function playToReward(page, { onCeremony, atShell, atCard } = {}) {
   const s = await said(page);
   check(s.includes("Le récif de corail est ouvert !"), "la voix annonce l'ouverture de la zone");
   check(s.includes("Oh ! Elle est brillante !"), "la voix dit « Oh ! Elle est brillante ! »");
-  check(s.includes("Tu la retrouveras dans ton album !") && !s.includes("va vivre dans ton récif"), "une carte du récif de corail vit dans l'album");
+  check(s.includes("Cette créature va vivre dans ton récif !") && !s.includes("Tu la retrouveras dans ton album !"), "une carte du récif de corail vit dans le récif");
   check(r.misses.length === 0, `chaque phrase dite a son fichier son${r.misses.length ? ` ; sans fichier : ${r.misses.join(" | ")}` : ""}`);
+  // le récif vivant : les créatures du récif de corail y sont, avec celles du lagon
+  await page.tap(".reefkey", { force: true });
+  const viv = await recifOuvert(page);
+  check(won.every((id) => viv.includes(id)) && viv.length === lagon.length + won.length, `récif : ${viv.length} créatures, dont celles du récif de corail`);
+  await page.tap(".homekey:not(.session-home)", { force: true }); await page.waitForTimeout(600);
   // l'album : la page du récif de corail, avec les vignettes brillantes
   await page.waitForSelector(".albumkey", { timeout: 20000 }); await page.tap(".albumkey", { force: true }); await page.waitForSelector(".album-card", { timeout: 10000 });
   await page.waitForTimeout(500);
@@ -93,15 +100,19 @@ async function playToReward(page, { onCeremony, atShell, atCard } = {}) {
   await context.close();
 }
 
-// ---- 2. le quota atteint : un doublon, même si la zone n'est pas complète
+// ---- 2. le quota atteint : jamais de doublon, une créature possédée devient brillante
 {
   const { context, page } = await fresh([owned(lagon.slice(0, 6)), { id: "quota", date: Date.now() - 3600000, cartes: 6 }, { id: "etoiles", total: 30, cumul: 30, arcEnCiel: 0, dorees: 0, coquillages: 6 }]);
   // quota : 6 + 2 = 8 ; on remplit les deux places
   await page.evaluate(async () => { const rw = window.__app.rewards; rw.owned = { ...rw.owned, [window.__app.cartes.cartes[6].id]: { n: 1, premiere: 1, brillante: false }, [window.__app.cartes.cartes[7].id]: { n: 1, premiere: 1, brillante: false } }; });
   await playToReward(page);
-  const r = await page.evaluate(() => ({ n: Object.keys(window.__app.rewards.owned).length, quota: window.__app.rewards.quota(), rec: window.__app.session.rec }));
-  check(r.n <= r.quota && (r.rec.cartes ?? []).length >= 1, `quota atteint (${r.n} / ${r.quota}) : ${(r.rec.cartes ?? []).length} coquillage(s), aucune carte nouvelle`);
-  check(/Tu avais déjà cette carte/.test(await said(page)), "la voix annonce un doublon");
+  const r = await page.evaluate(() => ({ n: Object.keys(window.__app.rewards.owned).length, quota: window.__app.rewards.quota(), rec: window.__app.session.rec, owned: window.__app.rewards.owned, misses: [...window.__app.voice.misses] }));
+  const got = r.rec.cartes ?? [];
+  check(r.n === 8 && r.n <= r.quota && got.length >= 1, `quota atteint (${r.n} / ${r.quota}) : ${got.length} coquillage(s), aucune carte nouvelle`);
+  check(got.every((id) => r.owned[id].brillante && r.owned[id].n === 1) && new Set(got).size === got.length, `les créatures rendues brillantes : ${got.join(", ")} (aucun doublon)`);
+  const s2 = await said(page);
+  check(/Oh ! Elle est brillante !/.test(s2) && !/Tu avais déjà/.test(s2), "la voix dit « C'est … ! Oh ! Elle est brillante ! »");
+  check(r.misses.length === 0, `chaque phrase dite a son fichier son${r.misses.length ? ` ; sans fichier : ${r.misses.join(" | ")}` : ""}`);
   await context.close();
 }
 
@@ -121,24 +132,12 @@ async function playToReward(page, { onCeremony, atShell, atCard } = {}) {
 
 // ---- 4. la surprise
 {
-  const { context, page } = await fresh([], `${Q}&surprise=cadeau:corail`);
-  await page.tap(".play", { force: true });
-  await page.waitForSelector(".gift", { timeout: 20000 }); await page.waitForTimeout(500);
-  await page.screenshot({ path: join(OUT, "9-surprise-cadeau.png") });
-  await page.waitForFunction(() => window.__app.rewards.gifts.includes("corail"), null, { timeout: 20000 });
-  check((await said(page)).includes("Surprise ! Un cadeau pour ton récif."), "cadeau : la voix l'annonce");
-  const rec = await page.evaluate(() => window.__app.session.rec.surprise);
-  check(rec?.type === "cadeau" && rec.id === "corail", "la séance note sa surprise");
-  await context.close();
-  // le cadeau est dans le récif
-  const b = await fresh([{ id: "cadeaux", ids: ["corail", "gorgone", "etoile", "coquille"] }, owned(lagon)]);
-  await b.page.tap(".reefkey", { force: true }); await b.page.waitForTimeout(2500);
-  await b.page.screenshot({ path: join(OUT, "10-recif-cadeaux.png") });
-  check((await b.page.evaluate(() => window.__app.reef.gifts.length)) === 4, "récif : les 4 cadeaux sont posés");
-  await b.context.close();
   for (const who of ["tortue", "poissons"]) {
     const c = await fresh([], `${Q}&surprise=visite:${who}`);
-    await c.page.tap(".play", { force: true }); await c.page.waitForTimeout(2600);
+    // (la phrase vient après le bonjour de la pieuvre, 2,5 à 3,5 s après le toucher : on l'attend, puis le visiteur traverse)
+    await c.page.tap(".play", { force: true });
+    await c.page.waitForFunction(() => window.__said.some((t) => t.includes("quelqu'un vient te dire bonjour")), null, { timeout: 15000 }).catch(() => {});
+    await c.page.waitForTimeout(1500);
     await c.page.screenshot({ path: join(OUT, `11-visite-${who}.png`) });
     check((await said(c.page)).includes("Regarde, quelqu'un vient te dire bonjour !"), `visite (${who}) : la voix l'annonce`);
     await c.context.close();

@@ -1,6 +1,6 @@
 // Lot 3 bis, étape 2 (docs/SPEC-LOT3BIS.md, A3, A5, A6) : repères de la ligne et tirage sans remise ; niveau 1 (voisins et
 // trajet cachés) ; E3 en « sauter » sans L3 ; le pavé ignoré pendant un retour et le double toucher ; la reprise avec la
-// consigne ; les décors du doublon et la probabilité de brillante inchangée.
+// consigne .
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -11,9 +11,6 @@ import { repriseText, TapGate } from "../../app/js/engine/toucher.js";
 import { applyCran, makeEstimate, makeJump, makePlace, makeRead, makeWrite, questionKey } from "../../app/js/modules/numberline/generator.js";
 import { Module1Runner } from "../../app/js/modules/numberline/runner.js";
 import { checkSequence } from "../../app/js/modules/variete.js";
-import { cardSpeech } from "../../app/js/session/screens.js";
-import { dateOf, nextDecor, reefDecor, Rewards, shinyChance, shinyDraw } from "../../app/js/session/rewards.js";
-import { GIFT_SPOTS } from "../../app/js/session/surprise.js";
 import { fill } from "../../app/js/engine/phrases.js";
 
 const load = (f) => JSON.parse(readFileSync(new URL(`../../app/content/${f}`, import.meta.url)));
@@ -85,35 +82,5 @@ test("A5 : la reprise redit la consigne quand la séance attendait une réponse 
 });
 
 // ---------------------------------------------------------------- A6 : décors du doublon
-const at = (s) => dateOf(s) + 18 * 3600000;
-test("A6 : chaque doublon apporte le décor suivant, dans l'ordre ; la collection complète, le doublon redevient comme avant", async () => {
-  assert.equal(cartes.decors.liste.length, 15); assert.ok(cartes.decors.liste.every((d) => d.nomLu && d.place && d.zone && d.sprite));
-  const store = await Store.open(new IDBFactory()), rw = await new Rewards(store, cartes, cal).load(at("2026-09-28")), r = rng(3);
-  await rw.add(25 * 40);
-  const got = []; for (let i = 0; i < 20; i++) got.push(await rw.openShell(r, at("2026-09-29")));
-  const dbl = got.filter((g) => !g.nouvelle);
-  assert.equal(got.filter((g) => g.nouvelle).length, 2, "le quota ne change pas");
-  assert.deepEqual(dbl.slice(0, 15).map((g) => g.decor?.id), cartes.decors.liste.map((d) => d.id));
-  assert.ok(dbl.slice(15).every((g) => !g.decor), "collection complète : plus de décor");
-  assert.equal(nextDecor(cartes, rw.decors), null);
-  assert.deepEqual((await new Rewards(store, cartes, cal).load()).decors.length, 15, "rangés dans la base");
-  // la voix : le nom du décor avec son article
-  assert.equal(cardSpeech({ data: T }, dbl[0], true), `Encore ${dbl[0].carte.nomLu ?? dbl[0].carte.nom} ! Tu avais déjà cette carte : elle t'offre un corail branchu pour ton récif !`);
-  assert.equal(cardSpeech({ data: T }, dbl[16], true), fill(T.carteDoublon, { nom: dbl[16].carte.nomLu ?? dbl[16].carte.nom }));
-  // posés dans le récif, avec les cadeaux de la surprise dans le lagon
-  const pose = reefDecor(cartes, { decors: rw.decors.slice(0, 3), gifts: ["etoile"] }, "lagon", GIFT_SPOTS);
-  assert.deepEqual(pose.map((d) => d.id), ["corail-branchu", "anemone-rose", "gorgone", "etoile"]);
-});
-
-test("A6 : la probabilité de brillante d'un doublon reste 5 % (décision du parent), décor ou pas ; pas de règle du 3e doublon", async () => {
-  assert.equal(cartes.brillanteDoublon, 0.05);
-  const owned = { moule: { n: 1, brillante: false } }, carte = cartes.cartes.find((c) => c.id === "moule");
-  assert.equal(shinyChance(cartes, owned, carte), 0.05);
-  const r = rng(2026); let n = 0; for (let i = 0; i < 1000; i++) if (shinyDraw(r, 0.05)) n++;
-  assert.ok(Math.abs(n / 1000 - 0.05) < 0.03, `${n} sur 1 000`);
-  // tirage de contrôle en situation : la même suite de coquillages, avec ou sans décors, donne exactement les mêmes brillantes
-  const run = async (content) => { const store = await Store.open(new IDBFactory()), rw = await new Rewards(store, content, cal).load(at("2026-09-28")), rr = rng(7); await rw.add(25 * 60); const out = []; for (let i = 0; i < 60; i++) { const g = await rw.openShell(rr, at("2026-09-29")); out.push(`${g.carte.id}:${g.nouvelle}:${!!g.parTirage}:${!!g.devientBrillante}`); } return out; };
-  const avec = await run(cartes), sans = await run({ ...cartes, decors: { liste: [] } });
-  assert.deepEqual(avec, sans);
-  assert.ok(avec.some((x) => x.endsWith("true:true") || x.includes(":true:")), "des brillantes sortent");
-});
+// (supprimés le 5 octobre 2026, décision du parent : jamais de doublon ; les nouvelles règles sont testées par
+// tests/unit/cartes.test.mjs et tests/unit/recompenses-sans-doublon.test.mjs)

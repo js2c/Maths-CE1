@@ -56,7 +56,7 @@ Dernière mise à jour : 30 septembre 2026, après la fusion du lot 3 ter (PR 25
 
 - **Cartes animées** (idée du parent, 27 septembre) : remplacer la version brillante par une courte vidéo en boucle (6 s). Faisable : WebM (VP9) ou MP4 (H.264) sans son, 3:4 (720 × 960 ou 600 × 800), 24 images/s, 0,3 à 0,8 Mo par carte ; l'image fixe garde son rôle d'affiche et d'album ; une seule vidéo jouée à la fois ; téléchargement à la demande plutôt que tout en cache. Une vidéo générée en 9:16 se recadre en 3:4 en gardant toute la largeur et 75 % de la hauteur. Non décidé.
 
-**Graphisme** (projet parallèle, hors de ce fichier) : le récif vivant (mer continue, kit `kit-recif-vivant.zip`), la refonte graphique (PR 24 et 26).
+**Graphisme** (projet parallèle, hors de ce fichier) : la refonte graphique (PR 24 et 26). Le récif vivant est intégré comme collection depuis le 5 octobre 2026 (`docs/SPEC.md`, section 10).
 
 ## 5. À observer avec l'enfant, à vérifier sur la tablette
 
@@ -68,7 +68,7 @@ Dernière mise à jour : 30 septembre 2026, après la fusion du lot 3 ter (PR 25
 - **Les aides passables** : les deux triangles jaunes poussent-ils l'enfant à tout passer ? L'historique compte les aides et les corrections passées.
 - **Choisir en un toucher** : l'enfant ne valide-t-elle pas par erreur ? Entend-elle le nom avant l'écran suivant ?
 - **Le défi** : la bulle qui se vide se lit-elle comme un temps ?
-- **Fluidité et mémoire** : jusqu'à 224 Mo de planches décodées (récif ouvert pendant une pause, mesure sur ordinateur) ; 51 Mo de voix à télécharger la première fois. Modèle de la tablette inconnu.
+- **Fluidité et mémoire** : jusqu'à 224 Mo de planches décodées (ancien récif ouvert pendant une pause, mesure sur ordinateur ; à remesurer avec le récif vivant, dont les images ne sont plus des planches) ; le récif vivant (WebGL et grandes images) sur la tablette ; 51 Mo de voix à télécharger la première fois. Modèle de la tablette inconnu.
 
 ## 6. À demander, à préparer
 

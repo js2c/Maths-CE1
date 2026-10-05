@@ -84,7 +84,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   check((await page.locator(".card").count()) === 1, `${W} : toucher une créature du grand large ouvre sa carte`);
   await page.tap(".check", { force: true }); await page.waitForTimeout(700);
   // déplacer une créature (l'oursin, qui ne se promène pas tout seul) : doigt posé (plus de 260 ms), puis glissé
-  await page.evaluate(() => window.__app.reef.api.aller("oursin")); await page.waitForTimeout(600);
+  await page.evaluate(() => window.__app.reef.api.aller("oursin")); await page.waitForFunction(() => window.__app.reef.api.ou("oursin"), null, { timeout: 15000 }); await page.waitForTimeout(300);
   const p0 = await page.evaluate(() => window.__app.reef.api.ou("oursin")), bb = await box();
   await geste(page, cdp, [bb.x + p0.x, bb.y + p0.y - 12], [bb.x + p0.x + 180, bb.y + p0.y - 70], { tenir: 450, pas: 15 });
   await page.waitForTimeout(500);
@@ -97,7 +97,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   check(!e.open && e.canvas === 0 && e.octo && e.etoiles !== "hidden" && !e.lagonPause, `${W} : la maison : le récif libéré, la pieuvre, le compteur et le lagon reviennent`);
   check(await page.evaluate(() => { const cs = [...document.querySelectorAll("button.bubble canvas")]; return cs.length >= 4 && cs.every((c) => { const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < d.length; i += 4) if (d[i] > 0) return true; return false; }); }), `${W} : les boutons de l'accueil sont dessinés`);
   await shot("6-accueil-au-retour");
-  await entrer(); await page.evaluate(() => window.__app.reef.api.aller("oursin")); await page.waitForTimeout(600);
+  await entrer(); await page.evaluate(() => window.__app.reef.api.aller("oursin")); await page.waitForFunction(() => window.__app.reef.api.ou("oursin"), null, { timeout: 15000 }).catch(() => {}); await page.waitForTimeout(300);
   const p2 = await page.evaluate(() => window.__app.reef.api.ou("oursin"));
   check(p2 && Math.hypot(p2.x - p0.x, p2.y - p0.y) < 30, `${W} : à la visite suivante, l'oursin est revenu à sa place`);
   await page.tap(".homekey:not(.session-home)", { force: true }); await page.waitForTimeout(600);

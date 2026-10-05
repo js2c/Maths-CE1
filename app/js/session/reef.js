@@ -10,7 +10,7 @@
 //    d'étoiles par-dessus la mer (comme dans la maquette) ;
 //  - pendant la visite, le lagon de l'application (le fond, lagon.js) se met en pause sous le récif ; les images du récif
 //    ne sont chargées qu'à l'entrée et libérées en sortant ; si le temps d'image moyen dépasse 20 ms, le récif se dessine
-//    en densité 1.
+//    en densité 1 (`alleger`).
 // Remplace le récif en pages (lot 3, étape 5) depuis le 5 octobre 2026 (décision du parent).
 import { CardView, forgetPictures } from "./cards.js";
 import { spriteBox } from "./screens.js";
@@ -29,6 +29,12 @@ export function recifCreatures(collection) {
 }
 // la densité de dessin : celle de l'écran (au plus 2), ou 1 quand l'allègement le demande
 const densite = (lent) => (lent ? 1 : Math.min(2, devicePixelRatio || 1));
+// l'allègement : passé les 3 premières secondes, si l'intervalle moyen des dernières images (60 au plus, 10 au moins)
+// dépasse 20 ms. Un intervalle de plus d'une seconde (onglet caché, appareil en veille) n'est pas compté ; une image
+// lente, si : sur une tablette très lente, c'est elle qu'il faut alléger (`gaps` : les intervalles retenus, en ms ;
+// `ecoule` : le temps depuis l'entrée, en ms)
+export const garderIntervalle = (dt) => dt > 0 && dt < 1000;
+export const alleger = (gaps, ecoule) => ecoule > 3000 && gaps.length >= 10 && gaps.reduce((a, b) => a + b, 0) / gaps.length > 20;
 
 // le scintillement d'une créature brillante : trois étoiles à quatre branches qui s'allument tour à tour, posées sur la
 // créature (dans son repère : `k` px d'écran par px de son image) ; dessiné en direct, comme les bulles
@@ -68,15 +74,18 @@ export class Reef {
     this.cache = { octo: ocean.octoVisible, etoiles: stage.ui.querySelector(".hud.stars") };
     ocean.octoVisible = false; this.cache.etoiles?.classList.add("recif-masque");
     const ecoute = []; this.ecoute = ecoute;
-    const gaps = []; let last = 0;
+    const gaps = []; let last = 0, t0 = 0;
     this.api = startRecif({
       cv, glc, donnees: this.donnees, owned, brillantes,
       size: () => ({ w: stage.root.clientWidth, h: stage.root.clientHeight }), rect: () => cv.getBoundingClientRect(),
       dpr: () => densite(this.lent),
       on: (cible, type, f, o) => { cible.addEventListener(type, f, o); ecoute.push([cible, type, f, o]); },
       onFiche: (id) => this.fiche(id), scintille,
-      // l'allègement : au-delà de 20 ms d'intervalle moyen (60 images, après 3 s), la densité passe à 1
-      mesure: (t) => { if (last && t - last < 200) gaps.push(t - last); last = t; if (!this.lent && gaps.length >= 240 && gaps.slice(-60).reduce((a, b) => a + b, 0) / 60 > 20) { this.lent = true; this.api?.resize(); } },
+      // l'allègement (`alleger`) : la densité passe à 1
+      mesure: (t) => {
+        t0 ||= t; if (last && garderIntervalle(t - last)) gaps.push(t - last); last = t; if (gaps.length > 60) gaps.shift();
+        if (!this.lent && alleger(gaps, t - t0)) { this.lent = true; this.api?.resize(); }
+      },
     });
     const home = spriteBox(app, { x: 90 - 70, y: 712 - 70, w: 140, h: 140, cls: "bubble homekey", label: "revenir", paint: (ctx) => sprites.draw(ctx, "maison", 0, 70, 70) });
     // l'album, par-dessus le récif (docs/SPEC.md : « depuis l'accueil et depuis le récif »)

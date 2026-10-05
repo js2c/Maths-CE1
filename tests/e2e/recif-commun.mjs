@@ -9,7 +9,9 @@ export async function recifOuvert(page, timeout = 30000) {
 // touche une créature (nom de la carte) : la vue glisse jusqu'à elle, puis un toucher bref au milieu de son image
 export async function toucherCreature(page, id) {
   const m = await page.evaluate((id) => { const N = { "benitier-geant": "benitier", "meduse-criniere": "meduse", "ver-tubicole-geant": "ver-tubicole", "requin-groenland": "requin-du-groenland" }; const k = N[id] ?? id; window.__app.reef.api.aller(k); return k; }, id);
-  await page.waitForTimeout(600);
+  // (la position n'est connue qu'une fois l'image suivante dessinée : sur une machine lente, plusieurs centaines de ms)
+  await page.waitForFunction((k) => window.__app.reef.api.ou(k), m, { timeout: 15000 }).catch(() => {});
+  await page.waitForTimeout(300);
   const pos = await page.evaluate((k) => window.__app.reef.api.ou(k), m);
   if (!pos) throw new Error(`créature introuvable à l'écran : ${id}`);
   const box = await page.locator("canvas.recif-dessin").boundingBox();

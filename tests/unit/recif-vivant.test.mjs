@@ -5,7 +5,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { recifCreatures, versCarte, versMaquette } from "../../app/js/session/reef.js";
+import { alleger, garderIntervalle, recifCreatures, versCarte, versMaquette } from "../../app/js/session/reef.js";
 
 const root = new URL("../../", import.meta.url), read = (p) => readFileSync(new URL(p, root), "utf8");
 const cartes = JSON.parse(read("app/content/cartes.json")), donnees = JSON.parse(read("app/assets/recif/donnees.json"));
@@ -59,4 +59,14 @@ test("pendant la visite : le lagon en pause, ni la pieuvre ni le compteur d'éto
   assert.match(reefJs, /lagon\?\.pause\(true\)/); assert.match(reefJs, /lagon\?\.pause\(false\)/);
   assert.match(reefJs, /ocean\.octoVisible = false/); assert.match(reefJs, /classList\.remove\("recif-masque"\)/);
   assert.match(reefJs, /this\.api\?\.stop\(\)/); assert.match(reefJs, /removeEventListener/);
+});
+
+test("l'allègement : après 3 s, au-delà de 20 ms d'intervalle moyen, même quand chaque image est très lente", () => {
+  const n = (k, ms) => Array(k).fill(ms);
+  assert.equal(alleger(n(60, 16), 5000), false, "60 images/s : rien");
+  assert.equal(alleger(n(60, 25), 5000), true, "40 images/s : allégé");
+  assert.equal(alleger(n(60, 25), 2000), false, "pas avant 3 s");
+  assert.equal(alleger(n(12, 350), 4200), true, "une image toutes les 350 ms (machine très lente) : allégé dès 3 s");
+  assert.equal(alleger(n(5, 350), 4200), false, "trop peu de mesures");
+  assert.ok(garderIntervalle(350) && !garderIntervalle(4000), "un onglet caché (plusieurs secondes) n'est pas compté");
 });

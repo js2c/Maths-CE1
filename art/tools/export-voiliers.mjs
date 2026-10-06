@@ -155,6 +155,8 @@ const API={
   get qual(){return QUAL;},
   // où est le bateau de l'enfant (pour la bulle, qui ne le couvre jamais) : là où il va s'il arrive
   zoneBateau(){if(!B.vis)return null;const t=B.tw&&B.mode==='enter'?B.tw.to:B,s=boatK(t.y)/.44;return[t.x-190*s,t.y-330*s,t.x+200*s,t.y+55*s];},
+  // là où il est et là où il va
+  zonesBateau(){if(!B.vis)return[];const r=(t)=>{const s=boatK(t.y)/.44;return[t.x-190*s,t.y-330*s,t.x+200*s,t.y+55*s];};return B.tw?[r(B),r(B.tw.to)]:[r(B)];},
   // pour les parcours : poser le bateau dans le passage c, comme le doigt
   deposer(c){if(B.mode!=='wait')return false;B.x=zoneCenter(c);B.y=LINE_Y-20;drag=null;lacher(chenalAt(B.x));return true;},
   etat(){return{mode:B.mode,vis:B.vis,x:B.x,y:B.y,k:B.k,num:B.num,bouees:G.buoys.slice(),rangee:G.stage,xs:xsOf(),LINE_Y,mer:G.mv,pirates:P.vis?P.mode:null,allumees:activeBU().map(b=>b.lit),images:pending,qualite:QUAL,ZC,depart:OLD?OLD.vis:false};},
@@ -207,9 +209,15 @@ export function exportVoiliers({ log = console.log, ecrire = true } = {}) {
     const n = js.split(a).length - 1; if (n !== 1) throw new Error(`export-voiliers : retouche « ${pourquoi} » : ${n} occurrence(s) au lieu d'une ; la maquette a changé`);
     js = js.replace(a, () => b);
   }
+  // deux fonctions de la section FLOW servent encore à la scène (les pirates partent en chasse, visent le bateau) : elles
+  // sont gardées telles quelles (la première retouchée plus haut) et posées en tête des raccords
+  const gardees = ["function startPirates(){", "function pirTarget(){"].map((debut) => {
+    const i = js.indexOf(debut); if (i < 0 || js.indexOf(debut, i + 1) >= 0) throw new Error(`export-voiliers : ${debut} introuvable ou en double`);
+    return js.slice(i, js.indexOf("\n", i) + 1);
+  }).join("");
   // les sections, de la dernière à la première (les indices restent justes)
   const places = SECTIONS.map(([n, txt, pourquoi]) => ({ n, txt, pourquoi, at: section(js, n) })).sort((x, y) => y.at[0] - x.at[0]);
-  for (const s of places) js = js.slice(0, s.at[0]) + (s.n === "FLOW" ? RACCORDS : s.n === "START" ? DEMARRAGE : s.txt) + js.slice(s.at[1]);
+  for (const s of places) js = js.slice(0, s.at[0]) + (s.n === "FLOW" ? RACCORDS + "// (gardées de la section FLOW de la maquette)\n" + gardees : s.n === "START" ? DEMARRAGE : s.txt) + js.slice(s.at[1]);
   // plus rien de la page de la maquette (ses éléments, sa bulle, sa mascotte, ses crochets d'essai)
   for (const [re, quoi] of [[/\$\(['"]/, "un élément de la page de la maquette"], [/document\.getElementById/, "un élément de la page de la maquette"], [/\bMASC\b|\bsay\(|\bevaluate\(|\bsinkBoat\(|\bnewBoat\(|\bupdatePanel\(|window\.__/, "un reste de la séance de la maquette"], [/(^|[^.\w])addEventListener\(/m, "un écouteur de la fenêtre qui ne serait pas retiré"]]) {
     const x = js.match(re); if (x) throw new Error(`export-voiliers : ${quoi} reste : ${js.slice(Math.max(0, x.index - 40), x.index + 60)}`);
@@ -244,7 +252,7 @@ ${js}
   const poids = [...ecrits.values()].reduce((s, b) => s + b.length, 0);
   const empreinteSortie = createHash("sha256").update(module).update(json).update([...ecrits.entries()].map(([f, b]) => f + createHash("sha256").update(b).digest("hex")).join()).digest("hex").slice(0, 12);
   log(`voiliers : ${ecrits.size} images (${(poids / 1048576).toFixed(2)} Mo) -> ${OUT_IMG} ; module ${(module.length / 1024).toFixed(0)} Ko -> ${OUT_JS} ; empreinte ${empreinteSortie}`);
-  return { images: ecrits.size, poids, empreinte, empreinteSortie };
+  return { images: ecrits.size, poids, empreinte, empreinteSortie, module, json };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

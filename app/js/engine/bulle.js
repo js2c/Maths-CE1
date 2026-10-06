@@ -107,8 +107,9 @@ const SVG = "http://www.w3.org/2000/svg";
 export class Bulle {
   // stage : la scène (son calque #ui, son échelle k)
   // stage : la scène ; `dures()` : d'autres zones à ne jamais couvrir (la bande de la ligne graduée affichée, main.js)
-  constructor(stage, { dures = () => [] } = {}) {
-    this.st = stage; this.dures = dures; this.grille = { gen: null, rects: [] };
+  // (lot « Les voiliers » : `souples()`, d'autres zones à éviter si possible : le bateau qui va seul au bon passage)
+  constructor(stage, { dures = () => [], souples = () => [] } = {}) {
+    this.st = stage; this.dures = dures; this.souplesEnPlus = souples; this.grille = { gen: null, rects: [] };
     const el = (this.el = document.createElement("div"));
     el.className = "bulle keep cachee"; el.setAttribute("aria-hidden", "true");
     const svg = document.createElementNS(SVG, "svg"); svg.setAttribute("width", "1280"); svg.setAttribute("height", "800"); svg.setAttribute("viewBox", "0 0 1280 800");
@@ -172,7 +173,7 @@ export class Bulle {
     }
     this.grille = { gen: key, rects }; return rects;
   }
-  obstacles() { return { durs: [...obstacles(this.st.ui, this.st.k), ...this.dures()], souples: [...obstacles(this.st.ui, this.st.k, CARTE), ...this.dessins()] }; }
+  obstacles() { return { durs: [...obstacles(this.st.ui, this.st.k), ...this.dures()], souples: [...obstacles(this.st.ui, this.st.k, CARTE), ...this.dessins(), ...this.souplesEnPlus()] }; }
   layout() {
     const cible = largeurEquilibree(this.mesure(4000)[0]), m = (w) => this.mesure(Math.min(w, cible));
     const { durs, souples } = this.obstacles(), p = choisirPlace(durs, m, PLACES, souples);

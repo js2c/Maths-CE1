@@ -100,8 +100,11 @@ export class VoiliersScreen {
     if (app.bulleTexte === bulleNombre) app.bulleTexte = null;
     if (etait) app.lagon?.pause(false);
   }
-  // le bateau, pour la bulle (qui ne le couvre jamais) et la bande des bouées
-  obstacles() { if (!this.api) return []; const b = this.api.zoneBateau(); return b ? [b, BANDE_BOUEES] : [BANDE_BOUEES]; }
+  // pour la bulle : la bande des bouées et le bateau qui arrive ou attend le geste (jamais couverts) ; le bateau qui se
+  // déplace seul (correction, exemple), là où il est et là où il va (évité si possible)
+  bouge() { const m = this.api?.etat().mode; return !["enter", "wait", "tenu", "drag"].includes(m); }
+  obstacles() { if (!this.api) return []; const b = this.bouge() ? null : this.api.zoneBateau(); return b ? [b, BANDE_BOUEES] : [BANDE_BOUEES]; }
+  souples() { return this.api && this.bouge() ? this.api.zonesBateau() : []; }
 
   // « passer » pendant une explication ou un exemple : la voix se tait, les gestes finissent vite
   passable(on) {

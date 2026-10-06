@@ -551,6 +551,8 @@ const API={
   get qual(){return QUAL;},
   // où est le bateau de l'enfant (pour la bulle, qui ne le couvre jamais) : là où il va s'il arrive
   zoneBateau(){if(!B.vis)return null;const t=B.tw&&B.mode==='enter'?B.tw.to:B,s=boatK(t.y)/.44;return[t.x-190*s,t.y-330*s,t.x+200*s,t.y+55*s];},
+  // là où il est et là où il va
+  zonesBateau(){if(!B.vis)return[];const r=(t)=>{const s=boatK(t.y)/.44;return[t.x-190*s,t.y-330*s,t.x+200*s,t.y+55*s];};return B.tw?[r(B),r(B.tw.to)]:[r(B)];},
   // pour les parcours : poser le bateau dans le passage c, comme le doigt
   deposer(c){if(B.mode!=='wait')return false;B.x=zoneCenter(c);B.y=LINE_Y-20;drag=null;lacher(chenalAt(B.x));return true;},
   etat(){return{mode:B.mode,vis:B.vis,x:B.x,y:B.y,k:B.k,num:B.num,bouees:G.buoys.slice(),rangee:G.stage,xs:xsOf(),LINE_Y,mer:G.mv,pirates:P.vis?P.mode:null,allumees:activeBU().map(b=>b.lit),images:pending,qualite:QUAL,ZC,depart:OLD?OLD.vis:false};},
@@ -561,6 +563,9 @@ const API={
   resize(){fit();},
   stop(){VIVANT=false;JETON++;cancelAnimationFrame(RAF);ATTENTE=null;for(const c of [gl,gb]){try{c.getExtension('WEBGL_lose_context')?.loseContext();}catch(e){void e;}}},
 };
+// (gardées de la section FLOW de la maquette)
+function startPirates(){P=newShip('pirate');P.vis=true;P.x=1420;P.y=AUTO_Y0-95;P.mode='chase';P.deadline=T+G.windDur/(OPTS.piratesK??1.3)/1000;}
+function pirTarget(){const s=B.k/.44;return{x:B.x+170*s,y:B.y-70*s};}
 /* =====================================================================================
    TOUCH
    ===================================================================================== */
@@ -640,9 +645,9 @@ function render(){
  c2.globalAlpha=1;}
 let NFR=0,last=performance.now(),fpsN=0,fpsT=performance.now(),FPS=0;
 function frame(now){
- if(!VIVANT)return;RAF=requestAnimationFrame(frame);OPTS.mesure?.(now);
+ if(!VIVANT)return;RAF=requestAnimationFrame(frame);
+ if(OPTS.fige?.()){if(REDESSINE){REDESSINE=false;render();}return;}REDESSINE=false;OPTS.mesure?.(now);
  const tNow=OPTS.temps(now);const dt=clamp(tNow-T,0,.1);T=tNow;
- if(OPTS.fige?.()){if(REDESSINE){REDESSINE=false;render();}return;}REDESSINE=false;
  update(dt||.016);render();NFR++;
  fpsN++;if(now-fpsT>1000){FPS=Math.round(fpsN*1000/(now-fpsT));fpsN=0;fpsT=now;}
 }

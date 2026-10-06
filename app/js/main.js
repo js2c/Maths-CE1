@@ -81,8 +81,12 @@ const voice = new Voice({ rate: 0.9, fast: P.get("voix") === "rapide" }).setInde
 // (lot « Mascotte ») la mascotte parle quand la voix parle, et ce qu'elle dit s'écrit dans sa bulle (pas dans le récif
 // vivant, où elle n'est pas) ; la bulle s'efface 1,5 s après la phrase ; la flèche montre à la place du bras de la pieuvre
 // (la bande de la ligne graduée affichée est un obstacle de la bulle, sauf pendant la pause, où elle est cachée)
-// (lot « Les voiliers » : pendant le jeu, le bateau de l'enfant et la bande des bouées)
-const bulle = new Bulle(stage, { dures: () => { if (stage.root.classList.contains("paused")) return []; const b = app.line.bande; return [...(b ? [b] : []), ...(app.voiliers?.actif ? app.voiliers.obstacles() : [])]; } }), fleche = new Fleche(ocean);
+// (lot « Les voiliers » : pendant le jeu, la bande des bouées et le bateau de l'enfant quand il arrive ou attend le geste ;
+// quand il va seul au bon passage, il est seulement évité si possible)
+const bulle = new Bulle(stage, {
+  dures: () => { if (stage.root.classList.contains("paused")) return []; const b = app.line.bande; return [...(b ? [b] : []), ...(app.voiliers?.actif ? app.voiliers.obstacles() : [])]; },
+  souples: () => (app.voiliers?.actif && !stage.root.classList.contains("paused") ? app.voiliers.souples() : []),
+}), fleche = new Fleche(ocean);
 // (relecture du lot : pendant une question de dictée, la bulle n'écrit rien : elle écrirait en chiffres le nombre à écrire)
 const dicteeEnCours = () => !!(app.facts?.q?.dictee && !app.facts.locked);
 // (lot « Les voiliers » : `app.bulleTexte` récrit ce que la bulle écrit : le nombre du bateau, en chiffres et en lettres)

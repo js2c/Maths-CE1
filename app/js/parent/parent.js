@@ -13,7 +13,7 @@ import { catalog, median } from "../modules/facts/facts.js";
 import { recommended } from "../modules/calc/runner.js";
 import { ruleShare } from "../modules/facts/families.js";
 import { DB_NAME, MIGRATIONS, persist, STORES } from "../engine/store.js";
-import { familyKnown, markFamilyKnown, setCalcLevel, setLineLevel } from "./depart.js";
+import { familyKnown, markFamilyKnown, setCalcLevel, setLineLevel, setVoiliersLevel } from "./depart.js";
 
 // ---------------------------------------------------------------- petits outils du DOM
 function h(tag, attrs = {}, ...kids) {
@@ -63,7 +63,7 @@ export class ParentSpace {
   // (lot 3 bis, B2 et B10) la légende des niveaux de « choisir », le même texte que le panneau du petit livre (legendes.json)
   legendsBox() {
     const L = this.legendes; if (!L) return null;
-    const ex = [["ligne", "La ligne graduée"], ["additions", "Les additions"], ["calcul", "Le calcul rapide"], ["lecons", "Les leçons"]];
+    const ex = [["ligne", "La ligne graduée"], ["additions", "Les additions"], ["calcul", "Le calcul rapide"], ["voiliers", "Les voiliers"], ["lecons", "Les leçons"]];
     return h("div", { class: "pa-card-box" }, h("h2", {}, "Les niveaux de « choisir », en bref"),
       h("p", { class: "pa-note" }, "Le même texte que la légende de l'écran « choisir » (le bouton du petit livre, en haut à droite des niveaux). Chaque plaque porte son numéro : vous pouvez dire « fais le 7 »."),
       ex.map(([k, titre]) => h("details", { class: "pa-niveaux" }, h("summary", {}, titre),
@@ -251,8 +251,8 @@ export class ParentSpace {
     const cartes = (x.cartes ?? []).map((id) => this.cartes.cartes.find((c) => c.id === id)?.nom ?? id);
     det.append(h("div", { class: "pa-facts" },
       h("span", {}, "De ", h("b", {}, D.fmtTime(x.debut)), " à ", h("b", {}, x.fin ? D.fmtTime(x.fin) : "—")),
-      h("span", {}, "Notion du jour : ", h("b", {}, `${this.c.modules[x.module]?.nom ?? `module ${x.module}`}${x.module === 2 && x.famille ? ` (famille « ${this.module2.familles.find((f) => f.id === x.famille)?.nom ?? x.famille} »)` : ""}${x.module === 3 && x.niveauCalcul ? ` (niveau ${x.niveauCalcul})` : ""}`)),
-      x.choix && h("span", {}, "Exercice choisi par l'enfant : ", h("b", {}, x.choix.module === 1 ? `ligne graduée, niveau ${x.choix.niveau}` : x.choix.module === 3 ? `calcul rapide, niveau ${x.choix.niveau}` : `additions, famille « ${this.module2.familles.find((f) => f.id === x.choix.famille)?.nom ?? x.choix.famille} »`)),
+      h("span", {}, "Notion du jour : ", h("b", {}, `${this.c.modules[x.module]?.nom ?? `module ${x.module}`}${x.module === 2 && x.famille ? ` (famille « ${this.module2.familles.find((f) => f.id === x.famille)?.nom ?? x.famille} »)` : ""}${x.module === 3 && x.niveauCalcul ? ` (niveau ${x.niveauCalcul})` : ""}${x.module === 4 && x.niveauVoiliers ? ` (niveau ${x.niveauVoiliers})` : ""}${x.moduleImpose ? " · imposé par vous" : ""}`)),
+      x.choix && h("span", {}, "Exercice choisi par l'enfant : ", h("b", {}, x.choix.module === 1 ? `ligne graduée, niveau ${x.choix.niveau}` : x.choix.module === 3 ? `calcul rapide, niveau ${x.choix.niveau}` : x.choix.module === 4 ? `les voiliers, niveau ${x.choix.niveau}` : `additions, famille « ${this.module2.familles.find((f) => f.id === x.choix.famille)?.nom ?? x.choix.famille} »`)),
       x.echauffementPasse && h("span", {}, "Échauffement : ", h("b", {}, `passé par l'enfant après ${plural(x.echauffementPasse.apres, "question")}`)),
       (x.etapes ?? []).some((e) => e.sautee === "réglage du parent") && h("span", {}, "Échauffement : ", h("b", {}, "retiré (réglage « Échauffement : non »)")),
       (x.etapes ?? []).some((e) => e.sautee === "déjà fait aujourd'hui") && h("span", {}, "Échauffement : ", h("b", {}, "pas refait (déjà fait ou passé plus tôt ce jour-là)")),
@@ -335,6 +335,17 @@ export class ParentSpace {
         (st3.lecons ?? []).length ? h("p", { class: "pa-note" }, `Leçons déjà vues : ${st3.lecons.join(", ")}.`) : null);
     }
     this.weeklyBlock(m3, 3);
+    // lot « Les voiliers » : le niveau atteint, l'historique, la mer de chaque séance, semaine par semaine
+    const M4 = this.c.modules[4], st4 = this.d.niveaux.find((n) => n.module === 4) ?? null, m4 = h("div", { class: "pa-card-box" }, h("h2", {}, `Module 4 · ${M4?.nom ?? "Les voiliers"}`));
+    if (!st4) m4.append(h("p", { class: "pa-empty" }, "Pas encore joué. On y vient par « choisir » (un voilier), ou vous pouvez l'imposer pour la prochaine séance « jouer » (réglages)."));
+    else {
+      const cur = Math.min(9, st4.niveau ?? 1);
+      m4.append(h("p", { class: "pa-big" }, `Niveau atteint : ${cur} sur 9`), h("p", { class: "pa-note" }, M4.niveaux[cur]),
+        h("div", { class: "pa-levels", "aria-hidden": "true" }, Array.from({ length: 9 }, (_, i) => h("span", { class: i + 1 < cur ? "done" : i + 1 === cur ? "cur" : "" }, i + 1))),
+        h("p", { class: "pa-note" }, "L'enfant fait glisser chaque bateau jusqu'au passage où son nombre se range, entre deux bouées. Un niveau est franchi avec 8 bateaux rangés du premier coup sur les 10 derniers. La mer suit le cran choisi au début de la séance : calme (plus facile), le vent qui pousse le bateau (conseillé, après 3 réussites de suite), les pirates qui le poursuivent (plus dur, très dur)."),
+        h("h3", {}, "Historique des niveaux"), D.levelHistory(st4).every((e) => e.niveau === 1 && e.type === "obtenu") ? h("p", { class: "pa-muted" }, "Toujours au niveau 1.") : h("ul", { class: "pa-hist" }, D.levelHistory(st4).filter((e) => e.niveau > 1 || e.type !== "obtenu").map((e) => h("li", {}, `${D.fmtDay(e.date)} : ${e.type === "redescente" ? `retour au niveau ${e.niveau}` : e.type === "parent" ? `niveau ${e.niveau} choisi par le parent (point de départ)` : `niveau ${e.niveau} atteint`}`))));
+    }
+    this.weeklyBlock(m4, 4);
     // le défi record
     const DS = D.challengeSummary(this.d.recompenses.defi, this.d.seances);
     const df = h("div", { class: "pa-card-box" }, h("h2", {}, "Défi record"),
@@ -355,7 +366,7 @@ export class ParentSpace {
     const tr = h("div", { class: "pa-card-box" }, h("h2", {}, "Le trésor de l'enfant"), h("div", { class: "pa-stats" },
       stat(String(et.cumul ?? 0), "étoiles de mer gagnées depuis le début"), stat(String(et.total ?? 0), "étoiles pas encore dépensées"), stat(String(et.coquillages ?? 0), "coquillages ouverts"),
       stat(String(R.serie?.seances ?? 0), "séances dans la série (elle ne retombe jamais à zéro)")));
-    page.append(m1, m2, m3, df, jr, tr, this.cardsBox(), this.legendsBox());
+    page.append(m1, m2, m3, m4, df, jr, tr, this.cardsBox(), this.legendsBox());
   }
   // LA GRILLE DES ADDITIONS (lot 2, étape 7) : a en ligne, b en colonne ; couleur selon la boîte, anneau vert si le
   // fait est donné vite ; les cases « + 0 » en gris avec le temps de base ; toucher une case montre son historique
@@ -484,9 +495,9 @@ export class ParentSpace {
   moduleRow(row) {
     const seg = h("div", { class: "pa-seg", role: "group", "aria-label": "module de la prochaine séance" }), ok = h("span", { class: "pa-ok" });
     const paint = (v) => { for (const b of seg.children) b.setAttribute("aria-pressed", String(b.dataset.v === String(v ?? "auto"))); };
-    for (const [v, t] of [["auto", "au choix de l'application"], ["1", "ligne graduée"], ["2", "additions"], ["3", "calcul rapide"]]) seg.append(h("button", { "data-v": v, onclick: async () => { await this.store.setSetting("moduleImpose", v === "auto" ? null : { module: Number(v), t: Date.now() }); paint(v === "auto" ? null : v); ok.textContent = "Enregistré."; } }, t));
+    for (const [v, t] of [["auto", "au choix de l'application"], ["1", "ligne graduée"], ["2", "additions"], ["3", "calcul rapide"], ["4", "les voiliers"]]) seg.append(h("button", { "data-v": v, onclick: async () => { await this.store.setSetting("moduleImpose", v === "auto" ? null : { module: Number(v), t: Date.now() }); paint(v === "auto" ? null : v); ok.textContent = "Enregistré."; } }, t));
     this.store.setting("moduleImpose").then((m) => paint(m?.module ?? null));
-    return row("Notion du jour de la prochaine séance", "D'habitude, la ligne graduée, les additions et le calcul rapide tournent d'une séance à l'autre (le moins avancé d'abord, jamais deux fois de suite le même). Vous pouvez imposer l'un des trois exercices pour la prochaine séance seulement (celle que l'enfant lance avec « jouer » : si elle choisit elle-même son exercice, votre choix attend la séance suivante).", seg, ok);
+    return row("Notion du jour de la prochaine séance", "D'habitude, la ligne graduée, les additions et le calcul rapide tournent d'une séance à l'autre (le moins avancé d'abord, jamais deux fois de suite le même). Les voiliers ne tournent pas : l'enfant y vient par « choisir ». Vous pouvez imposer l'un des quatre exercices, voiliers compris, pour la prochaine séance seulement (celle que l'enfant lance avec « jouer » : si elle choisit elle-même son exercice, votre choix attend la séance suivante).", seg, ok);
   }
   // le son (lot 2) : musique oui/non et son volume, bruitages oui/non ; un seul réglage « son » dans la base
   sonRow(row) {
@@ -518,8 +529,12 @@ export class ParentSpace {
     const calc = h("div", { class: "pa-seg pa-levels-seg", role: "group", "aria-label": "niveau du calcul rapide" }), paintC = (n) => { for (const b of calc.children) b.setAttribute("aria-pressed", String(Number(b.dataset.v) === n)); };
     for (let n = 1; n <= (this.depart.calculMax ?? 9); n++) calc.append(h("button", { "data-v": n, onclick: async () => { await setCalcLevel(this.store, n); paintC(n); msg.textContent = `Calcul rapide : niveau ${n} à la prochaine séance (les niveaux d'avant sont comptés acquis).`; } }, String(n)));
     this.store.get("niveaux", 3).then((st) => paintC(st?.depart ?? null));
-    box.append(h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau de la ligne graduée :"), levels), h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau du calcul rapide :"), calc), fams, msg);
-    return row("Point de départ", "Si l'enfant sait déjà faire : choisissez le niveau de la ligne graduée ou du calcul rapide où elle commencera, ou marquez une famille de faits d'addition comme connue (ses faits seront revus moins souvent). C'est noté dans l'historique comme votre choix, et cela ne rapporte rien à l'enfant.", box);
+    // lot « Les voiliers » : le niveau des voiliers
+    const voil = h("div", { class: "pa-seg pa-levels-seg", role: "group", "aria-label": "niveau des voiliers" }), paintV = (n) => { for (const b of voil.children) b.setAttribute("aria-pressed", String(Number(b.dataset.v) === n)); };
+    for (let n = 1; n <= (this.depart.voiliersMax ?? 9); n++) voil.append(h("button", { "data-v": n, onclick: async () => { const st = await setVoiliersLevel(this.store, n); paintV(st.niveau); msg.textContent = `Voiliers : niveau ${n} à la prochaine partie.`; } }, String(n)));
+    this.store.get("niveaux", 4).then((st) => paintV(st?.niveau ?? 1));
+    box.append(h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau de la ligne graduée :"), levels), h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau du calcul rapide :"), calc), h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau des voiliers :"), voil), fams, msg);
+    return row("Point de départ", "Si l'enfant sait déjà faire : choisissez le niveau de la ligne graduée, du calcul rapide ou des voiliers où elle commencera, ou marquez une famille de faits d'addition comme connue (ses faits seront revus moins souvent). C'est noté dans l'historique comme votre choix, et cela ne rapporte rien à l'enfant.", box);
   }
   async marked() { const t = Date.now(); await this.store.setSetting("dernierExport", t); this.d.dernierExport = t; }
   settingsBox() {

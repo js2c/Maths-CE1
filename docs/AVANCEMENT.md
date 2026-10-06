@@ -32,5 +32,9 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 - Branche `claude/pensive-bardeen-yc0m7j` (partie de `main` après la PR #34). Demande de fusion : https://github.com/js2c/Maths-CE1/pull/36 (brouillon).
 - **Fiche** : `docs/LOTS.md`, lot 2 ; spécification `docs/SPEC.md`, section 7 bis ; maquette `art/voiliers/` (jamais modifiée).
-- **Fait** : lecture de la fiche, de la spécification et de la maquette.
-- **Reste** : règles du module 4 et simulation ; export de la maquette ; raccords (séance, voix, mascotte, pause, enregistrement, espace parent) ; recette ; documents.
+- **Fait** :
+  - les règles du module 4 (`modules/voiliers/voiliers.js`, `runner.js`, `content/module4.json`), comparées tirage par tirage à la maquette (`tests/unit/voiliers.test.mjs`) ; simulation (`tests/sim-seances.mjs --choix 4:N`) et séquences (`b-sequences.mjs`, voiliers compris) sans défaut ; textes et inventaire de la voix (835 phrases nouvelles) ;
+  - l'export de la maquette (`art/tools/export-voiliers.mjs` -> `app/js/voiliers/voiliers-scene.js`, `app/assets/voiliers/`), l'écran du module 4 (`modules/voiliers/screen.js`), la notion du jour, « choisir », l'entraînement libre, le module imposé, la pause, la bulle (le nombre en lettres, jamais sur le bateau) ;
+  - les pictogrammes de l'atelier (`art/src/canvas-core/sea/voiliers.ts`) ; l'espace parent (bloc des voiliers, journal V1 à V4, point de départ, légende) ;
+  - le parcours `tests/e2e/voiliers.mjs` (vert aux deux tailles).
+- **Reste** : mesure de fluidité ; recette complète (tous les parcours, séance réelle, attentes) ; relecture indépendante ; documents (SPEC, ARCHITECTURE, GUIDE-PARENT, CLAUDE, LOTS).

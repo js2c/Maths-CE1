@@ -236,7 +236,7 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 - **Elle parle quand la voix parle**, et ce qu'elle dit s'écrit dans une **bulle de BD**, mot à mot, les nombres en rouge. La bulle disparaît 1,5 seconde après la phrase ; « réécouter » la refait. Elle ne cache jamais ce que l'enfant doit toucher.
 - **Ses réactions** : un petit signe à une bonne réponse ; une grande joie toutes les trois réussites de suite et à la fin de la séance ; une **déception bienveillante** à une erreur (elle commence par un bref sourire), puis elle encourage.
 - **La relance** : si l'enfant ne touche rien pendant une question, la mascotte fait un geste au bout de 12 secondes, puis dit « Prends ton temps. Tu peux réécouter la consigne. » au bout de 25 secondes, et plus rien ensuite.
-- **Une flèche corail** montre ce que la pieuvre montrait du bras : l'étoile de mer, la tortue, le poisson qui porte le nombre (jamais la bonne place), la tortue et l'étoile dans les leçons, le nombre décomposé d'une correction.
+- **Une flèche corail** montre ce que la pieuvre montrait du bras : l'étoile de mer, la tortue, la tortue et l'étoile dans les leçons, le petit poisson du tableau des nombres, le nombre décomposé d'une correction de dictée. Elle ne montre rien quand il faut placer le poisson : elle donnerait la bonne place. Pendant une dictée, la bulle n'écrit pas le nombre à écrire.
 
 **Ce qui change pour vous.** Le réglage « nom de la pieuvre » a disparu de l'espace parent (le nom choisi autrefois reste dans les sauvegardes, sans être utilisé). Le logo de l'espace parent, le bouton « je ne sais pas » et la frise gardent pour l'instant leur petite pieuvre (à décider : `docs/IDEES.md`).
 

@@ -58,7 +58,8 @@ for (const [niveau, fmt] of [[3, "placer"], [6, "placer"], [2, "lire"]]) {
   await page.waitForFunction(() => window.__app.fleche.visible, null, { timeout: 8000 }).catch(() => {});
   await page.waitForTimeout(500);
   const info = await page.evaluate(() => ({ vue: window.__app.fleche.visible, cible: window.__app.fleche.cible, angle: window.__app.fleche.angle, want: window.__app.screen.pointAt(window.__app.screen.q), x: window.__app.screen.xOf(window.__app.screen.q.answer), star: window.__app.screen.starAt }));
-  check(info.vue && info.cible.map(Math.round).join() === info.want.point.map(Math.round).join() && (fmt === "lire" ? Math.abs(info.cible[0] - info.star[0]) < 1 : info.angle === 90), `niveau ${niveau} (${fmt}) : la flèche en ${info.cible?.map(Math.round)}, angle ${info.angle} (réponse en x=${Math.round(info.x)})`);
+  if (fmt === "lire") check(info.vue && info.cible.map(Math.round).join() === info.want.point.map(Math.round).join() && Math.abs(info.cible[0] - info.star[0]) < 1, `niveau ${niveau} (${fmt}) : la flèche au-dessus de l'étoile, en ${info.cible?.map(Math.round)}`);
+  else check(!info.vue && info.want === null, `niveau ${niveau} (${fmt}) : pas de flèche (elle donnerait la place de la réponse, x=${Math.round(info.x)})`);
   await page.screenshot({ path: join(OUT, `4-fleche-niveau${niveau}.png`) });
   await context.close();
 }

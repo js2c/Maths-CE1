@@ -121,9 +121,8 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   await go(`&choix=1:3&format=sauter${ROW}`); await page.tap(".play", { force: true });
   check(await until(() => window.__app.fleche.visible, null, 60000), `${W} sauter : la flèche`); await page.waitForTimeout(700); await shot("20-fleche-sauter");
   await go(`&choix=1:2&format=placer${ROW}`); await page.tap(".play", { force: true });
-  check(await until(() => window.__app.fleche.visible, null, 60000), `${W} placer : la flèche`); await page.waitForTimeout(700); await shot("21-fleche-placer");
-  const pl = await page.evaluate(() => { const s = window.__app.screen, f = window.__app.fleche; return { cible: f.cible, angle: f.angle, fish: s.fishAt }; });
-  check(pl.angle === 90 && Math.abs(pl.cible[0] - pl.fish[0] - 56) < 2 && Math.abs(pl.cible[1] - pl.fish[1] + 52) < 2, `${W} placer : la flèche montre l'étiquette du poisson, de côté (jamais une graduation)`);
+  await ligne(); await bulle(/./); await page.waitForTimeout(700); await shot("21-placer-sans-fleche");
+  check(!(await page.evaluate(() => window.__app.fleche.visible)), `${W} placer : pas de flèche (elle donnerait la réponse ou une direction)`);
 
   // ---- 6. les additions, le calcul, l'échauffement : la bulle évite l'ardoise quand elle peut, jamais le pavé
   await go(`&choix=2:3&cran=facile&sans=echauffement,defi&sansLecon&guides=0`); await page.tap(".play", { force: true });

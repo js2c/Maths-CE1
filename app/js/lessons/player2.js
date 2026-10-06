@@ -111,7 +111,9 @@ export class Lesson2Player {
     if (name === "poisson" || name === "nager") {
       const p = this.fishAt(v); if (!p) return;
       // (lot « Mascotte ») le petit poisson posé : la flèche le montre, jusqu'à la fin de la phrase
-      if (name === "poisson" || !this.fish.a.vis) { this.fish.at(...p); this.fishN = v; if (name === "poisson") this.app.fleche?.montrer([p[0], p[1] - 34]); return; }
+      // (sur le mur, la flèche est posée au bord gauche de la grille, à la hauteur du poisson, pointée vers lui : au-dessus de sa
+      // case, elle cachait les nombres de la colonne, relecture du lot)
+      if (name === "poisson" || !this.fish.a.vis) { this.fish.at(...p); this.fishN = v; if (name === "poisson") this.app.fleche?.montrer(st.mur ? [LESSON_WALL.x - 6, p[1]] : [p[0], p[1] - 34], { angle: st.mur ? -90 : 0 }); return; }
       const from = this.fishN; this.fishN = v;
       // sur le mur : d'abord les rangées (± 10), puis les cases (± 1)
       if (st.mur && Math.floor((from - 1) / 10) !== Math.floor((v - 1) / 10) && (from - 1) % 10 !== (v - 1) % 10) { await this.fish.swim(...this.fishAt(from + 10 * (Math.floor((v - 1) / 10) - Math.floor((from - 1) / 10))), 700); }

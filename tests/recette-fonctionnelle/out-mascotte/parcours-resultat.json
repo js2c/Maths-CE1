@@ -1,0 +1,728 @@
+{
+ "date": "2026-10-06T14:44:11.510Z",
+ "ecrans": [
+  {
+   "W": 1280,
+   "nom": "01-accueil",
+   "clip": "idle-sourire",
+   "ambiance": "pause",
+   "bulle": null,
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "02-salut-bienvenue",
+   "clip": "idle-sourcils",
+   "ambiance": "pause",
+   "bulle": {
+    "place": "droite",
+    "texte": "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "03-selecteur",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "Choisis ton niveau. Plus c'est dur, plus tu gagnes d'étoiles !",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "10-fleche-lire",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "L'étoile de mer est posée sur une bouée. Quel est ce nombre ?",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": true
+  },
+  {
+   "W": 1280,
+   "nom": "11-joie",
+   "clip": "idle-sourire",
+   "ambiance": "pause",
+   "bulle": {
+    "place": "droite",
+    "texte": "Exactement !",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "12-deception",
+   "clip": "wrong",
+   "ambiance": "soutien",
+   "bulle": {
+    "place": "droite",
+    "texte": "Les nombres grandissent vers la droite.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "13-grande-joie",
+   "clip": "success",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "L'étoile de mer est posée sur une bouée. Quel est ce nombre ?",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": true
+  },
+  {
+   "W": 1280,
+   "nom": "14-encouragement",
+   "clip": "encourage",
+   "ambiance": "soutien",
+   "bulle": {
+    "place": "droite",
+    "texte": "3",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "15-relance-geste",
+   "clip": "idle-curiosite",
+   "ambiance": "soutien",
+   "bulle": null,
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "16-relance-phrase",
+   "clip": "talk-a",
+   "ambiance": "soutien",
+   "bulle": {
+    "place": "droite",
+    "texte": "Prends ton temps. Tu peux réécouter la consigne.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "17-pause",
+   "clip": "idle-immobile",
+   "ambiance": "pause",
+   "bulle": null,
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "18-pause-reecouter",
+   "clip": "talk-a",
+   "ambiance": "pause",
+   "bulle": {
+    "place": "droite",
+    "texte": "C'est la pause. Touche la grande bulle pour continuer.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "19-reprise",
+   "clip": "talk-a",
+   "ambiance": "soutien",
+   "bulle": {
+    "place": "droite",
+    "texte": "On continue ! L'étoile de mer est posée sur une bouée. Quel est ce nombre ?",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "20-fleche-sauter",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "La tortue part de 8. Elle fait un saut. Sur quel nombre arrive-t-elle ?",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": true
+  },
+  {
+   "W": 1280,
+   "nom": "21-fleche-placer",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "Place le poisson sur le nombre 7.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": true
+  },
+  {
+   "W": 1280,
+   "nom": "22-additions-correction",
+   "clip": "wrong",
+   "ambiance": "soutien",
+   "bulle": {
+    "place": "milieu",
+    "texte": "Ce n'est pas grave, regardons ensemble.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "23-additions-consigne",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "milieu",
+    "texte": "Combien plus 8, ça fait 10 ?",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "24-calcul",
+   "clip": "idle-respiration",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "Plus 10 ?",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "25-echauffement",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "milieu",
+    "texte": "Combien font 0 plus 8 ?",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "26-dictee-correction",
+   "clip": "wrong",
+   "ambiance": "montre",
+   "bulle": {
+    "place": "dessous",
+    "texte": "949 : 9 centaines, 4 dizaines, 9 unités.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": true
+  },
+  {
+   "W": 1280,
+   "nom": "30-choisir-exercices",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "Qu'est-ce que tu veux faire ? Touche une bulle.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "31-choisir-niveaux",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "dessous",
+    "texte": "Choisis ! Touche une image pour commencer.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "40-lecon-L1",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "Elle n'a pas encore sauté.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": true
+  },
+  {
+   "W": 1280,
+   "nom": "41-lecon-L3",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "La tortue part de trente.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "42-lecon-L7",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "dessous",
+    "texte": "Le poisson est sur trente-quatre.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": true
+  },
+  {
+   "W": 1280,
+   "nom": "50-recompense",
+   "clip": "talk-a",
+   "ambiance": "bravo",
+   "bulle": {
+    "place": "dessous",
+    "texte": "Regarde tout ce que tu as gagné ce soir : une étoile de mer !",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "51-a-demain",
+   "clip": "idle-sourcils",
+   "ambiance": "pause",
+   "bulle": {
+    "place": "droite",
+    "texte": "Tu as bien travaillé. À demain !",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "52-recif",
+   "clip": "idle-sourire",
+   "ambiance": "ecoute",
+   "bulle": null,
+   "fleche": false
+  },
+  {
+   "W": 1280,
+   "nom": "53-album",
+   "clip": "idle-approbation",
+   "ambiance": "ecoute",
+   "bulle": null,
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "01-accueil",
+   "clip": "idle-hochement",
+   "ambiance": "pause",
+   "bulle": null,
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "02-salut-bienvenue",
+   "clip": "idle-sourcils",
+   "ambiance": "pause",
+   "bulle": {
+    "place": "droite",
+    "texte": "Bienvenue à bord ! On s'entraîne ensemble ?",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "03-selecteur",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "Choisis ton niveau. Plus c'est dur, plus tu gagnes d'étoiles !",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "10-fleche-lire",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "Quel nombre se cache sous l'étoile de mer ?",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": true
+  },
+  {
+   "W": 1920,
+   "nom": "11-joie",
+   "clip": "idle-amuse",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "Quel nombre se cache sous l'étoile de mer ?",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": true
+  },
+  {
+   "W": 1920,
+   "nom": "12-deception",
+   "clip": "wrong",
+   "ambiance": "soutien",
+   "bulle": {
+    "place": "droite",
+    "texte": "Les nombres grandissent vers la droite.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "13-grande-joie",
+   "clip": "success",
+   "ambiance": "bravo",
+   "bulle": {
+    "place": "droite",
+    "texte": "Oui, c'est ça !",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "14-encouragement",
+   "clip": "encourage",
+   "ambiance": "soutien",
+   "bulle": {
+    "place": "droite",
+    "texte": "L'étoile de mer est posée sur une bouée. Quel est ce nombre ?",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "15-relance-geste",
+   "clip": "idle-sourcils",
+   "ambiance": "soutien",
+   "bulle": null,
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "16-relance-phrase",
+   "clip": "talk-a",
+   "ambiance": "soutien",
+   "bulle": {
+    "place": "droite",
+    "texte": "Prends ton temps. Tu peux réécouter la consigne.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "17-pause",
+   "clip": "idle-sourire",
+   "ambiance": "pause",
+   "bulle": null,
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "18-pause-reecouter",
+   "clip": "talk-a",
+   "ambiance": "pause",
+   "bulle": {
+    "place": "droite",
+    "texte": "C'est la pause. Touche la grande bulle pour continuer.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "19-reprise",
+   "clip": "talk-a",
+   "ambiance": "soutien",
+   "bulle": {
+    "place": "droite",
+    "texte": "On continue ! L'étoile de mer est posée sur une bouée. Quel est ce nombre ?",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "20-fleche-sauter",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "La tortue est sur 4 et fait un saut. Où arrive-t-elle ?",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": true
+  },
+  {
+   "W": 1920,
+   "nom": "21-fleche-placer",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "Place le poisson sur le nombre 9.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": true
+  },
+  {
+   "W": 1920,
+   "nom": "22-additions-correction",
+   "clip": "wrong",
+   "ambiance": "soutien",
+   "bulle": {
+    "place": "milieu",
+    "texte": "Ce n'est pas grave, regardons ensemble.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "23-additions-consigne",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "milieu",
+    "texte": "Combien plus 3, ça fait 10 ?",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "24-calcul",
+   "clip": "idle-reflexion",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "Plus 10 ?",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "25-echauffement",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "5 plus 0 ?",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "26-dictee-correction",
+   "clip": "wrong",
+   "ambiance": "montre",
+   "bulle": {
+    "place": "dessous",
+    "texte": "467 : 4 centaines, 6 dizaines, 7 unités.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": true
+  },
+  {
+   "W": 1920,
+   "nom": "30-choisir-exercices",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "Qu'est-ce que tu veux faire ? Touche une bulle.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "31-choisir-niveaux",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "dessous",
+    "texte": "Choisis ! Touche une image pour commencer.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "40-lecon-L1",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "Elle n'a pas encore sauté.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": true
+  },
+  {
+   "W": 1920,
+   "nom": "41-lecon-L3",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "La tortue part de trente.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "42-lecon-L7",
+   "clip": "talk-a",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "dessous",
+    "texte": "Le poisson est sur trente-quatre.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": true
+  },
+  {
+   "W": 1920,
+   "nom": "50-recompense",
+   "clip": "talk-a",
+   "ambiance": "bravo",
+   "bulle": {
+    "place": "dessous",
+    "texte": "Bravo ! Ce soir, tu as gagné une étoile de mer.",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "51-a-demain",
+   "clip": "idle-sourcils",
+   "ambiance": "ecoute",
+   "bulle": {
+    "place": "droite",
+    "texte": "C'est fini pour aujourd'hui. À demain !",
+    "couvre": 0,
+    "gene": 0
+   },
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "52-recif",
+   "clip": "idle-respiration",
+   "ambiance": "ecoute",
+   "bulle": null,
+   "fleche": false
+  },
+  {
+   "W": 1920,
+   "nom": "53-album",
+   "clip": "idle-respiration",
+   "ambiance": "ecoute",
+   "bulle": null,
+   "fleche": false
+  }
+ ],
+ "journal": {
+  "duree_min": 12,
+  "raccords": 413,
+  "par_type": {
+   "direct": 1,
+   "doux": 46,
+   "fin": 341,
+   "entrée tête neutre": 10,
+   "exact": 15
+  },
+  "fondus_forces": [],
+  "attente_moyenne_s": 0.05
+ },
+ "echecs": [
+  "1280 lire : la flèche s'en va avec la fin de la consigne",
+  "1280 relance : le geste à 5.6 s",
+  "1920 lire : la flèche s'en va avec la fin de la consigne",
+  "1920 relance : le geste à 4 s"
+ ]
+}

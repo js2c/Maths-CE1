@@ -67,6 +67,8 @@ test("la bulle : la forme de la maquette des voiliers, un ovale qui contient le 
 });
 
 test("la bulle : les mots, les nombres à part (en rouge), la typographie française", () => {
+  assert.ok(mots("C'est fini. À demain !").some((m) => m.map((p) => p.t).join("") === "À\u00a0demain\u00a0!"), "« À » jamais seul en fin de ligne");
+  assert.ok(ovale(420, 35).b >= ovale(420, 35).a / 5, "une ligne seule : pas de pilule");
   assert.deepEqual(mots("Place le nombre 47 !").map((m) => m.map((p) => p.t).join("|")), ["Place", "le", "nombre", "47|\u00a0!"]); // (l'espace avant « ! » devient insécable)
   const n = mots("12 plus 7 ?"); assert.equal(n[0][0].nombre, true); assert.equal(n[1][0].nombre, false);
   assert.deepEqual(mots("Combien font 3+4 ?")[2].map((p) => [p.t, p.nombre]), [["3", true], ["+", false], ["4", true], ["\u00a0?", false]]);
@@ -117,10 +119,8 @@ test("la flèche : jamais sur la réponse à placer ; une arrivée avec un petit
   const geo = { tick: (i) => [100 + 50 * i, 470], seat: (i) => [100 + 50 * i, 441] };
   assert.deepEqual(cibleFleche({ format: "lire", target: 4 }, geo), { point: [300, 470 - 42 - 44], angle: 0 });
   assert.deepEqual(cibleFleche({ format: "sauter", start: 2 }, geo), { point: [200, 441 - 70], angle: 0 });
-  // placer, estimer : à droite de l'étiquette du poisson, pointée vers elle, quelle que soit la réponse ; elle suit le poisson
-  const a = cibleFleche({ format: "placer", answer: 3 }, geo), b = cibleFleche({ format: "placer", answer: 9 }, geo), e = cibleFleche({ format: "estimer", answer: 40 }, geo);
-  assert.deepEqual(a, b); assert.deepEqual(a, e); assert.equal(a.angle, 90);
-  assert.deepEqual(cibleFleche({ format: "placer", answer: 3 }, { ...geo, fish: [300, 600] }).point, [356, 548]);
+  // placer, estimer : pas de flèche (elle donnerait la réponse, ou se lirait comme une direction sur la ligne)
+  assert.equal(cibleFleche({ format: "placer", answer: 3 }, geo), null); assert.equal(cibleFleche({ format: "estimer", answer: 40 }, geo), null);
   assert.equal(arrivee(0), 1); assert.equal(arrivee(1), 0);
   const creux = Math.min(...Array.from({ length: 50 }, (_, i) => arrivee(i / 50))); assert.ok(creux < 0 && creux > -0.2, `rebond ${creux}`);
   assert.ok(ARRIVEE.ms <= 500);

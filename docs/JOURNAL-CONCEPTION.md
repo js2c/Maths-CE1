@@ -70,7 +70,8 @@ Mémoire de la conversation de conception (claude.ai, 26 au 30 septembre 2026, m
 
 Le lot a suivi les décisions des 5 et 6 octobre (ci-dessous). Là où elles laissaient un choix, la session a pris celui-ci (détail : `docs/SPEC.md`, section 11 ; questions ouvertes : `docs/IDEES.md`, section 4) :
 
-- **La flèche ne donne jamais la réponse** : au format « placer », la pieuvre pointait vers la place de la réponse (en trois directions, donc sans précision) ; une flèche posée exactement au-dessus l'aurait donnée. Elle montre donc le poisson qui porte le nombre (« placer », « estimer »), l'étoile (« lire »), la tortue sur son départ (« sauter »).
+- **La flèche ne donne jamais la réponse** : au format « placer », la pieuvre pointait vers la place de la réponse (en trois directions, donc sans précision) ; une flèche posée exactement au-dessus l'aurait donnée. Posée sur le poisson, elle semblait montrer une graduation ; couchée à côté de son étiquette, elle se lisait comme une direction (relecture du lot). En « placer » et « estimer », pas de flèche ; elle montre l'étoile (« lire »), la tortue sur son départ (« sauter »).
+- **La bulle ne donne pas la réponse non plus** : pendant une question de dictée, elle n'écrit rien (elle écrirait en chiffres le nombre dicté).
 - **La pause ne fige pas la mascotte** : la maquette proposait de mettre la vidéo en pause ; mais l'accueil en pause montre la mascotte, qui ne doit jamais rester figée. Elle se tait, sa bulle s'efface, la relance s'arrête, et elle attend comme à l'accueil.
 - **La bulle évite aussi ce que montre une leçon** : la règle « elle peut couvrir un moment la carte de la question » est gardée, mais la bulle choisit d'abord une place libre (entre l'ardoise et le pavé, ou sous la tête), et ne couvre jamais la bande de la ligne graduée.
 - **Les petites pieuvres** du bouton « je ne sais pas », de la frise et de l'icône restent, faute de décision sur leur remplacement.

@@ -54,7 +54,8 @@ export function balloonPath(cx, cy, a, b, seed, tip) {
   return d;
 }
 // l'ovale qui contient un bloc de texte w × h (comme la maquette des voiliers) : demi-axes
-export const ovale = (w, h) => ({ a: (w / 2) * BAL_K + 8, b: (h / 2) * BAL_K + 6 });
+// (une ligne seule : l'ovale garde au moins un cinquième de sa largeur en hauteur, sinon il s'aplatit en pilule : relecture du lot)
+export const ovale = (w, h) => { const a = (w / 2) * BAL_K + 8; return { a, b: Math.max((h / 2) * BAL_K + 6, a / 5) }; };
 // des lignes équilibrées : un texte plus long que 420 px sur une ligne est coupé en lignes de longueurs voisines (au plus
 // 420 px chacune, plus une marge) ; sinon l'ovale s'aplatit
 export const largeurEquilibree = (naturel) => (naturel > 420 ? Math.ceil(naturel / Math.ceil(naturel / 420)) + 24 : Math.ceil(naturel) + 4);
@@ -84,7 +85,8 @@ export function choisirPlace(obstacles, mesure, places = PLACES, souples = []) {
   return best;
 }
 // le texte découpé en mots, les nombres à part (en rouge) ; les espaces insécables de la typographie française gardées
-export const mots = (texte) => texte.trim().replace(/ ([:;!?»])/g, " $1").replace(/« /g, "« ").split(/[ \t\n]+/).map((w) => w.split(/(\d+)/).filter(Boolean).map((t) => ({ t, nombre: /^\d+$/.test(t) })));
+// (un mot d'une lettre, « À », « à », « a », n'est jamais seul en fin de ligne : relecture du lot)
+export const mots = (texte) => texte.trim().replace(/ ([:;!?»])/g, " $1").replace(/« /g, "« ").replace(/(^| )([A-Za-zÀ-ÖØ-öø-ÿ]) /g, "$1$2\u00a0").split(/[ \t\n]+/).map((w) => w.split(/(\d+)/).filter(Boolean).map((t) => ({ t, nombre: /^\d+$/.test(t) })));
 
 // ce que l'enfant touche, visible, en px logiques (ce que la bulle ne doit jamais couvrir)
 const TOUCHE = "button, .touchband, .fishhit, .shelltap, [data-bulle-evite]", CARTE = ".slate, .tally, .card, .special, [data-bulle-souple]"; // (l'ardoise, le bilan des étoiles, les cartes)

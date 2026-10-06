@@ -15,8 +15,9 @@ import { skipKey } from "../../engine/ui.js";
 import { paintHundreds, paintPlaceTable } from "../facts/aids.js";
 
 const SKIPPED = Symbol("correction passée");
-// (lot « Mascotte ») la pointe de la flèche au-dessus du nombre décomposé (paintHundreds, posé en 760, 340)
-const PARTS_FLECHE = [705, 300];
+// (lot « Mascotte ») la pointe de la flèche à gauche du nombre décomposé (paintHundreds, posé en 760, 340, entre x 420 et 990),
+// pointée vers lui : au-dessus, elle passait sous l'ardoise (relecture du lot)
+const PARTS_FLECHE = [412, 400];
 
 export class Dictation {
   // facts : () => l'écran des additions (créé à la demande)
@@ -28,7 +29,7 @@ export class Dictation {
     await this.app.sprites.load("centaines");
     this.fs.keys(false);
     // (lot « Mascotte ») la mascotte regarde, la flèche montre le nombre décomposé (la pieuvre le montrait du bras)
-    this.app.ocean.mascotte.hold("montrer"); this.app.fleche?.montrer(PARTS_FLECHE);
+    this.app.ocean.mascotte.hold("montrer"); this.app.fleche?.montrer(PARTS_FLECHE, { angle: -90 });
     this.app.aidBoard.draw((ctx) => paintHundreds(ctx, this.app.sprites, n, 760, 340, { lit, fit: [420, 990] }));
   }
   finParts() { this.app.ocean.mascotte.release(); this.app.fleche?.cacher(); }

@@ -80,7 +80,9 @@ const voice = new Voice({ rate: 0.9, fast: P.get("voix") === "rapide" }).setInde
 // vivant, où elle n'est pas) ; la bulle s'efface 1,5 s après la phrase ; la flèche montre à la place du bras de la pieuvre
 // (la bande de la ligne graduée affichée est un obstacle de la bulle, sauf pendant la pause, où elle est cachée)
 const bulle = new Bulle(stage, { dures: () => { const b = app.line.bande; return b && !stage.root.classList.contains("paused") ? [b] : []; } }), fleche = new Fleche(ocean);
-voice.onTalk = (t, ms, o) => { ocean.mascotte.parole(t, ms, { consigne: o.instruction }); if (ocean.mascotteVisible) bulle.dire(t, ms); else bulle.cacher(); };
+// (relecture du lot : pendant une question de dictée, la bulle n'écrit rien : elle écrirait en chiffres le nombre à écrire)
+const dicteeEnCours = () => !!(app.facts?.q?.dictee && !app.facts.locked);
+voice.onTalk = (t, ms, o) => { ocean.mascotte.parole(t, ms, { consigne: o.instruction }); if (ocean.mascotteVisible && !dicteeEnCours()) bulle.dire(t, ms); else bulle.cacher(); };
 voice.onSilence = () => { ocean.mascotte.silence(); bulle.silence(); };
 // les bruitages et la musique (lot 2) ; ?son=non : silence (mesures)
 const sound = new Sound({ content: sonContent, index: sonIndex, off: P.get("son") === "non" });

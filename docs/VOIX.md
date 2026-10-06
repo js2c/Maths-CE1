@@ -11,6 +11,37 @@ et comment corriger une phrase mal dite. Le détail technique est dans `docs/ARC
   faux, il est refait, quatre fois au plus.
 - L'outil ne refabrique que les phrases nouvelles ou modifiées. Ajouter dix phrases prend quelques minutes.
 
+## En une commande (conseillé)
+
+Décision du parent du 6 octobre 2026 : les lots sont fusionnés sans attendre leurs voix, et les voix de plusieurs
+lots se fabriquent ensuite d'un coup. Tant que des phrases n'ont pas leur voix, GitHub ne publie rien : la tablette
+garde la version précédente, et l'onglet « Actions » affiche « Publication reportée ».
+
+Dans PowerShell, depuis le dossier du jeu :
+
+```
+cd $env:USERPROFILE\Documents\Maths-CE1
+node tools\voix\publier.mjs
+```
+
+La commande fait tout, dans l'ordre :
+1. elle se met sur `main` et récupère les lots fusionnés depuis la dernière fois ;
+2. elle dit combien de phrases sont à fabriquer, et en montre quelques-unes ;
+3. elle trouve le Python de Chatterbox : un environnement `.venv-voix` dans le dossier du jeu ou à côté, sinon celui
+   qui est activé ;
+4. elle demande « Fabriquer maintenant ? », puis fabrique (environ 4 secondes par phrase ; si on l'interrompt,
+   la relancer reprend où elle s'était arrêtée) ;
+5. elle s'arrête pour laisser écouter les phrases refusées par le contrôle (la page `a-reecouter.html` qu'elle
+   indique), et demande « Continuer ? » ;
+6. elle vérifie (liste du mode hors ligne, test de la voix), enregistre et envoie sur GitHub, qui publie.
+
+Variantes : `--oui` (aucune question, pour la laisser tourner la nuit), `--ref D:\ref-posee.wav` (une autre place
+pour l'enregistrement de référence, `..\ref-posee.wav` par défaut), `--branche <nom>` (sur la branche d'un lot,
+avant sa fusion), `--sans-envoi` (tout sauf l'envoi). Si Python ne trouve pas Chatterbox, activer d'abord son
+environnement, ou donner son Python : `$env:PYTHON = "C:\chemin\python.exe"`.
+
+Les sections suivantes détaillent les mêmes étapes à la main, et la correction d'une phrase mal dite.
+
 ## Ce qu'il faut garder
 
 | Quoi | Où | Pourquoi |
@@ -49,7 +80,7 @@ les tests échouent avec « phrases sans fichier à jour »).
    hors ligne et lance tous les tests : si l'un échoue, rien n'est publié et l'ancienne version reste en ligne
    (onglet « Actions » du dépôt).
 
-## Fabriquer les sons d'un lot avant sa fusion (conseillé)
+## Fabriquer les sons d'un lot avant sa fusion, à la main
 
 Quand une session Claude Code prépare un lot qui ajoute ou change des phrases, elle s'arrête en le signalant
 dans sa demande de fusion, avec la liste des phrases. Mieux vaut alors fabriquer les sons **sur la branche du

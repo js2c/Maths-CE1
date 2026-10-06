@@ -14,7 +14,7 @@ Ce document a trois parties : **pour le parent**, comment lancer un lot ; **pour
 3. La session s'arrête d'elle-même dans trois cas, et le dit :
    - **une maquette à valider** (lots « Les leçons », « Sommes jusqu'à 30 », « Multiplication ») : regarder les captures et la maquette indiquées dans la demande de fusion, puis répondre **dans la même session** (« validé », ou les corrections). Elle reprend et code ;
    - **une règle qui pose problème en simulation** : elle décrit le problème ; répondre dans la même session ;
-   - **le lot est fini** : la demande de fusion liste les phrases dont la voix est à fabriquer. Les fabriquer sur la branche du lot (`docs/VOIX.md`, « Fabriquer les sons d'un lot avant sa fusion »), puis fusionner quand la coche en bas de la demande de fusion est verte (les tests sont relancés par GitHub à chaque poussée sur la branche).
+   - **le lot est fini** : la demande de fusion liste les phrases dont la voix est à fabriquer. La fusionner quand la coche en bas est verte (les tests sont relancés par GitHub à chaque poussée ; les phrases sans voix y sont seulement signalées). Les voix se fabriquent ensuite, **quand vous voulez, pour plusieurs lots d'un coup**, avec une seule commande sur votre ordinateur : `node tools\voix\publier.mjs` (`docs/VOIX.md`, « En une commande »). Tant qu'elles manquent, GitHub ne publie rien : la tablette garde la version précédente (décision du parent du 6 octobre 2026).
 4. Si la session s'est arrêtée en cours de route (contexte plein, coupure), en ouvrir une nouvelle avec :
    ```
    Lis CLAUDE.md puis docs/LOTS.md, et reprends le lot « Mascotte » là où il s'est arrêté (docs/AVANCEMENT.md, rubrique « Reprise »).
@@ -81,7 +81,7 @@ Ne reprendre qu'après la réponse du parent. Ses décisions vont dans `docs/JOU
 - Toute règle pédagogique nouvelle est d'abord simulée (`tests/sim-seances.mjs`), et ses séquences sont lues (`tests/recette-fonctionnelle/b-sequences.mjs`). Si elles montrent un défaut, s'arrêter et le décrire au parent.
 - Tout ce qui se règle va dans `app/content/`. Chaque règle nouvelle a ses tests unitaires.
 - Après chaque étape : lancer les tests, faire les captures, les regarder, et corriger ce qui est laid ou illisible avant de continuer (`CLAUDE.md`, « Méthode de travail »).
-- **Voix** : ne fabriquer aucun son (`CLAUDE.md`, « Voix »). Quand les tests échouent sur des phrases sans fichier, continuer le reste. À la fin, donner dans la demande de fusion la liste exacte de ces phrases, leur nombre et leur poids estimé.
+- **Voix** : ne fabriquer aucun son (`CLAUDE.md`, « Voix »). Quand les tests échouent sur des phrases sans fichier, continuer le reste : c'est attendu, y compris au départ du lot si les voix des lots précédents ne sont pas encore faites (le parent les fabrique en une fois, `tools/voix/publier.mjs`). Ne jamais modifier le test de la voix, ni `app/assets/voix/`, pour faire passer les tests. À la fin, donner dans la demande de fusion la liste exacte des phrases nouvelles du lot, leur nombre et leur poids estimé. Sur GitHub, ces phrases ne sont que signalées (`VOIX_A_FABRIQUER=tolere`) ; une croix rouge y signale donc un autre échec, à corriger.
 - **Sauvegardes** : migrations non destructives seulement. Une sauvegarde faite avec la version en ligne doit se restaurer.
 
 ### La recette, faite par la session avant de rendre la main

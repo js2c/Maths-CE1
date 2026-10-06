@@ -7,7 +7,7 @@ Mode d'emploi :
 - **Ce document dit ce que fait l'application** : les règles en vigueur. Ce qui n'est pas encore construit est marqué **(à construire)**. Les raisons des décisions sont dans `docs/JOURNAL-CONCEPTION.md` ; les idées et les questions ouvertes, dans `docs/IDEES.md`.
 - **Les valeurs vivent dans `app/content/`** (nombres de questions, seuils, pourcentages, textes lus). Ce document donne les valeurs par défaut quand elles font partie de la règle ; en cas d'écart, le fichier de contenu fait foi et l'écart est signalé.
 - **On le modifie en place** : un lot ne crée plus de nouvelle spécification. Il modifie ce document dans la même demande de fusion que le code.
-- **Rédigé à partir des spécifications, pas du code.** La confrontation avec le code reste à faire (`docs/PROMPTS.md`, « Confrontation ») ; les écarts trouvés sont tranchés par le parent, puis reportés ici.
+- **Rédigé à partir des spécifications, pas du code.** La confrontation avec le code reste à faire (`docs/PROMPTS.md`, « Confrontation »), avant le lot « Sommes jusqu'à 30 » ; les écarts trouvés sont tranchés par le parent, puis reportés ici.
 
 ## 1. Objectif et public
 
@@ -69,7 +69,7 @@ Quatre bulles : **jouer**, **choisir**, **le récif**, **l'album**, plus le logo
 
 - **Accès** : depuis l'accueil (bulle « les leçons »), plus depuis l'écran « choisir ».
 - **Menu refait** : les leçons rangées par exercice (la ligne, les additions, le calcul rapide), chaque tuile avec **son numéro en grand** et une **vignette qui montre le moment clé de la leçon** (la tortue et ses sauts comptés, le poisson et son reflet, le cadre de 10…), pas un exemple de calcul ; le nom dit au toucher ; la légende du parent inchangée. Maquette fabriquée en tête du lot et validée par le parent avant le code (`docs/LOTS.md`, lot « Les leçons »).
-- **Les tables à consulter** : dans le menu des leçons, la **table d'addition** (et la table de multiplication quand la multiplication arrivera, phase 2). Présentation à maquetter : une grille où toucher une case dit et montre le calcul (« 7 plus 5, 12 »), avec l'appui visuel de la famille.
+- **Les tables à consulter** : dans le menu des leçons, la **table d'addition** et la **table de multiplication** (décision du parent du 6 octobre 2026 ; la seconde arrive avec le lot « Multiplication »). Présentation à maquetter : une grille où toucher une case dit et montre le calcul (« 7 plus 5, 12 »), avec l'appui visuel de la famille.
 - **La leçon suivie de son exercice** : à la fin d'une leçon, regardée jusqu'au bout **ou passée**, deux bulles : **« À toi ! »** (la vignette de l'exercice associé) et la maison. « À toi ! » enchaîne sur les exemples guidés puis les questions de l'exercice associé, **sans échauffement** ni leçon d'entrée (elle vient d'être vue) ; c'est la **séance du jour** si aucune n'a été terminée aujourd'hui, de l'**entraînement libre** sinon (même règle que « choisir » et « Encore ! »). Sélecteur de difficulté comme pour « choisir ».
 
 | Leçon | Exercice associé |
@@ -549,7 +549,7 @@ Toutes les deux semaines, un bilan remplace la notion du jour, au format officie
 
 ### Sommes jusqu'à 30 (à construire, phase 1)
 
-Suite du module 2, décidée en phase 1 (décision du parent du 30 septembre : jusqu'à 30, pas 20). Au moins : doubles jusqu'à 10 + 10, presque-doubles, passage de la dizaine par 10 (8 + 5 = 8 + 2 + 3), sommes dont le résultat va jusqu'à 30. Partage entre faits à mémoriser et calculs à faire : question ouverte (`docs/IDEES.md`), proposition par défaut dans `docs/LOTS.md` (lot « Sommes jusqu'à 30 »). À spécifier après maquette.
+Suite du module 2, décidée en phase 1 (décision du parent du 30 septembre, confirmée le 6 octobre : jusqu'à 30, pas 20). Au moins : doubles jusqu'à 10 + 10, presque-doubles, passage de la dizaine par 10 (8 + 5 = 8 + 2 + 3), sommes dont le résultat va jusqu'à 30. Partage entre faits à mémoriser et calculs à faire : question ouverte (`docs/IDEES.md`), proposition par défaut dans `docs/LOTS.md` (lot « Sommes jusqu'à 30 »). À spécifier après maquette.
 
 ### Problèmes (à construire, phase 1)
 

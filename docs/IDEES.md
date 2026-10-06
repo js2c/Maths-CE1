@@ -11,6 +11,17 @@ Dernière mise à jour : 30 septembre 2026, après la fusion du lot 3 ter (PR 25
 3. **Confrontation de `docs/SPEC.md` avec le code** (`docs/PROMPTS.md`, « Confrontation ») : la liste des écarts, à trancher par le parent.
 4. **Revue de périmètre** (section 2), puis le lot suivant.
 
+
+### Mascotte et voiliers : à observer après l'essai (6 octobre 2026)
+
+- **La mer selon le cran** dans les voiliers : choix par défaut de la conception (section 7 bis) ; le revoir après quelques parties.
+- **Les voiliers dans la rotation de « jouer »** : non pour l'instant ; à reconsidérer quand les trois points faibles seront acquis.
+- **Les signes <, >, =** : pas dans les voiliers ; un format à ajouter au jeu, ou un exercice à part (section 13) ?
+- **Des clips de parole courts** (2 à 3 s, même structure que les clips d'attente) donneraient plus de variété quand la mascotte parle et des fins de phrase plus nettes ; `talk-b` ne revient à la pose de départ qu'à sa fin (7,9 s).
+- **`wrong`** commence par un bref sourire (vers 0,4 à 0,9 s) avant la déception ; à regarder avec l'enfant : le prend-elle pour de la moquerie ?
+- **`success`** dure 8,7 s ; il cède à la phrase suivante dès 1,8 s.
+- **`idle-hochement`** (l'ancienne vidéo d'attente) ne revient à la pose de départ qu'après 3,8 s : une phrase qui commence pendant ce clip passe par un fondu visible. Il n'est tiré qu'à l'accueil.
+
 ## 2. Revue de périmètre : questions à trancher avant le prochain lot
 
 - **L'échauffement quand un exercice est choisi** : aujourd'hui il reste, sauf si on le passe. Le garder, le supprimer, ou le réduire quand l'enfant a choisi ?

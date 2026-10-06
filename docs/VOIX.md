@@ -49,6 +49,40 @@ les tests échouent avec « phrases sans fichier à jour »).
    hors ligne et lance tous les tests : si l'un échoue, rien n'est publié et l'ancienne version reste en ligne
    (onglet « Actions » du dépôt).
 
+## Fabriquer les sons d'un lot avant sa fusion (conseillé)
+
+Quand une session Claude Code prépare un lot qui ajoute ou change des phrases, elle s'arrête en le signalant
+dans sa demande de fusion, avec la liste des phrases. Mieux vaut alors fabriquer les sons **sur la branche du
+lot, avant de fusionner** : le jeu publié n'a jamais de phrase sans sa voix, et les tests de la demande de
+fusion passent au vert.
+
+1. Repérer le nom de la branche : en haut de la demande de fusion sur GitHub (par exemple
+   `claude/mascotte-xxxx`).
+2. Dans PowerShell :
+   ```
+   cd $env:USERPROFILE\Documents\Maths-CE1
+   git fetch
+   git checkout <nom-de-la-branche>
+   git pull
+   node tools\voix\fabriquer.mjs --ref ..\ref-posee.wav
+   ```
+   La première ligne dit combien de phrases sont à fabriquer (environ 4 secondes chacune). Les sons qui ne
+   servent plus (par exemple des phrases supprimées) sont effacés par l'outil.
+3. Écouter `a-reecouter.html` s'il est indiqué, et quelques phrases nouvelles (comme plus haut).
+4. Vérifier, puis publier sur la branche :
+   ```
+   node tools\precache.mjs
+   node --test tests\unit\voix.test.mjs
+   git add -A
+   git commit -m "Voix : phrases nouvelles du lot"
+   git push
+   git checkout main
+   ```
+5. Fusionner la demande de fusion sur GitHub quand ses tests sont verts.
+
+Si la session Claude Code travaille encore sur la branche, attendre qu'elle ait fini et tout poussé avant
+l'étape 2 : sinon ses commits et les vôtres se croiseraient.
+
 ## Ce que le contrôle entend, et ce qu'il n'entend pas
 
 Le contrôle repère : un mot en trop (« Presque beau »), un mot qui manque, un nombre faux (66 pour 76), une

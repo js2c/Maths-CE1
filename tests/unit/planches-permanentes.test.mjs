@@ -21,5 +21,6 @@ test("main.js déclare les planches permanentes, dont celle des boutons", () => 
   const main = readFileSync(new URL("../../app/js/main.js", import.meta.url), "utf8");
   assert.match(main, /sprites\.keep = ALWAYS/);
   const always = main.match(/const ALWAYS = new Set\((\[[^\]]*\])\)/)[1];
-  for (const k of ["petits", "pieuvre", "lagon", "lagon-vie"]) assert.ok(JSON.parse(always).includes(k), k);
+  for (const k of ["petits", "lagon", "lagon-vie"]) assert.ok(JSON.parse(always).includes(k), k);
+  assert.ok(!/pieuvre/.test(always), "plus de planches de la pieuvre (lot « Mascotte »)");
 });

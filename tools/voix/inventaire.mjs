@@ -31,7 +31,7 @@ const FRAGMENTS = new Set(["unSaut", "sauts", "uneEtoile", "desEtoiles", "uneDiz
 
 // clé de textes.json -> liste des valeurs de ses {variables}
 function domaines(C) {
-  const T = C.textes, M1 = C.module1.niveaux, noms = C.seance.noms;
+  const T = C.textes, M1 = C.module1.niveaux;
   const sautsDe = (b) => (b === 1 ? T.unSaut : `${b} ${T.sauts}`);
   const etoiles = (n) => (n === 1 ? T.uneEtoile : fill(T.desEtoiles, { n }));
   // les lignes des niveaux : pour « sauter », tous les départs et nombres de sauts possibles
@@ -60,10 +60,6 @@ function domaines(C) {
     ecrire: avecNombre(dictee),
     "erreur.E6": grands.filter((n) => n < 1000).map((n) => ({ n, ...hundredsWords(T, n) })),
     "erreur.E7": dictee.filter((n) => e7Value(n) !== null).map((n) => e7Words(n, T)),
-    accueil: noms.map((mascotte) => ({ mascotte })),
-    nomChoisi: noms.map((mascotte) => ({ mascotte })),
-    nomTouche: noms.map((nom) => ({ nom })),
-    nomValider: noms.map((nom) => ({ nom })),
     sauter: sauter.map(({ a, b }) => ({ a, sauts: sautsDe(b) })),
     "erreur.E3": [...departs, ...departs1000].map((a) => ({ a })),
     "erreur.E3sauter": [...new Set(sauter.map((s) => s.a))].map((a) => ({ a })),

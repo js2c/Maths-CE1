@@ -4,8 +4,8 @@
 // image à l'échelle 1 et 2, la recadre au plus juste, et range tout en planches WebP + `atlas.json`.
 // Les positions dans l'atlas sont relatives à l'ancrage : l'application pose un sprite par son ancrage.
 import type { Gfx, P } from "../core";
-import { BUBBLE_R, drawAnswerBubble, drawBubble, drawCheck, drawFish, drawMoon, drawEraseKey, drawNameTag, drawShellKey, drawSlate, drawReplayKey, drawTally, SLATE_H, SLATE_W, NAME_H, NAME_W, TALLY_H, TALLY_W, drawPlay, drawSpeaker, drawStar, FISH_KINDS, FISH_N } from "./decor";
-import { IDLE_N, OCTO_CLIPS, OCTO_FPS, octoParts, type Part, RING_Y } from "./octopus";
+import { BUBBLE_R, drawAnswerBubble, drawBubble, drawCheck, drawFish, drawMoon, drawEraseKey, drawShellKey, drawSlate, drawReplayKey, drawTally, SLATE_H, SLATE_W, TALLY_H, TALLY_W, drawPlay, drawSpeaker, drawStar, FISH_KINDS, FISH_N } from "./decor";
+import { drawFleche, FLECHE_H, FLECHE_O, FLECHE_W } from "./fleche";
 import { drawTurtle, TURTLE_CLIPS, TURTLE_FPS } from "./turtle";
 import { CARD_H, CARD_W, drawBigShell, drawShinySweep, SWEEP_H, SWEEP_W, drawCardBack, drawCardBanner, drawCardFrame, drawCardVerso, drawCardWater, drawGlint, drawGoldStar, drawHomeKey, drawRainbowStar, drawReefKey, SHELL_N } from "./treasure";
 import { CRAN_W, drawCranGlow, drawCranKey, GLOW_CR } from "./selector";
@@ -30,43 +30,15 @@ export type Spec = {
   scales?: number[]; // défaut [1, 2]
 };
 
-// ---------------------------------------------------------------- la pieuvre, en pièces
-// Chaque image de chaque geste est découpée en pièces (octopus.ts, `octoParts`). Une pièce déjà vue (même
-// calque, même clé) n'est fabriquée qu'une fois. Les pièces du repos vont sur la planche « pieuvre »
-// (chargée au démarrage), celles qui n'apparaissent que dans un geste sur « pieuvre-gestes ». La frise
-// (OCTO_TIMELINE) dit, pour chaque image de chaque geste, quelles pièces poser et la transformation du tout.
-export const OW = 820, OH = 660, OX = 400, OY = 300; // calque d'une pièce ; centre du manteau en (OX, OY)
-const partFrames: Record<string, Part[]> = {}, seen = new Map<string, [string, number]>();
-type Ref = [string, number];
-export const OCTO_TIMELINE = {
-  fps: OCTO_FPS, idleFrames: IDLE_N, ring: RING_Y * 1.12,
-  clips: {} as Record<string, { frames: number; entry: number; exit: number; hold: [number, number] | null; tl: [number, number, number, number, number, Ref[]][] }>,
-};
-OCTO_CLIPS.forEach((c) => {
-  const tl: [number, number, number, number, number, Ref[]][] = [];
-  for (let f = 0; f < c.frames; f++) {
-    const { parts, tf } = octoParts(c.pose(f));
-    const refs = parts.map((pt): Ref => {
-      const id = `${pt.layer}|${pt.key}`;
-      if (!seen.has(id)) { const sprite = `pieuvre.${c.name === "repos" ? "" : "g."}${pt.layer}`, list = (partFrames[sprite] ??= []); seen.set(id, [sprite, list.length]); list.push(pt); }
-      return seen.get(id)!;
-    });
-    const r = (v: number, k = 1000) => Math.round(v * k) / k;
-    tl.push([r(tf.tilt), r(tf.dx, 10), r(tf.dy, 10), r(tf.sx), r(tf.sy), refs]);
-  }
-  OCTO_TIMELINE.clips[c.name] = { frames: c.frames, entry: c.entry, exit: c.exit, hold: c.hold ?? null, tl };
-});
-const octoSpecs: Spec[] = Object.entries(partFrames).map(([name, list]) => ({
-  name, sheet: name.startsWith("pieuvre.g.") ? "pieuvre-gestes" : "pieuvre", W: OW, H: OH, origin: [OX, OY], frames: list.length, fps: OCTO_FPS,
-  draw: (g, f) => list[f].draw(g, OX, OY),
-}));
+// (lot « Mascotte », 6 octobre 2026 : la pieuvre, ses pièces et sa frise, sur les planches « pieuvre » et « pieuvre-gestes »,
+// ne sont plus fabriquées : la mascotte de l'application est le capitaine en vidéo, art/mascotte/. Son dessin reste dans
+// sea/octopus.ts pour l'icône de l'application, appIcon.ts, et la planche de modèle octoSheet.ts.)
 
 export const SPECS: Spec[] = [
   // (lot « Lagon en fond d'exercices » : le fond, ses rayons, ses algues et ses reflets ne sont plus fabriqués ici ; le fond de
   // l'application est le lagon du récif vivant, extrait par tools/export-lagon.mjs. Récif vivant, 5 octobre 2026 : plus de
   // créatures dessinées en code (planche « recif »), de décors des doublons (« decors »), de cadeaux ni de perles de page ;
   // les créatures sont les images de la maquette, extraites par tools/export-recif.mjs)
-  ...octoSpecs,
   ...FISH_KINDS.flatMap((_, k) => ([-1, 1] as const).map((dir): Spec => ({
     name: `poisson.${k}.${dir < 0 ? "g" : "d"}`, sheet: "poissons", W: 200, H: 120, origin: [100, 60], frames: FISH_N, fps: 12,
     draw: (g, f) => drawFish(g, k, dir, f, 100, 60), loop: [0, FISH_N],
@@ -81,7 +53,6 @@ export const SPECS: Spec[] = [
   { name: "etoile", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawStar(g, 70, 70) },
   { name: "reponse", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawAnswerBubble(g, 70, 70, 0) },
   { name: "jouer", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawPlay(g, 90, 90) },
-  { name: "nom", sheet: "petits", W: NAME_W + 40, H: NAME_H + 40, origin: [NAME_W / 2 + 20, NAME_H / 2 + 20], frames: 1, draw: (g) => drawNameTag(g, NAME_W / 2 + 20, NAME_H / 2 + 20, 0) },
   { name: "bilan", sheet: "petits", W: TALLY_W + 50, H: TALLY_H + 50, origin: [TALLY_W / 2 + 20, TALLY_H / 2 + 20], frames: 1, draw: (g) => drawTally(g, TALLY_W / 2 + 20, TALLY_H / 2 + 20) },
   { name: "ardoise", sheet: "petits", W: SLATE_W + 50, H: SLATE_H + 50, origin: [SLATE_W / 2 + 20, SLATE_H / 2 + 20], frames: 1, draw: (g) => drawSlate(g, SLATE_W / 2 + 20, SLATE_H / 2 + 20) },
   { name: "effacer", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawEraseKey(g, 70, 70) },
@@ -108,6 +79,8 @@ export const SPECS: Spec[] = [
   { name: "lune.decor", sheet: "petits", W: 240, H: 220, origin: [120, 110], frames: 1, draw: (g) => drawMoonDecor(g, 120, 110) },
   ...([["ligne", drawFreeLine], ["faits", drawFreeFacts], ["lecons", drawFreeLessons]] as const).map(([id, f]): Spec => ({ name: `libre.${id}`, sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => f(g, 90, 90) })),
   { name: "reecouter", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawSpeaker(g, 70, 70) },
+  // lot « Mascotte » : la flèche qui montre, à la place du bras de la pieuvre (ancrage : la pointe)
+  { name: "fleche", sheet: "petits", W: FLECHE_W, H: FLECHE_H, origin: FLECHE_O, frames: 1, draw: (g) => drawFleche(g, FLECHE_O[0], FLECHE_O[1]) },
   // les créatures du lagon, animées (le récif) : chargées seulement quand on visite le récif
   // les cartes et le coquillage : chargés pour la récompense, l'album et quand on regarde une carte dans le
   // récif. Origine : le coin haut gauche de la carte. L'illustration (image générée) est posée par

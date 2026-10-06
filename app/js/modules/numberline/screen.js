@@ -4,7 +4,7 @@
 //  - « sauter » : la tortue est sur une bouée et va faire quelques sauts ; où arrive-t-elle ?
 //  - « placer » : l'enfant pose le poisson sur un nombre, en touchant la ligne ou en le faisant glisser ;
 //  - « estimer » : ligne sans graduations, l'enfant pose le poisson où il mettrait le nombre.
-// Retour immédiat : juste -> la pieuvre se réjouit ; faux -> la pieuvre encourage (jamais triste), la voix
+// Retour immédiat : juste -> la mascotte se réjouit ; faux -> elle est déçue puis encourage (lot « Mascotte »), la voix
 // dit pourquoi, et l'animation propre à l'erreur est jouée (tableau des erreurs E1 à E5 de la SPEC).
 // Exemples guidés et corrections : « passer » dès le début (engine/ui.js, skipKey) ; leurs animations vont
 // à la vitesse `app.vitesse` (content/seance.json, vitesseAnimations), la voix garde son débit.
@@ -16,6 +16,7 @@ import { classify, lineSpec, makeEstimate, makeJump, makePlace, makeRead, makeWr
 import { paintHundreds } from "../facts/aids.js";
 import { clock, wait } from "../../engine/clock.js";
 import { onBrief, onTap, pop, skipKey, SKIP_AT, spriteBox } from "../../engine/ui.js";
+import { MASCOTTE } from "../../engine/bulle.js";
 
 const ANSWER_Y = 700, BUB = 140; // centre des bulles, taille de leur calque (px logiques)
 // (lot 3 bis, B7 ; R16) le nombre à placer est écrit sur l'étiquette que porte le poisson (« placer.poisson », ancré à la
@@ -26,13 +27,16 @@ export const NSP_AT = [1180, 700];
 export { SKIP_AT };
 const SKIPPED = Symbol("correction passée");
 
-// le geste « montrer » selon la direction de la cible vue depuis l'épaule du bras (le centre du manteau décalé
-// de l'attache du bras 7, art/src/canvas-core/ocean.ts, à l'échelle de la pieuvre dans l'application)
-export const SHOULDER = [76, 56];
-export function pointClip(octoAt, [x, y], clips = null) {
-  const a = (Math.atan2(y - (octoAt[1] + SHOULDER[1]), x - (octoAt[0] + SHOULDER[0])) * 180) / Math.PI;
-  const name = a > 52 || x < octoAt[0] + SHOULDER[0] ? "montrerBas" : a > 24 ? "montrerBasDroite" : "montrer";
-  return !clips || clips[name] ? name : "montrer";
+// (lot « Mascotte ») ce que montre la flèche pendant la consigne, à la place du bras de la pieuvre : la pointe juste au-dessus
+// de l'étoile (« lire »), de la tortue sur son départ (« sauter »). Pas de flèche en « placer » ni en « estimer » (relecture du
+// lot) : la pieuvre y montrait la place de la réponse, qu'une flèche précise donnerait ; posée au-dessus du poisson, elle
+// semblait montrer une graduation ; posée à côté de son étiquette, sur la ligne, elle se lisait comme une direction.
+// Renvoie { point, angle } (angle 0 : la flèche pointe vers le bas), ou null.
+export const FLECHE = { etoile: 44, tortue: 70 };
+export function cibleFleche(q, { tick, seat }) {
+  if (q.format === "lire") { const [x, y] = tick(q.target); return { point: [x, y - 42 - FLECHE.etoile], angle: 0 }; }
+  if (q.format === "sauter") { const [x, y] = seat(q.start); return { point: [x, y - FLECHE.tortue], angle: 0 }; }
+  return null;
 }
 export class NumberLineScreen {
   constructor(app) {
@@ -93,14 +97,8 @@ export class NumberLineScreen {
     this.nsp.style.visibility = "hidden";
     onBrief(this.app, this.nsp, () => { if (this.locked) return; pop(this.nsp); this.answer(null, null, { nsp: true }); }, "nsp");
   }
-  // lot 2 (docs/SPEC-LOT2.md, section 4 : la tortue devant la pieuvre) : pendant un exemple guidé ou une
-  // correction, la pieuvre s'écarte un peu vers la gauche (sans monter : la frise est juste au-dessus) pour dégager le début de la ligne ; la
-  // tortue, les arcs et les filets de bulles sont de toute façon dans des calques au-dessus d'elle
-  lift(up) {
-    const o = this.app.ocean, home = (this.octoHome ??= [...o.octoAt]), to = up ? [home[0] - 60, home[1] - 4] : home, from = [...o.octoAt], t0 = performance.now(), tok = (this.liftTok = (this.liftTok ?? 0) + 1);
-    const step = () => { if (tok !== this.liftTok) return; const u = Math.min(1, (performance.now() - t0) / 600), e = u * u * (3 - 2 * u); o.octoAt = [from[0] + (to[0] - from[0]) * e, from[1] + (to[1] - from[1]) * e]; if (u < 1) requestAnimationFrame(step); };
-    step();
-  }
+  // (lot « Mascotte » : la pieuvre s'écartait pendant un exemple guidé ou une correction ; la mascotte ne bouge plus et ne
+  // touche pas la ligne : la tortue, les arcs et les filets de bulles sont dans des calques au-dessus d'elle)
   // la vitesse des animations des exemples guidés et des corrections ; une pause entre deux étapes
   // (vitesse 1 pour la correction « lente » qui remplace une leçon déjà vue dans la séance, runner.js)
   get pace() { return this.q?.lent ? 1 : this.app.vitesse ?? 1; }
@@ -147,8 +145,10 @@ export class NumberLineScreen {
     if (this.input) this.ripple();
     voice.stop();
     const v = { n: q.answer, a: q.format === "sauter" ? q.min + q.start * q.step : q.min, sauts: q.jumps === 1 ? text.data.unSaut : `${q.jumps} ${text.data.sauts}` };
-    // pendant la consigne, la pieuvre montre la cible (lot 2 : trois orientations) ; elle relâche quand la phrase est finie
-    this.app.ocean.octo.hold(this.pointAt(q));
+    // pendant la consigne, la mascotte regarde le travail et la flèche montre la cible (lot « Mascotte », à la place du bras
+    // de la pieuvre) ; elles relâchent quand la phrase est finie
+    this.app.ocean.mascotte.hold("montrer");
+    { const c = this.pointAt(q); if (c) this.app.fleche?.montrer(c.point, { angle: c.angle }); }
     // exemple guidé : on montre d'abord la méthode (les réponses attendent), puis « À toi ! »
     if (guide && !lesson) { await this.demoOrSkip(q); this.t0 = clock.now(); }
     // lot 3, niveau 1 « plus facile » (module1.json, crans) : la tortue montre le premier saut, depuis zéro
@@ -156,14 +156,10 @@ export class NumberLineScreen {
     this.locked = false; this.nsp.style.visibility = "visible";
     const L = lesson && this.app.lecons?.[lesson];
     const say = L ? (L.aToiDepuisZero && q.format === "lire" && q.min === 0 && q.step === 1 ? L.aToiDepuisZero : `${L.aToi} ${text.pick(q.format, v)}`) : `${guide ? `${text.pick("aToi")} ` : ""}${text.pick(q.format, v)}`;
-    return voice.say(say, { instruction: true }).then(() => this.app.ocean.octo.release());
+    return voice.say(say, { instruction: true }).then(() => { this.app.ocean.mascotte.release(); if (this.q === q) this.app.fleche?.cacher(); });
   }
-  // le geste « montrer » qui vise la cible de la question : vers le bas (une cible sous la pieuvre), vers le
-  // bas et la droite, ou vers la droite (une cible loin) ; l'angle est pris depuis l'épaule du bras qui montre
-  pointAt(q) {
-    const x = q.format === "sauter" ? R.tickP(this.spec, q.start)[0] : q.format === "lire" ? R.tickP(this.spec, q.target)[0] : this.xOf(q.format === "estimer" ? (q.min + q.max) / 2 : q.answer);
-    return pointClip(this.app.ocean.octoAt, [x, R.lineY(this.spec, x)], this.app.atlas?.octo?.clips);
-  }
+  // où se pose la pointe de la flèche pendant la consigne (cibleFleche)
+  pointAt(q) { return cibleFleche(q, { tick: (i) => R.tickP(this.spec, i), seat: (i) => this.turtle.seat(i) }); }
   // EXEMPLE GUIDÉ (docs/SPEC.md, « Notion du jour ») : la tortue montre comment trouver la réponse, puis
   // l'enfant répond. Lire, placer : elle part de zéro (ou du nombre écrit le plus proche à gauche, quand
   // la cible est loin ou que la ligne ne commence pas à 0) et compte les sauts jusqu'à la cible, un arc
@@ -175,9 +171,9 @@ export class NumberLineScreen {
     const { voice } = this.app, tok = (this.demoTok = (this.demoTok ?? 0) + 1);
     let btn = null;
     const skipP = new Promise((res) => { btn = skipKey(this.app, () => res(true), "passer l'exemple"); });
-    this.turtle.speed = this.pace; this.lift(true);
+    this.turtle.speed = this.pace;
     const skipped = await Promise.race([this.demo(q, () => tok !== this.demoTok).then(() => false), skipP]);
-    this.turtle.speed = 1; btn.remove(); this.lift(false);
+    this.turtle.speed = 1; btn.remove();
     if (!skipped) return;
     this.demoTok++; q.passe = true; voice.stop();
     this.arcs = []; this.overlay = []; this.paintFx(true);
@@ -283,7 +279,7 @@ export class NumberLineScreen {
   async answer(value, btn, { nsp = false } = {}) {
     if (this.locked) return; this.locked = true; this.nsp.style.visibility = "hidden";
     const { voice, ocean, text, line } = this.app, q = this.q, ms = clock.now() - this.t0, code = nsp ? "NSP" : classify(q, value), ok = code === null;
-    voice.stop();
+    voice.stop(); this.app.fleche?.cacher();
     const result = { q, value, ok, code, ms: Math.round(ms), listens: voice.listens };
     this.arcs = []; this.overlay = []; this.paintFx(true); // les traces d'un exemple guidé s'effacent
     if (q.choices) {
@@ -292,7 +288,7 @@ export class NumberLineScreen {
       if (ok) good.classList.add("pop"); else btn?.classList.add("shake", "dim");
       if (nsp) good.classList.add("pop");
     }
-    ocean.octo.play(ok ? "rejouir" : "encourager");
+    ocean.mascotte.play(ok ? "rejouir" : "encourager");
     // bruitage : une bulle claire, ou une bulle douce (rien pour « je ne sais pas », la voix rassure)
     if (ok) this.app.sound?.play("bonne"); else if (!nsp) this.app.sound?.play("erreur");
     const n = q.answer, T = text.data.erreur;
@@ -306,7 +302,7 @@ export class NumberLineScreen {
       let abort = null;
       const abortP = new Promise((_, rej) => { abort = () => rej(SKIPPED); }); abortP.catch(() => {});
       const g = (p) => Promise.race([p, abortP]), skip = skipKey(this.app, () => abort(), "passer la correction");
-      this.turtle.speed = this.pace; this.lift(true);
+      this.turtle.speed = this.pace;
       try {
         // au format « sauter », E3 est l'oubli du point de départ (la bouée où la tortue est posée), pas celui du début de la ligne
         const key = q.format === "sauter" && code === "E3" ? "E3sauter" : code;
@@ -326,7 +322,7 @@ export class NumberLineScreen {
         if (q.format === "sauter") this.turtle.sitOn(this.spec, q.target); else this.turtle.hide();
         await wait(1000);
       }
-      this.turtle.speed = 1; skip.remove(); this.lift(false);
+      this.turtle.speed = 1; skip.remove();
     }
     this.band.style.display = "none";
     const done = this.resolve; this.resolve = null; done?.(result);
@@ -359,9 +355,10 @@ export class NumberLineScreen {
       return this.countJumps(0, tgt, { label: (k, i) => String(q.min + i * q.step), guard: g });
     }
     if (code === "E4" && q.n > 0) {
-      // la flèche de croissance se trace de gauche à droite, puis la tortue repart de la gauche
-      const y = this.spec.y - 96, t0 = performance.now();
-      this.overlay.push((ctx) => R.drawArrow(ctx, this.a - 10, this.b + 10, y, Math.min(1, ((performance.now() - t0) * k) / 1400)));
+      // la flèche de croissance se trace de gauche à droite, puis la tortue repart de la gauche ; (lot « Mascotte ») elle part à
+      // droite de la tête de la mascotte (à la hauteur de son menton, elle semblait lui sortir de la bouche)
+      const y = this.spec.y - 96, t0 = performance.now(), x0 = Math.max(this.a - 10, MASCOTTE.x + MASCOTTE.w + 16);
+      this.overlay.push((ctx) => R.drawArrow(ctx, x0, this.b + 10, y, Math.min(1, ((performance.now() - t0) * k) / 1400)));
       await this.animateFx(1500 / k, g);
       if (far) { await g(T.swimTo(this.spec, 0)); return this.countJumps(0, tgt, { label: (k, i) => String(q.min + i * q.step), guard: g }); }
       return;
@@ -397,7 +394,7 @@ export class NumberLineScreen {
   // chaque image par `paintFx` tant que `fxAnimating` restait vrai, par-dessus l'exercice suivant)
   // la corde ondule (le calque de la ligne, animé par le compositeur : rien n'est redessiné)
   ripple() { const c = this.app.stage.root.querySelector("#line"); c?.animate([{ transform: "translateY(0)" }, { transform: "translateY(-7px)" }, { transform: "translateY(5px)" }, { transform: "translateY(-3px)" }, { transform: "translateY(0)" }], { duration: 900, easing: "ease-in-out" }); }
-  leave() { this.fishHit.style.display = "none"; this.clearButtons(); this.nsp.style.visibility = "hidden"; this.starAt = null; this.fishAt = null; this.fishGoal = null; this.turtle.hide(); this.band.style.display = "none"; this.arcs = []; this.overlay = []; this.fxAnimating = false; this.liveArc?.show(false); this.app.line.clear(); this.app.line.fxClear(); }
+  leave() { this.app.fleche?.cacher(); this.fishHit.style.display = "none"; this.clearButtons(); this.nsp.style.visibility = "hidden"; this.starAt = null; this.fishAt = null; this.fishGoal = null; this.turtle.hide(); this.band.style.display = "none"; this.arcs = []; this.overlay = []; this.fxAnimating = false; this.liveArc?.show(false); this.app.line.clear(); this.app.line.fxClear(); }
 }
 export { NumberLineScreen as ReadScreen };
 

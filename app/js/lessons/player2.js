@@ -70,19 +70,20 @@ export class Lesson2Player {
     }
     this.abort = null; this.tok++;
     this.keys.forEach((k) => k.remove()); this.keys = null;
-    if (!this.skipped) { app.ocean.octo.play("rejouir"); this.h?.play("rejouir"); await wait(600); }
+    if (!this.skipped) { app.ocean.mascotte.play("rejouir"); this.h?.play("rejouir"); await wait(600); }
     this.clear();
     return { vue: !this.skipped, passee: this.skipped, dureeS: Math.round((Date.now() - t0) / 1000), ...stats };
   }
   g(p) { return Promise.race([p, this.abortP]); }
   async phrase(p) {
     const { voice, ocean } = this.app;
-    ocean.octo.hold("montrer");
+    ocean.mascotte.hold("montrer"); this.app.fleche?.cacher();
     for (const beat of this.lesson.phrases[p]) {
       const said = beat.dire ? voice.say(beat.dire, { instruction: true }) : Promise.resolve();
       const done = (async () => { for (const a of beat.faire ?? []) await this.g(this.act(a)); })();
       await this.g(Promise.all([said, done]));
     }
+    ocean.mascotte.release(); this.app.fleche?.cacher();
   }
   async act(a) {
     const [[name, v]] = Object.entries(a), st = this.st;
@@ -109,7 +110,10 @@ export class Lesson2Player {
     if (name === "ligne") { st.ligne = v; st.arcs = []; st.mur = null; this.paint(); return; }
     if (name === "poisson" || name === "nager") {
       const p = this.fishAt(v); if (!p) return;
-      if (name === "poisson" || !this.fish.a.vis) { this.fish.at(...p); this.fishN = v; return; }
+      // (lot « Mascotte ») le petit poisson posé : la flèche le montre, jusqu'à la fin de la phrase
+      // (sur le mur, la flèche est posée au bord gauche de la grille, à la hauteur du poisson, pointée vers lui : au-dessus de sa
+      // case, elle cachait les nombres de la colonne, relecture du lot)
+      if (name === "poisson" || !this.fish.a.vis) { this.fish.at(...p); this.fishN = v; if (name === "poisson") this.app.fleche?.montrer(st.mur ? [LESSON_WALL.x - 6, p[1]] : [p[0], p[1] - 34], { angle: st.mur ? -90 : 0 }); return; }
       const from = this.fishN; this.fishN = v;
       // sur le mur : d'abord les rangées (± 10), puis les cases (± 1)
       if (st.mur && Math.floor((from - 1) / 10) !== Math.floor((v - 1) / 10) && (from - 1) % 10 !== (v - 1) % 10) { await this.fish.swim(...this.fishAt(from + 10 * (Math.floor((v - 1) / 10) - Math.floor((from - 1) / 10))), 700); }
@@ -162,7 +166,7 @@ export class Lesson2Player {
   }
   abandon() { if (!this.keys) return; this.tok++; this.abort = null; this.keys.forEach((k) => k.remove()); this.keys = null; this.clear(); }
   clear() {
-    this.app.aidBoard?.clear();
+    this.app.aidBoard?.clear(); this.app.fleche?.cacher(); this.app.ocean.mascotte.release();
     if (this.fish) { this.fish.remove(); this.fish = null; }
     if (this.own) { this.h?.remove(); this.app.sprites.unload("ermite"); } else if (this.h && this.back) { this.h.left = null; this.h.at(...this.back); } // (l'ancienne coquille reste dans la leçon)
     this.h = null;

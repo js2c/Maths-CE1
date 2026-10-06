@@ -1,11 +1,13 @@
-// DÉMARRAGE. Charge l'atlas et les planches nécessaires au premier écran (fond, pieuvre au repos,
-// décor), lance l'animation, puis charge le reste en arrière-plan (gestes de la pieuvre).
+// DÉMARRAGE. Charge l'atlas et les planches nécessaires au premier écran (le lagon, les boutons, la tortue), lance
+// l'animation et la mascotte (ses vidéos se chargent en arrière-plan : engine/mascotte.js), puis le reste.
 // Premier écran : l'océan vivant et une grosse bulle « jouer » (ou, si la séance du jour est déjà faite,
 // la lune en décor et la bulle « Encore ! » de l'entraînement libre), le récif et l'album ; le premier
 // toucher débloque la voix et lance la séance (session/session.js). Pendant la séance, la maison (en haut
 // à gauche) la met en pause ; la frise d'avancement montre où l'on en est.
 import { repriseText } from "./engine/toucher.js";
 import { Ocean, rng } from "./engine/ocean.js";
+import { Bulle } from "./engine/bulle.js";
+import { Fleche } from "./engine/fleche.js";
 import { Lagon } from "./engine/lagon.js";
 import { LineView } from "./engine/line.js";
 import { persist, Store } from "./engine/store.js";
@@ -30,7 +32,7 @@ import { Dictation } from "./modules/numberline/dictation.js";
 import { AidBoard } from "./modules/facts/aids.js";
 import { ChallengeView } from "./modules/facts/challengeView.js";
 import { Rewards } from "./session/rewards.js";
-import { chooseName, goodNight, reward, spriteBox, StarHud } from "./session/screens.js";
+import { goodNight, reward, spriteBox, StarHud } from "./session/screens.js";
 import { challengeReady, doneToday, sameDay, Session } from "./session/session.js";
 import { Reef } from "./session/reef.js";
 import { drawSurprise, playSurprise, previousSession } from "./session/surprise.js";
@@ -56,11 +58,13 @@ const sprites = new Sprites(atlas, stage.px);
 // la base locale ; au premier lancement, on demande au navigateur de ne jamais l'effacer de lui-même
 const store = await Store.open();
 if (!(await store.setting("premierLancement"))) { await store.setSetting("premierLancement", new Date().toISOString()); await store.setSetting("stockagePersistant", await persist()); }
-await Promise.all(["lagon", "lagon-vie", "pieuvre", "poissons", "petits", "tortue"].map((s) => sprites.load(s)));
-// le fond de toute l'application : le lagon du récif vivant (engine/lagon.js) ; par-dessus, la pieuvre et les acteurs
+await Promise.all(["lagon", "lagon-vie", "poissons", "petits", "tortue"].map((s) => sprites.load(s)));
+// le fond de toute l'application : le lagon du récif vivant (engine/lagon.js) ; par-dessus, la mascotte et les acteurs
 const lagon = new Lagon(stage, sprites, atlas);
 lagon.paintStatic();
-const ocean = new Ocean(stage, sprites, atlas);
+// (lot « Mascotte ») le journal des raccords de la mascotte : gardé pour la recette (combien de fondus forcés)
+const journalMascotte = []; window.__journalMascotte = journalMascotte;
+const ocean = new Ocean(stage, sprites, atlas, { rapide: location.search.includes("voix=rapide"), journal: (texte, genre, info) => { journalMascotte.push({ t: Math.round(performance.now()), texte, genre, ...info }); if (journalMascotte.length > 2000) journalMascotte.shift(); } });
 stage.ticks.add((t, dt) => { lagon.update(t, dt); lagon.render(); ocean.update(t, dt); ocean.render(); });
 stage.start();
 // un changement d'échelle (rotation, fenêtre) demanderait d'autres planches : on recharge simplement
@@ -69,9 +73,17 @@ stage.onResize(() => { if (Math.abs(stage.px - sprites.px) > 0.01) location.relo
 const rnd = rng(Date.now() & 0xffffffff);
 // pour les tests et les captures : ?module=2 ?cran=dur ?surprise=visite:tortue ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape ?sansLecon ?lecon=L1 ?etoiles=N
 const P = new URLSearchParams(location.search);
-const text = { data: textes, pick: (k, v = {}) => { const e = textes[k]; return fill(Array.isArray(e) ? e[Math.floor(rnd() * e.length)] : e, { mascotte: app.mascotte, ...v }); } };
+const text = { data: textes, pick: (k, v = {}) => { const e = textes[k]; return fill(Array.isArray(e) ? e[Math.floor(rnd() * e.length)] : e, v); } };
 // les phrases fabriquées à l'avance (assets/voix/) ; ?voix=synthese : seulement la synthèse du navigateur (comparaison)
 const voice = new Voice({ rate: 0.9, fast: P.get("voix") === "rapide" }).setIndex(P.get("voix") === "synthese" ? null : voix);
+// (lot « Mascotte ») la mascotte parle quand la voix parle, et ce qu'elle dit s'écrit dans sa bulle (pas dans le récif
+// vivant, où elle n'est pas) ; la bulle s'efface 1,5 s après la phrase ; la flèche montre à la place du bras de la pieuvre
+// (la bande de la ligne graduée affichée est un obstacle de la bulle, sauf pendant la pause, où elle est cachée)
+const bulle = new Bulle(stage, { dures: () => { const b = app.line.bande; return b && !stage.root.classList.contains("paused") ? [b] : []; } }), fleche = new Fleche(ocean);
+// (relecture du lot : pendant une question de dictée, la bulle n'écrit rien : elle écrirait en chiffres le nombre à écrire)
+const dicteeEnCours = () => !!(app.facts?.q?.dictee && !app.facts.locked);
+voice.onTalk = (t, ms, o) => { ocean.mascotte.parole(t, ms, { consigne: o.instruction }); if (ocean.mascotteVisible && !dicteeEnCours()) bulle.dire(t, ms); else bulle.cacher(); };
+voice.onSilence = () => { ocean.mascotte.silence(); bulle.silence(); };
 // les bruitages et la musique (lot 2) ; ?son=non : silence (mesures)
 const sound = new Sound({ content: sonContent, index: sonIndex, off: P.get("son") === "non" });
 sound.setPrefs(await store.setting("son"));
@@ -96,7 +108,7 @@ addEventListener("error", (ev) => journal({ type: "erreur de page", message: ev.
 addEventListener("unhandledrejection", (ev) => journal({ type: "erreur de page", message: String(ev.reason?.message ?? ev.reason), pile: ev.reason?.stack?.split("\n").slice(0, 4).join(" | ") ?? null }));
 const rewards = await new Rewards(store, cartes, calendrier).load();
 if (P.get("etoiles")) { rewards.st.total = Number(P.get("etoiles")); await rewards.save(); } // tests : un trésor de départ
-const app = { stage, sprites, ocean, lagon, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, legendes, line: new LineView(stage), mascotte: await store.setting("mascotte") };
+const app = { stage, sprites, ocean, lagon, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, legendes, line: new LineView(stage), bulle, fleche };
 // la vitesse des animations des exemples guidés et des corrections (1 : la vitesse d'origine ; la voix garde son débit)
 app.vitesse = seance.vitesseAnimations ?? 1;
 app.toucher = seance.toucher ?? {}; // (lot 3 bis, A5 : le double toucher)
@@ -113,7 +125,6 @@ stage.ticks.add(() => sound.duck(voice.speaking));
 
 // le premier écran est prêt : on le note pour la mesure du démarrage
 requestAnimationFrame(() => requestAnimationFrame(() => { performance.mark("app-ready"); window.__ready = performance.now() - T0; }));
-sprites.load("pieuvre-gestes").then(() => ocean.octo.warm("pieuvre-gestes"));
 sprites.load("aides"); // lot 2 : les aides visuelles du module 2 (petite planche : cadre de 10, maison, bulle dorée)
 
 // ---------------------------------------------------------------- en-tête : réécouter, étoiles de mer
@@ -145,11 +156,9 @@ const handlers = {
   accueil: async ({ session }) => {
     // la musique de la séance : l'une des trois, tirée au hasard, gardée toute la séance (pause comprise)
     session.rec.musique ??= pickMusic(sonIndex, rnd); await session.save(); sound.startMusic(session.rec.musique);
-    // premier lancement : l'enfant choisit le nom de la pieuvre ; ensuite, la pieuvre salue
-    if (!app.mascotte) {
-      app.mascotte = await chooseName(app, seance.noms); await store.setSetting("mascotte", app.mascotte);
-      ocean.octo.play("rejouir"); await voice.say(text.pick("nomChoisi"));
-    } else { ocean.octo.play("saluer"); await voice.say(text.pick("accueil")); }
+    // la mascotte salue et souhaite la bienvenue (lot « Mascotte » : elle n'a pas de nom ; le nom de la pieuvre choisi
+    // autrefois reste dans la base, sans être montré)
+    ocean.mascotte.play("saluer"); await voice.say(text.pick("accueil"));
     // une séance sur cinq environ : une surprise (un visiteur) ; ?surprise=visite:tortue|visite:poissons (tests)
     const forced = P.get("surprise")?.split(":"), prev = previousSession(await store.all("seances"), session.id);
     const s = forced ? { type: forced[0], id: forced[1] } : drawSurprise(rnd, cartes.surprise, prev);
@@ -187,7 +196,7 @@ const handlers = {
     await sprites.load("defi");
     const view = new ChallengeView(app); app.challenge = view;
     try {
-      await runChallenge({ ...ctx, warmup, screen, view, store, rnd, octo: ocean.octo, stars: seance.etoiles, say: (k, v = {}) => voice.say(text.pick(k, v)) });
+      await runChallenge({ ...ctx, warmup, screen, view, store, rnd, mascotte: ocean.mascotte, stars: seance.etoiles, say: (k, v = {}) => voice.say(text.pick(k, v)) });
     } finally { view.remove(); app.challenge = null; sprites.unload("defi"); }
   },
   recompense: (ctx) => reward(app, { ...ctx, hud }),
@@ -296,7 +305,7 @@ const big = (name, cx, cy, label, cls = "bubble") => spriteBox(app, { x: cx - 90
 let homeEls = [];
 const clearHome = () => { homeEls.forEach((e) => e.remove()); homeEls = []; };
 async function showHome({ done, first = false }) {
-  clearHome();
+  clearHome(); ocean.mascotte.ambiance("pause"); fleche.cacher();
   // (lot 3 bis, R22) ce que « réécouter » redit à l'accueil
   voice.instruction = done ? text.data.accueilConsigneFaite : text.data.accueilConsigne;
   const reefKey = big("recif", HOME_X[2], 650, "le récif", "bubble reefkey"), albumKey = big("album", HOME_X[3], 650, "l'album", "bubble albumkey");
@@ -337,7 +346,7 @@ async function showHome({ done, first = false }) {
   }, "choisir");
 }
 // les bulles de l'accueil : jouer (ou « Encore ! »), choisir, le récif, l'album
-// (lot 3 bis, R20 : l'album était posé sur le rocher de droite ; les bulles se décalent vers la gauche, sous la pieuvre)
+// (lot 3 bis, R20 : l'album était posé sur le rocher de droite ; les bulles se décalent vers la gauche, sous la mascotte)
 const HOME_X = [390, 580, 770, 960];
 // une séance du jour : proposée par l'application (« jouer »), ou l'exercice choisi (`choix`, lot 3)
 async function runSession(choix = null) {
@@ -349,8 +358,8 @@ async function runSession(choix = null) {
   // lot 3 : la rotation de « jouer » entre les trois modules, le moins maîtrisé d'abord (session.js, chooseModule)
   const [n1, n2, n3] = await Promise.all([1, 2, 3].map((k) => store.get("niveaux", k))), mastery = { 1: ((n1?.niveau ?? 1) - 1) / module1.niveaux.length, 2: (n2?.acquises?.length ?? 0) / module2.familles.length, 3: calcMastery(module3, n3) };
   const session = new Session({ store, content: { ...seance, dureeMaxMin: await store.setting("dureeSeanceMin", seance.dureeMaxMin) }, handlers, rewards, paused: () => clock.pausedTotal(), onProgress: (p) => progress(p), choix, sans, sansRaison, mastery: (m) => mastery[m] ?? 0,
-    // la protection du sélecteur redescend d'un cran : la pieuvre encourage, la voix le dit doucement
-    onCranDown: async () => { voice.stop(); ocean.octo.play("encourager"); await voice.say(text.data.cranDescente); } });
+    // la protection du sélecteur redescend d'un cran : la mascotte encourage, la voix le dit doucement
+    onCranDown: async () => { voice.stop(); ocean.mascotte.play("encourager"); await voice.say(text.data.cranDescente); } });
   app.session = session; mode = "seance";
   // la frise ne montre le défi record que s'il aura lieu (à partir de la 5e séance, assez de faits bien sus)
   const defi = seance.etapes.find((e) => e.id === "defi");
@@ -396,6 +405,10 @@ const progress = (p) => {
 };
 // attend-on une réponse de l'enfant (la consigne est finie ou en cours) ?
 const awaiting = () => [app.screen, app.facts].some((s) => s && s.resolve && !s.locked);
+// (lot « Mascotte ») la relance : 25 s sans toucher pendant une question, une phrase d'aide (12 s : un geste, la mascotte le
+// fait seule) ; seulement si une question attend sa réponse, hors pause et sans autre phrase en cours
+ocean.mascotte.onRelance = () => { if (awaiting() && !app.enPause && !visiting && !voice.speaking && !voice.paused) voice.say(text.pick("relanceAide")); };
+let ambianceAvantPause = null;
 // L'ACCUEIL COMPLET PENDANT UNE PAUSE (lot 3, étape 5 ; décision du parent du 28 septembre ; docs/SPEC.md, « Navigation
 // pendant la séance ») : « continuer » (reprise exacte), « choisir » (l'écran de choix : revenir sans valider ramène ici ;
 // valider un exercice termine la séance en pause, interrompue, et lance l'exercice choisi comme séance du jour ; valider
@@ -405,6 +418,8 @@ let pausedEls = null; // l'accueil en pause : continuer, choisir, le récif, l'a
 let visiting = false;
 async function pauseSession() {
   clock.pause(); voice.pause(); sound.pauseLevel(true); stage.root.classList.add("paused"); homeKey.style.visibility = "hidden";
+  // (lot « Mascotte ») la mascotte se tait, ne surveille plus l'inactivité, et attend comme à l'accueil ; la flèche s'efface
+  ambianceAvantPause = ocean.mascotte.amb; ocean.mascotte.suspendre(true); ocean.mascotte.ambiance("pause"); bulle.cacher(); fleche.cacher();
   app.enPause = true;
   await app.session?.notePause();
   showPauseHome();
@@ -425,6 +440,7 @@ function resumeSession() {
   if (visiting) return;
   clearPauseHome(); app.enPause = false;
   voice.unlock(); stage.root.classList.remove("paused"); homeKey.style.visibility = "visible";
+  ocean.mascotte.suspendre(false); if (ambianceAvantPause) ocean.mascotte.setAmb(ambianceAvantPause);
   clock.resume(); voice.resume(); sound.pauseLevel(false);
   // la séance attendait une réponse : la voix redit la consigne (lot 3 bis, A5 : même si la pause a coupé la consigne, qui
   // reprendrait sans « On continue ! » ; pendant une correction, la phrase coupée est redite, puis la question suivante)
@@ -461,17 +477,17 @@ async function startChosen(c) {
 // (`suspend`) ; une leçon dessine dans des calques neufs (ligne, effets, aides) avec son propre écran de la ligne. Au
 // retour, tout ce que la visite a ajouté (éléments, acteurs, rappels d'image, planches) est retiré, et la séance
 // retrouve exactement sa pause.
-const ALWAYS = new Set(["lagon", "lagon-vie", "pieuvre", "poissons", "petits", "tortue", "pieuvre-gestes", "aides"]);
+const ALWAYS = new Set(["lagon", "lagon-vie", "poissons", "petits", "tortue", "aides"]);
 sprites.keep = ALWAYS; // jamais libérées (engine/sprites.js, unload)
 function sandbox() {
   const o = ocean, st = stage, kids = (el) => new Set(el.children);
   const ui = kids(st.ui), front = kids(o.frontEl), root = kids(st.root);
-  const hidden = [...[...ui].filter((e) => !e.matches(".stars, .speaker, .session-home")), ...front, ...[...root].filter((e) => e.matches("#line, #fx, #aides, .aid-board"))];
+  const hidden = [...[...ui].filter((e) => !e.matches(".stars, .speaker, .session-home, .bulle")), ...front, ...[...root].filter((e) => e.matches("#line, #fx, #aides, .aid-board"))];
   hidden.forEach((e) => e.classList.add("stash"));
   const actors = [...o.actors], oFront = [...o.front], ticks = new Set(st.ticks), sheets = sprites.held();
   // (l'écran de la ligne de la séance reste en place, masqué : une leçon en pause a le sien ; les additions, le calque des
   // aides et le bernard-l'ermite sont mis de côté : une leçon des additions ou du calcul rapide prend les siens)
-  const saved = { facts: app.facts, aidBoard: app.aidBoard, hermit: app.hermit, starFrom: app.starFrom, octoAt: [...o.octoAt], holding: o.octo.holding };
+  const saved = { facts: app.facts, aidBoard: app.aidBoard, hermit: app.hermit, starFrom: app.starFrom };
   app.facts = null; app.aidBoard = null; app.hermit = null;
   const lineBack = app.line.swap();
   sprites.pinned = sheets;
@@ -485,7 +501,7 @@ function sandbox() {
     for (const f of [...st.ticks]) if (!ticks.has(f)) st.ticks.delete(f);
     hidden.forEach((e) => e.classList.remove("stash"));
     Object.assign(app, { facts: saved.facts, aidBoard: saved.aidBoard, hermit: saved.hermit, starFrom: saved.starFrom });
-    o.octoAt = saved.octoAt; o.octo.holding = saved.holding;
+    bulle.cacher(); fleche.cacher(); o.mascotte.ambiance("pause");
     sprites.pinned = null;
     for (const k of sprites.held()) if (!sheets.has(k) && !ALWAYS.has(k)) sprites.unload(k);
     st.root.classList.add("paused");
@@ -493,7 +509,7 @@ function sandbox() {
 }
 // l'activité en cours est abandonnée pour de bon (engine/clock.js) et la scène rangée
 function abandonActivity() {
-  clock.abandon(); voice.abandon();
+  clock.abandon(); voice.abandon(); bulle.cacher(); fleche.cacher(); ocean.mascotte.release(); ocean.mascotte.ambiance("pause");
   app.choiceClear?.(); app.choiceClear = null; if (app.facts) app.facts.notion = false; app.calc?.fishDone(); // (lot 3 : l'écran « choisir », les additions libres, le poisson du mur)
   app.screen?.leave(); app.facts?.leave(); app.dictation?.hide?.(); lessons.abandon();
   // (correctif du 28 septembre 2026) le défi record quitté en cours : sa bulle-sablier et ses perles restaient à l'écran

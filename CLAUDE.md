@@ -34,7 +34,7 @@ Application d'entraînement aux mathématiques pour une élève de CE1, utilisé
 
 Mesure faite le 26 septembre 2026 : dessiner la scène complète en direct coûte 70 à 190 ms par image sur un ordinateur de bureau, donc bien davantage sur une tablette. On ne redessine donc **jamais** les personnages et le décor en direct. Trois niveaux :
 
-1. **Fabriqué à l'avance par l'atelier** : chaque élément qui bouge est rendu en courte boucle d'images (pieuvre : bras qui ondulent, clignement, chaque geste ; poissons : battement de queue ; algues : ondulation ; tortue : saut). Boucles périodiques sans raccord visible, fond transparent, en planches de sprites. Le moteur est déterministe : une même source donne les mêmes images.
+1. **Fabriqué à l'avance par l'atelier** : chaque élément qui bouge est rendu en courte boucle d'images (poissons : battement de queue ; algues : ondulation ; tortue : saut). Boucles périodiques sans raccord visible, fond transparent, en planches de sprites. Le moteur est déterministe : une même source donne les mêmes images.
 2. **Composé en direct par l'application** : affichage de la bonne image de la boucle, déplacements, flottement, légères rotations (au plus une couche tournée par image). Le décor fixe est composé une fois dans un canvas de fond.
 3. **Dessiné en direct, seulement ce qui est léger et dynamique** : bulles, miroitement, arcs des sauts, surbrillances. La ligne graduée d'un exercice (bornes, graduations, chiffres) change à chaque question : elle est dessinée une fois par question avec les primitives du style (même encre, mêmes chiffres que `ocean.ts`) dans un canvas mis en cache, puis simplement affichée.
 
@@ -42,7 +42,7 @@ Budget à tenir sur la tablette : démarrage en moins de 3 s, animation à 30 im
 
 ## Personnages
 
-La mascotte, présente partout : la pieuvre, remplacée au lot « Mascotte » par le capitaine en vidéo (`docs/SPEC.md`, section 11). Un personnage guide par module : tortue de mer (ligne graduée, lot 1), bernard-l'ermite (faits d'addition, lot 2), crabe (problèmes, à décider : `docs/IDEES.md`) ; pas de dauphin : le calcul rapide (lot 3) se contente de la tortue et du petit poisson du mur de corail (décision du parent du 27 septembre 2026). Chaque personnage est un module de l'atelier, dessiné une fois et seulement posé ensuite (`references/workflows/character-consistency.md`) ; ses gestes sont des boucles fabriquées.
+La mascotte, présente partout (sauf dans le récif vivant) : le capitaine en vidéo, qui a remplacé la pieuvre au lot « Mascotte » (`docs/SPEC.md`, section 11) ; son moteur est celui de la maquette `art/mascotte/`, repris tel quel dans `app/js/engine/mascotte.js` (ne pas en réécrire les règles : modifier la maquette, puis reporter) ; sa bulle (`engine/bulle.js`) ne couvre jamais ce que l'enfant touche ; la flèche (`engine/fleche.js`, dessinée dans l'atelier) montre à la place du bras de la pieuvre. Un personnage guide par module : tortue de mer (ligne graduée, lot 1), bernard-l'ermite (faits d'addition, lot 2), crabe (problèmes, à décider : `docs/IDEES.md`) ; pas de dauphin : le calcul rapide (lot 3) se contente de la tortue et du petit poisson du mur de corail (décision du parent du 27 septembre 2026). Chaque personnage est un module de l'atelier, dessiné une fois et seulement posé ensuite (`references/workflows/character-consistency.md`) ; ses gestes sont des boucles fabriquées.
 
 ## Contraintes techniques de l'application
 

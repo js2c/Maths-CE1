@@ -15,19 +15,24 @@ import { skipKey } from "../../engine/ui.js";
 import { paintHundreds, paintPlaceTable } from "../facts/aids.js";
 
 const SKIPPED = Symbol("correction passée");
+// (lot « Mascotte ») la pointe de la flèche à gauche du nombre décomposé (paintHundreds, posé en 760, 340, entre x 420 et 990),
+// pointée vers lui : au-dessus, elle passait sous l'ardoise (relecture du lot)
+const PARTS_FLECHE = [412, 400];
 
 export class Dictation {
   // facts : () => l'écran des additions (créé à la demande)
   constructor(app, facts) { this.app = app; this.facts = facts; }
   get board() { return this.app.aidBoard; }
-  hide() { this.fs?.leave(); this.app.aidBoard?.clear(); }
+  hide() { this.fs?.leave(); this.app.aidBoard?.clear(); this.finParts(); }
   // le nombre décomposé sur le calque des aides (le pavé est caché : même place)
   async showParts(n, lit = null) {
     await this.app.sprites.load("centaines");
     this.fs.keys(false);
-    this.app.ocean.octo.play("montrer");
+    // (lot « Mascotte ») la mascotte regarde, la flèche montre le nombre décomposé (la pieuvre le montrait du bras)
+    this.app.ocean.mascotte.hold("montrer"); this.app.fleche?.montrer(PARTS_FLECHE, { angle: -90 });
     this.app.aidBoard.draw((ctx) => paintHundreds(ctx, this.app.sprites, n, 760, 340, { lit, fit: [420, 990] }));
   }
+  finParts() { this.app.ocean.mascotte.release(); this.app.fleche?.cacher(); }
   parts(n) { return fill(this.app.text.data.erreur.E6, { n, ...hundredsWords(this.app.text.data, n) }); }
   async ask(q, cfg, { guide = false, lesson = null } = {}) {
     const { voice, text, sound, ocean } = this.app, k = this.app.vitesse ?? 1;
@@ -43,7 +48,7 @@ export class Dictation {
         await g(voice.say(this.parts(n)));
         this.fs.write(n, false); await g(wait(900 / k));
       } catch (e) { if (e !== SKIPPED) throw e; voice.stop(); q.passe = true; }
-      skip.remove(); this.app.aidBoard.clear();
+      skip.remove(); this.app.aidBoard.clear(); this.finParts();
     }
     const say = lesson ? `${this.app.lecons?.[lesson]?.aToi ?? text.pick("aToi")} ${consigne}` : guide ? `${text.pick("aToi")} ${consigne}` : consigne;
     // lot 3, cran « plus facile » (module1.json, crans) : le tableau centaines, dizaines, unités sous l'ardoise
@@ -51,7 +56,7 @@ export class Dictation {
     const r = await this.fs.askNumber(q, say); this.fs.onTyped = null; if (q.tableau) this.app.aidBoard.clear();
     const code = r.nsp ? "NSP" : classify(q, r.value), ok = code === null;
     const result = { q, value: r.value, ok, code, ms: r.ms, listens: r.listens };
-    ocean.octo.play(ok ? "rejouir" : "encourager");
+    ocean.mascotte.play(ok ? "rejouir" : "encourager");
     if (ok) { sound?.play("bonne"); this.fs.write(n, false); await voice.say(text.pick("bravo")); await wait(500); }
     else {
       if (!r.nsp) sound?.play("erreur");
@@ -68,7 +73,7 @@ export class Dictation {
         await g(voice.say(fill(text.data.bonneReponse, { n })));
         await g(wait(900 / k));
       } catch (e) { if (e !== SKIPPED) throw e; voice.stop(); result.correctionPassee = true; this.fs.write(n, false); await wait(1000); }
-      skip.remove(); this.app.aidBoard.clear();
+      skip.remove(); this.app.aidBoard.clear(); this.finParts();
     }
     this.fs.leave();
     return result;

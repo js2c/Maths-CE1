@@ -103,7 +103,7 @@ async function touchers() {
     }
     // à côté des cibles : le ciel, le sable, entre deux cibles, juste au bord d'une bulle
     await prochaine(page, { bulle: true }); await pause(page, 1500);
-    for (const [ou, xy] of [["le ciel (640, 120)", [640, 120]], ["le sable (300, 760)", [300, 760]], ["la pieuvre (200, 200)", [200, 200]]]) await essai(S, s, { essai: "toucher à côté", exo: nomExo, geste: `un toucher sur ${ou}`, attente: 1200, action: (p) => tap(p, ...xy) });
+    for (const [ou, xy] of [["le ciel (640, 120)", [640, 120]], ["le sable (300, 760)", [300, 760]], ["la mascotte (130, 280)", [130, 280]]]) await essai(S, s, { essai: "toucher à côté", exo: nomExo, geste: `un toucher sur ${ou}`, attente: 1200, action: (p) => tap(p, ...xy) });
     const bb = await page.evaluate(() => { const e = [...document.querySelectorAll(".answer, .key")].find((x) => getComputedStyle(x).visibility !== "hidden"); if (!e) return null; const r = e.getBoundingClientRect(); return { x: r.x, y: r.y, h: r.height, v: e.dataset.value ?? e.dataset.key }; });
     if (bb) await essai(S, s, { essai: "toucher à côté", exo: nomExo, geste: `un toucher à 5 px à gauche de la bulle ou touche « ${bb.v} » (hors de sa boîte)`, attente: 1500, action: (p) => tap(p, bb.x - 5, bb.y + bb.h / 2) });
     if (s.errors.length) journal.push({ essai: "(fin de séance)", exo: nomExo, geste: "", resultat: "", dit: "", erreurs: s.errors.join(" | "), capture: "" });
@@ -185,7 +185,6 @@ async function rien() {
   const S = new Serie(DIR, "C4-rien-60s", "Partie C · ne rien faire pendant 60 s, à chaque type d'écran");
   const ecrans = [
     ["accueil", { base: "mois", nom: true }, async () => {}],
-    ["choix du nom (premier lancement)", { base: "neuve" }, async (p) => { await toucher(p, ".play"); await attendre(p, () => document.querySelector(".name")); }],
     ["choisir : les exercices", { base: "mois", nom: true }, async (p) => { await toucher(p, ".choisir"); await attendre(p, () => document.querySelector(".choix-ex")); }],
     ["choisir : les niveaux de la ligne", { base: "mois", nom: true }, async (p) => { await toucher(p, ".choisir"); await attendre(p, () => document.querySelector(".choix-ex")); await pause(p, 3000); await toucher(p, '.choix-ex[aria-label="ligne"]'); await attendre(p, () => document.querySelector(".choix-tuile")); }],
     ["sélecteur de difficulté", { base: "mois", nom: true }, async (p) => { await toucher(p, ".play"); await attendre(p, () => document.querySelector(".cran")); }],

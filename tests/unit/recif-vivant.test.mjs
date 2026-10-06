@@ -55,9 +55,9 @@ test("plus de créatures dessinées en code ni de récif en pages, de décors ou
   assert.match(read("art/tools/export-app.mjs"), /exportRecif\(/);
 });
 
-test("pendant la visite : le lagon en pause, ni la pieuvre ni le compteur d'étoiles, tout est rendu en sortant", () => {
+test("pendant la visite : le lagon en pause, ni la mascotte ni le compteur d'étoiles, tout est rendu en sortant", () => {
   assert.match(reefJs, /lagon\?\.pause\(true\)/); assert.match(reefJs, /lagon\?\.pause\(false\)/);
-  assert.match(reefJs, /ocean\.octoVisible = false/); assert.match(reefJs, /classList\.remove\("recif-masque"\)/);
+  assert.match(reefJs, /ocean\.mascotteVisible = false/); assert.match(reefJs, /classList\.remove\("recif-masque"\)/);
   assert.match(reefJs, /this\.api\?\.stop\(\)/); assert.match(reefJs, /removeEventListener/);
 });
 

@@ -18,7 +18,6 @@
   "finirSurReussite": { "essaisMax": 2 },
   "vitesseAnimations": 1.5,
   "etoiles": { "bonneReponse": 1, "erreurCorrigee": 1, "lecon": 3, "seanceTerminee": 10, "nouveauRecord": 5 },
-  "noms": ["Pili", "Octavie", "Bulle", "Coralie", "Plouf", "Mimosa"],
   "selecteur": {
     "actif": true,
     "crans": ["facile", "conseille", "dur", "tresdur"],

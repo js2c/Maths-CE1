@@ -39,13 +39,11 @@ await page.screenshot({ path: join(OUT, "1-accueil.png") });
 
 // ---- séance : on touche « jouer », puis on répond (juste, puis faux, puis juste…) en mesurant les images
 await page.tap(".play", { force: true });
-// premier lancement : la pieuvre demande son nom (un nom, puis la coche)
-await page.waitForSelector(".name", { timeout: 30000 }); await page.tap('.name[data-value="Pili"]', { force: true }); await page.tap(".check", { force: true });
 await page.waitForSelector(".answer", { timeout: 30000 });
 await page.waitForTimeout(1200);
 await page.screenshot({ path: join(OUT, "2-question.png") });
 await page.waitForTimeout(500);
-await page.evaluate(() => { window.__gaps = []; window.__slow = []; let last = performance.now(); const f = (t) => { window.__gaps.push(t - last); if (t - last > 33.4) window.__slow.push([Math.round(t), Math.round(t - last), window.__app.ocean.octo.clip]); last = t; requestAnimationFrame(f); }; requestAnimationFrame(f); window.__app.stage.perf.work.length = 0; window.__work = []; const s = window.__app.stage, m = s.measure.bind(s); s.measure = (w, g) => { window.__work.push(w); m(w, g); }; });
+await page.evaluate(() => { window.__gaps = []; window.__slow = []; let last = performance.now(); const f = (t) => { window.__gaps.push(t - last); if (t - last > 33.4) window.__slow.push([Math.round(t), Math.round(t - last), window.__app.ocean.mascotte.etat().clip]); last = t; requestAnimationFrame(f); }; requestAnimationFrame(f); window.__app.stage.perf.work.length = 0; window.__work = []; const s = window.__app.stage, m = s.measure.bind(s); s.measure = (w, g) => { window.__work.push(w); m(w, g); }; });
 // --niveau : le niveau d'allègement est fixé (la mesure n'en change plus)
 if (NIVEAU !== null) await page.evaluate((n) => { const s = window.__app.stage; s.perf.level = n; s.measure = (w) => { window.__work.push(w); }; }, Number(NIVEAU));
 

@@ -35,10 +35,10 @@ export function nextRecord(prev, score, { now = Date.now(), seance = null } = {}
 // ---------------------------------------------------------------- le défi dans la séance
 // warmup : le moteur des faits (warmup.js, marqué `defi`), pour la forme des questions et l'enregistrement ;
 // screen : l'écran des additions (askDefi, cancel) ; view : la bulle-sablier et les perles ;
-// say(clé, valeurs) : ce que dit la voix ; octo : la pieuvre ; now, pause, timer : l'horloge (active) ; la
+// say(clé, valeurs) : ce que dit la voix ; mascotte : la mascotte ; now, pause, timer : l'horloge (active) ; la
 // simulation (tests/sim-recette.mjs) en donne une virtuelle, où le temps n'avance qu'avec les réponses
 const minuteur = (now) => (end) => new Promise((res) => { const tick = () => (now() >= end ? res("fin") : wait(Math.min(250, Math.max(20, end - now()))).then(tick)); tick(); });
-export async function runChallenge({ session, step, warmup, screen, view, say, octo, store, rnd = Math.random, stars = {}, now = () => clock.now(), pause = wait, timer = minuteur(now) }) {
+export async function runChallenge({ session, step, warmup, screen, view, say, mascotte, store, rnd = Math.random, stars = {}, now = () => clock.now(), pause = wait, timer = minuteur(now) }) {
   const facts = challengeFacts(warmup.facts, step.boiteMin ?? 3), queue = challengeQueue(facts, rnd), dur = (step.dureeS ?? 60) * 1000;
   const prev = (await store.get("recompenses", "defi")) ?? null;
   screen.show(true); screen.keys(false);
@@ -74,13 +74,13 @@ export async function runChallenge({ session, step, warmup, screen, view, say, o
   await fini; await shown;
   const un = score === 1;
   if (nouveau) {
-    octo?.play("rejouir"); view.record(score, true);
+    mascotte?.play("rejouir"); view.record(score, true);
     await say(un ? "defiNouveauRecordUn" : "defiNouveauRecord", { n: score });
     if (premier) await say("defiPremierRecord");
     await session.stars(stars.nouveauRecord ?? 5, "nouveau record");
   } else if (score === 0) await say("defiZero");
   else {
-    octo?.play(egal ? "rejouir" : "encourager");
+    mascotte?.play(egal ? "rejouir" : "encourager");
     await say(egal ? (un ? "defiEgalUn" : "defiEgal") : (un ? "defiPresqueUn" : "defiPresque"), { n: score });
   }
   await pause(600);

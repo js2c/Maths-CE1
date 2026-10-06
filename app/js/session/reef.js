@@ -71,8 +71,8 @@ export class Reef {
     app.lagon?.pause(true); stage.ui.classList.add("ui-recif");
     // comme dans la maquette : ni la pieuvre (fixe, elle cachait des créatures et le sous-marin) ni le compteur d'étoiles
     // (illisible sur le noir des abysses) par-dessus la mer
-    this.cache = { octo: ocean.octoVisible, etoiles: stage.ui.querySelector(".hud.stars") };
-    ocean.octoVisible = false; this.cache.etoiles?.classList.add("recif-masque");
+    this.cache = { mascotte: ocean.mascotteVisible, etoiles: stage.ui.querySelector(".hud.stars") };
+    ocean.mascotteVisible = false; this.cache.etoiles?.classList.add("recif-masque");
     const ecoute = []; this.ecoute = ecoute;
     const gaps = []; let last = 0, t0 = 0;
     this.api = startRecif({
@@ -109,7 +109,7 @@ export class Reef {
     this.ecoute = [];
     this.canvases?.forEach((c) => { c.width = c.height = 0; c.remove(); }); this.canvases = null;
     app.stage.ui.classList.remove("ui-recif"); app.lagon?.pause(false);
-    if (this.cache) { app.ocean.octoVisible = this.cache.octo; this.cache.etoiles?.classList.remove("recif-masque"); this.cache = null; }
+    if (this.cache) { app.ocean.mascotteVisible = this.cache.mascotte; this.cache.etoiles?.classList.remove("recif-masque"); this.cache = null; }
     this.els.forEach((e) => e.remove()); this.els = []; this.open = false;
     app.sprites.unload("cartes"); forgetPictures();
   }

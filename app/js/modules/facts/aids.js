@@ -13,13 +13,14 @@ export class AidBoard {
     this.c = document.createElement("canvas"); this.c.id = "aides"; this.c.className = "aid-board";
     // sous les acteurs du premier plan (tortue, bernard-l'ermite), au-dessus de la pieuvre et des effets
     st.root.insertBefore(this.c, st.root.querySelector("#front") ?? st.ui);
-    this.used = false; this.place(); st.onResize(() => this.place());
+    this.used = false; this.c.__gen = 0; this.c.__used = false; this.place(); st.onResize(() => this.place());
   }
-  place() { const { px, k } = this.app.stage; this.c.width = Math.round(1280 * px); this.c.height = Math.round(800 * px); Object.assign(this.c.style, { width: `${1280 * k}px`, height: `${800 * k}px` }); this.used = false; }
+  place() { const { px, k } = this.app.stage; this.c.width = Math.round(1280 * px); this.c.height = Math.round(800 * px); Object.assign(this.c.style, { width: `${1280 * k}px`, height: `${800 * k}px` }); this.used = false; this.c.__used = false; }
   // dessine en coordonnées de la scène (px logiques) ; efface d'abord. Renvoie le numéro du dessin (`gen`) : une animation
   // s'arrête dès qu'un autre dessin ou un effacement l'a remplacé
-  draw(fn) { const x = this.c.getContext("2d"), px = this.app.stage.px; x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, this.c.width, this.c.height); x.setTransform(px, 0, 0, px, 0, 0); fn(x); this.used = true; return (this.gen = (this.gen ?? 0) + 1); }
-  clear() { this.gen = (this.gen ?? 0) + 1; if (!this.used) return; const x = this.c.getContext("2d"); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, this.c.width, this.c.height); this.used = false; }
+  // (lot « Mascotte » : `c.__gen`, `c.__used` : la bulle de la mascotte relève ce qui est dessiné pour l'éviter, engine/bulle.js)
+  draw(fn) { const x = this.c.getContext("2d"), px = this.app.stage.px; x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, this.c.width, this.c.height); x.setTransform(px, 0, 0, px, 0, 0); fn(x); this.used = true; this.gen = (this.gen ?? 0) + 1; this.c.__gen = this.gen; this.c.__used = true; return this.gen; }
+  clear() { this.gen = (this.gen ?? 0) + 1; this.c.__gen = this.gen; if (!this.used) return; const x = this.c.getContext("2d"); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, this.c.width, this.c.height); this.used = false; this.c.__used = false; }
 }
 
 // pose un sprite dans un contexte déjà en px logiques (sprites.draw travaille en pixels d'écran)

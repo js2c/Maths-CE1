@@ -103,7 +103,7 @@ const cell = (x) => String(x ?? "").replace(/\|/g, "/");
 const etapes = {}; for (const r of rows) etapes[r.etape] = (etapes[r.etape] ?? 0) + (r.fin - r.t);
 const longs = idle.filter((x) => x.a - x.de >= 1.5);
 const L = [`# Partie D · ${nom} : une séance à vitesse réelle`, "",
-  `Voix réelle (fichiers Piper), base neuve (première séance : choix du nom de la pieuvre), réponse ${DELAI / 1000} s après pouvoir répondre ; outil \`tests/recette-fonctionnelle/d-vitesse-reelle.mjs --cas ${cas}\`, paramètre de l'application \`?${params}\`.`, "",
+  `Voix réelle (fichiers de la voix fabriquée), base neuve (première séance), réponse ${DELAI / 1000} s après pouvoir répondre ; outil \`tests/recette-fonctionnelle/d-vitesse-reelle.mjs --cas ${cas}\`, paramètre de l'application \`?${params}\`.`, "",
   `- **durée totale** : ${Math.floor(total / 60)} min ${Math.round(total % 60)} s (${fmt(total)} s)`,
   `- durée par étape : ${Object.entries(etapes).map(([k, v]) => `${k} ${fmt(v)} s`).join(" ; ")}`,
   `- **attentes sans rien à toucher** (hors réécouter, maison, espace parent) : ${idle.length} en tout, ${fmt(idle.reduce((a, x) => a + x.a - x.de, 0))} s cumulées ; ${longs.length} de 1,5 s ou plus (tableau plus bas)`,

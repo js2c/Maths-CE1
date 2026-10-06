@@ -289,17 +289,7 @@ if (part("appui")) {
     await probe(page, "récif", ".homekey:not(.session-home)", "maison", { brief: async (p) => { await p.waitForTimeout(800); return !(await p.evaluate(() => window.__app.reef.open)); } });
     check(!errors.length, `album et récif : aucune erreur (${errors.join(" | ")})`); await context.close();
   }
-  // 6. le premier lancement : le choix du nom de la pieuvre
-  {
-    const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 2, hasTouch: true }), page = await context.newPage(), errors = [];
-    page.on("pageerror", (e) => errors.push(e.message));
-    await page.goto(url + "?nosw&voix=rapide&son=non&sans=echauffement"); await page.waitForFunction(() => window.__ready !== undefined);
-    await page.evaluate(() => { const v = window.__app.voice, say = v.say.bind(v); window.__said = []; v.say = (t, o) => { window.__said.push(t); return say(t, o); }; });
-    await press(page, ".play", 60).then((r) => r()); await page.waitForSelector(".bubble.name", { timeout: 20000 }); await page.waitForTimeout(800);
-    await probe(page, "premier lancement", ".bubble.name", "un nom", { shot: true, brief: async (p) => (await p.locator(".bubble.name.chosen").count()) === 1 });
-    await probe(page, "premier lancement", ".bubble.check", "c'est bon", { brief: async (p) => { await p.waitForTimeout(500); return !(await p.locator(".bubble.name").count()); } });
-    check(!errors.length, `premier lancement : aucune erreur (${errors.join(" | ")})`); await context.close();
-  }
+  // 6. (le premier lancement n'a plus de choix du nom : lot « Mascotte »)
   // 7. la récompense : le coquillage, puis « c'est bon » ; « Encore ! » ensuite
   {
     const { page, context, errors } = await open("&etoiles=75&cran=conseille&choix=1:1&sans=echauffement,defi&sansLecon&questions=1&guides=0");

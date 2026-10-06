@@ -51,10 +51,7 @@ export class LessonPlayer {
     const skip = skipKey(app, () => { this.skipped = true; jump(lesson.phrases.length); }, "passer la leçon");
     skip.classList.add("lessonkey");
     const keys = [again, skip]; this.keys = keys;
-    // la pieuvre remonte un peu : ses bras dégagent le début de la ligne, où se tracent les premiers arcs
-    const home = [...app.ocean.octoAt], up = [home[0] - 20, home[1] - 56];
-    this.home = home;
-    tween(900, (u) => { const e = ease(u); app.ocean.octoAt = [home[0] + (up[0] - home[0]) * e, home[1] + (up[1] - home[1]) * e]; });
+    // (lot « Mascotte » : la pieuvre remontait ici pour dégager le début de la ligne ; la mascotte ne bouge pas et n'y touche pas)
     if (this.netsOf !== id) { this.nets.forEach((n) => n.a.remove()); this.nets.clear(); this.netsOf = id; }
     this.lesson = lesson; this.spec = lessonLineSpec(lesson);
     nl.spec = this.spec; nl.q = { min: 0, max: 1, step: 1 }; nl.turtle.spec = this.spec;
@@ -76,22 +73,21 @@ export class LessonPlayer {
     }
     this.abort = null; this.tok++;
     keys.forEach((k) => k.remove()); this.keys = null;
-    if (!this.skipped) { app.ocean.octo.play("rejouir"); await wait(500); }
+    if (!this.skipped) { app.ocean.mascotte.play("rejouir"); await wait(500); }
     this.clear();
-    tween(900, (u) => { const e = ease(u); app.ocean.octoAt = [up[0] + (home[0] - up[0]) * e, up[1] + (home[1] - up[1]) * e]; });
     return { vue: !this.skipped, passee: this.skipped, dureeS: Math.round((Date.now() - t0) / 1000), ...stats };
   }
   // une phrase : ses temps l'un après l'autre ; dans un temps, la voix et les actions ensemble
   async phrase(p, tok) {
     const { voice, ocean } = this.app;
-    ocean.octo.hold("montrer");
+    ocean.mascotte.hold("montrer");
     for (const beat of this.lesson.phrases[p]) {
       const acts = actions(beat), doing = (async () => { for (const a of acts) await this.act(a, tok); })();
       const said = beat.dire ? voice.say(beat.dire, { instruction: true }) : Promise.resolve();
       await this.guard(Promise.all([said, doing]), tok);
       await this.guard(wait(250), tok);
     }
-    ocean.octo.release();
+    ocean.mascotte.release(); this.app.fleche?.cacher();
   }
   // attend `promise`, mais s'arrête net si la phrase a été abandonnée entre-temps
   async guard(promise, tok) { const r = await Promise.race([promise, this.abortP]); if (tok !== this.tok) throw ABORT; return r; }
@@ -108,6 +104,7 @@ export class LessonPlayer {
       case "tortue": {
         const i = tickOf(L, arg);
         if (T.a.vis) T.sitOn(spec, i); else await g(T.swimTo(spec, i));
+        this.montrer(T.seat(i), 70); // (lot « Mascotte ») la flèche montre la tortue, là où la pieuvre la montrait du bras
         return done();
       }
       case "sauter": { await g(this.jump(tickOf(L, arg[0]), arg[1])); return done(); }
@@ -140,13 +137,16 @@ export class LessonPlayer {
       case "loupe": {
         const i = tickOf(L, arg), lens = this.lensFor(i);
         for (let k = 0; k < 7; k++) { lens.show(k % 2 === 0); this.lensRing = k % 2 === 0 ? i : null; this.paint(); await g(wait(300)); }
-        lens.show(true); this.lensRing = i; this.paint();
+        lens.show(true); this.lensRing = i; this.paint(); this.montrer(R.tickP(spec, i), 120);
         return done();
       }
       case "compteur": done(); if (this.counter) pop(this.counter); return;
-      default: return done(); // note, ecrire, etoile, entourer, arc, eclairer : un changement d'état, repeint aussitôt
+      case "etoile": done(); this.montrer(R.tickP(spec, tickOf(L, arg)), 42 + 44); return;
+      default: return done(); // note, ecrire, entourer, arc, eclairer : un changement d'état, repeint aussitôt
     }
   }
+  // (lot « Mascotte ») la flèche se pose `au-dessus` px au-dessus du point [x, y] (jusqu'à la fin de la phrase)
+  montrer([x, y], auDessus = 0) { this.app.fleche?.montrer([x, y - auDessus]); }
   // un saut de la tortue vers la graduation i ; l'arc lumineux se trace pendant le saut (acteur de l'écran)
   async jump(i, label) {
     const nl = this.nl, T = nl.turtle, A = T.seat(T.at), B = T.seat(i);
@@ -159,7 +159,7 @@ export class LessonPlayer {
   // au début de chaque phrase : tout est remis d'après l'état (la tortue posée, les filets en place…)
   apply(S) {
     const nl = this.nl, T = nl.turtle;
-    this.S = S; this.flash = 0; this.hideArcs = false; this.lensRing = null; this.lens?.show(false);
+    this.S = S; this.flash = 0; this.hideArcs = false; this.lensRing = null; this.lens?.show(false); this.app.fleche?.cacher();
     this.app.line.c.style.opacity = S.ligne ? "1" : "0";
     if (S.tortue === null) T.hide(); else T.sitOn(this.spec, S.tortue);
     this.nets.forEach((n, i) => { n.a.show(S.filets.includes(i)); n.a.moveTo(n.x, n.y, n.s); });
@@ -231,11 +231,10 @@ export class LessonPlayer {
     this.p2?.abandon();
     if (!this.keys) return;
     this.tok++; this.abort = null; this.keys.forEach((k) => k.remove()); this.keys = null; this.clear();
-    if (this.home) this.app.ocean.octoAt = [...this.home];
   }
   // fin de leçon : la scène redevient celle des exercices
   clear() {
-    const nl = this.nl;
+    const nl = this.nl; this.app.fleche?.cacher();
     this.nets.forEach((n) => n.a.show(false)); this.lens?.show(false); this.counter?.remove(); this.counter = null;
     nl.arcs = []; nl.overlay = []; nl.starAt = null; nl.turtle.hide(); this.app.line.fxClear();
     this.app.line.clear(); this.app.line.c.style.opacity = "1";

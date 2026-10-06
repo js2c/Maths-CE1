@@ -4,8 +4,9 @@ html, body { margin: 0; height: 100%; background: #0b5563; overflow: hidden; }
 body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
 #stage { position: absolute; overflow: hidden; background: #0b5563; }
 #stage > canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-/* la pieuvre : son propre canvas, incliné et déplacé par le compositeur (octopus.js) */
-#stage > #octo { inset: auto; left: 0; top: 0; will-change: transform; }
+/* la mascotte (lot « Mascotte ») : la tête en vidéo détourée, dans son canvas (450 × 600), posée en haut à gauche (ocean.js) */
+#stage > #mascotte { position: absolute; pointer-events: none; }
+#mascotte > canvas { display: block; width: 100%; height: 100%; }
 #stage > #line, #stage > #fx { inset: auto; left: 0; width: 100%; } /* bande de la ligne graduée : top et height posés par line.js */
 /* les acteurs : un petit canvas chacun, déplacé par le compositeur (actor.js) */
 .actors { position: absolute; inset: 0; pointer-events: none; }
@@ -42,9 +43,7 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .fishhit { position: absolute; display: none; touch-action: none; cursor: grab; } /* lot 3 bis (B7) : le poisson du format « placer » se touche et se fait glisser */
 .answer.still { pointer-events: none; }
 
-/* séance : choix du nom, coche, lune, bilan des étoiles */
-.name { transition: opacity 0.3s, filter 0.3s; }
-.name.chosen { filter: drop-shadow(0 0 6px #ffe45c) drop-shadow(0 0 14px #ffd23a); }
+/* séance : coche, lune, bilan des étoiles */
 .invite { animation: invite 1.6s ease-in-out infinite; }
 .invite.pop { animation: pop 0.45s ease-out; }
 .tally { pointer-events: none; }
@@ -128,3 +127,20 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .legende-defile { position: absolute; z-index: 42; overflow-y: auto; overflow-x: hidden; touch-action: pan-y; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #d8c9a8 transparent; }
 .legende-ligne { display: block; }
 .legende-fermer { z-index: 43; }
+
+/* lot « Mascotte » : la bulle de la mascotte (engine/bulle.js). Un calque de toute la scène, transparent au toucher, au-dessus
+   de l'ardoise et des boutons (qu'elle ne couvre jamais : elle change de place), sous les étiquettes et la légende ; l'ovale tracé en SVG (trait épaissi du côté de l'ombre, ombre portée), le texte en Shantell Sans (SIL OFL,
+   assets/polices/), les mots qui apparaissent au rythme de la voix, les nombres en rouge. Elle n'est là que le temps de parler. */
+@font-face { font-family: "Shantell Sans"; font-style: normal; font-weight: 600; font-display: block; src: url(../assets/polices/shantell-sans-600.woff2) format("woff2"); }
+.bulle { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; z-index: 20; pointer-events: none !important; transition: opacity 0.35s; }
+.bulle.cachee { opacity: 0; }
+.bulle > svg { position: absolute; left: 0; top: 0; overflow: visible; }
+.bulle .ombre { fill: rgba(10, 20, 30, 0.24); }
+.bulle .epais { fill: none; stroke: #111; stroke-width: 5; stroke-linejoin: round; }
+.bulle .trait { fill: #fffef8; stroke: #111; stroke-width: 4; stroke-linejoin: round; }
+.bulle-texte { position: absolute; width: max-content; box-sizing: border-box; text-align: center; color: #111; font: 600 30px/1.16 "Shantell Sans", "Comic Sans MS", cursive; letter-spacing: 0.01em; hyphens: none; overflow-wrap: normal; }
+.bulle-texte .m { opacity: 0; transition: opacity 0.12s; }
+.bulle-texte .m.on { opacity: 1; }
+.bulle-texte .nb { color: #d63a26; font-weight: 700; }
+.bulle.pop { animation: bulle-pop 0.38s ease-out; }
+@keyframes bulle-pop { 0% { transform: scale(0.9); opacity: 0.4; } 70% { transform: scale(1); opacity: 1; } 85% { transform: scale(0.985); } 100% { transform: scale(1); } }

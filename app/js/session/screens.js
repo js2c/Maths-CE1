@@ -1,5 +1,5 @@
-// LES ÉCRANS DE LA SÉANCE autour des exercices : le compteur d'étoiles (en haut), le choix du nom de la
-// pieuvre (premier lancement), la récompense et « à demain ». Tout est posé dans #ui (boutons HTML
+// LES ÉCRANS DE LA SÉANCE autour des exercices : le compteur d'étoiles (en haut), la récompense et « à demain » (le
+// choix du nom de la pieuvre, au premier lancement, a disparu avec elle : lot « Mascotte »). Tout est posé dans #ui (boutons HTML
 // portant chacun un petit canvas dessiné une fois) et dans le premier plan de l'océan (étoiles qui volent).
 import * as R from "../art/runtime.js";
 import { fill } from "../modules/numberline/screen.js";
@@ -63,39 +63,6 @@ export class StarHud {
   }
 }
 
-// ---------------------------------------------------------------- le choix du nom (premier lancement)
-// Six propositions (content/seance.json, « noms »), écrites au feutre sur des galets. Toucher un nom le
-// fait dire à voix haute et fait apparaître la coche verte ; la coche le garde. Aucun clavier.
-export function chooseName(app, names) {
-  const { voice, text, ocean } = app, boxes = [];
-  let chosen = null, told = false;
-  ocean.octo.play("saluer");
-  voice.say(text.pick("nomDemande"), { instruction: true });
-  return new Promise((resolve) => {
-    const W = 236, H = 104, cols = [616, 874, 1132], rows = [290, 432];
-    const paintTag = (name) => (ctx, px) => {
-      app.sprites.draw(ctx, "nom", 0, W / 2 + 20, H / 2 + 20);
-      ctx.setTransform(px, 0, 0, px, 0, 0);
-      const em = name.length > 6 ? 38 : 42, ww = R.wordWidth(name) * em, k = Math.min(1, 200 / ww);
-      R.drawWord(ctx, name, W / 2 + 20, H / 2 + 20 - (em * k) / 2 - 4, em * k, { w: em * k * 0.13, seed: 700 + name.length });
-    };
-    const ok = spriteBox(app, { x: 874 - 80, y: 530, w: 160, h: 160, cls: "bubble check", label: "c'est bon", paint: (ctx) => app.sprites.draw(ctx, "valider", 0, 80, 80) });
-    ok.style.visibility = "hidden";
-    names.forEach((name, i) => {
-      const cx = cols[i % 3], cy = rows[Math.floor(i / 3)];
-      const b = spriteBox(app, { x: cx - W / 2 - 20, y: cy - H / 2 - 20, w: W + 40, h: H + 40, cls: "bubble name", label: name, paint: paintTag(name) });
-      b.dataset.value = name; boxes.push(b);
-      onBrief(app, b, () => {
-        chosen = name; boxes.forEach((o) => o.classList.toggle("chosen", o === b)); pop(b);
-        voice.stop(); voice.say(fill(text.data.nomTouche, { nom: name }));
-        if (!told) { told = true; voice.say(fill(text.data.nomValider, { nom: name })); }
-        ok.style.visibility = "visible"; ok.classList.add("invite");
-      }, () => name);
-    });
-    onBrief(app, ok, () => { if (!chosen) return; voice.stop(); [...boxes, ok].forEach((e) => e.remove()); resolve(chosen); }, "cestBon");
-  });
-}
-
 // ---------------------------------------------------------------- la récompense et « à demain »
 // Le bilan des étoiles de la séance : une grande étoile au milieu et le nombre gagné, qui monte pendant
 // que la voix le dit ; puis les dix étoiles de la séance terminée s'envolent vers le compteur ; puis les
@@ -109,7 +76,7 @@ export async function reward(app, { session, hud }) {
     ctx.setTransform(px, 0, 0, px, 0, 0); const t = String(shown); R.drawNumber(ctx, t, 282, 70, t.length > 2 ? 76 : 92, { w: 12, seed: 810 });
   } });
   tally.classList.add("pop");
-  ocean.octo.play("rejouir");
+  ocean.mascotte.play("rejouir", { fort: true }); // (lot « Mascotte » : la grande joie de la fin de séance)
   // (lot 3 bis, R21 : jamais « tu as gagné 0 étoiles » : une séance sans étoile est saluée sans nombre)
   const said = voice.say(earned ? fill(text.pick("recompense"), { etoiles: phrase(earned) }) : text.data.recompenseZero);
   for (let i = 1; i <= 20 && shown < earned; i++) { shown = Math.round((earned * i) / 20); tally.repaint(); await wait(60); }
@@ -142,14 +109,14 @@ async function bonuses(app, { session }) {
   if (libres) { session.rec.arcLibre = libres; await session.save(); }
   for (const [i, [sprite, say]] of specials.entries()) {
     spriteBox(app, { x: 640 - 60 + (i - (specials.length - 1) / 2) * 130, y: 440, w: 120, h: 120, cls: "hud special pop", still: true, paint: (ctx) => app.sprites.draw(ctx, sprite, 0, 60, 60) });
-    ocean.octo.play("rejouir"); await voice.say(say); await wait(500);
+    ocean.mascotte.play("rejouir"); await voice.say(say); await wait(500);
   }
   // (lot 3 bis, B6 ; R13) les étoiles arc-en-ciel : une seule phrase, au pluriel s'il y en a plusieurs ; elles apparaissent
   // sous le bilan puis volent, avec leur traînée, jusqu'à l'album (en bas à droite), pendant que la voix parle ; le
   // coquillage est à toucher tout de suite après
   const arcs = (session.rec.arcEnCiel ?? 0) + libres;
   if (arcs) {
-    ocean.octo.play("rejouir");
+    ocean.mascotte.play("rejouir");
     const said = voice.say(arcs === 1 ? text.data.etoileArc : fill(text.data.etoilesArc, { n: arcs }));
     await flyRainbowStars(app, arcs, { from: [640, 500 + (specials.length ? 90 : 0)] });
     await said;
@@ -225,7 +192,7 @@ export async function zoneCeremony(app, { zone, hud }) {
   back.classList.remove("zone-closed"); app.sound?.play("zone");
   const glint = ocean.spriteActor(ocean.frontEl, "eclat"), t0 = performance.now() / 1000, tick = (t) => { const u = (t - t0) / 1.4; glint.show(u < 1); if (u < 1) glint.moveTo(640, 370, 0.5 + 1.2 * Math.sin(Math.PI * u), Math.round(Math.sin(Math.PI * u) * 20) / 20); };
   glint.draw(0); ocean.front.push(tick);
-  ocean.octo.play("rejouir");
+  ocean.mascotte.play("rejouir");
   await voice.say(zone.ouvertureLu ?? text.data.etoileArc, { instruction: true });
   await wait(400);
   back.classList.add("to-album"); await wait(950);
@@ -276,7 +243,7 @@ export async function openShell(app, { session, hud, first = true, gold = false,
   const el = await cardElement(app, got.carte, { x: C[0] - CARD.W / 2, y: 128, front: "dos", back: "recto", brillante: owned.brillante });
   el.classList.add("enter"); await wait(900); await opened;
   el.flip(true); app.sound?.play("carte"); if (owned.brillante) setTimeout(() => app.sound?.play("brillante"), 350);
-  ocean.octo.play("rejouir"); await wait(800);
+  ocean.mascotte.play("rejouir"); await wait(800);
   // toutes les créatures vivent dans le récif vivant (session/recif.js) : « Cette créature va vivre dans ton récif ! »
   const inReef = true;
   await voice.say(cardSpeech(text, got, inReef), { instruction: true });
@@ -288,12 +255,12 @@ export async function openShell(app, { session, hud, first = true, gold = false,
   ocean.actors.splice(ocean.actors.indexOf(shell), 1); ocean.actors.splice(ocean.actors.indexOf(glint), 1);
   return got;
 }
-// « à demain » : la pieuvre salue, la lune se lève. La lune est un décor, pas un bouton (lot 1 bis) :
+// « à demain » : la mascotte salue, la lune se lève. La lune est un décor, pas un bouton (lot 1 bis) :
 // sans bulle, elle flotte doucement au-dessus des bulles de l'écran d'accueil, et rien ne se passe si
 // on la touche. La voix dit « À demain ! » quand la séance vient de finir.
 export async function goodNight(app, { first = true } = {}) {
   const { voice, text, ocean } = app;
   const moon = spriteBox(app, { x: 640 - 120, y: 250 - 110, w: 240, h: 220, cls: "hud moon", still: true, paint: (ctx) => app.sprites.draw(ctx, "lune.decor", 0, 120, 110) });
-  if (first) { ocean.octo.play("saluer"); await voice.say(text.pick("aDemain"), { instruction: true }); }
+  if (first) { ocean.mascotte.play("saluer"); await voice.say(text.pick("aDemain"), { instruction: true }); }
   return moon;
 }

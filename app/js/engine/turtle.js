@@ -45,9 +45,10 @@ export class Turtle {
       return false;
     });
   }
-  // arrive à la nage depuis la gauche et se pose sur la graduation i
+  // arrive à la nage depuis la gauche et se pose sur la graduation i ; (lot « Mascotte ») elle arrive d'en bas à gauche, sous la
+  // tête de la mascotte (en partant de la gauche à sa hauteur, elle lui traversait le visage)
   swimTo(spec, i) {
-    this.spec = spec; this.a.show(true); const b = this.seat(i), a = [-120, b[1] - 40];
+    this.spec = spec; this.a.show(true); const b = this.seat(i), a = [b[0] - 330, b[1] + 220];
     this.clip = "tortue.nage"; this.pos = a;
     return this.run((t) => { const u = Math.min(1, ((t - this.t0) * this.speed) / 1.6), e = 1 - (1 - u) * (1 - u); this.pos = [a[0] + (b[0] - a[0]) * e, a[1] + (b[1] - a[1]) * e - 10 * Math.sin(Math.PI * u)]; if (u >= 1) { this.at = i; this.pos = b; return true; } return false; });
   }

@@ -4,7 +4,7 @@
 //    puis un nouveau code ; les données sont gardées) ;
 //  - quatre onglets : Calendrier (jours travaillés, durée, réussite), Séances (historique, chaque réponse),
 //    Progression (niveaux, courbes semaine par semaine, faits d'addition, journal des erreurs, trésor),
-//    Données et réglages (exports CSV et JSON, restauration, nom de la pieuvre, durée de séance, code,
+//    Données et réglages (exports CSV et JSON, restauration, durée de séance, code,
 //    tout effacer) ; rappel d'export chaque semaine ;
 //  - pendant la visite, l'océan s'arrête (la scène ne dessine plus rien) et la voix se tait.
 // Les calculs sont dans data.js (fonctions pures, testées) ; ici, seulement l'affichage.
@@ -159,13 +159,12 @@ export class ParentSpace {
     removeEventListener("keydown", this.onKey);
     this.app.stage.paused = true;
     await this.load();
-    const mascotte = (await this.store.setting("mascotte")) ?? "pas encore choisie";
     this.root.replaceChildren();
     this.main = h("main", { class: "pa-main" });
     const tabs = [["calendrier", "Calendrier"], ["seances", "Séances"], ["progression", "Progression"], ["donnees", "Données et réglages"]];
     this.tabsEl = h("nav", { class: "pa-tabs", role: "tablist" }, tabs.map(([id, label]) => h("button", { role: "tab", "data-tab": id, "aria-selected": String(id === this.tab), onclick: () => this.show(id) }, label)));
     this.root.append(h("div", { class: "pa-sheet" },
-      h("header", { class: "pa-top" }, h("img", { src: "icons/icon-192.png", alt: "" }), h("div", { class: "pa-grow" }, h("h1", {}, "Espace parent"), h("p", {}, `L'océan des nombres · la pieuvre s'appelle ${mascotte}`)),
+      h("header", { class: "pa-top" }, h("img", { src: "icons/icon-192.png", alt: "" }), h("div", { class: "pa-grow" }, h("h1", {}, "Espace parent"), h("p", {}, "L'océan des nombres")),
         h("button", { class: "pa-close", onclick: () => this.close() }, "Fermer")),
       this.pauseBlock(), this.tabsEl, this.main));
     this.show(this.tab);
@@ -526,11 +525,8 @@ export class ParentSpace {
   settingsBox() {
     const box = h("div", { class: "pa-card-box" }, h("h2", {}, "Réglages"));
     const row = (title, help, ...ctl) => h("div", { class: "pa-setting" }, h("div", {}, h("b", {}, title), help && h("span", {}, help)), h("div", { class: "pa-row" }, ...ctl));
-    // le nom de la pieuvre (il est seulement dit par la voix : le parent peut en taper un autre)
-    const name = h("input", { class: "pa-input", maxlength: "20", "aria-label": "nom de la pieuvre", autocomplete: "off" }), nameOk = h("span", { class: "pa-ok" });
-    this.store.setting("mascotte").then((m) => { name.value = m ?? ""; });
-    const saveName = async () => { const v = name.value.trim().replace(/\s+/g, " "); if (!v) return; await this.store.setSetting("mascotte", v); this.app.mascotte = v; nameOk.textContent = "Enregistré."; this.root.querySelector(".pa-top p").textContent = `L'océan des nombres · la pieuvre s'appelle ${v}`; };
-    box.append(row("Nom de la pieuvre", "Choisi par l'enfant au premier lancement ; vous pouvez le changer ici.", name, h("button", { class: "pa-btn", onclick: saveName }, "Enregistrer"), nameOk));
+    // (lot « Mascotte » : le réglage « nom de la pieuvre » a disparu avec elle ; la mascotte n'a pas de nom. Le nom déjà
+    // choisi reste dans la base, réglage « mascotte », sans être montré)
     // la durée maximale d'une séance
     const seg = h("div", { class: "pa-seg", role: "group", "aria-label": "durée maximale d'une séance" });
     const paint = (v) => { for (const b of seg.children) b.setAttribute("aria-pressed", String(Number(b.dataset.v) === v)); };
@@ -548,7 +544,7 @@ export class ParentSpace {
     box.append(row("Données protégées", "Stockage persistant de la base locale.", pst));
     // tout effacer
     const conf = h("div");
-    box.append(row("Tout effacer", "Remet l'application à zéro : séances, réponses, niveaux, étoiles, cartes, nom de la pieuvre et code.",
+    box.append(row("Tout effacer", "Remet l'application à zéro : séances, réponses, niveaux, étoiles, cartes et code.",
       h("button", { class: "pa-btn danger", onclick: () => conf.replaceChildren(h("div", { class: "pa-confirm" }, h("p", {}, h("b", {}, "Tout effacer ? "), "Rien ne pourra être récupéré sans sauvegarde. Pensez d'abord à la sauvegarde complète."),
         h("div", { class: "pa-row" }, h("button", { class: "pa-btn danger primary", onclick: async () => { await this.store.wipe(); this.changed = true; this.close(); } }, "Oui, tout effacer"), h("button", { class: "pa-btn", onclick: () => conf.replaceChildren() }, "Annuler")))) }, "Tout effacer…"), conf));
     return box;

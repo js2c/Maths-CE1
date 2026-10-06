@@ -3,8 +3,7 @@
 // l'image), range les images en planches et les encode en WebP. Tout ce qui touche au DOM est ici ;
 // les modules de dessin n'en savent rien.
 import { Gfx, PENCIL, tile, type Ctx, type Env, type Layer } from "../canvas-core/core";
-import { OCTO_TIMELINE, OH, OW, OX, OY, SPECS, type Spec } from "../canvas-core/sea/catalog";
-import { drawOctopus, OCTO_CLIPS } from "../canvas-core/sea/octopus";
+import { SPECS, type Spec } from "../canvas-core/sea/catalog";
 
 type Frame = { c: OffscreenCanvas; x: number; y: number; w: number; h: number; hash: string; edges: number[] };
 const surface = (w: number, h: number): Layer => { const c = new OffscreenCanvas(w, h); return { canvas: c, ctx: c.getContext("2d", { willReadFrequently: true }) as unknown as Ctx } as Layer; };
@@ -68,7 +67,6 @@ const diff = (a: Frame, b: Frame, s: Spec) => {
 
 declare global { interface Window { EXPORT: unknown } }
 window.EXPORT = {
-  octo: () => OCTO_TIMELINE,
   specs: () => SPECS.map((s) => ({ name: s.name, sheet: s.sheet, frames: s.frames, fps: s.fps ?? 0, scales: s.scales ?? [1, 2], origin: s.origin, meta: s.meta ?? null, loop: s.loop ?? null })),
   // rend une planche : renvoie les WebP (base64), les rectangles et les empreintes de chaque image
   sheet: async (sheet: string, scale: number, encode = true, quality = 1) => {
@@ -89,7 +87,7 @@ window.EXPORT = {
     return { frames, hashes, edges, files, sizes, drawMs, pixels: all.reduce((a, x) => a + x.fr.w * x.fr.h, 0) };
   },
   // contrôle des boucles (à l'échelle 1) : l'écart au raccord doit rester dans l'ordre des écarts
-  // entre images voisines ; et un geste doit partir de l'image du repos où il entre et y revenir.
+  // entre images voisines (lot « Mascotte » : plus de gestes de la pieuvre à contrôler)
   seams: () => {
     const out: Record<string, unknown> = {}, cache = new Map<string, Frame>();
     const fr = (s: Spec, f: number) => { const k = `${s.name}:${f}`; let v = cache.get(k); if (!v) { v = renderFrame(s, f, 1); cache.set(k, v); } return v; };
@@ -97,17 +95,6 @@ window.EXPORT = {
       const [a, b] = s.loop!, steps: number[] = [];
       for (let f = a; f < b - 1; f++) steps.push(diff(fr(s, f), fr(s, f + 1), s));
       out[s.name] = { seam: +diff(fr(s, b - 1), fr(s, a), s).toFixed(2), stepMax: +Math.max(...steps).toFixed(2), stepMean: +(steps.reduce((x, y) => x + y, 0) / steps.length).toFixed(2) };
-    });
-    // la pieuvre : on contrôle les poses entières (ce que l'application recompose à partir des pièces)
-    const whole = (name: string): Spec => { const c = OCTO_CLIPS.find((x) => x.name === name)!; return { name: `pieuvre:${name}`, sheet: "", W: OW, H: OH, origin: [OX, OY], frames: c.frames, draw: (g, f) => drawOctopus(g, c.pose(f), OX, OY) }; };
-    const idle = whole("repos"), steps: number[] = [];
-    for (let f = 0; f < 35; f++) steps.push(diff(fr(idle, f), fr(idle, f + 1), idle));
-    out["pieuvre.repos"] = { seam: +diff(fr(idle, 35), fr(idle, 0), idle).toFixed(2), stepMax: +Math.max(...steps).toFixed(2), stepMean: +(steps.reduce((x, y) => x + y, 0) / steps.length).toFixed(2) };
-    OCTO_CLIPS.filter((c) => c.name !== "repos").forEach((c) => {
-      const s = whole(c.name);
-      out[`pieuvre.${c.name} (entrée)`] = { diff: +diff(fr(idle, c.entry), fr(s, 0), s).toFixed(2) };
-      out[`pieuvre.${c.name} (sortie)`] = { diff: +diff(fr(s, c.frames - 1), fr(idle, c.exit % 36), s).toFixed(2), stepMax: +Math.max(...steps).toFixed(2) };
-      if (c.hold) { const [a, b] = c.hold; out[`pieuvre.${c.name} (boucle)`] = { seam: +diff(fr(s, b - 1), fr(s, a), s).toFixed(2), stepMax: +Math.max(...steps).toFixed(2) }; }
     });
     return out;
   },

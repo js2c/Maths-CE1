@@ -6,7 +6,7 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 - **En ligne** (https://js2c.github.io/Maths-CE1/) : lots 1, 1 bis, 2, 3, 3 bis, 3 ter et « Lagon en fond d'exercices », tous fusionnés (dernière demande de fusion : PR #30, le lagon).
 - **Ce que fait l'application** : `docs/SPEC.md` (spécification unique ; ce qui reste à construire y est marqué « à construire », section 13).
-- **Prochaines sessions** (`docs/PROMPTS.md`) : relecteur de contrôle des lots 3 bis et 3 ter ; confrontation de la spécification avec le code. Puis le prochain lot, après la revue de périmètre (`docs/IDEES.md`, section 2).
+- **Prochains lots** : dans l'ordre de `docs/LOTS.md` (mascotte, voiliers, leçons et table d'addition, sommes jusqu'à 30, multiplication et tables). Sessions de contrôle facultatives (`docs/PROMPTS.md`) : relecteur des lots 3 bis et 3 ter ; confrontation de la spécification avec le code.
 - **En cours** : le récif vivant comme collection, les récompenses sans doublon et le correctif des boutons invisibles (rubrique « Reprise » ci-dessous).
 - **Projet parallèle** : la refonte graphique (hors de ce fichier).
 

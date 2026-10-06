@@ -4,6 +4,8 @@ Tenu en conception. Les prompts des lots passés sont dans `docs/archives/`.
 
 ## Règles communes à toutes les sessions
 
+Pour les lots, la méthode commune de `docs/LOTS.md` les reprend et les complète. Pour les sessions de contrôle ci-dessous :
+
 - Lire `CLAUDE.md`, `docs/SPEC.md` (la spécification unique), `docs/ARCHITECTURE.md` et `docs/AVANCEMENT.md`. Les anciennes spécifications (`docs/archives/`) ne servent qu'à retrouver l'origine d'une règle : **en cas d'écart, `docs/SPEC.md` fait foi**.
 - Partir de `origin/main` à jour ; une branche poussée dès le début ; une demande de fusion en brouillon ouverte tout de suite ; commits poussés après chaque sous-partie et au moins toutes les 30 à 45 minutes ; une rubrique « Reprise » tenue à jour dans `docs/AVANCEMENT.md`.
 - Un lot modifie **`docs/SPEC.md` en place**, dans la même demande de fusion que le code (pas de nouvelle spécification). Les raisons des décisions vont dans `docs/JOURNAL-CONCEPTION.md`, les questions non tranchées dans `docs/IDEES.md`.
@@ -11,7 +13,7 @@ Tenu en conception. Les prompts des lots passés sont dans `docs/archives/`.
 
 ## Relecteur (recette de contrôle des lots 3 bis et 3 ter)
 
-À lancer après l'essai du lot 3 ter sur la tablette. Réflexion « élevé ».
+Facultatif. À lancer après l'essai du lot 3 ter sur la tablette, **avant le lot « Mascotte »**, qui change les écrans qu'il juge ; sinon, l'abandonner : la relecture indépendante de chaque lot (`docs/LOTS.md`) prend le relais. Ne touche pas à l'application ; peut tourner en même temps qu'un lot. Réflexion « élevé ».
 
 ```
 Tu es relecteur d'une application de mathématiques pour une enfant de CE1. Lis la section « Les deux personnes à incarner » de docs/archives/PROMPT-RECETTE-LOT3.md, le rapport docs/archives/RECETTE-LOT3.md, puis tests/recette-fonctionnelle/out-lot3bis/INDEX.md et tests/recette-fonctionnelle/out-lot3ter/INDEX.md. Ne lis pas les spécifications avant d'avoir terminé la première partie.
@@ -34,7 +36,7 @@ Commit le rapport sur une branche, ouvre une demande de fusion intitulée « Rec
 
 ## Confrontation de la spécification avec le code
 
-`docs/SPEC.md` a été rédigée le 30 septembre 2026 à partir des spécifications successives, pas du code. Cette session relève les écarts, sans rien corriger. Réflexion « élevé » ; peut suivre le relecteur, ou être faite avant.
+`docs/SPEC.md` a été rédigée le 30 septembre 2026 à partir des spécifications successives, pas du code. Cette session relève les écarts, sans rien corriger, et ne modifie que son rapport : elle peut tourner en même temps qu'un lot. Facultatif, mais utile avant les lots « Sommes jusqu'à 30 » et « Multiplication », qui s'appuient sur les règles du module 2. Réflexion « élevé ».
 
 ```
 Lis CLAUDE.md et docs/SPEC.md. Ta mission : confronter docs/SPEC.md au code et au contenu (app/js, app/content), sans rien corriger dans l'application.
@@ -45,15 +47,21 @@ Méthode :
 - Relève aussi ce que l'application fait et que docs/SPEC.md ne dit pas (comportements visibles pour l'enfant ou le parent seulement ; pas les détails d'implémentation).
 - Pour retrouver l'origine d'une règle, consulte docs/archives/ et docs/JOURNAL-CONCEPTION.md.
 
-Écris docs/ECARTS-SPEC.md : une synthèse en cinq lignes, puis un tableau par section de la spécification (règle, ce que fait l'application, où, qualification, proposition), puis la liste de ce qui manque à la spécification. Dans la même branche, corrige docs/SPEC.md pour les seuls écarts où la spécification est manifestement datée et le code conforme aux décisions du journal ; laisse tout le reste au parent. Ouvre une demande de fusion intitulée « Confrontation de la spécification et du code », puis arrête-toi.
+Écris docs/ECARTS-SPEC.md : une synthèse en cinq lignes, puis un tableau par section de la spécification (règle, ce que fait l'application, où, qualification, proposition), puis la liste de ce qui manque à la spécification. Ne modifie aucun autre fichier (un lot peut être en cours sur docs/SPEC.md) : les corrections de la spécification seront faites après la décision du parent. Ouvre une demande de fusion intitulée « Confrontation de la spécification et du code », puis arrête-toi.
 ```
 
 ## Lancer un lot
 
-Le lot est d'abord décrit dans `docs/SPEC.md` (sections modifiées ou ajoutées, marquées « à construire »), en conception. Puis, dans une nouvelle session (réflexion « élevé » pour la logique fine ou le graphisme) :
+Les lots à lancer, leur ordre, la méthode commune (dont la recette faite par la session) et la fiche de chaque lot sont dans **`docs/LOTS.md`** (6 octobre 2026). Le prompt tient en une ligne, réflexion « élevé » :
 
 ```
-Lis CLAUDE.md, docs/SPEC.md, docs/ARCHITECTURE.md, docs/AVANCEMENT.md et la section « Règles communes à toutes les sessions » de docs/PROMPTS.md. Réalise le lot « <nom> » : <ce qu'il faut construire, en une ou deux phrases, avec les sections de docs/SPEC.md concernées>.
-
-Avant de coder une règle pédagogique nouvelle, simule-la (tests/sim-seances.mjs) et lis les séquences produites (tests/recette-fonctionnelle/b-sequences.mjs) ; si elles montrent un défaut, arrête-toi et décris-le. Tout ce qui se règle va dans app/content/. Toute phrase nouvelle : fabrique sa voix (node tools/voix/fabriquer.mjs), puis node tools/precache.mjs. Tests unitaires pour chaque règle nouvelle. Recette : docs/SPEC.md, section 14, points 1 à 5. Mets docs/SPEC.md à jour (retire « à construire » de ce qui est fait), puis docs/AVANCEMENT.md. Complète la demande de fusion (ce qui change pour l'enfant, pour le parent, le tableau de recette, les questions restées ouvertes, ce qui reste à vérifier sur la tablette), sors-la du mode brouillon, puis arrête-toi.
+Lis CLAUDE.md puis docs/LOTS.md, et réalise le lot « <nom du lot> » en suivant sa fiche et la méthode commune.
 ```
+
+Pour reprendre un lot interrompu :
+
+```
+Lis CLAUDE.md puis docs/LOTS.md, et reprends le lot « <nom du lot> » là où il s'est arrêté (docs/AVANCEMENT.md, rubrique « Reprise »).
+```
+
+Un lot nouveau s'ajoute à `docs/LOTS.md` (une ligne du tableau et une fiche), en conception.

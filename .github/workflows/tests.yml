@@ -1,0 +1,28 @@
+# TESTS D'UNE DEMANDE DE FUSION, avant de la fusionner : les mêmes tests unitaires que la publication
+# (pages.yml), lancés à chaque poussée sur la branche d'une demande de fusion vers main. La coche verte
+# (ou la croix rouge) s'affiche en bas de la demande de fusion. Tant que les voix d'un lot ne sont pas
+# fabriquées, ces tests échouent sur les « phrases sans fichier » : c'est attendu (docs/VOIX.md).
+name: Tests de la demande de fusion
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Dépendances des tests
+        run: npm ci
+      - name: Liste des fichiers pour le mode hors ligne
+        run: node tools/precache.mjs --check || echo "::warning::app/sw-files.json n'est pas à jour (lancer node tools/precache.mjs) ; la publication la refera."
+      - name: Tests unitaires
+        run: npm test

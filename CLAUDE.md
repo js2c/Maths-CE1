@@ -4,7 +4,7 @@ Application d'entraînement aux mathématiques pour une élève de CE1, utilisé
 
 ## Utilisateurs
 
-- **L'enfant (7 ans)** : ne lit pas encore avec aisance. Toute consigne est orale, toute interaction se fait au toucher. Pas de texte long à l'écran, jamais de clavier alphabétique.
+- **L'enfant (7 ans)** : ne lit pas encore avec aisance. Toute consigne est orale, toute interaction se fait au toucher. Pas de texte long à l'écran, jamais de clavier alphabétique. Seule exception (décision du parent du 6 octobre 2026) : la bulle de la mascotte, qui écrit ce que dit la voix le temps de la phrase (`docs/SPEC.md`, section 11).
 - **Le parent** : consulte l'espace parent (progression réelle, historique, export). Ce n'est pas un développeur ; les instructions qui lui sont destinées doivent être en français simple.
 
 ## Organisation du dépôt
@@ -17,7 +17,7 @@ Application d'entraînement aux mathématiques pour une élève de CE1, utilisé
 | `app/content/` | Tout le contenu éditable, en JSON, séparé du code : niveaux et paramètres de génération, textes lus (consignes, retours d'erreur, scripts des leçons), cartes et anecdotes, seuils et réglages. Un changement de contenu ne doit jamais demander de toucher au moteur. |
 | `art/` | L'**atelier graphique** : le moteur anidoodle (TypeScript, esbuild, Playwright) et les modules de dessin de l'application. Il ne tourne jamais sur la tablette ; il fabrique les images de `app/assets/art/`. |
 | `.claude/skills/anidoodle/` | La compétence anidoodle (copie figée, licence Apache 2.0, voir `VENDORED.txt`). La lire avant tout travail graphique. |
-| `docs/` | `SPEC.md` (la **spécification unique** : ce que fait l'application, modifiée en place à chaque lot), `IDEES.md` (idées et questions ouvertes), `PROMPTS.md` (prompts des sessions), `AVANCEMENT.md`, `ARCHITECTURE.md`, `GUIDE-PARENT.md`, `JOURNAL-CONCEPTION.md` (les raisons des décisions), `maquettes/` (références visuelles validées), `archives/` (anciennes spécifications, prompts, bilans et recettes des lots 1 à 3 ter : les renvois du code vers `docs/SPEC-LOT2.md`, `docs/SPEC-LOT3BIS.md`… y renvoient ; en cas d'écart, `docs/SPEC.md` fait foi). |
+| `docs/` | `SPEC.md` (la **spécification unique** : ce que fait l'application, modifiée en place à chaque lot), `LOTS.md` (les lots à lancer, dans l'ordre : méthode commune, fiche de chaque lot, recette faite par la session), `IDEES.md` (idées et questions ouvertes), `PROMPTS.md` (prompts des sessions de contrôle), `AVANCEMENT.md`, `ARCHITECTURE.md`, `GUIDE-PARENT.md`, `JOURNAL-CONCEPTION.md` (les raisons des décisions), `maquettes/` (références visuelles validées), `archives/` (anciennes spécifications, prompts, bilans et recettes des lots 1 à 3 ter : les renvois du code vers `docs/SPEC-LOT2.md`, `docs/SPEC-LOT3BIS.md`… y renvoient ; en cas d'écart, `docs/SPEC.md` fait foi). |
 | `tests/` | Tests unitaires (`node --test`) et parcours Playwright. |
 
 ## Direction graphique (validée)
@@ -26,6 +26,8 @@ Application d'entraînement aux mathématiques pour une élève de CE1, utilisé
 - Tout élément graphique de l'application est dessiné en code dans cet atelier et respecte la « craft bar » de la compétence (`references/craft-bar.md`) : pas de formes génériques, anatomie juste, contrôle des détails (visages, jonctions) sur des agrandissements.
 - **Exception : les illustrations des cartes** sont des images générées à part et déposées dans `app/assets/cards/`. L'application ajoute le cadre, la rareté, le nom et l'anecdote par-dessus ; il n'y a jamais de texte dans ces images.
 - **Exception : le fond de l'application, le lagon** (décision du parent du 4 octobre 2026) : c'est le début du panorama de la maquette du récif vivant (`art/recif-vivant/index.html`), avec ses algues, ses poissons en silhouette, ses faisceaux et son miroitement. Ces images sont extraites telles quelles de la maquette par `art/tools/export-lagon.mjs` (la maquette n'est jamais modifiée) ; leurs mouvements sont ceux du code de la maquette, repris dans `app/js/engine/lagon.js`. L'ancien fond dessiné (fond, rayons, reflets, algues, poissons, bulles du décor) n'existe plus ; ne pas le réintroduire.
+- **Exception : la mascotte** (décisions du parent des 5 et 6 octobre 2026, lot « Mascotte ») : des vidéos d'une tête dessinée, détourées à l'affichage, préparées dans `art/mascotte/` (son `README.md` : les clips, les raccords mesurés, l'outil de coupe). Elle remplace la pieuvre. La flèche qui remplace le tentacule, elle, est dessinée dans l'atelier.
+- **Exception : le jeu des voiliers** (décision du parent du 6 octobre 2026, lot « Les voiliers ») : la maquette `art/voiliers/` (mer en WebGL, images des bateaux, des bouées et du ciel), intégrée comme le récif vivant, par un outil d'export qui ne la modifie jamais.
 - **Exception : la collection, le récif vivant** (décisions du parent du 5 octobre 2026) : c'est la maquette du récif vivant elle-même, avec ses images de créatures, intégrée telle quelle par `art/tools/export-recif.mjs` (images dans `app/assets/recif/`, module généré `app/js/recif/recif-vivant.js`, à ne pas modifier à la main : on modifie l'outil et on relance l'export). Les créatures dessinées en code (`sea/creatures.ts`) ne sont plus utilisées par l'application.
 
 ## Animation : comment elle est fabriquée
@@ -40,7 +42,7 @@ Budget à tenir sur la tablette : démarrage en moins de 3 s, animation à 30 im
 
 ## Personnages
 
-La pieuvre (mascotte, présente partout) et un personnage guide par module : tortue de mer (ligne graduée, lot 1), bernard-l'ermite (faits d'addition, lot 2), crabe (problèmes, à décider : `docs/IDEES.md`) ; pas de dauphin : le calcul rapide (lot 3) se contente de la tortue et du petit poisson du mur de corail (décision du parent du 27 septembre 2026). Chaque personnage est un module de l'atelier, dessiné une fois et seulement posé ensuite (`references/workflows/character-consistency.md`) ; ses gestes sont des boucles fabriquées.
+La mascotte, présente partout : la pieuvre, remplacée au lot « Mascotte » par le capitaine en vidéo (`docs/SPEC.md`, section 11). Un personnage guide par module : tortue de mer (ligne graduée, lot 1), bernard-l'ermite (faits d'addition, lot 2), crabe (problèmes, à décider : `docs/IDEES.md`) ; pas de dauphin : le calcul rapide (lot 3) se contente de la tortue et du petit poisson du mur de corail (décision du parent du 27 septembre 2026). Chaque personnage est un module de l'atelier, dessiné une fois et seulement posé ensuite (`references/workflows/character-consistency.md`) ; ses gestes sont des boucles fabriquées.
 
 ## Contraintes techniques de l'application
 

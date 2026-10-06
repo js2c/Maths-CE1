@@ -7,7 +7,7 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 - **En ligne** (https://js2c.github.io/Maths-CE1/) : lots 1, 1 bis, 2, 3, 3 bis, 3 ter et « Lagon en fond d'exercices », tous fusionnés (dernière demande de fusion : PR #30, le lagon).
 - **Ce que fait l'application** : `docs/SPEC.md` (spécification unique ; ce qui reste à construire y est marqué « à construire », section 13).
 - **Prochains lots** : dans l'ordre de `docs/LOTS.md` (mascotte, voiliers, leçons et table d'addition, sommes jusqu'à 30, multiplication et tables). Confrontation de la spécification avec le code (`docs/PROMPTS.md`) avant le lot « Sommes jusqu'à 30 » ; le relecteur des lots 3 bis et 3 ter est abandonné.
-- **En cours** : rien. Le lot « Mascotte » attend la fabrication de ses 6 phrases, puis la fusion de la PR #34 ; le lot suivant est « Les voiliers » (`docs/LOTS.md`).
+- **En cours** : le lot « Les voiliers » (rubrique « Reprise » ci-dessous). Le lot « Mascotte » (PR #34, fusionnée) attend la fabrication de ses 6 phrases.
 - **Projet parallèle** : la refonte graphique (hors de ce fichier).
 
 ## Lots
@@ -27,3 +27,10 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
 
+
+## Reprise du lot « Les voiliers »
+
+- Branche `claude/pensive-bardeen-yc0m7j` (partie de `main` après la PR #34). Demande de fusion : à ouvrir (brouillon).
+- **Fiche** : `docs/LOTS.md`, lot 2 ; spécification `docs/SPEC.md`, section 7 bis ; maquette `art/voiliers/` (jamais modifiée).
+- **Fait** : lecture de la fiche, de la spécification et de la maquette.
+- **Reste** : règles du module 4 et simulation ; export de la maquette ; raccords (séance, voix, mascotte, pause, enregistrement, espace parent) ; recette ; documents.

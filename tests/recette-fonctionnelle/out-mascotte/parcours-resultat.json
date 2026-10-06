@@ -1,10 +1,10 @@
 {
- "date": "2026-10-06T14:44:11.510Z",
+ "date": "2026-10-06T17:45:26.341Z",
  "ecrans": [
   {
    "W": 1280,
    "nom": "01-accueil",
-   "clip": "idle-sourire",
+   "clip": "idle-curiosite",
    "ambiance": "pause",
    "bulle": null,
    "fleche": false
@@ -16,7 +16,7 @@
    "ambiance": "pause",
    "bulle": {
     "place": "droite",
-    "texte": "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+    "texte": "Bienvenue à bord ! On s'entraîne ensemble ?",
     "couvre": 0,
     "gene": 0
    },
@@ -51,11 +51,11 @@
   {
    "W": 1280,
    "nom": "11-joie",
-   "clip": "idle-sourire",
-   "ambiance": "pause",
+   "clip": "idle-amuse",
+   "ambiance": "bravo",
    "bulle": {
     "place": "droite",
-    "texte": "Exactement !",
+    "texte": "Bravo !",
     "couvre": 0,
     "gene": 0
    },
@@ -68,7 +68,7 @@
    "ambiance": "soutien",
    "bulle": {
     "place": "droite",
-    "texte": "Les nombres grandissent vers la droite.",
+    "texte": "On compte les sauts, pas les traits.",
     "couvre": 0,
     "gene": 0
    },
@@ -94,7 +94,7 @@
    "ambiance": "soutien",
    "bulle": {
     "place": "droite",
-    "texte": "3",
+    "texte": "C'était 2.",
     "couvre": 0,
     "gene": 0
    },
@@ -124,7 +124,7 @@
   {
    "W": 1280,
    "nom": "17-pause",
-   "clip": "idle-immobile",
+   "clip": "idle-respiration",
    "ambiance": "pause",
    "bulle": null,
    "fleche": false
@@ -149,7 +149,7 @@
    "ambiance": "soutien",
    "bulle": {
     "place": "droite",
-    "texte": "On continue ! L'étoile de mer est posée sur une bouée. Quel est ce nombre ?",
+    "texte": "On continue ! Quel nombre se cache sous l'étoile de mer ?",
     "couvre": 0,
     "gene": 0
    },
@@ -162,7 +162,7 @@
    "ambiance": "ecoute",
    "bulle": {
     "place": "droite",
-    "texte": "La tortue part de 8. Elle fait un saut. Sur quel nombre arrive-t-elle ?",
+    "texte": "La tortue part de 3. Elle fait 3 sauts. Sur quel nombre arrive-t-elle ?",
     "couvre": 0,
     "gene": 0
    },
@@ -170,16 +170,16 @@
   },
   {
    "W": 1280,
-   "nom": "21-fleche-placer",
+   "nom": "21-placer-sans-fleche",
    "clip": "talk-a",
    "ambiance": "ecoute",
    "bulle": {
     "place": "droite",
-    "texte": "Place le poisson sur le nombre 7.",
+    "texte": "Place le poisson sur le nombre 4.",
     "couvre": 0,
     "gene": 0
    },
-   "fleche": true
+   "fleche": false
   },
   {
    "W": 1280,
@@ -201,7 +201,7 @@
    "ambiance": "ecoute",
    "bulle": {
     "place": "milieu",
-    "texte": "Combien plus 8, ça fait 10 ?",
+    "texte": "Combien plus 2, ça fait 10 ?",
     "couvre": 0,
     "gene": 0
    },
@@ -210,11 +210,11 @@
   {
    "W": 1280,
    "nom": "24-calcul",
-   "clip": "idle-respiration",
+   "clip": "talk-a",
    "ambiance": "ecoute",
    "bulle": {
     "place": "droite",
-    "texte": "Plus 10 ?",
+    "texte": "Moins 10 ?",
     "couvre": 0,
     "gene": 0
    },
@@ -226,8 +226,8 @@
    "clip": "talk-a",
    "ambiance": "ecoute",
    "bulle": {
-    "place": "milieu",
-    "texte": "Combien font 0 plus 8 ?",
+    "place": "droite",
+    "texte": "5 plus 0 ?",
     "couvre": 0,
     "gene": 0
    },
@@ -240,7 +240,7 @@
    "ambiance": "montre",
    "bulle": {
     "place": "dessous",
-    "texte": "949 : 9 centaines, 4 dizaines, 9 unités.",
+    "texte": "638 : 6 centaines, 3 dizaines, 8 unités.",
     "couvre": 0,
     "gene": 0
    },
@@ -275,7 +275,7 @@
   {
    "W": 1280,
    "nom": "40-lecon-L1",
-   "clip": "talk-a",
+   "clip": "idle-reflexion",
    "ambiance": "ecoute",
    "bulle": {
     "place": "droite",
@@ -301,7 +301,7 @@
   {
    "W": 1280,
    "nom": "42-lecon-L7",
-   "clip": "talk-a",
+   "clip": "idle-immobile",
    "ambiance": "ecoute",
    "bulle": {
     "place": "dessous",
@@ -331,7 +331,7 @@
    "ambiance": "pause",
    "bulle": {
     "place": "droite",
-    "texte": "Tu as bien travaillé. À demain !",
+    "texte": "C'est fini pour aujourd'hui. À demain !",
     "couvre": 0,
     "gene": 0
    },
@@ -340,7 +340,7 @@
   {
    "W": 1280,
    "nom": "52-recif",
-   "clip": "idle-sourire",
+   "clip": "idle-coup-oeil",
    "ambiance": "ecoute",
    "bulle": null,
    "fleche": false
@@ -348,7 +348,7 @@
   {
    "W": 1280,
    "nom": "53-album",
-   "clip": "idle-approbation",
+   "clip": "idle-reflexion",
    "ambiance": "ecoute",
    "bulle": null,
    "fleche": false
@@ -368,7 +368,7 @@
    "ambiance": "pause",
    "bulle": {
     "place": "droite",
-    "texte": "Bienvenue à bord ! On s'entraîne ensemble ?",
+    "texte": "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
     "couvre": 0,
     "gene": 0
    },
@@ -403,15 +403,15 @@
   {
    "W": 1920,
    "nom": "11-joie",
-   "clip": "idle-amuse",
-   "ambiance": "ecoute",
+   "clip": "idle-sourire",
+   "ambiance": "bravo",
    "bulle": {
     "place": "droite",
-    "texte": "Quel nombre se cache sous l'étoile de mer ?",
+    "texte": "Oui, c'est ça !",
     "couvre": 0,
     "gene": 0
    },
-   "fleche": true
+   "fleche": false
   },
   {
    "W": 1920,
@@ -430,14 +430,14 @@
    "W": 1920,
    "nom": "13-grande-joie",
    "clip": "success",
-   "ambiance": "bravo",
+   "ambiance": "ecoute",
    "bulle": {
     "place": "droite",
-    "texte": "Oui, c'est ça !",
+    "texte": "L'étoile de mer est posée sur une bouée. Quel est ce nombre ?",
     "couvre": 0,
     "gene": 0
    },
-   "fleche": false
+   "fleche": true
   },
   {
    "W": 1920,
@@ -446,7 +446,7 @@
    "ambiance": "soutien",
    "bulle": {
     "place": "droite",
-    "texte": "L'étoile de mer est posée sur une bouée. Quel est ce nombre ?",
+    "texte": "3",
     "couvre": 0,
     "gene": 0
    },
@@ -476,7 +476,7 @@
   {
    "W": 1920,
    "nom": "17-pause",
-   "clip": "idle-sourire",
+   "clip": "idle-respiration",
    "ambiance": "pause",
    "bulle": null,
    "fleche": false
@@ -514,7 +514,7 @@
    "ambiance": "ecoute",
    "bulle": {
     "place": "droite",
-    "texte": "La tortue est sur 4 et fait un saut. Où arrive-t-elle ?",
+    "texte": "La tortue part de 1. Elle fait 2 sauts. Sur quel nombre arrive-t-elle ?",
     "couvre": 0,
     "gene": 0
    },
@@ -522,16 +522,16 @@
   },
   {
    "W": 1920,
-   "nom": "21-fleche-placer",
+   "nom": "21-placer-sans-fleche",
    "clip": "talk-a",
    "ambiance": "ecoute",
    "bulle": {
     "place": "droite",
-    "texte": "Place le poisson sur le nombre 9.",
+    "texte": "Place le poisson sur le nombre 8.",
     "couvre": 0,
     "gene": 0
    },
-   "fleche": true
+   "fleche": false
   },
   {
    "W": 1920,
@@ -553,7 +553,7 @@
    "ambiance": "ecoute",
    "bulle": {
     "place": "milieu",
-    "texte": "Combien plus 3, ça fait 10 ?",
+    "texte": "Combien plus 4, ça fait 10 ?",
     "couvre": 0,
     "gene": 0
    },
@@ -562,7 +562,7 @@
   {
    "W": 1920,
    "nom": "24-calcul",
-   "clip": "idle-reflexion",
+   "clip": "talk-a",
    "ambiance": "ecoute",
    "bulle": {
     "place": "droite",
@@ -575,11 +575,11 @@
   {
    "W": 1920,
    "nom": "25-echauffement",
-   "clip": "talk-a",
+   "clip": "idle-travail",
    "ambiance": "ecoute",
    "bulle": {
     "place": "droite",
-    "texte": "5 plus 0 ?",
+    "texte": "3 plus 0 ?",
     "couvre": 0,
     "gene": 0
    },
@@ -592,7 +592,7 @@
    "ambiance": "montre",
    "bulle": {
     "place": "dessous",
-    "texte": "467 : 4 centaines, 6 dizaines, 7 unités.",
+    "texte": "368 : 3 centaines, 6 dizaines, 8 unités.",
     "couvre": 0,
     "gene": 0
    },
@@ -627,7 +627,7 @@
   {
    "W": 1920,
    "nom": "40-lecon-L1",
-   "clip": "talk-a",
+   "clip": "idle-sourire",
    "ambiance": "ecoute",
    "bulle": {
     "place": "droite",
@@ -666,11 +666,11 @@
   {
    "W": 1920,
    "nom": "50-recompense",
-   "clip": "talk-a",
+   "clip": "success",
    "ambiance": "bravo",
    "bulle": {
     "place": "dessous",
-    "texte": "Bravo ! Ce soir, tu as gagné une étoile de mer.",
+    "texte": "Regarde tout ce que tu as gagné ce soir : une étoile de mer !",
     "couvre": 0,
     "gene": 0
    },
@@ -692,7 +692,7 @@
   {
    "W": 1920,
    "nom": "52-recif",
-   "clip": "idle-respiration",
+   "clip": "idle-sourire",
    "ambiance": "ecoute",
    "bulle": null,
    "fleche": false
@@ -700,29 +700,24 @@
   {
    "W": 1920,
    "nom": "53-album",
-   "clip": "idle-respiration",
+   "clip": "idle-approbation",
    "ambiance": "ecoute",
    "bulle": null,
    "fleche": false
   }
  ],
  "journal": {
-  "duree_min": 12,
-  "raccords": 413,
+  "duree_min": 3.8,
+  "raccords": 124,
   "par_type": {
    "direct": 1,
-   "doux": 46,
-   "fin": 341,
-   "entrée tête neutre": 10,
-   "exact": 15
+   "doux": 66,
+   "entrée tête neutre": 18,
+   "exact": 15,
+   "fin": 24
   },
   "fondus_forces": [],
-  "attente_moyenne_s": 0.05
+  "attente_moyenne_s": 0.3
  },
- "echecs": [
-  "1280 lire : la flèche s'en va avec la fin de la consigne",
-  "1280 relance : le geste à 5.6 s",
-  "1920 lire : la flèche s'en va avec la fin de la consigne",
-  "1920 relance : le geste à 4 s"
- ]
+ "echecs": []
 }

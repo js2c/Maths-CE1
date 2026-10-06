@@ -11,6 +11,7 @@ import { rng } from "../../app/js/engine/ocean.js";
 import { annonce, candidates, codeErreur, entre, explication, genBuoys, lv, merApres, merDepart, merDuCran, passage, pickNumber, pourquoi, tensWindow } from "../../app/js/modules/voiliers/voiliers.js";
 import { Module4Runner, passageTexte, voiliersQuestion } from "../../app/js/modules/voiliers/runner.js";
 import { checkSequence } from "../../app/js/modules/variete.js";
+import { bulleNombre, qualiteSuivante } from "../../app/js/modules/voiliers/screen.js";
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), "utf8");
 const M4 = JSON.parse(read("app/content/module4.json")), seance = JSON.parse(read("app/content/seance.json"));
@@ -169,4 +170,20 @@ test("la réponse qui varie : le passage visé change, jamais 3 fois de suite le
     const passages = niveau === 9 ? 5 : M4.niveaux[niveau - 1].bouees + 1;
     assert.deepEqual(checkSequence(seq, { ...seance.variete, valeursMin: Math.min(seance.variete.valeursMin, passages) }), [], `niveau ${niveau}, graine ${seed}`);
   }
+});
+
+test("la qualité de la mer suit le temps d'image ; la bulle écrit le nombre du bateau en lettres", () => {
+  const n = (ms, k) => Array(k).fill(ms);
+  assert.equal(qualiteSuivante(1, n(25, 12), 3500), 0); // trop lent : un cran de moins
+  assert.equal(qualiteSuivante(1, n(1000, 12), 3500), 0); // très lent (une tablette sans carte graphique) : aussi
+  assert.equal(qualiteSuivante(0, n(1000, 12), 3500), 0); // déjà au plus bas
+  assert.equal(qualiteSuivante(1, n(25, 8), 3500), 1); // trop tôt pour juger
+  assert.equal(qualiteSuivante(1, n(25, 12), 1000), 1);
+  assert.equal(qualiteSuivante(1, n(10, 12), 5000), 1); // fluide, mais pas encore assez d'images pour remonter
+  assert.equal(qualiteSuivante(1, n(10, 40), 5000), 2); // fluide : un cran de plus
+  assert.equal(qualiteSuivante(2, n(10, 40), 5000), 2);
+  assert.equal(qualiteSuivante(1, n(17, 40), 5000), 1); // entre les deux : rien ne change
+  assert.equal(bulleNombre("Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 347"), "Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 347 « trois-cent-quarante-sept »");
+  assert.equal(bulleNombre("71"), "71 « soixante-et-onze »");
+  assert.equal(bulleNombre("Il est plus grand que 40 : il passe après."), "Il est plus grand que 40 : il passe après.");
 });

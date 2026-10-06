@@ -35,13 +35,15 @@ export const ATTENTE = { x: 880, y: 410 }, ATTENTE_X_MIN = 600;
 export const BANDE_BOUEES = [0, 600, 1280, 800];
 // le nombre du bateau, dans la bulle : en chiffres et en lettres (« 347 « trois-cent-quarante-sept » »)
 export const bulleNombre = (t) => t.replace(/(^|\s)(\d{1,3})$/, (m, sp, n) => `${sp}${n} « ${ecritEnLettres(Number(n))} »`);
-// la qualité de la mer : un cran de moins si l'intervalle moyen des dernières images dépasse 20 ms, un de plus s'il passe
-// sous `remonteSousMs` (après au moins 4 s à ce cran) ; `gaps` : les intervalles retenus (ms), `depuis` : ms à ce cran
+// la qualité de la mer : un cran de moins si l'intervalle moyen des dernières images dépasse 20 ms (au moins 10 images, et
+// 3 s à ce cran), un de plus s'il passe sous `remonteSousMs` (au moins 30 images et 4 s à ce cran) ; `gaps` : les
+// intervalles retenus (ms ; une image très lente compte : sur une tablette lente, c'est elle qu'il faut alléger), `depuis` :
+// ms à ce cran
 export function qualiteSuivante(q, gaps, depuis, { remonteSousMs = 14, max = 2 } = {}) {
-  if (gaps.length < 30 || depuis < 4000) return q;
+  if (gaps.length < 10 || depuis < 3000) return q;
   const m = gaps.reduce((a, b) => a + b, 0) / gaps.length;
   if (m > 20 && q > 0) return q - 1;
-  if (m < remonteSousMs && q < max) return q + 1;
+  if (m < remonteSousMs && q < max && gaps.length >= 30 && depuis >= 4000) return q + 1;
   return q;
 }
 
@@ -67,10 +69,10 @@ export class VoiliersScreen {
       on: (cible, type, f, o) => { cible.addEventListener(type, f, o); this.ecoute.push([cible, type, f, o]); },
       attente: ATTENTE, attenteXMin: ATTENTE_X_MIN, ventMs: (this.c.mer?.ventS ?? 7) * 1000, piratesK: this.c.mer?.piratesPlusRapides ?? 1.3,
       qualite: this.qual ?? Q.depart ?? 1,
-      // l'allègement : la qualité de la mer suit le temps d'image (les 3 premières secondes et les images de plus d'une
-      // seconde, onglet caché ou pause, ne comptent pas)
+      // l'allègement : la qualité de la mer suit le temps d'image (les 3 premières secondes, et un intervalle de plus de 3 s,
+      // onglet caché, ne comptent pas ; pendant la pause, la scène ne mesure rien)
       mesure: (t) => {
-        t0 ||= t; depuis ||= t; if (last && t - last > 0 && t - last < 1000) gaps.push(t - last); last = t; if (gaps.length > 60) gaps.shift();
+        t0 ||= t; depuis ||= t; if (last && t - last > 0 && t - last < 3000) gaps.push(t - last); last = t; if (gaps.length > 60) gaps.shift();
         if (t - t0 < 3000 || !this.api) return;
         const q = this.api.qual, n = qualiteSuivante(q, gaps, t - depuis, { remonteSousMs: Q.remonteSousMs ?? 14 });
         if (n !== q) { this.api.qualite(n); this.qual = n; depuis = t; gaps.length = 0; (window.__voiliersQualite ??= []).push({ t: Math.round(t), de: q, a: n }); }

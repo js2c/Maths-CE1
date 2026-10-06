@@ -35,15 +35,15 @@ export const drawTileNumber = (g: Gfx, cx: number, cy: number, n: number) => {
   g.mark([[cx - 30, cy + NUM_TOP], [cx + 30, cy + NUM_TOP + em + 4]]);
 };
 // un filet clair sous le numéro, qui sépare le numéro de la vignette
-const underline = (g: Gfx, cx: number, cy: number, seed: number) => ink(g, smooth([[cx - 44, cy + NUM_TOP + NUM_EM + 9], [cx, cy + NUM_TOP + NUM_EM + 7], [cx + 44, cy + NUM_TOP + NUM_EM + 9]], false, 6), NACRE_S, { w: 2.4, shadow: 0, taper: [0.3, 0.3], seed }, 0.9);
-const plaque = (g: Gfx, cx: number, cy: number, seed: number) => g.group("plain", () => {
+export const underline = (g: Gfx, cx: number, cy: number, seed: number) => ink(g, smooth([[cx - 44, cy + NUM_TOP + NUM_EM + 9], [cx, cy + NUM_TOP + NUM_EM + 7], [cx + 44, cy + NUM_TOP + NUM_EM + 9]], false, 6), NACRE_S, { w: 2.4, shadow: 0, taper: [0.3, 0.3], seed }, 0.9);
+export const plaque = (g: Gfx, cx: number, cy: number, seed: number) => g.group("plain", () => {
   const s = rrect(cx - TILE_W / 2, cy - TILE_H / 2, TILE_W, TILE_H, TILE_R);
   fillShape(g, shift(s, 6, 8), SH, 0.28);
   cel(g, s, NACRE, NACRE_S, 6, [smooth([[cx - TILE_W / 2 + 14, cy - TILE_H / 2 + 10], [cx - 10, cy - TILE_H / 2 + 7], [cx - 20, cy - TILE_H / 2 + 14], [cx - TILE_W / 2 + 16, cy - TILE_H / 2 + 18]], true, 4), "#ffffff"]);
   contour(g, s, 3.6, seed);
 });
 // l'intérieur de la plaque (le dessin ne déborde pas du bord : il est découpé par la plaque, marge comprise)
-const inside = (cx: number, cy: number): P[] => rrect(cx - TILE_W / 2 + 5, cy - TILE_H / 2 + 5, TILE_W - 10, TILE_H - 10, TILE_R - 4);
+export const inside = (cx: number, cy: number): P[] => rrect(cx - TILE_W / 2 + 5, cy - TILE_H / 2 + 5, TILE_W - 10, TILE_H - 10, TILE_R - 4);
 // dessine `fn` à l'échelle s, l'origine (0, 0) de fn en (x, y) ; les primitives de runtime.ts dessinent dans g.cur
 const scaled = (g: Gfx, x: number, y: number, s: number, fn: () => void) => { g.push(x, y, s); fn(); g.pop(); };
 

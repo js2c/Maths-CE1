@@ -34,9 +34,12 @@ export const doneToday = async (store, now = Date.now()) => (await store.all("se
 // lot 3 (docs/SPEC-LOT3.md, section 6) : trois modules ; parmi ceux qui ne sont pas le dernier joué, le moins maîtrisé
 // d'abord (`mastery(module)`, de 0 à 1 ; à égalité, l'ordre de la rotation) ; le dernier seulement si aucun autre n'a
 // rien à proposer. Une séance d'exercice choisi compte comme la dernière jouée.
+// lot « Les voiliers » : le module 4 n'est pas dans la rotation (seance.json, alternance.horsRotation) ; on y vient par
+// « choisir », ou le parent l'impose pour la prochaine séance « jouer ».
 export const chooseModule = (c = {}, seances = [], impose = null, has = () => true, mastery = () => 0) => {
   const mods = c.alternance?.modules ?? [1];
-  if (impose && mods.includes(impose)) return { module: impose, impose: true };
+  // (lot « Les voiliers » : un module hors de la rotation, `horsRotation`, peut être imposé par le parent)
+  if (impose && (mods.includes(impose) || (c.alternance?.horsRotation ?? []).includes(impose))) return { module: impose, impose: true };
   const last = [...seances].filter((s) => s.terminee && !s.libre && s.module).sort((x, y) => x.debut - y.debut).at(-1)?.module;
   const i = mods.indexOf(last), order = i < 0 ? mods : [...mods.slice(i + 1), ...mods.slice(0, i + 1)];
   const others = order.filter((m) => m !== last && has(m)), m = [...others].sort((x, y) => mastery(x) - mastery(y) || others.indexOf(x) - others.indexOf(y))[0];

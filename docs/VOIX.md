@@ -78,7 +78,9 @@ fusion passent au vert.
    git push
    git checkout main
    ```
-5. Fusionner la demande de fusion sur GitHub quand ses tests sont verts.
+5. Sur GitHub, attendre la coche verte en bas de la demande de fusion (les tests sont relancés à chaque poussée sur
+   la branche, en deux à trois minutes), puis fusionner. Une croix rouge : cliquer sur « Details » pour voir quel
+   test échoue ; s'il parle de phrases sans fichier, l'étape 2 n'est pas allée au bout.
 
 Si la session Claude Code travaille encore sur la branche, attendre qu'elle ait fini et tout poussé avant
 l'étape 2 : sinon ses commits et les vôtres se croiseraient.

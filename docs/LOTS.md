@@ -14,7 +14,7 @@ Ce document a trois parties : **pour le parent**, comment lancer un lot ; **pour
 3. La session s'arrête d'elle-même dans trois cas, et le dit :
    - **une maquette à valider** (lots « Les leçons », « Sommes jusqu'à 30 », « Multiplication ») : regarder les captures et la maquette indiquées dans la demande de fusion, puis répondre **dans la même session** (« validé », ou les corrections). Elle reprend et code ;
    - **une règle qui pose problème en simulation** : elle décrit le problème ; répondre dans la même session ;
-   - **le lot est fini** : la demande de fusion liste les phrases dont la voix est à fabriquer. Les fabriquer sur la branche du lot (`docs/VOIX.md`, « Fabriquer les sons d'un lot avant sa fusion »), puis fusionner quand les tests sont verts.
+   - **le lot est fini** : la demande de fusion liste les phrases dont la voix est à fabriquer. Les fabriquer sur la branche du lot (`docs/VOIX.md`, « Fabriquer les sons d'un lot avant sa fusion »), puis fusionner quand la coche en bas de la demande de fusion est verte (les tests sont relancés par GitHub à chaque poussée sur la branche).
 4. Si la session s'est arrêtée en cours de route (contexte plein, coupure), en ouvrir une nouvelle avec :
    ```
    Lis CLAUDE.md puis docs/LOTS.md, et reprends le lot « Mascotte » là où il s'est arrêté (docs/AVANCEMENT.md, rubrique « Reprise »).

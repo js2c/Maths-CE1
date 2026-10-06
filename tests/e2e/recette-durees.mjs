@@ -13,7 +13,7 @@ const out = [];
 // la plus longue attente sans commande : échantillonnée toutes les 100 ms dans la page (`window.__gap`)
 const MONITOR = () => {
   const vis = (sel) => [...document.querySelectorAll(sel)].some((e) => e.isConnected && getComputedStyle(e).visibility !== "hidden" && getComputedStyle(e).display !== "none");
-  const cmd = () => { const a = window.__app; if (!a) return true; if (a.clock?.paused || !a.session) return true; const open = [a.screen, a.facts].some((s) => s?.q && s.resolve && !s.locked); return open || vis(".skip") || vis(".lessonkey") || vis(".play") || vis(".shelltap") || vis(".check"); };
+  const cmd = () => { const a = window.__app; if (!a) return true; if (a.clock?.paused || !a.session) return true; const open = [a.screen, a.facts].some((s) => s?.q && s.resolve && !s.locked) || !!a.voiliers?.attend; return open || vis(".skip") || vis(".lessonkey") || vis(".play") || vis(".shelltap") || vis(".check"); };
   window.__gap = { max: 0, maxHors: 0, at: "", atHors: "" }; let t0 = null, h0 = null;
   setInterval(() => {
     const now = performance.now(), c = cmd(), speak = !!window.__app?.voice?.speaking, where = () => `${window.__app?.session?.progress?.etape ?? "-"} q${window.__app?.session?.rec?.questions ?? 0}`;
@@ -131,4 +131,31 @@ for (const [famille, appui] of [[1, "ligne"], [2, "reflet"], [3, "cadre"], [4, "
   out.push(`aide ${cran === "facile" ? "d'emblée (plus facile)" : "du coquillage"}, ${appuiVu} (famille ${famille})${PASSER ? ", passée" : ""} : pavé rendu après ${(dt / 1000).toFixed(1)} s ; « passer » ${sk ? "visible dès le début" : "ABSENT"} ; ${await gapOf(page)}`);
   console.log(out.at(-1)); await context.close();
 }
+// lot « Les voiliers » : niveaux 1, 5 et 9 (double encadrement), au calme (cran « plus facile ») : l'exemple guidé, un bon
+// passage, « je ne sais pas » (le bateau va seul), une erreur puis une deuxième (le bateau va seul) ; la mer en WebGL
+// logiciel (sans processeur graphique, la scène est lente : les gestes suivent l'horloge, pas les images)
+const bgl = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
+for (const niveau of [1, 5, 9]) {
+  const context = await bgl.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); const page = await context.newPage();
+  await page.goto(url + "?nosw"); await page.waitForFunction(() => window.__ready !== undefined);
+  await page.goto(url + `?nosw&cran=facile&sans=echauffement&choix=4:${niveau}&questions=8`); await page.waitForFunction(() => window.__ready !== undefined);
+  await page.tap(".play", { force: true });
+  const open = () => page.waitForFunction(() => window.__app.voiliers?.attend, null, { timeout: 240000, polling: 100 });
+  const ev = []; let t = Date.now();
+  if (PASSER) await page.evaluate(() => { window.__passes = 0; setInterval(() => { const b = document.querySelector(".skip"); if (b && getComputedStyle(b).visibility !== "hidden") { (b.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })), b.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }))); window.__passes++; } }, 300); });
+  for (let nq = 1; nq <= 4; nq++) {
+    await open(); const now = Date.now(), q = await page.evaluate(() => { const v = window.__app.voiliers; return { k: v.q.k, k2: v.q.k2, n: v.q.bouees.length, rangee: v.api.etat().rangee }; });
+    ev.push(`${nq === 1 ? "avant le 1er bateau (exemple guidé)" : "attente"} ${((now - t) / 1000).toFixed(1)} s`);
+    await page.waitForTimeout(800); t = Date.now();
+    const k = q.rangee === 2 ? q.k2 : q.k, faux = k === 0 ? 2 : 0;
+    if (nq === 2) { await page.evaluate(() => { const b = document.querySelector(".voiliers-nsp"); b.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })); b.dispatchEvent(new PointerEvent("pointerup", { bubbles: true })); }); ev.push("[NSP]"); }
+    else if (nq === 3) { await page.evaluate((c) => window.__app.voiliers.api.deposer(c), faux); ev.push("[erreur]"); await open(); ev.push(`retour du bateau ${((Date.now() - t) / 1000).toFixed(1)} s`); await page.waitForTimeout(500); t = Date.now(); await page.evaluate((c) => window.__app.voiliers.api.deposer(c), faux); ev.push("[deuxième erreur]"); }
+    else { await page.evaluate((c) => window.__app.voiliers.api.deposer(c), k); if (q.rangee === 1 && niveau === 9) { await open(); await page.waitForTimeout(300); const k2 = await page.evaluate(() => window.__app.voiliers.q.k2); await page.evaluate((c) => window.__app.voiliers.api.deposer(c), k2); } }
+  }
+  await page.waitForTimeout(4000);
+  const passes = PASSER ? await page.evaluate(() => window.__passes) : 0;
+  out.push(`voiliers, niveau ${niveau}${PASSER ? ` (passer touché ${passes} fois)` : ""} : ${ev.join(" · ")} ; ${await gapOf(page)}`);
+  console.log(out.at(-1)); await context.close();
+}
+await bgl.close();
 await browser.close(); srv.close();

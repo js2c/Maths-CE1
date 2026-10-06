@@ -108,19 +108,23 @@ export class VoiliersScreen {
   obstacles() { if (!this.api) return []; const b = this.bouge() ? null : this.api.zoneBateau(); return b ? [b, BANDE_BOUEES] : [BANDE_BOUEES]; }
   souples() { return this.api && this.bouge() ? this.api.zonesBateau() : []; }
 
-  // « passer » pendant une explication ou un exemple : la voix se tait, les gestes finissent vite
+  // « passer » pendant une explication ou un exemple : la voix se tait, les gestes finissent vite, jusqu'à la fin de ce qui
+  // a été passé (le bouton ne revient pas pour la suite de la même correction : `this.skipped` ne repart à zéro qu'au
+  // geste suivant de l'enfant, ou au bateau suivant)
   passable(on) {
     const { app } = this;
-    this.skip?.remove(); this.skip = null; this.skipped = false;
-    if (!on) return;
+    if (!on) { this.skip?.remove(); this.skip = null; return; }
+    if (this.skipped || this.skip) return;
     this.skip = skipKey(app, () => { this.skipped = true; this.skippedOnce = true; app.voice.stop(); this.api?.vitesse(8); });
   }
+  // la vitesse des gestes d'une correction ou d'un exemple (plus vite si « passer » a été touché)
+  vitesseCorrection() { return this.skipped ? 8 : this.app.vitesse ?? 1; }
   dire(t, o) { return this.skipped || !t ? Promise.resolve() : this.app.voice.say(t, o); }
 
   // un bateau ; o.guide : l'exemple guidé
   async ask(q) {
     const { app } = this, { voice, text, ocean, sound } = app, T = text.data, api = this.api, g = clock.hold(), tok = ++this.tok, vivant = () => tok === this.tok;
-    this.q = q; this.locked = true; this.attend = false; this.passable(false); app.fleche?.cacher();
+    this.q = q; this.locked = true; this.attend = false; this.passable(false); this.skipped = false; app.fleche?.cacher();
     api.vitesse(1);
     await api.bouees(q.bouees).then(g);
     if (!vivant()) return new Promise(() => {});
@@ -141,7 +145,7 @@ export class VoiliersScreen {
     // une rangée (la seule, ou l'une des deux du double encadrement) : { premier, fin, nsp, rattrape }
     const rangee = async (b, k, derniere) => {
       for (let essai = 1; ; essai++) {
-        this.attend = true; this.nsp.style.visibility = "visible";
+        this.attend = true; this.nsp.style.visibility = "visible"; this.skipped = false;
         const r = await Promise.race([api.attendreLacher(), new Promise((ok) => { this.onNsp = () => ok({ nsp: true }); })]).then(g);
         this.attend = false; this.onNsp = null; this.nsp.style.visibility = "hidden";
         if (!vivant()) return new Promise(() => {});
@@ -159,7 +163,7 @@ export class VoiliersScreen {
         sound?.play("erreur"); ocean.mascotte.play("encourager");
         const e = explication(b, r.c, q.num), phrase = fill(T.voiliersErreur[e.cle], { b: e.b });
         api.allumer(e.cle.endsWith("Bouee") ? [e.bouee] : [r.c - 1, r.c].filter((i) => i >= 0 && i < b.length));
-        this.passable(true); api.vitesse(app.vitesse ?? 1);
+        this.passable(true); api.vitesse(this.vitesseCorrection());
         if (q.mer === "pirates") {
           await this.dire(phrase).then(g);
           await Promise.all([this.dire(T.voiliersMer.rattrape), api.couler()]).then(g);
@@ -213,7 +217,7 @@ export class VoiliersScreen {
   // le bateau va seul au bon passage pendant que la voix dit pourquoi (après deux erreurs, ou « je ne sais pas »)
   async montrer(b, k, q, { nsp = false, derniere = true } = {}) {
     const { app } = this, { text } = app, T = text.data, api = this.api, g = clock.hold();
-    this.passable(true); api.vitesse(app.vitesse ?? 1);
+    this.passable(true); api.vitesse(this.vitesseCorrection());
     const p = pourquoi(b, q.num);
     if (nsp) await this.dire(T.erreur.NSP).then(g);
     api.allumer(p.bouee == null ? [k - 1, k] : [p.bouee]);
@@ -228,7 +232,7 @@ export class VoiliersScreen {
     const { app } = this, { text } = app, T = text.data, api = this.api, g = clock.hold();
     this.passable(true);
     await Promise.all([arrive, dit]).then(g); if (!vivant()) return new Promise(() => {});
-    api.vitesse(this.skipped ? 8 : app.vitesse ?? 1);
+    api.vitesse(this.vitesseCorrection());
     const geste = (async () => {
       api.allumer([q.k - 1, q.k]); await api.guider(q.k).then(g);
       if (q.double) { await api.traversee(q.rangee2).then(g); api.allumer([q.k2 - 1, q.k2]); await api.guider(q.k2).then(g); await api.passe(q.k2).then(g); }

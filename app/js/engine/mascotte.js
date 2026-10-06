@@ -391,6 +391,10 @@ export function creerMascotte({ canvas, base = "assets/mascotte/", journal = () 
     if (!v) return;
     if (on) { if (!v.ended) v.play().catch(() => {}); M.activite(); } else v.pause();
   };
+  // (correctif de la maquette) un toucher annule aussi le geste de relance déjà dû mais pas encore joué (12 s sans toucher
+  // pendant un clip qui ne cédait pas encore) : sinon le geste arrivait après le toucher, à contretemps
+  const activite0 = M.activite.bind(M);
+  M.activite = () => { activite0(); M.relanceDue = false; };
   M.tables = { CLIPS, AMBIANCES, CALMES: [...CALMES], ECART_MIN, RELANCE, PETITES_REUSSITES, MIN_REACTION, RELANCE_GESTE, RELANCE_PHRASE, FADE, ENTREES: M.ENTREES };
   return M;
 }

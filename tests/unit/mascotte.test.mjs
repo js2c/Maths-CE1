@@ -48,6 +48,8 @@ test("les raccords nouveaux : mode accéléré, pause, cachée, allègement, jou
   assert.match(app, /if \(suspendue \|\| !visible\) return;/);
   assert.match(app, /niveau\(\) >= 2 && performance\.now\(\) - lastUp < 80/);
   assert.match(app, /const EXT = "webm"/);
+  // (correctif) un toucher annule le geste de relance dû mais pas encore joué
+  assert.match(app, /M\.activite = \(\) => \{ activite0\(\); M\.relanceDue = false; \};/);
 });
 
 test("la bulle : la forme de la maquette des voiliers, un ovale qui contient le texte, la pointe vers la bouche", () => {

@@ -8,7 +8,8 @@
 //  4. cran « très dur » : les pirates (rattrapent le bateau, qui coule) ;
 //  5. niveau 9 : le double encadrement (la caméra recule, la rangée des dizaines) ;
 //  6. ce qui est enregistré (codes V1, V2, NSP, rattrapé ; erreur corrigée) et la mascotte (placement, bulle) ;
-//  7. « jouer » avec les voiliers imposés par le parent ; l'espace parent (le bloc des voiliers, le journal des erreurs).
+//  7. « jouer » avec les voiliers imposés par le parent ; l'espace parent (le bloc des voiliers, le journal des erreurs) ;
+//  8. l'entraînement libre (« Encore ! ») sur les voiliers, quitté par la maison.
 //   node tests/e2e/voiliers.mjs [--out dossier] [--grand] (--grand : seulement 1920 × 1200)
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -206,6 +207,27 @@ for (const T of TAILLES) {
   await page.evaluate(() => [...document.querySelectorAll(".pa-card-box h2")].find((h) => h.textContent.includes("Module 4"))?.scrollIntoView()); await page.waitForTimeout(300); await shot(page, "18-parent-voiliers", T);
   const journal = await page.evaluate(() => document.body.textContent);
   check(/voiliers/.test(journal) && /(a confondu plus grand et plus petit|s'est trompée de plusieurs passages)/.test(journal), "journal des erreurs : l'erreur des voiliers en une phrase");
+  check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
+}
+// 8. l'entraînement libre (« Encore ! ») : les voiliers au niveau choisi, sans étoiles ; la maison les quitte, le lagon revient
+{
+  const T = TAILLES[0];
+  const { page, context, errors } = await open("", T, async () => { const n = Date.now(); await window.__app.store.add("seances", { debut: n - 600000, fin: n, terminee: true, module: 1, etapes: [] }); });
+  await page.waitForSelector(".again"); await page.tap(".again", { force: true });
+  await page.waitForSelector(".choix-ex", { timeout: 15000 }); await page.waitForTimeout(400);
+  await page.tap('.choix-ex[data-key="voiliers"]', { force: true }); await page.waitForTimeout(700);
+  await page.tap('.choix-tuile[data-key="3"]', { force: true });
+  await page.waitForSelector(".cran", { timeout: 15000 }); await page.waitForTimeout(400);
+  await page.tap(".cran", { force: true }).catch(() => {});
+  await waitBoat(page); const q = await question(page);
+  const etoiles0 = await page.evaluate(() => window.__app.rewards.total);
+  await deposer(page, q.k); await waitBoat(page);
+  const libre = await page.evaluate(async () => { const r = (await window.__app.store.all("reponses")).filter((x) => x.module === 4); return { libre: r.every((x) => x.libre), n: r.length, etoiles: window.__app.rewards.total }; });
+  check(libre.n >= 1 && libre.libre && libre.etoiles === etoiles0, `entraînement libre : réponses marquées « libre », sans étoiles (${JSON.stringify(libre)})`);
+  await shot(page, "19-encore-voiliers", T);
+  await page.tap(".session-home", { force: true }); await page.waitForTimeout(1200);
+  const apres = await page.evaluate(() => ({ canvas: document.querySelectorAll("canvas.voiliers").length, scene: !!window.__app.voiliers.api, again: !!document.querySelector(".again") }));
+  check(!apres.canvas && !apres.scene && apres.again, `la maison quitte les voiliers : la scène s'en va, retour à l'accueil (${JSON.stringify(apres)})`);
   check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
 }
 writeFileSync(join(OUT, "parcours-resultat.json"), JSON.stringify({ echecs: fail, captures: releve }, null, 1));

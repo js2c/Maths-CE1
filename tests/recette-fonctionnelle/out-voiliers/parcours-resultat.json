@@ -1,0 +1,294 @@
+{
+ "echecs": [],
+ "captures": [
+  {
+   "capture": "01-choisir-1280.png",
+   "dit": [
+    "Qu'est-ce que tu veux faire ? Touche une bulle."
+   ],
+   "bulle": "Qu'est-ce que tu veux faire ? Touche une bulle."
+  },
+  {
+   "capture": "02-choisir-niveaux-1280.png",
+   "dit": [
+    "Les voiliers.",
+    "Choisis ! Touche une image pour commencer."
+   ],
+   "bulle": "Choisis ! Touche une image pour commencer."
+  },
+  {
+   "capture": "03-exemple-guide-1280.png",
+   "dit": [
+    "Bienvenue à bord ! On s'entraîne ensemble ?",
+    "Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 36",
+    "Regarde : 36 est plus grand que 30, et plus petit que 40. Le bateau passe entre 30 et 40."
+   ],
+   "bulle": "Regarde : 36 est plus grand que 30, et plus petit que 40. Le bateau passe entre 30 et 40."
+  },
+  {
+   "capture": "04-arrivee-bulle-1280.png",
+   "dit": [
+    "99",
+    "99"
+   ],
+   "bulle": null
+  },
+  {
+   "capture": "05-bon-passage-1280.png",
+   "dit": [
+    "Bien joué !",
+    "83"
+   ],
+   "bulle": "83 « quatre-vingt-trois »"
+  },
+  {
+   "capture": "06-erreur-calme-1280.png",
+   "dit": [
+    "Il est plus grand que 70 : il passe après."
+   ],
+   "bulle": "Il est plus grand que 70 : il passe après."
+  },
+  {
+   "capture": "07-deuxieme-erreur-1280.png",
+   "dit": [
+    "Il est plus grand que 70 : il passe après.",
+    "C'est entre 80 et 90 !"
+   ],
+   "bulle": "C'est entre 80 et 90 !"
+  },
+  {
+   "capture": "08-je-ne-sais-pas-1280.png",
+   "dit": [
+    "Ce n'est pas grave, regardons ensemble.",
+    "Il est plus petit que 70 : il passe avant."
+   ],
+   "bulle": "Il est plus petit que 70 : il passe avant."
+  },
+  {
+   "capture": "09-pause-1280.png",
+   "dit": [
+    "76"
+   ],
+   "bulle": null
+  },
+  {
+   "capture": "10-vent-1280.png",
+   "dit": [
+    "Bienvenue à bord ! On s'entraîne ensemble ?",
+    "Regarde, quelqu'un vient te dire bonjour !",
+    "Le vent se lève ! Il pousse les bateaux vers les bouées.",
+    "Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 882"
+   ],
+   "bulle": null
+  },
+  {
+   "capture": "11-vent-arrive-1280.png",
+   "dit": [
+    "Il est plus grand que 700 : il passe après. Le vent repousse le bateau."
+   ],
+   "bulle": null
+  },
+  {
+   "capture": "12-pirates-1280.png",
+   "dit": [
+    "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+    "Attention, des pirates ! Mets vite le bateau à l'abri.",
+    "Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 46"
+   ],
+   "bulle": null
+  },
+  {
+   "capture": "13-pirates-coule-1280.png",
+   "dit": [
+    "Les pirates ont rattrapé le bateau !"
+   ],
+   "bulle": null
+  },
+  {
+   "capture": "14-double-centaines-1280.png",
+   "dit": [
+    "Bienvenue à bord ! On s'entraîne ensemble ?",
+    "Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 347"
+   ],
+   "bulle": null
+  },
+  {
+   "capture": "15-double-recul-1280.png",
+   "dit": [
+    "C'est entre 300 et 400 !"
+   ],
+   "bulle": null
+  },
+  {
+   "capture": "16-double-dizaines-1280.png",
+   "dit": [
+    "Et maintenant, entre quelles dizaines ? 347"
+   ],
+   "bulle": "Et maintenant, entre quelles dizaines ? 347 « trois-cent-quarante-sept »"
+  },
+  {
+   "capture": "01-choisir-1920.png",
+   "dit": [
+    "Qu'est-ce que tu veux faire ? Touche une bulle."
+   ],
+   "bulle": "Qu'est-ce que tu veux faire ? Touche une bulle."
+  },
+  {
+   "capture": "02-choisir-niveaux-1920.png",
+   "dit": [
+    "Les voiliers.",
+    "Choisis ! Touche une image pour commencer."
+   ],
+   "bulle": "Choisis ! Touche une image pour commencer."
+  },
+  {
+   "capture": "03-exemple-guide-1920.png",
+   "dit": [
+    "Bienvenue à bord ! On s'entraîne ensemble ?",
+    "Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 36",
+    "Regarde : 36 est plus grand que 30, et plus petit que 40. Le bateau passe entre 30 et 40."
+   ],
+   "bulle": null
+  },
+  {
+   "capture": "04-arrivee-bulle-1920.png",
+   "dit": [
+    "57",
+    "57"
+   ],
+   "bulle": null
+  },
+  {
+   "capture": "05-bon-passage-1920.png",
+   "dit": [
+    "C'est entre 50 et 60 !",
+    "28"
+   ],
+   "bulle": "28 « vingt-huit »"
+  },
+  {
+   "capture": "06-erreur-calme-1920.png",
+   "dit": [
+    "Il est plus petit que 50 : il passe avant."
+   ],
+   "bulle": null
+  },
+  {
+   "capture": "07-deuxieme-erreur-1920.png",
+   "dit": [
+    "Il est plus petit que 50 : il passe avant.",
+    "Il est plus petit que 40 : il passe avant.",
+    "74"
+   ],
+   "bulle": "74 « soixante-quatorze »"
+  },
+  {
+   "capture": "08-je-ne-sais-pas-1920.png",
+   "dit": [
+    "Ce n'est pas grave, regardons ensemble.",
+    "Il est plus grand que 60 : il passe après.",
+    "45"
+   ],
+   "bulle": "45 « quarante-cinq »"
+  },
+  {
+   "capture": "09-pause-1920.png",
+   "dit": [],
+   "bulle": null
+  },
+  {
+   "capture": "10-vent-1920.png",
+   "dit": [
+    "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+    "Regarde, quelqu'un vient te dire bonjour !",
+    "Le vent se lève ! Il pousse les bateaux vers les bouées.",
+    "Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 144"
+   ],
+   "bulle": null
+  },
+  {
+   "capture": "11-vent-arrive-1920.png",
+   "dit": [
+    "Prends ton temps. Tu peux réécouter la consigne.",
+    "Il est plus petit que 700 : il passe avant. Le vent repousse le bateau."
+   ],
+   "bulle": null
+  },
+  {
+   "capture": "12-pirates-1920.png",
+   "dit": [
+    "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+    "Attention, des pirates ! Mets vite le bateau à l'abri.",
+    "Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 14"
+   ],
+   "bulle": null
+  },
+  {
+   "capture": "13-pirates-coule-1920.png",
+   "dit": [
+    "Les pirates ont rattrapé le bateau !"
+   ],
+   "bulle": null
+  },
+  {
+   "capture": "14-double-centaines-1920.png",
+   "dit": [
+    "Bienvenue à bord ! On s'entraîne ensemble ?",
+    "Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 756"
+   ],
+   "bulle": null
+  },
+  {
+   "capture": "15-double-recul-1920.png",
+   "dit": [
+    "C'est entre 700 et 800 !",
+    "Et maintenant, entre quelles dizaines ? 756"
+   ],
+   "bulle": null
+  },
+  {
+   "capture": "16-double-dizaines-1920.png",
+   "dit": [],
+   "bulle": null
+  },
+  {
+   "capture": "17-jouer-impose-1280.png",
+   "dit": [
+    "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+    "Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 36",
+    "Regarde : 36 est plus grand que 30, et plus petit que 40. Le bateau passe entre 30 et 40.",
+    "47"
+   ],
+   "bulle": null
+  },
+  {
+   "capture": "18-parent-voiliers-1280.png",
+   "dit": [
+    "C'est entre 40 et 50 !",
+    "80",
+    "Il est plus grand que 40 : il passe après.",
+    "Oui, c'est ça !",
+    "55"
+   ],
+   "bulle": null
+  },
+  {
+   "capture": "19-encore-voiliers-1280.png",
+   "dit": [
+    "Tu veux encore jouer ? Choisis ! Ici, on s'entraîne pour le plaisir.",
+    "Qu'est-ce que tu veux faire ? Touche une bulle.",
+    "Les voiliers.",
+    "Choisis ! Touche une image pour commencer.",
+    "Des bouées de cent en cent, jusqu'à mille.",
+    "Choisis ton niveau.",
+    "Plus facile.",
+    "Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 450",
+    "Regarde : 450 est plus grand que 400, et plus petit que 500. Le bateau passe entre 400 et 500.",
+    "48",
+    "Exactement !",
+    "242"
+   ],
+   "bulle": null
+  }
+ ]
+}

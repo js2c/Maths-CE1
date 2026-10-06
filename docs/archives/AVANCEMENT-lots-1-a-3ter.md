@@ -812,3 +812,16 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 - **Recette** (détail dans la demande de fusion) : `npm test` 262 verts ; simulation sans doublon ; séquences sans défaut ; séance réelle 8,6 min ; attentes hors voix 1,3 s au plus ; `recif-vivant`, `lagon` et 21 autres parcours : tout est bon. `lot3bis` vert depuis la correction de son contrôle du double toucher à 60 ms (le toucher émulé de Chromium était trop lent pour l'éprouver ; échouait déjà sur `main`). Échecs qui existent aussi sur `main` : `pwa`, `defi`, `lot3ter` (étiquettes trop lentes dans ce conteneur sans processeur graphique). Propre à la branche : dans `lot3ter`, l'étiquette d'appui long de la maison et de l'album du récif arrive après 0,8 s (le récif dessine lentement ici ; allègement corrigé pour se déclencher quand même).
 - **Réponses du parent après la recette (5 octobre)** : étoiles qui s'accumulent, acceptées ; maison et album qui couvrent une créature, acceptés ; baudroie d'ambiance dans les abysses fermées, acceptée ; nageuses du grand large réparties sur toute la hauteur : fait (`art/tools/grand-large.mjs`, profondeurs appliquées par l'export ; pire grappe de 9 à 5 nageuses).
 - **Reste** : l'essai sur la tablette (fluidité du récif vivant en WebGL, mémoire).
+
+## Reprise du lot « Mascotte »
+
+- Branche `claude/nifty-knuth-g0r17e` (partie de `main` après la PR #33). Demande de fusion : https://github.com/js2c/Maths-CE1/pull/34 (brouillon).
+- **Fiche** : `docs/LOTS.md`, lot 1 ; spécification `docs/SPEC.md`, section 11 ; maquette `art/mascotte/`.
+- **Fait** :
+  - le moteur de la mascotte (`engine/mascotte.js`, repris de la maquette), ses 17 clips WebM, ses raccords (voix, pause, récif, mode accéléré, allègement, journal) ; la bulle (`engine/bulle.js`, places et obstacles) ; la flèche (atelier `sea/fleche.ts`, `engine/fleche.js`) ; la relance ; la bienvenue sans nom ;
+  - la pieuvre retirée (moteur, planches, fabrication, choix et réglage du nom) ; export de l'atelier refait (seule « petits » change) ;
+  - tests unitaires `tests/unit/mascotte.test.mjs` ; parcours `tests/e2e/mascotte.mjs` (nouveau) ; parcours qui visaient la pieuvre ou le nom adaptés ;
+  - `docs/SPEC.md` (sections 2, 3, 8, 11, 12), `docs/ARCHITECTURE.md`, `docs/GUIDE-PARENT.md`, `docs/IDEES.md`, `docs/JOURNAL-CONCEPTION.md`.
+- **Recette** (détail dans la demande de fusion) : `npm test` 271 sur 272 (les 6 phrases sans fichier) ; séquences sans défaut ; séance réelle 8,5 min ; attentes hors voix 1,1 s au plus ; parcours `mascotte` vert aux deux tailles, 0 fondu forcé ; relecture indépendante, 22 constats traités (`tests/recette-fonctionnelle/out-mascotte/RELECTURE.md`). Propre à la branche : dans `lot3ter`, des étiquettes d'appui long encore à moitié visibles après 0,8 s (9 échecs contre 2 sur `main`, 3 en masquant la mascotte : la charge de la vidéo dans ce conteneur sans processeur graphique) ; à vérifier sur la tablette.
+- **Reste** : la fabrication des 6 phrases par le parent, la fusion, l'essai sur la tablette.
+- **Connu** : `npm test` échoue sur les 6 phrases nouvelles sans fichier (attendu, le parent les fabrique). L'export de l'atelier signale un saut au raccord de `ermite.repos` : il existe déjà sur `main`.

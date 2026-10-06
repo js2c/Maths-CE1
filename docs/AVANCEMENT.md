@@ -2,12 +2,12 @@
 
 Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 à 3 ter (ce qui a été fait, décisions prises en cours de route, recettes) est dans `docs/archives/AVANCEMENT-lots-1-a-3ter.md`.
 
-## Où en est-on (5 octobre 2026)
+## Où en est-on (6 octobre 2026)
 
 - **En ligne** (https://js2c.github.io/Maths-CE1/) : lots 1, 1 bis, 2, 3, 3 bis, 3 ter et « Lagon en fond d'exercices », tous fusionnés (dernière demande de fusion : PR #30, le lagon).
 - **Ce que fait l'application** : `docs/SPEC.md` (spécification unique ; ce qui reste à construire y est marqué « à construire », section 13).
 - **Prochains lots** : dans l'ordre de `docs/LOTS.md` (mascotte, voiliers, leçons et table d'addition, sommes jusqu'à 30, multiplication et tables). Confrontation de la spécification avec le code (`docs/PROMPTS.md`) avant le lot « Sommes jusqu'à 30 » ; le relecteur des lots 3 bis et 3 ter est abandonné.
-- **En cours** : le lot « Mascotte » (rubrique « Reprise » ci-dessous).
+- **En cours** : rien. Le lot « Mascotte » attend la fabrication de ses 6 phrases, puis la fusion de la PR #34 ; le lot suivant est « Les voiliers » (`docs/LOTS.md`).
 - **Projet parallèle** : la refonte graphique (hors de ce fichier).
 
 ## Lots
@@ -21,20 +21,9 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 | 3 ter | Passer l'échauffement, échauffement qui s'ajuste, appui long partout | fait (PR #25) |
 | Lagon | Le lagon de la maquette du récif vivant en fond de toute l'application | fait (PR #30) |
 | Récif vivant | La collection est la maquette du récif vivant ; récompenses sans doublon ; correctif des boutons invisibles | fait (PR #31) |
-| Mascotte | Le capitaine en vidéo remplace la pieuvre ; bulle, flèche, bienvenue, relance | en cours |
+| Mascotte | Le capitaine en vidéo remplace la pieuvre ; bulle, flèche, bienvenue, relance | fait (PR #34) |
 
 ## Reprise
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
 
-### Reprise du lot « Mascotte »
-
-- Branche `claude/nifty-knuth-g0r17e` (partie de `main` après la PR #33). Demande de fusion : https://github.com/js2c/Maths-CE1/pull/34 (brouillon).
-- **Fiche** : `docs/LOTS.md`, lot 1 ; spécification `docs/SPEC.md`, section 11 ; maquette `art/mascotte/`.
-- **Fait** :
-  - le moteur de la mascotte (`engine/mascotte.js`, repris de la maquette), ses 17 clips WebM, ses raccords (voix, pause, récif, mode accéléré, allègement, journal) ; la bulle (`engine/bulle.js`, places et obstacles) ; la flèche (atelier `sea/fleche.ts`, `engine/fleche.js`) ; la relance ; la bienvenue sans nom ;
-  - la pieuvre retirée (moteur, planches, fabrication, choix et réglage du nom) ; export de l'atelier refait (seule « petits » change) ;
-  - tests unitaires `tests/unit/mascotte.test.mjs` ; parcours `tests/e2e/mascotte.mjs` (nouveau) ; parcours qui visaient la pieuvre ou le nom adaptés ;
-  - `docs/SPEC.md` (sections 2, 3, 8, 11, 12), `docs/ARCHITECTURE.md`, `docs/GUIDE-PARENT.md`, `docs/IDEES.md`, `docs/JOURNAL-CONCEPTION.md`.
-- **Reste** : la recette complète (méthode commune de `docs/LOTS.md`), la relecture indépendante, `CLAUDE.md`, la demande de fusion.
-- **Connu** : `npm test` échoue sur les 6 phrases nouvelles sans fichier (attendu, le parent les fabrique). L'export de l'atelier signale un saut au raccord de `ermite.repos` : il existe déjà sur `main`.

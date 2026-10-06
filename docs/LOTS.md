@@ -25,7 +25,7 @@ Ce document a trois parties : **pour le parent**, comment lancer un lot ; **pour
 
 | Ordre | Lot (son nom dans le prompt) | Ce qui est prêt | Maquette à valider en début de lot | Voix à fabriquer (estimation) | État |
 | --- | --- | --- | --- | --- | --- |
-| 1 | « Mascotte » | tout : maquette validée (`art/mascotte/`), spécification (`docs/SPEC.md`, section 11) | non | une dizaine de phrases, quelques minutes | à faire |
+| 1 | « Mascotte » | tout : maquette validée (`art/mascotte/`), spécification (`docs/SPEC.md`, section 11) | non | 6 phrases, quelques secondes | fait (PR #34, à fusionner après la fabrication des 6 phrases) |
 | 2 | « Les voiliers » | tout : maquette validée (`art/voiliers/`), spécification (section 7 bis) | non (une capture de contrôle du placement de la mascotte) | environ 800 phrases, environ 1 h | à faire |
 | 3 | « Les leçons » (avec la table d'addition) | la spécification (section 3, « Les leçons ») ; les écrans sont à maquetter | oui | environ 150 phrases (la table d'addition), environ 10 min | à faire |
 | 4 | « Sommes jusqu'à 30 » | le principe (section 13) et une proposition par défaut ; le contenu est à concevoir | oui, avec la proposition pédagogique | à estimer au point d'arrêt | à faire |

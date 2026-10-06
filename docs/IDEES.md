@@ -109,7 +109,7 @@ Au cran « plus facile », l'écriture 600 + 30 + 5 s'affiche sous la cale. Un f
 - **`wrong`** commence par un bref sourire (vers 0,4 à 0,9 s) avant la déception ; à regarder avec l'enfant : le prend-elle pour de la moquerie ?
 - **`success`** dure 8,7 s ; il cède à la phrase suivante dès 1,8 s.
 - **`idle-hochement`** (l'ancienne vidéo d'attente) ne revient à la pose de départ qu'après 3,8 s : une phrase qui commence pendant ce clip passe par un fondu visible. Il n'est tiré qu'à l'accueil.
-- **La mascotte sur la tablette** (après le lot « Mascotte ») : fluidité des 17 vidéos décodées et du détourage en WebGL avec le lagon (dans le conteneur de développement, sans processeur graphique, la vidéo tourne à 6 à 13 images/s) ; mémoire ; la bulle se lit-elle, ou distrait-elle l'enfant de l'ardoise ? La flèche corail se voit-elle sur l'eau ?
+- **La mascotte sur la tablette** (après le lot « Mascotte ») : fluidité des 17 vidéos décodées et du détourage en WebGL avec le lagon (dans le conteneur de développement, sans processeur graphique, la vidéo tourne à 6 à 13 images/s) ; mémoire ; la bulle se lit-elle, ou distrait-elle l'enfant de l'ardoise ? La flèche corail se voit-elle sur l'eau ? Dans le conteneur, la charge de la vidéo retarde les fondus : au parcours `lot3ter`, les étiquettes d'appui long sont à moitié visibles après 0,8 s (9 échecs contre 2 sur `main` ; 3 seulement en masquant la mascotte). Sur la tablette, vérifier qu'un appui long sur « jouer » montre bien son étiquette.
 
 **Depuis les lots précédents :**
 

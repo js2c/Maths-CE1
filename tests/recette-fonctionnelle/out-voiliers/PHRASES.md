@@ -1,6 +1,6 @@
 # Lot « Les voiliers » : les phrases à fabriquer
 
-835 phrases nouvelles (la liste exacte, tirée de `tools/voix/inventaire.mjs` : chaque phrase que l'inventaire connaît et qui n'a pas encore de fichier, hors les 6 phrases du lot « Mascotte »). Poids estimé : environ 5,9 Mo (7,1 Ko par phrase en moyenne aujourd'hui) ; la voix passerait de 60,2 à environ 66,1 Mo, sous le plafond de 80 Mo.
+835 phrases nouvelles (la liste exacte, tirée de `tools/voix/inventaire.mjs` : chaque phrase que l'inventaire connaît et qui n'a pas encore de fichier, hors les 6 phrases du lot « Mascotte »). Poids estimé : environ 5,9 Mo (7,1 Ko par phrase en moyenne aujourd'hui) ; la voix passerait de 60,2 à environ 66,2 Mo, sous le plafond de 80 Mo.
 
 Fabrication : sur l'ordinateur du parent, `node tools\voix\publier.mjs` (`docs/VOIX.md`, « En une commande »).
 
@@ -433,22 +433,22 @@ Fabrication : sur l'ordinateur du parent, `node tools\voix\publier.mjs` (`docs/V
 ## voiliersExemple.5 (2)
 
 - Regarde : 698 est tout près de 700, mais il est plus petit.
-- Le bateau passe avant 700.
+- Le bateau passe entre 600 et 700.
 
 ## voiliersExemple.6 (2)
 
 - Regarde : 426 est tout près de 425, mais il est plus grand.
-- Le bateau passe après cette bouée.
+- Le bateau passe entre 425 et 431.
 
 ## voiliersExemple.7 (2)
 
 - Regarde : 369 est tout près de 370, mais il est plus petit.
-- Le bateau passe avant 370.
+- Le bateau passe entre 360 et 370.
 
 ## voiliersExemple.8 (2)
 
 - Regarde : 349 est tout près de 350, mais il est plus petit.
-- Le bateau passe avant 350.
+- Le bateau passe entre 250 et 350.
 
 ## voiliersExemple.9 (2)
 

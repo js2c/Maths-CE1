@@ -53,11 +53,12 @@ const tap = (page, sel) => page.tap(sel, { force: true });
 // placer ; formes à trou au cran très dur
 for (const [niveau, fmt] of [[3, "placer"], [6, "placer"], [2, "lire"]]) {
   const { page, context } = await open(`&cran=conseille&sans=echauffement&sansLecon&niveau=${niveau}&format=${fmt}&guides=0`);
+  // (voix accélérée : la consigne, donc la flèche, ne dure que quelques dixièmes de seconde : on note chaque pose)
+  await page.evaluate(() => { const f = window.__app.fleche, m = f.montrer.bind(f); window.__poses = []; f.montrer = (c, o) => { window.__poses.push(typeof c === "function" ? c() : c); return m(c, o); }; });
   await tap(page, ".play");
   await page.waitForFunction(() => { const s = window.__app.screen; return s?.q && s.resolve; }, null, { timeout: 30000 });
-  await page.waitForFunction(() => window.__app.fleche.visible, null, { timeout: 8000 }).catch(() => {});
   await page.waitForTimeout(500);
-  const info = await page.evaluate(() => ({ vue: window.__app.fleche.visible, cible: window.__app.fleche.cible, angle: window.__app.fleche.angle, want: window.__app.screen.pointAt(window.__app.screen.q), x: window.__app.screen.xOf(window.__app.screen.q.answer), star: window.__app.screen.starAt }));
+  const info = await page.evaluate(() => ({ vue: window.__poses.length > 0, cible: window.__poses.at(-1), angle: window.__app.fleche.angle, want: window.__app.screen.pointAt(window.__app.screen.q), x: window.__app.screen.xOf(window.__app.screen.q.answer), star: window.__app.screen.starAt }));
   if (fmt === "lire") check(info.vue && info.cible.map(Math.round).join() === info.want.point.map(Math.round).join() && Math.abs(info.cible[0] - info.star[0]) < 1, `niveau ${niveau} (${fmt}) : la flèche au-dessus de l'étoile, en ${info.cible?.map(Math.round)}`);
   else check(!info.vue && info.want === null, `niveau ${niveau} (${fmt}) : pas de flèche (elle donnerait la place de la réponse, x=${Math.round(info.x)})`);
   await page.screenshot({ path: join(OUT, `4-fleche-niveau${niveau}.png`) });

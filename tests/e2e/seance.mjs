@@ -76,7 +76,7 @@ check(db.base?.mesures?.length === 3, `temps de base mesuré (${db.base?.mesures
 check(db.faits.length >= 3 && db.faits.filter((x) => x.boite === 1).length >= 1, `au moins 3 nouveaux faits rangés en boîtes (lot 2 : voie rapide, faits ajoutés) (${db.faits.map((x) => `${x.fait}:${x.boite}`).join(" ")})`);
 check(db.rep2.some((r) => r.aide) && db.rep2.some((r) => r.revient), "échauffement : réponse avec aide, fait raté revenu");
 check(db.rep2.length >= 3 + 5, `${db.rep2.length} réponses d'échauffement enregistrées`);
-check(db.nom === undefined, `aucun nom de mascotte enregistré (${db.nom})`);
+check(db.nom == null, `aucun nom de mascotte enregistré (${db.nom})`);
 check(se?.terminee === true, "séance terminée enregistrée");
 check(db.reponses.filter((r) => r.guide).length === 1 && db.reponses[0].guide && db.reponses[0].forme === "lire", `un exercice guidé « lire » après la leçon (${db.reponses.filter((r) => r.guide).length})`);
 check(se?.lecons?.[0]?.id === "L1" && se.lecons[0].vue && se.lecons[0].raison === "niveau", `leçon L1 notée dans la séance (${JSON.stringify(se?.lecons)})`);

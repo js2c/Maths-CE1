@@ -79,7 +79,9 @@ async function playToReward(page, { onCeremony, atShell, atCard } = {}) {
   // le récif vivant : les créatures du récif de corail y sont, avec celles du lagon
   await page.tap(".reefkey", { force: true });
   const viv = await recifOuvert(page);
-  check(won.every((id) => viv.includes(id)) && viv.length === lagon.length + won.length, `récif : ${viv.length} créatures, dont celles du récif de corail`);
+  // (quatre créatures portent un autre nom dans la maquette du récif vivant : session/reef.js, NOM_MAQUETTE)
+  const MAQ = { "benitier-geant": "benitier", "meduse-criniere": "meduse", "ver-tubicole-geant": "ver-tubicole", "requin-groenland": "requin-du-groenland" };
+  check(won.every((id) => viv.includes(MAQ[id] ?? id)) && viv.length === lagon.length + won.length, `récif : ${viv.length} créatures, dont celles du récif de corail`);
   await page.tap(".homekey:not(.session-home)", { force: true }); await page.waitForTimeout(600);
   // l'album : la page du récif de corail, avec les vignettes brillantes
   await page.waitForSelector(".albumkey", { timeout: 20000 }); await page.tap(".albumkey", { force: true }); await page.waitForSelector(".album-card", { timeout: 10000 });

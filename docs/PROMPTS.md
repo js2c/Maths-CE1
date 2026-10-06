@@ -4,39 +4,16 @@ Tenu en conception. Les prompts des lots passés sont dans `docs/archives/`.
 
 ## Règles communes à toutes les sessions
 
-Pour les lots, la méthode commune de `docs/LOTS.md` les reprend et les complète. Pour les sessions de contrôle ci-dessous :
+Pour les lots, la méthode commune de `docs/LOTS.md` les reprend et les complète. Pour la session de contrôle ci-dessous (la session « relecteur » des lots 3 bis et 3 ter a été abandonnée par le parent le 6 octobre 2026 : chaque lot a désormais sa relecture indépendante) :
 
 - Lire `CLAUDE.md`, `docs/SPEC.md` (la spécification unique), `docs/ARCHITECTURE.md` et `docs/AVANCEMENT.md`. Les anciennes spécifications (`docs/archives/`) ne servent qu'à retrouver l'origine d'une règle : **en cas d'écart, `docs/SPEC.md` fait foi**.
 - Partir de `origin/main` à jour ; une branche poussée dès le début ; une demande de fusion en brouillon ouverte tout de suite ; commits poussés après chaque sous-partie et au moins toutes les 30 à 45 minutes ; une rubrique « Reprise » tenue à jour dans `docs/AVANCEMENT.md`.
 - Un lot modifie **`docs/SPEC.md` en place**, dans la même demande de fusion que le code (pas de nouvelle spécification). Les raisons des décisions vont dans `docs/JOURNAL-CONCEPTION.md`, les questions non tranchées dans `docs/IDEES.md`.
 - Arrêt propre si le contexte dépasse environ la moitié : tout pousser, noter où reprendre, s'arrêter en le disant.
 
-## Relecteur (recette de contrôle des lots 3 bis et 3 ter)
-
-Facultatif. À lancer après l'essai du lot 3 ter sur la tablette, **avant le lot « Mascotte »**, qui change les écrans qu'il juge ; sinon, l'abandonner : la relecture indépendante de chaque lot (`docs/LOTS.md`) prend le relais. Ne touche pas à l'application ; peut tourner en même temps qu'un lot. Réflexion « élevé ».
-
-```
-Tu es relecteur d'une application de mathématiques pour une enfant de CE1. Lis la section « Les deux personnes à incarner » de docs/archives/PROMPT-RECETTE-LOT3.md, le rapport docs/archives/RECETTE-LOT3.md, puis tests/recette-fonctionnelle/out-lot3bis/INDEX.md et tests/recette-fonctionnelle/out-lot3ter/INDEX.md. Ne lis pas les spécifications avant d'avoir terminé la première partie.
-
-Ta mission :
-1. Pour chaque constat R1 à R25 de docs/archives/RECETTE-LOT3.md, regarde le matériel le plus récent et dis s'il est levé, en partie levé ou non levé, avec ce que l'enfant voit maintenant et la planche ou la séquence qui le montre.
-2. Juge les trois nouveautés du lot 3 ter avec les dix questions de la grille (docs/archives/PROMPT-RECETTE-LOT3.md, session 2, phase 1) :
-   - passer l'échauffement : le bouton est-il trouvable, et la confirmation est-elle comprise sans lire ?
-   - l'échauffement qui s'ajuste : les séquences d'échauffement d'un mois sont-elles à la bonne difficulté pour chaque profil ?
-   - l'appui long : un appui prolongé lance-t-il encore quelque chose quelque part ?
-3. Cherche les régressions et les problèmes nouveaux, sur tous les écrans modifiés depuis le rapport initial.
-4. Vérifie que ce que le rapport initial rangeait dans « Ce qui fonctionne bien » (§5) l'est toujours.
-
-Ensuite seulement, lis docs/SPEC.md (la spécification unique en vigueur), et qualifie chaque constat encore ouvert : défaut de spécification, défaut de réalisation, ou question.
-
-Écris docs/RECETTE-LOT3TER.md dans cet ordre : une synthèse en cinq lignes ; le tableau des constats R1 à R25 ; les constats sur les nouveautés et les constats nouveaux, numérotés N1, N2…, avec la gravité (bloquant, gênant, cosmétique) ; la non-régression.
-
-Commit le rapport sur une branche, ouvre une demande de fusion intitulée « Recette de contrôle des lots 3 bis et 3 ter », puis arrête-toi. Ne corrige rien.
-```
-
 ## Confrontation de la spécification avec le code
 
-`docs/SPEC.md` a été rédigée le 30 septembre 2026 à partir des spécifications successives, pas du code. Cette session relève les écarts, sans rien corriger, et ne modifie que son rapport : elle peut tourner en même temps qu'un lot. Facultatif, mais utile avant les lots « Sommes jusqu'à 30 » et « Multiplication », qui s'appuient sur les règles du module 2. Réflexion « élevé ».
+`docs/SPEC.md` a été rédigée le 30 septembre 2026 à partir des spécifications successives, pas du code. Cette session relève les écarts, sans rien corriger, et ne modifie que son rapport : elle peut tourner en même temps qu'un lot. **À faire avant le lot « Sommes jusqu'à 30 »** (décision du parent du 6 octobre 2026), qui s'appuie sur les règles du module 2 ; le parent tranche ensuite les écarts. Réflexion « élevé ».
 
 ```
 Lis CLAUDE.md et docs/SPEC.md. Ta mission : confronter docs/SPEC.md au code et au contenu (app/js, app/content), sans rien corriger dans l'application.

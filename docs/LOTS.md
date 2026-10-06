@@ -2,7 +2,7 @@
 
 Préparé en conception le 6 octobre 2026 (décision du parent : intégrer la mascotte et le jeu des voiliers dans l'application, puis enchaîner les lots suivants, chacun lancé à son tour dans Claude Code, avec sa recette faite par la session elle-même).
 
-Ce document a trois parties : **pour le parent**, comment lancer un lot ; **pour la session**, la méthode commune à tous les lots ; puis **la fiche de chaque lot**. Les prompts des sessions de contrôle sont dans `docs/PROMPTS.md`. La fabrication des voix se fait à part, sur l'ordinateur du parent (`docs/VOIX.md`).
+Ce document a trois parties : **pour le parent**, comment lancer un lot ; **pour la session**, la méthode commune à tous les lots ; puis **la fiche de chaque lot**. Le prompt de la session de contrôle (confrontation de la spécification avec le code) est dans `docs/PROMPTS.md`. La fabrication des voix se fait à part, sur l'ordinateur du parent (`docs/VOIX.md`).
 
 ## Pour le parent : lancer un lot
 
@@ -19,7 +19,7 @@ Ce document a trois parties : **pour le parent**, comment lancer un lot ; **pour
    ```
    Lis CLAUDE.md puis docs/LOTS.md, et reprends le lot « Mascotte » là où il s'est arrêté (docs/AVANCEMENT.md, rubrique « Reprise »).
    ```
-5. Un seul lot à la fois : ils modifient les mêmes fichiers. Les sessions de contrôle (`docs/PROMPTS.md`), qui ne touchent pas à l'application, peuvent tourner en même temps qu'un lot.
+5. Un seul lot à la fois : ils modifient les mêmes fichiers. La session de confrontation (`docs/PROMPTS.md`), qui ne touche pas à l'application, peut tourner en même temps qu'un lot ; elle doit être faite, et ses écarts tranchés, avant le lot « Sommes jusqu'à 30 ».
 
 ## L'ordre
 
@@ -33,6 +33,8 @@ Ce document a trois parties : **pour le parent**, comment lancer un lot ; **pour
 
 Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent déjà les lots passés.
 
+**Avant le lot « Sommes jusqu'à 30 »** (décision du parent du 6 octobre 2026) : la session de confrontation de la spécification avec le code (`docs/PROMPTS.md`), puis la décision du parent sur ses écarts. Elle peut tourner pendant l'un des lots précédents.
+
 **Pourquoi cet ordre.**
 
 - La mascotte d'abord : le jeu des voiliers se branche sur celle de l'application.
@@ -41,7 +43,7 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Pas encore dans la liste** (`docs/IDEES.md`, section 1) :
 
-- les fractions, que le programme attend au plus tard en période 2, c'est-à-dire avant les vacances de Noël ;
+- les fractions : plus tard (décision du parent du 6 octobre 2026), bien que le programme les attende au plus tard en période 2, c'est-à-dire avant les vacances de Noël ;
 - les problèmes de la vie courante, la pêche, suites et rangs ;
 - les bilans périodiques.
 
@@ -206,7 +208,9 @@ Le moteur entre tel quel dans `app/js/engine/` : même table de clips, mêmes r�
 - la table d'addition : une grille où toucher une case dit et montre le calcul ;
 - la leçon L10 corrigée.
 
-Taille de la table proposée par défaut : de 0 + 0 à 10 + 10. Elle est à confirmer par le parent, car elle dépend du lot « Sommes jusqu'à 30 ».
+Taille de la table proposée par défaut : de 0 + 0 à 10 + 10, à confirmer au point d'arrêt.
+
+**Les tables dans le menu des leçons** (décision du parent du 6 octobre 2026) : la table d'addition et la table de multiplication y figurent toutes deux. Ce lot fait la table d'addition et prévoit, dans le menu, la place de la table de multiplication, que le lot « Multiplication » remplira.
 
 **Voix** : une phrase par case de la table (« 7 plus 5, 12 »), « À toi ! », et les noms du menu s'ils changent.
 
@@ -219,7 +223,9 @@ Taille de la table proposée par défaut : de 0 + 0 à 10 + 10. Elle est à conf
 
 ### 4. Lot « Sommes jusqu'à 30 »
 
-**But** : la suite du module 2 (`docs/SPEC.md`, section 13, « Sommes jusqu'à 30 » ; question ouverte dans `docs/IDEES.md`, section 3). La décision du parent du 30 septembre dit **jusqu'à 30**, pas 20. La proposition de la session la rappelle et la fait confirmer.
+**But** : la suite du module 2 (`docs/SPEC.md`, section 13, « Sommes jusqu'à 30 » ; question ouverte dans `docs/IDEES.md`, section 3). **Jusqu'à 30** : décision du parent du 30 septembre, confirmée le 6 octobre 2026.
+
+**Prérequis supplémentaire** : le rapport de confrontation (`docs/ECARTS-SPEC.md`) est sur `main`, et les écarts qui touchent le module 2 sont tranchés par le parent. Sinon, s'arrêter et le dire.
 
 **Proposition par défaut**, à vérifier contre le programme officiel puis à soumettre au point d'arrêt :
 
@@ -237,7 +243,7 @@ Taille de la table proposée par défaut : de 0 + 0 à 10 + 10. Elle est à conf
 - le sens : addition répétée, rangées, groupes égaux ;
 - le signe × et la commutativité ;
 - les tables qu'attend le programme officiel de CE1, à établir sur le texte officiel, cité ;
-- la table de multiplication à consulter dans le menu des leçons ;
+- la table de multiplication à consulter dans le menu des leçons, à la place que le lot « Les leçons » lui a prévue (décision du parent du 6 octobre 2026) ;
 - les liens avec doubles et moitiés.
 
 **Maquette à valider** :

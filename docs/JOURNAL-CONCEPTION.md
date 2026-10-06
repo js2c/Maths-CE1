@@ -66,6 +66,15 @@ Mémoire de la conversation de conception (claude.ai, 26 au 30 septembre 2026, m
 | Cran « plus facile » (27 septembre, décision du parent) | Moteur inchangé : une réussite au cran « plus facile » ne compte toujours pas pour la montée du niveau conseillé. Parade : le réglage existant de l'espace parent (interdire « plus facile »), expliqué dans `docs/GUIDE-PARENT.md` | Garder « plus facile » comme un repos, pas comme un moyen d'avancer ; le parent intervient s'il devient systématique |
 | Relecture extérieure (27 septembre, décisions du parent, faites à l'étape 9) | 1. **Aide des additions passable** : coquillage et aide affichée d'emblée du cran « plus facile » ont le bouton « passer » habituel dès leur début ; un toucher coupe voix et animation, range l'appui et rend le pavé ; aucune attente sans commande au-delà d'environ 2 s (mesuré par `recette-durees.mjs`). 2. **Sortie de la pause** : pas de bouton d'arrêt pour l'enfant ; dans l'espace parent, pendant une pause, « Terminer la séance » (avec confirmation) l'enregistre comme interrompue, sans récompense, et ramène à l'accueil. 3. **Cran « plus facile », additions** : un fait réussi avec l'aide affichée d'emblée ne change pas de boîte (« juste avec une aide : pas de promotion »), sans être renvoyé en boîte 1 ; cohérent avec la ligne graduée. 4. **Stagnation du module 2** : une famille pas acquise après 6 séances d'additions en notion du jour (`module2.json`, `familles2.stagnation`) est dépassée : la suivante devient la famille en cours, avec sa leçon ; l'autre reste travaillée en révision | Une aide sans issue bloquait l'enfant ; l'enfant n'avait aucun moyen de sortir d'une pause sinon de fermer l'application ; « plus facile » faisait monter les faits sans effort ; une enfant en difficulté restait toute l'année sur la famille 1 (simulation : aucune leçon du module 2 sur l'année) |
 
+## Décisions du 6 octobre 2026, après la fusion de la feuille de route (PR #32)
+
+- **Sommes jusqu'à 30** : confirmé (pas 20).
+- **Les tables d'addition et de multiplication** figurent toutes deux dans le menu des leçons ; le lot « Les leçons » fait la première et prévoit la place de la seconde.
+- **Les fractions** : plus tard, bien que le programme les attende avant Noël.
+- **Les lots à concevoir d'abord** (leçons, sommes, multiplication) commencent par une maquette et s'arrêtent pour validation : accepté.
+- **Le relecteur des lots 3 bis et 3 ter** : abandonné ; chaque lot a sa relecture indépendante.
+- **La confrontation de la spécification avec le code** : à faire avant le lot « Sommes jusqu'à 30 ».
+
 ## Décisions des 5 et 6 octobre 2026 (la mascotte, le jeu des voiliers)
 
 - **Une nouvelle mascotte** (5 octobre) : le parent n'est pas satisfait de la pieuvre. Il génère de courtes vidéos d'une tête dessinée qui lui ressemble, sur fond vert (attente, parole, joie, déception, encouragement), puis 11 courtes vidéos d'attente (4 s, image de départ imposée au début et à la fin). Maquette du comportement mise au point et validée en conception : `art/mascotte/`.
@@ -118,12 +127,9 @@ Mémoire de la conversation de conception (claude.ai, 26 au 30 septembre 2026, m
 
 ## Prochaines étapes
 
-1. **Essai du lot 3 ter** sur la tablette.
-2. **Session relecteur** de contrôle des lots 3 bis et 3 ter (`docs/PROMPTS.md`, « Relecteur ») ; relecture du rapport en conception.
-3. **Confrontation de la spécification avec le code** (`docs/PROMPTS.md`, « Confrontation ») ; le parent tranche les écarts.
-4. **Phase 1** (`docs/IDEES.md`, section 1) : d'abord les leçons (spécifiées dans `docs/SPEC.md`, section 3), puis les problèmes (banque d'énoncés en conception), puis les exercices nouveaux, chacun après une maquette validée.
-5. **Phase 2** avant les vacances de Noël pour les fractions (échéance du programme).
-6. **Contenu des cartes** : grand large avant début février 2027, abysses avant fin avril 2027.
+1. **Les lots de `docs/LOTS.md`**, dans l'ordre : « Mascotte », « Les voiliers », « Les leçons », « Sommes jusqu'à 30 », « Multiplication » ; les voix de chaque lot fabriquées sur sa branche avant la fusion (`docs/VOIX.md`).
+2. **Confrontation de la spécification avec le code** (`docs/PROMPTS.md`), avant le lot « Sommes jusqu'à 30 » ; le parent tranche les écarts.
+3. **Contenu des cartes** : grand large avant début février 2027, abysses avant fin avril 2027.
 
 ## Points ouverts
 

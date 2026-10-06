@@ -30,7 +30,7 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 ## Reprise du lot « Les voiliers »
 
-- Branche `claude/pensive-bardeen-yc0m7j` (partie de `main` après la PR #34). Demande de fusion : à ouvrir (brouillon).
+- Branche `claude/pensive-bardeen-yc0m7j` (partie de `main` après la PR #34). Demande de fusion : https://github.com/js2c/Maths-CE1/pull/36 (brouillon).
 - **Fiche** : `docs/LOTS.md`, lot 2 ; spécification `docs/SPEC.md`, section 7 bis ; maquette `art/voiliers/` (jamais modifiée).
 - **Fait** : lecture de la fiche, de la spécification et de la maquette.
 - **Reste** : règles du module 4 et simulation ; export de la maquette ; raccords (séance, voix, mascotte, pause, enregistrement, espace parent) ; recette ; documents.

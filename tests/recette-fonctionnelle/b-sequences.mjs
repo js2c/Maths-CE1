@@ -303,7 +303,7 @@ const EXOS = [
   ...module2.familles.map((f) => ({ id: `additions-famille-${f.id}`, choix: { module: 2, famille: f.id }, nom: `Additions, famille ${f.id} (${f.nom})` })),
   ...module3.niveaux.map((c) => ({ id: `calcul-${c.niveau}`, choix: { module: 3, niveau: c.niveau }, nom: `Calcul rapide, niveau ${c.niveau} (${c.type}, ${c.support})` })),
   ...module4.niveaux.map((c) => ({ id: `voiliers-${c.niveau}`, choix: { module: 4, niveau: c.niveau }, nom: `Voiliers, niveau ${c.niveau} (${c.bouees} bouées, ${c.ecart}, ${c.place})`, passages: c.ecart === "double" ? 12 : c.bouees + 1 })),
-].filter((e) => !only || (e.choix.module === only[0] && (e.choix.niveau ?? e.choix.famille) === only[1]));
+].filter((e) => !only || (e.choix.module === only[0] && (only[1] == null || (e.choix.niveau ?? e.choix.famille) === only[1]))); // (--seulement 4 : tout le module 4)
 if (TEST) {
   const fails = [], combos = new Set(), courtes = []; let n = 0;
   for (const base of ["neuve", "mois"]) for (const ex of EXOS) for (const cran of CRANS) for (const comp of ["appliquee", "reelle"]) {

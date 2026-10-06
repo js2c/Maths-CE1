@@ -11,7 +11,7 @@
 //  7. « jouer » avec les voiliers imposés par le parent ; l'espace parent (le bloc des voiliers, le journal des erreurs).
 //   node tests/e2e/voiliers.mjs [--out dossier] [--grand] (--grand : seulement 1920 × 1200)
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
 
@@ -32,7 +32,7 @@ const open = async (q, [w, h], prep = null) => {
 };
 const etat = (page) => page.evaluate(() => window.__app.voiliers?.api?.etat() ?? null);
 const said = (page) => page.evaluate(() => window.__said.join(" | "));
-const clearSaid = (page) => page.evaluate(() => { window.__said.length = 0; });
+const clearSaid = (page) => page.evaluate(() => { window.__said.length = 0; window.__vu = 0; });
 // un bateau attend le geste de l'enfant
 const waitBoat = (page, t = 60000) => page.waitForFunction(() => window.__app.voiliers?.attend, null, { timeout: t, polling: 50 });
 const question = (page) => page.evaluate(() => { const q = window.__app.voiliers.q; return { num: q.num, k: q.k, bouees: q.bouees, mer: q.mer, double: q.double, k2: q.k2, rangee2: q.rangee2 }; });
@@ -51,7 +51,13 @@ const bulleLibre = (page) => page.evaluate(() => {
   const r = b.rect, sur = !(r[2] < z[0] || r[0] > z[2] || r[3] < z[1] || r[1] > z[3]) || r[3] > 600;
   return { ok: !sur, b, z };
 });
-const shot = (page, n, [w]) => page.screenshot({ path: join(OUT, `${n}-${w}.png`) });
+// chaque capture, avec ce que la voix a dit depuis la précédente et ce qu'écrit la bulle (pour la relecture du lot)
+const releve = [];
+const shot = async (page, n, [w]) => {
+  await page.screenshot({ path: join(OUT, `${n}-${w}.png`) });
+  const x = await page.evaluate(() => { const d = window.__said ?? [], b = window.__app.bulle?.etat?.(); const r = { dit: d.slice(window.__vu ?? 0), bulle: b?.visible ? b.texte : null }; window.__vu = d.length; return r; }).catch(() => ({}));
+  releve.push({ capture: `${n}-${w}.png`, ...x });
+};
 
 for (const T of TAILLES) {
   console.log(`\n# ${T[0]} × ${T[1]}`);
@@ -202,6 +208,7 @@ for (const T of TAILLES) {
   check(/voiliers/.test(journal) && /(a confondu plus grand et plus petit|s'est trompée de plusieurs passages)/.test(journal), "journal des erreurs : l'erreur des voiliers en une phrase");
   check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
 }
+writeFileSync(join(OUT, "parcours-resultat.json"), JSON.stringify({ echecs: fail, captures: releve }, null, 1));
 console.log(fail.length ? `\n${fail.length} échec(s)` : "\nparcours voiliers : tout est vert");
 await browser.close(); srv.close();
 process.exit(fail.length ? 1 : 0);

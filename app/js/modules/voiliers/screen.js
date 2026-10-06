@@ -204,7 +204,9 @@ export class VoiliersScreen {
       // rangé : il passe ; « Bravo ! » (devant les pirates : « Bravo, tu as semé les pirates ! »), ou entre deux bouées rondes
       const b = q.double ? q.rangee2 : q.bouees, k = q.double ? q.k2 : q.k, e = entre(b, k);
       sound?.play("bonne"); ocean.mascotte.play("rejouir");
-      const bravo = e ? fill(T.voiliersBravoEntre, { a: e[0], b: e[1] }) : q.mer === "pirates" ? text.pick("voiliersBravoPirates") : text.pick("bravo");
+      // (devant les pirates, entre deux bouées rondes : « Les pirates sont loin. C'est entre 340 et 350 ! », comme la maquette)
+      const entreDit = e ? fill(T.voiliersBravoEntre, { a: e[0], b: e[1] }) : null;
+      const bravo = q.mer === "pirates" ? (entreDit ? `${T.voiliersMer.loin} ${entreDit}` : text.pick("voiliersBravoPirates")) : entreDit ?? text.pick("bravo");
       app.starFrom = [api.centre(k), 700];
       await Promise.all([voice.say(bravo), api.passe(k)]).then(g);
     }

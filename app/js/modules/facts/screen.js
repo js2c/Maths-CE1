@@ -242,7 +242,7 @@ export class FactsScreen {
     const r = { value, ms, listens: voice.listens, aide: this.aide, nsp }, tok = this.tok;
     // lot 3 : le calcul rapide a sa correction (le chemin, le mur de corail et le poisson) et son retour « juste mais lent »
     if (q.module === 3 && this.calc) { await this.calc.feedback(q, r, ok); this.app.aidBoard?.clear(); const done = this.resolve; this.resolve = null; return done?.(r); }
-    ocean.octo.play(ok ? "rejouir" : "encourager");
+    ocean.mascotte.play(ok ? "rejouir" : "encourager");
     if (ok) this.app.sound?.play("bonne"); else if (!nsp) this.app.sound?.play("erreur");
     const answer = () => { this.typed = String(expected(q)); this.ring = true; this.slate.repaint(); };
     if (ok) { pop(this.slate); if (this.notion && (q.guide || q.revient)) this.hermit?.play("rejouir"); await voice.say(text.pick("bravo")); await wait(250); }

@@ -46,7 +46,7 @@ test("découpage en phrases", () => {
 
 test("inventaire : les phrases à nombre sont déclinées pour chaque valeur", () => {
   const inv = inventaire();
-  for (const s of ["Place le poisson sur le nombre 37.", "Où est le nombre 0 ?", "Où mettrais-tu 100 ?", "C'était 64.", "0 plus 6 ?", "Combien font 10 plus 0 ?", "La tortue est sur 6 et fait 4 sauts.", "La tortue est sur 9 et fait un saut.", "4 dizaines et 7 unités.", "1 dizaine et 2 unités.", "2 dizaines et 1 unité.", "1 dizaine et 3 unités.", "Cette carte t'attend quelque part dans le lagon !", "Ce n'est pas grave, regardons ensemble.", "La ligne commence à 30, pas à zéro.", "La tortue part de 3, pas de zéro.", "Ce soir, tu as gagné 12 étoiles de mer.", "Coucou !", "C'est moi, Plouf.", "C'est l'hippocampe !", "37", "trente…"]) assert.ok(inv.has(s), s);
+  for (const s of ["Place le poisson sur le nombre 37.", "Où est le nombre 0 ?", "Où mettrais-tu 100 ?", "C'était 64.", "0 plus 6 ?", "Combien font 10 plus 0 ?", "La tortue est sur 6 et fait 4 sauts.", "La tortue est sur 9 et fait un saut.", "4 dizaines et 7 unités.", "1 dizaine et 2 unités.", "2 dizaines et 1 unité.", "1 dizaine et 3 unités.", "Cette carte t'attend quelque part dans le lagon !", "Ce n'est pas grave, regardons ensemble.", "La ligne commence à 30, pas à zéro.", "La tortue part de 3, pas de zéro.", "Ce soir, tu as gagné 12 étoiles de mer.", "Bienvenue à bord !", "Prends ton temps.", "C'est l'hippocampe !", "37", "trente…"]) assert.ok(inv.has(s), s);
   // les 66 additions sous leurs trois formes, et leur correction
   const faits = additions();
   assert.equal(faits.length, 66);
@@ -89,11 +89,11 @@ test("le moteur de voix joue les fichiers, la synthèse en secours, « réécout
   const v = new Voice({ fast: true }).setIndex(index);
   const p = v.plan("Bravo ! Ce soir, tu as gagné 3 étoiles de mer.");
   assert.equal(p.length, 2); assert.equal(p[0].src, `assets/voix/${index.phrases["Bravo !"][0]}`);
-  assert.equal(v.plan("Coucou ! C'est moi, Zoé."), null); // un nom tapé par le parent : pas de fichier
+  assert.equal(v.plan("Bravo ! Une phrase sans fichier."), null); // une phrase pas encore fabriquée : pas de fichier
   await v.say("Place le poisson sur le nombre 37.", { instruction: true });
   assert.equal(v.misses.size, 0);
-  await v.say("Coucou ! C'est moi, Zoé.");
-  assert.deepEqual([...v.misses], ["C'est moi, Zoé."]);
+  await v.say("Bravo ! Une phrase sans fichier.");
+  assert.deepEqual([...v.misses], ["Une phrase sans fichier."]);
   // « réécouter » : la même consigne, donc le même fichier ; l'écoute est comptée
   v.misses.clear(); await v.replay();
   assert.equal(v.listens, 2); assert.equal(v.misses.size, 0); assert.ok(v.plan(v.instruction));
@@ -102,9 +102,9 @@ test("le moteur de voix joue les fichiers, la synthèse en secours, « réécout
 });
 
 test("un gabarit rempli en deux temps garde ses nombres (défaut « plus ? » du lot 1)", () => {
-  // comme main.js : pick remplit {mascotte}, puis l'écran remplit les nombres
-  const pick = (t) => fill(t, { mascotte: "Bulle" });
+  // comme main.js : pick remplit ce qu'il connaît (rien depuis le lot « Mascotte », la mascotte n'a plus de nom), puis
+  // l'écran remplit les nombres
+  const pick = (t) => fill(t, {});
   assert.equal(fill(pick("{a} plus {b} ?"), { a: 0, b: 6 }), "0 plus 6 ?");
   assert.equal(fill(pick("Regarde tout ce que tu as gagné ce soir : {etoiles} !"), { etoiles: "3 étoiles de mer" }), "Regarde tout ce que tu as gagné ce soir : 3 étoiles de mer !");
-  assert.equal(pick("C'est moi, {mascotte}."), "C'est moi, Bulle.");
 });

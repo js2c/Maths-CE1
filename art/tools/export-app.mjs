@@ -3,11 +3,11 @@
 //   app/assets/art/atlas.json                  où est chaque image, son décalage par rapport à l'ancrage, sa cadence
 //   app/js/art/runtime.js                      le dessin en direct (ligne graduée, chiffres), module ES généré
 // puis vérifie : (1) reproductibilité : chaque planche est rendue une seconde fois dans une page neuve
-// et les empreintes de toutes les images doivent être identiques ; (2) raccord des boucles et
-// continuité des gestes de la pieuvre (voir `seams` dans src/hosts/export-app.ts).
+// et les empreintes de toutes les images doivent être identiques ; (2) raccord des boucles (voir `seams` dans
+// src/hosts/export-app.ts). (Lot « Mascotte » : plus de planches de la pieuvre ; la mascotte est en vidéo, art/mascotte/.)
 //
 //   node tools/export-app.mjs                 tout
-//   node tools/export-app.mjs --only pieuvre  seulement les planches dont le nom contient « pieuvre »
+//   node tools/export-app.mjs --only petits   seulement les planches dont le nom contient « petits »
 //   node tools/export-app.mjs --no-check      sans le second rendu de contrôle
 //   node tools/export-app.mjs --runtime       seulement app/js/art/runtime.js
 // Le fond de l'application, le lagon, n'est pas dessiné ici : il est extrait de la maquette du récif vivant par
@@ -50,7 +50,7 @@ const sheets = [...new Set(specs.map((s) => s.sheet))].filter((s) => !only || s.
 mkdirSync(OUT, { recursive: true });
 const atlasPath = join(OUT, "atlas.json");
 const atlas = existsSync(atlasPath) && only ? JSON.parse(readFileSync(atlasPath, "utf8")) : { version: 1, generated: "art/tools/export-app.mjs", sheets: {}, sprites: {} };
-if (sheets.some((s) => s.startsWith("pieuvre"))) atlas.octo = await pg.evaluate(() => window.EXPORT.octo());
+delete atlas.octo; // (la frise de la pieuvre, jusqu'au lot « Mascotte »)
 if (!only) for (const f of readdirSync(OUT)) if (f.endsWith(".webp") && !f.startsWith("lagon") && !sheets.some((s) => f.startsWith(`${s}@`))) unlinkSync(join(OUT, f)); // planches qui n'existent plus (le lagon : plus bas)
 let bad = 0;
 const report = [];
@@ -93,7 +93,7 @@ atlas.hash = createHash("md5").update(JSON.stringify(atlas.sprites)).digest("hex
 writeFileSync(atlasPath, JSON.stringify(atlas));
 console.log(`atlas    -> ${atlasPath} (${Object.keys(atlas.sprites).length} sprites, empreinte ${atlas.hash})`);
 
-if (check && (!only || ["pieuvre", "poisson", "tortue"].some((k) => only.includes(k)))) {
+if (check && (!only || ["poisson", "tortue"].some((k) => only.includes(k)))) {
   const seams = await pg.evaluate(() => window.EXPORT.seams());
   console.log("raccords (écart moyen 0..255 ; un raccord doit rester sous l'écart maximal entre deux images voisines) :");
   for (const [n, v] of Object.entries(seams)) {

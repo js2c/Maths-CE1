@@ -1,6 +1,6 @@
 /* L'ESPACE PARENT : des pages HTML ordinaires, en français, par-dessus l'océan (parent.js). Contrairement
-   au reste de l'application, on y lit du texte : défilement vertical, sélection du texte, clavier permis
-   (nom de la pieuvre). Les couleurs reprennent l'océan : sable, eau profonde, corail, étoile jaune. */
+   au reste de l'application, on y lit du texte : défilement vertical, sélection du texte.
+   Les couleurs reprennent l'océan : sable, eau profonde, corail, étoile jaune. */
 :root {
   --pa-ink: #15222a; --pa-ink-2: #3f5560; --pa-ink-3: #6b7f88;
   --pa-sand: #f4ead3; --pa-card: #fffaf0; --pa-line: #e3d6b8; --pa-sea: #0b5563; --pa-sea-2: #137683; --pa-sea-3: #d5ecec;
@@ -88,8 +88,6 @@
 .pa-seg button { min-height: 60px; min-width: 96px; padding: 0 16px; border: 0; background: #fff; color: var(--pa-sea); font-weight: 650; }
 .pa-seg button + button { border-left: 2px solid var(--pa-sea); }
 .pa-seg button[aria-pressed="true"] { background: var(--pa-sea); color: #fff; }
-.pa-input { min-height: 60px; padding: 0 16px; font: inherit; border: 2px solid var(--pa-line); border-radius: 14px; background: #fff; min-width: 240px; }
-.pa-input:focus { outline: 3px solid var(--pa-sea-3); border-color: var(--pa-sea); }
 .pa-setting { display: grid; grid-template-columns: 260px 1fr; gap: 12px 20px; align-items: center; padding: 14px 0; border-top: 1px solid var(--pa-line); }
 .pa-setting:first-of-type { border-top: 0; }
 .pa-setting > div:first-child b { display: block; }

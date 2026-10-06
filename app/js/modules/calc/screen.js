@@ -110,7 +110,7 @@ export class CalcScreen {
   // après la réponse (FactsScreen.submit) : juste (et, si c'était lent, le chemin rejoué une fois), ou la correction
   async feedback(q, r, ok) {
     const fs = this.fs, { voice, text, ocean, sound } = this.app, T = text.data, k = this.app.vitesse ?? 1;
-    ocean.octo.play(ok ? "rejouir" : "encourager");
+    ocean.mascotte.play(ok ? "rejouir" : "encourager");
     if (ok) sound?.play("bonne"); else if (!r.nsp) sound?.play("erreur");
     const answer = () => { fs.typed = String(answerOf(q)); fs.ring = true; fs.slate.repaint(); };
     if (q.pont) { // un caillou d'un calcul guidé : bravo, ou la correction du pont

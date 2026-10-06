@@ -13,8 +13,8 @@ export class LineView {
     this.worker.onmessage = ({ data }) => { this.wait.get(data.id)?.(data.bitmaps); this.wait.delete(data.id); };
     // calque d'effets de la même bande (arcs de saut, surbrillances) : dessiné seulement pendant un retour
     // ou une leçon, vidé ensuite (un canvas qui ne change pas ne coûte rien)
-    // (lot 2 : posé au-dessus de la pieuvre, comme la tortue : arcs et filets ne passent jamais derrière ses bras)
-    this.fx = document.createElement("canvas"); this.fx.id = "fx"; (stage.root.querySelector("#octo") ?? this.c).after(this.fx); this.fxCtx = this.fx.getContext("2d"); this.fxUsed = false;
+    // (lot 2 : posé au-dessus de la mascotte, comme la tortue : arcs et filets ne passent jamais derrière elle)
+    this.fx = document.createElement("canvas"); this.fx.id = "fx"; (stage.root.querySelector("#mascotte") ?? this.c).after(this.fx); this.fxCtx = this.fx.getContext("2d"); this.fxUsed = false;
     this.place(); stage.onResize(() => this.place());
   }
   place() {
@@ -30,13 +30,15 @@ export class LineView {
   // (lot 3, étape 5) une leçon jouée pendant une pause dessine dans des calques neufs, posés sur ceux de la séance (qui
   // gardent leur ligne, qu'on ne peut pas relire d'un canvas « bitmaprenderer ») ; `restore()` rend ceux de la séance
   swap() {
-    const old = { c: this.c, ctx: this.ctx, fx: this.fx, fxCtx: this.fxCtx, fxUsed: this.fxUsed };
+    const old = { c: this.c, ctx: this.ctx, fx: this.fx, fxCtx: this.fxCtx, fxUsed: this.fxUsed, affichee: this.affichee };
     const c = old.c.cloneNode(false), fx = old.fx.cloneNode(false);
     for (const e of [c, fx]) { e.classList.remove("stash"); e.style.opacity = ""; e.style.transition = ""; }
     old.c.after(c); old.fx.after(fx);
-    Object.assign(this, { c, ctx: c.getContext("bitmaprenderer"), fx, fxCtx: fx.getContext("2d"), fxUsed: false }); this.place();
+    Object.assign(this, { c, ctx: c.getContext("bitmaprenderer"), fx, fxCtx: fx.getContext("2d"), fxUsed: false, affichee: false }); this.place();
     return () => { this.c.remove(); this.fx.remove(); Object.assign(this, old); };
   }
-  show(bitmap) { this.ctx.transferFromImageBitmap(bitmap); }
-  clear() { this.ctx.transferFromImageBitmap(null); }
+  // (lot « Mascotte ») `affichee` : une ligne est à l'écran (la bulle de la mascotte ne couvre jamais sa bande)
+  show(bitmap) { this.ctx.transferFromImageBitmap(bitmap); this.affichee = !!bitmap; }
+  clear() { this.ctx.transferFromImageBitmap(null); this.affichee = false; }
+  get bande() { const c = this.c; return this.affichee && c.style.opacity !== "0" && !c.classList.contains("stash") ? [0, BAND[0], 1280, BAND[0] + BAND[1]] : null; }
 }

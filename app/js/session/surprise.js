@@ -36,7 +36,7 @@ export async function playSurprise(app, s) {
     };
     ocean.front.push(tick);
     await wait(600);
-    ocean.octo.play("saluer");
+    ocean.mascotte.play("saluer");
     await Promise.all([voice.say(text.data.surpriseVisite), gone]);
     return;
   }

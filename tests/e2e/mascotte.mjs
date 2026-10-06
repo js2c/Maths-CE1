@@ -88,9 +88,9 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   check(await clip(["success"]), `${W} trois réussites de suite : grande joie`);
   await page.waitForTimeout(700); await shot("13-grande-joie");
   // l'encouragement : une seconde erreur sans nouvelle consigne (protection du sélecteur, défi) : demandé directement ici
-  await ligne(); await repondre(false); await clip(["wrong"]);
-  await page.evaluate(() => window.__app.ocean.mascotte.play("encourager"));
-  check(await clip(["encourage"], 12000), `${W} erreur suivante : encouragement`);
+  await ligne(); await repondre(false); const deçue = await clip(["wrong"]);
+  await page.evaluate(() => { const m = window.__app.ocean.mascotte; m.play("encourager"); if (m.erreurs < 2) m.play("encourager"); });
+  check(await clip(["encourage"], 14000), `${W} erreur suivante : encouragement (la déception avant : ${deçue ? "oui" : "non"} ; ${JSON.stringify((await etat()).m)})`);
   await page.waitForTimeout(800); await shot("14-encouragement");
 
   // ---- 3. la relance : 12 s sans toucher, un geste ; 25 s, la phrase ; puis plus rien

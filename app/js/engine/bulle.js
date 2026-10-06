@@ -87,7 +87,7 @@ export function choisirPlace(obstacles, mesure, places = PLACES, souples = []) {
 export const mots = (texte) => texte.trim().replace(/ ([:;!?»])/g, " $1").replace(/« /g, "« ").split(/[ \t\n]+/).map((w) => w.split(/(\d+)/).filter(Boolean).map((t) => ({ t, nombre: /^\d+$/.test(t) })));
 
 // ce que l'enfant touche, visible, en px logiques (ce que la bulle ne doit jamais couvrir)
-const TOUCHE = "button, .touchband, .fishhit, .shelltap, [data-bulle-evite]", CARTE = ".slate, [data-bulle-souple]";
+const TOUCHE = "button, .touchband, .fishhit, .shelltap, [data-bulle-evite]", CARTE = ".slate, .tally, .card, .special, [data-bulle-souple]"; // (l'ardoise, le bilan des étoiles, les cartes)
 export function obstacles(ui, k, sel = TOUCHE) {
   const r0 = ui.getBoundingClientRect(), out = [];
   for (const el of ui.querySelectorAll(sel)) {

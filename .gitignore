@@ -8,3 +8,4 @@ tools/voix/travail/
 tools/voix/essais/out/
 __pycache__/
 tools/voix/a-refaire.txt
+.venv*/

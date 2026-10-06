@@ -53,7 +53,7 @@ Le passage visé est tiré au hasard (tous les passages également probables) ; 
 - **La mer** : dessinée en direct en WebGL (houle, reflets, écume), avec trois qualités (`QUAL`) ; les bateaux et les bouées tanguent avec la houle.
 - **Les images** (2,2 Mo dans `ASSETS`, 0,6 Mo dans `SKY`) : 5 bateaux (voilier, catamaran, yacht, chalutier, pirate) en textures avec leur ombre, 4 types de bouées, le ciel et les nuages, la côte. Images générées à part, pas dessinées dans l'atelier : une exception de plus au « tout dessiné », comme les cartes, le lagon et le récif vivant.
 - **Les nombres** sur les voiles, les plaques et les bouées : peints en direct.
-- **La bulle** : ovale de BD dessiné en SVG (`balloonPath`, `drawBalloon`), police Shantell Sans ; la mascotte en haut à droite, « réécouter » dessous.
+- **La bulle** : ovale de BD dessiné en SVG (`balloonPath`, `drawBalloon`), police Shantell Sans ; la mascotte en haut à droite, « réécouter » dessous (dans l'application : en haut à gauche, voir plus bas).
 
 ## Branchements de la mascotte (déjà dans la maquette)
 
@@ -67,6 +67,7 @@ Le passage visé est tiré au hasard (tous les passages également probables) ; 
 
 - Pas de voix : à l'intégration, chaque texte devient une phrase fabriquée avec Chatterbox (liste économe dans `docs/SPEC.md`, section 7 bis).
 - Les nombres en lettres de la bulle (« Quarante-sept ») suivent ici l'ancienne orthographe (« vingt et un ») : l'application écrit avec des traits d'union, comme partout ailleurs (`app/js/engine/phrases.js`).
+- La mascotte passe en haut à gauche, sous la maison, comme sur les autres écrans de l'application (décision du parent du 6 octobre 2026), sa bulle à sa droite ; le point d'attente du bateau (`WAIT`) passe à droite du centre pour que la bulle ne cache pas la voile ; l'export le règle (`docs/SPEC.md`, section 7 bis).
 - Le panneau de réglage (appui long en haut à gauche) disparaît : ce qui doit rester réglable va dans l'espace parent ou dans `app/content/`.
 - Les pastilles de la partie sont remplacées par la frise d'avancement de l'application ; la longueur de la partie suit la durée de la séance.
 - Ni maison, ni « je ne sais pas », ni « passer », ni pause : à ajouter selon les règles communes (`docs/SPEC.md`, section 9).

@@ -30,7 +30,7 @@ les tests échouent avec « phrases sans fichier à jour »).
    git checkout main
    git pull
    ```
-2. Fabriquer ce qui manque :
+2. Fabriquer ce qui manque (si Chatterbox est installé dans un environnement Python, par exemple `.venv-voix`, l'activer d'abord : `.venv-voix\Scripts\activate` ; le début de la ligne affiche alors `(.venv-voix)`) :
    ```
    node tools\voix\fabriquer.mjs --ref ..\ref-posee.wav
    ```
@@ -41,11 +41,11 @@ les tests échouent avec « phrases sans fichier à jour »).
 5. Vérifier, puis publier :
    ```
    node --test tests\unit\voix.test.mjs
-   git add -A
+   git add app tools\voix
    git commit -m "Voix : phrases nouvelles"
    git push
    ```
-   Le test doit finir par `# fail 0`. À la publication, GitHub refait lui-même la liste des fichiers du mode
+   Le test doit finir par `# fail 0`. `git add app tools\voix` n'ajoute que les sons, l'index et les fichiers de l'outil : jamais l'enregistrement de référence, ni un environnement Python posé dans le dossier. À la publication, GitHub refait lui-même la liste des fichiers du mode
    hors ligne et lance tous les tests : si l'un échoue, rien n'est publié et l'ancienne version reste en ligne
    (onglet « Actions » du dépôt).
 
@@ -73,7 +73,7 @@ fusion passent au vert.
    ```
    node tools\precache.mjs
    node --test tests\unit\voix.test.mjs
-   git add -A
+   git add app tools\voix
    git commit -m "Voix : phrases nouvelles du lot"
    git push
    git checkout main

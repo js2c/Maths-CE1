@@ -21,7 +21,7 @@ Mode d'emploi :
 
 ### L'accueil
 
-Quatre bulles : **jouer**, **choisir**, **le récif**, **l'album**, plus le logo (appui long, espace parent). Après la séance du jour : la lune « à demain » (un décor, pas un bouton), **Encore !**, le récif, l'album.
+Quatre bulles : **jouer**, **choisir**, **le récif**, **l'album**, plus le logo (appui long, espace parent). **(à construire)** Une cinquième bulle, **les leçons**, sort les leçons de l'écran « choisir » (section 3, « Les leçons »). Après la séance du jour : la lune « à demain » (un décor, pas un bouton), **Encore !**, le récif, l'album.
 
 - **jouer** : la séance préparée par l'application (notion du jour choisie par la rotation, section 3).
 - **choisir** : l'enfant, ou le parent pour elle, choisit l'exercice puis le niveau (section 3). L'exercice choisi **est la séance du jour**, avec étoiles, coquillages et cartes.
@@ -63,7 +63,27 @@ Quatre bulles : **jouer**, **choisir**, **le récif**, **l'album**, plus le logo
   - Chaque tuile porte **son numéro en grand** (le parent peut dire « fais le 7 »), avec sa vignette en petit.
   - Le niveau conseillé a un **halo épais et animé** ; un niveau validé porte une petite étoile, à l'intérieur de sa tuile.
   - Aucune tuile coupée par un bord d'écran, ni posée sur la mascotte (la pieuvre aujourd'hui) ou les algues.
-- **Écran des leçons** : toutes les leçons existantes, vues ou non. Une leçon choisie seule n'est pas une séance : elle se joue, puis revient à l'accueil ; 3 étoiles si elle est regardée jusqu'au bout, une fois par leçon et par jour.
+- **Écran des leçons** (aujourd'hui, la dernière image du premier écran) : toutes les leçons existantes, vues ou non. Une leçon choisie seule n'est pas une séance : elle se joue, puis revient à l'accueil ; 3 étoiles si elle est regardée jusqu'au bout, une fois par leçon et par jour. Les tuiles portent un exemple (« 1 2 3 », « 10 20 », « 100 »…) sans numéro : **incompréhensibles** (constat du parent du 30 septembre), à refaire ci-dessous.
+
+### Les leçons (à construire)
+
+- **Accès** : depuis l'accueil (bulle « les leçons »), plus depuis l'écran « choisir ».
+- **Menu refait** : les leçons rangées par exercice (la ligne, les additions, le calcul rapide), chaque tuile avec **son numéro en grand** et une **vignette qui montre le moment clé de la leçon** (la tortue et ses sauts comptés, le poisson et son reflet, le cadre de 10…), pas un exemple de calcul ; le nom dit au toucher ; la légende du parent inchangée. Maquette fabriquée en tête du lot et validée par le parent avant le code (`docs/LOTS.md`, lot « Les leçons »).
+- **Les tables à consulter** : dans le menu des leçons, la **table d'addition** (et la table de multiplication quand la multiplication arrivera, phase 2). Présentation à maquetter : une grille où toucher une case dit et montre le calcul (« 7 plus 5, 12 »), avec l'appui visuel de la famille.
+- **La leçon suivie de son exercice** : à la fin d'une leçon, regardée jusqu'au bout **ou passée**, deux bulles : **« À toi ! »** (la vignette de l'exercice associé) et la maison. « À toi ! » enchaîne sur les exemples guidés puis les questions de l'exercice associé, **sans échauffement** ni leçon d'entrée (elle vient d'être vue) ; c'est la **séance du jour** si aucune n'a été terminée aujourd'hui, de l'**entraînement libre** sinon (même règle que « choisir » et « Encore ! »). Sélecteur de difficulté comme pour « choisir ».
+
+| Leçon | Exercice associé |
+| --- | --- |
+| L1 · On compte les sauts | ligne, niveau 1 |
+| L2 · Un saut peut valoir 10 | ligne, niveau 5 |
+| L3 · La ligne ne commence pas toujours à 0 | ligne, niveau 4 |
+| L10 · Les centaines | ligne, niveau 9 |
+| L4 · Les doubles | additions, famille 2 |
+| L5 · Les amis de 10 | additions, famille 3 |
+| L6 · La maison des nombres | additions, famille 4 |
+| L7 · + 10 sur le mur de corail | calcul rapide, niveau 2 |
+| L8 · L'astuce du 9 | calcul rapide, niveau 6 |
+| L9 · Passer la dizaine | calcul rapide, niveau 7 |
 - **La légende des niveaux**, pour le parent : sur chaque écran de niveaux et celui des leçons, un bouton discret (un petit livre) ouvre un panneau par-dessus ; une ligne par niveau (numéro, vignette, ce qui est travaillé en une phrase simple, un exemple) ; fermé par une croix ou un toucher en dehors ; ne choisit et ne lance rien ; pas lue par la voix. Texte rangé une seule fois (`legendes.json`), repris par le guide et l'espace parent.
 
 ### Ce qu'entraîne un choix
@@ -344,7 +364,7 @@ Les changements de mer sont annoncés par les phrases de la maquette. Le vent et
 
 Estimation : environ 800 phrases (dont 486 nombres de 101 à 999 qui n'existent pas encore), environ 5 Mo ; la voix passe d'environ 60 à 66 Mo, sous le plafond de 80 Mo. L'inventaire (`tools/voix/inventaire.mjs`) reçoit le domaine de chaque gabarit.
 
-**La mascotte** : en haut à droite, comme dans la maquette ; « réécouter », « passer » et « je ne sais pas » dessous ; la maison en haut à gauche. Ses branchements sont ceux de la maquette (`art/voiliers/README.md`) ; la bulle n'est là que le temps de parler (section 11).
+**La mascotte** : en haut à gauche, sous la maison, comme sur les autres écrans (décision du parent du 6 octobre 2026 ; la maquette la place en haut à droite), sa bulle à sa droite ; « réécouter », « passer » et « je ne sais pas » à leur place habituelle. Pour que la bulle ne cache jamais la voile et son nombre, le point d'attente du bateau (au centre gauche dans la maquette) passe à droite du centre ; l'export le règle sans modifier la maquette. Si ce déplacement abîme le jeu (arrivée du bateau, poursuite des pirates, double encadrement), la mascotte reste à droite comme dans la maquette, et le lot le dit. Ses branchements sont ceux de la maquette (`art/voiliers/README.md`) ; la bulle n'est là que le temps de parler (section 11).
 
 **Fluidité** : 30 images/s au moins sur la tablette ; si le temps d'image moyen dépasse 20 ms, la mer passe à une qualité plus basse (les trois qualités de la maquette), puis revient quand tout redevient fluide ; mesuré par `tests/e2e/perf.mjs`.
 
@@ -367,7 +387,7 @@ Estimation : environ 800 phrases (dont 486 nombres de 101 à 999 qui n'existent 
 | L7 · + 10 sur le mur de corail | calcul | le poisson descend d'une rangée ; seules les dizaines changent |
 | L8 · L'astuce du 9 | calcul | + 10 puis un pas en arrière, deux exemples (34 + 9, puis 56 + 9) |
 | L9 · Passer la dizaine | calcul | deux tableaux successifs : le cadre de 10 qui se complète (8 + 2), puis la ligne et ses deux ponts (38 → 40 → 43) ; rien ne se superpose |
-| L10 · Les centaines | ligne | dix filets dans un chalut, 300, puis 307 et le zéro des dizaines |
+| L10 · Les centaines | ligne | dix filets dans un chalut, 300, puis 307 et le zéro des dizaines. **À corriger** (constat du parent du 30 septembre) : dans le chalut, chaque petit filet ne montre que 5 poissons ; **un filet montre toujours 10 poissons**, en deux rangées de 5 comme le cadre de 10. Le rendu, jugé daté, relève du chantier graphique |
 
 Le vocabulaire (« amis de 10 », « maison », « mur ») est à aligner sur celui de la classe si l'enseignante en utilise un autre.
 
@@ -466,7 +486,7 @@ Principe : la progression visible récompense **l'effort et la régularité** ; 
 
 - **La pieuvre**, mascotte présente partout jusqu'au lot « Mascotte » (ci-dessous, à construire), qui la remplace partout.
 - **La mascotte, le capitaine (à construire)**. Décisions du parent des 5 et 6 octobre 2026 ; maquette validée : `art/mascotte/` (son `README.md` donne les vidéos, les raccords mesurés, le rendu et les règles du comportement).
-  - Une tête dessinée, en vidéo (17 clips, fond vert retiré à l'affichage), qui **remplace la pieuvre partout, à sa place** sur chaque écran (en haut à droite dans le jeu des voiliers) ; la tête entière, sans fondu ; absente du récif vivant, comme la pieuvre. Elle ne se déplace pas : ce qu'elle cacherait pendant un exemple, une correction ou une leçon est déplacé, pas elle.
+  - Une tête dessinée, en vidéo (17 clips, fond vert retiré à l'affichage), qui **remplace la pieuvre partout, à sa place** sur chaque écran (en haut à gauche, sous la maison ; dans le jeu des voiliers aussi, section 7 bis) ; la tête entière, sans fondu ; absente du récif vivant, comme la pieuvre. Elle ne se déplace pas : ce qu'elle cacherait pendant un exemple, une correction ou une leçon est déplacé, pas elle.
   - **Pas de nom** : le choix du nom au premier lancement et le réglage « nom de la pieuvre » disparaissent, ainsi que `{mascotte}` dans les textes.
   - **Jamais figée** : entre deux phrases, elle enchaîne de courts clips d'attente tirés au hasard selon le moment (accueil ; question en cours : calme et attentive ; après une réussite ; après une erreur ; pendant une explication), sans répéter les deux derniers, avec un délai minimal avant de refaire un geste marqué et un clip calme après chaque geste.
   - **Elle parle quand la voix parle**, sans synchronisation des lèvres, et se tait au plus 1,4 s après la fin de la phrase.
@@ -521,22 +541,28 @@ Le fond dessiné d'origine (le sprite « fond », ses rayons, ses reflets, ses a
 
 ## 13. Ce qui reste à construire
 
-L'ordre n'est pas fixé : voir la revue de périmètre dans `docs/IDEES.md`. Chaque élément sera précisé ici, dans ce document, au moment de son lot.
+Les lots prêts à lancer, dans l'ordre, sont dans `docs/LOTS.md` (décision du parent du 6 octobre : mascotte, voiliers, leçons et table d'addition, sommes jusqu'à 30, multiplication et tables). Les phases (décision du parent du 30 septembre, détail dans `docs/IDEES.md`, section 1) : **phase 1**, les leçons (section 3), les problèmes, les sommes jusqu'à 30 et trois nouveaux exercices de numération ; **phase 2**, fractions, multiplication et partage, opérations posées, calculs à trois chiffres ; **phase 3**, heure, monnaie, longueurs et masses. **Exclu** : écrire les nombres en lettres. Chaque élément est précisé ici au moment de son lot, **après validation par le parent d'une maquette de son rendu** (fabriquée en tête du lot quand elle n'existe pas, `docs/LOTS.md`) ; les concepts non encore validés sont dans `docs/IDEES.md`, section 2.
 
 ### Bilans périodiques (à construire)
 
 Toutes les deux semaines, un bilan remplace la notion du jour, au format officiel d'un exercice à la fois, en tournant : 15 questions de ligne graduée en 5 minutes (paliers officiels 0–4, 5–8, 9–15) ; 20 additions en 1 minute (0–5, 6–7, 8–20) ; 30 calculs en 3 minutes (0–8, 9–17, 18–30). Pour l'enfant, une « grande exploration » qui rapporte des étoiles comme une séance ; pour le parent, les scores bruts comparés aux paliers et au point de départ de septembre. Source des paliers : fiches descriptives Repères CE1, https://www.education.gouv.fr/l-evaluation-des-acquis-des-eleves-en-cp-ce1-ce2-cm1-et-cm2-fiches-descriptives-des-exercices-342046
 
-### Sommes jusqu'à 20 (à construire, non programmé)
+### Sommes jusqu'à 30 (à construire, phase 1)
 
-Suite du module 2 prévue « après maîtrise » : doubles jusqu'à 10 + 10, presque-doubles, passage de la dizaine par 10 (8 + 5 = 8 + 2 + 3). À spécifier.
+Suite du module 2, décidée en phase 1 (décision du parent du 30 septembre : jusqu'à 30, pas 20). Au moins : doubles jusqu'à 10 + 10, presque-doubles, passage de la dizaine par 10 (8 + 5 = 8 + 2 + 3), sommes dont le résultat va jusqu'à 30. Partage entre faits à mémoriser et calculs à faire : question ouverte (`docs/IDEES.md`), proposition par défaut dans `docs/LOTS.md` (lot « Sommes jusqu'à 30 »). À spécifier après maquette.
 
-### Problèmes et dénombrement (à construire)
+### Problèmes (à construire, phase 1)
 
-Compétences presque acquises en septembre : le module les entretient. Un problème par séance, remplacé par un dénombrement une fois sur quatre.
+**Situations de la vie courante** (décision du parent du 30 septembre : le thème marin serait trop restrictif), par exemple : « Papa vide trois sachets de gourmandises dans la gamelle du chien. Chaque sachet contient 6 gourmandises. », « La maîtresse fabrique des carnets. Elle a 28 pages. Elle utilise 4 pages pour chaque carnet. », « Les enfants ont rangé les 17 ballons de l'école. La maîtresse en achète 8 nouveaux. ».
 
-- **Problèmes** : lus à voix haute, illustrés d'une scène marine ; à partir de la 3e semaine, l'image montre le contexte mais plus les quantités. Nombres jusqu'à 20, puis dizaines entières jusqu'à 100. Sept structures en rotation (davantage de moyens et difficiles quand les faciles sont réussis) : réunion (tout ou partie inconnue), transformation (fin, changement ou début inconnu), comparaison (valeur ou écart inconnu). Aide après une erreur : un schéma en barres (le tout et ses parties) à compléter.
-- **Dénombrement** : collections organisées (filets de 10 et poissons seuls : 3 filets + 7 = 37) ; en vrac jusqu'à 40 objets, que l'enfant peut marquer et entourer par 10 ; on enregistre si elle a regroupé par 10.
+- Lus à voix haute (l'énoncé n'est pas à lire), illustrés ; « réécouter » toujours disponible ; réponse au pavé.
+- **Structures** : additives (réunion, transformation avec début, changement ou fin inconnu, comparaison), et dès le départ, avec de petits nombres, **multiplicatives** (groupes égaux) et de **partage** (valeur d'une part, nombre de parts), résolues sans le signe × en groupant des objets ou par additions répétées ; problèmes en deux étapes ensuite.
+- **Aide après une erreur** : le schéma en barres (le tout et ses parties) pour les problèmes additifs ; des objets à grouper pour les autres.
+- Place dans la séance (étape fixe ou exercice à choisir), banque d'énoncés, illustrations : `docs/IDEES.md`.
+
+### Dénombrement (à construire)
+
+Collections organisées (filets de 10 et poissons seuls : 3 filets + 7 = 37) ; en vrac jusqu'à 40 objets, que l'enfant peut marquer et entourer par 10 ; on enregistre si elle a regroupé par 10. Pourrait être remplacé par le jeu de la pêche (`docs/IDEES.md`), qui va jusqu'aux centaines.
 
 ### Comparer, doubles et moitiés, pair et impair (à construire)
 
@@ -566,7 +592,7 @@ Le jeu des voiliers (section 7 bis) couvre déjà une partie de « Comparer et r
 3. **Réponse qui varie** : `tests/recette-fonctionnelle/b-sequences.mjs --test`, aucune séance en défaut.
 4. **Séance réelle et attentes** : `node tests/e2e/recette.mjs --delai 4.5` (9 à 11 min) ; `node tests/e2e/recette-durees.mjs`, avec et sans `--passer` (aucune attente sans commande de plus de 2 s environ).
 5. **Parcours Playwright** concernés (tous en fin de lot), captures des écrans modifiés regardées ; aucune erreur dans la page.
-6. **Recette fonctionnelle** du point de vue de l'enfant devant l'écran (et du parent à côté), pas de conformité : planches et séquences (`tests/recette-fonctionnelle/`), jugées par une session distincte qui ne lit la spécification qu'après.
+6. **Recette fonctionnelle** du point de vue de l'enfant devant l'écran (et du parent à côté), pas de conformité : planches et séquences (`tests/recette-fonctionnelle/`), jugées par un relecteur distinct qui n'a pas vu le travail et ne lit la spécification qu'après : un agent lancé par la session du lot (`docs/LOTS.md`, « La recette »).
 7. **Essai de dix minutes avec l'enfant** par le parent, après fusion : ce que la recette ne peut pas juger (voix, ressenti, réactions).
 
 Toute règle pédagogique nouvelle est **simulée et lue en séquences avant d'être codée**.

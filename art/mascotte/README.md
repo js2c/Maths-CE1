@@ -212,7 +212,7 @@ L'application utilise de la pieuvre : `play` (18 appels), `hold` (3), `release` 
 - **Pas de nom pour la mascotte.** Le choix du nom au premier lancement (`nomDemande`, `nomTouche`, `nomValider`, `nomChoisi`, liste `noms` de `seance.json`, réglage « nom de la pieuvre » de l'espace parent) est supprimé, ainsi que `{mascotte}` dans les salutations.
 - **Au lancement : une phrase d'introduction courte avec « bienvenue »** (par exemple « Bienvenue à bord ! On s'entraîne ensemble ? »), avec le geste `saluer`. Phrase à fabriquer avec Chatterbox sur l'ordinateur du parent, comme celles des salutations réécrites et de la relance.
 - **Ligne graduée : une flèche bien faite** marque le nombre pendant l'explication, à la place du tentacule de la pieuvre (`hold(pointAt(q))`) : dessinée dans le style A de l'atelier, posée au-dessus de la graduation, avec une petite animation d'arrivée.
-- **La mascotte remplace la pieuvre partout**, à sa place sur chaque écran (en haut à droite dans le jeu des voiliers, comme sur sa maquette).
+- **La mascotte remplace la pieuvre partout**, à sa place sur chaque écran : en haut à gauche, sous la maison, jeu des voiliers compris (décision du parent du 6 octobre 2026 ; la maquette des voiliers la place à droite).
 - **La bulle n'est là que le temps de parler**, partout, jeu des voiliers compris (section 5.5).
 - **Police de la bulle : Shantell Sans.**
 

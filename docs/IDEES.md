@@ -89,6 +89,15 @@ Au cran « plus facile », l'écriture 600 + 30 + 5 s'affiche sous la cale. Un f
   - « je ne sais pas » reste en bas à droite, au bout de la ligne des bouées : il ne gêne pas le geste (le bateau glisse dessous sans le déclencher), mais il couvre un peu l'eau du dernier passage ;
   - la rangée de bouées change tous les 5 bateaux : plus souvent, moins souvent ?
   - le nombre écrit en lettres dans la bulle suit l'orthographe à traits d'union (« trois-cent-quarante-sept ») ; la maquette écrivait « trois cent quarante-sept ».
+  - questions de la relecture du lot (`tests/recette-fonctionnelle/out-voiliers/RELECTURE.md`) :
+    - avec les pirates, le bateau rattrapé coule sans montrer le bon passage (pas de deuxième essai, comme dans la maquette) : montrer une ombre du bateau au bon passage ? (V4)
+    - aux niveaux 1 à 4, environ la moitié des bateaux se rangent avant la première bouée ou après la dernière, parfois très loin (8 parmi 50 · 60 · 70) : il suffit alors de voir qu'il est « beaucoup plus petit » ; borner l'éloignement aux deux bouts, ou leur donner moins de poids ? (V5) Et au niveau 9, le bon passage n'est jamais aux bouts (le nombre est tiré entre la première et la dernière centaine, comme dans la maquette). (V14)
+    - aux niveaux 2 et 6, les bouées qui ne sont pas des dizaines sont dites « cette bouée », allumée, sans leur nombre : assez pour une enfant qui ne lit pas ? Des phrases avec les nombres en feraient environ 2 000 de plus. (V7)
+    - rien ne montre les passages ni le geste à l'image (la maquette non plus) : allumer les deux bouées du passage visé pendant le glisser, une main qui montre le geste au premier bateau ? Et un signe visible du vent (rides, voiles tendues) ? (V10, V11)
+    - une montée de niveau peut être fêtée juste après un naufrage (la règle des 8 sur 10 compte les 10 derniers bateaux) : fêter au bateau réussi suivant ? (V12)
+    - les étoiles : en lâchant les bateaux au hasard en « très dur », l'enfant gagne presque autant qu'une enfant appliquée en « plus facile » ; un nombre manqué puis rangé à son retour rapporte deux étoiles. Règle commune à revoir ? (V13)
+    - l'écran de pause pose ses boutons sur la rangée de bouées, sans voile sur la mer (V15) ; l'écran des crans dit « Choisis ton niveau » alors que l'enfant vient de choisir un niveau : « Choisis ta mer » pour les voiliers ? (V17, phrase à refaire en voix)
+    - au niveau 9, rien ne relie les deux rangées : allumer les deux centaines retenues pendant que la caméra recule ? (V22) Sur le chalutier et la vedette, le nombre est sur une petite plaque (images de la maquette, V21).
 
 ## 5. Idées d'amélioration (non décidées)
 

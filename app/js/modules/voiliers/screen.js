@@ -33,6 +33,10 @@ import { codeErreur, entre, explication, passage, pourquoi } from "./voiliers.js
 export const ATTENTE = { x: 880, y: 410 }, ATTENTE_X_MIN = 600;
 // la bande des bouées : ce que l'enfant vise (la bulle ne la couvre jamais)
 export const BANDE_BOUEES = [0, 600, 1280, 800];
+// au double encadrement, la caméra recule : la rangée des centaines remonte au fond (vers y 420) pendant que celle des
+// dizaines arrive ; la bande interdite à la bulle commence plus haut (relecture du lot, N3 : la bulle, passée sous la tête
+// en dernier recours, mordait sur la rangée qui recule)
+export const BANDE_DOUBLE = [0, 400, 1280, 800];
 // le nombre du bateau, dans la bulle : en chiffres et en lettres (« 347 « trois-cent-quarante-sept » »)
 export const bulleNombre = (t) => t.replace(/(^|\s)(\d{1,3})$/, (m, sp, n) => `${sp}${n} « ${ecritEnLettres(Number(n))} »`);
 // la qualité de la mer : un cran de moins si l'intervalle moyen des dernières images dépasse 20 ms (au moins 10 images, et
@@ -105,7 +109,7 @@ export class VoiliersScreen {
   // pour la bulle : la bande des bouées et le bateau qui arrive ou attend le geste (jamais couverts) ; le bateau qui se
   // déplace seul (correction, exemple), là où il est et là où il va (évité si possible)
   bouge() { const m = this.api?.etat().mode; return !["enter", "wait", "tenu", "drag"].includes(m); }
-  obstacles() { if (!this.api) return []; const b = this.bouge() ? null : this.api.zoneBateau(); return b ? [b, BANDE_BOUEES] : [BANDE_BOUEES]; }
+  obstacles() { if (!this.api) return []; const bande = this.q?.double ? BANDE_DOUBLE : BANDE_BOUEES, b = this.bouge() ? null : this.api.zoneBateau(); return b ? [b, bande] : [bande]; }
   souples() { return this.api && this.bouge() ? this.api.zonesBateau() : []; }
 
   // « passer » pendant une explication ou un exemple : la voix se tait, les gestes finissent vite, jusqu'à la fin de ce qui

@@ -74,6 +74,13 @@ for (const T of TAILLES) {
     const tuiles = await page.$$eval(".choix-tuile", (b) => b.map((x) => x.dataset.key));
     check(tuiles.length === 9, `les voiliers : neuf niveaux (${tuiles.join(" ")})`);
     await shot(page, "02-choisir-niveaux", T);
+    // la légende (le petit livre) : une ligne par niveau, avec la vignette des voiliers
+    await page.tap(".legende", { force: true }); await page.waitForTimeout(700);
+    const leg = await page.evaluate(() => ({ ouverte: !!window.__app.legendOpen, n: window.__app.legendes?.voiliers?.length ?? 0 }));
+    check(leg.ouverte && leg.n === 9, `la légende des voiliers s'ouvre, neuf lignes (${JSON.stringify(leg)})`);
+    await shot(page, "02b-legende", T);
+    await page.tap(".legende-fermer", { force: true }); await page.waitForTimeout(500);
+    check(!(await page.evaluate(() => window.__app.legendOpen)), "la croix ferme la légende");
     await page.tap('.choix-tuile[data-key="2"]', { force: true });
     await page.waitForFunction(() => window.__app.session?.rec?.module === 4, null, { timeout: 20000 });
     check(true, "un niveau des voiliers touché : la séance du jour sur les voiliers");
@@ -207,6 +214,13 @@ for (const T of TAILLES) {
   await page.evaluate(() => [...document.querySelectorAll(".pa-card-box h2")].find((h) => h.textContent.includes("Module 4"))?.scrollIntoView()); await page.waitForTimeout(300); await shot(page, "18-parent-voiliers", T);
   const journal = await page.evaluate(() => document.body.textContent);
   check(/voiliers/.test(journal) && /(a confondu plus grand et plus petit|s'est trompée de plusieurs passages)/.test(journal), "journal des erreurs : l'erreur des voiliers en une phrase");
+  await page.evaluate(() => { const el = [...document.querySelectorAll(".pa-main *")].filter((e) => !e.children.length).find((e) => /a confondu plus grand et plus petit|s'est trompée de plusieurs passages/.test(e.textContent)); el?.scrollIntoView({ block: "center" }); }); await page.waitForTimeout(300); await shot(page, "18b-parent-journal", T);
+  await page.click('[data-tab="donnees"]'); await page.waitForTimeout(700);
+  await page.evaluate(() => document.querySelector('[aria-label="niveau des voiliers"]')?.scrollIntoView({ block: "center" })); await page.waitForTimeout(200);
+  await page.click('[aria-label="niveau des voiliers"] button[data-v="5"]'); await page.waitForTimeout(500);
+  const dep = await page.evaluate(async () => ({ msg: document.body.textContent.includes("Voiliers : niveau 5 à la prochaine partie."), niveau: (await window.__app.store.all("niveaux")).find((n) => n.module === 4)?.niveau }));
+  check(dep.msg && dep.niveau === 5, `point de départ : le parent met les voiliers au niveau 5 (${JSON.stringify(dep)})`);
+  await shot(page, "18c-parent-point-de-depart", T);
   check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
 }
 // 8. l'entraînement libre (« Encore ! ») : les voiliers au niveau choisi, sans étoiles ; la maison les quitte, le lagon revient
@@ -218,6 +232,7 @@ for (const T of TAILLES) {
   await page.tap('.choix-ex[data-key="voiliers"]', { force: true }); await page.waitForTimeout(700);
   await page.tap('.choix-tuile[data-key="3"]', { force: true });
   await page.waitForSelector(".cran", { timeout: 15000 }); await page.waitForTimeout(400);
+  await shot(page, "19a-crans", T);
   await page.tap(".cran", { force: true }).catch(() => {});
   await waitBoat(page); const q = await question(page);
   const etoiles0 = await page.evaluate(() => window.__app.rewards.total);

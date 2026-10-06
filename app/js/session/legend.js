@@ -1,5 +1,5 @@
 // LA LÉGENDE DES NIVEAUX (lot 3 bis, docs/SPEC-LOT3BIS.md, B2 ; décision du parent). Sur les écrans de niveaux de
-// « choisir » (ligne graduée, additions, calcul rapide) et sur l'écran des leçons, un bouton discret (un petit livre
+// « choisir » (ligne graduée, additions, calcul rapide, voiliers) et sur l'écran des leçons, un bouton discret (un petit livre
 // ouvert, sprite « legende »), en haut à droite sous « réécouter », hors de la zone des plaques. Il ouvre un panneau par-
 // dessus l'écran (plaque de nacre dessinée en direct, runtime.js, drawPanel) : une ligne par niveau, sa vignette (la même
 // que la plaque), ce qui est travaillé et un exemple, écrits au feutre ; le tableau défile si nécessaire. La croix, ou
@@ -12,7 +12,7 @@ export const LEGEND_AT = [1218, 214], PANEL = { x: 130, y: 44, w: 1020, h: 730 }
 const COL = { vign: 70, travail: 160, exemple: 670, fin: 925 }, EM = 23, EX_EM = 23, ROW_PAD = 16;
 
 // la vignette d'un niveau, comme sur sa plaque de « choisir »
-export const legendSprite = (ex, n) => (ex === "ligne" ? `choix.ligne.${n}` : ex === "additions" ? `choix.famille.${n}` : ex === "calcul" ? `choix.calcul.${n}` : "choix.lecon");
+export const legendSprite = (ex, n) => (ex === "ligne" ? `choix.ligne.${n}` : ex === "additions" ? `choix.famille.${n}` : ex === "calcul" ? `choix.calcul.${n}` : ex === "voiliers" ? `choix.voiliers.${n}` : "choix.lecon");
 // les lignes du tableau d'un exercice, dans l'ordre des plaques (`keys`) : { n, travail: [lignes], exemple: [lignes] }
 export function legendRows(legendes, ex, keys = null) {
   const rows = legendes?.[ex] ?? [], by = new Map(rows.map((r) => [String(r.n), r]));

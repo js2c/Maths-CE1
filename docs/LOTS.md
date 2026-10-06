@@ -33,9 +33,11 @@ Ce document a trois parties : **pour le parent**, comment lancer un lot ; **pour
 
 Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent déjà les lots passés.
 
-**Avant le lot « Sommes jusqu'à 30 »** (décision du parent du 6 octobre 2026) : la session de confrontation de la spécification avec le code (`docs/PROMPTS.md`), puis la décision du parent sur ses écarts. Elle peut tourner pendant l'un des lots précédents.
+**Entre « Les voiliers » et « Les leçons » : le lot « Correctifs »** (décision du parent du 6 octobre 2026, fiche 2 bis). La confrontation de la spécification avec le code est faite (`docs/ECARTS-SPEC.md`, #37) et ses écarts sont tranchés ; ce lot les applique. Il ne peut pas tourner en même temps qu'un autre lot (il modifie `docs/SPEC.md`). Il n'est pas dans le tableau ci-dessus : son état est tenu ici. **État : à faire.**
 
 **Pourquoi cet ordre.**
+
+- Les correctifs de la confrontation avant les leçons et les sommes : ces lots s'appuient sur les règles du module 2 telles qu'elles seront écrites.
 
 - La mascotte d'abord : le jeu des voiliers se branche sur celle de l'application.
 - Les leçons avant les sommes et la multiplication : les leçons nouvelles de ces deux lots arrivent dans le menu refait, suivies de leur exercice. La table de multiplication à consulter rejoint celle d'addition.
@@ -54,7 +56,7 @@ Chacun deviendra un lot de ce tableau quand le parent le décidera.
 ### Avant de commencer
 
 - Lire `CLAUDE.md`, la fiche du lot, les sections de `docs/SPEC.md` qu'elle cite, plus les sections 9 (règles communes) et 14 (recette), puis `docs/ARCHITECTURE.md` et `docs/AVANCEMENT.md`. Les anciennes spécifications (`docs/archives/`) ne servent qu'à retrouver l'origine d'une règle : en cas d'écart, `docs/SPEC.md` fait foi.
-- **Prérequis** : sur `origin/main`, les lots qui précèdent dans le tableau sont marqués « fait ». Sinon, s'arrêter et le dire au parent : le lot précédent n'est pas fusionné.
+- **Prérequis** : sur `origin/main`, les lots qui précèdent dans le tableau sont marqués « fait », ainsi que le lot « Correctifs » (son état est sous le tableau) pour « Les leçons » et les lots suivants. Sinon, s'arrêter et le dire au parent : le lot précédent n'est pas fusionné.
 - Partir de `origin/main` à jour. Pousser la branche dès le début. Ouvrir tout de suite une demande de fusion en brouillon, intitulée « Lot : <nom du lot> ». Tenir une rubrique « Reprise du lot … » dans `docs/AVANCEMENT.md`. Pousser les commits après chaque étape, au moins toutes les 30 à 45 minutes. Un commit par étape, message en français.
 - S'arrêter proprement si le contexte dépasse environ la moitié : tout pousser, noter où reprendre, et le dire.
 
@@ -191,6 +193,46 @@ Le moteur entre tel quel dans `app/js/engine/` : même table de clips, mêmes r�
   - des parties à chaque cran ;
   - une capture de chaque situation : calme, vent, pirates, double encadrement, erreur, « je ne sais pas », exemple guidé, pause et reprise.
 
+### 2 bis. Lot « Correctifs » (entre « Les voiliers » et « Les leçons »)
+
+**But** : appliquer les décisions du parent du 6 octobre 2026 sur le rapport de confrontation (`docs/ECARTS-SPEC.md`, demande de fusion #37). Le parent a accepté toutes les propositions de la conception (liste ci-dessous). Les numéros sont ceux du rapport.
+
+**Prérequis** : « Les voiliers » est marqué « fait » sur `main`, et `docs/ECARTS-SPEC.md` y est. **À la fin**, passer son état (sous le tableau) à « fait », au lieu d'une ligne du tableau.
+
+**Pas de maquette** : rien de nouveau à l'écran, sauf la forme à trou du niveau 9 du calcul rapide, qui suit celle des niveaux 4 à 8.
+
+**Dans le code** (chaque correctif avec son test unitaire, simulé d'abord quand il touche une règle pédagogique) :
+
+- **10.1 et 12.3** : retirer de l'espace parent la ligne « cadeaux de la surprise dans le récif ».
+- **4.2** : à la ligne, une réponse au cran « plus facile » ne compte jamais pour la montée ni pour la voie rapide, même quand le niveau joué est le conseillé (décision du 27 septembre).
+- **6.2** : au plus une famille d'additions ouverte par jour, toutes voies confondues (notion du jour, échauffement, stagnation). Seuls le choix du parent et le point de départ y échappent. À simuler avant de coder : la montée des familles chez les 5 profils ne doit pas ralentir au-delà d'une séance.
+- **7.3** : niveau 9 du calcul rapide, forme à trou au cran « très dur » (`trou: true`), avec ses phrases (« {a} moins combien ? Ça fait {n}. ») dans l'inventaire. Ne pas fabriquer leur voix : le parent les fabrique avec celles des autres lots.
+- **5.4** : la tolérance d'« estimer » se resserre d'après les estimations justes du **niveau joué**, conseillé ou non.
+- **6.9** : difficulté persistante aux maisons de 8 et de 9, relancer L6 ; aux presque-doubles, relancer L4 (les doubles). Toujours au plus une fois par séance.
+- **7.6** : au mur, l'erreur non reconnue dit « Hmm, regardons ensemble. » (phrase de la ligne, qui a déjà sa voix), et non « Regardons le chemin ensemble. ».
+
+**Dans `docs/SPEC.md`** :
+
+- les 23 écarts « Spéc. datée » : réécrire la règle comme le code l'applique, selon la proposition du rapport (2.2, 3.1, 4.1, 5.1, 5.2, 5.3, 6.1, 6.3, 6.4, 6.6, 6.7, 6.8, 7.1, 7.2, 7.4, 7.5, 8.1, 9.1, 10.2, 10.3, 10.4, 12.1, 12.2) ;
+- les 7 correctifs ci-dessus, comme règles ;
+- les questions tranchées, code gardé et règle écrite :
+  - 2.1 : le défi à partir de la 6e séance (5 déjà terminées) ;
+  - 2.3 : l'échauffement déjà fait vaut pour toute séance du même jour ; un échauffement interrompu est refait ;
+  - 2.4 et 11.2 : musique très basse pendant une visite du récif ou de l'album depuis la pause, coupée hors séance (les deux sections mises d'accord) ;
+  - 2.5 : séances plus courtes acceptées avec « choisir » aux niveaux étroits ; noter dans `docs/IDEES.md` (à observer) de les mesurer à l'usage ;
+  - 3.2 : l'étoile d'un niveau de la ligne veut dire « dépassé » ;
+  - 3.3 : laissé tel quel ;
+  - 6.5 : les formes à trou du mélange suivent l'ouverture de celles des familles de chaque fait ;
+  - 9.2 : la redescente n'existe qu'à la ligne ; aux additions et au calcul, on ne perd jamais rien (la révision espacée suffit) ;
+  - 9.3 : la difficulté persistante ne compte que sur le niveau conseillé (ligne) ou un niveau pas encore acquis (calcul) ;
+  - 9.4 : une erreur corrigée rapporte 2 étoiles en tout (1 pour la bonne réponse, 1 pour l'erreur corrigée), multipliées par le cran ;
+  - 11.1 : la mascotte est déçue à la première erreur après une réussite, puis encourage aux erreurs suivantes ;
+- les 24 comportements de la dernière partie du rapport, chacun dans sa section.
+
+**Ensuite** : en tête de `docs/ECARTS-SPEC.md`, une ligne « Tranché par le parent le 6 octobre 2026, appliqué par le lot « Correctifs » (demande de fusion #…) ». La question 2 de la demande de fusion #34 (l'encouragement) est réglée par 11.1.
+
+**Recette** : la méthode commune. Pas de relecture indépendante des écrans (rien ne change à l'écran, sauf la forme à trou du niveau 9, à capturer) ; à la place, une relecture indépendante de la spécification modifiée, confrontée de nouveau au code sur les seules sections touchées.
+
 ### 3. Lot « Les leçons » (avec la table d'addition)
 
 **But** : `docs/SPEC.md`, section 3, « Les leçons », et section 8 (correction de la leçon L10).
@@ -225,7 +267,7 @@ Taille de la table proposée par défaut : de 0 + 0 à 10 + 10, à confirmer au 
 
 **But** : la suite du module 2 (`docs/SPEC.md`, section 13, « Sommes jusqu'à 30 » ; question ouverte dans `docs/IDEES.md`, section 3). **Jusqu'à 30** : décision du parent du 30 septembre, confirmée le 6 octobre 2026.
 
-**Prérequis supplémentaire** : le rapport de confrontation (`docs/ECARTS-SPEC.md`) est sur `main`, et les écarts qui touchent le module 2 sont tranchés par le parent. Sinon, s'arrêter et le dire.
+**Prérequis supplémentaire** : le lot « Correctifs » est fait (son état, sous le tableau, dit « fait » sur `main`). Sinon, s'arrêter et le dire.
 
 **Proposition par défaut**, à vérifier contre le programme officiel puis à soumettre au point d'arrêt :
 

@@ -77,6 +77,12 @@ Le lot a suivi les décisions des 5 et 6 octobre (ci-dessous). Là où elles lai
 - **Les petites pieuvres** du bouton « je ne sais pas », de la frise et de l'icône restent, faute de décision sur leur remplacement.
 - **La grande joie de fin de séance** : à l'ouverture du bilan des étoiles (la pieuvre y faisait une joie ordinaire).
 
+## Décisions du 6 octobre 2026, le soir (confrontation de la spécification avec le code, PR #37)
+
+- **Toutes les propositions de la conception acceptées** (« ok pour tout ») : les 23 écarts où le code a raison sont reportés dans la spécification ; les 4 écarts où le code s'écarte d'une décision sont corrigés dans le code (cadeaux de la surprise, « plus facile » à la ligne, une famille ouverte par jour toutes voies confondues, forme à trou du niveau 9 du calcul avec ses phrases) ; parmi les 14 questions, trois correctifs (tolérance d'« estimer » au niveau joué, leçon relancée aux maisons de 8 et 9 et aux presque-doubles, phrase de correction du mur sans « chemin »), le reste gardé tel que le code le fait et écrit ; les 24 comportements non décrits ajoutés à la spécification.
+- **Raisons principales** : une réussite au cran « plus facile » ne doit jamais faire progresser (27 septembre) ; une famille par jour compte davantage quand les sommes jusqu'à 30 ajouteront des familles ; une erreur corrigée à 2 étoiles récompense la persévérance, et les étoiles s'accumulent de toute façon (5 octobre) ; la mascotte déçue seulement à la première erreur après une réussite évite une déception répétée.
+- **Un lot « Correctifs »** les applique, entre « Les voiliers » et « Les leçons » (`docs/LOTS.md`, fiche 2 bis) ; il remplace le prérequis « écarts tranchés » du lot « Sommes jusqu'à 30 ».
+
 ## Décisions du 6 octobre 2026, après la fusion de la feuille de route (PR #32)
 
 - **Sommes jusqu'à 30** : confirmé (pas 20).

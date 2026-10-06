@@ -94,7 +94,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
 | 28 | notion | 737 entre 700 · 710 · 720 · 730 (niveau 4, mer calme) | 737 | 4 | après 730 | « Bravo ! » |
 | 29 | notion | 707 entre 700 · 710 · 720 · 730 (niveau 4, mer calme) | 707 | 1 | entre 700 et 710 | « C'est entre 700 et 710 ! » ; +1★ |
 | 30 | notion | 703 entre 700 · 710 · 720 · 730 (niveau 4, mer calme) | 703 | 1 | avant 700, puis entre 700 et 710 | erreur V1 : « Il est plus grand que 700 : il passe après. » ; « C'est entre 700 et 710 ! » |
-| 31 | notion | 715 entre 700 · 710 · 720 · 730 (niveau 4, mer calme) | 715 | 2 | entre 720 et 730, puis entre 700 et 710 | erreur V1 : « Il est plus petit que 720 : il passe avant. » ; erreur V1 : « Il est plus grand que 710 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 710 et 720 ! » |
+| 31 | notion | 715 entre 700 · 710 · 720 · 730 (niveau 4, mer calme) | 715 | 2 | entre 720 et 730, puis entre 700 et 710 | erreur V1 : « Il est plus petit que 720 : il passe avant. » ; erreur V1 : « Il est plus grand que 710 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 710 : il passe après. » |
 | 32 | notion | 725 entre 700 · 710 · 720 · 730 (niveau 4, mer calme) | 725 | 3 | entre 720 et 730 | « C'est entre 720 et 730 ! » ; +1★ |
 
 Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) (brillante)
@@ -123,24 +123,24 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) (brillante)
 | 13 | notion | EXEMPLE GUIDÉ : 534 entre 520 · 530 · 540 · 550 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 534 Regarde : 534 est plus grand que 530, et plus petit que 540. Le bateau passe entre 530 et 540. |  | (le bateau va seul) |  |
 | 14 | notion | 773 entre 750 · 760 · 770 · 780 (niveau 4, mer calme) | 773 | 3 | entre 750 et 760, puis entre 770 et 780 | erreur V2 : « Il est plus grand que 760 : il passe après. » ; « C'est entre 770 et 780 ! » |
 | 15 | notion | 917 entre 750 · 760 · 770 · 780 (niveau 4, mer calme) | 917 | 4 | entre 760 et 770, puis entre 760 et 770 | erreur V2 : « Il est plus grand que 770 : il passe après. » ; erreur V2 : « Il est plus grand que 770 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 780 : il passe après. » |
-| 16 | notion | 755 entre 750 · 760 · 770 · 780 (niveau 4, mer calme) | 755 | 1 | entre 770 et 780, puis entre 770 et 780 | erreur V2 : « Il est plus petit que 770 : il passe avant. » ; erreur V2 : « Il est plus petit que 770 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 750 et 760 ! » |
-| 17 | notion | 764 entre 750 · 760 · 770 · 780 (niveau 4, mer calme) | 764 | 2 | avant 750, puis avant 750 | erreur V2 : « Il est plus grand que 750 : il passe après. » ; erreur V2 : « Il est plus grand que 750 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 760 et 770 ! » |
+| 16 | notion | 755 entre 750 · 760 · 770 · 780 (niveau 4, mer calme) | 755 | 1 | entre 770 et 780, puis entre 770 et 780 | erreur V2 : « Il est plus petit que 770 : il passe avant. » ; erreur V2 : « Il est plus petit que 770 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 750 : il passe après. » |
+| 17 | notion | 764 entre 750 · 760 · 770 · 780 (niveau 4, mer calme) | 764 | 2 | avant 750, puis avant 750 | erreur V2 : « Il est plus grand que 750 : il passe après. » ; erreur V2 : « Il est plus grand que 750 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 760 : il passe après. » |
 | 18 | notion | 138 entre 750 · 760 · 770 · 780 (niveau 4, mer calme) | 138 | 0 | entre 770 et 780, puis avant 750 | erreur V2 : « Il est plus petit que 770 : il passe avant. » ; « Bravo ! » ; +1★ |
-| 19 | notion | 563 entre 540 · 550 · 560 · 570 (niveau 4, mer calme) | 563 | 3 | avant 540, puis entre 550 et 560 | erreur V2 : « Il est plus grand que 540 : il passe après. » ; erreur V2 : « Il est plus grand que 560 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 560 et 570 ! » |
+| 19 | notion | 563 entre 540 · 550 · 560 · 570 (niveau 4, mer calme) | 563 | 3 | avant 540, puis entre 550 et 560 | erreur V2 : « Il est plus grand que 540 : il passe après. » ; erreur V2 : « Il est plus grand que 560 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 560 : il passe après. » |
 | 20 | notion | 917 entre 750 · 760 · 770 · 780 (niveau 4, mer calme, revient) | 917 | 4 | entre 750 et 760, puis après 780 | erreur V2 : « Il est plus grand que 760 : il passe après. » ; « Bravo ! » |
-| 21 | notion | 755 entre 750 · 760 · 770 · 780 (niveau 4, mer calme, revient) | 755 | 1 | avant 750, puis entre 760 et 770 | erreur V1 : « Il est plus grand que 750 : il passe après. » ; erreur V1 : « Il est plus petit que 760 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 750 et 760 ! » |
-| 22 | notion | 764 entre 750 · 760 · 770 · 780 (niveau 4, mer calme, revient) | 764 | 2 | entre 770 et 780, puis entre 750 et 760 | erreur V1 : « Il est plus petit que 770 : il passe avant. » ; erreur V1 : « Il est plus grand que 760 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 760 et 770 ! » |
+| 21 | notion | 755 entre 750 · 760 · 770 · 780 (niveau 4, mer calme, revient) | 755 | 1 | avant 750, puis entre 760 et 770 | erreur V1 : « Il est plus grand que 750 : il passe après. » ; erreur V1 : « Il est plus petit que 760 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 750 : il passe après. » |
+| 22 | notion | 764 entre 750 · 760 · 770 · 780 (niveau 4, mer calme, revient) | 764 | 2 | entre 770 et 780, puis entre 750 et 760 | erreur V1 : « Il est plus petit que 770 : il passe avant. » ; erreur V1 : « Il est plus grand que 760 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 760 : il passe après. » |
 | 23 | notion | 553 entre 540 · 550 · 560 · 570 (niveau 4, mer calme) | 553 | 2 | entre 550 et 560 | « C'est entre 550 et 560 ! » ; +1★ |
 | 24 | notion | 563 entre 540 · 550 · 560 · 570 (niveau 4, mer calme, revient) | 563 | 3 | avant 540, puis entre 560 et 570 | erreur V2 : « Il est plus grand que 540 : il passe après. » ; « C'est entre 560 et 570 ! » |
 | 25 | notion | 535 entre 540 · 550 · 560 · 570 (niveau 4, mer calme) | 535 | 0 | entre 560 et 570, puis entre 550 et 560 | erreur V2 : « Il est plus petit que 560 : il passe avant. » ; erreur V2 : « Il est plus petit que 550 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 540 : il passe avant. » |
-| 26 | notion | 564 entre 540 · 550 · 560 · 570 (niveau 4, mer calme) | 564 | 3 | entre 540 et 550, puis entre 550 et 560 | erreur V2 : « Il est plus grand que 550 : il passe après. » ; erreur V2 : « Il est plus grand que 560 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 560 et 570 ! » |
+| 26 | notion | 564 entre 540 · 550 · 560 · 570 (niveau 4, mer calme) | 564 | 3 | entre 540 et 550, puis entre 550 et 560 | erreur V2 : « Il est plus grand que 550 : il passe après. » ; erreur V2 : « Il est plus grand que 560 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 560 : il passe après. » |
 | 27 | notion | 775 entre 540 · 550 · 560 · 570 (niveau 4, mer calme) | 775 | 4 | avant 540, puis avant 540 | erreur V2 : « Il est plus grand que 540 : il passe après. » ; erreur V2 : « Il est plus grand que 540 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 570 : il passe après. » |
 | 28 | notion | 2 entre 70 · 80 · 90 · 100 (niveau 4, mer calme) | 2 | 0 | entre 90 et 100, puis avant 70 | erreur V2 : « Il est plus petit que 90 : il passe avant. » ; « Bravo ! » ; +1★ |
 | 29 | notion | 535 entre 540 · 550 · 560 · 570 (niveau 4, mer calme, revient) | 535 | 0 | entre 540 et 550, puis entre 550 et 560 | erreur V1 : « Il est plus petit que 540 : il passe avant. » ; erreur V1 : « Il est plus petit que 550 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 540 : il passe avant. » |
-| 30 | notion | 564 entre 540 · 550 · 560 · 570 (niveau 4, mer calme, revient) | 564 | 3 | avant 540, puis entre 550 et 560 | erreur V2 : « Il est plus grand que 540 : il passe après. » ; erreur V2 : « Il est plus grand que 560 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 560 et 570 ! » |
+| 30 | notion | 564 entre 540 · 550 · 560 · 570 (niveau 4, mer calme, revient) | 564 | 3 | avant 540, puis entre 550 et 560 | erreur V2 : « Il est plus grand que 540 : il passe après. » ; erreur V2 : « Il est plus grand que 560 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 560 : il passe après. » |
 | 31 | notion | 775 entre 540 · 550 · 560 · 570 (niveau 4, mer calme, revient) | 775 | 4 | entre 550 et 560, puis après 570 | erreur V2 : « Il est plus grand que 560 : il passe après. » ; « Bravo ! » |
 | 32 | notion | 55 entre 70 · 80 · 90 · 100 (niveau 4, mer calme) | 55 | 0 | entre 70 et 80, puis entre 80 et 90 | erreur V1 : « Il est plus petit que 70 : il passe avant. » ; erreur V1 : « Il est plus petit que 80 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 70 : il passe avant. » |
-| 33 | notion | 94 entre 70 · 80 · 90 · 100 (niveau 4, mer calme) | 94 | 3 | après 100, puis entre 70 et 80 | erreur V1 : « Il est plus petit que 100 : il passe avant. » ; erreur V1 : « Il est plus grand que 80 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 90 et 100 ! » |
+| 33 | notion | 94 entre 70 · 80 · 90 · 100 (niveau 4, mer calme) | 94 | 3 | après 100, puis entre 70 et 80 | erreur V1 : « Il est plus petit que 100 : il passe avant. » ; erreur V1 : « Il est plus grand que 80 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 90 : il passe après. » |
 
 Récompense et fin : +10★ (fin)
 
@@ -220,7 +220,7 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) (brillante)
 | 11 | notion | 450 entre 610 · 620 · 630 · 640 (niveau 4, mer calme) | 450 | 0 | avant 610 | « Bravo ! » ; +1★ |
 | 12 | notion | 633 entre 610 · 620 · 630 · 640 (niveau 4, mer calme) | 633 | 3 | entre 630 et 640 | « C'est entre 630 et 640 ! » ; +1★ |
 | 13 | notion | 617 entre 610 · 620 · 630 · 640 (niveau 4, mer calme) | 617 | 1 | entre 610 et 620 | « C'est entre 610 et 620 ! » ; +1★ |
-| 14 | notion | 623 entre 610 · 620 · 630 · 640 (niveau 4, mer vent) | Le vent se lève ! Il pousse les bateaux vers les bouées. 623 | 2 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « C'est entre 620 et 630 ! » |
+| 14 | notion | 623 entre 610 · 620 · 630 · 640 (niveau 4, mer vent) | Le vent se lève ! Il pousse les bateaux vers les bouées. 623 | 2 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « Il est plus grand que 620 : il passe après. » |
 | 15 | notion | 682 entre 610 · 620 · 630 · 640 (niveau 4, mer vent) | 682 | 4 | après 640 | « Bravo ! » ; +1★ |
 | 16 | notion | 517 entre 510 · 520 · 530 · 540 (niveau 4, mer vent) | 517 | 1 | entre 510 et 520 | « C'est entre 510 et 520 ! » ; +1★ |
 | 17 | notion | 623 entre 610 · 620 · 630 · 640 (niveau 4, mer vent, revient) | 623 | 2 | entre 610 et 620, puis entre 620 et 630 | erreur V1 : « Il est plus grand que 620 : il passe après. » « Le vent repousse le bateau. » ; « C'est entre 620 et 630 ! » ; +1★ |
@@ -229,7 +229,7 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) (brillante)
 | 20 | notion | 537 entre 510 · 520 · 530 · 540 (niveau 4, mer vent) | 537 | 3 | entre 530 et 540 | « C'est entre 530 et 540 ! » ; MONTÉE (niveau 1 → 5) ; +1★ ; étoile arc-en-ciel (niveau franchi) |
 | 21 | notion | 514 entre 510 · 520 · 530 · 540 (niveau 4, mer vent) | 514 | 1 | entre 510 et 520 | « C'est entre 510 et 520 ! » ; +1★ |
 | 22 | notion | 616 entre 600 · 610 · 620 · 630 (niveau 4, mer vent) | 616 | 2 | entre 610 et 620 | « C'est entre 610 et 620 ! » ; +1★ |
-| 23 | notion | 625 entre 600 · 610 · 620 · 630 (niveau 4, mer vent) | 625 | 3 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « C'est entre 620 et 630 ! » |
+| 23 | notion | 625 entre 600 · 610 · 620 · 630 (niveau 4, mer vent) | 625 | 3 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « Il est plus grand que 620 : il passe après. » |
 | 24 | notion | 626 entre 600 · 610 · 620 · 630 (niveau 4, mer vent) | 626 | 3 | entre 620 et 630 | « C'est entre 620 et 630 ! » ; +1★ |
 | 25 | notion | 607 entre 600 · 610 · 620 · 630 (niveau 4, mer vent) | 607 | 1 | entre 610 et 620, puis entre 600 et 610 | erreur V1 : « Il est plus petit que 610 : il passe avant. » « Le vent repousse le bateau. » ; « C'est entre 600 et 610 ! » ; +1★ |
 | 26 | notion | 613 entre 600 · 610 · 620 · 630 (niveau 4, mer vent) | 613 | 2 | entre 610 et 620 | « C'est entre 610 et 620 ! » ; +1★ |
@@ -238,7 +238,7 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) (brillante)
 | 29 | notion | 123 entre 110 · 120 · 130 · 140 (niveau 4, mer vent) | 123 | 2 | entre 120 et 130 | « C'est entre 120 et 130 ! » ; +1★ |
 | 30 | notion | 137 entre 110 · 120 · 130 · 140 (niveau 4, mer vent) | 137 | 3 | entre 130 et 140 | « C'est entre 130 et 140 ! » ; +1★ |
 | 31 | notion | 874 entre 110 · 120 · 130 · 140 (niveau 4, mer vent) | 874 | 4 | après 140 | « Bravo ! » ; +1★ |
-| 32 | notion | 116 entre 110 · 120 · 130 · 140 (niveau 4, mer vent) | 116 | 1 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « C'est entre 110 et 120 ! » |
+| 32 | notion | 116 entre 110 · 120 · 130 · 140 (niveau 4, mer vent) | 116 | 1 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « Il est plus grand que 110 : il passe après. » |
 | 33 | notion | 125 entre 100 · 110 · 120 · 130 (niveau 4, mer vent) | 125 | 3 | entre 120 et 130 | « C'est entre 120 et 130 ! » ; +1★ |
 
 Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle)
@@ -267,26 +267,26 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle)
 | 13 | échauffement | 2 + 8 = ? (fait nouveau) | Combien font 2 plus 8 ? | 10 | 5 | correction : « 2 plus 8, ça fait 10. » |
 | 14 | notion | EXEMPLE GUIDÉ : 534 entre 520 · 530 · 540 · 550 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 534 Regarde : 534 est plus grand que 530, et plus petit que 540. Le bateau passe entre 530 et 540. |  | (le bateau va seul) |  |
 | 15 | notion | 845 entre 830 · 840 · 850 · 860 (niveau 4, mer calme) | 845 | 2 | entre 850 et 860, puis entre 840 et 850 | erreur V1 : « Il est plus petit que 850 : il passe avant. » ; « C'est entre 840 et 850 ! » ; +1★ |
-| 16 | notion | 856 entre 830 · 840 · 850 · 860 (niveau 4, mer calme) | 856 | 3 | avant 830, puis avant 830 | erreur V2 : « Il est plus grand que 830 : il passe après. » ; erreur V2 : « Il est plus grand que 830 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 850 et 860 ! » |
+| 16 | notion | 856 entre 830 · 840 · 850 · 860 (niveau 4, mer calme) | 856 | 3 | avant 830, puis avant 830 | erreur V2 : « Il est plus grand que 830 : il passe après. » ; erreur V2 : « Il est plus grand que 830 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 850 : il passe après. » |
 | 17 | notion | 927 entre 830 · 840 · 850 · 860 (niveau 4, mer calme) | 927 | 4 | après 860 | « Bravo ! » ; +1★ |
 | 18 | notion | 833 entre 830 · 840 · 850 · 860 (niveau 4, mer calme) | 833 | 1 | entre 850 et 860, puis entre 830 et 840 | erreur V2 : « Il est plus petit que 850 : il passe avant. » ; « C'est entre 830 et 840 ! » ; +1★ |
 | 19 | notion | 227 entre 830 · 840 · 850 · 860 (niveau 4, mer calme) | 227 | 0 | entre 830 et 840, puis après 860 | erreur V1 : « Il est plus petit que 830 : il passe avant. » ; erreur V1 : « Il est plus petit que 860 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 830 : il passe avant. » |
-| 20 | notion | 926 entre 920 · 930 · 940 · 950 (niveau 4, mer calme) | 926 | 1 | avant 920, puis après 950 | erreur V1 : « Il est plus grand que 920 : il passe après. » ; erreur V1 : « Il est plus petit que 950 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 920 et 930 ! » |
+| 20 | notion | 926 entre 920 · 930 · 940 · 950 (niveau 4, mer calme) | 926 | 1 | avant 920, puis après 950 | erreur V1 : « Il est plus grand que 920 : il passe après. » ; erreur V1 : « Il est plus petit que 950 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 920 : il passe après. » |
 | 21 | notion | 856 entre 830 · 840 · 850 · 860 (niveau 4, mer calme, revient) | 856 | 3 | entre 850 et 860 | « C'est entre 850 et 860 ! » ; +2★ (erreur corrigée) |
 | 22 | notion | 999 entre 920 · 930 · 940 · 950 (niveau 4, mer calme) | 999 | 4 | après 950 | « Bravo ! » ; +1★ |
 | 23 | notion | 227 entre 830 · 840 · 850 · 860 (niveau 4, mer calme, revient) | 227 | 0 | après 860, puis entre 830 et 840 | erreur V2 : « Il est plus petit que 860 : il passe avant. » ; erreur V2 : « Il est plus petit que 830 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 830 : il passe avant. » |
-| 24 | notion | 926 entre 920 · 930 · 940 · 950 (niveau 4, mer calme, revient) | 926 | 1 | entre 940 et 950, puis entre 940 et 950 | erreur V2 : « Il est plus petit que 940 : il passe avant. » ; erreur V2 : « Il est plus petit que 940 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 920 et 930 ! » |
-| 25 | notion | 933 entre 920 · 930 · 940 · 950 (niveau 4, mer calme) | 933 | 2 | avant 920, puis entre 940 et 950 | erreur V2 : « Il est plus grand que 920 : il passe après. » ; erreur V2 : « Il est plus petit que 940 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 930 et 940 ! » |
+| 24 | notion | 926 entre 920 · 930 · 940 · 950 (niveau 4, mer calme, revient) | 926 | 1 | entre 940 et 950, puis entre 940 et 950 | erreur V2 : « Il est plus petit que 940 : il passe avant. » ; erreur V2 : « Il est plus petit que 940 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 920 : il passe après. » |
+| 25 | notion | 933 entre 920 · 930 · 940 · 950 (niveau 4, mer calme) | 933 | 2 | avant 920, puis entre 940 et 950 | erreur V2 : « Il est plus grand que 920 : il passe après. » ; erreur V2 : « Il est plus petit que 940 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 930 : il passe après. » |
 | 26 | notion | 959 entre 920 · 930 · 940 · 950 (niveau 4, mer calme) | 959 | 4 | entre 920 et 930, puis entre 920 et 930 | erreur V2 : « Il est plus grand que 930 : il passe après. » ; erreur V2 : « Il est plus grand que 930 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 950 : il passe après. » |
-| 27 | notion | 934 entre 920 · 930 · 940 · 950 (niveau 4, mer calme) | 934 | 2 | avant 920, puis après 950 | erreur V2 : « Il est plus grand que 920 : il passe après. » ; erreur V2 : « Il est plus petit que 950 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 930 et 940 ! » |
+| 27 | notion | 934 entre 920 · 930 · 940 · 950 (niveau 4, mer calme) | 934 | 2 | avant 920, puis après 950 | erreur V2 : « Il est plus grand que 920 : il passe après. » ; erreur V2 : « Il est plus petit que 950 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 930 : il passe après. » |
 | 28 | notion | 447 entre 620 · 630 · 640 · 650 (niveau 4, mer calme) | 447 | 0 | après 650, puis entre 620 et 630 | erreur V2 : « Il est plus petit que 650 : il passe avant. » ; erreur V2 : « Il est plus petit que 620 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 620 : il passe avant. » |
-| 29 | notion | 933 entre 920 · 930 · 940 · 950 (niveau 4, mer calme, revient) | 933 | 2 | avant 920, puis après 950 | erreur V2 : « Il est plus grand que 920 : il passe après. » ; erreur V2 : « Il est plus petit que 950 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 930 et 940 ! » |
-| 30 | notion | 647 entre 620 · 630 · 640 · 650 (niveau 4, mer calme) | 647 | 3 | entre 620 et 630, puis après 650 | erreur V2 : « Il est plus grand que 630 : il passe après. » ; erreur V2 : « Il est plus petit que 650 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 640 et 650 ! » |
+| 29 | notion | 933 entre 920 · 930 · 940 · 950 (niveau 4, mer calme, revient) | 933 | 2 | avant 920, puis après 950 | erreur V2 : « Il est plus grand que 920 : il passe après. » ; erreur V2 : « Il est plus petit que 950 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 930 : il passe après. » |
+| 30 | notion | 647 entre 620 · 630 · 640 · 650 (niveau 4, mer calme) | 647 | 3 | entre 620 et 630, puis après 650 | erreur V2 : « Il est plus grand que 630 : il passe après. » ; erreur V2 : « Il est plus petit que 650 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 640 : il passe après. » |
 | 31 | notion | 959 entre 920 · 930 · 940 · 950 (niveau 4, mer calme, revient) | 959 | 4 | après 950 | « Bravo ! » ; +2★ (erreur corrigée) |
 | 32 | notion | 934 entre 920 · 930 · 940 · 950 (niveau 4, mer calme, revient) | 934 | 2 | entre 930 et 940 | « C'est entre 930 et 940 ! » ; +2★ (erreur corrigée) |
 | 33 | notion | 447 entre 620 · 630 · 640 · 650 (niveau 4, mer calme, revient) | 447 | 0 | entre 620 et 630, puis entre 640 et 650 | erreur V1 : « Il est plus petit que 620 : il passe avant. » ; erreur V1 : « Il est plus petit que 640 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 620 : il passe avant. » |
 | 34 | notion | 647 entre 620 · 630 · 640 · 650 (niveau 4, mer calme, revient) | 647 | 3 | entre 620 et 630, puis entre 640 et 650 | erreur V2 : « Il est plus grand que 630 : il passe après. » ; « C'est entre 640 et 650 ! » ; +1★ |
-| 35 | notion | 625 entre 620 · 630 · 640 · 650 (niveau 4, mer calme) | 625 | 1 | avant 620, puis avant 620 | erreur V1 : « Il est plus grand que 620 : il passe après. » ; erreur V1 : « Il est plus grand que 620 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 620 et 630 ! » |
+| 35 | notion | 625 entre 620 · 630 · 640 · 650 (niveau 4, mer calme) | 625 | 1 | avant 620, puis avant 620 | erreur V1 : « Il est plus grand que 620 : il passe après. » ; erreur V1 : « Il est plus grand que 620 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 620 : il passe après. » |
 | 36 | notion | 624 entre 620 · 630 · 640 · 650 (niveau 4, mer calme) | 624 | 1 | entre 640 et 650, puis entre 620 et 630 | erreur V2 : « Il est plus petit que 640 : il passe avant. » ; « C'est entre 620 et 630 ! » ; +1★ |
 
 Récompense et fin : +10★ (fin)
@@ -315,33 +315,33 @@ Récompense et fin : +10★ (fin)
 | 11 | notion | 753 entre 150 · 160 · 170 · 180 (niveau 4, mer vent) | Le vent se lève ! Il pousse les bateaux vers les bouées. 753 | 4 | après 180 | « Bravo ! » ; +2★ |
 | 12 | notion | 157 entre 150 · 160 · 170 · 180 (niveau 4, mer vent) | 157 | 1 | entre 150 et 160 | « C'est entre 150 et 160 ! » ; +1★ |
 | 13 | notion | 176 entre 150 · 160 · 170 · 180 (niveau 4, mer vent) | 176 | 3 | entre 170 et 180 | « C'est entre 170 et 180 ! » ; +2★ |
-| 14 | notion | 166 entre 150 · 160 · 170 · 180 (niveau 4, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 166 | 2 | entre 160 et 170 | « C'est entre 160 et 170 ! » ; +1★ |
-| 15 | notion | 35 entre 150 · 160 · 170 · 180 (niveau 4, mer pirates) | 35 | 0 | avant 150 | « Bravo ! » ; MONTÉE (niveau 1 → 5) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
-| 16 | notion | 507 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 507 | 3 | entre 500 et 510 | « C'est entre 500 et 510 ! » ; +1★ |
-| 17 | notion | 686 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 686 | 4 | après 510 | « Bravo ! » ; +2★ |
-| 18 | notion | 487 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 487 | 1 | entre 480 et 490 | « C'est entre 480 et 490 ! » ; +1★ |
-| 19 | notion | 687 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 687 | 4 | après 510 | « Bravo ! » ; +2★ |
-| 20 | notion | 484 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 484 | 1 | entre 480 et 490 | « C'est entre 480 et 490 ! » ; +1★ |
-| 21 | notion | 306 entre 280 · 290 · 300 · 310 (niveau 4, mer pirates) | 306 | 3 | entre 300 et 310 | « C'est entre 300 et 310 ! » ; +2★ |
-| 22 | notion | 296 entre 280 · 290 · 300 · 310 (niveau 4, mer pirates) | 296 | 2 | entre 290 et 300 | « C'est entre 290 et 300 ! » ; +1★ |
-| 23 | notion | 611 entre 280 · 290 · 300 · 310 (niveau 4, mer pirates) | 611 | 4 | après 310 | « Bravo ! » ; +2★ |
-| 24 | notion | 286 entre 280 · 290 · 300 · 310 (niveau 4, mer pirates) | 286 | 1 | entre 280 et 290 | « C'est entre 280 et 290 ! » ; +1★ |
-| 25 | notion | 296 entre 280 · 290 · 300 · 310 (niveau 4, mer pirates) | 296 | 2 | entre 290 et 300 | « C'est entre 290 et 300 ! » ; +2★ |
-| 26 | notion | 767 entre 600 · 610 · 620 · 630 (niveau 4, mer pirates) | 767 | 4 | après 630 | « Bravo ! » ; +1★ |
-| 27 | notion | 840 entre 600 · 610 · 620 · 630 (niveau 4, mer pirates) | 840 | 4 | après 630 | « Bravo ! » ; +2★ |
-| 28 | notion | 574 entre 600 · 610 · 620 · 630 (niveau 4, mer pirates) | 574 | 0 | avant 600 | « Bravo ! » ; +1★ |
-| 29 | notion | 606 entre 600 · 610 · 620 · 630 (niveau 4, mer pirates) | 606 | 1 | entre 600 et 610 | « C'est entre 600 et 610 ! » ; +2★ |
-| 30 | notion | 615 entre 600 · 610 · 620 · 630 (niveau 4, mer pirates) | 615 | 2 | entre 610 et 620 | « C'est entre 610 et 620 ! » ; +1★ |
-| 31 | notion | 834 entre 820 · 830 · 840 · 850 (niveau 4, mer pirates) | 834 | 2 | entre 830 et 840 | « C'est entre 830 et 840 ! » ; +2★ |
-| 32 | notion | 844 entre 820 · 830 · 840 · 850 (niveau 4, mer pirates) | 844 | 3 | entre 840 et 850 | « C'est entre 840 et 850 ! » ; +1★ |
-| 33 | notion | 943 entre 820 · 830 · 840 · 850 (niveau 4, mer pirates) | 943 | 4 | après 850 | « Bravo ! » ; +2★ |
-| 34 | notion | 837 entre 820 · 830 · 840 · 850 (niveau 4, mer pirates) | 837 | 2 | entre 830 et 840 | « C'est entre 830 et 840 ! » ; +1★ |
-| 35 | notion | 239 entre 820 · 830 · 840 · 850 (niveau 4, mer pirates) | 239 | 0 | avant 820 | « Bravo ! » ; +2★ |
-| 36 | notion | 373 entre 350 · 360 · 370 · 380 (niveau 4, mer pirates) | 373 | 3 | entre 370 et 380 | « C'est entre 370 et 380 ! » ; +1★ |
-| 37 | notion | 128 entre 350 · 360 · 370 · 380 (niveau 4, mer pirates) | 128 | 0 | avant 350 | « Bravo ! » ; +2★ |
-| 38 | notion | 353 entre 350 · 360 · 370 · 380 (niveau 4, mer pirates) | 353 | 1 | entre 350 et 360 | « C'est entre 350 et 360 ! » ; +1★ |
-| 39 | notion | 364 entre 350 · 360 · 370 · 380 (niveau 4, mer pirates) | 364 | 2 | entre 360 et 370 | « C'est entre 360 et 370 ! » ; +2★ |
-| 40 | notion | 611 entre 350 · 360 · 370 · 380 (niveau 4, mer pirates) | 611 | 4 | après 380 | « Bravo ! » ; +1★ |
+| 14 | notion | 166 entre 150 · 160 · 170 · 180 (niveau 4, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 166 | 2 | entre 160 et 170 | « Les pirates sont loin. C'est entre 160 et 170 ! » ; +1★ |
+| 15 | notion | 35 entre 150 · 160 · 170 · 180 (niveau 4, mer pirates) | 35 | 0 | avant 150 | « Ouf ! Les pirates sont loin. » ; MONTÉE (niveau 1 → 5) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
+| 16 | notion | 507 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 507 | 3 | entre 500 et 510 | « Les pirates sont loin. C'est entre 500 et 510 ! » ; +1★ |
+| 17 | notion | 686 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 686 | 4 | après 510 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 18 | notion | 487 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 487 | 1 | entre 480 et 490 | « Les pirates sont loin. C'est entre 480 et 490 ! » ; +1★ |
+| 19 | notion | 687 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 687 | 4 | après 510 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 20 | notion | 484 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 484 | 1 | entre 480 et 490 | « Les pirates sont loin. C'est entre 480 et 490 ! » ; +1★ |
+| 21 | notion | 306 entre 280 · 290 · 300 · 310 (niveau 4, mer pirates) | 306 | 3 | entre 300 et 310 | « Les pirates sont loin. C'est entre 300 et 310 ! » ; +2★ |
+| 22 | notion | 296 entre 280 · 290 · 300 · 310 (niveau 4, mer pirates) | 296 | 2 | entre 290 et 300 | « Les pirates sont loin. C'est entre 290 et 300 ! » ; +1★ |
+| 23 | notion | 611 entre 280 · 290 · 300 · 310 (niveau 4, mer pirates) | 611 | 4 | après 310 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 24 | notion | 286 entre 280 · 290 · 300 · 310 (niveau 4, mer pirates) | 286 | 1 | entre 280 et 290 | « Les pirates sont loin. C'est entre 280 et 290 ! » ; +1★ |
+| 25 | notion | 296 entre 280 · 290 · 300 · 310 (niveau 4, mer pirates) | 296 | 2 | entre 290 et 300 | « Les pirates sont loin. C'est entre 290 et 300 ! » ; +2★ |
+| 26 | notion | 767 entre 600 · 610 · 620 · 630 (niveau 4, mer pirates) | 767 | 4 | après 630 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 27 | notion | 840 entre 600 · 610 · 620 · 630 (niveau 4, mer pirates) | 840 | 4 | après 630 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 28 | notion | 574 entre 600 · 610 · 620 · 630 (niveau 4, mer pirates) | 574 | 0 | avant 600 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 29 | notion | 606 entre 600 · 610 · 620 · 630 (niveau 4, mer pirates) | 606 | 1 | entre 600 et 610 | « Les pirates sont loin. C'est entre 600 et 610 ! » ; +2★ |
+| 30 | notion | 615 entre 600 · 610 · 620 · 630 (niveau 4, mer pirates) | 615 | 2 | entre 610 et 620 | « Les pirates sont loin. C'est entre 610 et 620 ! » ; +1★ |
+| 31 | notion | 834 entre 820 · 830 · 840 · 850 (niveau 4, mer pirates) | 834 | 2 | entre 830 et 840 | « Les pirates sont loin. C'est entre 830 et 840 ! » ; +2★ |
+| 32 | notion | 844 entre 820 · 830 · 840 · 850 (niveau 4, mer pirates) | 844 | 3 | entre 840 et 850 | « Les pirates sont loin. C'est entre 840 et 850 ! » ; +1★ |
+| 33 | notion | 943 entre 820 · 830 · 840 · 850 (niveau 4, mer pirates) | 943 | 4 | après 850 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 34 | notion | 837 entre 820 · 830 · 840 · 850 (niveau 4, mer pirates) | 837 | 2 | entre 830 et 840 | « Les pirates sont loin. C'est entre 830 et 840 ! » ; +1★ |
+| 35 | notion | 239 entre 820 · 830 · 840 · 850 (niveau 4, mer pirates) | 239 | 0 | avant 820 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 36 | notion | 373 entre 350 · 360 · 370 · 380 (niveau 4, mer pirates) | 373 | 3 | entre 370 et 380 | « Les pirates sont loin. C'est entre 370 et 380 ! » ; +1★ |
+| 37 | notion | 128 entre 350 · 360 · 370 · 380 (niveau 4, mer pirates) | 128 | 0 | avant 350 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 38 | notion | 353 entre 350 · 360 · 370 · 380 (niveau 4, mer pirates) | 353 | 1 | entre 350 et 360 | « Les pirates sont loin. C'est entre 350 et 360 ! » ; +1★ |
+| 39 | notion | 364 entre 350 · 360 · 370 · 380 (niveau 4, mer pirates) | 364 | 2 | entre 360 et 370 | « Les pirates sont loin. C'est entre 360 et 370 ! » ; +2★ |
+| 40 | notion | 611 entre 350 · 360 · 370 · 380 (niveau 4, mer pirates) | 611 | 4 | après 380 | « Ouf ! Les pirates sont loin. » ; +1★ |
 
 Récompense et fin : +10★ (fin) ; carte limace-de-mer (nouvelle) ; carte oursin (nouvelle)
 
@@ -372,28 +372,28 @@ Récompense et fin : +10★ (fin) ; carte limace-de-mer (nouvelle) ; carte oursi
 | 16 | notion | 336 entre 330 · 340 · 350 · 360 (niveau 4, mer vent) | Le vent se lève ! Il pousse les bateaux vers les bouées. 336 | 1 | entre 330 et 340 | « C'est entre 330 et 340 ! » ; +1★ |
 | 17 | notion | 357 entre 330 · 340 · 350 · 360 (niveau 4, mer vent) | 357 | 3 | entre 350 et 360 | « C'est entre 350 et 360 ! » ; +2★ |
 | 18 | notion | 262 entre 330 · 340 · 350 · 360 (niveau 4, mer vent) | 262 | 0 | avant 330 | « Bravo ! » ; +1★ |
-| 19 | notion | 346 entre 330 · 340 · 350 · 360 (niveau 4, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 346 | 2 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « C'est entre 340 et 350 ! » |
-| 20 | notion | 976 entre 330 · 340 · 350 · 360 (niveau 4, mer pirates) | 976 | 4 | après 360 | « Bravo ! » ; +2★ |
-| 21 | notion | 464 entre 450 · 460 · 470 · 480 (niveau 4, mer pirates) | 464 | 2 | entre 460 et 470 | « C'est entre 460 et 470 ! » ; +1★ |
-| 22 | notion | 13 entre 450 · 460 · 470 · 480 (niveau 4, mer pirates) | 13 | 0 | avant 450 | « Bravo ! » ; +2★ |
-| 23 | notion | 346 entre 330 · 340 · 350 · 360 (niveau 4, mer pirates, revient) | 346 | 2 | entre 340 et 350 | « C'est entre 340 et 350 ! » ; +3★ (erreur corrigée) |
+| 19 | notion | 346 entre 330 · 340 · 350 · 360 (niveau 4, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 346 | 2 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « Il est plus grand que 340 : il passe après. » |
+| 20 | notion | 976 entre 330 · 340 · 350 · 360 (niveau 4, mer pirates) | 976 | 4 | après 360 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 21 | notion | 464 entre 450 · 460 · 470 · 480 (niveau 4, mer pirates) | 464 | 2 | entre 460 et 470 | « Les pirates sont loin. C'est entre 460 et 470 ! » ; +1★ |
+| 22 | notion | 13 entre 450 · 460 · 470 · 480 (niveau 4, mer pirates) | 13 | 0 | avant 450 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 23 | notion | 346 entre 330 · 340 · 350 · 360 (niveau 4, mer pirates, revient) | 346 | 2 | entre 340 et 350 | « Les pirates sont loin. C'est entre 340 et 350 ! » ; +3★ (erreur corrigée) |
 | 24 | notion | 473 entre 450 · 460 · 470 · 480 (niveau 4, mer pirates) | 473 | 3 | après 480 | erreur V1 : « Il est plus petit que 480 : il passe avant. » « Les pirates ont rattrapé le bateau ! » |
-| 25 | notion | 474 entre 450 · 460 · 470 · 480 (niveau 4, mer pirates) | 474 | 3 | entre 470 et 480 | « C'est entre 470 et 480 ! » ; MONTÉE (niveau 1 → 5) ; +1★ ; étoile arc-en-ciel (niveau franchi) |
-| 26 | notion | 463 entre 450 · 460 · 470 · 480 (niveau 4, mer pirates) | 463 | 2 | entre 460 et 470 | « C'est entre 460 et 470 ! » ; +2★ |
+| 25 | notion | 474 entre 450 · 460 · 470 · 480 (niveau 4, mer pirates) | 474 | 3 | entre 470 et 480 | « Les pirates sont loin. C'est entre 470 et 480 ! » ; MONTÉE (niveau 1 → 5) ; +1★ ; étoile arc-en-ciel (niveau franchi) |
+| 26 | notion | 463 entre 450 · 460 · 470 · 480 (niveau 4, mer pirates) | 463 | 2 | entre 460 et 470 | « Les pirates sont loin. C'est entre 460 et 470 ! » ; +2★ |
 | 27 | notion | 467 entre 440 · 450 · 460 · 470 (niveau 4, mer pirates) | 467 | 3 | entre 450 et 460 | erreur V1 : « Il est plus grand que 460 : il passe après. » « Les pirates ont rattrapé le bateau ! » |
-| 28 | notion | 473 entre 450 · 460 · 470 · 480 (niveau 4, mer pirates, revient) | 473 | 3 | entre 470 et 480 | « C'est entre 470 et 480 ! » ; +3★ (erreur corrigée) |
-| 29 | notion | 219 entre 440 · 450 · 460 · 470 (niveau 4, mer pirates) | 219 | 0 | avant 440 | « Bravo ! » ; +1★ |
+| 28 | notion | 473 entre 450 · 460 · 470 · 480 (niveau 4, mer pirates, revient) | 473 | 3 | entre 470 et 480 | « Les pirates sont loin. C'est entre 470 et 480 ! » ; +3★ (erreur corrigée) |
+| 29 | notion | 219 entre 440 · 450 · 460 · 470 (niveau 4, mer pirates) | 219 | 0 | avant 440 | « Ouf ! Les pirates sont loin. » ; +1★ |
 | 30 | notion | 457 entre 440 · 450 · 460 · 470 (niveau 4, mer pirates) | 457 | 2 | entre 460 et 470 | erreur V1 : « Il est plus petit que 460 : il passe avant. » « Les pirates ont rattrapé le bateau ! » |
-| 31 | notion | 467 entre 440 · 450 · 460 · 470 (niveau 4, mer pirates, revient) | 467 | 3 | entre 460 et 470 | « C'est entre 460 et 470 ! » ; +3★ (erreur corrigée) |
-| 32 | notion | 463 entre 440 · 450 · 460 · 470 (niveau 4, mer pirates) | 463 | 3 | entre 460 et 470 | « C'est entre 460 et 470 ! » ; +2★ |
-| 33 | notion | 444 entre 440 · 450 · 460 · 470 (niveau 4, mer pirates) | 444 | 1 | entre 440 et 450 | « C'est entre 440 et 450 ! » ; +1★ |
-| 34 | notion | 366 entre 350 · 360 · 370 · 380 (niveau 4, mer pirates) | 366 | 2 | entre 360 et 370 | « C'est entre 360 et 370 ! » ; +2★ |
+| 31 | notion | 467 entre 440 · 450 · 460 · 470 (niveau 4, mer pirates, revient) | 467 | 3 | entre 460 et 470 | « Les pirates sont loin. C'est entre 460 et 470 ! » ; +3★ (erreur corrigée) |
+| 32 | notion | 463 entre 440 · 450 · 460 · 470 (niveau 4, mer pirates) | 463 | 3 | entre 460 et 470 | « Les pirates sont loin. C'est entre 460 et 470 ! » ; +2★ |
+| 33 | notion | 444 entre 440 · 450 · 460 · 470 (niveau 4, mer pirates) | 444 | 1 | entre 440 et 450 | « Les pirates sont loin. C'est entre 440 et 450 ! » ; +1★ |
+| 34 | notion | 366 entre 350 · 360 · 370 · 380 (niveau 4, mer pirates) | 366 | 2 | entre 360 et 370 | « Les pirates sont loin. C'est entre 360 et 370 ! » ; +2★ |
 | 35 | notion | 457 entre 440 · 450 · 460 · 470 (niveau 4, mer pirates, revient) | 457 | 2 | entre 440 et 450 | erreur V1 : « Il est plus grand que 450 : il passe après. » « Les pirates ont rattrapé le bateau ! » |
-| 36 | notion | 897 entre 350 · 360 · 370 · 380 (niveau 4, mer pirates) | 897 | 4 | après 380 | « Bravo ! » ; +1★ |
-| 37 | notion | 365 entre 350 · 360 · 370 · 380 (niveau 4, mer pirates) | 365 | 2 | entre 360 et 370 | « C'est entre 360 et 370 ! » ; +2★ |
-| 38 | notion | 367 entre 350 · 360 · 370 · 380 (niveau 4, mer pirates) | 367 | 2 | entre 360 et 370 | « C'est entre 360 et 370 ! » ; +1★ |
+| 36 | notion | 897 entre 350 · 360 · 370 · 380 (niveau 4, mer pirates) | 897 | 4 | après 380 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 37 | notion | 365 entre 350 · 360 · 370 · 380 (niveau 4, mer pirates) | 365 | 2 | entre 360 et 370 | « Les pirates sont loin. C'est entre 360 et 370 ! » ; +2★ |
+| 38 | notion | 367 entre 350 · 360 · 370 · 380 (niveau 4, mer pirates) | 367 | 2 | entre 360 et 370 | « Les pirates sont loin. C'est entre 360 et 370 ! » ; +1★ |
 | 39 | notion | 376 entre 350 · 360 · 370 · 380 (niveau 4, mer pirates) | 376 | 3 | après 380 | erreur V1 : « Il est plus petit que 380 : il passe avant. » « Les pirates ont rattrapé le bateau ! » |
-| 40 | notion | 216 entre 210 · 220 · 230 · 240 (niveau 4, mer pirates) | 216 | 1 | entre 210 et 220 | « C'est entre 210 et 220 ! » ; +2★ |
+| 40 | notion | 216 entre 210 · 220 · 230 · 240 (niveau 4, mer pirates) | 216 | 1 | entre 210 et 220 | « Les pirates sont loin. C'est entre 210 et 220 ! » ; +2★ |
 
 Récompense et fin : +10★ (fin) ; carte limace-de-mer (nouvelle) ; carte oursin (nouvelle)
 
@@ -427,18 +427,18 @@ Récompense et fin : +10★ (fin) ; carte limace-de-mer (nouvelle) ; carte oursi
 | 19 | notion | 52 entre 710 · 720 · 730 · 740 (niveau 4, mer vent) | 52 | 0 | entre 710 et 720, puis entre 710 et 720 | erreur V1 : « Il est plus petit que 710 : il passe avant. » « Le vent repousse le bateau. » ; erreur V1 : « Il est plus petit que 710 : il passe avant. » « Le vent repousse le bateau. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 710 : il passe avant. » |
 | 20 | notion | 924 entre 710 · 720 · 730 · 740 (niveau 4, mer vent) | 924 | 4 | entre 720 et 730, puis entre 710 et 720 | erreur V2 : « Il est plus grand que 730 : il passe après. » « Le vent repousse le bateau. » ; erreur V2 : « Il est plus grand que 720 : il passe après. » « Le vent repousse le bateau. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 740 : il passe après. » |
 | 21 | notion | 778 entre 710 · 720 · 730 · 740 (niveau 4, mer calme) | La mer se calme. 778 | 4 | entre 710 et 720, puis avant 710 | erreur V2 : « Il est plus grand que 720 : il passe après. » ; erreur V2 : « Il est plus grand que 710 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 740 : il passe après. » |
-| 22 | notion | 714 entre 710 · 720 · 730 · 740 (niveau 4, mer calme) | 714 | 1 | entre 720 et 730, puis avant 710 | erreur V1 : « Il est plus petit que 720 : il passe avant. » ; erreur V1 : « Il est plus grand que 710 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 710 et 720 ! » |
+| 22 | notion | 714 entre 710 · 720 · 730 · 740 (niveau 4, mer calme) | 714 | 1 | entre 720 et 730, puis avant 710 | erreur V1 : « Il est plus petit que 720 : il passe avant. » ; erreur V1 : « Il est plus grand que 710 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 710 : il passe après. » |
 | 23 | notion | 52 entre 710 · 720 · 730 · 740 (niveau 4, mer calme, revient) | 52 | 0 | entre 730 et 740, puis après 740 | erreur V2 : « Il est plus petit que 730 : il passe avant. » ; erreur V2 : « Il est plus petit que 740 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 710 : il passe avant. » |
-| 24 | notion | 725 entre 710 · 720 · 730 · 740 (niveau 4, mer calme) | 725 | 2 | entre 710 et 720, puis entre 730 et 740 | erreur V1 : « Il est plus grand que 720 : il passe après. » ; erreur V1 : « Il est plus petit que 730 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 720 et 730 ! » |
+| 24 | notion | 725 entre 710 · 720 · 730 · 740 (niveau 4, mer calme) | 725 | 2 | entre 710 et 720, puis entre 730 et 740 | erreur V1 : « Il est plus grand que 720 : il passe après. » ; erreur V1 : « Il est plus petit que 730 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 720 : il passe après. » |
 | 25 | notion | 924 entre 710 · 720 · 730 · 740 (niveau 4, mer calme, revient) | 924 | 4 | entre 730 et 740, puis après 740 | erreur V1 : « Il est plus grand que 740 : il passe après. » ; « Bravo ! » ; +1★ |
 | 26 | notion | 778 entre 710 · 720 · 730 · 740 (niveau 4, mer calme, revient) | 778 | 4 | avant 710, puis avant 710 | erreur V2 : « Il est plus grand que 710 : il passe après. » ; erreur V2 : « Il est plus grand que 710 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 740 : il passe après. » |
-| 27 | notion | 714 entre 710 · 720 · 730 · 740 (niveau 4, mer calme, revient) | 714 | 1 | avant 710, puis après 740 | erreur V1 : « Il est plus grand que 710 : il passe après. » ; erreur V1 : « Il est plus petit que 740 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 710 et 720 ! » |
+| 27 | notion | 714 entre 710 · 720 · 730 · 740 (niveau 4, mer calme, revient) | 714 | 1 | avant 710, puis après 740 | erreur V1 : « Il est plus grand que 710 : il passe après. » ; erreur V1 : « Il est plus petit que 740 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 710 : il passe après. » |
 | 28 | notion | 725 entre 710 · 720 · 730 · 740 (niveau 4, mer calme, revient) | 725 | 2 | entre 720 et 730 | « C'est entre 720 et 730 ! » ; +2★ (erreur corrigée) |
 | 29 | notion | 794 entre 280 · 290 · 300 · 310 (niveau 4, mer calme) | 794 | 4 | après 310 | « Bravo ! » ; +1★ |
-| 30 | notion | 286 entre 280 · 290 · 300 · 310 (niveau 4, mer calme) | 286 | 1 | avant 280, puis avant 280 | erreur V1 : « Il est plus grand que 280 : il passe après. » ; erreur V1 : « Il est plus grand que 280 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 280 et 290 ! » |
+| 30 | notion | 286 entre 280 · 290 · 300 · 310 (niveau 4, mer calme) | 286 | 1 | avant 280, puis avant 280 | erreur V1 : « Il est plus grand que 280 : il passe après. » ; erreur V1 : « Il est plus grand que 280 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 280 : il passe après. » |
 | 31 | notion | 498 entre 280 · 290 · 300 · 310 (niveau 4, mer calme) | 498 | 4 | avant 280, puis avant 280 | erreur V2 : « Il est plus grand que 280 : il passe après. » ; erreur V2 : « Il est plus grand que 280 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 310 : il passe après. » |
 | 32 | notion | 297 entre 280 · 290 · 300 · 310 (niveau 4, mer calme) | 297 | 2 | entre 280 et 290, puis entre 290 et 300 | erreur V1 : « Il est plus grand que 290 : il passe après. » ; « C'est entre 290 et 300 ! » ; +1★ |
-| 33 | notion | 294 entre 280 · 290 · 300 · 310 (niveau 4, mer calme) | 294 | 2 | entre 300 et 310, puis entre 300 et 310 | erreur V1 : « Il est plus petit que 300 : il passe avant. » ; erreur V1 : « Il est plus petit que 300 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 290 et 300 ! » |
+| 33 | notion | 294 entre 280 · 290 · 300 · 310 (niveau 4, mer calme) | 294 | 2 | entre 300 et 310, puis entre 300 et 310 | erreur V1 : « Il est plus petit que 300 : il passe avant. » ; erreur V1 : « Il est plus petit que 300 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 290 : il passe après. » |
 | 34 | notion | 286 entre 280 · 290 · 300 · 310 (niveau 4, mer calme, revient) | 286 | 1 | entre 280 et 290 | « C'est entre 280 et 290 ! » ; +2★ (erreur corrigée) |
 | 35 | notion | 498 entre 280 · 290 · 300 · 310 (niveau 4, mer calme, revient) | 498 | 4 | entre 280 et 290, puis avant 280 | erreur V2 : « Il est plus grand que 290 : il passe après. » ; erreur V2 : « Il est plus grand que 280 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 310 : il passe après. » |
 | 36 | notion | 564 entre 550 · 560 · 570 · 580 (niveau 4, mer calme) | 564 | 2 | entre 570 et 580, puis entre 560 et 570 | erreur V1 : « Il est plus petit que 570 : il passe avant. » ; « C'est entre 560 et 570 ! » ; +1★ |
@@ -467,36 +467,36 @@ Récompense et fin : +10★ (fin)
 | 8 | échauffement | 8 + 2 = ? (fait nouveau) | 8 plus 2 ? | 10 | 10 | +2★ |
 | 9 | échauffement | 2 + 8 = ? (fait nouveau) | Combien font 2 plus 8 ? | 10 | 10 | +2★ |
 | 10 | notion | EXEMPLE GUIDÉ : 534 entre 520 · 530 · 540 · 550 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 534 Regarde : 534 est plus grand que 530, et plus petit que 540. Le bateau passe entre 530 et 540. |  | (le bateau va seul) |  |
-| 11 | notion | 314 entre 290 · 300 · 310 · 320 (niveau 4, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 314 | 3 | entre 310 et 320 | « C'est entre 310 et 320 ! » ; +2★ |
-| 12 | notion | 219 entre 290 · 300 · 310 · 320 (niveau 4, mer pirates) | 219 | 0 | avant 290 | « Bravo ! » ; +2★ |
-| 13 | notion | 296 entre 290 · 300 · 310 · 320 (niveau 4, mer pirates) | 296 | 1 | entre 290 et 300 | « C'est entre 290 et 300 ! » ; +2★ |
-| 14 | notion | 304 entre 290 · 300 · 310 · 320 (niveau 4, mer pirates) | 304 | 2 | entre 300 et 310 | « C'est entre 300 et 310 ! » ; +2★ |
-| 15 | notion | 852 entre 290 · 300 · 310 · 320 (niveau 4, mer pirates) | 852 | 4 | après 320 | « Bravo ! » ; MONTÉE (niveau 1 → 5) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
-| 16 | notion | 804 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates) | 804 | 3 | entre 800 et 810 | « C'est entre 800 et 810 ! » ; +2★ |
-| 17 | notion | 786 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates) | 786 | 1 | entre 780 et 790 | « C'est entre 780 et 790 ! » ; +2★ |
-| 18 | notion | 795 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates) | 795 | 2 | entre 790 et 800 | « C'est entre 790 et 800 ! » ; +2★ |
-| 19 | notion | 784 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates) | 784 | 1 | entre 780 et 790 | « C'est entre 780 et 790 ! » ; +2★ |
-| 20 | notion | 805 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates) | 805 | 3 | entre 800 et 810 | « C'est entre 800 et 810 ! » ; +2★ |
-| 21 | notion | 946 entre 870 · 880 · 890 · 900 (niveau 4, mer pirates) | 946 | 4 | après 900 | « Bravo ! » ; +2★ |
-| 22 | notion | 897 entre 870 · 880 · 890 · 900 (niveau 4, mer pirates) | 897 | 3 | entre 890 et 900 | « C'est entre 890 et 900 ! » ; +2★ |
-| 23 | notion | 883 entre 870 · 880 · 890 · 900 (niveau 4, mer pirates) | 883 | 2 | entre 880 et 890 | « C'est entre 880 et 890 ! » ; +2★ |
-| 24 | notion | 893 entre 870 · 880 · 890 · 900 (niveau 4, mer pirates) | 893 | 3 | entre 890 et 900 | « C'est entre 890 et 900 ! » ; +2★ |
-| 25 | notion | 886 entre 870 · 880 · 890 · 900 (niveau 4, mer pirates) | 886 | 2 | entre 880 et 890 | « C'est entre 880 et 890 ! » ; +2★ |
-| 26 | notion | 509 entre 420 · 430 · 440 · 450 (niveau 4, mer pirates) | 509 | 4 | après 450 | « Bravo ! » ; +2★ |
-| 27 | notion | 426 entre 420 · 430 · 440 · 450 (niveau 4, mer pirates) | 426 | 1 | entre 420 et 430 | « C'est entre 420 et 430 ! » ; +2★ |
-| 28 | notion | 358 entre 420 · 430 · 440 · 450 (niveau 4, mer pirates) | 358 | 0 | avant 420 | « Bravo ! » ; +2★ |
-| 29 | notion | 426 entre 420 · 430 · 440 · 450 (niveau 4, mer pirates) | 426 | 1 | entre 420 et 430 | « C'est entre 420 et 430 ! » ; +2★ |
-| 30 | notion | 437 entre 420 · 430 · 440 · 450 (niveau 4, mer pirates) | 437 | 2 | entre 430 et 440 | « C'est entre 430 et 440 ! » ; +2★ |
-| 31 | notion | 496 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 496 | 2 | entre 490 et 500 | « C'est entre 490 et 500 ! » ; +2★ |
-| 32 | notion | 197 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 197 | 0 | avant 480 | « Bravo ! » ; +2★ |
-| 33 | notion | 441 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 441 | 0 | avant 480 | « Bravo ! » ; +2★ |
-| 34 | notion | 722 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 722 | 4 | après 510 | « Bravo ! » ; +2★ |
-| 35 | notion | 486 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 486 | 1 | entre 480 et 490 | « C'est entre 480 et 490 ! » ; +2★ |
-| 36 | notion | 166 entre 140 · 150 · 160 · 170 (niveau 4, mer pirates) | 166 | 3 | entre 160 et 170 | « C'est entre 160 et 170 ! » ; +2★ |
-| 37 | notion | 167 entre 140 · 150 · 160 · 170 (niveau 4, mer pirates) | 167 | 3 | entre 160 et 170 | « C'est entre 160 et 170 ! » ; +2★ |
-| 38 | notion | 154 entre 140 · 150 · 160 · 170 (niveau 4, mer pirates) | 154 | 2 | entre 150 et 160 | « C'est entre 150 et 160 ! » ; +2★ |
-| 39 | notion | 43 entre 140 · 150 · 160 · 170 (niveau 4, mer pirates) | 43 | 0 | avant 140 | « Bravo ! » ; +2★ |
-| 40 | notion | 65 entre 140 · 150 · 160 · 170 (niveau 4, mer pirates) | 65 | 0 | avant 140 | « Bravo ! » ; +2★ |
+| 11 | notion | 314 entre 290 · 300 · 310 · 320 (niveau 4, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 314 | 3 | entre 310 et 320 | « Les pirates sont loin. C'est entre 310 et 320 ! » ; +2★ |
+| 12 | notion | 219 entre 290 · 300 · 310 · 320 (niveau 4, mer pirates) | 219 | 0 | avant 290 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 13 | notion | 296 entre 290 · 300 · 310 · 320 (niveau 4, mer pirates) | 296 | 1 | entre 290 et 300 | « Les pirates sont loin. C'est entre 290 et 300 ! » ; +2★ |
+| 14 | notion | 304 entre 290 · 300 · 310 · 320 (niveau 4, mer pirates) | 304 | 2 | entre 300 et 310 | « Les pirates sont loin. C'est entre 300 et 310 ! » ; +2★ |
+| 15 | notion | 852 entre 290 · 300 · 310 · 320 (niveau 4, mer pirates) | 852 | 4 | après 320 | « Ouf ! Les pirates sont loin. » ; MONTÉE (niveau 1 → 5) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
+| 16 | notion | 804 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates) | 804 | 3 | entre 800 et 810 | « Les pirates sont loin. C'est entre 800 et 810 ! » ; +2★ |
+| 17 | notion | 786 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates) | 786 | 1 | entre 780 et 790 | « Les pirates sont loin. C'est entre 780 et 790 ! » ; +2★ |
+| 18 | notion | 795 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates) | 795 | 2 | entre 790 et 800 | « Les pirates sont loin. C'est entre 790 et 800 ! » ; +2★ |
+| 19 | notion | 784 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates) | 784 | 1 | entre 780 et 790 | « Les pirates sont loin. C'est entre 780 et 790 ! » ; +2★ |
+| 20 | notion | 805 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates) | 805 | 3 | entre 800 et 810 | « Les pirates sont loin. C'est entre 800 et 810 ! » ; +2★ |
+| 21 | notion | 946 entre 870 · 880 · 890 · 900 (niveau 4, mer pirates) | 946 | 4 | après 900 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 22 | notion | 897 entre 870 · 880 · 890 · 900 (niveau 4, mer pirates) | 897 | 3 | entre 890 et 900 | « Les pirates sont loin. C'est entre 890 et 900 ! » ; +2★ |
+| 23 | notion | 883 entre 870 · 880 · 890 · 900 (niveau 4, mer pirates) | 883 | 2 | entre 880 et 890 | « Les pirates sont loin. C'est entre 880 et 890 ! » ; +2★ |
+| 24 | notion | 893 entre 870 · 880 · 890 · 900 (niveau 4, mer pirates) | 893 | 3 | entre 890 et 900 | « Les pirates sont loin. C'est entre 890 et 900 ! » ; +2★ |
+| 25 | notion | 886 entre 870 · 880 · 890 · 900 (niveau 4, mer pirates) | 886 | 2 | entre 880 et 890 | « Les pirates sont loin. C'est entre 880 et 890 ! » ; +2★ |
+| 26 | notion | 509 entre 420 · 430 · 440 · 450 (niveau 4, mer pirates) | 509 | 4 | après 450 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 27 | notion | 426 entre 420 · 430 · 440 · 450 (niveau 4, mer pirates) | 426 | 1 | entre 420 et 430 | « Les pirates sont loin. C'est entre 420 et 430 ! » ; +2★ |
+| 28 | notion | 358 entre 420 · 430 · 440 · 450 (niveau 4, mer pirates) | 358 | 0 | avant 420 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 29 | notion | 426 entre 420 · 430 · 440 · 450 (niveau 4, mer pirates) | 426 | 1 | entre 420 et 430 | « Les pirates sont loin. C'est entre 420 et 430 ! » ; +2★ |
+| 30 | notion | 437 entre 420 · 430 · 440 · 450 (niveau 4, mer pirates) | 437 | 2 | entre 430 et 440 | « Les pirates sont loin. C'est entre 430 et 440 ! » ; +2★ |
+| 31 | notion | 496 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 496 | 2 | entre 490 et 500 | « Les pirates sont loin. C'est entre 490 et 500 ! » ; +2★ |
+| 32 | notion | 197 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 197 | 0 | avant 480 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 33 | notion | 441 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 441 | 0 | avant 480 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 34 | notion | 722 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 722 | 4 | après 510 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 35 | notion | 486 entre 480 · 490 · 500 · 510 (niveau 4, mer pirates) | 486 | 1 | entre 480 et 490 | « Les pirates sont loin. C'est entre 480 et 490 ! » ; +2★ |
+| 36 | notion | 166 entre 140 · 150 · 160 · 170 (niveau 4, mer pirates) | 166 | 3 | entre 160 et 170 | « Les pirates sont loin. C'est entre 160 et 170 ! » ; +2★ |
+| 37 | notion | 167 entre 140 · 150 · 160 · 170 (niveau 4, mer pirates) | 167 | 3 | entre 160 et 170 | « Les pirates sont loin. C'est entre 160 et 170 ! » ; +2★ |
+| 38 | notion | 154 entre 140 · 150 · 160 · 170 (niveau 4, mer pirates) | 154 | 2 | entre 150 et 160 | « Les pirates sont loin. C'est entre 150 et 160 ! » ; +2★ |
+| 39 | notion | 43 entre 140 · 150 · 160 · 170 (niveau 4, mer pirates) | 43 | 0 | avant 140 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 40 | notion | 65 entre 140 · 150 · 160 · 170 (niveau 4, mer pirates) | 65 | 0 | avant 140 | « Bravo, tu as semé les pirates ! » ; +2★ |
 
 Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte crabe (nouvelle)
 
@@ -522,30 +522,30 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte cr
 | 11 | échauffement | 6 + 1 = ? (fait nouveau) | Combien font 6 plus 1 ? | 7 | 6 | correction : « 6 plus 1, ça fait 7. » |
 | 12 | échauffement | 6 + 1 = ? (fait nouveau) | 6 plus 1 ? | 7 | 7 | +4★ (erreur corrigée) |
 | 13 | notion | EXEMPLE GUIDÉ : 534 entre 520 · 530 · 540 · 550 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 534 Regarde : 534 est plus grand que 530, et plus petit que 540. Le bateau passe entre 530 et 540. |  | (le bateau va seul) |  |
-| 14 | notion | 910 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 910 | 4 | après 810 | « Bravo ! » ; +2★ |
-| 15 | notion | 795 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates) | 795 | 2 | entre 790 et 800 | « C'est entre 790 et 800 ! » ; +2★ |
+| 14 | notion | 910 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 910 | 4 | après 810 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 15 | notion | 795 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates) | 795 | 2 | entre 790 et 800 | « Les pirates sont loin. C'est entre 790 et 800 ! » ; +2★ |
 | 16 | notion | 807 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates) | 807 | 3 | après 810 | erreur V1 : « Il est plus petit que 810 : il passe avant. » « Les pirates ont rattrapé le bateau ! » |
-| 17 | notion | 783 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates) | 783 | 1 | entre 780 et 790 | « C'est entre 780 et 790 ! » ; +2★ |
+| 17 | notion | 783 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates) | 783 | 1 | entre 780 et 790 | « Les pirates sont loin. C'est entre 780 et 790 ! » ; +2★ |
 | 18 | notion | 721 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates) | 721 | 0 | entre 780 et 790 | erreur V1 : « Il est plus petit que 780 : il passe avant. » « Les pirates ont rattrapé le bateau ! » |
-| 19 | notion | 807 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates, revient) | 807 | 3 | entre 800 et 810 | « C'est entre 800 et 810 ! » ; +4★ (erreur corrigée) |
-| 20 | notion | 83 entre 80 · 90 · 100 · 110 (niveau 4, mer pirates) | 83 | 1 | entre 80 et 90 | « C'est entre 80 et 90 ! » ; +2★ |
-| 21 | notion | 721 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates, revient) | 721 | 0 | avant 780 | « Bravo ! » ; +4★ (erreur corrigée) |
-| 22 | notion | 96 entre 80 · 90 · 100 · 110 (niveau 4, mer pirates) | 96 | 2 | entre 90 et 100 | « C'est entre 90 et 100 ! » ; +2★ |
-| 23 | notion | 93 entre 80 · 90 · 100 · 110 (niveau 4, mer pirates) | 93 | 2 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « C'est entre 90 et 100 ! » |
-| 24 | notion | 590 entre 80 · 90 · 100 · 110 (niveau 4, mer pirates) | 590 | 4 | après 110 | « Bravo ! » ; +2★ |
-| 25 | notion | 573 entre 80 · 90 · 100 · 110 (niveau 4, mer pirates) | 573 | 4 | après 110 | « Bravo ! » ; +2★ |
+| 19 | notion | 807 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates, revient) | 807 | 3 | entre 800 et 810 | « Les pirates sont loin. C'est entre 800 et 810 ! » ; +4★ (erreur corrigée) |
+| 20 | notion | 83 entre 80 · 90 · 100 · 110 (niveau 4, mer pirates) | 83 | 1 | entre 80 et 90 | « Les pirates sont loin. C'est entre 80 et 90 ! » ; +2★ |
+| 21 | notion | 721 entre 780 · 790 · 800 · 810 (niveau 4, mer pirates, revient) | 721 | 0 | avant 780 | « Bravo, tu as semé les pirates ! » ; +4★ (erreur corrigée) |
+| 22 | notion | 96 entre 80 · 90 · 100 · 110 (niveau 4, mer pirates) | 96 | 2 | entre 90 et 100 | « Les pirates sont loin. C'est entre 90 et 100 ! » ; +2★ |
+| 23 | notion | 93 entre 80 · 90 · 100 · 110 (niveau 4, mer pirates) | 93 | 2 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « Il est plus grand que 90 : il passe après. » |
+| 24 | notion | 590 entre 80 · 90 · 100 · 110 (niveau 4, mer pirates) | 590 | 4 | après 110 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 25 | notion | 573 entre 80 · 90 · 100 · 110 (niveau 4, mer pirates) | 573 | 4 | après 110 | « Ouf ! Les pirates sont loin. » ; +2★ |
 | 26 | notion | 93 entre 80 · 90 · 100 · 110 (niveau 4, mer pirates, revient) | 93 | 2 | entre 80 et 90 | erreur V1 : « Il est plus grand que 90 : il passe après. » « Les pirates ont rattrapé le bateau ! » |
-| 27 | notion | 985 entre 190 · 200 · 210 · 220 (niveau 4, mer pirates) | 985 | 4 | après 220 | « Bravo ! » ; +2★ |
-| 28 | notion | 206 entre 190 · 200 · 210 · 220 (niveau 4, mer pirates) | 206 | 2 | entre 200 et 210 | « C'est entre 200 et 210 ! » ; MONTÉE (niveau 1 → 5) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
-| 29 | notion | 213 entre 190 · 200 · 210 · 220 (niveau 4, mer pirates) | 213 | 3 | entre 210 et 220 | « C'est entre 210 et 220 ! » ; +2★ |
-| 30 | notion | 214 entre 190 · 200 · 210 · 220 (niveau 4, mer pirates) | 214 | 3 | entre 210 et 220 | « C'est entre 210 et 220 ! » ; +2★ |
-| 31 | notion | 197 entre 190 · 200 · 210 · 220 (niveau 4, mer pirates) | 197 | 1 | entre 190 et 200 | « C'est entre 190 et 200 ! » ; +2★ |
-| 32 | notion | 854 entre 840 · 850 · 860 · 870 (niveau 4, mer pirates) | 854 | 2 | entre 850 et 860 | « C'est entre 850 et 860 ! » ; +2★ |
+| 27 | notion | 985 entre 190 · 200 · 210 · 220 (niveau 4, mer pirates) | 985 | 4 | après 220 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 28 | notion | 206 entre 190 · 200 · 210 · 220 (niveau 4, mer pirates) | 206 | 2 | entre 200 et 210 | « Les pirates sont loin. C'est entre 200 et 210 ! » ; MONTÉE (niveau 1 → 5) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
+| 29 | notion | 213 entre 190 · 200 · 210 · 220 (niveau 4, mer pirates) | 213 | 3 | entre 210 et 220 | « Les pirates sont loin. C'est entre 210 et 220 ! » ; +2★ |
+| 30 | notion | 214 entre 190 · 200 · 210 · 220 (niveau 4, mer pirates) | 214 | 3 | entre 210 et 220 | « Les pirates sont loin. C'est entre 210 et 220 ! » ; +2★ |
+| 31 | notion | 197 entre 190 · 200 · 210 · 220 (niveau 4, mer pirates) | 197 | 1 | entre 190 et 200 | « Les pirates sont loin. C'est entre 190 et 200 ! » ; +2★ |
+| 32 | notion | 854 entre 840 · 850 · 860 · 870 (niveau 4, mer pirates) | 854 | 2 | entre 850 et 860 | « Les pirates sont loin. C'est entre 850 et 860 ! » ; +2★ |
 | 33 | notion | 845 entre 840 · 850 · 860 · 870 (niveau 4, mer pirates) | 845 | 1 | avant 840 | erreur V1 : « Il est plus grand que 840 : il passe après. » « Les pirates ont rattrapé le bateau ! » |
-| 34 | notion | 894 entre 840 · 850 · 860 · 870 (niveau 4, mer pirates) | 894 | 4 | après 870 | « Bravo ! » ; +2★ |
-| 35 | notion | 847 entre 840 · 850 · 860 · 870 (niveau 4, mer pirates) | 847 | 1 | entre 840 et 850 | « C'est entre 840 et 850 ! » ; +2★ |
-| 36 | notion | 845 entre 840 · 850 · 860 · 870 (niveau 4, mer pirates, revient) | 845 | 1 | entre 840 et 850 | « C'est entre 840 et 850 ! » ; +4★ (erreur corrigée) |
-| 37 | notion | 866 entre 840 · 850 · 860 · 870 (niveau 4, mer pirates) | 866 | 3 | entre 860 et 870 | « C'est entre 860 et 870 ! » ; +2★ |
+| 34 | notion | 894 entre 840 · 850 · 860 · 870 (niveau 4, mer pirates) | 894 | 4 | après 870 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 35 | notion | 847 entre 840 · 850 · 860 · 870 (niveau 4, mer pirates) | 847 | 1 | entre 840 et 850 | « Les pirates sont loin. C'est entre 840 et 850 ! » ; +2★ |
+| 36 | notion | 845 entre 840 · 850 · 860 · 870 (niveau 4, mer pirates, revient) | 845 | 1 | entre 840 et 850 | « Les pirates sont loin. C'est entre 840 et 850 ! » ; +4★ (erreur corrigée) |
+| 37 | notion | 866 entre 840 · 850 · 860 · 870 (niveau 4, mer pirates) | 866 | 3 | entre 860 et 870 | « Les pirates sont loin. C'est entre 860 et 870 ! » ; +2★ |
 
 Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte crabe (nouvelle)
 
@@ -571,7 +571,7 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte crabe (nouvel
 | 11 | échauffement | 2 + 6 = ? (fait nouveau) | 2 plus 6 ? | 8 | 17 | correction : « 2 plus 6, ça fait 8. » |
 | 12 | échauffement | 8 + 2 = ? (fait nouveau) | 8 plus 2 ? | 10 | 4 | correction : « 8 plus 2, ça fait 10. » |
 | 13 | notion | EXEMPLE GUIDÉ : 534 entre 520 · 530 · 540 · 550 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 534 Regarde : 534 est plus grand que 530, et plus petit que 540. Le bateau passe entre 530 et 540. |  | (le bateau va seul) |  |
-| 14 | notion | 735 entre 710 · 720 · 730 · 740 (niveau 4, mer calme) | 735 | 3 | entre 710 et 720, puis entre 710 et 720 | erreur V2 : « Il est plus grand que 720 : il passe après. » ; erreur V2 : « Il est plus grand que 720 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 730 et 740 ! » |
+| 14 | notion | 735 entre 710 · 720 · 730 · 740 (niveau 4, mer calme) | 735 | 3 | entre 710 et 720, puis entre 710 et 720 | erreur V2 : « Il est plus grand que 720 : il passe après. » ; erreur V2 : « Il est plus grand que 720 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 730 : il passe après. » |
 | 15 | notion | 715 entre 710 · 720 · 730 · 740 (niveau 4, mer calme) | 715 | 1 | après 740, puis entre 710 et 720 | erreur V2 : « Il est plus petit que 740 : il passe avant. » ; « C'est entre 710 et 720 ! » ; +1★ |
 | 16 | notion | 724 entre 710 · 720 · 730 · 740 (niveau 4, mer calme) | 724 | 2 | entre 720 et 730 | « C'est entre 720 et 730 ! » ; +1★ |
 | 17 | notion | 735 entre 710 · 720 · 730 · 740 (niveau 4, mer calme, revient) | 735 | 3 | avant 710, puis entre 730 et 740 | erreur V2 : « Il est plus grand que 710 : il passe après. » ; « C'est entre 730 et 740 ! » ; +1★ |
@@ -579,19 +579,19 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte crabe (nouvel
 | 19 | notion | 822 entre 710 · 720 · 730 · 740 (niveau 4, mer calme) | 822 | 4 | après 740 | « Bravo ! » ; +1★ |
 | 20 | notion | 826 entre 810 · 820 · 830 · 840 (niveau 4, mer calme) | 826 | 2 | entre 810 et 820, puis entre 820 et 830 | erreur V1 : « Il est plus grand que 820 : il passe après. » ; « C'est entre 820 et 830 ! » ; +1★ |
 | 21 | notion | 64 entre 810 · 820 · 830 · 840 (niveau 4, mer calme) | 64 | 0 | après 840, puis entre 810 et 820 | erreur V2 : « Il est plus petit que 840 : il passe avant. » ; erreur V2 : « Il est plus petit que 810 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 810 : il passe avant. » |
-| 22 | notion | 826 entre 810 · 820 · 830 · 840 (niveau 4, mer calme) | 826 | 2 | après 840, puis entre 830 et 840 | erreur V2 : « Il est plus petit que 840 : il passe avant. » ; erreur V2 : « Il est plus petit que 830 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 820 et 830 ! » |
+| 22 | notion | 826 entre 810 · 820 · 830 · 840 (niveau 4, mer calme) | 826 | 2 | après 840, puis entre 830 et 840 | erreur V2 : « Il est plus petit que 840 : il passe avant. » ; erreur V2 : « Il est plus petit que 830 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 820 : il passe après. » |
 | 23 | notion | 135 entre 810 · 820 · 830 · 840 (niveau 4, mer calme) | 135 | 0 | entre 810 et 820, puis après 840 | erreur V1 : « Il est plus petit que 810 : il passe avant. » ; erreur V1 : « Il est plus petit que 840 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 810 : il passe avant. » |
 | 24 | notion | 815 entre 810 · 820 · 830 · 840 (niveau 4, mer calme) | 815 | 1 | entre 830 et 840, puis entre 810 et 820 | erreur V2 : « Il est plus petit que 830 : il passe avant. » ; « C'est entre 810 et 820 ! » ; +1★ |
 | 25 | notion | 64 entre 810 · 820 · 830 · 840 (niveau 4, mer calme, revient) | 64 | 0 | avant 810 | « Bravo ! » ; +2★ (erreur corrigée) |
-| 26 | notion | 826 entre 810 · 820 · 830 · 840 (niveau 4, mer calme, revient) | 826 | 2 | après 840, puis après 840 | erreur V2 : « Il est plus petit que 840 : il passe avant. » ; erreur V2 : « Il est plus petit que 840 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 820 et 830 ! » |
-| 27 | notion | 707 entre 690 · 700 · 710 · 720 (niveau 4, mer calme) | 707 | 2 | avant 690, puis entre 690 et 700 | erreur V2 : « Il est plus grand que 690 : il passe après. » ; erreur V2 : « Il est plus grand que 700 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 700 et 710 ! » |
+| 26 | notion | 826 entre 810 · 820 · 830 · 840 (niveau 4, mer calme, revient) | 826 | 2 | après 840, puis après 840 | erreur V2 : « Il est plus petit que 840 : il passe avant. » ; erreur V2 : « Il est plus petit que 840 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 820 : il passe après. » |
+| 27 | notion | 707 entre 690 · 700 · 710 · 720 (niveau 4, mer calme) | 707 | 2 | avant 690, puis entre 690 et 700 | erreur V2 : « Il est plus grand que 690 : il passe après. » ; erreur V2 : « Il est plus grand que 700 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 700 : il passe après. » |
 | 28 | notion | 135 entre 810 · 820 · 830 · 840 (niveau 4, mer calme, revient) | 135 | 0 | entre 820 et 830, puis après 840 | erreur V2 : « Il est plus petit que 820 : il passe avant. » ; erreur V2 : « Il est plus petit que 840 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 810 : il passe avant. » |
-| 29 | notion | 705 entre 690 · 700 · 710 · 720 (niveau 4, mer calme) | 705 | 2 | avant 690, puis entre 690 et 700 | erreur V2 : « Il est plus grand que 690 : il passe après. » ; erreur V2 : « Il est plus grand que 700 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 700 et 710 ! » |
+| 29 | notion | 705 entre 690 · 700 · 710 · 720 (niveau 4, mer calme) | 705 | 2 | avant 690, puis entre 690 et 700 | erreur V2 : « Il est plus grand que 690 : il passe après. » ; erreur V2 : « Il est plus grand que 700 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 700 : il passe après. » |
 | 30 | notion | 715 entre 690 · 700 · 710 · 720 (niveau 4, mer calme) | 715 | 3 | entre 700 et 710, puis entre 710 et 720 | erreur V1 : « Il est plus grand que 710 : il passe après. » ; « C'est entre 710 et 720 ! » ; +1★ |
-| 31 | notion | 707 entre 690 · 700 · 710 · 720 (niveau 4, mer calme, revient) | 707 | 2 | entre 710 et 720, puis entre 690 et 700 | erreur V1 : « Il est plus petit que 710 : il passe avant. » ; erreur V1 : « Il est plus grand que 700 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 700 et 710 ! » |
-| 32 | notion | 695 entre 690 · 700 · 710 · 720 (niveau 4, mer calme) | 695 | 1 | entre 700 et 710, puis après 720 | erreur V1 : « Il est plus petit que 700 : il passe avant. » ; erreur V1 : « Il est plus petit que 720 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 690 et 700 ! » |
-| 33 | notion | 714 entre 690 · 700 · 710 · 720 (niveau 4, mer calme) | 714 | 3 | avant 690, puis entre 700 et 710 | erreur V2 : « Il est plus grand que 690 : il passe après. » ; erreur V2 : « Il est plus grand que 710 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 710 et 720 ! » |
+| 31 | notion | 707 entre 690 · 700 · 710 · 720 (niveau 4, mer calme, revient) | 707 | 2 | entre 710 et 720, puis entre 690 et 700 | erreur V1 : « Il est plus petit que 710 : il passe avant. » ; erreur V1 : « Il est plus grand que 700 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 700 : il passe après. » |
+| 32 | notion | 695 entre 690 · 700 · 710 · 720 (niveau 4, mer calme) | 695 | 1 | entre 700 et 710, puis après 720 | erreur V1 : « Il est plus petit que 700 : il passe avant. » ; erreur V1 : « Il est plus petit que 720 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 690 : il passe après. » |
+| 33 | notion | 714 entre 690 · 700 · 710 · 720 (niveau 4, mer calme) | 714 | 3 | avant 690, puis entre 700 et 710 | erreur V2 : « Il est plus grand que 690 : il passe après. » ; erreur V2 : « Il est plus grand que 710 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 710 : il passe après. » |
 | 34 | notion | 75 entre 320 · 330 · 340 · 350 (niveau 4, mer calme) | 75 | 0 | après 350, puis avant 320 | erreur V2 : « Il est plus petit que 350 : il passe avant. » ; « Bravo ! » ; +1★ |
-| 35 | notion | 346 entre 320 · 330 · 340 · 350 (niveau 4, mer calme) | 346 | 3 | entre 330 et 340, puis entre 330 et 340 | erreur V1 : « Il est plus grand que 340 : il passe après. » ; erreur V1 : « Il est plus grand que 340 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 340 et 350 ! » |
+| 35 | notion | 346 entre 320 · 330 · 340 · 350 (niveau 4, mer calme) | 346 | 3 | entre 330 et 340, puis entre 330 et 340 | erreur V1 : « Il est plus grand que 340 : il passe après. » ; erreur V1 : « Il est plus grand que 340 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 340 : il passe après. » |
 
 Récompense et fin : +10★ (fin)

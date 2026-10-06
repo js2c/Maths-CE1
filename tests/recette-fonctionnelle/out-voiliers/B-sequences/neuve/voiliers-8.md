@@ -21,7 +21,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 4 | échauffement | 1 + 1 = ? (fait nouveau) | Combien font 1 plus 1 ? | 2 | 2 | +1★ |
 | 5 | échauffement | 5 + 2 = ? (fait nouveau) | 5 plus 2 ? | 7 | 7 |  |
 | 6 | échauffement | 2 + 5 = ? (fait nouveau) | Combien font 2 plus 5 ? | 7 | 7 | +1★ |
-| 7 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe avant 350. |  | (le bateau va seul) |  |
+| 7 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe entre 250 et 350. |  | (le bateau va seul) |  |
 | 8 | notion | 251 entre 223 · 233 · 239 · 249 · 259 (niveau 8, mer calme) | 251 | 4 | entre 249 et 259 | « Bravo ! » |
 | 9 | notion | 248 entre 223 · 233 · 239 · 249 · 259 (niveau 8, mer calme) | 248 | 3 | entre 239 et 249 | « Bravo ! » ; +1★ |
 | 10 | notion | 238 entre 223 · 233 · 239 · 249 · 259 (niveau 8, mer calme) | 238 | 2 | entre 233 et 239 | « Bravo ! » |
@@ -70,7 +70,7 @@ Récompense et fin : +10★ (fin) ; carte hippocampe (nouvelle)
 | 4 | échauffement | 1 + 4 = ? (fait nouveau) | Combien font 1 plus 4 ? | 5 | 5 | +1★ |
 | 5 | échauffement | 4 + 1 = ? (fait nouveau) | 4 plus 1 ? | 5 | 5 |  |
 | 6 | échauffement | 2 + 1 = ? (fait nouveau) | 2 plus 1 ? | 3 | 3 | +1★ |
-| 7 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe avant 350. |  | (le bateau va seul) |  |
+| 7 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe entre 250 et 350. |  | (le bateau va seul) |  |
 | 8 | notion | 488 entre 384 · 484 · 489 · 496 · 596 (niveau 8, mer calme) | 488 | 2 | entre 484 et 489 | « Bravo ! » |
 | 9 | notion | 495 entre 384 · 484 · 489 · 496 · 596 (niveau 8, mer calme) | 495 | 3 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « Il est plus grand que cette bouée : il passe après. » |
 | 10 | notion | 590 entre 384 · 484 · 489 · 496 · 596 (niveau 8, mer calme) | 590 | 4 | entre 496 et 596 | « Bravo ! » ; +1★ |
@@ -118,7 +118,7 @@ Récompense et fin : +10★ (fin)
 | 10 | échauffement | 2 + 1 = ? (fait nouveau) | 2 plus 1 ? | 3 | 13 | correction : « 2 plus 1, ça fait 3. » |
 | 11 | échauffement | 1 + 2 = ? (fait nouveau) | 1 plus 2 ? | 3 | 16 | correction : « 1 plus 2, ça fait 3. » |
 | 12 | échauffement | 1 + 7 = ? (fait nouveau) | Combien font 1 plus 7 ? | 8 | 0 | correction : « 1 plus 7, ça fait 8. » |
-| 13 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe avant 350. |  | (le bateau va seul) |  |
+| 13 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe entre 250 et 350. |  | (le bateau va seul) |  |
 | 14 | notion | 411 entre 293 · 302 · 307 · 407 · 410 (niveau 8, mer calme) | 411 | 5 | entre 302 et 307, puis après 410 | erreur V2 : « Il est plus grand que cette bouée : il passe après. » ; « Bravo ! » |
 | 15 | notion | 409 entre 293 · 302 · 307 · 407 · 410 (niveau 8, mer calme) | 409 | 4 | entre 307 et 407, puis entre 407 et 410 | erreur V1 : « Il est plus grand que cette bouée : il passe après. » ; « Bravo ! » ; +1★ |
 | 16 | notion | 304 entre 293 · 302 · 307 · 407 · 410 (niveau 8, mer calme) | 304 | 2 | après 410, puis entre 293 et 302 | erreur V2 : « Il est plus petit que 410 : il passe avant. » ; erreur V2 : « Il est plus grand que cette bouée : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que cette bouée : il passe après. » |
@@ -162,7 +162,7 @@ Récompense et fin : +10★ (fin)
 | 7 | échauffement | 1 + 8 = ? (fait nouveau) | 1 plus 8 ? | 9 | 9 | +1★ |
 | 8 | échauffement | 1 + 6 = ? (fait nouveau) | 1 plus 6 ? | 7 | 7 | +1★ |
 | 9 | échauffement | 6 + 1 = ? (fait nouveau) | 6 plus 1 ? | 7 | 7 | +1★ |
-| 10 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe avant 350. |  | (le bateau va seul) |  |
+| 10 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe entre 250 et 350. |  | (le bateau va seul) |  |
 | 11 | notion | 215 entre 193 · 201 · 209 · 214 · 223 (niveau 8, mer calme) | 215 | 4 | entre 214 et 223 | « Bravo ! » ; +1★ |
 | 12 | notion | 191 entre 193 · 201 · 209 · 214 · 223 (niveau 8, mer calme) | 191 | 0 | avant 193 | « Bravo ! » ; +1★ |
 | 13 | notion | 203 entre 193 · 201 · 209 · 214 · 223 (niveau 8, mer calme) | 203 | 2 | entre 201 et 209 | « Bravo ! » ; +1★ |
@@ -216,7 +216,7 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
 | 9 | échauffement | 5 + 1 = ? (fait nouveau) | Combien font 5 plus 1 ? | 6 | 6 | +1★ |
 | 10 | échauffement | 6 + 2 = ? (fait nouveau) | Combien font 6 plus 2 ? | 8 | 8 | +2★ (erreur corrigée) |
 | 11 | échauffement | 6 + 2 = ? (fait nouveau) | 6 plus 2 ? | 8 | 8 | +1★ |
-| 12 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe avant 350. |  | (le bateau va seul) |  |
+| 12 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe entre 250 et 350. |  | (le bateau va seul) |  |
 | 13 | notion | 350 entre 229 · 239 · 249 · 349 · 359 (niveau 8, mer calme) | 350 | 4 | entre 349 et 359 | « Bravo ! » ; +1★ |
 | 14 | notion | 227 entre 229 · 239 · 249 · 349 · 359 (niveau 8, mer calme) | 227 | 0 | avant 229 | « Bravo ! » ; +1★ |
 | 15 | notion | 344 entre 229 · 239 · 249 · 349 · 359 (niveau 8, mer calme) | 344 | 3 | entre 249 et 349 | « Bravo ! » ; +1★ |
@@ -268,7 +268,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle)
 | 11 | échauffement | 1 + 9 = ? (fait nouveau) | Combien font 1 plus 9 ? | 10 | 11 | correction : « 1 plus 9, ça fait 10. » |
 | 12 | échauffement | 5 + 2 = ? (fait nouveau) | Combien font 5 plus 2 ? | 7 | 13 | correction : « 5 plus 2, ça fait 7. » |
 | 13 | échauffement | 2 + 5 = ? (fait nouveau) | 2 plus 5 ? | 7 | 12 | correction : « 2 plus 5, ça fait 7. » |
-| 14 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe avant 350. |  | (le bateau va seul) |  |
+| 14 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe entre 250 et 350. |  | (le bateau va seul) |  |
 | 15 | notion | 429 entre 319 · 322 · 332 · 432 · 442 (niveau 8, mer calme) | 429 | 3 | entre 432 et 442, puis avant 319 | erreur V1 : « Il est plus petit que cette bouée : il passe avant. » ; erreur V1 : « Il est plus grand que cette bouée : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que cette bouée : il passe après. » |
 | 16 | notion | 320 entre 319 · 322 · 332 · 432 · 442 (niveau 8, mer calme) | 320 | 1 | entre 432 et 442, puis entre 332 et 432 | erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que cette bouée : il passe après. » |
 | 17 | notion | 444 entre 319 · 322 · 332 · 432 · 442 (niveau 8, mer calme) | 444 | 5 | entre 432 et 442, puis avant 319 | erreur V1 : « Il est plus grand que cette bouée : il passe après. » ; erreur V1 : « Il est plus grand que cette bouée : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que cette bouée : il passe après. » |
@@ -313,37 +313,37 @@ Récompense et fin : +10★ (fin)
 | 7 | échauffement | 2 + 6 = ? (fait nouveau) | Combien font 2 plus 6 ? | 8 | 8 | +1★ |
 | 8 | échauffement | 6 + 2 = ? (fait nouveau) | Combien font 6 plus 2 ? | 8 | 8 | +2★ |
 | 9 | échauffement | 3 + 1 = ? (fait nouveau) | Combien font 3 plus 1 ? | 4 | 4 | +1★ |
-| 10 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe avant 350. |  | (le bateau va seul) |  |
+| 10 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe entre 250 et 350. |  | (le bateau va seul) |  |
 | 11 | notion | 251 entre 125 · 225 · 233 · 240 · 250 (niveau 8, mer vent) | Le vent se lève ! Il pousse les bateaux vers les bouées. 251 | 5 | après 250 | « Bravo ! » ; +2★ |
 | 12 | notion | 239 entre 125 · 225 · 233 · 240 · 250 (niveau 8, mer vent) | 239 | 3 | entre 233 et 240 | « Bravo ! » ; +1★ |
 | 13 | notion | 120 entre 125 · 225 · 233 · 240 · 250 (niveau 8, mer vent) | 120 | 0 | avant 125 | « Bravo ! » ; +2★ |
-| 14 | notion | 219 entre 125 · 225 · 233 · 240 · 250 (niveau 8, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 219 | 1 | entre 125 et 225 | « Bravo ! » ; +1★ |
-| 15 | notion | 241 entre 125 · 225 · 233 · 240 · 250 (niveau 8, mer pirates) | 241 | 4 | entre 240 et 250 | « C'est entre 240 et 250 ! » ; MONTÉE (niveau 1 → 9) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
-| 16 | notion | 542 entre 431 · 436 · 441 · 541 · 545 (niveau 8, mer pirates) | 542 | 4 | entre 541 et 545 | « Bravo ! » ; +1★ |
-| 17 | notion | 430 entre 431 · 436 · 441 · 541 · 545 (niveau 8, mer pirates) | 430 | 0 | avant 431 | « Bravo ! » ; +2★ |
-| 18 | notion | 547 entre 431 · 436 · 441 · 541 · 545 (niveau 8, mer pirates) | 547 | 5 | après 545 | « Bravo ! » ; +1★ |
-| 19 | notion | 432 entre 431 · 436 · 441 · 541 · 545 (niveau 8, mer pirates) | 432 | 1 | entre 431 et 436 | « Bravo ! » ; +2★ |
-| 20 | notion | 429 entre 431 · 436 · 441 · 541 · 545 (niveau 8, mer pirates) | 429 | 0 | avant 431 | « Bravo ! » ; +1★ |
-| 21 | notion | 361 entre 168 · 268 · 368 · 378 · 382 (niveau 8, mer pirates) | 361 | 2 | entre 268 et 368 | « Bravo ! » ; +2★ |
-| 22 | notion | 379 entre 168 · 268 · 368 · 378 · 382 (niveau 8, mer pirates) | 379 | 4 | entre 378 et 382 | « Bravo ! » ; +1★ |
-| 23 | notion | 366 entre 168 · 268 · 368 · 378 · 382 (niveau 8, mer pirates) | 366 | 2 | entre 268 et 368 | « Bravo ! » ; +2★ |
-| 24 | notion | 384 entre 168 · 268 · 368 · 378 · 382 (niveau 8, mer pirates) | 384 | 5 | après 382 | « Bravo ! » ; +1★ |
-| 25 | notion | 367 entre 168 · 268 · 368 · 378 · 382 (niveau 8, mer pirates) | 367 | 2 | entre 268 et 368 | « Bravo ! » ; +2★ |
-| 26 | notion | 290 entre 175 · 275 · 282 · 382 · 392 (niveau 8, mer pirates) | 290 | 3 | entre 282 et 382 | « Bravo ! » ; +1★ |
-| 27 | notion | 281 entre 175 · 275 · 282 · 382 · 392 (niveau 8, mer pirates) | 281 | 2 | entre 275 et 282 | « Bravo ! » ; +2★ |
-| 28 | notion | 284 entre 175 · 275 · 282 · 382 · 392 (niveau 8, mer pirates) | 284 | 3 | entre 282 et 382 | « Bravo ! » ; +1★ |
-| 29 | notion | 166 entre 175 · 275 · 282 · 382 · 392 (niveau 8, mer pirates) | 166 | 0 | avant 175 | « Bravo ! » ; +2★ |
-| 30 | notion | 391 entre 175 · 275 · 282 · 382 · 392 (niveau 8, mer pirates) | 391 | 4 | entre 382 et 392 | « Bravo ! » ; +1★ |
-| 31 | notion | 120 entre 125 · 225 · 229 · 329 · 429 (niveau 8, mer pirates) | 120 | 0 | avant 125 | « Bravo ! » ; +2★ |
-| 32 | notion | 331 entre 125 · 225 · 229 · 329 · 429 (niveau 8, mer pirates) | 331 | 4 | entre 329 et 429 | « Bravo ! » ; +1★ |
-| 33 | notion | 231 entre 125 · 225 · 229 · 329 · 429 (niveau 8, mer pirates) | 231 | 3 | entre 229 et 329 | « Bravo ! » ; +2★ |
-| 34 | notion | 222 entre 125 · 225 · 229 · 329 · 429 (niveau 8, mer pirates) | 222 | 1 | entre 125 et 225 | « Bravo ! » ; +1★ |
-| 35 | notion | 434 entre 125 · 225 · 229 · 329 · 429 (niveau 8, mer pirates) | 434 | 5 | après 429 | « Bravo ! » ; +2★ |
-| 36 | notion | 563 entre 170 · 270 · 370 · 470 · 570 (niveau 8, mer pirates) | 563 | 4 | entre 470 et 570 | « Bravo ! » ; +1★ |
-| 37 | notion | 561 entre 170 · 270 · 370 · 470 · 570 (niveau 8, mer pirates) | 561 | 4 | entre 470 et 570 | « Bravo ! » ; +2★ |
-| 38 | notion | 577 entre 170 · 270 · 370 · 470 · 570 (niveau 8, mer pirates) | 577 | 5 | après 570 | « Bravo ! » ; +1★ |
-| 39 | notion | 578 entre 170 · 270 · 370 · 470 · 570 (niveau 8, mer pirates) | 578 | 5 | après 570 | « Bravo ! » ; +2★ |
-| 40 | notion | 364 entre 170 · 270 · 370 · 470 · 570 (niveau 8, mer pirates) | 364 | 2 | entre 270 et 370 | « Bravo ! » ; +1★ |
+| 14 | notion | 219 entre 125 · 225 · 233 · 240 · 250 (niveau 8, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 219 | 1 | entre 125 et 225 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 15 | notion | 241 entre 125 · 225 · 233 · 240 · 250 (niveau 8, mer pirates) | 241 | 4 | entre 240 et 250 | « Les pirates sont loin. C'est entre 240 et 250 ! » ; MONTÉE (niveau 1 → 9) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
+| 16 | notion | 542 entre 431 · 436 · 441 · 541 · 545 (niveau 8, mer pirates) | 542 | 4 | entre 541 et 545 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 17 | notion | 430 entre 431 · 436 · 441 · 541 · 545 (niveau 8, mer pirates) | 430 | 0 | avant 431 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 18 | notion | 547 entre 431 · 436 · 441 · 541 · 545 (niveau 8, mer pirates) | 547 | 5 | après 545 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 19 | notion | 432 entre 431 · 436 · 441 · 541 · 545 (niveau 8, mer pirates) | 432 | 1 | entre 431 et 436 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 20 | notion | 429 entre 431 · 436 · 441 · 541 · 545 (niveau 8, mer pirates) | 429 | 0 | avant 431 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 21 | notion | 361 entre 168 · 268 · 368 · 378 · 382 (niveau 8, mer pirates) | 361 | 2 | entre 268 et 368 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 22 | notion | 379 entre 168 · 268 · 368 · 378 · 382 (niveau 8, mer pirates) | 379 | 4 | entre 378 et 382 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 23 | notion | 366 entre 168 · 268 · 368 · 378 · 382 (niveau 8, mer pirates) | 366 | 2 | entre 268 et 368 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 24 | notion | 384 entre 168 · 268 · 368 · 378 · 382 (niveau 8, mer pirates) | 384 | 5 | après 382 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 25 | notion | 367 entre 168 · 268 · 368 · 378 · 382 (niveau 8, mer pirates) | 367 | 2 | entre 268 et 368 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 26 | notion | 290 entre 175 · 275 · 282 · 382 · 392 (niveau 8, mer pirates) | 290 | 3 | entre 282 et 382 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 27 | notion | 281 entre 175 · 275 · 282 · 382 · 392 (niveau 8, mer pirates) | 281 | 2 | entre 275 et 282 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 28 | notion | 284 entre 175 · 275 · 282 · 382 · 392 (niveau 8, mer pirates) | 284 | 3 | entre 282 et 382 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 29 | notion | 166 entre 175 · 275 · 282 · 382 · 392 (niveau 8, mer pirates) | 166 | 0 | avant 175 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 30 | notion | 391 entre 175 · 275 · 282 · 382 · 392 (niveau 8, mer pirates) | 391 | 4 | entre 382 et 392 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 31 | notion | 120 entre 125 · 225 · 229 · 329 · 429 (niveau 8, mer pirates) | 120 | 0 | avant 125 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 32 | notion | 331 entre 125 · 225 · 229 · 329 · 429 (niveau 8, mer pirates) | 331 | 4 | entre 329 et 429 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 33 | notion | 231 entre 125 · 225 · 229 · 329 · 429 (niveau 8, mer pirates) | 231 | 3 | entre 229 et 329 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 34 | notion | 222 entre 125 · 225 · 229 · 329 · 429 (niveau 8, mer pirates) | 222 | 1 | entre 125 et 225 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 35 | notion | 434 entre 125 · 225 · 229 · 329 · 429 (niveau 8, mer pirates) | 434 | 5 | après 429 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 36 | notion | 563 entre 170 · 270 · 370 · 470 · 570 (niveau 8, mer pirates) | 563 | 4 | entre 470 et 570 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 37 | notion | 561 entre 170 · 270 · 370 · 470 · 570 (niveau 8, mer pirates) | 561 | 4 | entre 470 et 570 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 38 | notion | 577 entre 170 · 270 · 370 · 470 · 570 (niveau 8, mer pirates) | 577 | 5 | après 570 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 39 | notion | 578 entre 170 · 270 · 370 · 470 · 570 (niveau 8, mer pirates) | 578 | 5 | après 570 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 40 | notion | 364 entre 170 · 270 · 370 · 470 · 570 (niveau 8, mer pirates) | 364 | 2 | entre 270 et 370 | « Ouf ! Les pirates sont loin. » ; +1★ |
 
 Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte poisson-clown (nouvelle)
 
@@ -367,33 +367,33 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte po
 | 9 | échauffement | 9 + 1 = ? (fait nouveau) | 9 plus 1 ? | 10 | 10 | +2★ |
 | 10 | échauffement | 1 + 1 = ? (fait nouveau) | 1 plus 1 ? | 2 | 2 | +3★ (erreur corrigée) |
 | 11 | échauffement | 1 + 1 = ? (fait nouveau) | Combien font 1 plus 1 ? | 2 | 2 | +1★ |
-| 12 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe avant 350. |  | (le bateau va seul) |  |
+| 12 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe entre 250 et 350. |  | (le bateau va seul) |  |
 | 13 | notion | 100 entre 72 · 78 · 82 · 92 · 102 (niveau 8, mer vent) | Le vent se lève ! Il pousse les bateaux vers les bouées. 100 | 4 | après 102, puis entre 92 et 102 | erreur V1 : « Il est plus petit que cette bouée : il passe avant. » « Le vent repousse le bateau. » ; « Bravo ! » ; +2★ |
 | 14 | notion | 71 entre 72 · 78 · 82 · 92 · 102 (niveau 8, mer vent) | 71 | 0 | avant 72 | « Bravo ! » ; +1★ |
 | 15 | notion | 74 entre 72 · 78 · 82 · 92 · 102 (niveau 8, mer vent) | 74 | 1 | entre 72 et 78 | « Bravo ! » ; +2★ |
 | 16 | notion | 91 entre 72 · 78 · 82 · 92 · 102 (niveau 8, mer vent) | 91 | 3 | entre 82 et 92 | « Bravo ! » ; +1★ |
-| 17 | notion | 81 entre 72 · 78 · 82 · 92 · 102 (niveau 8, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 81 | 2 | entre 78 et 82 | « Bravo ! » ; +2★ |
-| 18 | notion | 226 entre 121 · 221 · 321 · 421 · 431 (niveau 8, mer pirates) | 226 | 2 | entre 221 et 321 | « Bravo ! » ; +1★ |
-| 19 | notion | 432 entre 121 · 221 · 321 · 421 · 431 (niveau 8, mer pirates) | 432 | 5 | après 431 | « Bravo ! » ; +2★ |
-| 20 | notion | 319 entre 121 · 221 · 321 · 421 · 431 (niveau 8, mer pirates) | 319 | 2 | entre 221 et 321 | « Bravo ! » ; +1★ |
-| 21 | notion | 116 entre 121 · 221 · 321 · 421 · 431 (niveau 8, mer pirates) | 116 | 0 | avant 121 | « Bravo ! » ; +2★ |
-| 22 | notion | 130 entre 121 · 221 · 321 · 421 · 431 (niveau 8, mer pirates) | 130 | 1 | entre 121 et 221 | « Bravo ! » ; MONTÉE (niveau 1 → 9) ; +1★ ; étoile arc-en-ciel (niveau franchi) |
-| 23 | notion | 444 entre 438 · 538 · 548 · 648 · 748 (niveau 8, mer pirates) | 444 | 1 | entre 438 et 538 | « Bravo ! » ; +2★ |
-| 24 | notion | 741 entre 438 · 538 · 548 · 648 · 748 (niveau 8, mer pirates) | 741 | 4 | entre 648 et 748 | « Bravo ! » ; +1★ |
-| 25 | notion | 547 entre 438 · 538 · 548 · 648 · 748 (niveau 8, mer pirates) | 547 | 2 | entre 538 et 548 | « Bravo ! » ; +2★ |
-| 26 | notion | 745 entre 438 · 538 · 548 · 648 · 748 (niveau 8, mer pirates) | 745 | 4 | entre 648 et 748 | « Bravo ! » ; +1★ |
+| 17 | notion | 81 entre 72 · 78 · 82 · 92 · 102 (niveau 8, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 81 | 2 | entre 78 et 82 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 18 | notion | 226 entre 121 · 221 · 321 · 421 · 431 (niveau 8, mer pirates) | 226 | 2 | entre 221 et 321 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 19 | notion | 432 entre 121 · 221 · 321 · 421 · 431 (niveau 8, mer pirates) | 432 | 5 | après 431 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 20 | notion | 319 entre 121 · 221 · 321 · 421 · 431 (niveau 8, mer pirates) | 319 | 2 | entre 221 et 321 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 21 | notion | 116 entre 121 · 221 · 321 · 421 · 431 (niveau 8, mer pirates) | 116 | 0 | avant 121 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 22 | notion | 130 entre 121 · 221 · 321 · 421 · 431 (niveau 8, mer pirates) | 130 | 1 | entre 121 et 221 | « Bravo, tu as semé les pirates ! » ; MONTÉE (niveau 1 → 9) ; +1★ ; étoile arc-en-ciel (niveau franchi) |
+| 23 | notion | 444 entre 438 · 538 · 548 · 648 · 748 (niveau 8, mer pirates) | 444 | 1 | entre 438 et 538 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 24 | notion | 741 entre 438 · 538 · 548 · 648 · 748 (niveau 8, mer pirates) | 741 | 4 | entre 648 et 748 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 25 | notion | 547 entre 438 · 538 · 548 · 648 · 748 (niveau 8, mer pirates) | 547 | 2 | entre 538 et 548 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 26 | notion | 745 entre 438 · 538 · 548 · 648 · 748 (niveau 8, mer pirates) | 745 | 4 | entre 648 et 748 | « Bravo, tu as semé les pirates ! » ; +1★ |
 | 27 | notion | 652 entre 438 · 538 · 548 · 648 · 748 (niveau 8, mer pirates) | 652 | 4 | après 748 | erreur V1 : « Il est plus petit que cette bouée : il passe avant. » « Les pirates ont rattrapé le bateau ! » |
-| 28 | notion | 402 entre 394 · 404 · 413 · 513 · 613 (niveau 8, mer pirates) | 402 | 1 | entre 394 et 404 | « Bravo ! » ; +2★ |
-| 29 | notion | 618 entre 394 · 404 · 413 · 513 · 613 (niveau 8, mer pirates) | 618 | 5 | après 613 | « Bravo ! » ; +1★ |
+| 28 | notion | 402 entre 394 · 404 · 413 · 513 · 613 (niveau 8, mer pirates) | 402 | 1 | entre 394 et 404 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 29 | notion | 618 entre 394 · 404 · 413 · 513 · 613 (niveau 8, mer pirates) | 618 | 5 | après 613 | « Ouf ! Les pirates sont loin. » ; +1★ |
 | 30 | notion | 652 entre 438 · 538 · 548 · 648 · 748 (niveau 8, mer pirates, revient) | 652 | 4 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « Il est plus grand que cette bouée : il passe après. » |
-| 31 | notion | 611 entre 394 · 404 · 413 · 513 · 613 (niveau 8, mer pirates) | 611 | 4 | entre 513 et 613 | « Bravo ! » ; +2★ |
-| 32 | notion | 396 entre 394 · 404 · 413 · 513 · 613 (niveau 8, mer pirates) | 396 | 1 | entre 394 et 404 | « Bravo ! » ; +1★ |
-| 33 | notion | 506 entre 394 · 404 · 413 · 513 · 613 (niveau 8, mer pirates) | 506 | 3 | entre 413 et 513 | « Bravo ! » ; +2★ |
-| 34 | notion | 645 entre 444 · 544 · 554 · 654 · 754 (niveau 8, mer pirates) | 645 | 3 | entre 554 et 654 | « Bravo ! » ; +1★ |
-| 35 | notion | 552 entre 444 · 544 · 554 · 654 · 754 (niveau 8, mer pirates) | 552 | 2 | entre 544 et 554 | « Bravo ! » ; +2★ |
-| 36 | notion | 758 entre 444 · 544 · 554 · 654 · 754 (niveau 8, mer pirates) | 758 | 5 | après 754 | « Bravo ! » ; +1★ |
+| 31 | notion | 611 entre 394 · 404 · 413 · 513 · 613 (niveau 8, mer pirates) | 611 | 4 | entre 513 et 613 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 32 | notion | 396 entre 394 · 404 · 413 · 513 · 613 (niveau 8, mer pirates) | 396 | 1 | entre 394 et 404 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 33 | notion | 506 entre 394 · 404 · 413 · 513 · 613 (niveau 8, mer pirates) | 506 | 3 | entre 413 et 513 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 34 | notion | 645 entre 444 · 544 · 554 · 654 · 754 (niveau 8, mer pirates) | 645 | 3 | entre 554 et 654 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 35 | notion | 552 entre 444 · 544 · 554 · 654 · 754 (niveau 8, mer pirates) | 552 | 2 | entre 544 et 554 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 36 | notion | 758 entre 444 · 544 · 554 · 654 · 754 (niveau 8, mer pirates) | 758 | 5 | après 754 | « Bravo, tu as semé les pirates ! » ; +1★ |
 | 37 | notion | 552 entre 444 · 544 · 554 · 654 · 754 (niveau 8, mer pirates) | 552 | 2 | entre 444 et 544 | erreur V1 : « Il est plus grand que cette bouée : il passe après. » « Les pirates ont rattrapé le bateau ! » |
-| 38 | notion | 501 entre 444 · 544 · 554 · 654 · 754 (niveau 8, mer pirates) | 501 | 1 | entre 444 et 544 | « Bravo ! » ; +2★ |
+| 38 | notion | 501 entre 444 · 544 · 554 · 654 · 754 (niveau 8, mer pirates) | 501 | 1 | entre 444 et 544 | « Bravo, tu as semé les pirates ! » ; +2★ |
 
 Récompense et fin : +10★ (fin) ; carte oursin (nouvelle) ; carte poisson-clown (nouvelle)
 
@@ -418,7 +418,7 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle) ; carte poisson-clow
 | 10 | échauffement | 2 + 7 = ? (fait nouveau) | 2 plus 7 ? | 9 | 3 | correction : « 2 plus 7, ça fait 9. » |
 | 11 | échauffement | 7 + 2 = ? (fait nouveau) | Combien font 7 plus 2 ? | 9 | 18 | correction : « 7 plus 2, ça fait 9. » |
 | 12 | échauffement | 1 + 7 = ? (fait nouveau) | 1 plus 7 ? | 8 | 12 | correction : « 1 plus 7, ça fait 8. » |
-| 13 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe avant 350. |  | (le bateau va seul) |  |
+| 13 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe entre 250 et 350. |  | (le bateau va seul) |  |
 | 14 | notion | 377 entre 157 · 160 · 260 · 270 · 370 (niveau 8, mer calme) | 377 | 5 | entre 157 et 160, puis avant 157 | erreur V2 : « Il est plus grand que 160 : il passe après. » ; erreur V2 : « Il est plus grand que cette bouée : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 370 : il passe après. » |
 | 15 | notion | 158 entre 157 · 160 · 260 · 270 · 370 (niveau 8, mer calme) | 158 | 1 | entre 270 et 370, puis entre 160 et 260 | erreur V2 : « Il est plus petit que 270 : il passe avant. » ; erreur V2 : « Il est plus petit que 160 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que cette bouée : il passe après. » |
 | 16 | notion | 161 entre 157 · 160 · 260 · 270 · 370 (niveau 8, mer calme) | 161 | 2 | entre 270 et 370, puis entre 157 et 160 | erreur V2 : « Il est plus petit que 270 : il passe avant. » ; erreur V2 : « Il est plus grand que 160 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 160 : il passe après. » |
@@ -463,37 +463,37 @@ Récompense et fin : +10★ (fin)
 | 7 | échauffement | 7 + 1 = ? (fait nouveau) | 7 plus 1 ? | 8 | 8 | +2★ |
 | 8 | échauffement | 1 + 3 = ? (fait nouveau) | Combien font 1 plus 3 ? | 4 | 4 | +2★ |
 | 9 | échauffement | 3 + 1 = ? (fait nouveau) | Combien font 3 plus 1 ? | 4 | 4 | +2★ |
-| 10 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe avant 350. |  | (le bateau va seul) |  |
-| 11 | notion | 351 entre 323 · 332 · 342 · 345 · 350 (niveau 8, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 351 | 5 | après 350 | « Bravo ! » ; +2★ |
-| 12 | notion | 325 entre 323 · 332 · 342 · 345 · 350 (niveau 8, mer pirates) | 325 | 1 | entre 323 et 332 | « Bravo ! » ; +2★ |
-| 13 | notion | 321 entre 323 · 332 · 342 · 345 · 350 (niveau 8, mer pirates) | 321 | 0 | avant 323 | « Bravo ! » ; +2★ |
-| 14 | notion | 346 entre 323 · 332 · 342 · 345 · 350 (niveau 8, mer pirates) | 346 | 4 | entre 345 et 350 | « Bravo ! » ; +2★ |
-| 15 | notion | 340 entre 323 · 332 · 342 · 345 · 350 (niveau 8, mer pirates) | 340 | 2 | entre 332 et 342 | « Bravo ! » ; MONTÉE (niveau 1 → 9) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
-| 16 | notion | 312 entre 187 · 197 · 297 · 307 · 313 (niveau 8, mer pirates) | 312 | 4 | entre 307 et 313 | « Bravo ! » ; +2★ |
-| 17 | notion | 315 entre 187 · 197 · 297 · 307 · 313 (niveau 8, mer pirates) | 315 | 5 | après 313 | « Bravo ! » ; +2★ |
-| 18 | notion | 186 entre 187 · 197 · 297 · 307 · 313 (niveau 8, mer pirates) | 186 | 0 | avant 187 | « Bravo ! » ; +2★ |
-| 19 | notion | 196 entre 187 · 197 · 297 · 307 · 313 (niveau 8, mer pirates) | 196 | 1 | entre 187 et 197 | « Bravo ! » ; +2★ |
-| 20 | notion | 312 entre 187 · 197 · 297 · 307 · 313 (niveau 8, mer pirates) | 312 | 4 | entre 307 et 313 | « Bravo ! » ; +2★ |
-| 21 | notion | 301 entre 85 · 95 · 100 · 200 · 300 (niveau 8, mer pirates) | 301 | 5 | après 300 | « Bravo ! » ; +2★ |
-| 22 | notion | 94 entre 85 · 95 · 100 · 200 · 300 (niveau 8, mer pirates) | 94 | 1 | entre 85 et 95 | « Bravo ! » ; +2★ |
-| 23 | notion | 93 entre 85 · 95 · 100 · 200 · 300 (niveau 8, mer pirates) | 93 | 1 | entre 85 et 95 | « Bravo ! » ; +2★ |
-| 24 | notion | 301 entre 85 · 95 · 100 · 200 · 300 (niveau 8, mer pirates) | 301 | 5 | après 300 | « Bravo ! » ; +2★ |
-| 25 | notion | 305 entre 85 · 95 · 100 · 200 · 300 (niveau 8, mer pirates) | 305 | 5 | après 300 | « Bravo ! » ; +2★ |
-| 26 | notion | 168 entre 153 · 163 · 170 · 270 · 273 (niveau 8, mer pirates) | 168 | 2 | entre 163 et 170 | « Bravo ! » ; +2★ |
-| 27 | notion | 274 entre 153 · 163 · 170 · 270 · 273 (niveau 8, mer pirates) | 274 | 5 | après 273 | « Bravo ! » ; +2★ |
-| 28 | notion | 275 entre 153 · 163 · 170 · 270 · 273 (niveau 8, mer pirates) | 275 | 5 | après 273 | « Bravo ! » ; +2★ |
-| 29 | notion | 162 entre 153 · 163 · 170 · 270 · 273 (niveau 8, mer pirates) | 162 | 1 | entre 153 et 163 | « Bravo ! » ; +2★ |
-| 30 | notion | 155 entre 153 · 163 · 170 · 270 · 273 (niveau 8, mer pirates) | 155 | 1 | entre 153 et 163 | « Bravo ! » ; +2★ |
-| 31 | notion | 456 entre 443 · 447 · 457 · 464 · 474 (niveau 8, mer pirates) | 456 | 2 | entre 447 et 457 | « Bravo ! » ; +2★ |
-| 32 | notion | 462 entre 443 · 447 · 457 · 464 · 474 (niveau 8, mer pirates) | 462 | 3 | entre 457 et 464 | « Bravo ! » ; +2★ |
-| 33 | notion | 476 entre 443 · 447 · 457 · 464 · 474 (niveau 8, mer pirates) | 476 | 5 | après 474 | « Bravo ! » ; +2★ |
-| 34 | notion | 448 entre 443 · 447 · 457 · 464 · 474 (niveau 8, mer pirates) | 448 | 2 | entre 447 et 457 | « Bravo ! » ; +2★ |
-| 35 | notion | 458 entre 443 · 447 · 457 · 464 · 474 (niveau 8, mer pirates) | 458 | 3 | entre 457 et 464 | « Bravo ! » ; +2★ |
-| 36 | notion | 382 entre 271 · 281 · 381 · 391 · 401 (niveau 8, mer pirates) | 382 | 3 | entre 381 et 391 | « Bravo ! » ; +2★ |
-| 37 | notion | 399 entre 271 · 281 · 381 · 391 · 401 (niveau 8, mer pirates) | 399 | 4 | entre 391 et 401 | « Bravo ! » ; +2★ |
-| 38 | notion | 403 entre 271 · 281 · 381 · 391 · 401 (niveau 8, mer pirates) | 403 | 5 | après 401 | « Bravo ! » ; +2★ |
-| 39 | notion | 382 entre 271 · 281 · 381 · 391 · 401 (niveau 8, mer pirates) | 382 | 3 | entre 381 et 391 | « Bravo ! » ; +2★ |
-| 40 | notion | 393 entre 271 · 281 · 381 · 391 · 401 (niveau 8, mer pirates) | 393 | 4 | entre 391 et 401 | « Bravo ! » ; +2★ |
+| 10 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe entre 250 et 350. |  | (le bateau va seul) |  |
+| 11 | notion | 351 entre 323 · 332 · 342 · 345 · 350 (niveau 8, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 351 | 5 | après 350 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 12 | notion | 325 entre 323 · 332 · 342 · 345 · 350 (niveau 8, mer pirates) | 325 | 1 | entre 323 et 332 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 13 | notion | 321 entre 323 · 332 · 342 · 345 · 350 (niveau 8, mer pirates) | 321 | 0 | avant 323 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 14 | notion | 346 entre 323 · 332 · 342 · 345 · 350 (niveau 8, mer pirates) | 346 | 4 | entre 345 et 350 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 15 | notion | 340 entre 323 · 332 · 342 · 345 · 350 (niveau 8, mer pirates) | 340 | 2 | entre 332 et 342 | « Bravo, tu as semé les pirates ! » ; MONTÉE (niveau 1 → 9) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
+| 16 | notion | 312 entre 187 · 197 · 297 · 307 · 313 (niveau 8, mer pirates) | 312 | 4 | entre 307 et 313 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 17 | notion | 315 entre 187 · 197 · 297 · 307 · 313 (niveau 8, mer pirates) | 315 | 5 | après 313 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 18 | notion | 186 entre 187 · 197 · 297 · 307 · 313 (niveau 8, mer pirates) | 186 | 0 | avant 187 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 19 | notion | 196 entre 187 · 197 · 297 · 307 · 313 (niveau 8, mer pirates) | 196 | 1 | entre 187 et 197 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 20 | notion | 312 entre 187 · 197 · 297 · 307 · 313 (niveau 8, mer pirates) | 312 | 4 | entre 307 et 313 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 21 | notion | 301 entre 85 · 95 · 100 · 200 · 300 (niveau 8, mer pirates) | 301 | 5 | après 300 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 22 | notion | 94 entre 85 · 95 · 100 · 200 · 300 (niveau 8, mer pirates) | 94 | 1 | entre 85 et 95 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 23 | notion | 93 entre 85 · 95 · 100 · 200 · 300 (niveau 8, mer pirates) | 93 | 1 | entre 85 et 95 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 24 | notion | 301 entre 85 · 95 · 100 · 200 · 300 (niveau 8, mer pirates) | 301 | 5 | après 300 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 25 | notion | 305 entre 85 · 95 · 100 · 200 · 300 (niveau 8, mer pirates) | 305 | 5 | après 300 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 26 | notion | 168 entre 153 · 163 · 170 · 270 · 273 (niveau 8, mer pirates) | 168 | 2 | entre 163 et 170 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 27 | notion | 274 entre 153 · 163 · 170 · 270 · 273 (niveau 8, mer pirates) | 274 | 5 | après 273 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 28 | notion | 275 entre 153 · 163 · 170 · 270 · 273 (niveau 8, mer pirates) | 275 | 5 | après 273 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 29 | notion | 162 entre 153 · 163 · 170 · 270 · 273 (niveau 8, mer pirates) | 162 | 1 | entre 153 et 163 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 30 | notion | 155 entre 153 · 163 · 170 · 270 · 273 (niveau 8, mer pirates) | 155 | 1 | entre 153 et 163 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 31 | notion | 456 entre 443 · 447 · 457 · 464 · 474 (niveau 8, mer pirates) | 456 | 2 | entre 447 et 457 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 32 | notion | 462 entre 443 · 447 · 457 · 464 · 474 (niveau 8, mer pirates) | 462 | 3 | entre 457 et 464 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 33 | notion | 476 entre 443 · 447 · 457 · 464 · 474 (niveau 8, mer pirates) | 476 | 5 | après 474 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 34 | notion | 448 entre 443 · 447 · 457 · 464 · 474 (niveau 8, mer pirates) | 448 | 2 | entre 447 et 457 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 35 | notion | 458 entre 443 · 447 · 457 · 464 · 474 (niveau 8, mer pirates) | 458 | 3 | entre 457 et 464 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 36 | notion | 382 entre 271 · 281 · 381 · 391 · 401 (niveau 8, mer pirates) | 382 | 3 | entre 381 et 391 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 37 | notion | 399 entre 271 · 281 · 381 · 391 · 401 (niveau 8, mer pirates) | 399 | 4 | entre 391 et 401 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 38 | notion | 403 entre 271 · 281 · 381 · 391 · 401 (niveau 8, mer pirates) | 403 | 5 | après 401 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 39 | notion | 382 entre 271 · 281 · 381 · 391 · 401 (niveau 8, mer pirates) | 382 | 3 | entre 381 et 391 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 40 | notion | 393 entre 271 · 281 · 381 · 391 · 401 (niveau 8, mer pirates) | 393 | 4 | entre 391 et 401 | « Ouf ! Les pirates sont loin. » ; +2★ |
 
 Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) ; carte poisson-chirurgien (nouvelle) (brillante)
 
@@ -515,13 +515,13 @@ Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) ; carte poiss
 | 7 | échauffement | 1 + 3 = ? (fait nouveau) | 1 plus 3 ? | 4 | 4 | +2★ |
 | 8 | échauffement | 3 + 1 = ? (fait nouveau) | Combien font 3 plus 1 ? | 4 | 4 | +2★ |
 | 9 | échauffement | 7 + 2 = ? (fait nouveau) | 7 plus 2 ? | 9 | 9 | +2★ |
-| 10 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe avant 350. |  | (le bateau va seul) |  |
-| 11 | notion | 187 entre 185 · 285 · 293 · 393 · 396 (niveau 8, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 187 | 1 | entre 185 et 285 | « Bravo ! » ; +2★ |
-| 12 | notion | 384 entre 185 · 285 · 293 · 393 · 396 (niveau 8, mer pirates) | 384 | 3 | entre 293 et 393 | « Bravo ! » ; +2★ |
-| 13 | notion | 177 entre 185 · 285 · 293 · 393 · 396 (niveau 8, mer pirates) | 177 | 0 | avant 185 | « Bravo ! » ; +2★ |
+| 10 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe entre 250 et 350. |  | (le bateau va seul) |  |
+| 11 | notion | 187 entre 185 · 285 · 293 · 393 · 396 (niveau 8, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 187 | 1 | entre 185 et 285 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 12 | notion | 384 entre 185 · 285 · 293 · 393 · 396 (niveau 8, mer pirates) | 384 | 3 | entre 293 et 393 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 13 | notion | 177 entre 185 · 285 · 293 · 393 · 396 (niveau 8, mer pirates) | 177 | 0 | avant 185 | « Ouf ! Les pirates sont loin. » ; +2★ |
 | 14 | notion | 394 entre 185 · 285 · 293 · 393 · 396 (niveau 8, mer pirates) | 394 | 4 | entre 293 et 393 | erreur V1 : « Il est plus grand que cette bouée : il passe après. » « Les pirates ont rattrapé le bateau ! » |
-| 15 | notion | 291 entre 185 · 285 · 293 · 393 · 396 (niveau 8, mer pirates) | 291 | 2 | entre 285 et 293 | « Bravo ! » ; +2★ |
-| 16 | notion | 129 entre 23 · 31 · 131 · 140 · 146 (niveau 8, mer pirates) | 129 | 2 | entre 31 et 131 | « Bravo ! » ; +2★ |
+| 15 | notion | 291 entre 185 · 285 · 293 · 393 · 396 (niveau 8, mer pirates) | 291 | 2 | entre 285 et 293 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 16 | notion | 129 entre 23 · 31 · 131 · 140 · 146 (niveau 8, mer pirates) | 129 | 2 | entre 31 et 131 | « Bravo, tu as semé les pirates ! » ; +2★ |
 | 17 | notion | 394 entre 185 · 285 · 293 · 393 · 396 (niveau 8, mer pirates, revient) | 394 | 4 | entre 293 et 393 | erreur V1 : « Il est plus grand que cette bouée : il passe après. » « Les pirates ont rattrapé le bateau ! » |
 | 18 | notion | 142 entre 23 · 31 · 131 · 140 · 146 (niveau 8, mer pirates) | 142 | 4 | entre 131 et 140 | erreur V1 : « Il est plus grand que 140 : il passe après. » « Les pirates ont rattrapé le bateau ! » ; le cran redescend : très dur → plus dur (« On essaie un peu moins dur ? ») |
 | 19 | notion | 68 entre 23 · 31 · 131 · 140 · 146 (niveau 8, mer pirates) | 68 | 2 | entre 23 et 31 | erreur V1 : « Il est plus grand que cette bouée : il passe après. » « Les pirates ont rattrapé le bateau ! » |
@@ -562,7 +562,7 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle) ; carte crabe (nouve
 | 11 | échauffement | 1 + 3 = ? (fait nouveau) | 1 plus 3 ? | 4 | 12 | correction : « 1 plus 3, ça fait 4. » |
 | 12 | échauffement | 2 + 7 = ? (fait nouveau) | Combien font 2 plus 7 ? | 9 | 9 | +1★ |
 | 13 | échauffement | 3 + 1 = ? (fait nouveau) | 3 plus 1 ? | 4 | 19 | correction : « 3 plus 1, ça fait 4. » |
-| 14 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe avant 350. |  | (le bateau va seul) |  |
+| 14 | notion | EXEMPLE GUIDÉ : 349 entre 240 · 250 · 350 · 357 · 367 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 349 Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe entre 250 et 350. |  | (le bateau va seul) |  |
 | 15 | notion | 386 entre 385 · 388 · 392 · 492 · 502 (niveau 8, mer calme) | 386 | 1 | entre 492 et 502, puis entre 392 et 492 | erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que cette bouée : il passe après. » |
 | 16 | notion | 503 entre 385 · 388 · 392 · 492 · 502 (niveau 8, mer calme) | 503 | 5 | entre 392 et 492, puis entre 385 et 388 | erreur V2 : « Il est plus grand que cette bouée : il passe après. » ; erreur V2 : « Il est plus grand que cette bouée : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que cette bouée : il passe après. » |
 | 17 | notion | 483 entre 385 · 388 · 392 · 492 · 502 (niveau 8, mer calme) | 483 | 3 | entre 392 et 492 | « Bravo ! » ; +1★ |
@@ -570,11 +570,11 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle) ; carte crabe (nouve
 | 19 | notion | 386 entre 385 · 388 · 392 · 492 · 502 (niveau 8, mer calme, revient) | 386 | 1 | avant 385, puis entre 392 et 492 | erreur V1 : « Il est plus grand que cette bouée : il passe après. » ; erreur V1 : « Il est plus petit que cette bouée : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que cette bouée : il passe après. » |
 | 20 | notion | 351 entre 385 · 388 · 392 · 492 · 502 (niveau 8, mer calme) | 351 | 0 | entre 388 et 392, puis entre 392 et 492 | erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que cette bouée : il passe avant. » |
 | 21 | notion | 503 entre 385 · 388 · 392 · 492 · 502 (niveau 8, mer calme, revient) | 503 | 5 | entre 392 et 492, puis entre 388 et 392 | erreur V2 : « Il est plus grand que cette bouée : il passe après. » ; erreur V2 : « Il est plus grand que cette bouée : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que cette bouée : il passe après. » |
-| 22 | notion | 471 entre 359 · 363 · 463 · 470 · 480 (niveau 8, mer calme) | 471 | 4 | après 480, puis entre 463 et 470 | erreur V1 : « Il est plus petit que 480 : il passe avant. » ; erreur V1 : « Il est plus grand que 470 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 470 et 480 ! » |
+| 22 | notion | 471 entre 359 · 363 · 463 · 470 · 480 (niveau 8, mer calme) | 471 | 4 | après 480, puis entre 463 et 470 | erreur V1 : « Il est plus petit que 480 : il passe avant. » ; erreur V1 : « Il est plus grand que 470 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 470 : il passe après. » |
 | 23 | notion | 384 entre 385 · 388 · 392 · 492 · 502 (niveau 8, mer calme, revient) | 384 | 0 | entre 388 et 392, puis entre 492 et 502 | erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que cette bouée : il passe avant. » |
 | 24 | notion | 351 entre 385 · 388 · 392 · 492 · 502 (niveau 8, mer calme, revient) | 351 | 0 | entre 385 et 388, puis entre 385 et 388 | erreur V1 : « Il est plus petit que cette bouée : il passe avant. » ; erreur V1 : « Il est plus petit que cette bouée : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que cette bouée : il passe avant. » |
 | 25 | notion | 430 entre 359 · 363 · 463 · 470 · 480 (niveau 8, mer calme) | 430 | 2 | avant 359, puis entre 463 et 470 | erreur V2 : « Il est plus grand que cette bouée : il passe après. » ; erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que cette bouée : il passe après. » |
-| 26 | notion | 471 entre 359 · 363 · 463 · 470 · 480 (niveau 8, mer calme, revient) | 471 | 4 | entre 363 et 463, puis entre 363 et 463 | erreur V2 : « Il est plus grand que cette bouée : il passe après. » ; erreur V2 : « Il est plus grand que cette bouée : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 470 et 480 ! » |
+| 26 | notion | 471 entre 359 · 363 · 463 · 470 · 480 (niveau 8, mer calme, revient) | 471 | 4 | entre 363 et 463, puis entre 363 et 463 | erreur V2 : « Il est plus grand que cette bouée : il passe après. » ; erreur V2 : « Il est plus grand que cette bouée : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 470 : il passe après. » |
 | 27 | notion | 361 entre 359 · 363 · 463 · 470 · 480 (niveau 8, mer calme) | 361 | 1 | entre 470 et 480, puis entre 363 et 463 | erreur V2 : « Il est plus petit que 470 : il passe avant. » ; erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que cette bouée : il passe après. » |
 | 28 | notion | 362 entre 359 · 363 · 463 · 470 · 480 (niveau 8, mer calme) | 362 | 1 | avant 359, puis entre 359 et 363 | erreur V1 : « Il est plus grand que cette bouée : il passe après. » ; « Bravo ! » ; +1★ |
 | 29 | notion | 430 entre 359 · 363 · 463 · 470 · 480 (niveau 8, mer calme, revient) | 430 | 2 | entre 359 et 363, puis entre 470 et 480 | erreur V1 : « Il est plus grand que cette bouée : il passe après. » ; erreur V1 : « Il est plus petit que 470 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que cette bouée : il passe après. » |

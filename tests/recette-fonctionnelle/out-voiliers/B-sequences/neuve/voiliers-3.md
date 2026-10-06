@@ -83,7 +83,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle)
 | 17 | notion | 962 entre 700 · 800 · 900 (niveau 3, mer calme) | 962 | 3 | après 900 | « Bravo ! » ; +1★ |
 | 18 | notion | 660 entre 700 · 800 · 900 (niveau 3, mer calme) | 660 | 0 | avant 700 | « Bravo ! » |
 | 19 | notion | 848 entre 700 · 800 · 900 (niveau 3, mer calme) | 848 | 2 | entre 700 et 800, puis entre 800 et 900 | erreur V1 : « Il est plus grand que 800 : il passe après. » ; « C'est entre 800 et 900 ! » ; +1★ |
-| 20 | notion | 749 entre 700 · 800 · 900 (niveau 3, mer calme) | 749 | 1 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « C'est entre 700 et 800 ! » |
+| 20 | notion | 749 entre 700 · 800 · 900 (niveau 3, mer calme) | 749 | 1 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « Il est plus grand que 700 : il passe après. » |
 | 21 | notion | 821 entre 700 · 800 · 900 (niveau 3, mer calme) | 821 | 2 | entre 700 et 800, puis entre 800 et 900 | erreur V1 : « Il est plus grand que 800 : il passe après. » ; « C'est entre 800 et 900 ! » |
 | 22 | notion | 723 entre 600 · 700 · 800 (niveau 3, mer calme) | 723 | 2 | entre 700 et 800 | « C'est entre 700 et 800 ! » ; +1★ |
 | 23 | notion | 945 entre 600 · 700 · 800 (niveau 3, mer calme) | 945 | 3 | après 800 | « Bravo ! » |
@@ -97,7 +97,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle)
 | 31 | notion | 419 entre 500 · 600 · 700 (niveau 3, mer calme) | 419 | 0 | avant 500 | « Bravo ! » ; +1★ |
 | 32 | notion | 824 entre 500 · 600 · 700 (niveau 3, mer calme) | 824 | 3 | après 700 | « Bravo ! » |
 | 33 | notion | 242 entre 100 · 200 · 300 (niveau 3, mer calme) | 242 | 2 | entre 200 et 300 | « C'est entre 200 et 300 ! » ; +1★ |
-| 34 | notion | 232 entre 100 · 200 · 300 (niveau 3, mer calme) | 232 | 2 | entre 100 et 200, puis entre 100 et 200 | erreur V1 : « Il est plus grand que 200 : il passe après. » ; erreur V1 : « Il est plus grand que 200 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 200 et 300 ! » |
+| 34 | notion | 232 entre 100 · 200 · 300 (niveau 3, mer calme) | 232 | 2 | entre 100 et 200, puis entre 100 et 200 | erreur V1 : « Il est plus grand que 200 : il passe après. » ; erreur V1 : « Il est plus grand que 200 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 200 : il passe après. » |
 | 35 | notion | 4 entre 100 · 200 · 300 (niveau 3, mer calme) | 4 | 0 | avant 100 | « Bravo ! » |
 | 36 | notion | 257 entre 100 · 200 · 300 (niveau 3, mer calme) | 257 | 2 | entre 200 et 300 | « C'est entre 200 et 300 ! » ; +1★ |
 | 37 | notion | 232 entre 100 · 200 · 300 (niveau 3, mer calme, revient) | 232 | 2 | entre 200 et 300 | « C'est entre 200 et 300 ! » ; +1★ (erreur corrigée) |
@@ -129,28 +129,28 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle)
 | 11 | échauffement | 2 + 5 = ? (fait nouveau) | 2 plus 5 ? | 7 | 11 | correction : « 2 plus 5, ça fait 7. » |
 | 12 | échauffement | 2 + 4 = ? (fait nouveau) | Combien font 2 plus 4 ? | 6 | 8 | correction : « 2 plus 4, ça fait 6. » |
 | 13 | notion | EXEMPLE GUIDÉ : 450 entre 300 · 400 · 500 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 450 Regarde : 450 est plus grand que 400, et plus petit que 500. Le bateau passe entre 400 et 500. |  | (le bateau va seul) |  |
-| 14 | notion | 121 entre 100 · 200 · 300 (niveau 3, mer calme) | 121 | 1 | entre 200 et 300, puis avant 100 | erreur V1 : « Il est plus petit que 200 : il passe avant. » ; erreur V1 : « Il est plus grand que 100 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 100 et 200 ! » |
+| 14 | notion | 121 entre 100 · 200 · 300 (niveau 3, mer calme) | 121 | 1 | entre 200 et 300, puis avant 100 | erreur V1 : « Il est plus petit que 200 : il passe avant. » ; erreur V1 : « Il est plus grand que 100 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 100 : il passe après. » |
 | 15 | notion | 46 entre 100 · 200 · 300 (niveau 3, mer calme) | 46 | 0 | entre 200 et 300, puis entre 200 et 300 | erreur V2 : « Il est plus petit que 200 : il passe avant. » ; erreur V2 : « Il est plus petit que 200 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 100 : il passe avant. » |
 | 16 | notion | 762 entre 100 · 200 · 300 (niveau 3, mer calme) | 762 | 3 | après 300 | « Bravo ! » |
 | 17 | notion | 237 entre 100 · 200 · 300 (niveau 3, mer calme) | 237 | 2 | entre 200 et 300 | « C'est entre 200 et 300 ! » ; +1★ |
 | 18 | notion | 38 entre 100 · 200 · 300 (niveau 3, mer calme) | 38 | 0 | entre 200 et 300, puis avant 100 | erreur V2 : « Il est plus petit que 200 : il passe avant. » ; « Bravo ! » |
-| 19 | notion | 121 entre 100 · 200 · 300 (niveau 3, mer calme, revient) | 121 | 1 | après 300, puis entre 200 et 300 | erreur V2 : « Il est plus petit que 300 : il passe avant. » ; erreur V2 : « Il est plus petit que 200 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 100 et 200 ! » |
+| 19 | notion | 121 entre 100 · 200 · 300 (niveau 3, mer calme, revient) | 121 | 1 | après 300, puis entre 200 et 300 | erreur V2 : « Il est plus petit que 300 : il passe avant. » ; erreur V2 : « Il est plus petit que 200 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 100 : il passe après. » |
 | 20 | notion | 46 entre 100 · 200 · 300 (niveau 3, mer calme, revient) | 46 | 0 | entre 100 et 200, puis entre 100 et 200 | erreur V1 : « Il est plus petit que 100 : il passe avant. » ; erreur V1 : « Il est plus petit que 100 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 100 : il passe avant. » |
 | 21 | notion | 965 entre 700 · 800 · 900 (niveau 3, mer calme) | 965 | 3 | après 900 | « Bravo ! » ; +1★ |
-| 22 | notion | 730 entre 700 · 800 · 900 (niveau 3, mer calme) | 730 | 1 | après 900, puis après 900 | erreur V2 : « Il est plus petit que 900 : il passe avant. » ; erreur V2 : « Il est plus petit que 900 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 700 et 800 ! » |
+| 22 | notion | 730 entre 700 · 800 · 900 (niveau 3, mer calme) | 730 | 1 | après 900, puis après 900 | erreur V2 : « Il est plus petit que 900 : il passe avant. » ; erreur V2 : « Il est plus petit que 900 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 700 : il passe après. » |
 | 23 | notion | 837 entre 700 · 800 · 900 (niveau 3, mer calme) | 837 | 2 | entre 800 et 900 | « C'est entre 800 et 900 ! » |
-| 24 | notion | 767 entre 700 · 800 · 900 (niveau 3, mer calme) | 767 | 1 | après 900, puis avant 700 | erreur V2 : « Il est plus petit que 900 : il passe avant. » ; erreur V2 : « Il est plus grand que 700 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 700 et 800 ! » |
+| 24 | notion | 767 entre 700 · 800 · 900 (niveau 3, mer calme) | 767 | 1 | après 900, puis avant 700 | erreur V2 : « Il est plus petit que 900 : il passe avant. » ; erreur V2 : « Il est plus grand que 700 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 700 : il passe après. » |
 | 25 | notion | 880 entre 700 · 800 · 900 (niveau 3, mer calme) | 880 | 2 | avant 700, puis entre 800 et 900 | erreur V2 : « Il est plus grand que 700 : il passe après. » ; « C'est entre 800 et 900 ! » ; +1★ |
 | 26 | notion | 818 entre 300 · 400 · 500 (niveau 3, mer calme) | 818 | 3 | entre 400 et 500, puis après 500 | erreur V1 : « Il est plus grand que 500 : il passe après. » ; « Bravo ! » |
-| 27 | notion | 730 entre 700 · 800 · 900 (niveau 3, mer calme, revient) | 730 | 1 | après 900, puis avant 700 | erreur V2 : « Il est plus petit que 900 : il passe avant. » ; erreur V2 : « Il est plus grand que 700 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 700 et 800 ! » |
+| 27 | notion | 730 entre 700 · 800 · 900 (niveau 3, mer calme, revient) | 730 | 1 | après 900, puis avant 700 | erreur V2 : « Il est plus petit que 900 : il passe avant. » ; erreur V2 : « Il est plus grand que 700 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 700 : il passe après. » |
 | 28 | notion | 444 entre 300 · 400 · 500 (niveau 3, mer calme) | 444 | 2 | entre 400 et 500 | « C'est entre 400 et 500 ! » ; +1★ |
-| 29 | notion | 767 entre 700 · 800 · 900 (niveau 3, mer calme, revient) | 767 | 1 | entre 800 et 900, puis après 900 | erreur V1 : « Il est plus petit que 800 : il passe avant. » ; erreur V1 : « Il est plus petit que 900 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 700 et 800 ! » |
+| 29 | notion | 767 entre 700 · 800 · 900 (niveau 3, mer calme, revient) | 767 | 1 | entre 800 et 900, puis après 900 | erreur V1 : « Il est plus petit que 800 : il passe avant. » ; erreur V1 : « Il est plus petit que 900 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 700 : il passe après. » |
 | 30 | notion | 54 entre 300 · 400 · 500 (niveau 3, mer calme) | 54 | 0 | entre 400 et 500, puis entre 400 et 500 | erreur V2 : « Il est plus petit que 400 : il passe avant. » ; erreur V2 : « Il est plus petit que 400 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 300 : il passe avant. » |
-| 31 | notion | 355 entre 300 · 400 · 500 (niveau 3, mer calme) | 355 | 1 | après 500, puis après 500 | erreur V2 : « Il est plus petit que 500 : il passe avant. » ; erreur V2 : « Il est plus petit que 500 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 300 et 400 ! » |
+| 31 | notion | 355 entre 300 · 400 · 500 (niveau 3, mer calme) | 355 | 1 | après 500, puis après 500 | erreur V2 : « Il est plus petit que 500 : il passe avant. » ; erreur V2 : « Il est plus petit que 500 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 300 : il passe après. » |
 | 32 | notion | 421 entre 300 · 400 · 500 (niveau 3, mer calme) | 421 | 2 | entre 300 et 400, puis entre 400 et 500 | erreur V1 : « Il est plus grand que 400 : il passe après. » ; « C'est entre 400 et 500 ! » |
 | 33 | notion | 341 entre 700 · 800 · 900 (niveau 3, mer calme) | 341 | 0 | entre 800 et 900, puis entre 700 et 800 | erreur V2 : « Il est plus petit que 800 : il passe avant. » ; erreur V2 : « Il est plus petit que 700 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 700 : il passe avant. » |
 | 34 | notion | 854 entre 700 · 800 · 900 (niveau 3, mer calme) | 854 | 2 | avant 700, puis entre 800 et 900 | erreur V2 : « Il est plus grand que 700 : il passe après. » ; « C'est entre 800 et 900 ! » ; +1★ |
-| 35 | notion | 843 entre 700 · 800 · 900 (niveau 3, mer calme) | 843 | 2 | avant 700, puis entre 700 et 800 | erreur V2 : « Il est plus grand que 700 : il passe après. » ; erreur V2 : « Il est plus grand que 800 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 800 et 900 ! » |
+| 35 | notion | 843 entre 700 · 800 · 900 (niveau 3, mer calme) | 843 | 2 | avant 700, puis entre 700 et 800 | erreur V2 : « Il est plus grand que 700 : il passe après. » ; erreur V2 : « Il est plus grand que 800 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 800 : il passe après. » |
 
 Récompense et fin : +10★ (fin)
 
@@ -234,14 +234,14 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle)
 | 15 | notion | EXEMPLE GUIDÉ : 450 entre 300 · 400 · 500 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 450 Regarde : 450 est plus grand que 400, et plus petit que 500. Le bateau passe entre 400 et 500. |  | (le bateau va seul) |  |
 | 16 | notion | 739 entre 500 · 600 · 700 (niveau 3, mer calme) | 739 | 3 | après 700 | « Bravo ! » ; +1★ |
 | 17 | notion | 654 entre 500 · 600 · 700 (niveau 3, mer calme) | 654 | 2 | après 700, puis entre 600 et 700 | erreur V1 : « Il est plus petit que 700 : il passe avant. » ; « C'est entre 600 et 700 ! » ; +1★ |
-| 18 | notion | 528 entre 500 · 600 · 700 (niveau 3, mer calme) | 528 | 1 | avant 500, puis entre 600 et 700 | erreur V1 : « Il est plus grand que 500 : il passe après. » ; erreur V1 : « Il est plus petit que 600 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 500 et 600 ! » |
+| 18 | notion | 528 entre 500 · 600 · 700 (niveau 3, mer calme) | 528 | 1 | avant 500, puis entre 600 et 700 | erreur V1 : « Il est plus grand que 500 : il passe après. » ; erreur V1 : « Il est plus petit que 600 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 500 : il passe après. » |
 | 19 | notion | 548 entre 500 · 600 · 700 (niveau 3, mer calme) | 548 | 1 | entre 500 et 600 | « C'est entre 500 et 600 ! » ; +1★ |
 | 20 | notion | 161 entre 500 · 600 · 700 (niveau 3, mer calme) | 161 | 0 | avant 500 | « Bravo ! » ; +1★ |
 | 21 | notion | 347 entre 200 · 300 · 400 (niveau 3, mer calme) | 347 | 2 | entre 200 et 300, puis entre 300 et 400 | erreur V1 : « Il est plus grand que 300 : il passe après. » ; « C'est entre 300 et 400 ! » ; +1★ |
 | 22 | notion | 238 entre 200 · 300 · 400 (niveau 3, mer calme) | 238 | 1 | avant 200, puis entre 200 et 300 | erreur V1 : « Il est plus grand que 200 : il passe après. » ; « C'est entre 200 et 300 ! » ; +1★ |
 | 23 | notion | 528 entre 500 · 600 · 700 (niveau 3, mer calme, revient) | 528 | 1 | entre 500 et 600 | « C'est entre 500 et 600 ! » ; +2★ (erreur corrigée) |
 | 24 | notion | 945 entre 200 · 300 · 400 (niveau 3, mer calme) | 945 | 3 | après 400 | « Bravo ! » ; +1★ |
-| 25 | notion | 372 entre 200 · 300 · 400 (niveau 3, mer calme) | 372 | 2 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « C'est entre 300 et 400 ! » |
+| 25 | notion | 372 entre 200 · 300 · 400 (niveau 3, mer calme) | 372 | 2 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « Il est plus grand que 300 : il passe après. » |
 | 26 | notion | 330 entre 200 · 300 · 400 (niveau 3, mer calme) | 330 | 2 | entre 300 et 400 | « C'est entre 300 et 400 ! » ; +1★ |
 | 27 | notion | 536 entre 500 · 600 · 700 (niveau 3, mer calme) | 536 | 1 | entre 500 et 600 | « C'est entre 500 et 600 ! » ; +1★ |
 | 28 | notion | 167 entre 500 · 600 · 700 (niveau 3, mer calme) | 167 | 0 | avant 500 | « Bravo ! » ; +1★ |
@@ -280,24 +280,24 @@ Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle) (bri
 | 11 | échauffement | 2 + 4 = ? (fait nouveau) | Combien font 2 plus 4 ? | 6 | 9 | correction : « 2 plus 4, ça fait 6. » |
 | 12 | échauffement | 8 + 2 = ? (fait nouveau) | Combien font 8 plus 2 ? | 10 | 0 | correction : « 8 plus 2, ça fait 10. » |
 | 13 | notion | EXEMPLE GUIDÉ : 450 entre 300 · 400 · 500 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 450 Regarde : 450 est plus grand que 400, et plus petit que 500. Le bateau passe entre 400 et 500. |  | (le bateau va seul) |  |
-| 14 | notion | 259 entre 200 · 300 · 400 (niveau 3, mer calme) | 259 | 1 | après 400, puis avant 200 | erreur V2 : « Il est plus petit que 400 : il passe avant. » ; erreur V2 : « Il est plus grand que 200 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 200 et 300 ! » |
+| 14 | notion | 259 entre 200 · 300 · 400 (niveau 3, mer calme) | 259 | 1 | après 400, puis avant 200 | erreur V2 : « Il est plus petit que 400 : il passe avant. » ; erreur V2 : « Il est plus grand que 200 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 200 : il passe après. » |
 | 15 | notion | 46 entre 200 · 300 · 400 (niveau 3, mer calme) | 46 | 0 | entre 200 et 300, puis entre 300 et 400 | erreur V1 : « Il est plus petit que 200 : il passe avant. » ; erreur V1 : « Il est plus petit que 300 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 200 : il passe avant. » |
 | 16 | notion | 667 entre 200 · 300 · 400 (niveau 3, mer calme) | 667 | 3 | avant 200, puis entre 300 et 400 | erreur V2 : « Il est plus grand que 200 : il passe après. » ; erreur V2 : « Il est plus grand que 400 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 400 : il passe après. » |
-| 17 | notion | 353 entre 200 · 300 · 400 (niveau 3, mer calme) | 353 | 2 | avant 200, puis avant 200 | erreur V2 : « Il est plus grand que 200 : il passe après. » ; erreur V2 : « Il est plus grand que 200 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 300 et 400 ! » |
+| 17 | notion | 353 entre 200 · 300 · 400 (niveau 3, mer calme) | 353 | 2 | avant 200, puis avant 200 | erreur V2 : « Il est plus grand que 200 : il passe après. » ; erreur V2 : « Il est plus grand que 200 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 300 : il passe après. » |
 | 18 | notion | 46 entre 200 · 300 · 400 (niveau 3, mer calme, revient) | 46 | 0 | entre 200 et 300, puis avant 200 | erreur V1 : « Il est plus petit que 200 : il passe avant. » ; « Bravo ! » ; +1★ |
 | 19 | notion | 689 entre 200 · 300 · 400 (niveau 3, mer calme) | 689 | 3 | entre 300 et 400, puis après 400 | erreur V1 : « Il est plus grand que 400 : il passe après. » ; « Bravo ! » ; +1★ |
 | 20 | notion | 259 entre 200 · 300 · 400 (niveau 3, mer calme, revient) | 259 | 1 | entre 200 et 300 | « C'est entre 200 et 300 ! » ; +2★ (erreur corrigée) |
 | 21 | notion | 667 entre 200 · 300 · 400 (niveau 3, mer calme, revient) | 667 | 3 | entre 200 et 300, puis entre 300 et 400 | erreur V2 : « Il est plus grand que 300 : il passe après. » ; erreur V2 : « Il est plus grand que 400 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 400 : il passe après. » |
-| 22 | notion | 353 entre 200 · 300 · 400 (niveau 3, mer calme, revient) | 353 | 2 | entre 200 et 300, puis avant 200 | erreur V1 : « Il est plus grand que 300 : il passe après. » ; erreur V1 : « Il est plus grand que 200 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 300 et 400 ! » |
+| 22 | notion | 353 entre 200 · 300 · 400 (niveau 3, mer calme, revient) | 353 | 2 | entre 200 et 300, puis avant 200 | erreur V1 : « Il est plus grand que 300 : il passe après. » ; erreur V1 : « Il est plus grand que 200 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 300 : il passe après. » |
 | 23 | notion | 37 entre 100 · 200 · 300 (niveau 3, mer calme) | 37 | 0 | entre 100 et 200, puis après 300 | erreur V1 : « Il est plus petit que 100 : il passe avant. » ; erreur V1 : « Il est plus petit que 300 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 100 : il passe avant. » |
-| 24 | notion | 164 entre 100 · 200 · 300 (niveau 3, mer calme) | 164 | 1 | entre 200 et 300, puis avant 100 | erreur V1 : « Il est plus petit que 200 : il passe avant. » ; erreur V1 : « Il est plus grand que 100 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 100 et 200 ! » |
+| 24 | notion | 164 entre 100 · 200 · 300 (niveau 3, mer calme) | 164 | 1 | entre 200 et 300, puis avant 100 | erreur V1 : « Il est plus petit que 200 : il passe avant. » ; erreur V1 : « Il est plus grand que 100 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 100 : il passe après. » |
 | 25 | notion | 239 entre 100 · 200 · 300 (niveau 3, mer calme) | 239 | 2 | entre 200 et 300 | « C'est entre 200 et 300 ! » ; +1★ |
 | 26 | notion | 143 entre 100 · 200 · 300 (niveau 3, mer calme) | 143 | 1 | entre 100 et 200 | « C'est entre 100 et 200 ! » ; +1★ |
-| 27 | notion | 164 entre 100 · 200 · 300 (niveau 3, mer calme, revient) | 164 | 1 | après 300, puis entre 200 et 300 | erreur V2 : « Il est plus petit que 300 : il passe avant. » ; erreur V2 : « Il est plus petit que 200 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 100 et 200 ! » |
+| 27 | notion | 164 entre 100 · 200 · 300 (niveau 3, mer calme, revient) | 164 | 1 | après 300, puis entre 200 et 300 | erreur V2 : « Il est plus petit que 300 : il passe avant. » ; erreur V2 : « Il est plus petit que 200 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 100 : il passe après. » |
 | 28 | notion | 37 entre 100 · 200 · 300 (niveau 3, mer calme, revient) | 37 | 0 | entre 200 et 300, puis avant 100 | erreur V2 : « Il est plus petit que 200 : il passe avant. » ; « Bravo ! » ; +1★ |
-| 29 | notion | 140 entre 100 · 200 · 300 (niveau 3, mer calme) | 140 | 1 | entre 200 et 300, puis avant 100 | erreur V1 : « Il est plus petit que 200 : il passe avant. » ; erreur V1 : « Il est plus grand que 100 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 100 et 200 ! » |
-| 30 | notion | 474 entre 300 · 400 · 500 (niveau 3, mer calme) | 474 | 2 | avant 300, puis avant 300 | erreur V2 : « Il est plus grand que 300 : il passe après. » ; erreur V2 : « Il est plus grand que 300 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 400 et 500 ! » |
-| 31 | notion | 420 entre 300 · 400 · 500 (niveau 3, mer calme) | 420 | 2 | avant 300, puis avant 300 | erreur V2 : « Il est plus grand que 300 : il passe après. » ; erreur V2 : « Il est plus grand que 300 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 400 et 500 ! » |
+| 29 | notion | 140 entre 100 · 200 · 300 (niveau 3, mer calme) | 140 | 1 | entre 200 et 300, puis avant 100 | erreur V1 : « Il est plus petit que 200 : il passe avant. » ; erreur V1 : « Il est plus grand que 100 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 100 : il passe après. » |
+| 30 | notion | 474 entre 300 · 400 · 500 (niveau 3, mer calme) | 474 | 2 | avant 300, puis avant 300 | erreur V2 : « Il est plus grand que 300 : il passe après. » ; erreur V2 : « Il est plus grand que 300 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 400 : il passe après. » |
+| 31 | notion | 420 entre 300 · 400 · 500 (niveau 3, mer calme) | 420 | 2 | avant 300, puis avant 300 | erreur V2 : « Il est plus grand que 300 : il passe après. » ; erreur V2 : « Il est plus grand que 300 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 400 : il passe après. » |
 | 32 | notion | 30 entre 300 · 400 · 500 (niveau 3, mer calme) | 30 | 0 | après 500, puis entre 300 et 400 | erreur V2 : « Il est plus petit que 500 : il passe avant. » ; erreur V2 : « Il est plus petit que 300 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 300 : il passe avant. » |
 | 33 | notion | 326 entre 300 · 400 · 500 (niveau 3, mer calme) | 326 | 1 | entre 300 et 400 | « C'est entre 300 et 400 ! » ; +1★ |
 
@@ -327,33 +327,33 @@ Récompense et fin : +10★ (fin)
 | 11 | notion | 809 entre 400 · 500 · 600 (niveau 3, mer vent) | Le vent se lève ! Il pousse les bateaux vers les bouées. 809 | 3 | après 600 | « Bravo ! » ; +2★ |
 | 12 | notion | 559 entre 400 · 500 · 600 (niveau 3, mer vent) | 559 | 2 | entre 500 et 600 | « C'est entre 500 et 600 ! » ; +1★ |
 | 13 | notion | 298 entre 400 · 500 · 600 (niveau 3, mer vent) | 298 | 0 | avant 400 | « Bravo ! » ; +2★ |
-| 14 | notion | 433 entre 400 · 500 · 600 (niveau 3, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 433 | 1 | entre 400 et 500 | « C'est entre 400 et 500 ! » ; +1★ |
-| 15 | notion | 438 entre 400 · 500 · 600 (niveau 3, mer pirates) | 438 | 1 | entre 400 et 500 | « C'est entre 400 et 500 ! » ; MONTÉE (niveau 1 → 4) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
-| 16 | notion | 673 entre 500 · 600 · 700 (niveau 3, mer pirates) | 673 | 2 | entre 600 et 700 | « C'est entre 600 et 700 ! » ; +1★ |
-| 17 | notion | 837 entre 500 · 600 · 700 (niveau 3, mer pirates) | 837 | 3 | après 700 | « Bravo ! » ; +2★ |
-| 18 | notion | 285 entre 500 · 600 · 700 (niveau 3, mer pirates) | 285 | 0 | avant 500 | « Bravo ! » ; +1★ |
-| 19 | notion | 47 entre 500 · 600 · 700 (niveau 3, mer pirates) | 47 | 0 | avant 500 | « Bravo ! » ; +2★ |
-| 20 | notion | 834 entre 500 · 600 · 700 (niveau 3, mer pirates) | 834 | 3 | après 700 | « Bravo ! » ; +1★ |
-| 21 | notion | 305 entre 700 · 800 · 900 (niveau 3, mer pirates) | 305 | 0 | avant 700 | « Bravo ! » ; +2★ |
-| 22 | notion | 733 entre 700 · 800 · 900 (niveau 3, mer pirates) | 733 | 1 | entre 700 et 800 | « C'est entre 700 et 800 ! » ; +1★ |
-| 23 | notion | 575 entre 700 · 800 · 900 (niveau 3, mer pirates) | 575 | 0 | avant 700 | « Bravo ! » ; +2★ |
-| 24 | notion | 975 entre 700 · 800 · 900 (niveau 3, mer pirates) | 975 | 3 | après 900 | « Bravo ! » ; +1★ |
-| 25 | notion | 928 entre 700 · 800 · 900 (niveau 3, mer pirates) | 928 | 3 | après 900 | « Bravo ! » ; +2★ |
-| 26 | notion | 146 entre 100 · 200 · 300 (niveau 3, mer pirates) | 146 | 1 | entre 100 et 200 | « C'est entre 100 et 200 ! » ; +1★ |
-| 27 | notion | 14 entre 100 · 200 · 300 (niveau 3, mer pirates) | 14 | 0 | avant 100 | « Bravo ! » ; +2★ |
-| 28 | notion | 423 entre 100 · 200 · 300 (niveau 3, mer pirates) | 423 | 3 | après 300 | « Bravo ! » ; +1★ |
-| 29 | notion | 127 entre 100 · 200 · 300 (niveau 3, mer pirates) | 127 | 1 | entre 100 et 200 | « C'est entre 100 et 200 ! » ; +2★ |
-| 30 | notion | 129 entre 100 · 200 · 300 (niveau 3, mer pirates) | 129 | 1 | entre 100 et 200 | « C'est entre 100 et 200 ! » ; +1★ |
-| 31 | notion | 880 entre 700 · 800 · 900 (niveau 3, mer pirates) | 880 | 2 | entre 800 et 900 | « C'est entre 800 et 900 ! » ; +2★ |
-| 32 | notion | 839 entre 700 · 800 · 900 (niveau 3, mer pirates) | 839 | 2 | entre 800 et 900 | « C'est entre 800 et 900 ! » ; +1★ |
-| 33 | notion | 602 entre 700 · 800 · 900 (niveau 3, mer pirates) | 602 | 0 | avant 700 | « Bravo ! » ; +2★ |
-| 34 | notion | 671 entre 700 · 800 · 900 (niveau 3, mer pirates) | 671 | 0 | avant 700 | « Bravo ! » ; +1★ |
-| 35 | notion | 734 entre 700 · 800 · 900 (niveau 3, mer pirates) | 734 | 1 | entre 700 et 800 | « C'est entre 700 et 800 ! » ; +2★ |
-| 36 | notion | 411 entre 500 · 600 · 700 (niveau 3, mer pirates) | 411 | 0 | avant 500 | « Bravo ! » ; +1★ |
-| 37 | notion | 669 entre 500 · 600 · 700 (niveau 3, mer pirates) | 669 | 2 | entre 600 et 700 | « C'est entre 600 et 700 ! » ; +2★ |
-| 38 | notion | 872 entre 500 · 600 · 700 (niveau 3, mer pirates) | 872 | 3 | après 700 | « Bravo ! » ; +1★ |
-| 39 | notion | 564 entre 500 · 600 · 700 (niveau 3, mer pirates) | 564 | 1 | entre 500 et 600 | « C'est entre 500 et 600 ! » ; +2★ |
-| 40 | notion | 637 entre 500 · 600 · 700 (niveau 3, mer pirates) | 637 | 2 | entre 600 et 700 | « C'est entre 600 et 700 ! » ; +1★ |
+| 14 | notion | 433 entre 400 · 500 · 600 (niveau 3, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 433 | 1 | entre 400 et 500 | « Les pirates sont loin. C'est entre 400 et 500 ! » ; +1★ |
+| 15 | notion | 438 entre 400 · 500 · 600 (niveau 3, mer pirates) | 438 | 1 | entre 400 et 500 | « Les pirates sont loin. C'est entre 400 et 500 ! » ; MONTÉE (niveau 1 → 4) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
+| 16 | notion | 673 entre 500 · 600 · 700 (niveau 3, mer pirates) | 673 | 2 | entre 600 et 700 | « Les pirates sont loin. C'est entre 600 et 700 ! » ; +1★ |
+| 17 | notion | 837 entre 500 · 600 · 700 (niveau 3, mer pirates) | 837 | 3 | après 700 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 18 | notion | 285 entre 500 · 600 · 700 (niveau 3, mer pirates) | 285 | 0 | avant 500 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 19 | notion | 47 entre 500 · 600 · 700 (niveau 3, mer pirates) | 47 | 0 | avant 500 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 20 | notion | 834 entre 500 · 600 · 700 (niveau 3, mer pirates) | 834 | 3 | après 700 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 21 | notion | 305 entre 700 · 800 · 900 (niveau 3, mer pirates) | 305 | 0 | avant 700 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 22 | notion | 733 entre 700 · 800 · 900 (niveau 3, mer pirates) | 733 | 1 | entre 700 et 800 | « Les pirates sont loin. C'est entre 700 et 800 ! » ; +1★ |
+| 23 | notion | 575 entre 700 · 800 · 900 (niveau 3, mer pirates) | 575 | 0 | avant 700 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 24 | notion | 975 entre 700 · 800 · 900 (niveau 3, mer pirates) | 975 | 3 | après 900 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 25 | notion | 928 entre 700 · 800 · 900 (niveau 3, mer pirates) | 928 | 3 | après 900 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 26 | notion | 146 entre 100 · 200 · 300 (niveau 3, mer pirates) | 146 | 1 | entre 100 et 200 | « Les pirates sont loin. C'est entre 100 et 200 ! » ; +1★ |
+| 27 | notion | 14 entre 100 · 200 · 300 (niveau 3, mer pirates) | 14 | 0 | avant 100 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 28 | notion | 423 entre 100 · 200 · 300 (niveau 3, mer pirates) | 423 | 3 | après 300 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 29 | notion | 127 entre 100 · 200 · 300 (niveau 3, mer pirates) | 127 | 1 | entre 100 et 200 | « Les pirates sont loin. C'est entre 100 et 200 ! » ; +2★ |
+| 30 | notion | 129 entre 100 · 200 · 300 (niveau 3, mer pirates) | 129 | 1 | entre 100 et 200 | « Les pirates sont loin. C'est entre 100 et 200 ! » ; +1★ |
+| 31 | notion | 880 entre 700 · 800 · 900 (niveau 3, mer pirates) | 880 | 2 | entre 800 et 900 | « Les pirates sont loin. C'est entre 800 et 900 ! » ; +2★ |
+| 32 | notion | 839 entre 700 · 800 · 900 (niveau 3, mer pirates) | 839 | 2 | entre 800 et 900 | « Les pirates sont loin. C'est entre 800 et 900 ! » ; +1★ |
+| 33 | notion | 602 entre 700 · 800 · 900 (niveau 3, mer pirates) | 602 | 0 | avant 700 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 34 | notion | 671 entre 700 · 800 · 900 (niveau 3, mer pirates) | 671 | 0 | avant 700 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 35 | notion | 734 entre 700 · 800 · 900 (niveau 3, mer pirates) | 734 | 1 | entre 700 et 800 | « Les pirates sont loin. C'est entre 700 et 800 ! » ; +2★ |
+| 36 | notion | 411 entre 500 · 600 · 700 (niveau 3, mer pirates) | 411 | 0 | avant 500 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 37 | notion | 669 entre 500 · 600 · 700 (niveau 3, mer pirates) | 669 | 2 | entre 600 et 700 | « Les pirates sont loin. C'est entre 600 et 700 ! » ; +2★ |
+| 38 | notion | 872 entre 500 · 600 · 700 (niveau 3, mer pirates) | 872 | 3 | après 700 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 39 | notion | 564 entre 500 · 600 · 700 (niveau 3, mer pirates) | 564 | 1 | entre 500 et 600 | « Les pirates sont loin. C'est entre 500 et 600 ! » ; +2★ |
+| 40 | notion | 637 entre 500 · 600 · 700 (niveau 3, mer pirates) | 637 | 2 | entre 600 et 700 | « Les pirates sont loin. C'est entre 600 et 700 ! » ; +1★ |
 
 Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte crevette (nouvelle)
 
@@ -383,27 +383,27 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte cr
 | 15 | notion | 968 entre 100 · 200 · 300 (niveau 3, mer vent) | Le vent se lève ! Il pousse les bateaux vers les bouées. 968 | 3 | après 300 | « Bravo ! » ; +2★ |
 | 16 | notion | 221 entre 100 · 200 · 300 (niveau 3, mer vent) | 221 | 2 | entre 200 et 300 | « C'est entre 200 et 300 ! » ; +1★ |
 | 17 | notion | 169 entre 100 · 200 · 300 (niveau 3, mer vent) | 169 | 1 | entre 100 et 200 | « C'est entre 100 et 200 ! » ; +2★ |
-| 18 | notion | 276 entre 100 · 200 · 300 (niveau 3, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 276 | 2 | entre 200 et 300 | « C'est entre 200 et 300 ! » ; +1★ |
-| 19 | notion | 70 entre 100 · 200 · 300 (niveau 3, mer pirates) | 70 | 0 | avant 100 | « Bravo ! » ; MONTÉE (niveau 1 → 4) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
-| 20 | notion | 960 entre 300 · 400 · 500 (niveau 3, mer pirates) | 960 | 3 | après 500 | « Bravo ! » ; +1★ |
+| 18 | notion | 276 entre 100 · 200 · 300 (niveau 3, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 276 | 2 | entre 200 et 300 | « Les pirates sont loin. C'est entre 200 et 300 ! » ; +1★ |
+| 19 | notion | 70 entre 100 · 200 · 300 (niveau 3, mer pirates) | 70 | 0 | avant 100 | « Ouf ! Les pirates sont loin. » ; MONTÉE (niveau 1 → 4) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
+| 20 | notion | 960 entre 300 · 400 · 500 (niveau 3, mer pirates) | 960 | 3 | après 500 | « Ouf ! Les pirates sont loin. » ; +1★ |
 | 21 | notion | 453 entre 300 · 400 · 500 (niveau 3, mer pirates) | 453 | 2 | après 500 | erreur V1 : « Il est plus petit que 500 : il passe avant. » « Les pirates ont rattrapé le bateau ! » |
-| 22 | notion | 90 entre 300 · 400 · 500 (niveau 3, mer pirates) | 90 | 0 | avant 300 | « Bravo ! » ; +2★ |
-| 23 | notion | 713 entre 300 · 400 · 500 (niveau 3, mer pirates) | 713 | 3 | après 500 | « Bravo ! » ; +1★ |
-| 24 | notion | 453 entre 300 · 400 · 500 (niveau 3, mer pirates, revient) | 453 | 2 | entre 400 et 500 | « C'est entre 400 et 500 ! » ; +3★ (erreur corrigée) |
-| 25 | notion | 1 entre 300 · 400 · 500 (niveau 3, mer pirates) | 1 | 0 | avant 300 | « Bravo ! » ; +2★ |
-| 26 | notion | 527 entre 500 · 600 · 700 (niveau 3, mer pirates) | 527 | 1 | entre 500 et 600 | « C'est entre 500 et 600 ! » ; +1★ |
-| 27 | notion | 666 entre 500 · 600 · 700 (niveau 3, mer pirates) | 666 | 2 | entre 600 et 700 | « C'est entre 600 et 700 ! » ; +2★ |
-| 28 | notion | 678 entre 500 · 600 · 700 (niveau 3, mer pirates) | 678 | 2 | entre 600 et 700 | « C'est entre 600 et 700 ! » ; +1★ |
-| 29 | notion | 733 entre 500 · 600 · 700 (niveau 3, mer pirates) | 733 | 3 | après 700 | « Bravo ! » ; +2★ |
-| 30 | notion | 227 entre 500 · 600 · 700 (niveau 3, mer pirates) | 227 | 0 | avant 500 | « Bravo ! » ; +1★ |
-| 31 | notion | 574 entre 400 · 500 · 600 (niveau 3, mer pirates) | 574 | 2 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « C'est entre 500 et 600 ! » |
-| 32 | notion | 59 entre 400 · 500 · 600 (niveau 3, mer pirates) | 59 | 0 | avant 400 | « Bravo ! » ; +2★ |
-| 33 | notion | 172 entre 400 · 500 · 600 (niveau 3, mer pirates) | 172 | 0 | avant 400 | « Bravo ! » ; +1★ |
+| 22 | notion | 90 entre 300 · 400 · 500 (niveau 3, mer pirates) | 90 | 0 | avant 300 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 23 | notion | 713 entre 300 · 400 · 500 (niveau 3, mer pirates) | 713 | 3 | après 500 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 24 | notion | 453 entre 300 · 400 · 500 (niveau 3, mer pirates, revient) | 453 | 2 | entre 400 et 500 | « Les pirates sont loin. C'est entre 400 et 500 ! » ; +3★ (erreur corrigée) |
+| 25 | notion | 1 entre 300 · 400 · 500 (niveau 3, mer pirates) | 1 | 0 | avant 300 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 26 | notion | 527 entre 500 · 600 · 700 (niveau 3, mer pirates) | 527 | 1 | entre 500 et 600 | « Les pirates sont loin. C'est entre 500 et 600 ! » ; +1★ |
+| 27 | notion | 666 entre 500 · 600 · 700 (niveau 3, mer pirates) | 666 | 2 | entre 600 et 700 | « Les pirates sont loin. C'est entre 600 et 700 ! » ; +2★ |
+| 28 | notion | 678 entre 500 · 600 · 700 (niveau 3, mer pirates) | 678 | 2 | entre 600 et 700 | « Les pirates sont loin. C'est entre 600 et 700 ! » ; +1★ |
+| 29 | notion | 733 entre 500 · 600 · 700 (niveau 3, mer pirates) | 733 | 3 | après 700 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 30 | notion | 227 entre 500 · 600 · 700 (niveau 3, mer pirates) | 227 | 0 | avant 500 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 31 | notion | 574 entre 400 · 500 · 600 (niveau 3, mer pirates) | 574 | 2 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « Il est plus grand que 500 : il passe après. » |
+| 32 | notion | 59 entre 400 · 500 · 600 (niveau 3, mer pirates) | 59 | 0 | avant 400 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 33 | notion | 172 entre 400 · 500 · 600 (niveau 3, mer pirates) | 172 | 0 | avant 400 | « Ouf ! Les pirates sont loin. » ; +1★ |
 | 34 | notion | 681 entre 400 · 500 · 600 (niveau 3, mer pirates) | 681 | 3 | entre 500 et 600 | erreur V1 : « Il est plus grand que 600 : il passe après. » « Les pirates ont rattrapé le bateau ! » |
-| 35 | notion | 574 entre 400 · 500 · 600 (niveau 3, mer pirates, revient) | 574 | 2 | entre 500 et 600 | « C'est entre 500 et 600 ! » ; +3★ (erreur corrigée) |
+| 35 | notion | 574 entre 400 · 500 · 600 (niveau 3, mer pirates, revient) | 574 | 2 | entre 500 et 600 | « Les pirates sont loin. C'est entre 500 et 600 ! » ; +3★ (erreur corrigée) |
 | 36 | notion | 575 entre 400 · 500 · 600 (niveau 3, mer pirates) | 575 | 2 | entre 400 et 500 | erreur V1 : « Il est plus grand que 500 : il passe après. » « Les pirates ont rattrapé le bateau ! » |
-| 37 | notion | 727 entre 100 · 200 · 300 (niveau 3, mer pirates) | 727 | 3 | après 300 | « Bravo ! » ; +2★ |
-| 38 | notion | 150 entre 100 · 200 · 300 (niveau 3, mer pirates) | 150 | 1 | entre 100 et 200 | « C'est entre 100 et 200 ! » ; +1★ |
+| 37 | notion | 727 entre 100 · 200 · 300 (niveau 3, mer pirates) | 727 | 3 | après 300 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 38 | notion | 150 entre 100 · 200 · 300 (niveau 3, mer pirates) | 150 | 1 | entre 100 et 200 | « Les pirates sont loin. C'est entre 100 et 200 ! » ; +1★ |
 
 Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte moule (nouvelle)
 
@@ -429,20 +429,20 @@ Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte 
 | 11 | échauffement | 8 + 1 = ? (fait nouveau) | 8 plus 1 ? | 9 | 7 | correction : « 8 plus 1, ça fait 9. » |
 | 12 | échauffement | 2 + 5 = ? (fait nouveau) | 2 plus 5 ? | 7 | 9 | correction : « 2 plus 5, ça fait 7. » |
 | 13 | notion | EXEMPLE GUIDÉ : 450 entre 300 · 400 · 500 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 450 Regarde : 450 est plus grand que 400, et plus petit que 500. Le bateau passe entre 400 et 500. |  | (le bateau va seul) |  |
-| 14 | notion | 738 entre 700 · 800 · 900 (niveau 3, mer calme) | 738 | 1 | entre 800 et 900, puis après 900 | erreur V1 : « Il est plus petit que 800 : il passe avant. » ; erreur V1 : « Il est plus petit que 900 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 700 et 800 ! » |
+| 14 | notion | 738 entre 700 · 800 · 900 (niveau 3, mer calme) | 738 | 1 | entre 800 et 900, puis après 900 | erreur V1 : « Il est plus petit que 800 : il passe avant. » ; erreur V1 : « Il est plus petit que 900 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 700 : il passe après. » |
 | 15 | notion | 831 entre 700 · 800 · 900 (niveau 3, mer calme) | 831 | 2 | entre 800 et 900 | « C'est entre 800 et 900 ! » ; +1★ |
 | 16 | notion | 582 entre 700 · 800 · 900 (niveau 3, mer calme) | 582 | 0 | entre 700 et 800, puis avant 700 | erreur V1 : « Il est plus petit que 700 : il passe avant. » ; « Bravo ! » ; +1★ |
 | 17 | notion | 954 entre 700 · 800 · 900 (niveau 3, mer calme) | 954 | 3 | avant 700, puis après 900 | erreur V2 : « Il est plus grand que 700 : il passe après. » ; « Bravo ! » ; +1★ |
-| 18 | notion | 738 entre 700 · 800 · 900 (niveau 3, mer calme, revient) | 738 | 1 | entre 800 et 900, puis avant 700 | erreur V1 : « Il est plus petit que 800 : il passe avant. » ; erreur V1 : « Il est plus grand que 700 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 700 et 800 ! » |
+| 18 | notion | 738 entre 700 · 800 · 900 (niveau 3, mer calme, revient) | 738 | 1 | entre 800 et 900, puis avant 700 | erreur V1 : « Il est plus petit que 800 : il passe avant. » ; erreur V1 : « Il est plus grand que 700 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 700 : il passe après. » |
 | 19 | notion | 238 entre 700 · 800 · 900 (niveau 3, mer calme) | 238 | 0 | entre 800 et 900, puis après 900 | erreur V2 : « Il est plus petit que 800 : il passe avant. » ; erreur V2 : « Il est plus petit que 900 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 700 : il passe avant. » |
 | 20 | notion | 79 entre 500 · 600 · 700 (niveau 3, mer calme) | 79 | 0 | avant 500 | « Bravo ! » ; +1★ |
 | 21 | notion | 523 entre 500 · 600 · 700 (niveau 3, mer calme) | 523 | 1 | après 700, puis entre 500 et 600 | erreur V2 : « Il est plus petit que 700 : il passe avant. » ; « C'est entre 500 et 600 ! » ; +1★ |
 | 22 | notion | 833 entre 500 · 600 · 700 (niveau 3, mer calme) | 833 | 3 | après 700 | « Bravo ! » ; +1★ |
 | 23 | notion | 238 entre 700 · 800 · 900 (niveau 3, mer calme, revient) | 238 | 0 | après 900, puis entre 800 et 900 | erreur V2 : « Il est plus petit que 900 : il passe avant. » ; erreur V2 : « Il est plus petit que 800 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 700 : il passe avant. » |
-| 24 | notion | 647 entre 500 · 600 · 700 (niveau 3, mer calme) | 647 | 2 | avant 500, puis entre 500 et 600 | erreur V2 : « Il est plus grand que 500 : il passe après. » ; erreur V2 : « Il est plus grand que 600 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 600 et 700 ! » |
+| 24 | notion | 647 entre 500 · 600 · 700 (niveau 3, mer calme) | 647 | 2 | avant 500, puis entre 500 et 600 | erreur V2 : « Il est plus grand que 500 : il passe après. » ; erreur V2 : « Il est plus grand que 600 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 600 : il passe après. » |
 | 25 | notion | 821 entre 500 · 600 · 700 (niveau 3, mer calme) | 821 | 3 | entre 500 et 600, puis après 700 | erreur V2 : « Il est plus grand que 600 : il passe après. » ; « Bravo ! » ; +1★ |
 | 26 | notion | 231 entre 100 · 200 · 300 (niveau 3, mer calme) | 231 | 2 | entre 200 et 300 | « C'est entre 200 et 300 ! » ; +1★ |
-| 27 | notion | 265 entre 100 · 200 · 300 (niveau 3, mer calme) | 265 | 2 | après 300, puis avant 100 | erreur V1 : « Il est plus petit que 300 : il passe avant. » ; erreur V1 : « Il est plus grand que 100 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 200 et 300 ! » |
+| 27 | notion | 265 entre 100 · 200 · 300 (niveau 3, mer calme) | 265 | 2 | après 300, puis avant 100 | erreur V1 : « Il est plus petit que 300 : il passe avant. » ; erreur V1 : « Il est plus grand que 100 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 200 : il passe après. » |
 | 28 | notion | 142 entre 100 · 200 · 300 (niveau 3, mer calme) | 142 | 1 | entre 200 et 300, puis entre 100 et 200 | erreur V1 : « Il est plus petit que 200 : il passe avant. » ; « C'est entre 100 et 200 ! » ; +1★ |
 | 29 | notion | 15 entre 100 · 200 · 300 (niveau 3, mer calme) | 15 | 0 | avant 100 | « Bravo ! » ; +1★ |
 | 30 | notion | 647 entre 500 · 600 · 700 (niveau 3, mer calme, revient) | 647 | 2 | entre 600 et 700 | « C'est entre 600 et 700 ! » ; +2★ (erreur corrigée) |
@@ -453,7 +453,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte 
 | 35 | notion | 323 entre 100 · 200 · 300 (niveau 3, mer vent) | 323 | 3 | entre 100 et 200, puis avant 100 | erreur V2 : « Il est plus grand que 200 : il passe après. » « Le vent repousse le bateau. » ; erreur V2 : « Il est plus grand que 100 : il passe après. » « Le vent repousse le bateau. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 300 : il passe après. » |
 | 36 | notion | 17 entre 100 · 200 · 300 (niveau 3, mer vent) | 17 | 0 | avant 100 | « Bravo ! » ; +1★ |
 | 37 | notion | 31 entre 100 · 200 · 300 (niveau 3, mer vent) | 31 | 0 | après 300, puis avant 100 | erreur V2 : « Il est plus petit que 300 : il passe avant. » « Le vent repousse le bateau. » ; « Bravo ! » ; +1★ |
-| 38 | notion | 270 entre 200 · 300 · 400 (niveau 3, mer vent) | 270 | 1 | après 400, puis entre 300 et 400 | erreur V2 : « Il est plus petit que 400 : il passe avant. » « Le vent repousse le bateau. » ; erreur V2 : « Il est plus petit que 300 : il passe avant. » « Le vent repousse le bateau. » ; deuxième erreur : le bateau va seul : « C'est entre 200 et 300 ! » |
+| 38 | notion | 270 entre 200 · 300 · 400 (niveau 3, mer vent) | 270 | 1 | après 400, puis entre 300 et 400 | erreur V2 : « Il est plus petit que 400 : il passe avant. » « Le vent repousse le bateau. » ; erreur V2 : « Il est plus petit que 300 : il passe avant. » « Le vent repousse le bateau. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 200 : il passe après. » |
 | 39 | notion | 722 entre 200 · 300 · 400 (niveau 3, mer calme) | La mer se calme. 722 | 3 | après 400 | « Bravo ! » ; +1★ |
 
 Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
@@ -479,36 +479,36 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
 | 8 | échauffement | 2 + 4 = ? (fait nouveau) | 2 plus 4 ? | 6 | 6 | +2★ |
 | 9 | échauffement | 4 + 2 = ? (fait nouveau) | 4 plus 2 ? | 6 | 6 | +2★ |
 | 10 | notion | EXEMPLE GUIDÉ : 450 entre 300 · 400 · 500 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 450 Regarde : 450 est plus grand que 400, et plus petit que 500. Le bateau passe entre 400 et 500. |  | (le bateau va seul) |  |
-| 11 | notion | 748 entre 700 · 800 · 900 (niveau 3, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 748 | 1 | entre 700 et 800 | « C'est entre 700 et 800 ! » ; +2★ |
-| 12 | notion | 196 entre 700 · 800 · 900 (niveau 3, mer pirates) | 196 | 0 | avant 700 | « Bravo ! » ; +2★ |
-| 13 | notion | 963 entre 700 · 800 · 900 (niveau 3, mer pirates) | 963 | 3 | après 900 | « Bravo ! » ; +2★ |
-| 14 | notion | 837 entre 700 · 800 · 900 (niveau 3, mer pirates) | 837 | 2 | entre 800 et 900 | « C'est entre 800 et 900 ! » ; +2★ |
-| 15 | notion | 721 entre 700 · 800 · 900 (niveau 3, mer pirates) | 721 | 1 | entre 700 et 800 | « C'est entre 700 et 800 ! » ; MONTÉE (niveau 1 → 4) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
-| 16 | notion | 446 entre 400 · 500 · 600 (niveau 3, mer pirates) | 446 | 1 | entre 400 et 500 | « C'est entre 400 et 500 ! » ; +2★ |
-| 17 | notion | 803 entre 400 · 500 · 600 (niveau 3, mer pirates) | 803 | 3 | après 600 | « Bravo ! » ; +2★ |
-| 18 | notion | 451 entre 400 · 500 · 600 (niveau 3, mer pirates) | 451 | 1 | entre 400 et 500 | « C'est entre 400 et 500 ! » ; +2★ |
-| 19 | notion | 447 entre 400 · 500 · 600 (niveau 3, mer pirates) | 447 | 1 | entre 400 et 500 | « C'est entre 400 et 500 ! » ; +2★ |
-| 20 | notion | 557 entre 400 · 500 · 600 (niveau 3, mer pirates) | 557 | 2 | entre 500 et 600 | « C'est entre 500 et 600 ! » ; +2★ |
-| 21 | notion | 455 entre 400 · 500 · 600 (niveau 3, mer pirates) | 455 | 1 | entre 400 et 500 | « C'est entre 400 et 500 ! » ; +2★ |
-| 22 | notion | 706 entre 400 · 500 · 600 (niveau 3, mer pirates) | 706 | 3 | après 600 | « Bravo ! » ; +2★ |
-| 23 | notion | 455 entre 400 · 500 · 600 (niveau 3, mer pirates) | 455 | 1 | entre 400 et 500 | « C'est entre 400 et 500 ! » ; +2★ |
-| 24 | notion | 462 entre 400 · 500 · 600 (niveau 3, mer pirates) | 462 | 1 | entre 400 et 500 | « C'est entre 400 et 500 ! » ; +2★ |
-| 25 | notion | 580 entre 400 · 500 · 600 (niveau 3, mer pirates) | 580 | 2 | entre 500 et 600 | « C'est entre 500 et 600 ! » ; +2★ |
-| 26 | notion | 321 entre 500 · 600 · 700 (niveau 3, mer pirates) | 321 | 0 | avant 500 | « Bravo ! » ; +2★ |
-| 27 | notion | 529 entre 500 · 600 · 700 (niveau 3, mer pirates) | 529 | 1 | entre 500 et 600 | « C'est entre 500 et 600 ! » ; +2★ |
-| 28 | notion | 573 entre 500 · 600 · 700 (niveau 3, mer pirates) | 573 | 1 | entre 500 et 600 | « C'est entre 500 et 600 ! » ; +2★ |
-| 29 | notion | 644 entre 500 · 600 · 700 (niveau 3, mer pirates) | 644 | 2 | entre 600 et 700 | « C'est entre 600 et 700 ! » ; +2★ |
-| 30 | notion | 556 entre 500 · 600 · 700 (niveau 3, mer pirates) | 556 | 1 | entre 500 et 600 | « C'est entre 500 et 600 ! » ; +2★ |
-| 31 | notion | 464 entre 400 · 500 · 600 (niveau 3, mer pirates) | 464 | 1 | entre 400 et 500 | « C'est entre 400 et 500 ! » ; +2★ |
-| 32 | notion | 166 entre 400 · 500 · 600 (niveau 3, mer pirates) | 166 | 0 | avant 400 | « Bravo ! » ; +2★ |
-| 33 | notion | 441 entre 400 · 500 · 600 (niveau 3, mer pirates) | 441 | 1 | entre 400 et 500 | « C'est entre 400 et 500 ! » ; +2★ |
-| 34 | notion | 422 entre 400 · 500 · 600 (niveau 3, mer pirates) | 422 | 1 | entre 400 et 500 | « C'est entre 400 et 500 ! » ; +2★ |
-| 35 | notion | 109 entre 400 · 500 · 600 (niveau 3, mer pirates) | 109 | 0 | avant 400 | « Bravo ! » ; +2★ |
-| 36 | notion | 973 entre 300 · 400 · 500 (niveau 3, mer pirates) | 973 | 3 | après 500 | « Bravo ! » ; +2★ |
-| 37 | notion | 543 entre 300 · 400 · 500 (niveau 3, mer pirates) | 543 | 3 | après 500 | « Bravo ! » ; +2★ |
-| 38 | notion | 340 entre 300 · 400 · 500 (niveau 3, mer pirates) | 340 | 1 | entre 300 et 400 | « C'est entre 300 et 400 ! » ; +2★ |
-| 39 | notion | 996 entre 300 · 400 · 500 (niveau 3, mer pirates) | 996 | 3 | après 500 | « Bravo ! » ; +2★ |
-| 40 | notion | 427 entre 300 · 400 · 500 (niveau 3, mer pirates) | 427 | 2 | entre 400 et 500 | « C'est entre 400 et 500 ! » ; +2★ |
+| 11 | notion | 748 entre 700 · 800 · 900 (niveau 3, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 748 | 1 | entre 700 et 800 | « Les pirates sont loin. C'est entre 700 et 800 ! » ; +2★ |
+| 12 | notion | 196 entre 700 · 800 · 900 (niveau 3, mer pirates) | 196 | 0 | avant 700 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 13 | notion | 963 entre 700 · 800 · 900 (niveau 3, mer pirates) | 963 | 3 | après 900 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 14 | notion | 837 entre 700 · 800 · 900 (niveau 3, mer pirates) | 837 | 2 | entre 800 et 900 | « Les pirates sont loin. C'est entre 800 et 900 ! » ; +2★ |
+| 15 | notion | 721 entre 700 · 800 · 900 (niveau 3, mer pirates) | 721 | 1 | entre 700 et 800 | « Les pirates sont loin. C'est entre 700 et 800 ! » ; MONTÉE (niveau 1 → 4) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
+| 16 | notion | 446 entre 400 · 500 · 600 (niveau 3, mer pirates) | 446 | 1 | entre 400 et 500 | « Les pirates sont loin. C'est entre 400 et 500 ! » ; +2★ |
+| 17 | notion | 803 entre 400 · 500 · 600 (niveau 3, mer pirates) | 803 | 3 | après 600 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 18 | notion | 451 entre 400 · 500 · 600 (niveau 3, mer pirates) | 451 | 1 | entre 400 et 500 | « Les pirates sont loin. C'est entre 400 et 500 ! » ; +2★ |
+| 19 | notion | 447 entre 400 · 500 · 600 (niveau 3, mer pirates) | 447 | 1 | entre 400 et 500 | « Les pirates sont loin. C'est entre 400 et 500 ! » ; +2★ |
+| 20 | notion | 557 entre 400 · 500 · 600 (niveau 3, mer pirates) | 557 | 2 | entre 500 et 600 | « Les pirates sont loin. C'est entre 500 et 600 ! » ; +2★ |
+| 21 | notion | 455 entre 400 · 500 · 600 (niveau 3, mer pirates) | 455 | 1 | entre 400 et 500 | « Les pirates sont loin. C'est entre 400 et 500 ! » ; +2★ |
+| 22 | notion | 706 entre 400 · 500 · 600 (niveau 3, mer pirates) | 706 | 3 | après 600 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 23 | notion | 455 entre 400 · 500 · 600 (niveau 3, mer pirates) | 455 | 1 | entre 400 et 500 | « Les pirates sont loin. C'est entre 400 et 500 ! » ; +2★ |
+| 24 | notion | 462 entre 400 · 500 · 600 (niveau 3, mer pirates) | 462 | 1 | entre 400 et 500 | « Les pirates sont loin. C'est entre 400 et 500 ! » ; +2★ |
+| 25 | notion | 580 entre 400 · 500 · 600 (niveau 3, mer pirates) | 580 | 2 | entre 500 et 600 | « Les pirates sont loin. C'est entre 500 et 600 ! » ; +2★ |
+| 26 | notion | 321 entre 500 · 600 · 700 (niveau 3, mer pirates) | 321 | 0 | avant 500 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 27 | notion | 529 entre 500 · 600 · 700 (niveau 3, mer pirates) | 529 | 1 | entre 500 et 600 | « Les pirates sont loin. C'est entre 500 et 600 ! » ; +2★ |
+| 28 | notion | 573 entre 500 · 600 · 700 (niveau 3, mer pirates) | 573 | 1 | entre 500 et 600 | « Les pirates sont loin. C'est entre 500 et 600 ! » ; +2★ |
+| 29 | notion | 644 entre 500 · 600 · 700 (niveau 3, mer pirates) | 644 | 2 | entre 600 et 700 | « Les pirates sont loin. C'est entre 600 et 700 ! » ; +2★ |
+| 30 | notion | 556 entre 500 · 600 · 700 (niveau 3, mer pirates) | 556 | 1 | entre 500 et 600 | « Les pirates sont loin. C'est entre 500 et 600 ! » ; +2★ |
+| 31 | notion | 464 entre 400 · 500 · 600 (niveau 3, mer pirates) | 464 | 1 | entre 400 et 500 | « Les pirates sont loin. C'est entre 400 et 500 ! » ; +2★ |
+| 32 | notion | 166 entre 400 · 500 · 600 (niveau 3, mer pirates) | 166 | 0 | avant 400 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 33 | notion | 441 entre 400 · 500 · 600 (niveau 3, mer pirates) | 441 | 1 | entre 400 et 500 | « Les pirates sont loin. C'est entre 400 et 500 ! » ; +2★ |
+| 34 | notion | 422 entre 400 · 500 · 600 (niveau 3, mer pirates) | 422 | 1 | entre 400 et 500 | « Les pirates sont loin. C'est entre 400 et 500 ! » ; +2★ |
+| 35 | notion | 109 entre 400 · 500 · 600 (niveau 3, mer pirates) | 109 | 0 | avant 400 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 36 | notion | 973 entre 300 · 400 · 500 (niveau 3, mer pirates) | 973 | 3 | après 500 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 37 | notion | 543 entre 300 · 400 · 500 (niveau 3, mer pirates) | 543 | 3 | après 500 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 38 | notion | 340 entre 300 · 400 · 500 (niveau 3, mer pirates) | 340 | 1 | entre 300 et 400 | « Les pirates sont loin. C'est entre 300 et 400 ! » ; +2★ |
+| 39 | notion | 996 entre 300 · 400 · 500 (niveau 3, mer pirates) | 996 | 3 | après 500 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 40 | notion | 427 entre 300 · 400 · 500 (niveau 3, mer pirates) | 427 | 2 | entre 400 et 500 | « Les pirates sont loin. C'est entre 400 et 500 ! » ; +2★ |
 
 Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte poisson-clown (nouvelle)
 
@@ -533,30 +533,30 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte poisson-clo
 | 10 | échauffement | 2 + 4 = ? (fait nouveau) | 2 plus 4 ? | 6 | 6 | +2★ |
 | 11 | échauffement | 2 + 7 = ? (fait nouveau) | 2 plus 7 ? | 9 | 9 | +2★ |
 | 12 | notion | EXEMPLE GUIDÉ : 450 entre 300 · 400 · 500 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 450 Regarde : 450 est plus grand que 400, et plus petit que 500. Le bateau passe entre 400 et 500. |  | (le bateau va seul) |  |
-| 13 | notion | 756 entre 600 · 700 · 800 (niveau 3, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 756 | 2 | entre 700 et 800 | « C'est entre 700 et 800 ! » ; +2★ |
-| 14 | notion | 653 entre 600 · 700 · 800 (niveau 3, mer pirates) | 653 | 1 | entre 600 et 700 | « C'est entre 600 et 700 ! » ; +2★ |
-| 15 | notion | 125 entre 600 · 700 · 800 (niveau 3, mer pirates) | 125 | 0 | avant 600 | « Bravo ! » ; +2★ |
+| 13 | notion | 756 entre 600 · 700 · 800 (niveau 3, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 756 | 2 | entre 700 et 800 | « Les pirates sont loin. C'est entre 700 et 800 ! » ; +2★ |
+| 14 | notion | 653 entre 600 · 700 · 800 (niveau 3, mer pirates) | 653 | 1 | entre 600 et 700 | « Les pirates sont loin. C'est entre 600 et 700 ! » ; +2★ |
+| 15 | notion | 125 entre 600 · 700 · 800 (niveau 3, mer pirates) | 125 | 0 | avant 600 | « Bravo, tu as semé les pirates ! » ; +2★ |
 | 16 | notion | 986 entre 600 · 700 · 800 (niveau 3, mer pirates) | 986 | 3 | entre 700 et 800 | erreur V1 : « Il est plus grand que 800 : il passe après. » « Les pirates ont rattrapé le bateau ! » |
-| 17 | notion | 166 entre 600 · 700 · 800 (niveau 3, mer pirates) | 166 | 0 | avant 600 | « Bravo ! » ; +2★ |
+| 17 | notion | 166 entre 600 · 700 · 800 (niveau 3, mer pirates) | 166 | 0 | avant 600 | « Ouf ! Les pirates sont loin. » ; +2★ |
 | 18 | notion | 853 entre 700 · 800 · 900 (niveau 3, mer pirates) | 853 | 2 | après 900 | erreur V1 : « Il est plus petit que 900 : il passe avant. » « Les pirates ont rattrapé le bateau ! » |
 | 19 | notion | 986 entre 600 · 700 · 800 (niveau 3, mer pirates, revient) | 986 | 3 | entre 700 et 800 | erreur V1 : « Il est plus grand que 800 : il passe après. » « Les pirates ont rattrapé le bateau ! » ; le cran redescend : très dur → plus dur (« On essaie un peu moins dur ? ») |
-| 20 | notion | 354 entre 700 · 800 · 900 (niveau 3, mer pirates) | 354 | 0 | avant 700 | « Bravo ! » ; +1★ |
-| 21 | notion | 865 entre 700 · 800 · 900 (niveau 3, mer pirates) | 865 | 2 | entre 800 et 900 | « C'est entre 800 et 900 ! » ; +2★ |
-| 22 | notion | 924 entre 700 · 800 · 900 (niveau 3, mer pirates) | 924 | 3 | après 900 | « Bravo ! » ; +1★ |
-| 23 | notion | 853 entre 700 · 800 · 900 (niveau 3, mer pirates, revient) | 853 | 2 | entre 800 et 900 | « C'est entre 800 et 900 ! » ; +3★ (erreur corrigée) |
-| 24 | notion | 214 entre 700 · 800 · 900 (niveau 3, mer pirates) | 214 | 0 | avant 700 | « Bravo ! » ; +2★ |
-| 25 | notion | 347 entre 300 · 400 · 500 (niveau 3, mer pirates) | 347 | 1 | entre 300 et 400 | « C'est entre 300 et 400 ! » ; +1★ |
-| 26 | notion | 27 entre 300 · 400 · 500 (niveau 3, mer pirates) | 27 | 0 | avant 300 | « Bravo ! » ; +2★ |
-| 27 | notion | 30 entre 300 · 400 · 500 (niveau 3, mer pirates) | 30 | 0 | avant 300 | « Bravo ! » ; MONTÉE (niveau 1 → 4) ; +1★ ; étoile arc-en-ciel (niveau franchi) |
-| 28 | notion | 443 entre 300 · 400 · 500 (niveau 3, mer pirates) | 443 | 2 | entre 400 et 500 | « C'est entre 400 et 500 ! » ; +2★ |
-| 29 | notion | 33 entre 300 · 400 · 500 (niveau 3, mer pirates) | 33 | 0 | avant 300 | « Bravo ! » ; +1★ |
-| 30 | notion | 860 entre 600 · 700 · 800 (niveau 3, mer pirates) | 860 | 3 | après 800 | « Bravo ! » ; +2★ |
-| 31 | notion | 648 entre 600 · 700 · 800 (niveau 3, mer pirates) | 648 | 1 | entre 600 et 700 | « C'est entre 600 et 700 ! » ; +1★ |
-| 32 | notion | 673 entre 600 · 700 · 800 (niveau 3, mer pirates) | 673 | 1 | entre 600 et 700 | « C'est entre 600 et 700 ! » ; +2★ |
-| 33 | notion | 886 entre 600 · 700 · 800 (niveau 3, mer pirates) | 886 | 3 | après 800 | « Bravo ! » ; +1★ |
+| 20 | notion | 354 entre 700 · 800 · 900 (niveau 3, mer pirates) | 354 | 0 | avant 700 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 21 | notion | 865 entre 700 · 800 · 900 (niveau 3, mer pirates) | 865 | 2 | entre 800 et 900 | « Les pirates sont loin. C'est entre 800 et 900 ! » ; +2★ |
+| 22 | notion | 924 entre 700 · 800 · 900 (niveau 3, mer pirates) | 924 | 3 | après 900 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 23 | notion | 853 entre 700 · 800 · 900 (niveau 3, mer pirates, revient) | 853 | 2 | entre 800 et 900 | « Les pirates sont loin. C'est entre 800 et 900 ! » ; +3★ (erreur corrigée) |
+| 24 | notion | 214 entre 700 · 800 · 900 (niveau 3, mer pirates) | 214 | 0 | avant 700 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 25 | notion | 347 entre 300 · 400 · 500 (niveau 3, mer pirates) | 347 | 1 | entre 300 et 400 | « Les pirates sont loin. C'est entre 300 et 400 ! » ; +1★ |
+| 26 | notion | 27 entre 300 · 400 · 500 (niveau 3, mer pirates) | 27 | 0 | avant 300 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 27 | notion | 30 entre 300 · 400 · 500 (niveau 3, mer pirates) | 30 | 0 | avant 300 | « Ouf ! Les pirates sont loin. » ; MONTÉE (niveau 1 → 4) ; +1★ ; étoile arc-en-ciel (niveau franchi) |
+| 28 | notion | 443 entre 300 · 400 · 500 (niveau 3, mer pirates) | 443 | 2 | entre 400 et 500 | « Les pirates sont loin. C'est entre 400 et 500 ! » ; +2★ |
+| 29 | notion | 33 entre 300 · 400 · 500 (niveau 3, mer pirates) | 33 | 0 | avant 300 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 30 | notion | 860 entre 600 · 700 · 800 (niveau 3, mer pirates) | 860 | 3 | après 800 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 31 | notion | 648 entre 600 · 700 · 800 (niveau 3, mer pirates) | 648 | 1 | entre 600 et 700 | « Les pirates sont loin. C'est entre 600 et 700 ! » ; +1★ |
+| 32 | notion | 673 entre 600 · 700 · 800 (niveau 3, mer pirates) | 673 | 1 | entre 600 et 700 | « Les pirates sont loin. C'est entre 600 et 700 ! » ; +2★ |
+| 33 | notion | 886 entre 600 · 700 · 800 (niveau 3, mer pirates) | 886 | 3 | après 800 | « Ouf ! Les pirates sont loin. » ; +1★ |
 | 34 | notion | 737 entre 600 · 700 · 800 (niveau 3, mer pirates) | 737 | 2 | après 800 | erreur V1 : « Il est plus petit que 800 : il passe avant. » « Les pirates ont rattrapé le bateau ! » |
-| 35 | notion | 969 entre 500 · 600 · 700 (niveau 3, mer pirates) | 969 | 3 | après 700 | « Bravo ! » ; +2★ |
-| 36 | notion | 659 entre 500 · 600 · 700 (niveau 3, mer pirates) | 659 | 2 | entre 600 et 700 | « C'est entre 600 et 700 ! » ; +1★ |
+| 35 | notion | 969 entre 500 · 600 · 700 (niveau 3, mer pirates) | 969 | 3 | après 700 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 36 | notion | 659 entre 500 · 600 · 700 (niveau 3, mer pirates) | 659 | 2 | entre 600 et 700 | « Les pirates sont loin. C'est entre 600 et 700 ! » ; +1★ |
 
 Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte poisson-chirurgien (nouvelle)
 
@@ -591,19 +591,19 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte po
 | 20 | notion | 149 entre 500 · 600 · 700 (niveau 3, mer calme, revient) | 149 | 0 | entre 600 et 700, puis entre 500 et 600 | erreur V2 : « Il est plus petit que 600 : il passe avant. » ; erreur V2 : « Il est plus petit que 500 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 500 : il passe avant. » |
 | 21 | notion | 934 entre 500 · 600 · 700 (niveau 3, mer calme, revient) | 934 | 3 | après 700 | « Bravo ! » ; +2★ (erreur corrigée) |
 | 22 | notion | 839 entre 500 · 600 · 700 (niveau 3, mer calme, revient) | 839 | 3 | entre 500 et 600, puis après 700 | erreur V2 : « Il est plus grand que 600 : il passe après. » ; « Bravo ! » ; +1★ |
-| 23 | notion | 826 entre 700 · 800 · 900 (niveau 3, mer calme) | 826 | 2 | avant 700, puis entre 700 et 800 | erreur V2 : « Il est plus grand que 700 : il passe après. » ; erreur V2 : « Il est plus grand que 800 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 800 et 900 ! » |
+| 23 | notion | 826 entre 700 · 800 · 900 (niveau 3, mer calme) | 826 | 2 | avant 700, puis entre 700 et 800 | erreur V2 : « Il est plus grand que 700 : il passe après. » ; erreur V2 : « Il est plus grand que 800 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 800 : il passe après. » |
 | 24 | notion | 153 entre 700 · 800 · 900 (niveau 3, mer calme) | 153 | 0 | avant 700 | « Bravo ! » ; +1★ |
 | 25 | notion | 860 entre 700 · 800 · 900 (niveau 3, mer calme) | 860 | 2 | entre 800 et 900 | « C'est entre 800 et 900 ! » ; +1★ |
 | 26 | notion | 993 entre 700 · 800 · 900 (niveau 3, mer calme) | 993 | 3 | avant 700, puis après 900 | erreur V2 : « Il est plus grand que 700 : il passe après. » ; « Bravo ! » ; +1★ |
 | 27 | notion | 380 entre 200 · 300 · 400 (niveau 3, mer calme) | 380 | 2 | entre 300 et 400 | « C'est entre 300 et 400 ! » ; +1★ |
-| 28 | notion | 826 entre 700 · 800 · 900 (niveau 3, mer calme, revient) | 826 | 2 | après 900, puis après 900 | erreur V1 : « Il est plus petit que 900 : il passe avant. » ; erreur V1 : « Il est plus petit que 900 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 800 et 900 ! » |
+| 28 | notion | 826 entre 700 · 800 · 900 (niveau 3, mer calme, revient) | 826 | 2 | après 900, puis après 900 | erreur V1 : « Il est plus petit que 900 : il passe avant. » ; erreur V1 : « Il est plus petit que 900 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 800 : il passe après. » |
 | 29 | notion | 268 entre 200 · 300 · 400 (niveau 3, mer calme) | 268 | 1 | entre 300 et 400, puis entre 200 et 300 | erreur V1 : « Il est plus petit que 300 : il passe avant. » ; « C'est entre 200 et 300 ! » ; +1★ |
 | 30 | notion | 912 entre 200 · 300 · 400 (niveau 3, mer calme) | 912 | 3 | après 400 | « Bravo ! » ; +1★ |
-| 31 | notion | 262 entre 200 · 300 · 400 (niveau 3, mer calme) | 262 | 1 | entre 300 et 400, puis après 400 | erreur V1 : « Il est plus petit que 300 : il passe avant. » ; erreur V1 : « Il est plus petit que 400 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 200 et 300 ! » |
-| 32 | notion | 267 entre 200 · 300 · 400 (niveau 3, mer calme) | 267 | 1 | avant 200, puis entre 300 et 400 | erreur V1 : « Il est plus grand que 200 : il passe après. » ; erreur V1 : « Il est plus petit que 300 : il passe avant. » ; deuxième erreur : le bateau va seul : « C'est entre 200 et 300 ! » |
+| 31 | notion | 262 entre 200 · 300 · 400 (niveau 3, mer calme) | 262 | 1 | entre 300 et 400, puis après 400 | erreur V1 : « Il est plus petit que 300 : il passe avant. » ; erreur V1 : « Il est plus petit que 400 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 200 : il passe après. » |
+| 32 | notion | 267 entre 200 · 300 · 400 (niveau 3, mer calme) | 267 | 1 | avant 200, puis entre 300 et 400 | erreur V1 : « Il est plus grand que 200 : il passe après. » ; erreur V1 : « Il est plus petit que 300 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 200 : il passe après. » |
 | 33 | notion | 455 entre 300 · 400 · 500 (niveau 3, mer calme) | 455 | 2 | avant 300, puis entre 400 et 500 | erreur V2 : « Il est plus grand que 300 : il passe après. » ; « C'est entre 400 et 500 ! » ; +1★ |
 | 34 | notion | 246 entre 300 · 400 · 500 (niveau 3, mer calme) | 246 | 0 | entre 400 et 500, puis entre 300 et 400 | erreur V2 : « Il est plus petit que 400 : il passe avant. » ; erreur V2 : « Il est plus petit que 300 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 300 : il passe avant. » |
-| 35 | notion | 262 entre 200 · 300 · 400 (niveau 3, mer calme, revient) | 262 | 1 | avant 200, puis avant 200 | erreur V1 : « Il est plus grand que 200 : il passe après. » ; erreur V1 : « Il est plus grand que 200 : il passe après. » ; deuxième erreur : le bateau va seul : « C'est entre 200 et 300 ! » |
+| 35 | notion | 262 entre 200 · 300 · 400 (niveau 3, mer calme, revient) | 262 | 1 | avant 200, puis avant 200 | erreur V1 : « Il est plus grand que 200 : il passe après. » ; erreur V1 : « Il est plus grand que 200 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 200 : il passe après. » |
 | 36 | notion | 730 entre 300 · 400 · 500 (niveau 3, mer calme) | 730 | 3 | avant 300, puis avant 300 | erreur V2 : « Il est plus grand que 300 : il passe après. » ; erreur V2 : « Il est plus grand que 300 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 500 : il passe après. » |
 | 37 | notion | 435 entre 300 · 400 · 500 (niveau 3, mer calme) | 435 | 2 | entre 400 et 500 | « C'est entre 400 et 500 ! » ; +1★ |
 

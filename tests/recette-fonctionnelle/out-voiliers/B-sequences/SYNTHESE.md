@@ -45,9 +45,9 @@ Limites : la voix est reconstituée à partir de `app/content/textes.json` avec 
 | Voiliers, niveau 8 (5 bouées, melange, pres) | plus dur | 68 | 61 | 19 | 28 % |
 | Voiliers, niveau 8 (5 bouées, melange, pres) | très dur | 88 | 52 | 14 | 16 % |
 | Voiliers, niveau 9 (4 bouées, double, partout) | plus facile | 24 | 23 | 12 | 50 % |
-| Voiliers, niveau 9 (4 bouées, double, partout) | conseillé | 42 | 27 | 10 | 24 % |
-| Voiliers, niveau 9 (4 bouées, double, partout) | plus dur | 58 | 37 | 13 | 22 % |
-| Voiliers, niveau 9 (4 bouées, double, partout) | très dur | 74 | 40 | 15 | 20 % |
+| Voiliers, niveau 9 (4 bouées, double, partout) | conseillé | 42 | 32 | 10 | 24 % |
+| Voiliers, niveau 9 (4 bouées, double, partout) | plus dur | 58 | 37 | 11 | 19 % |
+| Voiliers, niveau 9 (4 bouées, double, partout) | très dur | 74 | 40 | 13 | 18 % |
 
 ### Un mois
 
@@ -85,8 +85,8 @@ Limites : la voix est reconstituée à partir de `app/content/textes.json` avec 
 | Voiliers, niveau 8 (5 bouées, melange, pres) | conseillé | 80 | 62 | 24 | 30 % |
 | Voiliers, niveau 8 (5 bouées, melange, pres) | plus dur | 110 | 87 | 25 | 23 % |
 | Voiliers, niveau 8 (5 bouées, melange, pres) | très dur | 140 | 109 | 25 | 18 % |
-| Voiliers, niveau 9 (4 bouées, double, partout) | plus facile | 46 | 34 | 18 | 39 % |
-| Voiliers, niveau 9 (4 bouées, double, partout) | conseillé | 69 | 45 | 19 | 28 % |
+| Voiliers, niveau 9 (4 bouées, double, partout) | plus facile | 46 | 34 | 16 | 35 % |
+| Voiliers, niveau 9 (4 bouées, double, partout) | conseillé | 69 | 42 | 20 | 29 % |
 | Voiliers, niveau 9 (4 bouées, double, partout) | plus dur | 98 | 62 | 21 | 21 % |
 | Voiliers, niveau 9 (4 bouées, double, partout) | très dur | 122 | 72 | 24 | 20 % |
 
@@ -192,16 +192,16 @@ Limites : la voix est reconstituée à partir de `app/content/textes.json` avec 
 | neuve | Voiliers, niveau 8 (5 bouées, melange, pres) | très dur | pressée | 18 | 6 | 12 % | 3 (0, 2, 4 : pas de +2) | – | 14 | 13 % | conseillé |
 | neuve | Voiliers, niveau 9 (4 bouées, double, partout) | plus facile | appliquée | 23 | 10 | 14 % | 2 (22, 24 : pas de +2) | – | 24 | 100 % | plus facile |
 | neuve | Voiliers, niveau 9 (4 bouées, double, partout) | plus facile | réelle | 17 | 10 | 0 % | 2 (11, 21 : pas de +10) | – | 23 | 75 % | plus facile |
-| neuve | Voiliers, niveau 9 (4 bouées, double, partout) | plus facile | pressée | 19 | 9 | 6 % | 2 (34, 31 : pas de -3) | – | 12 | 6 % | plus facile |
+| neuve | Voiliers, niveau 9 (4 bouées, double, partout) | plus facile | pressée | 18 | 8 | 0 % | 2 (34, 31 : pas de -3) | – | 12 | 6 % | plus facile |
 | neuve | Voiliers, niveau 9 (4 bouées, double, partout) | conseillé | appliquée | 23 | 11 | 0 % | 2 (23, 24 : pas de +1) | – | 42 | 100 % | conseillé |
-| neuve | Voiliers, niveau 9 (4 bouées, double, partout) | conseillé | réelle | 13 | 7 | 0 % | 2 (33, 31 : pas de -2) | – | 27 | 56 % | conseillé |
-| neuve | Voiliers, niveau 9 (4 bouées, double, partout) | conseillé | pressée | 19 | 8 | 11 % | 2 (14, 12 : pas de -2) | – | 10 | 3 % | conseillé |
+| neuve | Voiliers, niveau 9 (4 bouées, double, partout) | conseillé | réelle | 16 | 8 | 0 % | 2 (33, 31 : pas de -2) | – | 32 | 73 % | conseillé |
+| neuve | Voiliers, niveau 9 (4 bouées, double, partout) | conseillé | pressée | 18 | 8 | 6 % | 3 (12, 22, 32 : pas de +10) | – | 10 | 3 % | conseillé |
 | neuve | Voiliers, niveau 9 (4 bouées, double, partout) | plus dur | appliquée | 23 | 12 | 0 % | 2 (11, 12 : pas de +1) | – | 58 | 100 % | plus dur |
-| neuve | Voiliers, niveau 9 (4 bouées, double, partout) | plus dur | réelle | 19 | 8 | 11 % | 2 (23, 14 : pas de -9) | – | 37 | 68 % | conseillé |
-| neuve | Voiliers, niveau 9 (4 bouées, double, partout) | plus dur | pressée | 20 | 8 | 5 % | 2 (14, 21 : pas de +7) | – | 13 | 9 % | conseillé |
+| neuve | Voiliers, niveau 9 (4 bouées, double, partout) | plus dur | réelle | 18 | 7 | 12 % | 2 (23, 14 : pas de -9) | – | 37 | 73 % | conseillé |
+| neuve | Voiliers, niveau 9 (4 bouées, double, partout) | plus dur | pressée | 18 | 6 | 6 % | 2 (14, 21 : pas de +7) | – | 11 | 7 % | conseillé |
 | neuve | Voiliers, niveau 9 (4 bouées, double, partout) | très dur | appliquée | 23 | 12 | 5 % | 3 (31, 21, 11 : pas de -10) | – | 74 | 100 % | très dur |
 | neuve | Voiliers, niveau 9 (4 bouées, double, partout) | très dur | réelle | 15 | 8 | 0 % | 2 (33, 34 : pas de +1) | – | 40 | 60 % | conseillé |
-| neuve | Voiliers, niveau 9 (4 bouées, double, partout) | très dur | pressée | 19 | 10 | 0 % | 3 (31, 32, 33 : pas de +1) | – | 15 | 9 % | conseillé |
+| neuve | Voiliers, niveau 9 (4 bouées, double, partout) | très dur | pressée | 18 | 9 | 0 % | 3 (24, 23, 22 : pas de -1) | – | 13 | 6 % | conseillé |
 | mois | Voiliers, niveau 1 (3 bouées, dizaine, loin) | plus facile | appliquée | 30 | 4 | 14 % | 3 (0, 1, 2 : pas de +1) | – | 48 | 100 % | plus facile |
 | mois | Voiliers, niveau 1 (3 bouées, dizaine, loin) | plus facile | réelle | 22 | 4 | 14 % | 3 (3, 2, 1 : pas de -1) | – | 38 | 78 % | plus facile |
 | mois | Voiliers, niveau 1 (3 bouées, dizaine, loin) | plus facile | pressée | 22 | 4 | 19 % | 3 (0, 1, 2 : pas de +1) | – | 21 | 15 % | plus facile |
@@ -300,13 +300,13 @@ Limites : la voix est reconstituée à partir de `app/content/textes.json` avec 
 | mois | Voiliers, niveau 8 (5 bouées, melange, pres) | très dur | pressée | 21 | 5 | 5 % | 3 (4, 2, 0 : pas de -2) | – | 25 | 8 % | conseillé |
 | mois | Voiliers, niveau 9 (4 bouées, double, partout) | plus facile | appliquée | 23 | 9 | 14 % | 3 (14, 24, 34 : pas de +10) | – | 46 | 100 % | plus facile |
 | mois | Voiliers, niveau 9 (4 bouées, double, partout) | plus facile | réelle | 18 | 11 | 0 % | 3 (21, 22, 23 : pas de +1) | – | 34 | 75 % | plus facile |
-| mois | Voiliers, niveau 9 (4 bouées, double, partout) | plus facile | pressée | 19 | 9 | 0 % | 3 (13, 23, 33 : pas de +10) | – | 18 | 3 % | plus facile |
+| mois | Voiliers, niveau 9 (4 bouées, double, partout) | plus facile | pressée | 18 | 8 | 6 % | 3 (14, 24, 34 : pas de +10) | – | 16 | 3 % | plus facile |
 | mois | Voiliers, niveau 9 (4 bouées, double, partout) | conseillé | appliquée | 23 | 11 | 9 % | 2 (11, 21 : pas de +10) | – | 69 | 100 % | conseillé |
-| mois | Voiliers, niveau 9 (4 bouées, double, partout) | conseillé | réelle | 17 | 9 | 0 % | 2 (32, 33 : pas de +1) | – | 45 | 60 % | conseillé |
-| mois | Voiliers, niveau 9 (4 bouées, double, partout) | conseillé | pressée | 19 | 9 | 6 % | 2 (21, 23 : pas de +2) | – | 19 | 6 % | conseillé |
+| mois | Voiliers, niveau 9 (4 bouées, double, partout) | conseillé | réelle | 14 | 9 | 8 % | 2 (32, 33 : pas de +1) | – | 42 | 54 % | conseillé |
+| mois | Voiliers, niveau 9 (4 bouées, double, partout) | conseillé | pressée | 19 | 10 | 0 % | 2 (22, 21 : pas de -1) | – | 20 | 8 % | conseillé |
 | mois | Voiliers, niveau 9 (4 bouées, double, partout) | plus dur | appliquée | 23 | 12 | 9 % | 3 (31, 32, 33 : pas de +1) | – | 98 | 100 % | plus dur |
-| mois | Voiliers, niveau 9 (4 bouées, double, partout) | plus dur | réelle | 15 | 8 | 0 % | 2 (34, 33 : pas de -1) | – | 62 | 72 % | conseillé |
-| mois | Voiliers, niveau 9 (4 bouées, double, partout) | plus dur | pressée | 19 | 10 | 0 % | 3 (13, 22, 31 : pas de +9) | – | 21 | 5 % | conseillé |
+| mois | Voiliers, niveau 9 (4 bouées, double, partout) | plus dur | réelle | 17 | 10 | 0 % | 2 (13, 22 : pas de +9) | – | 62 | 71 % | conseillé |
+| mois | Voiliers, niveau 9 (4 bouées, double, partout) | plus dur | pressée | 18 | 8 | 6 % | 2 (11, 21 : pas de +10) | – | 21 | 6 % | conseillé |
 | mois | Voiliers, niveau 9 (4 bouées, double, partout) | très dur | appliquée | 23 | 11 | 5 % | 2 (14, 12 : pas de -2) | – | 122 | 100 % | très dur |
 | mois | Voiliers, niveau 9 (4 bouées, double, partout) | très dur | réelle | 17 | 11 | 0 % | 3 (22, 23, 24 : pas de +1) | – | 72 | 72 % | conseillé |
-| mois | Voiliers, niveau 9 (4 bouées, double, partout) | très dur | pressée | 20 | 8 | 0 % | 2 (12, 14 : pas de +2) | – | 24 | 9 % | conseillé |
+| mois | Voiliers, niveau 9 (4 bouées, double, partout) | très dur | pressée | 18 | 8 | 6 % | 2 (32, 34 : pas de +2) | – | 24 | 8 % | conseillé |

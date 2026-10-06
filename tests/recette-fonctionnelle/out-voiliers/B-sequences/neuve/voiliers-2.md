@@ -332,33 +332,33 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle)
 | 11 | notion | 97 entre 13 · 16 · 21 (niveau 2, mer vent) | Le vent se lève ! Il pousse les bateaux vers les bouées. 97 | 3 | après 21 | « Bravo ! » ; +2★ |
 | 12 | notion | 19 entre 13 · 16 · 21 (niveau 2, mer vent) | 19 | 2 | entre 16 et 21 | « Bravo ! » ; +1★ |
 | 13 | notion | 7 entre 13 · 16 · 21 (niveau 2, mer vent) | 7 | 0 | avant 13 | « Bravo ! » ; +2★ |
-| 14 | notion | 15 entre 13 · 16 · 21 (niveau 2, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 15 | 1 | entre 13 et 16 | « Bravo ! » ; +1★ |
-| 15 | notion | 19 entre 13 · 16 · 21 (niveau 2, mer pirates) | 19 | 2 | entre 16 et 21 | « Bravo ! » ; MONTÉE (niveau 1 → 3) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
-| 16 | notion | 14 entre 23 · 28 · 37 (niveau 2, mer pirates) | 14 | 0 | avant 23 | « Bravo ! » ; +1★ |
-| 17 | notion | 61 entre 23 · 28 · 37 (niveau 2, mer pirates) | 61 | 3 | après 37 | « Bravo ! » ; +2★ |
-| 18 | notion | 27 entre 23 · 28 · 37 (niveau 2, mer pirates) | 27 | 1 | entre 23 et 28 | « Bravo ! » ; +1★ |
-| 19 | notion | 25 entre 23 · 28 · 37 (niveau 2, mer pirates) | 25 | 1 | entre 23 et 28 | « Bravo ! » ; +2★ |
-| 20 | notion | 29 entre 23 · 28 · 37 (niveau 2, mer pirates) | 29 | 2 | entre 28 et 37 | « Bravo ! » ; +1★ |
-| 21 | notion | 3 entre 36 · 39 · 42 (niveau 2, mer pirates) | 3 | 0 | avant 36 | « Bravo ! » ; +2★ |
-| 22 | notion | 38 entre 36 · 39 · 42 (niveau 2, mer pirates) | 38 | 1 | entre 36 et 39 | « Bravo ! » ; +1★ |
-| 23 | notion | 92 entre 36 · 39 · 42 (niveau 2, mer pirates) | 92 | 3 | après 42 | « Bravo ! » ; +2★ |
-| 24 | notion | 38 entre 36 · 39 · 42 (niveau 2, mer pirates) | 38 | 1 | entre 36 et 39 | « Bravo ! » ; +1★ |
-| 25 | notion | 37 entre 36 · 39 · 42 (niveau 2, mer pirates) | 37 | 1 | entre 36 et 39 | « Bravo ! » ; +2★ |
-| 26 | notion | 83 entre 33 · 38 · 44 (niveau 2, mer pirates) | 83 | 3 | après 44 | « Bravo ! » ; +1★ |
-| 27 | notion | 27 entre 33 · 38 · 44 (niveau 2, mer pirates) | 27 | 0 | avant 33 | « Bravo ! » ; +2★ |
-| 28 | notion | 65 entre 33 · 38 · 44 (niveau 2, mer pirates) | 65 | 3 | après 44 | « Bravo ! » ; +1★ |
-| 29 | notion | 41 entre 33 · 38 · 44 (niveau 2, mer pirates) | 41 | 2 | entre 38 et 44 | « Bravo ! » ; +2★ |
-| 30 | notion | 9 entre 33 · 38 · 44 (niveau 2, mer pirates) | 9 | 0 | avant 33 | « Bravo ! » ; +1★ |
-| 31 | notion | 15 entre 12 · 16 · 24 (niveau 2, mer pirates) | 15 | 1 | entre 12 et 16 | « Bravo ! » ; +2★ |
-| 32 | notion | 11 entre 12 · 16 · 24 (niveau 2, mer pirates) | 11 | 0 | avant 12 | « Bravo ! » ; +1★ |
-| 33 | notion | 18 entre 12 · 16 · 24 (niveau 2, mer pirates) | 18 | 2 | entre 16 et 24 | « Bravo ! » ; +2★ |
-| 34 | notion | 7 entre 12 · 16 · 24 (niveau 2, mer pirates) | 7 | 0 | avant 12 | « Bravo ! » ; +1★ |
-| 35 | notion | 18 entre 12 · 16 · 24 (niveau 2, mer pirates) | 18 | 2 | entre 16 et 24 | « Bravo ! » ; +2★ |
-| 36 | notion | 64 entre 68 · 72 · 79 (niveau 2, mer pirates) | 64 | 0 | avant 68 | « Bravo ! » ; +1★ |
-| 37 | notion | 71 entre 68 · 72 · 79 (niveau 2, mer pirates) | 71 | 1 | entre 68 et 72 | « Bravo ! » ; +2★ |
-| 38 | notion | 10 entre 68 · 72 · 79 (niveau 2, mer pirates) | 10 | 0 | avant 68 | « Bravo ! » ; +1★ |
-| 39 | notion | 77 entre 68 · 72 · 79 (niveau 2, mer pirates) | 77 | 2 | entre 72 et 79 | « Bravo ! » ; +2★ |
-| 40 | notion | 69 entre 68 · 72 · 79 (niveau 2, mer pirates) | 69 | 1 | entre 68 et 72 | « Bravo ! » ; +1★ |
+| 14 | notion | 15 entre 13 · 16 · 21 (niveau 2, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 15 | 1 | entre 13 et 16 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 15 | notion | 19 entre 13 · 16 · 21 (niveau 2, mer pirates) | 19 | 2 | entre 16 et 21 | « Ouf ! Les pirates sont loin. » ; MONTÉE (niveau 1 → 3) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
+| 16 | notion | 14 entre 23 · 28 · 37 (niveau 2, mer pirates) | 14 | 0 | avant 23 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 17 | notion | 61 entre 23 · 28 · 37 (niveau 2, mer pirates) | 61 | 3 | après 37 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 18 | notion | 27 entre 23 · 28 · 37 (niveau 2, mer pirates) | 27 | 1 | entre 23 et 28 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 19 | notion | 25 entre 23 · 28 · 37 (niveau 2, mer pirates) | 25 | 1 | entre 23 et 28 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 20 | notion | 29 entre 23 · 28 · 37 (niveau 2, mer pirates) | 29 | 2 | entre 28 et 37 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 21 | notion | 3 entre 36 · 39 · 42 (niveau 2, mer pirates) | 3 | 0 | avant 36 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 22 | notion | 38 entre 36 · 39 · 42 (niveau 2, mer pirates) | 38 | 1 | entre 36 et 39 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 23 | notion | 92 entre 36 · 39 · 42 (niveau 2, mer pirates) | 92 | 3 | après 42 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 24 | notion | 38 entre 36 · 39 · 42 (niveau 2, mer pirates) | 38 | 1 | entre 36 et 39 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 25 | notion | 37 entre 36 · 39 · 42 (niveau 2, mer pirates) | 37 | 1 | entre 36 et 39 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 26 | notion | 83 entre 33 · 38 · 44 (niveau 2, mer pirates) | 83 | 3 | après 44 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 27 | notion | 27 entre 33 · 38 · 44 (niveau 2, mer pirates) | 27 | 0 | avant 33 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 28 | notion | 65 entre 33 · 38 · 44 (niveau 2, mer pirates) | 65 | 3 | après 44 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 29 | notion | 41 entre 33 · 38 · 44 (niveau 2, mer pirates) | 41 | 2 | entre 38 et 44 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 30 | notion | 9 entre 33 · 38 · 44 (niveau 2, mer pirates) | 9 | 0 | avant 33 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 31 | notion | 15 entre 12 · 16 · 24 (niveau 2, mer pirates) | 15 | 1 | entre 12 et 16 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 32 | notion | 11 entre 12 · 16 · 24 (niveau 2, mer pirates) | 11 | 0 | avant 12 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 33 | notion | 18 entre 12 · 16 · 24 (niveau 2, mer pirates) | 18 | 2 | entre 16 et 24 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 34 | notion | 7 entre 12 · 16 · 24 (niveau 2, mer pirates) | 7 | 0 | avant 12 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 35 | notion | 18 entre 12 · 16 · 24 (niveau 2, mer pirates) | 18 | 2 | entre 16 et 24 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 36 | notion | 64 entre 68 · 72 · 79 (niveau 2, mer pirates) | 64 | 0 | avant 68 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 37 | notion | 71 entre 68 · 72 · 79 (niveau 2, mer pirates) | 71 | 1 | entre 68 et 72 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 38 | notion | 10 entre 68 · 72 · 79 (niveau 2, mer pirates) | 10 | 0 | avant 68 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 39 | notion | 77 entre 68 · 72 · 79 (niveau 2, mer pirates) | 77 | 2 | entre 72 et 79 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 40 | notion | 69 entre 68 · 72 · 79 (niveau 2, mer pirates) | 69 | 1 | entre 68 et 72 | « Bravo, tu as semé les pirates ! » ; +1★ |
 
 Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte moule (nouvelle) (brillante)
 
@@ -388,25 +388,25 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte mo
 | 15 | notion | 18 entre 45 · 48 · 55 (niveau 2, mer vent) | 18 | 0 | avant 45 | « Bravo ! » ; +1★ |
 | 16 | notion | 50 entre 45 · 48 · 55 (niveau 2, mer vent) | 50 | 2 | entre 48 et 55 | « Bravo ! » ; +2★ |
 | 17 | notion | 52 entre 45 · 48 · 55 (niveau 2, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 52 | 2 | entre 45 et 48 | erreur V1 : « Il est plus grand que cette bouée : il passe après. » « Les pirates ont rattrapé le bateau ! » |
-| 18 | notion | 46 entre 45 · 48 · 55 (niveau 2, mer pirates, revient) | 46 | 1 | entre 45 et 48 | « Bravo ! » ; +3★ (erreur corrigée) |
-| 19 | notion | 25 entre 22 · 28 · 34 (niveau 2, mer pirates) | 25 | 1 | entre 22 et 28 | « Bravo ! » ; +1★ |
-| 20 | notion | 3 entre 22 · 28 · 34 (niveau 2, mer pirates) | 3 | 0 | avant 22 | « Bravo ! » ; +2★ |
-| 21 | notion | 16 entre 22 · 28 · 34 (niveau 2, mer pirates) | 16 | 0 | avant 22 | « Bravo ! » ; +1★ |
+| 18 | notion | 46 entre 45 · 48 · 55 (niveau 2, mer pirates, revient) | 46 | 1 | entre 45 et 48 | « Ouf ! Les pirates sont loin. » ; +3★ (erreur corrigée) |
+| 19 | notion | 25 entre 22 · 28 · 34 (niveau 2, mer pirates) | 25 | 1 | entre 22 et 28 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 20 | notion | 3 entre 22 · 28 · 34 (niveau 2, mer pirates) | 3 | 0 | avant 22 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 21 | notion | 16 entre 22 · 28 · 34 (niveau 2, mer pirates) | 16 | 0 | avant 22 | « Ouf ! Les pirates sont loin. » ; +1★ |
 | 22 | notion | 52 entre 45 · 48 · 55 (niveau 2, mer pirates, revient) | 52 | 2 | entre 45 et 48 | erreur V1 : « Il est plus grand que cette bouée : il passe après. » « Les pirates ont rattrapé le bateau ! » |
-| 23 | notion | 26 entre 22 · 28 · 34 (niveau 2, mer pirates) | 26 | 1 | entre 22 et 28 | « Bravo ! » ; MONTÉE (niveau 1 → 3) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
-| 24 | notion | 25 entre 22 · 28 · 34 (niveau 2, mer pirates) | 25 | 1 | entre 22 et 28 | « Bravo ! » ; +1★ |
-| 25 | notion | 56 entre 41 · 49 · 58 (niveau 2, mer pirates) | 56 | 2 | entre 49 et 58 | « Bravo ! » ; +2★ |
+| 23 | notion | 26 entre 22 · 28 · 34 (niveau 2, mer pirates) | 26 | 1 | entre 22 et 28 | « Ouf ! Les pirates sont loin. » ; MONTÉE (niveau 1 → 3) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
+| 24 | notion | 25 entre 22 · 28 · 34 (niveau 2, mer pirates) | 25 | 1 | entre 22 et 28 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 25 | notion | 56 entre 41 · 49 · 58 (niveau 2, mer pirates) | 56 | 2 | entre 49 et 58 | « Ouf ! Les pirates sont loin. » ; +2★ |
 | 26 | notion | 38 entre 41 · 49 · 58 (niveau 2, mer pirates) | 38 | 0 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « Il est plus petit que cette bouée : il passe avant. » |
-| 27 | notion | 26 entre 41 · 49 · 58 (niveau 2, mer pirates) | 26 | 0 | avant 41 | « Bravo ! » ; +1★ |
-| 28 | notion | 54 entre 41 · 49 · 58 (niveau 2, mer pirates) | 54 | 2 | entre 49 et 58 | « Bravo ! » ; +2★ |
-| 29 | notion | 21 entre 41 · 49 · 58 (niveau 2, mer pirates) | 21 | 0 | avant 41 | « Bravo ! » ; +1★ |
-| 30 | notion | 38 entre 41 · 49 · 58 (niveau 2, mer pirates, revient) | 38 | 0 | avant 41 | « Bravo ! » ; +3★ (erreur corrigée) |
-| 31 | notion | 55 entre 48 · 54 · 61 (niveau 2, mer pirates) | 55 | 2 | entre 54 et 61 | « Bravo ! » ; +2★ |
+| 27 | notion | 26 entre 41 · 49 · 58 (niveau 2, mer pirates) | 26 | 0 | avant 41 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 28 | notion | 54 entre 41 · 49 · 58 (niveau 2, mer pirates) | 54 | 2 | entre 49 et 58 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 29 | notion | 21 entre 41 · 49 · 58 (niveau 2, mer pirates) | 21 | 0 | avant 41 | « Bravo, tu as semé les pirates ! » ; +1★ |
+| 30 | notion | 38 entre 41 · 49 · 58 (niveau 2, mer pirates, revient) | 38 | 0 | avant 41 | « Bravo, tu as semé les pirates ! » ; +3★ (erreur corrigée) |
+| 31 | notion | 55 entre 48 · 54 · 61 (niveau 2, mer pirates) | 55 | 2 | entre 54 et 61 | « Bravo, tu as semé les pirates ! » ; +2★ |
 | 32 | notion | 60 entre 48 · 54 · 61 (niveau 2, mer pirates) | 60 | 2 | après 61 | erreur V1 : « Il est plus petit que cette bouée : il passe avant. » « Les pirates ont rattrapé le bateau ! » |
-| 33 | notion | 89 entre 48 · 54 · 61 (niveau 2, mer pirates) | 89 | 3 | après 61 | « Bravo ! » ; +1★ |
-| 34 | notion | 47 entre 48 · 54 · 61 (niveau 2, mer pirates) | 47 | 0 | avant 48 | « Bravo ! » ; +2★ |
+| 33 | notion | 89 entre 48 · 54 · 61 (niveau 2, mer pirates) | 89 | 3 | après 61 | « Ouf ! Les pirates sont loin. » ; +1★ |
+| 34 | notion | 47 entre 48 · 54 · 61 (niveau 2, mer pirates) | 47 | 0 | avant 48 | « Ouf ! Les pirates sont loin. » ; +2★ |
 | 35 | notion | 60 entre 48 · 54 · 61 (niveau 2, mer pirates, revient) | 60 | 2 | entre 48 et 54 | erreur V1 : « Il est plus grand que cette bouée : il passe après. » « Les pirates ont rattrapé le bateau ! » |
-| 36 | notion | 51 entre 48 · 54 · 61 (niveau 2, mer pirates) | 51 | 1 | entre 48 et 54 | « Bravo ! » ; +1★ |
+| 36 | notion | 51 entre 48 · 54 · 61 (niveau 2, mer pirates) | 51 | 1 | entre 48 et 54 | « Bravo, tu as semé les pirates ! » ; +1★ |
 
 Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte oursin (nouvelle)
 
@@ -477,36 +477,36 @@ Récompense et fin : +10★ (fin)
 | 8 | échauffement | 6 + 1 = ? (fait nouveau) | 6 plus 1 ? | 7 | 7 | +2★ |
 | 9 | échauffement | 1 + 6 = ? (fait nouveau) | Combien font 1 plus 6 ? | 7 | 7 | +2★ |
 | 10 | notion | EXEMPLE GUIDÉ : 31 entre 23 · 28 · 34 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 31 Regarde : 31 est plus grand que 28, et plus petit que 34. Le bateau passe entre ces deux bouées. |  | (le bateau va seul) |  |
-| 11 | notion | 54 entre 45 · 52 · 61 (niveau 2, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 54 | 2 | entre 52 et 61 | « Bravo ! » ; +2★ |
-| 12 | notion | 97 entre 45 · 52 · 61 (niveau 2, mer pirates) | 97 | 3 | après 61 | « Bravo ! » ; +2★ |
-| 13 | notion | 11 entre 45 · 52 · 61 (niveau 2, mer pirates) | 11 | 0 | avant 45 | « Bravo ! » ; +2★ |
-| 14 | notion | 46 entre 45 · 52 · 61 (niveau 2, mer pirates) | 46 | 1 | entre 45 et 52 | « Bravo ! » ; +2★ |
-| 15 | notion | 47 entre 45 · 52 · 61 (niveau 2, mer pirates) | 47 | 1 | entre 45 et 52 | « Bravo ! » ; MONTÉE (niveau 1 → 3) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
-| 16 | notion | 56 entre 72 · 78 · 84 (niveau 2, mer pirates) | 56 | 0 | avant 72 | « Bravo ! » ; +2★ |
-| 17 | notion | 92 entre 72 · 78 · 84 (niveau 2, mer pirates) | 92 | 3 | après 84 | « Bravo ! » ; +2★ |
-| 18 | notion | 64 entre 72 · 78 · 84 (niveau 2, mer pirates) | 64 | 0 | avant 72 | « Bravo ! » ; +2★ |
-| 19 | notion | 52 entre 72 · 78 · 84 (niveau 2, mer pirates) | 52 | 0 | avant 72 | « Bravo ! » ; +2★ |
-| 20 | notion | 96 entre 72 · 78 · 84 (niveau 2, mer pirates) | 96 | 3 | après 84 | « Bravo ! » ; +2★ |
-| 21 | notion | 25 entre 18 · 23 · 29 (niveau 2, mer pirates) | 25 | 2 | entre 23 et 29 | « Bravo ! » ; +2★ |
-| 22 | notion | 3 entre 18 · 23 · 29 (niveau 2, mer pirates) | 3 | 0 | avant 18 | « Bravo ! » ; +2★ |
-| 23 | notion | 26 entre 18 · 23 · 29 (niveau 2, mer pirates) | 26 | 2 | entre 23 et 29 | « Bravo ! » ; +2★ |
-| 24 | notion | 19 entre 18 · 23 · 29 (niveau 2, mer pirates) | 19 | 1 | entre 18 et 23 | « Bravo ! » ; +2★ |
-| 25 | notion | 80 entre 18 · 23 · 29 (niveau 2, mer pirates) | 80 | 3 | après 29 | « Bravo ! » ; +2★ |
-| 26 | notion | 53 entre 37 · 42 · 49 (niveau 2, mer pirates) | 53 | 3 | après 49 | « Bravo ! » ; +2★ |
-| 27 | notion | 43 entre 37 · 42 · 49 (niveau 2, mer pirates) | 43 | 2 | entre 42 et 49 | « Bravo ! » ; +2★ |
-| 28 | notion | 8 entre 37 · 42 · 49 (niveau 2, mer pirates) | 8 | 0 | avant 37 | « Bravo ! » ; +2★ |
-| 29 | notion | 68 entre 37 · 42 · 49 (niveau 2, mer pirates) | 68 | 3 | après 49 | « Bravo ! » ; +2★ |
-| 30 | notion | 43 entre 37 · 42 · 49 (niveau 2, mer pirates) | 43 | 2 | entre 42 et 49 | « Bravo ! » ; +2★ |
-| 31 | notion | 75 entre 67 · 74 · 81 (niveau 2, mer pirates) | 75 | 2 | entre 74 et 81 | « Bravo ! » ; +2★ |
-| 32 | notion | 88 entre 67 · 74 · 81 (niveau 2, mer pirates) | 88 | 3 | après 81 | « Bravo ! » ; +2★ |
-| 33 | notion | 78 entre 67 · 74 · 81 (niveau 2, mer pirates) | 78 | 2 | entre 74 et 81 | « Bravo ! » ; +2★ |
-| 34 | notion | 37 entre 67 · 74 · 81 (niveau 2, mer pirates) | 37 | 0 | avant 67 | « Bravo ! » ; +2★ |
-| 35 | notion | 90 entre 67 · 74 · 81 (niveau 2, mer pirates) | 90 | 3 | après 81 | « Bravo ! » ; +2★ |
-| 36 | notion | 68 entre 54 · 58 · 65 (niveau 2, mer pirates) | 68 | 3 | après 65 | « Bravo ! » ; +2★ |
-| 37 | notion | 61 entre 54 · 58 · 65 (niveau 2, mer pirates) | 61 | 2 | entre 58 et 65 | « Bravo ! » ; +2★ |
-| 38 | notion | 50 entre 54 · 58 · 65 (niveau 2, mer pirates) | 50 | 0 | avant 54 | « Bravo ! » ; +2★ |
-| 39 | notion | 59 entre 54 · 58 · 65 (niveau 2, mer pirates) | 59 | 2 | entre 58 et 65 | « Bravo ! » ; +2★ |
-| 40 | notion | 97 entre 54 · 58 · 65 (niveau 2, mer pirates) | 97 | 3 | après 65 | « Bravo ! » ; +2★ |
+| 11 | notion | 54 entre 45 · 52 · 61 (niveau 2, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 54 | 2 | entre 52 et 61 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 12 | notion | 97 entre 45 · 52 · 61 (niveau 2, mer pirates) | 97 | 3 | après 61 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 13 | notion | 11 entre 45 · 52 · 61 (niveau 2, mer pirates) | 11 | 0 | avant 45 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 14 | notion | 46 entre 45 · 52 · 61 (niveau 2, mer pirates) | 46 | 1 | entre 45 et 52 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 15 | notion | 47 entre 45 · 52 · 61 (niveau 2, mer pirates) | 47 | 1 | entre 45 et 52 | « Bravo, tu as semé les pirates ! » ; MONTÉE (niveau 1 → 3) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
+| 16 | notion | 56 entre 72 · 78 · 84 (niveau 2, mer pirates) | 56 | 0 | avant 72 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 17 | notion | 92 entre 72 · 78 · 84 (niveau 2, mer pirates) | 92 | 3 | après 84 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 18 | notion | 64 entre 72 · 78 · 84 (niveau 2, mer pirates) | 64 | 0 | avant 72 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 19 | notion | 52 entre 72 · 78 · 84 (niveau 2, mer pirates) | 52 | 0 | avant 72 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 20 | notion | 96 entre 72 · 78 · 84 (niveau 2, mer pirates) | 96 | 3 | après 84 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 21 | notion | 25 entre 18 · 23 · 29 (niveau 2, mer pirates) | 25 | 2 | entre 23 et 29 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 22 | notion | 3 entre 18 · 23 · 29 (niveau 2, mer pirates) | 3 | 0 | avant 18 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 23 | notion | 26 entre 18 · 23 · 29 (niveau 2, mer pirates) | 26 | 2 | entre 23 et 29 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 24 | notion | 19 entre 18 · 23 · 29 (niveau 2, mer pirates) | 19 | 1 | entre 18 et 23 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 25 | notion | 80 entre 18 · 23 · 29 (niveau 2, mer pirates) | 80 | 3 | après 29 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 26 | notion | 53 entre 37 · 42 · 49 (niveau 2, mer pirates) | 53 | 3 | après 49 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 27 | notion | 43 entre 37 · 42 · 49 (niveau 2, mer pirates) | 43 | 2 | entre 42 et 49 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 28 | notion | 8 entre 37 · 42 · 49 (niveau 2, mer pirates) | 8 | 0 | avant 37 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 29 | notion | 68 entre 37 · 42 · 49 (niveau 2, mer pirates) | 68 | 3 | après 49 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 30 | notion | 43 entre 37 · 42 · 49 (niveau 2, mer pirates) | 43 | 2 | entre 42 et 49 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 31 | notion | 75 entre 67 · 74 · 81 (niveau 2, mer pirates) | 75 | 2 | entre 74 et 81 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 32 | notion | 88 entre 67 · 74 · 81 (niveau 2, mer pirates) | 88 | 3 | après 81 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 33 | notion | 78 entre 67 · 74 · 81 (niveau 2, mer pirates) | 78 | 2 | entre 74 et 81 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 34 | notion | 37 entre 67 · 74 · 81 (niveau 2, mer pirates) | 37 | 0 | avant 67 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 35 | notion | 90 entre 67 · 74 · 81 (niveau 2, mer pirates) | 90 | 3 | après 81 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 36 | notion | 68 entre 54 · 58 · 65 (niveau 2, mer pirates) | 68 | 3 | après 65 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 37 | notion | 61 entre 54 · 58 · 65 (niveau 2, mer pirates) | 61 | 2 | entre 58 et 65 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 38 | notion | 50 entre 54 · 58 · 65 (niveau 2, mer pirates) | 50 | 0 | avant 54 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 39 | notion | 59 entre 54 · 58 · 65 (niveau 2, mer pirates) | 59 | 2 | entre 58 et 65 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 40 | notion | 97 entre 54 · 58 · 65 (niveau 2, mer pirates) | 97 | 3 | après 65 | « Bravo, tu as semé les pirates ! » ; +2★ |
 
 Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte concombre-de-mer (nouvelle)
 
@@ -529,32 +529,32 @@ Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte 
 | 8 | échauffement | 1 + 2 = ? (fait nouveau) | 1 plus 2 ? | 3 | 3 | +2★ |
 | 9 | échauffement | 2 + 1 = ? (fait nouveau) | 2 plus 1 ? | 3 | 3 | +2★ |
 | 10 | notion | EXEMPLE GUIDÉ : 31 entre 23 · 28 · 34 | Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 31 Regarde : 31 est plus grand que 28, et plus petit que 34. Le bateau passe entre ces deux bouées. |  | (le bateau va seul) |  |
-| 11 | notion | 98 entre 55 · 62 · 65 (niveau 2, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 98 | 3 | après 65 | « Bravo ! » ; +2★ |
-| 12 | notion | 56 entre 55 · 62 · 65 (niveau 2, mer pirates) | 56 | 1 | entre 55 et 62 | « Bravo ! » ; +2★ |
-| 13 | notion | 44 entre 55 · 62 · 65 (niveau 2, mer pirates) | 44 | 0 | avant 55 | « Bravo ! » ; +2★ |
-| 14 | notion | 63 entre 55 · 62 · 65 (niveau 2, mer pirates) | 63 | 2 | entre 62 et 65 | « Bravo ! » ; +2★ |
-| 15 | notion | 64 entre 55 · 62 · 65 (niveau 2, mer pirates) | 64 | 2 | entre 62 et 65 | « Bravo ! » ; MONTÉE (niveau 1 → 3) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
-| 16 | notion | 67 entre 33 · 42 · 51 (niveau 2, mer pirates) | 67 | 3 | après 51 | « Bravo ! » ; +2★ |
-| 17 | notion | 78 entre 33 · 42 · 51 (niveau 2, mer pirates) | 78 | 3 | après 51 | « Bravo ! » ; +2★ |
+| 11 | notion | 98 entre 55 · 62 · 65 (niveau 2, mer pirates) | Attention, des pirates ! Mets vite le bateau à l'abri. 98 | 3 | après 65 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 12 | notion | 56 entre 55 · 62 · 65 (niveau 2, mer pirates) | 56 | 1 | entre 55 et 62 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 13 | notion | 44 entre 55 · 62 · 65 (niveau 2, mer pirates) | 44 | 0 | avant 55 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 14 | notion | 63 entre 55 · 62 · 65 (niveau 2, mer pirates) | 63 | 2 | entre 62 et 65 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 15 | notion | 64 entre 55 · 62 · 65 (niveau 2, mer pirates) | 64 | 2 | entre 62 et 65 | « Ouf ! Les pirates sont loin. » ; MONTÉE (niveau 1 → 3) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
+| 16 | notion | 67 entre 33 · 42 · 51 (niveau 2, mer pirates) | 67 | 3 | après 51 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 17 | notion | 78 entre 33 · 42 · 51 (niveau 2, mer pirates) | 78 | 3 | après 51 | « Bravo, tu as semé les pirates ! » ; +2★ |
 | 18 | notion | 49 entre 33 · 42 · 51 (niveau 2, mer pirates) | 49 | 2 | entre 33 et 42 | erreur V1 : « Il est plus grand que cette bouée : il passe après. » « Les pirates ont rattrapé le bateau ! » |
-| 19 | notion | 16 entre 33 · 42 · 51 (niveau 2, mer pirates) | 16 | 0 | avant 33 | « Bravo ! » ; +2★ |
-| 20 | notion | 72 entre 33 · 42 · 51 (niveau 2, mer pirates) | 72 | 3 | après 51 | « Bravo ! » ; +2★ |
+| 19 | notion | 16 entre 33 · 42 · 51 (niveau 2, mer pirates) | 16 | 0 | avant 33 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 20 | notion | 72 entre 33 · 42 · 51 (niveau 2, mer pirates) | 72 | 3 | après 51 | « Bravo, tu as semé les pirates ! » ; +2★ |
 | 21 | notion | 71 entre 69 · 75 · 84 (niveau 2, mer pirates) | 71 | 1 | entre 75 et 84 | erreur V1 : « Il est plus petit que cette bouée : il passe avant. » « Les pirates ont rattrapé le bateau ! » |
-| 22 | notion | 49 entre 33 · 42 · 51 (niveau 2, mer pirates, revient) | 49 | 2 | entre 42 et 51 | « Bravo ! » ; +4★ (erreur corrigée) |
-| 23 | notion | 78 entre 69 · 75 · 84 (niveau 2, mer pirates) | 78 | 2 | entre 75 et 84 | « Bravo ! » ; +2★ |
-| 24 | notion | 98 entre 69 · 75 · 84 (niveau 2, mer pirates) | 98 | 3 | après 84 | « Bravo ! » ; +2★ |
-| 25 | notion | 24 entre 69 · 75 · 84 (niveau 2, mer pirates) | 24 | 0 | avant 69 | « Bravo ! » ; +2★ |
-| 26 | notion | 71 entre 69 · 75 · 84 (niveau 2, mer pirates, revient) | 71 | 1 | entre 69 et 75 | « Bravo ! » ; +4★ (erreur corrigée) |
-| 27 | notion | 17 entre 69 · 75 · 84 (niveau 2, mer pirates) | 17 | 0 | avant 69 | « Bravo ! » ; +2★ |
-| 28 | notion | 61 entre 37 · 45 · 51 (niveau 2, mer pirates) | 61 | 3 | après 51 | « Bravo ! » ; +2★ |
-| 29 | notion | 50 entre 37 · 45 · 51 (niveau 2, mer pirates) | 50 | 2 | entre 45 et 51 | « Bravo ! » ; +2★ |
-| 30 | notion | 13 entre 37 · 45 · 51 (niveau 2, mer pirates) | 13 | 0 | avant 37 | « Bravo ! » ; +2★ |
-| 31 | notion | 43 entre 37 · 45 · 51 (niveau 2, mer pirates) | 43 | 1 | entre 37 et 45 | « Bravo ! » ; +2★ |
-| 32 | notion | 39 entre 37 · 45 · 51 (niveau 2, mer pirates) | 39 | 1 | entre 37 et 45 | « Bravo ! » ; +2★ |
-| 33 | notion | 56 entre 57 · 64 · 73 (niveau 2, mer pirates) | 56 | 0 | avant 57 | « Bravo ! » ; +2★ |
-| 34 | notion | 28 entre 57 · 64 · 73 (niveau 2, mer pirates) | 28 | 0 | avant 57 | « Bravo ! » ; +2★ |
-| 35 | notion | 59 entre 57 · 64 · 73 (niveau 2, mer pirates) | 59 | 1 | entre 57 et 64 | « Bravo ! » ; +2★ |
-| 36 | notion | 92 entre 57 · 64 · 73 (niveau 2, mer pirates) | 92 | 3 | après 73 | « Bravo ! » ; +2★ |
+| 22 | notion | 49 entre 33 · 42 · 51 (niveau 2, mer pirates, revient) | 49 | 2 | entre 42 et 51 | « Ouf ! Les pirates sont loin. » ; +4★ (erreur corrigée) |
+| 23 | notion | 78 entre 69 · 75 · 84 (niveau 2, mer pirates) | 78 | 2 | entre 75 et 84 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 24 | notion | 98 entre 69 · 75 · 84 (niveau 2, mer pirates) | 98 | 3 | après 84 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 25 | notion | 24 entre 69 · 75 · 84 (niveau 2, mer pirates) | 24 | 0 | avant 69 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 26 | notion | 71 entre 69 · 75 · 84 (niveau 2, mer pirates, revient) | 71 | 1 | entre 69 et 75 | « Bravo, tu as semé les pirates ! » ; +4★ (erreur corrigée) |
+| 27 | notion | 17 entre 69 · 75 · 84 (niveau 2, mer pirates) | 17 | 0 | avant 69 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 28 | notion | 61 entre 37 · 45 · 51 (niveau 2, mer pirates) | 61 | 3 | après 51 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 29 | notion | 50 entre 37 · 45 · 51 (niveau 2, mer pirates) | 50 | 2 | entre 45 et 51 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 30 | notion | 13 entre 37 · 45 · 51 (niveau 2, mer pirates) | 13 | 0 | avant 37 | « Bravo, tu as semé les pirates ! » ; +2★ |
+| 31 | notion | 43 entre 37 · 45 · 51 (niveau 2, mer pirates) | 43 | 1 | entre 37 et 45 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 32 | notion | 39 entre 37 · 45 · 51 (niveau 2, mer pirates) | 39 | 1 | entre 37 et 45 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 33 | notion | 56 entre 57 · 64 · 73 (niveau 2, mer pirates) | 56 | 0 | avant 57 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 34 | notion | 28 entre 57 · 64 · 73 (niveau 2, mer pirates) | 28 | 0 | avant 57 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 35 | notion | 59 entre 57 · 64 · 73 (niveau 2, mer pirates) | 59 | 1 | entre 57 et 64 | « Ouf ! Les pirates sont loin. » ; +2★ |
+| 36 | notion | 92 entre 57 · 64 · 73 (niveau 2, mer pirates) | 92 | 3 | après 73 | « Ouf ! Les pirates sont loin. » ; +2★ |
 
 Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte oursin (nouvelle)
 

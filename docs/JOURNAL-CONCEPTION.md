@@ -74,7 +74,7 @@ Le lot a suivi les décisions des 5 et 6 octobre (plus bas) et la maquette valid
 - **La rangée de bouées change tous les 5 bateaux** : dans la maquette, elle ne changeait qu'avec le niveau, que sa propre progression faisait souvent changer ; avec les règles de l'application (8 sur 10), une partie entière se jouerait sur les mêmes trois bouées, et l'alternance centaines / dizaines du niveau 5 ne se verrait jamais. Changement silencieux, avec le fondu de la maquette.
 - **Le cran ne change pas le niveau, seulement la mer**, avec « jouer » comme avec « choisir » : la section 7 bis donnait la mer de chaque cran ; décaler aussi le niveau aurait cumulé deux difficultés.
 - **L'exemple guidé** vient aussi après une montée dans la même partie (voie rapide) : c'est « la première fois que l'enfant joue un niveau ». Il se fait au calme, ne rapporte rien, compte une bulle de la frise.
-- **Les bouées allumées** : celles du passage choisi (la maquette) ; une seule, celle dont parle la voix, quand elle n'est pas ronde (« cette bouée » serait sinon ambiguë).
+- **Les bouées allumées** : la maquette allumait les deux bouées du passage choisi ; l'application n'allume que celle dont parle la voix (relecture du lot : deux bouées allumées quand la voix en nomme une, « cette bouée » devenait ambiguë).
 - **Le vent reprend après l'explication** (la maquette le relançait 0,4 s après la rafale, pendant que la bulle parlait).
 - **Pirates : « Il fallait le mettre à l'abri plus vite. »** n'est pas dit (pas dans la liste des phrases de la section 7 bis) ; « Les pirates ont rattrapé le bateau ! » suffit.
 - **Le temps de réponse** court de la fin du nombre dit (la consigne) au lâcher ; un lâcher pendant que la voix parle compte zéro.
@@ -82,6 +82,13 @@ Le lot a suivi les décisions des 5 et 6 octobre (plus bas) et la maquette valid
 - **La bulle et le bateau** : elle ne couvre jamais le bateau qui arrive ou attend le geste, ni la bande des bouées ; quand le bateau va seul au bon passage, elle l'évite si elle peut (première capture : la bulle « dessous » couvrait le bateau qui allait vers la gauche).
 - **L'allègement** compte aussi les images très lentes (plus d'une seconde) : sans cela, une tablette sans carte graphique ne serait jamais allégée.
 - **« Passer »** vaut pour toute la correction en cours (le bouton ne revient pas pour le bateau qui va ensuite seul au bon passage).
+- **Après la relecture indépendante** (`tests/recette-fonctionnelle/out-voiliers/RELECTURE.md`) :
+  - « C'est entre … ! » est réservé aux réussites ; quand le bateau va seul au bon passage, la voix dit pourquoi par rapport à une bouée (la maquette disait « C'est entre » dans les deux cas : l'enfant ne savait plus si elle avait réussi) ;
+  - le bateau qui va seul s'arrête au-dessus de la rangée, sans cacher la bouée nommée (dans la maquette, il s'arrêtait dessus) ;
+  - les exemples guidés disent toujours les deux bouées qui encadrent (« Le bateau passe entre 600 et 700. » au lieu de « avant 700 ») ;
+  - au niveau 9, « je ne sais pas » montre aussi la rangée des dizaines ;
+  - pas de relance (« Prends ton temps… ») quand le vent ou les pirates mènent le bateau ;
+  - au niveau 9, la bulle reste au-dessus des deux rangées pendant le recul de la caméra.
 
 ## Lot « Mascotte » (6 octobre 2026) : les choix de la session, à confirmer par le parent
 

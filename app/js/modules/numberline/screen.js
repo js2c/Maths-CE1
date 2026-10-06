@@ -27,13 +27,15 @@ export { SKIP_AT };
 const SKIPPED = Symbol("correction passée");
 
 // (lot « Mascotte ») ce que montre la flèche pendant la consigne, à la place du bras de la pieuvre : la pointe juste au-dessus
-// de l'étoile (« lire »), de la tortue sur son départ (« sauter »), du poisson qui porte le nombre (« placer », « estimer » :
-// jamais la place de la réponse, qu'elle donnerait)
-export const FLECHE = { etoile: 44, tortue: 70, poisson: [-14, -186] };
-export function cibleFleche(q, { tick, seat }) {
-  if (q.format === "lire") { const [x, y] = tick(q.target); return [x, y - 42 - FLECHE.etoile]; }
-  if (q.format === "sauter") { const [x, y] = seat(q.start); return [x, y - FLECHE.tortue]; }
-  return [FISH_WAIT[0] + FLECHE.poisson[0], FISH_WAIT[1] + FLECHE.poisson[1]];
+// de l'étoile (« lire »), de la tortue sur son départ (« sauter ») ; à droite de l'étiquette du poisson qui porte le nombre,
+// pointée vers elle (« placer », « estimer » : posée au-dessus, elle semblait montrer une graduation, et jamais la place de
+// la réponse, qu'elle donnerait). `fish` : où est le poisson (l'ancrage : la pointe de son étiquette, FISH_WAIT au départ).
+// Renvoie { point, angle } (angle 0 : la flèche pointe vers le bas ; 90 : vers la gauche).
+export const FLECHE = { etoile: 44, tortue: 70, etiquette: [56, -52] }; // (l'étiquette : centre à 52 px au-dessus de l'ancrage, 92 px de large)
+export function cibleFleche(q, { tick, seat, fish = FISH_WAIT }) {
+  if (q.format === "lire") { const [x, y] = tick(q.target); return { point: [x, y - 42 - FLECHE.etoile], angle: 0 }; }
+  if (q.format === "sauter") { const [x, y] = seat(q.start); return { point: [x, y - FLECHE.tortue], angle: 0 }; }
+  return { point: [fish[0] + FLECHE.etiquette[0], fish[1] + FLECHE.etiquette[1]], angle: 90 };
 }
 export class NumberLineScreen {
   constructor(app) {
@@ -144,7 +146,8 @@ export class NumberLineScreen {
     const v = { n: q.answer, a: q.format === "sauter" ? q.min + q.start * q.step : q.min, sauts: q.jumps === 1 ? text.data.unSaut : `${q.jumps} ${text.data.sauts}` };
     // pendant la consigne, la mascotte regarde le travail et la flèche montre la cible (lot « Mascotte », à la place du bras
     // de la pieuvre) ; elles relâchent quand la phrase est finie
-    this.app.ocean.mascotte.hold("montrer"); this.app.fleche?.montrer(this.pointAt(q));
+    this.app.ocean.mascotte.hold("montrer");
+    { const c = this.pointAt(q); this.app.fleche?.montrer(this.input ? () => (this.fishAt ? this.pointAt(q).point : null) : c.point, { angle: c.angle }); }
     // exemple guidé : on montre d'abord la méthode (les réponses attendent), puis « À toi ! »
     if (guide && !lesson) { await this.demoOrSkip(q); this.t0 = clock.now(); }
     // lot 3, niveau 1 « plus facile » (module1.json, crans) : la tortue montre le premier saut, depuis zéro
@@ -155,7 +158,7 @@ export class NumberLineScreen {
     return voice.say(say, { instruction: true }).then(() => { this.app.ocean.mascotte.release(); if (this.q === q) this.app.fleche?.cacher(); });
   }
   // où se pose la pointe de la flèche pendant la consigne (cibleFleche)
-  pointAt(q) { return cibleFleche(q, { tick: (i) => R.tickP(this.spec, i), seat: (i) => this.turtle.seat(i) }); }
+  pointAt(q) { return cibleFleche(q, { tick: (i) => R.tickP(this.spec, i), seat: (i) => this.turtle.seat(i), fish: this.fishAt ?? FISH_WAIT }); }
   // EXEMPLE GUIDÉ (docs/SPEC.md, « Notion du jour ») : la tortue montre comment trouver la réponse, puis
   // l'enfant répond. Lire, placer : elle part de zéro (ou du nombre écrit le plus proche à gauche, quand
   // la cible est loin ou que la ligne ne commence pas à 0) et compte les sauts jusqu'à la cible, un arc

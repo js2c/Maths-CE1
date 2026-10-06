@@ -2,7 +2,7 @@
 // et 1920 × 1200 (densité 1). Gestes au doigt (événements tactiles de Chromium) :
 //  1. Toute la collection (les 60 créatures, dix brillantes) : on entre par le lagon ; glisser fait défiler la mer ; une
 //     capture par zone ; une brillante scintille ; un toucher bref ouvre sa carte ; doigt posé puis glissé : la créature
-//     se déplace, et c'est oublié à la visite suivante ; ni la pieuvre ni le compteur d'étoiles par-dessus la mer.
+//     se déplace, et c'est oublié à la visite suivante ; ni la mascotte ni le compteur d'étoiles par-dessus la mer.
 //  2. Deux zones ouvertes seulement : on peut glisser jusqu'aux abysses (la mer est là, sans créature).
 //  3. Une collection vide : la mer seule, la voix dit « recifVide ».
 //  4. La maison : l'accueil revient, ses boutons dessinés, le récif libéré (canvas retirés, lagon reparti).
@@ -34,7 +34,7 @@ async function geste(page, cdp, [x0, y0], [x1, y1], { tenir = 0, pas = 12 } = {}
 }
 const etat = (page) => page.evaluate(() => {
   const a = window.__app, r = a.reef;
-  return { open: r.open, camX: r.api?.camX ?? null, viv: r.api?.vivantes() ?? [], canvas: document.querySelectorAll("canvas.recif-vivant").length, octo: a.ocean.octoVisible, etoiles: getComputedStyle(document.querySelector(".hud.stars") ?? document.body).visibility, lagonPause: !!a.lagon?.paused };
+  return { open: r.open, camX: r.api?.camX ?? null, viv: r.api?.vivantes() ?? [], canvas: document.querySelectorAll("canvas.recif-vivant").length, octo: a.ocean.mascotteVisible && getComputedStyle(document.querySelector("#mascotte")).visibility !== "hidden", etoiles: getComputedStyle(document.querySelector(".hud.stars") ?? document.body).visibility, lagonPause: !!a.lagon?.paused };
 });
 // la collection posée dans la base
 const poser = (page, ids, zones) => page.evaluate(async ({ ids, zones, br }) => {
@@ -60,7 +60,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   let e = await etat(page);
   check(viv.length === 60, `${W} : les 60 créatures vivent dans le récif (${viv.length})`);
   check(e.camX === 0, `${W} : on entre par le lagon (camX ${e.camX})`);
-  check(!e.octo && e.etoiles === "hidden" && e.lagonPause, `${W} : ni la pieuvre ni le compteur d'étoiles ; le lagon du fond en pause`);
+  check(!e.octo && e.etoiles === "hidden" && e.lagonPause, `${W} : ni la mascotte ni le compteur d'étoiles ; le lagon du fond en pause`);
   await shot("1-entree-lagon");
   // glisser vers la droite de la mer : le doigt va de droite à gauche
   const b = await box();
@@ -94,7 +94,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   // la maison, puis une nouvelle visite : le déplacement est oublié
   await page.tap(".homekey:not(.session-home)", { force: true }); await page.waitForTimeout(800);
   e = await etat(page);
-  check(!e.open && e.canvas === 0 && e.octo && e.etoiles !== "hidden" && !e.lagonPause, `${W} : la maison : le récif libéré, la pieuvre, le compteur et le lagon reviennent`);
+  check(!e.open && e.canvas === 0 && e.octo && e.etoiles !== "hidden" && !e.lagonPause, `${W} : la maison : le récif libéré, la mascotte, le compteur et le lagon reviennent`);
   check(await page.evaluate(() => { const cs = [...document.querySelectorAll("button.bubble canvas")]; return cs.length >= 4 && cs.every((c) => { const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < d.length; i += 4) if (d[i] > 0) return true; return false; }); }), `${W} : les boutons de l'accueil sont dessinés`);
   await shot("6-accueil-au-retour");
   await entrer(); await page.evaluate(() => window.__app.reef.api.aller("oursin")); await page.waitForFunction(() => window.__app.reef.api.ou("oursin"), null, { timeout: 15000 }).catch(() => {}); await page.waitForTimeout(300);

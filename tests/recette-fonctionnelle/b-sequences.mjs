@@ -48,7 +48,7 @@ const COMPORTEMENTS = {
 const D = { consigne: 3000, bravo: 1500, correction: 11000, correctionCalc: 14000, demo: 12000, lecon: 75000, accueil: 20000, selecteur: 8000, defiApres: 500 };
 const CRANS = ["facile", "conseille", "dur", "tresdur"], CRAN_NOM = { facile: "plus facile", conseille: "conseillé", dur: "plus dur", tresdur: "très dur" };
 
-const pickT = (R, k, v = {}) => { const e = T[k]; return fill(Array.isArray(e) ? e[Math.floor(R() * e.length)] : e, { mascotte: "Pili", ...v }); };
+const pickT = (R, k, v = {}) => { const e = T[k]; return fill(Array.isArray(e) ? e[Math.floor(R() * e.length)] : e, v); };
 const any = (R, xs) => xs[Math.floor(R() * xs.length)];
 const hash = (s) => { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; };
 
@@ -127,7 +127,6 @@ function baseMois() {
 async function openBase(base) {
   const store = await Store.open(new IDBFactory());
   if (base === "mois") await store.restore(baseMois(), []);
-  if (base === "neuve") await store.setSetting("mascotte", "Pili"); // (le nom est choisi à l'accueil du premier lancement ; hors séquence)
   return store;
 }
 

@@ -37,8 +37,9 @@ async function accueil() {
   const S = new Serie(DIR, "A01-accueil", "Partie A · l'accueil (avant, après la séance du jour, en pause)");
   let s = await ouvrir(nav, { base: "neuve" });
   await S.shot(s.page, { ecran: "accueil", etat: "base neuve, premier lancement, avant la séance" });
-  await toucher(s.page, ".play"); await attendre(s.page, () => document.querySelector(".name")); await pause(s.page, 1500);
-  await S.shot(s.page, { ecran: "choix du nom de la pieuvre", etat: "base neuve, après « jouer »" });
+  // (lot « Mascotte » : plus de choix du nom ; la mascotte salue et souhaite la bienvenue, dans sa bulle)
+  await toucher(s.page, ".play"); await attendre(s.page, () => /bienvenue/i.test(window.__app.bulle.etat().texte) && window.__app.bulle.etat().visible); await pause(s.page, 1200);
+  await S.shot(s.page, { ecran: "la mascotte souhaite la bienvenue", etat: "base neuve, après « jouer »" });
   await s.context.close();
   s = await ouvrir(nav, { base: "mois" });
   await S.shot(s.page, { ecran: "accueil", etat: "un mois, avant la séance du jour" });

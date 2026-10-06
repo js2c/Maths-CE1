@@ -31,5 +31,10 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 - Branche `claude/nifty-knuth-g0r17e` (partie de `main` après la PR #33). Demande de fusion : https://github.com/js2c/Maths-CE1/pull/34 (brouillon).
 - **Fiche** : `docs/LOTS.md`, lot 1 ; spécification `docs/SPEC.md`, section 11 ; maquette `art/mascotte/`.
-- **Fait** : —
-- **Reste** : tout.
+- **Fait** :
+  - le moteur de la mascotte (`engine/mascotte.js`, repris de la maquette), ses 17 clips WebM, ses raccords (voix, pause, récif, mode accéléré, allègement, journal) ; la bulle (`engine/bulle.js`, places et obstacles) ; la flèche (atelier `sea/fleche.ts`, `engine/fleche.js`) ; la relance ; la bienvenue sans nom ;
+  - la pieuvre retirée (moteur, planches, fabrication, choix et réglage du nom) ; export de l'atelier refait (seule « petits » change) ;
+  - tests unitaires `tests/unit/mascotte.test.mjs` ; parcours `tests/e2e/mascotte.mjs` (nouveau) ; parcours qui visaient la pieuvre ou le nom adaptés ;
+  - `docs/SPEC.md` (sections 2, 3, 8, 11, 12), `docs/ARCHITECTURE.md`, `docs/GUIDE-PARENT.md`, `docs/IDEES.md`, `docs/JOURNAL-CONCEPTION.md`.
+- **Reste** : la recette complète (méthode commune de `docs/LOTS.md`), la relecture indépendante, `CLAUDE.md`, la demande de fusion.
+- **Connu** : `npm test` échoue sur les 6 phrases nouvelles sans fichier (attendu, le parent les fabrique). L'export de l'atelier signale un saut au raccord de `ermite.repos` : il existe déjà sur `main`.

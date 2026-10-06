@@ -36,7 +36,6 @@ await page.evaluate(() => window.__app.store.put("recompenses", { id: "serie", s
 await page.reload(); await page.waitForFunction(() => window.__ready !== undefined);
 check((await page.locator(".reefkey").count()) === 1, "écran de départ : la bulle du récif à côté de « jouer »");
 await page.tap(".play", { force: true });
-await page.waitForSelector(".name", { timeout: 20000 }); await page.tap('.name[data-value="Bulle"]', { force: true }); await page.waitForTimeout(300); await page.tap(".check", { force: true });
 for (const until = Date.now() + 120000; Date.now() < until;) {
   const st = await page.evaluate(() => { const s = window.__app.screen; return { end: !!document.querySelector(".tally"), q: s?.q && !s.locked && s.resolve ? s.q.answer : null }; });
   if (st.end) break;

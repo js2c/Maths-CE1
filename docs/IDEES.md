@@ -68,6 +68,10 @@ Au cran « plus facile », l'écriture 600 + 30 + 5 s'affiche sous la cale. Un f
 
 ## 4. Questions laissées avec une valeur par défaut
 
+- **Les pictogrammes de la pieuvre** (lot « Mascotte ») : la pieuvre a quitté l'application, sauf trois dessins de l'atelier : le bouton « je ne sais pas » (la pieuvre qui hausse les bras, choisi au lot 3 bis pour ne plus ressembler au « ? » des questions), l'étape « accueil » de la frise (une petite pieuvre) et l'icône de l'application. Par défaut, ils restent : les refaire est un choix graphique (un nouveau pictogramme « je ne sais pas » à faire valider), pas une conséquence du lot. Autres possibilités : une ancre ou une casquette de capitaine pour la frise ; pour « je ne sais pas », des épaules qui se haussent sans personnage.
+- **L'encouragement** (lot « Mascotte ») : la règle de la maquette (déception à la première erreur d'une question, encouragement aux suivantes) compte les erreurs depuis la dernière consigne. Dans l'application, chaque erreur est suivie de sa correction puis d'une autre question, avec sa consigne : l'encouragement ne vient donc que quand deux erreurs se suivent sans consigne entre elles (la protection du sélecteur qui redescend d'un cran juste après une erreur, le défi record). Par défaut : la règle de la maquette telle quelle. Autre possibilité : compter les erreurs de la séance (déception à la première, encouragement ensuite, remis à zéro par une réussite).
+- **La flèche dans les leçons L4 à L6 et L10** (lot « Mascotte ») : la pieuvre y faisait le geste « montrer » sans viser rien de précis ; la flèche ne s'y pose pas (le bernard-l'ermite et les aides montrent déjà). Par défaut : pas de flèche ; à revoir avec le lot « Les leçons ».
+
 - **Part de la famille en cours pour une petite famille** (lot 3 bis) : avec la limite de 3 passages par fait, les doubles et les presque-doubles n'atteignent pas 80 % de la notion du jour pour une enfant en difficulté (62 % en moyenne, 32 à 41 % au plus bas, en simulation). L'accepter, ou relâcher la limite pour les petites familles ?
 - **Pictogramme « passer l'échauffement »** (lot 3 ter) : une vague franchie par une flèche. L'enfant peut le confondre avec les vagues du sélecteur de difficulté. Autre idée : une flèche qui saute un rocher. À juger sur la tablette.
 - **Ouverture d'une famille par l'échauffement** (lot 3 ter) : une enfant à l'aise atteint les amis de 10 à la 6e séance, pas à la 4e visée. Rien n'a été changé.
@@ -100,6 +104,7 @@ Au cran « plus facile », l'écriture 600 + 30 + 5 s'affiche sous la cale. Un f
 - **`wrong`** commence par un bref sourire (vers 0,4 à 0,9 s) avant la déception ; à regarder avec l'enfant : le prend-elle pour de la moquerie ?
 - **`success`** dure 8,7 s ; il cède à la phrase suivante dès 1,8 s.
 - **`idle-hochement`** (l'ancienne vidéo d'attente) ne revient à la pose de départ qu'après 3,8 s : une phrase qui commence pendant ce clip passe par un fondu visible. Il n'est tiré qu'à l'accueil.
+- **La mascotte sur la tablette** (après le lot « Mascotte ») : fluidité des 17 vidéos décodées et du détourage en WebGL avec le lagon (dans le conteneur de développement, sans processeur graphique, la vidéo tourne à 6 à 13 images/s) ; mémoire ; la bulle se lit-elle, ou distrait-elle l'enfant de l'ardoise ? La flèche corail se voit-elle sur l'eau ?
 
 **Depuis les lots précédents :**
 

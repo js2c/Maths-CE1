@@ -37,7 +37,7 @@ export const ecouteVoix = (page) => page.evaluate(() => {
   const replay = v.replay?.bind(v); if (replay) v.replay = (...a) => { window.__dit.push({ t: `(réécouter) ${v.instruction ?? ""}`, at: performance.now() }); return replay(...a); };
 });
 // une page ouverte sur l'application : `base` « neuve » ou « mois » ; `params` : paramètres de test de main.js ;
-// `nom` : la pieuvre déjà nommée (sinon, base neuve : le choix du nom au premier « jouer ») ; `avant(page)` : de quoi
+// `nom` : le nom donné autrefois à la pieuvre, gardé dans la base (lot « Mascotte » : il n'est plus montré ni demandé) ; `avant(page)` : de quoi
 // préparer la base avant le rechargement (séances, cartes…)
 export async function ouvrir(nav, { base = "neuve", params = "", nom = false, voix = "rapide", avant = null } = {}) {
   const context = await nav.browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true });

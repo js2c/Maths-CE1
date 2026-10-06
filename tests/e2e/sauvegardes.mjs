@@ -27,7 +27,7 @@ for (const [name, profil, per, weeks] of CASES) {
   const st = await page.evaluate(async () => { const s = window.__app.store, seances = await s.all("seances"), last = seances.filter((x) => x.terminee).at(-1); return { n: seances.length, last: last && new Date(last.debut).toDateString(), play: !!document.querySelector(".play"), code: await s.setting("codeParent"), mascotte: await s.setting("mascotte"), niveau: (await s.get("niveaux", 1))?.niveau }; });
   const yesterday = new Date(Date.now() - 86400000).toDateString();
   check(!problem, `${name} : fichier accepté par la restauration (${problem ?? "aucun problème"})`);
-  check(st.n > 0 && st.last === yesterday && st.play && st.code === "1234" && st.mascotte === "Pili", `${name} : ${st.n} séances, la dernière hier (${st.last}), « jouer » proposé, code parent gardé, niveau de la ligne ${st.niveau}`);
+  check(st.n > 0 && st.last === yesterday && st.play && st.code === "1234", `${name} : ${st.n} séances, la dernière hier (${st.last}), « jouer » proposé, code parent gardé, niveau de la ligne ${st.niveau}`);
   await page.screenshot({ path: join(OUT, `${name}-1-accueil.png`) });
   await page.tap(".albumkey", { force: true }); await page.waitForTimeout(2500); await page.screenshot({ path: join(OUT, `${name}-2-album.png`) });
   await page.goto(url + "?nosw&voix=rapide&son=non"); await page.waitForFunction(() => window.__ready !== undefined);

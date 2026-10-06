@@ -1,6 +1,6 @@
 // PARCOURS D'UNE SÉANCE COMPLÈTE dans Chromium (tablette 1280 × 800, tactile), voix accélérée :
-// premier lancement -> choix du nom de la pieuvre -> accueil -> échauffement -> leçon L1 (niveau 1, la
-// première fois) et son exercice guidé -> questions (justes et fausses) -> récompense -> « à demain ». Puis vérifie la base (séance terminée, réponses, étoiles, nom)
+// premier lancement -> accueil (la mascotte salue, sans nom) -> échauffement -> leçon L1 (niveau 1, la
+// première fois) et son exercice guidé -> questions (justes et fausses) -> récompense -> « à demain ». Puis vérifie la base (séance terminée, réponses, étoiles, aucun nom)
 // et qu'une relance le même jour affiche la lune au lieu de « jouer ». Captures dans tests/e2e/out/seance.
 //   node tests/e2e/seance.mjs [--out dossier] [--questions 3]
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
@@ -23,11 +23,10 @@ const q = `?nosw&voix=rapide&questions=${N}&guides=2&faits=5`;
 await page.goto(url + q); await page.waitForFunction(() => window.__ready !== undefined);
 await shot("1-accueil");
 await page.tap(".play", { force: true });
-await page.waitForSelector(".name", { timeout: 20000 }); await page.waitForTimeout(600);
-check(await page.locator(".check").isHidden(), "la coche n'apparaît qu'après un nom touché");
-await page.tap('.name[data-value="Octavie"]', { force: true }); await page.waitForTimeout(500);
-await shot("2-choix-du-nom");
-await page.tap(".check", { force: true });
+// (lot « Mascotte » : plus de choix du nom ; la mascotte salue et souhaite la bienvenue)
+await page.waitForFunction(() => /bienvenue/i.test(window.__app.bulle.etat().texte), null, { timeout: 20000 }); await page.waitForTimeout(300);
+check(!(await page.locator(".name").count()), "premier lancement : pas de choix du nom, la bienvenue");
+await shot("2-bienvenue");
 
 // l'échauffement : répond au pavé (juste, sauf le premier fait) ; l'aide du coquillage au premier fait
 let f = 0, sawHelp = false, facts = 0;
@@ -77,7 +76,7 @@ check(db.base?.mesures?.length === 3, `temps de base mesuré (${db.base?.mesures
 check(db.faits.length >= 3 && db.faits.filter((x) => x.boite === 1).length >= 1, `au moins 3 nouveaux faits rangés en boîtes (lot 2 : voie rapide, faits ajoutés) (${db.faits.map((x) => `${x.fait}:${x.boite}`).join(" ")})`);
 check(db.rep2.some((r) => r.aide) && db.rep2.some((r) => r.revient), "échauffement : réponse avec aide, fait raté revenu");
 check(db.rep2.length >= 3 + 5, `${db.rep2.length} réponses d'échauffement enregistrées`);
-check(db.nom === "Octavie", `nom de la pieuvre enregistré (${db.nom})`);
+check(db.nom === undefined, `aucun nom de mascotte enregistré (${db.nom})`);
 check(se?.terminee === true, "séance terminée enregistrée");
 check(db.reponses.filter((r) => r.guide).length === 1 && db.reponses[0].guide && db.reponses[0].forme === "lire", `un exercice guidé « lire » après la leçon (${db.reponses.filter((r) => r.guide).length})`);
 check(se?.lecons?.[0]?.id === "L1" && se.lecons[0].vue && se.lecons[0].raison === "niveau", `leçon L1 notée dans la séance (${JSON.stringify(se?.lecons)})`);

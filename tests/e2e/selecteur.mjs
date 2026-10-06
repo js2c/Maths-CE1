@@ -1,6 +1,6 @@
 // LOT 2, ÉTAPE 2 : parcours du sélecteur de difficulté (quatre crans, lueur du conseillé, cran touché, coche,
-// attente de 15 s), cran enregistré dans la séance ; la pieuvre qui montre la cible (trois orientations) ; le
-// calque d'effets et la tortue au-dessus de la pieuvre ; formes à trou au cran « très dur ». Captures en densité 2.
+// attente de 15 s), cran enregistré dans la séance ; la flèche qui montre la cible (lot « Mascotte ») ; le
+// calque d'effets et la tortue au-dessus de la mascotte ; formes à trou au cran « très dur ». Captures en densité 2.
 //   node tests/e2e/selecteur.mjs [--out dossier]
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { mkdirSync } from "node:fs";
@@ -49,16 +49,17 @@ const tap = (page, sel) => page.tap(sel, { force: true });
   check((await page.evaluate(() => window.__app.session.rec.cran)) === "conseille", "le cran affiché est gardé");
   await context.close();
 }
-// 3. la pieuvre montre la cible ; formes à trou au cran très dur
+// 3. la flèche montre pendant la consigne (lot « Mascotte », à la place du bras de la pieuvre) : jamais sur la réponse à
+// placer ; formes à trou au cran très dur
 for (const [niveau, fmt] of [[3, "placer"], [6, "placer"], [2, "lire"]]) {
   const { page, context } = await open(`&cran=conseille&sans=echauffement&sansLecon&niveau=${niveau}&format=${fmt}&guides=0`);
   await tap(page, ".play");
   await page.waitForFunction(() => { const s = window.__app.screen; return s?.q && s.resolve; }, null, { timeout: 30000 });
-  await page.waitForFunction(() => window.__app.ocean.octo.clip.startsWith("montrer"), null, { timeout: 8000 }).catch(() => {});
-  await page.waitForTimeout(700);
-  const info = await page.evaluate(() => ({ clip: window.__app.ocean.octo.clip, want: window.__app.screen.pointAt(window.__app.screen.q), x: window.__app.screen.xOf(window.__app.screen.q.answer) }));
-  check(info.clip === info.want, `niveau ${niveau} : cible en x=${Math.round(info.x)}, geste ${info.want} (joué : ${info.clip})`);
-  await page.screenshot({ path: join(OUT, `4-montrer-niveau${niveau}.png`) });
+  await page.waitForFunction(() => window.__app.fleche.visible, null, { timeout: 8000 }).catch(() => {});
+  await page.waitForTimeout(500);
+  const info = await page.evaluate(() => ({ vue: window.__app.fleche.visible, cible: window.__app.fleche.cible, angle: window.__app.fleche.angle, want: window.__app.screen.pointAt(window.__app.screen.q), x: window.__app.screen.xOf(window.__app.screen.q.answer), star: window.__app.screen.starAt }));
+  check(info.vue && info.cible.map(Math.round).join() === info.want.point.map(Math.round).join() && (fmt === "lire" ? Math.abs(info.cible[0] - info.star[0]) < 1 : info.angle === 90), `niveau ${niveau} (${fmt}) : la flèche en ${info.cible?.map(Math.round)}, angle ${info.angle} (réponse en x=${Math.round(info.x)})`);
+  await page.screenshot({ path: join(OUT, `4-fleche-niveau${niveau}.png`) });
   await context.close();
 }
 {

@@ -76,7 +76,7 @@ export async function reward(app, { session, hud }) {
     ctx.setTransform(px, 0, 0, px, 0, 0); const t = String(shown); R.drawNumber(ctx, t, 282, 70, t.length > 2 ? 76 : 92, { w: 12, seed: 810 });
   } });
   tally.classList.add("pop");
-  ocean.mascotte.play("rejouir");
+  ocean.mascotte.play("rejouir", { fort: true }); // (lot « Mascotte » : la grande joie de la fin de séance)
   // (lot 3 bis, R21 : jamais « tu as gagné 0 étoiles » : une séance sans étoile est saluée sans nombre)
   const said = voice.say(earned ? fill(text.pick("recompense"), { etoiles: phrase(earned) }) : text.data.recompenseZero);
   for (let i = 1; i <= 20 && shown < earned; i++) { shown = Math.round((earned * i) / 20); tally.repaint(); await wait(60); }

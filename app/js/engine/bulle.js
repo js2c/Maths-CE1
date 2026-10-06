@@ -11,8 +11,9 @@
 //    une aide sur le calque des aides (les obstacles « souples », relevés sur une grille de 40 px). Elle essaie, dans
 //    l'ordre, les places de `PLACES` (à droite de la tête, au-dessus de la ligne ; plus étroite ; à hauteur de la bouche,
 //    entre l'ardoise et le pavé ; sous la tête) et prend la première qui ne touche rien (sinon la première qui ne touche
-//    aucun obstacle dur, sinon celle qui en couvre le moins). Tant qu'elle est là, elle vérifie quatre fois par seconde
-//    qu'un bouton n'est pas apparu dessous ; sinon elle change de place.
+//    aucun obstacle dur). Si aucune ne laisse libre ce que l'enfant touche (l'album, couvert de cartes), elle ne s'affiche
+//    pas : la voix parle seule. Tant qu'elle est là, elle vérifie quatre fois par seconde qu'un bouton n'est pas apparu
+//    dessous ; sinon elle change de place, ou s'efface.
 //  - Fonctions pures exportées (testées : tests/unit/mascotte.test.mjs) : `balloonPath`, `ovale`, `choisirPlace`, `mots`.
 export const MASCOTTE = { x: 22, y: 136, w: 210, h: 280 }; // la tête, en px logiques (en haut à gauche, sous la maison)
 // devant la joue droite (bord du visage mesuré à 82,4 % de la largeur du clip, à hauteur de la bouche : 71,5 %), 12 px de marge
@@ -130,6 +131,7 @@ export class Bulle {
       this.txt.append(s); return s;
     });
     this.layout();
+    if (this.place.couvre) { this.shown = false; this.el.classList.add("cachee"); return; } // nulle part sans couvrir une cible
     this.el.classList.remove("cachee", "pop"); void this.el.offsetWidth; this.el.classList.add("pop");
     this.shown = true;
     // les mots apparaissent au rythme de la phrase (poids : la longueur de chaque mot)
@@ -185,7 +187,7 @@ export class Bulle {
   verifier() {
     if (!this.shown || !this.place) return;
     const { durs, souples } = this.obstacles();
-    if (durs.some((o) => aire(this.place.rect, o) > 0)) return this.layout();
+    if (durs.some((o) => aire(this.place.rect, o) > 0)) { this.layout(); if (this.place.couvre) this.cacher(); return; }
     if (this.place.gene || souples.some((o) => aire(this.place.rect, o, 0) > 0)) { const avant = this.place.place.nom; this.layout(); if (this.place.place.nom !== avant) { this.el.classList.remove("pop"); void this.el.offsetWidth; this.el.classList.add("pop"); } }
   }
   // pour les tests : où elle est, ce qu'elle dit, ce qu'elle couvre

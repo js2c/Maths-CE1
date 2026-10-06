@@ -9,7 +9,7 @@
 //              node tools/sauvegarde-test.mjs diff 2 6     (une enfant en difficulté)
 // Les séances tombent aux jours habituels (2 par semaine : lundi et jeudi ; 3 : lundi, mercredi, vendredi ; 5 : du
 // lundi au vendredi), la dernière la veille du jour de fabrication ; toutes les dates suivent l'horloge simulée, même
-// celles que le moteur prend à Date.now(). Le nom de la pieuvre est « Pili » ; le code parent n'est pas dans le fichier
+// celles que le moteur prend à Date.now(). Le code parent n'est pas dans le fichier
 // (la restauration garde celui de la tablette). ATTENTION : restaurer remplace toutes les données de la tablette.
 import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -34,7 +34,6 @@ export function seanceDays(perWeek, weeks, today = new Date()) {
 const jours = seanceDays(perWeek, weeks);
 const res = await simulate({ profil, jours, seed: 11, zonesPretes: false, horloge: true });
 const store = res.store;
-await store.setSetting("mascotte", "Pili");
 await store.setSetting("premierLancement", new Date(jours[0].getTime() + 18 * 3600000 - 60000).toISOString());
 const dump = cleanDump(await store.dump());
 const file = resolve(val("--sortie") ?? `sauvegarde-test-${profil}-${perWeek}par-semaine-${weeks}semaines.json`);

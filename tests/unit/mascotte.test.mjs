@@ -113,11 +113,12 @@ test("la voix prévient la mascotte : un texte commence (avec sa durée), il s'a
 test("la flèche : jamais sur la réponse à placer ; une arrivée avec un petit rebond", async () => {
   const { cibleFleche } = await import("../../app/js/modules/numberline/screen.js");
   const geo = { tick: (i) => [100 + 50 * i, 470], seat: (i) => [100 + 50 * i, 441] };
-  assert.deepEqual(cibleFleche({ format: "lire", target: 4 }, geo), [300, 470 - 42 - 44]);
-  assert.deepEqual(cibleFleche({ format: "sauter", start: 2 }, geo), [200, 441 - 70]);
-  // placer, estimer : sur le poisson qui porte le nombre, quelle que soit la réponse
+  assert.deepEqual(cibleFleche({ format: "lire", target: 4 }, geo), { point: [300, 470 - 42 - 44], angle: 0 });
+  assert.deepEqual(cibleFleche({ format: "sauter", start: 2 }, geo), { point: [200, 441 - 70], angle: 0 });
+  // placer, estimer : à droite de l'étiquette du poisson, pointée vers elle, quelle que soit la réponse ; elle suit le poisson
   const a = cibleFleche({ format: "placer", answer: 3 }, geo), b = cibleFleche({ format: "placer", answer: 9 }, geo), e = cibleFleche({ format: "estimer", answer: 40 }, geo);
-  assert.deepEqual(a, b); assert.deepEqual(a, e);
+  assert.deepEqual(a, b); assert.deepEqual(a, e); assert.equal(a.angle, 90);
+  assert.deepEqual(cibleFleche({ format: "placer", answer: 3 }, { ...geo, fish: [300, 600] }).point, [356, 548]);
   assert.equal(arrivee(0), 1); assert.equal(arrivee(1), 0);
   const creux = Math.min(...Array.from({ length: 50 }, (_, i) => arrivee(i / 50))); assert.ok(creux < 0 && creux > -0.2, `rebond ${creux}`);
   assert.ok(ARRIVEE.ms <= 500);

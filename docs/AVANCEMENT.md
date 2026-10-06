@@ -29,7 +29,7 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 ### Reprise du lot « Mascotte »
 
-- Branche `claude/nifty-knuth-g0r17e` (partie de `main` après la PR #33). Demande de fusion : (à ouvrir).
+- Branche `claude/nifty-knuth-g0r17e` (partie de `main` après la PR #33). Demande de fusion : https://github.com/js2c/Maths-CE1/pull/34 (brouillon).
 - **Fiche** : `docs/LOTS.md`, lot 1 ; spécification `docs/SPEC.md`, section 11 ; maquette `art/mascotte/`.
 - **Fait** : —
 - **Reste** : tout.

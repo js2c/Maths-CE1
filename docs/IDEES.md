@@ -83,6 +83,13 @@ Au cran « plus facile », l'écriture 600 + 30 + 5 s'affiche sous la cale. Un f
 - **Variété des tout premiers échauffements** : ils tournent sur 2 ou 3 faits et leurs inverses.
 - **Débit des musiques** : 64 kbit/s (3,7 Mo) par défaut, ou 48 kbit/s (2,7 Mo) : à l'écoute.
 
+- **Questions du lot « Les voiliers »** (`docs/JOURNAL-CONCEPTION.md`, « Lot « Les voiliers » ») :
+  - au cran conseillé, le vent souffle sur environ deux bateaux sur trois dans la simulation (3 réussites de suite suffisent à le lever, 2 échecs à le calmer) : une enfant à l'aise ne voit presque plus la mer calme ;
+  - la voie rapide (5 bateaux justes en moins de 6 s) fait franchir les niveaux 1 et 2 dès la première partie dans la simulation ; le geste du doigt prend 2 à 4 s : à observer ;
+  - « je ne sais pas » reste en bas à droite, au bout de la ligne des bouées : il ne gêne pas le geste (le bateau glisse dessous sans le déclencher), mais il couvre un peu l'eau du dernier passage ;
+  - la rangée de bouées change tous les 5 bateaux : plus souvent, moins souvent ?
+  - le nombre écrit en lettres dans la bulle suit l'orthographe à traits d'union (« trois-cent-quarante-sept ») ; la maquette écrivait « trois cent quarante-sept ».
+
 ## 5. Idées d'amélioration (non décidées)
 
 **Pédagogie et ergonomie** (issues de la relecture extérieure du 27 septembre, non retenues à l'époque)

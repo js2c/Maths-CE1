@@ -16,9 +16,11 @@ import { expected, ruleFacts, startOfDay } from "../app/js/modules/facts/facts.j
 import { Module2Runner } from "../app/js/modules/facts/runner.js";
 import { calcMastery, Module3Runner } from "../app/js/modules/calc/runner.js";
 import { runChallenge } from "../app/js/modules/facts/challenge.js";
+import { Module4Runner } from "../app/js/modules/voiliers/runner.js";
+import { codeErreur } from "../app/js/modules/voiliers/voiliers.js";
 
 const load = (f) => JSON.parse(readFileSync(new URL(`../app/content/${f}`, import.meta.url)));
-const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), module3 = load("module3.json"), cartes0 = load("cartes.json"), calendrier = load("calendrier.json");
+const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), module3 = load("module3.json"), module4 = load("module4.json"), cartes0 = load("cartes.json"), calendrier = load("calendrier.json");
 // les zones 3 et 4 « prêtes » (illustrations et anecdotes fictives) pour vérifier le rythme des cartes sur l'année
 const pretes = (c) => ({ ...c, cartes: c.cartes.map((x) => ({ ...x, illustration: x.illustration ?? `fictif/${x.id}.webp`, anecdote: x.anecdote ?? "Anecdote fictive." })) });
 const gen = (cfg, r, o = {}) => (o.format === "ecrire" ? makeWrite(cfg, r, o) : o.format === "sauter" ? makeJump(cfg, r) : o.format === "placer" ? makePlace(cfg, r, o) : o.format === "estimer" ? makeEstimate(cfg, r, o) : makeRead(cfg, r, o));
@@ -30,15 +32,23 @@ const ERR = { 1: "E1", 2: "E1", 3: "E1", 4: "E3", 5: "E2", 6: "E5", 7: "E2", 8: 
 // (lot 2, étape 8 : niveaux 9 à 13, nombres jusqu'à 1 000 : hypothèses du même ordre que les niveaux 5 à 8)
 // lot 3, étape 4 : calcul(n) : probabilité de réussir un calcul du niveau n du calcul rapide (hypothèse), qui progresse avec
 // les essais comme la ligne ; calculMs : temps d'un calcul juste
-const reel = { calcul: (n) => [0, 0.9, 0.8, 0.7, 0.8, 0.7, 0.55, 0.45, 0.6, 0.4][n], calculMs: 6000, ligne: (n) => [0, 0.95, 0.9, 0.85, 0.55, 0.45, 0.45, 0.4, 0.45, 0.5, 0.45, 0.4, 0.5, 0.45][n], apprend: 0.006, fait: 0.9, faitMs: 5000, baseMs: 3500, nsp: 0.3, trou: 0.85 };
+// lot « Les voiliers » : voiliers(n) : probabilité de ranger un bateau du premier coup au niveau n (hypothèse : le niveau
+// 1 se fait sans peine, les nombres près d'une bouée et le double encadrement coûtent) ; le deuxième essai réussit plus
+// souvent (VOILIERS.deuxieme) ; avec le vent, un peu moins ; avec les pirates, le premier essai seulement, et parfois trop tard
+const reel = { voiliers: (n) => [0, 0.88, 0.8, 0.8, 0.72, 0.6, 0.55, 0.6, 0.5, 0.5][n], calcul: (n) => [0, 0.9, 0.8, 0.7, 0.8, 0.7, 0.55, 0.45, 0.6, 0.4][n], calculMs: 6000, ligne: (n) => [0, 0.95, 0.9, 0.85, 0.55, 0.45, 0.45, 0.4, 0.45, 0.5, 0.45, 0.4, 0.5, 0.45][n], apprend: 0.006, fait: 0.9, faitMs: 5000, baseMs: 3500, nsp: 0.3, trou: 0.85 };
 export const PROFILS = {
-  sait: { nom: "sait déjà (rapide)", calcul: (n) => (n <= 5 ? 0.95 : 0.88), calculMs: 4000, ligne: (n) => (n <= 5 ? 0.97 : 0.85), apprend: 0.004, fait: 0.97, faitMs: 3500, baseMs: 3000, nsp: 0.2, trou: 0.95 },
+  sait: { nom: "sait déjà (rapide)", voiliers: (n) => (n <= 4 ? 0.95 : 0.88), calcul: (n) => (n <= 5 ? 0.95 : 0.88), calculMs: 4000, ligne: (n) => (n <= 5 ? 0.97 : 0.85), apprend: 0.004, fait: 0.97, faitMs: 3500, baseMs: 3000, nsp: 0.2, trou: 0.95 },
   reel: { nom: "profil de l'évaluation (ligne faible au-delà de 20, faits en partie sus)", ...reel },
-  diff: { nom: "en difficulté", calcul: (n) => [0, 0.8, 0.65, 0.55, 0.65, 0.55, 0.4, 0.3, 0.45, 0.3][n], calculMs: 9000, ligne: (n) => [0, 0.85, 0.75, 0.7, 0.45, 0.35, 0.35, 0.3, 0.35, 0.4, 0.35, 0.3, 0.4, 0.35][n], apprend: 0.004, fait: 0.75, faitMs: 8000, baseMs: 4000, nsp: 0.4, trou: 0.75 },
+  diff: { nom: "en difficulté", voiliers: (n) => [0, 0.78, 0.65, 0.65, 0.55, 0.45, 0.4, 0.45, 0.35, 0.35][n], calcul: (n) => [0, 0.8, 0.65, 0.55, 0.65, 0.55, 0.4, 0.3, 0.45, 0.3][n], calculMs: 9000, ligne: (n) => [0, 0.85, 0.75, 0.7, 0.45, 0.35, 0.35, 0.3, 0.35, 0.4, 0.35, 0.3, 0.4, 0.35][n], apprend: 0.004, fait: 0.75, faitMs: 8000, baseMs: 4000, nsp: 0.4, trou: 0.75 },
   tresdur: { nom: "profil de l'évaluation, choisit toujours « très dur »", ...reel, cran: "tresdur" },
   facile: { nom: "profil de l'évaluation, choisit toujours « plus facile »", ...reel, cran: "facile" },
 };
-const T = { calc: 9000, calcFaux: 24000, calcGuide: 26000, phrase: 3000, defiEnPlus: 500, chauffe: 7000, chauffeFaux: 9000, notion: 15000, notionFaux: 30000, guide: 30000, lecon: 75000, add: 8000, addFaux: 16000, addGuide: 16000 };
+// lot « Les voiliers » : un bateau rangé du premier coup (arrivée 2,2 s, le nombre dit, le geste, le passage 2,4 s), une
+// erreur corrigée (explication, retour du bateau, second geste), un bateau manqué (le bateau va seul au bon passage), coulé
+// par les pirates, l'exemple guidé ; la mer : le second essai réussit avec `deuxieme` de plus, le vent retire `vent` au
+// premier essai, les pirates `pirates` (et rattrapent un bateau sur `rattrape` de ceux qui seraient rangés)
+export const VOILIERS = { deuxieme: 0.2, vent: 0.04, pirates: 0.08, rattrape: 0.08 };
+const T = { bateau: 9500, bateauCorrige: 19000, bateauManque: 24000, bateauCoule: 13000, exempleVoilier: 16000, calc: 9000, calcFaux: 24000, calcGuide: 26000, phrase: 3000, defiEnPlus: 500, chauffe: 7000, chauffeFaux: 9000, notion: 15000, notionFaux: 30000, guide: 30000, lecon: 75000, add: 8000, addFaux: 16000, addGuide: 16000 };
 
 // lot 3 : `choix` ({ module: 1, niveau } ou { module: 2, famille }) : l'enfant choisit toujours cet exercice (écran
 // « choisir ») ; `cran` : le cran qu'elle choisit (remplace celui du profil). Hypothèse du lot 3 (docs/SPEC-LOT3.md,
@@ -93,6 +103,32 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
       accueil: async ({ session }) => { add(20000); await session.setCran(P.cran ?? "conseille"); add(8000); const sp = drawSurprise(R, cartes.surprise, previousSession(await store.all("seances"), session.id)); if (sp) { session.rec.surprise = sp; log.surprise = `${sp.type}:${sp.id}`; add(5000); } },
       echauffement: async (ctx) => { const w = await new Warmup({ store, content: module2, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load(); log.warm = w; await runWarmup({ ...ctx, warmup: w, screen: warmScreen, rnd: R }); },
       notion: async (ctx) => {
+        // lot « Les voiliers » : le module 4 (choisi, ou imposé par le parent)
+        if (ctx.session.rec.module === 4) {
+          const runner = await new Module4Runner({ store, content: module4, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, choix: ctx.session.choix?.module === 4 ? ctx.session.choix.niveau || null : null }).load();
+          log.module = 4; log.niv0 = runner.niveau; log.voiliers = []; log.mers = [];
+          const scr = { ask: async (q) => {
+            if (q.guide) { add(T.exempleVoilier); log.voiliers.push(`ex${q.num}`); return { q, ok: true, ms: 0, listens: 1 }; }
+            const niv = `v${q.niveau}`; essais[niv] = (essais[niv] ?? 0) + 1; log.mers.push(q.mer);
+            const p = Math.max(0.05, Math.min(0.97, P.voiliers(q.niveau) + P.apprend * essais[niv] - (q.mer === "vent" ? VOILIERS.vent : q.mer === "pirates" ? VOILIERS.pirates : 0) + (q.simple ? 0.08 : 0)));
+            const nsp = R() < (1 - p) * P.nsp * 0.5; if (nsp) { log.nsp++; add(T.bateauManque); log.voiliers.push(`${q.num}?`); return { q, ok: false, code: "NSP", nsp: true, ms: 9000, listens: 1 }; }
+            const essai = () => R() < p, ms = (ok) => (ok ? 3000 + R() * 3000 : 6000);
+            // le double encadrement : deux rangées
+            const rangee = () => { const a = essai(); if (a) return [true, true]; if (q.mer === "pirates") return [false, false]; return [false, R() < Math.min(0.97, p + VOILIERS.deuxieme)]; };
+            const r1 = rangee(), r2 = q.double && r1[1] && (q.mer !== "pirates" || r1[0]) ? rangee() : [false, false];
+            let ok, corrigee, demi = false, code = null;
+            if (q.double) { ok = r1[0] && r2[0]; demi = !ok && (r1[0] || r2[0]) && r1[1] && r2[1]; corrigee = !ok && r1[1] && r2[1]; code = ok ? null : !r1[0] ? "V4" : "V3"; }
+            else { ok = r1[0]; corrigee = !ok && r1[1]; code = ok ? null : codeErreur(q.k === 0 ? 1 : q.k - 1, q.k); }
+            if (q.mer === "pirates" && ok && R() < VOILIERS.rattrape) { ok = false; corrigee = false; code = "rattrape"; }
+            add(ok ? T.bateau : corrigee ? T.bateauCorrige : q.mer === "pirates" ? T.bateauCoule : T.bateauManque);
+            log.voiliers.push(`${q.num}${ok ? "" : corrigee ? "c" : "✗"}${q.mer === "vent" ? "~" : q.mer === "pirates" ? "!" : ""}`); (log.notionOk ??= []).push(ok);
+            return { q, ok, corrigee, demi, code, ms: ms(ok), listens: 1, essais: ok ? 1 : 2 };
+          } };
+          const step = { ...ctx.step, ...(ctx.step.module4 ?? {}) };
+          await runNotion({ ...ctx, step, runner, screen: scr, rnd: R });
+          log.niv1 = runner.st.niveau;
+          return;
+        }
         // lot 3, étape 4 : le calcul rapide
         if (ctx.session.rec.module === 3) {
           const runner = await new Module3Runner({ store, content: module3, content2: module2, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, choix: ctx.session.choix?.module === 3 ? ctx.session.choix.niveau : null }).load();

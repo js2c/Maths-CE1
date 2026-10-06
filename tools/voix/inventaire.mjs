@@ -11,7 +11,7 @@ import { e7Words } from "../../app/js/modules/numberline/dictation.js";
 import { calcsOf, chemin } from "../../app/js/modules/calc/calc.js";
 
 const CONTENT = new URL("../../app/content/", import.meta.url);
-export const lireContenu = () => Object.fromEntries(["textes", "lecons", "cartes", "module1", "module2", "module3", "seance"].map((k) => [k, JSON.parse(readFileSync(new URL(`${k}.json`, CONTENT), "utf8"))]));
+export const lireContenu = () => Object.fromEntries(["textes", "lecons", "cartes", "module1", "module2", "module3", "module4", "seance"].map((k) => [k, JSON.parse(readFileSync(new URL(`${k}.json`, CONTENT), "utf8"))]));
 
 const range = (a, b, s = 1) => { const out = []; for (let v = a; v <= b; v += s) out.push(v); return out; };
 const TOUS = range(0, 100); // tout nombre de la ligne graduée (le module 1 va de 0 à 100)
@@ -114,6 +114,14 @@ function domaines(C) {
         })(),
       };
     })(),
+    // lot « Les voiliers » (modules/voiliers/voiliers.js) : les bouées rondes d'une rangée (genBuoys : de 10 à 990, de 10 en
+    // 10 ; centaines de 100 à 900) et de la rangée des dizaines du double encadrement (tensWindow) ; « C'est entre {a} et
+    // {b} ! » : deux dizaines voisines (10 et 20 … 980 et 990) ou deux centaines voisines (100 et 200 … 800 et 900)
+    ...(() => {
+      if (!C.module4) return {};
+      const rondes = range(10, 990, 10).map((b) => ({ b }));
+      return { "voiliersErreur.plusGrand": rondes, "voiliersErreur.plusPetit": rondes, voiliersBravoEntre: [...range(10, 980, 10).map((a) => ({ a, b: a + 10 })), ...range(100, 800, 100).map((a) => ({ a, b: a + 100 }))] };
+    })(),
     // le défi record (lot 3 bis, B6) : le score en perles, 2 ou plus (une seule : les phrases « …Un »)
     defiNouveauRecord: range(2, DEFI_MAX).map((n) => ({ n })),
     defiEgal: range(2, DEFI_MAX).map((n) => ({ n })),
@@ -155,5 +163,7 @@ export function inventaire(C = lireContenu()) {
   // lot 2, étape 8 : les nombres des lignes des niveaux 9 à 11, comptés pendant les corrections
   const M1 = C.module1.niveaux;
   for (const c of M1.filter((x) => x.niveau >= 9 && x.niveau <= 11)) for (const n of levelValues(c)) if (n > 100) add(String(n), "comptage");
+  // lot « Les voiliers » : le nombre du bateau, dit seul (pickNumber : de 1 à 99 jusqu'à 100, de 1 à 999 jusqu'à 1 000)
+  if (C.module4) for (const n of range(1, Math.max(...C.module4.niveaux.map((c) => c.max)) - 1)) add(String(n), "voiliers");
   return out;
 }

@@ -22,13 +22,15 @@ import { runWarmup } from "../../app/js/modules/facts/screen.js";
 import { aidFor, expected, median } from "../../app/js/modules/facts/facts.js";
 import { Module2Runner } from "../../app/js/modules/facts/runner.js";
 import { calcMastery, Module3Runner } from "../../app/js/modules/calc/runner.js";
+import { Module4Runner, passageTexte } from "../../app/js/modules/voiliers/runner.js";
+import { codeErreur, entre, explication, pourquoi } from "../../app/js/modules/voiliers/voiliers.js";
 import { calcKey, classifyCalc } from "../../app/js/modules/calc/calc.js";
 import { checkSequence } from "../../app/js/modules/variete.js";
 import { runChallenge } from "../../app/js/modules/facts/challenge.js";
 
 const ROOT = new URL("../../", import.meta.url).pathname;
 const load = (f) => JSON.parse(readFileSync(join(ROOT, "app/content", f), "utf8"));
-const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), module3 = load("module3.json"), cartes = load("cartes.json"), calendrier = load("calendrier.json"), T = load("textes.json"), lecons = load("lecons.json");
+const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), module3 = load("module3.json"), module4 = load("module4.json"), cartes = load("cartes.json"), calendrier = load("calendrier.json"), T = load("textes.json"), lecons = load("lecons.json");
 const OUT = join(ROOT, process.env.RECETTE_OUT ?? "tests/recette-fonctionnelle/out", "B-sequences");
 mkdirSync(OUT, { recursive: true });
 // --test (lot 3 bis, docs/SPEC-LOT3BIS.md, §0) : rien n'est écrit ; les quatre règles de la réponse qui varie sont vérifiées
@@ -194,6 +196,31 @@ async function uneSeance({ base, choix, cran, comp }) {
           for (const e of res?.events ?? []) { if (e.type === "acquise" && !e.parent && !runner.events.some((x) => x.famille === e.famille)) await ctx.session.levelUp(); suite(`fin de la notion : ${e.type} famille ${e.famille}`); }
           ctx.session.nouveaux = runner.nouveaux; return;
         }
+        // lot « Les voiliers » : un bateau par question ; la « réponse » est le passage (au double encadrement, 10 × celui des
+        // centaines + celui des dizaines) ; deux essais au calme et au vent, un seul avec les pirates
+        if (m === 4) {
+          const runner = wrapRunner(await new Module4Runner({ store, content: module4, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, choix: ctx.session.choix?.niveau ?? null }).load());
+          const dire = (e, v) => (e.cle === "entre" ? fill(T.voiliersBravoEntre, { a: e.a, b: e.b }) : fill(T.voiliersErreur[e.cle], { b: e.b, n: v }));
+          const scr = { ask: async (q) => {
+            const att = q.double ? q.k * 10 + q.k2 : q.k, mer = { calme: "calme", vent: "vent", pirates: "pirates" }[q.mer];
+            const voix = `${q.annonce ? `${T.voiliersMer[q.annonce]} ` : ""}${q.premier ? `${T.voiliersConsigne} ` : ""}${q.num}`;
+            if (q.guide) { const x = row({ cle: `exemple:${q.num}`, forme: `EXEMPLE GUIDÉ : ${q.num} entre ${q.bouees.join(" · ")}`, voix: `${voix} ${T.voiliersExemple[q.niveau]}`, attendue: "", donnee: "(le bateau va seul)" }); add(D.demo); void x; return { q, ok: true, ms: 0, listens: 1 }; }
+            // une rangée : le passage choisi au premier essai, puis au second (calme, vent)
+            const rangee = (b, k) => { const n = b.length + 1, essai = () => (C.hasard ? Math.floor(R() * n) : R() < C.erreur ? (R() < C.nsp ? null : Math.max(0, Math.min(n - 1, k + (R() < 0.5 ? -1 : 1)))) : k); const c1 = essai(); return c1 === k || c1 === null || q.mer === "pirates" ? [c1] : [c1, essai()]; };
+            const r1 = rangee(q.bouees, q.k), ok1 = r1[0] === q.k, fin1 = r1.at(-1) === q.k, r2 = q.double && fin1 ? rangee(q.rangee2, q.k2) : [], ok2 = r2[0] === q.k2, fin2 = r2.at(-1) === q.k2;
+            const nsp = r1[0] === null || (q.double && r2[0] === null), ok = !nsp && ok1 && (!q.double || ok2), fin = !nsp && fin1 && (!q.double || fin2);
+            const demi = q.double && !ok && fin && (ok1 || ok2), corrigee = !ok && fin && q.mer !== "pirates";
+            const code = ok ? null : nsp ? "NSP" : q.double ? (ok1 ? "V3" : "V4") : codeErreur(r1[0], q.k);
+            const x = row({ cle: String(q.num), forme: `${q.num} entre ${q.bouees.join(" · ")}${q.double ? ` puis ${q.rangee2.join(" · ")}` : ""} (niveau ${q.niveau}, mer ${mer}${q.revient ? ", revient" : ""})`, voix, attendue: att, donnee: nsp ? "je ne sais pas" : [passageTexte(q.bouees, r1[0]), ...r1.slice(1).map((c) => `puis ${passageTexte(q.bouees, c)}`), ...r2.map((c, i) => `${i ? "puis " : "dizaines : "}${passageTexte(q.rangee2, c)}`)].join(", ") });
+            add(2200 + D.consigne + C.ms * (r1.length + r2.length) + (ok ? 2400 : corrigee ? D.correction : D.correction + 3000));
+            if (!ok && !nsp) for (const [b, rr, k] of [[q.bouees, r1, q.k], ...(q.double ? [[q.rangee2, r2, q.k2]] : [])]) for (const c of rr) if (c !== k && c != null) x.suite.push(`erreur ${code} : « ${dire(explication(b, c, q.num), q.num)} »${q.mer === "vent" ? ` « ${T.voiliersMer.repousse} »` : q.mer === "pirates" ? ` « ${T.voiliersMer.rattrape} »` : ""}`);
+            if (nsp) x.suite.push(`« ${T.erreur.NSP} » puis le bateau va seul : « ${dire(pourquoi(q.bouees, q.num), q.num)} »`);
+            else if (!fin && q.mer !== "pirates") x.suite.push(`deuxième erreur : le bateau va seul : « ${dire(pourquoi(q.bouees, q.num), q.num)} »`);
+            if (ok || corrigee) x.suite.push(entre(q.double ? q.rangee2 : q.bouees, q.double ? q.k2 : q.k) ? `« ${dire(pourquoi(q.double ? q.rangee2 : q.bouees, q.num), q.num)} »` : "« Bravo ! »");
+            return { q, ok, corrigee, demi, code, nsp, choisi: r1[0], ms: C.ms, listens: 1, essais: r1.length + r2.length };
+          } };
+          await runNotion({ ...ctx, step: { ...ctx.step, ...(ctx.step.module4 ?? {}) }, runner, screen: scr, rnd: R, lesson }); cur = null; return;
+        }
         const baseMs = median((await store.setting("tempsDeBase"))?.mesures ?? []) ?? module2.base.defautS * 1000;
         const runner = wrapRunner(await new Module3Runner({ store, content: module3, content2: module2, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, choix: ctx.session.choix?.module === 3 ? ctx.session.choix.niveau : null, baseMs }).load());
         const scr = { ask: async (q) => {
@@ -275,12 +302,14 @@ const EXOS = [
   ...module1.niveaux.map((c) => ({ id: `ligne-${String(c.niveau).padStart(2, "0")}`, choix: { module: 1, niveau: c.niveau }, nom: `Ligne graduée, niveau ${c.niveau}` })),
   ...module2.familles.map((f) => ({ id: `additions-famille-${f.id}`, choix: { module: 2, famille: f.id }, nom: `Additions, famille ${f.id} (${f.nom})` })),
   ...module3.niveaux.map((c) => ({ id: `calcul-${c.niveau}`, choix: { module: 3, niveau: c.niveau }, nom: `Calcul rapide, niveau ${c.niveau} (${c.type}, ${c.support})` })),
+  ...module4.niveaux.map((c) => ({ id: `voiliers-${c.niveau}`, choix: { module: 4, niveau: c.niveau }, nom: `Voiliers, niveau ${c.niveau} (${c.bouees} bouées, ${c.ecart}, ${c.place})`, passages: c.ecart === "double" ? 12 : c.bouees + 1 })),
 ].filter((e) => !only || (e.choix.module === only[0] && (e.choix.niveau ?? e.choix.famille) === only[1]));
 if (TEST) {
   const fails = [], combos = new Set(), courtes = []; let n = 0;
   for (const base of ["neuve", "mois"]) for (const ex of EXOS) for (const cran of CRANS) for (const comp of ["appliquee", "reelle"]) {
     const res = await uneSeance({ base, choix: ex.choix, cran, comp }), seq = res.rows.filter((r) => r.etape === "notion" && typeof r.attendue === "number").map((r) => ({ cle: r.cle, reponse: r.attendue }));
-    const bad = checkSequence(seq, seance.variete); n++; combos.add(`${ex.id}:${cran}`); courtes.push([seq.length, `${base} · ${ex.nom} · ${CRAN_NOM[cran]} · ${COMPORTEMENTS[comp].nom} (${Math.round(res.rec.dureeS / 6) / 10} min simulées)`]);
+    // (lot « Les voiliers » : avec 3 bouées, il n'y a que 4 passages : la réponse prend au moins autant de valeurs qu'il y en a)
+    const bad = checkSequence(seq, { ...seance.variete, valeursMin: Math.min(seance.variete.valeursMin, ex.passages ?? Infinity) }); n++; combos.add(`${ex.id}:${cran}`); courtes.push([seq.length, `${base} · ${ex.nom} · ${CRAN_NOM[cran]} · ${COMPORTEMENTS[comp].nom} (${Math.round(res.rec.dureeS / 6) / 10} min simulées)`]);
     if (bad.length) fails.push(`${base} · ${ex.nom} · ${CRAN_NOM[cran]} · ${COMPORTEMENTS[comp].nom} (${seq.length} questions) : ${bad.join(" ; ")}`);
   }
   console.log(`${combos.size} combinaisons exercice × niveau × cran, ${n} séances simulées ; ${fails.length} en défaut`);

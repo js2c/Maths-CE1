@@ -5,7 +5,7 @@
   "etapes": [
     { "id": "accueil" },
     { "id": "echauffement", "minutes": 3, "questions": [12, 16] },
-    { "id": "notion", "minutes": 6, "guides": 2, "questions": [36, 44], "module2": { "guides": 2, "questions": [50, 60] }, "module3": { "guides": 0, "questions": [40, 50] } },
+    { "id": "notion", "minutes": 6, "guides": 2, "questions": [36, 44], "module2": { "guides": 2, "questions": [50, 60] }, "module3": { "guides": 0, "questions": [40, 50] }, "module4": { "guides": 0, "questions": [40, 50] } },
     { "id": "defi", "minutes": 2, "dureeS": 60, "aPartirDeSeance": 5, "faitsBoite3Min": 8, "boiteMin": 3, "apresErreurMs": 900 },
     { "id": "probleme", "actif": false, "minutes": 2 },
     { "id": "recompense" }

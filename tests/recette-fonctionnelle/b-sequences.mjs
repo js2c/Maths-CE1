@@ -200,23 +200,24 @@ async function uneSeance({ base, choix, cran, comp }) {
         // centaines + celui des dizaines) ; deux essais au calme et au vent, un seul avec les pirates
         if (m === 4) {
           const runner = wrapRunner(await new Module4Runner({ store, content: module4, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, choix: ctx.session.choix?.niveau ?? null }).load());
-          const dire = (e, v) => (e.cle === "entre" ? fill(T.voiliersBravoEntre, { a: e.a, b: e.b }) : fill(T.voiliersErreur[e.cle], { b: e.b, n: v }));
+          const dire = (e, v) => fill(T.voiliersErreur[e.cle], { b: e.b, n: v });
           const scr = { ask: async (q) => {
             const att = q.double ? q.k * 10 + q.k2 : q.k, mer = { calme: "calme", vent: "vent", pirates: "pirates" }[q.mer];
             const voix = `${q.annonce ? `${T.voiliersMer[q.annonce]} ` : ""}${q.premier ? `${T.voiliersConsigne} ` : ""}${q.num}`;
             if (q.guide) { const x = row({ cle: `exemple:${q.num}`, forme: `EXEMPLE GUIDÉ : ${q.num} entre ${q.bouees.join(" · ")}`, voix: `${voix} ${T.voiliersExemple[q.niveau]}`, attendue: "", donnee: "(le bateau va seul)" }); add(D.demo); void x; return { q, ok: true, ms: 0, listens: 1 }; }
             // une rangée : le passage choisi au premier essai, puis au second (calme, vent)
             const rangee = (b, k) => { const n = b.length + 1, essai = () => (C.hasard ? Math.floor(R() * n) : R() < C.erreur ? (R() < C.nsp ? null : Math.max(0, Math.min(n - 1, k + (R() < 0.5 ? -1 : 1)))) : k); const c1 = essai(); return c1 === k || c1 === null || q.mer === "pirates" ? [c1] : [c1, essai()]; };
-            const r1 = rangee(q.bouees, q.k), ok1 = r1[0] === q.k, fin1 = r1.at(-1) === q.k, r2 = q.double && fin1 ? rangee(q.rangee2, q.k2) : [], ok2 = r2[0] === q.k2, fin2 = r2.at(-1) === q.k2;
+            // (comme l'écran : la rangée des dizaines suit, même après deux erreurs sur les centaines ; pas après un naufrage)
+            const r1 = rangee(q.bouees, q.k), ok1 = r1[0] === q.k, fin1 = r1.at(-1) === q.k, r2 = q.double && r1[0] !== null && (fin1 || q.mer !== "pirates") ? rangee(q.rangee2, q.k2) : [], ok2 = r2[0] === q.k2, fin2 = r2.at(-1) === q.k2;
             const nsp = r1[0] === null || (q.double && r2[0] === null), ok = !nsp && ok1 && (!q.double || ok2), fin = !nsp && fin1 && (!q.double || fin2);
             const demi = q.double && !ok && fin && (ok1 || ok2), corrigee = !ok && fin && q.mer !== "pirates";
             const code = ok ? null : nsp ? "NSP" : q.double ? (ok1 ? "V3" : "V4") : codeErreur(r1[0], q.k);
             const x = row({ cle: String(q.num), forme: `${q.num} entre ${q.bouees.join(" · ")}${q.double ? ` puis ${q.rangee2.join(" · ")}` : ""} (niveau ${q.niveau}, mer ${mer}${q.revient ? ", revient" : ""})`, voix, attendue: att, donnee: nsp ? "je ne sais pas" : [passageTexte(q.bouees, r1[0]), ...r1.slice(1).map((c) => `puis ${passageTexte(q.bouees, c)}`), ...r2.map((c, i) => `${i ? "puis " : "dizaines : "}${passageTexte(q.rangee2, c)}`)].join(", ") });
             add(2200 + D.consigne + C.ms * (r1.length + r2.length) + (ok ? 2400 : corrigee ? D.correction : D.correction + 3000));
             if (!ok && !nsp) for (const [b, rr, k] of [[q.bouees, r1, q.k], ...(q.double ? [[q.rangee2, r2, q.k2]] : [])]) for (const c of rr) if (c !== k && c != null) x.suite.push(`erreur ${code} : « ${dire(explication(b, c, q.num), q.num)} »${q.mer === "vent" ? ` « ${T.voiliersMer.repousse} »` : q.mer === "pirates" ? ` « ${T.voiliersMer.rattrape} »` : ""}`);
-            if (nsp) x.suite.push(`« ${T.erreur.NSP} » puis le bateau va seul : « ${dire(pourquoi(q.bouees, q.num), q.num)} »`);
-            else if (!fin && q.mer !== "pirates") x.suite.push(`deuxième erreur : le bateau va seul : « ${dire(pourquoi(q.bouees, q.num), q.num)} »`);
-            if (ok || corrigee) x.suite.push(entre(q.double ? q.rangee2 : q.bouees, q.double ? q.k2 : q.k) ? `« ${dire(pourquoi(q.double ? q.rangee2 : q.bouees, q.num), q.num)} »` : "« Bravo ! »");
+            if (nsp) x.suite.push(`« ${T.erreur.NSP} » puis le bateau va seul : « ${dire(pourquoi(q.bouees, q.num), q.num)} »${q.double ? ` ; puis les dizaines : « ${dire(pourquoi(q.rangee2, q.num), q.num)} »` : ""}`);
+            else if (!fin && q.mer !== "pirates") for (const [b, rr, k] of [[q.bouees, r1, q.k], ...(q.double ? [[q.rangee2, r2, q.k2]] : [])]) if (rr.length > 1 && rr.at(-1) !== k) x.suite.push(`deuxième erreur : le bateau va seul : « ${dire(pourquoi(b, q.num), q.num)} »`);
+            if (ok || corrigee) { const b = q.double ? q.rangee2 : q.bouees, e = entre(b, q.double ? q.k2 : q.k), en = e && fill(T.voiliersBravoEntre, { a: e[0], b: e[1] }); x.suite.push(q.mer === "pirates" ? `« ${en ? `${T.voiliersMer.loin} ${en}` : pickT(RV, "voiliersBravoPirates")} »` : en ? `« ${en} »` : "« Bravo ! »"); }
             return { q, ok, corrigee, demi, code, nsp, choisi: r1[0], ms: C.ms, listens: 1, essais: r1.length + r2.length };
           } };
           await runNotion({ ...ctx, step: { ...ctx.step, ...(ctx.step.module4 ?? {}) }, runner, screen: scr, rnd: R, lesson }); cur = null; return;

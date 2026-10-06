@@ -69,7 +69,7 @@ test("le bon passage, les erreurs V1 et V2, ce que la voix explique", () => {
   // entre deux dizaines ou deux centaines voisines : « C'est entre 40 et 50 ! »
   assert.deepEqual(entre(b, 1), [40, 50]); assert.equal(entre(b, 0), null); assert.equal(entre([23, 28, 34], 1), null);
   assert.deepEqual(entre([300, 400, 500], 2), [400, 500]); assert.equal(entre([240, 250, 350], 2), null);
-  assert.deepEqual(pourquoi(b, 47), { cle: "entre", a: 40, b: 50, bouee: null });
+  assert.deepEqual(pourquoi(b, 47), { cle: "plusGrand", b: 40, bouee: 0 }); // (« C'est entre … ! » est réservé aux réussites)
   assert.deepEqual(pourquoi(b, 12), { cle: "plusPetit", b: 40, bouee: 0 });
   assert.deepEqual(pourquoi(b, 75), { cle: "plusGrand", b: 60, bouee: 2 });
   assert.deepEqual(pourquoi([412, 417, 425, 431], 426), { cle: "plusGrandBouee", b: 425, bouee: 2 });

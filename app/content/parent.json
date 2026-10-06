@@ -43,7 +43,7 @@
     "4": {
       "nom": "Les voiliers",
       "niveaux": {
-        "1": "ranger un nombre jusqu'à 100 entre deux dizaines (3 bouées de 10 en 10), loin des bouées (47 entre 40 et 50)",
+        "1": "ranger un nombre jusqu'à 100 entre deux dizaines (3 bouées de 10 en 10), à au moins 3 des bouées (45 entre 40 et 50)",
         "2": "jusqu'à 100, 3 bouées qui ne sont pas des dizaines, écart de 3 à 9 (31 entre 28 et 34)",
         "3": "jusqu'à 1 000, 3 bouées de 100 en 100 (450 entre 400 et 500)",
         "4": "jusqu'à 1 000, 4 bouées de 10 en 10 (534 entre 530 et 540)",

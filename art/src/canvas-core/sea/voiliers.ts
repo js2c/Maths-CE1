@@ -86,14 +86,14 @@ export const drawStepVoiliers = (g: Gfx, cx: number, cy: number) => g.group("pla
 // ---------------------------------------------------------------- les plaques des niveaux
 // la rangée de chaque niveau (les exemples de module4.json et de la légende) : les bouées, leurs nombres, le bon passage
 export const VOILIER_TILES: Record<number, { bouees: number[]; num: number; loin?: number[] }> = {
-  1: { bouees: [40, 50, 60], num: 47 },
+  1: { bouees: [40, 50, 60], num: 45 },
   2: { bouees: [23, 28, 34], num: 31 },
   3: { bouees: [300, 400, 500], num: 450 },
   4: { bouees: [530, 540, 550, 560], num: 534 },
-  5: { bouees: [600, 700, 800], num: 698 },
-  6: { bouees: [417, 425, 431], num: 426 },
+  5: { bouees: [600, 700, 800, 900], num: 698 },
+  6: { bouees: [412, 417, 425, 431], num: 426 },
   7: { bouees: [350, 360, 370, 380, 390], num: 369 },
-  8: { bouees: [250, 350, 357], num: 349 },
+  8: { bouees: [240, 250, 350, 357, 367], num: 349 },
   9: { bouees: [340, 350], num: 347, loin: [300, 400] },
 };
 // (chaque bouée et le voilier sont des groupes à eux : un groupe se compose sur la planche à sa fin, donc après les dessins
@@ -101,9 +101,10 @@ export const VOILIER_TILES: Record<number, { bouees: number[]; num: number; loin
 export const drawVoiliersTile = (g: Gfx, cx: number, cy: number, level: number) => {
   plaque(g, cx, cy, 7750 + level);
   const T = VOILIER_TILES[level], n = T.bouees.length, k = T.bouees.findIndex((b) => b > T.num), pass = k < 0 ? n : k;
-  const wy = cy + 43, x0 = cx - 64, x1 = cx + 64;
-  const xs = T.bouees.map((_, i) => (n === 2 ? cx + (i ? 30 : -30) : x0 + 10 + ((x1 - x0 - 20) * i) / (n - 1)));
-  const bx = pass === 0 ? xs[0] - 22 : pass === n ? xs[n - 1] + 22 : (xs[pass - 1] + xs[pass]) / 2, kb = T.loin ? 0.3 : 0.34, by = wy - (T.loin ? 6 : n >= 5 ? 20 : 13);
+  // (relecture du lot : la rangée de chaque niveau, 3, 4 ou 5 bouées, sans que les nombres débordent de la plaque)
+  const wy = cy + 43, x0 = cx - 64, x1 = cx + 64, m = T.bouees.length >= 5 ? 14 : T.bouees.length === 4 ? 13 : 10;
+  const xs = T.bouees.map((_, i) => (n === 2 ? cx + (i ? 30 : -30) : x0 + m + ((x1 - x0 - 2 * m) * i) / (n - 1)));
+  const bx = pass === 0 ? xs[0] - 22 : pass === n ? xs[n - 1] + 22 : (xs[pass - 1] + xs[pass]) / 2, kb = T.loin || n >= 5 ? 0.3 : 0.34, by = wy - (T.loin ? 6 : n >= 5 ? 16 : 13);
   const farX = (i: number) => (i ? x1 - 16 : x0 + 16);
   // le ciel pâle (les voiles blanches s'y détachent) et l'eau, découpés par la plaque
   g.group("plain", () => clipped(g, inside(cx, cy), () => {
@@ -118,7 +119,7 @@ export const drawVoiliersTile = (g: Gfx, cx: number, cy: number, level: number) 
   // le voilier au-dessus du bon passage (le geste de l'enfant), son nombre en rouge au-dessus du mât
   drawSailboat(g, bx, by, kb, null, 7830 + level);
   g.group("plain", () => {
-    const ctx = g.cur as CanvasRenderingContext2D, em = n >= 5 ? 9.5 : n === 4 ? 11 : 12.5;
+    const ctx = g.cur as CanvasRenderingContext2D, em = n >= 5 ? (T.bouees.some((b) => b >= 100) ? 8.5 : 9.5) : n === 4 ? (T.bouees.some((b) => b >= 100) ? 10 : 11) : 12.5;
     clipped(g, inside(cx, cy), () => {
       T.loin?.forEach((b, i) => drawNumber(ctx, String(b), farX(i) + (i ? -22 : 22), cy + 12, 10, { color: mix(INK, "#ffffff", 0.3), w: 1.6, seed: 7772 + i }));
       T.bouees.forEach((b, i) => drawNumber(ctx, String(b), xs[i], wy + 4, em, { color: INK, w: em * 0.17, seed: 7800 + level * 10 + i }));

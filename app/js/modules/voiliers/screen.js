@@ -185,7 +185,11 @@ export class VoiliersScreen {
     };
     const r1 = await rangee(q.bouees, q.k, !q.double);
     let r2 = null;
-    if (q.double && !r1.nsp && !r1.rattrape && !(q.mer === "pirates" && !r1.fin)) {
+    // (relecture du lot : « je ne sais pas » au double encadrement montre aussi la rangée des dizaines)
+    if (q.double && r1.nsp) {
+      await api.traversee(q.rangee2).then(g); if (!vivant()) return new Promise(() => {});
+      await this.montrer(q.rangee2, q.k2, q, { derniere: true });
+    } else if (q.double && !r1.rattrape && !(q.mer === "pirates" && !r1.fin)) {
       // la bonne centaine : « C'est entre 300 et 400 ! », la caméra recule, la rangée des dizaines
       if (r1.fin) { ocean.mascotte.play("rejouir"); sound?.play("bonne"); const e = entre(q.bouees, q.k); await Promise.all([this.dire(e ? fill(T.voiliersBravoEntre, { a: e[0], b: e[1] }) : null), api.traversee(q.rangee2)]).then(g); }
       else await api.traversee(q.rangee2).then(g);
@@ -222,8 +226,8 @@ export class VoiliersScreen {
     this.passable(true); api.vitesse(this.vitesseCorrection());
     const p = pourquoi(b, q.num);
     if (nsp) await this.dire(T.erreur.NSP).then(g);
-    api.allumer(p.bouee == null ? [k - 1, k] : [p.bouee]);
-    const phrase = p.cle === "entre" ? fill(T.voiliersBravoEntre, { a: p.a, b: p.b }) : fill(T.voiliersErreur[p.cle], { b: p.b });
+    api.allumer([p.bouee]);
+    const phrase = fill(T.voiliersErreur[p.cle], { b: p.b });
     await Promise.all([this.dire(phrase), api.guider(k)]).then(g);
     // le double encadrement continue (la rangée des dizaines) ; sinon, le bateau passe
     if (derniere) await api.passe(k).then(g);

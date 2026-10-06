@@ -139,7 +139,7 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .bulle .epais { fill: none; stroke: #111; stroke-width: 5; stroke-linejoin: round; }
 .bulle .trait { fill: #fffef8; stroke: #111; stroke-width: 4; stroke-linejoin: round; }
 .bulle-texte { position: absolute; width: max-content; box-sizing: border-box; text-align: center; color: #111; font: 600 30px/1.16 "Shantell Sans", "Comic Sans MS", cursive; letter-spacing: 0.01em; hyphens: none; overflow-wrap: normal; }
-.bulle-texte .m { opacity: 0; transition: opacity 0.12s; }
+.bulle-texte .m { opacity: 0; transition: opacity 0.12s; white-space: nowrap; } /* (lot « Les voiliers » : « trois-cent-quarante-sept » n'est jamais coupé à un trait d'union) */
 .bulle-texte .m.on { opacity: 1; }
 .bulle-texte .nb { color: #d63a26; font-weight: 700; }
 .bulle.pop { animation: bulle-pop 0.38s ease-out; }

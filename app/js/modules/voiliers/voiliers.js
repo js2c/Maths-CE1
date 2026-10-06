@@ -88,11 +88,11 @@ export function explication(b, c, v) {
   const i = c < k ? c : c - 1, apres = c < k;
   return { cle: `${apres ? "plusGrand" : "plusPetit"}${rond(b[i]) ? "" : "Bouee"}`, b: b[i], bouee: i };
 }
-// pourquoi le bon passage est le bon (le bateau y va seul) : « C'est entre 40 et 50 ! » quand il est entre deux bouées
-// rondes voisines ; sinon, par rapport à la bouée de gauche (il passe après), ou à la première (il passe avant)
+// pourquoi le bon passage est le bon (le bateau y va seul) : par rapport à la bouée de gauche (il passe après), ou à la
+// première (il passe avant). (Relecture du lot : « C'est entre 40 et 50 ! » est réservé aux réussites ; dit aussi pour une
+// correction, l'enfant ne savait plus si elle avait réussi.)
 export function pourquoi(b, v) {
-  const k = passage(b, v), e = entre(b, k);
-  if (e) return { cle: "entre", a: e[0], b: e[1], bouee: null };
+  const k = passage(b, v);
   const i = k > 0 ? k - 1 : 0, apres = k > 0;
   return { cle: `${apres ? "plusGrand" : "plusPetit"}${rond(b[i]) ? "" : "Bouee"}`, b: b[i], bouee: i };
 }

@@ -527,7 +527,8 @@ const API={
   // le bateau va seul jusqu'au bon passage, au bord de la ligne des bouées (puis passe(k))
   guider(k){
     B.mode='auto';drag=null;BU.forEach(x=>x.lit=0);if(P.vis&&P.mode!=='leave')P.mode='leave';
-    return new Promise(res=>tween(B,{x:zoneCenter(k),y:LINE_Y-70},1600,undefined,res));
+    // (relecture du lot : arrêté en retrait de la ligne, il ne cache pas les bouées dont parle la voix)
+    return new Promise(res=>tween(B,{x:zoneCenter(k),y:LINE_Y-170},1600,undefined,res));
   },
   // le double encadrement : la bonne centaine franchie, la caméra recule, la rangée des dizaines apparaît (maquette, startTravel)
   traversee(row2){

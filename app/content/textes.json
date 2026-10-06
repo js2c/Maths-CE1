@@ -306,10 +306,10 @@
     "2": "Regarde : 31 est plus grand que 28, et plus petit que 34. Le bateau passe entre ces deux bouées.",
     "3": "Regarde : 450 est plus grand que 400, et plus petit que 500. Le bateau passe entre 400 et 500.",
     "4": "Regarde : 534 est plus grand que 530, et plus petit que 540. Le bateau passe entre 530 et 540.",
-    "5": "Regarde : 698 est tout près de 700, mais il est plus petit. Le bateau passe avant 700.",
-    "6": "Regarde : 426 est tout près de 425, mais il est plus grand. Le bateau passe après cette bouée.",
-    "7": "Regarde : 369 est tout près de 370, mais il est plus petit. Le bateau passe avant 370.",
-    "8": "Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe avant 350.",
+    "5": "Regarde : 698 est tout près de 700, mais il est plus petit. Le bateau passe entre 600 et 700.",
+    "6": "Regarde : 426 est tout près de 425, mais il est plus grand. Le bateau passe entre 425 et 431.",
+    "7": "Regarde : 369 est tout près de 370, mais il est plus petit. Le bateau passe entre 360 et 370.",
+    "8": "Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe entre 250 et 350.",
     "9": "Regarde : 347 est entre 300 et 400. Puis, de plus près : 347 est entre 340 et 350."
   }
 }

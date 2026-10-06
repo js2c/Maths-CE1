@@ -78,7 +78,7 @@
     { "n": 9, "travail": "Retirer en passant la dizaine.", "exemple": "42 - 5 = 42 - 2 - 3" }
   ],
   "voiliers": [
-    { "n": 1, "travail": "Ranger un nombre jusqu'à 100 entre deux dizaines, loin des bouées.", "exemple": "47 entre 40 et 50" },
+    { "n": 1, "travail": "Ranger un nombre jusqu'à 100 entre deux dizaines, à au moins 3 des bouées.", "exemple": "45 entre 40 et 50" },
     { "n": 2, "travail": "Ranger un nombre jusqu'à 100 entre des bouées qui ne sont pas des dizaines.", "exemple": "31 entre 28 et 34" },
     { "n": 3, "travail": "Ranger un nombre jusqu'à 1 000 entre deux centaines.", "exemple": "450 entre 400 et 500" },
     { "n": 4, "travail": "Ranger un nombre jusqu'à 1 000 entre deux dizaines, avec quatre bouées.", "exemple": "534 entre 530 et 540" },

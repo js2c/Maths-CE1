@@ -1,7 +1,9 @@
 # TESTS D'UNE DEMANDE DE FUSION, avant de la fusionner : les mêmes tests unitaires que la publication
 # (pages.yml), lancés à chaque poussée sur la branche d'une demande de fusion vers main. La coche verte
-# (ou la croix rouge) s'affiche en bas de la demande de fusion. Tant que les voix d'un lot ne sont pas
-# fabriquées, ces tests échouent sur les « phrases sans fichier » : c'est attendu (docs/VOIX.md).
+# (ou la croix rouge) s'affiche en bas de la demande de fusion. Les phrases dont la voix n'est pas encore
+# fabriquée ne font pas échouer : elles sont signalées en avertissement, et la publication les attend
+# (pages.yml ; décision du parent du 6 octobre 2026 : les voix de plusieurs lots se fabriquent d'un coup,
+# après leur fusion, avec tools/voix/publier.mjs, docs/VOIX.md).
 name: Tests de la demande de fusion
 
 on:
@@ -24,5 +26,9 @@ jobs:
         run: npm ci
       - name: Liste des fichiers pour le mode hors ligne
         run: node tools/precache.mjs --check || echo "::warning::app/sw-files.json n'est pas à jour (lancer node tools/precache.mjs) ; la publication la refera."
+      - name: Voix à fabriquer
+        run: node tools/voix/fabriquer.mjs --verifier || echo "::warning::Des phrases n'ont pas encore leur voix. Rien à corriger dans la demande de fusion ; le parent les fabriquera (docs/VOIX.md). Tant qu'elles manquent, la publication attend."
       - name: Tests unitaires
         run: npm test
+        env:
+          VOIX_A_FABRIQUER: tolere

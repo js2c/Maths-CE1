@@ -2,6 +2,9 @@
 # « Actions » > « Publier l'application » > « Run workflow »). Seul le dossier app/ est publié, tel quel
 # (pas d'étape de construction). Avant de publier : la liste des fichiers du mode hors ligne est refaite
 # (au cas où un fichier aurait été ajouté sans lancer tools/precache.mjs) et les tests unitaires passent.
+# Si des phrases n'ont pas encore leur voix (un lot fusionné avant la fabrication de ses voix, décision du
+# parent du 6 octobre 2026), rien n'est publié et la version en ligne reste la précédente : la publication
+# se fera à la poussée des voix (tools/voix/publier.mjs, docs/VOIX.md).
 # Réglage à faire une fois dans GitHub : Settings > Pages > Source : « GitHub Actions ».
 name: Publier l'application
 
@@ -40,9 +43,19 @@ jobs:
           git diff --quiet -- app/sw-files.json app/sw.js || echo "::warning::app/sw-files.json n'était pas à jour dans le dépôt : la liste a été refaite pour cette publication (lancer node tools/precache.mjs)."
       - name: Tests unitaires
         run: npm test
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+        env:
+          VOIX_A_FABRIQUER: tolere
+      - name: Voix
+        id: voix
+        run: |
+          if node tools/voix/fabriquer.mjs --verifier; then echo "pretes=oui" >> "$GITHUB_OUTPUT"
+          else echo "pretes=non" >> "$GITHUB_OUTPUT"; echo "::warning::Publication reportée : des phrases n'ont pas encore leur voix. La version en ligne reste la précédente. Fabriquer les voix : node tools/voix/publier.mjs (docs/VOIX.md)."; fi
+      - if: steps.voix.outputs.pretes == 'oui'
+        uses: actions/configure-pages@v5
+      - if: steps.voix.outputs.pretes == 'oui'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: app
-      - id: deploiement
+      - if: steps.voix.outputs.pretes == 'oui'
+        id: deploiement
         uses: actions/deploy-pages@v4

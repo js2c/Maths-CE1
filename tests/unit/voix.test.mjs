@@ -70,12 +70,21 @@ test("inventaire : chaque texte du contenu est couvert, un gabarit sans règle e
   assert.throws(() => inventaire(C2), /pas de règle/);
 });
 
-test("chaque phrase de l'inventaire a son fichier son ; poids total sous 80 Mo (décision du parent du 28 septembre 2026 ; lot 3 : sous 60 Mo, pour garder 20 Mo au lot 4)", () => {
+test("chaque phrase de l'inventaire a son fichier son ; poids total sous 80 Mo (décision du parent du 28 septembre 2026 ; lot 3 : sous 60 Mo, pour garder 20 Mo au lot 4)", (t) => {
   const { phrases, index, afaire } = bilan();
-  assert.deepEqual(afaire, [], `phrases sans fichier à jour (lancer node tools/voix/fabriquer.mjs) : ${afaire.slice(0, 5).join(" | ")}`);
-  for (const k of phrases.keys()) assert.ok(existsSync(join(VOIX, index.phrases[k][0])), k);
-  // pas de phrase périmée dans l'index, pas de fichier orphelin
-  assert.deepEqual(Object.keys(index.phrases).filter((k) => !phrases.has(k)), []);
+  // VOIX_A_FABRIQUER=tolere (tests de GitHub, décision du parent du 6 octobre 2026) : les voix d'un lot peuvent être
+  // fabriquées après sa fusion, plusieurs lots d'un coup (tools/voix/publier.mjs). Les phrases pas encore fabriquées
+  // et celles qui ne servent plus sont alors signalées sans faire échouer ; la publication attend qu'elles soient faites.
+  const tolere = process.env.VOIX_A_FABRIQUER === "tolere";
+  const perimees = Object.keys(index.phrases).filter((k) => !phrases.has(k));
+  if (tolere && (afaire.length || perimees.length)) {
+    t.diagnostic(`voix à fabriquer : ${afaire.length} phrases (${afaire.slice(0, 5).join(" | ")}) ; ${perimees.length} phrases qui ne servent plus`);
+  } else {
+    assert.deepEqual(afaire, [], `phrases sans fichier à jour (lancer node tools/voix/fabriquer.mjs) : ${afaire.slice(0, 5).join(" | ")}`);
+    // pas de phrase périmée dans l'index, pas de fichier orphelin
+    assert.deepEqual(perimees, []);
+  }
+  for (const k of phrases.keys()) if (!afaire.includes(k)) assert.ok(existsSync(join(VOIX, index.phrases[k][0])), k);
   const utiles = new Set(Object.values(index.phrases).map(([f]) => f));
   assert.deepEqual(readdirSync(VOIX).filter((f) => f.endsWith(".ogg") && !utiles.has(f)), []);
   const poids = readdirSync(VOIX).reduce((s, f) => s + statSync(join(VOIX, f)).size, 0);

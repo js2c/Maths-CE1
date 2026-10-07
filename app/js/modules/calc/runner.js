@@ -10,7 +10,8 @@
 //  - déroulé d'un nouveau niveau : la leçon (L7 au niveau 2, L8 au 6, L9 au 7), puis 3 calculs guidés où l'enfant
 //    remplit chaque pont du chemin (`q.guide`, `q.remplir`), puis des calculs où le chemin vient au coquillage (cran
 //    conseillé) ; crans : « plus facile » le chemin affiché d'emblée (sans promotion), « plus dur » sans chemin, « très
-//    dur » sans chemin et forme à trou (niveaux 1 à 8) ;
+//    dur » sans chemin et forme à trou (tous les niveaux : sur le second nombre aux niveaux 4, 5, 7, 8 et 9, le niveau 9
+//    depuis le lot « Correctifs », écart 7.3 ; sur le nombre de départ aux niveaux à pas fixe) ;
 //  - montée (acquis) : 8 bonnes réponses sur les 10 dernières du niveau, au plus une aide, ou la voie rapide (progress.js) ;
 //    un niveau choisi au-dessus du conseillé et réussi est acquis ; échouer ne retire rien ;
 //  - erreurs : une erreur revient 3 questions plus loin ; la même erreur C1, C3 ou C4 deux fois : sa leçon (L7, L8, L9),

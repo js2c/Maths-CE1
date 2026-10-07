@@ -33,11 +33,11 @@ test("familles 3 à 7 : règles, ordre d'introduction, 45 faits (a, b de 1 à 9,
   assert.deepEqual(by, { 1: 30, 2: 3, 3: 4, 4: 2, 5: 6 });
   assert.equal(aidFor(7, 3), "cadre"); assert.equal(aidFor(4, 4), "reflet"); assert.equal(aidFor(3, 4), "doublePlus"); assert.equal(aidFor(6, 2), "ligne"); assert.equal(aidFor(5, 3), "maison");
   // réglages dans le contenu, jamais en dur
-  assert.deepEqual(c.familles2.ouverture, { part: 0.8, boite: 2 }); assert.deepEqual(c.familles2.trou, { part: 0.5, boite: 3 }); assert.equal(c.notion.memeFaitMax, 3);
+  assert.deepEqual(c.familles2.ouverture, { part: 0.8, boite: 2, parJour: 1 }); assert.deepEqual(c.familles2.trou, { part: 0.5, boite: 3 }); assert.equal(c.notion.memeFaitMax, 3);
   assert.deepEqual(seance.alternance.modules, [1, 2, 3]); // (lot 3 : le calcul rapide rejoint la rotation)
 });
 
-test("ouverture : 80 % des faits introduits en boîte 2 ou plus ; une famille à la fois, au plus une par séance", () => {
+test("ouverture : 80 % des faits introduits en boîte 2 ou plus ; une famille à la fois, au plus une par jour (lot « Correctifs », 6.2)", () => {
   const st = initialFamilies(c, NOW);
   assert.deepEqual(st.ouvertes, [1, 2]);
   const some = ["1+1", "2+1", "1+2", "3+1", "1+3"];
@@ -46,7 +46,9 @@ test("ouverture : 80 % des faits introduits en boîte 2 ou plus ; une famille à
   const a = updateFamilies(c, st, some.map((k) => fact(k, 2)), NOW, { seance: 7 });
   assert.deepEqual(a.st.ouvertes, [1, 2, 3]); assert.ok(a.events.some((e) => e.type === "ouverte" && e.famille === 3));
   assert.deepEqual(updateFamilies(c, a.st, some.map((k) => fact(k, 2)), NOW, { seance: 7 }).st.ouvertes, [1, 2, 3], "pas deux familles dans la même séance");
-  assert.deepEqual(updateFamilies(c, a.st, some.map((k) => fact(k, 2)), NOW, { seance: 8 }).st.ouvertes, [1, 2, 3, 4]);
+  // (lot « Correctifs », écart 6.2 : au plus une par jour, même dans une autre séance ; le lendemain, la suivante)
+  assert.deepEqual(updateFamilies(c, a.st, some.map((k) => fact(k, 2)), NOW + 3600e3, { seance: 8 }).st.ouvertes, [1, 2, 3], "pas deux familles le même jour");
+  assert.deepEqual(updateFamilies(c, a.st, some.map((k) => fact(k, 2)), NOW + DAY, { seance: 8 }).st.ouvertes, [1, 2, 3, 4]);
   // une famille sans fait nouveau à introduire (6, presque-doubles) s'ouvre de la même façon
   const st5 = { ...initialFamilies(c, NOW), ouvertes: [1, 2, 3, 4, 5] };
   assert.equal(canOpenNext(c, st5, some.map((k) => fact(k, 3))), 6);

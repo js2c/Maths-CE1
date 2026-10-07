@@ -141,7 +141,7 @@ test("A2 : calcul « très dur » aux niveaux à pas fixe : la forme directe et 
     assert.deepEqual(checkSequence(qs.map((q) => ({ cle: `${q.a}${q.op}${q.b}`, reponse: calcAnswer(q) }))), [], `niveau ${niveau}`);
   }
   assert.deepEqual(m3.niveaux.filter((c) => c.trouDepart).map((c) => c.niveau), [1, 2, 3, 6]);
-  assert.deepEqual(m3.niveaux.filter((c) => c.trou).map((c) => c.niveau), [4, 5, 7, 8]);
+  assert.deepEqual(m3.niveaux.filter((c) => c.trou).map((c) => c.niveau), [4, 5, 7, 8, 9]); // (le 9 depuis le lot « Correctifs », écart 7.3)
   // la réponse, la question pour le parent, la voix, une erreur
   const q = { a: 47, op: "+", b: 10, n: 57, forme: "trouGauche" };
   assert.equal(calcAnswer(q), 47); assert.equal(answerOf(q), 47); assert.equal(calcQuestion(q), "? + 10 = 57"); assert.equal(expected(q), 47);

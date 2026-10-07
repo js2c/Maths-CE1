@@ -26,7 +26,7 @@
 //    notion du jour est dépassée : la suivante devient la famille en cours (avec sa leçon), elle reste en révision.
 import { aidFor, catalog, expected, familyOf, formFor, key, newFact, roomForNew, ruleFacts, trouPartOf, trouTurn } from "./facts.js";
 import { MANQUE, Variete } from "../variete.js";
-import { currentFamily, isAcquired, noteNotion, openChosen, trouOpenFor, updateFamilies, withOpen } from "./families.js";
+import { currentFamily, isAcquired, noteNotion, openChosen, openPending, trouOpenFor, updateFamilies, withOpen } from "./families.js";
 import { Warmup } from "./warmup.js";
 
 export class Module2Runner {
@@ -44,7 +44,12 @@ export class Module2Runner {
       // la famille choisie s'ouvre si elle ne l'était pas (sans étoile arc-en-ciel : ce n'est pas une famille acquise)
       if (!this.fam.ouvertes.includes(this.choix)) { this.fam = openChosen(this.fam, this.choix, this.clock(), this.seance); this.w.fam = this.fam; this.w.c = withOpen(this.c0, this.fam); await this.save(); }
       this.famille = this.choix;
-    } else this.famille = currentFamily(this.c0, this.fam);
+    } else {
+      // (lot « Correctifs », écart 6.2 : l'ouverture due à la stagnation qui attendait un autre jour)
+      const o = openPending(this.c0, this.fam, this.clock(), { seance: this.seance });
+      if (o.st !== this.fam) { this.fam = o.st; this.w.fam = o.st; this.w.c = withOpen(this.c0, o.st); this.events.push(...o.events); await this.save(); }
+      this.famille = currentFamily(this.c0, this.fam);
+    }
     return this;
   }
   get c() { return this.w.c; }
@@ -248,11 +253,13 @@ export class Module2Runner {
     this.count++; if (res.juste) this.ok++;
     // l'erreur : le fait revient 3 questions plus loin (une seule fois)
     if (!res.juste && !q.revient && (this.asked.get(q.fait) ?? 0) < this.N.memeFaitMax) this.replays.push({ q: { ...q, revient: undefined }, in: 3 });
-    // difficulté persistante : la leçon de la famille (une fois par séance), puis un fait déjà bien su
+    // difficulté persistante : la leçon de la famille (une fois par séance), puis un fait déjà bien su ; lot « Correctifs »
+    // (écart 6.9, décision du parent du 6 octobre 2026) : une famille sans leçon propre relance celle de sa représentation
+    // (maisons de 8 et 9 : L6 ; presque-doubles : L4 ; module2.json, leconSiJamaisVue), vue ou non ; le mélange, aucune
     const D = this.N.difficulte; this.win = [...this.win, res.juste].slice(-D.sur);
     if (this.win.length >= D.sur && this.win.filter((x) => !x).length >= D.erreurs) {
       this.win = []; this.simpler = true;
-      const l = familyOf(this.c0, this.famille)?.lecon;
+      const f = familyOf(this.c0, this.famille), l = f?.lecon ?? f?.leconSiJamaisVue;
       if (l && !this.played.has(l)) { this.played.add(l); events.push({ type: "lecon", id: l, raison: "difficulte" }); }
     }
     // la famille en cours vient d'être acquise : un niveau franchi (étoile arc-en-ciel), on passe à la suivante

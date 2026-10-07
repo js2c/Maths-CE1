@@ -45,7 +45,15 @@ export class Module1Runner {
   }
   // le niveau joué : le conseillé décalé du cran, borné au premier et au dernier niveau
   eff() { return Math.min(this.levels.length, Math.max(1, this.choix ?? this.st.niveau + (this.offset() ?? 0))); }
-  async load() { this.st = (await this.store?.get("niveaux", 1)) ?? initialLevelState(1); this.st.justesNiveau ??= 0; return this; }
+  async load() {
+    this.st = (await this.store?.get("niveaux", 1)) ?? initialLevelState(1); this.st.justesNiveau ??= 0;
+    // (lot « Correctifs », écart 5.4 : les estimations justes comptées par niveau ; une base d'avant reprend celles du conseillé)
+    if (!this.st.estimer) this.st.estimer = this.cfg().formats.includes("estimer") && this.st.justesNiveau ? { [this.st.niveau]: this.st.justesNiveau } : {};
+    return this;
+  }
+  // lot « Correctifs » (écart 5.4, décision du parent du 6 octobre 2026) : la tolérance d'« estimer » se resserre d'après les
+  // estimations justes du niveau joué, qu'il soit le conseillé ou non (avant : seulement au conseillé)
+  justesEstimer(n) { return this.st.estimer?.[n] ?? 0; }
   cfg(n = this.st.niveau) { return this.levels[Math.min(this.levels.length, Math.max(1, n)) - 1]; }
   // la leçon à jouer avant de commencer, s'il y en a une pour ce niveau et qu'elle n'a jamais été vue
   entryLesson() { const l = LESSON_OF_LEVEL[this.eff()]; return l && !this.st.lecons.includes(l) && !this.played.has(l) ? l : null; }
@@ -69,14 +77,14 @@ export class Module1Runner {
     if (this.choix != null) cfg = applyCran(cfg, this.cran());
     opts.k = this.k;
     const fmts = cfg.formats, format = want && fmts.includes(want) ? want : fmts[this.k++ % fmts.length];
-    if (format === "estimer") opts.tolerance = toleranceFor(cfg, this.st.justesNiveau);
+    if (format === "estimer") opts.tolerance = toleranceFor(cfg, this.justesEstimer(cfg.niveau));
     // lot 3 bis (docs/SPEC-LOT3BIS.md, §0) : plusieurs tirages, le premier qui respecte les règles de la réponse qui varie ;
     // si le format du tour n'a plus de question possible, les autres formats du niveau ; plus rien : la notion s'arrête
     const tries = [], T = this.tries ?? 24;
     for (const f of [format, ...fmts.filter((x) => x !== format)]) {
       // (lot 3 bis, A3 : les cibles de « lire », « placer » et « estimer » tirées sans remise, module1.json, tirageSansRemise)
       const bag = this.content.tirageSansRemise && ["lire", "placer", "estimer"].includes(f) ? `${cfg.niveau}:${cfg.cran ?? ""}:${f === "estimer" ? "e" : "l"}` : null;
-      for (let i = 0; i < T; i++) { const x = this.screen.generate(cfg, this.rnd, { ...opts, ...(i >= T / 2 ? { eviter: undefined } : {}), format: f, ...(bag ? { pick: this.picker(bag) } : {}), ...(f === "estimer" ? { tolerance: toleranceFor(cfg, this.st.justesNiveau) } : {}) }); if (bag) x.bag = bag; tries.push(x); }
+      for (let i = 0; i < T; i++) { const x = this.screen.generate(cfg, this.rnd, { ...opts, ...(i >= T / 2 ? { eviter: undefined } : {}), format: f, ...(bag ? { pick: this.picker(bag) } : {}), ...(f === "estimer" ? { tolerance: toleranceFor(cfg, this.justesEstimer(cfg.niveau)) } : {}) }); if (bag) x.bag = bag; tries.push(x); }
       const best = this.var.pick(tries.map((x) => this.cand(x)), (c) => ({ attente: this.waiting(c.cle) }));
       if (best.cout < MANQUE) { const q = tries[best.i]; if (cfg.cran) q.cran = cfg.cran; this.recent.push(q.answer); if (guide) q.guide = true; else if (this.slowNext) q.lent = true; return this.ret({ q, cfg }); }
     }
@@ -154,6 +162,8 @@ export class Module1Runner {
         events.push({ type: "montee", de, a: to, rapide: m.rapide, cran: true }); this.up = null; this.climbed(events);
       }
     }
+    // une estimation juste au niveau joué (lot « Correctifs », écart 5.4 ; pas au cran « plus facile », qui consolide)
+    if (q.format === "estimer" && r.ok && q.cran !== "facile" && this.cran() !== "facile") this.st = { ...this.st, estimer: { ...this.st.estimer, [q.niveau]: this.justesEstimer(q.niveau) + 1 } };
     // la même erreur deux fois dans la séance : la leçon correspondante
     // (lot 3 bis, docs/SPEC-LOT3BIS.md, A3 : L3 parle d'une corde qui ne commence pas à zéro ; elle n'est relancée que pour E3 au
     // format « lire » sur une telle corde ; E3 en « sauter », oublier le départ de la tortue, garde sa correction habituelle)

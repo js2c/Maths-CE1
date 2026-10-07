@@ -139,9 +139,13 @@ test("T2, condition 3 : au plus une famille ouverte par l'échauffement le même
   const o = warmupOpening(m2, st, faits, rep, NOW, { limitMs: L });
   assert.equal(o.famille, null); assert.deepEqual(o.conditions, [true, true, false]);
   assert.equal(warmupOpening(m2, st, faits, rep, NOW + DAY, { limitMs: L }).famille, 4, "le lendemain");
-  // une famille ouverte autrement le même jour (notion du jour, parent, choix) ne compte pas dans ce plafond
-  const st2 = { ...initialFamilies(m2, NOW - 30 * DAY), ouvertes: [1, 2, 3], ouvertures: [{ famille: 3, date: NOW - 60e3, choix: true }] };
-  assert.equal(warmupOpening(m2, st2, faits, rep, NOW, { limitMs: L }).famille, 4);
+  // lot « Correctifs » (écart 6.2, décision du parent du 6 octobre 2026) : une famille ouverte autrement le même jour
+  // (notion du jour, stagnation, choix, parent) compte aussi : au plus une par jour, toutes voies confondues
+  for (const voie of [{}, { stagnation: true }, { choix: true }, { parent: true }]) {
+    const st2 = { ...initialFamilies(m2, NOW - 30 * DAY), ouvertes: [1, 2, 3], ouvertures: [{ famille: 3, date: NOW - 60e3, ...voie }] };
+    assert.equal(warmupOpening(m2, st2, faits, rep, NOW, { limitMs: L }).famille, null, JSON.stringify(voie));
+    assert.equal(warmupOpening(m2, st2, faits, rep, NOW + DAY, { limitMs: L }).famille, 4, "le lendemain");
+  }
 });
 
 test("T2 : l'échauffement de la séance ouvre la famille (notée « par l'échauffement ») ; l'entraînement libre n'en ouvre pas", async () => {

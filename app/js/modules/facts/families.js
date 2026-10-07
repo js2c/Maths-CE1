@@ -3,7 +3,10 @@
 //  - ouvertes : les familles ouvertes ; au départ celles de `famillesActives` (1 et 2). La famille suivante
 //    s'ouvre quand 80 % des faits déjà introduits sont en boîte 2 ou plus, ou quand le parent la marque connue
 //    (point de départ) ; une famille sans fait nouveau à introduire s'ouvre de la même façon (elle a des faits
-//    à pratiquer). Une famille à la fois, au plus une par séance (`seance`) ;
+//    à pratiquer). Une famille à la fois ; lot « Correctifs » (écart 6.2, décision du parent du 6 octobre 2026) : au
+//    plus une par jour, toutes voies confondues (notion du jour, échauffement, stagnation : `openedToday`) ; seuls le
+//    choix (écran « choisir ») et le point de départ du parent y échappent (ils ouvrent quand même, et comptent pour le
+//    jour) ;
 //  - acquise : 80 % des faits de sa RÈGLE en boîte 3 ou plus (les amis de 10 comptent 9 + 1, 8 + 2 et 5 + 5,
 //    déjà rencontrés dans les familles 1 et 2) ; une famille acquise est un niveau franchi (une étoile
 //    arc-en-ciel), sauf si c'est le parent qui l'a marquée connue ;
@@ -14,11 +17,12 @@
 //  - stagnation (décision du parent du 27 septembre ; `familles2.stagnation`) : une famille pas acquise après
 //    6 séances où elle était la notion du jour est « dépassée » : la suivante devient la famille en cours (elle
 //    s'ouvre si besoin, et joue sa leçon à sa première notion du jour) ; la famille dépassée reste travaillée en
-//    révision (échauffement, autres familles de la notion du jour) et peut encore être acquise.
+//    révision (échauffement, autres familles de la notion du jour) et peut encore être acquise. Si une famille s'est déjà
+//    ouverte ce jour-là, l'ouverture attend la séance suivante d'un autre jour (`ouvertureEnAttente`, `openPending`).
 import { catalog, familyOf, median, ruleFacts, startOfDay } from "./facts.js";
 
 export const initialFamilies = (c, now = Date.now()) => ({ module: 2, ouvertes: [...c.famillesActives], ouvertures: c.famillesActives.map((id) => ({ famille: id, date: now })), acquises: [], trou: [], notion: [], lecons: [] });
-export const cfgOf = (c) => ({ ouverture: { part: 0.8, boite: 2 }, acquise: { part: 0.8, boite: 3 }, trou: { part: 0.5, boite: 3 }, stagnation: { seances: 6 }, ...(c.familles2 ?? {}) });
+export const cfgOf = (c) => ({ ouverture: { part: 0.8, boite: 2, parJour: 1 }, acquise: { part: 0.8, boite: 3 }, trou: { part: 0.5, boite: 3 }, stagnation: { seances: 6 }, ...(c.familles2 ?? {}) });
 // le contenu avec les familles ouvertes (ce que lisent le plan de l'échauffement et `pool`)
 export const withOpen = (c, st) => ({ ...c, famillesActives: st?.ouvertes ?? c.famillesActives });
 const byKey = (faits) => new Map(faits.map((f) => [f.fait, f]));
@@ -43,6 +47,11 @@ export function isAcquired(c, faits, id, { parent = false } = {}) {
   const kid = ok.filter((f) => !wins(f).some((h) => h.parent));
   return !kid.length || new Set(kid.flatMap((f) => wins(f).map((h) => startOfDay(h.t)))).size >= (k.jours ?? 1);
 }
+// lot « Correctifs » (écart 6.2) : les familles ouvertes le jour de `now`, toutes voies confondues (les familles ouvertes
+// au départ, `famillesActives`, ne sont pas des ouvertures) ; `openedToday` : la limite du jour (`ouverture.parJour`, 1)
+// est-elle atteinte ?
+export const openingsOfDay = (c, st, now) => (st.ouvertures ?? []).filter((o) => !c.famillesActives.includes(o.famille) && startOfDay(o.date) === startOfDay(now));
+export const openedToday = (c, st, now) => openingsOfDay(c, st, now).length >= (cfgOf(c).ouverture.parJour ?? 1);
 // la famille suivante peut-elle s'ouvrir ? (80 % des faits introduits en boîte 2 ou plus)
 export function canOpenNext(c, st, faits) {
   const next = c.familles.find((f) => !st.ouvertes.includes(f.id));
@@ -58,7 +67,7 @@ export function updateFamilies(c, st0, faits, now = Date.now(), { parent = false
     if (!st.acquises.includes(id) && isAcquired(c, faits, id, { parent })) { st.acquises.push(id); (st.obtenus ??= []).push({ famille: id, date: now, ...(parent ? { parent: true } : {}) }); events.push({ type: "acquise", famille: id, ...(parent ? { parent: true } : {}) }); }
     if (!st.trou.includes(id) && ruleShare(c, faits, id, K.trou.boite) >= K.trou.part - 1e-9) { st.trou.push(id); events.push({ type: "trou", famille: id }); }
   }
-  const next = !open || (seance != null && st.ouvertures.at(-1)?.seance === seance) ? null : canOpenNext(c, st, faits);
+  const next = !open || openedToday(c, st, now) ? null : canOpenNext(c, st, faits);
   if (next) { st.ouvertes.push(next); st.ouvertures.push({ famille: next, date: now, ...(parent ? { parent: true } : {}), ...(seance != null ? { seance } : {}) }); events.push({ type: "ouverte", famille: next }); }
   return { st, events };
 }
@@ -68,11 +77,12 @@ export function updateFamilies(c, st0, faits, now = Date.now(), { parent = false
 //     (2) ou plus ;
 //  2. sur les `dernieres` (12) dernières réponses d'échauffement portant sur les familles ouvertes, au moins `justes` (90 %)
 //     sont justes (sans aide), et leur temps médian est sous le seuil « rapide » (`limitMs`, celui de la voie rapide) ;
-//  3. aucune famille ne s'est ouverte ainsi le même jour (`parJour` : 1).
+//  3. aucune famille ne s'est ouverte le même jour, par quelque voie que ce soit (lot « Correctifs », écart 6.2 : jusque-là,
+//     seules les ouvertures par l'échauffement comptaient ; `ouverture.parJour`, 1).
 // Elle est ensuite une famille ouverte comme les autres (notée `echauffement: true` dans les ouvertures) ; aucune leçon
 // n'est imposée ; pas de fermeture automatique. `reponses` : le magasin « reponses » (ou une partie, la plus récente).
 // Renvoie { famille (ou null), conditions: [1, 2, 3 remplies ?], mesures } : la simulation et les tests lisent le détail.
-export const warmupCfg = (c) => ({ part: 0.8, boite: 2, dernieres: 12, justes: 0.9, parJour: 1, ...(c.familles2?.echauffement ?? {}) });
+export const warmupCfg = (c) => ({ part: 0.8, boite: 2, dernieres: 12, justes: 0.9, ...(c.familles2?.echauffement ?? {}) });
 // une réponse est-elle une réponse d'échauffement ? (ni notion du jour, ni défi, ni entraînement libre, ni temps de base)
 export const isWarmupAnswer = (r) => r.module === 2 && !r.notion && !r.defi && !r.libre && !r.guide && r.forme !== "base";
 // le fait d'une réponse : `fait` (depuis le lot 3 ter), sinon relu dans la question (« 3 + 4 », « 3 + ? = 7 », « ? + 4 = 7 »)
@@ -92,8 +102,7 @@ export function warmupOpening(c, st, faits, reponses, now, { limitMs = Infinity 
   const last = reponses.filter((r) => isWarmupAnswer(r) && st.ouvertes.includes(famOf.get(answerFact(r)))).sort((x, y) => x.t - y.t).slice(-K.dernieres);
   const justes = last.length ? last.filter((r) => r.juste && !r.aide).length / last.length : 0, med = median(last.map((r) => r.tempsMs)) ?? Infinity;
   const c2 = last.length >= K.dernieres && justes >= K.justes - 1e-9 && med < limitMs;
-  const today = (st.ouvertures ?? []).filter((o) => o.echauffement && startOfDay(o.date) === startOfDay(now)).length;
-  const c3 = today < K.parJour;
+  const c3 = !openedToday(c, st, now);
   return { famille: next && c1 && c2 && c3 ? next.id : null, conditions: [c1, c2, c3], mesures: { introduits: met.length, faits: open.length, part, reponses: last.length, justes, medianeMs: med, limitMs } };
 }
 // la famille ouverte par l'échauffement, rangée dans l'état (une ouverture comme les autres, marquée `echauffement`)
@@ -118,12 +127,24 @@ export function noteNotion(c, st0, id, now = Date.now(), { seance = null } = {})
   const f = familyOf(c, id);
   if (!N || !f || f.regle === "melange" || st.acquises.includes(id) || passed(st).includes(id) || st.seancesNotion[id] < N) return { st, events };
   (st.depassees ??= []).push({ famille: id, date: now, ...(seance != null ? { seance } : {}) }); events.push({ type: "depassee", famille: id });
-  const next = c.familles.find((x) => !st.ouvertes.includes(x.id));
-  if (!firstLive(c, st) && next) {
-    st.ouvertes.push(next.id); st.ouvertures.push({ famille: next.id, date: now, stagnation: true, ...(seance != null ? { seance } : {}) });
-    events.push({ type: "ouverte", famille: next.id, stagnation: true });
+  if (!firstLive(c, st) && c.familles.some((x) => !st.ouvertes.includes(x.id))) {
+    // (lot « Correctifs », écart 6.2 : une famille déjà ouverte aujourd'hui, l'ouverture attend un autre jour)
+    st.ouvertureEnAttente = { stagnation: true, date: now };
+    const o = openPending(c, st, now, { seance }); events.push(...o.events); return { st: o.st, events };
   }
   return { st, events };
+}
+// lot « Correctifs » (écart 6.2) : l'ouverture due à la stagnation qui attendait un autre jour ; à la fin de la séance où
+// la famille est dépassée, puis au début de chaque séance d'additions (runner.js, load). Abandonnée si une famille est
+// redevenue « en cours » entre-temps (ouverte par l'échauffement ou par le choix, par exemple).
+export function openPending(c, st0, now = Date.now(), { seance = null } = {}) {
+  if (!st0.ouvertureEnAttente) return { st: st0, events: [] };
+  const next = c.familles.find((x) => !st0.ouvertes.includes(x.id));
+  if (next && !firstLive(c, st0) && openedToday(c, st0, now)) return { st: st0, events: [] };
+  const st = structuredClone(st0); delete st.ouvertureEnAttente;
+  if (!next || firstLive(c, st)) return { st, events: [] };
+  st.ouvertes.push(next.id); st.ouvertures.push({ famille: next.id, date: now, stagnation: true, ...(seance != null ? { seance } : {}) });
+  return { st, events: [{ type: "ouverte", famille: next.id, stagnation: true }] };
 }
 // lot 3 : une famille choisie par l'enfant (écran « choisir ») s'ouvre si elle ne l'était pas ; notée `choix` dans les
 // ouvertures, elle ne rapporte rien (ce n'est pas une famille acquise)

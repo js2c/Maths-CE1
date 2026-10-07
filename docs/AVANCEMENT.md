@@ -28,3 +28,10 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 ## Reprise
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
+
+### Reprise du lot « Les leçons »
+
+- **Branche** : `claude/upbeat-ramanujan-tvcxot` ; demande de fusion en brouillon « Lot : Les leçons ».
+- **Prérequis** : vérifiés sur `origin/main` le 7 octobre 2026 (« Mascotte », « Les voiliers » et « Correctifs » marqués « fait »).
+- **Étape en cours** : le point d'arrêt « maquette » (`docs/LOTS.md`, méthode commune) : maquette `art/lecons/`, captures et phrases dans `docs/maquettes/lecons/`. Rien n'est modifié dans `app/` avant la validation du parent.
+- **Reste** : tout le code, après validation.

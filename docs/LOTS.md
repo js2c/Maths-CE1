@@ -12,7 +12,7 @@ Ce document a trois parties : **pour le parent**, comment lancer un lot ; **pour
    Lis CLAUDE.md puis docs/LOTS.md, et réalise le lot « Mascotte » en suivant sa fiche et la méthode commune.
    ```
 3. La session s'arrête d'elle-même dans trois cas, et le dit :
-   - **une maquette à valider** (lots « Les leçons », « Sommes jusqu'à 30 », « Multiplication ») : regarder les captures et la maquette indiquées dans la demande de fusion, puis répondre **dans la même session** (« validé », ou les corrections). Elle reprend et code ;
+   - **une maquette à valider** (lot « Les leçons » ; plus pour « Sommes jusqu'à 30 » et « Multiplication », faits d'un seul bloc sans arrêt, décision du 7 octobre) : regarder les captures et la maquette indiquées dans la demande de fusion, puis répondre **dans la même session** (« validé », ou les corrections). Elle reprend et code ;
    - **une règle qui pose problème en simulation** : elle décrit le problème ; répondre dans la même session ;
    - **le lot est fini** : la demande de fusion liste les phrases dont la voix est à fabriquer. La fusionner quand la coche en bas est verte (les tests sont relancés par GitHub à chaque poussée ; les phrases sans voix y sont seulement signalées). Les voix se fabriquent ensuite, **quand vous voulez, pour plusieurs lots d'un coup**, avec une seule commande sur votre ordinateur : `node tools\voix\publier.mjs` (`docs/VOIX.md`, « En une commande »). Tant qu'elles manquent, GitHub ne publie rien : la tablette garde la version précédente (décision du parent du 6 octobre 2026).
 4. Si la session s'est arrêtée en cours de route (contexte plein, coupure), en ouvrir une nouvelle avec :
@@ -30,6 +30,8 @@ Ce document a trois parties : **pour le parent**, comment lancer un lot ; **pour
 | 3 | « Les leçons » (avec la table d'addition) | la spécification (section 3, « Les leçons ») ; les écrans sont à maquetter | oui | environ 150 phrases (la table d'addition), environ 10 min | à faire |
 | 4 | « Sommes jusqu'à 30 » | le principe (section 13) et une proposition par défaut ; le contenu est à concevoir | oui, avec la proposition pédagogique | à estimer au point d'arrêt | à faire |
 | 5 | « Multiplication » (et les tables) | le principe (`docs/IDEES.md`, phase 2) ; tout est à concevoir | oui, avec la proposition pédagogique | à estimer au point d'arrêt | à faire |
+
+**« Sommes jusqu'à 30 » et « Multiplication » : d'un seul bloc, sans arrêt** (décision du parent du 7 octobre 2026) : la colonne « Maquette à valider » ne vaut plus pour eux ; la session fait la proposition et la maquette, puis les applique elle-même (fiche « 4 et 5 »).
 
 Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent déjà les lots passés.
 
@@ -263,20 +265,55 @@ Taille de la table proposée par défaut : de 0 + 0 à 10 + 10, à confirmer au 
 - la pause pendant la leçon et pendant l'exercice qui suit ;
 - la table touchée vite et deux fois de suite.
 
+### 4 et 5. Le bloc « Sommes jusqu'à 30 » puis « Multiplication », sans interruption
+
+**Décision du parent du 7 octobre 2026** : les deux lots sont réalisés **d'un seul tenant, par une seule session, sans aucun arrêt pour une validation**. Le parent ne pourra pas répondre pendant le travail. Pour ce bloc, cette décision remplace :
+
+- le point d'arrêt « maquette » de la méthode commune ;
+- l'arrêt quand une règle simulée montre un défaut ;
+- la règle de `CLAUDE.md` « en cas de doute sur un choix pédagogique, demander plutôt que d'inventer » ;
+- l'arrêt à la moitié du contexte : continuer, en tenant la rubrique « Reprise » de `docs/AVANCEMENT.md` à jour après chaque étape, pour qu'une nouvelle session puisse reprendre si celle-ci est coupée.
+
+**À la place des arrêts, décider, et tout consigner.**
+
+1. **La proposition est faite, puis appliquée sans attendre.**
+   - Tout ce que la méthode commune demande pour un point d'arrêt est fait de la même façon : maquette dans `art/<lot>/`, captures dans `docs/maquettes/<lot>/`, note `PROPOSITION.md` avec le programme officiel cité, simulation de l'année par profil, séquences lues, nombre de phrases.
+   - Ensuite seulement, elle est appliquée.
+2. **Chaque choix pédagogique non tranché par le parent est pris par la session.** La session décide selon :
+   - le programme officiel de CE1 (texte officiel, cité), en premier ;
+   - les propositions par défaut ci-dessous ;
+   - ce que montrent la simulation et les séquences.
+
+   Chaque choix est inscrit dans `docs/JOURNAL-CONCEPTION.md` avec sa raison et marqué « choix de la session, à revoir par le parent ».
+3. **Un défaut montré par la simulation est corrigé**, avec la meilleure solution trouvée, puis simulé de nouveau. Il est décrit dans le journal.
+4. **Ce qui demanderait un dessin, un personnage ou un réglage que le parent n'a pas vu** reste sobre et réutilise ce qui existe : décor, personnages, appuis visuels déjà validés. Pas de personnage nouveau.
+
+**Déroulé**
+
+1. « Sommes jusqu'à 30 » : proposition, maquette, code, recette complète de la méthode commune, documents.
+2. « Multiplication » : la même chose, sur la même branche, à la suite.
+3. **Une seule demande de fusion**, intitulée « Lot : Sommes jusqu'à 30 et Multiplication ».
+   - Les deux lots passent à « fait » dans le tableau.
+   - En tête de la demande de fusion, une section « **Choix faits sans le parent** » : la liste courte de chaque décision pédagogique prise, avec sa raison et le lien vers la note, pour qu'il les relise après coup.
+   - Puis, comme toujours, les phrases à fabriquer : liste, nombre, poids. Le poids total de la voix doit rester sous 80 Mo : sinon, réduire les phrases (gabarits plus économes) plutôt que dépasser.
+4. Si la session est coupée malgré tout, le parent relance : « Lis CLAUDE.md puis docs/LOTS.md, et reprends le bloc « Sommes jusqu'à 30 » puis « Multiplication » là où il s'est arrêté (docs/AVANCEMENT.md, rubrique « Reprise »). »
+
+**Prérequis** : « Les leçons » et « Correctifs » sont marqués « fait » sur `main`.
+
 ### 4. Lot « Sommes jusqu'à 30 »
 
 **But** : la suite du module 2 (`docs/SPEC.md`, section 13, « Sommes jusqu'à 30 » ; question ouverte dans `docs/IDEES.md`, section 3). **Jusqu'à 30** : décision du parent du 30 septembre, confirmée le 6 octobre 2026.
 
 **Prérequis supplémentaire** : le lot « Correctifs » est fait (son état, sous le tableau, dit « fait » sur `main`). Sinon, s'arrêter et le dire.
 
-**Proposition par défaut**, à vérifier contre le programme officiel puis à soumettre au point d'arrêt :
+**Proposition par défaut**, à vérifier contre le programme officiel puis à appliquer sans arrêt (bloc ci-dessus) :
 
 - **les faits jusqu'à 9 + 9 = 18 sont à mémoriser** : nouvelles familles du module 2, avec révision espacée et formes à trou. On y trouve les doubles jusqu'à 10 + 10, les presque-doubles, et le passage de la dizaine par 10 (8 + 5 = 8 + 2 + 3) ;
 - **les sommes de 19 à 30 se calculent par procédure** : calcul réfléchi, à rapprocher du niveau 7 du calcul rapide pour ne pas faire double emploi ;
 - les leçons nouvelles de ces familles, suivies de leur exercice (lot « Les leçons ») ;
 - l'effet sur l'échauffement et sur le défi record.
 
-**Maquette à valider** : les aides visuelles nouvelles (passage de la dizaine, presque-doubles), les leçons nouvelles, et la note de proposition (méthode commune).
+**Maquette** (faite et appliquée sans arrêt, bloc ci-dessus) : les aides visuelles nouvelles (passage de la dizaine, presque-doubles), les leçons nouvelles, et la note de proposition (méthode commune).
 
 ### 5. Lot « Multiplication » (et les tables)
 
@@ -288,11 +325,11 @@ Taille de la table proposée par défaut : de 0 + 0 à 10 + 10, à confirmer au 
 - la table de multiplication à consulter dans le menu des leçons, à la place que le lot « Les leçons » lui a prévue (décision du parent du 6 octobre 2026) ;
 - les liens avec doubles et moitiés.
 
-**Maquette à valider** :
+**Maquette** (faite et appliquée sans arrêt, bloc ci-dessus) :
 
 - l'exercice : la scène, les gestes, l'image des rangées ;
 - les leçons ;
 - la table à consulter ;
 - la note de proposition (méthode commune), avec la place dans la séance et dans la rotation de « jouer ».
 
-Ne pas inventer de personnage nouveau sans le proposer.
+Pas de personnage nouveau : la scène réutilise le décor et les personnages existants (bloc ci-dessus).

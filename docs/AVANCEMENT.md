@@ -32,6 +32,7 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 - **Branche** : `claude/friendly-pascal-ylq8p1`, partie de `main` après la fusion des voiliers (PR #36). Demande de fusion en brouillon « Lot : Correctifs ».
 - **Fiche** : `docs/LOTS.md`, 2 bis ; rapport : `docs/ECARTS-SPEC.md`.
-- **Fait** : —
-- **Reste** : les 7 correctifs du code (10.1/12.3, 4.2, 6.2, 7.3, 5.4, 6.9, 7.6) ; la spécification (23 écarts datés, questions tranchées, 24 comportements) ; la ligne en tête du rapport ; la recette.
+- **Fait** : les 7 correctifs du code, testés (`tests/unit/lot-correctifs.test.mjs`) ; 6.2 simulé (5 profils × 2 rythmes, et `--deux-par-jour`) ; la spécification, `docs/IDEES.md`, le journal, l'architecture, le guide du parent ; la ligne en tête du rapport ; le cache ; le parcours du lot (`tests/e2e/correctifs.mjs`, captures dans `tests/recette-fonctionnelle/out-correctifs/`) ; `b-sequences --test` (0 en défaut).
+- **Reste** : relecture indépendante de la spécification ; tous les parcours `tests/e2e/` ; temps d'image après ; séance à vitesse réelle et attentes ; demande de fusion complète ; état « fait » dans `docs/LOTS.md` ; rubrique archivée.
+- **Mesures de départ** (sur `main`) : 283 tests sur 284 (seul échec : 841 phrases sans voix des lots « Mascotte » et « Les voiliers ») ; `perf.mjs` à processeur ÷ 4 dépasse ses délais dans le conteneur, même sur `main` : mesure faite à ÷ 1 (démarrage 1,4 s à froid, image moyenne 18,6 ms, allègement niveau 2).
 

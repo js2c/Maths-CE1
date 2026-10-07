@@ -53,7 +53,7 @@ if (want("choisir")) {
     const prep = async () => { await window.__app.store.put("niveaux", { module: 3, acquis: [1, 2, 3], obtenus: [], vus: {}, fenetres: {}, lecons: [] }); };
     const { page, context, errors } = await open("&cran=conseille&sans=echauffement", { size, scale: size[0] > 1500 ? 1 : 2, prep });
     await page.waitForSelector(".choisir"); await tap(page, ".choisir"); await page.waitForSelector(".choix-ex");
-    for (const ex of ["ligne", "additions", "calcul", "lecons"]) {
+    for (const ex of ["ligne", "additions", "calcul"]) { // (lot « Les leçons » : les leçons ont quitté « choisir », tests/e2e/lecons-menu.mjs)
       await tap(page, `.choix-ex[aria-label="${ex}"]`); await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(500);
       const b = await boxes(page, ".choix-tuile");
       const inside = b.every((r) => r.x >= 4 && r.y >= 4 && r.x + r.w <= 1276 && r.y + r.h <= 796);
@@ -83,7 +83,7 @@ const inScreen = async (page, sel) => (await boxes(page, sel)).every((r) => r.x 
 if (want("legende")) {
   const { page, context, errors } = await open("&cran=conseille&sans=echauffement");
   await page.waitForSelector(".choisir"); await tap(page, ".choisir"); await page.waitForSelector(".choix-ex");
-  for (const ex of ["ligne", "additions", "calcul", "lecons"]) {
+  for (const ex of ["ligne", "additions", "calcul"]) { // (lot « Les leçons » : les leçons ont quitté « choisir », tests/e2e/lecons-menu.mjs)
     await tap(page, `.choix-ex[aria-label="${ex}"]`); await page.waitForSelector(".legende");
     const lb = (await boxes(page, ".legende"))[0], tiles = await boxes(page, ".choix-tuile");
     check(!tiles.some((r) => lb.x < r.x + r.w && r.x < lb.x + lb.w && lb.y < r.y + r.h && r.y < lb.y + lb.h), `${ex} : le bouton de la légende est hors de la zone des plaques`);
@@ -117,7 +117,7 @@ if (want("appui")) {
   }
   await tap(page, ".choisir"); await page.waitForSelector(".choix-ex");
   check(true, "accueil, toucher bref sur « choisir » : l'écran des exercices s'ouvre");
-  for (const ex of ["ligne", "additions", "calcul", "lecons"]) {
+  for (const ex of ["ligne", "additions", "calcul"]) { // (lot « Les leçons » : les leçons ont quitté « choisir », tests/e2e/lecons-menu.mjs)
     await hold(page, `.choix-ex[aria-label="${ex}"]`, 800); await page.waitForTimeout(100);
     const st = await page.evaluate(() => ({ lab: !!document.querySelector(".etiquette"), tiles: document.querySelectorAll(".choix-tuile").length }));
     check(st.lab && !st.tiles && (await inScreen(page, ".etiquette")), `« choisir », appui long de 0,8 s sur « ${ex} » : étiquette, rien de lancé`);

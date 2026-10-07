@@ -31,12 +31,12 @@ const pick = async (page, sel) => { await page.waitForSelector(sel, { timeout: 1
 {
   const { page, context, errors } = await open("&cran=conseille&sans=echauffement");
   await page.waitForSelector(".choisir"); await page.waitForTimeout(400);
-  check((await page.locator(".play, .choisir, .reefkey, .albumkey").count()) === 4, "l'accueil : jouer, choisir, le récif, l'album");
+  check((await page.locator(".play, .choisir, .leconskey, .reefkey, .albumkey").count()) === 5, "l'accueil : jouer, choisir, les leçons, le récif, l'album");
   await page.screenshot({ path: join(OUT, "1-accueil.png") });
   taps = 0;
   await tap(page, ".choisir");
   await page.waitForSelector(".choix-ex"); await page.waitForTimeout(400);
-  check((await page.locator(".choix-ex").count()) === 5, "cinq exercices (ligne, additions, calcul rapide, voiliers, leçons ; lot « Les voiliers »)");
+  check((await page.locator(".choix-ex").count()) === 4, "quatre exercices (ligne, additions, calcul rapide, voiliers ; lot « Les leçons » : plus de leçons ici)");
   await page.screenshot({ path: join(OUT, "2-exercices.png") });
   await tap(page, '.choix-ex[aria-label="ligne"]');
   await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(400);
@@ -73,20 +73,12 @@ const pick = async (page, sel) => { await page.waitForSelector(sel, { timeout: 1
   await page.waitForTimeout(800); await page.screenshot({ path: join(OUT, "7-famille-5.png") });
   check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
 }
-// 3. une leçon seule : toutes les leçons proposées ; elle se joue puis revient à l'accueil ; notée dans l'historique
+// 3. (lot « Les leçons ») les leçons ont quitté « choisir » : elles ont leur bulle à l'accueil (parcours tests/e2e/lecons-menu.mjs)
 {
   const { page, context, errors } = await open();
-  await tap(page, ".choisir"); await pick(page, '.choix-ex[aria-label="lecons"]');
-  await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(400);
-  check((await page.locator(".choix-tuile").count()) === 10, "les leçons L1 à L10, vues ou non");
-  await page.screenshot({ path: join(OUT, "8-lecons.png") });
-  await pick(page, '.choix-tuile[data-key="L4"]');
-  await page.waitForSelector(".skip", { timeout: 10000 }); await page.waitForTimeout(1500);
-  await page.screenshot({ path: join(OUT, "9-lecon-L4.png") });
-  await tap(page, ".skip");
-  await page.waitForSelector(".choisir", { timeout: 15000 });
-  const s = await page.evaluate(async () => (await window.__app.store.all("seances")).at(-1));
-  check(s?.leconChoisie && s.lecons?.[0]?.id === "L4" && s.lecons[0].passee && s.libre, "la leçon passée est notée (séance « libre », pas la séance du jour)");
+  check((await page.locator(".leconskey").count()) === 1, "la bulle « les leçons » à l'accueil");
+  await tap(page, ".choisir"); await page.waitForSelector(".choix-ex"); await page.waitForTimeout(300);
+  check((await page.locator('.choix-ex[aria-label="lecons"]').count()) === 0, "pas d'image des leçons dans « choisir »");
   check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
 }
 // 4. « passer » l'échauffement (lot 3 ter, T1 : le bouton dédié, puis la coche) : la notion du jour commence moins de 2 s après la coche
@@ -118,7 +110,7 @@ const pick = async (page, sel) => { await page.waitForSelector(sel, { timeout: 1
   const { page, context, errors } = await open("", async () => { const n = Date.now(); await window.__app.store.add("seances", { debut: n - 600000, fin: n, terminee: true, module: 1, etapes: [] }); });
   await page.waitForSelector(".again"); await tap(page, ".again");
   await page.waitForSelector(".choix-ex", { timeout: 15000 }); await page.waitForTimeout(400);
-  check((await page.locator(".choix-ex").count()) === 5, "« Encore ! » : le même écran de choix");
+  check((await page.locator(".choix-ex").count()) === 4, "« Encore ! » : le même écran de choix");
   await pick(page, '.choix-ex[aria-label="ligne"]'); await pick(page, '.choix-tuile[data-key="3"]');
   await page.waitForSelector(".cran", { timeout: 15000 });
   check(true, "puis le sélecteur sans étoiles");

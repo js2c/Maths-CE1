@@ -63,8 +63,8 @@
     "base": "temps de base",
     "directe": "a + b = ?", "trouDroite": "a + ? = n", "trouGauche": "? + b = n"
   },
-  "erreursExercice": { "_doc": "Lot 3 bis (B10) : l'exercice affiché devant chaque erreur du journal, d'après son code (premières lettres).", "E": "ligne", "C": "calcul", "V": "voiliers", "rattrape": "voiliers", "soustraction": "additions", "unDesNombres": "additions", "plusOuMoins1": "additions", "NSP": "?", "autre": "—" },
-  "journalNote": "Pour la ligne graduée et le calcul rapide, une mauvaise réponse révèle souvent une erreur type, décrite ci-dessous en une phrase ; aux additions, l'application distingue quatre cas (se trompe de 1, a répondu l'un des deux nombres, a fait une soustraction, autre). L'application corrige chaque erreur avec une animation, et relance une leçon si la même erreur revient deux fois dans une séance. Au calcul rapide, une réponse juste mais lente est notée sans reproche : l'application rejoue le raccourci. Le bouton « je ne sais pas » a sa propre ligne : ce n'est pas une erreur, mais la question revient comme après une erreur. Aux voiliers, l'application nomme quatre cas (V1 à V4, ci-dessous) ; un bateau rangé au deuxième essai compte comme une erreur corrigée : l'erreur figure dans le journal, et l'étoile est gagnée.",
+  "erreursExercice": { "_doc": "Lot 3 bis (B10) : l'exercice affiché devant chaque erreur du journal, d'après son code (premières lettres).", "E": "ligne", "C": "calcul", "V": "voiliers", "rattrape": "voiliers", "soustraction": "additions", "unDesNombres": "additions", "plusOuMoins1": "additions", "dizaine": "additions", "NSP": "?", "autre": "—" },
+  "journalNote": "Pour la ligne graduée et le calcul rapide, une mauvaise réponse révèle souvent une erreur type, décrite ci-dessous en une phrase ; aux additions, l'application distingue cinq cas (se trompe de 1, a répondu l'un des deux nombres, a fait une soustraction, a oublié la dizaine au-delà de 10, autre). L'application corrige chaque erreur avec une animation, et relance une leçon si la même erreur revient deux fois dans une séance. Au calcul rapide, une réponse juste mais lente est notée sans reproche : l'application rejoue le raccourci. Le bouton « je ne sais pas » a sa propre ligne : ce n'est pas une erreur, mais la question revient comme après une erreur. Aux voiliers, l'application nomme quatre cas (V1 à V4, ci-dessous) ; un bateau rangé au deuxième essai compte comme une erreur corrigée : l'erreur figure dans le journal, et l'étoile est gagnée.",
   "erreurs": {
     "E1": "compte les traits au lieu des sauts",
     "E2": "oublie qu'un saut vaut 10",
@@ -75,6 +75,7 @@
     "soustraction": "a fait une soustraction au lieu d'une addition (à trou : a donné le total)",
     "unDesNombres": "a répondu l'un des deux nombres",
     "plusOuMoins1": "se trompe de 1",
+    "dizaine": "a oublié la dizaine (8 + 5 = 3 au lieu de 13)",
     "autre": "autre erreur",
     "NSP": "« je ne sais pas » (bouton)",
     "V1": "a confondu plus grand et plus petit près d'une bouée",
@@ -85,7 +86,7 @@
   },
   "pointDeDepart": {
     "niveauxMax": 13,
-    "familles": [1, 2, 3, 4, 5, 6, 7],
+    "familles": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
     "calculMax": 9,
     "voiliersMax": 9
   }

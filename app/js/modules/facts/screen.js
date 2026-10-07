@@ -11,7 +11,7 @@ import { clock, wait } from "../../engine/clock.js";
 import { onBrief, skipKey } from "../../engine/ui.js";
 import { aidFor, expected } from "./facts.js";
 import { vary, varyIndex } from "./warmup.js";
-import { AidBoard, paintDoublePlus, paintFishHouse, paintTenFrame } from "./aids.js";
+import { AidBoard, paintBigDouble, paintDoublePlus, paintFishHouse, paintTenFrame, paintTwoFrames } from "./aids.js";
 
 const SKIPPED = Symbol("correction passée");
 
@@ -136,7 +136,17 @@ export class FactsScreen {
   // cadre de 10, maison des nombres, double + 1, reflet des doubles (la ligne de la famille 1 est la tortue,
   // voir showHelp) ; `solved` : avec la réponse (exemple guidé, correction), sinon avec « ? » et des places vides
   // l'appui d'une question : celui que la notion du jour a choisi (`q.appui`), sinon celui de la famille du fait
-  aidKind(q) { const fam = this.c.familles.find((f) => f.id === q.famille)?.aide; return q.appui ?? (fam && fam !== "fait" ? fam : aidFor(q.a, q.b)); }
+  // (lot « Sommes jusqu'à 30 » : le reflet d'un double au-delà de 10 + 10, c'est le filet de dix et son reflet)
+  aidKind(q) { const fam = this.c.familles.find((f) => f.id === q.famille)?.aide, k = q.appui ?? (fam && fam !== "fait" ? fam : aidFor(q.a, q.b)); return k === "reflet" && q.a > 10 ? "grandDouble" : k; }
+  // lot « Sommes jusqu'à 30 » : les deux boîtes de dix. Forme directe (ou résolue) : le plus grand nombre d'abord (le 10 de
+  // « 4 + 10 » aussi), puis les poissons de l'autre qui complètent la première boîte (entourés de lumière), le reste dans la
+  // seconde ; forme à trou : le nombre connu en poissons, les places du nombre qui manque allumées (on les compte)
+  framesOf(q, solved) {
+    const f = solved ? "directe" : q.forme ?? "directe", n = q.a + q.b;
+    if (f !== "directe") { const k = f === "trouDroite" ? q.a : q.b; return { first: k, second: n - k, places: true }; }
+    const hi = Math.max(q.a, q.b); return { first: hi, second: n - hi, places: false };
+  }
+  paintFramesAid(ctx, q, solved) { const { sprites } = this.app, m = sprites.atlas.sprites["aide.cadre10"].meta; paintTwoFrames(ctx, sprites, 700 - m.w / 2, 372, this.framesOf(q, solved)); }
   get board() { return (this.app.aidBoard ??= new AidBoard(this.app)); }
   paintAid(q, solved) {
     const { sprites } = this.app, kind = this.aidKind(q), f = q.forme ?? "directe", n = q.a + q.b;
@@ -147,6 +157,8 @@ export class FactsScreen {
       if (kind === "cadre") { const k = f === "trouGauche" ? q.b : q.a, rest = n - k; paintTenFrame(ctx, sprites, 700 - 228, 495, { n: k, extra: solved || f === "directe" ? rest : 0, glow: solved || f === "directe" ? [] : Array.from({ length: rest }, (_, i) => k + i) }); }
       else if (kind === "maison") this.paintHouseAid(ctx, q, solved, 0);
       else if (kind === "doublePlus") paintDoublePlus(ctx, sprites, Math.min(q.a, q.b), { cx: 700, y: 500 });
+      else if (kind === "deuxCadres") this.paintFramesAid(ctx, q, solved);
+      else if (kind === "grandDouble") paintBigDouble(ctx, sprites, q.a, { cx: 700, y: 372 });
       else paintDoublePlus(ctx, sprites, q.a, { cx: 700, y: 500, bonus: false });
     });
     if (kind === "maison") this.animateHouse(q, solved);
@@ -177,6 +189,9 @@ export class FactsScreen {
   aidSpeech(q, kind, solved = false) {
     const t = this.app.text.data, k = q.forme === "trouGauche" ? q.b : q.a;
     // (lot 3 bis, R21 : « un poisson », jamais « 1 poissons »)
+    // (lot « Sommes jusqu'à 30 » : les deux boîtes ; le grand double ; le reflet et le double + 1 jusqu'à 10)
+    if (kind === "deuxCadres") { const F = this.framesOf(q, solved), c = 10 - F.first, r = F.second - c; return F.places ? fill(t.aideCadresTrou, { n: q.a + q.b }) : c === 0 ? fill(t.aideDix, { r }) : solved ? fill(t.aideDeuxCadresSolu, { c, r }) : t.aideDeuxCadres; }
+    if (kind === "grandDouble") { const u = q.a - 10; return fill(t.aideGrandDouble, { a: q.a, u, d: 2 * u }); }
     return kind === "cadre" ? (k === 1 ? t.aideCadreUn : fill(t.aideCadre, { k })) : kind === "maison" ? (solved || (q.forme ?? "directe") === "directe" ? t.aideMaison : fill(t.aideMaisonTrou, { n: q.a + q.b })) : kind === "doublePlus" ? fill(t.aideDoublePlus, { d: Math.min(q.a, q.b) }) : q.a === 1 ? t.aideRefletUn : fill(t.aideReflet, { a: q.a });
   }
   // l'aide (coquillage, aide affichée d'emblée) peut être passée dès qu'elle commence (décision du parent du

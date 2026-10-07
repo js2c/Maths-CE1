@@ -9,6 +9,7 @@ import { decompose, fill, hundredsWords, sentences } from "../../app/js/engine/p
 import { e7Value, levelValues } from "../../app/js/modules/numberline/generator.js";
 import { e7Words } from "../../app/js/modules/numberline/dictation.js";
 import { calcsOf, chemin } from "../../app/js/modules/calc/calc.js";
+import { catalog } from "../../app/js/modules/facts/facts.js";
 
 const CONTENT = new URL("../../app/content/", import.meta.url);
 export const lireContenu = () => Object.fromEntries(["textes", "lecons", "cartes", "module1", "module2", "module3", "module4", "seance"].map((k) => [k, JSON.parse(readFileSync(new URL(`${k}.json`, CONTENT), "utf8"))]));
@@ -45,7 +46,9 @@ function domaines(C) {
   // les nombres dont on peut inverser les chiffres (erreur E5, generator.js, TRAPS.E5)
   // accord au singulier : « 1 dizaine », « 1 unité » (numberline/screen.js, decompose)
   const e5 = range(10, 99).filter((n) => n % 10 !== 0 && n % 10 !== Math.floor(n / 10)).map((n) => decompose(T, n));
-  const faits = additions(C.module2.sommeMax);
+  // (lot « Sommes jusqu'à 30 » : plus les faits des familles 8 à 13, au-delà de 10 : 10 + 4, 8 + 5, 13 + 13…)
+  const faits20 = catalog(C.module2).filter((f) => f.a + f.b > C.module2.sommeMax).map(({ a, b }) => ({ a, b, n: a + b }));
+  const faits = [...additions(C.module2.sommeMax), ...faits20];
   const milieux = M1.filter((c) => c.formats.includes("estimer")).map((c) => ({ n: (c.min + c.max) / 2 }));
   // seules les cartes qui se gagnent déjà sont dites (celles qui attendent leur anecdote ne se gagnent pas)
   const cartes = C.cartes.cartes.filter((c) => c.anecdote).map((c) => ({ nom: c.nomLu ?? c.nom }));
@@ -80,15 +83,24 @@ function domaines(C) {
     // l'aide de la famille 1 : la tortue part du grand nombre et fait 1 ou 2 sauts (facts/screen.js)
     aideLigne: faits.filter(({ a, b }) => Math.min(a, b) === 1 || Math.min(a, b) === 2).map(({ a, b }) => ({ a: Math.max(a, b), sauts: sautsDe(Math.min(a, b)) })),
     // l'aide des doubles jusqu'à 5 : a poissons et leur reflet
-    aideReflet: range(2, 5).map((a) => ({ a })),
+    // (lot « Sommes jusqu'à 30 » : jusqu'à 10 + 10 ; au-delà, le grand double)
+    aideReflet: range(2, 10).map((a) => ({ a })),
     // lot 3 bis (B5) : la famille 1 à trou (la tortue saute jusqu'au total), la maison à trou (les places sous le toit)
     aideLigneTrou: range(1, C.module2.sommeMax).map((n) => ({ n })),
     aideMaisonTrou: range(2, C.module2.sommeMax).map((n) => ({ n })),
     // lot 2, étape 6 : le cadre de 10 (le nombre de poissons déjà dans la boîte), le double + 1 (le double)
     aideCadre: range(2, 9).map((k) => ({ k })),
-    aideDoublePlus: range(1, 4).map((d) => ({ d })),
+    aideDoublePlus: range(1, 9).map((d) => ({ d })),
+    // lot « Sommes jusqu'à 30 » (facts/screen.js, aidSpeech) : les deux boîtes de dix. Forme résolue : le plus grand nombre
+    // d'abord, `c` poissons du plus petit complètent la boîte, il en reste `r` ; dix et quelques : la boîte pleine et `r` ; forme à
+    // trou : le total `n` ; le grand double : a = 10 + u, et le double de u
+    aideDeuxCadresSolu: (() => { const out = new Map(); for (const { a, b } of faits20) { const hi = Math.max(a, b), lo = a + b - hi; if (hi < 10) out.set(`${10 - hi}:${lo - (10 - hi)}`, { c: 10 - hi, r: lo - (10 - hi) }); } return [...out.values()]; })(),
+    aideDix: range(1, 10).map((r) => ({ r })),
+    aideCadresTrou: range(11, 20).map((n) => ({ n })),
+    aideGrandDouble: range(11, 15).map((a) => ({ a, u: a - 10, d: 2 * (a - 10) })),
     // lot 3 : chaque question des presque-doubles rappelle le double (facts/runner.js, q.rappel : d, le petit nombre)
-    rappelDouble: faits.filter(({ a, b }) => Math.abs(a - b) === 1 && Math.max(a, b) <= 5).map(({ a, b }) => ({ a, b, d: Math.min(a, b) })),
+    // (lot « Sommes jusqu'à 30 » : et les presque-doubles jusqu'à 10, famille 10)
+    rappelDouble: faits.filter(({ a, b }) => Math.abs(a - b) === 1 && (Math.max(a, b) <= 5 || (Math.max(a, b) <= 10 && a + b > 10))).map(({ a, b }) => ({ a, b, d: Math.min(a, b) })),
     // lot 3, étape 4 : le calcul rapide (modules/calc/calc.js : calcsOf, les calculs de chaque niveau de module3.json ; chemin :
     // les pas des ponts ; la forme à trou aux niveaux où elle a un sens ; C4 et C5 : les unités et le nombre ajouté ou retiré)
     ...(() => {

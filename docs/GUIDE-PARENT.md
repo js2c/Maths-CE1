@@ -173,6 +173,12 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 | 5 | Les maisons de 8 et 9, avec le cadre de 10. | 6 + ? = 9 |
 | 6 | Les presque-doubles, un double et encore 1. | 3 + 4 = 3 + 3 + 1 |
 | 7 | Le mélange de toutes les additions déjà rencontrées. | 5 + 3, 4 + 4, 7 + 3 |
+| 8 | Dix et quelques, une boîte pleine et ce qui reste. | 10 + 4, 4 + 10 |
+| 9 | Les doubles jusqu'à 15 + 15, dix et dix, puis les unités. | 7 + 7, 13 + 13 |
+| 10 | Les presque-doubles jusqu'à 10, un double et encore 1. | 7 + 8 = 7 + 7 + 1 |
+| 11 | Plus 9, un pour faire dix, puis le reste. | 9 + 4 |
+| 12 | Passer la dizaine, on remplit d'abord la boîte de dix. | 8 + 5 = 8 + 2 + 3 |
+| 13 | Le grand mélange de toutes les additions, jusqu'à 30. | 8 + 5, 7 + 7, 10 + 6 |
 
 **Le calcul rapide**
 
@@ -202,6 +208,8 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 | L7 | Plus 10 sur le mur de corail, on descend d'une rangée. | 34 + 10 |
 | L8 | L'astuce du 9, plus 10, puis moins 1. | 34 + 9 |
 | L9 | Passer la dizaine, on complète d'abord jusqu'à 10. | 38 + 5 |
+| L11 | Dix et encore, une boîte pleine et ce qui reste. | 10 + 4 = 14 |
+| L12 | Faire dix d'abord, on remplit la boîte, puis on ajoute le reste. | 8 + 5 = 13 |
 | + | La table d'addition, toucher une case dit et montre le calcul. | 7 + 5 = 12 |
 
 **L'appui long sur les pictogrammes.** Garder le doigt environ **une demi-seconde** sur une bulle de l'accueil (jouer, choisir, les leçons, le récif, l'album) ou sur un exercice de l'écran « choisir » (la ligne, les additions, le calcul rapide, les voiliers) fait apparaître une **étiquette** au-dessus, qui reste tant que le doigt est posé (depuis le lot 3 ter : elle s'efface en une demi-seconde, et cela vaut pour tous les boutons, voir **d quater**). Relâcher après un appui long **ne lance rien** ; seul un toucher bref lance. La voix ne lit pas l'étiquette. La durée se règle dans `app/content/legendes.json` (`appuiLong`).

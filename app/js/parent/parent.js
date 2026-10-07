@@ -319,7 +319,10 @@ export class ParentSpace {
       m2.querySelector("#pa-base").textContent = m ? `Temps de base (réponse à « a + 0 ») : ${D.fmtSeconds(m)}. Un fait est « rapide » s'il est donné en moins de ce temps plus ${M2.seuilS} secondes (${M2.seuilAvanceS} secondes quand la moitié des faits sont en boîte 3 ou plus).` : "Temps de base : pas encore mesuré.";
       m2.querySelector(".pa-grid-host").replaceChildren(this.additionGrid(m));
     });
-    m2.append(h("h3", {}, "La grille des additions"), h("div", { class: "pa-grid-host" }));
+    // (lot « Sommes jusqu'à 30 » : la grille va jusqu'à 10 + 10 ; les grands doubles, de 11 + 11 à 15 + 15, sont écrits dessous)
+    const big = [11, 12, 13, 14, 15].map((a) => ({ a, f: this.d.faits.find((x) => x.fait === `${a}+${a}`) }));
+    m2.append(h("h3", {}, "La grille des additions"), h("div", { class: "pa-grid-host" }),
+      h("p", { class: "pa-note" }, "Les grands doubles (au-delà de la grille) : ", ...big.map(({ a, f }, i) => h("span", {}, `${i ? " · " : ""}${a} + ${a} : ${f ? `boîte ${f.boite}` : "pas encore rencontré"}`))));
     this.weeklyBlock(m2, 2);
     const WS = D.weeklySolid(this.d.faits);
     if (WS.length) { const cap = h("p", { class: "pa-caption" }, "Touchez un point pour voir le détail de la semaine."); m2.append(h("p", { class: "pa-note" }, "Faits bien sus (boîte 3 ou plus) à la fin de chaque semaine"), chart(WS, (w) => w.n, { fmt: (v) => String(Math.round(v)), tell: (w) => { cap.textContent = `Semaine du ${D.fmtDay(w.semaine)} : ${plural(w.n, "fait bien su", "faits bien sus")} sur ${cat.length}.`; } }), cap); }

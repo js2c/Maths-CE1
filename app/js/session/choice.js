@@ -1,5 +1,5 @@
 // L'ÉCRAN « CHOISIR » (lot 3, docs/SPEC-LOT3.md, section 2) : l'enfant choisit l'exercice, puis le niveau (ligne
-// graduée : les 13 niveaux ; additions : les 7 familles ; calcul rapide et voiliers : 9 niveaux). (Lot « Les leçons » : les
+// graduée : les 13 niveaux ; additions : les 13 familles (7 avant le lot « Sommes jusqu'à 30 ») ; calcul rapide et voiliers : 9 niveaux). (Lot « Les leçons » : les
 // leçons n'y sont plus ; elles ont leur bulle à l'accueil, session/lessons.js.) Tout est accessible, même
 // ce qui n'a jamais été atteint. Sans texte à lire : des pictogrammes et des vignettes de l'atelier
 // (art/src/canvas-core/sea/choice.ts, planche « choix », chargée le temps du choix) ; toucher une image dit son nom et

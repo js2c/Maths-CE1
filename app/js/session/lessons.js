@@ -17,12 +17,14 @@ import * as R from "../art/runtime.js";
 import { onBrief, onTap, pop, spriteBox } from "../engine/ui.js";
 import { MENTON } from "../engine/bulle.js";
 import { closeLegend, legendKey } from "./legend.js";
-import { paintDoublePlus, paintHouse, paintTenFrame } from "../modules/facts/aids.js";
+import { paintDoublePlus, paintHouse, paintTenFrame, paintTwoFrames } from "../modules/facts/aids.js";
 
 // ---------------------------------------------------------------- le menu
-// la grille du menu (px de la scène) : 4 rangées, la colonne des pictogrammes puis 4 colonnes de tuiles, entre la bulle de
+// la grille du menu (px de la scène) : 4 rangées, la colonne des pictogrammes puis 5 colonnes de tuiles, entre la bulle de
 // la mascotte (sous sa tête, jusqu'à x 404) et le petit livre de la légende (1218, 214)
-export const MENU = { rowY: [205, 361, 517, 673], colX: [580, 745, 910, 1075], iconX: 458, tile: { w: 150, h: 136 }, icon: { w: 92, h: 90 } };
+// (lot « Sommes jusqu'à 30 » : la rangée des additions a cinq leçons, L11 et L12 en plus ; les colonnes se resserrent, de
+// 165 à 155 px, pour en tenir cinq ; la cinquième colonne n'a rien sur la rangée de la ligne, sous le petit livre)
+export const MENU = { rowY: [205, 361, 517, 673], colX: [575, 730, 885, 1040, 1195], iconX: 452, tile: { w: 150, h: 136 }, icon: { w: 92, h: 90 } };
 // les éléments du menu et leur place : { kind: "icone", ex } | { kind: "lecon", id } | { kind: "table", id }, avec x, y
 export function menuLayout(menu, M = MENU) {
   const out = [];
@@ -124,7 +126,9 @@ export const tableAid = (a, b) => {
   const lo = Math.min(a, b), hi = Math.max(a, b), n = a + b;
   if (lo === 0) return "rien";
   if (n === 10) return "cadre";
-  if (n > 10) return lo <= 2 ? "ligne" : "deuxCadres";
+  // (lot « Sommes jusqu'à 30 » : au-delà de 10, l'appui des familles 8 à 12 : le reflet d'un double, le double + 1 d'un
+  // presque-double, sinon les deux boîtes, la première complétée, le 10 de « 4 + 10 » compris)
+  if (n > 10) return a === b ? "reflet" : hi - lo === 1 ? "doublePlus" : "deuxCadres";
   if (a === b && a <= 5) return "reflet";
   if (hi - lo === 1 && hi <= 5) return "doublePlus";
   if (lo <= 2) return "ligne";
@@ -179,8 +183,8 @@ function paintPanel(app, ctx, px, lit) {
   const c = document.createElement("canvas"); c.width = Math.round(lw * px); c.height = Math.round(lh * px);
   const x = c.getContext("2d"); x.setTransform(px, 0, 0, px, 0, 0);
   if (kind === "cadre") paintTenFrame(x, sprites, 7, 6, { n: hi, extra: lo });
-  if (kind === "deuxCadres") { paintTenFrame(x, sprites, 7, 6, { n: hi, extra: 10 - hi }); paintTenFrame(x, sprites, 7, 228, { n: 0, extra: lo - (10 - hi) }); }
-  if (kind === "reflet" || kind === "doublePlus") paintDoublePlus(x, sprites, lo, { cx: lw / 2 - (kind === "doublePlus" ? 46 : 0), y: 60, gap: 92, bonus: kind === "doublePlus" });
+  if (kind === "deuxCadres") paintTwoFrames(x, sprites, 7, 6, { first: hi, second: lo, gap: 24 });
+  if (kind === "reflet" || kind === "doublePlus") paintDoublePlus(x, sprites, lo, { cx: lw / 2 - (kind === "doublePlus" ? 46 : 0), y: 60, gap: 92, bonus: kind === "doublePlus", maxW: Infinity });
   if (kind === "maison") paintHouse(x, sprites, lw / 2, 160, n, [[a, b]]);
   if (kind === "ligne") paintJumps(x, sprites, 10, 100, lw - 20, hi, lo);
   const k = Math.min((w - 10) / lw, (P.h - top - 10) / lh);

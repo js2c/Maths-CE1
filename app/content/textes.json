@@ -149,6 +149,11 @@
   "aideMaison": "Les poissons des deux pièces montent sous le toit : compte-les tous !",
   "aideMaisonTrou": "Sous le toit, il y a {n} places. Compte les places vides !",
   "aideDoublePlus": "{d} plus {d}, c'est un double. Et une bulle de plus !",
+  "aideDeuxCadres": "On remplit d'abord la boîte de dix, puis on compte ce qui reste.",
+  "aideDeuxCadresSolu": "{c} pour faire dix, il en reste {r}.",
+  "aideDix": "Une boîte pleine, c'est dix. Et encore {r}.",
+  "aideCadresTrou": "Il faut {n} poissons en tout. Compte les places qui brillent !",
+  "aideGrandDouble": "{a}, c'est dix et {u}. Dix et dix, vingt. {u} et {u}, {d}.",
   "aToiFait": "À toi ! Tape la réponse.",
   "reprise": "On continue !",
   "relanceAide": "Prends ton temps. Tu peux réécouter la consigne.",
@@ -210,7 +215,13 @@
     "4": "Les maisons de cinq, six et sept.",
     "5": "Les maisons de huit et neuf.",
     "6": "Les presque-doubles.",
-    "7": "Le mélange."
+    "7": "Le mélange.",
+    "8": "Dix et quelques.",
+    "9": "Les doubles jusqu'à quinze.",
+    "10": "Les presque-doubles jusqu'à dix.",
+    "11": "Plus neuf.",
+    "12": "Passer la dizaine.",
+    "13": "Le grand mélange."
   },
   "choixLeconNom": {
     "L1": "On compte les sauts.",
@@ -222,7 +233,9 @@
     "L10": "Les centaines.",
     "L7": "Plus dix sur le mur de corail.",
     "L8": "L'astuce du neuf.",
-    "L9": "Passer la dizaine."
+    "L9": "Passer la dizaine.",
+    "L11": "Dix et encore.",
+    "L12": "Faire dix d'abord."
   },
   "rappelDouble": "{a} plus {b}, c'est {d} plus {d}, et encore 1.",
   "calcPlus": "{a} plus {b} ?",

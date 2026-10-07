@@ -33,7 +33,7 @@ test("familles 3 à 7 : règles, ordre d'introduction, 45 faits (a, b de 1 à 9,
   assert.deepEqual(by, { 1: 30, 2: 3, 3: 4, 4: 2, 5: 6 });
   assert.equal(aidFor(7, 3), "cadre"); assert.equal(aidFor(4, 4), "reflet"); assert.equal(aidFor(3, 4), "doublePlus"); assert.equal(aidFor(6, 2), "ligne"); assert.equal(aidFor(5, 3), "maison");
   // réglages dans le contenu, jamais en dur
-  assert.deepEqual(c.familles2.ouverture, { part: 0.8, boite: 2, parJour: 1 }); assert.deepEqual(c.familles2.trou, { part: 0.5, boite: 3 }); assert.equal(c.notion.memeFaitMax, 3);
+  { const { derniere, ...o } = c.familles2.ouverture; assert.deepEqual(o, { part: 0.8, boite: 2, parJour: 1 }); assert.deepEqual([derniere.part, derniere.boite, derniere.aPartirDe], [0.8, 2, 9]); } assert.deepEqual(c.familles2.trou, { part: 0.5, boite: 3 }); assert.equal(c.notion.memeFaitMax, 3);
   assert.deepEqual(seance.alternance.modules, [1, 2, 3]); // (lot 3 : le calcul rapide rejoint la rotation)
 });
 

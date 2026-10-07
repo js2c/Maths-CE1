@@ -16,7 +16,7 @@
   "menuLecons": {
     "rangees": [
       { "exercice": "ligne", "lecons": ["L1", "L2", "L3", "L10"] },
-      { "exercice": "additions", "lecons": ["L4", "L5", "L6"] },
+      { "exercice": "additions", "lecons": ["L4", "L5", "L6", "L11", "L12"] },
       { "exercice": "calcul", "lecons": ["L7", "L8", "L9"] }
     ],
     "tables": ["addition"],

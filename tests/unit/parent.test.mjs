@@ -166,12 +166,12 @@ test("export : le cran choisi, le cran à la fin et les descentes de chaque séa
 const M2 = JSON.parse(readFileSync(new URL("../../app/content/module2.json", import.meta.url)));
 const fait = (k, boite, hist = []) => { const [a, b] = k.split("+").map(Number); return { fait: k, a, b, boite, historique: hist, tempsMedian: hist.filter((x) => x.juste).map((x) => x.ms).sort((p, q) => p - q)[0] ?? null, prochain: at(2026, 10, 9) }; };
 
-test("grille des additions : 11 × 11, 45 faits colorés par boîte et rapidité, 21 cases « + 0 » avec le temps de base, le reste hors grille", () => {
+test("grille des additions : 11 × 11, 100 faits colorés par boîte et rapidité (45 jusqu'à 10, 55 au-delà depuis le lot « Sommes jusqu'à 30 »), 21 cases « + 0 » avec le temps de base", () => {
   const faits = [fait("3+4", 3, [{ t: at(2026, 10, 1), juste: true, ms: 1500, boite: 2, apres: 3 }]), fait("2+2", 1, [{ t: at(2026, 10, 1), juste: false, ms: 9000, boite: 2, apres: 1 }, { t: at(2026, 10, 2), juste: true, ms: 9000, boite: 1, apres: 1 }]), fait("5+5", 3, [{ t: at(2026, 10, 1), parent: true, boite: null, apres: 3 }])];
   const reps = [{ forme: "base", question: "4 + 0", juste: true, tempsMs: 1800 }, { forme: "base", question: "4 + 0", juste: true, tempsMs: 2200 }, { forme: "base", question: "0 + 7", juste: false, tempsMs: 900 }];
   const G = D.additionGrid(faits, reps, { c: M2, baseMs: 2000 }), cells = G.flat();
   assert.equal(G.length, 11); assert.ok(G.every((r) => r.length === 11));
-  assert.equal(cells.filter((x) => x.kind === "fait").length, 45); assert.equal(cells.filter((x) => x.kind === "base").length, 21); assert.equal(cells.filter((x) => x.kind === "hors").length, 55);
+  assert.equal(cells.filter((x) => x.kind === "fait").length, 100); assert.equal(cells.filter((x) => x.kind === "base").length, 21); assert.equal(cells.filter((x) => x.kind === "hors").length, 0);
   assert.deepEqual([G[3][4].boite, G[3][4].rapide], [3, true]);
   assert.deepEqual([G[2][2].boite, G[2][2].rapide, G[2][2].erreurs, G[2][2].passages], [1, false, 1, 2]);
   assert.deepEqual([G[5][5].erreurs, G[5][5].passages], [0, 0]); // le point de départ du parent n'est ni un passage ni une erreur

@@ -24,13 +24,13 @@ import { onTap, spriteBox } from "../session/screens.js";
 import { skipKey } from "../engine/ui.js";
 import { wait } from "../engine/clock.js";
 import { Hermit } from "../engine/hermit.js";
-import { AidBoard, num, paintHouse, paintHundreds, paintTenFrame, put, putScaled } from "../modules/facts/aids.js";
+import { AidBoard, num, paintHouse, paintHundreds, paintTenFrame, paintTwoFrames, put, putScaled } from "../modules/facts/aids.js";
 import { WallFish } from "../modules/calc/wallfish.js";
 
 const ABORT = Symbol("leçon interrompue");
 const REPLAY_AT = [1205, 372]; // (lot 3 bis, R23 : sous « passer », plus à la place de « je ne sais pas »)
 const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };
-const EMPTY = () => ({ miroir: null, cadre: null, maison: null, ecrit: null, filet: false, chalut: null, compteur: null, chaluts: null, nombre: null, mur: null, ligne: null, arcs: [] });
+const EMPTY = () => ({ miroir: null, cadre: null, cadres: null, maison: null, ecrit: null, filet: false, chalut: null, compteur: null, chaluts: null, nombre: null, mur: null, ligne: null, arcs: [] });
 // lot 3 : le mur de corail et la ligne des leçons L7 à L9
 // (lot 3 bis, R18 : la ligne s'arrête avant « rejouer », qui coupait le dernier nombre)
 export const LESSON_WALL = { x: 580, y: 150, cell: 42, gap: 3 }, LESSON_LINE = { x0: 330, x1: 1040, y: 610 };
@@ -133,6 +133,11 @@ export class Lesson2Player {
     if (name === "ecrire") { st.ecrit = v; return this.paint(); }
     if (name === "defiler") { for (const [x, y] of v) { st.ecrit = `${x} + ${y} = ${x + y}`; this.paint(); await wait(950); } return; }
     if (name === "cadre") { st.cadre = { n: 0, extra: 0, lueur: [], ...v }; st.miroir = null; return this.paint(); }
+    // lot « Sommes jusqu'à 30 » (L11, L12) : deux boîtes de dix ; les poissons entrent, puis sautent compléter la première
+    if (name === "cadres") { st.cadres = { a: 0, b: 0, moved: 0, lueur: [], ...v }; st.cadre = null; st.miroir = null; st.maison = null; return this.paint(); }
+    if (name === "entrer" && st.cadres) { const c = st.cadres; while (c.a < v) { c.a++; this.paint(); this.app.sound?.play("bouton"); await wait(220); } return; }
+    if (name === "entrerB") { const c = st.cadres ?? (st.cadres = { a: 0, b: 0, moved: 0, lueur: [] }); while (c.b < v) { c.b++; this.paint(); this.app.sound?.play("bouton"); await wait(260); } return; }
+    if (name === "sauter") { const c = st.cadres; if (!c) return; c.lueur = []; while (c.moved < v) { c.moved++; this.paint(); this.app.sound?.play("bouton"); await wait(520); } return; }
     if (name === "entrer") { const c = st.cadre ?? (st.cadre = { n: 0, extra: 0, lueur: [] }); while (c.n < v) { c.n++; this.paint(); this.app.sound?.play("bouton"); await wait(260); } return; }
     if (name === "maison") { st.maison = v; st.miroir = null; st.cadre = null; return this.paint(); }
   }
@@ -146,6 +151,7 @@ export class Lesson2Player {
       if (st.miroir) paintMirror(ctx, sprites, st.miroir, 700, 470);
       if (st.cadre) paintTenFrame(ctx, sprites, 700 - 228, 400, { n: st.cadre.n, extra: st.cadre.extra ?? 0, glow: st.cadre.lueur ?? [] });
       if (st.maison) paintHouse(ctx, sprites, 700, 400, st.maison.total, st.maison.etages ?? []);
+      if (st.cadres) paintTwoFrames(ctx, sprites, 700 - 228, 340, { first: st.cadres.a, second: st.cadres.b, moved: st.cadres.moved, glow: st.cadres.lueur ?? [] });
       // lot 3 : le mur de corail, la ligne de L9 (et ses arcs)
       if (st.mur) R.drawWall(ctx, { ...LESSON_WALL, lit: st.mur.lit, split: st.mur.split, upTo: st.mur.upTo });
       if (st.ligne) { const L = this.lineSpec(); R.drawLine(ctx, L); for (const [a, b, label] of st.arcs) R.drawJumpArc(ctx, R.tickP(L, a - st.ligne.min), R.tickP(L, b - st.ligne.min), 1, { label: label ?? "+1" }); }

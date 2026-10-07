@@ -64,7 +64,13 @@
     { "n": 4, "travail": "Les maisons de 5, 6 et 7, deux nombres qui font le nombre du toit.", "exemple": "5 + ? = 7" },
     { "n": 5, "travail": "Les maisons de 8 et 9, avec le cadre de 10.", "exemple": "6 + ? = 9" },
     { "n": 6, "travail": "Les presque-doubles, un double et encore 1.", "exemple": "3 + 4 = 3 + 3 + 1" },
-    { "n": 7, "travail": "Le mélange de toutes les additions déjà rencontrées.", "exemple": "5 + 3, 4 + 4, 7 + 3" }
+    { "n": 7, "travail": "Le mélange de toutes les additions déjà rencontrées.", "exemple": "5 + 3, 4 + 4, 7 + 3" },
+    { "n": 8, "travail": "Dix et quelques, une boîte pleine et ce qui reste.", "exemple": "10 + 4, 4 + 10" },
+    { "n": 9, "travail": "Les doubles jusqu'à 15 + 15, dix et dix, puis les unités.", "exemple": "7 + 7, 13 + 13" },
+    { "n": 10, "travail": "Les presque-doubles jusqu'à 10, un double et encore 1.", "exemple": "7 + 8 = 7 + 7 + 1" },
+    { "n": 11, "travail": "Plus 9, un pour faire dix, puis le reste.", "exemple": "9 + 4" },
+    { "n": 12, "travail": "Passer la dizaine, on remplit d'abord la boîte de dix.", "exemple": "8 + 5 = 8 + 2 + 3" },
+    { "n": 13, "travail": "Le grand mélange de toutes les additions, jusqu'à 30.", "exemple": "8 + 5, 7 + 7, 10 + 6" }
   ],
   "calcul": [
     { "n": 1, "travail": "Ajouter ou retirer 1 ou 2.", "exemple": "47 + 2" },
@@ -99,6 +105,8 @@
     { "n": "L7", "travail": "Plus 10 sur le mur de corail, on descend d'une rangée.", "exemple": "34 + 10" },
     { "n": "L8", "travail": "L'astuce du 9, plus 10, puis moins 1.", "exemple": "34 + 9" },
     { "n": "L9", "travail": "Passer la dizaine, on complète d'abord jusqu'à 10.", "exemple": "38 + 5" },
+    { "n": "L11", "travail": "Dix et encore, une boîte pleine et ce qui reste.", "exemple": "10 + 4 = 14" },
+    { "n": "L12", "travail": "Faire dix d'abord, on remplit la boîte, puis on ajoute le reste.", "exemple": "8 + 5 = 13" },
     { "n": "+", "travail": "La table d'addition, toucher une case dit et montre le calcul.", "exemple": "7 + 5 = 12" }
   ]
 }

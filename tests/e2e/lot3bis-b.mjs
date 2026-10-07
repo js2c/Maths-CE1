@@ -347,8 +347,10 @@ if (want("cosmetique")) {
     const { page, context, errors } = await open("&cran=conseille");
     await page.waitForSelector(".choisir"); await page.waitForTimeout(400); await shot(page, "B11-accueil");
     // les bulles de l'accueil ne sont plus posées sur le rocher de droite (x 1024 à 1203, y 600 à 665)
-    const b = await boxes(page, ".play, .choisir, .reefkey, .albumkey");
-    check(b.every((r) => r.x + r.w / 2 + 75 <= 1040), `accueil : les quatre bulles à gauche du rocher (${b.map((r) => Math.round(r.x + r.w / 2)).join(", ")})`);
+    // (lot « Les leçons » : cinq bulles ; le fond est le lagon depuis le lot « Lagon », ce rocher n'existe plus : les bulles,
+    // de 60 px de rayon, restent entre le rocher de gauche, jusqu'à x 285, et le corail de droite, depuis x 1155)
+    const b = await boxes(page, ".play, .choisir, .leconskey, .reefkey, .albumkey");
+    check(b.length === 5 && b.every((r) => r.x + r.w / 2 - 60 >= 285 && r.x + r.w / 2 + 60 <= 1155), `accueil : les cinq bulles entre le rocher de gauche et le corail de droite (${b.map((r) => Math.round(r.x + r.w / 2)).join(", ")})`);
     await spy(page); await page.tap(".speaker", { force: true }); await page.waitForTimeout(600);
     check(/Touche une bulle/.test(await said(page)), "accueil : « réécouter » dit ce qu'on peut faire");
     await tap(page, ".albumkey"); await page.waitForSelector(".album-tab"); await page.waitForTimeout(700); await shot(page, "B11-album");

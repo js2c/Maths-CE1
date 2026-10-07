@@ -98,7 +98,7 @@ test("crans : plus facile = le chemin d'emblée, sans promotion ; plus dur = san
   // lot 3 bis (A2) : au niveau 3 (pas fixe), la forme directe et le trou sur le nombre de départ, à parts égales ; au niveau 4, le trou sur le second nombre
   assert.deepEqual(td.qs.filter((q) => !q.revient).map((q) => q.forme), ["directe", "trouGauche", "directe", "trouGauche", "directe", "trouGauche"].slice(0, td.qs.filter((q) => !q.revient).length));
   const t4 = await play({ cran: "tresdur", choix: 4, store: await (async () => { const s = await open(); await s.put("niveaux", { ...initialCalcState(), vus: { 4: 10 } }); return s; })() }, 4); assert.ok(t4.qs.every((q) => q.forme === "trouDroite"));
-  const t9 = await play({ cran: "tresdur", choix: 9, store: await (async () => { const s = await open(); await s.put("niveaux", { ...initialCalcState(), vus: { 9: 10 } }); return s; })() }, 4); assert.ok(t9.qs.every((q) => q.forme === "directe"), "niveau 9 : la forme à trou n'a pas de sens");
+  const t9 = await play({ cran: "tresdur", choix: 9, store: await (async () => { const s = await open(); await s.put("niveaux", { ...initialCalcState(), vus: { 9: 10 } }); return s; })() }, 4); assert.ok(t9.qs.every((q) => q.forme === "trouDroite"), "niveau 9 : le trou sur le second nombre, comme aux niveaux 4 à 8 (lot « Correctifs », écart 7.3)");
 });
 
 test("niveau choisi : toutes les questions à ce niveau (même au-dessus du conseillé) ; réussi, il est acquis ; échouer ne retire rien", async () => {

@@ -3,6 +3,8 @@
 // dates où chaque zone s'ouvre et se complète, légendaires, brillantes, quota jamais dépassé.
 //   node tests/sim-seances.mjs [sait|reel|diff|tresdur|facile] [séances par semaine : 2|3|5] [nombre de séances, ou « annee » : jusqu'au 2 juillet 2027] [--court]
 //   lot 3 : [--choix 1:5 | 2:4] l'enfant choisit toujours cet exercice (ligne, niveau 5 ; additions, famille 4) ; [--cran facile|conseille|dur|tresdur]
+//   lot « Correctifs » (écart 6.2) : [--deux-par-jour] deux séances chaque soir (la seconde une heure après la première,
+//   comme une séance interrompue suivie d'une autre) : au plus une famille d'additions ouverte par jour, toutes voies confondues.
 // Les zones 3 et 4 sont considérées prêtes (contenu fictif). --court : seulement le bilan.
 import { readFileSync } from "node:fs";
 import { simulate, PROFILS } from "./sim-recette.mjs";
@@ -15,7 +17,8 @@ const argv = process.argv.slice(2), val = (k) => (argv.includes(k) ? argv[argv.i
 const args = argv.filter((a, i) => !a.startsWith("--") && !["--choix", "--cran"].includes(argv[i - 1])), court = argv.includes("--court");
 const ch = val("--choix")?.split(":").map(Number), choix = ch ? (ch[0] === 2 ? { module: 2, famille: ch[1] } : { module: ch[0], niveau: ch[1] }) : null;
 const [profil = "reel", perWeek = "2", n = "30"] = args;
-const res = await simulate({ profil, jours: days(+perWeek, n === "annee" ? "annee" : +n), seed: 7, choix, cran: val("--cran") });
+const jours0 = days(+perWeek, n === "annee" ? "annee" : +n), jours = argv.includes("--deux-par-jour") ? jours0.flatMap((d) => [d, new Date(d.getTime() + 3600000)]) : jours0;
+const res = await simulate({ profil, jours, seed: 7, choix, cran: val("--cran") });
 if (choix) console.log(`# lot 3 : l'enfant choisit toujours ${choix.module === 4 ? (choix.niveau ? `les voiliers, niveau ${choix.niveau}` : "les voiliers, au niveau conseillé") : choix.module === 3 ? `le calcul rapide, niveau ${choix.niveau}` : choix.module === 1 ? `la ligne, niveau ${choix.niveau}` : `les additions, famille ${choix.famille}`}, cran ${val("--cran") ?? PROFILS[profil].cran ?? "conseille"} : réussite de la notion du jour (10 premières séances, exemples guidés exclus) ${(() => { const xs = res.slice(0, 10).flatMap((r) => r.notionOk ?? []); return Math.round((100 * xs.filter(Boolean).length) / Math.max(1, xs.length)); })()} % ; descentes de cran ${res.slice(0, 10).reduce((a, r) => a + r.descentes, 0)}`);
 console.log(`# profil ${PROFILS[profil].nom}, ${perWeek}/sem, ${res.length} séances`);
 if (!court) for (const r of res) console.log(`${r.n}\t${r.date}\t${r.cranDepart}${r.descentes ? `->${r.cran}` : ""}\t${r.module === 2 ? "additions" : r.module === 3 ? `calcul ${r.niv0}->${r.niv1}` : r.module === 4 ? `voiliers ${r.niv0}->${r.niv1}` : `niv ${r.niv0}->${r.niv1}`}\tq=${r.questions} ${Math.round((r.reussite ?? 0) * 100)}% nsp ${r.nsp} nouveaux ${r.nouveaux}\t${r.duree}min\tm${r.module}${r.defi !== undefined ? ` défi ${r.defi}${r.record ? "!" : ""}` : ""}${r.module === 2 ? ` f${r.famille}` : ""}\t★${r.etoiles}\tarc${r.arc}${r.doree ? " DORÉE" : ""}${r.surprise ? ` surprise ${r.surprise}` : ""}\tcartes ${r.nbCartes}/${r.quota} [${r.cartes.join(",")}]${r.zones.length ? ` ZONE ${r.zones.join(",")}` : ""}\tfaits vus ${r.faitsVus} boîtes ${r.boites.join("/")}\tchauffe: ${r.faits.join(" ")}\tligne: ${r.ligne.join(" ")}${r.lecons.length ? " leçons " + r.lecons.join(",") : ""}`);

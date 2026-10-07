@@ -7,7 +7,7 @@ Mode d'emploi :
 - **Ce document dit ce que fait l'application** : les règles en vigueur. Ce qui n'est pas encore construit est marqué **(à construire)**. Les raisons des décisions sont dans `docs/JOURNAL-CONCEPTION.md` ; les idées et les questions ouvertes, dans `docs/IDEES.md`.
 - **Les valeurs vivent dans `app/content/`** (nombres de questions, seuils, pourcentages, textes lus). Ce document donne les valeurs par défaut quand elles font partie de la règle ; en cas d'écart, le fichier de contenu fait foi et l'écart est signalé.
 - **On le modifie en place** : un lot ne crée plus de nouvelle spécification. Il modifie ce document dans la même demande de fusion que le code.
-- **Rédigé à partir des spécifications, pas du code.** La confrontation avec le code reste à faire (`docs/PROMPTS.md`, « Confrontation »), avant le lot « Sommes jusqu'à 30 » ; les écarts trouvés sont tranchés par le parent, puis reportés ici.
+- **Confronté au code** le 6 octobre 2026 (`docs/ECARTS-SPEC.md`) : les écarts ont été tranchés par le parent le même jour et reportés ici par le lot « Correctifs » (octobre 2026), avec les comportements que l'application avait sans que ce document les décrive. Les renvois « (6.2) », « (9.4) »… donnent le numéro de l'écart dans le rapport.
 
 ## 1. Objectif et public
 
@@ -21,11 +21,11 @@ Mode d'emploi :
 
 ### L'accueil
 
-Quatre bulles : **jouer**, **choisir**, **le récif**, **l'album**, plus le logo (appui long, espace parent). **(à construire)** Une cinquième bulle, **les leçons**, sort les leçons de l'écran « choisir » (section 3, « Les leçons »). Après la séance du jour : la lune « à demain » (un décor, pas un bouton), **Encore !**, le récif, l'album.
+Quatre bulles : **jouer**, **choisir**, **le récif**, **l'album**, plus le logo (appui long, espace parent). **(à construire)** Une cinquième bulle, **les leçons**, sort les leçons de l'écran « choisir » (section 3, « Les leçons »). Après la séance du jour : la lune « à demain » (un décor, pas un bouton), **Encore !**, le récif, l'album. « Réécouter » dit ce qu'on peut faire : à l'accueil, « Touche une bulle : jouer, choisir, le récif ou l'album. » ; en pause, « C'est la pause. Touche la grande bulle pour continuer. ».
 
 - **jouer** : la séance préparée par l'application (notion du jour choisie par la rotation, section 3).
 - **choisir** : l'enfant, ou le parent pour elle, choisit l'exercice puis le niveau (section 3). L'exercice choisi **est la séance du jour**, avec étoiles, coquillages et cartes.
-- **Encore !** : le même écran de choix, en **entraînement libre** : sans étoiles ni coquillages, réponses enregistrées (marquées « libre »), comptées pour l'adaptation et la révision espacée. Pas de limite de durée ; la voix propose d'arrêter après 10 minutes. Une étoile arc-en-ciel gagnée en entraînement libre est remise à la récompense de la séance suivante.
+- **Encore !** : le même écran de choix, en **entraînement libre** : sans étoiles ni coquillages, réponses enregistrées (marquées « libre »), comptées pour l'adaptation et la révision espacée. Une musique y joue ; une leçon y est vue sans étoiles. Pas de limite de durée ; après 10 minutes, la voix dit une fois « Tu t'entraînes depuis longtemps ! Tu peux t'arrêter quand tu veux : touche la maison. ». Une étoile arc-en-ciel gagnée en entraînement libre (une famille acquise y donne aussi la sienne) est remise à la récompense de la séance suivante.
 - **Une séance comptée par jour** : la première séance terminée du jour. Une séance interrompue ne compte pas ; une autre peut suivre le même jour.
 
 ### Le déroulé
@@ -36,32 +36,35 @@ Quatre bulles : **jouer**, **choisir**, **le récif**, **l'album**, plus le logo
 | Sélecteur de difficulté | Quatre crans (section 4). |
 | Échauffement | Des additions : faits dus de la révision espacée et faits nouveaux (section 6). Passable. |
 | Notion du jour | L'exercice du jour : leçon si besoin, exemples guidés, questions (sections 5 à 7). |
-| Défi record | 1 minute d'additions déjà bien sues (section 6). À partir de la 5e séance terminée et si au moins 8 faits sont en boîte 3 ou plus ; sinon sauté sans rien dire. Désactivable par le parent. |
+| Défi record | 1 minute d'additions déjà bien sues (section 6). À partir de la **6e séance** (5 déjà terminées : décision du parent du 6 octobre 2026, 2.1) et si au moins 8 faits sont en boîte 3 ou plus ; sinon sauté sans rien dire. Désactivable par le parent. |
 | Problème du jour | **(à construire)** Un problème court (section 13). |
 | Récompense | Étoiles, coquillages, cartes, décors, étoiles arc-en-ciel et dorées (section 10). |
 
-- **Durée visée : 9 à 11 minutes** pour une enfant qui répond en 4,5 s. **La durée prime** sur le nombre de questions : chaque étape a une durée et une plage de questions (`seance.json`) ; si la mesure donne moins de 9 minutes, les nombres de questions sont relevés. Plafond de sécurité réglable par le parent (10, 12 ou 15 min ; 12 par défaut).
-- **La séance se termine toujours sur une réussite**, puis la récompense.
+- **Durée visée : 9 à 11 minutes** pour une enfant qui répond en 4,5 s, avec « jouer ». **La durée prime** sur le nombre de questions : chaque étape a une durée et une plage de questions (`seance.json`) ; si la mesure donne moins de 9 minutes, les nombres de questions sont relevés. Plafond de sécurité réglable par le parent (10, 12 ou 15 min ; 12 par défaut).
+- **Le plafond** : plus aucune nouvelle question 60 s avant le plafond (sauf les questions de fin sur une réussite, ci-dessous) (le temps de la récompense, `seance.json`, `reserveRecompenseS`) ; une étape pas encore commencée quand le temps est écoulé est sautée.
+- **La notion du jour s'arrête d'elle-même** quand plus aucune question ne respecte « pas plus de 3 fois la même question » (section 9) ; la séance peut alors être plus courte. Avec « choisir », aux niveaux étroits (par exemple ligne niveau 2 « très dur », ligne niveau 8, crans « plus facile »), une séance sur une base neuve peut ainsi durer 6 à 8 minutes : c'est accepté (décision du parent du 6 octobre 2026, 2.5), à mesurer à l'usage (`docs/IDEES.md`).
+- **La notion du jour se termine si possible sur une réussite** : après une dernière réponse fausse, au plus 2 questions plus simples (`seance.json`, `finirSurReussite.essaisMax`), même si le temps de l'étape est écoulé, et même sur la minute gardée pour la récompense (seule exception au plafond ci-dessus). Le défi, qui suit, finit comme il finit (2.2). Puis la récompense.
 - **Pas de chronomètre visible**, sauf au défi record (une bulle qui se vide, sans chiffre de secondes).
 
 ### Pendant la séance
 
 - **La maison** (coin haut gauche) met la séance en pause, pendant l'échauffement, la notion du jour (leçons, exemples, corrections comprises) et le défi (le chronomètre s'arrête) ; pas pendant l'accueil ni la récompense.
-- **L'accueil en pause** montre : **continuer** (reprise exacte : même question, consigne redite, même phrase de leçon) ; **choisir** (revenir sans valider ramène à la pause ; valider un exercice interrompt la séance en pause, avec la raison « autre exercice choisi par l'enfant », sans rien perdre des réponses ni des étoiles, puis lance l'exercice choisi comme séance du jour, sans refaire l'échauffement déjà fait ou passé ; valider une leçon la joue puis revient à la pause) ; **le récif et l'album** (visite libre, horloge, voix et musique de la séance en pause) ; **le logo** (espace parent, où « Terminer la séance » est proposé).
+- **L'accueil en pause** montre : **continuer** (reprise exacte : même question, consigne redite, même phrase de leçon) ; **choisir** (revenir sans valider ramène à la pause ; valider un exercice interrompt la séance en pause, avec la raison « autre exercice choisi par l'enfant », sans rien perdre des réponses ni des étoiles, puis lance l'exercice choisi comme séance du jour ; valider une leçon la joue puis revient à la pause) ; **le récif et l'album** (visite libre ; horloge et voix de la séance en pause ; la musique continue très bas, au niveau de la pause : décision du parent du 6 octobre 2026, 2.4) ; **le logo** (espace parent, où « Terminer la séance » est proposé).
+- **L'échauffement déjà fait ou passé aujourd'hui n'est pas refait**, dans toute séance du même jour (après « choisir » depuis la pause, après « Terminer la séance » du parent…) ; un échauffement interrompu en cours (pause, puis autre exercice) ne compte pas comme fait : il est refait en entier (décision du parent du 6 octobre 2026, 2.3).
 - **Pas de bouton d'arrêt pour l'enfant.** Seul le parent termine une séance en pause (section 12).
-- **La frise d'avancement**, en haut : un pictogramme plat par étape (accueil, échauffement, notion du jour, défi, récompense), une rangée de bulles qui se remplissent dans l'étape en cours ; pas de chiffre ; elle ne ressemble à aucun bouton et ne réagit pas au toucher.
+- **La frise d'avancement**, en haut : un pictogramme plat par étape (accueil, échauffement, notion du jour, défi, récompense), une rangée de bulles qui se remplissent dans l'étape en cours ; pas de chiffre ; elle ne ressemble à aucun bouton et ne réagit pas au toucher. Elle ne montre le défi que s'il aura lieu, et l'échauffement seulement s'il est prévu ; le pictogramme de la notion du jour change selon l'exercice (la ligne, le « + », le mur de corail, le voilier).
 - **Réécouter** : toujours visible, rejoue la consigne ; compteur d'écoutes enregistré.
 
 ## 3. Choisir l'exercice et le niveau
 
 ### L'écran « choisir »
 
-- **Validation simple** : un toucher bref sur une image dit son nom et la lance. De l'accueil au sélecteur : 3 touchers (choisir, l'exercice, le niveau).
+- **Validation simple** : un toucher bref sur une image dit son nom et la lance. De l'accueil au sélecteur : 3 touchers (choisir, l'exercice, le niveau). À l'étape des niveaux, une petite bulle (l'image de l'exercice) ramène au choix de l'exercice ; la maison ramène à l'accueil sans rien lancer.
 - **Premier écran, l'exercice** : la ligne des nombres (la tortue), les additions (le « + »), le calcul rapide (le mur de corail), les voiliers (un voilier entre deux bouées, section 7 bis), les leçons (un livre ouvert).
 - **Écrans de niveaux** : **tous les niveaux sont accessibles**, même jamais atteints.
   - Ligne des nombres : 13 tuiles ; additions : 7 familles ; calcul rapide : 9 plaques posées dans l'ordre sur un chemin de cailloux, l'exemple de calcul en petit ; voiliers : 9 tuiles, chacune avec la rangée de bouées du niveau, leurs nombres, et le voilier au-dessus du bon passage, son nombre en rouge.
   - Chaque tuile porte **son numéro en grand** (le parent peut dire « fais le 7 »), avec sa vignette en petit.
-  - Le niveau conseillé a un **halo épais et animé** ; un niveau validé porte une petite étoile, à l'intérieur de sa tuile.
+  - Le niveau conseillé a un **halo épais et animé** ; un niveau validé porte une petite étoile, à l'intérieur de sa tuile. À la ligne, l'étoile veut dire « dépassé » : tous les niveaux sous le conseillé la portent, même jamais joués (réussir le 9 en partant du 3 met une étoile sur les niveaux 4 à 8) ; aux voiliers aussi ; aux additions et au calcul rapide, seulement les familles et les niveaux acquis (décision du parent du 6 octobre 2026, 3.2).
   - Aucune tuile coupée par un bord d'écran, ni posée sur la mascotte ou les algues.
 - **Écran des leçons** (aujourd'hui, la dernière image du premier écran) : toutes les leçons existantes, vues ou non. Une leçon choisie seule n'est pas une séance : elle se joue, puis revient à l'accueil ; 3 étoiles si elle est regardée jusqu'au bout, une fois par leçon et par jour. Les tuiles portent un exemple (« 1 2 3 », « 10 20 », « 100 »…) sans numéro : **incompréhensibles** (constat du parent du 30 septembre), à refaire ci-dessous.
 
@@ -88,30 +91,35 @@ Quatre bulles : **jouer**, **choisir**, **le récif**, **l'album**, plus le logo
 
 ### Ce qu'entraîne un choix
 
-- **Niveau choisi au-dessus du conseillé** : le réussir (8 bonnes réponses sur 10, au plus une aide) **le valide** et fait passer le conseillé au niveau suivant ; échouer ne fait jamais baisser le conseillé ni rien retirer. La leçon d'entrée du niveau est jouée la première fois.
+- **Niveau choisi au-dessus du conseillé** : le réussir (8 bonnes réponses sur 10, au plus une aide, ou la voie rapide) **le valide** ; échouer ne fait jamais baisser le conseillé ni rien retirer. La leçon d'entrée du niveau est jouée la première fois. Ce que devient le conseillé dépend de l'exercice (3.1) :
+  - ligne et voiliers : le conseillé passe au niveau qui suit le niveau réussi (réussir le 9 en partant du 3 mène au 10) ;
+  - calcul rapide : le niveau réussi est acquis ; le conseillé reste le plus bas des niveaux débloqués et pas encore acquis (les niveaux du calcul sont des procédures, pas une échelle).
 - **Famille d'additions choisie** : elle devient la famille en cours de la séance ; si elle n'est pas ouverte, elle s'ouvre (sans étoile arc-en-ciel). La limite de faits nouveaux par séance ne s'applique pas à ses faits.
 - **Mélange choisi en base neuve** : si moins de 3 familles ont des faits introduits, il introduit des faits des familles 1 à 3, avec la même limite que pour une famille choisie.
 
 ### La rotation de « jouer »
 
-- La notion du jour tourne entre les trois exercices : **le moins avancé d'abord**, jamais deux fois de suite le même, sauf si un autre n'a rien à proposer.
+- La notion du jour tourne entre les trois exercices : **le moins avancé d'abord**, jamais deux fois de suite le même, sauf si un autre n'a rien à proposer (ce cas ne se présente pas aujourd'hui : chaque exercice a toujours un niveau à proposer, et le code ne le vérifie pas ; laissé tel quel, décision du parent du 6 octobre 2026, 3.3).
+- « Le moins avancé » se mesure à la part du parcours faite : ligne, le niveau atteint sur 13 ; additions, les familles acquises sur 7 ; calcul rapide, les niveaux acquis sur 9 ; à égalité, l'ordre qui suit l'exercice de la dernière séance dans le cycle ligne, additions, calcul (après les additions : le calcul, puis la ligne). « La dernière », c'est la dernière séance terminée, une séance d'exercice choisi comprise.
 - Quand tout ce qui est débloqué dans un exercice est acquis, « jouer » y révise le plus haut niveau acquis.
-- **Module imposé par le parent** : valable pour la prochaine séance lancée par « jouer » ; si l'enfant choisit elle-même, il attend la suivante.
+- **Module imposé par le parent** : valable pour la prochaine séance lancée par « jouer » ; si l'enfant choisit elle-même, il attend la suivante. Il est consommé dès qu'une séance « jouer » commence, même si elle est ensuite interrompue.
 - **Les voiliers n'entrent pas dans la rotation** (décision du parent du 6 octobre 2026 : on y accède par « choisir », comme aux autres exercices) ; le parent peut les imposer pour la prochaine séance « jouer » (`seance.json`, `alternance.horsRotation`).
 
 ## 4. La difficulté : le sélecteur à quatre crans
 
-Juste après l'accueil, un curseur à 4 crans, placé sur **conseillé**. Le cran vaut pour toute la séance, échauffement compris. Sans toucher pendant 15 s, la séance commence sur le cran affiché. Écran sans texte : des vagues de plus en plus grosses et les étoiles de chaque cran ; le conseillé a une lueur. En entraînement libre : même sélecteur, sans étoiles.
+Juste après l'accueil, un curseur à 4 crans, placé sur **conseillé**. Le cran vaut pour toute la séance, échauffement compris. Sans toucher pendant 15 s, la séance commence sur le cran affiché. Écran sans texte : des vagues de plus en plus grosses et les étoiles de chaque cran ; le conseillé a une lueur. Toucher une vague dit ce qu'elle rapporte (« Plus dur : une étoile et demie par bonne réponse ! ») ; une grosse coche valide. Si le parent n'autorise qu'un cran, l'écran n'apparaît pas ; si le conseillé est interdit, le cran de départ est le plus proche autorisé. En entraînement libre : même sélecteur, sans étoiles.
 
-| Cran | Étoiles des bonnes réponses | Avec « jouer » | Avec « choisir » |
+| Cran | Étoiles des bonnes réponses | Ligne, avec « jouer » | Avec « choisir » |
 | --- | --- | --- | --- |
 | Plus facile | × 0,5 | niveau conseillé − 1 | même niveau, une aide ou un repère en plus |
 | Conseillé | × 1 | niveau conseillé | le niveau tel qu'il est défini |
 | Plus dur | × 1,5 | niveau conseillé + 1 | même niveau, un repère en moins |
 | Très dur | × 2 | niveau conseillé + 2 | même niveau, repères au minimum ou tolérance resserrée |
 
+- **Le décalage de niveau avec « jouer » ne vaut que pour la ligne** (4.1). Avec « jouer », les additions gardent la famille en cours et changent les formes et les faits (section 6, « Les crans ») ; le calcul rapide a les mêmes crans qu'avec « choisir » (le chemin, section 7) ; les voiliers changent la mer (section 7 bis).
+
 - Le multiplicateur ne porte que sur les bonnes réponses et les erreurs corrigées ; les fractions s'accumulent.
-- **« Plus facile » consolide sans faire progresser** : une réussite à ce cran ne fait pas monter le niveau conseillé, et un fait réussi avec l'aide affichée d'emblée ne change pas de boîte (sans être renvoyé en boîte 1). La parade, si l'enfant le choisit presque toujours : l'interdire dans l'espace parent.
+- **« Plus facile » consolide sans faire progresser** : une réponse à ce cran ne compte jamais pour la montée ni pour la voie rapide, même quand le niveau joué est le conseillé (à la ligne, avec « jouer », au niveau 1) (décision du 27 septembre 2026, appliquée au lot « Correctifs », 4.2). À la ligne, elle ne compte pas non plus pour la difficulté persistante (section 9) ; un fait réussi avec l'aide affichée d'emblée ne change pas de boîte (sans être renvoyé en boîte 1). La parade, si l'enfant le choisit presque toujours : l'interdire dans l'espace parent.
 - **Réussir au-dessus du conseillé** valide le niveau ; échouer au-dessus ne fait jamais baisser le conseillé.
 - **Protection** : 3 erreurs sur 5 au-dessus du conseillé font redescendre **d'un cran** pour le reste de la séance, avec une phrase douce (« On essaie un peu moins dur ? ») ; le multiplicateur suit. Avec « choisir », la protection descend un cran, jamais un niveau.
 - **Crans autorisés** : réglage du parent (par exemple interdire « plus facile », ou plafonner à « plus dur »).
@@ -125,7 +133,7 @@ Juste après l'accueil, un curseur à 4 crans, placé sur **conseillé**. Le cra
 
 **Formats.**
 
-- **Lire** : une étoile de mer sur une graduation, choisir le bon nombre parmi des propositions (format de l'évaluation). Les propositions pièges sont construites à partir des erreurs E1 à E7 et reconstruites à chaque question.
+- **Lire** : une étoile de mer sur une graduation, choisir le bon nombre parmi des propositions (format de l'évaluation) : 3 aux niveaux 1 et 2, 4 ensuite (`module1.json`, `choix`). Les propositions pièges sont construites à partir des erreurs E1 à E7 et reconstruites à chaque question.
 - **Placer** : « Place le poisson sur 7 ». Le nombre est écrit sur une étiquette que porte le poisson (il ne ressemble pas à une bulle-réponse) ; la corde ondule au début de la question ; on peut toucher la corde, toucher ou glisser le poisson.
 - **Sauter** : « La tortue est sur 4 et fait 3 sauts. Où arrive-t-elle ? »
 - **Estimer** : placer un nombre sur une ligne sans graduations, avec une tolérance.
@@ -137,17 +145,19 @@ Juste après l'accueil, un curseur à 4 crans, placé sur **conseillé**. Le cra
 | 2 | 0 à 10, pas de 1 | 0, 5, 10 | lire, placer |
 | 3 | 0 à 20, pas de 1 | 0, 10, 20 | lire, placer |
 | 4 | 10 graduations hors de 0 (30 à 40) | les deux extrémités | lire, placer |
-| 5 | 0 à 100, pas de 10 | 0 et 100, puis 0, 50, 100 | lire, placer |
+| 5 | 0 à 100, pas de 10 | 0, 50, 100 (« 0 et 100 seulement », c'est le cran « plus dur », 5.1) | lire, placer |
 | 6 | segment de 20, pas de 1 (30 à 50) | les dizaines | lire, placer |
 | 7 | pas à déduire (1 ou 10) | deux graduations voisines | lire |
-| 8 | 0 à 100 sans graduations | 0 et 100 | estimer (± 8 puis ± 5) |
+| 8 | 0 à 100 sans graduations | 0 et 100 | estimer (± 8, puis ± 5 après 5 estimations justes au niveau) |
 | 9 | 0 à 1 000, pas de 100 | 0, 500, 1 000 | lire, placer |
 | 10 | une centaine, pas de 10 (300 à 400) | les deux extrémités | lire, placer |
 | 11 | 20 graduations de 1 (340 à 360) | les dizaines | lire, placer |
 | 12 | pas de ligne : dictée | — | écrire (« trois-cent-sept » → 307) |
-| 13 | 0 à 1 000 sans graduations | 0 et 1 000 | estimer (± 60 puis ± 40) |
+| 13 | 0 à 1 000 sans graduations | 0 et 1 000 | estimer (± 60, puis ± 40 après 5 estimations justes au niveau) |
 
 Les niveaux 9 à 13 s'ouvrent avec « jouer » quand le niveau 8 est acquis ; avec « choisir », ils sont accessibles dès le départ.
+
+**La tolérance d'« estimer »** (niveaux 8 et 13) se resserre après 5 estimations justes **au niveau joué**, qu'il soit le conseillé ou non (« choisir » compris), comptées d'une séance à l'autre ; les estimations au cran « plus facile » ne comptent pas (correctif du lot « Correctifs », décision du parent du 6 octobre 2026, 5.4 : jusque-là, seulement au niveau conseillé). Avec « choisir », les crans « plus facile », « plus dur » et « très dur » fixent leur propre tolérance (tableau ci-dessous) ; avec « jouer », le cran change le niveau (section 4).
 
 **Crans à l'intérieur du niveau (avec « choisir »)** — réglés dans `module1.json` ; une case qui rendrait le niveau infaisable peut être ajustée, avec la raison notée :
 
@@ -181,7 +191,11 @@ Les niveaux 9 à 13 s'ouvrent avec « jouer » quand le niveau 8 est acquis ; av
 | E6 | confond dizaines et centaines | 37 ou 370 au lieu de 307 | « Trois-cent-sept : 3 centaines, 0 dizaine, 7 unités. » |
 | E7 | écrit le nombre comme il l'entend | 3007 au lieu de 307 | « Le 7 prend la place des unités. » |
 
-**Leçons** : L1 (niveau 1, et E1 répétée), L3 (niveau 4, et E3 répétée au format « lire » sur une ligne qui ne commence pas à 0 ; une E3 au format « sauter » rejoue seulement sa correction), L2 (niveau 5, et E2 répétée), L10 (niveau 9). Section 8.
+**Retours** : toute correction finit par la bonne réponse (« C'était 7. »). Une leçon jouée pendant la séance est suivie de « À toi ! » et d'un exemple guidé au format « lire ».
+
+**Leçons** : L1 (niveau 1, et E1 répétée), L3 (niveau 4, et E3 répétée au format « lire » sur une ligne qui ne commence pas à 0 ; une E3 au format « sauter » rejoue seulement sa correction), L2 (niveau 5, et E2 répétée), L10 (niveau 9, et E6 répétée, 5.2). Section 8.
+
+**Difficulté persistante** (3 erreurs sur 5 au niveau conseillé, section 9) : la leçon relancée est L1 aux niveaux 1 à 3, L3 au niveau 4, L2 au niveau 5, L10 au niveau 9 ; aux niveaux 6 à 8 et 10 à 13, aucune leçon : seulement une question plus simple (5.3).
 
 **Voie rapide** : elle peut faire franchir plusieurs niveaux dans une même séance, avec la leçon d'entrée de chaque niveau.
 
@@ -205,14 +219,16 @@ Les niveaux 9 à 13 s'ouvrent avec « jouer » quand le niveau 8 est acquis ; av
 
 - **Introduction et pratique** : un fait nouveau est introduit avec la première famille qui le contient ; la pratique d'une famille porte sur tous les faits de sa règle, même rencontrés avant (les amis de 10 incluent 9 + 1, 5 + 5).
 - **Faits nouveaux tirés au hasard** dans la famille (pas dans l'ordre 1 + 9, 2 + 8…) ; les deux ordres des termes apparaissent dans la séance.
-- **Ouverture de la famille suivante** (au plus une par jour, quelle que soit la voie) :
-  - par la **notion du jour** : 80 % des faits déjà introduits en boîte 2 ou plus ;
-  - par l'**échauffement** : tous les faits des familles ouvertes introduits et 80 % en boîte 2 ou plus, et 90 % de réussite rapide sur les 12 dernières réponses d'échauffement ; aucune leçon imposée ; l'espace parent note « ouverte par l'échauffement le … » ;
-  - par le **choix** de l'enfant (section 3), ou par le **point de départ** du parent (section 12).
+- **Ouverture de la famille suivante**, **au plus une par jour, toutes voies confondues** (correctif du lot « Correctifs », décision du parent du 6 octobre 2026, 6.2 ; `module2.json`, `familles2.ouverture.parJour`) :
+  - par la **notion du jour** : à la fin de la notion, 80 % des faits déjà introduits en boîte 2 ou plus ;
+  - par l'**échauffement** : tous les faits des familles ouvertes introduits et 80 % en boîte 2 ou plus, et 90 % de réussite rapide sur les 12 dernières réponses d'échauffement ; aucune leçon imposée ; l'espace parent note « ouverte par l'échauffement le … » ; l'entraînement libre n'ouvre pas de famille par l'échauffement ;
+  - par la **stagnation** (ci-dessous) ;
+  - seuls le **choix** de l'enfant (section 3) et le **point de départ** du parent (section 12) échappent à la limite : ils ouvrent même si une famille s'est déjà ouverte le jour même ; une famille ouverte ainsi compte pour le jour (aucune autre ne s'ouvre ensuite par les autres voies ce jour-là).
+  - Les familles 1 et 2, ouvertes au départ, ne comptent pas. Deux séances le même jour (une séance interrompue suivie d'une autre) n'ouvrent donc jamais deux familles d'elles-mêmes (seuls le choix et le point de départ le peuvent).
   - Pas de fermeture automatique : une famille ouverte trop tôt se régule par la révision (les faits ratés restent en boîte 1).
 - **Famille acquise** (une étoile arc-en-ciel, sauf point de départ du parent) : 80 % des faits de sa règle en boîte 3 ou plus ; pour les familles 3 à 5, chacun de ces faits réussi au moins une fois à une forme à trou ; ces réussites sur au moins 2 séances à deux jours différents. Une famille acquise le reste.
 - **Famille en cours** (avec « jouer ») : la plus basse des familles ouvertes ni acquise ni dépassée ; quand toutes sont acquises, le mélange.
-- **Stagnation** : une famille pas acquise après 6 séances où elle était la famille en cours de la notion du jour est **dépassée** ; la suivante devient la famille en cours (elle s'ouvre si besoin, avec sa leçon) ; la famille dépassée reste travaillée en révision, peut encore être acquise, et ne redevient jamais la famille en cours. L'espace parent la marque « en révision ».
+- **Stagnation** : une famille pas acquise après 6 séances où elle était la famille en cours de la notion du jour est **dépassée** ; la suivante devient la famille en cours (elle s'ouvre si besoin, avec sa leçon) ; la famille dépassée reste travaillée en révision, peut encore être acquise, et ne redevient jamais la famille en cours. L'espace parent la marque « en révision ». Si une famille s'est déjà ouverte ce jour-là, l'ouverture attend la séance d'additions « jouer » d'un autre jour (6.2) ; d'ici là, la famille en cours est la dernière famille ouverte qui n'est pas dépassée.
 
 ### La révision espacée (5 boîtes)
 
@@ -232,7 +248,7 @@ Les niveaux 9 à 13 s'ouvrent avec « jouer » quand le niveau 8 est acquis ; av
 
 ### Les formes à trou
 
-- Pour les familles 1, 2, 6 et 7 : elles **s'ouvrent pour une famille** le jour où la moitié des faits de sa règle atteignent la boîte 3 (ouverture définitive) ; ensuite, chaque question tire la forme au hasard (un tiers chacune).
+- Pour les familles 1, 2 et 6 : elles **s'ouvrent pour une famille** le jour où la moitié des faits de sa règle atteignent la boîte 3 (ouverture définitive) ; ensuite, chaque question tire la forme au hasard (un tiers chacune). Le mélange (famille 7) n'a pas d'ouverture propre : chaque fait y reçoit des formes à trou si l'une des autres familles dont il relève les a ouvertes (décision du parent du 6 octobre 2026, 6.5).
 - Pour les familles définies par leur résultat, les formes à trou sont là **d'emblée**, et les deux côtés du trou alternent :
 
 | Famille | Plus facile | Conseillé | Plus dur | Très dur |
@@ -241,37 +257,51 @@ Les niveaux 9 à 13 s'ouvrent avec « jouer » quand le niveau 8 est acquis ; av
 | 4 · maisons de 5 à 7 | moitié à trou, appui affiché d'emblée | moitié à trou | 2 sur 3 à trou | toutes à trou, révisions de toutes les familles |
 | 5 · maisons de 8 et 9 | 2 sur 3 à trou, appui affiché d'emblée | 2 sur 3 à trou | toutes à trou | toutes à trou, révisions de toutes les familles |
 
-- Pour les familles 1, 2, 6 et 7 : plus facile = formes directes, appui affiché d'emblée ; conseillé = formes directes, et à trou si elles sont ouvertes ; plus dur = la moitié à trou même si elles ne sont pas ouvertes ; très dur = toutes à trou, révisions (au plus 20 %) prises dans toutes les familles.
+- La part de questions à trou de ce tableau vaut avec « jouer » comme avec « choisir », à l'échauffement, en notion du jour et au défi (`module2.json`, `notion.formes`) ; l'appui affiché d'emblée et les révisions de toutes les familles ne valent qu'en notion du jour.
 - Formulations lues : « 3 plus combien, ça fait 7 ? », « Combien plus 4, ça fait 6 ? ».
+
+### Les crans en notion du jour (6.4)
+
+| Cran | Avec « jouer » (la famille en cours) | Avec « choisir » (familles 1, 2, 6 et 7) |
+| --- | --- | --- |
+| Plus facile | formes directes, seulement la famille en cours, appui affiché d'emblée | formes directes, appui affiché d'emblée |
+| Conseillé | formes directes, et à trou si elles sont ouvertes | formes directes, et à trou si elles sont ouvertes |
+| Plus dur | la forme tirée au hasard, un tiers chacune (deux questions sur trois à trou), même si elles ne sont pas ouvertes ; des faits de la famille suivante, même non ouverte | la moitié à trou, même si elles ne sont pas ouvertes |
+| Très dur | comme « plus dur », et toutes les familles ouvertes mêlées | toutes à trou, révisions (au plus 20 %) prises dans toutes les familles |
+
+- Les familles 3 à 5 suivent le tableau des formes ci-dessus, dans les deux colonnes.
+- **Exception, presque-doubles au cran « plus facile »** : une question sur trois à trou (6.3). Avec les seules formes directes, il n'y aurait que 4 réponses possibles (3, 5, 7, 9), sous le minimum de 5 (section 9).
 
 ### L'échauffement
 
-- **12 à 16 questions, 3 minutes** (réglages) : les faits dus, les plus en retard d'abord, et **3 places réservées** aux faits nouveaux tant qu'il en reste à introduire, dans la limite de la boîte 1 (au plus 8 faits). Si les 3 faits nouveaux passent par la voie rapide, jusqu'à 3 autres s'ajoutent à la fin.
-- **Limite commune** : au plus 6 faits nouveaux par séance, échauffement et notion du jour confondus (sauf les faits d'une famille choisie).
-- Crans : plus facile = seulement des faits dus ; plus dur = 2 faits nouveaux de plus et formes à trou dès la boîte 3 ; très dur = 3 faits nouveaux de plus, formes à trou dès la boîte 2, faits de la famille suivante même non ouverte.
-- **Variété** : la question suivante est la première de la file qui ne redonne pas la même réponse ; une forme à trou peut changer de côté.
+- **12 à 16 questions, 3 minutes** (réglages) : les faits dus, les plus en retard d'abord, et **3 places réservées** aux faits nouveaux tant qu'il en reste à introduire, dans la limite de la boîte 1 (au plus 8 faits). Si les 3 faits nouveaux passent par la voie rapide, jusqu'à 3 autres s'ajoutent à la fin. S'il manque des faits dus : des faits nouveaux, puis des faits revus en avance, puis un second passage des faits de la boîte 1.
+- **La première fois** : « Tape la réponse, puis touche la coche verte. ». **Temps de base** : 3 questions « a + 0 » au premier échauffement, puis 1 une séance sur cinq.
+- **Limite commune** : au plus 6 faits nouveaux par séance, échauffement et notion du jour confondus (sauf les faits d'une famille choisie). **Exception** (6.1) : avec « jouer » aussi, la notion du jour la dépasse quand la famille en cours n'a plus d'autre question possible, tant que la boîte 1 compte moins de 8 faits ratés (correction du lot 3 bis : sans elle, la notion d'une base neuve s'arrêtait au bout de 4 minutes ; dans la simulation, 9 puis 7 faits nouveaux aux séances 2 et 6).
+- Crans : plus facile = des faits dus ; s'ils ne suffisent pas, au plus 3 faits nouveaux complètent la liste, puis des faits revus en avance (6.7 ; sans cela, une enfant qui choisit toujours « plus facile » n'aurait aucun échauffement sur une base neuve) ; plus dur = 2 faits nouveaux de plus et formes à trou dès la boîte 3 ; très dur = 3 faits nouveaux de plus, formes à trou dès la boîte 2, faits de la famille suivante même non ouverte.
+- **Variété** (6.8) : jamais trois fois de suite la même réponse : après deux réponses égales de suite, la question suivante est la première de la file qui ne peut pas la redonner ; une forme à trou peut changer de côté. Un cas sans issue reste possible (1 échauffement sur 64 dans la simulation de l'année).
+- **Aide et correction** : le coquillage d'aide existe aussi à l'échauffement ; la correction y est seulement « 3 plus 4, ça fait 7. » (l'appui de la famille n'est montré qu'en notion du jour).
 - **Passer l'échauffement** : un bouton dédié, présent pendant tout l'échauffement, de la phrase d'introduction à la dernière question, avec son propre pictogramme (une vague franchie par une flèche), hors de la zone du pavé. Un toucher met l'échauffement en attente (voix arrêtée, pavé fermé, question affichée), la voix demande « Tu veux passer l'échauffement ? Touche la coche pour dire oui. » et une coche remplace le bouton ; la coche touchée termine l'échauffement ; sans toucher en 5 s, la coche disparaît et l'échauffement reprend, consigne redite. Journal : « échauffement passé ».
 - **Réglage du parent** « Échauffement : oui / non » (oui par défaut) ; « non » le retire de la séance et de la frise. Passer souvent l'échauffement ralentit la révision espacée : les faits dus ne reviennent alors que dans les exercices d'additions.
 
 ### Les additions en notion du jour
 
-- **Au moins 80 % des questions** sur les faits de la famille en cours (ou choisie), le reste en révision des faits les plus faibles des autres familles. Un même fait ne revient pas plus de 3 fois dans la séance. *(Pour une petite famille, la limite de 3 passages empêche parfois d'atteindre 80 % : question ouverte, `docs/IDEES.md`.)*
+- **Au moins 80 % des questions** sur les faits de la famille en cours (ou choisie), le reste en révision des faits les plus faibles des autres familles. Un fait nouveau une question sur deux de la famille, tant que la limite commune le permet. Un même fait ne revient pas plus de 3 fois dans la séance. *(Pour une petite famille, la limite de 3 passages empêche parfois d'atteindre 80 % : question ouverte, `docs/IDEES.md`.)*
 - **Leçon** : celle de la famille, seulement quand cette famille est travaillée, la première fois qu'elle est la notion du jour (L4, L5, L6 ; L6 pour les maisons de 8 et 9 et L4 pour les presque-doubles si elles n'ont jamais été vues ; aucune pour le mélange). Ensuite, deux exemples guidés que l'on peut passer.
 - **Exemple guidé** : l'appui avec la réponse, « 3 plus 7, ça fait 10. », puis « À toi ! Tape la réponse. »
-- **Presque-doubles** : chaque question rappelle le double (« 3 plus 4, c'est 3 plus 3, et encore 1. »), avec l'appui double + 1.
+- **Presque-doubles** : chaque question à forme directe rappelle le double (« 3 plus 4, c'est 3 plus 3, et encore 1. »), avec l'appui double + 1 ; pas une forme à trou, où le rappel donnerait la réponse (6.6).
 - **Correction** : l'appui visuel de la famille avec la réponse, puis la phrase de correction.
 - **Aide (coquillage)** : l'appui visuel, lu par la voix, qui fait comprendre sans donner la réponse. Famille 1 : à la forme à trou, « Compte les sauts avec la tortue jusqu'à 10 » et la tortue avance saut par saut sans que le nombre de sauts soit annoncé ; à la forme directe, la tortue saute et l'enfant lit où elle arrive. L'aide se passe avec le « passer » habituel (voix et animation coupées, pavé rendu aussitôt) ; après l'aide, la consigne est redite ; la réponse compte comme faite avec aide.
-- **Difficulté persistante** (3 erreurs sur 5) : la leçon de la famille si elle n'a pas été jouée dans la séance, puis un fait déjà bien su.
+- **Difficulté persistante** (3 erreurs sur 5) : la leçon de la famille si elle n'a pas été jouée dans la séance, puis un fait déjà bien su. Les familles sans leçon propre relancent celle de leur représentation, vue ou non : L6 (la maison) aux maisons de 8 et 9, L4 (les doubles) aux presque-doubles ; « + 1 et + 2 » et le mélange, aucune ; toujours au plus une fois par séance (correctif du lot « Correctifs », décision du parent du 6 octobre 2026, 6.9).
 
 ### Le défi record
 
-1 minute, seulement des faits en boîte 3 ou plus, au pavé, sans consigne lue ; score en perles comparé à son propre record (jamais à une norme) ; 5 étoiles au nouveau record. Fin : le pavé est rangé, les perles avancent jusqu'au score, le drapeau du record est visible, la voix dit « Nouveau record ! 12 perles ! », « Record égalé ! » ou « Presque ! Tu as fait 9 perles. ».
+1 minute, seulement des faits en boîte 3 ou plus, au pavé, sans consigne lue ; score en perles comparé à son propre record (jamais à une norme) ; 5 étoiles au nouveau record, et 1 étoile par bonne réponse (× le multiplicateur du cran). Des formes à trou peuvent y être posées (amis de 10 toujours à trou, maisons en partie, comme le tableau des formes). Après une erreur, la bonne réponse reste écrite un instant pendant que le temps continue. Fin : le pavé est rangé, les perles avancent jusqu'au score, le drapeau du record est visible, la voix dit « Nouveau record ! 12 perles ! », « Record égalé ! » ou « Presque ! Tu as fait 9 perles. » ; au premier défi réussi (score non nul), « C'est ton premier record ! » ; à un score nul, « Ce n'est pas grave, on réessaiera la prochaine fois ! ».
 
 ## 7. Le calcul rapide (module 3)
 
 **Objectif** : des **procédures** qui évitent de compter un par un, sur les nombres jusqu'à 100.
 
-**Supports** : la **ligne** pour les petits sauts ; le **mur de corail** (tableau de 1 à 100, 10 rangées de 10 ; ajouter 10, c'est descendre d'une rangée) et le petit poisson qui s'y déplace ; le **chemin** : des ponts entre les nombres (38 → + 2 → 40 → + 3 → 43), avec le cadre de 10 pour passer la dizaine. Pas de personnage guide.
+**Supports** : le **chemin** pour les petits sauts et le passage de la dizaine : des cailloux et des ponts entre les nombres (38 → + 2 → 40 → + 3 → 43), avec le cadre de 10 pour passer la dizaine ; le **mur de corail** pour les dizaines (tableau de 1 à 100, 10 rangées de 10 ; ajouter 10, c'est descendre d'une rangée) et le petit poisson qui s'y déplace. Mur : niveaux 2, 3, 6 et 8 ; chemin : niveaux 1, 4, 5, 7 et 9 (`module3.json`, `support` ; la valeur « ligne » y désigne le chemin). Il n'y a pas de ligne graduée dans le calcul rapide (7.1, 7.2). Pas de personnage guide.
 
 | Niveau | Procédure | Exemples | Débloqué (avec « jouer ») quand… |
 | --- | --- | --- | --- |
@@ -286,11 +316,14 @@ Les niveaux 9 à 13 s'ouvrent avec « jouer » quand le niveau 8 est acquis ; av
 | 9 | passer la dizaine en retirant | 42 − 5 = 42 − 2 − 3 | niveau 7 acquis |
 
 - **Domaine** : tout le domaine de chaque procédure sur le mur de 1 à 100 (sommes au plus 99), sans borne artificielle ; chaque calcul lu a son fichier de voix.
-- **Déroulé d'un nouveau niveau** : la leçon s'il y en a une ; 3 calculs guidés où l'enfant remplit chaque caillou du chemin ; 3 calculs où le chemin n'apparaît qu'au coquillage ; puis sans aide. Les niveaux acquis reviennent en révision.
+- **Déroulé d'un nouveau niveau** : la leçon s'il y en a une ; 3 calculs guidés où l'enfant remplit chaque caillou du chemin (seulement des calculs à forme directe : au cran « très dur », aux niveaux 4, 5, 7, 8 et 9, toutes les questions sont à trou, il n'y a donc pas de calcul guidé ; aux niveaux à pas fixe, seuls ceux à forme directe le sont) ; puis le chemin selon le cran (au cran conseillé : au coquillage, pour toujours ; « sans aide », c'est le cran « plus dur ») (7.4). Les 3 calculs suivants (`deroule.cheminAide`) retardent seulement la révision des niveaux acquis : avec « jouer », une fois ces 6 calculs faits, une question sur cinq est prise dans un niveau déjà acquis (`melange`).
 - **Affichage** : le calcul en grand dans une bulle, lu à voix haute ; réponse au pavé (même écran que les additions). Pendant les étapes guidées, la bulle garde le calcul demandé ; les étapes s'inscrivent sur les cailloux ; le résultat s'écrit dans la bulle à la fin.
-- **Crans** : plus facile = le chemin affiché d'emblée (sans promotion) ; conseillé = le chemin au coquillage ; plus dur = sans chemin ; très dur = sans chemin, et à parts égales la forme directe et une forme à trou dont la réponse varie : aux niveaux à pas fixe (1, 2, 3, 6), le trou sur le nombre de départ (« ? + 10 = 57 ») ; aux niveaux 4, 5, 7, 8, 9, le trou sur le second nombre (« 38 plus combien ? Ça fait 43. »).
-- **Aide (coquillage)** : aux niveaux du mur (2, 3, 6), le mur et le poisson apparaissent, le poisson fait le premier pas et la voix le dit (« Plus dix : le poisson descend d'une rangée ») ; sur le chemin (7 à 9), la voix dit le premier pont (« D'abord, on va jusqu'à 40 »). « Le petit poisson va t'aider » n'est dit que si le poisson est à l'écran.
-- **Corrections** : jamais « C'était 40. » seul. Sur le chemin, y compris après « je ne sais pas » : « Ce n'est pas grave, regardons ensemble », le pont en cause rejoué, la phrase de l'erreur. Au mur, la réponse fausse n'est pas laissée écrite comme une égalité ; la bonne réponse est entourée.
+- **Crans** (avec « jouer » comme avec « choisir ») : plus facile = le chemin affiché d'emblée (sans promotion) ; conseillé = le chemin au coquillage ; plus dur = sans chemin ni coquillage ; très dur = sans chemin ni coquillage, avec une forme à trou dont la réponse varie :
+  - aux niveaux à pas fixe (1, 2, 3, 6), à parts égales la forme directe et le trou sur le nombre de départ (« Combien plus 10 ? Ça fait 57. ») ;
+  - aux niveaux 4, 5, 7, 8 et 9, toutes les questions avec le trou sur le second nombre (« 38 plus combien ? Ça fait 43. », « 42 moins combien ? Ça fait 37. »). Le niveau 9 a cette forme depuis le lot « Correctifs » (décision du parent du 6 octobre 2026, 7.3).
+- **Aide (coquillage)** : aux niveaux du mur (2, 3, 6 et 8), le mur et le poisson apparaissent, le poisson fait le premier pas et la voix le dit (« Plus dix : le poisson descend d'une rangée » ; au niveau 8, « Plus 30 : le poisson descend de 3 rangées ») ; sur le chemin (1, 4, 5, 7 et 9), la voix dit le premier pont (« D'abord, on va jusqu'à 40 »). « Le petit poisson va t'aider » n'est dit que si le poisson est à l'écran.
+- **Juste mais lent** (C2) : « Bravo ! Regarde le raccourci. », puis la procédure rejouée (le chemin, ou le poisson sur le mur).
+- **Corrections** : jamais « C'était 40. » seul. Sur le chemin, y compris après « je ne sais pas » : « Ce n'est pas grave, regardons ensemble », **tout le chemin rejoué**, pont après pont (seule une erreur sur un caillou d'un calcul guidé rejoue le pont en cause, 7.5), puis la phrase de l'erreur (C4, C5). Au mur : la phrase de l'erreur (C1, C3), « Hmm, regardons ensemble. » pour une erreur non reconnue (décision du parent du 6 octobre 2026, 7.6), ou « Ce n'est pas grave, regardons ensemble. » après « je ne sais pas » ; le poisson, puis « C'était 64. » ; la réponse fausse n'est pas laissée écrite comme une égalité ; la bonne réponse est entourée.
 
 | Code | Erreur | Exemple | Retour oral (résumé) |
 | --- | --- | --- | --- |
@@ -378,7 +411,11 @@ Phrases nouvelles : 835 (dont 486 nombres de 101 à 999 qui n'existaient pas enc
 
 - **Dix leçons** de 30 à 90 s, découpées en temps courts : une phrase lue, puis une animation qui attend la fin de la phrase. Textes dans `app/content/lecons.json` (tutoiement). Quand la pieuvre montrait quelque chose, une flèche le montre (section 11) : la tortue, l'étoile de mer et la loupe dans L1 à L3, le petit poisson du mur et de la ligne dans L7 à L9. Dans L4 à L6 et L10, où la pieuvre ne montrait rien de précis, le bernard-l'ermite et les aides suffisent.
 - **Deux boutons seulement, dès la première vue** : « rejouer » (reprend au début) et « passer » (enchaîne sur « À toi ! » et l'exercice guidé). Une leçon passée ne rapporte pas ses 3 étoiles et est notée « passée ».
-- **Au plus une fois par séance** la même leçon. Si la difficulté persiste ensuite : les questions suivantes au niveau inférieur, et la prochaine erreur corrigée plus lentement au lieu de relancer la leçon.
+- **Au plus une fois par séance** la même leçon. Si la difficulté persiste ensuite (8.1) :
+  - ligne : les questions suivantes au niveau inférieur, et la prochaine erreur corrigée plus lentement au lieu de relancer la leçon ;
+  - additions : un fait déjà bien su ;
+  - calcul rapide : une question d'un niveau acquis plus bas (ou du même niveau) ;
+  - pas de correction ralentie hors de la ligne.
 
 | Leçon | Exercice | Ce qu'elle montre |
 | --- | --- | --- |
@@ -401,8 +438,10 @@ Le vocabulaire (« amis de 10 », « maison », « mur ») est à aligner sur ce
 
 - **Montée de niveau** : 8 bonnes réponses sur les 10 dernières du niveau, avec au plus une aide.
 - **Voie rapide** : les 5 premières questions d'un niveau justes, sans aide, en moins de 6 s chacune : niveau suivant. On part du niveau 1 partout.
-- **Après une erreur** : retour immédiat qui montre la bonne réponse et pourquoi ; la même question revient 3 à 5 questions plus loin. Réussie à son retour : « erreur corrigée », une étoile.
-- **Difficulté persistante** : 3 erreurs sur 5 relancent la leçon (au plus une fois par séance, section 8), puis une question plus simple. Deux séances de suite sous 50 % font redescendre d'un niveau, sans le dire.
+- **Après une erreur** : retour immédiat qui montre la bonne réponse et pourquoi ; la même question revient plus loin : 3 à 5 questions à la ligne et aux voiliers, 3 aux additions (échauffement et notion du jour) et au calcul rapide (9.1). Réussie à son retour : « erreur corrigée », qui rapporte **2 étoiles en tout** (aux voiliers, « erreur corrigée » veut aussi dire réussi au deuxième essai, 1 étoile : section 7 bis) (1 pour la bonne réponse, 1 pour l'erreur corrigée), multipliées par le cran, dans tous les exercices et à l'échauffement (décision du parent du 6 octobre 2026, 9.4).
+- **Exemples guidés** : 1 étoile s'ils sont réussis (aux voiliers, où le bateau va seul, rien) ; ils ne comptent ni pour l'adaptation ni pour le taux de la séance.
+- **Difficulté persistante** : 3 erreurs sur 5 relancent la leçon (au plus une fois par séance, section 8), puis une question plus simple. Elle ne compte que là où l'enfant progresse (décision du parent du 6 octobre 2026, 9.3) : à la ligne, sur les questions du niveau conseillé, hors cran « plus facile » (un niveau choisi qui n'est pas le conseillé, ou « plus dur » et « très dur » avec « jouer », ne la déclenchent pas ; aux crans « plus dur » et « très dur », la protection du cran prend le relais, section 4 ; un niveau choisi au-dessus du conseillé, au cran conseillé, n'a ni l'une ni l'autre) ; au calcul rapide, sur un niveau pas encore acquis, hors cran « plus facile » ; aux additions, sur toutes les questions de la notion du jour. Le détail de chaque exercice est aux sections 5 à 7 bis.
+- **Redescente** : à la ligne et aux voiliers, deux séances de suite sous 50 % font redescendre d'un niveau, sans le dire. Aux additions et au calcul rapide, **on ne perd jamais rien** : une famille ou un niveau acquis le reste, la révision espacée et la révision des niveaux acquis suffisent (décision du parent du 6 octobre 2026, 9.2).
 - **La même erreur deux fois dans une séance** relance la leçon correspondante (dans la limite d'une fois par séance).
 
 **Une réponse qui varie** (principe du lot 3 bis : un exercice conforme peut ne rien faire travailler si la réponse est toujours la même). Dans la notion du jour, pour chaque exercice, niveau et cran :
@@ -426,7 +465,7 @@ Vérifié automatiquement par `tests/recette-fonctionnelle/b-sequences.mjs` sur 
 **Le toucher.**
 
 - **Boutons de choix et de commande** (tous, recensés) : un **toucher bref** (moins de 0,5 s) valide **au lever du doigt** ; un **appui long** montre une **étiquette** (fondu d'environ 0,2 s, tant que le doigt est posé, disparue 0,5 s après le lever) et **ne lance jamais rien**. La voix ne lit pas l'étiquette. Étiquettes dans `legendes.json` (pour une tuile de niveau : sa ligne de légende, « 7 · Ajouter en passant la dizaine »).
-- **Exception : le pavé et les bulles-réponses** : la réponse part au premier contact, un appui long compte comme une réponse. Un second toucher sur la même touche en moins de 150 ms est ignoré. Pendant un retour (« bravo », correction), le pavé et les bulles sont ignorés jusqu'à la question suivante.
+- **Exception : le pavé et les bulles-réponses** : la touche compte au premier contact, un appui long compte comme un toucher. Un second toucher sur la même touche en moins de 150 ms est ignoré. Pendant un retour (« bravo », correction), le pavé et les bulles sont ignorés jusqu'à la question suivante. Le pavé a deux rangées (0 à 4, 5 à 9), « effacer » et la coche verte : une bulle-réponse répond aussitôt, la réponse tapée au pavé part à la coche.
 - **L'appui long sur le logo** ouvre l'espace parent (durée indiquée dans le guide du parent).
 - Zones tactiles d'au moins 64 px.
 
@@ -434,11 +473,12 @@ Vérifié automatiquement par `tests/recette-fonctionnelle/b-sequences.mjs` sur 
 
 ## 10. Récompenses
 
-Principe : la progression visible récompense **l'effort et la régularité** ; **on ne perd jamais rien** ; pas de classement ni de comparaison ; pas de gain hors séance (l'entraînement libre ne rapporte ni étoiles ni coquillages) ; une série de jours se met en pause au lieu de retomber à zéro.
+Principe : la progression visible récompense **l'effort et la régularité** ; **on ne perd jamais rien** ; pas de classement ni de comparaison ; pas de gain hors séance (l'entraînement libre ne rapporte ni étoiles ni coquillages), à une exception près : une leçon choisie seule (depuis l'accueil, ou l'accueil en pause) rapporte ses 3 étoiles, une fois par leçon et par jour (section 3, 10.2) ; une série de jours se met en pause au lieu de retomber à zéro.
 
 | Événement | Gain |
 | --- | --- |
-| Bonne réponse, erreur corrigée | 1 étoile de mer, × le multiplicateur du cran |
+| Bonne réponse | 1 étoile de mer, × le multiplicateur du cran |
+| Erreur corrigée (la question qui revient, réussie) | 1 étoile de plus, soit 2 en tout, × le multiplicateur du cran (9.4) |
 | Leçon regardée jusqu'au bout | 3 étoiles |
 | Séance terminée | 10 étoiles |
 | Nouveau record au défi | 5 étoiles |
@@ -446,7 +486,9 @@ Principe : la progression visible récompense **l'effort et la régularité** ; 
 | Niveau franchi, famille acquise | 1 étoile arc-en-ciel |
 | 4 semaines réussies (au moins 2 séances terminées dans la semaine, consécutives ou non) | 1 étoile dorée |
 
+- **Ordre de la récompense** : bilan des étoiles, 10 étoiles de la séance, série, étoile dorée, étoiles arc-en-ciel, ouverture de zone, coquillage doré, coquillages ordinaires.
 - **Le compteur d'étoiles** ne baisse jamais d'un coup : à l'échange, les étoiles volent vers le coquillage. Jamais « tu as gagné 0 étoiles » : « Tu as bien travaillé ! ».
+- **Le coquillage s'ouvre seul** au bout de 9 s si l'enfant ne le touche pas ; la carte se range seule après 20 s ; une carte nouvelle est suivie de son anecdote et de « Cette créature va vivre dans ton récif ! ».
 - **Coquillages** : 25 étoiles chacun, au plus 2 par séance ; ouverture animée (il s'entrouvre, une perle brille, la carte se retourne).
 - **Quota de cartes nouvelles** : 2 par semaine d'école (calendrier scolaire de `calendrier.json`, zone C), cumulées depuis la date de base enregistrée sur la tablette, au plus 60. Objectif : toutes les cartes, légendaires comprises, à la fin de l'année scolaire à 2 séances par semaine.
 - **Jamais de doublon** (décision du parent du 5 octobre 2026) : un coquillage ne redonne jamais une créature déjà possédée.
@@ -454,9 +496,9 @@ Principe : la progression visible récompense **l'effort et la régularité** ; 
   - **Au-dessus du quota**, ou quand il ne reste rien à gagner dans les zones ouvertes : le coquillage **rend brillante une créature déjà possédée** qui ne l'est pas encore (tirée de la même façon) ; la carte sort du coquillage et la voix dit « C'est {nom} ! Oh ! Elle est brillante ! ».
   - **Si toutes les créatures possédées sont déjà brillantes** (et qu'il n'y en a pas de nouvelle à gagner sous le quota) : le coquillage attend ; les étoiles restent au compteur, rien n'est perdu. Les étoiles peuvent ainsi s'accumuler (décision du parent du 5 octobre 2026 : accepté, rien d'autre n'est prévu).
 - **Brillantes** : une créature nouvelle sort brillante une fois sur cinq (20 %) ; une créature possédée le devient au-dessus du quota (ci-dessus) ; une brillante le reste. Sur la carte, un reflet irisé la balaie toutes les 3 à 4 s, quelques étincelles sur le cadre ; dans le récif, la créature scintille. « Oh ! Elle est brillante ! ». Pas de compteur chiffré pour l'enfant.
-- **Plus de décors ni de cadeaux pour le récif** (décision du parent du 5 octobre 2026) : les 15 décors des doublons et les cadeaux de la surprise sont supprimés ; ceux déjà gagnés restent dans les données de la tablette, mais ne sont plus montrés.
-- **Zones** : la zone suivante s'ouvre quand toutes les communes et rares de la zone en cours sont gagnées **et** que toutes ses cartes ont leur illustration et leur anecdote ; elle est ouverte par une étoile arc-en-ciel à la récompense (l'étoile vole vers l'album) ; réserve vide : au prochain niveau franchi. Étoiles arc-en-ciel à la récompense : une seule phrase, au pluriel s'il y en a plusieurs, étoiles dessinées qui volent vers l'album.
-- **Légendaires** : les dernières cartes de leur zone ; chacune coûte une étoile dorée, dépensée à la récompense dans un **coquillage doré** (au plus un par séance, en plus des coquillages ordinaires, sans étoiles de mer ; il passe avant les ordinaires quand il ne reste qu'une place sous le quota).
+- **Plus de décors ni de cadeaux pour le récif** (décision du parent du 5 octobre 2026) : les 15 décors des doublons et les cadeaux de la surprise sont supprimés ; ceux déjà gagnés restent dans les données de la tablette, mais ne sont plus montrés, ni à l'enfant ni dans l'espace parent (correctif du lot « Correctifs », 10.1 : la carte « Cartes » de l'espace parent affichait encore leur nombre).
+- **Zones** : la zone suivante s'ouvre quand toutes les communes et rares de la zone en cours sont gagnées **et** que toutes ses cartes ont leur illustration et leur anecdote ; elle est ouverte par une étoile arc-en-ciel à la récompense : l'étoile vole jusqu'au dos assombri de la zone, qui s'éclaire ; la voix annonce la zone ; puis ce dos file vers l'album (10.4) ; réserve vide : au prochain niveau franchi. Étoiles arc-en-ciel à la récompense : une seule phrase, au pluriel s'il y en a plusieurs, étoiles dessinées qui volent vers l'album.
+- **Légendaires** : les dernières cartes de leur zone ; chacune coûte une étoile dorée, dépensée à la récompense dans un **coquillage doré** (au plus un par séance, en plus des coquillages ordinaires, sans étoiles de mer ; il passe avant les coquillages ordinaires quand il est possible, 10.3).
 - **Surprise** : environ une séance sur cinq, jamais deux de suite, à l'accueil : un visiteur qui traverse la scène (la tortue, ou un banc de poissons) ; sans étoiles. (Plus de cadeau pour le récif depuis le 5 octobre 2026.)
 
 **Les cartes.** 60 cartes (40 communes, 15 rares, 5 légendaires), en 4 zones de 15 :
@@ -493,7 +535,7 @@ Principe : la progression visible récompense **l'effort et la régularité** ; 
   - **Pas de nom** : plus de choix du nom au premier lancement ni de réglage « nom de la pieuvre », plus de `{mascotte}` dans les textes. Le nom choisi autrefois reste dans la base (réglage `mascotte`), sans être montré.
   - **Jamais figée** : entre deux phrases, elle enchaîne de courts clips d'attente tirés au hasard selon le moment (accueil ; question en cours : calme et attentive ; après une réussite ; après une erreur ; pendant une explication), sans répéter les deux derniers, avec un délai minimal avant de refaire un geste marqué et un clip calme après chaque geste.
   - **Elle parle quand la voix parle**, sans synchronisation des lèvres, et se tait au plus 1,4 s après la fin de la phrase.
-  - **Réactions** : à l'accueil, un salut et une phrase de bienvenue ; petite joie à une bonne réponse ; grande joie après une erreur surmontée, toutes les 3 réussites de suite et en fin de séance ; **déception bienveillante à la première erreur d'une question, puis encouragement** (remplace « jamais triste ni déçue ») ; elle regarde le travail quand quelque chose est montré.
+  - **Réactions** : à l'accueil, un salut et une phrase de bienvenue ; petite joie à une bonne réponse ; grande joie après une erreur surmontée, toutes les 3 réussites de suite et en fin de séance ; **la première erreur depuis la dernière consigne ou la dernière réussite déçoit (déception bienveillante), les suivantes encouragent** : une consigne dite (une question nouvelle, ou la même question qui revient) et une réussite remettent le compteur à zéro ; en pratique, la première erreur de chaque question déçoit, et l'encouragement vient pour une autre erreur sans nouvelle consigne (un caillou d'un calcul guidé, une descente de cran, le défi). Le rapport (11.1) décrivait un compteur remis à zéro par la seule réussite : c'était inexact ; la règle écrite ici est celle de l'application (remplace « jamais triste ni déçue ») ; elle regarde le travail quand quelque chose est montré.
   - **Relance** : 12 s sans toucher pendant une question, un geste pour attirer l'attention ; 25 s, « Prends ton temps. Tu peux réécouter la consigne. » (`relanceAide`) ; puis plus rien. Seulement quand une question attend sa réponse : ni pendant une leçon, ni en pause.
   - **La pause** (la maison) : la mascotte se tait, sa bulle s'efface, la relance s'arrête ; elle attend comme à l'accueil (jamais figée) ; à la reprise, elle reparle avec la phrase redite.
   - **Raccords invisibles** : elle ne change de clip qu'aux moments où les vidéos repassent par la même pose (mesurés image par image) ; une réaction attend en moyenne 0,4 s.
@@ -504,7 +546,7 @@ Principe : la progression visible récompense **l'effort et la régularité** ; 
 - **Personnages guides** : la tortue (ligne des nombres) ; le bernard-l'ermite (additions : leçons, exemples et corrections ; aucun travail de plus prévu) ; pas de personnage pour le calcul rapide ; le crabe pour les problèmes est à décider (`docs/IDEES.md`).
 - **Style** : style A, « BD au marqueur » ; tout est dessiné dans l'atelier (règles dans `CLAUDE.md`), sauf les illustrations des cartes, le décor du lagon repris du récif vivant (ci-dessous), les vidéos de la mascotte et la scène du jeu des voiliers (section 7 bis). Rien n'est jamais figé à l'écran.
 - **Voix** : toutes les phrases sont **fabriquées à l'avance** avec Chatterbox, qui imite la voix du parent (docs/VOIX.md), à partir du contenu ; une phrase avec un nombre est fabriquée pour chaque valeur possible, les nombres écrits en toutes lettres avant la synthèse ; la synthèse du navigateur ne sert que de secours. Plafond : **80 Mo**, contrôlé par un test. La voix ne démarre qu'après un premier toucher ; la consigne se lit automatiquement.
-- **Son** : fabriqué par l'outil du dépôt (`tools/son/`), sans banque extérieure. Bruitages courts (bonne réponse, erreur douce jamais un son d'échec, étoile, coquillage, carte, brillante, bouton, zone). Trois musiques calmes (harpe, marimba, cloches), l'une tirée au hasard au début de chaque séance et gardée toute la séance ; environ 18 dB sous les bruitages, plus basse encore pendant la voix, très basse en pause, coupée dans l'espace parent ; aussi en entraînement libre ; pas dans le récif, l'album ni sur l'écran « à demain ». Réglages du parent : musique oui/non et volume (3 niveaux), bruitages oui/non.
+- **Son** : fabriqué par l'outil du dépôt (`tools/son/`), sans banque extérieure. Bruitages courts (bonne réponse, erreur douce jamais un son d'échec, étoile, coquillage, carte, brillante, bouton, zone). Trois musiques calmes (harpe, marimba, cloches), l'une tirée au hasard au début de chaque séance et gardée toute la séance ; environ 18 dB sous les bruitages, plus basse encore pendant la voix, très basse en pause et pendant une visite du récif ou de l'album depuis la pause, coupée dans l'espace parent ; aussi en entraînement libre ; hors séance, pas dans le récif, l'album ni sur l'écran « à demain » (décision du parent du 6 octobre 2026, 2.4 et 11.2). Réglages du parent : musique oui/non et volume (3 niveaux), bruitages oui/non.
 
 ### Le lagon, fond de toute l'application
 
@@ -529,17 +571,22 @@ Le fond dessiné d'origine (le sprite « fond », ses rayons, ses reflets, ses a
 
 ## 12. L'espace parent
 
-- **Accès** : appui long sur le logo, puis un code à 4 chiffres (créé et confirmé au premier accès ; récupération par une petite opération).
-- **Les données** restent sur la tablette (IndexedDB, stockage persistant demandé), jamais en ligne. Elles disparaissent si l'on efface les données de Chrome ou désinstalle l'application : **sauvegarde complète (JSON)**, avec un rappel chaque semaine ; export CSV ; **restaurer une sauvegarde** (remplace toutes les données, le code parent conservé).
+- **Accès** : appui long sur le logo, puis un code à 4 chiffres (créé et confirmé au premier accès ; récupération par une petite opération) ; après 5 codes faux, 30 secondes d'attente ; un réglage « Changer le code ».
+- **Les données** restent sur la tablette (IndexedDB, stockage persistant demandé, un réglage « Données protégées » dit s'il est accordé, avec « Demander à nouveau »), jamais en ligne. Elles disparaissent si l'on efface les données de Chrome ou désinstalle l'application : **sauvegarde complète (JSON)**, avec un rappel chaque semaine ; export CSV ; **restaurer une sauvegarde** (remplace toutes les données, le code parent conservé).
 - **Ce qui est enregistré** : séances (date, heures, durée, terminée ou interrompue et pourquoi, exercice, cran, musique, nombre de questions, réussite) ; réponses (horodatage, exercice, niveau, question, forme, réponse, juste ou fausse, temps, écoutes, aide demandée ou d'emblée, code d'erreur, exemple ou correction passés, « libre ») ; faits (boîte, prochain passage, historique, temps médian) ; niveaux (atteint, dates d'obtention, redescentes, choix du parent) ; défi ; récompenses.
 - **Ce qui est montré**, en **phrases simples, sans sigle ni mot de conception** :
-  - calendrier des séances ;
-  - progression de chaque exercice (niveau, courbe de réussite et temps médian par semaine ; familles : ouverture, faits bien sus, « acquise le 17/09 (depuis, 19 sur 30) », « en révision », « ouverte par l'échauffement le … ») ;
+  - calendrier des séances ; l'historique des séances : pour chacune, ses étapes et leur durée, les leçons (vues, passées, arrêtées), le cran choisi et ses descentes, les pauses, la raison d'une interruption, les cartes gagnées et chaque réponse ; une leçon choisie seule et l'entraînement libre y figurent, hors du calendrier ;
+  - le trésor de l'enfant : étoiles gagnées depuis le début, étoiles à dépenser, coquillages ouverts, longueur de la série ;
+  - progression de chaque exercice (niveau, courbe de réussite et temps médian par semaine ; familles : ouverture, avec sa date et sa voie, « par l'échauffement », « parent », faits bien sus, « acquise le 17/09 (depuis, 19 sur 30) », « en révision », formes à trou ; le temps de base et le seuil « rapide » écrits en clair) ;
   - grille des additions (11 × 11, couleur selon la boîte et la rapidité ; les « + 0 » en gris ; toucher une case montre l'historique du fait) ;
   - journal des erreurs, chaque type en une phrase, précédé de l'exercice ; les erreurs d'additions détaillées (« se trompe de 1 », « a répondu l'un des deux nombres », « a fait une soustraction au lieu d'une addition », « autre ») ;
-  - le défi (scores, record) ; les cartes (cartes, brillantes, cartes encore gagnables, étoiles dorées) ; la légende des niveaux ;
+  - le défi (scores, record) ; les cartes (cartes, brillantes, cartes nouvelles encore gagnables d'ici dimanche, légendaires, étoiles dorées et prochaine étoile dorée, étoiles arc-en-ciel en réserve et ce qu'attend la zone suivante ; les cadeaux de la surprise n'y sont plus, 10.1) ; la légende des niveaux ;
   - les incidents techniques, s'il y en a.
-- **Réglages** : durée maximale de séance ; crans autorisés ; échauffement oui/non ; défi record oui/non ; exercice imposé pour la prochaine séance « jouer » ; point de départ (niveau de la ligne 1 à 13, du calcul rapide 1 à 9, des voiliers 1 à 9, familles connues 1 à 7 : leurs faits passent en boîte 3, sans étoile, noté comme choix du parent) ; son ; tout effacer (avec confirmation).
+- **Réglages** : durée maximale de séance ; crans autorisés ; échauffement oui/non ; défi record oui/non ; exercice imposé pour la prochaine séance « jouer » ; point de départ ; son ; tout effacer (avec confirmation).
+- **Point de départ** (noté comme choix du parent, sans étoile) :
+  - niveau de la ligne 1 à 13, des voiliers 1 à 9 : le niveau conseillé ;
+  - niveau du calcul rapide 1 à 9 : les niveaux d'avant sont comptés acquis (sans étoile) et le niveau choisi devient le conseillé, même si les additions qui le débloquent ne sont pas encore sues (12.1) ;
+  - familles connues 1 à 7 : les faits de sa règle passent en boîte 3 ; les familles jusqu'à la famille marquée sont ouvertes ; si toutes les familles ouvertes sont alors acquises, la suivante s'ouvre aussitôt, pour que la notion du jour ne reprenne pas une famille sue (12.2) ; ces ouvertures échappent à la limite d'une famille par jour (section 6).
 - **Terminer la séance** : pendant une pause, en haut de l'espace parent, avec confirmation : séance enregistrée comme interrompue, sans récompense (les étoiles déjà gagnées restent), retour à l'accueil.
 - **Sauvegardes de test** (pour le parent qui veut essayer un stade plus avancé) : `node tools/sauvegarde-test.mjs <profil> <séances par semaine> <semaines>` fabrique une sauvegarde restaurable d'après la simulation ; mode d'emploi dans le guide du parent.
 - **Bilans** : **(à construire)**, section 13.

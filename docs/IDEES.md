@@ -10,7 +10,7 @@ Dernière mise à jour : 6 octobre 2026 (mascotte, voiliers et lots ordonnés de
 
 Les lots prêts à lancer, dans l'ordre, sont dans **`docs/LOTS.md`** (décision du parent du 6 octobre 2026) : « Mascotte », « Les voiliers », « Les leçons » (avec la table d'addition), « Sommes jusqu'à 30 », « Multiplication » (et les tables). Cette section garde ce qui n'est pas encore un lot. Depuis le 6 octobre, un lot dont la maquette n'existe pas commence par la fabriquer, s'arrête pour la validation du parent, puis seulement code.
 
-**Contrôles** (décisions du parent du 6 octobre) : la session relecteur des lots 3 bis et 3 ter est abandonnée (chaque lot a sa relecture indépendante) ; la confrontation de la spécification avec le code (`docs/PROMPTS.md`) est faite avant le lot « Sommes jusqu'à 30 ».
+**Contrôles** (décisions du parent du 6 octobre) : la session relecteur des lots 3 bis et 3 ter est abandonnée (chaque lot a sa relecture indépendante) ; la confrontation de la spécification avec le code (`docs/PROMPTS.md`) est faite (`docs/ECARTS-SPEC.md`), ses écarts tranchés le 6 octobre et appliqués par le lot « Correctifs ».
 
 **Phase 1, maintenant** — ordre proposé le 30 septembre (un lot court chacun ; les leçons et les sommes jusqu'à 30 sont devenues les lots « Les leçons » et « Sommes jusqu'à 30 » de `docs/LOTS.md`) :
 
@@ -126,6 +126,12 @@ Au cran « plus facile », l'écriture 600 + 30 + 5 s'affiche sous la cale. Un f
 - **`success`** dure 8,7 s ; il cède à la phrase suivante dès 1,8 s.
 - **`idle-hochement`** (l'ancienne vidéo d'attente) ne revient à la pose de départ qu'après 3,8 s : une phrase qui commence pendant ce clip passe par un fondu visible. Il n'est tiré qu'à l'accueil.
 - **La mascotte sur la tablette** (après le lot « Mascotte ») : fluidité des 17 vidéos décodées et du détourage en WebGL avec le lagon (dans le conteneur de développement, sans processeur graphique, la vidéo tourne à 6 à 13 images/s) ; mémoire ; la bulle se lit-elle, ou distrait-elle l'enfant de l'ardoise ? La flèche corail se voit-elle sur l'eau ? Dans le conteneur, la charge de la vidéo retarde les fondus : au parcours `lot3ter`, les étiquettes d'appui long sont à moitié visibles après 0,8 s (9 échecs contre 2 sur `main` ; 3 seulement en masquant la mascotte). Sur la tablette, vérifier qu'un appui long sur « jouer » montre bien son étiquette.
+
+**Après le lot « Correctifs »** (octobre 2026) :
+
+- **Les séances courtes avec « choisir »** aux niveaux étroits (ligne niveau 2 « très dur », ligne niveau 8, crans « plus facile ») : 6 à 8 minutes dans la simulation sur une base neuve, acceptées par le parent le 6 octobre 2026 (écart 2.5 de `docs/ECARTS-SPEC.md`). À mesurer à l'usage (historique des séances de l'espace parent) ; si elles reviennent souvent, donner plus de cibles à ces niveaux.
+- **Toujours « plus facile »** : depuis que ce cran ne fait jamais monter à la ligne (écart 4.2), une enfant qui le choisit à chaque fois reste au niveau 1 de la ligne (avant, l'écart la faisait passer au niveau 2 conseillé dès la première séance, pour rejouer ensuite le niveau 1), et la rotation de « jouer », qui va au moins avancé, lui donne davantage la ligne : sur l'année simulée (profil « facile », 2 séances par semaine), 31 séances de ligne sur 64 au lieu de 26, 3 d'additions en notion du jour au lieu de 7 ; ses familles s'ouvrent alors surtout par l'échauffement, plus tard (la dernière à la séance 60 au lieu de 34). La parade reste d'interdire ce cran dans l'espace parent.
+- **Deux séances le même jour** n'ouvrent plus jamais deux familles d'additions (écart 6.2) ; une famille dépassée ce jour-là ouvre la suivante à la séance d'additions d'un autre jour.
 
 **Depuis les lots précédents :**
 

@@ -6,8 +6,8 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 - **En ligne** (https://js2c.github.io/Maths-CE1/) : lots 1, 1 bis, 2, 3, 3 bis, 3 ter et « Lagon en fond d'exercices », tous fusionnés (dernière demande de fusion : PR #30, le lagon).
 - **Ce que fait l'application** : `docs/SPEC.md` (spécification unique ; ce qui reste à construire y est marqué « à construire », section 13).
-- **Prochains lots** : dans l'ordre de `docs/LOTS.md` (« Correctifs », issu de la confrontation de la spécification avec le code, `docs/ECARTS-SPEC.md` ; puis leçons et table d'addition, sommes jusqu'à 30, multiplication et tables) ; le relecteur des lots 3 bis et 3 ter est abandonné.
-- **En attente du parent** : le lot « Les voiliers » (PR #36, prête) attend la fabrication de ses 835 phrases, avec les 6 du lot « Mascotte » (PR #34, fusionnée), puis la fusion et l'essai sur la tablette.
+- **Prochains lots** : dans l'ordre de `docs/LOTS.md` (leçons et table d'addition, sommes jusqu'à 30, multiplication et tables) ; le relecteur des lots 3 bis et 3 ter est abandonné.
+- **En attente du parent** : la fabrication des phrases des lots « Mascotte » (6), « Les voiliers » (835) et « Correctifs » (8), puis la publication et l'essai sur la tablette ; le lot « Correctifs » (PR #39) attend aussi sa fusion et une réponse sur la mascotte (11.1).
 - **Projet parallèle** : la refonte graphique (hors de ce fichier).
 
 ## Lots
@@ -22,7 +22,8 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 | Lagon | Le lagon de la maquette du récif vivant en fond de toute l'application | fait (PR #30) |
 | Récif vivant | La collection est la maquette du récif vivant ; récompenses sans doublon ; correctif des boutons invisibles | fait (PR #31) |
 | Mascotte | Le capitaine en vidéo remplace la pieuvre ; bulle, flèche, bienvenue, relance | fait (PR #34) |
-| Les voiliers | Le jeu de la maquette des voiliers devient le module 4 : ranger un nombre entre des bouées, jusqu'à 1 000, mer selon la difficulté | fait (PR #36, à fusionner après la fabrication des phrases) |
+| Les voiliers | Le jeu de la maquette des voiliers devient le module 4 : ranger un nombre entre des bouées, jusqu'à 1 000, mer selon la difficulté | fait (PR #36) |
+| Correctifs | Les décisions du parent sur la confrontation de la spécification avec le code (`docs/ECARTS-SPEC.md`) : 7 correctifs, spécification réécrite | fait (PR #39) |
 
 ## Reprise
 

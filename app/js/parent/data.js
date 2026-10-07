@@ -241,7 +241,8 @@ export function gateQuestion(rnd = Math.random) {
 
 // ---------------------------------------------------------------- les cartes (lot 2)
 // Pour le parent seulement (docs/SPEC-LOT2.md, section 7) : cartes et brillantes, cartes encore gagnables selon
-// le quota, zones, étoiles dorées et arc-en-ciel, semaines réussies, cadeaux. R : les fiches du magasin
+// le quota, zones, étoiles dorées et arc-en-ciel, semaines réussies (plus de cadeaux de la surprise depuis le
+// 5 octobre 2026, ni dans l'espace parent : lot « Correctifs », écart 10.1). R : les fiches du magasin
 // « recompenses » par clé ; cartes, calendrier : le contenu ; seances : les séances enregistrées.
 export function cardsSummary(R, cartes, calendrier, seances, now = Date.now()) {
   const owned = R.cartes?.cartes ?? {}, et = R.etoiles ?? {}, C = cartes.cartes, n = Object.keys(owned).length;

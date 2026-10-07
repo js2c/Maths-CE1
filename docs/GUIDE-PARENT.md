@@ -260,6 +260,22 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 
 **À vérifier sur la tablette.** La fluidité de la mer (elle est dessinée en direct par la carte graphique ; si l'image ralentit, l'application passe d'elle-même à une mer plus simple) ; le geste du doigt sur le bateau ; la place de la bulle.
 
+## d septies) Lot « Correctifs » : vos décisions du 6 octobre sur la confrontation
+
+Vous avez tranché le rapport qui comparait la spécification et l'application (`docs/ECARTS-SPEC.md`). Ce lot applique vos décisions. **Rien ne change à l'écran**, sauf au calcul rapide, niveau 9, au cran « très dur ». Ce qui change :
+
+- **« Plus facile » ne fait jamais progresser.** À la ligne des nombres, au niveau 1, ce cran faisait encore monter le niveau (il ne peut pas descendre en dessous du niveau 1). Désormais non. Une enfant qui choisirait toujours « plus facile » resterait au niveau 1 de la ligne : dans ce cas, interdisez ce cran (**Données et réglages**, crans autorisés).
+- **Une famille d'additions au plus par jour**, quelle que soit la façon dont elle s'ouvre (l'exercice d'additions, l'échauffement, une famille qui résiste). Avant, deux séances le même soir (par exemple une séance interrompue, puis une autre) pouvaient en ouvrir deux. Seuls le choix d'une famille (écran « choisir ») et le point de départ que vous réglez ouvrent une famille même si une autre s'est déjà ouverte ce jour-là.
+- **Calcul rapide, niveau 9, « très dur »** : les questions sont maintenant à trou, comme aux niveaux 4 à 8 : « 42 moins combien ? Ça fait 37. » (l'enfant tape 5).
+- **Placer un nombre sans graduations** (niveaux 8 et 13 de la ligne) : la marge d'erreur acceptée se resserre après 5 bonnes estimations au niveau joué, même quand l'enfant a choisi ce niveau elle-même (avant, seulement au niveau conseillé).
+- **Maisons de 8 et 9, presque-doubles** : quand l'enfant se trompe souvent (3 erreurs sur 5), la leçon de la maison (pour les maisons de 8 et 9) ou celle des doubles (pour les presque-doubles) est rejouée, une fois par séance au plus, comme pour les autres familles.
+- **Au mur de corail**, une erreur que l'application ne reconnaît pas fait dire « Hmm, regardons ensemble. » (la voix parlait du « chemin », qui n'est pas à l'écran au mur).
+- **Dans l'espace parent**, la carte « Cartes » ne montre plus les cadeaux de la surprise, supprimés le 5 octobre (elle affichait « undefined / 4 »).
+
+Ce que vous avez gardé tel quel, et qui est maintenant écrit dans la spécification : le défi record commence à la 6e séance (5 déjà terminées) ; une erreur corrigée rapporte 2 étoiles en tout ; la musique reste très basse quand l'enfant visite le récif ou l'album pendant la pause ; la mascotte est déçue à la première erreur d'une question, puis encourage si l'enfant se trompe encore sans nouvelle consigne (le rapport décrivait autre chose, voir la demande de fusion) ; les séances avec « choisir » peuvent être plus courtes (6 à 8 minutes) aux niveaux qui ont peu de questions différentes : regardez leur durée dans l'historique des séances.
+
+**Les phrases à fabriquer.** 8 phrases nouvelles (« 21 moins combien ? », « 31 moins combien ? »… jusqu'à « 91 moins combien ? »), quelques secondes de fabrication, avec les autres lots en attente (`node tools\voix\publier.mjs`). Une phrase ne sert plus (« Regardons le chemin ensemble. »).
+
 ## e) Ce qui reste approximatif ou à ajuster
 
 **À vérifier sur la vraie tablette.** Écouter la voix (aucune phrase n'a été écoutée par une personne, la vérification a été automatique) et regarder les illustrations des cartes en grand. Toutes les mesures ont été faites sur un ordinateur, en ralentissant le processeur 4 fois pour imiter une tablette : démarrage en moins de 1,5 s, animation à 50 à 60 images par seconde la plupart du temps, avec des baisses vers 30 pendant certaines animations (l'application allège alors d'elle-même le décor). Il faut confirmer que tout reste fluide sur la tablette.

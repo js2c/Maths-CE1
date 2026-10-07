@@ -11,7 +11,8 @@
 //    multiplicateur) ni protection ; le cran décale le niveau de la ligne et règle l'échauffement ;
 //  - lot 3 (docs/SPEC-LOT3.md, section 2) : « Encore ! » ouvre le même écran « choisir » que l'accueil (session/choice.js),
 //    sans étoiles : la ligne au niveau choisi, les additions de la famille choisie (même déroulement que la notion
-//    du jour, Module2Runner), une leçon (toutes, vues ou non), puis retour à l'écran de choix.
+//    du jour, Module2Runner). (Lot « Les leçons » : plus de leçon ici, elles ont leur bulle à l'accueil ; « À toi ! », à la
+//    fin d'une leçon, lance directement l'exercice associé en entraînement libre si la séance du jour est faite : `start`.)
 import { Module1Runner } from "../modules/numberline/runner.js";
 import { Module2Runner } from "../modules/facts/runner.js";
 import { FactsScreen } from "../modules/facts/screen.js";
@@ -47,19 +48,23 @@ export class FreeTraining {
     await this.store.put("seances", this.rec);
     if (!this.told && this.app.clock.now() - this.t0 > PROPOSE_STOP_MS) { this.told = true; await this.app.voice.say(this.app.text.data.libreLongtemps); }
   }
-  // le menu : l'écran « choisir » (lot 3), sans étoiles ; une leçon ramène à ce menu
+  // le menu : l'écran « choisir » (lot 3), sans étoiles
   async menu() {
     const { app } = this;
     this.t0 ??= app.clock.now();
     app.voice.stop(); await app.voice.say(`${app.text.data.encore} ${app.text.data.libre}`);
-    for (;;) {
-      const c = await choose(app, { stars: false, store: this.store, content: { module1: this.m1, module2: this.m2, module3: this.m3, module4: this.m4, seance: this.seance ?? {} } });
-      if (c.module === 1) return this.line(c.niveau);
-      if (c.module === 2) return this.facts(c.famille);
-      if (c.module === 3) return this.calc(c.niveau);
-      if (c.module === 4) return this.voiliers(c.niveau);
-      await this.lesson(c.lecon);
-    }
+    const c = await choose(app, { stars: false, store: this.store, content: { module1: this.m1, module2: this.m2, module3: this.m3, module4: this.m4, seance: this.seance ?? {} } });
+    return this.start(c);
+  }
+  // l'exercice choisi ({ module, niveau } ou { module: 2, famille }), sans fin ; (lot « Les leçons » : `apresLecon`, la leçon
+  // qui vient d'être vue depuis le menu des leçons, notée dans la séance libre)
+  async start(c) {
+    this.t0 ??= this.app.clock.now();
+    if (c.apresLecon) { await this.seanceId(); this.rec.apresLecon = c.apresLecon; await this.store.put("seances", this.rec); }
+    if (c.module === 1) return this.line(c.niveau);
+    if (c.module === 2) return this.facts(c.famille);
+    if (c.module === 3) return this.calc(c.niveau);
+    return this.voiliers(c.niveau);
   }
   // la ligne graduée au niveau choisi, sans fin
   async line(niveau = null) {
@@ -118,10 +123,5 @@ export class FreeTraining {
       for (const e of events) if (e.type === "montee") await app.rewards.arcFromFree();
       if (!x.q.guide) await this.answered(r.ok);
     }
-  }
-  // une leçon (sans étoiles), puis retour au menu
-  async lesson(id) {
-    const r = await this.app.lessons.play(id);
-    await this.seanceId(); (this.rec.lecons ??= []).push({ id, raison: "libre", ...r }); await this.store.put("seances", this.rec);
   }
 }

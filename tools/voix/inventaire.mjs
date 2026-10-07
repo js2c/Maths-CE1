@@ -74,6 +74,9 @@ function domaines(C) {
     // lot 3 bis (B6) : plusieurs étoiles arc-en-ciel à la récompense, une seule phrase (au plus un niveau par question)
     etoilesArc: range(2, 20).map((n) => ({ n })),
     fait: faits, faitTrouDroite: faits, faitTrouGauche: faits, faitCorrection: faits,
+    // lot « Les leçons » : la table d'addition à consulter, une phrase par case, de 0 + 0 à max + max (session/lessons.js ;
+    // seance.json, menuLecons.table.max)
+    tableCase: (() => { const m = C.seance?.menuLecons?.table?.max ?? 10; return range(0, m).flatMap((a) => range(0, m).map((b) => ({ a, b, n: a + b }))); })(),
     // l'aide de la famille 1 : la tortue part du grand nombre et fait 1 ou 2 sauts (facts/screen.js)
     aideLigne: faits.filter(({ a, b }) => Math.min(a, b) === 1 || Math.min(a, b) === 2).map(({ a, b }) => ({ a: Math.max(a, b), sauts: sautsDe(Math.min(a, b)) })),
     // l'aide des doubles jusqu'à 5 : a poissons et leur reflet

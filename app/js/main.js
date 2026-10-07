@@ -43,6 +43,7 @@ import { Frieze } from "./session/frieze.js";
 import { FreeTraining } from "./session/free.js";
 import { allowedCrans, chooseCran } from "./session/selector.js";
 import { choose } from "./session/choice.js";
+import { additionTable, exerciseOf, lessonEnd, lessonsMenu } from "./session/lessons.js";
 import { clock } from "./engine/clock.js";
 import { onBrief, pop, skipKey } from "./engine/ui.js";
 import { ParentSpace, parentLogo } from "./parent/parent.js";
@@ -168,11 +169,14 @@ const handlers = {
     session.rec.musique ??= pickMusic(sonIndex, rnd); await session.save(); sound.startMusic(session.rec.musique);
     // la mascotte salue et souhaite la bienvenue (lot « Mascotte » : elle n'a pas de nom ; le nom de la pieuvre choisi
     // autrefois reste dans la base, sans être montré)
-    ocean.mascotte.play("saluer"); await voice.say(text.pick("accueil"));
-    // une séance sur cinq environ : une surprise (un visiteur) ; ?surprise=visite:tortue|visite:poissons (tests)
-    const forced = P.get("surprise")?.split(":"), prev = previousSession(await store.all("seances"), session.id);
-    const s = forced ? { type: forced[0], id: forced[1] } : drawSurprise(rnd, cartes.surprise, prev);
-    if (s) { session.rec.surprise = s; await session.save(); await playSurprise(app, s); }
+    // (lot « Les leçons » : après « À toi ! », à la fin d'une leçon du menu, ni salut ni surprise : on enchaîne sur le sélecteur)
+    if (!session.choix?.apresLecon) {
+      ocean.mascotte.play("saluer"); await voice.say(text.pick("accueil"));
+      // une séance sur cinq environ : une surprise (un visiteur) ; ?surprise=visite:tortue|visite:poissons (tests)
+      const forced = P.get("surprise")?.split(":"), prev = previousSession(await store.all("seances"), session.id);
+      const s = forced ? { type: forced[0], id: forced[1] } : drawSurprise(rnd, cartes.surprise, prev);
+      if (s) { session.rec.surprise = s; await session.save(); await playSurprise(app, s); }
+    }
     // lot 2 : le sélecteur de difficulté (?cran=dur pour les tests : sans l'écran)
     if (seance.selecteur?.actif) await session.setCran(P.get("cran") ?? await chooseCran(app, { allowed: allowedCrans(await store.setting("cransAutorises")), attenteS: seance.selecteur.attenteS }));
   },
@@ -193,6 +197,7 @@ const handlers = {
     const screen = app.lineScreen();
     // lot 3 : le niveau choisi par l'enfant (écran « choisir ») : toutes les questions à ce niveau
     const runner = await new Module1Runner({ screen, store, content: module1, rnd, seance: ctx.session.id, variete: seance.variete, offset: () => ctx.session.offset, cran: () => ctx.session.cran, choix: ctx.session.choix?.niveau ?? null }).load();
+    afterLesson(ctx.session, runner);
     if (P.get("niveau")) { runner.st.niveau = Number(P.get("niveau")); runner.save = () => {}; }
     if (P.get("format")) runner.levels = runner.levels.map((c) => ({ ...c, formats: [P.get("format")] }));
     const step = { ...ctx.step, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}), ...(P.get("guides") ? { guides: Number(P.get("guides")) } : {}) };
@@ -212,6 +217,9 @@ const handlers = {
   },
   recompense: (ctx) => reward(app, { ...ctx, hud }),
 };
+// lot « Les leçons » : après « À toi ! », la leçon qui vient d'être vue depuis le menu ne peut pas être relancée dans la séance
+// (au plus une fois par séance, section 8) ; elle est déjà notée vue ou passée, ce n'est donc pas la leçon d'entrée
+const afterLesson = (session, runner) => { if (session.choix?.apresLecon) runner.lessonPlayed?.(session.choix.apresLecon); };
 // lot 2, étape 6 : la notion du jour sur les additions (docs/SPEC-LOT2.md, section 3) : l'écran des additions, le
 // bernard-l'ermite (planche « ermite », chargée le temps de l'étape), la leçon de la famille la première fois
 // (L4 à L6), sinon deux exemples guidés ; une famille acquise rapporte une étoile arc-en-ciel
@@ -219,7 +227,7 @@ async function notion2(ctx) {
   const { session } = ctx, screen = (app.facts ??= new FactsScreen(app, module2));
   const runner = await new Module2Runner({ store, content: module2, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, dejaNouveaux: session.nouveaux, choix: session.choix?.famille ?? null }).load();
   const conf = ctx.step.module2 ?? ctx.step, step = { ...ctx.step, ...conf, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}), ...(P.get("guides") ? { guides: Number(P.get("guides")) } : {}) };
-  app.runner = runner; session.rec.famille = runner.famille; await session.save();
+  app.runner = runner; afterLesson(session, runner); session.rec.famille = runner.famille; await session.save();
   await Promise.all([sprites.load("ermite"), sprites.load("aides")]);
   const hermit = new Hermit(ocean, { x: 150, y: 776, scale: 0.85 }); // (lot 3 bis, R20 : un peu plus haut, il était coupé par le bas de l'écran)
   screen.hermit = hermit; screen.notion = true; app.hermit = hermit;
@@ -243,7 +251,7 @@ async function notion3(ctx) {
   const step = { ...ctx.step, ...conf, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}) };
   const base = median((await store.setting("tempsDeBase"))?.mesures ?? []) ?? module2.base.defautS * 1000;
   const runner = await new Module3Runner({ store, content: module3, content2: module2, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, choix: session.choix?.module === 3 ? session.choix.niveau : null, baseMs: base }).load();
-  app.runner = runner; session.rec.niveauCalcul = runner.niveau; await session.save();
+  app.runner = runner; afterLesson(session, runner); session.rec.niveauCalcul = runner.niveau; await session.save();
   await sprites.load("calcul");
   const fs = (app.facts ??= new FactsScreen(app, module2)); fs.show(true); fs.keys(false);
   // (lot 3 bis, B4) « Le petit poisson va t'aider » n'est dit que s'il est à l'écran : aux niveaux du mur, le mur et le poisson
@@ -336,15 +344,18 @@ async function showHome({ done, first = false }) {
   clearHome(); ocean.mascotte.ambiance("pause"); fleche.cacher();
   // (lot 3 bis, R22) ce que « réécouter » redit à l'accueil
   voice.instruction = done ? text.data.accueilConsigneFaite : text.data.accueilConsigne;
-  const reefKey = big("recif", HOME_X[2], 650, "le récif", "bubble reefkey"), albumKey = big("album", HOME_X[3], 650, "l'album", "bubble albumkey");
-  homeEls.push(reefKey, albumKey, parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }));
+  const reefKey = big("recif", HOME_X[3], 650, "le récif", "bubble reefkey"), albumKey = big("album", HOME_X[4], 650, "l'album", "bubble albumkey");
+  // (lot « Les leçons ») la bulle « les leçons », avant comme après la séance du jour
+  const lessonsKey = big("accueil.lecons", HOME_X[2], 650, "les leçons", "bubble leconskey");
+  homeEls.push(reefKey, albumKey, lessonsKey, parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }));
+  onBrief(app, lessonsKey, () => openLessons(), "lecons");
   const visit = (place) => async () => { voice.unlock(); voice.stop(); clearHome(); await place.visit(); showHome({ done: await doneToday(store) }); };
   // (lot 3 bis, B3) les bulles de l'accueil : un toucher bref les lance, un appui long montre leur étiquette
   onBrief(app, reefKey, visit(reef), "recif"); onBrief(app, albumKey, visit(album), "album");
   if (done) {
     // la séance du jour est faite : la lune (un décor) et « Encore ! », l'entraînement libre (le même écran « choisir »,
     // sans étoiles)
-    const again = big("encore", HOME_X[0] + 55, 650, "encore", "bubble play again");
+    const again = big("encore", HOME_X[1], 650, "encore", "bubble play again");
     homeEls.push(again);
     onBrief(app, again, () => { voice.unlock(); clearHome(); freeTraining(); }, "encore");
     homeEls.push(await goodNight(app, { first }));
@@ -369,13 +380,34 @@ async function showHome({ done, first = false }) {
     mode = "choix"; homeKey.style.visibility = "visible";
     const c = await choose(app, { store, content: { module1, module2, module3, module4, seance } });
     mode = null; homeKey.style.visibility = "hidden";
-    if (c.lecon) return lessonAlone(c.lecon);
     await runSession(c);
   }, "choisir");
 }
-// les bulles de l'accueil : jouer (ou « Encore ! »), choisir, le récif, l'album
+// les bulles de l'accueil : jouer, choisir (ou « Encore ! »), les leçons, le récif, l'album
 // (lot 3 bis, R20 : l'album était posé sur le rocher de droite ; les bulles se décalent vers la gauche, sous la mascotte)
-const HOME_X = [390, 580, 770, 960];
+// (lot « Les leçons » : cinq bulles, 180 px de l'une à l'autre)
+const HOME_X = [370, 550, 730, 910, 1090];
+// LES LEÇONS (lot « Les leçons », session/lessons.js) : le menu ; une leçon, puis l'écran « À toi ! » (l'exercice associé :
+// séance du jour s'il n'y en a pas encore eu, entraînement libre sinon) ; la table d'addition ; la maison ramène à l'accueil
+async function openLessons() {
+  voice.unlock(); clearHome(); voice.stop(); voice.say(text.data.choixNom.lecons);
+  let go = null;
+  mode = "lecons"; homeKey.style.visibility = "visible";
+  const c = await lessonsMenu(app, { store, seance, lecons });
+  if (c?.table) { mode = "table"; await additionTable(app, { seance }); }
+  else if (c?.lecon) {
+    const r = await lessonAlone(c.lecon, { fin: true });
+    if (r) {
+      mode = "lecon-fin"; homeKey.style.visibility = "hidden";
+      if ((await lessonEnd(app, { id: c.lecon })) === "atoi") go = exerciseOf(lecons, c.lecon);
+    } else abandonActivity();
+  }
+  mode = null; homeKey.style.visibility = "hidden";
+  if (!go) return showHome({ done: await doneToday(store) });
+  voice.say(text.pick("aToi"));
+  if (await doneToday(store)) return freeTraining(go);
+  await runSession(go);
+}
 // une séance du jour : proposée par l'application (« jouer »), ou l'exercice choisi (`choix`, lot 3)
 async function runSession(choix = null) {
   // la durée maximale d'une séance est un réglage du parent (seance.json donne la valeur par défaut) ; « Échauffement :
@@ -383,6 +415,8 @@ async function runSession(choix = null) {
   const sans = (await store.setting("echauffement")) === false ? ["echauffement"] : [], sansRaison = {};
   // lot 3, étape 5 : l'échauffement déjà fait ou passé ce jour-là (séance interrompue pour un autre exercice) n'est pas refait
   if (!sans.length && (await store.all("seances")).some((s) => !s.libre && sameDay(s.debut, Date.now()) && (s.etapes ?? []).some((e) => e.id === "echauffement" && e.dureeS !== undefined))) { sans.push("echauffement"); sansRaison.echauffement = "déjà fait aujourd'hui"; }
+  // lot « Les leçons » : « À toi ! » après une leçon du menu : sans échauffement
+  if (choix?.apresLecon && !sans.includes("echauffement")) { sans.push("echauffement"); sansRaison.echauffement = "après une leçon"; }
   // lot 3 : la rotation de « jouer » entre les trois modules, le moins maîtrisé d'abord (session.js, chooseModule)
   const [n1, n2, n3] = await Promise.all([1, 2, 3].map((k) => store.get("niveaux", k))), mastery = { 1: ((n1?.niveau ?? 1) - 1) / module1.niveaux.length, 2: (n2?.acquises?.length ?? 0) / module2.familles.length, 3: calcMastery(module3, n3) };
   const session = new Session({ store, content: { ...seance, dureeMaxMin: await store.setting("dureeSeanceMin", seance.dureeMaxMin) }, handlers, rewards, paused: () => clock.pausedTotal(), onProgress: (p) => progress(p), choix, sans, sansRaison, mastery: (m) => mastery[m] ?? 0,
@@ -402,12 +436,14 @@ async function runSession(choix = null) {
 // rangée dans l'historique du parent comme une séance « libre » (qui ne compte jamais comme la séance du jour).
 // (lot 3, étape 5 : `pause` : choisie depuis l'accueil en pause ; jouée par un lecteur à part, dans le bac à sable de la
 // scène (`sandbox`), puis retour à l'accueil en pause, la séance intacte ; la maison la quitte, sans rien noter)
-async function lessonAlone(id, { pause = false } = {}) {
+// (lot « Les leçons » : `fin`, une leçon du menu, suivie de l'écran « À toi ! » : pas de retour à l'accueil ; renvoie le
+// résultat de la leçon, ou null si elle a été quittée par la maison)
+async function lessonAlone(id, { pause = false, fin = false } = {}) {
   const player = pause ? new LessonPlayer(app, lecons, { screen: new ReadScreen(app) }) : lessons;
   mode = pause ? "pause-lecon" : "lecon"; homeKey.style.visibility = "visible";
   const t0 = Date.now(), r = await Promise.race([player.play(id), new Promise((res) => { app.lessonCancel = () => { player.abandon(); clock.abandon(); voice.abandon(); res(null); }; })]);
   app.lessonCancel = null; mode = pause ? "seance" : null; homeKey.style.visibility = "hidden";
-  if (!r) return;
+  if (!r) return null;
   const L = lecons[id], key = L?.module === 2 ? 2 : L?.module === 3 ? 3 : 1, st = (await store.get("niveaux", key)) ?? (key === 3 ? { module: 3, acquis: [], obtenus: [], vus: {}, fenetres: {}, lecons: [] } : null);
   if ((r?.vue || r?.passee) && st && !(st.lecons ??= []).includes(id)) { st.lecons.push(id); await store.put("niveaux", st); }
   const today = new Date().toDateString(), done = await store.setting("leconsChoisies"), ids = done?.jour === today ? done.ids : [];
@@ -415,7 +451,8 @@ async function lessonAlone(id, { pause = false } = {}) {
   if (r?.vue && !ids.includes(id)) { etoiles = seance.choix?.etoilesLecon ?? 3; await store.setSetting("leconsChoisies", { jour: today, ids: [...ids, id] }); app.starFrom = [640, 400]; await rewards.add(etoiles, `leçon ${id}`); }
   await store.add("seances", { debut: t0, fin: Date.now(), dureeS: Math.round((Date.now() - t0) / 1000), terminee: false, libre: true, leconChoisie: true, ...(pause ? { pendantPause: app.session?.id ?? true } : {}), module: key, questions: 0, justes: 0, reussite: null, etoiles, etapes: [], lecons: [{ id, raison: "choix", ...r }] });
   await clock.wait?.(etoiles ? 1500 : 0);
-  if (!pause) showHome({ done: await doneToday(store) });
+  if (!pause && !fin) showHome({ done: await doneToday(store) });
+  return r;
 }
 
 // ---------------------------------------------------------------- pendant la séance : la frise et la maison
@@ -458,9 +495,11 @@ function clearPauseHome() { pausedEls?.forEach((e) => e.remove()); pausedEls = n
 function showPauseHome() {
   clearPauseHome();
   const resume = big("jouer", HOME_X[0], 650, "continuer", "bubble play keep"), pickKey = big("choisir", HOME_X[1], 650, "choisir", "bubble choisir keep");
-  const reefKey = big("recif", HOME_X[2], 650, "le récif", "bubble reefkey keep"), albumKey = big("album", HOME_X[3], 650, "l'album", "bubble albumkey keep");
+  const reefKey = big("recif", HOME_X[3], 650, "le récif", "bubble reefkey keep"), albumKey = big("album", HOME_X[4], 650, "l'album", "bubble albumkey keep");
+  const lessonsKey = big("accueil.lecons", HOME_X[2], 650, "les leçons", "bubble leconskey keep");
   const logo = parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }); logo.classList.add("keep");
-  pausedEls = [resume, pickKey, reefKey, albumKey, logo];
+  pausedEls = [resume, pickKey, lessonsKey, reefKey, albumKey, logo];
+  onBrief(app, lessonsKey, () => visitInPause(lessonsInPause), "lecons");
   onBrief(app, resume, resumeSession, "continuer");
   onBrief(app, reefKey, () => visitInPause(() => reef.visit()), "recif");
   onBrief(app, albumKey, () => visitInPause(() => album.visit()), "album");
@@ -493,8 +532,17 @@ async function pickInPause() {
   const c = await choose(app, { store, content: { module1, module2, module3, module4, seance } });
   mode = "seance"; homeKey.style.visibility = "hidden";
   if (!c) return null;
-  if (c.lecon) { await lessonAlone(c.lecon, { pause: true }); return null; }
   return { exercice: c };
+}
+// (lot « Les leçons ») les leçons depuis la pause : une leçon revient à la pause, sans l'écran « À toi ! » (il interromprait
+// la séance) ; la table d'addition aussi ; la maison les quitte sans rien toucher à la séance
+async function lessonsInPause() {
+  mode = "pause-lecons"; homeKey.style.visibility = "visible";
+  const c = await lessonsMenu(app, { store, seance, lecons });
+  if (c?.table) { mode = "pause-table"; await additionTable(app, { seance }); }
+  else if (c?.lecon) await lessonAlone(c.lecon, { pause: true });
+  mode = "seance"; homeKey.style.visibility = "hidden";
+  return null;
 }
 // un autre exercice validé : la séance en pause est terminée comme « Terminer la séance » du parent (interrompue, sans
 // récompense ; ses réponses et ses étoiles restent), avec la raison, puis l'exercice choisi est la séance du jour
@@ -570,15 +618,20 @@ onBrief(app, homeKey, () => {
   pop(homeKey);
   if (mode === "seance") { if (app.warmupSkip?.pending) app.warmupSkip.timeout(); if (!app.enPause) pauseSession(); }
   else if (mode === "libre") quitFree();
-  else if (mode === "choix" || mode === "lecon") { abandonActivity(); showHome({ done: false }); }
+  else if (mode === "choix") { abandonActivity(); showHome({ done: false }); }
+  // (lot « Les leçons ») le menu des leçons, une leçon du menu, la table d'addition : retour à l'accueil (ou à la pause)
+  else if (mode === "lecons" || mode === "pause-lecons") app.lessonsCancel?.();
+  else if (mode === "table" || mode === "pause-table") app.tableCancel?.();
+  else if (mode === "lecon") app.lessonCancel?.();
   // (lot 3, étape 5) depuis l'accueil en pause : l'écran « choisir » ou la leçon seule, quittés sans rien toucher à la séance
   else if (mode === "pause-choix") app.choiceCancel?.();
   else if (mode === "pause-lecon") app.lessonCancel?.();
 }, () => app.legendes.etiquettes[mode === "seance" && !app.enPause ? "pause" : "maison"]);
-async function freeTraining() {
+// (lot « Les leçons » : `start`, l'exercice lancé par « À toi ! » après une leçon, quand la séance du jour est faite)
+async function freeTraining(start = null) {
   mode = "libre"; homeKey.style.visibility = "visible"; sound.startMusic(pickMusic(sonIndex, rnd));
   const free = new FreeTraining(app, { store, module1, module2, module3, module4, rnd, seance });
   app.free = free;
-  await free.menu();
+  await (start ? free.start(start) : free.menu());
 }
 showHome({ done: await doneToday(store) });

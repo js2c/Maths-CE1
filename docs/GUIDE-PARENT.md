@@ -202,8 +202,9 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 | L7 | Plus 10 sur le mur de corail, on descend d'une rangée. | 34 + 10 |
 | L8 | L'astuce du 9, plus 10, puis moins 1. | 34 + 9 |
 | L9 | Passer la dizaine, on complète d'abord jusqu'à 10. | 38 + 5 |
+| + | La table d'addition, toucher une case dit et montre le calcul. | 7 + 5 = 12 |
 
-**L'appui long sur les pictogrammes.** Garder le doigt environ **une demi-seconde** sur une bulle de l'accueil (jouer, choisir, le récif, l'album) ou sur un exercice de l'écran « choisir » (la ligne, les additions, le calcul rapide, les leçons) fait apparaître une **étiquette** au-dessus, qui reste tant que le doigt est posé (depuis le lot 3 ter : elle s'efface en une demi-seconde, et cela vaut pour tous les boutons, voir **d quater**). Relâcher après un appui long **ne lance rien** ; seul un toucher bref lance. La voix ne lit pas l'étiquette. La durée se règle dans `app/content/legendes.json` (`appuiLong`).
+**L'appui long sur les pictogrammes.** Garder le doigt environ **une demi-seconde** sur une bulle de l'accueil (jouer, choisir, les leçons, le récif, l'album) ou sur un exercice de l'écran « choisir » (la ligne, les additions, le calcul rapide, les voiliers) fait apparaître une **étiquette** au-dessus, qui reste tant que le doigt est posé (depuis le lot 3 ter : elle s'efface en une demi-seconde, et cela vaut pour tous les boutons, voir **d quater**). Relâcher après un appui long **ne lance rien** ; seul un toucher bref lance. La voix ne lit pas l'étiquette. La durée se règle dans `app/content/legendes.json` (`appuiLong`).
 
 **L'espace parent, rappel.** L'appui long sur le logo de la pieuvre, en bas à gauche de l'accueil, dure **2 secondes** (un anneau clair se remplit) ; il est différent de l'appui court sur les pictogrammes.
 

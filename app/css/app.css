@@ -30,6 +30,8 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .answer { width: 140px; height: 140px; }
 .play { width: 180px; height: 180px; left: 550px; top: 560px; animation: invite 1.6s ease-in-out infinite; }
 .stars { pointer-events: none; }
+/* lot « Les leçons » : la bulle « À toi ! » de la fin d'une leçon invite comme « jouer » */
+.lecons-atoi { animation: invite 1.6s ease-in-out infinite; }
 /* retours : jamais d'agrandissement d'une image (on part plus petit et on revient à 1) */
 @keyframes invite { 0%, 100% { transform: scale(1); } 50% { transform: scale(0.93); } }
 @keyframes pop { 0% { transform: scale(0.82); } 60% { transform: scale(1); } 80% { transform: scale(0.95); } 100% { transform: scale(1); } }

@@ -16,7 +16,7 @@ import { Warmup } from "../../app/js/modules/facts/warmup.js";
 import { runWarmup } from "../../app/js/modules/facts/screen.js";
 import { makeEstimate, makeJump, makePlace, makeRead, makeWrite } from "../../app/js/modules/numberline/generator.js";
 import { Module1Runner } from "../../app/js/modules/numberline/runner.js";
-import { levelItems, tilePos, TILE } from "../../app/js/session/choice.js";
+import { EXERCISES, levelItems, tilePos, TILE } from "../../app/js/session/choice.js";
 import { CALC_STOPS } from "../../app/js/art/runtime.js";
 import { Session } from "../../app/js/session/session.js";
 
@@ -34,7 +34,7 @@ async function notion(store, { n = 40, answer = () => true, cran = "conseille", 
   return { m, qs };
 }
 
-test("écran de choix : 13 niveaux, 7 familles, toutes les leçons ; le conseillé et les niveaux validés", () => {
+test("écran de choix : 13 niveaux, 7 familles, 9 niveaux du calcul ; le conseillé et les niveaux validés ; plus de leçons (lot « Les leçons »)", () => {
   const L = levelItems("ligne", { st1: { niveau: 4, lecons: ["L1"] }, module1: m1, module2: m2 });
   assert.equal(L.length, 13); assert.deepEqual(L.filter((x) => x.conseille).map((x) => x.key), [4]); assert.deepEqual(L.filter((x) => x.valide).map((x) => x.key), [1, 2, 3]);
   assert.ok(L.every((x) => x.sprite === `choix.ligne.${x.key}`));
@@ -42,14 +42,14 @@ test("écran de choix : 13 niveaux, 7 familles, toutes les leçons ; le conseill
   const L0 = levelItems("ligne", { module1: m1, module2: m2 }); assert.equal(L0.length, 13); assert.equal(L0.find((x) => x.conseille).key, 1); assert.ok(!L0.some((x) => x.valide));
   const F = levelItems("additions", { st2: { ...initialFamilies(m2, NOW), ouvertes: [1, 2, 3], acquises: [1, 2] }, module1: m1, module2: m2 });
   assert.equal(F.length, 7); assert.equal(F.find((x) => x.conseille).key, 3); assert.deepEqual(F.filter((x) => x.valide).map((x) => x.key), [1, 2]);
-  const S = levelItems("lecons", { st1: { lecons: ["L1"] }, st2: { lecons: ["L4"] }, module1: m1, module2: m2, lecons: seance.choix.lecons });
-  assert.deepEqual(S.map((x) => x.key), ["L1", "L2", "L3", "L4", "L5", "L6", "L10", "L7", "L8", "L9"]); assert.deepEqual(S.filter((x) => x.valide).map((x) => x.key), ["L1", "L4"]);
+  // (lot « Les leçons » : les leçons ont quitté l'écran « choisir » pour leur bulle de l'accueil, session/lessons.js)
+  assert.deepEqual(EXERCISES.map((e) => e.id), ["ligne", "additions", "calcul", "voiliers"]);
   // lot 3, étape 4 : le calcul rapide, 9 niveaux, tous accessibles
   const C = levelItems("calcul", { st3: { acquis: [1, 2], lecons: ["L7"] }, module1: m1, module2: m2, module3: m3 });
   assert.equal(C.length, 9); assert.equal(C.find((x) => x.conseille).key, 3); assert.deepEqual(C.filter((x) => x.valide).map((x) => x.key), [1, 2]);
   for (const x of C) assert.ok(textes.choixCalcul[x.key]);
   // chaque vignette a son nom dit par la voix
-  for (const x of L) assert.ok(textes.choixLigne[x.key]); for (const x of F) assert.ok(textes.choixFamille[x.key]); for (const x of S) assert.ok(textes.choixLeconNom[x.key]);
+  for (const x of L) assert.ok(textes.choixLigne[x.key]); for (const x of F) assert.ok(textes.choixFamille[x.key]);
   // les vignettes tiennent dans la scène (1280 × 800), entre les bras de la pieuvre et les algues de droite (lot 3 bis, B1 :
   // 4 colonnes, sous le bouton de retour) ; le calcul rapide sur son chemin de cailloux
   const inScene = ([x, y]) => x - TILE.w / 2 >= 410 && x + TILE.w / 2 <= 1165 && y - TILE.h / 2 >= 172 && y + TILE.h / 2 <= 790;

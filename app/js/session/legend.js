@@ -12,23 +12,24 @@ export const LEGEND_AT = [1218, 214], PANEL = { x: 130, y: 44, w: 1020, h: 730 }
 const COL = { vign: 70, travail: 160, exemple: 670, fin: 925 }, EM = 23, EX_EM = 23, ROW_PAD = 16;
 
 // la vignette d'un niveau, comme sur sa plaque de « choisir »
-export const legendSprite = (ex, n) => (ex === "ligne" ? `choix.ligne.${n}` : ex === "additions" ? `choix.famille.${n}` : ex === "calcul" ? `choix.calcul.${n}` : ex === "voiliers" ? `choix.voiliers.${n}` : "choix.lecon");
+// (lot « Les leçons » : les leçons ont la tuile de leur menu, la table d'addition la sienne, « + »)
+export const legendSprite = (ex, n) => (ex === "ligne" ? `choix.ligne.${n}` : ex === "additions" ? `choix.famille.${n}` : ex === "calcul" ? `choix.calcul.${n}` : ex === "voiliers" ? `choix.voiliers.${n}` : n === "+" ? "lecons.table.plus" : `lecons.tuile.${n}`);
 // les lignes du tableau d'un exercice, dans l'ordre des plaques (`keys`) : { n, travail: [lignes], exemple: [lignes] }
 export function legendRows(legendes, ex, keys = null) {
   const rows = legendes?.[ex] ?? [], by = new Map(rows.map((r) => [String(r.n), r]));
   return (keys ? keys.map((k) => by.get(String(k))).filter(Boolean) : rows).map((r) => ({ n: r.n, travail: R.wrapWords(r.travail, (COL.exemple - COL.travail - 30) / EM), exemple: R.wrapWords(r.exemple, (COL.fin - COL.exemple) / EX_EM) }));
 }
 
-// le bouton ; `labels` : les nombres écrits sur la vignette des leçons (choice.js, LESSON_LABELS)
-export function legendKey(app, ex, { keys = null, labels = {}, els }) {
+// le bouton
+export function legendKey(app, ex, { keys = null, els }) {
   const { sprites } = app, r = 40;
   const b = spriteBox(app, { x: LEGEND_AT[0] - r - 12, y: LEGEND_AT[1] - r - 12, w: 2 * r + 24, h: 2 * r + 24, cls: "bubble legende", label: "légende", paint: (ctx) => sprites.draw(ctx, "legende", 0, r + 12, r + 12) });
   els.push(b);
-  onBrief(app, b, () => { pop(b); openLegend(app, ex, { keys, labels, els }); }, "legende");
+  onBrief(app, b, () => { pop(b); openLegend(app, ex, { keys, els }); }, "legende");
   return b;
 }
 
-export function openLegend(app, ex, { keys = null, labels = {}, els = [] } = {}) {
+export function openLegend(app, ex, { keys = null, els = [] } = {}) {
   const { sprites, stage } = app, L = app.legendes, rows = legendRows(L, ex, keys);
   closeLegend(app);
   // le voile : tout l'écran ; un toucher dessus (hors du panneau) ferme
@@ -51,7 +52,6 @@ export function openLegend(app, ex, { keys = null, labels = {}, els = [] } = {})
     const q = sprites.frame(legendSprite(ex, row.n), 0), k = 0.6, cy = h / 2;
     ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (COL.vign * stage.px) + q.dx * k, cy * stage.px + q.dy * k, q.w * k, q.h * k);
     ctx.setTransform(stage.px, 0, 0, stage.px, 0, 0);
-    if (ex === "lecons" && labels[row.n]) { const em = Math.min(20, 70 / R.wordWidth(labels[row.n])); R.drawWord(ctx, labels[row.n], COL.vign, cy + 4, em, { w: em * 0.15, seed: 8830 + i }); }
     const top = (n) => cy - (n * EM * 1.55 - EM * 0.55) / 2;
     row.travail.forEach((t, j) => R.drawWord(ctx, t, COL.travail + R.wordWidth(t) * EM / 2, top(row.travail.length) + j * EM * 1.55, EM, { w: EM * 0.12, seed: 8840 + i * 13 + j }));
     row.exemple.forEach((t, j) => R.drawWord(ctx, t, COL.exemple + R.wordWidth(t) * EX_EM / 2, top(row.exemple.length) + j * EX_EM * 1.55, EX_EM, { color: "#b0402f", w: EX_EM * 0.12, seed: 8870 + i * 13 + j }));

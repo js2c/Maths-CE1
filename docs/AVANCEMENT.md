@@ -29,6 +29,14 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
 
+### Reprise du bloc « Sommes jusqu'à 30 » puis « Multiplication »
+
+- **Branche** : `claude/amazing-clarke-n9lyc7` ; demande de fusion en brouillon « Lot : Sommes jusqu'à 30 et Multiplication ». Bloc fait d'un seul tenant, sans arrêt pour validation (décision du parent du 7 octobre 2026, `docs/LOTS.md`, fiche « 4 et 5 »).
+- **Prérequis** : vérifiés sur `origin/main` le 7 octobre 2026 (« Les leçons » construit et fusionné, #40 ; « Correctifs » fait).
+- **Étape 0, fin de la recette des leçons** : en cours (rubrique ci-dessous).
+- **Étape 1, « Sommes jusqu'à 30 »** : à faire.
+- **Étape 2, « Multiplication »** : à faire.
+
 ### Reprise du lot « Les leçons »
 
 - **Branche** : `claude/upbeat-ramanujan-tvcxot` ; demande de fusion en brouillon « Lot : Les leçons ».

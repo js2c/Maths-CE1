@@ -530,7 +530,8 @@ const API={
     // (relecture du lot : arrêté en retrait de la ligne, il ne cache pas les bouées dont parle la voix)
     return new Promise(res=>tween(B,{x:zoneCenter(k),y:LINE_Y-170},1600,undefined,res));
   },
-  // le double encadrement : la bonne centaine franchie, la caméra recule, la rangée des dizaines apparaît (maquette, startTravel)
+  // le double encadrement : la bonne centaine franchie, la caméra recule, la rangée des dizaines apparaît (maquette, startTravel) ;
+  // après « passer », le recul aussi va plus vite (au plus 4 fois : plus vite, la caméra sauterait)
   traversee(row2){
     const v=B.num,b=G.buoys,k=b.filter(x=>x<v).length;
     B.mode='travel';BU.forEach(x=>x.lit=0);if(G.mv===3&&P.vis)P.mode='leave';
@@ -540,7 +541,7 @@ const API={
       addRow(row2,2,Z_LINE-ZC-PULL,false);
       const e2=[0,...row2.map((_,i)=>1280*(i+1)/6),1280],kk=row2.filter(x=>x<v).length,wrong=[0,1,2,3,4,5].filter(c=>c!==kk),droite=wrong.filter(c=>(e2[c]+e2[c+1])/2>=(OPTS.attenteXMin??0)),cw=pick(droite.length?droite:wrong);
       const xc=clamp((e2[cw]+e2[cw+1])/2,170,1060);B.wx0=B.wx;B.wxT=(xc-640)/F*(B.wz+ZC+PULL);
-      G.travel={t0:T,dur:2.6,z0:ZC,z1:ZC+PULL,done:()=>{
+      G.travel={t0:T,dur:2.6/Math.min(VIT.k,4),z0:ZC,z1:ZC+PULL,done:()=>{
         G.stage=2;G.buoys=row2.slice();G.travel=null;G.wait2={x:B.x,y:B.y};
         BU.filter(x=>x.row===1).forEach(x=>x.lit=0);
         B.mode=G.mv===1?'wait':'tenu';res();}};}));

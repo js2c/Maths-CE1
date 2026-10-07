@@ -35,6 +35,10 @@
    "base neuve (premier lancement) : additions famille 7, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
   ],
   [
+   "neuve/additions-famille-12.md",
+   "base neuve (premier lancement) : additions famille 12, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
    "neuve/calcul-1.md",
    "base neuve (premier lancement) : calcul 1, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
   ],
@@ -149,6 +153,10 @@
   [
    "mois/additions-famille-7.md",
    "un mois (tools/sauvegarde-test.mjs reel 2 4) : additions famille 7, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/additions-famille-12.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : additions famille 12, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
   ],
   [
    "mois/calcul-1.md",

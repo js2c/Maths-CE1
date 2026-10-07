@@ -18,7 +18,7 @@ import { Session } from "../../app/js/session/session.js";
 import { runNotion } from "../../app/js/session/notion.js";
 import { Rewards, goldenStar } from "../../app/js/session/rewards.js";
 import { Warmup } from "../../app/js/modules/facts/warmup.js";
-import { runWarmup } from "../../app/js/modules/facts/screen.js";
+import { FactsScreen, runWarmup } from "../../app/js/modules/facts/screen.js";
 import { aidFor, expected, median } from "../../app/js/modules/facts/facts.js";
 import { Module2Runner } from "../../app/js/modules/facts/runner.js";
 import { calcMastery, Module3Runner } from "../../app/js/modules/calc/runner.js";
@@ -77,8 +77,10 @@ const voixFait = (R, q) => {
   if (q.rappel && (q.forme ?? "directe") === "directe") return `${fill(pickT(R, "fait"), v)} ${fill(T.rappelDouble, { ...v, d: q.rappel.d })}`;
   return q.forme === "trouDroite" ? fill(T.faitTrouDroite, v) : q.forme === "trouGauche" ? fill(T.faitTrouGauche, v) : fill(pickT(R, "fait"), v);
 };
-const aidKind = (q) => { const fam = module2.familles.find((f) => f.id === q.famille)?.aide; return q.appui ?? (fam && fam !== "fait" ? fam : aidFor(q.a, q.b)); };
-const aidSpeech = (q) => { const kind = aidKind(q), k = q.forme === "trouGauche" ? q.b : q.a; return kind === "ligne" ? `[aide ligne] ${fill(T.aideLigne, { a: Math.max(q.a, q.b), sauts: Math.min(q.a, q.b) === 1 ? T.unSaut : `${Math.min(q.a, q.b)} ${T.sauts}` })}` : kind === "cadre" ? fill(T.aideCadre, { k }) : kind === "maison" ? T.aideMaison : kind === "doublePlus" ? fill(T.aideDoublePlus, { d: Math.min(q.a, q.b) }) : fill(T.aideReflet, { a: q.a }); };
+const aidKind = (q) => { const fam = module2.familles.find((f) => f.id === q.famille)?.aide, k = q.appui ?? (fam && fam !== "fait" ? fam : aidFor(q.a, q.b)); return k === "reflet" && q.a > 10 ? "grandDouble" : k; }; // (lot « Sommes jusqu'à 30 » : comme facts/screen.js, aidKind)
+// (lot « Sommes jusqu'à 30 » : ce que dit l'appui, repris de l'écran lui-même, facts/screen.js : les deux boîtes, le grand double…)
+const FS = Object.setPrototypeOf({ app: { text: { data: T } }, c: module2 }, FactsScreen.prototype);
+const aidSpeech = (q, solved = true) => { const kind = FS.aidKind(q); return kind === "ligne" ? `[aide ligne] ${fill(T.aideLigne, { a: Math.max(q.a, q.b), sauts: Math.min(q.a, q.b) === 1 ? T.unSaut : `${Math.min(q.a, q.b)} ${T.sauts}` })}` : FS.aidSpeech(q, kind, solved); };
 const consigneCalc = (q) => (q.pont ? fill(q.op === "-" ? T.calcPont.moins : T.calcPont.plus, { k: q.b }).replace(/\.$/, " ?") : q.forme === "trouDroite" ? fill(q.op === "-" ? T.calcTrouMoins : T.calcTrouPlus, { a: q.a, n: q.n }) : fill(q.op === "-" ? T.calcMoins : T.calcPlus, { a: q.a, b: q.b }));
 const cheminTxt = (q) => `${q.a} ${q.chemin.map((s) => `${s.op === "-" ? "−" : "+"}${s.k}→${s.a}`).join(" ")}`;
 const answerCalc = (q) => (q.forme === "trouDroite" ? q.b : q.n);
@@ -185,7 +187,7 @@ async function uneSeance({ base, choix, cran, comp }) {
           const runner = wrapRunner(await new Module2Runner({ store, content: module2, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux, choix: ctx.session.choix?.famille ?? null }).load());
           const scr = { ask: async (q, cfg, o = {}) => {
             const good = expected(q), guide = !!(o.guide || q.guide), r = guide ? { value: good } : reponseNombre(R, C, good, { max: 20, pieges: q.forme !== "directe" ? [q.a + q.b] : [] }), ok = r.value === good;
-            const pre = q.guide ? `[exemple guidé : ${aidSpeech(q)} ${fill(T.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b })} ${T.aToiFait}] ` : q.aideDEmblee ? `[aide d'emblée : ${aidSpeech(q)}] ` : "";
+            const pre = q.guide ? `[exemple guidé : ${aidSpeech(q)} ${fill(T.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b })} ${T.aToiFait}] ` : q.aideDEmblee ? `[aide d'emblée : ${aidSpeech(q, false)}] ` : "";
             const x = row({ cle: `fait:${q.fait}`, forme: `${fait(q)} (famille ${q.famille}${q.revient ? ", revient" : ""})`, voix: pre + voixFait(RV, q), attendue: good, donnee: guide ? `${good} (guidé)` : r.nsp ? "je ne sais pas" : r.value });
             add(D.consigne + (q.guide ? D.demo : 0) + (q.aideDEmblee ? 6000 : 0) + C.ms + (ok ? D.bravo : D.correction));
             if (!ok) x.suite.push(`correction : « ${r.nsp ? T.faitNSP + " " : ""}${aidSpeech(q)} ${fill(T.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b })} »`);

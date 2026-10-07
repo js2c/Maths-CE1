@@ -59,7 +59,7 @@ console.log(`séances d'additions : ${moy(m2.map((r) => r.add.filter((x) => !x.i
 }
 // lot 3, étape 1 (docs/SPEC-LOT3.md, section 7) : leçon et exercice cohérents
 {
-  const LF = { L4: [2, 6], L5: [3], L6: [4, 5] }, bad = m2.filter((r) => r.lecons.some((l) => LF[l] && !LF[l].includes(r.famille)));
+  const LF = { L4: [2, 6, 9, 10], L5: [3], L6: [4, 5], L11: [8], L12: [11, 12] }, bad = m2.filter((r) => r.lecons.some((l) => LF[l] && !LF[l].includes(r.famille)));
   const apresL4 = m2.filter((r) => r.lecons.includes("L4"));
   console.log(`\n## lot 3 : leçons et exercice (${PROFILS[profil].nom})`);
   console.log(`part des questions sur la famille en cours (additions) : minimum ${Math.round(Math.min(...m2.map((r) => r.partFamille ?? 1)) * 100)} %, moyenne ${Math.round(moy(m2.map((r) => r.partFamille ?? 1)) * 100)} % (seuil 80 %) ; leçon de famille jouée pour une autre famille : ${bad.length ? bad.map((r) => `${r.n} (${r.lecons.join(",")} pour f${r.famille})`).join(" ; ") : "jamais"} ; après L4 : ${apresL4.map((r) => `${Math.round((r.doubles ?? 0) * 100)} % de doubles ou presque-doubles (f${r.famille})`).join(", ") || "L4 jamais jouée"}`);

@@ -191,7 +191,8 @@
     "additions": "Les additions.",
     "calcul": "Le calcul rapide.",
     "lecons": "Les leçons.",
-    "voiliers": "Les voiliers."
+    "voiliers": "Les voiliers.",
+    "multiplication": "La multiplication."
   },
   "choixLigne": {
     "1": "La corde de zéro à dix, avec presque tous les nombres.",
@@ -235,9 +236,26 @@
     "L8": "L'astuce du neuf.",
     "L9": "Passer la dizaine.",
     "L11": "Dix et encore.",
-    "L12": "Faire dix d'abord."
+    "L12": "Faire dix d'abord.",
+    "L13": "Des rangées égales.",
+    "L14": "On tourne les rangées."
   },
   "rappelDouble": "{a} plus {b}, c'est {d} plus {d}, et encore 1.",
+  "multFois": "{a} fois {b} ?",
+  "multTrouDroite": "{a} fois combien, ça fait {n} ?",
+  "multTrouGauche": "Combien de fois {b}, ça fait {n} ?",
+  "multEt": "Et {a} fois {b} ?",
+  "multCorrection": "{a} fois {b}, ça fait {n}.",
+  "multRangees": "{a} rangées de {b} poissons.",
+  "multRangee1": "Une rangée de {b} poissons.",
+  "multRangeesUn": "{a} rangées d'un poisson.",
+  "multCombien": "Combien de poissons en tout ?",
+  "multAideTrou": "Il faut {n} poissons en tout. Compte les places qui brillent !",
+  "multAstuce": {"2": "Fois deux, c'est le double.", "4": "Fois quatre, c'est le double du double.", "5": "Fois cinq, c'est la moitié de fois dix.", "10": "Fois dix, ce sont des dizaines."},
+  "erreurMult": {"M1": "Attention : fois, ce n'est pas plus. On compte les rangées."},
+  "choixMult": {"1": "Des rangées égales.", "2": "Le signe fois.", "3": "La table de deux.", "4": "La table de dix.", "5": "La table de cinq.", "6": "On tourne les rangées.", "7": "La table de trois.", "8": "La table de quatre.", "9": "Les tables mélangées."},
+  "choixTableMult": "La table de multiplication.",
+  "tableCaseMult": "{a} fois {b}, {n}.",
   "calcPlus": "{a} plus {b} ?",
   "calcMoins": "{a} moins {b} ?",
   "calcTrouPlus": "{a} plus combien ? Ça fait {n}.",

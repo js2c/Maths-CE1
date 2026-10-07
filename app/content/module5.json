@@ -1,0 +1,27 @@
+{
+  "_doc": "Module 5, la multiplication (lot « Multiplication », docs/maquettes/multiplication/PROPOSITION.md ; docs/SPEC.md, section 7 ter). Une multiplication « a × b » se lit « a rangées de b poissons » et se dit « a fois b ». niveaux : dans l'ordre d'apprentissage ; type : groupes (a rangées de b poissons, l'image toujours là ; ecriture « addition » : 4 + 4 + 4, « fois » : 3 × 4), table (la table de `table` dans les deux sens : table × k et k × table, k de 1 à 10), tourner (une multiplication et son tour : « 3 × 4 = 12, et 4 × 3 ? »), tables (les tables de `tables` mêlées) ; rangees et parRangee : les nombres possibles (groupes, tourner) ; image : « toujours » (les rangées affichées pendant la question) ou « aide » (au coquillage ; d'emblée au cran « plus facile ») ; lecon : la leçon d'entrée ; debloque : les niveaux acquis qui ouvrent ce niveau avec « jouer ». trou : au cran « très dur », la forme à trou (« 3 × ? = 12 »), un côté puis l'autre. Les règles d'adaptation sont celles du calcul rapide (reglesAdaptation : montée 8 sur 10, voie rapide, difficulté persistante, même erreur deux fois). erreurs : la leçon relancée par une erreur répétée (M1 : a additionné au lieu de multiplier ; M2 : une rangée de trop ou de moins). melange : avec « jouer », une question sur cinq dans un niveau déjà acquis. crans : facile = les rangées d'emblée (sans promotion), dur = sans image ni coquillage, tresdur = sans image, formes à trou. rotation : le module entre dans la rotation de « jouer » à la date `alternance.aPartirDe` de seance.json.",
+  "niveaux": [
+    { "niveau": 1, "type": "groupes", "ecriture": "addition", "rangees": [2, 5], "parRangee": [2, 5], "image": "toujours", "lecon": "L13", "debloque": {} },
+    { "niveau": 2, "type": "groupes", "ecriture": "fois", "rangees": [2, 5], "parRangee": [2, 5], "image": "toujours", "debloque": { "niveaux": [1] } },
+    { "niveau": 3, "type": "table", "table": 2, "image": "aide", "debloque": { "niveaux": [2] } },
+    { "niveau": 4, "type": "table", "table": 10, "image": "aide", "debloque": { "niveaux": [3] } },
+    { "niveau": 5, "type": "table", "table": 5, "image": "aide", "debloque": { "niveaux": [4] } },
+    { "niveau": 6, "type": "tourner", "rangees": [2, 5], "parRangee": [3, 9], "image": "aide", "lecon": "L14", "debloque": { "niveaux": [3] } },
+    { "niveau": 7, "type": "table", "table": 3, "image": "aide", "debloque": { "niveaux": [6] } },
+    { "niveau": 8, "type": "table", "table": 4, "image": "aide", "debloque": { "niveaux": [7] } },
+    { "niveau": 9, "type": "tables", "tables": [2, 3, 4, 5, 10], "image": "aide", "debloque": { "niveaux": [5, 8] } }
+  ],
+  "trou": { "niveaux": [3, 4, 5, 7, 8, 9] },
+  "reglesAdaptation": { "montee": { "sur": 10, "justes": 8, "aidesMax": 1 }, "voieRapide": { "premieres": 5, "tempsMaxS": 6 }, "difficulte": { "sur": 5, "erreurs": 3 }, "memeErreurLecon": 2 },
+  "erreurs": { "M1": "L13", "M2": "L13" },
+  "melange": 0.2,
+  "deroule": { "guides": 2 },
+  "debloquePart": 0.8,
+  "crans": {
+    "facile": { "image": "emblee" },
+    "conseille": {},
+    "dur": { "image": "non" },
+    "tresdur": { "image": "non", "trou": true }
+  },
+  "lenteurS": 10
+}

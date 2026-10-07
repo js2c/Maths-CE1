@@ -54,8 +54,9 @@ export class FactsScreen {
     // (lot 3 : le calcul rapide, soustractions comprises : `q.op`, `q.n`)
     // (lot 3 bis, B4 : pendant un calcul guidé, l'ardoise garde le calcul demandé, `slateQ`, avec « ? » : les étapes
     // s'écrivent sur les cailloux du chemin)
-    const q = this.slateQ ?? this.q, n = q.n ?? q.a + q.b, f = q.forme ?? "directe", sg = q.op === "-" ? "−" : "+";
-    const [left, right] = q.dictee ? ["", ""] : f === "trouDroite" ? [`${q.a} ${sg}`, `= ${n}`] : f === "trouGauche" ? ["", `${sg} ${q.b} = ${n}`] : [`${q.a} ${sg} ${q.b} =`, ""];
+    // (lot « Multiplication » : le signe « × » ; `q.addition`, l'addition répétée du niveau 1 : « 4 + 4 + 4 = ? »)
+    const q = this.slateQ ?? this.q, n = q.n ?? q.a + q.b, f = q.forme ?? "directe", sg = q.op === "-" ? "−" : q.op === "×" ? "×" : "+";
+    const [left, right] = q.dictee ? ["", ""] : q.addition && f === "directe" ? [`${Array(q.a).fill(q.b).join(" + ")} =`, ""] : f === "trouDroite" ? [`${q.a} ${sg}`, `= ${n}`] : f === "trouGauche" ? ["", `${sg} ${q.b} = ${n}`] : [`${q.a} ${sg} ${q.b} =`, ""];
     // (lot 3 bis : l'écriture se resserre si elle dépasserait de l'ardoise, « ? + 10 = 57 », « ? − 2 = 45 »)
     const slot = (this.slateQ ? "" : this.typed) || "?", W = (x) => (x ? R.wordWidth(x) : 0), u = W(left) + (left ? 0.4 : 0) + Math.max(1.36, W(slot)) + (right ? 0.4 : 0) + W(right);
     const em = Math.min(76, SLATE_W / u), lw = W(left) * em, rw = W(right) * em, sw = Math.max(1.36, W(slot)) * em, gap = 0.4 * em;
@@ -71,7 +72,7 @@ export class FactsScreen {
   tap(key) { return !this.locked && this.gate.accept(key, performance.now()); }
   type(d, b) {
     if (!this.tap(d)) return; pop(b);
-    const max = this.q?.dictee ? 5 : this.q?.module === 3 ? 3 : 2; // (le calcul rapide : jusqu'à 100) // deux chiffres au plus (les sommes vont jusqu'à 10) ; la dictée : cinq (3007, 30017 sont des erreurs à reconnaître)
+    const max = this.q?.dictee ? 5 : this.q?.module === 3 || this.q?.module === 5 ? 3 : 2; // (lot « Multiplication » : jusqu'à 100) // (le calcul rapide : jusqu'à 100) // deux chiffres au plus (les sommes vont jusqu'à 10) ; la dictée : cinq (3007, 30017 sont des erreurs à reconnaître)
     this.typed = (this.typed.length >= max ? "" : this.typed) + d;
     this.slate.repaint();
     this.onTyped?.(this.typed); // (lot 3 : le tableau de la dictée)
@@ -80,14 +81,16 @@ export class FactsScreen {
   ask(q) {
     const { voice } = this.app;
     this.q = q; this.typed = ""; this.ring = false; this.aide = false; this.locked = false; this.app.starFrom = SLATE; this.gate.open();
-    this.help.style.visibility = q.base || q.cheminMode === "non" || q.pont ? "hidden" : "visible"; // pas d'aide pour « 4 + 0 » (lot 3 : ni sans chemin)
+    this.help.style.visibility = q.base || q.cheminMode === "non" || q.image === "non" || q.pont ? "hidden" : "visible"; // pas d'aide pour « 4 + 0 » (lot 3 : ni sans chemin)
     this.slate.repaint(); pop(this.slate);
     // lot 2, étape 6 : un exemple guidé (l'appui visuel montre la réponse, on peut le passer), ou l'aide
     // affichée d'emblée (cran « plus facile » en notion du jour)
     const p = new Promise((res) => { this.resolve = res; });
     // (l'appui est rangé quand le pavé revient : il occupe la même place)
     const then = () => { this.app.aidBoard?.clear(); this.locked = false; this.keys(true); this.t0 = clock.now(); voice.say(this.consigne(q), { instruction: true }); };
-    if (q.guide) { this.locked = true; this.demo(q).then(then); return p; }
+    // (lot « Multiplication » : l'exemple guidé et l'aide d'emblée de la multiplication sont les siens, modules/mult/screen.js)
+    if (q.guide) { this.locked = true; (q.module === 5 && this.mult ? this.mult.demo(q) : this.demo(q)).then(then); return p; }
+    if (q.aideDEmblee && q.module === 5 && this.mult) { this.locked = true; this.keys(false); this.mult.autoAid(q).then(() => { this.locked = false; this.keys(true); this.t0 = clock.now(); voice.say(this.consigne(q), { instruction: true }); }); return p; }
     if (q.aideDEmblee && q.module !== 3) { this.locked = true; this.keys(false); this.autoAid(q).then(then); return p; }
     this.t0 = clock.now();
     voice.stop(); voice.say(this.consigne(q), { instruction: true });
@@ -240,6 +243,7 @@ export class FactsScreen {
   consigne(q) {
     if (q.dictee) return this.dictee;
     if (q.module === 3) return this.calc?.consigne(q) ?? `${q.a} ${q.op === "-" ? "moins" : "plus"} ${q.b} ?`; // lot 3 (calc/screen.js)
+    if (q.module === 5) return this.mult?.consigne(q) ?? `${q.a} fois ${q.b} ?`; // lot « Multiplication » (mult/screen.js)
     const { text } = this.app, v = { a: q.a, b: q.b, n: q.a + q.b };
     // lot 3 : les presque-doubles rappellent le double (« 3 plus 4, c'est 3 plus 3, et encore 1 »), runner.js
     if (q.rappel && (q.forme ?? "directe") === "directe") return `${fill(text.pick("fait"), v)} ${fill(text.data.rappelDouble, { ...v, d: q.rappel.d })}`;
@@ -257,6 +261,7 @@ export class FactsScreen {
     const r = { value, ms, listens: voice.listens, aide: this.aide, nsp }, tok = this.tok;
     // lot 3 : le calcul rapide a sa correction (le chemin, le mur de corail et le poisson) et son retour « juste mais lent »
     if (q.module === 3 && this.calc) { await this.calc.feedback(q, r, ok); this.app.aidBoard?.clear(); const done = this.resolve; this.resolve = null; return done?.(r); }
+    if (q.module === 5 && this.mult) { await this.mult.feedback(q, r, ok); this.app.aidBoard?.clear(); const done = this.resolve; this.resolve = null; return done?.(r); }
     ocean.mascotte.play(ok ? "rejouir" : "encourager");
     if (ok) this.app.sound?.play("bonne"); else if (!nsp) this.app.sound?.play("erreur");
     const answer = () => { this.typed = String(expected(q)); this.ring = true; this.slate.repaint(); };
@@ -289,6 +294,7 @@ export class FactsScreen {
     if (this.locked || !this.q || this.q.base) return;
     // lot 3 : le coquillage du calcul rapide montre le chemin (les ponts), qui reste pendant la réponse
     if (this.q.module === 3 && this.calc) { if (this.aide) return; this.aide = true; pop(this.help); return this.calc.showHelp(this.q); }
+    if (this.q.module === 5 && this.mult) { if (this.aide) return; this.aide = true; pop(this.help); return this.mult.showHelp(this.q); }
     const { voice } = this.app, q = this.q, kind = this.aidKind(q), tok = this.tok;
     this.locked = true; this.aide = true; pop(this.help); this.keys(false); voice.stop();
     await this.skippable("passer l'aide", async (g, dead) => {

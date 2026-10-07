@@ -9,7 +9,7 @@
     "ligne": "Lire, placer et sauter sur une ligne de nombres.",
     "additions": "Les additions à savoir par cœur, famille par famille.",
     "calcul": "Des astuces pour calculer sans compter un par un.",
-    "lecons": "Revoir une leçon animée.",
+    "lecons": "Les leçons animées et la table d'addition.", "tableAddition": "La table d'addition, toucher une case dit le calcul.", "aToi": "S'entraîner tout de suite sur l'exercice de la leçon.",
     "continuer": "Continuer la séance.",
     "encore": "S'entraîner encore, sans étoiles.",
     "aide": "Un indice",
@@ -98,6 +98,7 @@
     { "n": "L10", "travail": "Les centaines, cent, c'est dix dizaines.", "exemple": "100, 200, 307" },
     { "n": "L7", "travail": "Plus 10 sur le mur de corail, on descend d'une rangée.", "exemple": "34 + 10" },
     { "n": "L8", "travail": "L'astuce du 9, plus 10, puis moins 1.", "exemple": "34 + 9" },
-    { "n": "L9", "travail": "Passer la dizaine, on complète d'abord jusqu'à 10.", "exemple": "38 + 5" }
+    { "n": "L9", "travail": "Passer la dizaine, on complète d'abord jusqu'à 10.", "exemple": "38 + 5" },
+    { "n": "+", "travail": "La table d'addition, toucher une case dit et montre le calcul.", "exemple": "7 + 5 = 12" }
   ]
 }

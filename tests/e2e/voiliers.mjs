@@ -1,6 +1,6 @@
 // LOT « LES VOILIERS » (docs/SPEC.md, section 7 bis ; docs/LOTS.md, lot 2) : parcours du jeu des voiliers dans l'application.
 // Chaque situation nouvelle, avec ses captures en 1280 × 800 et 1920 × 1200 (tests/e2e/out/voiliers) :
-//  1. l'écran « choisir » : cinq exercices, les neuf niveaux des voiliers ;
+//  1. l'écran « choisir » : quatre exercices (lot « Les leçons »), les neuf niveaux des voiliers ;
 //  2. base neuve, niveau 1, cran conseillé : l'exemple guidé, l'arrivée du bateau (la bulle : le nombre en chiffres et en
 //     lettres, jamais sur le bateau), un bon passage (le doigt glisse le bateau), une erreur (la bouée allumée, l'explication,
 //     le retour au calme), la deuxième erreur (le bateau va seul au bon passage), « je ne sais pas », la pause et la reprise ;
@@ -68,7 +68,7 @@ for (const T of TAILLES) {
     await page.tap(".choisir", { force: true });
     await page.waitForSelector(".choix-ex", { timeout: 20000 }); await page.waitForTimeout(600);
     const ex = await page.$$eval(".choix-ex", (b) => b.map((x) => { const r = x.getBoundingClientRect(); return { k: x.dataset.key, l: r.left, r: r.right }; }));
-    check(ex.map((e) => e.k).join() === "ligne,additions,calcul,voiliers,lecons" && ex.every((e) => e.l >= 0 && e.r <= T[0]), `« choisir » : cinq exercices dans l'écran (${ex.map((e) => e.k).join(", ")})`);
+    check(ex.map((e) => e.k).join() === "ligne,additions,calcul,voiliers" && ex.every((e) => e.l >= 0 && e.r <= T[0]), `« choisir » : quatre exercices dans l'écran (${ex.map((e) => e.k).join(", ")})`);
     await shot(page, "01-choisir", T);
     await page.tap('.choix-ex[data-key="voiliers"]', { force: true }); await page.waitForTimeout(900);
     const tuiles = await page.$$eval(".choix-tuile", (b) => b.map((x) => x.dataset.key));

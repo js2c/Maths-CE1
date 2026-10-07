@@ -134,8 +134,9 @@ if (!ONLY || ONLY === "choisir") {
   let s1 = await state(page), diff = Object.keys(s0).filter((k) => s0[k] !== s1[k]);
   check(!diff.length && !(await page.locator(".choix-ex").count()), `la maison quitte l'écran de choix sans rien valider : retour à l'accueil en pause, séance intacte (${diff.join(", ")})`);
   // 2. une leçon seule depuis la pause : jouée, puis retour à l'accueil en pause, la séance intacte
-  await tap(page, ".keep.choisir", 900); await tap(page, '.choix-ex[aria-label="lecons"]', 900);
-  await tap(page, '.choix-tuile[data-key="L2"]', 300); await page.waitForSelector(".lessonkey", { timeout: 20000 }); await page.waitForTimeout(2500);
+  // (lot « Les leçons » : par la bulle « les leçons » de l'accueil en pause)
+  await tap(page, ".keep.leconskey", 900); await page.waitForSelector(".lecons-tuile", { timeout: 20000 });
+  await tap(page, '.lecons-tuile[data-key="L2"]', 300); await page.waitForSelector(".lessonkey", { timeout: 20000 }); await page.waitForTimeout(2500);
   await page.screenshot({ path: join(OUT, "8-lecon-en-pause.png") });
   await tap(page, ".skip.lessonkey", 300); await page.waitForSelector(".keep.play", { timeout: 20000 }); await page.waitForTimeout(500);
   s1 = await state(page); diff = Object.keys(s0).filter((k) => s0[k] !== s1[k]);

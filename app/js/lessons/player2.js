@@ -138,6 +138,9 @@ export class Lesson2Player {
   }
   // l'état de la scène, dessiné une fois (le calque des aides)
   paint() {
+    // (lot « Les leçons » : une leçon passée pendant une animation, « entrer » par exemple, ne peint plus rien une fois
+    // terminée ; sinon le cadre restait dessiné derrière l'écran « À toi ! »)
+    if (!this.keys) return;
     const { sprites } = this.app, st = this.st;
     this.board.draw((ctx) => {
       if (st.miroir) paintMirror(ctx, sprites, st.miroir, 700, 470);

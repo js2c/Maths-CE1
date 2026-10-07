@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- La maquette prend ce qui existe dans l'application (planches, polices, bulle, aides, fond) : ses chemins partent de app/.
+     Rien n'est modifié sous app/. Les dessins nouveaux du lot viennent de l'atelier (dessins.js, fabriqué par
+     art/tools/maquette-lecons.mjs). -->
+<base href="../../app/">
+<title>Maquette — les leçons et la table d'addition</title>
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/parent.css">
+<style>
+  /* la navigation de la maquette (pour le parent ; absente des captures, ?capture) */
+  #nav { position: fixed; left: 8px; bottom: 8px; z-index: 50; display: flex; flex-wrap: wrap; gap: 4px; max-width: 96vw; font: 13px/1.2 system-ui, sans-serif; }
+  #nav button { padding: 5px 9px; border: 1px solid #0a3f49; border-radius: 6px; background: #fffaf0e8; cursor: pointer; }
+  #nav button.on { background: #ffd23a; }
+  #note { position: absolute; z-index: 30; left: 300px; top: 300px; width: 700px; padding: 22px 26px; border-radius: 18px; background: #fffaf0f2; border: 3px solid #15122a; box-shadow: 8px 10px 0 rgba(10, 63, 73, 0.3); font: 22px/1.35 system-ui, sans-serif; color: #15122a; }
+  .muet { pointer-events: none; }
+  .bubble.invite { animation: invite 1.6s ease-in-out infinite; }
+  #grille { position: absolute; touch-action: none; }
+</style>
+<script src="../art/mascotte/mascotte-moteur.js"></script>
+</head>
+<body>
+<div id="stage"><canvas id="bg"></canvas><div id="ui"><div id="mascotte" style="position:absolute;left:22px;top:136px;width:210px;height:280px;pointer-events:none"><canvas width="450" height="600"></canvas></div></div></div>
+<div id="nav"></div>
+<script type="module">
+import { Sprites, loadAtlas } from "./js/engine/sprites.js";
+import { Bulle, MENTON, BOUCHE, choisirPlace, largeurEquilibree, largeurMax, balloonPath } from "./js/engine/bulle.js";
+import * as R from "./js/art/runtime.js";
+import { paintTenFrame, paintHouse, paintDoublePlus, putScaled } from "./js/modules/facts/aids.js";
+import { DESSINS } from "../art/lecons/dessins.js";
+
+const P = new URLSearchParams(location.search), CAPTURE = P.has("capture");
+const W = 1280, H = 800, root = document.getElementById("stage"), ui = document.getElementById("ui"), bg = document.getElementById("bg");
+const stage = { root, ui, k: 1, px: 1 };
+const resize = () => {
+  const k = Math.min(innerWidth / W, innerHeight / H), dpr = devicePixelRatio || 1;
+  Object.assign(stage, { k, px: k * dpr });
+  Object.assign(root.style, { left: `${(innerWidth - W * k) / 2}px`, top: `${(innerHeight - H * k) / 2}px`, width: `${W * k}px`, height: `${H * k}px` });
+  ui.style.transform = `scale(${k})`;
+};
+resize();
+const atlas = await loadAtlas(), sprites = new Sprites(atlas, stage.px);
+await Promise.all(["petits", "lagon", "choix", "aides", "poissons", "tortue", "centaines", "selecteur"].map((s) => sprites.load(s)));
+await document.fonts.load('600 30px "Shantell Sans"');
+// le fond : le lagon (dans l'application, il vit : poissons, algues, faisceaux ; ici, l'image fixe)
+bg.width = W * stage.px; bg.height = H * stage.px;
+sprites.draw(bg.getContext("2d"), "lagon.fond", 0, 0, 0);
+
+// ---------------------------------------------------------------- la mascotte et sa bulle (moteur et bulle de l'application)
+const MASC = creerMascotte({ canvas: document.querySelector("#mascotte canvas"), base: "../art/mascotte/v/" });
+// la bulle de l'application ; sur l'écran de la table, une seule place : sous la tête, à gauche de la grille
+class BulleMaquette extends Bulle {
+  layout() {
+    if (!this.places) return super.layout();
+    const cible = largeurEquilibree(this.mesure(4000)[0]), m = (w) => this.mesure(Math.min(w, cible));
+    const { durs, souples } = this.obstacles(), p = choisirPlace(durs, m, this.places, souples);
+    m(largeurMax(p.place.boite));
+    Object.assign(this.txt.style, { left: `${(p.cx - p.w / 2).toFixed(1)}px`, top: `${(p.cy - p.h / 2).toFixed(1)}px` });
+    const d = balloonPath(p.cx, p.cy, p.a, p.b, (Math.round(p.w) * 7 + Math.round(p.h)) % 13, p.place.pointe);
+    this.paths.forEach((e) => e.setAttribute("d", d));
+    this.paths[0].setAttribute("transform", "translate(6 7)"); this.paths[1].setAttribute("transform", "translate(1.6 1.9)");
+    this.el.style.transformOrigin = `${p.place.pointe[0]}px ${p.place.pointe[1]}px`;
+    this.place = p; this.el.dataset.place = p.place.nom;
+  }
+}
+const bulle = new BulleMaquette(stage);
+// la maquette n'a pas de voix : la bulle et la mascotte parlent le temps de lire (comme la maquette des voiliers)
+let parle = null;
+const dureeDe = (t) => Math.max(1300, 380 + t.length * 62);
+function dire(texte, { consigne = false } = {}) {
+  if (parle) { clearTimeout(parle.t); parle.res(); }
+  const ms = dureeDe(texte);
+  bulle.dire(texte, ms); MASC.parole(texte, ms, { consigne });
+  window.__dit = texte;
+  return new Promise((res) => { parle = { res, t: setTimeout(() => { bulle.silence(); MASC.silence(); parle = null; res(); }, ms) }; });
+}
+let consigne = "";
+
+// ---------------------------------------------------------------- les éléments de l'écran
+const els = new Set();
+const clear = () => { els.forEach((e) => e.remove()); els.clear(); document.getElementById("note")?.remove(); };
+// un bouton (ou un calque) de w × h px logiques en (x, y), peint par `paint(ctx)` (contexte en px d'écran)
+function box({ x, y, w, h, cls = "bubble", paint, onTap, muet = false, keep = false, souple = false }) {
+  const b = document.createElement(muet ? "div" : "button"), c = document.createElement("canvas");
+  b.className = cls + (muet ? " muet" : ""); Object.assign(b.style, { position: "absolute", left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${h}px` });
+  c.width = Math.round(w * stage.px); c.height = Math.round(h * stage.px); Object.assign(c.style, { width: "100%", height: "100%", display: "block" });
+  if (souple) b.dataset.bulleSouple = ""; // (ce que dessine la leçon : la bulle l'évite si elle peut)
+  b.append(c); ui.append(b); if (!keep) els.add(b);
+  b.repaint = (f = paint) => { const ctx = c.getContext("2d"); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height); f(ctx, c); };
+  b.repaint();
+  if (onTap) b.addEventListener("pointerdown", (e) => { e.preventDefault(); MASC.activite(); onTap(e); });
+  return b;
+}
+// un sprite de l'application, centré
+const spriteKey = (name, cx, cy, size, onTap, cls = "bubble") => box({ x: cx - size / 2, y: cy - size / 2, w: size, h: size, cls, onTap, paint: (ctx) => sprites.draw(ctx, name, 0, size / 2, size / 2) });
+// un dessin nouveau de l'atelier, centré dans sa boîte
+const atelier = (nom, cx, cy, w, h, args, o = {}) => box({ x: cx - w / 2, y: cy - h / 2, w, h, ...o, paint: (ctx, c) => DESSINS.peindre(c, w, h, stage.px, nom, ...args(w / 2, h / 2)) });
+
+// le bandeau permanent : réécouter, le compteur d'étoiles
+let etoiles = 0;
+const speaker = box({ x: 1140, y: 8, w: 130, h: 130, cls: "hud speaker", keep: true, paint: (ctx) => sprites.draw(ctx, "reecouter", 0, 65, 65), onTap: () => consigne && dire(consigne, { consigne: true }) });
+const starHud = box({ x: 960, y: 22, w: 170, h: 100, cls: "hud stars", muet: true, keep: true, paint: (ctx) => {
+  const px = stage.px, q = sprites.frame("etoile", 0), k = 0.62;
+  ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 50 * px + q.dx * k, 50 * px + q.dy * k, q.w * k, q.h * k);
+  ctx.setTransform(px, 0, 0, px, 0, 0); const s = String(etoiles); R.drawNumber(ctx, s, 118, 32, 40, { w: 5.6 });
+} });
+const homeKey = (onTap) => box({ x: 14, y: 10, w: 120, h: 120, cls: "bubble homekey", onTap, paint: (ctx) => { const q = sprites.frame("maison", 0), k = 120 / 140; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 60 * stage.px + q.dx * k, 60 * stage.px + q.dy * k, q.w * k, q.h * k); } });
+
+// ---------------------------------------------------------------- les données du lot
+const LECONS = {
+  L1: { nom: "On compte les sauts.", ex: "ligne", niveau: 1 }, L2: { nom: "Un saut peut valoir dix.", ex: "ligne", niveau: 5 },
+  L3: { nom: "La ligne ne commence pas toujours à zéro.", ex: "ligne", niveau: 4 }, L10: { nom: "Les centaines.", ex: "ligne", niveau: 9 },
+  L4: { nom: "Les doubles.", ex: "additions", niveau: 2 }, L5: { nom: "Les amis de dix.", ex: "additions", niveau: 3 }, L6: { nom: "La maison des nombres.", ex: "additions", niveau: 4 },
+  L7: { nom: "Plus dix sur le mur de corail.", ex: "calcul", niveau: 2 }, L8: { nom: "L'astuce du neuf.", ex: "calcul", niveau: 6 }, L9: { nom: "Passer la dizaine.", ex: "calcul", niveau: 7 },
+};
+const RANGEES = [{ ex: "ligne", ids: ["L1", "L2", "L3", "L10"] }, { ex: "additions", ids: ["L4", "L5", "L6"] }, { ex: "calcul", ids: ["L7", "L8", "L9"] }];
+const TEXTES = {
+  bienvenue: "Bienvenue à bord ! On s'entraîne ensemble ?",
+  accueil: "Touche une bulle : jouer, choisir, les leçons, le récif ou l'album.",
+  menu: "Quelle leçon veux-tu regarder ? Touche-la.",
+  lecons: "Les leçons.",
+  table: "La table d'addition.",
+  fin: "À toi ! Touche la grande bulle pour t'entraîner.",
+  aToi: "À toi !",
+  tableConsigne: "Touche une case : je te dis le calcul.",
+};
+// la phrase d'une case de la table (docs/SPEC.md, section 3 : « 7 plus 5, 12 »)
+const phraseCase = (a, b) => `${a} plus ${b}, ${a + b}.`;
+
+// ---------------------------------------------------------------- 1. l'accueil, cinq bulles
+const HOME_X = [370, 550, 730, 910, 1090];
+function accueil() {
+  clear(); bulle.places = null; starHud.style.visibility = "visible";
+  const nomme = (t) => () => dire(t);
+  spriteKey("jouer", HOME_X[0], 650, 180, nomme("Jouer."), "bubble invite");
+  spriteKey("choisir", HOME_X[1], 650, 180, nomme("Choisir."));
+  atelier("lessonsKey", HOME_X[2], 650, 180, 180, (cx, cy) => [cx, cy], { onTap: async () => { await dire(TEXTES.lecons); menu(); } });
+  spriteKey("recif", HOME_X[3], 650, 180, nomme("Le récif."));
+  spriteKey("album", HOME_X[4], 650, 180, nomme("L'album."));
+  const logo = document.createElement("button"); logo.className = "logo"; logo.innerHTML = '<img src="icons/icon-192.png" alt="">'; ui.append(logo); els.add(logo);
+  consigne = TEXTES.accueil;
+  dire(TEXTES.bienvenue).then(() => { if (consigne === TEXTES.accueil) dire(TEXTES.accueil, { consigne: true }); });
+}
+
+// ---------------------------------------------------------------- 2. le menu des leçons
+const ROW_Y = [205, 361, 517, 673], COL_X = [580, 745, 910, 1075], ICON_X = 468, TW = 150, TH = 136;
+function menu({ choisi = null } = {}) {
+  clear(); bulle.places = null; starHud.style.visibility = "visible";
+  homeKey(() => accueil());
+  spriteKey("legende", 1218, 214, 104, () => {});
+  RANGEES.forEach((r, i) => {
+    atelier("rowIcon", ICON_X, ROW_Y[i], 110, 90, (cx, cy) => [cx, cy, r.ex], { muet: true });
+    r.ids.forEach((id, j) => {
+      const t = atelier("menuTile", COL_X[j], ROW_Y[i], TW + 40, TH + 40, (cx, cy) => [cx, cy, id], { onTap: async () => {
+        t.repaint((ctx, c) => { DESSINS.peindre(c, TW + 40, TH + 40, stage.px, "menuTile", (TW + 40) / 2, (TH + 40) / 2, id); ctx.setTransform(stage.px, 0, 0, stage.px, 0, 0); R.drawTileRing(ctx, (TW + 40) / 2, (TH + 40) / 2, TW + 14, TH + 14); });
+        await dire(LECONS[id].nom); fin(id);
+      } });
+      t.dataset.lecon = id;
+      if (choisi === id) t.repaint((ctx, c) => { DESSINS.peindre(c, TW + 40, TH + 40, stage.px, "menuTile", (TW + 40) / 2, (TH + 40) / 2, id); ctx.setTransform(stage.px, 0, 0, stage.px, 0, 0); R.drawTileRing(ctx, (TW + 40) / 2, (TH + 40) / 2, TW + 14, TH + 14); });
+    });
+  });
+  // la rangée des tables : la table d'addition, puis la place de la table de multiplication (lot « Multiplication »)
+  const tt = atelier("tableTile", COL_X[0], ROW_Y[3], TW + 40, TH + 40, (cx, cy) => [cx, cy, "+"], { onTap: async () => { await dire(TEXTES.table); table(); } });
+  tt.dataset.table = "+";
+  if (P.get("multiplication") === "place") atelier("reserved", COL_X[1], ROW_Y[3], TW + 40, TH + 40, (cx, cy) => [cx, cy], { muet: true });
+  if (P.get("multiplication") === "future") atelier("tableTile", COL_X[1], ROW_Y[3], TW + 40, TH + 40, (cx, cy) => [cx, cy, "×"], { muet: true });
+  consigne = TEXTES.menu; dire(consigne, { consigne: true });
+}
+
+// ---------------------------------------------------------------- 3. la fin d'une leçon : « À toi ! » et la maison
+function fin(id, { passee = P.get("passee") === "1" } = {}) {
+  clear(); bulle.places = null; starHud.style.visibility = "visible";
+  const L = LECONS[id];
+  if (!passee) etoiles += 3; starHud.repaint();
+  atelier("aToi", 560, 480, 290, 290, (cx, cy) => [cx, cy, L.ex, L.niveau], { cls: "bubble invite", onTap: async () => { await dire(TEXTES.aToi); suite(id); } });
+  atelier("bigHome", 815, 480, 180, 180, (cx, cy) => [cx, cy], { onTap: () => accueil() });
+  consigne = TEXTES.fin; dire(consigne, { consigne: true });
+}
+// après « À toi ! » : ce qui existe déjà dans l'application (une note pour le parent, dans la maquette seulement)
+function suite(id) {
+  clear(); consigne = "";
+  const L = LECONS[id], ex = { ligne: "la ligne des nombres", additions: "les additions", calcul: "le calcul rapide" }[L.ex];
+  const n = document.createElement("div"); n.id = "note";
+  n.innerHTML = `<b>Ensuite, comme aujourd'hui :</b> le sélecteur de difficulté, puis les exemples guidés et les questions de <b>${ex}</b>, ${L.ex === "additions" ? "famille" : "niveau"} ${L.niveau}, <b>sans échauffement ni leçon d'entrée</b>. C'est la séance du jour s'il n'y en a pas encore eu aujourd'hui, sinon de l'entraînement libre.<br><br><small>(Cette note n'existe que dans la maquette.)</small>`;
+  ui.append(n);
+  homeKey(() => accueil());
+}
+
+// ---------------------------------------------------------------- 4. la table d'addition
+const T = { x: 262, y: 30, pitch: 64, cell: 58, head: 52, max: 10, tint: true }, PANEL = { x: 1040, w: 230 };
+// l'appui visuel de la famille du fait (celui de l'aide et des corrections des additions, facts.js, aidFor) ; au-delà de 10,
+// le passage de la dizaine : deux cadres de 10 (proposition, à valider)
+const appuiDe = (a, b) => (a === 0 || b === 0 ? "rien" : a + b === 10 ? "cadre" : a === b && a <= 5 ? "reflet" : Math.abs(a - b) === 1 && Math.max(a, b) <= 5 ? "doublePlus" : Math.min(a, b) <= 2 ? "ligne" : a + b <= 10 ? "maison" : "deuxCadres");
+function table({ lit = null } = {}) {
+  clear(); starHud.style.visibility = "hidden";
+  bulle.places = [{ nom: "dessous-etroite", boite: [8, MENTON[1] + 30, 234, 792], pointe: MENTON, haut: true }];
+  homeKey(() => accueil());
+  const S = DESSINS.addTableSize(T), pad = 16, G = { ...T, x: pad, y: pad };
+  let cur = lit, last = { k: "", t: 0 };
+  const grid = box({ x: T.x - pad, y: T.y - pad, w: S + 2 * pad, h: S + 2 * pad, cls: "bubble grille", paint: (ctx, c) => DESSINS.peindre(c, S + 2 * pad, S + 2 * pad, stage.px, "addTable", { ...G, lit: cur }) });
+  grid.id = "grille";
+  const panel = box({ x: PANEL.x, y: 150, w: PANEL.w, h: 640, cls: "", muet: true, paint: (ctx) => paintPanel(ctx, cur) });
+  grid.addEventListener("pointerdown", (e) => {
+    e.preventDefault(); MASC.activite();
+    const r = grid.getBoundingClientRect(), x = (e.clientX - r.left) / stage.k - pad - T.head, y = (e.clientY - r.top) / stage.k - pad - T.head;
+    const b = Math.floor(x / T.pitch), a = Math.floor(y / T.pitch);
+    if (a < 0 || b < 0 || a > T.max || b > T.max) return;
+    const k = `${a}+${b}`; if (k === last.k && performance.now() - last.t < 150) return; // un second toucher trop rapide sur la même case
+    last = { k, t: performance.now() };
+    cur = [a, b]; grid.repaint(); panel.repaint(); window.__case = k;
+    dire(phraseCase(a, b));
+  });
+  consigne = TEXTES.tableConsigne;
+  if (lit) { grid.repaint(); panel.repaint(); dire(phraseCase(...lit)); } else dire(consigne, { consigne: true });
+}
+// le panneau à droite de la grille : le calcul écrit sur une plaque, et dessous l'appui visuel de la famille
+function paintPanel(ctx, lit) {
+  if (!lit) return;
+  const [a, b] = lit, n = a + b, px = stage.px, w = PANEL.w, txt = `${a} + ${b} = ${n}`;
+  ctx.setTransform(px, 0, 0, px, 0, 0);
+  const em = Math.min(34, (w - 44) / R.wordWidth(txt));
+  R.drawPanel(ctx, 6, 6, w - 12, em * 1.5 + 30);
+  R.drawWord(ctx, txt, w / 2, 21 + em * 0.2, em, { w: em * 0.14 });
+  const kind = appuiDe(a, b), top = em * 1.5 + 60;
+  if (kind === "rien") return;
+  // l'aide de l'application, dessinée à sa taille dans un canvas à part (lw × lh px logiques), puis réduite dans le panneau
+  const big = Math.max(a, b), small = Math.min(a, b), cadreH = 198;
+  const fishW = (small + (kind === "doublePlus" ? 1 : 0) - 1) * 92 + 120;
+  const [lw, lh] = { cadre: [470, 210], deuxCadres: [470, 440], reflet: [fishW, 230], doublePlus: [fishW, 230], maison: [360, 330], ligne: [150 + small * 120, 250] }[kind];
+  const c = document.createElement("canvas"); c.width = Math.round(lw * px); c.height = Math.round(lh * px);
+  const x = c.getContext("2d"); x.setTransform(px, 0, 0, px, 0, 0);
+  if (kind === "cadre") paintTenFrame(x, sprites, 7, 6, { n: big, extra: small });
+  if (kind === "deuxCadres") { paintTenFrame(x, sprites, 7, 6, { n: big, extra: 10 - big }); paintTenFrame(x, sprites, 7, cadreH + 30, { n: 0, extra: small - (10 - big) }); }
+  if (kind === "reflet" || kind === "doublePlus") paintDoublePlus(x, sprites, small, { cx: lw / 2 - (kind === "doublePlus" ? 46 : 0), y: 60, gap: 92, bonus: kind === "doublePlus" });
+  if (kind === "maison") paintHouse(x, sprites, lw / 2, 160, n, [[a, b]]);
+  if (kind === "ligne") DESSINS.peindre(c, lw, lh, px, "lineAid", 10, 100, lw - 20, big, small);
+  const k = Math.min((w - 10) / lw, 480 / lh);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.drawImage(c, (w / 2 - (lw * k) / 2) * px, top * px, lw * k * px, lh * k * px);
+}
+
+// ---------------------------------------------------------------- 5. la leçon L10 corrigée
+function l10({ moment = "cent", avant = P.get("avant") === "1" } = {}) {
+  clear(); bulle.places = null; starHud.style.visibility = "visible";
+  homeKey(() => accueil());
+  if (moment === "cent") {
+    // comme dans la leçon : le chalut à sa taille (640, 250), le nombre écrit en grand
+    if (avant) box({ x: 0, y: 0, w: W, h: H, cls: "", muet: true, souple: true, paint: (ctx) => { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.scale(1, 1); const m = new DOMMatrix([stage.px, 0, 0, stage.px, 0, 0]); ctx.setTransform(m); putScaled(ctx, sprites, "aide.chalut", 640, 250, 1, 10); } });
+    else atelier("trawl", 640, 400, 340, 340, (cx, cy) => [cx, 250 - 230, 10, 1], { muet: true, souple: true });
+    box({ x: 860, y: 330, w: 240, h: 140, cls: "", muet: true, souple: true, paint: (ctx) => { ctx.setTransform(stage.px, 0, 0, stage.px, 0, 0); R.drawPanel(ctx, 6, 6, 228, 124); R.drawNumber(ctx, "100", 120, 28, 76, { w: 10 }); } });
+    consigne = "Dans un chalut, il y a cent poissons !";
+  } else {
+    // trois chaluts (300), réduits comme dans la leçon
+    for (let i = 0; i < 3; i++) {
+      if (avant) box({ x: 0, y: 0, w: W, h: H, cls: "", muet: true, souple: true, paint: (ctx) => { ctx.setTransform(stage.px, 0, 0, stage.px, 0, 0); putScaled(ctx, sprites, "aide.chalut", 470 + i * 140, 300, 0.5, 10); } });
+      else atelier("trawl", 470 + i * 140, 380, 170, 180, (cx, cy) => [cx, 300 - 290, 10, 0.5], { muet: true, souple: true });
+    }
+    box({ x: 860, y: 330, w: 240, h: 140, cls: "", muet: true, souple: true, paint: (ctx) => { ctx.setTransform(stage.px, 0, 0, stage.px, 0, 0); R.drawPanel(ctx, 6, 6, 228, 124); R.drawNumber(ctx, "3", 60, 28, 76, { w: 10, color: R.RED }); R.drawNumber(ctx, "00", 145, 28, 76, { w: 10 }); } });
+    consigne = "Trois chaluts, c'est trois-cents.";
+  }
+  dire(consigne, { consigne: true });
+}
+
+// ---------------------------------------------------------------- navigation de la maquette
+const ECRANS = {
+  accueil: () => accueil(),
+  lecons: () => menu({ choisi: P.get("choisi") }),
+  fin: () => fin(P.get("lecon") ?? "L1"),
+  table: () => table({ lit: P.get("case") ? P.get("case").split("+").map(Number) : null }),
+  l10: () => l10({ moment: P.get("moment") ?? "cent" }),
+};
+const nav = document.getElementById("nav");
+if (CAPTURE) nav.remove();
+else [["accueil", "Accueil"], ["lecons", "Menu des leçons"], ["fin&lecon=L1", "Fin de L1 (regardée)"], ["fin&lecon=L5&passee=1", "Fin de L5 (passée)"], ["fin&lecon=L8", "Fin de L8"], ["table", "Table d'addition"], ["table&case=7+5", "Table : 7 + 5"], ["l10&moment=cent", "L10 : cent"], ["l10&moment=cent&avant=1", "L10 : cent (avant)"], ["l10&moment=trois", "L10 : trois chaluts"], ["l10&moment=trois&avant=1", "L10 : trois chaluts (avant)"], ["lecons&multiplication=future", "Menu avec la table × (plus tard)"]].forEach(([q, t]) => {
+  const b = document.createElement("button"); b.textContent = t; b.onclick = () => { location.search = "?ecran=" + q.replace("+", "%2B"); }; if (location.search.includes(q.split("&")[0]) && (q.includes("&") ? location.search.includes(q.split("&")[1]) : true)) b.classList.add("on"); nav.append(b);
+});
+await MASC.pret;
+(ECRANS[P.get("ecran")] ?? ECRANS.accueil)();
+window.__pret = true;
+</script>
+</body>
+</html>

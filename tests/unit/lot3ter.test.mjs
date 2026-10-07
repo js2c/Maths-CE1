@@ -241,8 +241,12 @@ test("T3 : chaque bouton recensé a son étiquette, écrite au feutre (caractèr
   for (const t of Object.values(E)) assert.match(t, ok, t);
   // les tuiles : la ligne de la légende
   assert.equal(tileLabel(legendes, "calcul", "7"), `7 · ${legendes.calcul.find((r) => r.n === 7).travail.replace(/\.$/, "")}`);
-  const all = [...m1.niveaux.map((n) => ["ligne", n.niveau]), ...m2.familles.map((f) => ["additions", f.id]), ...m3.niveaux.map((n) => ["calcul", n.niveau]), ...seance.choix.lecons.map((l) => ["lecons", l])];
+  const all = [...m1.niveaux.map((n) => ["ligne", n.niveau]), ...m2.familles.map((f) => ["additions", f.id]), ...m3.niveaux.map((n) => ["calcul", n.niveau])];
   for (const [ex, k] of all) { const t = tileLabel(legendes, ex, k); assert.ok(t, `${ex} ${k}`); assert.match(t, ok, t); }
+  // (lot « Les leçons » : les tuiles du menu des leçons, « 7 · … », et celle de la table d'addition, « + · … »)
+  const { tileLabel: lessonLabel } = await import("../../app/js/session/lessons.js");
+  for (const k of [...seance.menuLecons.rangees.flatMap((r) => r.lecons), "+"]) { const t = lessonLabel(legendes, k); assert.ok(t, k); assert.match(t, ok, t); }
+  assert.equal(lessonLabel(legendes, "L10"), `10 · ${legendes.lecons.find((r) => r.n === "L10").travail.replace(/\.$/, "")}`);
   // les onglets de zone et les cartes : leur nom
   for (const z of cartes.zones) assert.match(z.nom, ok, z.nom);
   for (const c of cartes.cartes) assert.match(c.nom, ok, c.nom);

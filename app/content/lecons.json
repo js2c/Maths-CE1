@@ -1,6 +1,6 @@
 {
-  "_doc": "Leçons animées (docs/SPEC.md, « Leçons animées »). Une leçon = une ligne (min, max, pas, k : 0 corde à bouées, 1 ligne d'école ; ecrits : les nombres écrits au départ ; geant, lot 3 bis : les bouées géantes et les grands filets suspendus au-dessus de la corde, leçon L2) et une suite de phrases. Le bouton « rejouer » revient au début de la leçon, « passer » l'arrête (dès la première vue). Une phrase = un ou plusieurs temps ; dans un temps, la voix dit « dire » pendant que « faire » se joue (actions l'une après l'autre), et le temps attend la fin des deux. Les nombres des actions sont des VALEURS de la ligne (pas des numéros de graduation). Actions : ligne (la ligne apparaît), allumer (les bouées s'allument une à une puis s'éteignent), tortue v (la tortue arrive et se pose sur v), note texte (un mot écrit au-dessus de la tortue, effacé au premier saut), sauter [v, texte de l'arc], ecrire [v…] (nombres écrits sous la ligne), clignoter « arcs », etoile v (l'étoile de mer sur v, un « ? » dessous), retour v (les arcs s'effacent, la tortue revient sur v), compter { jusqua, arcs : « sauts » ou « valeurs », dire : « sauts » ou « valeurs », ecrire } (la tortue saute jusqu'à la valeur en comptant à voix haute), filet [v…] (un filet de dix poissons sous la corde, de v au saut suivant), compteur n (la bulle du compteur), entourer [v…] (un anneau autour des nombres), arc [numéro de l'arc, texte], loupe v (une loupe montre le nombre en grand), eclairer [v…] (la graduation s'allume). aToi : ce que dit la voix au premier exercice guidé qui suit ; aToiDepuisZero : à la place, si la ligne de l'exercice part de 0 avec un pas de 1. Lot 2, étape 6 : les leçons du module 2 (L4 à L6, « module »: 2) se jouent sur le calque des aides avec le bernard-l'ermite (lessons/player2.js) ; actions : ermite (sortir, montrer, rejouir, changer), miroir n, ecrire « texte », defiler [[a, b]…], cadre { n, extra, lueur }, entrer n, maison { total, etages }, effacer, attendre ms. Lot 2, étape 8 : L10 (les centaines, docs/SPEC-COMPLEMENTS.md, partie A) a sa propre scène (scene : « centaines », lessons/player2.js : filet, chalut, remplir, chaluts, nombre) ; elle est jouée à l'entrée du niveau 9 et quand l'erreur E6 revient.",
-  "L1": {
+  "_doc": "Leçons animées (docs/SPEC.md, « Leçons animées »). Une leçon = une ligne (min, max, pas, k : 0 corde à bouées, 1 ligne d'école ; ecrits : les nombres écrits au départ ; geant, lot 3 bis : les bouées géantes et les grands filets suspendus au-dessus de la corde, leçon L2) et une suite de phrases. Le bouton « rejouer » revient au début de la leçon, « passer » l'arrête (dès la première vue). Une phrase = un ou plusieurs temps ; dans un temps, la voix dit « dire » pendant que « faire » se joue (actions l'une après l'autre), et le temps attend la fin des deux. Les nombres des actions sont des VALEURS de la ligne (pas des numéros de graduation). Actions : ligne (la ligne apparaît), allumer (les bouées s'allument une à une puis s'éteignent), tortue v (la tortue arrive et se pose sur v), note texte (un mot écrit au-dessus de la tortue, effacé au premier saut), sauter [v, texte de l'arc], ecrire [v…] (nombres écrits sous la ligne), clignoter « arcs », etoile v (l'étoile de mer sur v, un « ? » dessous), retour v (les arcs s'effacent, la tortue revient sur v), compter { jusqua, arcs : « sauts » ou « valeurs », dire : « sauts » ou « valeurs », ecrire } (la tortue saute jusqu'à la valeur en comptant à voix haute), filet [v…] (un filet de dix poissons sous la corde, de v au saut suivant), compteur n (la bulle du compteur), entourer [v…] (un anneau autour des nombres), arc [numéro de l'arc, texte], loupe v (une loupe montre le nombre en grand), eclairer [v…] (la graduation s'allume). aToi : ce que dit la voix au premier exercice guidé qui suit ; aToiDepuisZero : à la place, si la ligne de l'exercice part de 0 avec un pas de 1. Lot « Les leçons » : exercice, l'exercice associé (module et niveau, ou famille d'additions), joué après « À toi ! » à la fin d'une leçon du menu (docs/SPEC.md, section 3). Lot 2, étape 6 : les leçons du module 2 (L4 à L6, « module »: 2) se jouent sur le calque des aides avec le bernard-l'ermite (lessons/player2.js) ; actions : ermite (sortir, montrer, rejouir, changer), miroir n, ecrire « texte », defiler [[a, b]…], cadre { n, extra, lueur }, entrer n, maison { total, etages }, effacer, attendre ms. Lot 2, étape 8 : L10 (les centaines, docs/SPEC-COMPLEMENTS.md, partie A) a sa propre scène (scene : « centaines », lessons/player2.js : filet, chalut, remplir, chaluts, nombre) ; elle est jouée à l'entrée du niveau 9 et quand l'erreur E6 revient.",
+  "L1": { "exercice": { "module": 1, "niveau": 1 },
     "titre": "On compte les sauts",
     "ligne": { "min": 0, "max": 10, "pas": 1, "k": 0, "ecrits": [0] },
     "phrases": [
@@ -29,7 +29,7 @@
     "aToi": "À toi !",
     "aToiDepuisZero": "À toi ! Combien de sauts jusqu'à l'étoile ?"
   },
-  "L2": {
+  "L2": { "exercice": { "module": 1, "niveau": 5 },
     "titre": "Un saut peut valoir 10",
     "ligne": { "min": 0, "max": 100, "pas": 10, "k": 0, "ecrits": [0, 10, 100], "geant": true },
     "phrases": [
@@ -53,7 +53,7 @@
     ],
     "aToi": "À toi !"
   },
-  "L3": {
+  "L3": { "exercice": { "module": 1, "niveau": 4 },
     "titre": "La ligne ne commence pas toujours à 0",
     "ligne": { "min": 30, "max": 40, "pas": 1, "k": 0.8, "ecrits": [30, 40] },
     "phrases": [
@@ -74,7 +74,7 @@
     ],
     "aToi": "À toi !"
   },
-  "L4": {
+  "L4": { "exercice": { "module": 2, "famille": 2 },
     "module": 2,
     "titre": "Les doubles",
     "phrases": [
@@ -91,7 +91,7 @@
     ],
     "aToi": "À toi !"
   },
-  "L5": {
+  "L5": { "exercice": { "module": 2, "famille": 3 },
     "module": 2,
     "titre": "Les amis de 10",
     "phrases": [
@@ -114,7 +114,7 @@
     ],
     "aToi": "À toi !"
   },
-  "L6": {
+  "L6": { "exercice": { "module": 2, "famille": 4 },
     "module": 2,
     "titre": "La maison des nombres",
     "phrases": [
@@ -131,7 +131,7 @@
     ],
     "aToi": "À toi !"
   },
-  "L7": {
+  "L7": { "exercice": { "module": 3, "niveau": 2 },
     "module": 3,
     "scene": "mur",
     "titre": "+ 10 sur le mur de corail",
@@ -153,7 +153,7 @@
     ],
     "aToi": "À toi !"
   },
-  "L8": {
+  "L8": { "exercice": { "module": 3, "niveau": 6 },
     "module": 3,
     "scene": "mur",
     "titre": "L'astuce du 9",
@@ -187,7 +187,7 @@
     ],
     "aToi": "À toi !"
   },
-  "L9": {
+  "L9": { "exercice": { "module": 3, "niveau": 7 },
     "module": 3,
     "scene": "ligne",
     "titre": "Passer la dizaine",
@@ -210,5 +210,5 @@
     ],
     "aToi": "À toi !"
   },
-  "L10": {"scene":"centaines","titre":"Les centaines","phrases":[[{"dire":"Tu te souviens ? Un filet, c'est dix poissons.","faire":[{"filet":true}]}],[{"dire":"Quand on a dix filets, on les met dans un grand chalut.","faire":[{"chalut":0}]},{"dire":"dix,","faire":[{"remplir":1}]},{"dire":"vingt,","faire":[{"remplir":2}]},{"dire":"trente,","faire":[{"remplir":3}]},{"dire":"quarante,","faire":[{"remplir":4}]},{"dire":"cinquante,","faire":[{"remplir":5}]},{"dire":"soixante,","faire":[{"remplir":6}]},{"dire":"soixante-dix,","faire":[{"remplir":7}]},{"dire":"quatre-vingts,","faire":[{"remplir":8}]},{"dire":"quatre-vingt-dix,","faire":[{"remplir":9}]},{"dire":"cent !","faire":[{"remplir":10}]},{"dire":"Dans un chalut, il y a cent poissons !","faire":[{"nombre":{"v":100}}]}],[{"dire":"Trois chaluts, c'est trois-cents.","faire":[{"effacer":true},{"chaluts":300},{"nombre":{"v":300,"couleur":0}}]}],[{"dire":"Trois chaluts et sept poissons tout seuls : trois-cent-sept.","faire":[{"effacer":true},{"chaluts":307},{"nombre":{"v":307}}]},{"dire":"Il n'y a pas de filet, alors on écrit un zéro au milieu.","faire":[{"nombre":{"v":307,"clignote":1}}]}]],"aToi":"À toi !"}
+  "L10": { "exercice": { "module": 1, "niveau": 9 },"scene":"centaines","titre":"Les centaines","phrases":[[{"dire":"Tu te souviens ? Un filet, c'est dix poissons.","faire":[{"filet":true}]}],[{"dire":"Quand on a dix filets, on les met dans un grand chalut.","faire":[{"chalut":0}]},{"dire":"dix,","faire":[{"remplir":1}]},{"dire":"vingt,","faire":[{"remplir":2}]},{"dire":"trente,","faire":[{"remplir":3}]},{"dire":"quarante,","faire":[{"remplir":4}]},{"dire":"cinquante,","faire":[{"remplir":5}]},{"dire":"soixante,","faire":[{"remplir":6}]},{"dire":"soixante-dix,","faire":[{"remplir":7}]},{"dire":"quatre-vingts,","faire":[{"remplir":8}]},{"dire":"quatre-vingt-dix,","faire":[{"remplir":9}]},{"dire":"cent !","faire":[{"remplir":10}]},{"dire":"Dans un chalut, il y a cent poissons !","faire":[{"nombre":{"v":100}}]}],[{"dire":"Trois chaluts, c'est trois-cents.","faire":[{"effacer":true},{"chaluts":300},{"nombre":{"v":300,"couleur":0}}]}],[{"dire":"Trois chaluts et sept poissons tout seuls : trois-cent-sept.","faire":[{"effacer":true},{"chaluts":307},{"nombre":{"v":307}}]},{"dire":"Il n'y a pas de filet, alors on écrit un zéro au milieu.","faire":[{"nombre":{"v":307,"clignote":1}}]}]],"aToi":"À toi !"}
 }

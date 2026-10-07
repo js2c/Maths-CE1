@@ -142,7 +142,7 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 
 **Les plaques numérotées.** À l'écran « choisir », chaque niveau porte maintenant son **numéro en grand** (la ligne graduée de 1 à 13, les additions de 1 à 7, le calcul rapide de 1 à 9), avec l'ancienne vignette en petit dessous : vous pouvez dire « fais le 7 » quel que soit l'exercice. Les neuf niveaux du calcul rapide sont posés dans l'ordre sur un **chemin de cailloux**. Le niveau conseillé est entouré d'un halo doré qui respire doucement ; un niveau validé porte une petite étoile dans le coin de sa plaque. Un toucher dit le nom du niveau et le lance, comme avant.
 
-**La légende des niveaux (pour vous).** Sur chaque écran de niveaux, et sur celui des leçons, un petit bouton en forme de **livre ouvert**, en haut à droite, sous le haut-parleur, ouvre un panneau qui dit, pour chaque niveau, ce qui est travaillé et un exemple. La croix, ou un toucher à côté du panneau, le referme. Ouvrir ou fermer la légende ne lance rien, et la voix ne la lit pas. Le même texte est dans l'espace parent (onglet **Progression**, « Les niveaux de « choisir », en bref ») et ci-dessous ; il est rangé une seule fois dans l'application (`app/content/legendes.json`).
+**La légende des niveaux (pour vous).** Sur chaque écran de niveaux, et sur le menu des leçons (depuis le lot « Les leçons »), un petit bouton en forme de **livre ouvert**, en haut à droite, sous le haut-parleur, ouvre un panneau qui dit, pour chaque niveau, ce qui est travaillé et un exemple. La croix, ou un toucher à côté du panneau, le referme. Ouvrir ou fermer la légende ne lance rien, et la voix ne la lit pas. Le même texte est dans l'espace parent (onglet **Progression**, « Les niveaux de « choisir », en bref ») et ci-dessous ; il est rangé une seule fois dans l'application (`app/content/legendes.json`).
 
 **La ligne graduée**
 
@@ -202,8 +202,9 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 | L7 | Plus 10 sur le mur de corail, on descend d'une rangée. | 34 + 10 |
 | L8 | L'astuce du 9, plus 10, puis moins 1. | 34 + 9 |
 | L9 | Passer la dizaine, on complète d'abord jusqu'à 10. | 38 + 5 |
+| + | La table d'addition, toucher une case dit et montre le calcul. | 7 + 5 = 12 |
 
-**L'appui long sur les pictogrammes.** Garder le doigt environ **une demi-seconde** sur une bulle de l'accueil (jouer, choisir, le récif, l'album) ou sur un exercice de l'écran « choisir » (la ligne, les additions, le calcul rapide, les leçons) fait apparaître une **étiquette** au-dessus, qui reste tant que le doigt est posé (depuis le lot 3 ter : elle s'efface en une demi-seconde, et cela vaut pour tous les boutons, voir **d quater**). Relâcher après un appui long **ne lance rien** ; seul un toucher bref lance. La voix ne lit pas l'étiquette. La durée se règle dans `app/content/legendes.json` (`appuiLong`).
+**L'appui long sur les pictogrammes.** Garder le doigt environ **une demi-seconde** sur une bulle de l'accueil (jouer, choisir, les leçons, le récif, l'album) ou sur un exercice de l'écran « choisir » (la ligne, les additions, le calcul rapide, les voiliers) fait apparaître une **étiquette** au-dessus, qui reste tant que le doigt est posé (depuis le lot 3 ter : elle s'efface en une demi-seconde, et cela vaut pour tous les boutons, voir **d quater**). Relâcher après un appui long **ne lance rien** ; seul un toucher bref lance. La voix ne lit pas l'étiquette. La durée se règle dans `app/content/legendes.json` (`appuiLong`).
 
 **L'espace parent, rappel.** L'appui long sur le logo de la pieuvre, en bas à gauche de l'accueil, dure **2 secondes** (un anneau clair se remplit) ; il est différent de l'appui court sur les pictogrammes.
 
@@ -275,6 +276,19 @@ Vous avez tranché le rapport qui comparait la spécification et l'application (
 Ce que vous avez gardé tel quel, et qui est maintenant écrit dans la spécification : le défi record commence à la 6e séance (5 déjà terminées) ; une erreur corrigée rapporte 2 étoiles en tout ; la musique reste très basse quand l'enfant visite le récif ou l'album pendant la pause ; la mascotte est déçue à la première erreur d'une question, puis encourage si l'enfant se trompe encore sans nouvelle consigne (le rapport décrivait autre chose, voir la demande de fusion) ; les séances avec « choisir » peuvent être plus courtes (6 à 8 minutes) aux niveaux qui ont peu de questions différentes : regardez leur durée dans l'historique des séances.
 
 **Les phrases à fabriquer.** 8 phrases nouvelles (« 21 moins combien ? », « 31 moins combien ? »… jusqu'à « 91 moins combien ? »), quelques secondes de fabrication, avec les autres lots en attente (`node tools\voix\publier.mjs`). Une phrase ne sert plus (« Regardons le chemin ensemble. »).
+
+## d octies) Lot « Les leçons » : la bulle des leçons, « À toi ! » et la table d'addition
+
+Vous avez validé la maquette le 7 octobre 2026 (`docs/maquettes/lecons/`).
+
+- **Une cinquième bulle à l'accueil, « les leçons »** (un livre ouvert, entre « choisir » et le récif). Elle est là avant comme après la séance du jour, et aussi quand la séance est en pause. Les leçons ne sont plus dans **choisir**, qui garde la ligne, les additions, le calcul rapide et les voiliers.
+- **Le menu des leçons** : une rangée par exercice (la tortue pour la ligne, le « + » pour les additions, le mur de corail pour le calcul rapide), et dans chaque rangée une tuile par leçon, avec **le numéro de la leçon en grand** (vous pouvez dire « regarde la leçon 5 ») et une petite image de son moment le plus important. Une leçon déjà vue porte une petite étoile. Le petit livre en haut à droite ouvre la légende (pour vous), avec une ligne pour la table d'addition.
+- **Après une leçon du menu**, regardée jusqu'au bout ou passée : deux grandes bulles, **« À toi ! »** (dedans, la tuile du niveau d'exercice qui va avec la leçon) et **la maison**. La voix dit « À toi ! Touche la grande bulle pour t'entraîner. ». Rien ne se lance tout seul. « À toi ! » montre le choix de la difficulté, puis l'exercice qui va avec la leçon (par exemple la leçon 5, les amis de 10, puis les additions de la famille 3), **sans échauffement** : c'est la séance du jour si elle n'est pas encore faite (avec les étoiles), de l'entraînement libre sinon. La maison revient à l'accueil.
+- **Pendant une séance en pause**, la bulle des leçons joue une leçon puis revient à la pause, sans « À toi ! » (qui arrêterait la séance).
+- **La table d'addition** : la dernière rangée du menu (une tuile marquée d'un grand « + » ; la table de multiplication viendra à sa droite avec son lot). C'est une grille de 0 + 0 à 10 + 10 ; l'enfant touche une case : elle s'allume, le calcul s'écrit à droite (« 7 + 5 = 12 ») avec l'image de la famille (le cadre de 10, le poisson et son reflet, la maison, les sauts de la tortue ; au-delà de 10, deux cadres de 10), et la voix dit « 7 plus 5, 12. ». Les doubles sont légèrement teintés de bleu, les amis de 10 de corail. La table ne rapporte pas d'étoiles. La maison revient à l'accueil.
+- **La leçon 10 (les centaines)** : dans le grand chalut, chaque petit filet montre maintenant **10 poissons**, en deux rangées de 5, comme le cadre de 10.
+
+**Les phrases à fabriquer.** 126 phrases nouvelles (les 121 cases de la table, « 0 plus 0, 0. » à « 10 plus 10, 20. », les deux consignes de l'accueil, « Touche la grande bulle pour t'entraîner. », « La table d'addition. », « Touche une case : je te dis le calcul. »), environ 10 minutes de fabrication, avec les autres lots en attente (`docs/VOIX.md`, « En une commande »).
 
 ## e) Ce qui reste approximatif ou à ajuster
 

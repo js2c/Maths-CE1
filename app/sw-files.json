@@ -1,5 +1,5 @@
 {
- "version": "9d959c6bf21b",
+ "version": "079a48360adb",
  "files": [
   "./",
   "assets/art/aides@1x.webp",
@@ -21,6 +21,10 @@
   "assets/art/lagon-vie@2x.webp",
   "assets/art/lagon@1x.webp",
   "assets/art/lagon@2x.webp",
+  "assets/art/lecons-atoi@1x.webp",
+  "assets/art/lecons-atoi@2x.webp",
+  "assets/art/lecons@1x.webp",
+  "assets/art/lecons@2x.webp",
   "assets/art/petits@1x.webp",
   "assets/art/petits@2x.webp",
   "assets/art/poissons@1x.webp",
@@ -8817,6 +8821,7 @@
   "js/session/free.js",
   "js/session/frieze.js",
   "js/session/legend.js",
+  "js/session/lessons.js",
   "js/session/notion.js",
   "js/session/reef.js",
   "js/session/rewards.js",

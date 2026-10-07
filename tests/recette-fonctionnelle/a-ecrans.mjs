@@ -65,7 +65,7 @@ async function accueil() {
 async function choisir() {
   const S = new Serie(DIR, "A02-choisir", "Partie A · l'écran « choisir » (exercices, niveaux, conseillé, validés)");
   for (const base of ["neuve", "mois"]) {
-    for (const ex of ["ligne", "additions", "calcul", "lecons"]) {
+    for (const ex of ["ligne", "additions", "calcul"]) { // (lot « Les leçons » : les leçons ont leur bulle à l'accueil)
       const s = await ouvrir(nav, { base, nom: true });
       await toucher(s.page, ".choisir"); await attendre(s.page, () => document.querySelector(".choix-ex")); await pause(s.page, 900);
       if (ex === "ligne") await S.shot(s.page, { ecran: "choisir : les exercices", etat: base === "neuve" ? "base neuve" : "un mois" });

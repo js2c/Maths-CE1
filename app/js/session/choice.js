@@ -1,12 +1,13 @@
 // L'ÉCRAN « CHOISIR » (lot 3, docs/SPEC-LOT3.md, section 2) : l'enfant choisit l'exercice, puis le niveau (ligne
-// graduée : les 13 niveaux ; additions : les 7 familles ; leçons : toutes, vues ou non). Tout est accessible, même
+// graduée : les 13 niveaux ; additions : les 7 familles ; calcul rapide et voiliers : 9 niveaux). (Lot « Les leçons » : les
+// leçons n'y sont plus ; elles ont leur bulle à l'accueil, session/lessons.js.) Tout est accessible, même
 // ce qui n'a jamais été atteint. Sans texte à lire : des pictogrammes et des vignettes de l'atelier
 // (art/src/canvas-core/sea/choice.ts, planche « choix », chargée le temps du choix) ; toucher une image dit son nom et
 // l'entoure d'or ; la toucher encore, ou toucher la coche, la valide (content/seance.json, choix.validation :
 // « double », ou « simple » : le premier toucher valide). Le niveau conseillé est entouré d'une lueur ; les niveaux
 // déjà validés portent une petite étoile. À l'étape du niveau, la bulle de l'exercice (en haut) ramène au choix de
 // l'exercice ; la maison (main.js) ramène à l'accueil.
-// Renvoie { module: 1, niveau } | { module: 2, famille } | { module: 3 ou 4, niveau } | { lecon } (| null : quitté sans valider, `app.choiceCancel`). Fonctions pures (`levelItems`) testées par
+// Renvoie { module: 1, niveau } | { module: 2, famille } | { module: 3 ou 4, niveau } (| null : quitté sans valider, `app.choiceCancel`). Fonctions pures (`levelItems`) testées par
 // tests/unit/choix.test.mjs.
 import * as R from "../art/runtime.js";
 import { onBrief, pop, spriteBox } from "../engine/ui.js";
@@ -24,19 +25,15 @@ export const EXERCISES = [
   { id: "additions", sprite: "libre.faits", module: 2 },
   { id: "calcul", sprite: "choix.ex.calcul", module: 3 },
   { id: "voiliers", sprite: "choix.ex.voiliers", module: 4 },
-  { id: "lecons", sprite: "choix.ex.lecons" },
 ];
-// (lot « Les voiliers » : cinq exercices sur une rangée, entre la tête de la mascotte et le bord droit)
+// (lot « Les voiliers » : les exercices sur une rangée, entre la tête de la mascotte et le bord droit)
 export const EX_PITCH = 190, EX_CX = 780;
-// les nombres que la tortue écrit dans chaque leçon (repris de l'entraînement libre)
-export const LESSON_LABELS = { L1: "1 2 3", L2: "10 20", L3: "30 31", L4: "3+3", L5: "7+3", L6: "5+2", L10: "100", L7: "34+10", L8: "+9", L9: "38+5" };
 
-// les vignettes de l'étape « niveau » d'un exercice : { key, sprite, conseille, valide, label? }
-// st1 : l'état du module 1 (magasin « niveaux », clé 1) ; st2 : celui du module 2 ; module1, module2 : le contenu ;
-// lecons : les leçons proposées (seance.json, choix.lecons)
+// les vignettes de l'étape « niveau » d'un exercice : { key, sprite, conseille, valide }
+// st1 : l'état du module 1 (magasin « niveaux », clé 1) ; st2 : celui du module 2 ; module1, module2 : le contenu
 // (lot 3, étape 4 : st3, module3 : le calcul rapide, ses 9 niveaux ; conseillé : `recommended`, validés : les acquis)
 // (lot « Les voiliers » : st4, module4 : ses 9 niveaux ; conseillé : le niveau atteint, validés : ceux d'avant)
-export function levelItems(ex, { st1 = null, st2 = null, st3 = null, st4 = null, module1, module2, module3 = null, module4 = null, lecons = [], familyShare = () => 0 }) {
+export function levelItems(ex, { st1 = null, st2 = null, st3 = null, st4 = null, module1, module2, module3 = null, module4 = null, familyShare = () => 0 }) {
   if (ex === "voiliers") {
     const n = module4.niveaux.length, cur = Math.min(n, st4?.niveau ?? 1);
     return module4.niveaux.map((c) => ({ key: c.niveau, sprite: `choix.voiliers.${c.niveau}`, conseille: c.niveau === cur, valide: c.niveau < cur }));
@@ -49,14 +46,10 @@ export function levelItems(ex, { st1 = null, st2 = null, st3 = null, st4 = null,
     const n = module1.niveaux.length, cur = Math.min(n, st1?.niveau ?? 1);
     return module1.niveaux.map((c) => ({ key: c.niveau, sprite: `choix.ligne.${c.niveau}`, conseille: c.niveau === cur, valide: c.niveau < cur }));
   }
-  if (ex === "additions") {
-    const st = st2 ?? initialFamilies(module2), cur = currentFamily(module2, st);
-    return module2.familles.map((f) => ({ key: f.id, sprite: `choix.famille.${f.id}`, conseille: f.id === cur, valide: (st.acquises ?? []).includes(f.id) }));
-  }
-  const seen = new Set([...(st1?.lecons ?? []), ...(st2?.lecons ?? []), ...(st3?.lecons ?? [])]);
-  return lecons.map((id) => ({ key: id, sprite: "choix.lecon", conseille: false, valide: seen.has(id), label: LESSON_LABELS[id] ?? id }));
+  const st = st2 ?? initialFamilies(module2), cur = currentFamily(module2, st);
+  return module2.familles.map((f) => ({ key: f.id, sprite: `choix.famille.${f.id}`, conseille: f.id === cur, valide: (st.acquises ?? []).includes(f.id) }));
 }
-// (lot 3 ter, T3) l'étiquette d'une tuile de niveau, de famille ou de leçon : sa ligne de la légende (legendes.json),
+// (lot 3 ter, T3) l'étiquette d'une tuile de niveau ou de famille : sa ligne de la légende (legendes.json),
 // « 7 · Ajouter en passant la dizaine, on complète d'abord jusqu'à 10 », sans le point final
 export function tileLabel(legendes, ex, k) {
   const row = (legendes?.[ex] ?? []).find((r) => String(r.n) === String(k));
@@ -113,7 +106,7 @@ export async function choose(app, o) {
     if (ex === CANCEL) return done();
     clear();
     // 2. le niveau, la famille ou la leçon
-    const exo = xs.find((e) => e.id === ex), items = levelItems(ex, { st1, st2, st3, st4, module1: o.content.module1, module2: o.content.module2, module3: o.content.module3, module4: o.content.module4, lecons: C.lecons ?? [], familyShare });
+    const exo = xs.find((e) => e.id === ex), items = levelItems(ex, { st1, st2, st3, st4, module1: o.content.module1, module2: o.content.module2, module3: o.content.module3, module4: o.content.module4, familyShare });
     const back = spriteBox(app, { x: BACK[0] - 60, y: BACK[1] - 60, w: 120, h: 120, cls: "bubble choix-retour", label: "retour", paint: (ctx, px) => { const q = sprites.frame(exo.sprite, 0), k = 120 / 180; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 60 * px + q.dx * k, 60 * px + q.dy * k, q.w * k, q.h * k); } });
     els.push(back);
     // (lot 3 bis, B1) le chemin de cailloux du calcul rapide, dessiné en direct une fois par ouverture, sous les plaques
@@ -125,17 +118,16 @@ export async function choose(app, o) {
       const b = spriteBox(app, { x: x - W / 2, y: y - H / 2, w: W, h: H, cls: "bubble choix-tuile", label: `${ex} ${it.key}`, paint: (ctx, px) => {
         sprites.draw(ctx, it.sprite, 0, W / 2, H / 2);
         ctx.setTransform(px, 0, 0, px, 0, 0);
-        if (it.label) { const em = Math.min(30, 118 / R.wordWidth(it.label)); R.drawWord(ctx, it.label, W / 2, H / 2 + 8, em, { w: em * 0.15, seed: 860 + i }); }
         if (sel.key === String(it.key)) R.drawTileRing(ctx, W / 2, H / 2, W - 12, H - 12);
         if (it.valide) { ctx.setTransform(1, 0, 0, 1, 0, 0); const q = sprites.frame("etoile.doree", 0), k = 0.42; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (W - 24) * px + q.dx * k, 24 * px + q.dy * k, q.w * k, q.h * k); }
       } });
       b.dataset.key = String(it.key); b.dataset.conseille = it.conseille ? "1" : ""; b.dataset.valide = it.valide ? "1" : ""; els.push(b); return b;
     });
     // (lot 3 bis, B2) la légende des niveaux, pour le parent : ne choisit rien, ne lance rien
-    legendKey(app, ex, { keys: items.map((it) => it.key), labels: LESSON_LABELS, els });
+    legendKey(app, ex, { keys: items.map((it) => it.key), els });
     if (double) voice.stop();
-    voice.say(ex === "lecons" ? text.data.choixLecon : text.data.choixNiveau, { instruction: true });
-    const name = (k) => (ex === "ligne" ? text.data.choixLigne[k] : ex === "additions" ? text.data.choixFamille[k] : ex === "calcul" ? text.data.choixCalcul[k] : ex === "voiliers" ? text.data.choixVoiliers[k] : text.data.choixLeconNom[k] ?? k);
+    voice.say(text.data.choixNiveau, { instruction: true });
+    const name = (k) => (ex === "ligne" ? text.data.choixLigne[k] : ex === "additions" ? text.data.choixFamille[k] : ex === "calcul" ? text.data.choixCalcul[k] : text.data.choixVoiliers[k]);
     const backP = new Promise((res) => onBrief(app, back, () => { pop(back); res(null); }, "retourExercices"));
     const key = await Promise.race([pick(tiles, name, checkKey(), (k) => tileLabel(app.legendes, ex, k)), backP, cancelled]);
     if (key === CANCEL) return done();
@@ -146,7 +138,6 @@ export async function choose(app, o) {
     if (ex === "ligne") return { module: 1, niveau: Number(key) };
     if (ex === "additions") return { module: 2, famille: Number(key) };
     if (ex === "calcul") return { module: 3, niveau: Number(key) };
-    if (ex === "voiliers") return { module: 4, niveau: Number(key) };
-    return { lecon: key };
+    return { module: 4, niveau: Number(key) };
   }
 }

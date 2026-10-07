@@ -34,7 +34,7 @@ test("B3 : une étiquette pour chaque pictogramme de l'accueil et de « choisir 
 });
 
 test("B2 : la légende a une ligne par niveau (13, 7, 9) et par leçon proposée, chacune avec ce qui est travaillé et un exemple", () => {
-  const keys = { ligne: m1.niveaux.map((n) => n.niveau), additions: m2.familles.map((f) => f.id), calcul: m3.niveaux.map((n) => n.niveau), lecons: seance.choix.lecons };
+  const keys = { ligne: m1.niveaux.map((n) => n.niveau), additions: m2.familles.map((f) => f.id), calcul: m3.niveaux.map((n) => n.niveau), lecons: [...seance.menuLecons.rangees.flatMap((r) => r.lecons), "+"] }; // (lot « Les leçons » : les leçons du menu, et la table d'addition)
   for (const [ex, ks] of Object.entries(keys)) {
     const rows = legendRows(legendes, ex, ks);
     assert.equal(rows.length, ks.length, ex);

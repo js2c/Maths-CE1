@@ -43,12 +43,15 @@ export const drawFishNet = (g: Gfx, x: number, y: number, seed = 7000) => g.grou
 
 // ---------------------------------------------------------------- le chalut
 export const TRAWL = { w: 250, h: 250, bar: 34 };
-// un petit filet rangé dans le chalut (deux lignes de mailles, des éclats jaunes de poissons)
+// un petit filet rangé dans le chalut : dix petits poissons jaunes en deux rangées de cinq, comme le filet de dix poissons et
+// le cadre de 10 (lot « Les leçons », constat du parent du 30 septembre 2026 : il n'en montrait que cinq), sous les mailles
+export const PACKED = { w: 88, h: 34 };
 const packedNet = (g: Gfx, x: number, y: number, w: number, h: number, seed: number) => {
   const s = smooth([[x + 6, y], [x + w - 6, y], [x + w, y + 6], [x + w, y + h - 6], [x + w - 6, y + h], [x + 6, y + h], [x, y + h - 6], [x, y + 6]], true, 3);
   fillShape(g, shift(s, 2, 2.5), SH, 0.25); fillShape(g, s, "#1d8a98");
-  for (let i = 0; i < 5; i++) fillShape(g, blob(x + 8 + i * ((w - 16) / 4), y + h / 2 + (i % 2 ? 2 : -2), 4.2, 2.6, seed + i, 0.1, 8), YEL);
-  ink(g, [[x + 3, y + h / 2], [x + w - 3, y + h / 2]], MESH, { w: 1.1, shadow: 0, taper: [0.1, 0.1], seed: seed + 8 }, 0.7);
+  const dx = (w - 18) / 4;
+  for (let i = 0; i < 10; i++) miniFish(g, x + 9 + (i % 5) * dx, y + h * (i < 5 ? 0.3 : 0.72), dx * 0.92, seed + i * 3);
+  mesh(g, s, x, y, x + w, y + h, 9, 0.8, seed + 40);
   ink(g, s, ROPE_S, { w: 2.2, closed: true, shadow: 0.3, seed: seed + 9 });
 };
 // (cx, top) : milieu de la barre du haut ; k : nombre de filets dedans (0 à 10)
@@ -59,8 +62,8 @@ export const drawTrawl = (g: Gfx, cx: number, top: number, k: number) => g.group
   fillShape(g, shift(bag, 9, 11), SH, 0.26);
   fillShape(g, bag, "#0f6f7c", 0.5);
   // les filets rangés : deux colonnes de cinq, du fond vers le haut
-  const nw = 84, nh = 30, gx = 8;
-  for (let i = 0; i < k; i++) { const row = Math.floor(i / 2), col = i % 2, x = cx - nw - gx / 2 + col * (nw + gx) + (row % 2 ? 3 : -3), y = y0 + H - 70 - row * (nh + 6); packedNet(g, x, y, nw, nh, 7300 + i * 13); }
+  const nw = PACKED.w, nh = PACKED.h, gx = 6;
+  for (let i = 0; i < k; i++) { const row = Math.floor(i / 2), col = i % 2, x = cx - nw - gx / 2 + col * (nw + gx) + (row % 2 ? 3 : -3), y = y0 + H - 74 - row * (nh + 5); packedNet(g, x, y, nw, nh, 7300 + i * 13); }
   mesh(g, bag, x0 - 10, y0, x1 + 10, y0 + H, 17, 2.1, 7400);
   ink(g, bag, ROPE_S, { w: 4.2, closed: true, shadow: 0.4, seed: 7410 });
   // le nœud du fond

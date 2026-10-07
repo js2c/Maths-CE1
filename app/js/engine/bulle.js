@@ -176,7 +176,8 @@ export class Bulle {
   obstacles() { return { durs: [...obstacles(this.st.ui, this.st.k), ...this.dures()], souples: [...obstacles(this.st.ui, this.st.k, CARTE), ...this.dessins(), ...this.souplesEnPlus()] }; }
   layout() {
     const cible = largeurEquilibree(this.mesure(4000)[0]), m = (w) => this.mesure(Math.min(w, cible));
-    const { durs, souples } = this.obstacles(), p = choisirPlace(durs, m, PLACES, souples);
+    // (lot « Les leçons » : `places`, les places propres à un écran, la table d'addition : sous la tête, à gauche de la grille)
+    const { durs, souples } = this.obstacles(), p = choisirPlace(durs, m, this.places ?? PLACES, souples);
     m(largeurMax(p.place.boite));
     Object.assign(this.txt.style, { left: `${(p.cx - p.w / 2).toFixed(1)}px`, top: `${(p.cy - p.h / 2).toFixed(1)}px` });
     const d = balloonPath(p.cx, p.cy, p.a, p.b, (Math.round(p.w) * 7 + Math.round(p.h)) % 13, p.place.pointe);

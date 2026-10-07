@@ -27,3 +27,11 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 ## Reprise
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
+
+### Reprise du lot « Correctifs »
+
+- **Branche** : `claude/friendly-pascal-ylq8p1`, partie de `main` après la fusion des voiliers (PR #36). Demande de fusion en brouillon « Lot : Correctifs ».
+- **Fiche** : `docs/LOTS.md`, 2 bis ; rapport : `docs/ECARTS-SPEC.md`.
+- **Fait** : —
+- **Reste** : les 7 correctifs du code (10.1/12.3, 4.2, 6.2, 7.3, 5.4, 6.9, 7.6) ; la spécification (23 écarts datés, questions tranchées, 24 comportements) ; la ligne en tête du rapport ; la recette.
+

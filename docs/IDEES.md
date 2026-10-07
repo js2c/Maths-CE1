@@ -130,7 +130,7 @@ Au cran « plus facile », l'écriture 600 + 30 + 5 s'affiche sous la cale. Un f
 **Après le lot « Correctifs »** (octobre 2026) :
 
 - **Les séances courtes avec « choisir »** aux niveaux étroits (ligne niveau 2 « très dur », ligne niveau 8, crans « plus facile ») : 6 à 8 minutes dans la simulation sur une base neuve, acceptées par le parent le 6 octobre 2026 (écart 2.5 de `docs/ECARTS-SPEC.md`). À mesurer à l'usage (historique des séances de l'espace parent) ; si elles reviennent souvent, donner plus de cibles à ces niveaux.
-- **Toujours « plus facile »** : depuis que ce cran ne fait jamais monter à la ligne (écart 4.2), une enfant qui le choisit à chaque fois reste au niveau 1 de la ligne, et la rotation de « jouer » lui donne alors la ligne une séance sur trois (simulation, profil « facile »). La parade reste d'interdire ce cran dans l'espace parent.
+- **Toujours « plus facile »** : depuis que ce cran ne fait jamais monter à la ligne (écart 4.2), une enfant qui le choisit à chaque fois reste au niveau 1 de la ligne (avant, l'écart la faisait passer au niveau 2 conseillé dès la première séance, pour rejouer ensuite le niveau 1), et la rotation de « jouer », qui va au moins avancé, lui donne davantage la ligne : sur l'année simulée (profil « facile », 2 séances par semaine), 31 séances de ligne sur 64 au lieu de 26, 3 d'additions en notion du jour au lieu de 7 ; ses familles s'ouvrent alors surtout par l'échauffement, plus tard (la dernière à la séance 60 au lieu de 34). La parade reste d'interdire ce cran dans l'espace parent.
 - **Deux séances le même jour** n'ouvrent plus jamais deux familles d'additions (écart 6.2) ; une famille dépassée ce jour-là ouvre la suivante à la séance d'additions d'un autre jour.
 
 **Depuis les lots précédents :**

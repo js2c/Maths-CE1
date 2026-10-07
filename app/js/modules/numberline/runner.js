@@ -131,8 +131,10 @@ export class Module1Runner {
       this.lower = true; this.slowNext = true;
     };
     // les règles d'adaptation ne comptent que les questions du niveau conseillé (pas les plus simples) ; lot 3 : au
-    // niveau choisi, le cran « plus facile » consolide sans faire progresser (docs/SPEC-LOT2.md, section 2)
-    if (q.cran === "facile") { /* ni montée, ni validation */ }
+    // niveau choisi, le cran « plus facile » consolide sans faire progresser (docs/SPEC-LOT2.md, section 2) ; lot
+    // « Correctifs » (écart 4.2, décision du 27 septembre) : avec « jouer » aussi, même quand le niveau joué est le
+    // conseillé (conseillé au niveau 1, que « plus facile » ne peut pas décaler) : ni montée, ni voie rapide
+    if (q.cran === "facile" || this.cran() === "facile") { /* ni montée, ni validation */ }
     else if (q.niveau === this.st.niveau) {
       const a = afterAnswer(this.st, { juste: r.ok, aide: false, ms: r.ms }, this.rules, this.levels.length);
       this.st = { ...a.st, justesNiveau: a.events.some((e) => e.type === "montee") ? 0 : (this.st.justesNiveau ?? 0) + (r.ok ? 1 : 0) };

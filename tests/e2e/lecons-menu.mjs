@@ -13,7 +13,7 @@
 //  6. L10 : le chalut plein de dix filets de dix poissons.
 //   node tests/e2e/lecons-menu.mjs [--out dossier] [--seul 1280|1920]
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
 
@@ -39,6 +39,8 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
   const shot = (page, n) => page.screenshot({ path: join(OUT, `${T}-${n}.png`) });
   const tap = async (page, sel, wait = 250) => { await page.tap(sel, { force: true }); await page.waitForTimeout(wait); };
   const said = (page) => page.evaluate(() => window.__said.join(" | "));
+  // les phrases dites, gardées pour la relecture (tests/recette-fonctionnelle/out-lecons/SEQUENCES.md)
+  const journal = []; const note = async (page, quoi) => journal.push({ quoi, dit: await page.evaluate(() => [...window.__said]) });
   const resetSaid = (page) => page.evaluate(() => { window.__said = []; });
   const visible = (page, sel) => page.evaluate((s) => [...document.querySelectorAll(s)].filter((e) => e.isConnected && getComputedStyle(e).visibility !== "hidden" && !e.closest(".stash")).length, sel);
   const bulle = (page) => page.evaluate(() => window.__app.bulle.etat());
@@ -72,7 +74,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const keys = await page.evaluate(() => [...document.querySelectorAll(".lecons-tuile")].map((e) => e.dataset.key).join(","));
     check(keys === "L1,L2,L3,L10,L4,L5,L6,L7,L8,L9,table.addition", `${T} · l'ordre des tuiles (${keys})`);
     const b = await bulle(page); check(b.visible && !b.couvre, `${T} · la bulle du menu ne couvre aucune tuile (${b.place})`);
-    await shot(page, "03-menu");
+    await shot(page, "03-menu"); await note(page, "accueil, puis la bulle « les leçons »");
     const t7 = await hold(page, '.lecons-tuile[data-key="L7"]'); check(t7.label === "L7", `${T} · appui long sur la tuile 7 : son étiquette`);
     if (big) await shot(page, "04-menu-etiquette");
     await t7.release(); check(!(await page.evaluate(() => window.__app.lessons.p ?? window.__app.lessons.p2?.p ?? null)) && (await page.locator(".lecons-tuile").count()) === 11, `${T} · l'appui long ne lance pas la leçon`);
@@ -100,7 +102,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const bf = await bulle(page); check(!bf.couvre, `${T} · la bulle ne couvre ni « À toi ! » ni la maison (${bf.place})`);
     const rec = await page.evaluate(async () => (await window.__app.store.all("seances")).at(-1));
     check(rec.leconChoisie && rec.lecons?.[0]?.id === "L1" && rec.lecons[0].vue && rec.libre, `${T} · la leçon est notée vue (séance « libre »)`);
-    await shot(page, "07-fin-L1");
+    await shot(page, "07-fin-L1"); await note(page, "le menu, la leçon 1 regardée jusqu'au bout, l'écran « À toi ! »");
     await page.waitForTimeout(13000); check((await visible(page, ".lecons-atoi")) === 1 && !(await page.evaluate(() => window.__app.session)), `${T} · sans toucher, rien ne se lance (13 s)`);
     await resetSaid(page);
     await tap(page, ".lecons-atoi");
@@ -116,7 +118,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     await page.waitForFunction(() => { const s = window.__app.screen; return s?.resolve && !s.locked; }, null, { timeout: 60000 });
     const lec = await page.evaluate(() => (window.__app.session.rec.lecons ?? []).map((l) => l.id));
     check(!lec.includes("L1") && !(await page.evaluate(() => window.__app.lessons.playing)), `${T} · pas de leçon d'entrée : la leçon vient d'être vue (${lec.join(",")})`);
-    await page.waitForTimeout(600); await shot(page, "09-exercice-apres-L1");
+    await page.waitForTimeout(600); await shot(page, "09-exercice-apres-L1"); await note(page, "« À toi ! », le sélecteur, puis l'exercice de la leçon 1");
     // la pause pendant l'exercice qui suit
     await tap(page, ".homekey", 900);
     check(await page.evaluate(() => window.__app.enPause), `${T} · la maison met l'exercice en pause`);
@@ -160,7 +162,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     await page.waitForFunction(() => window.__app.free?.runner && window.__app.facts?.resolve && !window.__app.facts.locked, null, { timeout: 60000 });
     const f = await page.evaluate(() => ({ rec: window.__app.free.rec, fam: window.__app.free.runner.famille }));
     check(f.rec?.libre && f.rec.apresLecon === "L5" && f.fam === 3, `${T} · « À toi ! » après la séance du jour : les amis de 10 en entraînement libre (famille ${f.fam})`);
-    await page.waitForTimeout(500); await shot(page, "15-libre-apres-L5");
+    await page.waitForTimeout(500); await shot(page, "15-libre-apres-L5"); await note(page, "séance du jour faite : la leçon 5 passée, « À toi ! », l'entraînement libre");
     await tap(page, ".homekey", 900); check((await visible(page, ".again")) === 1, `${T} · la maison quitte l'entraînement libre`);
     check(!errors.length, `${T} · 3 : aucune erreur (${errors.slice(0, 3).join(" | ")})`); await context.close();
   }
@@ -181,7 +183,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     check((await page.evaluate(() => document.querySelector(".table-grille").dataset.case)) === "7+5", `${T} · la case 7 + 5 allumée`);
     await page.waitForTimeout(300); const bt = await bulle(page);
     check(bt.visible && bt.place === "dessous-table" && !bt.couvre, `${T} · la bulle sous la tête, sans couvrir la grille (${bt.place}, ${bt.couvre})`);
-    await shot(page, "17-table-7+5");
+    await shot(page, "17-table-7+5"); await note(page, "la table d'addition, la case 7 + 5");
     // deux fois très vite la même case : une seule phrase ; deux cases à la suite : la dernière l'emporte
     await resetSaid(page);
     // (deux contacts à 40 ms l'un de l'autre, émis dans la page : un toucher envoyé par le protocole du navigateur attend
@@ -220,6 +222,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     await shot(page, "20-L10-chalut");
     check(!errors.length, `${T} · 6 : aucune erreur (${errors.slice(0, 3).join(" | ")})`); await context.close();
   }
+  writeFileSync(join(OUT, `${T}-phrases.json`), JSON.stringify(journal, null, 1));
 }
 await browser.close(); srv.close();
 console.log(fail.length ? `\n${fail.length} échec(s)` : "\ntout est bon");

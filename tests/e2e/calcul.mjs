@@ -1,7 +1,7 @@
 // LOT 3, ÉTAPE 4 : parcours du calcul rapide (docs/SPEC-LOT3.md, section 6) : la leçon L7 sur le mur de corail (le mur
 // qui se construit, le poisson qui descend, les dizaines et les unités en couleurs), les calculs guidés où l'enfant remplit
 // chaque pont, une erreur corrigée sur le mur (C1), une erreur corrigée sur le chemin (C4), le chemin d'emblée (cran
-// « plus facile »), la forme à trou (« très dur »), l'écran « choisir » (cinq exercices depuis le lot « Les voiliers », neuf niveaux), la rotation de
+// « plus facile »), la forme à trou (« très dur »), l'écran « choisir » (quatre exercices depuis le lot « Les leçons », neuf niveaux), la rotation de
 // « jouer » (module imposé), le bloc « Calcul rapide » de l'espace parent. Captures en densité 2 (tests/e2e/out/calcul).
 //   node tests/e2e/calcul.mjs [--out dossier]
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
@@ -75,12 +75,12 @@ for (const cran of ["conseille", "facile", "tresdur"]) {
   }
   check(!errors.length, `${cran} : aucune erreur (${errors.join(" | ")})`); await context.close();
 }
-// 3. l'écran « choisir » : cinq exercices ; le calcul rapide et ses neuf niveaux
+// 3. l'écran « choisir » : quatre exercices ; le calcul rapide et ses neuf niveaux
 {
   const { page, context, errors } = await open();
   await page.tap(".choisir", { force: true }); await page.waitForSelector(".choix-ex"); await page.waitForTimeout(400);
-  // (lot « Les voiliers » : cinq exercices)
-  check((await page.locator(".choix-ex").count()) === 5, "cinq exercices (ligne, additions, calcul rapide, voiliers, leçons)");
+  // (lot « Les voiliers » : cinq exercices ; lot « Les leçons » : quatre, les leçons ont leur bulle à l'accueil)
+  check((await page.locator(".choix-ex").count()) === 4, "quatre exercices (ligne, additions, calcul rapide, voiliers)");
   await shot(page, "11-choisir-exercices");
   await page.tap('.choix-ex[aria-label="calcul"]', { force: true }); await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(400);
   check((await page.locator(".choix-tuile").count()) === 9, "les 9 niveaux du calcul rapide, tous accessibles");

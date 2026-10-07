@@ -1,0 +1,18 @@
+{
+ "titre": "Partie B · les séquences de questions",
+ "intro": "Le texte des séances telles que le moteur les génère (runners de l'application, sans navigateur) : pour chaque exercice × niveau (ou famille) × cran, en base neuve et en « un mois », avec trois comportements de l'enfant. Commencer par `SYNTHESE.md`.",
+ "lignes": [
+  [
+   "SYNTHESE.md",
+   "une ligne par séance simulée (base × exercice × cran × comportement) : réponses différentes, répétitions, suites prévisibles, leçons, étoiles ; et le tableau des étoiles « pressée » comparées à « appliquée »"
+  ],
+  [
+   "neuve/calcul-9.md",
+   "base neuve (premier lancement) : calcul 9, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/calcul-9.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : calcul 9, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ]
+ ]
+}

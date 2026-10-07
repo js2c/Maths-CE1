@@ -194,6 +194,20 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 | 8 | Ajouter deux nombres à deux chiffres, sans retenue. | 23 + 14 = 23 + 10 + 4 |
 | 9 | Retirer en passant la dizaine. | 42 - 5 = 42 - 2 - 3 |
 
+**La multiplication**
+
+| Niveau | Ce qui est travaillé | Exemple |
+| --- | --- | --- |
+| 1 | Des rangées égales de poissons, on ajoute les rangées. | 4 + 4 + 4 |
+| 2 | Le signe fois, 3 × 4, c'est 3 rangées de 4. | 3 × 4 |
+| 3 | La table de 2, fois deux, c'est le double. | 2 × 7 = 14 |
+| 4 | La table de 10, fois dix, ce sont des dizaines. | 10 × 4 = 40 |
+| 5 | La table de 5, la moitié de fois dix. | 5 × 6 = 30 |
+| 6 | On tourne les rangées, 3 × 5 et 5 × 3 font autant. | 5 × 3 = 3 × 5 |
+| 7 | La table de 3. | 3 × 7 = 21 |
+| 8 | La table de 4, le double du double. | 4 × 6 = 24 |
+| 9 | Les tables de 2, 3, 4, 5 et 10 mélangées. | ? × 5 = 20 |
+
 **Les leçons**
 
 | Leçon | Ce qui est travaillé | Exemple |
@@ -210,7 +224,10 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 | L9 | Passer la dizaine, on complète d'abord jusqu'à 10. | 38 + 5 |
 | L11 | Dix et encore, une boîte pleine et ce qui reste. | 10 + 4 = 14 |
 | L12 | Faire dix d'abord, on remplit la boîte, puis on ajoute le reste. | 8 + 5 = 13 |
+| L13 | Des rangées égales, 3 fois 4, c'est 4 + 4 + 4. | 3 × 4 = 12 |
+| L14 | On tourne les rangées, 3 × 5 fait autant que 5 × 3. | 3 × 5 = 5 × 3 |
 | + | La table d'addition, toucher une case dit et montre le calcul. | 7 + 5 = 12 |
+| × | La table de multiplication, toucher une case dit et montre le calcul. | 3 × 4 = 12 |
 
 **L'appui long sur les pictogrammes.** Garder le doigt environ **une demi-seconde** sur une bulle de l'accueil (jouer, choisir, les leçons, le récif, l'album) ou sur un exercice de l'écran « choisir » (la ligne, les additions, le calcul rapide, les voiliers) fait apparaître une **étiquette** au-dessus, qui reste tant que le doigt est posé (depuis le lot 3 ter : elle s'efface en une demi-seconde, et cela vaut pour tous les boutons, voir **d quater**). Relâcher après un appui long **ne lance rien** ; seul un toucher bref lance. La voix ne lit pas l'étiquette. La durée se règle dans `app/content/legendes.json` (`appuiLong`).
 

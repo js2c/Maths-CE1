@@ -10,9 +10,10 @@ import { e7Value, levelValues } from "../../app/js/modules/numberline/generator.
 import { e7Words } from "../../app/js/modules/numberline/dictation.js";
 import { calcsOf, chemin } from "../../app/js/modules/calc/calc.js";
 import { catalog } from "../../app/js/modules/facts/facts.js";
+import { allMults, multsOf } from "../../app/js/modules/mult/mult.js";
 
 const CONTENT = new URL("../../app/content/", import.meta.url);
-export const lireContenu = () => Object.fromEntries(["textes", "lecons", "cartes", "module1", "module2", "module3", "module4", "seance"].map((k) => [k, JSON.parse(readFileSync(new URL(`${k}.json`, CONTENT), "utf8"))]));
+export const lireContenu = () => Object.fromEntries(["textes", "lecons", "cartes", "module1", "module2", "module3", "module4", "module5", "seance"].map((k) => [k, JSON.parse(readFileSync(new URL(`${k}.json`, CONTENT), "utf8"))]));
 
 const range = (a, b, s = 1) => { const out = []; for (let v = a; v <= b; v += s) out.push(v); return out; };
 const TOUS = range(0, 100); // tout nombre de la ligne graduée (le module 1 va de 0 à 100)
@@ -136,6 +137,29 @@ function domaines(C) {
       if (!C.module4) return {};
       const rondes = range(10, 990, 10).map((b) => ({ b }));
       return { "voiliersErreur.plusGrand": rondes, "voiliersErreur.plusPetit": rondes, voiliersBravoEntre: [...range(10, 980, 10).map((a) => ({ a, b: a + 10 })), ...range(100, 800, 100).map((a) => ({ a, b: a + 100 }))] };
+    })(),
+    // lot « Multiplication » (modules/mult/mult.js : multsOf, les multiplications de chaque niveau de module5.json ;
+    // mult/screen.js : la consigne, les rangées comptées, la correction ; au niveau « tourner », la multiplication donnée
+    // est dite avant la question, « 3 fois 4, ça fait 12. Et 4 fois 3 ? » ; les formes à trou aux niveaux de trou.niveaux,
+    // cran « très dur » ; la table de multiplication du menu des leçons, de min à max dans les deux sens)
+    ...(() => {
+      if (!C.module5) return {};
+      const M5 = C.module5, all = allMults(M5), tours = M5.niveaux.filter((c) => c.type === "tourner").flatMap(multsOf);
+      const trou = M5.niveaux.filter((c) => (M5.trou?.niveaux ?? []).includes(c.niveau)).flatMap(multsOf);
+      const uniq = (xs) => [...new Map(xs.map((v) => [JSON.stringify(v), v])).values()];
+      const tm = C.seance?.menuLecons?.tableMult ?? { min: 1, max: 10 };
+      return {
+        multFois: all.map(({ a, b }) => ({ a, b })),
+        multEt: tours.map(({ a, b }) => ({ a, b })),
+        multCorrection: uniq([...all, ...tours.map(({ a, b, n }) => ({ a: b, b: a, n }))].map(({ a, b, n }) => ({ a, b, n }))),
+        multRangees: uniq(all.filter(({ a, b }) => a > 1 && b > 1).map(({ a, b }) => ({ a, b }))),
+        multRangee1: uniq(all.filter(({ a }) => a === 1).map(({ b }) => ({ b }))),
+        multRangeesUn: uniq(all.filter(({ a, b }) => b === 1 && a > 1).map(({ a }) => ({ a }))),
+        multTrouDroite: uniq(trou.map(({ a, n }) => ({ a, n }))),
+        multTrouGauche: uniq(trou.map(({ b, n }) => ({ b, n }))),
+        multAideTrou: uniq(trou.map(({ n }) => ({ n }))),
+        tableCaseMult: range(tm.min, tm.max).flatMap((a) => range(tm.min, tm.max).map((b) => ({ a, b, n: a * b }))),
+      };
     })(),
     // le défi record (lot 3 bis, B6) : le score en perles, 2 ou plus (une seule : les phrases « …Un »)
     defiNouveauRecord: range(2, DEFI_MAX).map((n) => ({ n })),

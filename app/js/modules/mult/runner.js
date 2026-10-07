@@ -13,6 +13,7 @@
 //  - erreurs : une erreur revient 3 questions plus loin ; la même erreur (M1, M2) deux fois : la leçon L13, une fois par
 //    séance ; 3 erreurs sur 5 : la leçon du niveau puis une question plus simple (un niveau acquis plus bas).
 import { afterAnswer } from "../progress.js";
+import { startOfDay } from "../facts/facts.js";
 import { classifyMult, makeMult, multAnswer, multKey, multQuestion, multUnlocked } from "./mult.js";
 import { MANQUE, Variete } from "../variete.js";
 
@@ -85,6 +86,11 @@ export class Module5Runner {
     if (q.cran !== "facile" && !this.st.acquis.includes(q.niveau)) {
       const w0 = { niveau: q.niveau, fenetre: this.st.fenetres[q.niveau] ?? [], vus: (this.st.essais ??= {})[q.niveau] ?? 0, obtenus: [] };
       const a = afterAnswer(w0, { juste: r.ok, aide: !!r.aide || !!q.aideDEmblee, ms: r.ms }, this.c.reglesAdaptation, 99, this.clock());
+      // (simulation du lot : une table s'acquiert sur deux jours au moins, `acquisJours` ; sinon les neuf niveaux tombaient en
+      // quelques séances, sans que rien ne soit revu un autre jour)
+      const day = startOfDay(this.clock()), jours = new Set([...(this.st.jours?.[q.niveau] ?? []), day]);
+      (this.st.jours ??= {})[q.niveau] = [...jours].slice(-5);
+      if (jours.size < (this.c.acquisJours ?? 1)) a.events = a.events.filter((x) => x.type !== "montee");
       this.st.fenetres[q.niveau] = a.st.fenetre; this.st.essais[q.niveau] = a.st.vus;
       if (a.events.some((x) => x.type === "montee")) {
         this.st.acquis = [...this.st.acquis, q.niveau]; this.st.obtenus = [...this.st.obtenus, { niveau: q.niveau, date: this.clock(), acquis: true, ...(this.choix != null ? { choix: true } : {}) }];

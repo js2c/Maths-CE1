@@ -7,6 +7,7 @@ import { initialLevelState } from "../modules/progress.js";
 import { catalog, DAY, familyOf, ruleFacts, startOfDay } from "../modules/facts/facts.js";
 import { initialFamilies, updateFamilies } from "../modules/facts/families.js";
 import { initialCalcState } from "../modules/calc/runner.js";
+import { initialMultState } from "../modules/mult/runner.js";
 
 // le niveau actuel de la ligne graduée, choisi par le parent
 export async function setLineLevel(store, niveau, now = Date.now()) {
@@ -62,6 +63,16 @@ export async function setVoiliersLevel(store, niveau, now = Date.now()) {
   const st0 = (await store.get("niveaux", 4)) ?? { ...initialLevelState(4, now), exemples: [] };
   if (st0.niveau === niveau) return st0;
   const st = { ...st0, niveau, fenetre: [], vus: 0, taux: [], obtenus: [...(st0.obtenus ?? []), { niveau, date: now, parent: true, de: st0.niveau }] };
+  await store.put("niveaux", st);
+  return st;
+}
+
+// lot « Multiplication » : le niveau de la multiplication choisi par le parent (point de départ), comme le calcul rapide :
+// les niveaux d'avant sont comptés acquis (choix du parent, sans étoile arc-en-ciel) et celui-ci devient le conseillé
+export async function setMultLevel(store, niveau, now = Date.now()) {
+  const st0 = (await store.get("niveaux", 5)) ?? initialMultState(now), before = Array.from({ length: niveau - 1 }, (_, i) => i + 1);
+  const acquis = [...new Set([...before, ...(st0.acquis ?? []).filter((n) => n < niveau)])].sort((a, b) => a - b);
+  const st = { ...st0, acquis, depart: niveau, obtenus: [...(st0.obtenus ?? []), { niveau, date: now, parent: true }] };
   await store.put("niveaux", st);
   return st;
 }

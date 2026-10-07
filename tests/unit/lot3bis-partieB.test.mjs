@@ -6,7 +6,7 @@ import { onBrief } from "../../app/js/engine/ui.js";
 import { legendRows } from "../../app/js/session/legend.js";
 
 const json = (p) => JSON.parse(readFileSync(new URL(`../../app/content/${p}`, import.meta.url), "utf8"));
-const legendes = json("legendes.json"), m1 = json("module1.json"), m2 = json("module2.json"), m3 = json("module3.json"), seance = json("seance.json");
+const legendes = json("legendes.json"), m1 = json("module1.json"), m2 = json("module2.json"), m3 = json("module3.json"), m5 = json("module5.json"), seance = json("seance.json");
 
 test("B3, T3 : appui long sans validation ; toucher bref : validé au lever du doigt ; l'étiquette s'efface 0,5 s après", () => {
   mock.timers.enable({ apis: ["setTimeout"] });
@@ -34,14 +34,14 @@ test("B3 : une étiquette pour chaque pictogramme de l'accueil et de « choisir 
 });
 
 test("B2 : la légende a une ligne par niveau (13, 7, 9) et par leçon proposée, chacune avec ce qui est travaillé et un exemple", () => {
-  const keys = { ligne: m1.niveaux.map((n) => n.niveau), additions: m2.familles.map((f) => f.id), calcul: m3.niveaux.map((n) => n.niveau), lecons: [...seance.menuLecons.rangees.flatMap((r) => r.lecons), "+"] }; // (lot « Les leçons » : les leçons du menu, et la table d'addition)
+  const keys = { ligne: m1.niveaux.map((n) => n.niveau), additions: m2.familles.map((f) => f.id), calcul: m3.niveaux.map((n) => n.niveau), multiplication: m5.niveaux.map((n) => n.niveau), lecons: [...seance.menuLecons.rangees.flatMap((r) => r.lecons), "+", "×"] }; // (lot « Les leçons » : les leçons du menu, et la table d'addition ; lot « Multiplication » : ses niveaux, sa table)
   for (const [ex, ks] of Object.entries(keys)) {
     const rows = legendRows(legendes, ex, ks);
     assert.equal(rows.length, ks.length, ex);
     for (const r of rows) { assert.ok(r.travail.length >= 1 && r.travail.length <= 3, `${ex} ${r.n}`); assert.ok(r.exemple.length >= 1 && r.exemple.length <= 2, `${ex} ${r.n} exemple`); }
   }
   // écrit au feutre : seulement des caractères que l'atelier sait tracer
-  const ok = /^[A-Za-z0-9éèêëàâùûîïôçÉÈœ +=\-'!.,? ]*$/;
+  const ok = /^[A-Za-z0-9éèêëàâùûîïôçÉÈœ +=\-'!.,? ×]*$/; // (« × » : lot « Multiplication »)
   for (const ex of Object.keys(keys)) for (const r of legendes[ex]) { assert.match(r.travail, ok, r.travail); assert.match(r.exemple, ok, r.exemple); }
   for (const t of Object.values(legendes.etiquettes)) assert.match(t, ok, t);
   // le tableau du calcul rapide de la spécification (B2)
@@ -68,7 +68,7 @@ test("B10 : erreurs d'additions détaillées (se trompe de 1, un des deux nombre
 
 test("B12 : le guide du parent reprend la légende des niveaux (le même texte que legendes.json) et les durées d'appui", () => {
   const guide = readFileSync(new URL("../../docs/GUIDE-PARENT.md", import.meta.url), "utf8"), nb = (s) => s.replace(/ /g, " ");
-  for (const ex of ["ligne", "additions", "calcul", "lecons"]) for (const r of legendes[ex]) assert.ok(guide.includes(`| ${r.n} | ${nb(r.travail)} | ${nb(r.exemple)} |`), `${ex} ${r.n} : la ligne du guide diffère du contenu`);
+  for (const ex of ["ligne", "additions", "calcul", "multiplication", "lecons"]) for (const r of legendes[ex]) assert.ok(guide.includes(`| ${r.n} | ${nb(r.travail)} | ${nb(r.exemple)} |`), `${ex} ${r.n} : la ligne du guide diffère du contenu`);
   const parent = JSON.parse(readFileSync(new URL("../../app/content/parent.json", import.meta.url), "utf8"));
   assert.match(guide, new RegExp(`garder le doigt ${parent.appuiLongMs / 1000} secondes|dure \\*\\*${parent.appuiLongMs / 1000} secondes`));
   assert.equal(legendes.appuiLong.ms, 500); assert.match(guide, /une demi-seconde/);

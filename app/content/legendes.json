@@ -9,7 +9,7 @@
     "ligne": "Lire, placer et sauter sur une ligne de nombres.",
     "additions": "Les additions à savoir par cœur, famille par famille.",
     "calcul": "Des astuces pour calculer sans compter un par un.",
-    "lecons": "Les leçons animées et la table d'addition.", "tableAddition": "La table d'addition, toucher une case dit le calcul.", "aToi": "S'entraîner tout de suite sur l'exercice de la leçon.",
+    "lecons": "Les leçons animées, les tables d'addition et de multiplication.", "tableAddition": "La table d'addition, toucher une case dit le calcul.", "tableMultiplication": "La table de multiplication, toucher une case dit le calcul.", "aToi": "S'entraîner tout de suite sur l'exercice de la leçon.",
     "continuer": "Continuer la séance.",
     "encore": "S'entraîner encore, sans étoiles.",
     "aide": "Un indice",
@@ -39,7 +39,8 @@
     "cranLibre.conseille": "Conseillé. Le niveau préparé pour toi.",
     "cranLibre.dur": "Plus dur. Des questions plus difficiles.",
     "cranLibre.tresdur": "Très dur. Les questions les plus difficiles.",
-    "voiliers": "Ranger un nombre entre des bouées, jusqu'à 1 000."
+    "voiliers": "Ranger un nombre entre des bouées, jusqu'à 1 000.",
+    "multiplication": "Les tables de multiplication, des rangées égales de poissons."
   },
   "titres": { "travail": "Ce qui est travaillé", "exemple": "Exemple" },
   "ligne": [
@@ -94,6 +95,17 @@
     { "n": 8, "travail": "Des écarts mélangés entre les bouées, le nombre tout près d'une bouée.", "exemple": "349 entre 250 et 350" },
     { "n": 9, "travail": "Double encadrement, entre deux centaines puis entre deux dizaines.", "exemple": "347 entre 300 et 400 puis entre 340 et 350" }
   ],
+  "multiplication": [
+    { "n": 1, "travail": "Des rangées égales de poissons, on ajoute les rangées.", "exemple": "4 + 4 + 4" },
+    { "n": 2, "travail": "Le signe fois, 3 × 4, c'est 3 rangées de 4.", "exemple": "3 × 4" },
+    { "n": 3, "travail": "La table de 2, fois deux, c'est le double.", "exemple": "2 × 7 = 14" },
+    { "n": 4, "travail": "La table de 10, fois dix, ce sont des dizaines.", "exemple": "10 × 4 = 40" },
+    { "n": 5, "travail": "La table de 5, la moitié de fois dix.", "exemple": "5 × 6 = 30" },
+    { "n": 6, "travail": "On tourne les rangées, 3 × 5 et 5 × 3 font autant.", "exemple": "5 × 3 = 3 × 5" },
+    { "n": 7, "travail": "La table de 3.", "exemple": "3 × 7 = 21" },
+    { "n": 8, "travail": "La table de 4, le double du double.", "exemple": "4 × 6 = 24" },
+    { "n": 9, "travail": "Les tables de 2, 3, 4, 5 et 10 mélangées.", "exemple": "? × 5 = 20" }
+  ],
   "lecons": [
     { "n": "L1", "travail": "On compte les sauts, pas les traits.", "exemple": "De 0 à 3, 3 sauts" },
     { "n": "L2", "travail": "Un saut peut valoir dix.", "exemple": "10, 20, 30" },
@@ -107,6 +119,9 @@
     { "n": "L9", "travail": "Passer la dizaine, on complète d'abord jusqu'à 10.", "exemple": "38 + 5" },
     { "n": "L11", "travail": "Dix et encore, une boîte pleine et ce qui reste.", "exemple": "10 + 4 = 14" },
     { "n": "L12", "travail": "Faire dix d'abord, on remplit la boîte, puis on ajoute le reste.", "exemple": "8 + 5 = 13" },
-    { "n": "+", "travail": "La table d'addition, toucher une case dit et montre le calcul.", "exemple": "7 + 5 = 12" }
+    { "n": "L13", "travail": "Des rangées égales, 3 fois 4, c'est 4 + 4 + 4.", "exemple": "3 × 4 = 12" },
+    { "n": "L14", "travail": "On tourne les rangées, 3 × 5 fait autant que 5 × 3.", "exemple": "3 × 5 = 5 × 3" },
+    { "n": "+", "travail": "La table d'addition, toucher une case dit et montre le calcul.", "exemple": "7 + 5 = 12" },
+    { "n": "×", "travail": "La table de multiplication, toucher une case dit et montre le calcul.", "exemple": "3 × 4 = 12" }
   ]
 }

@@ -36,10 +36,13 @@ export const doneToday = async (store, now = Date.now()) => (await store.all("se
 // rien à proposer. Une séance d'exercice choisi compte comme la dernière jouée.
 // lot « Les voiliers » : le module 4 n'est pas dans la rotation (seance.json, alternance.horsRotation) ; on y vient par
 // « choisir », ou le parent l'impose pour la prochaine séance « jouer ».
-export const chooseModule = (c = {}, seances = [], impose = null, has = () => true, mastery = () => 0) => {
-  const mods = c.alternance?.modules ?? [1];
+// (lot « Multiplication » : un module de la rotation peut n'y entrer qu'à une date, `alternance.aPartirDe` : la multiplication à
+// la rentrée de janvier ; avant, on y vient par « choisir » ou parce que le parent l'impose ; `now` : l'heure de la séance)
+export const chooseModule = (c = {}, seances = [], impose = null, has = () => true, mastery = () => 0, now = Date.now()) => {
+  const from = c.alternance?.aPartirDe ?? {}, mods = (c.alternance?.modules ?? [1]).filter((m) => !from[m] || new Date(`${from[m]}T00:00:00`).getTime() <= now);
+  const all = c.alternance?.modules ?? [1];
   // (lot « Les voiliers » : un module hors de la rotation, `horsRotation`, peut être imposé par le parent)
-  if (impose && (mods.includes(impose) || (c.alternance?.horsRotation ?? []).includes(impose))) return { module: impose, impose: true };
+  if (impose && (all.includes(impose) || (c.alternance?.horsRotation ?? []).includes(impose))) return { module: impose, impose: true };
   const last = [...seances].filter((s) => s.terminee && !s.libre && s.module).sort((x, y) => x.debut - y.debut).at(-1)?.module;
   const i = mods.indexOf(last), order = i < 0 ? mods : [...mods.slice(i + 1), ...mods.slice(0, i + 1)];
   const others = order.filter((m) => m !== last && has(m)), m = [...others].sort((x, y) => mastery(x) - mastery(y) || others.indexOf(x) - others.indexOf(y))[0];
@@ -87,7 +90,7 @@ export class Session {
     this.p0 = this.paused();
     // le module du jour ; un module imposé par le parent ne vaut qu'une séance
     // (exercice choisi par l'enfant : c'est lui ; le module imposé attend la prochaine séance « jouer »)
-    const impose = this.choix ? null : (await this.store.setting("moduleImpose"))?.module ?? null, pick = this.choix ? { module: this.choix.module } : chooseModule(this.c, await this.store.all("seances"), impose, this.has ?? (() => true), this.mastery);
+    const impose = this.choix ? null : (await this.store.setting("moduleImpose"))?.module ?? null, pick = this.choix ? { module: this.choix.module } : chooseModule(this.c, await this.store.all("seances"), impose, this.has ?? (() => true), this.mastery, this.clock());
     if (impose) await this.store.setSetting("moduleImpose", null);
     this.rec = { debut: this.clock(), fin: null, dureeS: null, terminee: false, module: pick.module, ...(pick.impose ? { moduleImpose: true } : {}), ...(this.choix ? { choix: { ...this.choix } } : {}), questions: 0, justes: 0, reussite: null, etoiles: 0, etapes: [] };
     this.rec.id = await this.store.add("seances", this.rec);

@@ -93,6 +93,15 @@ console.log(`séances d'additions : ${moy(m2.map((r) => r.add.filter((x) => !x.i
   console.log(`\n## lot 3 : calcul rapide (${PROFILS[profil].nom})`);
   console.log(`séances de calcul rapide : ${m3.length} sur ${res.length} ; niveau acquis (séance) : ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => `${n}: ${acq(n)}`).join(" ; ")} ; acquis à la fin : ${last3?.acquis3?.join(", ") || "aucun"} ; leçons L7 à L9 : ${res.flatMap((r) => r.lecons.filter((l) => ["L7", "L8", "L9"].includes(l)).map((l) => `${l} (${r.n})`)).join(", ") || "aucune"} ; durée moyenne des séances de calcul rapide ${moy(m3.map((r) => r.duree)).toFixed(1)} min, ${moy(m3.map((r) => (r.calc ?? []).length)).toFixed(0)} calculs`);
 }
+// lot « Multiplication » : le module 5 (dans la rotation de « jouer » à partir du 4 janvier 2027, ou choisi : --choix 5:N)
+{
+  const m5 = res.filter((r) => r.module === 5), acq = (n) => res.find((r) => (r.acquis5 ?? []).includes(n))?.n ?? "jamais", last5 = [...res].reverse().find((r) => r.acquis5);
+  console.log(`\n## multiplication (${PROFILS[profil].nom})`);
+  console.log(`séances de multiplication : ${m5.length} sur ${res.length} (la première : séance ${m5[0]?.n ?? "-"}, le ${m5[0]?.date ?? "-"}) ; niveau acquis (séance) : ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => `${n}: ${acq(n)}`).join(" ; ")} ; acquis à la fin : ${last5?.acquis5?.join(", ") || "aucun"} ; leçons L13 et L14 : ${res.flatMap((r) => r.lecons.filter((l) => ["L13", "L14"].includes(l)).map((l) => `${l} (${r.n})`)).join(", ") || "jamais"}`);
+  const mods = res.filter((r) => new Date(r.date.split("/").reverse().join("-")) >= new Date("2027-01-04")).map((r) => r.module);
+  console.log(`rotation depuis janvier : ligne ${mods.filter((m) => m === 1).length}, additions ${mods.filter((m) => m === 2).length}, calcul ${mods.filter((m) => m === 3).length}, multiplication ${mods.filter((m) => m === 5).length}`);
+  if (!court) for (const r of m5.slice(0, 4)) console.log(`  séance ${r.n} (niveau ${r.niv0} -> ${r.niv1}) : ${r.mult.join(" ")}`);
+}
 // lot « Les voiliers » : le module 4 (choisi : --choix 4:N, ou --choix 4:0 pour le niveau conseillé chaque fois)
 {
   const m4 = res.filter((r) => r.module === 4);

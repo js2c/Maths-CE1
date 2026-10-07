@@ -276,6 +276,10 @@
     "C5": "On ne peut pas retirer {b} de {u} : on casse une dizaine.",
     "autre": "Hmm, regardons ensemble."
   },
+  "notionMult": [
+    "Maintenant, la multiplication !",
+    "Au tour de la multiplication ! On compte les rangées de poissons."
+  ],
   "notionCalcul": [
     "Maintenant, le calcul rapide !",
     "Au tour du calcul rapide !"

@@ -43,7 +43,7 @@ test("écran de choix : 13 niveaux, 13 familles (lot « Sommes jusqu'à 30 »), 
   const F = levelItems("additions", { st2: { ...initialFamilies(m2, NOW), ouvertes: [1, 2, 3], acquises: [1, 2] }, module1: m1, module2: m2 });
   assert.equal(F.length, 13); assert.equal(F.find((x) => x.conseille).key, 3); assert.deepEqual(F.filter((x) => x.valide).map((x) => x.key), [1, 2]);
   // (lot « Les leçons » : les leçons ont quitté l'écran « choisir » pour leur bulle de l'accueil, session/lessons.js)
-  assert.deepEqual(EXERCISES.map((e) => e.id), ["ligne", "additions", "calcul", "voiliers"]);
+  assert.deepEqual(EXERCISES.map((e) => e.id), ["ligne", "additions", "calcul", "voiliers", "multiplication"]);
   // lot 3, étape 4 : le calcul rapide, 9 niveaux, tous accessibles
   const C = levelItems("calcul", { st3: { acquis: [1, 2], lecons: ["L7"] }, module1: m1, module2: m2, module3: m3 });
   assert.equal(C.length, 9); assert.equal(C.find((x) => x.conseille).key, 3); assert.deepEqual(C.filter((x) => x.valide).map((x) => x.key), [1, 2]);

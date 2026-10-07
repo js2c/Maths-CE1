@@ -125,12 +125,20 @@ test("déblocage du niveau 4 : les maisons de 5 à 7 (famille 4) en boîte 2 ou 
 
 test("« jouer » : rotation entre les trois modules, le moins maîtrisé d'abord, jamais deux fois de suite (sauf si les autres n'ont rien)", () => {
   const seance = load("seance.json"), s = (module, debut) => ({ module, debut, terminee: true });
-  assert.deepEqual(seance.alternance.modules, [1, 2, 3]);
-  assert.equal(chooseModule(seance, []).module, 1);
-  assert.equal(chooseModule(seance, [s(1, 1)]).module, 2); assert.equal(chooseModule(seance, [s(1, 1), s(2, 2)]).module, 3); assert.equal(chooseModule(seance, [s(2, 2), s(3, 3)]).module, 1);
+  // (lot « Multiplication » : la multiplication, module 5, entre dans la rotation le 4 janvier 2027 : avant, les trois modules)
+  assert.deepEqual(seance.alternance.modules, [1, 2, 3, 5]); assert.equal(seance.alternance.aPartirDe["5"], "2027-01-04");
+  const OCT = new Date(2026, 9, 7).getTime();
+  const choose = (h, imp = null, has = undefined, mas = undefined) => chooseModule(seance, h, imp, has, mas, OCT);
+  assert.equal(choose([]).module, 1);
+  assert.equal(choose([s(1, 1)]).module, 2); assert.equal(choose([s(1, 1), s(2, 2)]).module, 3); assert.equal(choose([s(2, 2), s(3, 3)]).module, 1);
   const mastery = (m) => ({ 1: 0.5, 2: 0.4, 3: 0.1 })[m];
-  assert.equal(chooseModule(seance, [s(1, 1)], null, () => true, mastery).module, 3, "le moins maîtrisé");
-  assert.equal(chooseModule(seance, [s(3, 1)], null, () => true, mastery).module, 2, "jamais deux fois de suite");
-  assert.equal(chooseModule(seance, [s(3, 1)], null, (m) => m === 3, mastery).module, 3, "sauf si les autres n'ont rien à proposer");
-  assert.deepEqual(chooseModule(seance, [s(1, 1)], 3), { module: 3, impose: true }, "module imposé par le parent");
+  assert.equal(choose([s(1, 1)], null, () => true, mastery).module, 3, "le moins maîtrisé");
+  assert.equal(choose([s(3, 1)], null, () => true, mastery).module, 2, "jamais deux fois de suite");
+  assert.equal(choose([s(3, 1)], null, (m) => m === 3, mastery).module, 3, "sauf si les autres n'ont rien à proposer");
+  assert.deepEqual(choose([s(1, 1)], 3), { module: 3, impose: true }, "module imposé par le parent");
+  // à partir du 4 janvier 2027 : quatre modules, la multiplication comprise (la moins maîtrisée d'abord)
+  const JAN = new Date(2027, 0, 4, 18).getTime(), m4 = (m) => ({ 1: 0.5, 2: 0.4, 3: 0.3, 5: 0 })[m];
+  assert.equal(chooseModule(seance, [s(1, 1)], null, () => true, m4, JAN).module, 5);
+  assert.equal(chooseModule(seance, [s(5, 1)], null, () => true, m4, JAN).module, 3, "jamais deux fois de suite");
+  assert.equal(chooseModule(seance, [s(1, 1)], null, () => true, m4, new Date(2027, 0, 3, 18).getTime()).module, 3, "pas avant le 4 janvier");
 });

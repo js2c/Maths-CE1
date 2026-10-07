@@ -10,20 +10,22 @@ import { BOUCHE, MASCOTTE } from "../../app/js/engine/bulle.js";
 import { LEGEND_AT } from "../../app/js/session/legend.js";
 
 const read = (f) => JSON.parse(readFileSync(new URL(`../../app/content/${f}.json`, import.meta.url), "utf8"));
-const [seance, lecons, textes, legendes, m1, m2, m3] = ["seance", "lecons", "textes", "legendes", "module1", "module2", "module3"].map(read);
+const [seance, lecons, textes, legendes, m1, m2, m3, m5] = ["seance", "lecons", "textes", "legendes", "module1", "module2", "module3", "module5"].map(read);
 const menu = seance.menuLecons;
 
-test("menu : les douze leçons (lot « Sommes jusqu'à 30 » : L11 et L12), chacune une fois, rangées par exercice ; la table d'addition en dernière rangée", () => {
+test("menu : les quatorze leçons (lot « Sommes jusqu'à 30 » : L11 et L12 ; lot « Multiplication » : L13 et L14), chacune une fois, rangées par exercice ; les tables d'addition et de multiplication au bout de la dernière rangée", () => {
   const ids = menu.rangees.flatMap((r) => r.lecons);
   assert.deepEqual([...ids].sort(), Object.keys(lecons).filter((k) => k !== "_doc").sort());
-  assert.deepEqual(menu.rangees.map((r) => r.exercice), ["ligne", "additions", "calcul"]);
-  assert.deepEqual(menu.rangees.map((r) => r.lecons), [["L1", "L2", "L3", "L10"], ["L4", "L5", "L6", "L11", "L12"], ["L7", "L8", "L9"]]);
-  assert.deepEqual(menu.tables, ["addition"]);
+  assert.deepEqual(menu.rangees.map((r) => r.exercice), ["ligne", "additions", "calcul", "multiplication"]);
+  assert.deepEqual(menu.rangees.map((r) => r.lecons), [["L1", "L2", "L3", "L10"], ["L4", "L5", "L6", "L11", "L12"], ["L7", "L8", "L9"], ["L13", "L14"]]);
+  assert.deepEqual(menu.tables, ["addition", "multiplication"]);
   const L = menuLayout(menu);
-  assert.equal(L.filter((x) => x.kind === "lecon").length, 12); assert.equal(L.filter((x) => x.kind === "icone").length, 3); assert.deepEqual(L.filter((x) => x.kind === "table").map((x) => x.id), ["addition"]);
+  assert.equal(L.filter((x) => x.kind === "lecon").length, 14); assert.equal(L.filter((x) => x.kind === "icone").length, 4); assert.deepEqual(L.filter((x) => x.kind === "table").map((x) => x.id), ["addition", "multiplication"]);
+  // les deux tables : dans la rangée de la multiplication, à droite de ses deux leçons (tablesPlace : rangée 4, colonnes 4 et 5)
+  const last = L.filter((x) => x.y === L.find((y) => y.id === "L13").y).map((x) => x.id ?? x.ex); assert.deepEqual(last, ["multiplication", "L13", "L14", "addition", "multiplication"]);
   // chaque leçon a son nom dit au toucher, sa ligne de légende et son numéro
   for (const id of ids) { assert.ok(textes.choixLeconNom[id], id); assert.ok(tileLabel(legendes, id)?.startsWith(`${lessonNumber(id)} · `), id); }
-  assert.ok(tileLabel(legendes, "+").startsWith("+ · ")); assert.equal(lessonNumber("L10"), 10);
+  assert.ok(tileLabel(legendes, "+").startsWith("+ · ")); assert.ok(tileLabel(legendes, "×").startsWith("× · ")); assert.equal(lessonNumber("L10"), 10);
 });
 
 test("menu : les tuiles tiennent dans la scène, ne se chevauchent pas, évitent la bulle sous la tête et le petit livre", () => {
@@ -43,13 +45,14 @@ test("menu : les tuiles tiennent dans la scène, ne se chevauchent pas, évitent
 });
 
 test("« À toi ! » : chaque leçon a son exercice associé (le tableau de la spécification), dont elle est la leçon d'entrée", () => {
-  const want = { L1: [1, 1], L2: [1, 5], L3: [1, 4], L10: [1, 9], L4: [2, 2], L5: [2, 3], L6: [2, 4], L7: [3, 2], L8: [3, 6], L9: [3, 7], L11: [2, 8], L12: [2, 11] };
+  const want = { L1: [1, 1], L2: [1, 5], L3: [1, 4], L10: [1, 9], L4: [2, 2], L5: [2, 3], L6: [2, 4], L7: [3, 2], L8: [3, 6], L9: [3, 7], L11: [2, 8], L12: [2, 11], L13: [5, 1], L14: [5, 6] };
   for (const [id, [mod, n]] of Object.entries(want)) {
     const e = exerciseOf(lecons, id);
     assert.equal(e.module, mod, id); assert.equal(e.apresLecon, id);
     if (mod === 1) { assert.equal(e.niveau, n); assert.ok(m1.niveaux.some((c) => c.niveau === n)); assert.equal(LESSON_OF_LEVEL[n], id); }
     if (mod === 2) { assert.equal(e.famille, n); assert.equal(m2.familles.find((f) => f.id === n).lecon, id); }
     if (mod === 3) { assert.equal(e.niveau, n); assert.equal(m3.niveaux.find((c) => c.niveau === n).lecon, id); }
+    if (mod === 5) { assert.equal(e.niveau, n); assert.equal(m5.niveaux.find((c) => c.niveau === n).lecon, id); }
   }
   assert.equal(exerciseOf(lecons, "L99"), null);
 });

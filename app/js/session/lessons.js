@@ -18,6 +18,7 @@ import { onBrief, onTap, pop, spriteBox } from "../engine/ui.js";
 import { MENTON } from "../engine/bulle.js";
 import { closeLegend, legendKey } from "./legend.js";
 import { paintDoublePlus, paintHouse, paintTenFrame, paintTwoFrames } from "../modules/facts/aids.js";
+import { paintRows } from "../modules/mult/screen.js";
 
 // ---------------------------------------------------------------- le menu
 // la grille du menu (px de la scène) : 4 rangées, la colonne des pictogrammes puis 5 colonnes de tuiles, entre la bulle de
@@ -32,22 +33,26 @@ export function menuLayout(menu, M = MENU) {
     out.push({ kind: "icone", ex: r.exercice, x: M.iconX, y: M.rowY[i] });
     r.lecons.forEach((id, j) => out.push({ kind: "lecon", id, x: M.colX[j], y: M.rowY[i] }));
   });
-  const ti = (menu.rangees ?? []).length;
-  (menu.tables ?? []).forEach((id, j) => out.push({ kind: "table", id, x: M.colX[j], y: M.rowY[ti] }));
+  // (lot « Multiplication » : les tables peuvent partager la dernière rangée, à droite de ses leçons : `tablesPlace`, la
+  // rangée et la première colonne ; sinon une rangée à elles, sous les autres)
+  const P = menu.tablesPlace ?? { rangee: (menu.rangees ?? []).length, colonne: 0 };
+  (menu.tables ?? []).forEach((id, j) => out.push({ kind: "table", id, x: M.colX[P.colonne + j], y: M.rowY[P.rangee] }));
   return out;
 }
 // le numéro d'une leçon (« L10 » : 10)
 export const lessonNumber = (id) => Number(String(id).replace(/^L/, ""));
 // l'exercice associé à une leçon (lecons.json, « exercice ») : ce que « À toi ! » lance, avec la leçon jouée
 export const exerciseOf = (lecons, id) => { const e = lecons?.[id]?.exercice; return e ? { ...e, apresLecon: id } : null; };
-const TABLE_SPRITE = { addition: "lecons.table.plus" };
+const TABLE_SPRITE = { addition: "lecons.table.plus", multiplication: "lecons.table.fois" };
+// la clé de légende et le signe de chaque table
+export const TABLE_SIGNE = { addition: "+", multiplication: "×" };
 
 // o = { store, seance, lecons } ; renvoie { lecon } | { table } | null
 export async function lessonsMenu(app, o) {
   const { sprites, voice, text } = app, menu = o.seance.menuLecons ?? { rangees: [], tables: [] };
   await sprites.load("lecons");
-  const [st1, st2, st3] = await Promise.all([1, 2, 3].map((k) => o.store.get("niveaux", k)));
-  const seen = new Set([...(st1?.lecons ?? []), ...(st2?.lecons ?? []), ...(st3?.lecons ?? [])]);
+  const sts = await Promise.all([1, 2, 3, 5].map((k) => o.store.get("niveaux", k)));
+  const seen = new Set(sts.flatMap((st) => st?.lecons ?? []));
   const els = [], clear = () => { closeLegend(app); els.forEach((e) => e.remove()); els.length = 0; sprites.unload("lecons"); app.lessonsCancel = null; };
   let sel = null;
   const result = new Promise((res) => {
@@ -68,15 +73,15 @@ export async function lessonsMenu(app, o) {
         if (valide) { const q = sprites.frame("etoile.doree", 0), k = 0.42; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (W - 24) * px + q.dx * k, 24 * px + q.dy * k, q.w * k, q.h * k); }
       } });
       b.dataset.key = key; if (valide) b.dataset.valide = "1"; els.push(b);
-      const name = it.kind === "lecon" ? text.data.choixLeconNom?.[it.id] ?? it.id : text.data.choixTable;
+      const name = it.kind === "lecon" ? text.data.choixLeconNom?.[it.id] ?? it.id : it.id === "multiplication" ? text.data.choixTableMult : text.data.choixTable;
       // (comme « choisir », validation « simple » : le toucher dit le nom et lance ; le nom est dit jusqu'au bout)
       onBrief(app, b, () => {
         if (sel) return; sel = key; b.repaint(); pop(b); voice.stop(); voice.say(name);
         setTimeout(() => res(it.kind === "lecon" ? { lecon: it.id } : { table: it.id }), 300);
-      }, () => tileLabel(app.legendes, it.kind === "lecon" ? it.id : "+"));
+      }, () => tileLabel(app.legendes, it.kind === "lecon" ? it.id : TABLE_SIGNE[it.id]));
     }
     // la légende du parent (le petit livre) : une ligne par leçon, et une pour la table d'addition
-    legendKey(app, "lecons", { keys: [...menu.rangees.flatMap((r) => r.lecons), ...(menu.tables.includes("addition") ? ["+"] : [])], els });
+    legendKey(app, "lecons", { keys: [...menu.rangees.flatMap((r) => r.lecons), ...menu.tables.map((t) => TABLE_SIGNE[t]).filter(Boolean)], els });
     voice.say(text.data.choixLecon, { instruction: true });
   });
   const r = await result;
@@ -86,7 +91,7 @@ export async function lessonsMenu(app, o) {
 // l'étiquette d'une tuile (appui long) : « 7 · Plus 10 sur le mur de corail, on descend d'une rangée », « + · La table… »
 export function tileLabel(legendes, key) {
   const row = (legendes?.lecons ?? []).find((r) => r.n === key);
-  return row ? `${key === "+" ? "+" : lessonNumber(key)} · ${row.travail.replace(/\.$/, "")}` : null;
+  return row ? `${key === "+" || key === "×" ? key : lessonNumber(key)} · ${row.travail.replace(/\.$/, "")}` : null;
 }
 
 // ---------------------------------------------------------------- la fin d'une leçon du menu
@@ -115,9 +120,10 @@ export async function lessonEnd(app, { id }) {
 export const TABLE = { x: 262, y: 26, pitch: 64, cell: 58, head: 52, pad: 16, panel: { x: 1040, y: 150, w: 230, h: 640 } };
 export const TABLE_PLACES = [{ nom: "dessous-table", boite: [8, MENTON[1] + 30, 234, 792], pointe: MENTON, haut: true }];
 // la case sous un point de la scène : [a, b] (a : la rangée, b : la colonne) ou null (en-têtes, bord)
-export function tableHit(T, max, x, y) {
-  const b = Math.floor((x - T.x - T.head) / T.pitch), a = Math.floor((y - T.y - T.head) / T.pitch);
-  return a >= 0 && b >= 0 && a <= max && b <= max ? [a, b] : null;
+// (lot « Multiplication » : `min`, la première valeur : 1 pour la table de multiplication)
+export function tableHit(T, max, x, y, min = 0) {
+  const b = Math.floor((x - T.x - T.head) / T.pitch) + min, a = Math.floor((y - T.y - T.head) / T.pitch) + min;
+  return a >= min && b >= min && a <= max && b <= max ? [a, b] : null;
 }
 // l'appui montré pour a + b : celui des aides des additions (facts.js, aidFor : le cadre pour les amis de 10, le reflet
 // pour les doubles jusqu'à 5, le double + 1 pour les presque-doubles jusqu'à 5, les sauts pour + 1 et + 2, sinon la
@@ -134,37 +140,55 @@ export const tableAid = (a, b) => {
   if (lo <= 2) return "ligne";
   return "maison";
 };
-// o = { seance } ; la promesse se résout quand la maison quitte la table (`app.tableCancel`)
+// o = { seance, op } ; la promesse se résout quand la maison quitte la table (`app.tableCancel`)
+// (lot « Multiplication » : `op` « × », la table de multiplication, de 1 × 1 à 10 × 10 : seance.json, menuLecons.tableMult ;
+// la case dit « 7 fois 5, 35. » et montre les rangées)
 export async function additionTable(app, o) {
-  const { sprites, voice, text, stage } = app, C = o.seance.menuLecons?.table ?? {}, max = C.max ?? 10, T = { ...TABLE, max, tint: true };
+  const mul = o.op === "×", { sprites, voice, text, stage } = app, C = (mul ? o.seance.menuLecons?.tableMult : o.seance.menuLecons?.table) ?? {}, max = C.max ?? 10, min = C.min ?? 0, T = { ...TABLE, max, min, op: mul ? "×" : "+", tint: true };
   await sprites.load("aides");
-  const els = [], S = T.head + (max + 1) * T.pitch, side = S + 2 * T.pad, G = { ...T, x: T.pad, y: T.pad };
+  const els = [], S = T.head + (max - min + 1) * T.pitch, side = S + 2 * T.pad, G = { ...T, x: T.pad, y: T.pad };
   // la grille, dessinée une fois ; dessus, le calque de la case touchée
-  const grid = spriteBox(app, { x: T.x - T.pad, y: T.y - T.pad, w: side, h: side, cls: "bubble table-grille", label: "table d'addition", paint: (ctx, px) => { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawAddTable(ctx, G); } });
+  const grid = spriteBox(app, { x: T.x - T.pad, y: T.y - T.pad, w: side, h: side, cls: "bubble table-grille", label: mul ? "table de multiplication" : "table d'addition", paint: (ctx, px) => { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawAddTable(ctx, G); } });
   let lit = null, last = { k: "", t: -1e9 };
   const over = spriteBox(app, { x: T.x - T.pad, y: T.y - T.pad, w: side, h: side, cls: "hud table-case", still: true, paint: (ctx, px) => { if (!lit) return; ctx.setTransform(px, 0, 0, px, 0, 0); R.drawAddTable(ctx, { ...G, lit, bare: true }); } });
   over.style.pointerEvents = "none";
-  const P = T.panel, panel = spriteBox(app, { x: P.x, y: P.y, w: P.w, h: P.h, cls: "hud table-calcul", still: true, paint: (ctx, px) => paintPanel(app, ctx, px, lit) });
+  const P = T.panel, panel = spriteBox(app, { x: P.x, y: P.y, w: P.w, h: P.h, cls: "hud table-calcul", still: true, paint: (ctx, px) => (mul ? paintPanelMult : paintPanel)(app, ctx, px, lit) });
   panel.dataset.bulleSouple = "";
   els.push(grid, over, panel);
   // le compteur d'étoiles n'est pas affiché (rien à gagner ici) ; la bulle se met sous la tête
   const hud = app.hud?.box; if (hud) hud.style.visibility = "hidden";
   app.bulle.places = TABLE_PLACES;
   onTap(grid, (e) => {
-    const r = grid.getBoundingClientRect(), k = stage.k, hit = tableHit(T, max, T.x - T.pad + (e.clientX - r.left) / k, T.y - T.pad + (e.clientY - r.top) / k);
+    const r = grid.getBoundingClientRect(), k = stage.k, hit = tableHit(T, max, T.x - T.pad + (e.clientX - r.left) / k, T.y - T.pad + (e.clientY - r.top) / k, min);
     if (!hit) return;
     const key = hit.join("+"), now = performance.now();
     if (key === last.k && now - last.t < (C.doubleToucherMs ?? 150)) return; // un second toucher trop rapide de la même case
     last = { k: key, t: now };
     lit = hit; over.repaint(); panel.repaint(); pop(over); grid.dataset.case = key;
     app.ocean?.mascotte?.activite?.();
-    voice.stop(); voice.say(text.pick("tableCase", { a: hit[0], b: hit[1], n: hit[0] + hit[1] }));
+    voice.stop(); voice.say(mul ? text.pick("tableCaseMult", { a: hit[0], b: hit[1], n: hit[0] * hit[1] }) : text.pick("tableCase", { a: hit[0], b: hit[1], n: hit[0] + hit[1] }));
   });
   voice.stop(); voice.say(text.data.tableConsigne, { instruction: true });
   await new Promise((res) => { app.tableCancel = res; });
   app.tableCancel = null; app.bulle.places = null; app.bulle.cacher?.();
   if (hud) hud.style.visibility = "";
   els.forEach((e) => e.remove());
+}
+// (lot « Multiplication ») le panneau de la table de multiplication : le calcul, et dessous les rangées (a rangées de b), réduites
+function paintPanelMult(app, ctx, px, lit) {
+  if (!lit) return;
+  const { sprites } = app, [a, b] = lit, P = TABLE.panel, w = P.w, txt = `${a} × ${b} = ${a * b}`;
+  ctx.setTransform(px, 0, 0, px, 0, 0);
+  const em = Math.min(34, (w - 44) / R.wordWidth(txt));
+  R.drawPanel(ctx, 6, 6, w - 12, em * 1.5 + 30);
+  R.drawWord(ctx, txt, w / 2, 21 + em * 0.2, em, { w: em * 0.14 });
+  const top = em * 1.5 + 60, lw = 660, lh = Math.max(120, a * 52);
+  const c = document.createElement("canvas"); c.width = Math.round(lw * px); c.height = Math.round(lh * px);
+  const x = c.getContext("2d"); x.setTransform(px, 0, 0, px, 0, 0);
+  paintRows(x, sprites, a, b, { cx: lw / 2, top: 0, h: lh, w: lw - 20 });
+  const k = Math.min((w - 10) / lw, (P.h - top - 10) / lh);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.drawImage(c, (w / 2 - (lw * k) / 2) * px, top * px, lw * k * px, lh * k * px);
 }
 // le panneau : le calcul sur une plaque de nacre, et dessous l'appui de la famille, dessiné à sa taille dans un calque à
 // part puis réduit dans le panneau (les aides posent leurs sprites sans les réduire)

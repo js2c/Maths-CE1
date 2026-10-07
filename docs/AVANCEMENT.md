@@ -6,8 +6,8 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 - **En ligne** (https://js2c.github.io/Maths-CE1/) : lots 1, 1 bis, 2, 3, 3 bis, 3 ter et « Lagon en fond d'exercices », tous fusionnés (dernière demande de fusion : PR #30, le lagon).
 - **Ce que fait l'application** : `docs/SPEC.md` (spécification unique ; ce qui reste à construire y est marqué « à construire », section 13).
-- **Prochains lots** : dans l'ordre de `docs/LOTS.md` (« Correctifs », issu de la confrontation de la spécification avec le code, `docs/ECARTS-SPEC.md` ; puis leçons et table d'addition, sommes jusqu'à 30, multiplication et tables) ; le relecteur des lots 3 bis et 3 ter est abandonné.
-- **En attente du parent** : le lot « Les voiliers » (PR #36, prête) attend la fabrication de ses 835 phrases, avec les 6 du lot « Mascotte » (PR #34, fusionnée), puis la fusion et l'essai sur la tablette.
+- **Prochains lots** : dans l'ordre de `docs/LOTS.md` (leçons et table d'addition, sommes jusqu'à 30, multiplication et tables) ; le relecteur des lots 3 bis et 3 ter est abandonné.
+- **En attente du parent** : la fabrication des phrases des lots « Mascotte » (6), « Les voiliers » (835) et « Correctifs » (8), puis la publication et l'essai sur la tablette ; le lot « Correctifs » (PR #39) attend aussi sa fusion et une réponse sur la mascotte (11.1).
 - **Projet parallèle** : la refonte graphique (hors de ce fichier).
 
 ## Lots
@@ -22,17 +22,9 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 | Lagon | Le lagon de la maquette du récif vivant en fond de toute l'application | fait (PR #30) |
 | Récif vivant | La collection est la maquette du récif vivant ; récompenses sans doublon ; correctif des boutons invisibles | fait (PR #31) |
 | Mascotte | Le capitaine en vidéo remplace la pieuvre ; bulle, flèche, bienvenue, relance | fait (PR #34) |
-| Les voiliers | Le jeu de la maquette des voiliers devient le module 4 : ranger un nombre entre des bouées, jusqu'à 1 000, mer selon la difficulté | fait (PR #36, à fusionner après la fabrication des phrases) |
+| Les voiliers | Le jeu de la maquette des voiliers devient le module 4 : ranger un nombre entre des bouées, jusqu'à 1 000, mer selon la difficulté | fait (PR #36) |
+| Correctifs | Les décisions du parent sur la confrontation de la spécification avec le code (`docs/ECARTS-SPEC.md`) : 7 correctifs, spécification réécrite | fait (PR #39) |
 
 ## Reprise
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
-
-### Reprise du lot « Correctifs »
-
-- **Branche** : `claude/friendly-pascal-ylq8p1`, partie de `main` après la fusion des voiliers (PR #36). Demande de fusion en brouillon « Lot : Correctifs ».
-- **Fiche** : `docs/LOTS.md`, 2 bis ; rapport : `docs/ECARTS-SPEC.md`.
-- **Fait** : les 7 correctifs du code, testés (`tests/unit/lot-correctifs.test.mjs`) ; 6.2 simulé (5 profils × 2 rythmes, et `--deux-par-jour`) ; la spécification, `docs/IDEES.md`, le journal, l'architecture, le guide du parent ; la ligne en tête du rapport ; le cache ; le parcours du lot (`tests/e2e/correctifs.mjs`, captures dans `tests/recette-fonctionnelle/out-correctifs/`) ; `b-sequences --test` (0 en défaut).
-- **Reste** : relecture indépendante de la spécification ; tous les parcours `tests/e2e/` ; temps d'image après ; séance à vitesse réelle et attentes ; demande de fusion complète ; état « fait » dans `docs/LOTS.md` ; rubrique archivée.
-- **Mesures de départ** (sur `main`) : 283 tests sur 284 (seul échec : 841 phrases sans voix des lots « Mascotte » et « Les voiliers ») ; `perf.mjs` à processeur ÷ 4 dépasse ses délais dans le conteneur, même sur `main` : mesure faite à ÷ 1 (démarrage 1,4 s à froid, image moyenne 18,6 ms, allègement niveau 2).
-

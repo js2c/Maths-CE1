@@ -840,3 +840,12 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 - **Recette** (détail dans la demande de fusion) : `npm test` 283 sur 284 (les phrases sans fichier) ; séquences sans défaut ; séance réelle 8,4 min, séance des voiliers 8,4 min (étape de 6,1 min, 32 bateaux) ; attentes sans commande 6,4 s au plus aux voiliers (hors voix 2,0 s), et après « passer » 6,1 s au plus au niveau 9 (15,1 s avant le correctif de la voix).
 - **Reste** : la fabrication des phrases par le parent (835, avec les 6 du lot « Mascotte »), la fusion, l'essai sur la tablette (fluidité de la mer, geste, bulle).
 - **Connu** : dans le conteneur sans processeur graphique, la mer tourne à environ 700 ms par image (la maquette seule aussi) : la fluidité ne se juge que sur la tablette. Les échecs de parcours déjà présents sur `main` (`aide-passer`, `calcul` C1, `lot3ter`, `mascotte` « grande joie », `pwa` et `video` par délai dépassé) sont inchangés.
+
+## Reprise du lot « Correctifs »
+
+- **Branche** : `claude/friendly-pascal-ylq8p1`, partie de `main` après la fusion des voiliers (PR #36). Demande de fusion en brouillon « Lot : Correctifs ».
+- **Fiche** : `docs/LOTS.md`, 2 bis ; rapport : `docs/ECARTS-SPEC.md`.
+- **Fait** : les 7 correctifs du code, testés (`tests/unit/lot-correctifs.test.mjs`) ; 6.2 simulé (5 profils × 2 rythmes, et `--deux-par-jour`) ; la spécification, `docs/IDEES.md`, le journal, l'architecture, le guide du parent ; la ligne en tête du rapport ; le cache ; le parcours du lot (`tests/e2e/correctifs.mjs`, captures dans `tests/recette-fonctionnelle/out-correctifs/`) ; `b-sequences --test` (0 en défaut).
+- **Reste** : la fabrication des 8 phrases par le parent, sa réponse sur la mascotte (11.1), la fusion.
+- **Mesures de départ** (sur `main`) : 283 tests sur 284 (seul échec : 841 phrases sans voix des lots « Mascotte » et « Les voiliers ») ; `perf.mjs` à processeur ÷ 4 dépasse ses délais dans le conteneur, même sur `main` : mesure faite à ÷ 1 (démarrage 1,4 s à froid, image moyenne 18,6 ms, allègement niveau 2).
+- **Recette** (détail dans la demande de fusion #39) : `npm test` 293 sur 294 (les phrases sans fichier) ; séquences sans défaut ; simulation des familles identique avant et après, plus jamais deux familles le même jour ; séance réelle 8,4 min ; parcours du lot vert aux deux tailles ; échecs déjà présents sur `main` : `calcul` (C1, C4), `lot3ter`, `video` ; relecture indépendante de la spécification, 14 constats traités (`tests/recette-fonctionnelle/out-correctifs/RELECTURE.md`).

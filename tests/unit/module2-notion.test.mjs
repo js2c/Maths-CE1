@@ -174,7 +174,7 @@ test("point de départ du parent étendu aux familles 3 à 7 : la famille ouvert
   const faits = await store.all("faits");
   assert.ok(ruleFacts(c, 5).every((r) => faits.find((f) => f.fait === r.fait)?.boite >= 3));
   assert.ok(isAcquired(c, faits, 5));
-  const parent = load("parent.json"); assert.deepEqual(parent.pointDeDepart.familles, [1, 2, 3, 4, 5, 6, 7]);
+  const parent = load("parent.json"); assert.deepEqual(parent.pointDeDepart.familles, c.familles.map((f) => f.id)); // (lot « Sommes jusqu'à 30 » : 1 à 13)
 });
 
 // lot 3 (docs/SPEC-LOT3.md, section 4) : la règle leconSiPasVue du lot 2 est supprimée ; une leçon n'est jouée que pour ce

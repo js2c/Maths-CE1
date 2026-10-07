@@ -5,7 +5,7 @@ import { Gfx, PENCIL, type Ctx, type Env } from "./core";
 import type { Film } from "./film";
 import { fillShape } from "./gallery";
 import { SAND, WATER } from "./oceanMarker";
-import { drawChooseKey, drawExerciseLessons, drawExerciseLine, drawFamilyTile, drawLessonTile, drawLineTile, drawTileGlow } from "./sea/choice";
+import { drawChooseKey, drawExerciseLine, drawFamilyTile, drawLineTile, drawTileGlow } from "./sea/choice";
 import { CALC_STOPS, drawCalcTile, drawStonePath } from "./sea/calc";
 import { drawFreeFacts } from "./sea/ui";
 
@@ -14,8 +14,7 @@ const draw = (ctx: Ctx, frame: number, env: Env) => {
   ctx.setTransform(env.scale, 0, 0, env.scale, 0, 0);
   const g = new Gfx(ctx, env, 0, PENCIL);
   g.group("plain", () => { fillShape(g, [[0, 0], [W, 0], [W, H], [0, H]], WATER); fillShape(g, [[0, 820], [W, 820], [W, H], [0, H]], SAND); });
-  drawChooseKey(g, 110, 110); drawExerciseLine(g, 330, 110); drawFreeFacts(g, 550, 110); drawExerciseLessons(g, 770, 110);
-  drawLessonTile(g, 1000, 110);
+  drawChooseKey(g, 110, 110); drawExerciseLine(g, 330, 110); drawFreeFacts(g, 550, 110);
   for (let i = 0; i < 13; i++) { const x = 100 + (i % 7) * 170, y = 300 + Math.floor(i / 7) * 160; if (i === 4) drawTileGlow(g, x, y); drawLineTile(g, x, y, i + 1); }
   for (let i = 0; i < 7; i++) drawFamilyTile(g, 100 + i * 170, 650, i + 1);
   const ox = 300, oy = 980; drawStonePath(g.cur as CanvasRenderingContext2D, ox, oy);

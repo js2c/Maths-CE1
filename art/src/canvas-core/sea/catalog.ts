@@ -15,7 +15,8 @@ import { drawHermit, HERMIT_CLIPS, HERMIT_FPS, HERMIT_REST } from "./hermit";
 import { drawBonusBubble, drawCellGlow, drawHouseBase, drawHouseFloor, drawHouseRoof, drawTenFrame, HOUSE, TEN, TEN_H, TEN_W, tenCell } from "./aids";
 import { drawCalcTile, drawExerciseCalc, drawStepCalc, drawWallFish, WALL_FISH_N } from "./calc";
 import { drawExerciseVoiliers, drawStepVoiliers, drawVoiliersTile } from "./voiliers";
-import { GLOW_PAD, drawChooseKey, drawExerciseLessons, drawExerciseLine, drawFamilyTile, drawLessonTile, drawLineTile, drawTileGlow, TILE_H, TILE_W } from "./choice";
+import { GLOW_PAD, drawChooseKey, drawExerciseLine, drawFamilyTile, drawLineTile, drawTileGlow, TILE_H, TILE_W } from "./choice";
+import { ATOI_R, drawAToiKey, drawBigHomeKey, drawLessonMenuTile, drawLessonsKey, drawRowIcon, drawTableTile, HOME_BIG_S, LESSON_ATOI, LESSON_IDS } from "./lecons";
 import { drawBigFlag, drawCloseKey, drawHintKey, drawLegendKey, drawShrugKey, drawSmallFish, drawStarTrail, drawTagFish, drawTallNet, drawZoneTab, FLAG_N, HOUSE_FISH, LEGEND_R, NETV_H, NETV_W, TAG, TAG_FISH_N, TRAIL_H, TRAIL_W, ZONE_TAB_R } from "./lot3bis";
 import { drawWarmupSkipKey } from "./lot3ter";
 import { drawAgainKey, drawAlbumKey, drawFreeFacts, drawFreeLessons, drawFreeLine, drawMoonDecor, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepGlow, drawStepShell, GLOW_R, STEP_R } from "./ui";
@@ -145,10 +146,8 @@ export const SPECS: Spec[] = [
   // famille d'additions, la plaque des leçons, la lueur du conseillé (ancrage : le centre)
   { name: "choisir", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawChooseKey(g, 90, 90) },
   { name: "choix.ex.ligne", sheet: "choix", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawExerciseLine(g, 90, 90) },
-  { name: "choix.ex.lecons", sheet: "choix", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawExerciseLessons(g, 90, 90) },
   ...Array.from({ length: 13 }, (_, i): Spec => ({ name: `choix.ligne.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawLineTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
   ...Array.from({ length: 7 }, (_, i): Spec => ({ name: `choix.famille.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawFamilyTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
-  { name: "choix.lecon", sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawLessonTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12) },
   { name: "choix.lueur", sheet: "choix", W: TILE_W + 2 * GLOW_PAD + 12, H: TILE_H + 2 * GLOW_PAD + 12, origin: [TILE_W / 2 + GLOW_PAD + 6, TILE_H / 2 + GLOW_PAD + 6], frames: 1, draw: (g) => drawTileGlow(g, TILE_W / 2 + GLOW_PAD + 6, TILE_H / 2 + GLOW_PAD + 6) },
   // lot 3, étape 3 : le calcul rapide. Le pictogramme de l'écran « choisir » et les neuf plaques de niveaux (planche
   // « choix ») ; celui de la frise (« petits », comme les autres étapes) ; le petit poisson jaune du mur de corail,
@@ -177,4 +176,15 @@ export const SPECS: Spec[] = [
   { name: "placer.poisson", sheet: "poissons", W: 210, H: 190, origin: [120, 180], frames: TAG_FISH_N, fps: 12, loop: [0, TAG_FISH_N], draw: (g, f) => drawTagFish(g, f, 120, 180), meta: { tag: { ...TAG } } },
   { name: "defi.drapeau", sheet: "defi", W: 170, H: 200, origin: [50, 186], frames: FLAG_N, fps: 8, loop: [0, FLAG_N], draw: (g, f) => drawBigFlag(g, 50, 186, f) },
   ...["lagon", "corail", "large", "abysses"].map((z): Spec => ({ name: `album.zone.${z}`, sheet: "petits", W: 2 * ZONE_TAB_R + 24, H: 2 * ZONE_TAB_R + 24, origin: [ZONE_TAB_R + 10, ZONE_TAB_R + 10], frames: 1, draw: (g) => drawZoneTab(g, ZONE_TAB_R + 10, ZONE_TAB_R + 10, z) })),
+  // lot « Les leçons » (docs/SPEC.md, section 3, « Les leçons » ; maquette validée le 7 octobre 2026, art/lecons/) : la bulle
+  // « les leçons » de l'accueil (planche « petits », toujours chargée) ; la planche « lecons », chargée le temps du menu : une
+  // tuile par leçon (son numéro et la vignette du moment clé), la tuile de la table d'addition, le pictogramme de chaque
+  // rangée ; la planche « lecons-atoi », chargée le temps de la fin d'une leçon : la bulle « À toi ! » de chaque leçon (la
+  // tuile du niveau associé dedans) et la grande maison. La grille de la table est dessinée en direct (runtime.ts, drawAddTable).
+  { name: "accueil.lecons", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawLessonsKey(g, 90, 90) },
+  ...LESSON_IDS.map((id): Spec => ({ name: `lecons.tuile.${id}`, sheet: "lecons", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawLessonMenuTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, id) })),
+  { name: "lecons.table.plus", sheet: "lecons", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawTableTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, "+") },
+  ...(["ligne", "additions", "calcul"] as const).map((ex): Spec => ({ name: `lecons.rangee.${ex}`, sheet: "lecons", W: 110, H: 90, origin: [55, 45], frames: 1, draw: (g) => drawRowIcon(g, 55, 45, ex) })),
+  ...LESSON_IDS.map((id): Spec => { const R = ATOI_R + 26; return { name: `lecons.atoi.${id}`, sheet: "lecons-atoi", W: 2 * R + 20, H: 2 * R + 20, origin: [R, R], frames: 1, draw: (g) => drawAToiKey(g, R, R, LESSON_ATOI[id].ex, LESSON_ATOI[id].niveau) }; }),
+  { name: "maison.grande", sheet: "lecons-atoi", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawBigHomeKey(g, 90, 90), meta: { s: HOME_BIG_S } },
 ];

@@ -205,10 +205,17 @@ export const drawAToiKey = (g: Gfx, cx: number, cy: number, ex: "ligne" | "addit
 export const HOME_BIG_S = 1.3;
 export const drawBigHomeKey = (g: Gfx, cx: number, cy: number) => scaled(g, cx, cy, HOME_BIG_S, () => drawHomeKey(g, 0, 0));
 
-// pour la planche spécimen
+// les rangées du menu (l'ordre des tuiles) et l'exercice associé à chaque leçon (docs/SPEC.md, section 3 : le niveau, ou la
+// famille d'additions, joué après « À toi ! » ; le même tableau est dans app/content/lecons.json, « exercice »)
 export const LESSON_ROWS: { ex: "ligne" | "additions" | "calcul"; ids: string[] }[] = [
   { ex: "ligne", ids: ["L1", "L2", "L3", "L10"] },
   { ex: "additions", ids: ["L4", "L5", "L6"] },
   { ex: "calcul", ids: ["L7", "L8", "L9"] },
 ];
+export const LESSON_IDS = LESSON_ROWS.flatMap((r) => r.ids);
+export const LESSON_ATOI: Record<string, { ex: "ligne" | "additions" | "calcul"; niveau: number }> = {
+  L1: { ex: "ligne", niveau: 1 }, L2: { ex: "ligne", niveau: 5 }, L3: { ex: "ligne", niveau: 4 }, L10: { ex: "ligne", niveau: 9 },
+  L4: { ex: "additions", niveau: 2 }, L5: { ex: "additions", niveau: 3 }, L6: { ex: "additions", niveau: 4 },
+  L7: { ex: "calcul", niveau: 2 }, L8: { ex: "calcul", niveau: 6 }, L9: { ex: "calcul", niveau: 7 },
+};
 export { GOLD };

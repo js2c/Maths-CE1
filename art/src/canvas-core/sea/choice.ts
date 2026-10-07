@@ -75,11 +75,8 @@ export const drawExerciseLine = (g: Gfx, cx: number, cy: number) => {
   const [bx, by] = tickP(L, 1);
   scaled(g, cx + bx * 0.5 - 2, cy + 22 + by * 0.5 - 6, 0.62, () => drawTurtle(g, TURTLE_REST, 0, 0));
 };
-// les leçons : un livre ouvert, sur ses pages une petite corde et un saut numéroté
-export const drawExerciseLessons = (g: Gfx, cx: number, cy: number) => {
-  drawAnswerBubble(g, cx, cy, 26, 70);
-  drawOpenBook(g, cx, cy + 4, 1, 5620);
-};
+// le livre ouvert, sur ses pages une petite corde et un saut numéroté (lot « Les leçons » : la bulle « les leçons » de
+// l'accueil, sea/lecons.ts ; jusque-là l'image des leçons de l'écran « choisir »)
 export const drawOpenBook = (g: Gfx, cx: number, cy: number, k: number, seed: number) => g.group("plain", () => {
   const w = 44 * k, h = 30 * k, sag = 7 * k;
   // la couverture sous les pages (turquoise, comme l'album)
@@ -201,13 +198,6 @@ export const FAMILY: Record<number, (g: Gfx, cx: number, cy: number) => void> = 
     scaled(g, cx - 18, cy + 30, 0.6, () => drawFish(g, 0, 1, 2, 0, 0));
     fillShape(g, blob(cx + 34, cy + 32, 8, 8, 5795, 0.05, 10), "#fff1a8", 0.8);
   },
-};
-
-// ---------------------------------------------------------------- les leçons
-// une plaque avec le livre en petit, en haut ; l'application écrit dessous les nombres de la leçon
-export const drawLessonTile = (g: Gfx, cx: number, cy: number) => {
-  plaque(g, cx, cy, 5799);
-  drawOpenBook(g, cx, cy - 30, 0.62, 5800);
 };
 
 // un « ? » rouge et des nombres encrés : repris de runtime.ts (RED) pour rester dans la même main

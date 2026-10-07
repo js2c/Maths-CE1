@@ -25,6 +25,8 @@ import { WarmupSkip } from "./modules/facts/warmupskip.js";
 import { Module2Runner } from "./modules/facts/runner.js";
 import { calcMastery, Module3Runner } from "./modules/calc/runner.js";
 import { CalcScreen } from "./modules/calc/screen.js";
+import { Module4Runner } from "./modules/voiliers/runner.js";
+import { VoiliersScreen } from "./modules/voiliers/screen.js";
 import { median } from "./modules/facts/facts.js";
 import { Hermit } from "./engine/hermit.js";
 import { runChallenge } from "./modules/facts/challenge.js";
@@ -53,7 +55,7 @@ const stage = new Stage(document.getElementById("stage"));
 // le désactivent), avec une seule résolution des planches d'images : celle que cet écran utilise (sprites.js)
 if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !location.search.includes("nosw")) navigator.serviceWorker.register(`sw.js?r=${stage.px > 1.2 ? 2 : 1}`).catch(() => {});
 const [atlas, module1, module2, textes, seance, lecons, cartes, calendrier, parentContent, voix] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/module2.json"), json("content/textes.json"), json("content/seance.json"), json("content/lecons.json"), json("content/cartes.json"), json("content/calendrier.json"), json("content/parent.json"), json("assets/voix/index.json").catch(() => null)]);
-const [sonContent, sonIndex, module3, legendes] = await Promise.all([json("content/son.json"), json("assets/son/index.json").catch(() => null), json("content/module3.json"), json("content/legendes.json")]);
+const [sonContent, sonIndex, module3, legendes, module4] = await Promise.all([json("content/son.json"), json("assets/son/index.json").catch(() => null), json("content/module3.json"), json("content/legendes.json"), json("content/module4.json")]);
 const sprites = new Sprites(atlas, stage.px);
 // la base locale ; au premier lancement, on demande au navigateur de ne jamais l'effacer de lui-même
 const store = await Store.open();
@@ -79,10 +81,16 @@ const voice = new Voice({ rate: 0.9, fast: P.get("voix") === "rapide" }).setInde
 // (lot « Mascotte ») la mascotte parle quand la voix parle, et ce qu'elle dit s'écrit dans sa bulle (pas dans le récif
 // vivant, où elle n'est pas) ; la bulle s'efface 1,5 s après la phrase ; la flèche montre à la place du bras de la pieuvre
 // (la bande de la ligne graduée affichée est un obstacle de la bulle, sauf pendant la pause, où elle est cachée)
-const bulle = new Bulle(stage, { dures: () => { const b = app.line.bande; return b && !stage.root.classList.contains("paused") ? [b] : []; } }), fleche = new Fleche(ocean);
+// (lot « Les voiliers » : pendant le jeu, la bande des bouées et le bateau de l'enfant quand il arrive ou attend le geste ;
+// quand il va seul au bon passage, il est seulement évité si possible)
+const bulle = new Bulle(stage, {
+  dures: () => { if (stage.root.classList.contains("paused")) return []; const b = app.line.bande; return [...(b ? [b] : []), ...(app.voiliers?.actif ? app.voiliers.obstacles() : [])]; },
+  souples: () => (app.voiliers?.actif && !stage.root.classList.contains("paused") ? app.voiliers.souples() : []),
+}), fleche = new Fleche(ocean);
 // (relecture du lot : pendant une question de dictée, la bulle n'écrit rien : elle écrirait en chiffres le nombre à écrire)
 const dicteeEnCours = () => !!(app.facts?.q?.dictee && !app.facts.locked);
-voice.onTalk = (t, ms, o) => { ocean.mascotte.parole(t, ms, { consigne: o.instruction }); if (ocean.mascotteVisible && !dicteeEnCours()) bulle.dire(t, ms); else bulle.cacher(); };
+// (lot « Les voiliers » : `app.bulleTexte` récrit ce que la bulle écrit : le nombre du bateau, en chiffres et en lettres)
+voice.onTalk = (t, ms, o) => { ocean.mascotte.parole(t, ms, { consigne: o.instruction }); if (ocean.mascotteVisible && !dicteeEnCours()) bulle.dire(app.bulleTexte ? app.bulleTexte(t) : t, ms); else bulle.cacher(); };
 voice.onSilence = () => { ocean.mascotte.silence(); bulle.silence(); };
 // les bruitages et la musique (lot 2) ; ?son=non : silence (mesures)
 const sound = new Sound({ content: sonContent, index: sonIndex, off: P.get("son") === "non" });
@@ -119,6 +127,8 @@ app.aidBoard ??= new AidBoard(app); // l'écran de la ligne (aussi pour l'aide d
 // lot 3, étape 4 : le calcul rapide prend l'ardoise et le pavé de l'écran des additions
 app.calc = new CalcScreen(app, () => (app.facts ??= new FactsScreen(app, module2)));
 app.module3 = module3;
+// lot « Les voiliers » : le module 4 (sa scène est installée le temps de la notion du jour)
+app.module4 = module4; app.voiliers = new VoiliersScreen(app, module4);
 window.__app = app;
 // la musique baisse pendant que la voix parle
 stage.ticks.add(() => sound.duck(voice.speaking));
@@ -179,6 +189,7 @@ const handlers = {
     frieze.notionIcon(ctx.session.rec.module);
     if (ctx.session.rec.module === 2) return notion2(ctx);
     if (ctx.session.rec.module === 3) return notion3(ctx);
+    if (ctx.session.rec.module === 4) return notion4(ctx);
     const screen = app.lineScreen();
     // lot 3 : le niveau choisi par l'enfant (écran « choisir ») : toutes les questions à ce niveau
     const runner = await new Module1Runner({ screen, store, content: module1, rnd, seance: ctx.session.id, variete: seance.variete, offset: () => ctx.session.offset, cran: () => ctx.session.cran, choix: ctx.session.choix?.niveau ?? null }).load();
@@ -242,6 +253,23 @@ async function notion3(ctx) {
   try {
     await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.calc.askNotion(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
   } finally { app.calc.leave(); sprites.unload("calcul"); }
+}
+// LOT « LES VOILIERS » (docs/SPEC.md, section 7 bis) : la notion du jour sur le jeu des voiliers, choisi par l'enfant ou
+// imposé par le parent : la scène de la maquette (modules/voiliers/screen.js), un bateau par question, l'exemple guidé la
+// première fois qu'un niveau est joué ; pas de leçon. Sans WebGL (le jeu ne peut pas se jouer), la ligne graduée à la place.
+async function notion4(ctx) {
+  const { session } = ctx, conf = ctx.step.module4 ?? ctx.step;
+  const step = { ...ctx.step, ...conf, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}) };
+  const runner = await new Module4Runner({ store, content: module4, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, choix: session.choix?.module === 4 ? session.choix.niveau : null }).load();
+  app.runner = runner; session.rec.niveauVoiliers = runner.niveau; await session.save();
+  const scr = app.voiliers;
+  if (!(await scr.enter())) {
+    journal({ type: "voiliers sans WebGL" }); session.rec.module = 1; session.rec.voiliersSansWebGL = true; await session.save(); frieze.notionIcon(1);
+    return handlers.notion(ctx);
+  }
+  try {
+    await runNotion({ ...ctx, step, runner, screen: { ask: (q) => scr.ask(q) }, lesson: async () => false, rnd });
+  } finally { scr.leave(); }
 }
 // LOT 3 TER (docs/SPEC-LOT3TER.md, T1 ; décision du parent) : « PASSER L'ÉCHAUFFEMENT ». Un bouton dédié (son propre
 // pictogramme, `passer.echauffement`), présent pendant tout l'échauffement, hors du pavé (content/seance.json,
@@ -339,7 +367,7 @@ async function showHome({ done, first = false }) {
   onBrief(app, pickKey, async () => {
     voice.unlock(); clearHome();
     mode = "choix"; homeKey.style.visibility = "visible";
-    const c = await choose(app, { store, content: { module1, module2, module3, seance } });
+    const c = await choose(app, { store, content: { module1, module2, module3, module4, seance } });
     mode = null; homeKey.style.visibility = "hidden";
     if (c.lecon) return lessonAlone(c.lecon);
     await runSession(c);
@@ -404,10 +432,12 @@ const progress = (p) => {
   homeKey.style.visibility = app.enPause ? "hidden" : p.etape === "echauffement" || p.etape === "notion" || p.etape === "defi" ? "visible" : "hidden";
 };
 // attend-on une réponse de l'enfant (la consigne est finie ou en cours) ?
-const awaiting = () => [app.screen, app.facts].some((s) => s && s.resolve && !s.locked);
+// (lot « Les voiliers » : un bateau attend le geste de l'enfant)
+const awaiting = () => [app.screen, app.facts].some((s) => s && s.resolve && !s.locked) || !!app.voiliers?.attend;
 // (lot « Mascotte ») la relance : 25 s sans toucher pendant une question, une phrase d'aide (12 s : un geste, la mascotte le
 // fait seule) ; seulement si une question attend sa réponse, hors pause et sans autre phrase en cours
-ocean.mascotte.onRelance = () => { if (awaiting() && !app.enPause && !visiting && !voice.speaking && !voice.paused) voice.say(text.pick("relanceAide")); };
+// (lot « Les voiliers » : pas avec le vent ni les pirates, où le bateau avance seul : relecture du lot)
+ocean.mascotte.onRelance = () => { if (awaiting() && !app.enPause && !visiting && !voice.speaking && !voice.paused && !(app.voiliers?.attend && app.voiliers.q?.mer !== "calme")) voice.say(text.pick("relanceAide")); };
 let ambianceAvantPause = null;
 // L'ACCUEIL COMPLET PENDANT UNE PAUSE (lot 3, étape 5 ; décision du parent du 28 septembre ; docs/SPEC.md, « Navigation
 // pendant la séance ») : « continuer » (reprise exacte), « choisir » (l'écran de choix : revenir sans valider ramène ici ;
@@ -460,7 +490,7 @@ async function visitInPause(fn) {
 // l'écran « choisir » depuis la pause : la maison y revient sans rien valider
 async function pickInPause() {
   mode = "pause-choix"; homeKey.style.visibility = "visible";
-  const c = await choose(app, { store, content: { module1, module2, module3, seance } });
+  const c = await choose(app, { store, content: { module1, module2, module3, module4, seance } });
   mode = "seance"; homeKey.style.visibility = "hidden";
   if (!c) return null;
   if (c.lecon) { await lessonAlone(c.lecon, { pause: true }); return null; }
@@ -482,7 +512,7 @@ sprites.keep = ALWAYS; // jamais libérées (engine/sprites.js, unload)
 function sandbox() {
   const o = ocean, st = stage, kids = (el) => new Set(el.children);
   const ui = kids(st.ui), front = kids(o.frontEl), root = kids(st.root);
-  const hidden = [...[...ui].filter((e) => !e.matches(".stars, .speaker, .session-home, .bulle")), ...front, ...[...root].filter((e) => e.matches("#line, #fx, #aides, .aid-board"))];
+  const hidden = [...[...ui].filter((e) => !e.matches(".stars, .speaker, .session-home, .bulle")), ...front, ...[...root].filter((e) => e.matches("#line, #fx, #aides, .aid-board, canvas.voiliers"))];
   hidden.forEach((e) => e.classList.add("stash"));
   const actors = [...o.actors], oFront = [...o.front], ticks = new Set(st.ticks), sheets = sprites.held();
   // (l'écran de la ligne de la séance reste en place, masqué : une leçon en pause a le sien ; les additions, le calque des
@@ -502,6 +532,8 @@ function sandbox() {
     hidden.forEach((e) => e.classList.remove("stash"));
     Object.assign(app, { facts: saved.facts, aidBoard: saved.aidBoard, hermit: saved.hermit, starFrom: saved.starFrom });
     bulle.cacher(); fleche.cacher(); o.mascotte.ambiance("pause");
+    // (lot « Les voiliers » : une visite du récif a remis le lagon en marche ; sous la mer des voiliers, il attend)
+    if (app.voiliers?.actif) { app.lagon?.pause(true); app.voiliers.api?.redessiner(); }
     sprites.pinned = null;
     for (const k of sprites.held()) if (!sheets.has(k) && !ALWAYS.has(k)) sprites.unload(k);
     st.root.classList.add("paused");
@@ -511,7 +543,7 @@ function sandbox() {
 function abandonActivity() {
   clock.abandon(); voice.abandon(); bulle.cacher(); fleche.cacher(); ocean.mascotte.release(); ocean.mascotte.ambiance("pause");
   app.choiceClear?.(); app.choiceClear = null; if (app.facts) app.facts.notion = false; app.calc?.fishDone(); // (lot 3 : l'écran « choisir », les additions libres, le poisson du mur)
-  app.screen?.leave(); app.facts?.leave(); app.dictation?.hide?.(); lessons.abandon();
+  app.screen?.leave(); app.facts?.leave(); app.dictation?.hide?.(); lessons.abandon(); app.voiliers?.leave();
   // (correctif du 28 septembre 2026) le défi record quitté en cours : sa bulle-sablier et ses perles restaient à l'écran
   if (app.challenge) { app.challenge.remove(); app.challenge = null; sprites.unload("defi"); }
   for (const s of [app.screen, app.facts]) if (s) { s.resolve = null; s.locked = true; }
@@ -545,7 +577,7 @@ onBrief(app, homeKey, () => {
 }, () => app.legendes.etiquettes[mode === "seance" && !app.enPause ? "pause" : "maison"]);
 async function freeTraining() {
   mode = "libre"; homeKey.style.visibility = "visible"; sound.startMusic(pickMusic(sonIndex, rnd));
-  const free = new FreeTraining(app, { store, module1, module2, module3, rnd, seance });
+  const free = new FreeTraining(app, { store, module1, module2, module3, module4, rnd, seance });
   app.free = free;
   await free.menu();
 }

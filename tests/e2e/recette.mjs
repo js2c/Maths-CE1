@@ -3,6 +3,7 @@
 // instant (répondre, toucher une bulle, rien), captures à chaque changement d'écran, inventaire des
 // éléments visibles qui ressemblent à des boutons et de leur réaction au toucher.
 //   node tests/e2e/recette.mjs [--out dossier] [--delai secondes : temps de réponse de l'enfant, 1,5 par défaut] [--module 2 : notion du jour imposée (lot 2, étape 6)]
+//     [--module 4 : les voiliers (lot « Les voiliers » ; la mer en WebGL logiciel, l'enfant fait glisser le bateau --delai secondes après la fin du nombre dit)]
 //     [--defi : une séance où le défi record a lieu (lot 2, étape 9) : 5 séances déjà terminées, la famille 1 connue (point de départ), la pieuvre déjà nommée]
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -13,7 +14,7 @@ const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k);
 const OUT = resolve(opt("--out", "tests/e2e/out/recette")); mkdirSync(OUT, { recursive: true });
 const DELAI = Math.round(Number(opt("--delai", "1.5")) * 1000); // temps de réponse de l'enfant
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", ...(opt("--module") === "4" ? ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] : [])] });
 const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true });
 const page = await context.newPage();
 const errors = []; page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
@@ -25,10 +26,10 @@ const note = (what) => { tl.push([+s(), what]); console.log(s(), what); };
 const state = () => page.evaluate(() => {
   const A = window.__app, vis = (e) => e && getComputedStyle(e).visibility !== "hidden" && getComputedStyle(e).display !== "none" && e.offsetParent !== null;
   const f = A.facts, l = A.screen;
-  const inputFacts = !!(f?.q && f.resolve && !f.locked), inputLine = !!(l?.q && l.resolve && !l.locked);
+  const inputFacts = !!(f?.q && f.resolve && !f.locked), inputLine = !!(l?.q && l.resolve && !l.locked), inputVoiliers = !!A.voiliers?.attend;
   const btns = [...document.querySelectorAll("#ui .bubble, #ui button")].filter(vis).map((b) => (b.className.split(" ").filter((c) => !["bubble", "pop", "keep"].includes(c)).join(".") || b.tagName) + (b.dataset.key ? `[${b.dataset.key}]` : ""));
   const huds = [...document.querySelectorAll("#ui .hud")].filter(vis).map((b) => b.className.replace("hud ", ""));
-  return { etape: A.frieze?.p?.etape ?? null, inputFacts, inputLine, q: inputFacts ? `${f.q.a}+${f.q.b}` : inputLine ? `${l.q.format}:${l.q.answer}` : null, lesson: !!A.lessons?.keys?.length && A.lessons.p !== undefined, voix: A.voice.speaking, btns, huds, paused: document.getElementById("stage").classList.contains("paused") };
+  return { etape: A.frieze?.p?.etape ?? null, inputFacts, inputLine, inputVoiliers, q: inputFacts ? `${f.q.a}+${f.q.b}` : inputLine ? `${l.q.format}:${l.q.answer}` : inputVoiliers ? `bateau ${A.voiliers.q.num} (${A.voiliers.q.mer})` : null, lesson: !!A.lessons?.keys?.length && A.lessons.p !== undefined, voix: A.voice.speaking, btns, huds, paused: document.getElementById("stage").classList.contains("paused") };
 });
 const tapSel = (sel) => page.tap(sel, { force: true }).catch(() => {});
 const typeIn = async (n) => { for (const d of String(n)) { await tapSel(`.key[data-key="${d}"]`); await new Promise((r) => setTimeout(r, 170)); } await tapSel('.key[data-key="valider"]'); };
@@ -45,7 +46,7 @@ await page.goto(url + `?nosw${opt("--module") ? `&module=${opt("--module")}` : "
 await shot("accueil"); note("accueil prêt");
 const home = await state(); note(`accueil : boutons visibles ${home.btns.join(", ")} ; décors ${home.huds.join(", ")}`);
 await tapSel(".play");
-let last = "", nf = 0, nl = 0, idle = 0, lastAct = Date.now(), prevEtape = null;
+let last = "", nf = 0, nl = 0, nv = 0, idle = 0, lastAct = Date.now(), prevEtape = null;
 const waits = []; let waitStart = Date.now();
 const deadline = Date.now() + 16 * 60000;
 while (Date.now() < deadline) {
@@ -54,6 +55,19 @@ while (Date.now() < deadline) {
   if (st.etape !== prevEtape) { note(`--- étape ${st.etape}`); prevEtape = st.etape; await shot(`etape-${st.etape}`); }
   const sig = JSON.stringify([st.q, st.btns.filter((b) => !b.startsWith("key")).sort(), st.huds.sort()]);
   if (sig !== last) { note(`écran : question=${st.q ?? "-"} ; boutons=${st.btns.filter((b) => !b.startsWith("key")).join(",")} ; affichages=${st.huds.join(",")}${st.voix ? " ; voix" : ""}`); last = sig; }
+  // lot « Les voiliers » : le bateau glissé dans le bon passage ; au 3e, « je ne sais pas » ; au 5e, une erreur (deux fois)
+  if (st.inputVoiliers) {
+    waits.push({ etape: st.etape, attenteS: (Date.now() - waitStart) / 1000, q: st.q });
+    await page.waitForTimeout(DELAI); nv++;
+    const v = await page.evaluate(() => { const V = window.__app.voiliers; return V?.attend ? { k: V.api.etat().rangee === 2 ? V.q.k2 : V.q.k } : null; });
+    if (v) {
+      if (nv === 1) await shot("voiliers-premier-bateau");
+      if (nv === 3) { note(`voiliers : « je ne sais pas » (${st.q})`); await tapSel(".voiliers-nsp"); await page.waitForTimeout(1500); await shot("voiliers-nsp"); }
+      else if (nv === 5 || nv === 6) { note(`voiliers : erreur (${st.q})`); await page.evaluate((c) => window.__app.voiliers.api.deposer(c), v.k === 0 ? 2 : 0); await page.waitForTimeout(1200); await shot(`voiliers-erreur-${nv}`); }
+      else await page.evaluate((c) => window.__app.voiliers.api.deposer(c), v.k);
+    }
+    await page.waitForTimeout(400); waitStart = Date.now(); lastAct = Date.now(); continue;
+  }
   if (st.inputFacts || st.inputLine) {
     waits.push({ etape: st.etape, attenteS: (Date.now() - waitStart) / 1000, q: st.q });
     await page.waitForTimeout(DELAI);

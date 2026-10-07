@@ -825,3 +825,18 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 - **Recette** (détail dans la demande de fusion) : `npm test` 271 sur 272 (les 6 phrases sans fichier) ; séquences sans défaut ; séance réelle 8,5 min ; attentes hors voix 1,1 s au plus ; parcours `mascotte` vert aux deux tailles, 0 fondu forcé ; relecture indépendante, 22 constats traités (`tests/recette-fonctionnelle/out-mascotte/RELECTURE.md`). Propre à la branche : dans `lot3ter`, des étiquettes d'appui long encore à moitié visibles après 0,8 s (9 échecs contre 2 sur `main`, 3 en masquant la mascotte : la charge de la vidéo dans ce conteneur sans processeur graphique) ; à vérifier sur la tablette.
 - **Reste** : la fabrication des 6 phrases par le parent, la fusion, l'essai sur la tablette.
 - **Connu** : `npm test` échoue sur les 6 phrases nouvelles sans fichier (attendu, le parent les fabrique). L'export de l'atelier signale un saut au raccord de `ermite.repos` : il existe déjà sur `main`.
+
+## Reprise du lot « Les voiliers »
+
+- Branche `claude/pensive-bardeen-yc0m7j` (partie de `main` après la PR #34 ; `main` fusionnée ensuite, après les PR #37 et #38, documents seulement). Demande de fusion : https://github.com/js2c/Maths-CE1/pull/36.
+- **Fiche** : `docs/LOTS.md`, lot 2 ; spécification `docs/SPEC.md`, section 7 bis ; maquette `art/voiliers/` (jamais modifiée).
+- **Fait** :
+  - les règles du module 4 (`modules/voiliers/voiliers.js`, `runner.js`, `content/module4.json`), comparées tirage par tirage à la maquette (`tests/unit/voiliers.test.mjs`) ; simulation (`tests/sim-seances.mjs --choix 4:N`) et séquences (`b-sequences.mjs`, voiliers compris) sans défaut ; textes et inventaire de la voix (835 phrases nouvelles, `tests/recette-fonctionnelle/out-voiliers/PHRASES.md`) ;
+  - l'export de la maquette (`art/tools/export-voiliers.mjs` -> `app/js/voiliers/voiliers-scene.js`, `app/assets/voiliers/`), l'écran du module 4 (`modules/voiliers/screen.js`), la notion du jour, « choisir », l'entraînement libre, le module imposé, la pause, la bulle (le nombre en lettres, jamais sur le bateau ni sur les bouées) ;
+  - les pictogrammes de l'atelier (`art/src/canvas-core/sea/voiliers.ts`) ; l'espace parent (bloc des voiliers, journal V1 à V4, point de départ, légende) ;
+  - le parcours `tests/e2e/voiliers.mjs` (vert aux deux tailles) ; les mesures (`perf.mjs --webgl --voiliers`, `recette-durees.mjs`, `recette.mjs --module 4`) ;
+  - la relecture indépendante (22 constats et 4 écarts nouveaux, traités : `tests/recette-fonctionnelle/out-voiliers/RELECTURE.md`) ;
+  - un correctif du moteur de voix trouvé par la recette : « passer » arrête aussi une phrase lue par la synthèse (phrase pas encore fabriquée).
+- **Recette** (détail dans la demande de fusion) : `npm test` 283 sur 284 (les phrases sans fichier) ; séquences sans défaut ; séance réelle 8,4 min, séance des voiliers 8,4 min (étape de 6,1 min, 32 bateaux) ; attentes sans commande 6,4 s au plus aux voiliers (hors voix 2,0 s), et après « passer » 6,1 s au plus au niveau 9 (15,1 s avant le correctif de la voix).
+- **Reste** : la fabrication des phrases par le parent (835, avec les 6 du lot « Mascotte »), la fusion, l'essai sur la tablette (fluidité de la mer, geste, bulle).
+- **Connu** : dans le conteneur sans processeur graphique, la mer tourne à environ 700 ms par image (la maquette seule aussi) : la fluidité ne se juge que sur la tablette. Les échecs de parcours déjà présents sur `main` (`aide-passer`, `calcul` C1, `lot3ter`, `mascotte` « grande joie », `pwa` et `video` par délai dépassé) sont inchangés.

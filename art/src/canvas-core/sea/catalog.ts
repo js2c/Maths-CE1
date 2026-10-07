@@ -14,6 +14,7 @@ import { DEFI_N, drawRecordFlag, drawScorePearl, drawStepChallenge, drawTimerBub
 import { drawHermit, HERMIT_CLIPS, HERMIT_FPS, HERMIT_REST } from "./hermit";
 import { drawBonusBubble, drawCellGlow, drawHouseBase, drawHouseFloor, drawHouseRoof, drawTenFrame, HOUSE, TEN, TEN_H, TEN_W, tenCell } from "./aids";
 import { drawCalcTile, drawExerciseCalc, drawStepCalc, drawWallFish, WALL_FISH_N } from "./calc";
+import { drawExerciseVoiliers, drawStepVoiliers, drawVoiliersTile } from "./voiliers";
 import { GLOW_PAD, drawChooseKey, drawExerciseLessons, drawExerciseLine, drawFamilyTile, drawLessonTile, drawLineTile, drawTileGlow, TILE_H, TILE_W } from "./choice";
 import { drawBigFlag, drawCloseKey, drawHintKey, drawLegendKey, drawShrugKey, drawSmallFish, drawStarTrail, drawTagFish, drawTallNet, drawZoneTab, FLAG_N, HOUSE_FISH, LEGEND_R, NETV_H, NETV_W, TAG, TAG_FISH_N, TRAIL_H, TRAIL_W, ZONE_TAB_R } from "./lot3bis";
 import { drawWarmupSkipKey } from "./lot3ter";
@@ -156,6 +157,10 @@ export const SPECS: Spec[] = [
   { name: "choix.ex.calcul", sheet: "choix", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawExerciseCalc(g, 90, 90) },
   ...Array.from({ length: 9 }, (_, i): Spec => ({ name: `choix.calcul.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawCalcTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
   { name: "frise.calcul", sheet: "petits", W: 2 * STEP_R + 24, H: 2 * STEP_R + 24, origin: [STEP_R + 10, STEP_R + 10], frames: 1, draw: (g) => drawStepCalc(g, STEP_R + 10, STEP_R + 10) },
+  // lot « Les voiliers » : le pictogramme de l'exercice, les neuf plaques de niveaux, l'étape de la frise
+  { name: "choix.ex.voiliers", sheet: "choix", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawExerciseVoiliers(g, 90, 90) },
+  ...Array.from({ length: 9 }, (_, i): Spec => ({ name: `choix.voiliers.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawVoiliersTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
+  { name: "frise.voiliers", sheet: "petits", W: 2 * STEP_R + 24, H: 2 * STEP_R + 24, origin: [STEP_R + 10, STEP_R + 10], frames: 1, draw: (g) => drawStepVoiliers(g, STEP_R + 10, STEP_R + 10) },
   ...([1, -1] as const).map((dir): Spec => ({ name: `mur.poisson.${dir > 0 ? "d" : "g"}`, sheet: "calcul", W: 80, H: 60, origin: [40, 30], frames: WALL_FISH_N, fps: 12, loop: [0, WALL_FISH_N], draw: (g, f) => drawWallFish(g, f, 40, 30, dir, 40) })),
   // lot 3 bis, partie B (docs/SPEC-LOT3BIS.md, B8 ; sea/lot3bis.ts, sea/reefdecor.ts). Sur « petits » (toujours chargée) : le
   // bouton de la légende et la croix du panneau, la traînée d'une étoile arc-en-ciel qui vole (ancrage : la tête), le filet

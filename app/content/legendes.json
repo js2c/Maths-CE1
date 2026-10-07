@@ -38,7 +38,8 @@
     "cranLibre.facile": "Plus facile. Plus d'aide, des questions plus simples.",
     "cranLibre.conseille": "Conseillé. Le niveau préparé pour toi.",
     "cranLibre.dur": "Plus dur. Des questions plus difficiles.",
-    "cranLibre.tresdur": "Très dur. Les questions les plus difficiles."
+    "cranLibre.tresdur": "Très dur. Les questions les plus difficiles.",
+    "voiliers": "Ranger un nombre entre des bouées, jusqu'à 1 000."
   },
   "titres": { "travail": "Ce qui est travaillé", "exemple": "Exemple" },
   "ligne": [
@@ -75,6 +76,17 @@
     { "n": 7, "travail": "Ajouter en passant la dizaine, on complète d'abord jusqu'à 10.", "exemple": "38 + 5 = 38 + 2 + 3" },
     { "n": 8, "travail": "Ajouter deux nombres à deux chiffres, sans retenue.", "exemple": "23 + 14 = 23 + 10 + 4" },
     { "n": 9, "travail": "Retirer en passant la dizaine.", "exemple": "42 - 5 = 42 - 2 - 3" }
+  ],
+  "voiliers": [
+    { "n": 1, "travail": "Ranger un nombre jusqu'à 100 entre deux dizaines, à au moins 3 des bouées.", "exemple": "45 entre 40 et 50" },
+    { "n": 2, "travail": "Ranger un nombre jusqu'à 100 entre des bouées qui ne sont pas des dizaines.", "exemple": "31 entre 28 et 34" },
+    { "n": 3, "travail": "Ranger un nombre jusqu'à 1 000 entre deux centaines.", "exemple": "450 entre 400 et 500" },
+    { "n": 4, "travail": "Ranger un nombre jusqu'à 1 000 entre deux dizaines, avec quatre bouées.", "exemple": "534 entre 530 et 540" },
+    { "n": 5, "travail": "Des centaines ou des dizaines, le nombre tout près d'une bouée.", "exemple": "698 avant 700" },
+    { "n": 6, "travail": "Des bouées qui ne sont pas rondes, le nombre tout près d'une bouée.", "exemple": "426 après 425" },
+    { "n": 7, "travail": "Cinq bouées de 10 en 10, le nombre tout près d'une bouée.", "exemple": "369 avant 370" },
+    { "n": 8, "travail": "Des écarts mélangés entre les bouées, le nombre tout près d'une bouée.", "exemple": "349 entre 250 et 350" },
+    { "n": 9, "travail": "Double encadrement, entre deux centaines puis entre deux dizaines.", "exemple": "347 entre 300 et 400 puis entre 340 et 350" }
   ],
   "lecons": [
     { "n": "L1", "travail": "On compte les sauts, pas les traits.", "exemple": "De 0 à 3, 3 sauts" },

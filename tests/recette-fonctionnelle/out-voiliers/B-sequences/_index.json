@@ -1,0 +1,82 @@
+{
+ "titre": "Partie B · les séquences de questions",
+ "intro": "Le texte des séances telles que le moteur les génère (runners de l'application, sans navigateur) : pour chaque exercice × niveau (ou famille) × cran, en base neuve et en « un mois », avec trois comportements de l'enfant. Commencer par `SYNTHESE.md`.",
+ "lignes": [
+  [
+   "SYNTHESE.md",
+   "une ligne par séance simulée (base × exercice × cran × comportement) : réponses différentes, répétitions, suites prévisibles, leçons, étoiles ; et le tableau des étoiles « pressée » comparées à « appliquée »"
+  ],
+  [
+   "neuve/voiliers-1.md",
+   "base neuve (premier lancement) : voiliers 1, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/voiliers-2.md",
+   "base neuve (premier lancement) : voiliers 2, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/voiliers-3.md",
+   "base neuve (premier lancement) : voiliers 3, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/voiliers-4.md",
+   "base neuve (premier lancement) : voiliers 4, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/voiliers-5.md",
+   "base neuve (premier lancement) : voiliers 5, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/voiliers-6.md",
+   "base neuve (premier lancement) : voiliers 6, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/voiliers-7.md",
+   "base neuve (premier lancement) : voiliers 7, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/voiliers-8.md",
+   "base neuve (premier lancement) : voiliers 8, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/voiliers-9.md",
+   "base neuve (premier lancement) : voiliers 9, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/voiliers-1.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : voiliers 1, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/voiliers-2.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : voiliers 2, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/voiliers-3.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : voiliers 3, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/voiliers-4.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : voiliers 4, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/voiliers-5.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : voiliers 5, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/voiliers-6.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : voiliers 6, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/voiliers-7.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : voiliers 7, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/voiliers-8.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : voiliers 8, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/voiliers-9.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : voiliers 9, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ]
+ ]
+}

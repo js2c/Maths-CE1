@@ -13,12 +13,12 @@ const days = (perWeek, n) => { const out = []; let d = new Date("2026-09-28T00:0
   while (n === "annee" ? d < fin : out.length < n) { if (!hol.some(([a, b]) => d >= a && d < b) && wd.includes(d.getDay())) out.push(new Date(d)); d = new Date(d.getTime() + 86400000); } return out; };
 const argv = process.argv.slice(2), val = (k) => (argv.includes(k) ? argv[argv.indexOf(k) + 1] : null);
 const args = argv.filter((a, i) => !a.startsWith("--") && !["--choix", "--cran"].includes(argv[i - 1])), court = argv.includes("--court");
-const ch = val("--choix")?.split(":").map(Number), choix = ch ? (ch[0] === 1 ? { module: 1, niveau: ch[1] } : { module: 2, famille: ch[1] }) : null;
+const ch = val("--choix")?.split(":").map(Number), choix = ch ? (ch[0] === 2 ? { module: 2, famille: ch[1] } : { module: ch[0], niveau: ch[1] }) : null;
 const [profil = "reel", perWeek = "2", n = "30"] = args;
 const res = await simulate({ profil, jours: days(+perWeek, n === "annee" ? "annee" : +n), seed: 7, choix, cran: val("--cran") });
-if (choix) console.log(`# lot 3 : l'enfant choisit toujours ${choix.module === 1 ? `la ligne, niveau ${choix.niveau}` : `les additions, famille ${choix.famille}`}, cran ${val("--cran") ?? PROFILS[profil].cran ?? "conseille"} : réussite de la notion du jour (10 premières séances, exemples guidés exclus) ${(() => { const xs = res.slice(0, 10).flatMap((r) => r.notionOk ?? []); return Math.round((100 * xs.filter(Boolean).length) / Math.max(1, xs.length)); })()} % ; descentes de cran ${res.slice(0, 10).reduce((a, r) => a + r.descentes, 0)}`);
+if (choix) console.log(`# lot 3 : l'enfant choisit toujours ${choix.module === 4 ? (choix.niveau ? `les voiliers, niveau ${choix.niveau}` : "les voiliers, au niveau conseillé") : choix.module === 3 ? `le calcul rapide, niveau ${choix.niveau}` : choix.module === 1 ? `la ligne, niveau ${choix.niveau}` : `les additions, famille ${choix.famille}`}, cran ${val("--cran") ?? PROFILS[profil].cran ?? "conseille"} : réussite de la notion du jour (10 premières séances, exemples guidés exclus) ${(() => { const xs = res.slice(0, 10).flatMap((r) => r.notionOk ?? []); return Math.round((100 * xs.filter(Boolean).length) / Math.max(1, xs.length)); })()} % ; descentes de cran ${res.slice(0, 10).reduce((a, r) => a + r.descentes, 0)}`);
 console.log(`# profil ${PROFILS[profil].nom}, ${perWeek}/sem, ${res.length} séances`);
-if (!court) for (const r of res) console.log(`${r.n}\t${r.date}\t${r.cranDepart}${r.descentes ? `->${r.cran}` : ""}\t${r.module === 2 ? "additions" : r.module === 3 ? `calcul ${r.niv0}->${r.niv1}` : `niv ${r.niv0}->${r.niv1}`}\tq=${r.questions} ${Math.round((r.reussite ?? 0) * 100)}% nsp ${r.nsp} nouveaux ${r.nouveaux}\t${r.duree}min\tm${r.module}${r.defi !== undefined ? ` défi ${r.defi}${r.record ? "!" : ""}` : ""}${r.module === 2 ? ` f${r.famille}` : ""}\t★${r.etoiles}\tarc${r.arc}${r.doree ? " DORÉE" : ""}${r.surprise ? ` surprise ${r.surprise}` : ""}\tcartes ${r.nbCartes}/${r.quota} [${r.cartes.join(",")}]${r.zones.length ? ` ZONE ${r.zones.join(",")}` : ""}\tfaits vus ${r.faitsVus} boîtes ${r.boites.join("/")}\tchauffe: ${r.faits.join(" ")}\tligne: ${r.ligne.join(" ")}${r.lecons.length ? " leçons " + r.lecons.join(",") : ""}`);
+if (!court) for (const r of res) console.log(`${r.n}\t${r.date}\t${r.cranDepart}${r.descentes ? `->${r.cran}` : ""}\t${r.module === 2 ? "additions" : r.module === 3 ? `calcul ${r.niv0}->${r.niv1}` : r.module === 4 ? `voiliers ${r.niv0}->${r.niv1}` : `niv ${r.niv0}->${r.niv1}`}\tq=${r.questions} ${Math.round((r.reussite ?? 0) * 100)}% nsp ${r.nsp} nouveaux ${r.nouveaux}\t${r.duree}min\tm${r.module}${r.defi !== undefined ? ` défi ${r.defi}${r.record ? "!" : ""}` : ""}${r.module === 2 ? ` f${r.famille}` : ""}\t★${r.etoiles}\tarc${r.arc}${r.doree ? " DORÉE" : ""}${r.surprise ? ` surprise ${r.surprise}` : ""}\tcartes ${r.nbCartes}/${r.quota} [${r.cartes.join(",")}]${r.zones.length ? ` ZONE ${r.zones.join(",")}` : ""}\tfaits vus ${r.faitsVus} boîtes ${r.boites.join("/")}\tchauffe: ${r.faits.join(" ")}\tligne: ${r.ligne.join(" ")}${r.lecons.length ? " leçons " + r.lecons.join(",") : ""}`);
 // lot 2, étape 2 : faits nouveaux, familles 1 et 2, niveaux, sélecteur de difficulté (docs/SPEC-LOT2.md, section 8)
 const avant7 = res.slice(0, 6).at(-1), withRoom = res.filter((r, i) => i === 0 || res[i - 1].faitsVus < 33);
 const moy = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
@@ -76,6 +76,17 @@ console.log(`séances d'additions : ${moy(m2.map((r) => r.add.filter((x) => !x.i
   const m3 = res.filter((r) => r.module === 3), acq = (n) => res.find((r) => (r.acquis3 ?? []).includes(n))?.n ?? "jamais", last3 = [...res].reverse().find((r) => r.acquis3);
   console.log(`\n## lot 3 : calcul rapide (${PROFILS[profil].nom})`);
   console.log(`séances de calcul rapide : ${m3.length} sur ${res.length} ; niveau acquis (séance) : ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => `${n}: ${acq(n)}`).join(" ; ")} ; acquis à la fin : ${last3?.acquis3?.join(", ") || "aucun"} ; leçons L7 à L9 : ${res.flatMap((r) => r.lecons.filter((l) => ["L7", "L8", "L9"].includes(l)).map((l) => `${l} (${r.n})`)).join(", ") || "aucune"} ; durée moyenne des séances de calcul rapide ${moy(m3.map((r) => r.duree)).toFixed(1)} min, ${moy(m3.map((r) => (r.calc ?? []).length)).toFixed(0)} calculs`);
+}
+// lot « Les voiliers » : le module 4 (choisi : --choix 4:N, ou --choix 4:0 pour le niveau conseillé chaque fois)
+{
+  const m4 = res.filter((r) => r.module === 4);
+  if (m4.length) {
+    console.log(`\n## les voiliers (${PROFILS[profil].nom}, cran ${val("--cran") ?? PROFILS[profil].cran ?? "conseille"})`);
+    const mers = m4.flatMap((r) => r.mers), part = (m) => Math.round((mers.filter((x) => x === m).length / Math.max(1, mers.length)) * 100);
+    console.log(`séances : ${m4.length} ; bateaux par séance : ${moy(m4.map((r) => r.voiliers.filter((x) => !x.startsWith("ex")).length)).toFixed(1)} (min ${Math.min(...m4.map((r) => r.voiliers.length))}, max ${Math.max(...m4.map((r) => r.voiliers.length))}) ; durée estimée ${moy(m4.map((r) => r.duree)).toFixed(1)} min ; réussite ${Math.round(moy(m4.map((r) => r.reussite ?? 0)) * 100)} % ; étoiles par séance ${moy(m4.map((r) => r.etoiles)).toFixed(1)}`);
+    console.log(`mer : calme ${part("calme")} %, vent ${part("vent")} %, pirates ${part("pirates")} % des bateaux ; niveau (séance où il est atteint) : ${[2, 3, 4, 5, 6, 7, 8, 9].map((n) => `${n}: ${m4.find((r) => r.niv1 >= n)?.n ?? "jamais"}`).join(" ; ")}`);
+    if (!court) for (const r of m4.slice(0, 6)) console.log(`  séance ${r.n} (niveau ${r.niv0} -> ${r.niv1}) : ${r.voiliers.join(" ")}`);
+  }
 }
 // lot 2, étape 7 : le défi record
 const defis = res.filter((r) => r.defi !== undefined), sautes = {};

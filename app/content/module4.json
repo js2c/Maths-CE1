@@ -1,0 +1,47 @@
+{
+  "_doc": "Module 4, les voiliers : ranger un nombre entre des bouées (docs/SPEC.md, section 7 bis ; maquette validée : art/voiliers/, son tableau LV). niveaux : ceux de la maquette, mêmes valeurs (tests/unit/voiliers.test.mjs les compare au script de la maquette) : max : les nombres vont jusqu'à 100 ou 1 000 ; bouees : leur nombre ; ecart : « dizaine » (de 10 en 10), « centaine » (de 100 en 100), « impair » (3 à 9, aucune bouée ronde), « alterne » (100 ou 10, en alternance d'une rangée à la suivante), « melange » (100, 10 ou 3 à 9 entre deux bouées), « double » (double encadrement : 4 bouées de 100 en 100, puis 5 bouées de 10 en 10) ; place : « loin » (au moins `loin` des bouées), « pres » (près d'une bouée : au plus 9 quand l'écart est de 100, au plus 2 sinon), « partout ». nouvellesBoueesApres : la rangée de bouées change après autant de bateaux (et à chaque changement de niveau ; dans la maquette, elle ne changeait qu'avec le niveau : sans cela, au niveau 5, l'alternance 100 / 10 ne se verrait jamais). essais : un bateau se range en deux essais au plus (calme et vent) ; au deuxième échec, il va seul au bon passage. retourErreur : un nombre manqué revient 3 à 5 bateaux plus loin. mer : la mer de chaque cran (proposition retenue par défaut le 6 octobre 2026) : `mers`, de la plus douce à la plus forte ; on commence par la première ; après `monteeApres` bateaux réussis de suite du premier coup, la suivante ; après `descenteApres` échecs, la précédente. ventS : le vent pousse le bateau jusqu'aux bouées en autant de secondes ; piratesPlusRapides : les pirates rattrapent un bateau immobile autant de fois plus vite que le vent (maquette : 30 %). exemples : l'exemple guidé de chaque niveau, la première fois qu'il est joué (le bateau va seul au bon passage pendant que la voix dit textes.json, voiliersExemple). qualite : la qualité de la mer au départ (0 économe, 1 normale, 2 fine, les trois de la maquette) ; elle baisse d'un cran quand le temps d'image moyen dépasse 20 ms et remonte quand tout redevient fluide (`remonteSousMs`). reglesAdaptation : comme les autres modules (docs/SPEC.md, section 9).",
+  "niveaux": [
+    { "niveau": 1, "max": 100, "bouees": 3, "ecart": "dizaine", "place": "loin", "loin": 3 },
+    { "niveau": 2, "max": 100, "bouees": 3, "ecart": "impair", "place": "partout" },
+    { "niveau": 3, "max": 1000, "bouees": 3, "ecart": "centaine", "place": "loin", "loin": 20 },
+    { "niveau": 4, "max": 1000, "bouees": 4, "ecart": "dizaine", "place": "loin", "loin": 3 },
+    { "niveau": 5, "max": 1000, "bouees": 4, "ecart": "alterne", "place": "pres" },
+    { "niveau": 6, "max": 1000, "bouees": 4, "ecart": "impair", "place": "pres" },
+    { "niveau": 7, "max": 1000, "bouees": 5, "ecart": "dizaine", "place": "pres" },
+    { "niveau": 8, "max": 1000, "bouees": 5, "ecart": "melange", "place": "pres" },
+    { "niveau": 9, "max": 1000, "bouees": 4, "ecart": "double", "place": "partout" }
+  ],
+  "nouvellesBoueesApres": 5,
+  "essais": 2,
+  "mer": {
+    "crans": {
+      "facile": { "mers": ["calme"] },
+      "conseille": { "mers": ["calme", "vent"] },
+      "dur": { "mers": ["vent", "pirates"] },
+      "tresdur": { "mers": ["pirates"] }
+    },
+    "monteeApres": 3,
+    "descenteApres": 2,
+    "ventS": 7,
+    "piratesPlusRapides": 1.3
+  },
+  "exemples": {
+    "1": { "bouees": [30, 40, 50], "nombre": 36 },
+    "2": { "bouees": [23, 28, 34], "nombre": 31 },
+    "3": { "bouees": [300, 400, 500], "nombre": 450 },
+    "4": { "bouees": [520, 530, 540, 550], "nombre": 534 },
+    "5": { "bouees": [600, 700, 800, 900], "nombre": 698 },
+    "6": { "bouees": [412, 417, 425, 431], "nombre": 426 },
+    "7": { "bouees": [350, 360, 370, 380, 390], "nombre": 369 },
+    "8": { "bouees": [240, 250, 350, 357, 367], "nombre": 349 },
+    "9": { "bouees": [200, 300, 400, 500], "nombre": 347, "dizaines": [320, 330, 340, 350, 360] }
+  },
+  "qualite": { "depart": 1, "remonteSousMs": 14 },
+  "reglesAdaptation": {
+    "montee": { "sur": 10, "justes": 8, "aidesMax": 1 },
+    "voieRapide": { "premieres": 5, "tempsMaxS": 6 },
+    "retourErreur": [3, 5],
+    "difficulte": { "sur": 5, "erreurs": 3 },
+    "redescente": { "seances": 2, "sousTaux": 0.5 }
+  }
+}

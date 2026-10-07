@@ -56,3 +56,12 @@ export async function setCalcLevel(store, niveau, now = Date.now()) {
   await store.put("niveaux", st);
   return st;
 }
+
+// lot « Les voiliers » : le niveau des voiliers choisi par le parent (point de départ) ; noté comme son choix, sans étoile
+export async function setVoiliersLevel(store, niveau, now = Date.now()) {
+  const st0 = (await store.get("niveaux", 4)) ?? { ...initialLevelState(4, now), exemples: [] };
+  if (st0.niveau === niveau) return st0;
+  const st = { ...st0, niveau, fenetre: [], vus: 0, taux: [], obtenus: [...(st0.obtenus ?? []), { niveau, date: now, parent: true, de: st0.niveau }] };
+  await store.put("niveaux", st);
+  return st;
+}

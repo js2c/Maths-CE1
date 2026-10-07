@@ -83,7 +83,7 @@ export class Voice {
         timer = setTimeout(go, p.ms + 1500); // secours : `ended` n'est pas arrivé
         audio.onended = go;
         // fichier illisible (absent du cache, format refusé) : cette phrase est lue par la synthèse
-        audio.onerror = () => { if (over) return; over = true; clearTimeout(timer); this.misses.add(p.s); this.speakSynth(p.s, null).then(() => { this.cur = me; this.speaking = true; timer = setTimeout(next, GAP_MS); }); };
+        audio.onerror = () => { if (over) return; over = true; clearTimeout(timer); this.misses.add(p.s); this.speakSynth(p.s, null).then(() => { if (done) return; this.cur = me; this.speaking = true; timer = setTimeout(next, GAP_MS); }); };
         this.files++;
         audio.play().catch(() => {}); // lecture refusée (pas encore de toucher) : le délai de secours fait avancer
       };
@@ -95,10 +95,13 @@ export class Voice {
   speakSynth(text, talk = null) {
     return new Promise((resolve) => {
       const ep = this.epoch, t = talk && { ...talk, ms: this.fallbackMs(text) }; let done = false, timer = 0, u = null;
-      const finish = () => { if (!done) { done = true; this.speaking = false; this.cur = null; clearTimeout(timer); this.quiet(t); if (ep === this.epoch) resolve(); } };
+      const finish = () => { if (!done) { done = true; this.speaking = false; this.cur = null; clearTimeout(timer); if (this.abort === finish) this.abort = null; this.quiet(t); if (ep === this.epoch) resolve(); } };
       const start = () => {
         timer = setTimeout(finish, this.fallbackMs(text));
         this.speaking = true;
+        // (lot « Les voiliers ») `stop` (« passer », une réponse donnée pendant la phrase) arrête aussi une phrase de
+        // synthèse : sans cela, son délai de secours courait jusqu'au bout (une phrase pas encore fabriquée)
+        if (talk) this.abort = finish;
         if (!this.synth) return;
         u = new SpeechSynthesisUtterance(text);
         u.lang = "fr-FR"; u.rate = this.rate; if (this.voice) u.voice = this.voice;

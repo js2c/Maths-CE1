@@ -108,6 +108,12 @@ test("le moteur de voix joue les fichiers, la synthèse en secours, « réécout
   assert.equal(v.listens, 2); assert.equal(v.misses.size, 0); assert.ok(v.plan(v.instruction));
   // sans index (fichier absent), tout passe par la synthèse
   const s = new Voice({ fast: true }); assert.equal(s.plan("Bravo !"), null); await s.say("Bravo !");
+  // (lot « Les voiliers ») « passer » arrête aussi une phrase de synthèse : elle finit tout de suite, au lieu d'attendre
+  // son délai de secours (environ une seconde ici, en mode rapide ; huit en vrai)
+  const long = "Une longue phrase sans fichier, que l'enfant a choisi de passer avant la fin, pour aller plus vite.";
+  const t0 = Date.now(), dite = s.say(long); await new Promise((r) => setTimeout(r, 30));
+  assert.ok(s.speaking); s.stop(); await dite;
+  assert.ok(Date.now() - t0 < 300, `${Date.now() - t0} ms`); assert.equal(s.speaking, false); assert.equal(s.abort, null);
 });
 
 test("un gabarit rempli en deux temps garde ses nombres (défaut « plus ? » du lot 1)", () => {

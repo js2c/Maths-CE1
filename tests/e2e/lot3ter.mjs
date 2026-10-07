@@ -197,14 +197,14 @@ if (part("appui")) {
     await page.waitForSelector(".choisir"); await page.waitForTimeout(400);
     for (const [sel, n] of [[".play", "jouer"], [".reefkey", "le récif"], [".albumkey", "l'album"], [".choisir", "choisir"]]) await probe(page, "accueil", sel, n, { shot: n === "jouer", brief: n === "choisir" ? changed : null });
     await page.waitForSelector(".choix-ex"); await page.waitForTimeout(300);
-    for (const ex of ["ligne", "additions", "calcul", "lecons"]) await probe(page, "choisir", `.choix-ex[aria-label="${ex}"]`, ex);
-    for (const ex of ["ligne", "additions", "calcul", "lecons"]) {
+    for (const ex of ["ligne", "additions", "calcul", "voiliers", "lecons"]) await probe(page, "choisir", `.choix-ex[aria-label="${ex}"]`, ex);
+    for (const ex of ["ligne", "additions", "calcul", "voiliers", "lecons"]) {
       await press(page, `.choix-ex[aria-label="${ex}"]`, 60).then((r) => r()); await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(500);
       const keys = await page.evaluate(() => [...document.querySelectorAll(".choix-tuile")].map((e) => e.dataset.key));
       for (const k of keys) await probe(page, `niveaux ${ex}`, `.choix-tuile[data-key="${k}"]`, k, { shot: (ex === "calcul" && k === "7") || (ex === "lecons" && k === "L2") || (ex === "ligne" && k === "1") });
       await probe(page, `niveaux ${ex}`, ".legende", "légende", { brief: async (p) => !!(await p.evaluate(() => window.__app.legendOpen)) });
       await probe(page, `niveaux ${ex}`, ".legende-fermer", "fermer la légende", { brief: async (p) => !(await p.evaluate(() => window.__app.legendOpen)) });
-      await probe(page, `niveaux ${ex}`, ".choix-retour", "retour aux exercices", { brief: async (p) => (await p.locator(".choix-ex").count()) === 4 });
+      await probe(page, `niveaux ${ex}`, ".choix-retour", "retour aux exercices", { brief: async (p) => (await p.locator(".choix-ex").count()) === 5 });
       await page.waitForTimeout(300);
     }
     // une tuile : toucher bref, lancée (la ligne, niveau 3), puis le sélecteur de difficulté

@@ -1,5 +1,5 @@
 {
-  "_doc": "Espace parent (docs/SPEC.md, « Espace parent »). appuiLongMs : durée de l'appui sur le logo ; codeChiffres : longueur du code ; rappelExportJours : délai avant le rappel d'export ; dureesSeance : choix proposés pour le plafond d'une séance (minutes, la valeur de seance.json par défaut) ; modules : noms et niveaux tels que le parent les lit ; erreurs : les codes du journal ; reussite : seuils des couleurs du calendrier. pointDeDepart (lot 2) : niveaux de la ligne graduée et familles de faits que le parent peut choisir comme point de départ (étape 2 : niveaux 1 à 8, familles 1 et 2 ; étape 6 : familles 1 à 7). Lot 3, étape 4 : modules.3 (le calcul rapide et ses 9 niveaux), erreurs C1 à C5, pointDeDepart.calculMax (le niveau du calcul rapide que le parent peut choisir comme point de départ).",
+  "_doc": "Espace parent (docs/SPEC.md, « Espace parent »). appuiLongMs : durée de l'appui sur le logo ; codeChiffres : longueur du code ; rappelExportJours : délai avant le rappel d'export ; dureesSeance : choix proposés pour le plafond d'une séance (minutes, la valeur de seance.json par défaut) ; modules : noms et niveaux tels que le parent les lit ; erreurs : les codes du journal ; reussite : seuils des couleurs du calendrier. pointDeDepart (lot 2) : niveaux de la ligne graduée et familles de faits que le parent peut choisir comme point de départ (étape 2 : niveaux 1 à 8, familles 1 et 2 ; étape 6 : familles 1 à 7). Lot 3, étape 4 : modules.3 (le calcul rapide et ses 9 niveaux), erreurs C1 à C5, pointDeDepart.calculMax (le niveau du calcul rapide que le parent peut choisir comme point de départ). Lot « Les voiliers » : modules.4 (les voiliers et leurs 9 niveaux), erreurs V1 à V4 et « rattrape » (le bateau rattrapé par les pirates), pointDeDepart.voiliersMax.",
   "appuiLongMs": 2000,
   "codeChiffres": 4,
   "rappelExportJours": 7,
@@ -39,6 +39,20 @@
         "1": "famille 1 : + 1 et + 2",
         "2": "famille 2 : doubles jusqu'à 5 + 5"
       }
+    },
+    "4": {
+      "nom": "Les voiliers",
+      "niveaux": {
+        "1": "ranger un nombre jusqu'à 100 entre deux dizaines (3 bouées de 10 en 10), à au moins 3 des bouées (45 entre 40 et 50)",
+        "2": "jusqu'à 100, 3 bouées qui ne sont pas des dizaines, écart de 3 à 9 (31 entre 28 et 34)",
+        "3": "jusqu'à 1 000, 3 bouées de 100 en 100 (450 entre 400 et 500)",
+        "4": "jusqu'à 1 000, 4 bouées de 10 en 10 (534 entre 530 et 540)",
+        "5": "jusqu'à 1 000, 4 bouées de 100 en 100 ou de 10 en 10, le nombre tout près d'une bouée (698 avant 700)",
+        "6": "jusqu'à 1 000, 4 bouées qui ne sont pas rondes, le nombre tout près d'une bouée (426 après 425)",
+        "7": "jusqu'à 1 000, 5 bouées de 10 en 10, le nombre tout près d'une bouée (369 avant 370)",
+        "8": "jusqu'à 1 000, 5 bouées aux écarts mélangés (100, 10, 3 à 9), le nombre tout près d'une bouée",
+        "9": "double encadrement : entre deux centaines, puis entre deux dizaines (347 entre 300 et 400, puis entre 340 et 350)"
+      }
     }
   },
   "formes": {
@@ -49,8 +63,8 @@
     "base": "temps de base",
     "directe": "a + b = ?", "trouDroite": "a + ? = n", "trouGauche": "? + b = n"
   },
-  "erreursExercice": { "_doc": "Lot 3 bis (B10) : l'exercice affiché devant chaque erreur du journal, d'après son code (premières lettres).", "E": "ligne", "C": "calcul", "soustraction": "additions", "unDesNombres": "additions", "plusOuMoins1": "additions", "NSP": "?", "autre": "—" },
-  "journalNote": "Pour la ligne graduée et le calcul rapide, une mauvaise réponse révèle souvent une erreur type, décrite ci-dessous en une phrase ; aux additions, l'application distingue quatre cas (se trompe de 1, a répondu l'un des deux nombres, a fait une soustraction, autre). L'application corrige chaque erreur avec une animation, et relance une leçon si la même erreur revient deux fois dans une séance. Au calcul rapide, une réponse juste mais lente est notée sans reproche : l'application rejoue le raccourci. Le bouton « je ne sais pas » a sa propre ligne : ce n'est pas une erreur, mais la question revient comme après une erreur.",
+  "erreursExercice": { "_doc": "Lot 3 bis (B10) : l'exercice affiché devant chaque erreur du journal, d'après son code (premières lettres).", "E": "ligne", "C": "calcul", "V": "voiliers", "rattrape": "voiliers", "soustraction": "additions", "unDesNombres": "additions", "plusOuMoins1": "additions", "NSP": "?", "autre": "—" },
+  "journalNote": "Pour la ligne graduée et le calcul rapide, une mauvaise réponse révèle souvent une erreur type, décrite ci-dessous en une phrase ; aux additions, l'application distingue quatre cas (se trompe de 1, a répondu l'un des deux nombres, a fait une soustraction, autre). L'application corrige chaque erreur avec une animation, et relance une leçon si la même erreur revient deux fois dans une séance. Au calcul rapide, une réponse juste mais lente est notée sans reproche : l'application rejoue le raccourci. Le bouton « je ne sais pas » a sa propre ligne : ce n'est pas une erreur, mais la question revient comme après une erreur. Aux voiliers, l'application nomme quatre cas (V1 à V4, ci-dessous) ; un bateau rangé au deuxième essai compte comme une erreur corrigée : l'erreur figure dans le journal, et l'étoile est gagnée.",
   "erreurs": {
     "E1": "compte les traits au lieu des sauts",
     "E2": "oublie qu'un saut vaut 10",
@@ -62,11 +76,17 @@
     "unDesNombres": "a répondu l'un des deux nombres",
     "plusOuMoins1": "se trompe de 1",
     "autre": "autre erreur",
-    "NSP": "« je ne sais pas » (bouton)"
+    "NSP": "« je ne sais pas » (bouton)",
+    "V1": "a confondu plus grand et plus petit près d'une bouée",
+    "V2": "s'est trompée de plusieurs passages",
+    "V3": "a trouvé les centaines, pas les dizaines",
+    "V4": "s'est trompée de centaine",
+    "rattrape": "le bateau a été rattrapé par les pirates avant d'être rangé"
   },
   "pointDeDepart": {
     "niveauxMax": 13,
     "familles": [1, 2, 3, 4, 5, 6, 7],
-    "calculMax": 9
+    "calculMax": 9,
+    "voiliersMax": 9
   }
 }

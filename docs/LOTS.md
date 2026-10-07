@@ -290,6 +290,11 @@ Taille de la table proposée par défaut : de 0 + 0 à 10 + 10, à confirmer au 
 
 **Déroulé**
 
+0. **D'abord, finir la recette du lot « Les leçons »**, écourtée à la demande du parent le 7 octobre 2026 : le lot a été fusionné (#40) avec ses tests unitaires et son parcours `lecons-menu`, mais sans la recette complète.
+   - Faire ce qui reste, d'après sa rubrique « Reprise » dans `docs/AVANCEMENT.md` : tous les parcours, la fluidité avant et après, la simulation, `b-sequences`, la séance réelle, les durées, et la relecture indépendante de ses écrans.
+   - Corriger ce qui en sort, comme un défaut de la branche, même si l'échec existe aussi sur `main`, puisque c'est ce lot qui l'a introduit. La comparaison se fait avec le `main` d'avant la #40.
+   - Archiver ensuite sa rubrique « Reprise ».
+   - Dans la demande de fusion du bloc, une section « Recette du lot Les leçons » donne les mesures et les corrections.
 1. « Sommes jusqu'à 30 » : proposition, maquette, code, recette complète de la méthode commune, documents.
 2. « Multiplication » : la même chose, sur la même branche, à la suite.
 3. **Une seule demande de fusion**, intitulée « Lot : Sommes jusqu'à 30 et Multiplication ».
@@ -298,7 +303,7 @@ Taille de la table proposée par défaut : de 0 + 0 à 10 + 10, à confirmer au 
    - Puis, comme toujours, les phrases à fabriquer : liste, nombre, poids. Le poids total de la voix doit rester sous 80 Mo : sinon, réduire les phrases (gabarits plus économes) plutôt que dépasser.
 4. Si la session est coupée malgré tout, le parent relance : « Lis CLAUDE.md puis docs/LOTS.md, et reprends le bloc « Sommes jusqu'à 30 » puis « Multiplication » là où il s'est arrêté (docs/AVANCEMENT.md, rubrique « Reprise »). »
 
-**Prérequis** : « Les leçons » et « Correctifs » sont marqués « fait » sur `main`.
+**Prérequis** : « Les leçons » et « Correctifs » sont marqués « fait » sur `main` (même si la recette des leçons n'est pas finie : c'est l'étape 0).
 
 ### 4. Lot « Sommes jusqu'à 30 »
 

@@ -101,6 +101,13 @@ Le lot a suivi les décisions des 5 et 6 octobre (ci-dessous). Là où elles lai
 - **Les petites pieuvres** du bouton « je ne sais pas », de la frise et de l'icône restent, faute de décision sur leur remplacement.
 - **La grande joie de fin de séance** : à l'ouverture du bilan des étoiles (la pieuvre y faisait une joie ordinaire).
 
+## Lot « Correctifs » (7 octobre 2026) : les choix faits en appliquant les décisions
+
+- **Une famille par jour (6.2)** : « seuls le choix et le point de départ y échappent » est lu ainsi : ils ouvrent même si une famille s'est ouverte le jour même, mais une famille ouverte par eux compte pour le jour (aucune autre ne s'ouvre ensuite par la notion du jour, l'échauffement ou la stagnation). C'est la lecture qui tient « au plus une par jour » au plus près ; l'autre (ne pas les compter) laisserait deux familles s'ouvrir le même soir après un choix. Une famille dépassée (stagnation) le jour où une autre s'est ouverte n'ouvre la suivante qu'au début de la séance d'additions « jouer » d'un autre jour : sinon la notion du jour pouvait rester sur la famille dépassée. Simulation : aucun ralentissement chez les 5 profils.
+- **Tolérance d'« estimer » (5.4)** : les estimations au cran « plus facile » ne comptent pas, comme ce cran ne compte pas pour la montée.
+- **Niveau 9 du calcul (7.3)** : au cran « très dur », toutes les questions à trou, comme les niveaux 4 à 8 (« la forme à trou du niveau 9 suit celle des niveaux 4 à 8 », fiche du lot). La spécification disait « à parts égales » pour tous les niveaux : c'était la règle du lot 3 bis pour les seuls niveaux à pas fixe.
+- **Redescente (9.2)** : le réglage `redescente` du calcul rapide, jamais lu, est retiré de `module3.json`, pour qu'un réglage du contenu ne promette pas ce que l'application ne fait pas. Les voiliers (lot suivant le rapport) ont la redescente, comme la ligne.
+
 ## Décisions du 6 octobre 2026, le soir (confrontation de la spécification avec le code, PR #37)
 
 - **Toutes les propositions de la conception acceptées** (« ok pour tout ») : les 23 écarts où le code a raison sont reportés dans la spécification ; les 4 écarts où le code s'écarte d'une décision sont corrigés dans le code (cadeaux de la surprise, « plus facile » à la ligne, une famille ouverte par jour toutes voies confondues, forme à trou du niveau 9 du calcul avec ses phrases) ; parmi les 14 questions, trois correctifs (tolérance d'« estimer » au niveau joué, leçon relancée aux maisons de 8 et 9 et aux presque-doubles, phrase de correction du mur sans « chemin »), le reste gardé tel que le code le fait et écrit ; les 24 comportements non décrits ajoutés à la spécification.

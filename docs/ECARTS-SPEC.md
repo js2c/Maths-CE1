@@ -1,5 +1,7 @@
 # Écarts entre la spécification et l'application
 
+**Tranché par le parent le 6 octobre 2026, appliqué par le lot « Correctifs » (demande de fusion #39).** Ce rapport décrit l'état d'avant ; la règle en vigueur est dans `docs/SPEC.md`, qui renvoie aux numéros ci-dessous.
+
 Confrontation de `docs/SPEC.md` avec le code (`app/js`) et les réglages (`app/content`), faite le 6 octobre 2026 sur `main` (après le lot « Mascotte »), sans rien corriger : la spécification et l'application restent telles quelles jusqu'à la décision du parent (`docs/PROMPTS.md`, « Confrontation »). Ce qui est marqué **(à construire)** dans la spécification (jeu des voiliers, leçons refaites, bilans, problèmes, sommes jusqu'à 30…) n'est pas relevé.
 
 ## Synthèse

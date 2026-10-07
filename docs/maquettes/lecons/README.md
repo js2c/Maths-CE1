@@ -1,6 +1,6 @@
 # Maquette du lot « Les leçons » (avec la table d'addition)
 
-**En attente de la validation du parent.** Rien n'est modifié dans `app/` avant sa réponse (`docs/LOTS.md`, méthode commune, « Le point d'arrêt maquette »).
+**Validée par le parent le 7 octobre 2026** (« validé » : les douze questions ouvertes prennent leur valeur par défaut ; `docs/JOURNAL-CONCEPTION.md`). Construite dans l'application par le même lot : `docs/SPEC.md`, section 3, « Les leçons ».
 
 - La maquette elle-même : `art/lecons/index.html` (mode d'emploi dans `art/lecons/README.md`). Elle a la mascotte, la bulle, les boutons et le fond de l'application ; elle n'a pas de voix : la bulle écrit ce que la voix dira.
 - Spécification : `docs/SPEC.md`, section 3, « Les leçons », et section 8 (L10). Fiche : `docs/LOTS.md`, lot 3.

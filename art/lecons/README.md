@@ -1,6 +1,6 @@
 # Maquette — les leçons et la table d'addition (lot « Les leçons »)
 
-Maquette du rendu final du lot (`docs/LOTS.md`, fiche 3 ; `docs/SPEC.md`, sections 3 et 8), **en attente de la validation du parent**. Captures, phrases et questions : `docs/maquettes/lecons/README.md`. Aucun fichier sous `app/` n'est modifié.
+Maquette du rendu final du lot (`docs/LOTS.md`, fiche 3 ; `docs/SPEC.md`, sections 3 et 8), **validée par le parent le 7 octobre 2026**, puis construite dans l'application (`app/js/session/lessons.js`). Captures, phrases et questions : `docs/maquettes/lecons/README.md`. La maquette ne modifie aucun fichier sous `app/` : elle les lit.
 
 ## Tester
 

@@ -50,7 +50,7 @@ console.log(`séances d'additions : ${moy(m2.map((r) => r.add.filter((x) => !x.i
   const big = M2.familles.filter((f) => f.id >= 8).map((f) => f.id), q = (r) => r.add.filter((x) => !x.includes("g")), gt10 = (x) => { const m = /^(\?|\d+)\+(\?|\d+)/.exec(x); return m && m[1] !== "?" && m[2] !== "?" ? +m[1] + +m[2] > 10 : null; };
   const quart = (k) => res.slice(Math.floor((k * res.length) / 4), Math.floor(((k + 1) * res.length) / 4));
   console.log(`\n## sommes jusqu'à 30 (${PROFILS[profil].nom})`);
-  console.log(`familles 8 à 14 (séance où elle s'ouvre / est acquise) : ${big.map((id) => `${id}: ${famDate("fOuvertes", id)}/${famDate("fAcquises", id)}`).join(" ; ")}`);
+  console.log(`familles 8 à 13 (séance où elle s'ouvre / est acquise) : ${big.map((id) => `${id}: ${famDate("fOuvertes", id)}/${famDate("fAcquises", id)}`).join(" ; ")}`);
   console.log(`faits au-delà de 10 (60) : rencontrés à la fin ${res.at(-1).vus20 ?? 0}, en boîte 3 ou plus ${res.at(-1).sus20 ?? 0} ; par quart d'année (rencontrés / bien sus à la fin du quart) : ${[0, 1, 2, 3].map((k) => `${quart(k).at(-1)?.vus20 ?? "-"}/${quart(k).at(-1)?.sus20 ?? "-"}`).join(" ; ")}`);
   console.log(`séances d'additions par quart d'année : ${[0, 1, 2, 3].map((k) => quart(k).filter((r) => r.module === 2).length + "/" + quart(k).length).join(" ; ")} ; leçons L11 et L12 : ${res.flatMap((r) => r.lecons.filter((l) => ["L11", "L12"].includes(l)).map((l) => `${l} (séance ${r.n})`)).join(", ") || "jamais"}`);
   const defq = (k) => quart(k).filter((r) => r.defi !== undefined).map((r) => r.defi);

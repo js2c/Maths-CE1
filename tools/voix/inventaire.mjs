@@ -81,7 +81,7 @@ function domaines(C) {
     // seance.json, menuLecons.table.max)
     tableCase: (() => { const m = C.seance?.menuLecons?.table?.max ?? 10; return range(0, m).flatMap((a) => range(0, m).map((b) => ({ a, b, n: a + b }))); })(),
     // l'aide de la famille 1 : la tortue part du grand nombre et fait 1 ou 2 sauts (facts/screen.js)
-    aideLigne: faits.filter(({ a, b }) => Math.min(a, b) === 1 || Math.min(a, b) === 2).map(({ a, b }) => ({ a: Math.max(a, b), sauts: sautsDe(Math.min(a, b)) })),
+    aideLigne: faits.filter(({ a, b }) => a + b <= 10).filter(({ a, b }) => Math.min(a, b) === 1 || Math.min(a, b) === 2).map(({ a, b }) => ({ a: Math.max(a, b), sauts: sautsDe(Math.min(a, b)) })),
     // l'aide des doubles jusqu'à 5 : a poissons et leur reflet
     // (lot « Sommes jusqu'à 30 » : jusqu'à 10 + 10 ; au-delà, le grand double)
     aideReflet: range(2, 10).map((a) => ({ a })),

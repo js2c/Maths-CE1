@@ -53,7 +53,6 @@ Au cran « plus facile », l'écriture 600 + 30 + 5 s'affiche sous la cale. Un f
 - **Les problèmes** : une étape courte de chaque séance (recommandation de conception : un ou deux problèmes par soir, c'est une compétence d'usage) ou un exercice qu'on choisit ?
 - **La banque de problèmes** : chaque phrase lue est fabriquée à l'avance (plafond 80 Mo, 51 Mo utilisés) ; des énoncés à nombres variables multiplieraient les fichiers. Recommandation : une banque fixe de 150 à 200 énoncés rédigés en conception et relus par le parent (quelques Mo de voix).
 - **Les illustrations des problèmes** : 150 à 200 scènes de la vie courante ne sont pas dessinables en code à un coût raisonnable ; Nano Banana, une image fixe par énoncé (ou par contexte réutilisé), dans un style fixé par une image de référence. Point de vigilance : un générateur d'images compte mal (« 3 sachets de 6 » ne sera pas exact) ; l'image montre le contexte, les quantités sont dessinées par l'application (objets à grouper) ou dites par la voix.
-- **Les sommes jusqu'à 30** : les tables d'addition du CE1 vont jusqu'à 9 + 9 = 18 ; au-delà (17 + 8, 21 + 9), c'est du calcul réfléchi (passer la dizaine), déjà en partie au calcul rapide (niveau 7). Proposition : faits jusqu'à 9 + 9 à mémoriser (révision espacée, formes à trou), sommes de 19 à 30 par procédure. La limite de 30 est confirmée (6 octobre) ; le partage entre mémoriser et calculer sera tranché au point d'arrêt du lot « Sommes jusqu'à 30 » (`docs/LOTS.md`).
 - **L'échauffement quand un exercice est choisi** : aujourd'hui il reste, sauf si on le passe. Le garder, le supprimer, ou le réduire ?
 - **Le nombre de crans de difficulté** : quatre crans multiplient les cas à tester (116 combinaisons pour la seule vérification des séquences). En garder quatre, ou passer à trois ?
 - **Le crabe**, prévu comme personnage des problèmes : au vu de ce que le bernard-l'ermite a apporté (rien de pédagogique, avis du parent), le laisser de côté ?
@@ -126,6 +125,13 @@ Au cran « plus facile », l'écriture 600 + 30 + 5 s'affiche sous la cale. Un f
 - **`success`** dure 8,7 s ; il cède à la phrase suivante dès 1,8 s.
 - **`idle-hochement`** (l'ancienne vidéo d'attente) ne revient à la pose de départ qu'après 3,8 s : une phrase qui commence pendant ce clip passe par un fondu visible. Il n'est tiré qu'à l'accueil.
 - **La mascotte sur la tablette** (après le lot « Mascotte ») : fluidité des 17 vidéos décodées et du détourage en WebGL avec le lagon (dans le conteneur de développement, sans processeur graphique, la vidéo tourne à 6 à 13 images/s) ; mémoire ; la bulle se lit-elle, ou distrait-elle l'enfant de l'ardoise ? La flèche corail se voit-elle sur l'eau ? Dans le conteneur, la charge de la vidéo retarde les fondus : au parcours `lot3ter`, les étiquettes d'appui long sont à moitié visibles après 0,8 s (9 échecs contre 2 sur `main` ; 3 seulement en masquant la mascotte). Sur la tablette, vérifier qu'un appui long sur « jouer » montre bien son étiquette.
+
+**Après le lot « Sommes jusqu'à 30 »** (octobre 2026 ; choix de la session, `docs/maquettes/sommes30/PROPOSITION.md`) :
+
+- **Le partage entre mémoriser et calculer** : faits jusqu'à 10 + 10 et doubles jusqu'à 15 + 15 à mémoriser (familles 8 à 13), les autres sommes jusqu'à 30 calculées au calcul rapide. À revoir si l'enseignante attend autre chose.
+- **Le défi record** avec les grands faits : un défi plus lent, un record qui se bat moins souvent (simulation : records surtout au premier trimestre). Faut-il un record par « âge » des faits ?
+- **La part de la famille en cours** pour les presque-doubles jusqu'à 10 (famille 10) : 70 à 80 % en simulation, comme les petites familles (question déjà ouverte ci-dessous).
+- **Les deux boîtes** : les places qui brillent aux formes à trou se voient-elles assez sur la tablette ?
 
 **Après le lot « Correctifs »** (octobre 2026) :
 

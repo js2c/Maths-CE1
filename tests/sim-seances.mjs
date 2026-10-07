@@ -10,6 +10,7 @@ import { readFileSync } from "node:fs";
 import { simulate, PROFILS } from "./sim-recette.mjs";
 import { dateOf } from "../app/js/session/rewards.js";
 const cal = JSON.parse(readFileSync(new URL("../app/content/calendrier.json", import.meta.url)));
+const M2 = JSON.parse(readFileSync(new URL("../app/content/module2.json", import.meta.url))), FAMS = M2.familles.map((f) => f.id), NONMIX = M2.familles.filter((f) => f.regle !== "melange").map((f) => f.id);
 const hol = cal.vacances.map((v) => [new Date(dateOf(v.debut)), new Date(dateOf(v.reprise))]), fin = new Date(dateOf("2027-07-02") + 86400000);
 const days = (perWeek, n) => { const out = []; let d = new Date("2026-09-28T00:00:00"); const wd = perWeek === 2 ? [1, 4] : perWeek === 3 ? [1, 3, 5] : [1, 2, 3, 4, 5];
   while (n === "annee" ? d < fin : out.length < n) { if (!hol.some(([a, b]) => d >= a && d < b) && wd.includes(d.getDay())) out.push(new Date(d)); d = new Date(d.getTime() + 86400000); } return out; };
@@ -37,13 +38,25 @@ console.log(`\n## module 2 et alternance (${PROFILS[profil].nom})`);
 console.log(`notion du jour : ${mods.filter((m) => m === 1).length} séances de ligne graduée, ${mods.filter((m) => m === 2).length} d'additions ; deux fois de suite le même module : ${deux}`);
 const m2f = (rs) => rs.filter((r) => r.module === 2).map((r) => r.famille).join(" ");
 const famDate = (k, id) => res.find((r) => r[k].includes(id))?.n ?? "-";
-console.log(`familles (séance où elle s'ouvre / est acquise / ouvre ses formes à trou) : ${[1, 2, 3, 4, 5, 6, 7].map((id) => `${id}: ${famDate("fOuvertes", id)}/${famDate("fAcquises", id)}/${famDate("fTrou", id)}`).join(" ; ")}`);
+console.log(`familles (séance où elle s'ouvre / est acquise / ouvre ses formes à trou) : ${FAMS.map((id) => `${id}: ${famDate("fOuvertes", id)}/${famDate("fAcquises", id)}/${famDate("fTrou", id)}`).join(" ; ")}`);
 // décision du parent du 27 septembre : stagnation (famille dépassée après 6 séances d'additions sans être acquise)
-console.log(`familles dépassées (séance) : ${[1, 2, 3, 4, 5, 6].filter((id) => res.at(-1).fDepassees.includes(id)).map((id) => `${id} (${famDate("fDepassees", id)})`).join(", ") || "aucune"} ; familles ouvertes à la fin : ${res.at(-1).fOuvertes.join(", ")} ; acquises : ${res.at(-1).fAcquises.join(", ") || "aucune"} ; famille en cours, séance par séance d'additions : ${m2f(res)}`);
+console.log(`familles dépassées (séance) : ${NONMIX.filter((id) => res.at(-1).fDepassees.includes(id)).map((id) => `${id} (${famDate("fDepassees", id)})`).join(", ") || "aucune"} ; familles ouvertes à la fin : ${res.at(-1).fOuvertes.join(", ")} ; acquises : ${res.at(-1).fAcquises.join(", ") || "aucune"} ; famille en cours, séance par séance d'additions : ${m2f(res)}`);
 console.log(`leçons jouées sur l'année : ${res.flatMap((r) => r.lecons.map((l) => `${l} (${r.n})`)).join(", ") || "aucune"}`);
 console.log(`45 faits vus à la séance ${res.find((r) => r.faitsVus >= 45)?.n ?? "jamais"} ; leçons du module 2 : ${res.flatMap((r) => r.lecons.filter((l) => ["L4", "L5", "L6"].includes(l)).map((l) => `${l} (séance ${r.n})`)).join(", ") || "aucune"}`);
 const m2 = res.filter((r) => r.module === 2);
 console.log(`séances d'additions : ${moy(m2.map((r) => r.add.filter((x) => !x.includes("g")).length)).toFixed(1)} questions en moyenne, durée estimée ${moy(m2.map((r) => r.duree)).toFixed(1)} min ; formes à trou ${m2.reduce((a, r) => a + r.add.filter((x) => x.includes("?")).length, 0)} sur ${m2.reduce((a, r) => a + r.add.length, 0)}`);
+// lot « Sommes jusqu'à 30 » (docs/maquettes/sommes30/PROPOSITION.md) : les familles 8 à 14, les faits au-delà de 10
+{
+  const big = M2.familles.filter((f) => f.id >= 8).map((f) => f.id), q = (r) => r.add.filter((x) => !x.includes("g")), gt10 = (x) => { const m = /^(\?|\d+)\+(\?|\d+)/.exec(x); return m && m[1] !== "?" && m[2] !== "?" ? +m[1] + +m[2] > 10 : null; };
+  const quart = (k) => res.slice(Math.floor((k * res.length) / 4), Math.floor(((k + 1) * res.length) / 4));
+  console.log(`\n## sommes jusqu'à 30 (${PROFILS[profil].nom})`);
+  console.log(`familles 8 à 14 (séance où elle s'ouvre / est acquise) : ${big.map((id) => `${id}: ${famDate("fOuvertes", id)}/${famDate("fAcquises", id)}`).join(" ; ")}`);
+  console.log(`faits au-delà de 10 (60) : rencontrés à la fin ${res.at(-1).vus20 ?? 0}, en boîte 3 ou plus ${res.at(-1).sus20 ?? 0} ; par quart d'année (rencontrés / bien sus à la fin du quart) : ${[0, 1, 2, 3].map((k) => `${quart(k).at(-1)?.vus20 ?? "-"}/${quart(k).at(-1)?.sus20 ?? "-"}`).join(" ; ")}`);
+  console.log(`séances d'additions par quart d'année : ${[0, 1, 2, 3].map((k) => quart(k).filter((r) => r.module === 2).length + "/" + quart(k).length).join(" ; ")} ; leçons L11 et L12 : ${res.flatMap((r) => r.lecons.filter((l) => ["L11", "L12"].includes(l)).map((l) => `${l} (séance ${r.n})`)).join(", ") || "jamais"}`);
+  const defq = (k) => quart(k).filter((r) => r.defi !== undefined).map((r) => r.defi);
+  console.log(`défi record, score moyen par quart d'année : ${[0, 1, 2, 3].map((k) => { const d = defq(k); return d.length ? moy(d).toFixed(1) : "-"; }).join(" ; ")} ; records battus par quart : ${[0, 1, 2, 3].map((k) => quart(k).filter((r) => r.record).length).join(" ; ")}`);
+  void q; void gt10;
+}
 // lot 3, étape 1 (docs/SPEC-LOT3.md, section 7) : leçon et exercice cohérents
 {
   const LF = { L4: [2, 6], L5: [3], L6: [4, 5] }, bad = m2.filter((r) => r.lecons.some((l) => LF[l] && !LF[l].includes(r.famille)));
@@ -53,7 +66,7 @@ console.log(`séances d'additions : ${moy(m2.map((r) => r.add.filter((x) => !x.i
 }
 // lot 3 bis (docs/SPEC-LOT3BIS.md, A1) : aucune famille acquise en une seule séance
 {
-  const acq = [1, 2, 3, 4, 5, 6].map((id) => { const i = res.findIndex((r) => r.fAcquises.includes(id)); if (i < 0) return null; const avant = res.slice(0, i + 1).filter((r) => (r.fPratique ?? []).includes(id)).length; return { id, n: res[i].n, avant }; }).filter(Boolean);
+  const acq = NONMIX.map((id) => { const i = res.findIndex((r) => r.fAcquises.includes(id)); if (i < 0) return null; const avant = res.slice(0, i + 1).filter((r) => (r.fPratique ?? []).includes(id)).length; return { id, n: res[i].n, avant }; }).filter(Boolean);
   const une = acq.filter((a) => a.avant < 2);
   console.log(`\n## lot 3 bis : acquisition des familles (${PROFILS[profil].nom})`);
   console.log(`familles acquises (séance, séances où elle a été réussie jusque-là) : ${acq.map((a) => `${a.id} (${a.n}, ${a.avant})`).join(" ; ") || "aucune"} ; acquise en une seule séance : ${une.length ? une.map((a) => a.id).join(", ") + " (ERREUR)" : "aucune"}`);

@@ -17,6 +17,8 @@ export const key = (a, b) => `${a}+${b}`;
 
 // les règles des familles : un fait (a, b) en fait-il partie ?
 // (lot 2, étape 6 : familles 3 à 7 ; docs/SPEC-LOT2.md, section 3)
+// (lot « Sommes jusqu'à 30 », docs/maquettes/sommes30/PROPOSITION.md : chaque famille a sa somme maximale, `max`, 10 par
+// défaut, `sommeMax` ; les familles 8 à 14 vont jusqu'à 20, puis 30 ; les termes vont jusqu'à `termeMax`, 15)
 export const RULES = {
   plus1ou2: (a, b) => Math.min(a, b) <= 2,
   doubles: (a, b) => a === b && a <= 5,
@@ -25,17 +27,31 @@ export const RULES = {
   maisons89: (a, b) => a + b === 8 || a + b === 9,
   presqueDoubles: (a, b) => Math.abs(a - b) === 1 && Math.max(a, b) <= 5,
   melange: () => true,
+  // lot « Sommes jusqu'à 30 » : dix et quelques (10 + 4, 4 + 10) ; les doubles de 6 + 6 à 15 + 15 (le programme : « les doubles
+  // des nombres de 1 à 15 ») ; les presque-doubles de 5 + 6 à 9 + 10 ; + 9 au-delà de 10 (9 + 2 à 9 + 9) ; passer la dizaine
+  // (sommes de 11 à 16, termes de 3 à 8)
+  dixPlus: (a, b) => a === 10 || b === 10,
+  doubles15: (a, b) => a === b && a >= 6 && a <= 15,
+  presqueDoubles10: (a, b) => Math.abs(a - b) === 1 && Math.max(a, b) >= 6 && Math.max(a, b) <= 10,
+  plus9: (a, b) => (a === 9 || b === 9) && a <= 9 && b <= 9 && a + b > 10,
+  passerDizaine: (a, b) => a + b > 10 && Math.max(a, b) <= 8,
 };
+// la somme maximale d'une famille, et les faits (a, b) qu'elle peut contenir (a, b >= 1)
+export const famMax = (c, fam) => fam?.max ?? c.sommeMax;
+const each = (c, fam, f) => { const m = famMax(c, fam), t = Math.max(c.termeMax ?? m, 1); for (let a = 1; a <= Math.min(t, m - 1); a++) for (let b = 1; b <= t && a + b <= m; b++) f(a, b); };
 // l'appui visuel qui montre le mieux un fait (aide du coquillage, correction, exemple guidé) : le plus
 // parlant d'abord (ami de 10, double, presque-double), puis les sauts pour + 1 et + 2, sinon la maison
-export const aidFor = (a, b) => (a + b === 10 ? "cadre" : a === b && a <= 5 ? "reflet" : Math.abs(a - b) === 1 && Math.max(a, b) <= 5 ? "doublePlus" : Math.min(a, b) <= 2 ? "ligne" : "maison");
+// (lot « Sommes jusqu'à 30 » : au-delà de 10, le reflet pour un double jusqu'à 10 + 10, le filet et son reflet pour un grand double,
+// le double + 1 pour un presque-double, sinon les deux boîtes de dix, la première complétée)
+export const aidFor = (a, b) => (a + b > 10 ? (a === b ? (a <= 10 ? "reflet" : "grandDouble") : Math.abs(a - b) === 1 && Math.max(a, b) <= 10 ? "doublePlus" : "deuxCadres") : a + b === 10 ? "cadre" : a === b && a <= 5 ? "reflet" : Math.abs(a - b) === 1 && Math.max(a, b) <= 5 ? "doublePlus" : Math.min(a, b) <= 2 ? "ligne" : "maison");
 // le catalogue, dans l'ordre d'apprentissage : famille par famille ; dans une famille, du plus petit
 // total au plus grand, + 1 avant + 2, le grand nombre d'abord (on part du grand et on fait 1 ou 2 sauts)
 export function catalog(c) {
   const out = [], seen = new Set();
   for (const fam of c.familles) {
     const list = [];
-    for (let a = 1; a < c.sommeMax; a++) for (let b = 1; a + b <= c.sommeMax; b++) if (RULES[fam.regle](a, b) && !seen.has(key(a, b))) list.push({ fait: key(a, b), a, b, famille: fam.id });
+    // (un mélange n'apporte aucun fait nouveau : il mêle ceux des familles d'avant)
+    if (fam.regle !== "melange") each(c, fam, (a, b) => { if (RULES[fam.regle](a, b) && !seen.has(key(a, b))) list.push({ fait: key(a, b), a, b, famille: fam.id }); });
     list.sort((x, y) => Math.min(x.a, x.b) - Math.min(y.a, y.b) || x.a + x.b - (y.a + y.b) || y.a - x.a);
     list.forEach((f) => seen.add(f.fait)); out.push(...list);
   }
@@ -47,7 +63,9 @@ export const familyOf = (c, id) => c.familles.find((f) => f.id === id);
 export function ruleFacts(c, id) {
   const fam = familyOf(c, id), out = [];
   if (!fam || !RULES[fam.regle]) return out;
-  for (let a = 1; a < c.sommeMax; a++) for (let b = 1; a + b <= c.sommeMax; b++) if (RULES[fam.regle](a, b)) out.push({ fait: key(a, b), a, b });
+  // (lot « Sommes jusqu'à 30 » : un mélange, les faits du catalogue jusqu'à sa somme maximale ; la famille 7, jusqu'à 10)
+  if (fam.regle === "melange") return catalog(c).filter((f) => f.a + f.b <= famMax(c, fam)).map(({ fait, a, b }) => ({ fait, a, b }));
+  each(c, fam, (a, b) => { if (RULES[fam.regle](a, b)) out.push({ fait: key(a, b), a, b }); });
   return out;
 }
 export const median = (xs) => { if (!xs.length) return null; const s = [...xs].sort((p, q) => p - q), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
@@ -156,6 +174,8 @@ export function classifyFact(q, v) {
   if (f === "directe" ? v === Math.abs(q.a - q.b) && q.a !== q.b : v === q.a + q.b) return "soustraction";
   if (f === "directe" ? v === q.a || v === q.b : v === (f === "trouDroite" ? q.a : q.b)) return "unDesNombres";
   if (Math.abs(v - exp) === 1) return "plusOuMoins1";
+  // (lot « Sommes jusqu'à 30 » : au-delà de 10, seules les unités données, 8 + 5 → 3 : « a oublié la dizaine »)
+  if (exp > 10 && v === exp % 10) return "dizaine";
   return "autre";
 }
 export const expected = (q) => (q.forme === "trouDroite" ? q.b : q.forme === "trouGauche" ? q.a : q.op === "-" ? q.a - q.b : q.a + q.b);

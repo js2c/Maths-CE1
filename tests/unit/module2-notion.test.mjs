@@ -21,7 +21,7 @@ const open = () => Store.open(new IDBFactory());
 const fact = (k, boite, extra = {}) => { const [a, b] = k.split("+").map(Number); return { fait: k, a, b, boite, prochain: NOW + 30 * DAY, historique: [{ t: NOW - DAY, juste: true, ms: 2000 }], ...extra }; };
 
 test("familles 3 à 7 : règles, ordre d'introduction, 45 faits (a, b de 1 à 9, somme au plus 10), appui visuel", () => {
-  assert.equal(catalog(c).length, 45);
+  assert.equal(catalog(c).filter((f) => f.famille <= 7).length, 45); // (lot « Sommes jusqu'à 30 » : 60 faits de plus, familles 8 à 13)
   const r = (id) => ruleFacts(c, id).map((f) => f.fait);
   assert.deepEqual(r(3).sort(), ["1+9", "2+8", "3+7", "4+6", "5+5", "6+4", "7+3", "8+2", "9+1"]);
   assert.equal(r(4).length, 15); assert.ok(r(4).every((k) => { const [a, b] = k.split("+").map(Number); return a + b >= 5 && a + b <= 7; }));
@@ -29,7 +29,7 @@ test("familles 3 à 7 : règles, ordre d'introduction, 45 faits (a, b de 1 à 9,
   assert.deepEqual(r(6).sort(), ["1+2", "2+1", "2+3", "3+2", "3+4", "4+3", "4+5", "5+4"]); // les presque-doubles : 8 faits
   assert.equal(r(7).length, 45);
   // introduction : la première famille qui contient le fait (les familles 1 et 2 en introduisent 33 ; 6 et 7, aucun)
-  const by = {}; for (const f of catalog(c)) by[f.famille] = (by[f.famille] ?? 0) + 1;
+  const by = {}; for (const f of catalog(c)) if (f.famille <= 7) by[f.famille] = (by[f.famille] ?? 0) + 1;
   assert.deepEqual(by, { 1: 30, 2: 3, 3: 4, 4: 2, 5: 6 });
   assert.equal(aidFor(7, 3), "cadre"); assert.equal(aidFor(4, 4), "reflet"); assert.equal(aidFor(3, 4), "doublePlus"); assert.equal(aidFor(6, 2), "ligne"); assert.equal(aidFor(5, 3), "maison");
   // réglages dans le contenu, jamais en dur

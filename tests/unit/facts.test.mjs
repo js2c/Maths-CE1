@@ -16,7 +16,8 @@ test("familles 1 et 2 : 30 faits + 1 et + 2, puis les doubles 3+3, 4+4, 5+5 ; so
   const cat = catalog(c);
   assert.equal(cat.filter((f) => f.famille === 1).length, 30);
   assert.deepEqual(cat.filter((f) => f.famille === 2).map((f) => f.fait), ["3+3", "4+4", "5+5"]);
-  assert.ok(cat.every((f) => f.a + f.b <= 10 && f.a >= 1 && f.b >= 1));
+  // (lot « Sommes jusqu'à 30 » : les familles 1 à 7 restent jusqu'à 10 ; les familles 8 à 14 vont au-delà)
+  assert.ok(cat.filter((f) => f.famille <= 7).every((f) => f.a + f.b <= 10 && f.a >= 1 && f.b >= 1));
   assert.deepEqual(cat.slice(0, 3).map((f) => f.fait), ["1+1", "2+1", "1+2"]);
 });
 

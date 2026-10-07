@@ -147,7 +147,7 @@ export const SPECS: Spec[] = [
   { name: "choisir", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawChooseKey(g, 90, 90) },
   { name: "choix.ex.ligne", sheet: "choix", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawExerciseLine(g, 90, 90) },
   ...Array.from({ length: 13 }, (_, i): Spec => ({ name: `choix.ligne.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawLineTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
-  ...Array.from({ length: 7 }, (_, i): Spec => ({ name: `choix.famille.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawFamilyTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
+  ...Array.from({ length: 13 }, (_, i): Spec => ({ name: `choix.famille.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawFamilyTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
   { name: "choix.lueur", sheet: "choix", W: TILE_W + 2 * GLOW_PAD + 12, H: TILE_H + 2 * GLOW_PAD + 12, origin: [TILE_W / 2 + GLOW_PAD + 6, TILE_H / 2 + GLOW_PAD + 6], frames: 1, draw: (g) => drawTileGlow(g, TILE_W / 2 + GLOW_PAD + 6, TILE_H / 2 + GLOW_PAD + 6) },
   // lot 3, étape 3 : le calcul rapide. Le pictogramme de l'écran « choisir » et les neuf plaques de niveaux (planche
   // « choix ») ; celui de la frise (« petits », comme les autres étapes) ; le petit poisson jaune du mur de corail,

@@ -184,7 +184,7 @@ test("familles du module 2 pour le parent : ouverte, acquise, formes à trou, fa
   const st = { module: 2, ouvertes: [1, 2, 3], ouvertures: [{ famille: 1, date: 0 }, { famille: 2, date: 0 }, { famille: 3, date: at(2026, 10, 3), parent: true }], acquises: [2], obtenus: [{ famille: 2, date: at(2026, 10, 2) }], trou: [2], notion: [], lecons: [] };
   const faits = ["1+1", "2+2", "3+3", "4+4", "5+5"].map((k) => fait(k, 3));
   const S = D.familiesSummary(M2, st, faits), f = (id) => S.familles.find((x) => x.id === id);
-  assert.equal(S.enCours, 1); assert.equal(S.familles.length, 7);
+  assert.equal(S.enCours, 1); assert.equal(S.familles.length, M2.familles.length); // (lot « Sommes jusqu'à 30 » : 14 familles)
   assert.deepEqual([f(2).acquise, f(2).trou, f(2).bienSus, f(2).total], [true, true, 5, 5]);
   assert.deepEqual([f(3).ouverte, f(3).ouverteParent, f(3).bienSus], [true, true, 1]); // 5 + 5 est aussi un ami de 10
   assert.equal(f(4).ouverte, false);

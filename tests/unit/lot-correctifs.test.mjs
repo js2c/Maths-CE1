@@ -74,6 +74,10 @@ test("6.2 : une famille dépassée (stagnation) le jour où une autre s'est ouve
   assert.ok(!n.events.some((e) => e.type === "ouverte"), "pas ce jour-là");
   assert.deepEqual(n.st.ouvertes, [1, 2, 3, 4]); assert.ok(n.st.ouvertureEnAttente);
   assert.equal(openPending(m2, n.st, NOW + 3600e3).st, n.st, "toujours pas le même jour");
+  // une autre séance d'additions le même soir : la famille dépassée ne redevient pas la famille en cours (relecture du lot)
+  const store0 = await Store.open(new IDBFactory()); await store0.put("niveaux", n.st);
+  for (const f of faitsSus([1, 2, 3, 4], 3)) await store0.put("faits", f);
+  assert.equal((await new Module2Runner({ store: store0, content: m2, rnd: rng(1), seance: 9.5, clock: () => NOW + 3600e3 }).load()).famille, 3, "la dernière famille ouverte non dépassée");
   // le lendemain, au début de la notion du jour des additions (« jouer ») : la famille 5 s'ouvre et devient la famille en cours
   const store = await Store.open(new IDBFactory()); await store.put("niveaux", n.st);
   for (const f of faitsSus([1, 2, 3, 4], 3)) await store.put("faits", f);

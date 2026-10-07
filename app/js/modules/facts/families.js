@@ -111,12 +111,14 @@ export function openByWarmup(st0, id, now, seance = null) {
   st.ouvertes.push(id); st.ouvertures.push({ famille: id, date: now, echauffement: true, ...(seance != null ? { seance } : {}) });
   return st;
 }
-// la famille en cours : la plus basse ouverte pas encore acquise ni dépassée, sinon la dernière (le mélange)
+// la famille en cours : la plus basse ouverte pas encore acquise ni dépassée, sinon le mélange s'il est ouvert, sinon la
+// dernière famille ouverte qui n'est pas dépassée (lot « Correctifs », relecture : une famille dépassée le jour où une autre
+// s'était ouverte, la suivante en attente, ne redevient pas la famille en cours ; une famille dépassée ne l'est jamais)
 const passed = (st) => (st.depassees ?? []).map((d) => d.famille);
 const firstLive = (c, st) => c.familles.find((f) => st.ouvertes.includes(f.id) && !st.acquises.includes(f.id) && !passed(st).includes(f.id) && f.regle !== "melange") ?? null;
 export function currentFamily(c, st) {
   const open = c.familles.filter((f) => st.ouvertes.includes(f.id));
-  return (firstLive(c, st) ?? (st.ouvertes.includes(c.familles.at(-1).id) ? c.familles.at(-1) : open.at(-1))).id;
+  return (firstLive(c, st) ?? (st.ouvertes.includes(c.familles.at(-1).id) ? c.familles.at(-1) : open.filter((f) => !passed(st).includes(f.id)).at(-1) ?? open.at(-1))).id;
 }
 // fin d'une séance dont la notion du jour était la famille `id` : on compte la séance ; au seuil, si elle n'est
 // toujours pas acquise, elle est dépassée et la famille suivante s'ouvre (si aucune autre ne peut prendre la

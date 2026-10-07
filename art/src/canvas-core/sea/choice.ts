@@ -80,7 +80,7 @@ export const drawExerciseLessons = (g: Gfx, cx: number, cy: number) => {
   drawAnswerBubble(g, cx, cy, 26, 70);
   drawOpenBook(g, cx, cy + 4, 1, 5620);
 };
-const drawOpenBook = (g: Gfx, cx: number, cy: number, k: number, seed: number) => g.group("plain", () => {
+export const drawOpenBook = (g: Gfx, cx: number, cy: number, k: number, seed: number) => g.group("plain", () => {
   const w = 44 * k, h = 30 * k, sag = 7 * k;
   // la couverture sous les pages (turquoise, comme l'album)
   const cover = smooth([[cx - w - 6 * k, cy - h + 6 * k], [cx - w * 0.5, cy - h + 2 * k], [cx, cy - h + 8 * k], [cx + w * 0.5, cy - h + 2 * k], [cx + w + 6 * k, cy - h + 6 * k], [cx + w + 6 * k, cy + h + 6 * k], [cx, cy + h + 12 * k], [cx - w - 6 * k, cy + h + 6 * k]], true, 4);
@@ -161,7 +161,7 @@ export const drawFamilyTile = (g: Gfx, cx: number, cy: number, fam: number) => {
     g.mark([[cx - TILE_W / 2, cy - TILE_H / 2], [cx + TILE_W / 2, cy + TILE_H / 2]]);
   });
 };
-const reflet = (g: Gfx, cx: number, cy: number, n: number, bonus: boolean) => {
+export const reflet = (g: Gfx, cx: number, cy: number, n: number, bonus: boolean) => {
   const gap = 34, x0 = cx - ((n - 1) * gap) / 2 - (bonus ? 16 : 0);
   // le miroir d'eau, puis les poissons au-dessus et leur reflet en dessous (plus pâle)
   ink(g, smooth([[x0 - 22, cy + 1], [cx, cy - 1], [x0 + (n - 1) * gap + 22, cy + 1]], false, 6), "#9fdfe6", { w: 3, shadow: 0, taper: [0.2, 0.2], seed: 5760 });
@@ -171,18 +171,18 @@ const reflet = (g: Gfx, cx: number, cy: number, n: number, bonus: boolean) => {
   }
   if (bonus) scaled(g, x0 + (n - 1) * gap + 40, cy + 22, 0.6, () => drawBonusBubble(g, 0, 0));
 };
-const house = (g: Gfx, cx: number, cy: number, top: string) => {
+export const house = (g: Gfx, cx: number, cy: number, top: string) => {
   const s = 0.3, y0 = cy - 8;
   scaled(g, cx, y0, s, () => { drawHouseRoof(g, 0, 0); drawHouseFloor(g, 0, 0); drawHouseBase(g, 0, HOUSE.floor); });
   drawNumber(g.cur as CanvasRenderingContext2D, top, cx, y0 - HOUSE.roof * s * 0.5 - 11, 22, { w: 3.6, seed: 5770 });
 };
-const tenFrame = (g: Gfx, cx: number, cy: number, n: number, k = 0.24) => {
+export const tenFrame = (g: Gfx, cx: number, cy: number, n: number, k = 0.24) => {
   const x = cx - (TEN_W * k) / 2, y = cy - (TEN_H * k) / 2;
   scaled(g, x, y, k, () => drawTenFrame(g, 0, 0));
   // des poissons dans les premières alvéoles : des pastilles orangées (à cette taille, un poisson ne se lit plus)
   for (let i = 0; i < n; i++) { const r = Math.floor(i / 5), c = i % 5, px = x + (18 + c * 86 + 38) * k, py = y + (18 + r * 86 + 38) * k; fillShape(g, blob(px, py, 6.5, 5.5, 5780 + i, 0.05, 10), "#ffb13b"); ink(g, blob(px, py, 6.5, 5.5, 5780 + i, 0.05, 10), INK, { w: 1.6, closed: true, shadow: 0.5, seed: 5790 + i }); }
 };
-const FAMILY: Record<number, (g: Gfx, cx: number, cy: number) => void> = {
+export const FAMILY: Record<number, (g: Gfx, cx: number, cy: number) => void> = {
   // + 1 et + 2 : la tortue sur la corde et son saut « + 1 »
   1: (g, cx, cy) => {
     const Ls: LineSpec = { x0: 0, x1: 260, y: 0, n: 3, labels: [null, null, null], k: 0 }, k = 0.46, x = cx - 130 * k, y = cy + 18;

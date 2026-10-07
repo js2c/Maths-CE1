@@ -32,7 +32,7 @@ export const drawWallFish = (g: Gfx, f: number, cx: number, cy: number, dir: 1 |
 });
 
 // un coin du mur de corail, en petit : `rows` × `cols` cases, la case (lr, lc) allumée
-const miniWall = (g: Gfx, x: number, y: number, cell: number, rows: number, cols: number, lit: [number, number] | null, seed: number) => {
+export const miniWall = (g: Gfx, x: number, y: number, cell: number, rows: number, cols: number, lit: [number, number] | null, seed: number) => {
   const gap = cell * 0.12, W = cols * cell + (cols - 1) * gap, H = rows * cell + (rows - 1) * gap, pad = cell * 0.3;
   const slab = rrect(x - pad, y - pad, W + 2 * pad, H + 2 * pad, cell * 0.4);
   fillShape(g, shift(slab, 4, 5), SH, 0.28); cel(g, slab, CORAL, CORAL_S, 4); contour(g, slab, 3, seed);

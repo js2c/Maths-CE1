@@ -33,5 +33,6 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 - **Branche** : `claude/upbeat-ramanujan-tvcxot` ; demande de fusion en brouillon « Lot : Les leçons ».
 - **Prérequis** : vérifiés sur `origin/main` le 7 octobre 2026 (« Mascotte », « Les voiliers » et « Correctifs » marqués « fait »).
-- **Étape en cours** : le point d'arrêt « maquette » (`docs/LOTS.md`, méthode commune) : maquette `art/lecons/`, captures et phrases dans `docs/maquettes/lecons/`. Rien n'est modifié dans `app/` avant la validation du parent.
-- **Reste** : tout le code, après validation.
+- **Fait** : la maquette (`art/lecons/`, ses dessins dans `art/src/canvas-core/sea/lecons.ts`, la grille `drawAddTable` dans `sea/runtime.ts`, le chalut corrigé de L10 dans `sea/hundreds.ts`), ses captures, ses phrases et ses questions (`docs/maquettes/lecons/README.md`), en tête de la demande de fusion.
+- **Où on en est** : **arrêté au point « maquette », en attente de la validation du parent** (réponse dans la même session). Rien n'est modifié dans `app/`.
+- **Reste, après validation** : reporter ses décisions (`docs/JOURNAL-CONCEPTION.md`, `docs/SPEC.md`), puis le code (accueil à cinq bulles, menu refait, « À toi ! », table d'addition, L10 : `node tools/export-app.mjs` après avoir ajouté les sprites au catalogue), les phrases dans `textes.json` et l'inventaire, les tests, la simulation, le parcours `tests/e2e/lecons-menu.mjs`, la recette.

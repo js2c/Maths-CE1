@@ -323,3 +323,43 @@ export const drawStonePath = (ctx: CanvasRenderingContext2D, ox: number, oy: num
     contour(g, stone, 2.2, 7730 + i);
   }
 };
+
+// ---------------------------------------------------------------- lot « Les leçons » : la table d'addition à consulter
+// Une grille posée sur une plaque de nacre : la rangée et la colonne d'en-tête (0 à `max`) en bleu de l'ardoise, chiffres
+// clairs ; dans chaque case, la somme. `lit` : la case touchée [a, b] (a : la rangée, b : la colonne), allumée en jaune, ses
+// deux en-têtes éclaircis et le chemin qui y mène (la rangée depuis son en-tête, la colonne depuis le sien) teinté ;
+// `tint` : l'appui de la famille, en teinte très légère : les doubles (le reflet, bleu) et les amis de 10 (le cadre, corail).
+// (x, y) : le coin haut gauche de la case d'angle ; `pitch` : le pas des cases (la zone tactile), `cell` : leur taille dessinée,
+// `head` : la largeur de la rangée et de la colonne d'en-tête.
+export type AddTableSpec = { x: number; y: number; pitch: number; cell: number; head: number; max: number; lit?: [number, number] | null; tint?: boolean };
+export const addTableCell = (T: AddTableSpec, a: number, b: number): P => [T.x + T.head + b * T.pitch + T.pitch / 2, T.y + T.head + a * T.pitch + T.pitch / 2];
+export const addTableSize = (T: AddTableSpec) => T.head + (T.max + 1) * T.pitch;
+export const ADD_TINT = { double: "#d4eef2", amis10: "#ffe1d6" };
+export const drawAddTable = (ctx: CanvasRenderingContext2D, T: AddTableSpec) => {
+  const g = shim(ctx), S = addTableSize(T), pad = 12, lit = T.lit ?? null, em = T.cell * 0.4, hc = T.head - (T.pitch - T.cell);
+  const slab = rr(T.x - pad, T.y - pad, S + 2 * pad, S + 2 * pad, 26);
+  fillShape(g, shiftP2(slab, 10, 12), "#0a3f49", 0.3);
+  cel(g, slab, "#fffaf0", "#e8dcc4", 8, [smooth([[T.x + 10, T.y - 4], [T.x + S * 0.45, T.y - 8], [T.x + S * 0.42, T.y + 2], [T.x + 12, T.y + 6]], true, 5), "#ffffff"]);
+  contour(g, slab, 4.2, 8700);
+  // le signe, dans la case d'angle
+  drawWord(ctx, "+", T.x + hc / 2, T.y + hc / 2 - em * 0.6, em * 1.2, { color: INK, w: em * 0.2, seed: 8701 });
+  const head = (cx: number, cy: number, w: number, h: number, v: number, on: boolean, seed: number) => {
+    const s = rr(cx - w / 2, cy - h / 2, w, h, Math.min(w, h) * 0.24);
+    fillShape(g, shiftP2(s, 2, 3), "#0a3f49", 0.25); cel(g, s, on ? "#9fe2ea" : "#2f6d78", on ? "#5fb9c4" : "#21545d", 2.5); contour(g, s, 2.2, seed);
+    drawNumber(ctx, String(v), cx, cy - em / 2, v === 10 ? em * 0.86 : em, { color: on ? INK : "#fffaf0", w: em * 0.16, seed: seed + 1 });
+  };
+  for (let v = 0; v <= T.max; v++) {
+    const [cx] = addTableCell(T, 0, v), [, cy] = addTableCell(T, v, 0);
+    head(cx, T.y + hc / 2, T.cell, hc, v, !!lit && lit[1] === v, 8710 + v * 3);
+    head(T.x + hc / 2, cy, hc, T.cell, v, !!lit && lit[0] === v, 8760 + v * 3);
+  }
+  for (let a = 0; a <= T.max; a++) for (let b = 0; b <= T.max; b++) {
+    const [cx, cy] = addTableCell(T, a, b), s = rr(cx - T.cell / 2, cy - T.cell / 2, T.cell, T.cell, T.cell * 0.22);
+    const on = !!lit && lit[0] === a && lit[1] === b, path = !!lit && ((a === lit[0] && b < lit[1]) || (b === lit[1] && a < lit[0]));
+    const fill = on ? "#ffe45c" : path ? "#fff1b0" : T.tint && a === b ? ADD_TINT.double : T.tint && a + b === 10 ? ADD_TINT.amis10 : "#fff8ee";
+    fillShape(g, shiftP2(s, -1.5, -1.5), "#c9b48f", 0.45); fillShape(g, s, fill);
+    ink(g, s, on ? "#e0a21c" : "#dcc9ab", { w: on ? 2.6 : 1.4, closed: true, shadow: 0.4, seed: 8820 + a * 11 + b });
+    const t = String(a + b);
+    drawNumber(ctx, t, cx, cy - em / 2, t.length > 1 ? em * 0.9 : em, { color: INK, w: em * 0.15, seed: 9000 + a * 11 + b });
+  }
+};

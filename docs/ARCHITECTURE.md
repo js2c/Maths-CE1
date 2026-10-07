@@ -105,6 +105,19 @@ Le jeu des voiliers (décisions du parent des 5 et 6 octobre 2026, `docs/SPEC.md
 - *L'atelier* (`art/src/canvas-core/sea/voiliers.ts`, planche spécimen `voiliersSheet`) : le pictogramme de l'exercice (`choix.ex.voiliers`), les 9 plaques de niveaux (`choix.voiliers.1` à `9`, planche « choix ») et l'étape de la frise (`frise.voiliers`, planche « petits »).
 - *Mesures* (conteneur de développement, sans processeur graphique, WebGL logiciel) : la maquette seule, environ 850 ms par image en densité 2 ; dans l'application, la qualité passe d'elle-même à « économe » et l'image prend environ 600 ms (`tests/e2e/perf.mjs --webgl --voiliers`) : l'intégration n'ajoute pas de coût visible ; la fluidité réelle se juge sur la tablette.
 
+## Les sommes jusqu'à 30 (lot « Sommes jusqu'à 30 »)
+
+Les familles 8 à 13 du module 2 (`docs/SPEC.md`, section 6 ; proposition, programme et simulation : `docs/maquettes/sommes30/PROPOSITION.md` ; maquette `art/sommes30/`, captures `node art/sommes30/captures.mjs`).
+
+- *Contenu* (`content/module2.json`) : six familles de plus, chacune avec sa somme maximale (`max` : 20, ou 30 pour les doubles jusqu'à 15 + 15 et le grand mélange) ; `termeMax` (15) ; `familles2.ouverture.derniere` (à partir de la famille 9, la suivante attend 80 % des faits nouveaux de la dernière famille ouverte en boîte 2).
+- *Moteur* (`modules/facts/facts.js`) : règles `dixPlus`, `doubles15`, `presqueDoubles10`, `plus9`, `passerDizaine` ; `famMax`, et un parcours des faits par famille (`each`) qui garde les familles 1 à 7 telles qu'elles étaient ; un mélange n'apporte aucun fait au catalogue et sa règle est le catalogue jusqu'à sa somme maximale (`ruleFacts`) ; `aidFor` au-delà de 10 ; `classifyFact` : « dizaine » (7 + 6 → 3). `families.js` : `lastFamilyReady` (lue par `canOpenNext` et `warmupOpening`). `runner.js` : `inMix` (le mélange 7 ne mêle que les faits jusqu'à 10).
+- *Appuis* (`modules/facts/aids.js`) : `paintTwoFrames` (deux cadres de 10 l'un au-dessus de l'autre ; les poissons qui complètent le premier entourés de lumière ; `places` : les places du nombre qui manque allumées) ; `paintBigDouble` (le filet de dix `aide.filet.haut` et les unités, la ligne d'eau, le reflet) ; `paintDoublePlus` resserre ses poissons jusqu'à 10. `facts/screen.js` : `aidKind` (le reflet au-delà de 10 + 10 devient le grand double), `framesOf` (le plus grand nombre d'abord ; à trou, le nombre connu), `paintFramesAid`, `aidSpeech` (`aideDeuxCadres`, `aideDeuxCadresSolu`, `aideDix`, `aideCadresTrou`, `aideGrandDouble`).
+- *Leçons L11 et L12* (`content/lecons.json`, `lessons/player2.js`) : actions `cadres`, `entrer` (dans la première boîte), `entrerB`, `sauter`. Menu (`session/lessons.js`, `MENU`) : cinq colonnes ; table d'addition (`tableAid`) : au-delà de 10, les deux boîtes.
+- *Atelier* (`sea/choice.ts`) : vignettes des familles 8 à 13 (`twoFrames`, `tenFrame` avec ses pastilles bleues et dorées, `reflet` resserré) ; `sea/lecons.ts` : vignettes `vL11`, `vL12`, rangée des additions, bulles « À toi ! » ; planche spécimen `node tools/still.mjs sommes30Sheet --frame 0 --out out/sommes30.png --scale 2`.
+- *Espace parent* : la grille 11 × 11 colore toutes les cases jusqu'à 10 + 10 ; les grands doubles sont écrits dessous ; point de départ jusqu'à la famille 13 ; l'erreur « a oublié la dizaine ».
+- *Voix* : `tools/voix/inventaire.mjs` ajoute les faits du catalogue au-delà de 10 (`faits20`) et les domaines des appuis nouveaux ; 384 phrases nouvelles (`docs/maquettes/sommes30/PHRASES.md`).
+- Tests : `tests/unit/sommes30.test.mjs` ; parcours `node tests/e2e/sommes30.mjs` ; simulation : rubrique « sommes jusqu'à 30 » de `tests/sim-seances.mjs` (hypothèses `fait20`, `lent20`, `apprendFait` de `tests/sim-recette.mjs`).
+
 ## Fabriquer les images
 
 ```bash

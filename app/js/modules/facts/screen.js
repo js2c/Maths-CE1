@@ -146,7 +146,7 @@ export class FactsScreen {
     if (f !== "directe") { const k = f === "trouDroite" ? q.a : q.b; return { first: k, second: n - k, places: true }; }
     const hi = Math.max(q.a, q.b); return { first: hi, second: n - hi, places: false };
   }
-  paintFramesAid(ctx, q, solved) { const { sprites } = this.app, m = sprites.atlas.sprites["aide.cadre10"].meta; paintTwoFrames(ctx, sprites, 700 - m.w / 2, 372, this.framesOf(q, solved)); }
+  paintFramesAid(ctx, q, solved) { const { sprites } = this.app, m = sprites.atlas.sprites["aide.cadre10"].meta; paintTwoFrames(ctx, sprites, 700 - m.w / 2, 350, this.framesOf(q, solved)); }
   get board() { return (this.app.aidBoard ??= new AidBoard(this.app)); }
   paintAid(q, solved) {
     const { sprites } = this.app, kind = this.aidKind(q), f = q.forme ?? "directe", n = q.a + q.b;
@@ -158,7 +158,7 @@ export class FactsScreen {
       else if (kind === "maison") this.paintHouseAid(ctx, q, solved, 0);
       else if (kind === "doublePlus") paintDoublePlus(ctx, sprites, Math.min(q.a, q.b), { cx: 700, y: 500 });
       else if (kind === "deuxCadres") this.paintFramesAid(ctx, q, solved);
-      else if (kind === "grandDouble") paintBigDouble(ctx, sprites, q.a, { cx: 700, y: 372 });
+      else if (kind === "grandDouble") paintBigDouble(ctx, sprites, q.a, { cx: 700, y: 352, k: 1 });
       else paintDoublePlus(ctx, sprites, q.a, { cx: 700, y: 500, bonus: false });
     });
     if (kind === "maison") this.animateHouse(q, solved);

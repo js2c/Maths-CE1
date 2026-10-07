@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- MAQUETTE DU LOT « SOMMES JUSQU'À 30 » (docs/LOTS.md, fiche 4 ; docs/maquettes/sommes30/PROPOSITION.md). Bloc fait sans
+     arrêt pour validation (décision du parent du 7 octobre 2026) : la maquette montre les écrans nouveaux du lot avec les pièces
+     de l'application (planches, aides des additions, dessin en direct) ; elle lit app/ et ne le modifie pas. Les appuis des deux
+     boîtes et du grand double, écrits pour ce lot dans app/js/modules/facts/aids.js, sont ceux que l'application dessine. -->
+<base href="../../app/">
+<title>Maquette — les sommes jusqu'à 30</title>
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/app.css">
+<style>
+  #nav { position: fixed; left: 8px; bottom: 8px; z-index: 50; display: flex; flex-wrap: wrap; gap: 4px; max-width: 96vw; font: 13px/1.2 system-ui, sans-serif; }
+  #nav button { padding: 5px 9px; border: 1px solid #0a3f49; border-radius: 6px; background: #fffaf0e8; cursor: pointer; }
+  #nav button.on { background: #ffd23a; }
+  #dit { position: absolute; z-index: 30; left: 16px; top: 440px; max-width: 330px; padding: 14px 20px; border-radius: 26px; background: #fffaf0; border: 3px solid #15122a; font: 600 22px/1.3 "Shantell Sans", system-ui, sans-serif; color: #15122a; }
+  #dit:empty { display: none; }
+  .couche { position: absolute; left: 0; top: 0; }
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="bg"></canvas><canvas id="scene" class="couche"></canvas><div id="dit"></div></div>
+<div id="nav"></div>
+<script type="module">
+import { Sprites, loadAtlas } from "./js/engine/sprites.js";
+import * as R from "./js/art/runtime.js";
+import { paintBigDouble, paintDoublePlus, paintTwoFrames } from "./js/modules/facts/aids.js";
+
+const P = new URLSearchParams(location.search), CAPTURE = P.has("capture");
+const W = 1280, H = 800, root = document.getElementById("stage"), bg = document.getElementById("bg"), scene = document.getElementById("scene");
+const k = Math.min(innerWidth / W, innerHeight / H), px = k * (devicePixelRatio || 1);
+Object.assign(root.style, { position: "absolute", left: `${(innerWidth - W * k) / 2}px`, top: `${(innerHeight - H * k) / 2}px`, width: `${W * k}px`, height: `${H * k}px` });
+for (const c of [bg, scene]) { c.width = W * px; c.height = H * px; Object.assign(c.style, { width: `${W * k}px`, height: `${H * k}px` }); }
+document.getElementById("dit").style.transform = `scale(${k})`; document.getElementById("dit").style.transformOrigin = "0 0";
+const sprites = new Sprites(await loadAtlas(), px);
+await Promise.all(["petits", "lagon", "choix", "aides", "poissons", "lecons"].map((s) => sprites.load(s)));
+await document.fonts.load('600 30px "Shantell Sans"');
+sprites.draw(bg.getContext("2d"), "lagon.fond", 0, 0, 0);
+const ctx = scene.getContext("2d");
+const clear = () => { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, scene.width, scene.height); ctx.setTransform(px, 0, 0, px, 0, 0); };
+const sprite = (name, x, y) => { ctx.setTransform(1, 0, 0, 1, 0, 0); sprites.draw(ctx, name, 0, x * k, y * k); ctx.setTransform(px, 0, 0, px, 0, 0); };
+const slate = (txt) => { const em = 76, w = R.wordWidth(txt) * em + 90; R.drawPanel(ctx, 790 - w / 2, 150, w, 140); R.drawWord(ctx, txt, 790, 182, em, { w: 10 }); };
+const dit = (t) => { document.getElementById("dit").textContent = t; };
+
+// les écrans de la maquette : ce que voit l'enfant, et ce que dit la voix (la bulle de la mascotte l'écrit)
+const ECRANS = {
+  "familles": () => { [...Array(13)].forEach((_, i) => sprite(`choix.famille.${i + 1}`, 520 + (i % 4) * 170, 200 + Math.floor(i / 4) * 150)); dit("Passer la dizaine."); },
+  "menu": () => { [["L1", "L2", "L3", "L10"], ["L4", "L5", "L6", "L11", "L12"], ["L7", "L8", "L9"]].forEach((r, j) => r.forEach((id, i) => sprite(`lecons.tuile.${id}`, 575 + i * 155, 205 + j * 156))); sprite("lecons.table.plus", 575, 673); dit("Quelle leçon veux-tu regarder ? Touche-la."); },
+  "L12-avant": () => { paintTwoFrames(ctx, sprites, 472, 340, { first: 8, second: 5, moved: 0, glow: [8, 9] }); dit("Il reste deux places dans la première boîte."); },
+  "L12-apres": () => { slate("8 + 5 = 13"); paintTwoFrames(ctx, sprites, 472, 340, { first: 8, second: 5 }); dit("Deux poissons sautent pour la remplir : dix ! Il en reste trois. Dix et trois, treize."); },
+  "L11": () => { slate("10 + 4 = 14"); paintTwoFrames(ctx, sprites, 472, 340, { first: 10, second: 4 }); dit("Dix et quatre : quatorze !"); },
+  "aide-8+5": () => { slate("8 + 5 = ?"); paintTwoFrames(ctx, sprites, 472, 350, { first: 8, second: 5 }); dit("On remplit d'abord la boîte de dix, puis on compte ce qui reste."); },
+  "correction-8+5": () => { slate("8 + 5 = 13"); paintTwoFrames(ctx, sprites, 472, 350, { first: 8, second: 5 }); dit("2 pour faire dix, il en reste 3. 8 plus 5, ça fait 13."); },
+  "trou-9+?=13": () => { slate("9 + ? = 13"); paintTwoFrames(ctx, sprites, 472, 350, { first: 9, second: 4, places: true }); dit("Il faut 13 poissons en tout. Compte les places qui brillent !"); },
+  "grand-double": () => { slate("13 + 13 = ?"); paintBigDouble(ctx, sprites, 13, { cx: 700, y: 352, k: 1 }); dit("13, c'est dix et 3. Dix et dix, vingt. 3 et 3, 6."); },
+  "double-9+9": () => { slate("9 + 9 = ?"); paintDoublePlus(ctx, sprites, 9, { cx: 700, y: 500, bonus: false }); dit("9 poissons, et dans le reflet, encore 9 poissons."); },
+  "presque-double-7+8": () => { slate("7 + 8 = ?"); paintDoublePlus(ctx, sprites, 7, { cx: 700, y: 500 }); dit("7 plus 8, c'est 7 plus 7, et encore 1."); },
+};
+const nav = document.getElementById("nav"), go = (id) => { clear(); dit(""); ECRANS[id](); [...nav.children].forEach((b) => b.classList.toggle("on", b.dataset.id === id)); window.__ecran = id; };
+for (const id of Object.keys(ECRANS)) { const b = document.createElement("button"); b.textContent = id; b.dataset.id = id; b.onclick = () => go(id); nav.append(b); }
+if (CAPTURE) nav.style.display = "none";
+go(P.get("ecran") ?? "familles");
+window.__go = go; window.__ready = true;
+</script>
+</body>
+</html>

@@ -71,18 +71,19 @@ test("table d'addition : la case sous le doigt (64 px), les en-têtes ne répond
   assert.ok(TABLE.x - TABLE.pad > MASCOTTE.x + MASCOTTE.w && TABLE_PLACES[0].boite[1] > MASCOTTE.y + MASCOTTE.h && TABLE_PLACES[0].boite[2] < BOUCHE[0] + 34);
 });
 
-// (lot « Sommes jusqu'à 30 » : au-delà de 10 aussi, l'appui est celui des aides : le reflet, le double + 1, les deux boîtes)
-test("table d'addition : l'appui montré est celui des aides des additions, jusqu'à 10 comme au-delà", () => {
+// (lot « Sommes jusqu'à 30 » : au-delà de 10, les deux boîtes de dix, celles des familles 8, 11 et 12)
+test("table d'addition : l'appui montré est celui des aides des additions jusqu'à 10 ; au-delà, les deux boîtes", () => {
   const conv = { cadre: "cadre", reflet: "reflet", doublePlus: "doublePlus", ligne: "ligne", maison: "maison", deuxCadres: "deuxCadres" };
   for (let a = 0; a <= 10; a++) for (let b = 0; b <= 10; b++) {
     const k = tableAid(a, b);
     assert.ok(["rien", "cadre", "reflet", "doublePlus", "ligne", "maison", "deuxCadres"].includes(k), `${a}+${b}`);
     assert.equal(k, tableAid(b, a), `${a}+${b} : le même appui dans les deux sens`);
     if (a === 0 || b === 0) assert.equal(k, "rien");
-    else assert.equal(k, conv[aidFor(a, b)], `${a}+${b}`);
+    else if (a + b <= 10) assert.equal(k, conv[aidFor(a, b)], `${a}+${b}`);
+    else assert.equal(k, "deuxCadres", `${a}+${b}`);
   }
   assert.equal(tableAid(7, 5), "deuxCadres"); assert.equal(tableAid(7, 3), "cadre"); assert.equal(tableAid(3, 3), "reflet"); assert.equal(tableAid(3, 4), "doublePlus");
-  assert.equal(tableAid(6, 2), "ligne"); assert.equal(tableAid(5, 3), "maison"); assert.equal(tableAid(8, 0), "rien"); assert.equal(tableAid(9, 2), "deuxCadres"); assert.equal(tableAid(6, 6), "reflet"); assert.equal(tableAid(7, 6), "doublePlus"); assert.equal(tableAid(10, 4), "deuxCadres");
+  assert.equal(tableAid(6, 2), "ligne"); assert.equal(tableAid(5, 3), "maison"); assert.equal(tableAid(8, 0), "rien"); assert.equal(tableAid(9, 2), "deuxCadres"); assert.equal(tableAid(6, 6), "deuxCadres"); assert.equal(tableAid(10, 4), "deuxCadres");
 });
 
 test("les phrases du lot : accueil à cinq bulles, fin de leçon, table d'addition (« 7 plus 5, 12. »)", () => {

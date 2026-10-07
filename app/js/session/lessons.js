@@ -126,9 +126,9 @@ export const tableAid = (a, b) => {
   const lo = Math.min(a, b), hi = Math.max(a, b), n = a + b;
   if (lo === 0) return "rien";
   if (n === 10) return "cadre";
-  // (lot « Sommes jusqu'à 30 » : au-delà de 10, l'appui des familles 8 à 12 : le reflet d'un double, le double + 1 d'un
-  // presque-double, sinon les deux boîtes, la première complétée, le 10 de « 4 + 10 » compris)
-  if (n > 10) return a === b ? "reflet" : hi - lo === 1 ? "doublePlus" : "deuxCadres";
+  // (lot « Sommes jusqu'à 30 » : au-delà de 10, toujours les deux boîtes, celles des familles 8, 11 et 12, + 9 et + 2
+  // compris ; le reflet et le double + 1 de 7 + 8 ou 9 + 9 feraient une rangée de poissons trop petite dans le panneau)
+  if (n > 10) return "deuxCadres";
   if (a === b && a <= 5) return "reflet";
   if (hi - lo === 1 && hi <= 5) return "doublePlus";
   if (lo <= 2) return "ligne";

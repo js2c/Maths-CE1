@@ -193,8 +193,12 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     // (deux contacts à 40 ms l'un de l'autre, émis dans la page : un toucher envoyé par le protocole du navigateur attend
     // l'image suivante, plus de 150 ms)
     const n2 = await page.evaluate(async () => { const g = document.querySelector(".table-grille"), r = g.getBoundingClientRect(), k = window.__app.stage.k, x = r.left + (16 + 52 + 5 * 64 + 32) * k, y = r.top + (16 + 52 + 7 * 64 + 32) * k, down = () => g.dispatchEvent(new PointerEvent("pointerdown", { clientX: x, clientY: y, bubbles: true }));
-      await new Promise((res) => setTimeout(res, 200)); window.__said = []; down(); await new Promise((res) => setTimeout(res, 40)); down(); await new Promise((res) => setTimeout(res, 300)); return window.__said.length; });
-    check(n2 === 1, `${T} · la même case touchée deux fois en 40 ms : une seule phrase (${n2})`);
+      // (le second contact doit vraiment arriver moins de 150 ms après le premier : sous la charge, un délai de 40 ms en prend
+      // parfois plus ; on recommence alors, au plus trois fois, et on rend l'écart mesuré)
+      let out = null;
+      for (let i = 0; i < 3 && !out; i++) { await new Promise((res) => setTimeout(res, 400)); window.__said = []; const t0 = performance.now(); down(); await new Promise((res) => setTimeout(res, 40)); const gap = performance.now() - t0; down(); await new Promise((res) => setTimeout(res, 300)); if (gap < 140) out = { n: window.__said.length, gap: Math.round(gap) }; }
+      return out ?? { n: -1, gap: null }; });
+    check(n2.n === 1, `${T} · la même case touchée deux fois en 40 ms : une seule phrase (${n2.n} ; écart réel ${n2.gap} ms)`);
     await resetSaid(page); await tapCell(page, 3, 3); await page.waitForTimeout(60); await tapCell(page, 9, 8); await page.waitForTimeout(900);
     check((await page.evaluate(() => window.__said.at(-1))) === "9 plus 8, 17." && (await page.evaluate(() => document.querySelector(".table-grille").dataset.case)) === "9+8", `${T} · deux cases à la suite : la dernière l'emporte`);
     if (big) await shot(page, "18-table-9+8");

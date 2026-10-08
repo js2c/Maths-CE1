@@ -259,3 +259,22 @@ Ce que demande le lot pour la recette est fait : choix en deux touchers sur chaq
 - Toucher la mascotte refait la consigne et la bulle (`50`) ; le haut-parleur revient dans le récif (`51`).
 - Le clavier : les 23 réponses tapées du relevé sont arrivées telles quelles (additions, calculs guidés, calcul rapide, multiplication, dictée). Le défi, que la section 9 compte parmi les exercices à pavé, a sa capture (`61`) mais n'apparaît pas dans le relevé `clavier` de `parcours-resultat.json` : à ajouter au relevé.
 - Aucune ardoise vide relevée.
+
+## Traitement par la session du lot
+
+Les constats bloquants : aucun (P1-1 n'est pas bloquant : la bulle laisse passer le doigt, `pointer-events: none` ; le parcours du lot le vérifie maintenant, une tuile sous la bulle se touche et prend la sélection). Les constats gênants :
+
+- **P1-1, P2-1 (la bulle cache des tuiles)** : corrigé en partie. La bulle d'une tuile est plus petite (texte de 26 px au lieu de 30), les descriptions sont raccourcies, et quand aucune place contre la tuile n'est libre, la bulle s'en éloigne (jusqu'à 210 px, la pointe allongée) : aux voiliers, niveau 4, elle ne cache plus aucune tuile (elle en cachait six). Sur les écrans les plus pleins (la ligne, 13 tuiles ; le calcul), elle en cache encore deux ou trois le temps de la phrase : il n'y a pas de place libre assez grande. La spécification est corrigée (section 11 : l'exception de la bulle d'une tuile ; section 3 : « quelques-unes »). Le compteur d'étoiles est évité si possible (P1-12, P2-12).
+- **P1-2, P2-4 (second toucher)** : la tuile sélectionnée se balance doucement, comme la bulle « jouer », pour inviter au second toucher ; un second toucher moins de 0,3 s après le premier (un doigt qui rebondit, un double toucher très rapide) ne lance rien.
+- **P1-3, P2-3 (le sélecteur de difficulté)** : laissé tel quel. Il n'est pas un écran de choix de la fiche (exercices, niveaux, leçons) ; à soumettre au parent (`docs/IDEES.md`).
+- **P1-4 (le halo du conseillé)** : laissé tel quel (inchangé par le lot ; la légende et le guide du parent l'expliquent).
+- **P1-5, P1-6, P2-6 (descriptions)** : corrigé. Raccourcies et sans redite du nom (voiliers 5 à 8, ligne 9 et 12, multiplication 5 et 9, leçon 1, additions 9) ; « tu devines » remplacé par « place le nombre à peu près » ; « jusqu'à la dizaine » par « jusqu'au nombre rond » ; « après cent » par « avec de grands nombres » ; « cadre de dix » par « boîte de dix ». Les tables ne redisent plus la consigne de la table. « Unités » et « dizaines » restent : ce sont les mots de la classe de CE1.
+- **P1-7, P2-5 (invitation au toucher du démarrage)** : laissé tel quel (le logo se balance, la barre pleine brille) ; à revoir avec l'enfant.
+- **P1-8 (l'accueil)** : la bulle de bienvenue est bien dite (la capture 1280 a été prise après la fin d'une phrase accélérée, en mode de test) ; le reste est inchangé par le lot.
+- **P1-9, P2-7 (la pieuvre)** : hors du lot (question ouverte, `docs/IDEES.md`).
+- **P1-10, P2-8 (toucher la mascotte)** : corrigé. Tant que l'enfant n'a jamais touché la mascotte, la bienvenue du lancement ajoute « Pour réécouter, touche-moi ! ». Le bouton « réécouter » ne reste que dans le récif (règle de la fiche).
+- **P1-11 (la pointe de la bulle en bas)** : corrigé : la bulle se tient à 26 px de la tuile et la pointe vise 16 px à l'intérieur du coin (trop courte, elle se tordait).
+- **P1-13 (la dictée, écran vide)** : corrigé : l'ardoise de la dictée (« ? ») est là dès le début de chaque question.
+- **P2-2 (« réécouter » pendant un calcul guidé)** : la capture 62 avait été prise avant le point 7 ; elle est refaite (plus de bouton, et la bulle entre l'ardoise et le pavé). Le parcours du lot vérifie maintenant que la consigne d'un calcul guidé ne couvre pas l'ardoise.
+- **P2-13 (la recette)** : le parcours vérifie en plus la tuile sous la bulle et la consigne des calculs guidés ; le défi est dans le relevé du clavier (capture 61).
+- **Cosmétiques P1-14 à P1-17, P2-9 à P2-11** : inchangés par le lot (comportements antérieurs) ; notés pour le parent.

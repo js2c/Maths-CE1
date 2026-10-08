@@ -1,0 +1,23 @@
+# FINS DE LIGNE (lot « Correctifs de la tablette », octobre 2026) : les fichiers texte sont toujours en LF, sous
+# Windows comme ailleurs. Sans cela, Git pour Windows les écrit en CRLF sur l'ordinateur du parent, et la liste du
+# mode hors ligne (tools/precache.mjs, l'empreinte de tout app/) n'y était pas la même que sur GitHub.
+* text=auto eol=lf
+
+# les fichiers binaires : jamais touchés
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.mp3 binary
+*.mp4 binary
+*.ogg binary
+*.wav binary
+*.webm binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.pdf binary
+*.zip binary
+*.gz binary

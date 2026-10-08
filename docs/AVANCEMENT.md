@@ -26,6 +26,7 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 | Correctifs | Les décisions du parent sur la confrontation de la spécification avec le code (`docs/ECARTS-SPEC.md`) : 7 correctifs, spécification réécrite | fait (PR #39) |
 | Les leçons | La bulle des leçons, le menu, « À toi ! », la table d'addition ; recette finie à l'étape 0 du bloc suivant (durées, relecture indépendante) | fait (PR #40, recette dans la PR #42) |
 | Sommes jusqu'à 30 et Multiplication | Familles d'additions 8 à 13, leçons L11 et L12 ; cinquième exercice (multiplication, 9 niveaux, tables de 2, 3, 4, 5 et 10), leçons L13 et L14, table de multiplication ; fait d'un seul bloc, sans arrêt pour validation | fait (PR #42) ; 945 phrases à fabriquer |
+| Correctifs de la tablette | Écran de démarrage (logo, barre de chargement, toucher qui autorise la voix), bienvenue au lancement ; choisir en deux touchers ; toucher la mascotte pour réécouter ; clavier de l'ordinateur ; ardoise jamais vide ; plus de phrase dite par l'ancienne voix (contrôle dans tous les parcours) ; fins de ligne sous Windows | fait (PR #46) ; 278 phrases à fabriquer |
 
 ## Reprise
 
@@ -36,5 +37,5 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 - **Branche** : `claude/sweet-ptolemy-3g82xl` ; demande de fusion en brouillon « Lot : Correctifs de la tablette ».
 - **Fiche** : `docs/LOTS.md`, fiche 6 ; d'un seul tenant, sans arrêt pour une validation (les choix de la session vont dans `docs/JOURNAL-CONCEPTION.md`).
 - **Ordre des étapes** : 8 (fins de ligne), 5 (phrases sans fichier, contrôle des parcours), 4 (ardoise vide), 6 (clavier), 7 (toucher la mascotte), 1 (écran de démarrage, bienvenue), 2 (choisir en deux touchers), puis la recette.
-- **Fait** : (rien encore)
-- **Reste** : tout.
+- **Fait** : les huit points de la fiche (le point 3, la fluidité des voiliers, est hors du lot), leurs tests unitaires et le parcours du lot (`tests/e2e/correctifs-tablette.mjs`), la documentation.
+- **Reste** : la recette complète (tous les parcours, mesures, séance à vitesse réelle, attentes, relecture indépendante), puis la demande de fusion à compléter et à sortir du brouillon.

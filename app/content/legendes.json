@@ -107,11 +107,11 @@
     { "n": 9, "travail": "Les tables de 2, 3, 4, 5 et 10 mélangées.", "exemple": "? × 5 = 20" }
   ],
   "lecons": [
-    { "n": "L1", "travail": "On compte les sauts, pas les traits.", "exemple": "De 0 à 3, 3 sauts" },
+    { "n": "L1", "travail": "On compte les sauts, pas les bouées.", "exemple": "De 0 à 3, 3 sauts" },
     { "n": "L2", "travail": "Un saut peut valoir dix.", "exemple": "10, 20, 30" },
     { "n": "L3", "travail": "Une ligne ne commence pas toujours à 0.", "exemple": "30, 31, 32" },
     { "n": "L4", "travail": "Les doubles, deux fois le même nombre.", "exemple": "3 + 3" },
-    { "n": "L5", "travail": "Les amis de 10, remplir le cadre de 10.", "exemple": "7 + 3" },
+    { "n": "L5", "travail": "Les amis de 10, remplir la boîte de dix.", "exemple": "7 + 3" },
     { "n": "L6", "travail": "La maison des nombres, deux pièces et le toit.", "exemple": "5 + 2 = 7" },
     { "n": "L10", "travail": "Les centaines, cent, c'est dix dizaines.", "exemple": "100, 200, 307" },
     { "n": "L7", "travail": "Plus 10 sur le mur de corail, on descend d'une rangée.", "exemple": "34 + 10" },

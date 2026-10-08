@@ -1,0 +1,66 @@
+[
+ {
+  "quoi": "accueil, puis la bulle « les leçons »",
+  "dit": [
+   "Les leçons.",
+   "Quelle leçon veux-tu regarder ? Touche-la."
+  ]
+ },
+ {
+  "quoi": "le menu, la leçon 1 regardée jusqu'au bout, l'écran « À toi ! »",
+  "dit": [
+   "Les leçons.",
+   "Quelle leçon veux-tu regarder ? Touche-la.",
+   "On compte les sauts.",
+   "Regarde cette corde avec ses bouées.",
+   "Chaque bouée a sa place, et elles sont toutes à la même distance.",
+   "La petite tortue est sur zéro.",
+   "Elle n'a pas encore sauté.",
+   "Hop, un saut :",
+   "elle est sur 1.",
+   "Hop, un deuxième saut :",
+   "elle est sur 2.",
+   "Tu vois ? On ne compte pas les bouées, on compte les sauts.",
+   "Pour trouver où est l'étoile de mer, compte les sauts depuis zéro.",
+   "1",
+   "2",
+   "3",
+   "4",
+   "5",
+   "6",
+   "À toi ! Touche la grande bulle pour t'entraîner."
+  ]
+ },
+ {
+  "quoi": "« À toi ! », le sélecteur, puis l'exercice de la leçon 1",
+  "dit": [
+   "À ton tour !",
+   "Choisis ton niveau. Plus c'est dur, plus tu gagnes d'étoiles !",
+   "Regarde bien. On va compter les sauts ensemble.",
+   "On part de 0, et on compte les sauts.",
+   "1",
+   "À ton tour ! Quel nombre se cache sous l'étoile de mer ?"
+  ]
+ },
+ {
+  "quoi": "séance du jour faite : la leçon 5 passée, « À toi ! », l'entraînement libre",
+  "dit": [
+   "Les leçons.",
+   "Quelle leçon veux-tu regarder ? Touche-la.",
+   "Les amis de dix.",
+   "Voici la boîte à dix places.",
+   "Deux rangées de cinq.",
+   "Sept poissons entrent.",
+   "À toi ! Touche la grande bulle pour t'entraîner.",
+   "À ton tour !",
+   "Choisis ton niveau.",
+   "4 plus combien, ça fait 10 ?"
+  ]
+ },
+ {
+  "quoi": "la table d'addition, la case 7 + 5",
+  "dit": [
+   "7 plus 5, 12."
+  ]
+ }
+]

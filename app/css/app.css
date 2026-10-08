@@ -84,6 +84,9 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 /* pause : tout ce qui appartient à la séance disparaît, l'océan continue de vivre ; la bulle « continuer »,
    le logo du parent et le compteur d'étoiles restent */
 #stage.paused #line, #stage.paused #fx, #stage.paused #aides, #stage.paused #front { visibility: hidden; }
+/* (relecture de l'étape 0 du bloc « Sommes jusqu'à 30 » et « Multiplication » : un acteur du premier plan rendu visible par
+   son style, la tortue et son étoile, restait à flotter sur l'accueil en pause) */
+#stage.paused #front > * { visibility: hidden !important; }
 #stage.paused #ui > :not(.keep):not(.stars) { visibility: hidden !important; }
 /* lot 3, étape 5 : pendant une visite depuis l'accueil en pause (récif, album, choisir, leçon), ce que montrait la séance est mis de côté tel quel */
 .stash { visibility: hidden !important; pointer-events: none !important; }

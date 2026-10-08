@@ -24,6 +24,7 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 | Mascotte | Le capitaine en vidéo remplace la pieuvre ; bulle, flèche, bienvenue, relance | fait (PR #34) |
 | Les voiliers | Le jeu de la maquette des voiliers devient le module 4 : ranger un nombre entre des bouées, jusqu'à 1 000, mer selon la difficulté | fait (PR #36) |
 | Correctifs | Les décisions du parent sur la confrontation de la spécification avec le code (`docs/ECARTS-SPEC.md`) : 7 correctifs, spécification réécrite | fait (PR #39) |
+| Les leçons | La bulle des leçons, le menu, « À toi ! », la table d'addition ; recette finie à l'étape 0 du bloc suivant (durées, relecture indépendante) | fait (PR #40, recette dans la PR #42) |
 
 ## Reprise
 
@@ -33,20 +34,6 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 - **Branche** : `claude/amazing-clarke-n9lyc7` ; demande de fusion en brouillon « Lot : Sommes jusqu'à 30 et Multiplication ». Bloc fait d'un seul tenant, sans arrêt pour validation (décision du parent du 7 octobre 2026, `docs/LOTS.md`, fiche « 4 et 5 »).
 - **Prérequis** : vérifiés sur `origin/main` le 7 octobre 2026 (« Les leçons » construit et fusionné, #40 ; « Correctifs » fait).
-- **Étape 0, fin de la recette des leçons** : en cours (rubrique ci-dessous).
+- **Étape 0, fin de la recette des leçons** : faite (durées des attentes sur `main`, avec et sans « passer » ; relecture indépendante, `tests/recette-fonctionnelle/out-lecons/RELECTURE.md` : 21 constats, 4 corrigés, 2 alignements de la spécification, le reste expliqué) ; la rubrique du lot est dans l'archive.
 - **Étape 1, « Sommes jusqu'à 30 »** : à faire.
 - **Étape 2, « Multiplication »** : à faire.
-
-### Reprise du lot « Les leçons »
-
-- **Branche** : `claude/upbeat-ramanujan-tvcxot` ; demande de fusion en brouillon « Lot : Les leçons ».
-- **Prérequis** : vérifiés sur `origin/main` le 7 octobre 2026 (« Mascotte », « Les voiliers » et « Correctifs » marqués « fait »).
-- **Fait** : la maquette (`art/lecons/`, ses dessins dans `art/src/canvas-core/sea/lecons.ts`, la grille `drawAddTable` dans `sea/runtime.ts`, le chalut corrigé de L10 dans `sea/hundreds.ts`), ses captures, ses phrases et ses questions (`docs/maquettes/lecons/README.md`), en tête de la demande de fusion.
-- **Validé par le parent** le 7 octobre 2026 (« validé » : les douze questions à leur valeur par défaut), reporté dans `docs/JOURNAL-CONCEPTION.md` et `docs/SPEC.md`.
-- **Fait** : sprites exportés (planches « lecons », « lecons-atoi », bulle de l'accueil dans « petits », chalut corrigé dans « centaines ») ; `app/js/session/lessons.js` (menu, « À toi ! », table) ; `main.js` (cinq bulles, pause, séance après une leçon, entraînement libre) ; leçons retirées de « choisir » et de l'entraînement libre ; textes, légende, inventaire des voix ; tests unitaires (`tests/unit/lecons-menu.test.mjs`) ; parcours `tests/e2e/lecons-menu.mjs` (vert aux deux résolutions) ; parcours `choix`, `pause`, `lot3ter`, `lot3bis-b` mis à jour.
-- **Recette faite** (7 octobre 2026) : `npm test` (seul échec : les phrases sans voix, attendu) ; `node tools/precache.mjs --check` (liste régénérée) ; les 36 parcours `tests/e2e` (relancés seuls quand ils avaient échoué sous la charge ; restent en échec, **aussi sur `main`** : `calcul` (erreurs C1 ou C4 non reconnues, au hasard), `video` (délai dépassé), `lot3ter` (étiquettes encore en fondu à la mesure, 10 à 13 selon le passage), et ceux qui signalent les phrases sans voix des lots précédents : `cartes`, `centaines`, `defi`, `notion2`, `recompenses`, `seance`) ; `pwa` a échoué deux fois sous la charge puis passé seul ; `perf.mjs` (scénario par défaut périmé sur `main` aussi : mesuré avec `--query "?sans=echauffement&sansLecon&cran=conseille&module=1" --niveau 0`, travail par image 8,4 ms avant, 5,2 ms après, planches décodées 63,4 puis 63,9 Mo ; menu 6,2 ms, table 7,2 ms, toucher d'une case 34 à 114 ms au processeur ÷ 4) ; simulation d'une année, 5 profils, 2 et 5 séances par semaine : identique à `main` ; `b-sequences --test` : 152 combinaisons, 608 séances, 0 en défaut ; séance réelle `recette.mjs --delai 4.5` : 504,7 s (`main` : 510,6 s : l'écart à la cible de 9 à 11 min est antérieur au lot).
-- **Recette arrêtée à la demande du parent (7 octobre 2026). Reste exactement :**
-  1. `node tests/e2e/recette-durees.mjs`, puis `node tests/e2e/recette-durees.mjs --passer` (attentes sans commande ; seuls, sans autre test en parallèle) ;
-  2. la relecture indépendante (`docs/LOTS.md`, « La recette », point 4) : un agent relecteur qui reçoit la section « Les deux personnes à incarner » de `docs/archives/PROMPT-RECETTE-LOT3.md`, les captures de `tests/e2e/out/lecons-menu/` (régénérées par `node tests/e2e/lecons-menu.mjs`) et les phrases dites (`tests/e2e/out/lecons-menu/1280-phrases.json`), puis les sections 3 et 8 de `docs/SPEC.md` ; rapport dans `tests/recette-fonctionnelle/out-lecons/RELECTURE.md`, constats bloquants et gênants corrigés ou expliqués ;
-  3. ensuite : mettre la demande de fusion à jour (mesures des durées, constats de la relecture), passer le lot à « fait » dans `docs/LOTS.md`, déplacer cette rubrique dans l'archive.
-- **Constat hors lot** : l'étoile de mer (ou la tortue) de la ligne reste visible dans l'accueil en pause ; c'est déjà le cas sur `main` (vérifié), non corrigé ici.

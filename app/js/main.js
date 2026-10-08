@@ -23,9 +23,11 @@ import { FactsScreen, runWarmup } from "./modules/facts/screen.js";
 import { Warmup } from "./modules/facts/warmup.js";
 import { WarmupSkip } from "./modules/facts/warmupskip.js";
 import { Module2Runner } from "./modules/facts/runner.js";
-import { calcMastery, Module3Runner } from "./modules/calc/runner.js";
+import { calcMastery, initialCalcState, Module3Runner } from "./modules/calc/runner.js";
+import { initialLevelState } from "./modules/progress.js";
+import { initialFamilies } from "./modules/facts/families.js";
 import { CalcScreen } from "./modules/calc/screen.js";
-import { Module5Runner, multMastery } from "./modules/mult/runner.js";
+import { initialMultState, Module5Runner, multMastery } from "./modules/mult/runner.js";
 import { MultScreen } from "./modules/mult/screen.js";
 import { Module4Runner } from "./modules/voiliers/runner.js";
 import { VoiliersScreen } from "./modules/voiliers/screen.js";
@@ -465,7 +467,10 @@ async function lessonAlone(id, { pause = false, fin = false } = {}) {
   const t0 = Date.now(), r = await Promise.race([player.play(id), new Promise((res) => { app.lessonCancel = () => { player.abandon(); clock.abandon(); voice.abandon(); res(null); }; })]);
   app.lessonCancel = null; mode = pause ? "seance" : null; homeKey.style.visibility = "hidden";
   if (!r) return null;
-  const L = lecons[id], key = L?.module === 2 ? 2 : L?.module === 3 ? 3 : 1, st = (await store.get("niveaux", key)) ?? (key === 3 ? { module: 3, acquis: [], obtenus: [], vus: {}, fenetres: {}, lecons: [] } : null);
+  // (relecture de l'étape 0 du bloc « Sommes jusqu'à 30 » et « Multiplication » : en base neuve, l'état de l'exercice n'existait
+  // pas encore et la leçon vue n'était pas notée, sa tuile restait sans étoile ; lot « Multiplication » : L13 et L14, module 5)
+  const L = lecons[id], key = [2, 3, 5].includes(L?.module) ? L.module : 1, now = Date.now();
+  const st = (await store.get("niveaux", key)) ?? (key === 1 ? initialLevelState(1, now) : key === 2 ? initialFamilies(module2, now) : key === 3 ? initialCalcState(now) : initialMultState(now));
   if ((r?.vue || r?.passee) && st && !(st.lecons ??= []).includes(id)) { st.lecons.push(id); await store.put("niveaux", st); }
   const today = new Date().toDateString(), done = await store.setting("leconsChoisies"), ids = done?.jour === today ? done.ids : [];
   let etoiles = 0;

@@ -202,7 +202,7 @@ function paintPanel(app, ctx, px, lit) {
   R.drawWord(ctx, txt, w / 2, 21 + em * 0.2, em, { w: em * 0.14 });
   const kind = tableAid(a, b); if (kind === "rien") return;
   const lo = Math.min(a, b), hi = Math.max(a, b), top = em * 1.5 + 60;
-  const fishW = (lo + (kind === "doublePlus" ? 1 : 0) - 1) * 92 + 120;
+  const fishW = (lo + (kind === "doublePlus" ? 2 : 0) - 1) * 92 + 120; // (double + 1 : une place de plus, le premier poisson n'est plus coupé)
   const [lw, lh] = AID_SIZE[kind] ?? (kind === "ligne" ? [150 + lo * 120, 250] : [fishW, 230]);
   const c = document.createElement("canvas"); c.width = Math.round(lw * px); c.height = Math.round(lh * px);
   const x = c.getContext("2d"); x.setTransform(px, 0, 0, px, 0, 0);
@@ -212,6 +212,8 @@ function paintPanel(app, ctx, px, lit) {
   if (kind === "maison") paintHouse(x, sprites, lw / 2, 160, n, [[a, b]]);
   if (kind === "ligne") paintJumps(x, sprites, 10, 100, lw - 20, hi, lo);
   const k = Math.min((w - 10) / lw, (P.h - top - 10) / lh);
+  // (relecture de l'étape 0 du bloc : l'appui posé sur une plaque de nacre, lisible même devant le corail du décor)
+  R.drawPanel(ctx, 4, top - 12, w - 8, lh * k + 24);
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.drawImage(c, (w / 2 - (lw * k) / 2) * px, top * px, lw * k * px, lh * k * px);
 }

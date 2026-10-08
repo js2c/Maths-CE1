@@ -212,11 +212,11 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 
 | Leçon | Ce qui est travaillé | Exemple |
 | --- | --- | --- |
-| L1 | On compte les sauts, pas les traits. | De 0 à 3, 3 sauts |
+| L1 | On compte les sauts, pas les bouées. | De 0 à 3, 3 sauts |
 | L2 | Un saut peut valoir dix. | 10, 20, 30 |
 | L3 | Une ligne ne commence pas toujours à 0. | 30, 31, 32 |
 | L4 | Les doubles, deux fois le même nombre. | 3 + 3 |
-| L5 | Les amis de 10, remplir le cadre de 10. | 7 + 3 |
+| L5 | Les amis de 10, remplir la boîte de dix. | 7 + 3 |
 | L6 | La maison des nombres, deux pièces et le toit. | 5 + 2 = 7 |
 | L10 | Les centaines, cent, c'est dix dizaines. | 100, 200, 307 |
 | L7 | Plus 10 sur le mur de corail, on descend d'une rangée. | 34 + 10 |

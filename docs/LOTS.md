@@ -27,7 +27,7 @@ Ce document a trois parties : **pour le parent**, comment lancer un lot ; **pour
 | --- | --- | --- | --- | --- | --- |
 | 1 | « Mascotte » | tout : maquette validée (`art/mascotte/`), spécification (`docs/SPEC.md`, section 11) | non | 6 phrases, quelques secondes | fait (PR #34, à fusionner après la fabrication des 6 phrases) |
 | 2 | « Les voiliers » | tout : maquette validée (`art/voiliers/`), spécification (section 7 bis) | non (une capture de contrôle du placement de la mascotte) | environ 800 phrases, environ 1 h | fait (PR #36, à fusionner après la fabrication de ses 835 phrases) |
-| 3 | « Les leçons » (avec la table d'addition) | la spécification (section 3, « Les leçons ») ; les écrans sont à maquetter | oui (validée le 7 octobre 2026) | 126 phrases (la table d'addition, 121), environ 10 min | construit (PR #40) ; recette arrêtée à la demande du parent, reste : durées des attentes et relecture indépendante (`docs/AVANCEMENT.md`, « Reprise ») ; 126 phrases à fabriquer |
+| 3 | « Les leçons » (avec la table d'addition) | la spécification (section 3, « Les leçons ») ; les écrans sont à maquetter | oui (validée le 7 octobre 2026) | 126 phrases (la table d'addition, 121), environ 10 min | fait (PR #40 ; recette finie dans la PR #42 : durées des attentes, relecture indépendante) ; 126 phrases à fabriquer |
 | 4 | « Sommes jusqu'à 30 » | le principe (section 13) et une proposition par défaut ; le contenu est à concevoir | oui, avec la proposition pédagogique | à estimer au point d'arrêt | à faire |
 | 5 | « Multiplication » (et les tables) | le principe (`docs/IDEES.md`, phase 2) ; tout est à concevoir | oui, avec la proposition pédagogique | à estimer au point d'arrêt | à faire |
 

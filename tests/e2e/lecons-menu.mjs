@@ -124,7 +124,11 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     check(await page.evaluate(() => window.__app.enPause), `${T} · la maison met l'exercice en pause`);
     check((await visible(page, ".keep.leconskey")) === 1, `${T} · l'accueil en pause a la bulle « les leçons »`);
     await shot(page, "10-pause");
+    // (relecture de l'étape 0 du bloc « Sommes jusqu'à 30 » et « Multiplication » : la tortue restait à flotter sur l'accueil en pause)
+    check(await page.evaluate(() => [...document.querySelectorAll("#front > *")].every((e) => getComputedStyle(e).visibility === "hidden")), `${T} · en pause, rien de l'exercice (tortue, étoile) ne reste à l'écran`);
     await tap(page, ".keep.leconskey"); await page.waitForSelector(".lecons-tuile", { timeout: 15000 }); await page.waitForTimeout(400);
+    // (même relecture : en base neuve, la leçon 1 vue depuis le menu n'était pas notée, sa tuile restait sans étoile)
+    check((await page.evaluate(() => document.querySelector('.lecons-tuile[data-key="L1"]')?.dataset.valide)) === "1", `${T} · la leçon 1 vue porte son étoile dans le menu`);
     if (big) await shot(page, "11-pause-menu");
     await tap(page, '.lecons-tuile[data-key="L4"]'); await page.waitForSelector(".skip", { timeout: 15000 });
     await page.waitForFunction(() => document.querySelector(".keep.play") && getComputedStyle(document.querySelector(".keep.play")).visibility !== "hidden" && !document.querySelector(".skip"), null, { timeout: 120000 });

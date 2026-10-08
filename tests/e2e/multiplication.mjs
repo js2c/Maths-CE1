@@ -210,7 +210,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const b = await bulle(page); check(!b.couvre, `${T} · la bulle du menu ne couvre aucune tuile (${b.place})`);
     await shot(page, "16-menu-lecons");
     if (big) { await tap(page, ".legende", 600); const n = await page.locator(".legende-ligne").count(); check(n === 16, `${T} · la légende du menu : 16 lignes (${n})`); await shot(page, "17-menu-legende"); await tap(page, ".legende-fermer", 400); }
-    await resetSaid(page); await tap(page, '.lecons-tuile[data-key="L14"]');
+    await resetSaid(page); await tap(page, '.lecons-tuile[data-key="L14"]', 300); await tap(page, '.lecons-tuile[data-key="L14"]');
     check((await said(page)).startsWith("On tourne les rangées."), `${T} · la tuile 14 dit « On tourne les rangées. » (${(await said(page)).slice(0, 60)})`);
     await page.waitForFunction(() => window.__said.some((t) => /tourne/.test(t) && !/^On tourne les rangées\.$/.test(t)), null, { timeout: 60000 }).catch(() => {}); await page.waitForTimeout(2500);
     await shot(page, "18-L14");
@@ -231,7 +231,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const { page, context, errors } = await open();
     await tap(page, ".leconskey"); await page.waitForSelector(".lecons-tuile"); await page.waitForTimeout(300);
     await resetSaid(page);
-    await tap(page, '.lecons-tuile[data-key="table.multiplication"]'); await page.waitForSelector(".table-grille", { timeout: 10000 }); await page.waitForTimeout(800);
+    await tap(page, '.lecons-tuile[data-key="table.multiplication"]', 300); await tap(page, '.lecons-tuile[data-key="table.multiplication"]'); await page.waitForSelector(".table-grille", { timeout: 10000 }); await page.waitForTimeout(800);
     check((await said(page)).includes("La table de multiplication."), `${T} · la tuile dit « La table de multiplication. » (${(await said(page)).slice(0, 80)})`);
     const g = await page.evaluate(() => { const b = document.querySelector(".table-grille").getBoundingClientRect(); return [b.left, b.top, b.right, b.bottom]; });
     check(g[0] >= 0 && g[2] <= W && g[1] >= 0 && g[3] <= H, `${T} · la grille tient dans l'écran (${g.map(Math.round)})`);

@@ -2,9 +2,9 @@
 // graduée : les 13 niveaux ; additions : les 13 familles (7 avant le lot « Sommes jusqu'à 30 ») ; calcul rapide et voiliers : 9 niveaux). (Lot « Les leçons » : les
 // leçons n'y sont plus ; elles ont leur bulle à l'accueil, session/lessons.js.) Tout est accessible, même
 // ce qui n'a jamais été atteint. Sans texte à lire : des pictogrammes et des vignettes de l'atelier
-// (art/src/canvas-core/sea/choice.ts, planche « choix », chargée le temps du choix) ; toucher une image dit son nom et
-// l'entoure d'or ; la toucher encore, ou toucher la coche, la valide (content/seance.json, choix.validation :
-// « double », ou « simple » : le premier toucher valide). Le niveau conseillé est entouré d'une lueur ; les niveaux
+// (art/src/canvas-core/sea/choice.ts, planche « choix », chargée le temps du choix) ; (lot « Correctifs de la tablette ») toucher
+// une image la sélectionne (bordure corail), la mascotte dit son nom et une courte description, écrits dans une bulle partie de
+// l'image ; la toucher encore la lance (session/selection.js). Le niveau conseillé est entouré d'une lueur ; les niveaux
 // déjà validés portent une petite étoile. À l'étape du niveau, la bulle de l'exercice (en haut) ramène au choix de
 // l'exercice ; la maison (main.js) ramène à l'accueil.
 // Renvoie { module: 1, niveau } | { module: 2, famille } | { module: 3 ou 4, niveau } (| null : quitté sans valider, `app.choiceCancel`). Fonctions pures (`levelItems`) testées par
@@ -12,6 +12,7 @@
 import * as R from "../art/runtime.js";
 import { onBrief, pop, spriteBox } from "../engine/ui.js";
 import { closeLegend, legendKey } from "./legend.js";
+import { deuxTouchers } from "./selection.js";
 import { currentFamily, initialFamilies, ruleShare } from "../modules/facts/families.js";
 import { initialCalcState, recommended } from "../modules/calc/runner.js";
 import { initialMultState, recommendedMult } from "../modules/mult/runner.js";
@@ -72,45 +73,33 @@ export function tilePos(i, n, T = TILE, ex = null, stops = null) {
 
 // l'écran : o = { stars (false : entraînement libre), content: { module1, module2, seance }, store }
 export async function choose(app, o) {
-  const { sprites, voice, text } = app, store = o.store, C = o.content.seance.choix ?? {}, double = (C.validation ?? "double") === "double";
+  const { sprites, voice, text } = app, store = o.store;
   await sprites.load("choix");
   const [st1, st2, st3, st4, st5, faits] = await Promise.all([store.get("niveaux", 1), store.get("niveaux", 2), store.get("niveaux", 3), store.get("niveaux", 4), store.get("niveaux", 5), store.all("faits")]);
   const familyShare = (id, boite) => ruleShare(o.content.module2, faits, id, boite);
-  const els = [], clear = () => { closeLegend(app); els.forEach((e) => e.remove()); els.length = 0; };
+  const els = [], clear = () => { closeLegend(app); els.forEach((e) => e.remove()); els.length = 0; app.bulle?.ancrer(null); };
   app.choiceClear = () => { clear(); sprites.unload("choix"); };
   // (lot 3, étape 5) quitter sans rien valider (la maison, depuis l'accueil en pause) : `app.choiceCancel()`, choose renvoie null
   const CANCEL = Symbol("annulé"), cancelled = new Promise((res) => { app.choiceCancel = () => res(CANCEL); });
   const done = () => { clear(); sprites.unload("choix"); app.choiceClear = null; app.choiceCancel = null; voice.stop(); return null; };
-  // une étape : des boutons (b.dataset.key), le premier toucher les nomme, le second (ou la coche) valide (« double ») ;
-  // « simple » : le premier toucher nomme et valide
-  // (sel.key : la clé de l'image entourée, lue par les dessins)
+  // (lot « Correctifs de la tablette ») CHOISIR EN DEUX TOUCHERS (session/selection.js) : le premier toucher sélectionne
+  // l'image (bordure corail) et la mascotte dit son nom et une courte description, écrits dans une bulle qui part d'un coin
+  // de l'image ; le second toucher sur la même image la lance. (Avant : un toucher disait le nom et lançait, décision du
+  // 28 septembre ; le mode « double » d'avant, avec une coche, n'existe plus.)
+  // (sel.key : la clé de l'image sélectionnée, lue par les dessins)
   const sel = { key: null };
-  // (lot 3 bis, B3 : les pictogrammes des exercices ; lot 3 ter, T3 : toutes les tuiles, la coche et le retour : un toucher
-  // bref valide au lever du doigt, un appui long montre l'étiquette et ne lance rien ; `label(clé)` : le texte de l'étiquette)
-  const pick = (buttons, name, check, label = (k) => k) => new Promise((res) => {
-    let cur = null; sel.key = null;
-    const select = (b) => {
-      if (cur === b && double) return res(b.dataset.key);
-      const prev = cur; cur = b; sel.key = b.dataset.key;
-      if (prev) { prev.classList.remove("chosen"); prev.repaint(); }
-      b.classList.add("chosen"); b.repaint(); pop(b); voice.stop(); voice.say(name(b.dataset.key));
-      // « simple » (décision du parent du 28 septembre) : le toucher valide ; l'image reste entourée un instant et son nom
-      // est dit jusqu'au bout (la consigne suivante attend dans la file de la voix)
-      if (!double) setTimeout(() => res(b.dataset.key), 300);
-      else if (check) check.style.visibility = "visible";
-    };
-    buttons.forEach((b) => onBrief(app, b, () => select(b), () => label(b.dataset.key)));
-    if (check) onBrief(app, check, () => { if (cur) { pop(check); res(cur.dataset.key); } }, "validerChoix");
-  });
-  const checkKey = () => { const c = spriteBox(app, { x: CHECK[0] - 80, y: CHECK[1] - 80, w: 160, h: 160, cls: "bubble check choix-ok", label: "valider", paint: (ctx) => sprites.draw(ctx, "valider", 0, 80, 80) }); c.style.visibility = "hidden"; els.push(c); return c; };
+  // (lot 3 bis, B3 : les pictogrammes des exercices ; lot 3 ter, T3 : toutes les tuiles et le retour : un toucher bref agit au
+  // lever du doigt, un appui long montre l'étiquette et ne lance rien ; `label(clé)` : le texte de l'étiquette)
+  const pick = (buttons, name, label = (k) => k) => { sel.key = null; return deuxTouchers(app, { tuiles: buttons, texte: name, etiquette: label, peindre: (k) => { sel.key = k; } }); };
+  const D = text.data.choixDescription ?? {}, dire = (nom, desc) => [nom, desc].filter(Boolean).join(" ");
   for (;;) {
     // 1. l'exercice
     const xs = EXERCISES, exBtn = xs.map((e, i) => {
-      const b = spriteBox(app, { x: EX_CX + (i - (xs.length - 1) / 2) * EX_PITCH - 90, y: EX_Y - 90, w: 180, h: 180, cls: "bubble choix-ex", label: e.id, paint: (ctx, px) => { sprites.draw(ctx, e.sprite, 0, 90, 90); if (sel.key === e.id) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawRing(ctx, 90, 90, 80); } } });
+      const b = spriteBox(app, { x: EX_CX + (i - (xs.length - 1) / 2) * EX_PITCH - 90, y: EX_Y - 90, w: 180, h: 180, cls: "bubble choix-ex", label: e.id, paint: (ctx, px) => { sprites.draw(ctx, e.sprite, 0, 90, 90); if (sel.key === e.id) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawSelectRound(ctx, 90, 90, 80); } } });
       b.dataset.key = e.id; els.push(b); return b;
     });
     voice.stop(); voice.say(text.data.choixExercice, { instruction: true });
-    const ex = await Promise.race([pick(exBtn, (k) => text.data.choixNom[k], checkKey(), (k) => app.legendes?.etiquettes?.[k]), cancelled]);
+    const ex = await Promise.race([pick(exBtn, (k) => dire(text.data.choixNom[k], D.exercices?.[k]), (k) => app.legendes?.etiquettes?.[k]), cancelled]);
     if (ex === CANCEL) return done();
     clear();
     // 2. le niveau, la famille ou la leçon
@@ -126,22 +115,22 @@ export async function choose(app, o) {
       const b = spriteBox(app, { x: x - W / 2, y: y - H / 2, w: W, h: H, cls: "bubble choix-tuile", label: `${ex} ${it.key}`, paint: (ctx, px) => {
         sprites.draw(ctx, it.sprite, 0, W / 2, H / 2);
         ctx.setTransform(px, 0, 0, px, 0, 0);
-        if (sel.key === String(it.key)) R.drawTileRing(ctx, W / 2, H / 2, W - 12, H - 12);
+        if (sel.key === String(it.key)) R.drawSelectTile(ctx, W / 2, H / 2, W - 12, H - 12);
         if (it.valide) { ctx.setTransform(1, 0, 0, 1, 0, 0); const q = sprites.frame("etoile.doree", 0), k = 0.42; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (W - 24) * px + q.dx * k, 24 * px + q.dy * k, q.w * k, q.h * k); }
       } });
       b.dataset.key = String(it.key); b.dataset.conseille = it.conseille ? "1" : ""; b.dataset.valide = it.valide ? "1" : ""; els.push(b); return b;
     });
     // (lot 3 bis, B2) la légende des niveaux, pour le parent : ne choisit rien, ne lance rien
     legendKey(app, ex, { keys: items.map((it) => it.key), els });
-    if (double) voice.stop();
+    voice.stop();
     voice.say(text.data.choixNiveau, { instruction: true });
-    const name = (k) => (ex === "ligne" ? text.data.choixLigne[k] : ex === "additions" ? text.data.choixFamille[k] : ex === "calcul" ? text.data.choixCalcul[k] : ex === "multiplication" ? text.data.choixMult[k] : text.data.choixVoiliers[k]);
+    const name = (k) => dire(ex === "ligne" ? text.data.choixLigne[k] : ex === "additions" ? text.data.choixFamille[k] : ex === "calcul" ? text.data.choixCalcul[k] : ex === "multiplication" ? text.data.choixMult[k] : text.data.choixVoiliers[k], D[ex]?.[k]);
     const backP = new Promise((res) => onBrief(app, back, () => { pop(back); res(null); }, "retourExercices"));
-    const key = await Promise.race([pick(tiles, name, checkKey(), (k) => tileLabel(app.legendes, ex, k)), backP, cancelled]);
+    const key = await Promise.race([pick(tiles, name, (k) => tileLabel(app.legendes, ex, k)), backP, cancelled]);
     if (key === CANCEL) return done();
     clear();
     if (key === null) continue;
-    if (double) voice.stop();
+    voice.stop();
     sprites.unload("choix"); app.choiceClear = null; app.choiceCancel = null;
     if (ex === "ligne") return { module: 1, niveau: Number(key) };
     if (ex === "additions") return { module: 2, famille: Number(key) };

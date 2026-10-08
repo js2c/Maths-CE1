@@ -31,7 +31,7 @@ for (const [name, profil, per, weeks] of CASES) {
   await page.screenshot({ path: join(OUT, `${name}-1-accueil.png`) });
   await page.tap(".albumkey", { force: true }); await page.waitForTimeout(2500); await page.screenshot({ path: join(OUT, `${name}-2-album.png`) });
   await page.goto(url + "?nosw&voix=rapide&son=non"); await page.waitForFunction(() => window.__ready !== undefined);
-  await page.tap(".choisir", { force: true }); await page.tap('.choix-ex[aria-label="ligne"]', { force: true }); await page.waitForTimeout(300);
+  await page.tap(".choisir", { force: true }); await page.tap('.choix-ex[aria-label="ligne"]', { force: true }); await page.waitForTimeout(300); await page.tap('.choix-ex[aria-label="ligne"]', { force: true }); await page.waitForTimeout(300);
   await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(500);
   const tiles = await page.evaluate(() => ({ conseille: document.querySelector('.choix-tuile[data-conseille="1"]')?.dataset.key, valides: document.querySelectorAll('.choix-tuile[data-valide="1"]').length }));
   check(Number(tiles.conseille) === st.niveau && tiles.valides === st.niveau - 1, `${name} : écran « choisir » cohérent (conseillé ${tiles.conseille}, ${tiles.valides} niveaux validés)`);

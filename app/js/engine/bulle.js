@@ -63,11 +63,13 @@ export const largeurEquilibree = (naturel) => (naturel > 420 ? Math.ceil(naturel
 export const largeurMax = (boite) => Math.min(TEXTE_MAX, Math.max(120, ((boite[2] - boite[0]) / 2 - 8) * 2 / BAL_K));
 // l'ovale posé dans sa boîte : collé à gauche, au plus près de la hauteur de la pointe (en bas de la boîte si elle est plus
 // bas ; en haut de la boîte pour une bulle sous la tête) ; renvoie centre, demi-axes et rectangle occupé (pointe comprise)
+// (lot « Correctifs de la tablette » : `droite`, l'ovale collé à droite de sa boîte, pour une bulle à gauche de ce qu'elle
+// montre)
 export function poser(place, w, h) {
-  const { a, b } = ovale(w, h), [x0, y0, x1, y1] = place.boite, cx = x0 + a;
+  const { a, b } = ovale(w, h), [x0, y0, x1, y1] = place.boite, cx = place.droite ? x1 - a : x0 + a;
   const cy = place.haut ? y0 + b : Math.max(y0 + b, Math.min(place.pointe[1] - b * 0.35, y1 - b));
   const rect = [cx - a, cy - b, cx + a, cy + b];
-  return { cx, cy, a, b, rect, deborde: rect[2] > x1 + 1 || rect[3] > y1 + 1 || rect[1] < y0 - 1 };
+  return { cx, cy, a, b, rect, deborde: rect[2] > x1 + 1 || rect[3] > y1 + 1 || rect[1] < y0 - 1 || rect[0] < x0 - 1 };
 }
 // les places, puis les mêmes en lignes larges (essayées seulement si aucune place en lignes équilibrées n'est libre : une
 // longue consigne du calcul rapide, en quatre lignes, ne tenait qu'en couvrant l'ardoise ; en deux lignes, elle tient entre
@@ -92,6 +94,29 @@ export function choisirPlace(obstacles, mesure, places = PLACES, souples = []) {
     if (!best || r.score < best.score) best = r;
   }
   return best;
+}
+// (lot « Correctifs de la tablette », choisir en deux touchers) LA BULLE D'UNE TUILE : au premier toucher d'une tuile, ce que
+// dit la mascotte s'écrit dans une bulle qui part d'un coin de la tuile. Huit places, deux par coin (au-dessus ou au-dessous,
+// à droite ou à gauche), d'abord du côté où l'écran a le plus de place ; la pointe vise le coin. `tuile` : [gauche, haut,
+// droite, bas] en px logiques.
+export function placesTuile([x0, y0, x1, y1]) {
+  const m = 12, c = 22, mx = (y0 + y1) / 2;
+  const coins = {
+    hd: { boite: [x1 - c, 8, 1272, y0 - m], pointe: [x1 - 12, y0 + 12] },
+    hg: { boite: [8, 8, x0 + c, y0 - m], pointe: [x0 + 12, y0 + 12], droite: true },
+    bd: { boite: [x1 - c, y1 + m, 1272, 792], pointe: [x1 - 12, y1 - 12], haut: true },
+    bg: { boite: [8, y1 + m, x0 + c, 792], pointe: [x0 + 12, y1 - 12], haut: true, droite: true },
+    dh: { boite: [x1 + m, 8, 1272, mx], pointe: [x1 - 10, y0 + 14] },
+    db: { boite: [x1 + m, mx, 1272, 792], pointe: [x1 - 10, y1 - 14], haut: true },
+    gh: { boite: [8, 8, x0 - m, mx], pointe: [x0 + 10, y0 + 14], droite: true },
+    gb: { boite: [8, mx, x0 - m, 792], pointe: [x0 + 10, y1 - 14], haut: true, droite: true },
+  };
+  const bas = mx < 400, droite = (x0 + x1) / 2 < 640;
+  const ordre = [bas ? (droite ? "bd" : "bg") : (droite ? "hd" : "hg"), bas ? (droite ? "bg" : "bd") : (droite ? "hg" : "hd"), droite ? (bas ? "db" : "dh") : (bas ? "gb" : "gh"), droite ? (bas ? "dh" : "db") : (bas ? "gh" : "gb"),
+    bas ? (droite ? "hd" : "hg") : (droite ? "bd" : "bg"), bas ? (droite ? "hg" : "hd") : (droite ? "bg" : "bd"), droite ? (bas ? "gb" : "gh") : (bas ? "db" : "dh"), droite ? (bas ? "gh" : "gb") : (bas ? "dh" : "db")];
+  // (une boîte trop étroite ou trop basse ferait une bulle en colonne : écartée, sauf s'il ne reste rien)
+  const toutes = ordre.map((k) => ({ nom: `tuile-${k}`, ...coins[k] })), assez = toutes.filter(({ boite: [a, b, c, d] }) => c - a >= 320 && d - b >= 100);
+  return assez.length ? assez : toutes;
 }
 // le texte découpé en mots, les nombres à part (en rouge) ; les espaces insécables de la typographie française gardées
 // (un mot d'une lettre, « À », « à », « a », n'est jamais seul en fin de ligne : relecture du lot)
@@ -132,9 +157,13 @@ export class Bulle {
     document.fonts?.load?.(`600 ${POLICE.taille}px "Shantell Sans"`).catch(() => {});
   }
   clear() { this.timers.forEach(clearTimeout); this.timers = []; clearInterval(this.reveal); }
+  // (lot « Correctifs de la tablette ») la prochaine fois que la voix dit `texte`, la bulle part de la tuile : `places`
+  // (placesTuile) et `obstacles()` ({ durs, souples }) à elle ; `ancrer(null)` revient à la bulle de la mascotte
+  ancrer(a) { this.ancre = a; if (!a && this.mode) { this.mode = null; this.cacher(); } }
   // la voix commence un texte de `ms` millisecondes
   dire(texte, ms) {
     this.clear();
+    this.mode = this.ancre && this.ancre.texte === texte ? this.ancre : null; this.el.classList.toggle("tuile", !!this.mode);
     this.texte = texte; this.txt.textContent = "";
     this.words = mots(texte).map((parts, i) => {
       if (i) this.txt.append(" ");
@@ -182,11 +211,14 @@ export class Bulle {
     }
     this.grille = { gen: key, rects }; return rects;
   }
-  obstacles() { return { durs: [...obstacles(this.st.ui, this.st.k), ...this.dures()], souples: [...obstacles(this.st.ui, this.st.k, CARTE), ...this.dessins(), ...this.souplesEnPlus()] }; }
+  obstacles() {
+    if (this.mode?.obstacles) return this.mode.obstacles();
+    return { durs: [...obstacles(this.st.ui, this.st.k), ...this.dures()], souples: [...obstacles(this.st.ui, this.st.k, CARTE), ...this.dessins(), ...this.souplesEnPlus()] };
+  }
   layout() {
     const cible = largeurEquilibree(this.mesure(4000)[0]), m = (w, place) => this.mesure(Math.min(w, place?.large ? LIGNE_LARGE : cible));
     // (lot « Les leçons » : `places`, les places propres à un écran, la table d'addition : sous la tête, à gauche de la grille)
-    const { durs, souples } = this.obstacles(), p = choisirPlace(durs, m, avecLarges(this.places ?? PLACES), souples);
+    const { durs, souples } = this.obstacles(), p = choisirPlace(durs, m, avecLarges(this.mode?.places ?? this.places ?? PLACES), souples);
     m(largeurMax(p.place.boite), p.place);
     Object.assign(this.txt.style, { left: `${(p.cx - p.w / 2).toFixed(1)}px`, top: `${(p.cy - p.h / 2).toFixed(1)}px` });
     const d = balloonPath(p.cx, p.cy, p.a, p.b, (Math.round(p.w) * 7 + Math.round(p.h)) % 13, p.place.pointe);

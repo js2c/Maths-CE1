@@ -82,7 +82,7 @@ for (const cran of ["conseille", "facile", "tresdur"]) {
   // (lot « Les voiliers » : cinq exercices ; lot « Les leçons » : quatre, les leçons ont leur bulle à l'accueil)
   check((await page.locator(".choix-ex").count()) === 5, "cinq exercices (ligne, additions, calcul rapide, voiliers, multiplication)");
   await shot(page, "11-choisir-exercices");
-  await page.tap('.choix-ex[aria-label="calcul"]', { force: true }); await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(400);
+  await page.tap('.choix-ex[aria-label="calcul"]', { force: true }); await page.waitForTimeout(300); await page.tap('.choix-ex[aria-label="calcul"]', { force: true }); await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(400);
   check((await page.locator(".choix-tuile").count()) === 9, "les 9 niveaux du calcul rapide, tous accessibles");
   await shot(page, "12-choisir-niveaux-calcul");
   check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();

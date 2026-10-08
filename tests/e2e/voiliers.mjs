@@ -70,7 +70,7 @@ for (const T of TAILLES) {
     const ex = await page.$$eval(".choix-ex", (b) => b.map((x) => { const r = x.getBoundingClientRect(); return { k: x.dataset.key, l: r.left, r: r.right }; }));
     check(ex.map((e) => e.k).join() === "ligne,additions,calcul,voiliers,multiplication" && ex.every((e) => e.l >= 0 && e.r <= T[0]), `« choisir » : cinq exercices dans l'écran (lot « Multiplication ») (${ex.map((e) => e.k).join(", ")})`);
     await shot(page, "01-choisir", T);
-    await page.tap('.choix-ex[data-key="voiliers"]', { force: true }); await page.waitForTimeout(900);
+    await page.tap('.choix-ex[data-key="voiliers"]', { force: true }); await page.waitForTimeout(300); await page.tap('.choix-ex[data-key="voiliers"]', { force: true }); await page.waitForTimeout(900);
     const tuiles = await page.$$eval(".choix-tuile", (b) => b.map((x) => x.dataset.key));
     check(tuiles.length === 9, `les voiliers : neuf niveaux (${tuiles.join(" ")})`);
     await shot(page, "02-choisir-niveaux", T);
@@ -81,7 +81,7 @@ for (const T of TAILLES) {
     await shot(page, "02b-legende", T);
     await page.tap(".legende-fermer", { force: true }); await page.waitForTimeout(500);
     check(!(await page.evaluate(() => window.__app.legendOpen)), "la croix ferme la légende");
-    await page.tap('.choix-tuile[data-key="2"]', { force: true });
+    await page.tap('.choix-tuile[data-key="2"]', { force: true }); await page.waitForTimeout(300); await page.tap('.choix-tuile[data-key="2"]', { force: true });
     await page.waitForFunction(() => window.__app.session?.rec?.module === 4, null, { timeout: 20000 });
     check(true, "un niveau des voiliers touché : la séance du jour sur les voiliers");
     check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();
@@ -229,8 +229,8 @@ for (const T of TAILLES) {
   const { page, context, errors } = await open("", T, async () => { const n = Date.now(); await window.__app.store.add("seances", { debut: n - 600000, fin: n, terminee: true, module: 1, etapes: [] }); });
   await page.waitForSelector(".again"); await page.tap(".again", { force: true });
   await page.waitForSelector(".choix-ex", { timeout: 15000 }); await page.waitForTimeout(400);
-  await page.tap('.choix-ex[data-key="voiliers"]', { force: true }); await page.waitForTimeout(700);
-  await page.tap('.choix-tuile[data-key="3"]', { force: true });
+  await page.tap('.choix-ex[data-key="voiliers"]', { force: true }); await page.waitForTimeout(300); await page.tap('.choix-ex[data-key="voiliers"]', { force: true }); await page.waitForTimeout(700);
+  await page.tap('.choix-tuile[data-key="3"]', { force: true }); await page.waitForTimeout(300); await page.tap('.choix-tuile[data-key="3"]', { force: true });
   await page.waitForSelector(".cran", { timeout: 15000 }); await page.waitForTimeout(400);
   await shot(page, "19a-crans", T);
   await page.tap(".cran", { force: true }).catch(() => {});

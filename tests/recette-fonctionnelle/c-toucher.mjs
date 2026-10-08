@@ -186,7 +186,7 @@ async function rien() {
   const ecrans = [
     ["accueil", { base: "mois", nom: true }, async () => {}],
     ["choisir : les exercices", { base: "mois", nom: true }, async (p) => { await toucher(p, ".choisir"); await attendre(p, () => document.querySelector(".choix-ex")); }],
-    ["choisir : les niveaux de la ligne", { base: "mois", nom: true }, async (p) => { await toucher(p, ".choisir"); await attendre(p, () => document.querySelector(".choix-ex")); await pause(p, 3000); await toucher(p, '.choix-ex[aria-label="ligne"]'); await attendre(p, () => document.querySelector(".choix-tuile")); }],
+    ["choisir : les niveaux de la ligne", { base: "mois", nom: true }, async (p) => { await toucher(p, ".choisir"); await attendre(p, () => document.querySelector(".choix-ex")); await pause(p, 3000); await toucher(p, '.choix-ex[aria-label="ligne"]'); await pause(p, 300); await toucher(p, '.choix-ex[aria-label="ligne"]'); await attendre(p, () => document.querySelector(".choix-tuile")); }],
     ["sélecteur de difficulté", { base: "mois", nom: true }, async (p) => { await toucher(p, ".play"); await attendre(p, () => document.querySelector(".cran")); }],
     ["échauffement : une question", { base: "mois", nom: true, params: "cran=conseille" }, async (p) => { await toucher(p, ".play"); await question(p); }],
     ["ligne graduée : une question", { base: "mois", nom: true, params: "choix=1:5&cran=conseille&sans=echauffement&sansLecon&guides=0" }, async (p) => { await toucher(p, ".play"); await question(p); }],

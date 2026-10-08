@@ -1,5 +1,5 @@
 {
-  "_doc": "Tout ce que la voix lit. {n}, {a}, {b} : des nombres. Plusieurs variantes : l'application en tire une au hasard. Récompenses et récif : {nom} est le nom de la créature avec son article (cartes.json, nomLu). erreur.E3sauter : l'erreur E3 au format « sauter » (oublier le point de départ ; {a} : la bouée de départ). faitTrouDroite, faitTrouGauche : les formes à trou des faits (3 + ? = 7, ? + 4 = 6), utilisées à partir du lot 2 (textes validés par le parent). erreur.E5 : {dizaines} et {unites} sont remplis avec uneDizaine ou desDizaines, uneUnite ou desUnites (accord au singulier : « 1 dizaine »). erreur.NSP, faitNSP : après le bouton « je ne sais pas ». reprise : au retour d'une pause (bouton « maison » pendant la séance). Lot « Mascotte » (décisions du parent du 6 octobre 2026) : accueil (la mascotte salue et souhaite la bienvenue ; elle n'a pas de nom), bienvenueLancement (lot « Correctifs de la tablette » : à l'arrivée sur l'accueil après l'écran de démarrage, une fois par lancement ; distincte d'accueil, qui suit « jouer ») ; relanceAide (25 s sans toucher pendant une question ; lot « Correctifs de la tablette » : elle apprend à l'enfant qu'on touche la mascotte pour réécouter). encore, libre… : l'entraînement libre après la séance. album : l'album des cartes. Lot 2 : carteBrillanteTirage (une carte qui sort brillante, tirage d'une chance sur cinq), carteAlbum (une carte dont la créature n'est pas encore dans le récif), carteLegendaire (avant le nom d'une légendaire), coquillageDore (le coquillage des étoiles dorées), surpriseVisite et surpriseCadeau (la surprise de l'accueil) ; ce que dit l'ouverture d'une zone est dans cartes.json (zones[].ouvertureLu). Chaque phrase dite a son fichier son (app/assets/voix/, fabriqué par tools/voix/fabriquer.mjs) : après une modification ici, relancer cet outil ; une phrase sans fichier est lue par la synthèse du navigateur. Lot 2, étape 2 : selecteur, selecteurLibre (le sélecteur de difficulté au début de la séance, ou de l'entraînement libre), cran.* et cranLibre.* (dit quand l'enfant touche un cran), cranDescente (la protection redescend d'un cran). Lot 2, étape 6 : notionFaits (la notion du jour sur les additions), aideCadre, aideMaison, aideDoublePlus (l'appui visuel des familles 3 à 6 : aide du coquillage, exemple guidé, correction), aToiFait (après un exemple guidé des additions). Lot 2, étape 7 : defi* (le défi record : consigne du premier défi et des suivants, départ, fin, score {n} (bonnes réponses), record battu, égalé ou non ({n} : le record)). Lot 2, étape 8 (nombres jusqu'à 1 000) : ecrire (la dictée, niveau 12 ; {n} : le nombre dicté), guideEcrire (l'exemple guidé de la dictée), erreur.E6 ({centaines}, {dizaines}, {unites} : centaineUn ou centainesPlus, dizaineUn ou desDizaines, uniteUn ou desUnites ; singulier pour 0 et 1 : « 0 dizaine »), erreur.E7 ({cents} : les centaines rondes, {reste} : le reste, {places} : placesUnites ou placesDizainesUnites). Lot 3 (docs/SPEC-LOT3.md) : choixExercice, choixNiveau, choixLecon (l'écran « choisir » : l'exercice, puis le niveau, la famille ou la leçon ; depuis le 28 septembre 2026, validation simple : toucher une bulle dit son nom et la choisit) ; choixNom.* (le nom d'un exercice), choixLigne.1 à 13 (le nom d'un niveau de la ligne graduée), choixFamille.1 à 7 (le nom d'une famille d'additions), choixLeconNom.* (le nom d'une leçon) ; rappelDouble (chaque question des presque-doubles : {a} plus {b}, {d} le petit nombre). Lot 3, étape 4 (le calcul rapide, docs/SPEC.md, « Module 3 ») : calcPlus, calcMoins (la consigne : {a} et {b}, les nombres du calcul) ; calcTrouPlus, calcTrouMoins (la forme à trou du cran « très dur » ; {n} : le résultat) ; calcPont.plus, calcPont.moins (un pont du chemin : {k}, le pas) ; calcGuide (les calculs guidés : l'enfant remplit chaque caillou) ; calcLent (C2 : juste mais lent, sans reproche) ; erreurCalc.C1 à C5 (les erreurs types ; C4 : {u} et {b}, les unités et le nombre ajouté ; C5 : {b} et {u}), erreurCalc.autre (une erreur non reconnue, dite seulement au mur : lot « Correctifs », écart 7.6, la phrase de la ligne, sans « chemin ») ; notionCalcul ; choixCalcul.1 à 9 (le nom d'un niveau). Lot « Les voiliers » (docs/SPEC.md, section 7 bis) : voiliersConsigne (au premier bateau et à « réécouter », suivie du nombre du bateau, dit seul) ; voiliersMer.* (la mer qui change, annoncée au bateau suivant : vent, pirates, calme, ventRetour ; ce qui arrive au bateau : repousse, rattrape, loin) ; voiliersBravoPirates (un bateau rangé devant les pirates) ; voiliersBravoEntre ({a}, {b} : deux dizaines ou deux centaines voisines qui encadrent le nombre) ; voiliersErreur.* (après une erreur, ou quand le bateau va seul au bon passage ; {b} : une bouée ronde ; « cette bouée » : une bouée qui ne l'est pas, allumée) ; voiliersDizaines (la seconde rangée du double encadrement) ; voiliersExemple.1 à 9 (l'exemple guidé de chaque niveau, module4.json, exemples) ; choixVoiliers.1 à 9 (le nom d'un niveau dans l'écran « choisir »).",
+  "_doc": "Tout ce que la voix lit. {n}, {a}, {b} : des nombres. Plusieurs variantes : l'application en tire une au hasard. Récompenses et récif : {nom} est le nom de la créature avec son article (cartes.json, nomLu). erreur.E3sauter : l'erreur E3 au format « sauter » (oublier le point de départ ; {a} : la bouée de départ). faitTrouDroite, faitTrouGauche : les formes à trou des faits (3 + ? = 7, ? + 4 = 6), utilisées à partir du lot 2 (textes validés par le parent). erreur.E5 : {dizaines} et {unites} sont remplis avec uneDizaine ou desDizaines, uneUnite ou desUnites (accord au singulier : « 1 dizaine »). erreur.NSP, faitNSP : après le bouton « je ne sais pas ». reprise : au retour d'une pause (bouton « maison » pendant la séance). Lot « Mascotte » (décisions du parent du 6 octobre 2026) : accueil (la mascotte salue et souhaite la bienvenue ; elle n'a pas de nom), bienvenueLancement (lot « Correctifs de la tablette » : à l'arrivée sur l'accueil après l'écran de démarrage, une fois par lancement ; distincte d'accueil, qui suit « jouer ») ; relanceAide (25 s sans toucher pendant une question ; lot « Correctifs de la tablette » : elle apprend à l'enfant qu'on touche la mascotte pour réécouter). encore, libre… : l'entraînement libre après la séance. album : l'album des cartes. Lot 2 : carteBrillanteTirage (une carte qui sort brillante, tirage d'une chance sur cinq), carteAlbum (une carte dont la créature n'est pas encore dans le récif), carteLegendaire (avant le nom d'une légendaire), coquillageDore (le coquillage des étoiles dorées), surpriseVisite et surpriseCadeau (la surprise de l'accueil) ; ce que dit l'ouverture d'une zone est dans cartes.json (zones[].ouvertureLu). Chaque phrase dite a son fichier son (app/assets/voix/, fabriqué par tools/voix/fabriquer.mjs) : après une modification ici, relancer cet outil ; une phrase sans fichier est lue par la synthèse du navigateur. Lot 2, étape 2 : selecteur, selecteurLibre (le sélecteur de difficulté au début de la séance, ou de l'entraînement libre), cran.* et cranLibre.* (dit quand l'enfant touche un cran), cranDescente (la protection redescend d'un cran). Lot 2, étape 6 : notionFaits (la notion du jour sur les additions), aideCadre, aideMaison, aideDoublePlus (l'appui visuel des familles 3 à 6 : aide du coquillage, exemple guidé, correction), aToiFait (après un exemple guidé des additions). Lot 2, étape 7 : defi* (le défi record : consigne du premier défi et des suivants, départ, fin, score {n} (bonnes réponses), record battu, égalé ou non ({n} : le record)). Lot 2, étape 8 (nombres jusqu'à 1 000) : ecrire (la dictée, niveau 12 ; {n} : le nombre dicté), guideEcrire (l'exemple guidé de la dictée), erreur.E6 ({centaines}, {dizaines}, {unites} : centaineUn ou centainesPlus, dizaineUn ou desDizaines, uniteUn ou desUnites ; singulier pour 0 et 1 : « 0 dizaine »), erreur.E7 ({cents} : les centaines rondes, {reste} : le reste, {places} : placesUnites ou placesDizainesUnites). Lot 3 (docs/SPEC-LOT3.md) : choixExercice, choixNiveau, choixLecon (l'écran « choisir » : l'exercice, puis le niveau, la famille ou la leçon ; depuis le lot « Correctifs de la tablette », en deux touchers : le premier dit le nom et la description, choixDescription, le second lance ; avant, depuis le 28 septembre 2026, validation simple) ; choixNom.* (le nom d'un exercice), choixLigne.1 à 13 (le nom d'un niveau de la ligne graduée), choixFamille.1 à 7 (le nom d'une famille d'additions), choixLeconNom.* (le nom d'une leçon) ; rappelDouble (chaque question des presque-doubles : {a} plus {b}, {d} le petit nombre). Lot 3, étape 4 (le calcul rapide, docs/SPEC.md, « Module 3 ») : calcPlus, calcMoins (la consigne : {a} et {b}, les nombres du calcul) ; calcTrouPlus, calcTrouMoins (la forme à trou du cran « très dur » ; {n} : le résultat) ; calcPont.plus, calcPont.moins (un pont du chemin : {k}, le pas) ; calcGuide (les calculs guidés : l'enfant remplit chaque caillou) ; calcLent (C2 : juste mais lent, sans reproche) ; erreurCalc.C1 à C5 (les erreurs types ; C4 : {u} et {b}, les unités et le nombre ajouté ; C5 : {b} et {u}), erreurCalc.autre (une erreur non reconnue, dite seulement au mur : lot « Correctifs », écart 7.6, la phrase de la ligne, sans « chemin ») ; notionCalcul ; choixCalcul.1 à 9 (le nom d'un niveau). Lot « Les voiliers » (docs/SPEC.md, section 7 bis) : voiliersConsigne (au premier bateau et à « réécouter », suivie du nombre du bateau, dit seul) ; voiliersMer.* (la mer qui change, annoncée au bateau suivant : vent, pirates, calme, ventRetour ; ce qui arrive au bateau : repousse, rattrape, loin) ; voiliersBravoPirates (un bateau rangé devant les pirates) ; voiliersBravoEntre ({a}, {b} : deux dizaines ou deux centaines voisines qui encadrent le nombre) ; voiliersErreur.* (après une erreur, ou quand le bateau va seul au bon passage ; {b} : une bouée ronde ; « cette bouée » : une bouée qui ne l'est pas, allumée) ; voiliersDizaines (la seconde rangée du double encadrement) ; voiliersExemple.1 à 9 (l'exemple guidé de chaque niveau, module4.json, exemples) ; choixVoiliers.1 à 9 (le nom d'un niveau dans l'écran « choisir »).",
   "accueil": [
     "Bienvenue à bord ! On s'entraîne ensemble ?",
     "Bonsoir, et bienvenue ! On va jouer dans l'océan ?"
@@ -186,10 +186,102 @@
     "tresdur": "Très dur !"
   },
   "cranDescente": "On essaie un peu moins dur ?",
-  "choixExercice": "Qu'est-ce que tu veux faire ? Touche une bulle.",
-  "choixNiveau": "Choisis ! Touche une image pour commencer.",
-  "choixLecon": "Quelle leçon veux-tu regarder ? Touche-la.",
+  "choixExercice": "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+  "choixNiveau": "Choisis ! Touche une image : je te dis ce que c'est. Touche-la encore pour commencer.",
+  "choixLecon": "Quelle leçon veux-tu regarder ? Touche une image : je te dis ce que c'est. Touche-la encore pour la regarder.",
   "finLecon": "À toi ! Touche la grande bulle pour t'entraîner.",
+  "choixDescription": {
+    "exercices": {
+      "ligne": "Tu lis, tu places et tu sautes sur la ligne.",
+      "additions": "Les additions à savoir par cœur, famille par famille.",
+      "calcul": "Des astuces pour calculer sans compter un par un.",
+      "voiliers": "Tu ranges les bateaux entre les bouées.",
+      "multiplication": "Des rangées de poissons, et les tables."
+    },
+    "ligne": {
+      "1": "Tu comptes les sauts de la tortue, de un en un.",
+      "2": "Tu lis et tu places les nombres, de zéro à dix.",
+      "3": "Tu lis et tu places les nombres, jusqu'à vingt.",
+      "4": "Regarde bien le nombre du départ.",
+      "5": "Chaque saut vaut dix.",
+      "6": "Seules les dizaines sont écrites : trouve les autres nombres.",
+      "7": "Un saut vaut un, ou il vaut dix.",
+      "8": "Il n'y a pas de traits : tu devines où va le nombre.",
+      "9": "Chaque saut vaut cent.",
+      "10": "Entre deux centaines, chaque saut vaut dix.",
+      "11": "Sur un petit bout de ligne, chaque saut vaut un.",
+      "12": "Tu entends un grand nombre, et tu l'écris en chiffres.",
+      "13": "Il n'y a pas de traits : tu devines où va le grand nombre."
+    },
+    "additions": {
+      "1": "La tortue fait un ou deux sauts.",
+      "2": "Deux fois le même nombre, jusqu'à cinq plus cinq.",
+      "3": "Ce qui manque pour faire dix.",
+      "4": "Deux nombres qui font le nombre du toit.",
+      "5": "Deux nombres qui font huit ou neuf, avec le cadre de dix.",
+      "6": "Un double, et encore un.",
+      "7": "Toutes les additions que tu connais déjà.",
+      "8": "Une boîte de dix bien pleine, et ce qui reste.",
+      "9": "Deux fois le même nombre, jusqu'à quinze plus quinze.",
+      "10": "Un double, et encore un, jusqu'à dix plus dix.",
+      "11": "Un pour faire dix, puis le reste.",
+      "12": "On remplit d'abord la boîte de dix.",
+      "13": "Toutes les additions, jusqu'à trente."
+    },
+    "calcul": {
+      "1": "Un petit pas en avant, ou en arrière.",
+      "2": "Le petit poisson descend ou monte d'une rangée.",
+      "3": "Seules les dizaines changent.",
+      "4": "Les unités s'ajoutent, la dizaine ne bouge pas.",
+      "5": "Les unités s'enlèvent, la dizaine ne bouge pas.",
+      "6": "Plus dix, puis un pas en arrière.",
+      "7": "On va d'abord jusqu'à la dizaine, puis on ajoute le reste.",
+      "8": "Les dizaines d'abord, puis les unités.",
+      "9": "On recule d'abord jusqu'à la dizaine, puis on enlève le reste."
+    },
+    "voiliers": {
+      "1": "Range le bateau entre deux dizaines.",
+      "2": "Range le bateau entre deux bouées : lis bien leurs nombres.",
+      "3": "Range le bateau entre deux centaines.",
+      "4": "Range le bateau entre deux dizaines, après cent.",
+      "5": "Le nombre est juste à côté d'une bouée : avant, ou après ?",
+      "6": "Lis bien les bouées : le nombre est juste à côté de l'une d'elles.",
+      "7": "Cinq bouées : trouve le bon passage.",
+      "8": "Les bouées ne sont pas toutes à la même distance : lis bien chaque nombre.",
+      "9": "D'abord entre deux centaines, puis entre deux dizaines."
+    },
+    "multiplication": {
+      "1": "Tu ajoutes les rangées de poissons.",
+      "2": "Trois fois quatre, c'est trois rangées de quatre.",
+      "3": "Fois deux, c'est le double.",
+      "4": "Fois dix, ce sont des dizaines.",
+      "5": "Fois cinq, c'est la moitié de fois dix.",
+      "6": "Trois fois cinq, c'est pareil que cinq fois trois.",
+      "7": "On compte de trois en trois.",
+      "8": "Fois quatre, c'est le double du double.",
+      "9": "Les tables de deux, trois, quatre, cinq et dix, mélangées."
+    },
+    "lecons": {
+      "L1": "On compte les sauts, pas les bouées.",
+      "L2": "Avec des filets de dix poissons.",
+      "L3": "Elle peut commencer à trente.",
+      "L4": "Deux fois le même nombre, comme dans un miroir.",
+      "L5": "Ce qui manque pour remplir la boîte de dix.",
+      "L6": "Deux pièces et le toit.",
+      "L10": "Cent, c'est dix dizaines.",
+      "L7": "Le petit poisson descend d'une rangée.",
+      "L8": "Plus dix, puis un pas en arrière.",
+      "L9": "On complète d'abord jusqu'à dix.",
+      "L11": "Une boîte pleine, et ce qui reste.",
+      "L12": "On remplit la boîte, puis on ajoute le reste.",
+      "L13": "Trois fois quatre, c'est quatre plus quatre plus quatre.",
+      "L14": "Trois fois cinq, c'est pareil que cinq fois trois."
+    },
+    "tables": {
+      "addition": "Touche une case : je te dis le calcul.",
+      "multiplication": "Touche une case : je te dis le calcul."
+    }
+  },
   "choixTable": "La table d'addition.",
   "tableConsigne": "Touche une case : je te dis le calcul.",
   "tableCase": "{a} plus {b}, {n}.",

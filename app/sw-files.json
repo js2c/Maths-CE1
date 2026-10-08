@@ -1,5 +1,5 @@
 {
- "version": "f8aeaedb7e95",
+ "version": "ebab871c68d7",
  "files": [
   "./",
   "assets/art/aides@1x.webp",
@@ -10709,6 +10709,7 @@
   "js/session/reef.js",
   "js/session/rewards.js",
   "js/session/screens.js",
+  "js/session/selection.js",
   "js/session/selector.js",
   "js/session/session.js",
   "js/session/surprise.js",

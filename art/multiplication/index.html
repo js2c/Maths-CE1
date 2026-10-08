@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- MAQUETTE DU LOT « MULTIPLICATION » (docs/LOTS.md, fiche 5 ; docs/maquettes/multiplication/PROPOSITION.md). Bloc fait sans
+     arrêt pour validation (décision du parent du 7 octobre 2026) : la maquette montre les écrans nouveaux du lot avec les pièces
+     de l'application (planches, poissons des aides, rangées dessinées en direct par app/js/modules/mult/screen.js, table
+     dessinée par le moteur) ; elle lit app/ et ne le modifie pas. -->
+<base href="../../app/">
+<title>Maquette — la multiplication</title>
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/app.css">
+<style>
+  #nav { position: fixed; left: 8px; bottom: 8px; z-index: 50; display: flex; flex-wrap: wrap; gap: 4px; max-width: 96vw; font: 13px/1.2 system-ui, sans-serif; }
+  #nav button { padding: 5px 9px; border: 1px solid #0a3f49; border-radius: 6px; background: #fffaf0e8; cursor: pointer; }
+  #nav button.on { background: #ffd23a; }
+  #dit { position: absolute; z-index: 30; left: 16px; top: 440px; max-width: 330px; padding: 14px 20px; border-radius: 26px; background: #fffaf0; border: 3px solid #15122a; font: 600 22px/1.3 "Shantell Sans", system-ui, sans-serif; color: #15122a; }
+  #dit:empty { display: none; }
+  .couche { position: absolute; left: 0; top: 0; }
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="bg"></canvas><canvas id="scene" class="couche"></canvas><div id="dit"></div></div>
+<div id="nav"></div>
+<script type="module">
+import { Sprites, loadAtlas } from "./js/engine/sprites.js";
+import * as R from "./js/art/runtime.js";
+import { paintRows, ROWS_BIG, ROWS_SMALL } from "./js/modules/mult/screen.js";
+import { MENU, TABLE } from "./js/session/lessons.js";
+
+const P = new URLSearchParams(location.search), CAPTURE = P.has("capture");
+const W = 1280, H = 800, root = document.getElementById("stage"), bg = document.getElementById("bg"), scene = document.getElementById("scene");
+const k = Math.min(innerWidth / W, innerHeight / H), px = k * (devicePixelRatio || 1);
+Object.assign(root.style, { position: "absolute", left: `${(innerWidth - W * k) / 2}px`, top: `${(innerHeight - H * k) / 2}px`, width: `${W * k}px`, height: `${H * k}px` });
+for (const c of [bg, scene]) { c.width = W * px; c.height = H * px; Object.assign(c.style, { width: `${W * k}px`, height: `${H * k}px` }); }
+document.getElementById("dit").style.transform = `scale(${k})`; document.getElementById("dit").style.transformOrigin = "0 0";
+const sprites = new Sprites(await loadAtlas(), px);
+await Promise.all(["petits", "lagon", "choix", "aides", "poissons", "lecons", "lecons-atoi"].map((s) => sprites.load(s)));
+await document.fonts.load('600 30px "Shantell Sans"');
+sprites.draw(bg.getContext("2d"), "lagon.fond", 0, 0, 0);
+const ctx = scene.getContext("2d");
+const clear = () => { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, scene.width, scene.height); ctx.setTransform(px, 0, 0, px, 0, 0); };
+const sprite = (name, x, y) => { ctx.setTransform(1, 0, 0, 1, 0, 0); sprites.draw(ctx, name, 0, x * k, y * k); ctx.setTransform(px, 0, 0, px, 0, 0); };
+const slate = (txt) => { const em = 76, w = R.wordWidth(txt) * em + 90; R.drawPanel(ctx, 790 - w / 2, 150, w, 140); R.drawWord(ctx, txt, 790, 182, em, { w: 10 }); };
+const plate = (txt) => { const em = 44, w = R.wordWidth(txt) * em + 60; R.drawPanel(ctx, ROWS_SMALL.cx - w / 2, 372, w, em + 40); R.drawWord(ctx, txt, ROWS_SMALL.cx, 392, em, { w: 6.5, seed: 9600 }); };
+const dit = (t) => { document.getElementById("dit").textContent = t; };
+
+// les écrans de la maquette : ce que voit l'enfant, et ce que dit la voix (la bulle de la mascotte l'écrit)
+const ECRANS = {
+  "exercices": () => { ["choix.ex.ligne", "libre.faits", "choix.ex.calcul", "choix.ex.voiliers", "choix.ex.multiplication"].forEach((e, i) => sprite(e, 800 + (i - 2) * 172, 560)); dit("La multiplication."); },
+  "niveaux": () => { [...Array(9)].forEach((_, i) => sprite(`choix.multiplication.${i + 1}`, 520 + (i % 4) * 196, 260 + Math.floor(i / 4) * 152 + (i === 8 ? 0 : 0))); dit("La table de deux."); },
+  "menu": () => { [["L1", "L2", "L3", "L10"], ["L4", "L5", "L6", "L11", "L12"], ["L7", "L8", "L9"], ["L13", "L14"]].forEach((r, j) => r.forEach((id, i) => sprite(`lecons.tuile.${id}`, MENU.colX[i], MENU.rowY[j])));
+    ["ligne", "additions", "calcul", "multiplication"].forEach((e, j) => sprite(`lecons.rangee.${e}`, MENU.iconX, MENU.rowY[j])); sprite("lecons.table.plus", MENU.colX[3], MENU.rowY[3]); sprite("lecons.table.fois", MENU.colX[4], MENU.rowY[3]); dit("Quelle leçon veux-tu regarder ? Touche-la."); },
+  "L13-rangees": () => { slate("4 + 4 + 4"); paintRows(ctx, sprites, 3, 4, ROWS_BIG, { lit: 0 }); dit("Trois rangées de quatre poissons. Chaque rangée en a autant."); },
+  "L13-comptees": () => { slate("3 × 4 = 12"); paintRows(ctx, sprites, 3, 4, ROWS_BIG, { lit: 3, totals: true }); dit("4… 8… 12. Trois fois quatre, ça fait douze."); },
+  "L14-tour": () => { slate("3 × 5 = 5 × 3"); paintRows(ctx, sprites, 3, 5, { cx: 470, top: 380, h: 300, w: 420 }, { lit: 3 }); paintRows(ctx, sprites, 5, 3, { cx: 930, top: 360, h: 380, w: 300 }, { lit: 5 }); dit("On tourne l'image : cinq rangées de trois. Toujours quinze poissons !"); },
+  "question-niveau-1": () => { slate("4 + 4 + 4 = ?"); paintRows(ctx, sprites, 3, 4, ROWS_SMALL); sprite("aide", 222, 580); dit("3 rangées de 4 poissons. Combien de poissons en tout ?"); },
+  "coquillage-2x7": () => { slate("2 × 7 = ?"); paintRows(ctx, sprites, 2, 7, ROWS_BIG, { lit: 2, totals: true }); dit("Fois deux, c'est le double. 7… 14."); },
+  "correction-M1": () => { slate("3 × 5 = 15"); paintRows(ctx, sprites, 3, 5, ROWS_BIG, { lit: 3, totals: true }); dit("Attention : fois, ce n'est pas plus. On compte les rangées. 3 fois 5, ça fait 15."); },
+  "tour-3x7": () => { slate("7 × 3 = ?"); plate("3 × 7 = 21"); dit("3 fois 7, ça fait 21. Et 7 fois 3 ?"); },
+  "trou-3x?=12": () => { slate("3 × ? = 12"); paintRows(ctx, sprites, 3, 4, ROWS_BIG, { ghost: true }); dit("Il faut 12 poissons en tout. Compte les places qui brillent !"); },
+  "table": () => { const T = { ...TABLE, max: 10, min: 1, op: "×", tint: true }; R.drawAddTable(ctx, { ...T, lit: [7, 5] }); dit("7 fois 5, 35."); },
+  "atoi-L13": () => { sprite("lecons.atoi.L13", 600, 520); sprite("maison.grande", 820, 520); dit("À toi ! Touche la grande bulle pour t'entraîner."); },
+};
+const nav = document.getElementById("nav"), go = (id) => { clear(); dit(""); ECRANS[id](); [...nav.children].forEach((b) => b.classList.toggle("on", b.dataset.id === id)); window.__ecran = id; };
+for (const id of Object.keys(ECRANS)) { const b = document.createElement("button"); b.textContent = id; b.dataset.id = id; b.onclick = () => go(id); nav.append(b); }
+if (CAPTURE) nav.style.display = "none";
+go(P.get("ecran") ?? "exercices");
+window.__go = go; window.__ready = true;
+</script>
+</body>
+</html>

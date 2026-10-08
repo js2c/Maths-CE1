@@ -149,9 +149,9 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const { page, context, errors } = await open();
     await tap(page, ".leconskey"); await page.waitForSelector(".lecons-tuile"); await page.waitForTimeout(700);
     const keys = await page.evaluate(() => [...document.querySelectorAll(".lecons-tuile")].map((e) => e.dataset.key).join(","));
-    check(keys === "L1,L2,L3,L10,L4,L5,L6,L11,L12,L7,L8,L9,table.addition", `${T} · le menu : L11 et L12 dans la rangée des additions (${keys})`);
+    check(keys === "L1,L2,L3,L10,L4,L5,L6,L11,L12,L7,L8,L9,L13,L14,table.addition,table.multiplication", `${T} · le menu : L11 et L12 dans la rangée des additions (${keys})`);
     const rr = await page.evaluate(() => [...document.querySelectorAll(".lecons-tuile")].map((e) => e.getBoundingClientRect()).map((b) => [b.left, b.top, b.right, b.bottom]));
-    check(rr.every((b) => b[0] >= 0 && b[2] <= W + 1 && b[3] <= H + 1), `${T} · les treize tuiles tiennent dans l'écran`);
+    check(rr.every((b) => b[0] >= 0 && b[2] <= W + 1 && b[3] <= H + 1), `${T} · les seize tuiles tiennent dans l'écran`);
     const b = await bulle(page); check(!b.couvre, `${T} · la bulle du menu ne couvre aucune tuile (${b.place})`);
     await shot(page, "18-menu-lecons");
     await resetSaid(page);

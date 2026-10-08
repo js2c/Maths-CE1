@@ -178,4 +178,5 @@ export function classifyFact(q, v) {
   if (exp > 10 && v === exp % 10) return "dizaine";
   return "autre";
 }
-export const expected = (q) => (q.forme === "trouDroite" ? q.b : q.forme === "trouGauche" ? q.a : q.op === "-" ? q.a - q.b : q.a + q.b);
+// (lot « Multiplication » : « a × b », op « × », le même écran)
+export const expected = (q) => (q.forme === "trouDroite" ? q.b : q.forme === "trouGauche" ? q.a : q.op === "-" ? q.a - q.b : q.op === "×" ? q.a * q.b : q.a + q.b);

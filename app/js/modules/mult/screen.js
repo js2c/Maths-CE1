@@ -16,25 +16,30 @@ import { num, put, putScaled } from "../facts/aids.js";
 import { astuceOf, classifyMult, multAnswer } from "./mult.js";
 
 const SKIPPED = Symbol("passé");
-// la place des rangées : en petit, la bande entre l'ardoise et le pavé ; en grand, à la place du pavé
-export const ROWS_SMALL = { cx: 790, top: 342, h: 136, w: 640 }, ROWS_BIG = { cx: 700, top: 350, h: 430, w: 820 };
-const FISH = { w: 64, h: 44 };
+// la place des rangées : en petit, la bande entre l'ardoise et le pavé ; en grand, à la place du pavé (entre le coquillage et
+// « je ne sais pas ») ; kMax : l'agrandissement le plus fort des poissons (les rangées courtes sont montrées plus grandes)
+export const ROWS_SMALL = { cx: 790, top: 322, h: 168, w: 700, kMax: 1 }, ROWS_BIG = { cx: 700, top: 346, h: 430, w: 740, kMax: 1.45 };
+const FISH = { w: 64, h: 50 };
 
-// les rangées : a rangées de b poissons, centrées dans la zone Z ; `lit` : les rangées allumées (comptées), `totals` : le total
-// écrit au bout de chaque rangée allumée ; `ghost` : les rangées d'un nombre qui manque, en places vides (formes à trou)
-export function rowsLayout(a, b, Z) {
-  const pitchX = Math.min(FISH.w, Z.w / Math.max(1, b + 1.2)), pitchY = Math.min(FISH.h + 6, Z.h / Math.max(1, a)), k = Math.min(1, pitchX / FISH.w, pitchY / (FISH.h + 6));
-  const w = (b - 1) * pitchX, h = (a - 1) * pitchY, x0 = Z.cx - w / 2 - pitchX * 0.4, y0 = Z.top + (Z.h - h) / 2;
-  return { k, at: (i, j) => [x0 + j * pitchX, y0 + i * pitchY], end: (i) => [x0 + b * pitchX + 10, y0 + i * pitchY], pitchX, pitchY };
+// les rangées : a rangées de b poissons, centrées dans la zone Z, sur une plaque de nacre (les poissons et les totaux se lisent
+// sur le sable comme sur l'eau) ; `lit` : les rangées allumées (comptées), `totals` : le total écrit au bout de chaque rangée
+// allumée ; `ghost` : les rangées d'un nombre qui manque, en places vides (formes à trou)
+export function rowsLayout(a, b, Z, { totals = true } = {}) {
+  const extra = totals ? 1.7 : 0.6, k = Math.min(Z.kMax ?? 1, Z.w / ((b + extra) * FISH.w), (Z.h - 24) / (a * FISH.h + 16));
+  const px = FISH.w * k, py = FISH.h * k, w = (b - 1) * px, h = (a - 1) * py;
+  const x0 = Z.cx - w / 2 - (totals ? px * 0.55 : 0), y0 = Z.top + (Z.h - h) / 2;
+  const box = [x0 - px * 0.62, y0 - py * 0.66, w + px * (1.24 + (totals ? 1.1 : 0)), h + py * 1.32];
+  return { k, at: (i, j) => [x0 + j * px, y0 + i * py], end: (i) => [x0 + b * px - px * 0.2, y0 + i * py], pitchX: px, pitchY: py, box };
 }
-export function paintRows(ctx, sprites, a, b, Z, { lit = 0, totals = false, ghost = false } = {}) {
-  const L = rowsLayout(a, b, Z);
+export function paintRows(ctx, sprites, a, b, Z, { lit = 0, totals = false, ghost = false, panel = true } = {}) {
+  const L = rowsLayout(a, b, Z, { totals: totals || lit > 0 });
+  if (panel) R.drawPanel(ctx, ...L.box);
   for (let i = 0; i < a; i++) for (let j = 0; j < b; j++) {
     const [x, y] = L.at(i, j);
     if (ghost) putScaled(ctx, sprites, "aide.cadre.lueur", x, y, L.k * 0.5);
     else putScaled(ctx, sprites, i < lit ? "aide.poisson.0" : "aide.poisson.1", x, y, L.k);
   }
-  if (totals) for (let i = 0; i < Math.min(lit, a); i++) { const [x, y] = L.end(i); num(ctx, (i + 1) * b, x + 18, y, Math.max(22, 34 * L.k), R.INK); }
+  if (totals) for (let i = 0; i < Math.min(lit, a); i++) { const [x, y] = L.end(i); num(ctx, (i + 1) * b, x + 18 * L.k, y, Math.max(24, 32 * L.k), R.INK); }
   return L;
 }
 

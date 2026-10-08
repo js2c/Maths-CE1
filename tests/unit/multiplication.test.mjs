@@ -8,6 +8,7 @@ import { readFileSync } from "node:fs";
 import { IDBFactory } from "fake-indexeddb";
 import { Store } from "../../app/js/engine/store.js";
 import { rng } from "../../app/js/engine/ocean.js";
+import { expected } from "../../app/js/modules/facts/facts.js";
 import { allMults, astuceOf, classifyMult, makeMult, multAnswer, multQuestion, multsOf, tableFacts } from "../../app/js/modules/mult/mult.js";
 import { initialMultState, Module5Runner, multMastery, recommendedMult } from "../../app/js/modules/mult/runner.js";
 import { rowsLayout, ROWS_BIG, ROWS_SMALL } from "../../app/js/modules/mult/screen.js";
@@ -40,7 +41,9 @@ test("les 9 niveaux : des rangées (2 à 5 rangées de 2 à 5), les tables de 2,
 });
 
 test("la réponse, les formes à trou, les erreurs M1 (a additionné) et M2 (une rangée ou une colonne de trop ou de moins)", () => {
-  assert.equal(multAnswer({ a: 3, b: 4 }), 12); assert.equal(multAnswer({ a: 3, b: 4, forme: "trouDroite" }), 4); assert.equal(multAnswer({ a: 3, b: 4, forme: "trouGauche" }), 3);
+  assert.equal(multAnswer({ a: 3, b: 4 }), 12);
+  // l'écran des additions juge la réponse avec expected : « 3 × 4 » vaut 12, pas 7 (défaut trouvé par le parcours du lot)
+  const q34 = makeMult(cfg(2), rng(1)); assert.equal(expected(q34), q34.a * q34.b); assert.equal(expected({ ...q34, forme: "trouDroite" }), q34.b); assert.equal(multAnswer({ a: 3, b: 4, forme: "trouDroite" }), 4); assert.equal(multAnswer({ a: 3, b: 4, forme: "trouGauche" }), 3);
   assert.equal(multQuestion({ a: 3, b: 4, n: 12, forme: "trouDroite" }), "3 × ? = 12"); assert.equal(multQuestion({ a: 3, b: 4, n: 12, forme: "trouGauche" }), "? × 4 = 12");
   const q = { a: 3, b: 4, n: 12 };
   assert.equal(classifyMult(q, 12), null); assert.equal(classifyMult(q, 7), "M1");

@@ -86,8 +86,8 @@ export class FactsScreen {
     // lot 2, étape 6 : un exemple guidé (l'appui visuel montre la réponse, on peut le passer), ou l'aide
     // affichée d'emblée (cran « plus facile » en notion du jour)
     const p = new Promise((res) => { this.resolve = res; });
-    // (l'appui est rangé quand le pavé revient : il occupe la même place)
-    const then = () => { this.app.aidBoard?.clear(); this.locked = false; this.keys(true); this.t0 = clock.now(); voice.say(this.consigne(q), { instruction: true }); };
+    // (l'appui est rangé quand le pavé revient : il occupe la même place ; la multiplication remet ses petites rangées)
+    const then = () => { this.app.aidBoard?.clear(); if (q.module === 5) this.mult?.paintBand(q); this.locked = false; this.keys(true); this.t0 = clock.now(); voice.say(this.consigne(q), { instruction: true }); };
     // (lot « Multiplication » : l'exemple guidé et l'aide d'emblée de la multiplication sont les siens, modules/mult/screen.js)
     if (q.guide) { this.locked = true; (q.module === 5 && this.mult ? this.mult.demo(q) : this.demo(q)).then(then); return p; }
     if (q.aideDEmblee && q.module === 5 && this.mult) { this.locked = true; this.keys(false); this.mult.autoAid(q).then(() => { this.locked = false; this.keys(true); this.t0 = clock.now(); voice.say(this.consigne(q), { instruction: true }); }); return p; }

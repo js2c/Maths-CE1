@@ -13,7 +13,8 @@ const COL = { vign: 70, travail: 160, exemple: 670, fin: 925 }, EM = 23, EX_EM =
 
 // la vignette d'un niveau, comme sur sa plaque de « choisir »
 // (lot « Les leçons » : les leçons ont la tuile de leur menu, la table d'addition la sienne, « + »)
-export const legendSprite = (ex, n) => (ex === "ligne" ? `choix.ligne.${n}` : ex === "additions" ? `choix.famille.${n}` : ex === "calcul" ? `choix.calcul.${n}` : ex === "voiliers" ? `choix.voiliers.${n}` : n === "+" ? "lecons.table.plus" : `lecons.tuile.${n}`);
+// (lot « Multiplication » : les plaques de la multiplication, et la tuile de sa table, « × », dans le menu des leçons)
+export const legendSprite = (ex, n) => (ex === "ligne" ? `choix.ligne.${n}` : ex === "additions" ? `choix.famille.${n}` : ex === "calcul" ? `choix.calcul.${n}` : ex === "voiliers" ? `choix.voiliers.${n}` : ex === "multiplication" ? `choix.multiplication.${n}` : n === "+" ? "lecons.table.plus" : n === "×" ? "lecons.table.fois" : `lecons.tuile.${n}`);
 // les lignes du tableau d'un exercice, dans l'ordre des plaques (`keys`) : { n, travail: [lignes], exemple: [lignes] }
 export function legendRows(legendes, ex, keys = null) {
   const rows = legendes?.[ex] ?? [], by = new Map(rows.map((r) => [String(r.n), r]));

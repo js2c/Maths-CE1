@@ -110,6 +110,7 @@ Séquences lues : les séances du profil « réel » une à une ; `tests/recette
 2. **L'écran jugeait la réponse comme une addition** (3 × 4 : 7 était compté juste) : trouvé par le parcours de l'application, corrigé (la réponse attendue est le produit), et un test l'empêche de revenir.
 3. **La légende de la multiplication et celle de la table ne s'ouvraient pas** (une image manquante faisait échouer le panneau) : trouvé par le parcours, corrigé.
 4. **Les rangées étaient petites et se lisaient mal sur le sable** : agrandies (jusqu'à 1,45 fois quand il y a de la place) et posées sur une plaque de nacre.
+5. **Après la relecture indépendante** (`tests/recette-fonctionnelle/out-multiplication/RELECTURE.md`) : l'aide ne dit plus le dernier total (c'était la réponse) ; au niveau 1, pas de « fois, ce n'est pas plus » ; l'ardoise à cinq termes lisible ; les rangées de la table de multiplication agrandies ; dans L14, « 5 × 3 » s'écrit dès que l'image tourne.
 
 À 2 séances par semaine, la multiplication prend environ une séance de « jouer » sur sept à partir de janvier ; les additions jusqu'à 20 en ont un peu moins (la famille 12 n'est plus acquise dans l'année : `docs/maquettes/sommes30/PROPOSITION.md`, section 7). **Une fois tous les niveaux acquis** (profil « réel » à 5 séances par semaine, séance 69), la multiplication n'est plus choisie par « jouer » (le moins avancé d'abord) : les tables ne sont plus revues, sauf par « choisir » — comme le calcul rapide aujourd'hui. Question ouverte, section 8.
 

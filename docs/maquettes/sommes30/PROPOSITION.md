@@ -118,6 +118,7 @@ La simulation a montré cinq défauts, corrigés avant le code définitif :
 3. **Le profil n'apprenait jamais un fait nouveau** (défaut de la simulation, pas de l'application) : chaque bonne réponse rend un fait un peu mieux su.
 4. **Dans la table d'addition**, le reflet et le double + 1 faisaient une rangée de poissons trop petite au-delà de 10 : les deux boîtes pour toute somme au-delà de 10.
 5. **L'appui des deux boîtes touchait le bas de l'écran** : remonté (son haut à 350).
+6. **Après la relecture indépendante** (`tests/recette-fonctionnelle/out-sommes30/RELECTURE.md`) : les vignettes des familles 8, 11 et 12 écrivent leur exemple (elles se ressemblaient) ; le grand double, et les reflets au-delà de 5 + 5, sur une plaque de nacre ; « On complète la boîte avec 2, il en reste 3. » au lieu de « 2 pour faire dix… ».
 
 À 2 séances par semaine, l'enfant du profil de l'évaluation ouvre les familles 8 à 12 dans l'année et sait 36 des 60 faits nouveaux en fin d'année ; la famille 12 (passer la dizaine) n'est pas acquise et le grand mélange n'est pas atteint. C'est moins qu'avant l'arrivée de la multiplication dans la rotation (sans elle, toutes les familles étaient acquises vers la 64e séance) : à partir de janvier, la multiplication prend une séance sur sept environ. À 5 séances par semaine, tout est acquis à la 45e séance. Le défi record se bat moins souvent après le premier trimestre (les faits jusqu'à 20 sont plus lents) : à observer.
 

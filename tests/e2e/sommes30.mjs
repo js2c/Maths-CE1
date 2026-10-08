@@ -131,10 +131,10 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
       [{ a: 9, b: 9, forme: "directe", appui: "reflet" }, true, "11-reflet-9+9"],
       [{ a: 7, b: 8, forme: "directe", appui: "doublePlus" }, false, "12-double-plus-un-7+8"],
       [{ a: 8, b: 5, forme: "directe", appui: "deuxCadres" }, true, "13-deux-boites-8+5"],
-      [{ a: 9, b: 4, forme: "trouDroite", appui: "deuxCadres" }, false, "14-deux-boites-9+?=13"],
-      [{ a: 6, b: 8, forme: "trouGauche", appui: "deuxCadres" }, false, "15-deux-boites-?+8=14"],
+      [{ a: 9, b: 4, forme: "trouDroite", appui: "deuxCadres" }, false, "14-deux-boites-9+trou=13"],
+      [{ a: 6, b: 8, forme: "trouGauche", appui: "deuxCadres" }, false, "15-deux-boites-trou+8=14"],
       [{ a: 4, b: 10, forme: "directe", appui: "deuxCadres" }, true, "16-dix-et-quelques-4+10"],
-      [{ a: 10, b: 7, forme: "trouDroite", appui: "deuxCadres" }, false, "17-dix-et-quelques-10+?=17"],
+      [{ a: 10, b: 7, forme: "trouDroite", appui: "deuxCadres" }, false, "17-dix-et-quelques-10+trou=17"],
     ];
     for (const [fq, solved, name] of cases) {
       const k = await aid(page, fq, solved); await page.waitForTimeout(300);

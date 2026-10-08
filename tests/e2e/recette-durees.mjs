@@ -7,6 +7,8 @@
 import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
 import { serve } from "../serve.mjs";
 const PASSER = process.argv.includes("--passer"); // l'enfant touche « passer » dès qu'il apparaît
+// (bloc « Sommes jusqu'à 30 » et « Multiplication ») --bloc : seulement les familles 8 à 12, leurs appuis et la multiplication
+const BLOC = process.argv.includes("--bloc");
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
 const out = [];
@@ -24,7 +26,7 @@ const MONITOR = () => {
   }, 100);
 };
 const gapOf = async (page) => { const g = await page.evaluate(() => window.__gap); return `sans commande : ${(g.max / 1000).toFixed(1)} s au plus (${g.at}), hors voix ${(g.maxHors / 1000).toFixed(1)} s (${g.atHors})`; };
-for (const niveau of [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]) {
+for (const niveau of BLOC ? [] : [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); const page = await context.newPage();
   await page.goto(url + "?nosw"); await page.waitForFunction(() => window.__ready !== undefined);
   await page.evaluate(async () => { await window.__app.store.setSetting("mascotte", "Pili"); });
@@ -58,7 +60,7 @@ for (const niveau of [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]) {
 }
 // lot 2, étape 6 : la notion du jour sur les additions, famille par famille (le parent a marqué connues les
 // familles d'avant) : leçon d'entrée ou exemples guidés, correction après « je ne sais pas », après une erreur
-for (const famille of [1, 3, 4, 5, 6]) {
+for (const famille of BLOC ? [8, 9, 11, 12] : [1, 3, 4, 5, 6, 8, 9, 11, 12]) { // (8 à 12 : lot « Sommes jusqu'à 30 »)
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); const page = await context.newPage();
   await page.goto(url + "?nosw"); await page.waitForFunction(() => window.__ready !== undefined);
   await page.evaluate(async (fam) => { const s = window.__app.store; await s.setSetting("mascotte", "Pili"); const { markFamilyKnown } = await import("./js/parent/depart.js"), m2 = await (await fetch("content/module2.json")).json(); for (let f = 1; f < fam; f++) await markFamilyKnown(s, m2, f); }, famille);
@@ -83,7 +85,7 @@ for (const famille of [1, 3, 4, 5, 6]) {
 }
 // lot 3, étape 4 : le calcul rapide, sur une base neuve, niveau choisi (leçon d'entrée L7 au niveau 2, L8 au 6, L9 au 7 ;
 // puis les calculs guidés, pont par pont) : « je ne sais pas », une erreur (correction sur le mur ou le chemin)
-for (const niveau of [1, 2, 6, 7, 9]) {
+for (const niveau of BLOC ? [] : [1, 2, 6, 7, 9]) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); const page = await context.newPage();
   await page.goto(url + "?nosw"); await page.waitForFunction(() => window.__ready !== undefined);
   await page.evaluate(async () => { await window.__app.store.setSetting("mascotte", "Pili"); });
@@ -108,9 +110,36 @@ for (const niveau of [1, 2, 6, 7, 9]) {
   out.push(`calcul rapide, niveau ${niveau}${PASSER ? ` (passer touché ${passes} fois)` : ""} : ${ev.join(" · ")} ; leçons ${JSON.stringify((rec.lecons ?? []).map((l) => l.id + " " + l.dureeS + "s"))} ; ${await gapOf(page)}`);
   console.log(out.at(-1)); await context.close();
 }
+// lot « Multiplication » : niveaux 1 (leçon L13), 3, 6 (leçon L14) et 9, base neuve, niveau choisi : la leçon d'entrée ou
+// l'exemple guidé (les rangées comptées), « je ne sais pas », une erreur (la correction et les rangées comptées) ; puis
+// l'aide du coquillage au niveau 3 (les rangées comptées, sans le dernier total)
+for (const niveau of [1, 3, 6, 9]) {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); const page = await context.newPage();
+  await page.goto(url + "?nosw"); await page.waitForFunction(() => window.__ready !== undefined);
+  await page.evaluate(async () => { await window.__app.store.setSetting("mascotte", "Pili"); });
+  await page.goto(url + `?nosw&cran=conseille&sans=echauffement&choix=5:${niveau}&questions=4`); await page.waitForFunction(() => window.__ready !== undefined);
+  await page.tap(".play", { force: true });
+  const open = () => page.waitForFunction(() => { const s = window.__app.facts; return s?.q && s.resolve && !s.locked; }, null, { timeout: 240000, polling: 100 });
+  const ev = []; let t = Date.now();
+  if (PASSER) await page.evaluate(() => { window.__passes = 0; setInterval(() => { const b = document.querySelector(".skip"); if (b && getComputedStyle(b).visibility !== "hidden") { (b.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })), b.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }))); window.__passes++; } }, 150); });
+  const typeIn = async (n) => { for (const d of String(n)) { await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.waitForTimeout(170); } await page.tap('.key[data-key="valider"]', { force: true }); };
+  for (let k = 0; k < 5; k++) {
+    await open(); const now = Date.now(), q = await page.evaluate(() => { const f = window.__app.facts.q; return { v: f.forme === "trouDroite" ? f.b : f.forme === "trouGauche" ? f.a : f.a * f.b, g: !!f.guide }; });
+    ev.push(`${k === 0 ? "avant la 1re question (leçon, exemple)" : "attente"} ${((now - t) / 1000).toFixed(1)} s`);
+    await page.waitForTimeout(800); t = Date.now();
+    if (k === 2) { await page.evaluate(() => { const b = [...document.querySelectorAll(".nsp")].find((x) => getComputedStyle(x).visibility !== "hidden"); (b?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })), b?.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }))); }); ev.push("[NSP]"); }
+    else if (k === 3) { await typeIn(q.v + 1); ev.push("[erreur]"); }
+    else if (k === 4 && niveau === 3) { const t1 = Date.now(); await page.tap(".help", { force: true }); await page.waitForTimeout(400); await open(); ev.push(`[coquillage : pavé rendu après ${((Date.now() - t1) / 1000).toFixed(1)} s]`); await typeIn(q.v); }
+    else await typeIn(q.v);
+  }
+  const rec = await page.evaluate(() => window.__app.session.rec);
+  const passes = PASSER ? await page.evaluate(() => window.__passes) : 0;
+  out.push(`multiplication, niveau ${niveau}${PASSER ? ` (passer touché ${passes} fois)` : ""} : ${ev.join(" · ")} ; leçons ${JSON.stringify((rec.lecons ?? []).map((l) => l.id + " " + l.dureeS + "s"))} ; ${await gapOf(page)}`);
+  console.log(out.at(-1)); await context.close();
+}
 // décision du parent du 27 septembre : l'aide des additions (coquillage au cran conseillé, aide affichée d'emblée
 // au cran « plus facile »), appui par appui : durée jusqu'au retour du pavé, apparition de « passer »
-for (const [famille, appui] of [[1, "ligne"], [2, "reflet"], [3, "cadre"], [4, "maison"], [6, "doublePlus"]]) for (const cran of ["conseille", "facile"]) {
+for (const [famille, appui] of BLOC ? [[8, "deuxCadres"], [9, "reflet"]] : [[1, "ligne"], [2, "reflet"], [3, "cadre"], [4, "maison"], [6, "doublePlus"], [8, "deuxCadres"], [9, "reflet"]]) for (const cran of ["conseille", "facile"]) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); const page = await context.newPage();
   await page.goto(url + "?nosw"); await page.waitForFunction(() => window.__ready !== undefined);
   await page.evaluate(async (fam) => { const s = window.__app.store; await s.setSetting("mascotte", "Pili"); const { markFamilyKnown } = await import("./js/parent/depart.js"), m2 = await (await fetch("content/module2.json")).json(); for (let f = 1; f < fam; f++) await markFamilyKnown(s, m2, f); }, famille);
@@ -135,7 +164,7 @@ for (const [famille, appui] of [[1, "ligne"], [2, "reflet"], [3, "cadre"], [4, "
 // passage, « je ne sais pas » (le bateau va seul), une erreur puis une deuxième (le bateau va seul) ; la mer en WebGL
 // logiciel (sans processeur graphique, la scène est lente : les gestes suivent l'horloge, pas les images)
 const bgl = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
-for (const niveau of [1, 5, 9]) {
+for (const niveau of BLOC ? [] : [1, 5, 9]) {
   const context = await bgl.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); const page = await context.newPage();
   await page.goto(url + "?nosw"); await page.waitForFunction(() => window.__ready !== undefined);
   await page.goto(url + `?nosw&cran=facile&sans=echauffement&choix=4:${niveau}&questions=8`); await page.waitForFunction(() => window.__ready !== undefined);

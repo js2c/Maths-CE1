@@ -31,4 +31,10 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
 
-(Aucun lot en cours.)
+### Reprise du lot « Correctifs de la tablette »
+
+- **Branche** : `claude/sweet-ptolemy-3g82xl` ; demande de fusion en brouillon « Lot : Correctifs de la tablette ».
+- **Fiche** : `docs/LOTS.md`, fiche 6 ; d'un seul tenant, sans arrêt pour une validation (les choix de la session vont dans `docs/JOURNAL-CONCEPTION.md`).
+- **Ordre des étapes** : 8 (fins de ligne), 5 (phrases sans fichier, contrôle des parcours), 4 (ardoise vide), 6 (clavier), 7 (toucher la mascotte), 1 (écran de démarrage, bienvenue), 2 (choisir en deux touchers), puis la recette.
+- **Fait** : (rien encore)
+- **Reste** : tout.

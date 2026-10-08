@@ -177,7 +177,7 @@ let headShown = null;
 stage.ticks.add(() => { const v = ocean.mascotteVisible; if (v === headShown) return; headShown = v; headTap.style.visibility = v ? "visible" : "hidden"; speaker.style.visibility = v ? "hidden" : "visible"; });
 let pauseTalk = null;
 const replay = async (from) => {
-  if (from === headTap) pop(ocean.mascotteEl); else pop(speaker);
+  if (from === headTap) { pop(ocean.mascotteEl); store.setSetting("mascotteTouchee", true); } else pop(speaker);
   if (app.enPause && !visiting) {
     if (pauseTalk) return;
     pauseTalk = voice.suspend();
@@ -399,7 +399,12 @@ async function showHome({ done, first = false, bienvenue = false }) {
   voice.instruction = done ? text.data.accueilConsigneFaite : text.data.accueilConsigne;
   // (lot « Correctifs de la tablette ») à l'arrivée sur l'accueil, après l'écran de démarrage : la mascotte salue et souhaite
   // la bienvenue (une fois par lancement ; distincte de la bienvenue qui suit « jouer », qui reste)
-  if (bienvenue) { bienvenueEnCours = true; ocean.mascotte.play("saluer"); voice.say(text.pick("bienvenueLancement")).then(() => { bienvenueEnCours = false; }); }
+  // (relecture du lot : tant que l'enfant n'a jamais touché la mascotte, la bienvenue le lui apprend : « Pour réécouter, touche-moi ! »)
+  if (bienvenue) {
+    bienvenueEnCours = true; ocean.mascotte.play("saluer");
+    const astuce = !(await store.setting("mascotteTouchee"));
+    voice.say(astuce ? `${text.pick("bienvenueLancement")} ${text.data.astuceMascotte}` : text.pick("bienvenueLancement")).then(() => { bienvenueEnCours = false; });
+  }
   const reefKey = big("recif", HOME_X[3], 650, "le récif", "bubble reefkey"), albumKey = big("album", HOME_X[4], 650, "l'album", "bubble albumkey");
   // (lot « Les leçons ») la bulle « les leçons », avant comme après la séance du jour
   const lessonsKey = big("accueil.lecons", HOME_X[2], 650, "les leçons", "bubble leconskey");

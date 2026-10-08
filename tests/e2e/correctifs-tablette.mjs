@@ -63,14 +63,14 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
     await page.waitForFunction(() => window.__app.bulle.etat().visible, null, { timeout: 10000 }); await sleep(page, 300);
     const b = await bulle(page), bienvenue = T.bienvenueLancement;
     check(!(await page.evaluate(() => !!document.querySelector(".demarrage"))), `${W} démarrage : un toucher le fait disparaître`);
-    check(bienvenue.includes(b.texte), `${W} accueil : la mascotte souhaite la bienvenue (« ${b.texte} »)`);
+    check(bienvenue.some((t) => b.texte === `${t} ${T.astuceMascotte}`), `${W} accueil : la mascotte souhaite la bienvenue et, tant qu'on ne l'a jamais touchée, dit qu'on la touche pour réécouter (« ${b.texte} »)`);
     check(await page.evaluate(() => window.__app.voice.unlocked), `${W} démarrage : le toucher a autorisé la voix`);
     await shot(page, "03-accueil-bienvenue");
     // une fois par lancement : le récif, puis retour à l'accueil, sans nouvelle bienvenue
     await page.waitForFunction(() => !window.__app.voice.speaking, null, { timeout: 15000 });
     const dit = await page.evaluate(() => { const v = window.__app.voice, s = v.say.bind(v); window.__dit = []; v.say = (t, o) => { window.__dit.push(t); return s(t, o); }; return true; });
     await tap(page, ".reefkey", 2500); await tap(page, ".homekey", 1500);
-    const redit = await page.evaluate(() => window.__dit.filter((t) => /Coucou|revoilà|retrouver|te voilà/.test(t)));
+    const redit = await page.evaluate(() => window.__dit.filter((t) => /Coucou|revoilà|retrouver|te voilà|touche-moi/.test(t)));
     check(dit && redit.length === 0, `${W} accueil : la bienvenue n'est dite qu'une fois par lancement`);
     check(errors.length === 0, `${W} démarrage : aucune erreur (${errors.join(" | ")})`);
     await context.close();

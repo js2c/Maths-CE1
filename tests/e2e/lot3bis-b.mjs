@@ -18,7 +18,7 @@
 //   cosmetique — B11 : accueil (bulles hors du rocher), album (médaillons), « réécouter » à l'accueil et en pause, L1 (« 0 saut »),
 //               L10 (rien sur le rocher, « 100 » une fois), bulles « 800 », « 900 », le bernard-l'ermite entier, « rejouer »
 //   reprise   — R12 : calcul guidé (niveau 7), la maison pendant le « bravo » d'un caillou, visite du récif, « continuer » :
-//               la consigne est redite (« On continue ! Plus 1 ? »)
+//               la consigne est redite (« On continue ! Plus 1. » ; lot « Correctifs de la tablette » : la phrase du pont, qui a son fichier)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -405,7 +405,7 @@ if (want("reprise")) {
   await page.evaluate(() => { window.__said = []; });
   await page.tap(".play.keep", { force: true }); await page.waitForTimeout(3000);
   const s = await said(page);
-  check(/^On continue ! Plus \d+ \?/.test(s), `calcul guidé, pause pendant le « bravo », visite du récif, « continuer » : la consigne est redite (« ${s} »)`);
+  check(/^On continue ! Plus \d+\./.test(s), `calcul guidé, pause pendant le « bravo », visite du récif, « continuer » : la consigne est redite (« ${s} »)`);
   await shot(page, "R12-reprise-calcul-guide");
   check(!errors.length, `reprise : aucune erreur (${errors.join(" | ")})`); await context.close();
 }

@@ -118,6 +118,20 @@ Les familles 8 à 13 du module 2 (`docs/SPEC.md`, section 6 ; proposition, progr
 - *Voix* : `tools/voix/inventaire.mjs` ajoute les faits du catalogue au-delà de 10 (`faits20`) et les domaines des appuis nouveaux ; 384 phrases nouvelles (`docs/maquettes/sommes30/PHRASES.md`).
 - Tests : `tests/unit/sommes30.test.mjs` ; parcours `node tests/e2e/sommes30.mjs` ; simulation : rubrique « sommes jusqu'à 30 » de `tests/sim-seances.mjs` (hypothèses `fait20`, `lent20`, `apprendFait` de `tests/sim-recette.mjs`).
 
+## La multiplication (module 5, lot « Multiplication »)
+
+`docs/SPEC.md`, section 7 ter ; proposition, programme et simulation : `docs/maquettes/multiplication/PROPOSITION.md` ; maquette `art/multiplication/`, captures `node art/multiplication/captures.mjs`.
+
+- *Contenu* (`content/module5.json`) : les 9 niveaux (`type` : `groupes`, `table`, `tourner`, `tables` ; `rangees`, `parRangee`, `table`, `tables`, `ecriture`, `image`, `lecon`, `debloque`), `trou.niveaux`, `reglesAdaptation` (celles du calcul rapide), `erreurs` (M1, M2 → L13), `melange`, `deroule`, `acquisJours` (2), `crans`, `lenteurS`. Rotation : `seance.json`, `alternance` (`modules` [1, 2, 3, 5], `aPartirDe` {"5": "2027-01-04"}) ; `session.js`, `chooseModule(…, now)`.
+- *Moteur* (`modules/mult/mult.js`, fonctions pures) : `multsOf`, `allMults`, `makeMult`, `multAnswer`, `classifyMult`, `multQuestion`, `astuceOf`. `modules/mult/runner.js` : `Module5Runner` (sur le modèle de `Module3Runner` ; la montée attend `acquisJours` jours différents), `recommendedMult`, `multMastery`, `initialMultState`. Le juge de la réponse de l'écran des additions (`facts.js`, `expected`) connaît `op: "×"`.
+- *Écran* (`modules/mult/screen.js`) : `MultScreen` prête l'écran des additions (`FactsScreen`, qui renvoie au module 5 l'exemple guidé, l'aide, l'aide d'emblée, la consigne et le retour) ; `paintRows` / `rowsLayout` : les rangées sur le calque des aides, avec les poissons `aide.poisson.0` (comptés) et `aide.poisson.1`, sur une plaque `drawPanel`, dans `ROWS_SMALL` (entre l'ardoise et le pavé) ou `ROWS_BIG` (à la place du pavé) ; `count` les allume rangée par rangée.
+- *Notion du jour* (`main.js`, `notion5`) ; « choisir » (`session/choice.js`, un cinquième exercice ; `EX_PITCH` 172) ; entraînement libre (`session/free.js`) ; frise (`frise.multiplication`).
+- *Leçons L13 et L14* (`content/lecons.json`, `lessons/player2.js` : actions `rangees`, `compter`, `tourner`). Menu (`session/lessons.js`) : quatre rangées ; `menu.tablesPlace` met les deux tables au bout de la rangée de la multiplication. *Table de multiplication* : `additionTable(app, { op: "×" })` (`seance.json`, `menuLecons.tableMult` : 1 à 10), `drawAddTable` avec `min` et `op` (`sea/runtime.ts`), `paintPanelMult`.
+- *Atelier* (`sea/mult.ts`) : `drawExerciseMult`, `drawStepMult`, `drawMultTile` (les 9 plaques), `vL13`, `vL14` ; `sea/lecons.ts` : rangée et « À toi ! » de la multiplication ; `sea/letters.ts` : le signe « × » ; planche spécimen `node tools/still.mjs multSheet --frame 0 --out out/mult.png --scale 2`.
+- *Espace parent* : bloc « Module 5 · La multiplication » (`parent.js`), erreurs M1 et M2 (`parent.json`), point de départ (`depart.js`, `setMultLevel`), module imposable.
+- *Voix* : `tools/voix/inventaire.mjs` (les domaines des textes `mult…` et `tableCaseMult`) ; 561 phrases nouvelles (`docs/maquettes/multiplication/PHRASES.md`).
+- Tests : `tests/unit/multiplication.test.mjs` ; parcours `node tests/e2e/multiplication.mjs` ; simulation : rubrique « multiplication » de `tests/sim-seances.mjs` ; séquences : `b-sequences.mjs` (module 5).
+
 ## Fabriquer les images
 
 ```bash

@@ -229,7 +229,7 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 | + | La table d'addition, toucher une case dit et montre le calcul. | 7 + 5 = 12 |
 | × | La table de multiplication, toucher une case dit et montre le calcul. | 3 × 4 = 12 |
 
-**L'appui long sur les pictogrammes.** Garder le doigt environ **une demi-seconde** sur une bulle de l'accueil (jouer, choisir, les leçons, le récif, l'album) ou sur un exercice de l'écran « choisir » (la ligne, les additions, le calcul rapide, les voiliers) fait apparaître une **étiquette** au-dessus, qui reste tant que le doigt est posé (depuis le lot 3 ter : elle s'efface en une demi-seconde, et cela vaut pour tous les boutons, voir **d quater**). Relâcher après un appui long **ne lance rien** ; seul un toucher bref lance. La voix ne lit pas l'étiquette. La durée se règle dans `app/content/legendes.json` (`appuiLong`).
+**L'appui long sur les pictogrammes.** Garder le doigt environ **une demi-seconde** sur une bulle de l'accueil (jouer, choisir, les leçons, le récif, l'album) ou sur un exercice de l'écran « choisir » (la ligne, les additions, le calcul rapide, les voiliers, la multiplication) fait apparaître une **étiquette** au-dessus, qui reste tant que le doigt est posé (depuis le lot 3 ter : elle s'efface en une demi-seconde, et cela vaut pour tous les boutons, voir **d quater**). Relâcher après un appui long **ne lance rien** ; seul un toucher bref lance. La voix ne lit pas l'étiquette. La durée se règle dans `app/content/legendes.json` (`appuiLong`).
 
 **L'espace parent, rappel.** L'appui long sur le logo de la pieuvre, en bas à gauche de l'accueil, dure **2 secondes** (un anneau clair se remplit) ; il est différent de l'appui court sur les pictogrammes.
 
@@ -324,6 +324,17 @@ Fait sans vous demander de valider la maquette (votre décision du 7 octobre) : 
 - **Deux leçons nouvelles**, dans le menu des leçons, rangée des additions : **11 · Dix et encore** et **12 · Faire dix d'abord**, chacune suivie de « À toi ! ».
 - **Pour vous**, dans l'espace parent : les familles 8 à 13 dans la progression ; la grille des additions colore maintenant toutes les cases jusqu'à 10 + 10 (les grands doubles sont écrits dessous) ; une erreur de plus au journal, « a oublié la dizaine » (7 + 6 = 3) ; le point de départ va jusqu'à la famille 13.
 - **À vérifier sur la tablette** : que les places qui brillent dans les boîtes (formes à trou, « 9 + ? = 13 ») se voient bien ; que l'enfant comprend les poissons qui « sautent » d'une boîte à l'autre.
+
+## d decies) Lot « Multiplication » : un cinquième exercice, les tables, la table de multiplication
+
+Fait, lui aussi, sans vous demander de valider la maquette (votre décision du 7 octobre) : les choix sont listés dans la demande de fusion et dans `docs/JOURNAL-CONCEPTION.md`.
+
+- **Où la trouver.** Dans **choisir**, la cinquième bulle (trois rangées de poissons et le signe ×), puis l'un des 9 niveaux. Dans **jouer**, la multiplication tourne avec la ligne, les additions et le calcul rapide **à partir du 4 janvier 2027** (avant, seulement par « choisir » et les leçons). Vous pouvez aussi l'imposer pour une séance (espace parent, **Données et réglages**).
+- **Ce que fait l'enfant.** « 3 × 4 », ce sont **3 rangées de 4 poissons**, et la voix dit « 3 fois 4 ». Les niveaux : 1, des rangées écrites en addition (4 + 4 + 4) ; 2, le signe × ; 3, la table de 2 ; 4, la table de 10 ; 5, la table de 5 ; 6, « on tourne les rangées » (3 × 5 = 5 × 3) ; 7, la table de 3 ; 8, la table de 4 ; 9, tout mélangé. L'écran est celui des additions (l'ardoise, les chiffres, le coquillage). L'aide montre les rangées en grand, **comptées une à une** (« 4… 8… 12 »), avec l'astuce de la table (« Fois deux, c'est le double. ») ; une erreur où l'enfant a additionné (3 × 4 = 7) est dite (« Attention : fois, ce n'est pas plus. »). Un niveau est validé avec 8 bonnes réponses sur 10, sur deux jours au moins.
+- **Deux leçons nouvelles**, dans une quatrième rangée du menu des leçons : **13 · Des rangées égales** et **14 · On tourne les rangées**, chacune suivie de « À toi ! ».
+- **La table de multiplication**, au bout de cette rangée, à côté de la table d'addition (un grand « × ») : de 1 × 1 à 10 × 10 ; toucher une case dit le calcul (« 7 fois 5, 35. ») et montre les rangées.
+- **Pour vous**, dans l'espace parent : un bloc « Module 5 · La multiplication » (niveau conseillé, niveaux validés, semaine par semaine), deux erreurs au journal (« a additionné au lieu de multiplier », « une rangée ou une colonne de trop ou de moins »), le niveau de la multiplication dans le point de départ, la légende de ses 9 niveaux.
+- **À vérifier sur la tablette** : que les rangées de 10 poissons se lisent bien ; que les totaux écrits au bout des rangées sont assez gros.
 
 ## e) Ce qui reste approximatif ou à ajuster
 

@@ -2,12 +2,12 @@
 
 Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 à 3 ter (ce qui a été fait, décisions prises en cours de route, recettes) est dans `docs/archives/AVANCEMENT-lots-1-a-3ter.md`.
 
-## Où en est-on (7 octobre 2026)
+## Où en est-on (8 octobre 2026)
 
 - **En ligne** (https://js2c.github.io/Maths-CE1/) : lots 1, 1 bis, 2, 3, 3 bis, 3 ter et « Lagon en fond d'exercices », tous fusionnés (dernière demande de fusion : PR #30, le lagon).
 - **Ce que fait l'application** : `docs/SPEC.md` (spécification unique ; ce qui reste à construire y est marqué « à construire », section 13).
-- **Prochains lots** : dans l'ordre de `docs/LOTS.md` (leçons et table d'addition, sommes jusqu'à 30, multiplication et tables) ; le relecteur des lots 3 bis et 3 ter est abandonné.
-- **En attente du parent** : la fabrication des phrases des lots « Mascotte » (6), « Les voiliers » (835) et « Correctifs » (8), puis la publication et l'essai sur la tablette ; le lot « Correctifs » (PR #39) attend aussi sa fusion et une réponse sur la mascotte (11.1).
+- **Prochains lots** : les lots de `docs/LOTS.md` sont tous faits (le bloc « Sommes jusqu'à 30 » et « Multiplication », PR #42, attend sa fusion) ; la suite est à décider par le parent (`docs/IDEES.md`) ; le relecteur des lots 3 bis et 3 ter est abandonné.
+- **En attente du parent** : la fabrication des phrases des lots « Mascotte » (6), « Les voiliers » (835), « Correctifs » (8), « Les leçons » (126), « Sommes jusqu'à 30 » (384) et « Multiplication » (561), puis la publication et l'essai sur la tablette ; la relecture des choix faits sans lui au bloc « Sommes jusqu'à 30 » et « Multiplication » (PR #42, section « Choix faits sans le parent ») ; le lot « Correctifs » (PR #39) attend aussi sa fusion et une réponse sur la mascotte (11.1).
 - **Projet parallèle** : la refonte graphique (hors de ce fichier).
 
 ## Lots
@@ -25,16 +25,10 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 | Les voiliers | Le jeu de la maquette des voiliers devient le module 4 : ranger un nombre entre des bouées, jusqu'à 1 000, mer selon la difficulté | fait (PR #36) |
 | Correctifs | Les décisions du parent sur la confrontation de la spécification avec le code (`docs/ECARTS-SPEC.md`) : 7 correctifs, spécification réécrite | fait (PR #39) |
 | Les leçons | La bulle des leçons, le menu, « À toi ! », la table d'addition ; recette finie à l'étape 0 du bloc suivant (durées, relecture indépendante) | fait (PR #40, recette dans la PR #42) |
+| Sommes jusqu'à 30 et Multiplication | Familles d'additions 8 à 13, leçons L11 et L12 ; cinquième exercice (multiplication, 9 niveaux, tables de 2, 3, 4, 5 et 10), leçons L13 et L14, table de multiplication ; fait d'un seul bloc, sans arrêt pour validation | fait (PR #42) ; 945 phrases à fabriquer |
 
 ## Reprise
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
 
-### Reprise du bloc « Sommes jusqu'à 30 » puis « Multiplication »
-
-- **Branche** : `claude/amazing-clarke-n9lyc7` ; demande de fusion en brouillon « Lot : Sommes jusqu'à 30 et Multiplication ». Bloc fait d'un seul tenant, sans arrêt pour validation (décision du parent du 7 octobre 2026, `docs/LOTS.md`, fiche « 4 et 5 »).
-- **Prérequis** : vérifiés sur `origin/main` le 7 octobre 2026 (« Les leçons » construit et fusionné, #40 ; « Correctifs » fait).
-- **Étape 0, fin de la recette des leçons** : faite (durées des attentes sur `main`, avec et sans « passer » ; relecture indépendante, `tests/recette-fonctionnelle/out-lecons/RELECTURE.md` : 21 constats, 4 corrigés, 2 alignements de la spécification, le reste expliqué) ; la rubrique du lot est dans l'archive.
-- **Étape 1, « Sommes jusqu'à 30 »** : faite (proposition, maquette, code, tests unitaires, parcours `tests/e2e/sommes30.mjs` vert aux deux résolutions, documents) ; reste la relecture indépendante et la recette commune du bloc.
-- **Étape 2, « Multiplication »** : faite (proposition, maquette, code, tests unitaires, parcours `tests/e2e/multiplication.mjs` vert aux deux résolutions, `b-sequences` étendu, documents) ; reste la relecture indépendante et la recette commune du bloc.
-- **Reste (fin du bloc)** : tous les parcours `tests/e2e/*.mjs` (échecs relancés sur `main`, dans le worktree `wt-mesure` du bloc-notes de la session ou un clone de `main`) ; `perf.mjs` avant/après ; `b-sequences --test` complet ; `recette.mjs --delai 4.5` ; `recette-durees` avec et sans `--passer`, seuls ; les deux relectures indépendantes (`tests/recette-fonctionnelle/out-sommes30/`, `out-multiplication/`) ; `docs/LOTS.md` (les deux lots « fait ») ; la demande de fusion #42 complète, hors brouillon ; cette rubrique dans l'archive.
+(Aucun lot en cours.)

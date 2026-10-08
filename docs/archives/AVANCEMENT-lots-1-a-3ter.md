@@ -864,3 +864,13 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
   3. ensuite : mettre la demande de fusion à jour (mesures des durées, constats de la relecture), passer le lot à « fait » dans `docs/LOTS.md`, déplacer cette rubrique dans l'archive.
 - **Constat hors lot** : l'étoile de mer (ou la tortue) de la ligne reste visible dans l'accueil en pause ; c'est déjà le cas sur `main` (vérifié), non corrigé ici.
 - **Recette finie** à l'étape 0 du bloc « Sommes jusqu'à 30 » et « Multiplication » (8 octobre 2026, PR #42) : durées des attentes mesurées sur `main` ; relecture indépendante dans `tests/recette-fonctionnelle/out-lecons/RELECTURE.md`, avec la suite donnée ; la tortue en pause et l'étoile d'une leçon vue en base neuve corrigées.
+
+## Reprise du bloc « Sommes jusqu'à 30 » puis « Multiplication »
+
+- **Branche** : `claude/amazing-clarke-n9lyc7` ; demande de fusion en brouillon « Lot : Sommes jusqu'à 30 et Multiplication ». Bloc fait d'un seul tenant, sans arrêt pour validation (décision du parent du 7 octobre 2026, `docs/LOTS.md`, fiche « 4 et 5 »).
+- **Prérequis** : vérifiés sur `origin/main` le 7 octobre 2026 (« Les leçons » construit et fusionné, #40 ; « Correctifs » fait).
+- **Étape 0, fin de la recette des leçons** : faite (durées des attentes sur `main`, avec et sans « passer » ; relecture indépendante, `tests/recette-fonctionnelle/out-lecons/RELECTURE.md` : 21 constats, 4 corrigés, 2 alignements de la spécification, le reste expliqué) ; la rubrique du lot est dans l'archive.
+- **Étape 1, « Sommes jusqu'à 30 »** : faite (proposition, maquette, code, tests unitaires, parcours `tests/e2e/sommes30.mjs` vert aux deux résolutions, documents) ; reste la relecture indépendante et la recette commune du bloc.
+- **Étape 2, « Multiplication »** : faite (proposition, maquette, code, tests unitaires, parcours `tests/e2e/multiplication.mjs` vert aux deux résolutions, `b-sequences` étendu, documents) ; reste la relecture indépendante et la recette commune du bloc.
+- **Reste (fin du bloc)** : tous les parcours `tests/e2e/*.mjs` (échecs relancés sur `main`, dans le worktree `wt-mesure` du bloc-notes de la session ou un clone de `main`) ; `perf.mjs` avant/après ; `b-sequences --test` complet ; `recette.mjs --delai 4.5` ; `recette-durees` avec et sans `--passer`, seuls ; les deux relectures indépendantes (`tests/recette-fonctionnelle/out-sommes30/`, `out-multiplication/`) ; `docs/LOTS.md` (les deux lots « fait ») ; la demande de fusion #42 complète, hors brouillon ; cette rubrique dans l'archive.
+- **Fini le 8 octobre 2026** : recette commune faite (PR #42, sortie du brouillon) ; les deux lots « fait » dans `docs/LOTS.md`.

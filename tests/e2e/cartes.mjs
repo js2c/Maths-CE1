@@ -10,7 +10,7 @@
 //  5. L'espace parent : le bloc « Cartes ».
 // Captures dans tests/e2e/out/cartes/ ; échoue si une vérification échoue ou si la page a une erreur.
 //   node tests/e2e/cartes.mjs [--out dossier]
-import { chromium } from "./navigateur.mjs";
+import { chromium, voixPermise } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
@@ -122,6 +122,8 @@ async function playToReward(page, { onCeremony, atShell, atCard } = {}) {
 {
   const { context, page } = await fresh([owned([...lagon, ...corail, ...large]), { id: "zones", ouvertes: ["lagon", "corail", "large"], dates: {} }, { id: "quota", date: Date.now() - 3600000, cartes: lagon.length + corail.length + large.length }, { id: "etoiles", total: 0, cumul: 500, arcEnCiel: 3, arcDepensees: 2, dorees: 1, doreesDepensees: 0, coquillages: 43 }]);
   await page.route("**/fictive.webp", (r) => r.fulfill({ status: 200, contentType: "image/webp", body: "" })); // une image illisible : la carte montre son fond d'eau
+  // (contenu fictif du grand large, pour la capture : ces phrases ne sont pas fabriquées)
+  voixPermise(/^Anecdote fictive pour la capture\.$/, /^C.est le grand requin blanc !$/);
   await page.evaluate(() => { for (const c of window.__app.cartes.cartes) if (c.zone === "large") { c.anecdote ??= "Anecdote fictive pour la capture."; c.illustration ??= "assets/cards/fictive.webp"; } });
   let shot = false;
   await playToReward(page, { atShell: async () => { if (!shot) { shot = true; await page.screenshot({ path: join(OUT, "7-coquillage-dore.png") }); } }, atCard: async (n) => { if (n === 1) await page.screenshot({ path: join(OUT, "8-legendaire.png") }); } });

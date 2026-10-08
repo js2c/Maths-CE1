@@ -69,14 +69,23 @@ export function poser(place, w, h) {
   const rect = [cx - a, cy - b, cx + a, cy + b];
   return { cx, cy, a, b, rect, deborde: rect[2] > x1 + 1 || rect[3] > y1 + 1 || rect[1] < y0 - 1 };
 }
+// les places, puis les mêmes en lignes larges (essayées seulement si aucune place en lignes équilibrées n'est libre : une
+// longue consigne du calcul rapide, en quatre lignes, ne tenait qu'en couvrant l'ardoise ; en deux lignes, elle tient entre
+// l'ardoise et le pavé)
+// (500 px : deux lignes de 500 px tiennent entre l'ardoise et le pavé ; à 540, l'ovale, qui garde un cinquième de sa largeur
+// en hauteur, touchait le pavé)
+export const LIGNE_LARGE = 500;
+export const avecLarges = (places) => [...places, ...places.map((p) => ({ ...p, large: true }))];
 const aire = (r, o, m = 8) => Math.max(0, Math.min(r[2], o[2] + m) - Math.max(r[0], o[0] - m)) * Math.max(0, Math.min(r[3], o[3] + m) - Math.max(r[1], o[1] - m));
 // la première place sans obstacle (les obstacles : rectangles [gauche, haut, droite, bas]) ; sinon la première qui ne couvre
 // aucun obstacle dur et le moins d'obstacles souples ; sinon celle qui couvre le moins. `mesure(largeurMax)` donne la taille
 // du texte mis en page à cette largeur : [w, h]. `couvre` : l'aire des obstacles durs couverts ; `gene` : des souples.
+// (lot « Correctifs de la tablette », point 4 : `mesure(largeur, place)` ; une place `large` met le texte en lignes de
+// LIGNE_LARGE px au plus, au lieu des lignes équilibrées de 420 px : `avecLarges`)
 export function choisirPlace(obstacles, mesure, places = PLACES, souples = []) {
   let best = null;
   for (const place of places) {
-    const [w, h] = mesure(largeurMax(place.boite)), p = poser(place, w, h);
+    const [w, h] = mesure(largeurMax(place.boite), place), p = poser(place, w, h);
     const couvre = obstacles.reduce((s, o) => s + aire(p.rect, o), 0) + (p.deborde ? 1e6 : 0), gene = souples.reduce((s, o) => s + aire(p.rect, o, 0), 0);
     const r = { place, w, h, ...p, couvre, gene, score: couvre * 1000 + gene };
     if (!r.score) return r;
@@ -175,10 +184,10 @@ export class Bulle {
   }
   obstacles() { return { durs: [...obstacles(this.st.ui, this.st.k), ...this.dures()], souples: [...obstacles(this.st.ui, this.st.k, CARTE), ...this.dessins(), ...this.souplesEnPlus()] }; }
   layout() {
-    const cible = largeurEquilibree(this.mesure(4000)[0]), m = (w) => this.mesure(Math.min(w, cible));
+    const cible = largeurEquilibree(this.mesure(4000)[0]), m = (w, place) => this.mesure(Math.min(w, place?.large ? LIGNE_LARGE : cible));
     // (lot « Les leçons » : `places`, les places propres à un écran, la table d'addition : sous la tête, à gauche de la grille)
-    const { durs, souples } = this.obstacles(), p = choisirPlace(durs, m, this.places ?? PLACES, souples);
-    m(largeurMax(p.place.boite));
+    const { durs, souples } = this.obstacles(), p = choisirPlace(durs, m, avecLarges(this.places ?? PLACES), souples);
+    m(largeurMax(p.place.boite), p.place);
     Object.assign(this.txt.style, { left: `${(p.cx - p.w / 2).toFixed(1)}px`, top: `${(p.cy - p.h / 2).toFixed(1)}px` });
     const d = balloonPath(p.cx, p.cy, p.a, p.b, (Math.round(p.w) * 7 + Math.round(p.h)) % 13, p.place.pointe);
     this.paths.forEach((e) => e.setAttribute("d", d));

@@ -34,16 +34,16 @@ async function notion(store, { n = 40, answer = () => true, cran = "conseille", 
   return { m, qs };
 }
 
-test("écran de choix : 13 niveaux, 7 familles, 9 niveaux du calcul ; le conseillé et les niveaux validés ; plus de leçons (lot « Les leçons »)", () => {
+test("écran de choix : 13 niveaux, 13 familles (lot « Sommes jusqu'à 30 »), 9 niveaux du calcul ; le conseillé et les niveaux validés ; plus de leçons (lot « Les leçons »)", () => {
   const L = levelItems("ligne", { st1: { niveau: 4, lecons: ["L1"] }, module1: m1, module2: m2 });
   assert.equal(L.length, 13); assert.deepEqual(L.filter((x) => x.conseille).map((x) => x.key), [4]); assert.deepEqual(L.filter((x) => x.valide).map((x) => x.key), [1, 2, 3]);
   assert.ok(L.every((x) => x.sprite === `choix.ligne.${x.key}`));
   // base vide : le niveau 1 conseillé, rien de validé, mais tout est proposé
   const L0 = levelItems("ligne", { module1: m1, module2: m2 }); assert.equal(L0.length, 13); assert.equal(L0.find((x) => x.conseille).key, 1); assert.ok(!L0.some((x) => x.valide));
   const F = levelItems("additions", { st2: { ...initialFamilies(m2, NOW), ouvertes: [1, 2, 3], acquises: [1, 2] }, module1: m1, module2: m2 });
-  assert.equal(F.length, 7); assert.equal(F.find((x) => x.conseille).key, 3); assert.deepEqual(F.filter((x) => x.valide).map((x) => x.key), [1, 2]);
+  assert.equal(F.length, 13); assert.equal(F.find((x) => x.conseille).key, 3); assert.deepEqual(F.filter((x) => x.valide).map((x) => x.key), [1, 2]);
   // (lot « Les leçons » : les leçons ont quitté l'écran « choisir » pour leur bulle de l'accueil, session/lessons.js)
-  assert.deepEqual(EXERCISES.map((e) => e.id), ["ligne", "additions", "calcul", "voiliers"]);
+  assert.deepEqual(EXERCISES.map((e) => e.id), ["ligne", "additions", "calcul", "voiliers", "multiplication"]);
   // lot 3, étape 4 : le calcul rapide, 9 niveaux, tous accessibles
   const C = levelItems("calcul", { st3: { acquis: [1, 2], lecons: ["L7"] }, module1: m1, module2: m2, module3: m3 });
   assert.equal(C.length, 9); assert.equal(C.find((x) => x.conseille).key, 3); assert.deepEqual(C.filter((x) => x.valide).map((x) => x.key), [1, 2]);
@@ -53,7 +53,7 @@ test("écran de choix : 13 niveaux, 7 familles, 9 niveaux du calcul ; le conseil
   // les vignettes tiennent dans la scène (1280 × 800), entre les bras de la pieuvre et les algues de droite (lot 3 bis, B1 :
   // 4 colonnes, sous le bouton de retour) ; le calcul rapide sur son chemin de cailloux
   const inScene = ([x, y]) => x - TILE.w / 2 >= 410 && x + TILE.w / 2 <= 1165 && y - TILE.h / 2 >= 172 && y + TILE.h / 2 <= 790;
-  for (const n of [13, 7, 10]) for (let i = 0; i < n; i++) assert.ok(inScene(tilePos(i, n)), `${n}, ${i} : ${tilePos(i, n)}`);
+  for (const n of [13, 7, 10, m2.familles.length]) for (let i = 0; i < n; i++) assert.ok(inScene(tilePos(i, n)), `${n}, ${i} : ${tilePos(i, n)}`);
   for (let i = 0; i < 9; i++) assert.ok(inScene(tilePos(i, 9, TILE, "calcul", CALC_STOPS)), `calcul ${i} : ${tilePos(i, 9, TILE, "calcul", CALC_STOPS)}`);
 });
 

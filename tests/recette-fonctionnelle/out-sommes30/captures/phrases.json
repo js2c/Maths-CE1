@@ -1,0 +1,54 @@
+[
+ {
+  "quoi": "famille 12 choisie, cran « plus facile » : la leçon L12, puis la première question",
+  "dit": [
+   "Bienvenue à bord ! On s'entraîne ensemble ?",
+   "Maintenant, les additions, avec le bernard-l'ermite !",
+   "Huit plus cinq. Huit poissons dans la première boîte.",
+   "Et cinq dans la deuxième.",
+   "Il reste deux places dans la première boîte.",
+   "Deux poissons sautent pour la remplir : dix !",
+   "Il en reste trois. Dix et trois, treize.",
+   "Huit plus cinq, ça fait treize.",
+   "Avec neuf, un seul poisson saute. Neuf plus quatre.",
+   "Un pour faire dix, il en reste trois : treize !",
+   "On complète la boîte avec 4, il en reste 1.",
+   "5 plus 6, ça fait 11.",
+   "À toi ! Tape la réponse.",
+   "Combien font 5 plus 6 ?"
+  ]
+ },
+ {
+  "quoi": "une erreur sur 8 + 6 : la correction",
+  "dit": [
+   "On complète la boîte avec 2, il en reste 4.",
+   "8 plus 6, ça fait 14.",
+   "6 plus 6 ?",
+   "On remplit d'abord la boîte de dix, puis on compte ce qui reste."
+  ]
+ },
+ {
+  "quoi": "« je ne sais pas »",
+  "dit": [
+   "Ce n'est pas grave, regardons ensemble.",
+   "On complète la boîte avec 4, il en reste 2.",
+   "6 plus 6, ça fait 12.",
+   "5 plus 8 ?",
+   "On remplit d'abord la boîte de dix, puis on compte ce qui reste."
+  ]
+ },
+ {
+  "quoi": "le menu, la leçon 11 regardée jusqu'au bout, « À toi ! »",
+  "dit": [
+   "Dix et encore.",
+   "Voici deux boîtes à dix places.",
+   "Dix poissons entrent dans la première : elle est pleine !",
+   "Dans la deuxième, quatre poissons.",
+   "Dix et quatre : quatorze !",
+   "Et quatre plus dix ? C'est pareil : quatorze.",
+   "Avec une boîte pleine, c'est facile. Dix et sept, dix-sept.",
+   "Dix et dix, vingt !",
+   "À toi ! Touche la grande bulle pour t'entraîner."
+  ]
+ }
+]

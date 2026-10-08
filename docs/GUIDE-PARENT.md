@@ -173,6 +173,12 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 | 5 | Les maisons de 8 et 9, avec le cadre de 10. | 6 + ? = 9 |
 | 6 | Les presque-doubles, un double et encore 1. | 3 + 4 = 3 + 3 + 1 |
 | 7 | Le mélange de toutes les additions déjà rencontrées. | 5 + 3, 4 + 4, 7 + 3 |
+| 8 | Dix et quelques, une boîte pleine et ce qui reste. | 10 + 4, 4 + 10 |
+| 9 | Les doubles jusqu'à 15 + 15, dix et dix, puis les unités. | 7 + 7, 13 + 13 |
+| 10 | Les presque-doubles jusqu'à 10, un double et encore 1. | 7 + 8 = 7 + 7 + 1 |
+| 11 | Plus 9, un pour faire dix, puis le reste. | 9 + 4 |
+| 12 | Passer la dizaine, on remplit d'abord la boîte de dix. | 8 + 5 = 8 + 2 + 3 |
+| 13 | Le grand mélange de toutes les additions, jusqu'à 30. | 8 + 5, 7 + 7, 10 + 6 |
 
 **Le calcul rapide**
 
@@ -188,23 +194,42 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 | 8 | Ajouter deux nombres à deux chiffres, sans retenue. | 23 + 14 = 23 + 10 + 4 |
 | 9 | Retirer en passant la dizaine. | 42 - 5 = 42 - 2 - 3 |
 
+**La multiplication**
+
+| Niveau | Ce qui est travaillé | Exemple |
+| --- | --- | --- |
+| 1 | Des rangées égales de poissons, on ajoute les rangées. | 4 + 4 + 4 |
+| 2 | Le signe fois, 3 × 4, c'est 3 rangées de 4. | 3 × 4 |
+| 3 | La table de 2, fois deux, c'est le double. | 2 × 7 = 14 |
+| 4 | La table de 10, fois dix, ce sont des dizaines. | 10 × 4 = 40 |
+| 5 | La table de 5, la moitié de fois dix. | 5 × 6 = 30 |
+| 6 | On tourne les rangées, 3 × 5 et 5 × 3 font autant. | 5 × 3 = 3 × 5 |
+| 7 | La table de 3. | 3 × 7 = 21 |
+| 8 | La table de 4, le double du double. | 4 × 6 = 24 |
+| 9 | Les tables de 2, 3, 4, 5 et 10 mélangées. | ? × 5 = 20 |
+
 **Les leçons**
 
 | Leçon | Ce qui est travaillé | Exemple |
 | --- | --- | --- |
-| L1 | On compte les sauts, pas les traits. | De 0 à 3, 3 sauts |
+| L1 | On compte les sauts, pas les bouées. | De 0 à 3, 3 sauts |
 | L2 | Un saut peut valoir dix. | 10, 20, 30 |
 | L3 | Une ligne ne commence pas toujours à 0. | 30, 31, 32 |
 | L4 | Les doubles, deux fois le même nombre. | 3 + 3 |
-| L5 | Les amis de 10, remplir le cadre de 10. | 7 + 3 |
+| L5 | Les amis de 10, remplir la boîte de dix. | 7 + 3 |
 | L6 | La maison des nombres, deux pièces et le toit. | 5 + 2 = 7 |
 | L10 | Les centaines, cent, c'est dix dizaines. | 100, 200, 307 |
 | L7 | Plus 10 sur le mur de corail, on descend d'une rangée. | 34 + 10 |
 | L8 | L'astuce du 9, plus 10, puis moins 1. | 34 + 9 |
 | L9 | Passer la dizaine, on complète d'abord jusqu'à 10. | 38 + 5 |
+| L11 | Dix et encore, une boîte pleine et ce qui reste. | 10 + 4 = 14 |
+| L12 | Faire dix d'abord, on remplit la boîte, puis on ajoute le reste. | 8 + 5 = 13 |
+| L13 | Des rangées égales, 3 fois 4, c'est 4 + 4 + 4. | 3 × 4 = 12 |
+| L14 | On tourne les rangées, 3 × 5 fait autant que 5 × 3. | 3 × 5 = 5 × 3 |
 | + | La table d'addition, toucher une case dit et montre le calcul. | 7 + 5 = 12 |
+| × | La table de multiplication, toucher une case dit et montre le calcul. | 3 × 4 = 12 |
 
-**L'appui long sur les pictogrammes.** Garder le doigt environ **une demi-seconde** sur une bulle de l'accueil (jouer, choisir, les leçons, le récif, l'album) ou sur un exercice de l'écran « choisir » (la ligne, les additions, le calcul rapide, les voiliers) fait apparaître une **étiquette** au-dessus, qui reste tant que le doigt est posé (depuis le lot 3 ter : elle s'efface en une demi-seconde, et cela vaut pour tous les boutons, voir **d quater**). Relâcher après un appui long **ne lance rien** ; seul un toucher bref lance. La voix ne lit pas l'étiquette. La durée se règle dans `app/content/legendes.json` (`appuiLong`).
+**L'appui long sur les pictogrammes.** Garder le doigt environ **une demi-seconde** sur une bulle de l'accueil (jouer, choisir, les leçons, le récif, l'album) ou sur un exercice de l'écran « choisir » (la ligne, les additions, le calcul rapide, les voiliers, la multiplication) fait apparaître une **étiquette** au-dessus, qui reste tant que le doigt est posé (depuis le lot 3 ter : elle s'efface en une demi-seconde, et cela vaut pour tous les boutons, voir **d quater**). Relâcher après un appui long **ne lance rien** ; seul un toucher bref lance. La voix ne lit pas l'étiquette. La durée se règle dans `app/content/legendes.json` (`appuiLong`).
 
 **L'espace parent, rappel.** L'appui long sur le logo de la pieuvre, en bas à gauche de l'accueil, dure **2 secondes** (un anneau clair se remplit) ; il est différent de l'appui court sur les pictogrammes.
 
@@ -289,6 +314,31 @@ Vous avez validé la maquette le 7 octobre 2026 (`docs/maquettes/lecons/`).
 - **La leçon 10 (les centaines)** : dans le grand chalut, chaque petit filet montre maintenant **10 poissons**, en deux rangées de 5, comme le cadre de 10.
 
 **Les phrases à fabriquer.** 126 phrases nouvelles (les 121 cases de la table, « 0 plus 0, 0. » à « 10 plus 10, 20. », les deux consignes de l'accueil, « Touche la grande bulle pour t'entraîner. », « La table d'addition. », « Touche une case : je te dis le calcul. »), environ 10 minutes de fabrication, avec les autres lots en attente (`docs/VOIX.md`, « En une commande »).
+
+## d nonies) Lot « Sommes jusqu'à 30 » : les additions jusqu'à 20, et les doubles jusqu'à 15 + 15
+
+Fait sans vous demander de valider la maquette (votre décision du 7 octobre) : les choix pris par l'application sont listés dans la demande de fusion et dans `docs/JOURNAL-CONCEPTION.md` ; vous pouvez revenir sur chacun.
+
+- **Ce qui change pour l'enfant.** Les additions continuent après les sept premières familles. Six familles de plus : **8** « dix et quelques » (10 + 4, 4 + 10), **9** les doubles jusqu'à 15 + 15 (7 + 7, 13 + 13), **10** les presque-doubles jusqu'à 10 (7 + 8), **11** « plus neuf » (9 + 4), **12** passer la dizaine (8 + 5), **13** le grand mélange. Elles s'ouvrent une à une, comme les premières, quand la précédente est bien commencée (au plus une par jour). Le programme de CE1 demande les tables d'addition jusqu'à 10 + 10, dans les deux sens, et les doubles jusqu'à 15 ; les autres sommes jusqu'à 30 (17 + 8) se **calculent**, au calcul rapide (niveaux 4, 6 et 7), qui les proposait déjà.
+- **La nouvelle aide : deux boîtes de dix.** Pour 8 + 5 : huit poissons dans la première boîte, deux poissons (entourés de lumière) la complètent, il en reste trois dans la seconde ; la voix dit « On complète la boîte avec 2, il en reste 3. ». Pour les grands doubles : un filet de dix poissons et les poissons seuls, et leur reflet (« 13, c'est dix et 3. Dix et dix, vingt. 3 et 3, 6. »).
+- **Deux leçons nouvelles**, dans le menu des leçons, rangée des additions : **11 · Dix et encore** et **12 · Faire dix d'abord**, chacune suivie de « À toi ! ».
+- **Pour vous**, dans l'espace parent : les familles 8 à 13 dans la progression ; la grille des additions colore maintenant toutes les cases jusqu'à 10 + 10 (les grands doubles sont écrits dessous) ; une erreur de plus au journal, « a oublié la dizaine » (7 + 6 = 3) ; le point de départ va jusqu'à la famille 13.
+- **À vérifier sur la tablette** : que les places qui brillent dans les boîtes (formes à trou, « 9 + ? = 13 ») se voient bien ; que l'enfant comprend les poissons qui « sautent » d'une boîte à l'autre.
+
+**Les phrases à fabriquer.** 384 phrases nouvelles, environ 2,7 Mo (surtout les additions de 11 à 20 sous leurs formes, et les explications des deux boîtes) : la liste est dans `docs/maquettes/sommes30/PHRASES.md` ; elles se fabriquent avec les autres lots en attente (`node tools\voix\publier.mjs`, `docs/VOIX.md`, « En une commande »). Tant qu'elles manquent, GitHub ne publie pas la mise à jour.
+
+## d decies) Lot « Multiplication » : un cinquième exercice, les tables, la table de multiplication
+
+Fait, lui aussi, sans vous demander de valider la maquette (votre décision du 7 octobre) : les choix sont listés dans la demande de fusion et dans `docs/JOURNAL-CONCEPTION.md`.
+
+- **Où la trouver.** Dans **choisir**, la cinquième bulle (trois rangées de poissons et le signe ×), puis l'un des 9 niveaux. Dans **jouer**, la multiplication tourne avec la ligne, les additions et le calcul rapide **à partir du 4 janvier 2027** (avant, seulement par « choisir » et les leçons). Vous pouvez aussi l'imposer pour une séance (espace parent, **Données et réglages**).
+- **Ce que fait l'enfant.** « 3 × 4 », ce sont **3 rangées de 4 poissons**, et la voix dit « 3 fois 4 ». Les niveaux : 1, des rangées écrites en addition (4 + 4 + 4) ; 2, le signe × ; 3, la table de 2 ; 4, la table de 10 ; 5, la table de 5 ; 6, « on tourne les rangées » (3 × 5 = 5 × 3) ; 7, la table de 3 ; 8, la table de 4 ; 9, tout mélangé. L'écran est celui des additions (l'ardoise, les chiffres, le coquillage). L'aide montre les rangées en grand, **comptées une à une** (« 4… 8… 12 »), avec l'astuce de la table (« Fois deux, c'est le double. ») ; une erreur où l'enfant a additionné (3 × 4 = 7) est dite (« Attention : fois, ce n'est pas plus. »). Un niveau est validé avec 8 bonnes réponses sur 10, sur deux jours au moins.
+- **Deux leçons nouvelles**, dans une quatrième rangée du menu des leçons : **13 · Des rangées égales** et **14 · On tourne les rangées**, chacune suivie de « À toi ! ».
+- **La table de multiplication**, au bout de cette rangée, à côté de la table d'addition (un grand « × ») : de 1 × 1 à 10 × 10 ; toucher une case dit le calcul (« 7 fois 5, 35. ») et montre les rangées.
+- **Pour vous**, dans l'espace parent : un bloc « Module 5 · La multiplication » (niveau conseillé, niveaux validés, semaine par semaine), deux erreurs au journal (« a additionné au lieu de multiplier », « une rangée ou une colonne de trop ou de moins »), le niveau de la multiplication dans le point de départ, la légende de ses 9 niveaux.
+- **À vérifier sur la tablette** : que les rangées de 10 poissons se lisent bien ; que les totaux écrits au bout des rangées sont assez gros.
+
+**Les phrases à fabriquer.** 561 phrases nouvelles, environ 4 Mo (chaque multiplication posée sous ses formes, les rangées dites, les 100 cases de la table) : la liste est dans `docs/maquettes/multiplication/PHRASES.md`. Avec celles des lots précédents encore en attente, la voix pèsera environ 74 Mo, sous la limite de 80 Mo que vous aviez fixée (il restera environ 6 Mo pour les lots suivants).
 
 ## e) Ce qui reste approximatif ou à ajuster
 

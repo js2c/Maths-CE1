@@ -18,19 +18,22 @@ import { Session } from "../../app/js/session/session.js";
 import { runNotion } from "../../app/js/session/notion.js";
 import { Rewards, goldenStar } from "../../app/js/session/rewards.js";
 import { Warmup } from "../../app/js/modules/facts/warmup.js";
-import { runWarmup } from "../../app/js/modules/facts/screen.js";
+import { FactsScreen, runWarmup } from "../../app/js/modules/facts/screen.js";
 import { aidFor, expected, median } from "../../app/js/modules/facts/facts.js";
 import { Module2Runner } from "../../app/js/modules/facts/runner.js";
 import { calcMastery, Module3Runner } from "../../app/js/modules/calc/runner.js";
 import { Module4Runner, passageTexte } from "../../app/js/modules/voiliers/runner.js";
 import { codeErreur, entre, explication, pourquoi } from "../../app/js/modules/voiliers/voiliers.js";
 import { calcKey, classifyCalc } from "../../app/js/modules/calc/calc.js";
+import { Module5Runner } from "../../app/js/modules/mult/runner.js";
+import { classifyMult, multAnswer, multKey, multQuestion } from "../../app/js/modules/mult/mult.js";
+import { MultScreen } from "../../app/js/modules/mult/screen.js";
 import { checkSequence } from "../../app/js/modules/variete.js";
 import { runChallenge } from "../../app/js/modules/facts/challenge.js";
 
 const ROOT = new URL("../../", import.meta.url).pathname;
 const load = (f) => JSON.parse(readFileSync(join(ROOT, "app/content", f), "utf8"));
-const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), module3 = load("module3.json"), module4 = load("module4.json"), cartes = load("cartes.json"), calendrier = load("calendrier.json"), T = load("textes.json"), lecons = load("lecons.json");
+const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), module3 = load("module3.json"), module4 = load("module4.json"), module5 = load("module5.json"), cartes = load("cartes.json"), calendrier = load("calendrier.json"), T = load("textes.json"), lecons = load("lecons.json");
 const OUT = join(ROOT, process.env.RECETTE_OUT ?? "tests/recette-fonctionnelle/out", "B-sequences");
 mkdirSync(OUT, { recursive: true });
 // --test (lot 3 bis, docs/SPEC-LOT3BIS.md, §0) : rien n'est écrit ; les quatre règles de la réponse qui varie sont vérifiées
@@ -77,8 +80,11 @@ const voixFait = (R, q) => {
   if (q.rappel && (q.forme ?? "directe") === "directe") return `${fill(pickT(R, "fait"), v)} ${fill(T.rappelDouble, { ...v, d: q.rappel.d })}`;
   return q.forme === "trouDroite" ? fill(T.faitTrouDroite, v) : q.forme === "trouGauche" ? fill(T.faitTrouGauche, v) : fill(pickT(R, "fait"), v);
 };
-const aidKind = (q) => { const fam = module2.familles.find((f) => f.id === q.famille)?.aide; return q.appui ?? (fam && fam !== "fait" ? fam : aidFor(q.a, q.b)); };
-const aidSpeech = (q) => { const kind = aidKind(q), k = q.forme === "trouGauche" ? q.b : q.a; return kind === "ligne" ? `[aide ligne] ${fill(T.aideLigne, { a: Math.max(q.a, q.b), sauts: Math.min(q.a, q.b) === 1 ? T.unSaut : `${Math.min(q.a, q.b)} ${T.sauts}` })}` : kind === "cadre" ? fill(T.aideCadre, { k }) : kind === "maison" ? T.aideMaison : kind === "doublePlus" ? fill(T.aideDoublePlus, { d: Math.min(q.a, q.b) }) : fill(T.aideReflet, { a: q.a }); };
+const aidKind = (q) => { const fam = module2.familles.find((f) => f.id === q.famille)?.aide, k = q.appui ?? (fam && fam !== "fait" ? fam : aidFor(q.a, q.b)); return k === "reflet" && q.a > 10 ? "grandDouble" : k; }; // (lot « Sommes jusqu'à 30 » : comme facts/screen.js, aidKind)
+// (lot « Sommes jusqu'à 30 » : ce que dit l'appui, repris de l'écran lui-même, facts/screen.js : les deux boîtes, le grand double…)
+const FS = Object.setPrototypeOf({ app: { text: { data: T } }, c: module2 }, FactsScreen.prototype);
+const FM = Object.setPrototypeOf({ app: { text: { data: T } } }, MultScreen.prototype); // (lot « Multiplication »)
+const aidSpeech = (q, solved = true) => { const kind = FS.aidKind(q); return kind === "ligne" ? `[aide ligne] ${fill(T.aideLigne, { a: Math.max(q.a, q.b), sauts: Math.min(q.a, q.b) === 1 ? T.unSaut : `${Math.min(q.a, q.b)} ${T.sauts}` })}` : FS.aidSpeech(q, kind, solved); };
 const consigneCalc = (q) => (q.pont ? fill(q.op === "-" ? T.calcPont.moins : T.calcPont.plus, { k: q.b }).replace(/\.$/, " ?") : q.forme === "trouDroite" ? fill(q.op === "-" ? T.calcTrouMoins : T.calcTrouPlus, { a: q.a, n: q.n }) : fill(q.op === "-" ? T.calcMoins : T.calcPlus, { a: q.a, b: q.b }));
 const cheminTxt = (q) => `${q.a} ${q.chemin.map((s) => `${s.op === "-" ? "−" : "+"}${s.k}→${s.a}`).join(" ")}`;
 const answerCalc = (q) => (q.forme === "trouDroite" ? q.b : q.n);
@@ -185,7 +191,7 @@ async function uneSeance({ base, choix, cran, comp }) {
           const runner = wrapRunner(await new Module2Runner({ store, content: module2, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux, choix: ctx.session.choix?.famille ?? null }).load());
           const scr = { ask: async (q, cfg, o = {}) => {
             const good = expected(q), guide = !!(o.guide || q.guide), r = guide ? { value: good } : reponseNombre(R, C, good, { max: 20, pieges: q.forme !== "directe" ? [q.a + q.b] : [] }), ok = r.value === good;
-            const pre = q.guide ? `[exemple guidé : ${aidSpeech(q)} ${fill(T.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b })} ${T.aToiFait}] ` : q.aideDEmblee ? `[aide d'emblée : ${aidSpeech(q)}] ` : "";
+            const pre = q.guide ? `[exemple guidé : ${aidSpeech(q)} ${fill(T.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b })} ${T.aToiFait}] ` : q.aideDEmblee ? `[aide d'emblée : ${aidSpeech(q, false)}] ` : "";
             const x = row({ cle: `fait:${q.fait}`, forme: `${fait(q)} (famille ${q.famille}${q.revient ? ", revient" : ""})`, voix: pre + voixFait(RV, q), attendue: good, donnee: guide ? `${good} (guidé)` : r.nsp ? "je ne sais pas" : r.value });
             add(D.consigne + (q.guide ? D.demo : 0) + (q.aideDEmblee ? 6000 : 0) + C.ms + (ok ? D.bravo : D.correction));
             if (!ok) x.suite.push(`correction : « ${r.nsp ? T.faitNSP + " " : ""}${aidSpeech(q)} ${fill(T.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b })} »`);
@@ -221,6 +227,22 @@ async function uneSeance({ base, choix, cran, comp }) {
             return { q, ok, corrigee, demi, code, nsp, choisi: r1[0], ms: C.ms, listens: 1, essais: r1.length + r2.length };
           } };
           await runNotion({ ...ctx, step: { ...ctx.step, ...(ctx.step.module4 ?? {}) }, runner, screen: scr, rnd: R, lesson }); cur = null; return;
+        }
+        // lot « Multiplication » : la consigne et la correction de l'écran lui-même (mult/screen.js)
+        if (m === 5) {
+          const baseMs5 = median((await store.setting("tempsDeBase"))?.mesures ?? []) ?? module2.base.defautS * 1000;
+          const runner = wrapRunner(await new Module5Runner({ store, content: module5, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, choix: ctx.session.choix?.module === 5 ? ctx.session.choix.niveau : null, baseMs: baseMs5 }).load());
+          const scr = { ask: async (q) => {
+            const good = multAnswer(q), guide = !!q.guide, r = guide ? { value: good } : reponseNombre(R, C, good, { max: 100, pieges: (q.forme ?? "directe") === "directe" ? [q.a + q.b, q.n - q.b, q.n + q.b] : [q.n] }), ok = r.value === good;
+            const image = q.image === "toujours" ? "rangées affichées" : q.aideDEmblee ? "rangées comptées d'emblée" : q.image === "non" ? "sans image" : "rangées au coquillage";
+            const pre = guide ? `[exemple guidé : ${FM.rangees(q.a, q.b)} … ${q.n} ; ${fill(T.multCorrection, { a: q.a, b: q.b, n: q.n })} ${T.aToiFait}] ` : "";
+            const x = row({ cle: multKey(q), forme: `${multQuestion(q)}${(q.forme ?? "directe") === "directe" && !q.addition ? " = ?" : ""} (niveau ${q.niveau}, ${image}${q.revient ? ", revient" : ""})`, voix: pre + FM.consigne(q), attendue: good, donnee: guide ? `${good} (guidé)` : r.nsp ? "je ne sais pas" : r.value });
+            add(D.consigne + (guide ? D.demo : 0) + (q.aideDEmblee ? 6000 : 0) + C.ms + (ok ? D.bravo : D.correction));
+            const code = r.nsp ? "NSP" : ok ? null : classifyMult(q, r.value);
+            if (!ok) x.suite.push(`correction ${code} : « ${r.nsp ? T.faitNSP : code === "M1" && !q.addition ? T.erreurMult.M1 : T.erreur.autre} ${FM.rangees(q.a, q.b)} [les rangées comptées] ${fill(T.multCorrection, { a: q.a, b: q.b, n: q.n })} »`);
+            return { q, value: r.value, ok, code, ms: C.ms, listens: 1, aide: !!q.aideDEmblee, nsp: !!r.nsp };
+          } };
+          await runNotion({ ...ctx, step: { ...ctx.step, ...(ctx.step.module5 ?? {}) }, runner, screen: scr, rnd: R, lesson }); cur = null; return;
         }
         const baseMs = median((await store.setting("tempsDeBase"))?.mesures ?? []) ?? module2.base.defautS * 1000;
         const runner = wrapRunner(await new Module3Runner({ store, content: module3, content2: module2, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, choix: ctx.session.choix?.module === 3 ? ctx.session.choix.niveau : null, baseMs }).load());
@@ -303,6 +325,7 @@ const EXOS = [
   ...module1.niveaux.map((c) => ({ id: `ligne-${String(c.niveau).padStart(2, "0")}`, choix: { module: 1, niveau: c.niveau }, nom: `Ligne graduée, niveau ${c.niveau}` })),
   ...module2.familles.map((f) => ({ id: `additions-famille-${f.id}`, choix: { module: 2, famille: f.id }, nom: `Additions, famille ${f.id} (${f.nom})` })),
   ...module3.niveaux.map((c) => ({ id: `calcul-${c.niveau}`, choix: { module: 3, niveau: c.niveau }, nom: `Calcul rapide, niveau ${c.niveau} (${c.type}, ${c.support})` })),
+  ...module5.niveaux.map((c) => ({ id: `multiplication-${c.niveau}`, choix: { module: 5, niveau: c.niveau }, nom: `Multiplication, niveau ${c.niveau} (${c.type}${c.table ? ` ${c.table}` : ""})` })),
   ...module4.niveaux.map((c) => ({ id: `voiliers-${c.niveau}`, choix: { module: 4, niveau: c.niveau }, nom: `Voiliers, niveau ${c.niveau} (${c.bouees} bouées, ${c.ecart}, ${c.place})`, passages: c.ecart === "double" ? 12 : c.bouees + 1 })),
 ].filter((e) => !only || (e.choix.module === only[0] && (only[1] == null || (e.choix.niveau ?? e.choix.famille) === only[1]))); // (--seulement 4 : tout le module 4)
 if (TEST) {

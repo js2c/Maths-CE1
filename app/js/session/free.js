@@ -22,11 +22,12 @@ import { choose } from "./choice.js";
 import { Module3Runner } from "../modules/calc/runner.js";
 import { median } from "../modules/facts/facts.js";
 import { Module4Runner } from "../modules/voiliers/runner.js";
+import { Module5Runner } from "../modules/mult/runner.js";
 
 const PROPOSE_STOP_MS = 10 * 60000;
 
 export class FreeTraining {
-  constructor(app, { store, module1, module2, module3 = null, module4 = null, rnd, seance = null }) { this.app = app; this.store = store; this.m1 = module1; this.m2 = module2; this.m3 = module3; this.m4 = module4; this.rnd = rnd; this.seance = seance; this.rec = null; this.cran = "conseille"; }
+  constructor(app, { store, module1, module2, module3 = null, module4 = null, module5 = null, rnd, seance = null }) { this.app = app; this.store = store; this.m1 = module1; this.m2 = module2; this.m3 = module3; this.m4 = module4; this.m5 = module5; this.rnd = rnd; this.seance = seance; this.rec = null; this.cran = "conseille"; }
   // le sélecteur, sans étoiles
   async pickCran() {
     const sel = this.seance?.selecteur; if (!sel?.actif) return (this.cran = "conseille");
@@ -53,7 +54,7 @@ export class FreeTraining {
     const { app } = this;
     this.t0 ??= app.clock.now();
     app.voice.stop(); await app.voice.say(`${app.text.data.encore} ${app.text.data.libre}`);
-    const c = await choose(app, { stars: false, store: this.store, content: { module1: this.m1, module2: this.m2, module3: this.m3, module4: this.m4, seance: this.seance ?? {} } });
+    const c = await choose(app, { stars: false, store: this.store, content: { module1: this.m1, module2: this.m2, module3: this.m3, module4: this.m4, module5: this.m5, seance: this.seance ?? {} } });
     return this.start(c);
   }
   // l'exercice choisi ({ module, niveau } ou { module: 2, famille }), sans fin ; (lot « Les leçons » : `apresLecon`, la leçon
@@ -64,6 +65,7 @@ export class FreeTraining {
     if (c.module === 1) return this.line(c.niveau);
     if (c.module === 2) return this.facts(c.famille);
     if (c.module === 3) return this.calc(c.niveau);
+    if (c.module === 5) return this.mult(c.niveau);
     return this.voiliers(c.niveau);
   }
   // la ligne graduée au niveau choisi, sans fin
@@ -105,6 +107,21 @@ export class FreeTraining {
     for (;;) {
       const { q, cfg } = runner.next(), r = await app.calc.askNotion(q);
       const { events } = await runner.record(r, cfg);
+      for (const e of events) if (e.type === "montee") await app.rewards.arcFromFree();
+      await this.answered(r.ok);
+    }
+  }
+  // lot « Multiplication » : la multiplication au niveau choisi, sans fin (réponses marquées « libre »)
+  async mult(niveau) {
+    const { app } = this; await this.pickCran(); await app.sprites.load("aides");
+    const base = median((await this.store.setting("tempsDeBase"))?.mesures ?? []) ?? this.m2.base.defautS * 1000;
+    const runner = await new Module5Runner({ store: this.store, content: this.m5, rnd: this.rnd, seance: await this.seanceId(), variete: this.seance?.variete, cran: () => this.cran, choix: niveau, baseMs: base }).load();
+    runner.libre = true; this.runner = runner;
+    const fs = (app.facts ??= new FactsScreen(app, this.m2)); fs.show(true);
+    for (;;) {
+      const x = runner.next(); if (!x) { runner.var = new runner.var.constructor(runner.var.c); continue; }
+      const r = await app.mult.askNotion(x.q);
+      const { events } = await runner.record(r, x.cfg);
       for (const e of events) if (e.type === "montee") await app.rewards.arcFromFree();
       await this.answered(r.ok);
     }

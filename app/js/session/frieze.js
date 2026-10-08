@@ -24,7 +24,7 @@ export class Frieze {
   set(p) { this.p = { ...p }; this.el.repaint(); }
   // le pictogramme de la notion du jour : la ligne graduée (module 1), le « + » des additions (module 2) ou le mur de
   // corail du calcul rapide (module 3, lot 3)
-  notionIcon(module) { this.icon = module === 2 ? "frise.echauffement" : module === 3 ? "frise.calcul" : module === 4 ? "frise.voiliers" : null; this.el.repaint(); }
+  notionIcon(module) { this.icon = module === 2 ? "frise.echauffement" : module === 3 ? "frise.calcul" : module === 4 ? "frise.voiliers" : module === 5 ? "frise.multiplication" : null; this.el.repaint(); }
   // où va chaque élément : [{ kind: "etape"|"point", id|j, x }], x au centre (px logiques du calque)
   layout() {
     const cur = this.steps.indexOf(this.p.etape), dots = cur >= 0 ? this.p.prevues : 0;

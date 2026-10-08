@@ -24,7 +24,7 @@
 //    affichée d'emblée ne fait pas monter le fait (elle ne le fait pas redescendre non plus) ;
 //  - stagnation (module2.json, familles2.stagnation) : une famille pas acquise après 6 séances où elle était la
 //    notion du jour est dépassée : la suivante devient la famille en cours (avec sa leçon), elle reste en révision.
-import { aidFor, catalog, expected, familyOf, formFor, key, newFact, roomForNew, ruleFacts, trouPartOf, trouTurn } from "./facts.js";
+import { aidFor, catalog, expected, familyOf, famMax, formFor, key, newFact, roomForNew, ruleFacts, trouPartOf, trouTurn } from "./facts.js";
 import { MANQUE, Variete } from "../variete.js";
 import { currentFamily, isAcquired, noteNotion, openChosen, openPending, trouOpenFor, updateFamilies, withOpen } from "./families.js";
 import { Warmup } from "./warmup.js";
@@ -80,7 +80,7 @@ export class Module2Runner {
     const e = this.choix != null ? {} : this.effet, ids = new Set(e.melange ? this.fam.ouvertes : [this.famille]);
     if (e.familleSuivante) { const nx = this.c0.familles.find((f) => !this.fam.ouvertes.includes(f.id)); if (nx) ids.add(nx.id); }
     const cat = new Map(catalog(this.c0).map((f) => [f.fait, f])), out = new Map();
-    for (const id of ids) for (const r of familyOf(this.c0, id)?.regle === "melange" ? [...cat.values()].filter((f) => this.stored(f.fait)) : ruleFacts(this.c0, id)) if (!out.has(r.fait)) out.set(r.fait, { ...cat.get(r.fait), src: id });
+    for (const id of ids) for (const r of familyOf(this.c0, id)?.regle === "melange" ? [...cat.values()].filter((f) => this.stored(f.fait) && this.inMix(id, f)) : ruleFacts(this.c0, id)) if (!out.has(r.fait)) out.set(r.fait, { ...cat.get(r.fait), src: id });
     return [...out.values()];
   }
   weakest(list) {
@@ -105,11 +105,13 @@ export class Module2Runner {
   // familles 1 à 3 (module2.json, notion.melangeNeuf), comme faits nouveaux
   corePool() {
     const cat = new Map(catalog(this.c0).map((f) => [f.fait, f])), fam = familyOf(this.c0, this.famille);
-    let list = fam?.regle === "melange" ? [...cat.values()].filter((f) => this.stored(f.fait)) : ruleFacts(this.c0, this.famille).map((r) => cat.get(r.fait));
+    let list = fam?.regle === "melange" ? [...cat.values()].filter((f) => this.stored(f.fait) && this.inMix(this.famille, f)) : ruleFacts(this.c0, this.famille).map((r) => cat.get(r.fait));
     const M = this.N.melangeNeuf;
     if (fam?.regle === "melange" && this.choix != null && M && new Set(this.w.facts.map((f) => cat.get(f.fait)?.famille).filter(Boolean)).size < M.famillesMin) list = [...list, ...[...cat.values()].filter((f) => !this.stored(f.fait) && M.familles.includes(f.famille))];
     return list.filter(Boolean).map((f) => ({ ...f, src: this.famille }));
   }
+  // (lot « Sommes jusqu'à 30 » : un mélange ne mêle que les faits jusqu'à sa somme maximale ; la famille 7, jusqu'à 10)
+  inMix(id, f) { return f.a + f.b <= famMax(this.c0, familyOf(this.c0, id)); }
   extraPool() { const core = new Set(this.corePool().map((f) => f.fait)); return this.familyPool().filter((f) => !core.has(f.fait)); }
   // lot 3 bis (A1) : les faits nouveaux tirés au hasard (un rang tiré une fois par séance), l'autre ordre des termes du
   // dernier fait nouveau d'abord (7 + 3, puis 3 + 7)

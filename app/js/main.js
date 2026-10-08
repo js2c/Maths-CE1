@@ -23,8 +23,12 @@ import { FactsScreen, runWarmup } from "./modules/facts/screen.js";
 import { Warmup } from "./modules/facts/warmup.js";
 import { WarmupSkip } from "./modules/facts/warmupskip.js";
 import { Module2Runner } from "./modules/facts/runner.js";
-import { calcMastery, Module3Runner } from "./modules/calc/runner.js";
+import { calcMastery, initialCalcState, Module3Runner } from "./modules/calc/runner.js";
+import { initialLevelState } from "./modules/progress.js";
+import { initialFamilies } from "./modules/facts/families.js";
 import { CalcScreen } from "./modules/calc/screen.js";
+import { initialMultState, Module5Runner, multMastery } from "./modules/mult/runner.js";
+import { MultScreen } from "./modules/mult/screen.js";
 import { Module4Runner } from "./modules/voiliers/runner.js";
 import { VoiliersScreen } from "./modules/voiliers/screen.js";
 import { median } from "./modules/facts/facts.js";
@@ -56,7 +60,7 @@ const stage = new Stage(document.getElementById("stage"));
 // le désactivent), avec une seule résolution des planches d'images : celle que cet écran utilise (sprites.js)
 if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !location.search.includes("nosw")) navigator.serviceWorker.register(`sw.js?r=${stage.px > 1.2 ? 2 : 1}`).catch(() => {});
 const [atlas, module1, module2, textes, seance, lecons, cartes, calendrier, parentContent, voix] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/module2.json"), json("content/textes.json"), json("content/seance.json"), json("content/lecons.json"), json("content/cartes.json"), json("content/calendrier.json"), json("content/parent.json"), json("assets/voix/index.json").catch(() => null)]);
-const [sonContent, sonIndex, module3, legendes, module4] = await Promise.all([json("content/son.json"), json("assets/son/index.json").catch(() => null), json("content/module3.json"), json("content/legendes.json"), json("content/module4.json")]);
+const [sonContent, sonIndex, module3, legendes, module4, module5] = await Promise.all([json("content/son.json"), json("assets/son/index.json").catch(() => null), json("content/module3.json"), json("content/legendes.json"), json("content/module4.json"), json("content/module5.json")]);
 const sprites = new Sprites(atlas, stage.px);
 // la base locale ; au premier lancement, on demande au navigateur de ne jamais l'effacer de lui-même
 const store = await Store.open();
@@ -86,7 +90,9 @@ const voice = new Voice({ rate: 0.9, fast: P.get("voix") === "rapide" }).setInde
 // quand il va seul au bon passage, il est seulement évité si possible)
 const bulle = new Bulle(stage, {
   dures: () => { if (stage.root.classList.contains("paused")) return []; const b = app.line.bande; return [...(b ? [b] : []), ...(app.voiliers?.actif ? app.voiliers.obstacles() : [])]; },
-  souples: () => (app.voiliers?.actif && !stage.root.classList.contains("paused") ? app.voiliers.souples() : []),
+  // (relecture du lot « Multiplication » : l'ardoise de la multiplication, large au niveau 1, « 5 + 5 + 5 + 5 + 5 = ? », est
+  // évitée si possible)
+  souples: () => (stage.root.classList.contains("paused") ? [] : [...(app.voiliers?.actif ? app.voiliers.souples() : []), ...(app.facts?.q?.module === 5 && app.facts.slate?.style.visibility !== "hidden" ? [[495, 120, 1085, 300]] : [])]),
 }), fleche = new Fleche(ocean);
 // (relecture du lot : pendant une question de dictée, la bulle n'écrit rien : elle écrirait en chiffres le nombre à écrire)
 const dicteeEnCours = () => !!(app.facts?.q?.dictee && !app.facts.locked);
@@ -128,6 +134,8 @@ app.aidBoard ??= new AidBoard(app); // l'écran de la ligne (aussi pour l'aide d
 // lot 3, étape 4 : le calcul rapide prend l'ardoise et le pavé de l'écran des additions
 app.calc = new CalcScreen(app, () => (app.facts ??= new FactsScreen(app, module2)));
 app.module3 = module3;
+// lot « Multiplication » : la multiplication prend aussi l'ardoise et le pavé de l'écran des additions
+app.mult = new MultScreen(app, () => (app.facts ??= new FactsScreen(app, module2))); app.module5 = module5;
 // lot « Les voiliers » : le module 4 (sa scène est installée le temps de la notion du jour)
 app.module4 = module4; app.voiliers = new VoiliersScreen(app, module4);
 window.__app = app;
@@ -194,6 +202,7 @@ const handlers = {
     if (ctx.session.rec.module === 2) return notion2(ctx);
     if (ctx.session.rec.module === 3) return notion3(ctx);
     if (ctx.session.rec.module === 4) return notion4(ctx);
+    if (ctx.session.rec.module === 5) return notion5(ctx);
     const screen = app.lineScreen();
     // lot 3 : le niveau choisi par l'enfant (écran « choisir ») : toutes les questions à ce niveau
     const runner = await new Module1Runner({ screen, store, content: module1, rnd, seance: ctx.session.id, variete: seance.variete, offset: () => ctx.session.offset, cran: () => ctx.session.cran, choix: ctx.session.choix?.niveau ?? null }).load();
@@ -261,6 +270,22 @@ async function notion3(ctx) {
   try {
     await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.calc.askNotion(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
   } finally { app.calc.leave(); sprites.unload("calcul"); }
+}
+// LOT « MULTIPLICATION » (docs/SPEC.md, section 7 ter) : la notion du jour sur la multiplication : l'écran des additions
+// (ardoise, pavé) et les rangées de poissons (modules/mult/screen.js) ; la leçon d'entrée du niveau (L13, L14), sinon un
+// exemple guidé ; un niveau acquis rapporte une étoile arc-en-ciel
+async function notion5(ctx) {
+  const { session } = ctx, conf = ctx.step.module5 ?? ctx.step;
+  const step = { ...ctx.step, ...conf, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}), ...(P.get("guides") ? { guides: Number(P.get("guides")) } : {}) };
+  const base = median((await store.setting("tempsDeBase"))?.mesures ?? []) ?? module2.base.defautS * 1000;
+  const runner = await new Module5Runner({ store, content: module5, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, choix: session.choix?.module === 5 ? session.choix.niveau : null, baseMs: base }).load();
+  app.runner = runner; afterLesson(session, runner); session.rec.niveauMult = runner.niveau; await session.save();
+  await sprites.load("aides");
+  const fs = (app.facts ??= new FactsScreen(app, module2)); fs.show(true); fs.keys(false);
+  await voice.say(text.pick("notionMult"));
+  try {
+    await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.mult.askNotion(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
+  } finally { app.mult.leave(); }
 }
 // LOT « LES VOILIERS » (docs/SPEC.md, section 7 bis) : la notion du jour sur le jeu des voiliers, choisi par l'enfant ou
 // imposé par le parent : la scène de la maquette (modules/voiliers/screen.js), un bateau par question, l'exemple guidé la
@@ -378,7 +403,7 @@ async function showHome({ done, first = false }) {
   onBrief(app, pickKey, async () => {
     voice.unlock(); clearHome();
     mode = "choix"; homeKey.style.visibility = "visible";
-    const c = await choose(app, { store, content: { module1, module2, module3, module4, seance } });
+    const c = await choose(app, { store, content: { module1, module2, module3, module4, module5, seance } });
     mode = null; homeKey.style.visibility = "hidden";
     await runSession(c);
   }, "choisir");
@@ -394,7 +419,7 @@ async function openLessons() {
   let go = null;
   mode = "lecons"; homeKey.style.visibility = "visible";
   const c = await lessonsMenu(app, { store, seance, lecons });
-  if (c?.table) { mode = "table"; await additionTable(app, { seance }); }
+  if (c?.table) { mode = "table"; await additionTable(app, { seance, op: c.table === "multiplication" ? "×" : "+" }); }
   else if (c?.lecon) {
     const r = await lessonAlone(c.lecon, { fin: true });
     if (r) {
@@ -418,7 +443,7 @@ async function runSession(choix = null) {
   // lot « Les leçons » : « À toi ! » après une leçon du menu : sans échauffement
   if (choix?.apresLecon && !sans.includes("echauffement")) { sans.push("echauffement"); sansRaison.echauffement = "après une leçon"; }
   // lot 3 : la rotation de « jouer » entre les trois modules, le moins maîtrisé d'abord (session.js, chooseModule)
-  const [n1, n2, n3] = await Promise.all([1, 2, 3].map((k) => store.get("niveaux", k))), mastery = { 1: ((n1?.niveau ?? 1) - 1) / module1.niveaux.length, 2: (n2?.acquises?.length ?? 0) / module2.familles.length, 3: calcMastery(module3, n3) };
+  const [n1, n2, n3, n5] = await Promise.all([1, 2, 3, 5].map((k) => store.get("niveaux", k))), mastery = { 1: ((n1?.niveau ?? 1) - 1) / module1.niveaux.length, 2: (n2?.acquises?.length ?? 0) / module2.familles.length, 3: calcMastery(module3, n3), 5: multMastery(module5, n5) };
   const session = new Session({ store, content: { ...seance, dureeMaxMin: await store.setting("dureeSeanceMin", seance.dureeMaxMin) }, handlers, rewards, paused: () => clock.pausedTotal(), onProgress: (p) => progress(p), choix, sans, sansRaison, mastery: (m) => mastery[m] ?? 0,
     // la protection du sélecteur redescend d'un cran : la mascotte encourage, la voix le dit doucement
     onCranDown: async () => { voice.stop(); ocean.mascotte.play("encourager"); await voice.say(text.data.cranDescente); } });
@@ -444,7 +469,10 @@ async function lessonAlone(id, { pause = false, fin = false } = {}) {
   const t0 = Date.now(), r = await Promise.race([player.play(id), new Promise((res) => { app.lessonCancel = () => { player.abandon(); clock.abandon(); voice.abandon(); res(null); }; })]);
   app.lessonCancel = null; mode = pause ? "seance" : null; homeKey.style.visibility = "hidden";
   if (!r) return null;
-  const L = lecons[id], key = L?.module === 2 ? 2 : L?.module === 3 ? 3 : 1, st = (await store.get("niveaux", key)) ?? (key === 3 ? { module: 3, acquis: [], obtenus: [], vus: {}, fenetres: {}, lecons: [] } : null);
+  // (relecture de l'étape 0 du bloc « Sommes jusqu'à 30 » et « Multiplication » : en base neuve, l'état de l'exercice n'existait
+  // pas encore et la leçon vue n'était pas notée, sa tuile restait sans étoile ; lot « Multiplication » : L13 et L14, module 5)
+  const L = lecons[id], key = [2, 3, 5].includes(L?.module) ? L.module : 1, now = Date.now();
+  const st = (await store.get("niveaux", key)) ?? (key === 1 ? initialLevelState(1, now) : key === 2 ? initialFamilies(module2, now) : key === 3 ? initialCalcState(now) : initialMultState(now));
   if ((r?.vue || r?.passee) && st && !(st.lecons ??= []).includes(id)) { st.lecons.push(id); await store.put("niveaux", st); }
   const today = new Date().toDateString(), done = await store.setting("leconsChoisies"), ids = done?.jour === today ? done.ids : [];
   let etoiles = 0;
@@ -529,7 +557,7 @@ async function visitInPause(fn) {
 // l'écran « choisir » depuis la pause : la maison y revient sans rien valider
 async function pickInPause() {
   mode = "pause-choix"; homeKey.style.visibility = "visible";
-  const c = await choose(app, { store, content: { module1, module2, module3, module4, seance } });
+  const c = await choose(app, { store, content: { module1, module2, module3, module4, module5, seance } });
   mode = "seance"; homeKey.style.visibility = "hidden";
   if (!c) return null;
   return { exercice: c };
@@ -539,7 +567,7 @@ async function pickInPause() {
 async function lessonsInPause() {
   mode = "pause-lecons"; homeKey.style.visibility = "visible";
   const c = await lessonsMenu(app, { store, seance, lecons });
-  if (c?.table) { mode = "pause-table"; await additionTable(app, { seance }); }
+  if (c?.table) { mode = "pause-table"; await additionTable(app, { seance, op: c.table === "multiplication" ? "×" : "+" }); }
   else if (c?.lecon) await lessonAlone(c.lecon, { pause: true });
   mode = "seance"; homeKey.style.visibility = "hidden";
   return null;
@@ -630,7 +658,7 @@ onBrief(app, homeKey, () => {
 // (lot « Les leçons » : `start`, l'exercice lancé par « À toi ! » après une leçon, quand la séance du jour est faite)
 async function freeTraining(start = null) {
   mode = "libre"; homeKey.style.visibility = "visible"; sound.startMusic(pickMusic(sonIndex, rnd));
-  const free = new FreeTraining(app, { store, module1, module2, module3, module4, rnd, seance });
+  const free = new FreeTraining(app, { store, module1, module2, module3, module4, module5, rnd, seance });
   app.free = free;
   await (start ? free.start(start) : free.menu());
 }

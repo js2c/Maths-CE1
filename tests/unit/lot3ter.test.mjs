@@ -177,7 +177,7 @@ test("T2, recette : à l'échauffement, jamais 3 fois de suite la même réponse
 
 // ---------------------------------------------------------------- T3 : l'appui long, partout
 const { onBrief } = await import("../../app/js/engine/ui.js");
-const legendes = json("legendes.json"), cartes = json("cartes.json"), m1 = json("module1.json"), m3 = json("module3.json");
+const legendes = json("legendes.json"), cartes = json("cartes.json"), m1 = json("module1.json"), m3 = json("module3.json"), m5 = json("module5.json");
 const brief = (key, o = {}) => {
   const el = new EventTarget(), log = { f: 0, shown: [], hidden: [] };
   onBrief({ legendes }, el, () => log.f++, key, { show: (a, e, t, inMs) => { log.shown.push([t, inMs]); return { t }; }, hide: (e, outMs) => { log.hidden.push(outMs); e.__label = null; }, ...o });
@@ -231,8 +231,8 @@ test("T3, exception : les touches du pavé et les bulles-réponses répondent au
 
 test("T3 : chaque bouton recensé a son étiquette, écrite au feutre (caractères que l'atelier sait tracer)", async () => {
   const { tileLabel } = await import("../../app/js/session/choice.js");
-  const E = legendes.etiquettes, ok = /^[A-Za-z0-9éèêëàâùûîïôçÉÈœ +=\-'!.,?·\u00a0]*$/;
-  for (const k of ["jouer", "choisir", "recif", "album", "ligne", "additions", "calcul", "lecons", "continuer", "encore", "aide", "nsp", "reecouter", "passer", "passerEchauffement", "ouiPasserEchauffement", "rejouer", "effacer", "valider", "maison", "pause", "legende", "fermer", "retourExercices", "validerChoix", "cestBon", "coquillage", "retourner", "carteADecouvrir", ...["facile", "conseille", "dur", "tresdur"].flatMap((c) => [`cran.${c}`, `cranLibre.${c}`])]) assert.ok(E[k]?.length > 3, k);
+  const E = legendes.etiquettes, ok = /^[A-Za-z0-9éèêëàâùûîïôçÉÈœ +=\-'!.,?·×\u00a0]*$/;
+  for (const k of ["jouer", "choisir", "recif", "album", "ligne", "additions", "calcul", "multiplication", "lecons", "tableMultiplication", "continuer", "encore", "aide", "nsp", "reecouter", "passer", "passerEchauffement", "ouiPasserEchauffement", "rejouer", "effacer", "valider", "maison", "pause", "legende", "fermer", "retourExercices", "validerChoix", "cestBon", "coquillage", "retourner", "carteADecouvrir", ...["facile", "conseille", "dur", "tresdur"].flatMap((c) => [`cran.${c}`, `cranLibre.${c}`])]) assert.ok(E[k]?.length > 3, k);
   // les textes de la spécification
   assert.equal(E.aide, "Un indice"); assert.equal(E.nsp, "Je ne sais pas, on regarde ensemble"); assert.equal(E.reecouter, "Réécouter la consigne"); assert.equal(E.passer, "Passer");
   assert.equal(E.passerEchauffement, "Passer l'échauffement"); assert.equal(E.rejouer, "Revoir la leçon"); assert.equal(E.effacer, "Effacer le dernier chiffre"); assert.equal(E.valider, "Valider ma réponse");
@@ -241,11 +241,11 @@ test("T3 : chaque bouton recensé a son étiquette, écrite au feutre (caractèr
   for (const t of Object.values(E)) assert.match(t, ok, t);
   // les tuiles : la ligne de la légende
   assert.equal(tileLabel(legendes, "calcul", "7"), `7 · ${legendes.calcul.find((r) => r.n === 7).travail.replace(/\.$/, "")}`);
-  const all = [...m1.niveaux.map((n) => ["ligne", n.niveau]), ...m2.familles.map((f) => ["additions", f.id]), ...m3.niveaux.map((n) => ["calcul", n.niveau])];
+  const all = [...m1.niveaux.map((n) => ["ligne", n.niveau]), ...m2.familles.map((f) => ["additions", f.id]), ...m3.niveaux.map((n) => ["calcul", n.niveau]), ...m5.niveaux.map((n) => ["multiplication", n.niveau])];
   for (const [ex, k] of all) { const t = tileLabel(legendes, ex, k); assert.ok(t, `${ex} ${k}`); assert.match(t, ok, t); }
   // (lot « Les leçons » : les tuiles du menu des leçons, « 7 · … », et celle de la table d'addition, « + · … »)
   const { tileLabel: lessonLabel } = await import("../../app/js/session/lessons.js");
-  for (const k of [...seance.menuLecons.rangees.flatMap((r) => r.lecons), "+"]) { const t = lessonLabel(legendes, k); assert.ok(t, k); assert.match(t, ok, t); }
+  for (const k of [...seance.menuLecons.rangees.flatMap((r) => r.lecons), "+", "×"]) { const t = lessonLabel(legendes, k); assert.ok(t, k); assert.match(t, ok, t); }
   assert.equal(lessonLabel(legendes, "L10"), `10 · ${legendes.lecons.find((r) => r.n === "L10").travail.replace(/\.$/, "")}`);
   // les onglets de zone et les cartes : leur nom
   for (const z of cartes.zones) assert.match(z.nom, ok, z.nom);

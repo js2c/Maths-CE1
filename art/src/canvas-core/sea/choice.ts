@@ -19,7 +19,7 @@ import { drawAnswerBubble, drawFish } from "./decor";
 import { rrect } from "./treasure";
 import { drawTurtle, TURTLE_REST } from "./turtle";
 import { drawBonusBubble, drawHouseBase, drawHouseFloor, drawHouseRoof, drawTenFrame, HOUSE, TEN_H, TEN_W } from "./aids";
-import { drawJumpArc, drawLine, drawNumber, type LineSpec, RED, tickP } from "./runtime";
+import { drawJumpArc, drawLine, drawNumber, drawWord, type LineSpec, RED, tickP, wordWidth } from "./runtime";
 
 const SH = "#0a3f49", NACRE = "#fffaf0", NACRE_S = "#e3d6bb", SEA = "#35b3c1", GOLD = "#ffd23a";
 // une vignette : plaque de nacre de TILE_W × TILE_H, centrée
@@ -158,27 +158,38 @@ export const drawFamilyTile = (g: Gfx, cx: number, cy: number, fam: number) => {
     g.mark([[cx - TILE_W / 2, cy - TILE_H / 2], [cx + TILE_W / 2, cy + TILE_H / 2]]);
   });
 };
-export const reflet = (g: Gfx, cx: number, cy: number, n: number, bonus: boolean) => {
-  const gap = 34, x0 = cx - ((n - 1) * gap) / 2 - (bonus ? 16 : 0);
+export const reflet = (g: Gfx, cx: number, cy: number, n: number, bonus: boolean, gap = 34) => {
+  const x0 = cx - ((n - 1) * gap) / 2 - (bonus ? (16 * gap) / 34 : 0);
   // le miroir d'eau, puis les poissons au-dessus et leur reflet en dessous (plus pâle)
   ink(g, smooth([[x0 - 22, cy + 1], [cx, cy - 1], [x0 + (n - 1) * gap + 22, cy + 1]], false, 6), "#9fdfe6", { w: 3, shadow: 0, taper: [0.2, 0.2], seed: 5760 });
   for (let i = 0; i < n; i++) {
-    scaled(g, x0 + i * gap, cy - 20, 0.55, () => drawFish(g, 1, 1, i, 0, 0));
-    scaled(g, x0 + i * gap, cy + 22, 0.55, () => drawFish(g, 1, 1, i, 0, 0));
+    scaled(g, x0 + i * gap, cy - 20, (0.55 * gap) / 34, () => drawFish(g, 1, 1, i, 0, 0));
+    scaled(g, x0 + i * gap, cy + 22, (0.55 * gap) / 34, () => drawFish(g, 1, 1, i, 0, 0));
   }
-  if (bonus) scaled(g, x0 + (n - 1) * gap + 40, cy + 22, 0.6, () => drawBonusBubble(g, 0, 0));
+  if (bonus) scaled(g, x0 + (n - 1) * gap + (40 * gap) / 34, cy + 22, (0.6 * Math.max(gap, 28)) / 34, () => drawBonusBubble(g, 0, 0));
 };
 export const house = (g: Gfx, cx: number, cy: number, top: string) => {
   const s = 0.3, y0 = cy - 8;
   scaled(g, cx, y0, s, () => { drawHouseRoof(g, 0, 0); drawHouseFloor(g, 0, 0); drawHouseBase(g, 0, HOUSE.floor); });
   drawNumber(g.cur as CanvasRenderingContext2D, top, cx, y0 - HOUSE.roof * s * 0.5 - 11, 22, { w: 3.6, seed: 5770 });
 };
-export const tenFrame = (g: Gfx, cx: number, cy: number, n: number, k = 0.24) => {
+// (lot « Sommes jusqu'à 30 » : `extra`, des pastilles bleues après les orangées, les poissons du second nombre, comme dans
+// les aides ; `gold` : les pastilles bleues dorées, celles qui sautent compléter la boîte)
+export const tenFrame = (g: Gfx, cx: number, cy: number, n: number, k = 0.24, extra = 0, gold = false) => {
   const x = cx - (TEN_W * k) / 2, y = cy - (TEN_H * k) / 2;
   scaled(g, x, y, k, () => drawTenFrame(g, 0, 0));
   // des poissons dans les premières alvéoles : des pastilles orangées (à cette taille, un poisson ne se lit plus)
-  for (let i = 0; i < n; i++) { const r = Math.floor(i / 5), c = i % 5, px = x + (18 + c * 86 + 38) * k, py = y + (18 + r * 86 + 38) * k; fillShape(g, blob(px, py, 6.5, 5.5, 5780 + i, 0.05, 10), "#ffb13b"); ink(g, blob(px, py, 6.5, 5.5, 5780 + i, 0.05, 10), INK, { w: 1.6, closed: true, shadow: 0.5, seed: 5790 + i }); }
+  for (let i = 0; i < Math.min(10, n + extra); i++) { const r = Math.floor(i / 5), c = i % 5, px = x + (18 + c * 86 + 38) * k, py = y + (18 + r * 86 + 38) * k, col = i < n ? "#ffb13b" : gold ? "#ffe45c" : "#5cb8f0"; fillShape(g, blob(px, py, 6.5, 5.5, 5780 + i, 0.05, 10), col); ink(g, blob(px, py, 6.5, 5.5, 5780 + i, 0.05, 10), INK, { w: 1.6, closed: true, shadow: 0.5, seed: 5790 + i }); }
 };
+// lot « Sommes jusqu'à 30 » : deux boîtes de dix l'une au-dessus de l'autre (le passage de la dizaine) ; la première reçoit
+// `a` pastilles orangées puis les bleues qui la complètent (dorées si `gold`), la seconde le reste des `b` pastilles bleues
+export const twoFrames = (g: Gfx, cx: number, cy: number, a: number, b: number, k = 0.2, gold = false) => {
+  const h = TEN_H * k, fill = Math.min(b, 10 - a);
+  tenFrame(g, cx, cy - h / 2 - 3, a, k, fill, gold);
+  tenFrame(g, cx, cy + h / 2 + 3, 0, k, b - fill);
+};
+// l'exemple écrit d'une vignette, à l'encre des numéros, centré en (cx, cy)
+const famLabel = (g: Gfx, cx: number, cy: number, t: string) => { const em = Math.min(32, 92 / wordWidth(t)); drawWord(g.cur as CanvasRenderingContext2D, t, cx, cy - em / 2, em, { color: INK, w: em * 0.15, seed: 5900 + t.length }); };
 export const FAMILY: Record<number, (g: Gfx, cx: number, cy: number) => void> = {
   // + 1 et + 2 : la tortue sur la corde et son saut « + 1 »
   1: (g, cx, cy) => {
@@ -197,6 +208,18 @@ export const FAMILY: Record<number, (g: Gfx, cx: number, cy: number) => void> = 
     scaled(g, cx + 38, cy - 10, 0.2, () => { drawHouseRoof(g, 0, 0); drawHouseFloor(g, 0, 0); });
     scaled(g, cx - 18, cy + 30, 0.6, () => drawFish(g, 0, 1, 2, 0, 0));
     fillShape(g, blob(cx + 34, cy + 32, 8, 8, 5795, 0.05, 10), "#fff1a8", 0.8);
+  },
+  // lot « Sommes jusqu'à 30 » (docs/maquettes/sommes30/PROPOSITION.md) : les familles de 11 à 30
+  // (relecture du lot : les vignettes 8, 11 et 12 se ressemblaient ; chacune écrit son exemple à droite des boîtes)
+  8: (g, cx, cy) => { twoFrames(g, cx - 46, cy, 10, 4); famLabel(g, cx + 56, cy, "10+4"); }, // dix et quelques : la boîte pleine, quatre de plus
+  9: (g, cx, cy) => reflet(g, cx, cy, 5, false, 26), // les doubles jusqu'à 15 + 15 : cinq poissons et leur reflet (plus que les trois de la famille 2)
+  10: (g, cx, cy) => reflet(g, cx, cy, 4, true, 26), // les presque-doubles jusqu'à 10 : le double et une bulle dorée
+  11: (g, cx, cy) => { twoFrames(g, cx - 46, cy, 9, 4, 0.2, true); famLabel(g, cx + 56, cy, "9+4"); }, // + 9 : neuf, un poisson doré complète la boîte
+  12: (g, cx, cy) => { twoFrames(g, cx - 46, cy, 8, 5, 0.2, true); famLabel(g, cx + 56, cy, "8+5"); }, // passer la dizaine : huit, deux dorés, trois de plus
+  // le grand mélange : les deux boîtes et le reflet
+  13: (g, cx, cy) => {
+    twoFrames(g, cx - 30, cy, 7, 6, 0.16);
+    scaled(g, cx + 42, cy, 0.9, () => reflet(g, 0, 0, 2, false, 26));
   },
 };
 

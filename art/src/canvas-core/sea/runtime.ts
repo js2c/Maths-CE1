@@ -333,9 +333,11 @@ export const drawStonePath = (ctx: CanvasRenderingContext2D, ox: number, oy: num
 // `head` : la largeur de la rangée et de la colonne d'en-tête.
 // `bare` : seulement ce que la case touchée change (ses deux en-têtes, son chemin, elle-même), sur un calque posé par-dessus la
 // grille dessinée une fois : un toucher ne redessine pas les 121 cases.
-export type AddTableSpec = { x: number; y: number; pitch: number; cell: number; head: number; max: number; lit?: [number, number] | null; tint?: boolean; bare?: boolean };
-export const addTableCell = (T: AddTableSpec, a: number, b: number): P => [T.x + T.head + b * T.pitch + T.pitch / 2, T.y + T.head + a * T.pitch + T.pitch / 2];
-export const addTableSize = (T: AddTableSpec) => T.head + (T.max + 1) * T.pitch;
+// (lot « Multiplication » : `op` « × » pour la table de multiplication, les produits dans les cases ; `min`, la première
+// rangée et la première colonne : 1 pour la multiplication, 0 pour l'addition)
+export type AddTableSpec = { x: number; y: number; pitch: number; cell: number; head: number; max: number; min?: number; op?: "+" | "×"; lit?: [number, number] | null; tint?: boolean; bare?: boolean };
+export const addTableCell = (T: AddTableSpec, a: number, b: number): P => [T.x + T.head + (b - (T.min ?? 0)) * T.pitch + T.pitch / 2, T.y + T.head + (a - (T.min ?? 0)) * T.pitch + T.pitch / 2];
+export const addTableSize = (T: AddTableSpec) => T.head + (T.max - (T.min ?? 0) + 1) * T.pitch;
 export const ADD_TINT = { double: "#d4eef2", amis10: "#ffe1d6" };
 export const drawAddTable = (ctx: CanvasRenderingContext2D, T: AddTableSpec) => {
   const g = shim(ctx), S = addTableSize(T), pad = 12, lit = T.lit ?? null, em = T.cell * 0.4, hc = T.head - (T.pitch - T.cell);
@@ -345,26 +347,28 @@ export const drawAddTable = (ctx: CanvasRenderingContext2D, T: AddTableSpec) => 
     cel(g, slab, "#fffaf0", "#e8dcc4", 8, [smooth([[T.x + 10, T.y - 4], [T.x + S * 0.45, T.y - 8], [T.x + S * 0.42, T.y + 2], [T.x + 12, T.y + 6]], true, 5), "#ffffff"]);
     contour(g, slab, 4.2, 8700);
     // le signe, dans la case d'angle
-    drawWord(ctx, "+", T.x + hc / 2, T.y + hc / 2 - em * 0.6, em * 1.2, { color: INK, w: em * 0.2, seed: 8701 });
+    drawWord(ctx, T.op ?? "+", T.x + hc / 2, T.y + hc / 2 - em * 0.6, em * 1.2, { color: INK, w: em * 0.2, seed: 8701 });
   }
   const head = (cx: number, cy: number, w: number, h: number, v: number, on: boolean, seed: number) => {
     const s = rr(cx - w / 2, cy - h / 2, w, h, Math.min(w, h) * 0.24);
     fillShape(g, shiftP2(s, 2, 3), "#0a3f49", 0.25); cel(g, s, on ? "#9fe2ea" : "#2f6d78", on ? "#5fb9c4" : "#21545d", 2.5); contour(g, s, 2.2, seed);
     drawNumber(ctx, String(v), cx, cy - em / 2, v === 10 ? em * 0.86 : em, { color: on ? INK : "#fffaf0", w: em * 0.16, seed: seed + 1 });
   };
-  for (let v = 0; v <= T.max; v++) {
-    const [cx] = addTableCell(T, 0, v), [, cy] = addTableCell(T, v, 0);
+  const lo = T.min ?? 0, mul = T.op === "×";
+  for (let v = lo; v <= T.max; v++) {
+    const [cx] = addTableCell(T, lo, v), [, cy] = addTableCell(T, v, lo);
     if (!T.bare || (lit && lit[1] === v)) head(cx, T.y + hc / 2, T.cell, hc, v, !!lit && lit[1] === v, 8710 + v * 3);
     if (!T.bare || (lit && lit[0] === v)) head(T.x + hc / 2, cy, hc, T.cell, v, !!lit && lit[0] === v, 8760 + v * 3);
   }
-  for (let a = 0; a <= T.max; a++) for (let b = 0; b <= T.max; b++) {
+  for (let a = lo; a <= T.max; a++) for (let b = lo; b <= T.max; b++) {
     const [cx, cy] = addTableCell(T, a, b), s = rr(cx - T.cell / 2, cy - T.cell / 2, T.cell, T.cell, T.cell * 0.22);
     const on = !!lit && lit[0] === a && lit[1] === b, path = !!lit && ((a === lit[0] && b < lit[1]) || (b === lit[1] && a < lit[0]));
     if (T.bare && !on && !path) continue;
-    const fill = on ? "#ffe45c" : path ? "#fff1b0" : T.tint && a === b ? ADD_TINT.double : T.tint && a + b === 10 ? ADD_TINT.amis10 : "#fff8ee";
+    // (la multiplication : seulement la diagonale teintée, les carrés, 3 × 3 ; pas d'amis de 10)
+    const fill = on ? "#ffe45c" : path ? "#fff1b0" : T.tint && a === b ? ADD_TINT.double : T.tint && !mul && a + b === 10 ? ADD_TINT.amis10 : "#fff8ee";
     fillShape(g, shiftP2(s, -1.5, -1.5), "#c9b48f", 0.45); fillShape(g, s, fill);
     ink(g, s, on ? "#e0a21c" : "#dcc9ab", { w: on ? 2.6 : 1.4, closed: true, shadow: 0.4, seed: 8820 + a * 11 + b });
-    const t = String(a + b);
-    drawNumber(ctx, t, cx, cy - em / 2, t.length > 1 ? em * 0.9 : em, { color: INK, w: em * 0.15, seed: 9000 + a * 11 + b });
+    const t = String(mul ? a * b : a + b), e2 = t.length > 2 ? em * 0.72 : t.length > 1 ? em * 0.9 : em;
+    drawNumber(ctx, t, cx, cy - (mul ? e2 : em) / 2, e2, { color: INK, w: em * 0.15, seed: 9000 + a * 11 + b });
   }
 };

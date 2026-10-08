@@ -166,12 +166,12 @@ test("export : le cran choisi, le cran à la fin et les descentes de chaque séa
 const M2 = JSON.parse(readFileSync(new URL("../../app/content/module2.json", import.meta.url)));
 const fait = (k, boite, hist = []) => { const [a, b] = k.split("+").map(Number); return { fait: k, a, b, boite, historique: hist, tempsMedian: hist.filter((x) => x.juste).map((x) => x.ms).sort((p, q) => p - q)[0] ?? null, prochain: at(2026, 10, 9) }; };
 
-test("grille des additions : 11 × 11, 45 faits colorés par boîte et rapidité, 21 cases « + 0 » avec le temps de base, le reste hors grille", () => {
+test("grille des additions : 11 × 11, 100 faits colorés par boîte et rapidité (45 jusqu'à 10, 55 au-delà depuis le lot « Sommes jusqu'à 30 »), 21 cases « + 0 » avec le temps de base", () => {
   const faits = [fait("3+4", 3, [{ t: at(2026, 10, 1), juste: true, ms: 1500, boite: 2, apres: 3 }]), fait("2+2", 1, [{ t: at(2026, 10, 1), juste: false, ms: 9000, boite: 2, apres: 1 }, { t: at(2026, 10, 2), juste: true, ms: 9000, boite: 1, apres: 1 }]), fait("5+5", 3, [{ t: at(2026, 10, 1), parent: true, boite: null, apres: 3 }])];
   const reps = [{ forme: "base", question: "4 + 0", juste: true, tempsMs: 1800 }, { forme: "base", question: "4 + 0", juste: true, tempsMs: 2200 }, { forme: "base", question: "0 + 7", juste: false, tempsMs: 900 }];
   const G = D.additionGrid(faits, reps, { c: M2, baseMs: 2000 }), cells = G.flat();
   assert.equal(G.length, 11); assert.ok(G.every((r) => r.length === 11));
-  assert.equal(cells.filter((x) => x.kind === "fait").length, 45); assert.equal(cells.filter((x) => x.kind === "base").length, 21); assert.equal(cells.filter((x) => x.kind === "hors").length, 55);
+  assert.equal(cells.filter((x) => x.kind === "fait").length, 100); assert.equal(cells.filter((x) => x.kind === "base").length, 21); assert.equal(cells.filter((x) => x.kind === "hors").length, 0);
   assert.deepEqual([G[3][4].boite, G[3][4].rapide], [3, true]);
   assert.deepEqual([G[2][2].boite, G[2][2].rapide, G[2][2].erreurs, G[2][2].passages], [1, false, 1, 2]);
   assert.deepEqual([G[5][5].erreurs, G[5][5].passages], [0, 0]); // le point de départ du parent n'est ni un passage ni une erreur
@@ -184,7 +184,7 @@ test("familles du module 2 pour le parent : ouverte, acquise, formes à trou, fa
   const st = { module: 2, ouvertes: [1, 2, 3], ouvertures: [{ famille: 1, date: 0 }, { famille: 2, date: 0 }, { famille: 3, date: at(2026, 10, 3), parent: true }], acquises: [2], obtenus: [{ famille: 2, date: at(2026, 10, 2) }], trou: [2], notion: [], lecons: [] };
   const faits = ["1+1", "2+2", "3+3", "4+4", "5+5"].map((k) => fait(k, 3));
   const S = D.familiesSummary(M2, st, faits), f = (id) => S.familles.find((x) => x.id === id);
-  assert.equal(S.enCours, 1); assert.equal(S.familles.length, 7);
+  assert.equal(S.enCours, 1); assert.equal(S.familles.length, M2.familles.length); // (lot « Sommes jusqu'à 30 » : 14 familles)
   assert.deepEqual([f(2).acquise, f(2).trou, f(2).bienSus, f(2).total], [true, true, 5, 5]);
   assert.deepEqual([f(3).ouverte, f(3).ouverteParent, f(3).bienSus], [true, true, 1]); // 5 + 5 est aussi un ami de 10
   assert.equal(f(4).ouverte, false);

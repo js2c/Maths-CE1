@@ -117,7 +117,8 @@ export function factsSummary(faits) {
 
 // ---------------------------------------------------------------- module 2 (lot 2, étape 7)
 // LA GRILLE DES ADDITIONS (docs/SPEC.md, tableau de bord 3 ; docs/SPEC-LOT2.md, section 7) : un tableau 11 × 11,
-// a en ligne (0 à 10), b en colonne ; les cases a + b ≤ 10. Les 45 faits (a, b de 1 à 9) sont colorés selon
+// a en ligne (0 à 10), b en colonne ; les cases a + b ≤ 10, et, depuis le lot « Sommes jusqu'à 30 », toutes les cases des
+// faits du catalogue (jusqu'à 10 + 10). Les faits sont colorés selon
 // leur boîte et leur rapidité (temps médian des réponses justes sous le seuil « rapide ») ; les 21 cases « + 0 »
 // montrent seulement le temps de base (le temps médian des réponses à cette question triviale), en gris.
 // Chaque case : { a, b, kind: "fait" | "base" | "hors", fait?, boite (0 : pas encore rencontré), rapide,
@@ -128,8 +129,9 @@ export function additionGrid(faits, reponses, { c, baseMs = null } = {}) {
   for (const r of reponses) if (r.forme === "base" && r.juste && typeof r.tempsMs === "number") { const k = r.question.replace(/\s/g, ""); (base.get(k) ?? base.set(k, []).get(k)).push(r.tempsMs); }
   const known = new Set(c ? catalog(c).map((f) => f.fait) : []);
   return Array.from({ length: 11 }, (_, a) => Array.from({ length: 11 }, (_, b) => {
-    if (a + b > 10) return { a, b, kind: "hors" };
+    // (lot « Sommes jusqu'à 30 » : les faits au-delà de 10, jusqu'à 10 + 10, ont leur case comme les autres)
     const k = `${a}+${b}`;
+    if (a + b > 10 && !(known.has(k) && a && b)) return { a, b, kind: "hors" };
     if (!a || !b) return { a, b, kind: "base", tempsMedian: median(base.get(k) ?? []) };
     const f = by.get(k), hist = f?.historique ?? [];
     return { a, b, kind: "fait", fait: k, catalogue: !c || known.has(k), boite: f?.boite ?? 0, tempsMedian: f?.tempsMedian ?? null, rapide: f?.tempsMedian != null && limit != null && f.tempsMedian < limit, passages: hist.filter((h) => !h.parent).length, erreurs: hist.filter((h) => !h.juste && !h.parent).length };
@@ -195,7 +197,7 @@ export const SESSION_COLUMNS = [
   ["leçons", (s) => (s.lecons ?? []).map((l) => `${l.id}${l.vue ? "" : l.passee ? " (passée)" : " (arrêtée)"}`).join(" ")], ["cartes", (s) => (s.cartes ?? []).join(" ")],
   ["entraînement libre", (s) => !!s.libre], ["pauses", (s) => s.pauses ?? 0],
   ["cran choisi", (s) => (s.cranDepart ? CRAN_NAMES[s.cranDepart] : null)], ["cran à la fin", (s) => (s.cran ? CRAN_NAMES[s.cran] : null)], ["descentes de cran", (s) => (s.descentes ?? []).length],
-  ["famille du jour (additions)", (s) => s.famille ?? null], ["exercice choisi par l'enfant", (s) => (s.leconChoisie ? `leçon ${s.lecons?.[0]?.id ?? ""}` : s.choix ? (s.choix.module === 1 ? `ligne, niveau ${s.choix.niveau}` : s.choix.module === 3 ? `calcul rapide, niveau ${s.choix.niveau}` : s.choix.module === 4 ? `voiliers, niveau ${s.choix.niveau}` : `additions, famille ${s.choix.famille}`) : null)], ["échauffement passé", (s) => (s.echauffementPasse ? true : null)], ["défi : bonnes réponses", (s) => s.defi?.score ?? null], ["défi : nouveau record", (s) => (s.defi ? !!s.defi.nouveauRecord : null)],
+  ["famille du jour (additions)", (s) => s.famille ?? null], ["exercice choisi par l'enfant", (s) => (s.leconChoisie ? `leçon ${s.lecons?.[0]?.id ?? ""}` : s.choix ? (s.choix.module === 1 ? `ligne, niveau ${s.choix.niveau}` : s.choix.module === 3 ? `calcul rapide, niveau ${s.choix.niveau}` : s.choix.module === 4 ? `voiliers, niveau ${s.choix.niveau}` : s.choix.module === 5 ? `multiplication, niveau ${s.choix.niveau}` : `additions, famille ${s.choix.famille}`) : null)], ["échauffement passé", (s) => (s.echauffementPasse ? true : null)], ["défi : bonnes réponses", (s) => s.defi?.score ?? null], ["défi : nouveau record", (s) => (s.defi ? !!s.defi.nouveauRecord : null)],
   ["étapes", (s) => (s.etapes ?? []).map((e) => (e.sautee ? `${e.id} (sautée)` : `${e.id} ${e.dureeS ?? ""}s`)).join(" | ")],
 ];
 export const ANSWER_COLUMNS = [

@@ -1,5 +1,5 @@
 {
- "version": "079a48360adb",
+ "version": "46be07faf237",
  "files": [
   "./",
   "assets/art/aides@1x.webp",
@@ -8756,6 +8756,7 @@
   "content/module2.json",
   "content/module3.json",
   "content/module4.json",
+  "content/module5.json",
   "content/parent.json",
   "content/seance.json",
   "content/son.json",
@@ -8802,6 +8803,9 @@
   "js/modules/facts/screen.js",
   "js/modules/facts/warmup.js",
   "js/modules/facts/warmupskip.js",
+  "js/modules/mult/mult.js",
+  "js/modules/mult/runner.js",
+  "js/modules/mult/screen.js",
   "js/modules/numberline/dictation.js",
   "js/modules/numberline/generator.js",
   "js/modules/numberline/runner.js",

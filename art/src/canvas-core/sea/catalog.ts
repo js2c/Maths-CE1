@@ -14,6 +14,7 @@ import { DEFI_N, drawRecordFlag, drawScorePearl, drawStepChallenge, drawTimerBub
 import { drawHermit, HERMIT_CLIPS, HERMIT_FPS, HERMIT_REST } from "./hermit";
 import { drawBonusBubble, drawCellGlow, drawHouseBase, drawHouseFloor, drawHouseRoof, drawTenFrame, HOUSE, TEN, TEN_H, TEN_W, tenCell } from "./aids";
 import { drawCalcTile, drawExerciseCalc, drawStepCalc, drawWallFish, WALL_FISH_N } from "./calc";
+import { drawExerciseMult, drawMultTile, drawStepMult } from "./mult";
 import { drawExerciseVoiliers, drawStepVoiliers, drawVoiliersTile } from "./voiliers";
 import { GLOW_PAD, drawChooseKey, drawExerciseLine, drawFamilyTile, drawLineTile, drawTileGlow, TILE_H, TILE_W } from "./choice";
 import { ATOI_R, drawAToiKey, drawBigHomeKey, drawLessonMenuTile, drawLessonsKey, drawRowIcon, drawTableTile, HOME_BIG_S, LESSON_ATOI, LESSON_IDS } from "./lecons";
@@ -147,7 +148,7 @@ export const SPECS: Spec[] = [
   { name: "choisir", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawChooseKey(g, 90, 90) },
   { name: "choix.ex.ligne", sheet: "choix", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawExerciseLine(g, 90, 90) },
   ...Array.from({ length: 13 }, (_, i): Spec => ({ name: `choix.ligne.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawLineTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
-  ...Array.from({ length: 7 }, (_, i): Spec => ({ name: `choix.famille.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawFamilyTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
+  ...Array.from({ length: 13 }, (_, i): Spec => ({ name: `choix.famille.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawFamilyTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
   { name: "choix.lueur", sheet: "choix", W: TILE_W + 2 * GLOW_PAD + 12, H: TILE_H + 2 * GLOW_PAD + 12, origin: [TILE_W / 2 + GLOW_PAD + 6, TILE_H / 2 + GLOW_PAD + 6], frames: 1, draw: (g) => drawTileGlow(g, TILE_W / 2 + GLOW_PAD + 6, TILE_H / 2 + GLOW_PAD + 6) },
   // lot 3, étape 3 : le calcul rapide. Le pictogramme de l'écran « choisir » et les neuf plaques de niveaux (planche
   // « choix ») ; celui de la frise (« petits », comme les autres étapes) ; le petit poisson jaune du mur de corail,
@@ -160,6 +161,10 @@ export const SPECS: Spec[] = [
   { name: "choix.ex.voiliers", sheet: "choix", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawExerciseVoiliers(g, 90, 90) },
   ...Array.from({ length: 9 }, (_, i): Spec => ({ name: `choix.voiliers.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawVoiliersTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
   { name: "frise.voiliers", sheet: "petits", W: 2 * STEP_R + 24, H: 2 * STEP_R + 24, origin: [STEP_R + 10, STEP_R + 10], frames: 1, draw: (g) => drawStepVoiliers(g, STEP_R + 10, STEP_R + 10) },
+  // lot « Multiplication » (sea/mult.ts) : le pictogramme de l'exercice, les neuf plaques de niveaux, l'étape de la frise
+  { name: "choix.ex.multiplication", sheet: "choix", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawExerciseMult(g, 90, 90) },
+  ...Array.from({ length: 9 }, (_, i): Spec => ({ name: `choix.multiplication.${i + 1}`, sheet: "choix", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawMultTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, i + 1) })),
+  { name: "frise.multiplication", sheet: "petits", W: 2 * STEP_R + 24, H: 2 * STEP_R + 24, origin: [STEP_R + 10, STEP_R + 10], frames: 1, draw: (g) => drawStepMult(g, STEP_R + 10, STEP_R + 10) },
   ...([1, -1] as const).map((dir): Spec => ({ name: `mur.poisson.${dir > 0 ? "d" : "g"}`, sheet: "calcul", W: 80, H: 60, origin: [40, 30], frames: WALL_FISH_N, fps: 12, loop: [0, WALL_FISH_N], draw: (g, f) => drawWallFish(g, f, 40, 30, dir, 40) })),
   // lot 3 bis, partie B (docs/SPEC-LOT3BIS.md, B8 ; sea/lot3bis.ts, sea/reefdecor.ts). Sur « petits » (toujours chargée) : le
   // bouton de la légende et la croix du panneau, la traînée d'une étoile arc-en-ciel qui vole (ancrage : la tête), le filet
@@ -184,7 +189,8 @@ export const SPECS: Spec[] = [
   { name: "accueil.lecons", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawLessonsKey(g, 90, 90) },
   ...LESSON_IDS.map((id): Spec => ({ name: `lecons.tuile.${id}`, sheet: "lecons", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawLessonMenuTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, id) })),
   { name: "lecons.table.plus", sheet: "lecons", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawTableTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, "+") },
-  ...(["ligne", "additions", "calcul"] as const).map((ex): Spec => ({ name: `lecons.rangee.${ex}`, sheet: "lecons", W: 110, H: 90, origin: [55, 45], frames: 1, draw: (g) => drawRowIcon(g, 55, 45, ex) })),
+  { name: "lecons.table.fois", sheet: "lecons", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawTableTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, "×") },
+  ...(["ligne", "additions", "calcul", "multiplication"] as const).map((ex): Spec => ({ name: `lecons.rangee.${ex}`, sheet: "lecons", W: 110, H: 90, origin: [55, 45], frames: 1, draw: (g) => drawRowIcon(g, 55, 45, ex) })),
   ...LESSON_IDS.map((id): Spec => { const R = ATOI_R + 26; return { name: `lecons.atoi.${id}`, sheet: "lecons-atoi", W: 2 * R + 20, H: 2 * R + 20, origin: [R, R], frames: 1, draw: (g) => drawAToiKey(g, R, R, LESSON_ATOI[id].ex, LESSON_ATOI[id].niveau) }; }),
   { name: "maison.grande", sheet: "lecons-atoi", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawBigHomeKey(g, 90, 90), meta: { s: HOME_BIG_S } },
 ];

@@ -204,7 +204,7 @@ if (part("appui")) {
       for (const k of keys) await probe(page, `niveaux ${ex}`, `.choix-tuile[data-key="${k}"]`, k, { shot: (ex === "calcul" && k === "7") || (ex === "ligne" && k === "1") });
       await probe(page, `niveaux ${ex}`, ".legende", "légende", { brief: async (p) => !!(await p.evaluate(() => window.__app.legendOpen)) });
       await probe(page, `niveaux ${ex}`, ".legende-fermer", "fermer la légende", { brief: async (p) => !(await p.evaluate(() => window.__app.legendOpen)) });
-      await probe(page, `niveaux ${ex}`, ".choix-retour", "retour aux exercices", { brief: async (p) => (await p.locator(".choix-ex").count()) === 4 });
+      await probe(page, `niveaux ${ex}`, ".choix-retour", "retour aux exercices", { brief: async (p) => (await p.locator(".choix-ex").count()) === 5 }); // (lot « Multiplication » : cinq exercices)
       await page.waitForTimeout(300);
     }
     // une tuile : toucher bref, lancée (la ligne, niveau 3), puis le sélecteur de difficulté

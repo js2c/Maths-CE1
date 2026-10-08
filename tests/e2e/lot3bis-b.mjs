@@ -337,7 +337,7 @@ if (want("parent")) {
   check(!sig3.length, `détail des ${n} séances : les erreurs en phrases, sans code (${sig3.slice(0, 5).join(", ") || "aucun code"})`);
   await page.click('.pa-tabs button:has-text("Données et réglages")'); await page.waitForTimeout(600);
   const txt2 = await page.evaluate(() => document.body.innerText);
-  check(!/l'une des deux|SPEC/.test(txt2) && /l'un des quatre exercices, voiliers compris/.test(txt2), "réglages : « imposer l'un des quatre exercices, voiliers compris » (lot « Les voiliers »)");
+  check(!/l'une des deux|SPEC/.test(txt2) && /l'un des cinq exercices, voiliers et multiplication compris/.test(txt2), "réglages : « imposer l'un des cinq exercices, voiliers et multiplication compris » (lots « Les voiliers » et « Multiplication »)");
   check(!errors.length, `parent : aucune erreur (${errors.join(" | ")})`); await context.close();
 }
 

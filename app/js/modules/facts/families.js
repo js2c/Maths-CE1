@@ -52,12 +52,25 @@ export function isAcquired(c, faits, id, { parent = false } = {}) {
 // est-elle atteinte ?
 export const openingsOfDay = (c, st, now) => (st.ouvertures ?? []).filter((o) => !c.famillesActives.includes(o.famille) && startOfDay(o.date) === startOfDay(now));
 export const openedToday = (c, st, now) => openingsOfDay(c, st, now).length >= (cfgOf(c).ouverture.parJour ?? 1);
+// lot « Sommes jusqu'à 30 » (docs/maquettes/sommes30/PROPOSITION.md, simulation) : à partir de la famille `derniere.aPartirDe` (9),
+// la suivante ne s'ouvre que si les faits nouveaux de la dernière famille ouverte qui en apporte (la famille 8 pour ouvrir la 9)
+// sont introduits et en boîte `derniere.boite` (2) ou plus pour `derniere.part` (80 %) d'entre eux. Sans elle, les 45 faits
+// jusqu'à 10, déjà sus, suffisaient à la règle des 80 % : une famille nouvelle s'ouvrait toutes les deux séances, la
+// précédente à peine commencée (simulation de l'année, profil de l'évaluation : familles 8 à 14 ouvertes de la séance 11 à 24).
+export function lastFamilyReady(c, st, faits, nextId) {
+  const k = cfgOf(c).ouverture.derniere;
+  if (!k || nextId < (k.aPartirDe ?? Infinity)) return true;
+  const cat = catalog(c), withFacts = c.familles.filter((f) => st.ouvertes.includes(f.id) && f.id < nextId && cat.some((x) => x.famille === f.id)), last = withFacts.at(-1);
+  if (!last) return true;
+  const own = cat.filter((x) => x.famille === last.id), m = byKey(faits);
+  return own.filter((x) => (m.get(x.fait)?.boite ?? 0) >= k.boite).length >= k.part * own.length - 1e-9;
+}
 // la famille suivante peut-elle s'ouvrir ? (80 % des faits introduits en boîte 2 ou plus)
 export function canOpenNext(c, st, faits) {
   const next = c.familles.find((f) => !st.ouvertes.includes(f.id));
   if (!next) return null;
   const k = cfgOf(c).ouverture, met = faits.filter((f) => f.boite);
-  return met.length && met.filter((f) => f.boite >= k.boite).length >= k.part * met.length - 1e-9 ? next.id : null;
+  return met.length && met.filter((f) => f.boite >= k.boite).length >= k.part * met.length - 1e-9 && lastFamilyReady(c, st, faits, next.id) ? next.id : null;
 }
 // met l'état à jour ; renvoie { st, events } : { type: "ouverte" | "acquise" | "trou", famille, parent? }
 // `parent` : un changement dû au point de départ du parent (noté comme tel, ne rapporte rien)
@@ -98,7 +111,7 @@ export function warmupOpening(c, st, faits, reponses, now, { limitMs = Infinity 
   const cat = catalog(c), famOf = new Map(cat.map((f) => [f.fait, f.famille])), open = cat.filter((f) => st.ouvertes.includes(f.famille));
   const by = byKey(faits), met = open.filter((f) => by.get(f.fait)?.boite);
   const part = open.length ? met.filter((f) => by.get(f.fait).boite >= K.boite).length / open.length : 0;
-  const c1 = met.length === open.length && part >= K.part - 1e-9;
+  const c1 = met.length === open.length && part >= K.part - 1e-9 && (!next || lastFamilyReady(c, st, faits, next.id));
   const last = reponses.filter((r) => isWarmupAnswer(r) && st.ouvertes.includes(famOf.get(answerFact(r)))).sort((x, y) => x.t - y.t).slice(-K.dernieres);
   const justes = last.length ? last.filter((r) => r.juste && !r.aide).length / last.length : 0, med = median(last.map((r) => r.tempsMs)) ?? Infinity;
   const c2 = last.length >= K.dernieres && justes >= K.justes - 1e-9 && med < limitMs;

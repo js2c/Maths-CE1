@@ -24,13 +24,14 @@ import { onTap, spriteBox } from "../session/screens.js";
 import { skipKey } from "../engine/ui.js";
 import { wait } from "../engine/clock.js";
 import { Hermit } from "../engine/hermit.js";
-import { AidBoard, num, paintHouse, paintHundreds, paintTenFrame, put, putScaled } from "../modules/facts/aids.js";
+import { AidBoard, num, paintHouse, paintHundreds, paintTenFrame, paintTwoFrames, put, putScaled } from "../modules/facts/aids.js";
 import { WallFish } from "../modules/calc/wallfish.js";
+import { paintRows, ROWS_BIG } from "../modules/mult/screen.js";
 
 const ABORT = Symbol("leçon interrompue");
 const REPLAY_AT = [1205, 372]; // (lot 3 bis, R23 : sous « passer », plus à la place de « je ne sais pas »)
 const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };
-const EMPTY = () => ({ miroir: null, cadre: null, maison: null, ecrit: null, filet: false, chalut: null, compteur: null, chaluts: null, nombre: null, mur: null, ligne: null, arcs: [] });
+const EMPTY = () => ({ miroir: null, cadre: null, cadres: null, rangees: null, maison: null, ecrit: null, filet: false, chalut: null, compteur: null, chaluts: null, nombre: null, mur: null, ligne: null, arcs: [] });
 // lot 3 : le mur de corail et la ligne des leçons L7 à L9
 // (lot 3 bis, R18 : la ligne s'arrête avant « rejouer », qui coupait le dernier nombre)
 export const LESSON_WALL = { x: 580, y: 150, cell: 42, gap: 3 }, LESSON_LINE = { x0: 330, x1: 1040, y: 610 };
@@ -43,7 +44,8 @@ export class Lesson2Player {
     if (!lesson) return { vue: false };
     app.facts?.show(false);
     this.guide = lesson.module === 2; // le bernard-l'ermite est le guide du module 2 seulement
-    await Promise.all(this.guide ? [app.sprites.load("ermite"), app.sprites.load("aides")] : lesson.module === 3 ? [app.sprites.load("calcul"), app.sprites.load("aides")] : [app.sprites.load("centaines"), app.sprites.load("aides")]);
+    // (lot « Multiplication » : L13 et L14, module 5, les rangées de poissons des aides, sans personnage guide)
+    await Promise.all(this.guide ? [app.sprites.load("ermite"), app.sprites.load("aides")] : lesson.module === 3 ? [app.sprites.load("calcul"), app.sprites.load("aides")] : lesson.module === 5 ? [app.sprites.load("aides")] : [app.sprites.load("centaines"), app.sprites.load("aides")]);
     if (lesson.module === 3) this.fish ??= new WallFish(app);
     this.own = false; this.h = null; this.back = null;
     if (this.guide) {
@@ -133,6 +135,15 @@ export class Lesson2Player {
     if (name === "ecrire") { st.ecrit = v; return this.paint(); }
     if (name === "defiler") { for (const [x, y] of v) { st.ecrit = `${x} + ${y} = ${x + y}`; this.paint(); await wait(950); } return; }
     if (name === "cadre") { st.cadre = { n: 0, extra: 0, lueur: [], ...v }; st.miroir = null; return this.paint(); }
+    // lot « Multiplication » (L13, L14) : les rangées de poissons, comptées une à une ; l'image qui tourne
+    if (name === "rangees") { st.rangees = { lit: 0, ...v }; st.cadre = null; st.cadres = null; return this.paint(); }
+    if (name === "compter") { const r = st.rangees; if (!r) return; r.lit = 0; while (r.lit < Math.min(v, r.a)) { await wait(r.lit ? 620 : 250); r.lit++; this.paint(); this.app.sound?.play("bouton"); } return; }
+    if (name === "tourner") { const r = st.rangees; if (!r) return; st.rangees = null; this.paint(); await wait(350); st.rangees = { a: r.b, b: r.a, lit: 0 }; this.app.sound?.play("bouton"); return this.paint(); }
+    // lot « Sommes jusqu'à 30 » (L11, L12) : deux boîtes de dix ; les poissons entrent, puis sautent compléter la première
+    if (name === "cadres") { st.cadres = { a: 0, b: 0, moved: 0, lueur: [], ...v }; st.cadre = null; st.miroir = null; st.maison = null; return this.paint(); }
+    if (name === "entrer" && st.cadres) { const c = st.cadres; while (c.a < v) { c.a++; this.paint(); this.app.sound?.play("bouton"); await wait(220); } return; }
+    if (name === "entrerB") { const c = st.cadres ?? (st.cadres = { a: 0, b: 0, moved: 0, lueur: [] }); while (c.b < v) { c.b++; this.paint(); this.app.sound?.play("bouton"); await wait(260); } return; }
+    if (name === "sauter") { const c = st.cadres; if (!c) return; c.lueur = []; while (c.moved < v) { c.moved++; this.paint(); this.app.sound?.play("bouton"); await wait(520); } return; }
     if (name === "entrer") { const c = st.cadre ?? (st.cadre = { n: 0, extra: 0, lueur: [] }); while (c.n < v) { c.n++; this.paint(); this.app.sound?.play("bouton"); await wait(260); } return; }
     if (name === "maison") { st.maison = v; st.miroir = null; st.cadre = null; return this.paint(); }
   }
@@ -146,6 +157,8 @@ export class Lesson2Player {
       if (st.miroir) paintMirror(ctx, sprites, st.miroir, 700, 470);
       if (st.cadre) paintTenFrame(ctx, sprites, 700 - 228, 400, { n: st.cadre.n, extra: st.cadre.extra ?? 0, glow: st.cadre.lueur ?? [] });
       if (st.maison) paintHouse(ctx, sprites, 700, 400, st.maison.total, st.maison.etages ?? []);
+      if (st.rangees) paintRows(ctx, sprites, st.rangees.a, st.rangees.b, ROWS_BIG, { lit: st.rangees.lit, totals: true });
+      if (st.cadres) paintTwoFrames(ctx, sprites, 700 - 228, 340, { first: st.cadres.a, second: st.cadres.b, moved: st.cadres.moved, glow: st.cadres.lueur ?? [] });
       // lot 3 : le mur de corail, la ligne de L9 (et ses arcs)
       if (st.mur) R.drawWall(ctx, { ...LESSON_WALL, lit: st.mur.lit, split: st.mur.split, upTo: st.mur.upTo });
       if (st.ligne) { const L = this.lineSpec(); R.drawLine(ctx, L); for (const [a, b, label] of st.arcs) R.drawJumpArc(ctx, R.tickP(L, a - st.ligne.min), R.tickP(L, b - st.ligne.min), 1, { label: label ?? "+1" }); }

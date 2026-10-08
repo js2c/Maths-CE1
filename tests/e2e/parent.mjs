@@ -104,7 +104,7 @@ await page.locator(".pa-main").evaluate((m) => { m.scrollTop = 420; }); await pa
 await page.locator(".pa-main").evaluate((m) => { m.scrollTop = m.scrollHeight; }); await page.waitForTimeout(150); await shot("10-progression-fin");
 // lot 2, étape 7 : la grille des additions (toucher une case montre son historique), le défi record
 await page.waitForSelector(".pa-grid");
-check(await page.locator(".pa-grid td:not(.hors)").count() === 66 && await page.locator(".pa-grid td.base").count() === 21, "grille des additions : 66 cases dont 21 « + 0 »");
+check(await page.locator(".pa-grid td:not(.hors)").count() === 121 && await page.locator(".pa-grid td.base").count() === 21, "grille des additions : 121 cases dont 21 « + 0 » (lot « Sommes jusqu'à 30 » : jusqu'à 10 + 10)");
 await page.locator(".pa-grid td.b5").first().dispatchEvent("pointerdown"); await page.waitForTimeout(150);
 check((await page.locator(".pa-grid-info").textContent()).includes("boîte 5"), "toucher une case de la grille montre son historique");
 await page.locator(".pa-grid").scrollIntoViewIfNeeded(); await page.locator(".pa-main").evaluate((m) => { m.scrollTop -= 120; }); await page.waitForTimeout(150); await shot("9b-grille");

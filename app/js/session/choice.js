@@ -1,5 +1,5 @@
 // L'ÉCRAN « CHOISIR » (lot 3, docs/SPEC-LOT3.md, section 2) : l'enfant choisit l'exercice, puis le niveau (ligne
-// graduée : les 13 niveaux ; additions : les 7 familles ; calcul rapide et voiliers : 9 niveaux). (Lot « Les leçons » : les
+// graduée : les 13 niveaux ; additions : les 13 familles (7 avant le lot « Sommes jusqu'à 30 ») ; calcul rapide et voiliers : 9 niveaux). (Lot « Les leçons » : les
 // leçons n'y sont plus ; elles ont leur bulle à l'accueil, session/lessons.js.) Tout est accessible, même
 // ce qui n'a jamais été atteint. Sans texte à lire : des pictogrammes et des vignettes de l'atelier
 // (art/src/canvas-core/sea/choice.ts, planche « choix », chargée le temps du choix) ; toucher une image dit son nom et
@@ -14,6 +14,7 @@ import { onBrief, pop, spriteBox } from "../engine/ui.js";
 import { closeLegend, legendKey } from "./legend.js";
 import { currentFamily, initialFamilies, ruleShare } from "../modules/facts/families.js";
 import { initialCalcState, recommended } from "../modules/calc/runner.js";
+import { initialMultState, recommendedMult } from "../modules/mult/runner.js";
 
 // (lot 3 bis, B1 : plaques de 150 × 136 numérotées, en 4 colonnes de x 496 à 1084, entre les bras de la pieuvre et les
 // algues de droite ; le calcul rapide : ses neuf plaques sur le chemin de cailloux, CALC_AT = le centre de la plaque 1)
@@ -25,15 +26,22 @@ export const EXERCISES = [
   { id: "additions", sprite: "libre.faits", module: 2 },
   { id: "calcul", sprite: "choix.ex.calcul", module: 3 },
   { id: "voiliers", sprite: "choix.ex.voiliers", module: 4 },
+  { id: "multiplication", sprite: "choix.ex.multiplication", module: 5 },
 ];
-// (lot « Les voiliers » : les exercices sur une rangée, entre la tête de la mascotte et le bord droit)
-export const EX_PITCH = 190, EX_CX = 780;
+// (lot « Les voiliers » : les exercices sur une rangée, entre la tête de la mascotte et le bord droit ; lot « Multiplication » :
+// cinq exercices, l'écart resserré de 190 à 172 px)
+export const EX_PITCH = 172, EX_CX = 800;
 
 // les vignettes de l'étape « niveau » d'un exercice : { key, sprite, conseille, valide }
 // st1 : l'état du module 1 (magasin « niveaux », clé 1) ; st2 : celui du module 2 ; module1, module2 : le contenu
 // (lot 3, étape 4 : st3, module3 : le calcul rapide, ses 9 niveaux ; conseillé : `recommended`, validés : les acquis)
 // (lot « Les voiliers » : st4, module4 : ses 9 niveaux ; conseillé : le niveau atteint, validés : ceux d'avant)
-export function levelItems(ex, { st1 = null, st2 = null, st3 = null, st4 = null, module1, module2, module3 = null, module4 = null, familyShare = () => 0 }) {
+// (lot « Multiplication » : st5, module5 : ses 9 niveaux ; conseillé : `recommendedMult`, validés : les acquis)
+export function levelItems(ex, { st1 = null, st2 = null, st3 = null, st4 = null, st5 = null, module1, module2, module3 = null, module4 = null, module5 = null, familyShare = () => 0 }) {
+  if (ex === "multiplication") {
+    const st = st5 ?? initialMultState(), cur = recommendedMult(module5, st);
+    return module5.niveaux.map((c) => ({ key: c.niveau, sprite: `choix.multiplication.${c.niveau}`, conseille: c.niveau === cur, valide: (st.acquis ?? []).includes(c.niveau) }));
+  }
   if (ex === "voiliers") {
     const n = module4.niveaux.length, cur = Math.min(n, st4?.niveau ?? 1);
     return module4.niveaux.map((c) => ({ key: c.niveau, sprite: `choix.voiliers.${c.niveau}`, conseille: c.niveau === cur, valide: c.niveau < cur }));
@@ -66,7 +74,7 @@ export function tilePos(i, n, T = TILE, ex = null, stops = null) {
 export async function choose(app, o) {
   const { sprites, voice, text } = app, store = o.store, C = o.content.seance.choix ?? {}, double = (C.validation ?? "double") === "double";
   await sprites.load("choix");
-  const [st1, st2, st3, st4, faits] = await Promise.all([store.get("niveaux", 1), store.get("niveaux", 2), store.get("niveaux", 3), store.get("niveaux", 4), store.all("faits")]);
+  const [st1, st2, st3, st4, st5, faits] = await Promise.all([store.get("niveaux", 1), store.get("niveaux", 2), store.get("niveaux", 3), store.get("niveaux", 4), store.get("niveaux", 5), store.all("faits")]);
   const familyShare = (id, boite) => ruleShare(o.content.module2, faits, id, boite);
   const els = [], clear = () => { closeLegend(app); els.forEach((e) => e.remove()); els.length = 0; };
   app.choiceClear = () => { clear(); sprites.unload("choix"); };
@@ -106,7 +114,7 @@ export async function choose(app, o) {
     if (ex === CANCEL) return done();
     clear();
     // 2. le niveau, la famille ou la leçon
-    const exo = xs.find((e) => e.id === ex), items = levelItems(ex, { st1, st2, st3, st4, module1: o.content.module1, module2: o.content.module2, module3: o.content.module3, module4: o.content.module4, familyShare });
+    const exo = xs.find((e) => e.id === ex), items = levelItems(ex, { st1, st2, st3, st4, st5, module1: o.content.module1, module2: o.content.module2, module3: o.content.module3, module4: o.content.module4, module5: o.content.module5, familyShare });
     const back = spriteBox(app, { x: BACK[0] - 60, y: BACK[1] - 60, w: 120, h: 120, cls: "bubble choix-retour", label: "retour", paint: (ctx, px) => { const q = sprites.frame(exo.sprite, 0), k = 120 / 180; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 60 * px + q.dx * k, 60 * px + q.dy * k, q.w * k, q.h * k); } });
     els.push(back);
     // (lot 3 bis, B1) le chemin de cailloux du calcul rapide, dessiné en direct une fois par ouverture, sous les plaques
@@ -127,7 +135,7 @@ export async function choose(app, o) {
     legendKey(app, ex, { keys: items.map((it) => it.key), els });
     if (double) voice.stop();
     voice.say(text.data.choixNiveau, { instruction: true });
-    const name = (k) => (ex === "ligne" ? text.data.choixLigne[k] : ex === "additions" ? text.data.choixFamille[k] : ex === "calcul" ? text.data.choixCalcul[k] : text.data.choixVoiliers[k]);
+    const name = (k) => (ex === "ligne" ? text.data.choixLigne[k] : ex === "additions" ? text.data.choixFamille[k] : ex === "calcul" ? text.data.choixCalcul[k] : ex === "multiplication" ? text.data.choixMult[k] : text.data.choixVoiliers[k]);
     const backP = new Promise((res) => onBrief(app, back, () => { pop(back); res(null); }, "retourExercices"));
     const key = await Promise.race([pick(tiles, name, checkKey(), (k) => tileLabel(app.legendes, ex, k)), backP, cancelled]);
     if (key === CANCEL) return done();
@@ -138,6 +146,7 @@ export async function choose(app, o) {
     if (ex === "ligne") return { module: 1, niveau: Number(key) };
     if (ex === "additions") return { module: 2, famille: Number(key) };
     if (ex === "calcul") return { module: 3, niveau: Number(key) };
+    if (ex === "multiplication") return { module: 5, niveau: Number(key) };
     return { module: 4, niveau: Number(key) };
   }
 }

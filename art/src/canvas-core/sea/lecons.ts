@@ -24,7 +24,8 @@ import { drawTenFrame, drawHouseRoof, drawHouseFloor, drawHouseBase, HOUSE, TEN,
 import { drawStepLine, drawStepPlus } from "./ui";
 import { drawSmallFish, HOUSE_FISH } from "./lot3bis";
 import { drawStepCalc, drawCalcTile } from "./calc";
-import { drawFamilyTile, drawLineTile, drawOpenBook, inside, plaque, reflet, TILE_H, TILE_W, underline, VIGN_Y, NUM_EM, NUM_TOP } from "./choice";
+import { drawMultTile, drawStepMult, vL13, vL14 } from "./mult";
+import { drawFamilyTile, drawLineTile, drawOpenBook, inside, plaque, reflet, TILE_H, TILE_W, twoFrames, underline, VIGN_Y, NUM_EM, NUM_TOP } from "./choice";
 import { drawBridge, drawJumpArc, drawLens, drawLine, drawNumber, drawStone, drawWord, type LineSpec, tickP, WALL_TENS, WALL_UNITS } from "./runtime";
 
 const SH = "#0a3f49", GOLD = "#ffd23a", LIT = "#ffe45c", LIT_S = "#e0a21c", CELL = "#fff4e6";
@@ -135,7 +136,11 @@ const vL9 = (g: Gfx) => {
   drawBridge(c, [xs[1], y], [xs[2], y], "+3", { r, em: 17, seed: 8340 });
   ["38", "40", "43"].forEach((t, i) => drawStone(c, xs[i], y, t, { r, seed: 8350 + i * 10 }));
 };
-export const LESSON_VIGNETTES: Record<string, (g: Gfx) => void> = { L1: vL1, L2: vL2, L3: vL3, L4: vL4, L5: vL5, L6: vL6, L7: vL7, L8: vL8, L9: vL9, L10: vL10 };
+// lot « Sommes jusqu'à 30 » : L11 · Dix et encore : la boîte pleine, quatre poissons dans la seconde, « 14 »
+const vL11 = (g: Gfx) => { twoFrames(g, -34, -6, 10, 4, 0.22); drawNumber(cx2d(g), "14", 60, -6 - 17, 34, { w: 5.4, seed: 8030 }); };
+// L12 · Faire dix d'abord : huit poissons, deux dorés qui complètent la boîte, trois dans la seconde, « 13 »
+const vL12 = (g: Gfx) => { twoFrames(g, -34, -6, 8, 5, 0.22, true); drawNumber(cx2d(g), "13", 60, -6 - 17, 34, { w: 5.4, seed: 8031 }); };
+export const LESSON_VIGNETTES: Record<string, (g: Gfx) => void> = { L1: vL1, L2: vL2, L3: vL3, L4: vL4, L5: vL5, L6: vL6, L7: vL7, L8: vL8, L9: vL9, L10: vL10, L11: vL11, L12: vL12, L13: vL13, L14: vL14 };
 export const drawLessonVignette = (g: Gfx, id: string, x: number, y: number, s = 1) => scaled(g, x, y, s, () => LESSON_VIGNETTES[id]?.(g));
 
 // ---------------------------------------------------------------- les plaques du menu des leçons
@@ -188,15 +193,18 @@ export const drawReservedTile = (g: Gfx, cx: number, cy: number) => g.group("pla
 // ---------------------------------------------------------------- les pictogrammes des rangées du menu
 // ceux de la frise (plats, sans bulle : ils ne ressemblent à aucun bouton), en grand
 export const ROW_ICON_S = 2.1;
-export const drawRowIcon = (g: Gfx, cx: number, cy: number, ex: "ligne" | "additions" | "calcul") => scaled(g, cx, cy, ROW_ICON_S, () => (ex === "ligne" ? drawStepLine : ex === "additions" ? drawStepPlus : drawStepCalc)(g, 0, 0));
+export type Ex = "ligne" | "additions" | "calcul" | "multiplication";
+const STEP: Record<Ex, (g: Gfx, x: number, y: number) => void> = { ligne: drawStepLine, additions: drawStepPlus, calcul: drawStepCalc, multiplication: drawStepMult };
+export const drawRowIcon = (g: Gfx, cx: number, cy: number, ex: Ex) => scaled(g, cx, cy, ROW_ICON_S, () => STEP[ex](g, 0, 0));
 
 // ---------------------------------------------------------------- la fin d'une leçon : « À toi ! » et la maison
 // « À toi ! » : une grande bulle (rayon 104) avec, dedans, la plaque du niveau de l'exercice associé (celle de l'écran
 // « choisir », numéro compris) et, en bas à droite, une petite bulle au triangle de lecture (« on y va »)
 export const ATOI_R = 104;
-export const drawAToiKey = (g: Gfx, cx: number, cy: number, ex: "ligne" | "additions" | "calcul", level: number) => {
+const LEVEL_TILE: Record<Ex, (g: Gfx, x: number, y: number, n: number) => void> = { ligne: drawLineTile, additions: drawFamilyTile, calcul: drawCalcTile, multiplication: drawMultTile };
+export const drawAToiKey = (g: Gfx, cx: number, cy: number, ex: Ex, level: number) => {
   drawAnswerBubble(g, cx, cy, 31, ATOI_R);
-  scaled(g, cx, cy - 4, 0.9, () => (ex === "ligne" ? drawLineTile : ex === "additions" ? drawFamilyTile : drawCalcTile)(g, 0, 0, level));
+  scaled(g, cx, cy - 4, 0.9, () => LEVEL_TILE[ex](g, 0, 0, level));
   const px = cx + ATOI_R * 0.7, py = cy + ATOI_R * 0.7;
   drawAnswerBubble(g, px, py, 32, 32);
   g.group("plain", () => { const t: P[] = [[px - 8, py - 13], [px + 15, py], [px - 8, py + 13]]; fillShape(g, shift(t, 2, 3), SH, 0.25); cel(g, t, "#ff7a5c", "#c64d3c", 2.5); contour(g, t, 2.8, 8600); });
@@ -207,15 +215,17 @@ export const drawBigHomeKey = (g: Gfx, cx: number, cy: number) => scaled(g, cx, 
 
 // les rangées du menu (l'ordre des tuiles) et l'exercice associé à chaque leçon (docs/SPEC.md, section 3 : le niveau, ou la
 // famille d'additions, joué après « À toi ! » ; le même tableau est dans app/content/lecons.json, « exercice »)
-export const LESSON_ROWS: { ex: "ligne" | "additions" | "calcul"; ids: string[] }[] = [
+export const LESSON_ROWS: { ex: Ex; ids: string[] }[] = [
   { ex: "ligne", ids: ["L1", "L2", "L3", "L10"] },
-  { ex: "additions", ids: ["L4", "L5", "L6"] },
+  { ex: "additions", ids: ["L4", "L5", "L6", "L11", "L12"] },
   { ex: "calcul", ids: ["L7", "L8", "L9"] },
+  { ex: "multiplication", ids: ["L13", "L14"] },
 ];
 export const LESSON_IDS = LESSON_ROWS.flatMap((r) => r.ids);
-export const LESSON_ATOI: Record<string, { ex: "ligne" | "additions" | "calcul"; niveau: number }> = {
+export const LESSON_ATOI: Record<string, { ex: Ex; niveau: number }> = {
   L1: { ex: "ligne", niveau: 1 }, L2: { ex: "ligne", niveau: 5 }, L3: { ex: "ligne", niveau: 4 }, L10: { ex: "ligne", niveau: 9 },
-  L4: { ex: "additions", niveau: 2 }, L5: { ex: "additions", niveau: 3 }, L6: { ex: "additions", niveau: 4 },
+  L4: { ex: "additions", niveau: 2 }, L5: { ex: "additions", niveau: 3 }, L6: { ex: "additions", niveau: 4 }, L11: { ex: "additions", niveau: 8 }, L12: { ex: "additions", niveau: 11 },
   L7: { ex: "calcul", niveau: 2 }, L8: { ex: "calcul", niveau: 6 }, L9: { ex: "calcul", niveau: 7 },
+  L13: { ex: "multiplication", niveau: 1 }, L14: { ex: "multiplication", niveau: 6 },
 };
 export { GOLD };

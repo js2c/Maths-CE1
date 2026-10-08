@@ -1,7 +1,7 @@
 // LOT « LES LEÇONS » (docs/LOTS.md, fiche 3 ; docs/SPEC.md, section 3, « Les leçons ») : le parcours de chaque situation
 // nouvelle, en 1280 × 800 (densité 2) et 1920 × 1200 (densité 1), captures dans tests/e2e/out/lecons-menu :
 //  1. l'accueil à cinq bulles ; l'appui long sur « les leçons » (étiquette, rien ne se lance) ; le menu (dix leçons, la table,
-//     trois pictogrammes de rangée, le petit livre) ; l'appui long sur une tuile ; la légende du parent ;
+//     quatre pictogrammes de rangée, le petit livre) ; l'appui long sur une tuile ; la légende du parent ;
 //  2. une leçon regardée jusqu'au bout, puis « À toi ! » : 3 étoiles, l'écran « À toi ! » (une seule maison), le sélecteur,
 //     puis l'exercice associé comme séance du jour, sans échauffement (« après une leçon »), sans salut ni leçon d'entrée ;
 //     la pause pendant cet exercice : l'accueil en pause a la bulle « les leçons » ; une leçon depuis la pause revient à la
@@ -68,18 +68,18 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     if (big) await shot(page, "02-accueil-etiquette");
     await h.release(); check((await page.locator(".lecons-tuile").count()) === 0, `${T} · l'appui long ne lance rien`);
     await tap(page, ".leconskey"); await page.waitForSelector(".lecons-tuile"); await page.waitForTimeout(700);
-    check((await page.locator(".lecons-tuile").count()) === 11, `${T} · le menu : dix leçons et la table d'addition`);
-    check((await page.locator(".lecons-rangee").count()) === 3 && (await page.locator(".legende").count()) === 1, `${T} · trois pictogrammes de rangée et le petit livre`);
+    check((await page.locator(".lecons-tuile").count()) === 16, `${T} · le menu : quatorze leçons (L11 et L12 depuis le lot « Sommes jusqu'à 30 », L13 et L14 depuis le lot « Multiplication ») et les tables d'addition et de multiplication`);
+    check((await page.locator(".lecons-rangee").count()) === 4 && (await page.locator(".legende").count()) === 1, `${T} · quatre pictogrammes de rangée et le petit livre`);
     check(/Les leçons\. \| Quelle leçon veux-tu regarder \? Touche-la\./.test(await said(page)), `${T} · « Les leçons. », puis la consigne du menu`);
     const keys = await page.evaluate(() => [...document.querySelectorAll(".lecons-tuile")].map((e) => e.dataset.key).join(","));
-    check(keys === "L1,L2,L3,L10,L4,L5,L6,L7,L8,L9,table.addition", `${T} · l'ordre des tuiles (${keys})`);
+    check(keys === "L1,L2,L3,L10,L4,L5,L6,L11,L12,L7,L8,L9,L13,L14,table.addition,table.multiplication", `${T} · l'ordre des tuiles (${keys})`);
     const b = await bulle(page); check(b.visible && !b.couvre, `${T} · la bulle du menu ne couvre aucune tuile (${b.place})`);
     await shot(page, "03-menu"); await note(page, "accueil, puis la bulle « les leçons »");
     const t7 = await hold(page, '.lecons-tuile[data-key="L7"]'); check(t7.label === "L7", `${T} · appui long sur la tuile 7 : son étiquette`);
     if (big) await shot(page, "04-menu-etiquette");
-    await t7.release(); check(!(await page.evaluate(() => window.__app.lessons.p ?? window.__app.lessons.p2?.p ?? null)) && (await page.locator(".lecons-tuile").count()) === 11, `${T} · l'appui long ne lance pas la leçon`);
+    await t7.release(); check(!(await page.evaluate(() => window.__app.lessons.p ?? window.__app.lessons.p2?.p ?? null)) && (await page.locator(".lecons-tuile").count()) === 16, `${T} · l'appui long ne lance pas la leçon`);
     await tap(page, ".legende", 600);
-    const rows = await page.locator(".legende-ligne").count(); check(rows === 11, `${T} · la légende du parent : une ligne par leçon et une pour la table (${rows})`);
+    const rows = await page.locator(".legende-ligne").count(); check(rows === 16, `${T} · la légende du parent : une ligne par leçon et une par table (${rows})`);
     await shot(page, "05-legende");
     await tap(page, ".legende-fermer", 400);
     await tap(page, ".homekey", 800); check((await visible(page, ".leconskey")) === 1 && (await page.locator(".lecons-tuile").count()) === 0, `${T} · la maison ramène le menu à l'accueil`);
@@ -124,7 +124,11 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     check(await page.evaluate(() => window.__app.enPause), `${T} · la maison met l'exercice en pause`);
     check((await visible(page, ".keep.leconskey")) === 1, `${T} · l'accueil en pause a la bulle « les leçons »`);
     await shot(page, "10-pause");
+    // (relecture de l'étape 0 du bloc « Sommes jusqu'à 30 » et « Multiplication » : la tortue restait à flotter sur l'accueil en pause)
+    check(await page.evaluate(() => [...document.querySelectorAll("#front > *")].every((e) => getComputedStyle(e).visibility === "hidden")), `${T} · en pause, rien de l'exercice (tortue, étoile) ne reste à l'écran`);
     await tap(page, ".keep.leconskey"); await page.waitForSelector(".lecons-tuile", { timeout: 15000 }); await page.waitForTimeout(400);
+    // (même relecture : en base neuve, la leçon 1 vue depuis le menu n'était pas notée, sa tuile restait sans étoile)
+    check((await page.evaluate(() => document.querySelector('.lecons-tuile[data-key="L1"]')?.dataset.valide)) === "1", `${T} · la leçon 1 vue porte son étoile dans le menu`);
     if (big) await shot(page, "11-pause-menu");
     await tap(page, '.lecons-tuile[data-key="L4"]'); await page.waitForSelector(".skip", { timeout: 15000 });
     await page.waitForFunction(() => document.querySelector(".keep.play") && getComputedStyle(document.querySelector(".keep.play")).visibility !== "hidden" && !document.querySelector(".skip"), null, { timeout: 120000 });
@@ -189,8 +193,12 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     // (deux contacts à 40 ms l'un de l'autre, émis dans la page : un toucher envoyé par le protocole du navigateur attend
     // l'image suivante, plus de 150 ms)
     const n2 = await page.evaluate(async () => { const g = document.querySelector(".table-grille"), r = g.getBoundingClientRect(), k = window.__app.stage.k, x = r.left + (16 + 52 + 5 * 64 + 32) * k, y = r.top + (16 + 52 + 7 * 64 + 32) * k, down = () => g.dispatchEvent(new PointerEvent("pointerdown", { clientX: x, clientY: y, bubbles: true }));
-      await new Promise((res) => setTimeout(res, 200)); window.__said = []; down(); await new Promise((res) => setTimeout(res, 40)); down(); await new Promise((res) => setTimeout(res, 300)); return window.__said.length; });
-    check(n2 === 1, `${T} · la même case touchée deux fois en 40 ms : une seule phrase (${n2})`);
+      // (le second contact doit vraiment arriver moins de 150 ms après le premier : sous la charge, un délai de 40 ms en prend
+      // parfois plus ; on recommence alors, au plus trois fois, et on rend l'écart mesuré)
+      let out = null;
+      for (let i = 0; i < 3 && !out; i++) { await new Promise((res) => setTimeout(res, 400)); window.__said = []; const t0 = performance.now(); down(); await new Promise((res) => setTimeout(res, 40)); const gap = performance.now() - t0; down(); await new Promise((res) => setTimeout(res, 300)); if (gap < 140) out = { n: window.__said.length, gap: Math.round(gap) }; }
+      return out ?? { n: -1, gap: null }; });
+    check(n2.n === 1, `${T} · la même case touchée deux fois en 40 ms : une seule phrase (${n2.n} ; écart réel ${n2.gap} ms)`);
     await resetSaid(page); await tapCell(page, 3, 3); await page.waitForTimeout(60); await tapCell(page, 9, 8); await page.waitForTimeout(900);
     check((await page.evaluate(() => window.__said.at(-1))) === "9 plus 8, 17." && (await page.evaluate(() => document.querySelector(".table-grille").dataset.case)) === "9+8", `${T} · deux cases à la suite : la dernière l'emporte`);
     if (big) await shot(page, "18-table-9+8");

@@ -40,6 +40,40 @@ export function paintTenFrame(ctx, sprites, x, y, { n = 0, glow = [], extra = 0,
   return { w: m.w, h: m.h, cell: (i) => [x + m.cells[i][0], y + m.cells[i][1]] };
 }
 
+// ---------------------------------------------------------------- deux boîtes de dix (lot « Sommes jusqu'à 30 »)
+// le passage de la dizaine (8 + 5 = 8 + 2 + 3) : la boîte du haut reçoit `first` poissons orange, puis les `moved` premiers
+// poissons bleus du second nombre, qui la complètent (entourés de lumière : ce sont eux qui « sautent ») ; la boîte du bas, le
+// reste des `second` poissons bleus. `places` : au lieu des poissons du second nombre, leurs places allumées (formes à trou :
+// on compte les places qui brillent). (x, y) : coin haut gauche de la boîte du haut ; `gap` : entre les deux boîtes.
+// `glow` : d'autres places allumées dans la boîte du haut (leçon L12 : les places vides avant que les poissons sautent)
+export function paintTwoFrames(ctx, sprites, x, y, { first = 0, second = 0, moved = null, places = false, gap = 18, glow = [], fish = ["aide.poisson.0", "aide.poisson.1"] } = {}) {
+  const m = sprites.atlas.sprites["aide.cadre10"].meta, fill = Math.max(0, Math.min(second, 10 - first)), mv = moved ?? fill, y2 = y + m.h + gap;
+  const top = places ? paintTenFrame(ctx, sprites, x, y, { n: first, fish, glow: Array.from({ length: fill }, (_, i) => first + i) })
+    : paintTenFrame(ctx, sprites, x, y, { n: first, extra: mv, fish, glow: [...Array.from({ length: mv }, (_, i) => first + i), ...glow] });
+  const rest = second - mv;
+  if (places) paintTenFrame(ctx, sprites, x, y2, { n: 0, fish, glow: Array.from({ length: second - fill }, (_, i) => i) });
+  else paintTenFrame(ctx, sprites, x, y2, { n: 0, extra: rest, fish });
+  return { w: m.w, h: 2 * m.h + gap, top };
+}
+export const twoFramesHeight = (sprites, gap = 18) => 2 * sprites.atlas.sprites["aide.cadre10"].meta.h + gap;
+// les grands doubles (11 + 11 à 15 + 15) : un filet de dix poissons et les unités, au-dessus d'une ligne d'eau, et leur reflet
+// dessous (plus pâle) : treize et treize, c'est dix et dix, et trois et trois. (cx, y) : milieu, haut de la première rangée.
+// (relecture du lot « Sommes jusqu'à 30 » : `panel`, une plaque de nacre dessous, lisible devant le sable et le décor)
+export function paintBigDouble(ctx, sprites, a, { cx = 700, y = 360, k = 0.78, panel = false } = {}) {
+  const N = sprites.atlas.sprites["aide.filet.haut"].meta, u = a - 10, gap = 74, w = N.w * k + 40 + u * gap, x0 = cx - w / 2, h = N.h * k;
+  if (panel) R.drawPanel(ctx, x0 - 56, y - 22, w + 112, 2 * h + 84);
+  const row = (yy, alpha) => {
+    ctx.globalAlpha = alpha;
+    putScaled(ctx, sprites, "aide.filet.haut", x0 + (N.w * k) / 2, yy, k);
+    for (let i = 0; i < u; i++) put(ctx, sprites, "aide.poisson.0", x0 + N.w * k + 40 + gap / 2 + i * gap, yy + h / 2);
+    ctx.globalAlpha = 1;
+  };
+  row(y, 1);
+  R.drawWave(ctx, x0 - 40, x0 + w + 40, y + h + 20);
+  row(y + h + 40, 0.6);
+  return { h: 2 * h + 40 };
+}
+
 // ---------------------------------------------------------------- la maison des nombres
 // cx : milieu ; top : bas du toit (haut du premier étage) ; total sur le toit ; rows : [[a, b], …] (un nombre
 // ou « ? » en rouge) ; renvoie la hauteur totale et la position des plaques
@@ -87,8 +121,10 @@ export const houseHeight = (sprites, floors) => { const H = sprites.atlas.sprite
 
 // ---------------------------------------------------------------- double + 1
 // a poissons en haut, les mêmes renversés sous une ligne d'eau (le miroir), puis la bulle dorée
-export function paintDoublePlus(ctx, sprites, a, { cx = 640, y = 360, gap = 92, bonus = true } = {}) {
-  const n = a + (bonus ? 1 : 0), x0 = cx - ((n - 1) * gap) / 2;
+// (lot « Sommes jusqu'à 30 » : jusqu'à 10 poissons, l'écart se resserre pour tenir dans `maxW`)
+export function paintDoublePlus(ctx, sprites, a, { cx = 640, y = 360, gap = 92, bonus = true, maxW = 860, panel = false } = {}) {
+  const n = a + (bonus ? 1 : 0); gap = Math.min(gap, n > 1 ? maxW / (n - 1) : gap); const x0 = cx - ((n - 1) * gap) / 2;
+  if (panel) R.drawPanel(ctx, x0 - 80, y - 46, (n - 1) * gap + 160, 190); // (relecture du lot « Sommes jusqu'à 30 »)
   const fish = (x, yy, flip, alpha) => { const f = sprites.frame("poisson.1.d", 0), m = ctx.getTransform(); ctx.setTransform(1, 0, 0, flip ? -1 : 1, 0, 0); ctx.globalAlpha = alpha; const X = Math.round(m.a * x + m.e + f.dx), Y = m.d * yy + m.f; ctx.drawImage(f.img, f.sx, f.sy, f.w, f.h, X, flip ? -Math.round(Y - f.dy) : Math.round(Y + f.dy), f.w, f.h); ctx.globalAlpha = 1; ctx.setTransform(m); };
   for (let i = 0; i < a; i++) fish(x0 + i * gap, y, false, 1);
   R.drawWave(ctx, x0 - 70, x0 + (a - 1) * gap + 70, y + 48);

@@ -75,7 +75,7 @@ export function poser(place, w, h) {
 // longue consigne du calcul rapide, en quatre lignes, ne tenait qu'en couvrant l'ardoise ; en deux lignes, elle tient entre
 // l'ardoise et le pavé)
 // (500 px : deux lignes de 500 px tiennent entre l'ardoise et le pavé ; à 540, l'ovale, qui garde un cinquième de sa largeur
-// en hauteur, touchait le pavé)
+// en hauteur, touchait le pavé ; en lignes larges, le texte est un peu plus petit, 26 px : app.css, .bulle.large)
 export const LIGNE_LARGE = 500;
 export const avecLarges = (places) => [...places, ...places.map((p) => ({ ...p, large: true }))];
 const aire = (r, o, m = 8) => Math.max(0, Math.min(r[2], o[2] + m) - Math.max(r[0], o[0] - m)) * Math.max(0, Math.min(r[3], o[3] + m) - Math.max(r[1], o[1] - m));
@@ -103,23 +103,31 @@ export function choisirPlace(obstacles, mesure, places = PLACES, souples = []) {
 // à droite ou à gauche), d'abord du côté où l'écran a le plus de place ; la pointe vise le coin. `tuile` : [gauche, haut,
 // droite, bas] en px logiques.
 export function placesTuile([x0, y0, x1, y1]) {
-  const m = 12, c = 22, mx = (y0 + y1) / 2;
+  // (la bulle se tient à 26 px de la tuile, la pointe vise 16 px à l'intérieur du coin : une pointe trop courte se tordait)
+  const m = 26, c = 40, k = 16, mx = (y0 + y1) / 2;
   const coins = {
-    hd: { boite: [x1 - c, 8, 1272, y0 - m], pointe: [x1 - 12, y0 + 12] },
-    hg: { boite: [8, 8, x0 + c, y0 - m], pointe: [x0 + 12, y0 + 12], droite: true },
-    bd: { boite: [x1 - c, y1 + m, 1272, 792], pointe: [x1 - 12, y1 - 12], haut: true },
-    bg: { boite: [8, y1 + m, x0 + c, 792], pointe: [x0 + 12, y1 - 12], haut: true, droite: true },
-    dh: { boite: [x1 + m, 8, 1272, mx], pointe: [x1 - 10, y0 + 14] },
-    db: { boite: [x1 + m, mx, 1272, 792], pointe: [x1 - 10, y1 - 14], haut: true },
-    gh: { boite: [8, 8, x0 - m, mx], pointe: [x0 + 10, y0 + 14], droite: true },
-    gb: { boite: [8, mx, x0 - m, 792], pointe: [x0 + 10, y1 - 14], haut: true, droite: true },
+    hd: { boite: [x1 - c, 8, 1272, y0 - m], pointe: [x1 - k, y0 + k] },
+    hg: { boite: [8, 8, x0 + c, y0 - m], pointe: [x0 + k, y0 + k], droite: true },
+    bd: { boite: [x1 - c, y1 + m, 1272, 792], pointe: [x1 - k, y1 - k], haut: true },
+    bg: { boite: [8, y1 + m, x0 + c, 792], pointe: [x0 + k, y1 - k], haut: true, droite: true },
+    dh: { boite: [x1 + m, 8, 1272, mx], pointe: [x1 - k, y0 + k] },
+    db: { boite: [x1 + m, mx, 1272, 792], pointe: [x1 - k, y1 - k], haut: true },
+    gh: { boite: [8, 8, x0 - m, mx], pointe: [x0 + k, y0 + k], droite: true },
+    gb: { boite: [8, mx, x0 - m, 792], pointe: [x0 + k, y1 - k], haut: true, droite: true },
   };
   const bas = mx < 400, droite = (x0 + x1) / 2 < 640;
   const ordre = [bas ? (droite ? "bd" : "bg") : (droite ? "hd" : "hg"), bas ? (droite ? "bg" : "bd") : (droite ? "hg" : "hd"), droite ? (bas ? "db" : "dh") : (bas ? "gb" : "gh"), droite ? (bas ? "dh" : "db") : (bas ? "gh" : "gb"),
     bas ? (droite ? "hd" : "hg") : (droite ? "bd" : "bg"), bas ? (droite ? "hg" : "hd") : (droite ? "bg" : "bd"), droite ? (bas ? "gb" : "gh") : (bas ? "db" : "dh"), droite ? (bas ? "gh" : "gb") : (bas ? "dh" : "db")];
   // (une boîte trop étroite ou trop basse ferait une bulle en colonne : écartée, sauf s'il ne reste rien)
   const toutes = ordre.map((k) => ({ nom: `tuile-${k}`, ...coins[k] })), assez = toutes.filter(({ boite: [a, b, c, d] }) => c - a >= 320 && d - b >= 100);
-  return assez.length ? assez : toutes;
+  const base = assez.length ? assez : toutes;
+  // (relecture du lot : collée à son coin, la bulle cachait parfois toute une rangée de tuiles alors qu'il y avait de la place
+  // plus loin : les mêmes places, la bulle éloignée de 70 en 70 px, jusqu'à 210 px, essayées ensuite, la pointe s'allongeant jusqu'au coin)
+  const loin = base.flatMap((p) => [1, 2, 3].map((n) => {
+    const [a, b, c, d] = p.boite, dv = p.haut ? [0, 70 * n, 0, 0] : [0, 0, 0, -70 * n];
+    return { ...p, nom: p.nom, loin: n, boite: [a + dv[0], b + dv[1], c + dv[2], d + dv[3]] };
+  })).filter(({ boite: [a, b, c, d] }) => d - b >= 100);
+  return [...base, ...loin];
 }
 // le texte découpé en mots, les nombres à part (en rouge) ; les espaces insécables de la typographie française gardées
 // (un mot d'une lettre, « À », « à », « a », n'est jamais seul en fin de ligne : relecture du lot)
@@ -219,7 +227,7 @@ export class Bulle {
     return { durs: [...obstacles(this.st.ui, this.st.k), ...this.dures()], souples: [...obstacles(this.st.ui, this.st.k, CARTE), ...this.dessins(), ...this.souplesEnPlus()] };
   }
   layout() {
-    const cible = largeurEquilibree(this.mesure(4000)[0]), m = (w, place) => this.mesure(Math.min(w, place?.large ? LIGNE_LARGE : cible));
+    const cible = largeurEquilibree(this.mesure(4000)[0]), m = (w, place) => { this.el.classList.toggle("large", !!place?.large); return this.mesure(Math.min(w, place?.large ? LIGNE_LARGE : cible)); };
     // (lot « Les leçons » : `places`, les places propres à un écran, la table d'addition : sous la tête, à gauche de la grille)
     const { durs, souples } = this.obstacles(), p = choisirPlace(durs, m, avecLarges(this.mode?.places ?? this.places ?? PLACES), souples);
     m(largeurMax(p.place.boite), p.place);

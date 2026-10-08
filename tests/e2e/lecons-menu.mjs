@@ -91,7 +91,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const { page, context, errors } = await open();
     const t0 = await page.evaluate(() => window.__app.rewards.total);
     await tap(page, ".leconskey"); await page.waitForSelector(".lecons-tuile"); await page.waitForTimeout(400);
-    await tap(page, '.lecons-tuile[data-key="L1"]', 300); await tap(page, '.lecons-tuile[data-key="L1"]');
+    await tap(page, '.lecons-tuile[data-key="L1"]', 450); await tap(page, '.lecons-tuile[data-key="L1"]');
     await page.waitForSelector(".skip", { timeout: 15000 }); await page.waitForTimeout(1200);
     if (big) await shot(page, "06-lecon-L1");
     await page.waitForSelector(".lecons-atoi", { timeout: 120000 }); await page.waitForTimeout(900);
@@ -130,12 +130,12 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     // (même relecture : en base neuve, la leçon 1 vue depuis le menu n'était pas notée, sa tuile restait sans étoile)
     check((await page.evaluate(() => document.querySelector('.lecons-tuile[data-key="L1"]')?.dataset.valide)) === "1", `${T} · la leçon 1 vue porte son étoile dans le menu`);
     if (big) await shot(page, "11-pause-menu");
-    await tap(page, '.lecons-tuile[data-key="L4"]', 300); await tap(page, '.lecons-tuile[data-key="L4"]'); await page.waitForSelector(".skip", { timeout: 15000 });
+    await tap(page, '.lecons-tuile[data-key="L4"]', 450); await tap(page, '.lecons-tuile[data-key="L4"]'); await page.waitForSelector(".skip", { timeout: 15000 });
     await page.waitForFunction(() => document.querySelector(".keep.play") && getComputedStyle(document.querySelector(".keep.play")).visibility !== "hidden" && !document.querySelector(".skip"), null, { timeout: 120000 });
     await page.waitForTimeout(600);
     check((await page.locator(".lecons-atoi").count()) === 0 && await page.evaluate(() => window.__app.enPause), `${T} · une leçon depuis la pause revient à la pause, sans « À toi ! »`);
     await tap(page, ".keep.leconskey"); await page.waitForSelector(".lecons-tuile"); await page.waitForTimeout(300);
-    await tap(page, '.lecons-tuile[data-key="table.addition"]', 300); await tap(page, '.lecons-tuile[data-key="table.addition"]'); await page.waitForSelector(".table-grille", { timeout: 10000 }); await page.waitForTimeout(500);
+    await tap(page, '.lecons-tuile[data-key="table.addition"]', 450); await tap(page, '.lecons-tuile[data-key="table.addition"]'); await page.waitForSelector(".table-grille", { timeout: 10000 }); await page.waitForTimeout(500);
     await tapCell(page, 4, 4); await page.waitForTimeout(700);
     if (big) await shot(page, "12-pause-table");
     await tap(page, ".homekey", 900);
@@ -154,7 +154,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     await shot(page, "13-accueil-seance-faite");
     const t0 = await page.evaluate(() => window.__app.rewards.total);
     await tap(page, ".leconskey"); await page.waitForSelector(".lecons-tuile"); await page.waitForTimeout(300);
-    await tap(page, '.lecons-tuile[data-key="L5"]', 300); await tap(page, '.lecons-tuile[data-key="L5"]'); await page.waitForSelector(".skip", { timeout: 15000 }); await page.waitForTimeout(600);
+    await tap(page, '.lecons-tuile[data-key="L5"]', 450); await tap(page, '.lecons-tuile[data-key="L5"]'); await page.waitForSelector(".skip", { timeout: 15000 }); await page.waitForTimeout(600);
     await tap(page, ".skip");
     await page.waitForSelector(".lecons-atoi", { timeout: 20000 }); await page.waitForTimeout(700);
     check((await page.evaluate(() => window.__app.rewards.total)) === t0, `${T} · leçon passée : pas d'étoiles, mais l'écran « À toi ! »`);
@@ -176,9 +176,9 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const { page, context, errors } = await open();
     await tap(page, ".leconskey"); await page.waitForSelector(".lecons-tuile"); await page.waitForTimeout(300);
     await resetSaid(page);
-    await tap(page, '.lecons-tuile[data-key="table.addition"]', 300); await tap(page, '.lecons-tuile[data-key="table.addition"]');
+    await tap(page, '.lecons-tuile[data-key="table.addition"]', 450); await tap(page, '.lecons-tuile[data-key="table.addition"]');
     await page.waitForSelector(".table-grille", { timeout: 10000 }); await page.waitForTimeout(1200);
-    check(/La table d'addition\. \| Touche une case : je te dis le calcul\./.test(await said(page)), `${T} · « La table d'addition. », puis la consigne`);
+    check(/La table d'addition\. [^|]*\| Touche une case : je te dis le calcul\./.test(await said(page)), `${T} · « La table d'addition. » et sa description (premier toucher), puis la consigne`);
     check((await visible(page, ".stars")) === 0, `${T} · pas de compteur d'étoiles sur la table`);
     const g = await page.locator(".table-grille").boundingBox(); check(g.y >= 0 && g.y + g.height <= H + 1 && g.x + g.width <= W, `${T} · la grille tient dans l'écran`);
     await shot(page, "16-table");
@@ -214,7 +214,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
   {
     const { page, context, errors } = await open();
     await tap(page, ".leconskey"); await page.waitForSelector(".lecons-tuile"); await page.waitForTimeout(300);
-    await tap(page, '.lecons-tuile[data-key="L3"]', 300); await tap(page, '.lecons-tuile[data-key="L3"]'); await page.waitForSelector(".skip", { timeout: 15000 }); await page.waitForTimeout(800);
+    await tap(page, '.lecons-tuile[data-key="L3"]', 450); await tap(page, '.lecons-tuile[data-key="L3"]'); await page.waitForSelector(".skip", { timeout: 15000 }); await page.waitForTimeout(800);
     await tap(page, ".homekey", 1500);
     check((await visible(page, ".leconskey")) === 1 && (await page.locator(".lecons-atoi").count()) === 0, `${T} · la maison pendant une leçon du menu : l'accueil, sans « À toi ! »`);
     await page.waitForTimeout(3000); check((await page.locator(".lecons-atoi").count()) === 0, `${T} · et rien ne revient ensuite`);

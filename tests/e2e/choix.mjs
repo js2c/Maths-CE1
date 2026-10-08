@@ -22,7 +22,7 @@ const open = async (q = "", prep = null) => {
   return { page, context, errors };
 };
 let taps = 0;
-const tap = async (page, sel) => { taps++; await page.tap(sel, { force: true }); await page.waitForTimeout(250); };
+const tap = async (page, sel) => { taps++; await page.tap(sel, { force: true }); await page.waitForTimeout(400); };
 // choisir un exercice puis une vignette (lot « Correctifs de la tablette » : en deux touchers, le premier sélectionne et dit
 // le nom et la description, le second lance ; avant, validation « simple », décision du parent du 28 septembre)
 const pick = async (page, sel) => { await page.waitForSelector(sel, { timeout: 10000 }); await tap(page, sel); };
@@ -38,12 +38,12 @@ const pick = async (page, sel) => { await page.waitForSelector(sel, { timeout: 1
   await page.waitForSelector(".choix-ex"); await page.waitForTimeout(400);
   check((await page.locator(".choix-ex").count()) === 5, "cinq exercices (ligne, additions, calcul rapide, voiliers, multiplication ; lot « Les leçons » : plus de leçons ici)");
   await page.screenshot({ path: join(OUT, "2-exercices.png") });
-  await tap(page, '.choix-ex[aria-label="ligne"]', 300); await tap(page, '.choix-ex[aria-label="ligne"]');
+  await tap(page, '.choix-ex[aria-label="ligne"]', 450); await tap(page, '.choix-ex[aria-label="ligne"]');
   await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(400);
   check((await page.locator(".choix-tuile").count()) === 13, "les 13 niveaux de la ligne, tous accessibles");
   check(await page.evaluate(() => document.querySelector('.choix-tuile[data-conseille="1"]')?.dataset.key) === "1", "base vide : le niveau 1 conseillé (lueur)");
   await page.screenshot({ path: join(OUT, "3-niveaux-ligne.png") });
-  await tap(page, '.choix-tuile[data-key="8"]', 300); await tap(page, '.choix-tuile[data-key="8"]');
+  await tap(page, '.choix-tuile[data-key="8"]', 450); await tap(page, '.choix-tuile[data-key="8"]');
   check(taps === 5, `5 touchers de l'accueil au sélecteur (choisir, l'exercice deux fois, le niveau deux fois : lot « Correctifs de la tablette ») : ${taps}`);
   await page.waitForFunction(() => window.__app.runner && window.__app.screen?.q, null, { timeout: 30000 });
   const qs = [];

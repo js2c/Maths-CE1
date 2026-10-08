@@ -54,7 +54,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   { const d = await decor(page); check(d.lagon && d.ancien.length === 0, `${W} accueil : le lagon, rien de l'ancien décor`); }
   await page.tap(".play", { force: true }); await page.waitForSelector(".cran", { timeout: 30000 }); await page.waitForTimeout(800); await shot("02-selecteur");
   await go(""); await page.tap(".bubble.choisir", { force: true });
-  await page.waitForSelector(".choix-ex", { timeout: 15000 }).then(async () => { await page.waitForTimeout(600); await shot("03-choisir-exercices"); await page.tap(".choix-ex >> nth=0", { force: true }); await page.waitForTimeout(300); await page.tap(".choix-ex >> nth=0", { force: true }); await page.waitForSelector(".choix-tuile", { timeout: 15000 }); await page.waitForTimeout(800); await shot("04-choisir-niveaux"); }).catch(() => console.log("     (écran « choisir » non capturé)"));
+  await page.waitForSelector(".choix-ex", { timeout: 15000 }).then(async () => { await page.waitForTimeout(600); await shot("03-choisir-exercices"); await page.tap(".choix-ex >> nth=0", { force: true }); await page.waitForTimeout(450); await page.tap(".choix-ex >> nth=0", { force: true }); await page.waitForSelector(".choix-tuile", { timeout: 15000 }); await page.waitForTimeout(800); await shot("04-choisir-niveaux"); }).catch(() => console.log("     (écran « choisir » non capturé)"));
 
   // ---- les exercices
   const S = [

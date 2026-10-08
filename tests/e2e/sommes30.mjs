@@ -64,7 +64,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
   {
     const { page, context, errors } = await open();
     await tap(page, ".choisir", 900); await page.waitForSelector('.choice-ex[data-key="additions"], [data-key="additions"]', { timeout: 15000 });
-    await tap(page, '[data-key="additions"]', 1200);
+    await tap(page, '[data-key="additions"]', 450); await tap(page, '[data-key="additions"]', 1200); // (deux touchers)
     await page.waitForSelector('.choice-tile, [data-key="12"]', { timeout: 15000 }); await page.waitForTimeout(600);
     const n = await page.evaluate(() => [...document.querySelectorAll("[data-key]")].filter((e) => /^\d+$/.test(e.dataset.key) && e.isConnected).length);
     check(n === 13, `${T} · « choisir », les additions : 13 familles (${n})`);
@@ -155,7 +155,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const b = await bulle(page); check(!b.couvre, `${T} · la bulle du menu ne couvre aucune tuile (${b.place})`);
     await shot(page, "18-menu-lecons");
     await resetSaid(page);
-    await tap(page, '.lecons-tuile[data-key="L11"]', 300); await tap(page, '.lecons-tuile[data-key="L11"]');
+    await tap(page, '.lecons-tuile[data-key="L11"]', 450); await tap(page, '.lecons-tuile[data-key="L11"]');
     check((await said(page)).startsWith("Dix et encore."), `${T} · la tuile 11 dit « Dix et encore. »`);
     await page.waitForFunction(() => window.__said.some((t) => /Dix et quatre/.test(t)), null, { timeout: 60000 }); await page.waitForTimeout(1200);
     await shot(page, "19-L11-dix-et-quatre");
@@ -176,7 +176,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
   if (big) {
     const { page, context, errors } = await open();
     await tap(page, ".leconskey"); await page.waitForSelector(".lecons-tuile"); await page.waitForTimeout(300);
-    await tap(page, '.lecons-tuile[data-key="table.addition"]', 300); await tap(page, '.lecons-tuile[data-key="table.addition"]'); await page.waitForSelector(".table-grille", { timeout: 10000 }); await page.waitForTimeout(800);
+    await tap(page, '.lecons-tuile[data-key="table.addition"]', 450); await tap(page, '.lecons-tuile[data-key="table.addition"]'); await page.waitForSelector(".table-grille", { timeout: 10000 }); await page.waitForTimeout(800);
     const cellAt = (a, b2) => page.evaluate(([a, b2]) => { const g = document.querySelector(".table-grille").getBoundingClientRect(), k = window.__app.stage.k; return [g.left + (16 + 52 + b2 * 64 + 32) * k, g.top + (16 + 52 + a * 64 + 32) * k]; }, [a, b2]);
     for (const [a, b2, n] of [[10, 4, "dix-et-quatre"], [7, 8, "double-plus-un"], [9, 9, "reflet"], [8, 5, "deux-boites"]]) {
       const [cx, cy] = await cellAt(a, b2); await page.touchscreen.tap(cx, cy); await page.waitForTimeout(700); await shot(page, `22-table-${a}+${b2}-${n}`);

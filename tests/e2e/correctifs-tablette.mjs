@@ -118,7 +118,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
     check((await page.locator(".choix-tuile").count()) === 0, `${W} exercices : l'appui long ne lance rien`);
     // chaque exercice : ses niveaux, une tuile dans chaque coin de l'écran
     for (const ex of ["ligne", "additions", "calcul", "voiliers", "multiplication"]) {
-      await tap(page, `.choix-ex[data-key="${ex}"]`, 350); await tap(page, `.choix-ex[data-key="${ex}"]`, 1200);
+      await tap(page, `.choix-ex[data-key="${ex}"]`, 450); await tap(page, `.choix-ex[data-key="${ex}"]`, 1200);
       await page.waitForSelector(".choix-tuile");
       const keys = await page.evaluate(() => [...document.querySelectorAll(".choix-tuile")].map((e) => { const r = e.getBoundingClientRect(); return { k: e.dataset.key, x: r.x + r.width / 2, y: r.y + r.height / 2 }; }));
       const coin = (fx, fy) => keys.reduce((a, b) => (fx * b.x + fy * b.y > fx * a.x + fy * a.y ? b : a)).k;
@@ -127,13 +127,20 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
         await tap(page, `.choix-tuile[data-key="${k}"]`, 350);
         await controle(`.choix-tuile[data-key="${k}"]`, `2-${ex}-${c}-${k}`, `${noms[k]} ${D[ex][k]}`);
       }
+      // la bulle laisse passer le doigt : une tuile qu'elle couvre se touche quand même (elle prend la sélection)
+      const dessous = await page.evaluate(() => { const r = window.__app.bulle.etat().rect; if (!r) return null; const t = [...document.querySelectorAll(".choix-tuile")].find((e) => { const x = parseFloat(e.style.left), y = parseFloat(e.style.top), cx = x + parseFloat(e.style.width) / 2, cy = y + parseFloat(e.style.height) / 2; return cx > r[0] && cx < r[2] && cy > r[1] && cy < r[3]; }); return t?.dataset.key ?? null; });
+      if (dessous) {
+        await tap(page, `.choix-tuile[data-key="${dessous}"]`, 450);
+        const t = (await bulle(page)).texte;
+        check(t === `${noms[dessous]} ${D[ex][dessous]}`, `${W} ${ex} : une tuile sous la bulle (${dessous}) se touche quand même`);
+      }
       // la sélection est distincte du halo du conseillé : une tuile conseillée sélectionnée garde son halo, et sa bordure
       check((await page.locator(".choix-tuile").count()) > 0, `${W} ${ex} : les niveaux restent à l'écran pendant la sélection`);
       await tap(page, ".choix-retour", 1000); await page.waitForSelector(".choix-ex");
     }
     // le second toucher lance : additions, famille 3, puis le sélecteur de difficulté
-    await tap(page, '.choix-ex[data-key="additions"]', 350); await tap(page, '.choix-ex[data-key="additions"]', 1200);
-    await tap(page, '.choix-tuile[data-key="3"]', 350); await tap(page, '.choix-tuile[data-key="3"]', 300);
+    await tap(page, '.choix-ex[data-key="additions"]', 450); await tap(page, '.choix-ex[data-key="additions"]', 1200);
+    await tap(page, '.choix-tuile[data-key="3"]', 450); await tap(page, '.choix-tuile[data-key="3"]', 300);
     await page.waitForSelector(".cran", { timeout: 20000 });
     check(true, `${W} le second toucher sur la même tuile lance (le sélecteur de difficulté)`);
     await shot(page, "29-lance-selecteur");
@@ -214,7 +221,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
     if (q.module === 3) return String(q.forme === "trouDroite" ? (q.op === "-" ? q.a - q.n : q.n - q.a) : q.forme === "trouGauche" ? (q.op === "-" ? q.n + q.b : q.n - q.b) : q.n);
     const n = q.n ?? q.a + q.b; return String(q.forme === "trouDroite" ? n - q.a : q.forme === "trouGauche" ? n - q.b : n);
   };
-  const veille = () => { window.__vides = []; setInterval(() => { const f = window.__app?.facts; if (!f) return; const s = f.slate, v = getComputedStyle(s).visibility === "visible" && !s.closest(".stash") && !document.querySelector("#stage.paused"); if (v && !f.q && !f.slateQ) window.__vides.push(window.__app.bulle.etat().texte || "(silence)"); }, 40); };
+  const veille = () => { window.__vides = []; setInterval(() => { const f = window.__app?.facts; if (!f) return; const s = f.slate, v = getComputedStyle(s).visibility === "visible" && !s.closest(".stash") && !document.querySelector("#stage.paused"); if (v && !f.q && !f.slateQ) window.__vides.push(window.__app.bulle.etat().texte || "(silence)"); const b = window.__app.bulle.etat(); if (v && b.visible && /Suis le chemin/.test(b.texte)) (window.__guide ??= []).push(b.gene); }, 40); };
   const exos = [
     ["additions (échauffement et notion du jour)", "&choix=2:3&cran=conseille&faits=3&guides=0&sansLecon", 6],
     ["calcul rapide (calculs guidés d'un niveau nouveau)", "&choix=3:4&cran=conseille&sans=echauffement&sansLecon", 6],
@@ -244,6 +251,8 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
     const db = await page.evaluate(async () => (await window.__app.store.all("reponses")).slice(-12).map((r) => r.juste));
     const vides = await page.evaluate(() => [...new Set(window.__vides)]);
     resultat.ardoise.push({ exo: nom, vides });
+    const guide = await page.evaluate(() => window.__guide ?? []);
+    if (guide.length) check(guide.every((g) => g === 0), `ardoise · ${nom} : la consigne d'un calcul guidé ne couvre pas l'ardoise (bulle entre l'ardoise et le pavé)`);
     check(faites >= n && effaceOk, `clavier · ${nom} : chiffres, « Retour arrière » et « Entrée » font comme le pavé (${faites} réponses)`);
     check(db.length > 0 && db.filter(Boolean).length >= Math.min(faites, db.length) - 1, `clavier · ${nom} : les réponses tapées au clavier sont justes (${db.filter(Boolean).length}/${db.length})`);
     check(vides.length === 0, `ardoise · ${nom} : jamais vide à l'écran${vides.length ? ` (vide pendant : ${vides.join(" | ")})` : ""}`);

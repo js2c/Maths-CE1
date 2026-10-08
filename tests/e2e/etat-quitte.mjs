@@ -87,7 +87,7 @@ const signature = (page) => page.evaluate(() => {
 async function launch(page, to) {
   const T = EX[to], old = await page.evaluate(() => window.__app.session?.id ?? null);
   if (process.env.TRACE) await page.evaluate(() => { window.__leaves = []; const f = window.__app.facts; if (f) { const o = f.leave.bind(f); f.leave = () => { window.__leaves.push(new Error().stack); o(); }; } });
-  await tap(page, `.choix-ex[aria-label="${T.ex}"]`, 300); await tap(page, `.choix-ex[aria-label="${T.ex}"]`, 700); await tap(page, `.choix-tuile[data-key="${T.key}"]`, 300); await tap(page, `.choix-tuile[data-key="${T.key}"]`, 300);
+  await tap(page, `.choix-ex[aria-label="${T.ex}"]`, 450); await tap(page, `.choix-ex[aria-label="${T.ex}"]`, 700); await tap(page, `.choix-tuile[data-key="${T.key}"]`, 450); await tap(page, `.choix-tuile[data-key="${T.key}"]`, 300);
   // (la question de la NOUVELLE séance : pendant que l'ancienne s'arrête, sa question est encore là)
   await page.waitForFunction(`window.__app.session && window.__app.session.id !== ${JSON.stringify(old)} && ${T.ready}`, null, { timeout: 90000 }); await page.waitForTimeout(300);
   if (to !== "ligne") await pad(page, "1");

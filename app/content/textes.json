@@ -206,19 +206,19 @@
       "5": "Chaque saut vaut dix.",
       "6": "Seules les dizaines sont écrites : trouve les autres nombres.",
       "7": "Un saut vaut un, ou il vaut dix.",
-      "8": "Il n'y a pas de traits : tu devines où va le nombre.",
-      "9": "Chaque saut vaut cent.",
+      "8": "Il n'y a pas de traits : place le nombre à peu près.",
+      "9": "Les grands nombres, jusqu'à mille.",
       "10": "Entre deux centaines, chaque saut vaut dix.",
       "11": "Sur un petit bout de ligne, chaque saut vaut un.",
-      "12": "Tu entends un grand nombre, et tu l'écris en chiffres.",
-      "13": "Il n'y a pas de traits : tu devines où va le grand nombre."
+      "12": "Écoute le nombre, et écris-le en chiffres.",
+      "13": "Il n'y a pas de traits : place le grand nombre à peu près."
     },
     "additions": {
       "1": "La tortue fait un ou deux sauts.",
       "2": "Deux fois le même nombre, jusqu'à cinq plus cinq.",
       "3": "Ce qui manque pour faire dix.",
       "4": "Deux nombres qui font le nombre du toit.",
-      "5": "Deux nombres qui font huit ou neuf, avec le cadre de dix.",
+      "5": "Deux nombres qui font huit ou neuf, avec la boîte de dix.",
       "6": "Un double, et encore un.",
       "7": "Toutes les additions que tu connais déjà.",
       "8": "Une boîte de dix bien pleine, et ce qui reste.",
@@ -235,19 +235,19 @@
       "4": "Les unités s'ajoutent, la dizaine ne bouge pas.",
       "5": "Les unités s'enlèvent, la dizaine ne bouge pas.",
       "6": "Plus dix, puis un pas en arrière.",
-      "7": "On va d'abord jusqu'à la dizaine, puis on ajoute le reste.",
+      "7": "On va d'abord jusqu'au nombre rond, puis on ajoute le reste.",
       "8": "Les dizaines d'abord, puis les unités.",
-      "9": "On recule d'abord jusqu'à la dizaine, puis on enlève le reste."
+      "9": "On recule d'abord jusqu'au nombre rond, puis on enlève le reste."
     },
     "voiliers": {
       "1": "Range le bateau entre deux dizaines.",
       "2": "Range le bateau entre deux bouées : lis bien leurs nombres.",
       "3": "Range le bateau entre deux centaines.",
-      "4": "Range le bateau entre deux dizaines, après cent.",
-      "5": "Le nombre est juste à côté d'une bouée : avant, ou après ?",
-      "6": "Lis bien les bouées : le nombre est juste à côté de l'une d'elles.",
-      "7": "Cinq bouées : trouve le bon passage.",
-      "8": "Les bouées ne sont pas toutes à la même distance : lis bien chaque nombre.",
+      "4": "Range le bateau entre deux dizaines, avec de grands nombres.",
+      "5": "Avant la bouée, ou après ?",
+      "6": "Lis bien les nombres des bouées.",
+      "7": "Trouve le bon passage.",
+      "8": "Lis bien chaque nombre.",
       "9": "Tu ranges le bateau deux fois : d'abord de loin, puis tout près."
     },
     "multiplication": {
@@ -255,7 +255,7 @@
       "2": "Trois fois quatre, c'est trois rangées de quatre.",
       "3": "Fois deux, c'est le double.",
       "4": "Fois dix, ce sont des dizaines.",
-      "5": "Fois cinq, c'est la moitié de fois dix.",
+      "5": "On compte de cinq en cinq.",
       "6": "Trois fois cinq, c'est pareil que cinq fois trois.",
       "7": "On compte de trois en trois.",
       "8": "Fois quatre, c'est le double du double.",
@@ -278,8 +278,8 @@
       "L14": "Trois fois cinq, c'est pareil que cinq fois trois."
     },
     "tables": {
-      "addition": "Touche une case : je te dis le calcul.",
-      "multiplication": "Touche une case : je te dis le calcul."
+      "addition": "Toutes les additions de zéro à dix, dans une grille.",
+      "multiplication": "Toutes les multiplications jusqu'à dix fois dix, dans une grille."
     }
   },
   "choixTable": "La table d'addition.",

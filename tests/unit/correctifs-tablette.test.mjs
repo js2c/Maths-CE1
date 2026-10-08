@@ -37,10 +37,12 @@ test("2 : choisir en deux touchers : le premier sélectionne, le second sur la m
   assert.equal(new Selection().dehors(), null);
 });
 
-test("2 : la bulle d'une tuile : huit places au plus, deux par coin, pointe sur un coin, boîtes dans l'écran et hors de la tuile", () => {
+test("2 : la bulle d'une tuile : huit places au plus, deux par coin (puis les mêmes, éloignées), pointe sur un coin, boîtes dans l'écran et hors de la tuile", () => {
   for (const r of [[421, 178, 571, 314], [1009, 178, 1159, 314], [421, 634, 571, 770], [1009, 634, 1159, 770], [700, 400, 880, 580]]) {
     const ps = placesTuile(r);
-    assert.ok(ps.length >= 1 && ps.length <= 8);
+    const pres = ps.filter((p) => !p.loin);
+    assert.ok(pres.length >= 1 && pres.length <= 8 && ps.slice(0, pres.length).every((p) => !p.loin), "d'abord les places collées au coin");
+    assert.ok(ps.filter((p) => p.loin).every((p) => p.boite[3] - p.boite[1] >= 100));
     for (const p of ps) {
       const [a, b, c, d] = p.boite;
       assert.ok(a >= 0 && b >= 0 && c <= 1280 && d <= 800, `${p.nom} dans l'écran`);

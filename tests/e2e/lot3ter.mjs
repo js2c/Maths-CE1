@@ -199,7 +199,7 @@ if (part("appui")) {
     await page.waitForSelector(".choix-ex"); await page.waitForTimeout(300);
     for (const ex of ["ligne", "additions", "calcul", "voiliers"]) await probe(page, "choisir", `.choix-ex[aria-label="${ex}"]`, ex);
     for (const ex of ["ligne", "additions", "calcul", "voiliers"]) {
-      await press(page, `.choix-ex[aria-label="${ex}"]`, 60).then((r) => r()); await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(500);
+      await press(page, `.choix-ex[aria-label="${ex}"]`, 60).then((r) => r()); await page.waitForTimeout(450); await press(page, `.choix-ex[aria-label="${ex}"]`, 60).then((r) => r()); await page.waitForSelector(".choix-tuile"); // (deux touchers) await page.waitForTimeout(500);
       const keys = await page.evaluate(() => [...document.querySelectorAll(".choix-tuile")].map((e) => e.dataset.key));
       for (const k of keys) await probe(page, `niveaux ${ex}`, `.choix-tuile[data-key="${k}"]`, k, { shot: (ex === "calcul" && k === "7") || (ex === "ligne" && k === "1") });
       await probe(page, `niveaux ${ex}`, ".legende", "légende", { brief: async (p) => !!(await p.evaluate(() => window.__app.legendOpen)) });

@@ -152,6 +152,10 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .bulle-texte .m { opacity: 0; transition: opacity 0.12s; white-space: nowrap; } /* (lot « Les voiliers » : « trois-cent-quarante-sept » n'est jamais coupé à un trait d'union) */
 .bulle-texte .m.on { opacity: 1; }
 .bulle-texte .nb { color: #d63a26; font-weight: 700; }
+/* (lot « Correctifs de la tablette ») la tuile sélectionnée (premier toucher) invite au second, comme « jouer » */
+.choix-tuile.choisie, .choix-ex.choisie, .lecons-tuile.choisie { animation: invite 1.6s ease-in-out infinite; }
+/* (lot « Correctifs de la tablette ») la bulle d'une tuile, sur les écrans de choix pleins de tuiles : un peu plus petite */
+.bulle.tuile .bulle-texte, .bulle.large .bulle-texte { font-size: 26px; }
 .bulle.pop { animation: bulle-pop 0.38s ease-out; }
 @keyframes bulle-pop { 0% { transform: scale(0.9); opacity: 0.4; } 70% { transform: scale(1); opacity: 1; } 85% { transform: scale(0.985); } 100% { transform: scale(1); } }
 /* (lot « Correctifs de la tablette ») l'écran de démarrage (session/demarrage.js) : par-dessus tout, l'eau profonde, plus

@@ -69,7 +69,7 @@ async function choisir() {
       const s = await ouvrir(nav, { base, nom: true });
       await toucher(s.page, ".choisir"); await attendre(s.page, () => document.querySelector(".choix-ex")); await pause(s.page, 900);
       if (ex === "ligne") await S.shot(s.page, { ecran: "choisir : les exercices", etat: base === "neuve" ? "base neuve" : "un mois" });
-      await toucher(s.page, `.choix-ex[aria-label="${ex}"]`); await pause(s.page, 300); await toucher(s.page, `.choix-ex[aria-label="${ex}"]`); await attendre(s.page, () => document.querySelector(".choix-tuile")); await pause(s.page, 1200);
+      await toucher(s.page, `.choix-ex[aria-label="${ex}"]`); await pause(s.page, 450); await toucher(s.page, `.choix-ex[aria-label="${ex}"]`); await attendre(s.page, () => document.querySelector(".choix-tuile")); await pause(s.page, 1200);
       await S.shot(s.page, { ecran: `choisir : ${ex === "lecons" ? "les leçons" : ex === "ligne" ? "niveaux de la ligne graduée" : ex === "additions" ? "familles d'additions" : "niveaux du calcul rapide"}`, etat: base === "neuve" ? "base neuve" : "un mois" });
       await s.context.close();
     }

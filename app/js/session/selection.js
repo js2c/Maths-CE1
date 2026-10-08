@@ -32,8 +32,8 @@ export function deuxTouchers(app, { tuiles, texte, etiquette = () => null, peind
   const { voice, bulle, stage } = app, sel = new Selection();
   // (la place d'un bouton : celle de son style, en px de la scène ; sa boîte à l'écran est réduite pendant son petit rebond)
   const rect = (b) => { const x = parseFloat(b.style.left), y = parseFloat(b.style.top); return [x, y, x + parseFloat(b.style.width), y + parseFloat(b.style.height)]; };
-  let cur = null, fini = false;
-  const vider = () => { if (sel.dehors() !== "vide") return; const b = cur; cur = null; peindre(null); b?.repaint(); voice.stop(); bulle.ancrer(null); };
+  let cur = null, fini = false, quand = 0;
+  const vider = () => { if (sel.dehors() !== "vide") return; const b = cur; cur = null; peindre(null); b?.classList.remove("choisie"); b?.repaint(); voice.stop(); bulle.ancrer(null); };
   return new Promise((res) => {
     // un toucher hors des tuiles (pas sur un bouton de commande) désélectionne
     // (l'écran quitté sans rien lancer, par la maison ou le retour : ses tuiles ne sont plus là, l'écouteur s'en va)
@@ -43,16 +43,24 @@ export function deuxTouchers(app, { tuiles, texte, etiquette = () => null, peind
     for (const b of tuiles) {
       onBrief(app, b, () => {
         if (fini) return;
-        const k = b.dataset.key, r = sel.toucher(k);
-        if (r === "lancee") { pop(b); return finir(k); }
+        // (relecture du lot : un second toucher moins de 0,3 s après le premier, un doigt qui rebondit ou un double toucher
+        // trop rapide, ne lance pas : la mascotte a le temps de commencer à dire ce que c'est)
+        const k = b.dataset.key, t0 = performance.now();
+        if (cur === b && t0 - quand < (app.toucher?.secondToucherMs ?? 300)) return;
+        const r = sel.toucher(k); quand = t0;
+        if (r === "lancee") { b.classList.remove("choisie"); pop(b); return finir(k); }
         const avant = cur; cur = b; peindre(k);
-        avant?.repaint(); b.repaint(); pop(b);
+        avant?.classList.remove("choisie"); avant?.repaint(); b.repaint(); pop(b);
+        // la tuile sélectionnée se balance doucement, comme la bulle « jouer » : elle invite au second toucher
+        setTimeout(() => { if (cur === b && !fini) b.classList.add("choisie"); }, 450);
         // la bulle part d'un coin de la tuile ; elle évite la tuile, les boutons de commande, la tête de la mascotte, et si
         // possible les tuiles voisines (comptées deux fois), puis les autres
         const t = texte(k), r0 = rect(b), toutes = tuiles.filter((x) => x.checkVisibility?.({ visibilityProperty: true }) ?? true).map(rect);
         const proches = voisines(r0, toutes.filter((o) => o.join() !== r0.join()));
+        // (le compteur d'étoiles : à éviter si possible, comme les tuiles voisines)
+        const etoiles = [...stage.ui.querySelectorAll(".hud.stars")].map(rect);
         const fixes = [...stage.ui.querySelectorAll(".homekey, .session-home, .choix-retour, .legende, .mascotte-tap")].filter((e) => e.checkVisibility?.({ visibilityProperty: true }) ?? true).map(rect);
-        bulle.ancrer({ texte: t, places: placesTuile(r0), obstacles: () => ({ durs: [r0.map((v, i) => v + (i < 2 ? -4 : 4)), ...fixes], souples: [...proches, ...proches, ...toutes.filter((o) => o.join() !== r0.join())] }) });
+        bulle.ancrer({ texte: t, places: placesTuile(r0), obstacles: () => ({ durs: [r0.map((v, i) => v + (i < 2 ? -4 : 4)), ...fixes], souples: [...proches, ...proches, ...etoiles, ...toutes.filter((o) => o.join() !== r0.join())] }) });
         voice.stop(); voice.say(t);
       }, () => etiquette(b.dataset.key));
     }

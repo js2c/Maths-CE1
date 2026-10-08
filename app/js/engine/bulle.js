@@ -89,7 +89,10 @@ export function choisirPlace(obstacles, mesure, places = PLACES, souples = []) {
   for (const place of places) {
     const [w, h] = mesure(largeurMax(place.boite), place), p = poser(place, w, h);
     const couvre = obstacles.reduce((s, o) => s + aire(p.rect, o), 0) + (p.deborde ? 1e6 : 0), gene = souples.reduce((s, o) => s + aire(p.rect, o, 0), 0);
-    const r = { place, w, h, ...p, couvre, gene, score: couvre * 1000 + gene };
+    // (lot « Correctifs de la tablette » : `touche`, ce qu'elle couvre vraiment, sans la marge de 8 px : la bulle ne s'efface que
+    // pour cela ; un frôlement de la marge, à la mesure près, l'effaçait sur les écrans de choix)
+    const touche = obstacles.some((o) => aire(p.rect, o, 0) > 1) || p.deborde;
+    const r = { place, w, h, ...p, couvre, gene, touche, score: couvre * 1000 + gene };
     if (!r.score) return r;
     if (!best || r.score < best.score) best = r;
   }
@@ -172,7 +175,7 @@ export class Bulle {
       this.txt.append(s); return s;
     });
     this.layout();
-    if (this.place.couvre) { this.shown = false; this.el.classList.add("cachee"); return; } // nulle part sans couvrir une cible
+    if (this.place.touche) { this.shown = false; this.el.classList.add("cachee"); return; } // nulle part sans couvrir une cible
     this.el.classList.remove("cachee", "pop"); void this.el.offsetWidth; this.el.classList.add("pop");
     this.shown = true;
     // les mots apparaissent au rythme de la phrase (poids : la longueur de chaque mot)
@@ -232,7 +235,7 @@ export class Bulle {
   verifier() {
     if (!this.shown || !this.place) return;
     const { durs, souples } = this.obstacles();
-    if (durs.some((o) => aire(this.place.rect, o) > 0)) { this.layout(); if (this.place.couvre) this.cacher(); return; }
+    if (durs.some((o) => aire(this.place.rect, o, 0) > 1)) { this.layout(); if (this.place.touche) this.cacher(); return; }
     if (this.place.gene || souples.some((o) => aire(this.place.rect, o, 0) > 0)) { const avant = this.place.place.nom; this.layout(); if (this.place.place.nom !== avant) { this.el.classList.remove("pop"); void this.el.offsetWidth; this.el.classList.add("pop"); } }
   }
   // pour les tests : où elle est, ce qu'elle dit, ce qu'elle couvre

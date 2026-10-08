@@ -30,7 +30,8 @@ export const voisines = (r, toutes, portee = 1.45) => {
 // `peindre(clé | null)` (la tuile sélectionnée est redessinée avec sa bordure). Renvoie une promesse : la clé lancée.
 export function deuxTouchers(app, { tuiles, texte, etiquette = () => null, peindre = () => {} }) {
   const { voice, bulle, stage } = app, sel = new Selection();
-  const rect = (b) => { const k = stage.k, r0 = stage.ui.getBoundingClientRect(), r = b.getBoundingClientRect(); return [(r.left - r0.left) / k, (r.top - r0.top) / k, (r.right - r0.left) / k, (r.bottom - r0.top) / k]; };
+  // (la place d'un bouton : celle de son style, en px de la scène ; sa boîte à l'écran est réduite pendant son petit rebond)
+  const rect = (b) => { const x = parseFloat(b.style.left), y = parseFloat(b.style.top); return [x, y, x + parseFloat(b.style.width), y + parseFloat(b.style.height)]; };
   let cur = null, fini = false;
   const vider = () => { if (sel.dehors() !== "vide") return; const b = cur; cur = null; peindre(null); b?.repaint(); voice.stop(); bulle.ancrer(null); };
   return new Promise((res) => {

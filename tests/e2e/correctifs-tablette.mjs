@@ -54,7 +54,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
     const suite = [p1]; for (let i = 0; i < 6; i++) { await sleep(page, 400); suite.push(await part()); }
     check(suite.every((v, i) => i === 0 || v >= suite[i - 1]) && suite.at(-1) > p1, `${W} démarrage : la barre avance (${suite.map((v) => Math.round(v)).join(" → ")} %)`);
     await page.waitForSelector(".demarrage.pret", { timeout: 60000 }); await sleep(page, 600);
-    check(Math.round(await part()) >= 99, `${W} démarrage : la barre est pleine quand tout est chargé`);
+    check(Math.round(await part()) === 100, `${W} démarrage : la barre est pleine quand tout est chargé`);
     check(await page.evaluate(() => window.__app?.ocean.mascotte.etat().pret === true), `${W} démarrage : prêt seulement quand les vidéos de la mascotte sont chargées`);
     await shot(page, "02-demarrage-pret");
     check(await page.evaluate(() => window.__ready === undefined), `${W} démarrage : l'accueil attend le toucher`);
@@ -85,8 +85,8 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
       await page.waitForFunction(() => window.__app.bulle.etat().visible, null, { timeout: 8000 }).catch(() => {});
       await sleep(page, 350);
       const r = await page.evaluate((s) => {
-        const e = document.querySelector(s), k = window.__app.stage.k, r0 = window.__app.stage.ui.getBoundingClientRect(), b = e.getBoundingClientRect();
-        return { tuile: [(b.left - r0.left) / k, (b.top - r0.top) / k, (b.right - r0.left) / k, (b.bottom - r0.top) / k], bulle: window.__app.bulle.etat() };
+        const e = document.querySelector(s), x = parseFloat(e.style.left), y = parseFloat(e.style.top); // (la place de la tuile, hors de son rebond)
+        return { tuile: [x, y, x + parseFloat(e.style.width), y + parseFloat(e.style.height)], bulle: window.__app.bulle.etat() };
       }, sel);
       const { rect, place, texte, visible } = r.bulle, t = r.tuile;
       const dedans = rect && rect[0] >= 0 && rect[1] >= 0 && rect[2] <= 1280 && rect[3] <= 800;
@@ -208,19 +208,19 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   if (W !== 1280) continue;
   const reponse = () => {
     const f = window.__app.facts, q = f.q;
-    if (q.dictee) return String(q.n ?? q.answer);
+    if (q.dictee) return String(q.answer);
     if (q.pont) return String(q.n);
     if (q.module === 5) return String(q.forme === "trouDroite" ? q.b : q.forme === "trouGauche" ? q.a : q.a * q.b);
     if (q.module === 3) return String(q.forme === "trouDroite" ? (q.op === "-" ? q.a - q.n : q.n - q.a) : q.forme === "trouGauche" ? (q.op === "-" ? q.n + q.b : q.n - q.b) : q.n);
     const n = q.n ?? q.a + q.b; return String(q.forme === "trouDroite" ? n - q.a : q.forme === "trouGauche" ? n - q.b : n);
   };
-  const veille = () => { window.__vides = []; setInterval(() => { const f = window.__app.facts; if (!f) return; const s = f.slate, v = getComputedStyle(s).visibility === "visible" && !s.closest(".stash") && !document.querySelector("#stage.paused"); if (v && !f.q && !f.slateQ) window.__vides.push(window.__app.bulle.etat().texte || "(silence)"); }, 40); };
+  const veille = () => { window.__vides = []; setInterval(() => { const f = window.__app?.facts; if (!f) return; const s = f.slate, v = getComputedStyle(s).visibility === "visible" && !s.closest(".stash") && !document.querySelector("#stage.paused"); if (v && !f.q && !f.slateQ) window.__vides.push(window.__app.bulle.etat().texte || "(silence)"); }, 40); };
   const exos = [
     ["additions (échauffement et notion du jour)", "&choix=2:3&cran=conseille&faits=3&guides=0&sansLecon", 6],
     ["calcul rapide (calculs guidés d'un niveau nouveau)", "&choix=3:4&cran=conseille&sans=echauffement&sansLecon", 6],
     ["calcul rapide (questions)", "&choix=3:2&cran=conseille&sans=echauffement&sansLecon", 4],
     ["multiplication", "&choix=5:3&cran=conseille&sans=echauffement&sansLecon&guides=0", 4],
-    ["dictée (ligne, niveau 12)", "&choix=1:12&cran=conseille&sans=echauffement&sansLecon&guides=0", 3],
+    ["dictée (ligne, niveau 12, avec son exemple guidé)", "&choix=1:12&cran=conseille&sans=echauffement&sansLecon&guides=1", 3],
   ];
   for (const [nom, q, n] of exos) {
     const { context, page, errors } = await nouveau();

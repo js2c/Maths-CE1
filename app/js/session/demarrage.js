@@ -54,9 +54,9 @@ export class Demarrage {
   }
   // des tâches annoncées d'avance, terminées une à une (`un()`) : les vidéos de la mascotte
   annoncer(n, poids = 1) { this.total += n * poids; return () => { this.fait += poids; this.montrer(avancement(this.fait, this.total)); }; }
-  // le plein de la barre, dévoilé de gauche à droite (le bord du dessin, 12 px de chaque côté, est toujours là)
+  // le plein de la barre, dévoilé de gauche à droite (son bord gauche, 12 px, est là dès le début ; tout, chargement fini)
   montrer(p) {
-    this.part = p; const marge = 12 / BARRE.w, droite = (1 - (marge + (1 - 2 * marge) * p)) * 100;
+    this.part = p; const marge = 12 / BARRE.w, droite = (1 - marge) * (1 - p) * 100;
     this.plein.style.clipPath = `inset(0 ${droite.toFixed(2)}% 0 0)`;
   }
   // tout est chargé : le logo invite au toucher ; renvoie une promesse résolue au premier toucher (ou tout de suite en mode

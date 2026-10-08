@@ -42,6 +42,8 @@ export class Dictation {
     if (guide && !lesson) {
       let abort = null; const abortP = new Promise((_, rej) => { abort = () => rej(SKIPPED); }); abortP.catch(() => {});
       const g = (p) => Promise.race([p, abortP]), skip = skipKey(this.app, () => abort(), "passer l'exemple");
+      // (lot « Correctifs de la tablette » : l'ardoise montre le nombre de l'exemple ; sans question posée, elle restait vide)
+      this.fs.q = { ...q, dictee: true }; this.fs.typed = ""; this.fs.ring = false; this.fs.slate.repaint(); this.fs.showSlate();
       try {
         await g(voice.say(text.pick("guideEcrire")));
         await g(this.showParts(n)); this.fs.write("", false);

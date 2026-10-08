@@ -5,7 +5,7 @@
 //   - rien de l'ancien décor (ses sprites n'existent plus ; aucun acteur dans le calque des visiteurs hors surprise) ;
 //   - aucune erreur dans la page.
 //   node tests/e2e/lagon.mjs [--out dossier] [--seul 1280|1920]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

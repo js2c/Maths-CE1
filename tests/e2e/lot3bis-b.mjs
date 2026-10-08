@@ -19,7 +19,7 @@
 //               L10 (rien sur le rocher, « 100 » une fois), bulles « 800 », « 900 », le bernard-l'ermite entier, « rejouer »
 //   reprise   — R12 : calcul guidé (niveau 7), la maison pendant le « bravo » d'un caillou, visite du récif, « continuer » :
 //               la consigne est redite (« On continue ! Plus 1 ? »)
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

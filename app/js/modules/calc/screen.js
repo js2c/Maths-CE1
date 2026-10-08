@@ -34,7 +34,9 @@ export class CalcScreen {
   get board() { return this.app.aidBoard; }
   consigne(q) {
     const T = this.app.text.data;
-    if (q.pont) return fill(q.op === "-" ? T.calcPont.moins : T.calcPont.plus, { k: q.b }).replace(/\.$/, " ?");
+    // (lot « Correctifs de la tablette », point 5 : « Plus 10 ? », composé ici, n'était pas dans l'inventaire de la voix et
+    // passait par la synthèse du navigateur ; c'est la phrase du pont, « Plus 10. », qui existe déjà)
+    if (q.pont) return fill(q.op === "-" ? T.calcPont.moins : T.calcPont.plus, { k: q.b });
     if (q.forme === "trouDroite") return fill(q.op === "-" ? T.calcTrouMoins : T.calcTrouPlus, { a: q.a, n: q.n });
     // (lot 3 bis : le trou sur le nombre de départ, « Combien plus 10 ? Ça fait 57. »)
     if (q.forme === "trouGauche") return fill(q.op === "-" ? T.calcTrouDepartMoins : T.calcTrouDepartPlus, { b: q.b, n: q.n });

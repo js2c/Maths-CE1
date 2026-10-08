@@ -5,7 +5,7 @@
 //  - 7.6 : au mur (niveau 2), une erreur non reconnue fait dire « Hmm, regardons ensemble. » (plus de « chemin ») ;
 //  - 10.1 : l'espace parent, bloc « Cartes », sans les cadeaux de la surprise (ni « undefined »).
 //   node tests/e2e/correctifs.mjs [--out dossier] [--seul 1280|1920]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

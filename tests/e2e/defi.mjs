@@ -4,7 +4,7 @@
 // montrée, le temps continue), premier record et ses 5 étoiles ; second défi avec un record à battre (le
 // drapeau). Vérifie la base (réponses `defi`, record, séance) et que chaque phrase dite a son fichier.
 // Captures dans tests/e2e/out/defi.
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

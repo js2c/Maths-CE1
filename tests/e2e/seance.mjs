@@ -3,7 +3,7 @@
 // première fois) et son exercice guidé -> questions (justes et fausses) -> récompense -> « à demain ». Puis vérifie la base (séance terminée, réponses, étoiles, aucun nom)
 // et qu'une relance le même jour affiche la lune au lieu de « jouer ». Captures dans tests/e2e/out/seance.
 //   node tests/e2e/seance.mjs [--out dossier] [--questions 3]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

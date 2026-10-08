@@ -2,7 +2,7 @@
 // Les images viennent du flux d'écran de Chromium (CDP Page.startScreencast), assemblées en MP4 à
 // 30 images/s avec leurs vrais horodatages. Processeur non ralenti : on montre le rendu, les mesures
 // sont faites par perf.mjs.   FFMPEG=/chemin/ffmpeg node tests/e2e/video.mjs [--out fichier.mp4]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { execFileSync } from "node:child_process";
 import { mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { join, resolve } from "node:path";

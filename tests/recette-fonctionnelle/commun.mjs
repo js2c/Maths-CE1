@@ -4,7 +4,7 @@
 //  - ce que dit la voix, relevé à chaque phrase (window.__dit) ;
 //  - la capture (JPEG, qualité 80) avec sa légende : écran, état, voix, tout ce qui est touchable ;
 //  - les planches contact de 4 captures (2 × 2, légendées) ; l'index de chaque partie.
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "../e2e/navigateur.mjs";
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";

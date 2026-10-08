@@ -13,7 +13,7 @@
 //  7. la table de multiplication : la consigne, une case (« 3 fois 4, 12. »), 10 × 10 ;
 //  8. l'espace parent : le bloc de la multiplication, le point de départ.
 //   node tests/e2e/multiplication.mjs [--out dossier] [--seul 1280|1920]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

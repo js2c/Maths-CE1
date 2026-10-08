@@ -12,7 +12,7 @@
 //  5. la maison pendant une leçon du menu : retour à l'accueil, sans « À toi ! » ;
 //  6. L10 : le chalut plein de dix filets de dix poissons.
 //   node tests/e2e/lecons-menu.mjs [--out dossier] [--seul 1280|1920]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

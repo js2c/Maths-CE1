@@ -10,7 +10,7 @@
 //   - le journal des raccords de la mascotte : combien de fondus forcés ;
 //   - aucune erreur dans la page.
 //   node tests/e2e/mascotte.mjs [--out dossier] [--seul 1280|1920]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

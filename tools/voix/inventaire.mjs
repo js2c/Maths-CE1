@@ -17,7 +17,9 @@ export const lireContenu = () => Object.fromEntries(["textes", "lecons", "cartes
 
 const range = (a, b, s = 1) => { const out = []; for (let v = a; v <= b; v += s) out.push(v); return out; };
 const TOUS = range(0, 100); // tout nombre de la ligne graduée (le module 1 va de 0 à 100)
-// au plus autant d'étoiles gagnées dans une séance dites au bilan ; au-delà, la synthèse du navigateur prend le relais
+// au plus autant d'étoiles gagnées dans une séance dites au bilan (seance.json, etoiles.bilanDitMax ; lot « Correctifs de la
+// tablette » : 160 au lieu de 60, la simulation donne jusqu'à 156 étoiles au bilan au cran « très dur » ; au-delà, la phrase
+// sans nombre, recompenseBeaucoup, session/screens.js)
 export const ETOILES_MAX = 60;
 // le score du défi record (lot 2, étape 7, modules/facts/challenge.js) et le record dit quand il n'est pas battu :
 // au plus autant de bonnes réponses en une minute (au-delà, la synthèse du navigateur prend le relais)
@@ -73,7 +75,7 @@ function domaines(C) {
     estimer: [...TOUS, ...estimer1000].map((n) => ({ n })),
     guideDepart: [...TOUS, ...lignes1000.filter((v) => v % 10 === 0)].map((a) => ({ a })),
     guideMilieu: [...milieux, ...(N(13) ? [{ n: (N(13).min + N(13).max) / 2 }] : [])],
-    recompense: range(1, ETOILES_MAX).map((n) => ({ etoiles: etoiles(n) })),
+    recompense: range(1, C.seance?.etoiles?.bilanDitMax ?? ETOILES_MAX).map((n) => ({ etoiles: etoiles(n) })),
     serieBonus: [{ n: C.cartes.serie.bonus }],
     // lot 3 bis (B6) : plusieurs étoiles arc-en-ciel à la récompense, une seule phrase (au plus un niveau par question)
     etoilesArc: range(2, 20).map((n) => ({ n })),

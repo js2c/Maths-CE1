@@ -8,7 +8,7 @@
 // d'un démarrage à neuf du même exercice (même page, sans rien quitter avant) : aucune aide, aucun chemin, aucun tableau,
 // aucun chiffre d'avant, pas de « passer » ni de poisson du mur qui traîne.
 //   node tests/e2e/etat-quitte.mjs [--seul additions] [--vers calcul] [--parallele 3]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

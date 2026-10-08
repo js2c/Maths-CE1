@@ -10,7 +10,7 @@
 //  5. L'espace parent : le bloc « Cartes ».
 // Captures dans tests/e2e/out/cartes/ ; échoue si une vérification échoue ou si la page a une erreur.
 //   node tests/e2e/cartes.mjs [--out dossier]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

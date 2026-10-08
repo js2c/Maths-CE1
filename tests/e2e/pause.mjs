@@ -7,7 +7,7 @@
 // est interrompue (raison notée, étoiles gardées) et l'exercice choisi devient la séance du jour, sans refaire
 // l'échauffement déjà passé. Captures dans tests/e2e/out/pause.
 //   node tests/e2e/pause.mjs [--seul ligne] [--out dossier]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

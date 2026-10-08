@@ -3,7 +3,7 @@
 // le bouton « Oui, restaurer »), puis l'accueil (« jouer » : la dernière séance était la veille), l'album, l'espace parent
 // (onglets Calendrier, Séances, Progression) et l'écran « choisir » (niveaux validés, conseillé). Captures regardées.
 //   node tests/e2e/sauvegardes.mjs [--out dossier]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";

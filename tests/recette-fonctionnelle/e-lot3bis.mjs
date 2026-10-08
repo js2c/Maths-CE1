@@ -3,7 +3,7 @@
 // tests/e2e/out/lot3bis-b/, non versionnées) : planches de 4 (2 × 2), en JPEG qualité 80, chaque capture avec sa
 // légende (le constat du rapport qu'elle concerne et ce qu'elle montre). Aucun jugement : le relecteur juge.
 //   node tests/e2e/lot3bis-b.mjs && RECETTE_OUT=tests/recette-fonctionnelle/out-lot3bis node tests/recette-fonctionnelle/e-lot3bis.mjs
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "../e2e/navigateur.mjs";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { OUT, ROOT } from "./commun.mjs";

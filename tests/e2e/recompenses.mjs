@@ -8,7 +8,7 @@
 //     découvrir, zones fermées, perles.
 // Vérifie la base (étoiles dépensées, carte rangée, coquillage compté) et l'absence d'erreur.
 //   node tests/e2e/recompenses.mjs [--out dossier]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

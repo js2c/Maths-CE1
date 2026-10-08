@@ -1,6 +1,6 @@
 // PWA : installable (avis de Chromium) et utilisable hors ligne (réseau coupé après la première visite) ;
 // une seule résolution des planches d'images en cache (lot 1 bis) : celle de l'écran (ici densité 2 : @2x).
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { serve } from "../serve.mjs";
 
 const { srv, url } = await serve(0);

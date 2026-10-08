@@ -6,7 +6,7 @@
 //   appui    : T3, l'appui long de 0,8 s sur chaque bouton recensé : étiquette, rien de lancé, étiquette disparue 0,5 s après
 //              le lever ; toucher bref : lancé ; pavé et bulles-réponses : au premier contact (tableau : out/…/appui.json)
 //   node tests/e2e/lot3ter.mjs [--seul passer,parent,appui] [--out dossier]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";

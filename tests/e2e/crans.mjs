@@ -4,7 +4,7 @@
 // quatre crans (formes directes, à trou). Vérifie : le niveau joué est le niveau choisi, les nombres écrits et les
 // formats suivent module1.json (crans), aucune erreur de page.
 //   node tests/e2e/crans.mjs [--out dossier] [--niveaux 1,5,12]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

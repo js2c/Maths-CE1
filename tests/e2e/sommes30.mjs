@@ -11,7 +11,7 @@
 //  6. la table d'addition : 10 + 4 (les deux boîtes), 7 + 8 (le double + 1), 9 + 9 (le reflet) ;
 //  7. le défi et l'échauffement avec des faits au-delà de 10 (deux chiffres au pavé).
 //   node tests/e2e/sommes30.mjs [--out dossier] [--seul 1280|1920]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

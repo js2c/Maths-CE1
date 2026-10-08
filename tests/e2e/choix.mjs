@@ -3,7 +3,7 @@
 // sélecteur) ; les additions d'une famille pas encore ouverte ; une leçon seule ; « passer » l'échauffement ; le
 // réglage « Échauffement : non » ; « Encore ! » ouvre le même écran. Captures en densité 2.
 //   node tests/e2e/choix.mjs [--out dossier]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

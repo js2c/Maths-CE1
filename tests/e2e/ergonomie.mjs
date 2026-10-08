@@ -13,7 +13,7 @@
 // Le bouton « passer » est toujours le même, à la même place (en haut à droite), zone tactile de 64 px au moins.
 // Captures dans tests/e2e/out/ergonomie.
 //   node tests/e2e/ergonomie.mjs [--out dossier]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

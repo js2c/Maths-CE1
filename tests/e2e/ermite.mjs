@@ -2,7 +2,7 @@
 // 1280 × 800, densité 2) : ses gestes (repos, sortir, montrer, se réjouir, changer de coquille), le cadre de
 // 10, la maison des nombres, le double + 1. Captures dans tests/e2e/out/ermite ; échoue sur une erreur de page.
 //   node tests/e2e/ermite.mjs
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

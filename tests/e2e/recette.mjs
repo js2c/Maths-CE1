@@ -5,7 +5,7 @@
 //   node tests/e2e/recette.mjs [--out dossier] [--delai secondes : temps de réponse de l'enfant, 1,5 par défaut] [--module 2 : notion du jour imposée (lot 2, étape 6)]
 //     [--module 4 : les voiliers (lot « Les voiliers » ; la mer en WebGL logiciel, l'enfant fait glisser le bateau --delai secondes après la fin du nombre dit)]
 //     [--defi : une séance où le défi record a lieu (lot 2, étape 9) : 5 séances déjà terminées, la famille 1 connue (point de départ), la pieuvre déjà nommée]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

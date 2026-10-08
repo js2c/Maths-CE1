@@ -3,7 +3,7 @@
 // « rejouer » au milieu, qui ramène à la scène vide ; lecture jusqu'au bout ; la leçon est notée vue, et
 // aucune erreur n'apparaît. Captures des moments clés dans tests/e2e/out/lecons.
 //   node tests/e2e/lecons.mjs [--out dossier]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

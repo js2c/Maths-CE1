@@ -4,7 +4,7 @@
 // l'animation (tortue et ligne, ou cadre de 10), range l'appui et rend le pavé aussitôt. Réponses notées : aide
 // demandée (coquillage), « aide d'emblée » (cran « plus facile »). Captures dans tests/e2e/out/aide-passer.
 //   node tests/e2e/aide-passer.mjs [--out dossier]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

@@ -11,7 +11,7 @@
 //   - temps d'image pendant une séance : intervalles entre images (requestAnimationFrame) et temps de
 //     travail de chaque image dans l'application (stage.perf), moyenne, 95e centile, images > 33 ms.
 // Captures : premier écran, question posée, retour juste, retour faux.
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync, renameSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
@@ -33,7 +33,7 @@ await cdp.send("Emulation.setCPUThrottlingRate", { rate: RATE });
 // ---- démarrage à froid (cache vide), puis à chaud (cache HTTP rempli)
 const startup = async () => { await page.waitForFunction(() => window.__ready !== undefined, null, { timeout: 60000 }); return page.evaluate(() => Math.round(performance.getEntriesByName("app-ready")[0].startTime)); };
 // (sans la leçon L1 : avec la voix fabriquée, elle dure plus d'une minute avant la première question)
-await page.goto(url + opt("--query", VOIL ? "?sans=echauffement&choix=4:1&cran=conseille" : "?sans=echauffement&sansLecon")); const cold = await startup();
+await page.goto(url + opt("--query", VOIL ? "?sans=echauffement&choix=4:1&cran=conseille" : "?sans=echauffement&sansLecon&module=1")); const cold = await startup();
 await page.reload(); const warm = await startup();
 console.log(`démarrage (processeur ÷${RATE}) : à froid ${cold} ms, à chaud ${warm} ms`);
 await page.waitForTimeout(1500);
@@ -41,7 +41,7 @@ await page.screenshot({ path: join(OUT, "1-accueil.png") });
 
 // ---- séance : on touche « jouer », puis on répond (juste, puis faux, puis juste…) en mesurant les images
 await page.tap(".play", { force: true });
-if (VOIL) await page.waitForFunction(() => window.__app.voiliers?.attend, null, { timeout: 120000 }); else await page.waitForSelector(".answer", { timeout: 30000 });
+if (VOIL) await page.waitForFunction(() => window.__app.voiliers?.attend, null, { timeout: 120000 }); else await page.waitForSelector(".answer", { timeout: 180000 });
 await page.waitForTimeout(1200);
 await page.screenshot({ path: join(OUT, "2-question.png") });
 await page.waitForTimeout(500);

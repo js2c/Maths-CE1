@@ -5,7 +5,7 @@
 //   les exports CSV et JSON (contenu vérifié, code parent absent) ; fermer puis rouvrir avec un mauvais code,
 //   puis le bon ; « code oublié » ; la durée de séance ; restaurer la sauvegarde après un effacement.
 // Captures dans tests/e2e/out/parent.   node tests/e2e/parent.mjs [--out dossier]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

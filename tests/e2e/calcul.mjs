@@ -4,7 +4,7 @@
 // « plus facile »), la forme à trou (« très dur »), l'écran « choisir » (quatre exercices depuis le lot « Les leçons », neuf niveaux), la rotation de
 // « jouer » (module imposé), le bloc « Calcul rapide » de l'espace parent. Captures en densité 2 (tests/e2e/out/calcul).
 //   node tests/e2e/calcul.mjs [--out dossier]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

@@ -7,7 +7,7 @@
 //  3. Une collection vide : la mer seule, la voix dit « recifVide ».
 //  4. La maison : l'accueil revient, ses boutons dessinés, le récif libéré (canvas retirés, lagon reparti).
 //   node tests/e2e/recif-vivant.mjs [--out dossier] [--seul 1280|1920]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

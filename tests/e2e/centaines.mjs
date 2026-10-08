@@ -4,7 +4,7 @@
 // filets et poissons), 10, 11, 12 (la dictée : une erreur E7, 3007 pour 307… ; puis juste), 13 (estimer). Vérifie
 // les réponses notées (formes, codes E6 et E7) et que chaque phrase dite a son fichier. Captures dans
 // tests/e2e/out/centaines.
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

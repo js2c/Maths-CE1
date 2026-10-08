@@ -2,7 +2,7 @@
 // du jour, avec la frise en haut, et un agrandissement de la frise. Vérifie aussi qu'elle ne réagit pas
 // au toucher. Sert aux captures « avant / après » des correctifs du 27 septembre 2026.
 //   node tests/e2e/frise.mjs [--out dossier]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

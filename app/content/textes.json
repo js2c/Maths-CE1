@@ -113,6 +113,7 @@
   "accueilConsigneFaite": "La séance du jour est finie. Tu peux jouer encore, regarder les leçons, ou aller voir le récif et l'album.",
   "pauseConsigne": "C'est la pause. Touche la grande bulle pour continuer.",
   "recompenseZero": "Tu as bien travaillé !",
+  "recompenseBeaucoup": "Bravo ! Ce soir, tu as gagné plein d'étoiles de mer !",
   "etoilesArc": "{n} étoiles arc-en-ciel ! Un jour, elles t'ouvriront un nouveau coin du récif.",
   "coquillage": "Tu as assez d'étoiles pour ouvrir un coquillage ! Touche-le.",
   "coquillageEncore": "Et tu peux en ouvrir encore un ! Touche-le.",

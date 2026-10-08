@@ -11,7 +11,7 @@
 //  7. « jouer » avec les voiliers imposés par le parent ; l'espace parent (le bloc des voiliers, le journal des erreurs) ;
 //  8. l'entraînement libre (« Encore ! ») sur les voiliers, quitté par la maison.
 //   node tests/e2e/voiliers.mjs [--out dossier] [--grand] (--grand : seulement 1920 × 1200)
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

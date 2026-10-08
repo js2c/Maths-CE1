@@ -4,7 +4,7 @@
 // Vérifie la base (module 2 noté dans la séance, réponses marquées « notion », exemples guidés) et que chaque
 // phrase dite a son fichier. Captures dans tests/e2e/out/notion2.
 //   node tests/e2e/notion2.mjs [--questions 6] [--famille 3]   (--famille : le parent a marqué connues les familles d'avant)
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

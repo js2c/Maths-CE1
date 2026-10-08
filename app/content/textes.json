@@ -222,7 +222,7 @@
       "6": "Un double, et encore un.",
       "7": "Toutes les additions que tu connais déjà.",
       "8": "Une boîte de dix bien pleine, et ce qui reste.",
-      "9": "Deux fois le même nombre, jusqu'à quinze plus quinze.",
+      "9": "Sept plus sept, treize plus treize : deux fois le même nombre.",
       "10": "Un double, et encore un, jusqu'à dix plus dix.",
       "11": "Un pour faire dix, puis le reste.",
       "12": "On remplit d'abord la boîte de dix.",
@@ -248,7 +248,7 @@
       "6": "Lis bien les bouées : le nombre est juste à côté de l'une d'elles.",
       "7": "Cinq bouées : trouve le bon passage.",
       "8": "Les bouées ne sont pas toutes à la même distance : lis bien chaque nombre.",
-      "9": "D'abord entre deux centaines, puis entre deux dizaines."
+      "9": "Tu ranges le bateau deux fois : d'abord de loin, puis tout près."
     },
     "multiplication": {
       "1": "Tu ajoutes les rangées de poissons.",
@@ -259,10 +259,10 @@
       "6": "Trois fois cinq, c'est pareil que cinq fois trois.",
       "7": "On compte de trois en trois.",
       "8": "Fois quatre, c'est le double du double.",
-      "9": "Les tables de deux, trois, quatre, cinq et dix, mélangées."
+      "9": "Deux, trois, quatre, cinq et dix, dans le désordre."
     },
     "lecons": {
-      "L1": "On compte les sauts, pas les bouées.",
+      "L1": "La tortue saute : on compte ses sauts, pas les bouées.",
       "L2": "Avec des filets de dix poissons.",
       "L3": "Elle peut commencer à trente.",
       "L4": "Deux fois le même nombre, comme dans un miroir.",

@@ -109,6 +109,9 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     await qOpen(page, 60000); await page.waitForTimeout(400);
     const rb = await board(page); check(rowsOk(rb) && rb[3] < 500, `${T} · après l'exemple : les petites rangées au-dessus du pavé (${rb})`);
     for (let i = 0; i < 3 && (await q(page)).guide; i++) { await typeIn(page, (await q(page)).attendu); await page.waitForTimeout(1500); await qOpen(page, 60000); }
+    // (mesure des attentes du bloc : la réponse de l'exemple restait écrite, l'enfant qui la tapait était comptée fausse)
+    const gj = await page.evaluate(async () => (await window.__app.store.all("reponses")).filter((r) => r.module === 5 && r.guide).map((r) => `${r.donnee}/${r.attendue}`));
+    check(gj.length > 0 && gj.every((x) => x.split("/")[0] === x.split("/")[1]), `${T} · l'exemple guidé, la réponse tapée : juste (${gj.join(" ")})`);
     await page.waitForFunction(() => { const s = window.__app.facts; return s?.q && !s.q.guide && s.resolve && !s.locked; }, null, { timeout: 120000, polling: 100 }); await page.waitForTimeout(500);
     let x = await q(page);
     check(x.module === 5 && x.niveau === 1 && x.addition && x.image === "toujours", `${T} · une question du niveau 1 : en addition, les rangées affichées (${x.a} × ${x.b}, ${x.image})`);

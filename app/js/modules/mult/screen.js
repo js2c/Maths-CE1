@@ -124,6 +124,9 @@ export class MultScreen {
       fs.write(multAnswer(q)); await g(voice.say(fill(T.multCorrection, { a: q.a, b: q.b, n: q.n })));
       await g(wait(500 / k)); await g(voice.say(T.aToiFait));
     } catch (e) { if (e !== SKIPPED) throw e; voice.stop(); q.passe = true; }
+    // (mesure des attentes du bloc : la réponse écrite par l'exemple restait sur l'ardoise, et l'enfant qui la tapait à son
+    // tour écrivait « 22 » au lieu de « 2 » : l'exemple guidé était compté faux)
+    fs.typed = ""; fs.ring = false; fs.slate.repaint();
     skip.remove(); this.paintBand(q);
   }
   // après la réponse (FactsScreen.submit) : bravo, ou la correction (la phrase de l'erreur, les rangées comptées, le calcul)

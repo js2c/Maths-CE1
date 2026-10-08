@@ -40,7 +40,7 @@ jobs:
       - name: Liste des fichiers pour le mode hors ligne
         run: |
           node tools/precache.mjs
-          git diff --quiet -- app/sw-files.json app/sw.js || echo "::warning::app/sw-files.json n'était pas à jour dans le dépôt : la liste a été refaite pour cette publication (lancer node tools/precache.mjs)."
+          git diff --quiet -- app/sw-files.json app/sw.js app/version.json || echo "::warning::app/sw-files.json n'était pas à jour dans le dépôt : la liste a été refaite pour cette publication (lancer node tools/precache.mjs)."
       - name: Tests unitaires
         run: npm test
         env:

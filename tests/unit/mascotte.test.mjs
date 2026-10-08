@@ -132,7 +132,7 @@ test("le contenu : pas de nom, la bienvenue, la relance ; plus de choix du nom",
   for (const k of ["nomDemande", "nomTouche", "nomValider", "nomChoisi"]) assert.equal(T[k], undefined, k);
   assert.equal(S.noms, undefined);
   assert.ok(T.accueil.length >= 2 && T.accueil.every((t) => /bienvenue/i.test(t)), "la bienvenue");
-  assert.equal(T.relanceAide, "Prends ton temps. Tu peux réécouter la consigne."); // docs/SPEC.md, section 11
+  assert.equal(T.relanceAide, "Prends ton temps. Touche-moi pour réécouter la consigne."); // docs/SPEC.md, section 11 (lot « Correctifs de la tablette » : on touche la mascotte)
   assert.ok(!/chooseName|nomDemande/.test(read("app/js/main.js") + read("app/js/session/screens.js")));
   assert.ok(!/Nom de la pieuvre|pieuvre s'appelle/.test(read("app/js/parent/parent.js")));
 });

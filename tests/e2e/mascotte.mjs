@@ -110,7 +110,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   await page.tap(".session-home", { force: true }); await page.waitForTimeout(800);
   e = await shot("17-pause");
   check(e.m.suspendue && !e.m.parle && !e.b.visible && e.m.ambiance === "pause", `${W} pause : la mascotte se tait et attend, plus de bulle`);
-  await page.tap(".speaker", { force: true }); check(await bulle(/pause/), `${W} pause : « réécouter » écrit la phrase de la pause`);
+  await page.tap(".mascotte-tap", { force: true }); check(await bulle(/pause/), `${W} pause : « réécouter » écrit la phrase de la pause`);
   await page.waitForTimeout(800); await shot("18-pause-reecouter");
   await page.waitForTimeout(4000); await page.tap(".bubble.play", { force: true });
   check(await bulle(/On continue/), `${W} reprise : « On continue ! » et la consigne`);
@@ -128,11 +128,11 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   await go(`&choix=2:3&cran=facile&sans=echauffement,defi&sansLecon&guides=0`); await page.tap(".play", { force: true });
   await pave(); await page.locator(".nsp").filter({ visible: true }).first().tap({ force: true }).catch(() => {});
   await bulle(/./); await page.waitForTimeout(900); await shot("22-additions-correction");
-  await pave(); await page.tap(".speaker", { force: true }); await bulle(/./); await page.waitForTimeout(900); await shot("23-additions-consigne");
+  await pave(); await page.tap(".mascotte-tap", { force: true }); await bulle(/./); await page.waitForTimeout(900); await shot("23-additions-consigne");
   await go(`&choix=3:2&cran=conseille&sans=echauffement,defi&sansLecon`); await page.tap(".play", { force: true });
-  await pave(); await page.tap(".speaker", { force: true }); await bulle(/./); await page.waitForTimeout(700); await shot("24-calcul");
+  await pave(); await page.tap(".mascotte-tap", { force: true }); await bulle(/./); await page.waitForTimeout(700); await shot("24-calcul");
   await go(`&cran=conseille&sans=notion,defi`); await page.tap(".play", { force: true });
-  await pave(); await page.tap(".speaker", { force: true }); await bulle(/./); await page.waitForTimeout(700); await shot("25-echauffement");
+  await pave(); await page.tap(".mascotte-tap", { force: true }); await bulle(/./); await page.waitForTimeout(700); await shot("25-echauffement");
 
   // ---- 7. la dictée (niveau 12) : la correction montre le nombre décomposé, la flèche au-dessus
   await go(`&choix=1:12&cran=facile${ROW}`); await page.tap(".play", { force: true });

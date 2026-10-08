@@ -6,7 +6,7 @@
 // à gauche) la met en pause ; la frise d'avancement montre où l'on en est.
 import { repriseText } from "./engine/toucher.js";
 import { Ocean, rng } from "./engine/ocean.js";
-import { Bulle } from "./engine/bulle.js";
+import { Bulle, MASCOTTE } from "./engine/bulle.js";
 import { Fleche } from "./engine/fleche.js";
 import { Lagon } from "./engine/lagon.js";
 import { LineView } from "./engine/line.js";
@@ -51,6 +51,10 @@ import { additionTable, exerciseOf, lessonEnd, lessonsMenu } from "./session/les
 import { clock } from "./engine/clock.js";
 import { onBrief, pop, skipKey } from "./engine/ui.js";
 import { ParentSpace, parentLogo } from "./parent/parent.js";
+import { Demarrage } from "./session/demarrage.js";
+
+// les vidéos de la mascotte (engine/mascotte.js, CLIPS) : autant de pas dans la barre de chargement
+const MASCOTTE_VIDEOS = 17;
 
 const T0 = performance.now();
 const json = async (p) => (await fetch(p)).json();
@@ -59,19 +63,29 @@ const stage = new Stage(document.getElementById("stage"));
 // hors ligne : le service worker met toute l'application en cache (pas en file://, ni pendant les tests qui
 // le désactivent), avec une seule résolution des planches d'images : celle que cet écran utilise (sprites.js)
 if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !location.search.includes("nosw")) navigator.serviceWorker.register(`sw.js?r=${stage.px > 1.2 ? 2 : 1}`).catch(() => {});
-const [atlas, module1, module2, textes, seance, lecons, cartes, calendrier, parentContent, voix] = await Promise.all([loadAtlas(), json("content/module1.json"), json("content/module2.json"), json("content/textes.json"), json("content/seance.json"), json("content/lecons.json"), json("content/cartes.json"), json("content/calendrier.json"), json("content/parent.json"), json("assets/voix/index.json").catch(() => null)]);
-const [sonContent, sonIndex, module3, legendes, module4, module5] = await Promise.all([json("content/son.json"), json("assets/son/index.json").catch(() => null), json("content/module3.json"), json("content/legendes.json"), json("content/module4.json"), json("content/module5.json")]);
+// (lot « Correctifs de la tablette ») L'ÉCRAN DE DÉMARRAGE (session/demarrage.js) : l'atlas et la petite planche du logo
+// d'abord, puis tout le reste, chaque chargement faisant avancer la barre : les contenus et l'index de la voix, les planches
+// du premier écran, les vidéos de la mascotte (créée tout de suite : ses vidéos se chargent pendant le reste)
+const atlas = await loadAtlas();
 const sprites = new Sprites(atlas, stage.px);
+await sprites.load("demarrage").catch(() => {});
+const demarrage = new Demarrage(stage, sprites);
+performance.mark("demarrage-visible");
+json("version.json").then((v) => demarrage.infos(v?.version), () => demarrage.infos(null));
+// (lot « Mascotte ») le journal des raccords de la mascotte : gardé pour la recette (combien de fondus forcés)
+const journalMascotte = []; window.__journalMascotte = journalMascotte;
+const videoChargee = demarrage.annoncer(MASCOTTE_VIDEOS, 1);
+const ocean = new Ocean(stage, sprites, atlas, { rapide: location.search.includes("voix=rapide"), progres: videoChargee, journal: (texte, genre, info) => { journalMascotte.push({ t: Math.round(performance.now()), texte, genre, ...info }); if (journalMascotte.length > 2000) journalMascotte.shift(); } });
+const T = (p, poids = 1) => demarrage.tache(p, poids);
+const [module1, module2, textes, seance, lecons, cartes, calendrier, parentContent, voix] = await Promise.all([T(json("content/module1.json")), T(json("content/module2.json")), T(json("content/textes.json")), T(json("content/seance.json")), T(json("content/lecons.json")), T(json("content/cartes.json")), T(json("content/calendrier.json")), T(json("content/parent.json")), T(json("assets/voix/index.json").catch(() => null), 3)]);
+const [sonContent, sonIndex, module3, legendes, module4, module5] = await Promise.all([T(json("content/son.json")), T(json("assets/son/index.json").catch(() => null)), T(json("content/module3.json")), T(json("content/legendes.json")), T(json("content/module4.json")), T(json("content/module5.json"))]);
 // la base locale ; au premier lancement, on demande au navigateur de ne jamais l'effacer de lui-même
 const store = await Store.open();
 if (!(await store.setting("premierLancement"))) { await store.setSetting("premierLancement", new Date().toISOString()); await store.setSetting("stockagePersistant", await persist()); }
-await Promise.all(["lagon", "lagon-vie", "poissons", "petits", "tortue"].map((s) => sprites.load(s)));
+await Promise.all(["lagon", "lagon-vie", "poissons", "petits", "tortue"].map((s) => T(sprites.load(s), 2)));
 // le fond de toute l'application : le lagon du récif vivant (engine/lagon.js) ; par-dessus, la mascotte et les acteurs
 const lagon = new Lagon(stage, sprites, atlas);
 lagon.paintStatic();
-// (lot « Mascotte ») le journal des raccords de la mascotte : gardé pour la recette (combien de fondus forcés)
-const journalMascotte = []; window.__journalMascotte = journalMascotte;
-const ocean = new Ocean(stage, sprites, atlas, { rapide: location.search.includes("voix=rapide"), journal: (texte, genre, info) => { journalMascotte.push({ t: Math.round(performance.now()), texte, genre, ...info }); if (journalMascotte.length > 2000) journalMascotte.shift(); } });
 stage.ticks.add((t, dt) => { lagon.update(t, dt); lagon.render(); ocean.update(t, dt); ocean.render(); });
 stage.start();
 // un changement d'échelle (rotation, fenêtre) demanderait d'autres planches : on recharge simplement
@@ -143,16 +157,27 @@ window.__app = app;
 stage.ticks.add(() => sound.duck(voice.speaking));
 
 // le premier écran est prêt : on le note pour la mesure du démarrage
-requestAnimationFrame(() => requestAnimationFrame(() => { performance.mark("app-ready"); window.__ready = performance.now() - T0; }));
+// (lot « Correctifs de la tablette » : `__ready` et le repère « app-ready » sont posés à la fin, quand l'écran de démarrage
+// s'efface)
 sprites.load("aides"); // lot 2 : les aides visuelles du module 2 (petite planche : cadre de 10, maison, bulle dorée)
 
 // ---------------------------------------------------------------- en-tête : réécouter, étoiles de mer
 // (lot 3 bis, R22) « réécouter » reste visible pendant la pause (`keep`) ; à l'accueil, il redit ce qu'on peut faire ; en
 // pause, il le dit aussi, avec une file de voix à part (la voix de la séance, en pause, est rendue intacte ensuite)
+// (lot « Correctifs de la tablette », point 7 ; décision du parent du 8 octobre 2026) plus de bouton « réécouter » en haut à
+// droite : on TOUCHE LA MASCOTTE pour la faire répéter (mêmes effets : la consigne redite, le compteur d'écoutes, la bulle
+// refaite). La zone à toucher couvre toute la tête (MASCOTTE, 210 × 280 px). Là où la mascotte n'est pas affichée (le récif
+// vivant), le bouton « réécouter » revient, comme avant.
 const speaker = spriteBox(app, { x: 1140, y: 8, w: 130, h: 130, cls: "hud speaker keep", label: "réécouter", paint: (ctx) => sprites.draw(ctx, "reecouter", 0, 65, 65) });
+const headTap = document.createElement("button");
+headTap.className = "mascotte-tap keep"; headTap.setAttribute("aria-label", "réécouter");
+Object.assign(headTap.style, { left: `${MASCOTTE.x}px`, top: `${MASCOTTE.y}px`, width: `${MASCOTTE.w}px`, height: `${MASCOTTE.h}px` });
+stage.ui.append(headTap);
+let headShown = null;
+stage.ticks.add(() => { const v = ocean.mascotteVisible; if (v === headShown) return; headShown = v; headTap.style.visibility = v ? "visible" : "hidden"; speaker.style.visibility = v ? "hidden" : "visible"; });
 let pauseTalk = null;
-onBrief(app, speaker, async () => {
-  speaker.classList.remove("pop"); void speaker.offsetWidth; speaker.classList.add("pop");
+const replay = async (from) => {
+  if (from === headTap) pop(ocean.mascotteEl); else pop(speaker);
   if (app.enPause && !visiting) {
     if (pauseTalk) return;
     pauseTalk = voice.suspend();
@@ -160,7 +185,9 @@ onBrief(app, speaker, async () => {
     return;
   }
   voice.replay();
-}, "reecouter");
+};
+onBrief(app, speaker, () => replay(speaker), "reecouter");
+onBrief(app, headTap, () => replay(headTap), "reecouter");
 const hud = new StarHud(app, rewards);
 app.hud = hud;
 
@@ -363,12 +390,16 @@ app.parent = parent;
 // (pendant une pause, le parent peut terminer la séance : endPausedSession)
 const openParent = async () => { voice.stop(); sound.suspend(); const r = await parent.open(); if (r?.terminer) await endPausedSession({ par: "parent", raison: "terminée par le parent pendant une pause" }); if (r?.reload) location.reload(); sound.setPrefs(await store.setting("son")); sound.resume(); };
 const big = (name, cx, cy, label, cls = "bubble") => spriteBox(app, { x: cx - 90, y: cy - 90, w: 180, h: 180, cls, label, paint: (ctx) => sprites.draw(ctx, name, 0, 90, 90) });
-let homeEls = [];
-const clearHome = () => { homeEls.forEach((e) => e.remove()); homeEls = []; };
-async function showHome({ done, first = false }) {
+let homeEls = [], bienvenueEnCours = false;
+// (une bulle touchée pendant la bienvenue du lancement la coupe : la suite parle aussitôt)
+const clearHome = () => { homeEls.forEach((e) => e.remove()); homeEls = []; if (bienvenueEnCours) { bienvenueEnCours = false; voice.stop(); } };
+async function showHome({ done, first = false, bienvenue = false }) {
   clearHome(); ocean.mascotte.ambiance("pause"); fleche.cacher();
   // (lot 3 bis, R22) ce que « réécouter » redit à l'accueil
   voice.instruction = done ? text.data.accueilConsigneFaite : text.data.accueilConsigne;
+  // (lot « Correctifs de la tablette ») à l'arrivée sur l'accueil, après l'écran de démarrage : la mascotte salue et souhaite
+  // la bienvenue (une fois par lancement ; distincte de la bienvenue qui suit « jouer », qui reste)
+  if (bienvenue) { bienvenueEnCours = true; ocean.mascotte.play("saluer"); voice.say(text.pick("bienvenueLancement")).then(() => { bienvenueEnCours = false; }); }
   const reefKey = big("recif", HOME_X[3], 650, "le récif", "bubble reefkey"), albumKey = big("album", HOME_X[4], 650, "l'album", "bubble albumkey");
   // (lot « Les leçons ») la bulle « les leçons », avant comme après la séance du jour
   const lessonsKey = big("accueil.lecons", HOME_X[2], 650, "les leçons", "bubble leconskey");
@@ -588,7 +619,7 @@ sprites.keep = ALWAYS; // jamais libérées (engine/sprites.js, unload)
 function sandbox() {
   const o = ocean, st = stage, kids = (el) => new Set(el.children);
   const ui = kids(st.ui), front = kids(o.frontEl), root = kids(st.root);
-  const hidden = [...[...ui].filter((e) => !e.matches(".stars, .speaker, .session-home, .bulle")), ...front, ...[...root].filter((e) => e.matches("#line, #fx, #aides, .aid-board, canvas.voiliers"))];
+  const hidden = [...[...ui].filter((e) => !e.matches(".stars, .speaker, .mascotte-tap, .session-home, .bulle")), ...front, ...[...root].filter((e) => e.matches("#line, #fx, #aides, .aid-board, canvas.voiliers"))];
   hidden.forEach((e) => e.classList.add("stash"));
   const actors = [...o.actors], oFront = [...o.front], ticks = new Set(st.ticks), sheets = sprites.held();
   // (l'écran de la ligne de la séance reste en place, masqué : une leçon en pause a le sien ; les additions, le calque des
@@ -662,4 +693,11 @@ async function freeTraining(start = null) {
   app.free = free;
   await (start ? free.start(start) : free.menu());
 }
-showHome({ done: await doneToday(store) });
+// (lot « Correctifs de la tablette ») tout est chargé, les vidéos de la mascotte comprises : l'écran de démarrage attend un
+// toucher, qui autorise aussi la voix ; puis l'accueil, où la mascotte souhaite la bienvenue (une fois par lancement)
+await ocean.mascotte.pret;
+const toucheDemarrage = await demarrage.attendreToucher();
+if (toucheDemarrage) { voice.unlock(); sound.unlock(); }
+await demarrage.fermer();
+showHome({ done: await doneToday(store), bienvenue: toucheDemarrage });
+requestAnimationFrame(() => requestAnimationFrame(() => { performance.mark("app-ready"); window.__ready = performance.now() - T0; }));

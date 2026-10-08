@@ -20,6 +20,7 @@ import { GLOW_PAD, drawChooseKey, drawExerciseLine, drawFamilyTile, drawLineTile
 import { ATOI_R, drawAToiKey, drawBigHomeKey, drawLessonMenuTile, drawLessonsKey, drawRowIcon, drawTableTile, HOME_BIG_S, LESSON_ATOI, LESSON_IDS } from "./lecons";
 import { drawBigFlag, drawCloseKey, drawHintKey, drawLegendKey, drawShrugKey, drawSmallFish, drawStarTrail, drawTagFish, drawTallNet, drawZoneTab, FLAG_N, HOUSE_FISH, LEGEND_R, NETV_H, NETV_W, TAG, TAG_FISH_N, TRAIL_H, TRAIL_W, ZONE_TAB_R } from "./lot3bis";
 import { drawWarmupSkipKey } from "./lot3ter";
+import { BAR_H, BAR_W, drawBar, drawLogo, LOGO_H, LOGO_W } from "./demarrage";
 import { drawAgainKey, drawAlbumKey, drawFreeFacts, drawFreeLessons, drawFreeLine, drawMoonDecor, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepGlow, drawStepShell, GLOW_R, STEP_R } from "./ui";
 
 // la tortue dans l'application : longueur ~110 px logiques, assez petite pour tenir sur une bouée
@@ -38,6 +39,10 @@ export type Spec = {
 // sea/octopus.ts pour l'icône de l'application, appIcon.ts, et la planche de modèle octoSheet.ts.)
 
 export const SPECS: Spec[] = [
+  // (lot « Correctifs de la tablette ») l'écran de démarrage : le logo « Maths CE1 » (avec son étoile de mer et ses bulles) et
+  // la barre de chargement, vide et pleine ; une petite planche à elle, chargée la première (main.js)
+  { name: "demarrage.logo", sheet: "demarrage", W: LOGO_W + 80, H: LOGO_H + 90, origin: [LOGO_W / 2 + 40, LOGO_H / 2 + 30], frames: 1, draw: (g) => drawLogo(g, LOGO_W / 2 + 40, LOGO_H / 2 + 30) },
+  ...([["vide", false], ["pleine", true]] as const).map(([k, full]): Spec => ({ name: `demarrage.barre.${k}`, sheet: "demarrage", W: BAR_W + 30, H: BAR_H + 30, origin: [BAR_W / 2 + 10, BAR_H / 2 + 10], frames: 1, draw: (g) => drawBar(g, BAR_W / 2 + 10, BAR_H / 2 + 10, full) })),
   // (lot « Lagon en fond d'exercices » : le fond, ses rayons, ses algues et ses reflets ne sont plus fabriqués ici ; le fond de
   // l'application est le lagon du récif vivant, extrait par tools/export-lagon.mjs. Récif vivant, 5 octobre 2026 : plus de
   // créatures dessinées en code (planche « recif »), de décors des doublons (« decors »), de cadeaux ni de perles de page ;

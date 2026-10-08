@@ -16,7 +16,7 @@
 //    graphique (12 images/s au lieu de 24) ;
 //  - le journal des raccords (`journal`) : gardé pour la recette (combien de fondus forcés).
 // La bulle n'est pas gérée ici : engine/bulle.js.
-export function creerMascotte({ canvas, base = "assets/mascotte/", journal = () => {}, statut = null, rapide = false, niveau = () => 0 }) {
+export function creerMascotte({ canvas, base = "assets/mascotte/", journal = () => {}, statut = null, rapide = false, niveau = () => 0, progres = () => {} }) {
   const W = 450, H = 600;
   const T0 = performance.now();
   const now = () => (performance.now() - T0) / 1000;
@@ -375,7 +375,9 @@ export function creerMascotte({ canvas, base = "assets/mascotte/", journal = () 
   // tant que les vidéos ne sont pas chargées, les demandes sont ignorées (la mascotte démarre en attente)
   const request0 = L.request.bind(L);
   L.request = (req) => { if (pret) request0(req); else if (req.onCancel) req.onCancel(); };
-  M.pret = Promise.all(Object.keys(CLIPS).map(loadVideo)).then(() => { pret = true; M.attente("départ"); requestAnimationFrame(tick); });
+  // RACCORD (lot « Correctifs de la tablette ») : chaque vidéo chargée fait avancer la barre de l'écran de démarrage
+  M.nbVideos = Object.keys(CLIPS).length;
+  M.pret = Promise.all(Object.keys(CLIPS).map((k) => loadVideo(k).then(() => { try { progres(); } catch (e) {} }))).then(() => { pret = true; M.attente("départ"); requestAnimationFrame(tick); });
   document.addEventListener("pointerdown", () => { M.activite(); if (visible && L.cur && L.cur.video.paused && !L.cur.video.ended) L.cur.video.play().catch(() => {}); }, { passive: true });
   M.etat = () => ({ clip: L.cur && L.cur.clip, tag: L.cur && L.cur.tag, ambiance: M.amb, fps: L.fps, rendu: R.kind, attente: !!L.pending, pret, visible, suspendue, parle: M.parle });
 

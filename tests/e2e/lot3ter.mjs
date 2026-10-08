@@ -222,7 +222,7 @@ if (part("appui")) {
     await page.waitForFunction(() => window.__app.session?.progress.etape === "echauffement", null, { timeout: 30000 });
     for (;;) { await nextQ(page); if (!(await page.evaluate(() => window.__app.facts.q.base))) break; await answer(page, true); await page.waitForTimeout(400); }
     await page.waitForTimeout(500);
-    await probe(page, "échauffement", ".speaker", "réécouter", { shot: true, brief: async (p, b0) => JSON.parse(await p.evaluate(SIG)).said > JSON.parse(b0).said });
+    await probe(page, "échauffement", ".mascotte-tap", "réécouter (la mascotte)", { shot: true, brief: async (p, b0) => JSON.parse(await p.evaluate(SIG)).said > JSON.parse(b0).said });
     await probe(page, "échauffement", '.key[data-key="effacer"]', "effacer", { first: true });
     await probe(page, "échauffement", '.key[data-key="valider"]', "coche du pavé", { first: true });
     // un chiffre : au premier contact

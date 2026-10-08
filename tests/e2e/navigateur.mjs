@@ -7,6 +7,7 @@
 //  - une phrase de l'inventaire pas encore fabriquée est seulement signalée (le parent la fabriquera, docs/VOIX.md ;
 //    VOIX_A_FABRIQUER=stricte : elle fait échouer aussi) ;
 //  - une phrase volontairement absente (un texte d'essai) est permise par `voixPermise(/…/)`.
+// Il pose aussi `__demarrageAuto` (l'écran de démarrage s'efface seul, ci-dessous).
 import { chromium as pw } from "../../art/node_modules/playwright-core/index.mjs";
 import { inventaire } from "../../tools/voix/inventaire.mjs";
 
@@ -15,7 +16,15 @@ export const voixPermise = (...re) => { permises.push(...re); };
 // les phrases relevées jusqu'ici (pour un parcours qui veut les vérifier lui-même)
 export const voixManquees = () => [...manquees.keys()];
 const noter = (_source, s) => { if (typeof s === "string") manquees.set(s, (manquees.get(s) ?? 0) + 1); };
-const brancher = async (cible) => { try { await cible.exposeBinding("__voixManquee", noter); } catch { /* déjà posé */ } return cible; };
+// (lot « Correctifs de la tablette » : l'écran de démarrage attend un toucher ; dans les parcours, il s'efface seul quand tout
+// est chargé, sans la bienvenue du lancement : `__demarrageAuto`. Un parcours qui l'essaie le remet à false, par un script
+// posé après celui-ci : demarrageReel(contexte).)
+const brancher = async (cible) => {
+  try { await cible.exposeBinding("__voixManquee", noter); } catch { /* déjà posé */ }
+  try { await cible.addInitScript(() => { window.__demarrageAuto ??= true; }); } catch { /* déjà posé */ }
+  return cible;
+};
+export const demarrageReel = (cible) => cible.addInitScript(() => { window.__demarrageAuto = false; });
 
 const envelopper = (browser) => {
   const newContext = browser.newContext.bind(browser), newPage = browser.newPage.bind(browser);

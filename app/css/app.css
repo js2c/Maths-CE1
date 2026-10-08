@@ -7,6 +7,11 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 /* la mascotte (lot « Mascotte ») : la tête en vidéo détourée, dans son canvas (450 × 600), posée en haut à gauche (ocean.js) */
 #stage > #mascotte { position: absolute; pointer-events: none; }
 #mascotte > canvas { display: block; width: 100%; height: 100%; }
+/* (lot « Correctifs de la tablette ») la tête se touche pour réécouter : une zone transparente sur toute la tête ; touchée,
+   la tête fait un petit rebond (jamais d'agrandissement : de 0,96 à 1) */
+.mascotte-tap { position: absolute; padding: 0; border: 0; background: none; outline: none; cursor: pointer; touch-action: manipulation; }
+#mascotte.pop { animation: touche-tete 0.35s ease-out; transform-origin: 50% 80%; }
+@keyframes touche-tete { 0% { transform: scale(0.96); } 60% { transform: scale(1); } 80% { transform: scale(0.985); } 100% { transform: scale(1); } }
 #stage > #line, #stage > #fx { inset: auto; left: 0; width: 100%; } /* bande de la ligne graduée : top et height posés par line.js */
 /* les acteurs : un petit canvas chacun, déplacé par le compositeur (actor.js) */
 .actors { position: absolute; inset: 0; pointer-events: none; }
@@ -149,3 +154,14 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .bulle-texte .nb { color: #d63a26; font-weight: 700; }
 .bulle.pop { animation: bulle-pop 0.38s ease-out; }
 @keyframes bulle-pop { 0% { transform: scale(0.9); opacity: 0.4; } 70% { transform: scale(1); opacity: 1; } 85% { transform: scale(0.985); } 100% { transform: scale(1); } }
+/* (lot « Correctifs de la tablette ») l'écran de démarrage (session/demarrage.js) : par-dessus tout, l'eau profonde, plus
+   claire en haut à gauche (la lumière) ; le logo, la barre de chargement, les petites lignes d'information. Chargement fini :
+   le logo invite au toucher ; touché, l'écran s'efface en fondu */
+.demarrage { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; z-index: 100; cursor: pointer; touch-action: none;
+  background: radial-gradient(ellipse 900px 640px at 28% 18%, #17808c 0%, #0f6773 45%, #0b5563 75%, #08434e 100%); }
+.demarrage > canvas { position: absolute; display: block; pointer-events: none; }
+.demarrage-barre.plein { transition: clip-path 0.25s linear; }
+.demarrage.pret .demarrage-logo { animation: invite 1.6s ease-in-out infinite; }
+.demarrage.pret .demarrage-barre { animation: barre-prete 1.6s ease-in-out infinite; }
+@keyframes barre-prete { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.12); } }
+.demarrage.partir { opacity: 0; transition: opacity 0.4s ease-out; pointer-events: none; }

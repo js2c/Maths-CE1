@@ -18,14 +18,15 @@ export const rng = (seed) => { let a = seed >>> 0; return () => { a = (a + 0x6d2
 
 export class Ocean {
   // options : { rapide } (le mode accéléré des tests : la mascotte ne fait rien attendre), { journal } (ses raccords)
-  constructor(stage, sprites, atlas, { rapide = false, journal = () => {} } = {}) {
+  // (lot « Correctifs de la tablette » : { progres }, appelé à chaque vidéo chargée, pour la barre de l'écran de démarrage)
+  constructor(stage, sprites, atlas, { rapide = false, journal = () => {}, progres = () => {} } = {}) {
     this.st = stage; this.sp = sprites; this.atlas = atlas;
     const layer = (id) => { const d = document.createElement("div"); d.id = id; d.className = "actors"; return d; };
     // ordre d'empilement : fond et lagon (lagon.js), ligne graduée, visiteurs (backEl), mascotte, premier plan (étoile, tortue), boutons
     this.backEl = layer("back"); this.frontEl = layer("front");
     const el = (this.mascotteEl = stage.root.querySelector("#mascotte")), canvas = el.querySelector("canvas");
     stage.root.insertBefore(this.backEl, el); stage.root.insertBefore(this.frontEl, stage.ui);
-    this.mascotte = creerMascotte({ canvas, rapide, journal, niveau: () => stage.perf.level });
+    this.mascotte = creerMascotte({ canvas, rapide, journal, progres, niveau: () => stage.perf.level });
     this.mascotteVisible = true; this.shown = true;
     this.front = []; // rappels appelés à chaque image pour les acteurs du premier plan : f(t)
     this.t = 0; this.actors = [];

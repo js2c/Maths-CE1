@@ -53,7 +53,7 @@ async function run(n, { record = null, answers = 12, wrongAt = 3 } = {}) {
   // (lot 3 bis, B6) la fin : le pavé rangé, les perles jusqu'au score, le grand drapeau du record, la phrase du résultat
   await page.waitForSelector(".defi-drapeau", { timeout: 15000 }).catch(() => {}); await page.waitForTimeout(600); await shot("5b-drapeau");
   const fin = await page.evaluate(() => ({ drapeau: !!document.querySelector(".defi-drapeau"), pave: [...document.querySelectorAll(".key")].some((k) => getComputedStyle(k).visibility !== "hidden"), ardoise: getComputedStyle(document.querySelector(".slate")).visibility }));
-  check(fin.drapeau && !fin.pave && fin.ardoise === "hidden", "fin du défi : pavé et ardoise rangés, le drapeau du record planté");
+  check(fin.drapeau && !fin.pave && fin.ardoise === "hidden", `fin du défi : pavé et ardoise rangés, le drapeau du record planté (${JSON.stringify(fin)})`);
   await page.waitForSelector(".tally", { timeout: 60000 }); await page.waitForTimeout(600); await shot("6-recompense");
   const db = await page.evaluate(async () => { const s = window.__app.store; return { se: (await s.all("seances")).at(-1), rep: await s.all("reponses"), rec: await s.get("recompenses", "defi") }; });
   const rep = db.rep.filter((r) => r.defi && r.seance === db.se.id);

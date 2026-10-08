@@ -90,7 +90,9 @@ const voice = new Voice({ rate: 0.9, fast: P.get("voix") === "rapide" }).setInde
 // quand il va seul au bon passage, il est seulement évité si possible)
 const bulle = new Bulle(stage, {
   dures: () => { if (stage.root.classList.contains("paused")) return []; const b = app.line.bande; return [...(b ? [b] : []), ...(app.voiliers?.actif ? app.voiliers.obstacles() : [])]; },
-  souples: () => (app.voiliers?.actif && !stage.root.classList.contains("paused") ? app.voiliers.souples() : []),
+  // (relecture du lot « Multiplication » : l'ardoise de la multiplication, large au niveau 1, « 5 + 5 + 5 + 5 + 5 = ? », est
+  // évitée si possible)
+  souples: () => (stage.root.classList.contains("paused") ? [] : [...(app.voiliers?.actif ? app.voiliers.souples() : []), ...(app.facts?.q?.module === 5 && app.facts.slate?.style.visibility !== "hidden" ? [[495, 120, 1085, 300]] : [])]),
 }), fleche = new Fleche(ocean);
 // (relecture du lot : pendant une question de dictée, la bulle n'écrit rien : elle écrirait en chiffres le nombre à écrire)
 const dicteeEnCours = () => !!(app.facts?.q?.dictee && !app.facts.locked);

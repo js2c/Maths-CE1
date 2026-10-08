@@ -163,7 +163,7 @@ export class FactsScreen {
       else if (kind === "maison") this.paintHouseAid(ctx, q, solved, 0);
       else if (kind === "doublePlus") paintDoublePlus(ctx, sprites, Math.min(q.a, q.b), { cx: 700, y: 500, panel: Math.max(q.a, q.b) > 5 });
       else if (kind === "deuxCadres") this.paintFramesAid(ctx, q, solved);
-      else if (kind === "grandDouble") paintBigDouble(ctx, sprites, q.a, { cx: 700, y: 372, k: 1, panel: true });
+      else if (kind === "grandDouble") paintBigDouble(ctx, sprites, q.a, { cx: 700, y: 372, k: 0.8, panel: true });
       else paintDoublePlus(ctx, sprites, q.a, { cx: 700, y: 500, bonus: false, panel: q.a > 5 }); // (au-delà de 5 + 5, sur nacre : relecture du lot « Sommes jusqu'à 30 »)
     });
     if (kind === "maison") this.animateHouse(q, solved);

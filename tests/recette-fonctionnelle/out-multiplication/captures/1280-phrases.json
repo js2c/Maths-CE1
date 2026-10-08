@@ -3,6 +3,7 @@
     "quoi": "niveau 1 choisi : la leçon L13, puis l'exemple guidé",
     "dit": [
       "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+      "Regarde, quelqu'un vient te dire bonjour !",
       "Maintenant, la multiplication !",
       "Voici trois rangées de poissons.",
       "Dans chaque rangée, il y a quatre poissons.",
@@ -10,26 +11,26 @@
       "Quatre plus quatre plus quatre, douze.",
       "Trois rangées de quatre : on dit trois fois quatre. Trois fois quatre, douze.",
       "Et deux rangées de cinq ? Cinq, dix : deux fois cinq, dix.",
-      "2 rangées de 3 poissons.",
-      "3",
-      "6",
-      "2 fois 3, ça fait 6.",
-      "À toi ! Tape la réponse.",
-      "2 rangées de 3 poissons. Combien de poissons en tout ?"
+      "4 rangées de 4 poissons.",
+      "4",
+      "8",
+      "12",
+      "16",
+      "4 fois 4, ça fait 16.",
+      "À toi ! Tape la réponse."
     ]
   },
   {
-    "quoi": "une erreur M1 sur 5 × 3 (réponse 8) : la correction",
+    "quoi": "une erreur M1 sur 4 × 2 (réponse 6) : la correction",
     "dit": [
-      "Attention : fois, ce n'est pas plus. On compte les rangées.",
-      "5 rangées de 3 poissons.",
-      "3",
+      "Hmm, regardons ensemble.",
+      "4 rangées de 2 poissons.",
+      "2",
+      "4",
       "6",
-      "9",
-      "12",
-      "15",
-      "5 fois 3, ça fait 15.",
-      "5 rangées de 2 poissons. Combien de poissons en tout ?"
+      "8",
+      "4 fois 2, ça fait 8.",
+      "5 rangées de 3 poissons. Combien de poissons en tout ?"
     ]
   },
   {
@@ -38,28 +39,27 @@
       "3 rangées de 2 poissons.",
       "Fois deux, c'est le double.",
       "2",
-      "4",
-      "6"
+      "4"
     ]
   },
   {
     "quoi": "« je ne sais pas »",
     "dit": [
       "Ce n'est pas grave, regardons ensemble.",
-      "2 rangées de 4 poissons.",
+      "2 rangées de 5 poissons.",
       "Fois deux, c'est le double.",
-      "4",
-      "8",
-      "2 fois 4, ça fait 8.",
-      "7 fois 2 ?"
+      "5",
+      "10",
+      "2 fois 5, ça fait 10.",
+      "2 fois 8 ?"
     ]
   },
   {
     "quoi": "le niveau 6, le tour",
     "dit": [
-      "Bienvenue à bord ! On s'entraîne ensemble ?",
-      "Au tour de la multiplication ! On compte les rangées de poissons.",
-      "5 fois 9, ça fait 45. Et 9 fois 5 ?"
+      "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+      "Maintenant, la multiplication !",
+      "2 fois 4, ça fait 8. Et 4 fois 2 ?"
     ]
   },
   {

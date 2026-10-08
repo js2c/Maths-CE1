@@ -12,18 +12,18 @@
    "Huit plus cinq, ça fait treize.",
    "Avec neuf, un seul poisson saute. Neuf plus quatre.",
    "Un pour faire dix, il en reste trois : treize !",
-   "4 pour faire dix, il en reste 1.",
+   "On complète la boîte avec 4, il en reste 1.",
    "5 plus 6, ça fait 11.",
    "À toi ! Tape la réponse.",
-   "5 plus 6 ?"
+   "Combien font 5 plus 6 ?"
   ]
  },
  {
-  "quoi": "une erreur sur 7 + 5 : la correction",
+  "quoi": "une erreur sur 8 + 6 : la correction",
   "dit": [
-   "3 pour faire dix, il en reste 2.",
-   "7 plus 5, ça fait 12.",
-   "Combien font 6 plus 7 ?",
+   "On complète la boîte avec 2, il en reste 4.",
+   "8 plus 6, ça fait 14.",
+   "6 plus 6 ?",
    "On remplit d'abord la boîte de dix, puis on compte ce qui reste."
   ]
  },
@@ -31,9 +31,9 @@
   "quoi": "« je ne sais pas »",
   "dit": [
    "Ce n'est pas grave, regardons ensemble.",
-   "3 pour faire dix, il en reste 3.",
-   "6 plus 7, ça fait 13.",
-   "Combien font 5 plus 7 ?",
+   "On complète la boîte avec 4, il en reste 2.",
+   "6 plus 6, ça fait 12.",
+   "5 plus 8 ?",
    "On remplit d'abord la boîte de dix, puis on compte ce qui reste."
   ]
  },

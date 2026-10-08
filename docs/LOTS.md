@@ -366,21 +366,38 @@ Pas de personnage nouveau : la scène réutilise le décor et les personnages ex
    - **Second toucher sur la même tuile : elle se lance.** Un toucher sur une autre tuile la sélectionne à la place. Un toucher hors des tuiles désélectionne.
    - L'appui long continue de ne rien lancer.
    - Le petit livre de la légende reste, pour le parent.
-3. **Les voiliers rament sur la tablette.**
-   - **D'abord mesurer, puis corriger ce qui coûte.** La côte et les montagnes sont déjà une image (`SKY.coast`), pas de la 3D ; la mer, elle, est calculée en direct (WebGL), comme le détourage de la mascotte. Mesurer image par image ce que coûtent :
-     - la mer à chaque qualité ;
-     - la mascotte ;
-     - les bateaux et les bouées ;
-     - la résolution (densité de pixels).
-   - **Mesures possibles** : processeur ralenti dans le conteneur ; ajouter aussi, dans l'espace parent, un **compteur d'images par seconde** à afficher par-dessus le jeu, pour que le parent puisse relever les chiffres sur la tablette.
-   - **Corriger** :
-     - qualité de départ adaptée à l'appareil ;
-     - mer rendue à une résolution plus basse puis agrandie ;
-     - au besoin, 30 images par seconde visées pour la mer ;
-     - allègement automatique qui descend vraiment quand le temps d'image dépasse 20 ms.
+3. **Les voiliers rament sur la tablette : refaire le rendu de la mer.**
+   - **Mesures du parent du 8 octobre 2026**, sur une page d'essai, avec la tablette (densité 2,25, écran 1138 × 711) :
 
-     Si cela ne suffit pas : une **mer « fixe »** (image de la mer, avec seulement le tangage des bateaux), choisie automatiquement sur un appareil lent, et réglable dans l'espace parent.
-   - Ces changements passent par l'outil d'export, jamais par la maquette.
+     | Réglage | Images/s |
+     | --- | --- |
+     | jeu tel quel : mer 1280 × 800, bateaux 2560 × 1600 | 3 |
+     | mascotte arrêtée | 4 |
+     | mer fixe | 8 |
+     | mer à 40 % et bateaux à 1× | 15 |
+     | mer fixe, bateaux à 1×, sans oiseaux ni bulles (seul réglage à 30) | 30 |
+
+     Ce dernier réglage a un rendu jugé « hideux », surtout la mer.
+   - **La cause** :
+     - la mer est calculée pixel par pixel à chaque image, par un programme lourd : des dizaines de bruits et de vagues par pixel, en haute précision ;
+     - les bateaux et le premier plan sont dessinés à la densité native de l'écran, sur deux couches de plus.
+
+     Ni la côte (déjà une image) ni la mascotte ne sont en cause. Le récif vivant, lui, est fluide sur la même tablette, malgré toutes ses animations : il compose des **images**, sans calcul par pixel.
+   - **Le remède demandé, dans l'esprit du récif et de `CLAUDE.md` (« fabriqué à l'avance »)** :
+     1. **La mer devient une vidéo en boucle fabriquée par l'atelier.** Le programme de la mer de la maquette est rendu hors ligne, à pleine qualité, en une boucle sans raccord visible :
+        - de quelques secondes, en 1280 × 800 ;
+        - une boucle par état de la mer (calme, vent, pirates) ;
+        - en MP4 et WebM, comme les vidéos de la mascotte.
+
+        L'application la joue comme la mascotte : décodage vidéo matériel, une seule texture. Les ombres des bateaux, l'écume, le sillage et la zone allumée sont posés par-dessus en petits dessins légers. Le tangage des bateaux reste calculé comme aujourd'hui. Viser le même aspect que la maquette ; comparer sur captures côte à côte. Poids visé : quelques Mo au total, dans le mode hors ligne.
+     2. **Une seule toile au lieu de trois** (mer, bateaux, premier plan), dessinée au plus à 1,5 fois la résolution de base de l'écran : la tablette n'a plus qu'une image à composer.
+     3. **Au plus 30 images par seconde**, régulières.
+     4. **L'allègement automatique** ne descend plus que vers des réglages acceptables à l'œil : résolution un peu plus basse, oiseaux et bulles coupés. Jamais la mer figée ni les bateaux flous.
+   - **Si la vidéo ne donne pas le rendu voulu**, autre voie, à justifier dans la demande de fusion : une mer animée par deux textures de vagues qui glissent, la technique des jeux sur téléphone, à la place du calcul complet.
+   - **Mesurer** : un **compteur d'images par seconde**, à afficher par-dessus le jeu depuis l'espace parent. Et une **page d'essai autonome** `art/voiliers/essai-fluidite.html`, comme celle du 8 octobre : compteur, réglages séparés, « banc d'essai » qui mesure seul et affiche un tableau.
+
+     Le parent la fera publier en conception pour la tester sur la tablette **avant la fusion**. Objectif : au moins 30 images par seconde sur cette tablette, avec un rendu qu'il juge correct.
+   - Ces changements passent par l'outil d'export et l'atelier, jamais par la maquette.
 4. **L'ardoise vide derrière la bulle** (capture 01, calcul rapide en entraînement) : l'ardoise de l'opération apparaît vide, en arrière-plan, pendant que la bulle parle. Reproduire, trouver la cause et corriger dans tous les exercices et dans l'entraînement libre :
    - jamais d'ardoise vide visible ;
    - la bulle évite l'ardoise quand elle peut (règle du lot « Mascotte »).

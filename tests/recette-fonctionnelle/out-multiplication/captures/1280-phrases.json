@@ -1,0 +1,83 @@
+[
+  {
+    "quoi": "niveau 1 choisi : la leçon L13, puis l'exemple guidé",
+    "dit": [
+      "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+      "Maintenant, la multiplication !",
+      "Voici trois rangées de poissons.",
+      "Dans chaque rangée, il y a quatre poissons.",
+      "Comptons rangée par rangée : quatre, huit, douze.",
+      "Quatre plus quatre plus quatre, douze.",
+      "Trois rangées de quatre : on dit trois fois quatre. Trois fois quatre, douze.",
+      "Et deux rangées de cinq ? Cinq, dix : deux fois cinq, dix.",
+      "2 rangées de 3 poissons.",
+      "3",
+      "6",
+      "2 fois 3, ça fait 6.",
+      "À toi ! Tape la réponse.",
+      "2 rangées de 3 poissons. Combien de poissons en tout ?"
+    ]
+  },
+  {
+    "quoi": "une erreur M1 sur 5 × 3 (réponse 8) : la correction",
+    "dit": [
+      "Attention : fois, ce n'est pas plus. On compte les rangées.",
+      "5 rangées de 3 poissons.",
+      "3",
+      "6",
+      "9",
+      "12",
+      "15",
+      "5 fois 3, ça fait 15.",
+      "5 rangées de 2 poissons. Combien de poissons en tout ?"
+    ]
+  },
+  {
+    "quoi": "le coquillage sur 3 × 2",
+    "dit": [
+      "3 rangées de 2 poissons.",
+      "Fois deux, c'est le double.",
+      "2",
+      "4",
+      "6"
+    ]
+  },
+  {
+    "quoi": "« je ne sais pas »",
+    "dit": [
+      "Ce n'est pas grave, regardons ensemble.",
+      "2 rangées de 4 poissons.",
+      "Fois deux, c'est le double.",
+      "4",
+      "8",
+      "2 fois 4, ça fait 8.",
+      "7 fois 2 ?"
+    ]
+  },
+  {
+    "quoi": "le niveau 6, le tour",
+    "dit": [
+      "Bienvenue à bord ! On s'entraîne ensemble ?",
+      "Au tour de la multiplication ! On compte les rangées de poissons.",
+      "5 fois 9, ça fait 45. Et 9 fois 5 ?"
+    ]
+  },
+  {
+    "quoi": "le menu, la leçon 14 regardée jusqu'au bout, « À toi ! »",
+    "dit": [
+      "On tourne les rangées.",
+      "Trois rangées de cinq poissons : trois fois cinq, quinze.",
+      "On tourne l'image.",
+      "Maintenant, cinq rangées de trois. Toujours quinze poissons !",
+      "Trois fois cinq, c'est pareil que cinq fois trois.",
+      "Neuf fois deux ? C'est deux fois neuf : le double de neuf, dix-huit.",
+      "À toi ! Touche la grande bulle pour t'entraîner."
+    ]
+  },
+  {
+    "quoi": "la table de multiplication : 3 × 4, 10 × 10, 7 × 5",
+    "dit": [
+      "7 fois 5, 35."
+    ]
+  }
+]

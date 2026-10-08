@@ -325,6 +325,8 @@ Fait sans vous demander de valider la maquette (votre décision du 7 octobre) : 
 - **Pour vous**, dans l'espace parent : les familles 8 à 13 dans la progression ; la grille des additions colore maintenant toutes les cases jusqu'à 10 + 10 (les grands doubles sont écrits dessous) ; une erreur de plus au journal, « a oublié la dizaine » (7 + 6 = 3) ; le point de départ va jusqu'à la famille 13.
 - **À vérifier sur la tablette** : que les places qui brillent dans les boîtes (formes à trou, « 9 + ? = 13 ») se voient bien ; que l'enfant comprend les poissons qui « sautent » d'une boîte à l'autre.
 
+**Les phrases à fabriquer.** 384 phrases nouvelles, environ 2,7 Mo (surtout les additions de 11 à 20 sous leurs formes, et les explications des deux boîtes) : la liste est dans `docs/maquettes/sommes30/PHRASES.md` ; elles se fabriquent avec les autres lots en attente (`node tools\voix\publier.mjs`, `docs/VOIX.md`, « En une commande »). Tant qu'elles manquent, GitHub ne publie pas la mise à jour.
+
 ## d decies) Lot « Multiplication » : un cinquième exercice, les tables, la table de multiplication
 
 Fait, lui aussi, sans vous demander de valider la maquette (votre décision du 7 octobre) : les choix sont listés dans la demande de fusion et dans `docs/JOURNAL-CONCEPTION.md`.
@@ -335,6 +337,8 @@ Fait, lui aussi, sans vous demander de valider la maquette (votre décision du 7
 - **La table de multiplication**, au bout de cette rangée, à côté de la table d'addition (un grand « × ») : de 1 × 1 à 10 × 10 ; toucher une case dit le calcul (« 7 fois 5, 35. ») et montre les rangées.
 - **Pour vous**, dans l'espace parent : un bloc « Module 5 · La multiplication » (niveau conseillé, niveaux validés, semaine par semaine), deux erreurs au journal (« a additionné au lieu de multiplier », « une rangée ou une colonne de trop ou de moins »), le niveau de la multiplication dans le point de départ, la légende de ses 9 niveaux.
 - **À vérifier sur la tablette** : que les rangées de 10 poissons se lisent bien ; que les totaux écrits au bout des rangées sont assez gros.
+
+**Les phrases à fabriquer.** 561 phrases nouvelles, environ 4 Mo (chaque multiplication posée sous ses formes, les rangées dites, les 100 cases de la table) : la liste est dans `docs/maquettes/multiplication/PHRASES.md`. Avec celles des lots précédents encore en attente, la voix pèsera environ 74 Mo, sous la limite de 80 Mo que vous aviez fixée (il restera environ 6 Mo pour les lots suivants).
 
 ## e) Ce qui reste approximatif ou à ajuster
 

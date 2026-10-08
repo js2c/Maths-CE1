@@ -65,6 +65,42 @@ Au cran « plus facile », l'écriture 600 + 30 + 5 s'affiche sous la cale. Un f
   - leçons : en L9, l'étoile de mer du sable est juste sous « 40 41 » ; en L10, le « 0 » et le « 7 » de 307 décomposé sont écrits sur le rocher de droite ; en L3 et au niveau 11, le « ? » rouge est traversé par les feuilles d'une algue (derrière lui) ;
   - écran « choisir » : les tuiles 10, 11 et 13 de la ligne sont posées devant les algues et les rochers (la règle de la section 3 dit « ni posée sur la pieuvre ou les algues ») : garder ainsi, ou déplacer les tuiles ?
 
+### La fluidité des voiliers sur la tablette (8 octobre 2026, mis de côté par le parent)
+
+Le parent n'est pas encore convaincu par les remèdes proposés : la question est reportée hors du lot « Correctifs de la tablette ». Ce qui a été mesuré et envisagé :
+
+- **Mesures du parent du 8 octobre 2026**, sur une page d'essai, avec la tablette (densité 2,25, écran 1138 × 711) :
+
+  | Réglage | Images/s |
+  | --- | --- |
+  | jeu tel quel : mer 1280 × 800, bateaux 2560 × 1600 | 3 |
+  | mascotte arrêtée | 4 |
+  | mer fixe | 8 |
+  | mer à 40 % et bateaux à 1× | 15 |
+  | mer fixe, bateaux à 1×, sans oiseaux ni bulles (seul réglage à 30) | 30 |
+
+  Ce dernier réglage a un rendu jugé « hideux », surtout la mer.
+- **La cause** :
+  - la mer est calculée pixel par pixel à chaque image, par un programme lourd : des dizaines de bruits et de vagues par pixel, en haute précision ;
+  - les bateaux et le premier plan sont dessinés à la densité native de l'écran, sur deux couches de plus.
+
+  Ni la côte (déjà une image) ni la mascotte ne sont en cause. Le récif vivant, lui, est fluide sur la même tablette, malgré toutes ses animations : il compose des **images**, sans calcul par pixel.
+- **Le remède demandé, dans l'esprit du récif et de `CLAUDE.md` (« fabriqué à l'avance »)** :
+  1. **La mer devient une vidéo en boucle fabriquée par l'atelier.** Le programme de la mer de la maquette est rendu hors ligne, à pleine qualité, en une boucle sans raccord visible :
+     - de quelques secondes, en 1280 × 800 ;
+     - une boucle par état de la mer (calme, vent, pirates) ;
+     - en MP4 et WebM, comme les vidéos de la mascotte.
+
+     L'application la joue comme la mascotte : décodage vidéo matériel, une seule texture. Les ombres des bateaux, l'écume, le sillage et la zone allumée sont posés par-dessus en petits dessins légers. Le tangage des bateaux reste calculé comme aujourd'hui. Viser le même aspect que la maquette ; comparer sur captures côte à côte. Poids visé : quelques Mo au total, dans le mode hors ligne.
+  2. **Une seule toile au lieu de trois** (mer, bateaux, premier plan), dessinée au plus à 1,5 fois la résolution de base de l'écran : la tablette n'a plus qu'une image à composer.
+  3. **Au plus 30 images par seconde**, régulières.
+  4. **L'allègement automatique** ne descend plus que vers des réglages acceptables à l'œil : résolution un peu plus basse, oiseaux et bulles coupés. Jamais la mer figée ni les bateaux flous.
+- **Si la vidéo ne donne pas le rendu voulu**, autre voie, à justifier dans la demande de fusion : une mer animée par deux textures de vagues qui glissent, la technique des jeux sur téléphone, à la place du calcul complet.
+- **Mesurer** : un **compteur d'images par seconde**, à afficher par-dessus le jeu depuis l'espace parent. Et une **page d'essai autonome** `art/voiliers/essai-fluidite.html`, comme celle du 8 octobre : compteur, réglages séparés, « banc d'essai » qui mesure seul et affiche un tableau.
+
+  Le parent la fera publier en conception pour la tester sur la tablette **avant la fusion**. Objectif : au moins 30 images par seconde sur cette tablette, avec un rendu qu'il juge correct.
+- Ces changements passent par l'outil d'export et l'atelier, jamais par la maquette.
+
 ## 4. Questions laissées avec une valeur par défaut
 
 - **Les pictogrammes de la pieuvre** (lot « Mascotte ») : la pieuvre a quitté l'application, sauf trois dessins de l'atelier : le bouton « je ne sais pas » (la pieuvre qui hausse les bras, choisi au lot 3 bis pour ne plus ressembler au « ? » des questions), l'étape « accueil » de la frise (une petite pieuvre) et l'icône de l'application. Par défaut, ils restent : les refaire est un choix graphique (un nouveau pictogramme « je ne sais pas » à faire valider), pas une conséquence du lot. Autres possibilités : une ancre ou une casquette de capitaine pour la frise ; pour « je ne sais pas », des épaules qui se haussent sans personnage.

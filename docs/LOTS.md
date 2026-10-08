@@ -338,3 +338,66 @@ Taille de la table proposée par défaut : de 0 + 0 à 10 + 10, à confirmer au 
 - la note de proposition (méthode commune), avec la place dans la séance et dans la rotation de « jouer ».
 
 Pas de personnage nouveau : la scène réutilise le décor et les personnages existants (bloc ci-dessus).
+
+### 6. Lot « Correctifs de la tablette »
+
+**Origine** : le premier essai du parent sur la tablette, le 8 octobre 2026, après la publication des cinq lots. Les captures sont dans `docs/maquettes/correctifs-tablette/`.
+
+**Comme le bloc 4 et 5 : d'un seul tenant, sans arrêt pour une validation.** La session décide elle-même. Chaque choix va dans `docs/JOURNAL-CONCEPTION.md`, marqué « choix de la session, à revoir par le parent », et dans une section « Choix faits sans le parent », en tête de la demande de fusion. Pour ce lot, cela remplace la règle « demander plutôt que d'inventer » de `CLAUDE.md`.
+
+**Prérequis** : les lots « Sommes jusqu'à 30 » et « Multiplication » sont marqués « fait » sur `main`.
+
+**Ce qui est demandé** (décisions du parent du 8 octobre 2026, à reporter dans `docs/SPEC.md`) :
+
+1. **Le lancement de l'application**
+   - **Écran de démarrage** : au lieu de l'écran bleu, un écran avec le logo « Maths CE1 » (dessiné dans l'atelier, style A) et, dessous, de petites lignes d'information : 2026, js2c, la version. Pas de prénom d'enfant (le dépôt est public).
+   - **Une barre de chargement** qui avance réellement, selon ce qui est chargé : planches, vidéos de la mascotte, index de la voix.
+   - **Un toucher sur l'écran le fait disparaître**, quand le chargement est fini. Ce toucher sert aussi de « premier toucher » qui autorise la voix.
+   - **À l'arrivée sur l'accueil, la mascotte souhaite la bienvenue**, une fois par lancement : salut et phrase courte, quelques variantes. C'est distinct de la bienvenue qui suit « jouer », qui reste.
+2. **Choisir en deux touchers** : ceci remplace la décision du 28 septembre (« validation simple en un toucher ») pour les écrans de choix :
+   - l'écran « choisir », au niveau des exercices puis des niveaux ;
+   - le menu des leçons, tables comprises ;
+   - les écrans de choix de l'entraînement libre.
+
+   Le fonctionnement :
+   - **Premier toucher** sur une tuile : elle est **sélectionnée**, avec une bordure bien visible et distincte du halo du niveau conseillé.
+   - La mascotte dit son nom et une courte description. La description est celle de la légende du parent (`legendes.json`), adaptée si besoin pour être dite à une enfant.
+   - Le même texte s'écrit dans une **bulle de BD qui part d'un coin de la tuile**. La bulle est placée selon la position de la tuile, de façon à rester dans l'écran et à ne cacher ni la tuile ni ses voisines immédiates si possible.
+   - **Second toucher sur la même tuile : elle se lance.** Un toucher sur une autre tuile la sélectionne à la place. Un toucher hors des tuiles désélectionne.
+   - L'appui long continue de ne rien lancer.
+   - Le petit livre de la légende reste, pour le parent.
+3. **Les voiliers rament sur la tablette : hors de ce lot** (décision du parent du 8 octobre 2026). Ne rien changer au rendu ni à la fluidité du jeu des voiliers. Les mesures faites sur la tablette et les remèdes envisagés sont gardés dans `docs/IDEES.md`, pour un lot ultérieur.
+4. **L'ardoise vide derrière la bulle** (capture 01, calcul rapide en entraînement) : l'ardoise de l'opération apparaît vide, en arrière-plan, pendant que la bulle parle. Reproduire, trouver la cause et corriger dans tous les exercices et dans l'entraînement libre :
+   - jamais d'ardoise vide visible ;
+   - la bulle évite l'ardoise quand elle peut (règle du lot « Mascotte »).
+5. **« +10 » dit par l'ancienne voix** (capture 02, ponts du chemin au calcul rapide). Une phrase dite sans fichier passe par la synthèse du navigateur, une autre voix.
+   - Trouver toutes ces phrases, dans tout le jeu : les pas des ponts, et toute phrase composée à la volée qui échappe à l'inventaire (`tools/voix/inventaire.mjs`).
+   - Les ajouter à l'inventaire, ou les dire avec des phrases qui existent déjà.
+   - Ajouter un contrôle durable : chaque parcours `tests/e2e` relève les phrases dites sans fichier (`voice.misses`). Le parcours échoue s'il y en a une, sauf phrase volontairement absente comme un nom tapé.
+6. **Le clavier de l'ordinateur** : dans tout exercice où l'on tape un nombre au pavé, les touches du clavier font la même chose :
+   - les chiffres, pavé numérique compris ;
+   - « Retour arrière » efface ;
+   - « Entrée » vaut la coche.
+
+   Rien ne change sur la tablette.
+7. **Plus de bouton « réécouter » en haut à droite** : on **touche la mascotte** pour la faire répéter.
+   - Mêmes effets qu'avant : redit la consigne, compteur d'écoutes, refait la bulle.
+   - La zone à toucher couvre toute la tête et fait au moins 64 px.
+   - Un petit signe discret indique la première fois que la mascotte se touche : par exemple la relance de 25 s, « Touche-moi pour réécouter la consigne. », qui remplace « Tu peux réécouter la consigne. ».
+   - Là où la mascotte n'est pas affichée, comme le récif, rien ne change.
+   - Mettre à jour `CLAUDE.md` (« bouton réécouter toujours visible ») et `docs/SPEC.md`.
+8. **Les fins de ligne sous Windows** : ajouter un `.gitattributes` (`* text=auto eol=lf`, binaires marqués comme tels). La liste du mode hors ligne fabriquée sur l'ordinateur du parent doit être identique à celle de GitHub : plus d'avertissement « sw-files.json n'était pas à jour ».
+
+**Voix** : les phrases nouvelles sont listées dans la demande de fusion, avec leur nombre et leur poids :
+- les bienvenues ;
+- les descriptions des tuiles ;
+- « Touche-moi… » ;
+- les phrases trouvées au point 5.
+
+Le parent les fabrique ensuite avec `node tools\voix\publier.mjs`. Rester sous 80 Mo.
+
+**Recette** : la méthode commune. En plus :
+- un parcours du choix en deux touchers sur chaque écran de choix, avec les bulles capturées dans les quatre coins de l'écran ;
+- l'écran de démarrage capturé ;
+- le clavier essayé dans chaque exercice à pavé ;
+- le contrôle des phrases sans fichier sur tous les parcours.

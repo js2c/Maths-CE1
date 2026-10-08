@@ -119,11 +119,12 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     x = await q(page); const wrong = x.a + x.b === x.attendu ? x.attendu + 1 : x.a + x.b;
     await typeIn(page, wrong);
     await page.waitForFunction(() => window.__said.some((t) => /ça fait/.test(t)), null, { timeout: 30000 }).catch(() => {});
-    await page.waitForFunction(() => window.__said.some((t) => /fois, ce n'est pas plus/.test(t)), null, { timeout: 5000 }).catch(() => {});
+    await page.waitForFunction(() => window.__said.some((t) => /regardons ensemble/.test(t)), null, { timeout: 5000 }).catch(() => {});
     await page.waitForTimeout(400);
     const rc = await board(page); check(rowsOk(rc), `${T} · la correction : les rangées comptées (${rc})`);
     await shot(page, `09-correction-M1-${x.a}x${x.b}`);
-    const sc = await said(page); check(/fois, ce n'est pas plus/.test(sc) && /ça fait/.test(sc), `${T} · la correction dit l'erreur M1, les rangées et le calcul (${sc.slice(0, 160)})`);
+    // (relecture du lot : au niveau 1, écrit en addition, pas de « fois, ce n'est pas plus »)
+    const sc = await said(page); check(!/fois, ce n'est pas plus/.test(sc) && /regardons ensemble/.test(sc) && /ça fait/.test(sc), `${T} · niveau 1 : la correction dit « regardons ensemble », les rangées et le calcul (${sc.slice(0, 160)})`);
     await note(page, `une erreur M1 sur ${x.a} × ${x.b} (réponse ${wrong}) : la correction`);
     const err = await page.evaluate(async () => (await window.__app.store.all("reponses")).filter((r) => r.module === 5 && !r.juste).map((r) => r.erreur).at(-1));
     check(err === "M1", `${T} · l'erreur est rangée avec son code (${err})`);
@@ -144,7 +145,15 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     check(/Fois deux, c'est le double/.test(await said(page)), `${T} · l'astuce de la table de 2 (${(await said(page)).slice(0, 120)})`);
     await shot(page, `11-coquillage-${x.a}x${x.b}`);
     await note(page, `le coquillage sur ${x.a} × ${x.b}`);
+    // (relecture du lot : le coquillage compte les rangées sans dire ni écrire le dernier total, la réponse)
+    check(!new RegExp(`^${x.attendu}$`).test(await page.evaluate(() => window.__said.at(-1) ?? "")) || x.a === 1, `${T} · le coquillage ne dit pas la réponse (${await page.evaluate(() => window.__said.slice(-3).join(" | "))})`);
     await qOpen(page, 30000); await typeIn(page, x.attendu); await page.waitForTimeout(1500); await qOpen(page); await resetSaid(page);
+    // une erreur M1 au niveau des tables : sa phrase
+    let y = await q(page); await typeIn(page, y.a + y.b === y.attendu ? y.attendu + 1 : y.a + y.b);
+    await page.waitForFunction(() => window.__said.some((t) => /ça fait/.test(t)), null, { timeout: 30000 }).catch(() => {});
+    const s3 = await said(page); check(y.a + y.b === y.attendu || /fois, ce n'est pas plus/.test(s3), `${T} · table de 2 : l'erreur M1 dite (${y.a} × ${y.b} → ${y.a + y.b} : ${s3.slice(0, 120)})`);
+    if (big) await shot(page, `11b-correction-M1-${y.a}x${y.b}`);
+    await qOpen(page, 60000); await resetSaid(page);
     await nsp(page);
     await page.waitForFunction(() => window.__said.some((t) => /ça fait/.test(t)), null, { timeout: 30000 }); await page.waitForTimeout(500);
     if (big) await shot(page, "12-je-ne-sais-pas");

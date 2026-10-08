@@ -58,8 +58,10 @@ export function paintTwoFrames(ctx, sprites, x, y, { first = 0, second = 0, move
 export const twoFramesHeight = (sprites, gap = 18) => 2 * sprites.atlas.sprites["aide.cadre10"].meta.h + gap;
 // les grands doubles (11 + 11 à 15 + 15) : un filet de dix poissons et les unités, au-dessus d'une ligne d'eau, et leur reflet
 // dessous (plus pâle) : treize et treize, c'est dix et dix, et trois et trois. (cx, y) : milieu, haut de la première rangée.
-export function paintBigDouble(ctx, sprites, a, { cx = 700, y = 360, k = 0.78 } = {}) {
+// (relecture du lot « Sommes jusqu'à 30 » : `panel`, une plaque de nacre dessous, lisible devant le sable et le décor)
+export function paintBigDouble(ctx, sprites, a, { cx = 700, y = 360, k = 0.78, panel = false } = {}) {
   const N = sprites.atlas.sprites["aide.filet.haut"].meta, u = a - 10, gap = 74, w = N.w * k + 40 + u * gap, x0 = cx - w / 2, h = N.h * k;
+  if (panel) R.drawPanel(ctx, x0 - 56, y - 22, w + 112, 2 * h + 84);
   const row = (yy, alpha) => {
     ctx.globalAlpha = alpha;
     putScaled(ctx, sprites, "aide.filet.haut", x0 + (N.w * k) / 2, yy, k);
@@ -120,8 +122,9 @@ export const houseHeight = (sprites, floors) => { const H = sprites.atlas.sprite
 // ---------------------------------------------------------------- double + 1
 // a poissons en haut, les mêmes renversés sous une ligne d'eau (le miroir), puis la bulle dorée
 // (lot « Sommes jusqu'à 30 » : jusqu'à 10 poissons, l'écart se resserre pour tenir dans `maxW`)
-export function paintDoublePlus(ctx, sprites, a, { cx = 640, y = 360, gap = 92, bonus = true, maxW = 860 } = {}) {
+export function paintDoublePlus(ctx, sprites, a, { cx = 640, y = 360, gap = 92, bonus = true, maxW = 860, panel = false } = {}) {
   const n = a + (bonus ? 1 : 0); gap = Math.min(gap, n > 1 ? maxW / (n - 1) : gap); const x0 = cx - ((n - 1) * gap) / 2;
+  if (panel) R.drawPanel(ctx, x0 - 80, y - 46, (n - 1) * gap + 160, 190); // (relecture du lot « Sommes jusqu'à 30 »)
   const fish = (x, yy, flip, alpha) => { const f = sprites.frame("poisson.1.d", 0), m = ctx.getTransform(); ctx.setTransform(1, 0, 0, flip ? -1 : 1, 0, 0); ctx.globalAlpha = alpha; const X = Math.round(m.a * x + m.e + f.dx), Y = m.d * yy + m.f; ctx.drawImage(f.img, f.sx, f.sy, f.w, f.h, X, flip ? -Math.round(Y - f.dy) : Math.round(Y + f.dy), f.w, f.h); ctx.globalAlpha = 1; ctx.setTransform(m); };
   for (let i = 0; i < a; i++) fish(x0 + i * gap, y, false, 1);
   R.drawWave(ctx, x0 - 70, x0 + (a - 1) * gap + 70, y + 48);

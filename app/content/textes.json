@@ -150,7 +150,7 @@
   "aideMaisonTrou": "Sous le toit, il y a {n} places. Compte les places vides !",
   "aideDoublePlus": "{d} plus {d}, c'est un double. Et une bulle de plus !",
   "aideDeuxCadres": "On remplit d'abord la boîte de dix, puis on compte ce qui reste.",
-  "aideDeuxCadresSolu": "{c} pour faire dix, il en reste {r}.",
+  "aideDeuxCadresSolu": "On complète la boîte avec {c}, il en reste {r}.",
   "aideDix": "Une boîte pleine, c'est dix. Et encore {r}.",
   "aideCadresTrou": "Il faut {n} poissons en tout. Compte les places qui brillent !",
   "aideGrandDouble": "{a}, c'est dix et {u}. Dix et dix, vingt. {u} et {u}, {d}.",

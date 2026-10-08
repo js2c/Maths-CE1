@@ -31,7 +31,8 @@ export function rowsLayout(a, b, Z, { totals = true } = {}) {
   const box = [x0 - px * 0.62, y0 - py * 0.66, w + px * (1.24 + (totals ? 1.1 : 0)), h + py * 1.32];
   return { k, at: (i, j) => [x0 + j * px, y0 + i * py], end: (i) => [x0 + b * px - px * 0.2, y0 + i * py], pitchX: px, pitchY: py, box };
 }
-export function paintRows(ctx, sprites, a, b, Z, { lit = 0, totals = false, ghost = false, panel = true } = {}) {
+// `hideLast` : le total de la dernière rangée n'est pas écrit (l'aide ne donne pas la réponse)
+export function paintRows(ctx, sprites, a, b, Z, { lit = 0, totals = false, ghost = false, panel = true, hideLast = false } = {}) {
   const L = rowsLayout(a, b, Z, { totals: totals || lit > 0 });
   if (panel) R.drawPanel(ctx, ...L.box);
   for (let i = 0; i < a; i++) for (let j = 0; j < b; j++) {
@@ -39,7 +40,7 @@ export function paintRows(ctx, sprites, a, b, Z, { lit = 0, totals = false, ghos
     if (ghost) putScaled(ctx, sprites, "aide.cadre.lueur", x, y, L.k * 0.5);
     else putScaled(ctx, sprites, i < lit ? "aide.poisson.0" : "aide.poisson.1", x, y, L.k);
   }
-  if (totals) for (let i = 0; i < Math.min(lit, a); i++) { const [x, y] = L.end(i); num(ctx, (i + 1) * b, x + 18 * L.k, y, Math.max(24, 32 * L.k), R.INK); }
+  if (totals) for (let i = 0; i < Math.min(lit, a) - (hideLast && lit >= a ? 1 : 0); i++) { const [x, y] = L.end(i); num(ctx, (i + 1) * b, x + 18 * L.k, y, Math.max(24, 32 * L.k), R.INK); }
   return L;
 }
 
@@ -74,14 +75,16 @@ export class MultScreen {
     return { ...r, q, ok: code === null, code, aide: r.aide || !!q.aideDEmblee };
   }
   // les rangées en grand, comptées rangée par rangée (la voix dit chaque total) ; `g` garde chaque attente (« passer »)
-  async count(q, g, { say = true } = {}) {
+  // (relecture du lot : `reponse` faux pour l'aide et l'aide d'emblée, qui ne disent ni n'écrivent le dernier total, la
+  // réponse ; la dernière rangée s'allume quand même)
+  async count(q, g, { say = true, reponse = true } = {}) {
     const { sprites, voice } = this.app, k = this.app.vitesse ?? 1, a = q.a, b = q.b;
     this.fs.keys(false);
-    const draw = (lit) => this.board.draw((ctx) => paintRows(ctx, sprites, a, b, ROWS_BIG, { lit, totals: true }));
+    const draw = (lit) => this.board.draw((ctx) => paintRows(ctx, sprites, a, b, ROWS_BIG, { lit, totals: true, hideLast: !reponse }));
     draw(0);
     if (say) await g(voice.say(this.rangees(a, b)));
     const t = astuceOf(q); if (say && t) await g(voice.say(this.T.multAstuce[t]));
-    for (let i = 1; i <= a; i++) { draw(i); this.app.sound?.play("bouton"); await g(voice.say(String(i * b))); await g(wait(150 / k)); }
+    for (let i = 1; i <= a; i++) { draw(i); this.app.sound?.play("bouton"); if (reponse || i < a) await g(voice.say(String(i * b))); else await g(wait(700 / k)); await g(wait(150 / k)); }
   }
   // l'aide (coquillage) : les rangées comptées ; puis le pavé revient, la consigne redite
   async showHelp(q) {
@@ -97,7 +100,7 @@ export class MultScreen {
       });
     } else {
       fs.locked = true; voice.stop();
-      await fs.skippable("passer l'aide", async (g) => { await this.count({ ...q }, g); await g(wait(900)); });
+      await fs.skippable("passer l'aide", async (g) => { await this.count({ ...q }, g, { reponse: false }); await g(wait(900)); });
     }
     if (fs.q !== q) return;
     this.paintBand(q); fs.keys(true); fs.locked = false;
@@ -107,7 +110,7 @@ export class MultScreen {
   async autoAid(q) {
     const fs = this.fs, { voice } = this.app;
     voice.stop(); voice.say(this.consigne(q));
-    await fs.skippable("passer l'aide", async (g) => { await g(wait(400)); await this.count(q, g); await g(wait(1200)); });
+    await fs.skippable("passer l'aide", async (g) => { await g(wait(400)); await this.count(q, g, { reponse: false }); await g(wait(1200)); });
     this.paintBand(q);
   }
   // un exemple guidé : les rangées comptées, la réponse dite, puis « À toi ! »
@@ -136,7 +139,8 @@ export class MultScreen {
       const code = r.nsp ? "NSP" : classifyMult(q, r.value);
       if (!r.nsp) fs.slate.classList.add("shake");
       answer();
-      await g(voice.say(r.nsp ? T.faitNSP : code === "M1" ? T.erreurMult.M1 : T.faitNSP));
+      // (relecture du lot : au niveau 1, écrit en addition, « fois, ce n'est pas plus » n'a pas de sens)
+      await g(voice.say(r.nsp ? T.faitNSP : code === "M1" && !q.addition ? T.erreurMult.M1 : T.erreur.autre));
       await this.count(q, g, { say: true });
       await g(voice.say(fill(T.multCorrection, { a: q.a, b: q.b, n: q.n })));
       await g(wait(600 / k));

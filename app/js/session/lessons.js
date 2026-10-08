@@ -182,10 +182,12 @@ function paintPanelMult(app, ctx, px, lit) {
   const em = Math.min(34, (w - 44) / R.wordWidth(txt));
   R.drawPanel(ctx, 6, 6, w - 12, em * 1.5 + 30);
   R.drawWord(ctx, txt, w / 2, 21 + em * 0.2, em, { w: em * 0.14 });
-  const top = em * 1.5 + 60, lw = 660, lh = Math.max(120, a * 52);
+  // (relecture du lot : le calque à la taille des rangées, réduit d'autant moins qu'elles sont courtes ; avant, 660 px de large
+  // pour toutes, 3 × 4 tenait en 70 px)
+  const top = em * 1.5 + 60, lw = (b + 1.4) * 64, lh = a * 50 + 50;
   const c = document.createElement("canvas"); c.width = Math.round(lw * px); c.height = Math.round(lh * px);
   const x = c.getContext("2d"); x.setTransform(px, 0, 0, px, 0, 0);
-  paintRows(x, sprites, a, b, { cx: lw / 2, top: 0, h: lh, w: lw - 20 });
+  paintRows(x, sprites, a, b, { cx: lw / 2, top: 0, h: lh, w: lw, kMax: 1 });
   const k = Math.min((w - 10) / lw, (P.h - top - 10) / lh);
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.drawImage(c, (w / 2 - (lw * k) / 2) * px, top * px, lw * k * px, lh * k * px);

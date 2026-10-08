@@ -239,7 +239,7 @@ async function uneSeance({ base, choix, cran, comp }) {
             const x = row({ cle: multKey(q), forme: `${multQuestion(q)}${(q.forme ?? "directe") === "directe" && !q.addition ? " = ?" : ""} (niveau ${q.niveau}, ${image}${q.revient ? ", revient" : ""})`, voix: pre + FM.consigne(q), attendue: good, donnee: guide ? `${good} (guidé)` : r.nsp ? "je ne sais pas" : r.value });
             add(D.consigne + (guide ? D.demo : 0) + (q.aideDEmblee ? 6000 : 0) + C.ms + (ok ? D.bravo : D.correction));
             const code = r.nsp ? "NSP" : ok ? null : classifyMult(q, r.value);
-            if (!ok) x.suite.push(`correction ${code} : « ${r.nsp ? T.faitNSP : code === "M1" ? T.erreurMult.M1 : T.faitNSP} ${FM.rangees(q.a, q.b)} [les rangées comptées] ${fill(T.multCorrection, { a: q.a, b: q.b, n: q.n })} »`);
+            if (!ok) x.suite.push(`correction ${code} : « ${r.nsp ? T.faitNSP : code === "M1" && !q.addition ? T.erreurMult.M1 : T.erreur.autre} ${FM.rangees(q.a, q.b)} [les rangées comptées] ${fill(T.multCorrection, { a: q.a, b: q.b, n: q.n })} »`);
             return { q, value: r.value, ok, code, ms: C.ms, listens: 1, aide: !!q.aideDEmblee, nsp: !!r.nsp };
           } };
           await runNotion({ ...ctx, step: { ...ctx.step, ...(ctx.step.module5 ?? {}) }, runner, screen: scr, rnd: R, lesson }); cur = null; return;

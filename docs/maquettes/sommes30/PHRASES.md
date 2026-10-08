@@ -1,6 +1,6 @@
 # Les phrases nouvelles du lot « Sommes jusqu'à 30 »
 
-**384 phrases** à fabriquer (environ 2,7 Mo à 7,1 Ko par phrase, la moyenne des phrases déjà fabriquées). Liste tirée de l'inventaire (`tools/voix/inventaire.mjs`), comparé à celui de `main` avant le lot. Clé de `textes.json` (ou leçon) : les phrases, une par ligne.
+**384 phrases** à fabriquer (environ 2.7 Mo à 7,1 Ko par phrase, la moyenne des phrases déjà fabriquées). Liste tirée de l'inventaire (`tools/voix/inventaire.mjs`), comparé à celui de `main` avant le bloc (les phrases du lot « Multiplication » sont dans `docs/maquettes/multiplication/PHRASES.md`). Clé de `textes.json` (ou leçon) : les phrases, une par ligne.
 
 ## fait (104)
 
@@ -320,26 +320,26 @@
 
 ## aideDeuxCadresSolu (20)
 
-- 4 pour faire dix, il en reste 2.
-- 3 pour faire dix, il en reste 4.
-- 2 pour faire dix, il en reste 6.
-- 1 pour faire dix, il en reste 8.
-- 4 pour faire dix, il en reste 1.
-- 3 pour faire dix, il en reste 3.
-- 2 pour faire dix, il en reste 5.
-- 1 pour faire dix, il en reste 7.
-- 1 pour faire dix, il en reste 1.
-- 1 pour faire dix, il en reste 2.
-- 1 pour faire dix, il en reste 3.
-- 1 pour faire dix, il en reste 4.
-- 1 pour faire dix, il en reste 5.
-- 1 pour faire dix, il en reste 6.
-- 2 pour faire dix, il en reste 1.
-- 3 pour faire dix, il en reste 1.
-- 2 pour faire dix, il en reste 2.
-- 3 pour faire dix, il en reste 2.
-- 2 pour faire dix, il en reste 3.
-- 2 pour faire dix, il en reste 4.
+- On complète la boîte avec 4, il en reste 2.
+- On complète la boîte avec 3, il en reste 4.
+- On complète la boîte avec 2, il en reste 6.
+- On complète la boîte avec 1, il en reste 8.
+- On complète la boîte avec 4, il en reste 1.
+- On complète la boîte avec 3, il en reste 3.
+- On complète la boîte avec 2, il en reste 5.
+- On complète la boîte avec 1, il en reste 7.
+- On complète la boîte avec 1, il en reste 1.
+- On complète la boîte avec 1, il en reste 2.
+- On complète la boîte avec 1, il en reste 3.
+- On complète la boîte avec 1, il en reste 4.
+- On complète la boîte avec 1, il en reste 5.
+- On complète la boîte avec 1, il en reste 6.
+- On complète la boîte avec 2, il en reste 1.
+- On complète la boîte avec 3, il en reste 1.
+- On complète la boîte avec 2, il en reste 2.
+- On complète la boîte avec 3, il en reste 2.
+- On complète la boîte avec 2, il en reste 3.
+- On complète la boîte avec 2, il en reste 4.
 
 ## aideDix (11)
 
@@ -383,28 +383,16 @@
 - 15, c'est dix et 5.
 - 5 et 5, 10.
 
-## choixFamille.8 (1)
+## choixFamille (4)
 
 - Dix et quelques.
-
-## choixFamille.9 (1)
-
 - Les doubles jusqu'à quinze.
-
-## choixFamille.10 (1)
-
 - Les presque-doubles jusqu'à dix.
-
-## choixFamille.13 (1)
-
 - Le grand mélange.
 
-## choixLeconNom.L11 (1)
+## choixLeconNom (2)
 
 - Dix et encore.
-
-## choixLeconNom.L12 (1)
-
 - Faire dix d'abord.
 
 ## rappelDouble (10)

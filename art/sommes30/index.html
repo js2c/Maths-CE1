@@ -52,7 +52,7 @@ const ECRANS = {
   "L12-apres": () => { slate("8 + 5 = 13"); paintTwoFrames(ctx, sprites, 472, 340, { first: 8, second: 5 }); dit("Deux poissons sautent pour la remplir : dix ! Il en reste trois. Dix et trois, treize."); },
   "L11": () => { slate("10 + 4 = 14"); paintTwoFrames(ctx, sprites, 472, 340, { first: 10, second: 4 }); dit("Dix et quatre : quatorze !"); },
   "aide-8+5": () => { slate("8 + 5 = ?"); paintTwoFrames(ctx, sprites, 472, 350, { first: 8, second: 5 }); dit("On remplit d'abord la boîte de dix, puis on compte ce qui reste."); },
-  "correction-8+5": () => { slate("8 + 5 = 13"); paintTwoFrames(ctx, sprites, 472, 350, { first: 8, second: 5 }); dit("2 pour faire dix, il en reste 3. 8 plus 5, ça fait 13."); },
+  "correction-8+5": () => { slate("8 + 5 = 13"); paintTwoFrames(ctx, sprites, 472, 350, { first: 8, second: 5 }); dit("On complète la boîte avec 2, il en reste 3. 8 plus 5, ça fait 13."); },
   "trou-9+?=13": () => { slate("9 + ? = 13"); paintTwoFrames(ctx, sprites, 472, 350, { first: 9, second: 4, places: true }); dit("Il faut 13 poissons en tout. Compte les places qui brillent !"); },
   "grand-double": () => { slate("13 + 13 = ?"); paintBigDouble(ctx, sprites, 13, { cx: 700, y: 352, k: 1 }); dit("13, c'est dix et 3. Dix et dix, vingt. 3 et 3, 6."); },
   "double-9+9": () => { slate("9 + 9 = ?"); paintDoublePlus(ctx, sprites, 9, { cx: 700, y: 500, bonus: false }); dit("9 poissons, et dans le reflet, encore 9 poissons."); },

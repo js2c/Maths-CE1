@@ -19,7 +19,7 @@ import { drawAnswerBubble, drawFish } from "./decor";
 import { rrect } from "./treasure";
 import { drawTurtle, TURTLE_REST } from "./turtle";
 import { drawBonusBubble, drawHouseBase, drawHouseFloor, drawHouseRoof, drawTenFrame, HOUSE, TEN_H, TEN_W } from "./aids";
-import { drawJumpArc, drawLine, drawNumber, type LineSpec, RED, tickP } from "./runtime";
+import { drawJumpArc, drawLine, drawNumber, drawWord, type LineSpec, RED, tickP, wordWidth } from "./runtime";
 
 const SH = "#0a3f49", NACRE = "#fffaf0", NACRE_S = "#e3d6bb", SEA = "#35b3c1", GOLD = "#ffd23a";
 // une vignette : plaque de nacre de TILE_W × TILE_H, centrée
@@ -188,6 +188,8 @@ export const twoFrames = (g: Gfx, cx: number, cy: number, a: number, b: number, 
   tenFrame(g, cx, cy - h / 2 - 3, a, k, fill, gold);
   tenFrame(g, cx, cy + h / 2 + 3, 0, k, b - fill);
 };
+// l'exemple écrit d'une vignette, à l'encre des numéros, centré en (cx, cy)
+const famLabel = (g: Gfx, cx: number, cy: number, t: string) => { const em = Math.min(32, 92 / wordWidth(t)); drawWord(g.cur as CanvasRenderingContext2D, t, cx, cy - em / 2, em, { color: INK, w: em * 0.15, seed: 5900 + t.length }); };
 export const FAMILY: Record<number, (g: Gfx, cx: number, cy: number) => void> = {
   // + 1 et + 2 : la tortue sur la corde et son saut « + 1 »
   1: (g, cx, cy) => {
@@ -208,11 +210,12 @@ export const FAMILY: Record<number, (g: Gfx, cx: number, cy: number) => void> = 
     fillShape(g, blob(cx + 34, cy + 32, 8, 8, 5795, 0.05, 10), "#fff1a8", 0.8);
   },
   // lot « Sommes jusqu'à 30 » (docs/maquettes/sommes30/PROPOSITION.md) : les familles de 11 à 30
-  8: (g, cx, cy) => twoFrames(g, cx, cy, 10, 4), // dix et quelques : la boîte pleine, quatre de plus
+  // (relecture du lot : les vignettes 8, 11 et 12 se ressemblaient ; chacune écrit son exemple à droite des boîtes)
+  8: (g, cx, cy) => { twoFrames(g, cx - 46, cy, 10, 4); famLabel(g, cx + 56, cy, "10+4"); }, // dix et quelques : la boîte pleine, quatre de plus
   9: (g, cx, cy) => reflet(g, cx, cy, 5, false, 26), // les doubles jusqu'à 15 + 15 : cinq poissons et leur reflet (plus que les trois de la famille 2)
   10: (g, cx, cy) => reflet(g, cx, cy, 4, true, 26), // les presque-doubles jusqu'à 10 : le double et une bulle dorée
-  11: (g, cx, cy) => twoFrames(g, cx, cy, 9, 4, 0.2, true), // + 9 : neuf, un poisson doré complète la boîte
-  12: (g, cx, cy) => twoFrames(g, cx, cy, 8, 5, 0.2, true), // passer la dizaine : huit, deux dorés, trois de plus
+  11: (g, cx, cy) => { twoFrames(g, cx - 46, cy, 9, 4, 0.2, true); famLabel(g, cx + 56, cy, "9+4"); }, // + 9 : neuf, un poisson doré complète la boîte
+  12: (g, cx, cy) => { twoFrames(g, cx - 46, cy, 8, 5, 0.2, true); famLabel(g, cx + 56, cy, "8+5"); }, // passer la dizaine : huit, deux dorés, trois de plus
   // le grand mélange : les deux boîtes et le reflet
   13: (g, cx, cy) => {
     twoFrames(g, cx - 30, cy, 7, 6, 0.16);

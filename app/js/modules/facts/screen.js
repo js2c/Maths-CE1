@@ -61,9 +61,11 @@ export class FactsScreen {
     const slot = (this.slateQ ? "" : this.typed) || "?", W = (x) => (x ? R.wordWidth(x) : 0), u = W(left) + (left ? 0.4 : 0) + Math.max(1.36, W(slot)) + (right ? 0.4 : 0) + W(right);
     const em = Math.min(76, SLATE_W / u), lw = W(left) * em, rw = W(right) * em, sw = Math.max(1.36, W(slot)) * em, gap = 0.4 * em;
     const total = lw + (left ? gap : 0) + sw + (right ? gap : 0) + rw, x0 = 295 - total / 2;
-    if (left) R.drawWord(ctx, left, x0 + lw / 2, 110 - em / 2, em, { w: 10, seed: 950 });
+    // (relecture du lot « Multiplication » : le trait suit la taille de l'écriture, sinon « 2 + 2 + 2 + 2 + 2 » écrasait ses signes)
+    const sw0 = Math.min(10, em * 0.135);
+    if (left) R.drawWord(ctx, left, x0 + lw / 2, 110 - em / 2, em, { w: sw0, seed: 950 });
     const sx = x0 + lw + (left ? gap : 0) + sw / 2;
-    if (right) R.drawWord(ctx, right, sx + sw / 2 + gap + rw / 2, 110 - em / 2, em, { w: 10, seed: 960 });
+    if (right) R.drawWord(ctx, right, sx + sw / 2 + gap + rw / 2, 110 - em / 2, em, { w: sw0, seed: 960 });
     if (this.ring) R.drawRing(ctx, sx, 110, 56);
     R.drawNumber(ctx, slot, sx, 110 - em / 2, em, { w: 10.5, color: slot !== "?" ? R.INK : R.RED, seed: 970 });
   }
@@ -159,10 +161,10 @@ export class FactsScreen {
     this.board.draw((ctx) => {
       if (kind === "cadre") { const k = f === "trouGauche" ? q.b : q.a, rest = n - k; paintTenFrame(ctx, sprites, 700 - 228, 495, { n: k, extra: solved || f === "directe" ? rest : 0, glow: solved || f === "directe" ? [] : Array.from({ length: rest }, (_, i) => k + i) }); }
       else if (kind === "maison") this.paintHouseAid(ctx, q, solved, 0);
-      else if (kind === "doublePlus") paintDoublePlus(ctx, sprites, Math.min(q.a, q.b), { cx: 700, y: 500 });
+      else if (kind === "doublePlus") paintDoublePlus(ctx, sprites, Math.min(q.a, q.b), { cx: 700, y: 500, panel: Math.max(q.a, q.b) > 5 });
       else if (kind === "deuxCadres") this.paintFramesAid(ctx, q, solved);
-      else if (kind === "grandDouble") paintBigDouble(ctx, sprites, q.a, { cx: 700, y: 352, k: 1 });
-      else paintDoublePlus(ctx, sprites, q.a, { cx: 700, y: 500, bonus: false });
+      else if (kind === "grandDouble") paintBigDouble(ctx, sprites, q.a, { cx: 700, y: 372, k: 1, panel: true });
+      else paintDoublePlus(ctx, sprites, q.a, { cx: 700, y: 500, bonus: false, panel: q.a > 5 }); // (au-delà de 5 + 5, sur nacre : relecture du lot « Sommes jusqu'à 30 »)
     });
     if (kind === "maison") this.animateHouse(q, solved);
     return kind;

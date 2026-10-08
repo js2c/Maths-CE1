@@ -102,12 +102,12 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     check(aidOk(r1), `${T} · l'aide d'emblée : l'appui sous l'ardoise, dans l'écran (${r1})`);
     await shot(page, `06-aide-demblee-${x.a}+${x.b}-${x.appui}`);
     await qOpen(page); await resetSaid(page);
-    // une erreur : la correction montre les deux boîtes et dit « c pour faire dix, il en reste r »
+    // une erreur : la correction montre les deux boîtes et dit « On complète la boîte avec c, il en reste r »
     x = await q(page); await typeIn(page, x.attendu === 13 ? 3 : (x.attendu % 10) || 1);
-    await page.waitForFunction(() => window.__said.some((t) => /pour faire dix|boîte pleine|reflet|double|dix et/.test(t)), null, { timeout: 30000 }); await page.waitForTimeout(900);
+    await page.waitForFunction(() => window.__said.some((t) => /complète la boîte|boîte pleine|reflet|double|dix et/.test(t)), null, { timeout: 30000 }); await page.waitForTimeout(900);
     const r2 = await board(page); check(aidOk(r2), `${T} · la correction : l'appui sous l'ardoise (${r2})`);
     await shot(page, `07-correction-${x.a}+${x.b}`);
-    const sc = await said(page); check(/ça fait/.test(sc) || /pour faire dix|boîte pleine|reflet|double/.test(sc), `${T} · la correction dit l'appui et le calcul (${sc.slice(0, 140)})`);
+    const sc = await said(page); check(/ça fait/.test(sc) || /complète la boîte|boîte pleine|reflet|double/.test(sc), `${T} · la correction dit l'appui et le calcul (${sc.slice(0, 140)})`);
     await note(page, `une erreur sur ${x.a} + ${x.b} : la correction`);
     const err = await page.evaluate(async () => (await window.__app.store.all("reponses")).filter((r) => !r.juste).map((r) => r.erreur ?? r.code).at(-1));
     check(!!err, `${T} · l'erreur est rangée avec son code (${err})`);

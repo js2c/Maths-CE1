@@ -336,7 +336,7 @@ export class ParentSpace {
         h("div", { class: "pa-levels", "aria-hidden": "true" }, Array.from({ length: 9 }, (_, i) => h("span", { class: acq.includes(i + 1) ? "done" : i + 1 === cur ? "cur" : "" }, i + 1))),
         h("p", { class: "pa-note" }, "Un niveau est acquis avec 8 bonnes réponses sur 10 (au plus une aide) ; les niveaux se débloquent dans l'ordre prévu (le 4 quand les maisons de 5 à 7 sont bien sues, le 7 avec les amis de 10). Avec « choisir », l'enfant peut prendre n'importe quel niveau."),
         h("h3", {}, "Historique des niveaux"), h("ul", { class: "pa-hist" }, (st3.obtenus ?? []).filter((o) => o.acquis || o.parent).map((o) => h("li", {}, o.parent ? `${D.fmtDay(o.date)} : niveau ${o.niveau} choisi par le parent (point de départ)` : `${D.fmtDay(o.date)} : niveau ${o.niveau} acquis${o.choix ? " (choisi par l'enfant)" : ""}`))),
-        (st3.lecons ?? []).length ? h("p", { class: "pa-note" }, `Leçons déjà vues : ${st3.lecons.join(", ")}.`) : null);
+        ...((st3.lecons ?? []).length ? [h("p", { class: "pa-note" }, `Leçons déjà vues : ${st3.lecons.join(", ")}.`)] : []));
     }
     this.weeklyBlock(m3, 3);
     // lot « Les voiliers » : le niveau atteint, l'historique, la mer de chaque séance, semaine par semaine
@@ -360,7 +360,7 @@ export class ParentSpace {
         h("div", { class: "pa-levels", "aria-hidden": "true" }, Array.from({ length: 9 }, (_, i) => h("span", { class: acq.includes(i + 1) ? "done" : i + 1 === cur ? "cur" : "" }, i + 1))),
         h("p", { class: "pa-note" }, "« 3 × 4 », ce sont 3 rangées de 4 poissons. Un niveau est acquis avec 8 bonnes réponses sur 10 (au plus une aide), sur deux jours au moins ; les niveaux viennent dans l'ordre (les rangées, le signe fois, puis les tables de 2, 10, 5, le tour des rangées, les tables de 3 et 4, le mélange). Avec « choisir », l'enfant peut prendre n'importe quel niveau."),
         h("h3", {}, "Historique des niveaux"), h("ul", { class: "pa-hist" }, (st5.obtenus ?? []).filter((o) => o.acquis || o.parent).map((o) => h("li", {}, o.parent ? `${D.fmtDay(o.date)} : niveau ${o.niveau} choisi par le parent (point de départ)` : `${D.fmtDay(o.date)} : niveau ${o.niveau} acquis${o.choix ? " (choisi par l'enfant)" : ""}`))),
-        (st5.lecons ?? []).length ? h("p", { class: "pa-note" }, `Leçons déjà vues : ${st5.lecons.join(", ")}.`) : null);
+        ...((st5.lecons ?? []).length ? [h("p", { class: "pa-note" }, `Leçons déjà vues : ${st5.lecons.join(", ")}.`)] : [])); // (relecture du lot : append(null) écrivait « null »)
     }
     this.weeklyBlock(m5, 5);
     // le défi record

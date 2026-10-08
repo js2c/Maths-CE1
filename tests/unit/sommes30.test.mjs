@@ -58,7 +58,7 @@ test("les deux boîtes : le plus grand nombre d'abord, la première boîte compl
   assert.deepEqual(S.framesOf({ a: 8, b: 5, forme: "trouDroite" }, false), { first: 8, second: 5, places: true });
   assert.deepEqual(S.framesOf({ a: 8, b: 5, forme: "trouGauche" }, false), { first: 5, second: 8, places: true });
   assert.deepEqual(S.framesOf({ a: 8, b: 5, forme: "trouGauche" }, true), { first: 8, second: 5, places: false }); // résolue : comme la forme directe
-  assert.equal(S.aidSpeech({ a: 8, b: 5, forme: "directe" }, "deuxCadres", true), "2 pour faire dix, il en reste 3.");
+  assert.equal(S.aidSpeech({ a: 8, b: 5, forme: "directe" }, "deuxCadres", true), "On complète la boîte avec 2, il en reste 3.");
   assert.equal(S.aidSpeech({ a: 8, b: 5, forme: "directe" }, "deuxCadres", false), textes.aideDeuxCadres);
   assert.equal(S.aidSpeech({ a: 10, b: 4, forme: "directe" }, "deuxCadres", true), "Une boîte pleine, c'est dix. Et encore 4.");
   assert.equal(S.aidSpeech({ a: 9, b: 4, forme: "trouGauche" }, "deuxCadres", false), "Il faut 13 poissons en tout. Compte les places qui brillent !");
@@ -133,5 +133,5 @@ test("voix : chaque fait de 11 à 30 sous ses trois formes et sa correction, les
     for (const k of ["faitTrouDroite", "faitTrouGauche", "faitCorrection"]) assert.ok(inv.has(fill(textes[k], v)), `${k} ${f.fait}`);
     for (const t of textes.fait) assert.ok(inv.has(fill(t, v)), `fait ${f.fait}`);
   }
-  for (const s of ["2 pour faire dix, il en reste 3.", "1 pour faire dix, il en reste 8.", "Une boîte pleine, c'est dix.", "Et encore 10.", "Il faut 20 poissons en tout.", "15, c'est dix et 5.", "5 et 5, 10.", "9 poissons, et dans le reflet, encore 9 poissons.", "8 plus 9, c'est 8 plus 8, et encore 1.", "Huit plus cinq, ça fait treize."]) assert.ok(inv.has(s), s);
+  for (const s of ["On complète la boîte avec 2, il en reste 3.", "On complète la boîte avec 1, il en reste 8.", "Une boîte pleine, c'est dix.", "Et encore 10.", "Il faut 20 poissons en tout.", "15, c'est dix et 5.", "5 et 5, 10.", "9 poissons, et dans le reflet, encore 9 poissons.", "8 plus 9, c'est 8 plus 8, et encore 1.", "Huit plus cinq, ça fait treize."]) assert.ok(inv.has(s), s);
 });

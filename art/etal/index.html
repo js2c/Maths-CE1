@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Étal du pêcheur</title>
+<style>
+:root{--fond:#0e1418;--texte:#16212a;--pilule:rgba(255,255,255,.86);--pilule-bord:#16212a}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--fond:#0e1418}}
+:root[data-theme="dark"]{--fond:#0e1418}
+html,body{margin:0;height:100%;background:var(--fond);overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
+#cadre{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#scene{position:relative;width:1280px;height:800px;transform-origin:center center;flex:none;overflow:hidden;background:#9fd0ea}
+#scene canvas{position:absolute;left:0;top:0}
+#decor,#effets{width:1280px;height:800px}
+#effets{pointer-events:none}
+#capt{left:25.6px!important;top:142px!important;width:198px;height:264px;transition:filter 2.5s ease}
+#capt.orage{filter:brightness(.6) saturate(.75) sepia(.15)}
+#capt.cache{display:none}
+#commandes{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:5}
+#commandes button{font:600 17px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--texte);background:var(--pilule);
+  border:2.5px solid var(--pilule-bord);border-radius:999px;padding:9px 16px;cursor:pointer;box-shadow:0 2px 0 var(--pilule-bord)}
+#commandes button:active{transform:translateY(2px);box-shadow:none}
+#compteur{position:absolute;top:12px;right:14px;z-index:5;font:600 13px/1.3 ui-monospace,Menlo,monospace;color:#16212a;
+  background:rgba(255,255,255,.7);padding:4px 8px;border-radius:8px}
+#chargement{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 24px system-ui,sans-serif;color:#fff;background:#0e1418;z-index:9}
+</style>
+</head>
+<body>
+<div id="cadre"><div id="scene">
+  <canvas id="decor" width="1920" height="1200"></canvas>
+  <canvas id="capt" width="450" height="600" aria-hidden="true"></canvas>
+  <canvas id="effets" width="1920" height="1200"></canvas>
+  <div id="commandes">
+    <button id="bMeteo" type="button">⛈ Mauvais temps</button>
+    <button id="bBateau" type="button">⛵ Un bateau</button>
+    <button id="bCapt" type="button">Capitaine : oui</button>
+  </div>
+  <div id="compteur">–</div>
+  <div id="chargement">Chargement…</div>
+</div></div>
+
+<script>
+'use strict';
+/* =====================================================================================
+   Maquette de l'étal du pêcheur — le décor animé (lot « La boutique », octobre 2026).
+   Scène de 1280 × 800 (comme l'application), dessinée en 1920 × 1200 (images préparées à 1,5×).
+   Calques, du fond vers l'avant : ciel qui défile, oiseaux, mer en trois bandes (parallaxe),
+   jetée et phare, faisceau du phare, sillages, bateaux, cabane et étal, lumière de la lampe,
+   lampe, puis (canvas « effets ») pluie, éclaboussures, halo de la lampe, assombrissement des bords.
+   Beau temps et mauvais temps ont chacun leurs images ; « meteo » passe de 0 à 1 en 3 s.
+   ===================================================================================== */
+const K = 1.5;                       // résolution des images par rapport à la scène
+const PX = 0.5563;                   // pixels de l'illustration d'origine (2576 × 1438) → scène
+const IMG = {};
+const NOMS = ['avant-beau','avant-orage','ciel-beau','ciel-orage','mer-beau','mer-orage','jetee-beau','jetee-orage','lampe',
+  'bateau-chalutier-bleu','bateau-chalutier-orange','bateau-barque-grise','bateau-canot-orange','bateau-canot-vert','bateau-canot-rose'];
+const charger = n => new Promise((ok, ko) => { const i = new Image(); i.onload = () => { IMG[n] = i; ok(); }; i.onerror = ko; i.src = `img/${n}.webp`; });
+
+/* ---------- géométrie de la scène (coordonnées 1280 × 800) ---------- */
+const HORIZON = 200.3;               // ligne d'horizon (haut de la tuile de mer)
+const CIEL_H = 368 * PX;             // hauteur de la tuile de ciel
+const MER_Y = 360 * PX;              // haut de la tuile de mer
+const JETEE = { x: 436 * PX, y: 196 * PX };
+const PHARE = { x: 506, y: 150 };    // la lanterne du phare
+const ACCROCHE = { x: 295, y: 63 };  // le crochet de la lampe, sous l'angle du toit
+const LAMPE = { s: 0.45, hx: 56, hy: 1, fx: 68, fy: 246 }; // échelle, crochet et flamme dans l'image de la lampe
+const BORD_CABANE = 262;             // à gauche, la cabane cache la mer : les bateaux y naissent et y disparaissent
+
+/* bandes de mer : plus proches = plus rapides (vitesses en px/s, vers la gauche) */
+const BANDES = [ { y0: 0, y1: 40, v: 2.2 }, { y0: 28, y1: 72, v: 5.5 }, { y0: 60, y1: 109, v: 11 } ];
+const FONDU_BANDE = 12;
+
+/* bateaux : dimensions de l'image détourée, ligne de flottaison, cap d'origine (-1 : vers la gauche), longueur relative, feux */
+const TYPES = {
+  'chalutier-bleu':   { w: 598, h: 412, wl: 404, cap: -1, l: 1.00, feux: [[380,238,'f'],[408,238,'f'],[407,314,'f'],[285,28,'m']] },
+  'chalutier-orange': { w: 699, h: 345, wl: 337, cap:  1, l: 1.10, feux: [[420,109,'f'],[497,108,'f'],[408,14,'m']] },
+  'barque-grise':     { w: 369, h: 241, wl: 233, cap: -1, l: 0.62, feux: [[300,140,'f'],[105,10,'m']] },
+  'canot-orange':     { w: 229, h: 140, wl: 132, cap: -1, l: 0.42, feux: [[80,63,'f'],[123,8,'m']] },
+  'canot-vert':       { w: 287, h: 124, wl: 116, cap: -1, l: 0.46, feux: [[89,47,'f'],[109,50,'f'],[118,7,'m']] },
+  'canot-rose':       { w: 266, h: 133, wl: 125, cap: -1, l: 0.44, feux: [[92,53,'f'],[119,57,'f'],[129,7,'m']] }
+};
+const MAX_BATEAUX = 3;
+
+/* ---------- canvases ---------- */
+const $ = id => document.getElementById(id);
+const cv = $('decor'), ctx = cv.getContext('2d');
+const fxc = $('effets'), fx = fxc.getContext('2d');
+const hors = (w, h) => { const c = document.createElement('canvas'); c.width = Math.ceil(w); c.height = Math.ceil(h); return c; };
+let merC, merX, tmpC, tmpX, lumC, lumX, chaudC, sombres = {};
+
+function preparer() {
+  merC = hors(1280 * K, 112 * K); merX = merC.getContext('2d');
+  tmpC = hors(1280 * K, 112 * K); tmpX = tmpC.getContext('2d');
+  lumC = hors(1920, 1200); lumX = lumC.getContext('2d');
+  // l'étal et la cabane « éclairés » par la flamme : les couleurs du beau temps, teintées de la flamme ;
+  // la face avant de l'étal, verticale et sous la lampe, en reçoit moins que la glace
+  chaudC = hors(1920, 1200); const c = chaudC.getContext('2d');
+  c.drawImage(IMG['avant-beau'], 0, 0);
+  c.globalCompositeOperation = 'multiply'; c.fillStyle = 'rgb(255,188,112)'; c.fillRect(0, 0, 1920, 1200);
+  c.globalCompositeOperation = 'source-atop';
+  const g = c.createLinearGradient(0, 495 * K, 0, 560 * K); g.addColorStop(0, 'rgba(20,10,0,0)'); g.addColorStop(1, 'rgba(20,10,0,.5)');
+  c.fillStyle = g; c.fillRect(0, 495 * K, 1920, 1200);
+  c.globalCompositeOperation = 'destination-in'; c.drawImage(IMG['avant-beau'], 0, 0);
+  // bateaux assombris pour le mauvais temps
+  for (const n in TYPES) {
+    const im = IMG['bateau-' + n], s = hors(im.width, im.height), x = s.getContext('2d');
+    x.drawImage(im, 0, 0); x.globalCompositeOperation = 'multiply'; x.fillStyle = 'rgb(92,104,124)'; x.fillRect(0, 0, s.width, s.height);
+    x.globalCompositeOperation = 'destination-in'; x.drawImage(im, 0, 0);
+    sombres[n] = s;
+  }
+}
+
+/* ---------- état ---------- */
+let meteo = 0, meteoCible = 0;       // 0 beau temps, 1 mauvais temps
+let t = 0, dernier = 0;
+const bateaux = [], sillage = [], vols = [], gouttes = [], ploufs = [];
+let prochainBateau = 2, prochainVol = 3;
+const hasard = (a, b) => a + Math.random() * (b - a);
+const choisir = a => a[Math.floor(Math.random() * a.length)];
+
+/* ---------- ciel ---------- */
+function ciel() {
+  const v = 3 + 9 * meteo;                       // les nuages filent plus vite par gros temps
+  decalCiel = (decalCiel + v * dt) % 1e6;
+  tuile(ctx, IMG['ciel-beau'], 0, CIEL_H, decalCiel, 1);
+  if (meteo > 0.004) tuile(ctx, IMG['ciel-orage'], 0, CIEL_H, decalCiel, meteo);
+}
+let decalCiel = 0, dt = 0;
+function tuile(c, im, y, h, decal, alpha) {   // tuile répétée, défilant vers la gauche
+  const w = im.width / K, d = ((decal % w) + w) % w;
+  c.globalAlpha = alpha;
+  for (let x = -d; x < 1280; x += w) c.drawImage(im, x, y, w, h);
+  c.globalAlpha = 1;
+}
+
+/* ---------- mer : trois bandes qui glissent à des vitesses différentes, raccordées par un fondu ---------- */
+const decalMer = [0, 0, 0];
+function mer() {
+  merX.setTransform(1, 0, 0, 1, 0, 0); merX.clearRect(0, 0, merC.width, merC.height);
+  const imB = IMG['mer-beau'], imO = IMG['mer-orage'], tw = imB.width / K, th = imB.height / K;
+  const acc = 1 + 1.6 * meteo;
+  BANDES.forEach((b, i) => {
+    decalMer[i] = (decalMer[i] + b.v * acc * dt) % 1e6;
+    const d = ((decalMer[i] % tw) + tw) % tw;
+    tmpX.setTransform(1, 0, 0, 1, 0, 0); tmpX.globalCompositeOperation = 'source-over'; tmpX.clearRect(0, 0, tmpC.width, tmpC.height);
+    tmpX.setTransform(K, 0, 0, K, 0, 0);
+    for (let x = -d; x < 1280; x += tw) {
+      tmpX.globalAlpha = 1; tmpX.drawImage(imB, 0, b.y0 * K, imB.width, (b.y1 - b.y0) * K, x, b.y0, tw, b.y1 - b.y0);
+      if (meteo > 0.004) { tmpX.globalAlpha = meteo; tmpX.drawImage(imO, 0, b.y0 * K, imO.width, (b.y1 - b.y0) * K, x, b.y0, tw, b.y1 - b.y0); }
+      if (i === BANDES.length - 1) {          // la dernière rangée de l'image prolongée jusque sous le bord de l'étal
+        tmpX.globalAlpha = 1; tmpX.drawImage(imB, 0, imB.height - 3, imB.width, 3, x, th - 2, tw, 112 - th + 2);
+        if (meteo > 0.004) { tmpX.globalAlpha = meteo; tmpX.drawImage(imO, 0, imO.height - 3, imO.width, 3, x, th - 2, tw, 112 - th + 2); }
+      }
+    }
+    tmpX.globalAlpha = 1;
+    if (i > 0) {                               // le haut de la bande se fond dans la précédente
+      tmpX.globalCompositeOperation = 'destination-in';
+      const g = tmpX.createLinearGradient(0, b.y0, 0, b.y0 + FONDU_BANDE);
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,1)');
+      tmpX.fillStyle = g; tmpX.fillRect(0, b.y0, 1280, b.y1 - b.y0);
+      tmpX.globalCompositeOperation = 'source-over';
+    }
+    merX.drawImage(tmpC, 0, 0);
+  });
+  ctx.drawImage(merC, 0, MER_Y, 1280, merC.height / K);
+}
+
+/* ---------- jetée, phare et son faisceau ---------- */
+function jetee() {
+  const a = IMG['jetee-beau'], b = IMG['jetee-orage'];
+  if (meteo < 0.996) ctx.drawImage(a, JETEE.x, JETEE.y, a.width / K, a.height / K);
+  if (meteo > 0.004) { ctx.globalAlpha = meteo; ctx.drawImage(b, JETEE.x, JETEE.y, b.width / K, b.height / K); ctx.globalAlpha = 1; }
+}
+function faisceau() {
+  if (meteo < 0.02) return;
+  const th = t * 2 * Math.PI / 7.5, c = Math.cos(th), s = Math.sin(th);
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  // le pinceau : sa longueur visible suit le cosinus (il tourne autour de la tour)
+  const L = 760 * Math.abs(c), dir = Math.sign(c) || 1, demi = 6 + 26 * Math.abs(c);
+  if (L > 8) {
+    const g = ctx.createLinearGradient(PHARE.x, 0, PHARE.x + dir * L, 0);
+    const a0 = 0.42 * meteo * (0.55 + 0.45 * Math.max(0, s));
+    g.addColorStop(0, `rgba(255,236,190,${a0})`); g.addColorStop(0.5, `rgba(255,236,190,${a0 * 0.35})`); g.addColorStop(1, 'rgba(255,236,190,0)');
+    ctx.fillStyle = g; ctx.beginPath();
+    ctx.moveTo(PHARE.x, PHARE.y - 2); ctx.lineTo(PHARE.x + dir * L, PHARE.y - demi); ctx.lineTo(PHARE.x + dir * L, PHARE.y + demi); ctx.lineTo(PHARE.x, PHARE.y + 2);
+    ctx.closePath(); ctx.fill();
+  }
+  // l'éclat quand le faisceau passe face à nous, et le halo permanent
+  const eclat = Math.pow(Math.max(0, s), 10);
+  const r = 9 + 70 * eclat;
+  const h = ctx.createRadialGradient(PHARE.x, PHARE.y, 0, PHARE.x, PHARE.y, r);
+  h.addColorStop(0, `rgba(255,246,215,${0.9 * meteo})`); h.addColorStop(0.35, `rgba(255,230,170,${(0.35 + 0.4 * eclat) * meteo})`); h.addColorStop(1, 'rgba(255,220,150,0)');
+  ctx.fillStyle = h; ctx.fillRect(PHARE.x - r, PHARE.y - r, 2 * r, 2 * r);
+  ctx.restore();
+}
+
+/* ---------- oiseaux : des « V » lointains, en formation ---------- */
+function nouveauVol() {
+  const dir = Math.random() < 0.5 ? 1 : -1, n = 3 + Math.floor(Math.random() * 5), s = hasard(4, 7.5);
+  const oiseaux = [];
+  for (let i = 0; i < n; i++) {
+    const rang = Math.ceil(i / 2), cote = i % 2 ? 1 : -1;
+    oiseaux.push({ dx: -dir * rang * s * 3.2 + hasard(-2, 2), dy: cote * rang * s * 1.7 + hasard(-1.5, 1.5), ph: hasard(0, 6.3), f: hasard(4.2, 5.4) });
+  }
+  vols.push({ x: dir > 0 ? 250 : 1320, y: hasard(28, 150), dir, v: hasard(26, 40), s, oiseaux, dyv: hasard(-2, 2) });
+}
+function oiseaux() {
+  if (meteoCible === 0 && (prochainVol -= dt) <= 0) { nouveauVol(); prochainVol = hasard(9, 22); }
+  const a = 1 - meteo;
+  ctx.save(); ctx.strokeStyle = '#26323b'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  for (let k = vols.length - 1; k >= 0; k--) {
+    const v = vols[k];
+    v.x += v.dir * v.v * dt; v.y += v.dyv * dt;
+    if (v.x < 150 || v.x > 1450) { vols.splice(k, 1); continue; }
+    if (a < 0.01) continue;
+    ctx.globalAlpha = 0.78 * a; ctx.lineWidth = 0.9 + v.s * 0.16;
+    for (const o of v.oiseaux) {
+      // battements par séries, puis vol plané
+      const plane = Math.sin(t * 0.7 + o.ph) > 0.35;
+      const b = plane ? 0.25 : Math.sin(t * o.f * 2 * Math.PI / 3 + o.ph);
+      const x = v.x + o.dx, y = v.y + o.dy + (plane ? 0 : b * 0.6), s = v.s;
+      ctx.beginPath();
+      ctx.moveTo(x - s, y - s * (0.35 + 0.45 * b));
+      ctx.quadraticCurveTo(x - s * 0.45, y - s * 0.2 * (1 + b), x, y);
+      ctx.quadraticCurveTo(x + s * 0.45, y - s * 0.2 * (1 + b), x + s, y - s * (0.35 + 0.45 * b));
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+/* ---------- bateaux ---------- */
+function nouveauBateau(x0, y0, n0) {
+  if (bateaux.length >= MAX_BATEAUX) return;
+  const libres = Object.keys(TYPES).filter(n => !bateaux.some(b => b.n === n));
+  const n = n0 || choisir(libres), T = TYPES[n];
+  // profondeur : la ligne de flottaison, de l'horizon jusqu'au bord de l'étal ; on évite deux bateaux trop proches en hauteur
+  let y, essais = 0;
+  do { y = y0 || hasard(212, 298); essais++; } while (!y0 && (essais < 20 && bateaux.some(b => Math.abs(b.y - y) < 14)));
+  const L = 2.35 * (y - HORIZON) * T.l;
+  const dir = Math.random() < 0.5 ? 1 : -1;
+  const x = x0 != null ? x0 : (dir > 0 ? BORD_CABANE - L * 0.6 : 1280 + L * 0.6);
+  bateaux.push({ n, T, y, L, dir, x, v: 0.12 * L + 5 + hasard(-1, 2), ph: hasard(0, 6.3), ph2: hasard(0, 6.3), emis: 0 });
+  bateaux.sort((a, b) => a.y - b.y);
+}
+function majBateaux() {
+  if ((prochainBateau -= dt) <= 0) { nouveauBateau(); prochainBateau = hasard(5, 13); }
+  for (let k = bateaux.length - 1; k >= 0; k--) {
+    const b = bateaux[k];
+    b.x += b.dir * b.v * dt;
+    if ((b.dir > 0 && b.x - b.L / 2 > 1290) || (b.dir < 0 && b.x + b.L / 2 < BORD_CABANE - 10)) { bateaux.splice(k, 1); continue; }
+    // écume du sillage : de petits traits blancs laissés à l'arrière, qui s'allongent et s'effacent
+    b.emis += dt;
+    const pas = 0.05;
+    while (b.emis > pas) {
+      b.emis -= pas;
+      const arr = b.x - b.dir * b.L * 0.47;
+      sillage.push({ x: arr + hasard(-1, 1) * b.L * 0.02, y: b.y + hasard(-0.5, 1) * b.L * 0.012, L: b.L, age: 0, vie: hasard(2.2, 3.6),
+                     cote: Math.random() < 0.5 ? -1 : 1, dir: b.dir });
+    }
+  }
+  for (let k = sillage.length - 1; k >= 0; k--) { const p = sillage[k]; p.age += dt; if (p.age > p.vie) sillage.splice(k, 1); }
+}
+function dessinerSillage() {
+  ctx.save(); ctx.lineCap = 'round';
+  const blanc = 255 - 55 * meteo;
+  for (const p of sillage) {
+    const u = p.age / p.vie, a = Math.pow(1 - u, 1.6) * 0.75;
+    const len = p.L * (0.025 + 0.07 * u), ep = Math.max(0.8, p.L * 0.012 * (1 - 0.5 * u));
+    const y = p.y + p.cote * p.L * 0.018 * u;           // le sillage s'ouvre un peu en s'éloignant
+    ctx.strokeStyle = `rgba(${blanc},${blanc + 0},${blanc},${a})`; ctx.lineWidth = ep;
+    ctx.beginPath(); ctx.moveTo(p.x - len / 2, y); ctx.lineTo(p.x + len / 2, y); ctx.stroke();
+  }
+  ctx.restore();
+}
+function dessinerBateau(b) {
+  const T = b.T, ech = b.L / T.w;
+  const houle = 0.4 + 1.8 * meteo, roulis = (0.5 + 2.6 * meteo) * Math.PI / 180;
+  const dy = Math.sin(t * 1.4 + b.ph) * houle * b.L / 120;
+  const rot = Math.sin(t * 0.95 + b.ph2) * roulis;
+  ctx.save();
+  ctx.translate(b.x, b.y + dy); ctx.rotate(rot);
+  const miroir = b.dir !== T.cap ? -1 : 1;
+  ctx.scale(miroir * ech, ech);
+  if (meteo < 0.996) ctx.drawImage(IMG['bateau-' + b.n], -T.w / 2, -T.wl, T.w, T.h);
+  if (meteo > 0.004) { ctx.globalAlpha = meteo; ctx.drawImage(sombres[b.n], -T.w / 2, -T.wl, T.w, T.h); ctx.globalAlpha = 1; }
+  // feux allumés par mauvais temps (fenêtres chaudes, feu de mât blanc), et leur reflet sur l'eau
+  if (meteo > 0.02) {
+    ctx.globalCompositeOperation = 'lighter';
+    for (const [fxp, fyp, k] of T.feux) {
+      const x = fxp - T.w / 2, y = fyp - T.wl;
+      const scint = 0.85 + 0.15 * Math.sin(t * 9 + fxp);
+      const r = (k === 'm' ? 1.5 + 0.022 * b.L : 2.5 + 0.04 * b.L) / ech;   // rayon voulu dans la scène, ramené à l'image
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      const col = k === 'm' ? '255,250,235' : '255,205,110';
+      g.addColorStop(0, `rgba(${col},${0.95 * meteo * scint})`); g.addColorStop(0.3, `rgba(${col},${0.45 * meteo * scint})`); g.addColorStop(1, `rgba(${col},0)`);
+      ctx.fillStyle = g; ctx.fillRect(x - r, y - r, 2 * r, 2 * r);
+      if (k === 'f') {                                   // reflet tremblant sous le bateau
+        const rh = T.h * 0.5, rw = r * 0.45, ox = Math.sin(t * 5 + fxp) * rw * 0.3;
+        const gr = ctx.createLinearGradient(0, 4, 0, rh);
+        gr.addColorStop(0, `rgba(255,200,110,${0.32 * meteo})`); gr.addColorStop(1, 'rgba(255,200,110,0)');
+        ctx.fillStyle = gr; ctx.fillRect(x - rw / 2 + ox, 4, rw, rh);
+      }
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  ctx.restore();
+  // écume le long de la coque et vague d'étrave (en coordonnées de la scène, sans le roulis) :
+  // une bande blanche au bord supérieur bosselé, cernée d'un trait bleuté, comme les vagues peintes
+  const yv = b.y + dy, L = b.L, blanc = 255 - 60 * meteo;
+  const x0 = b.x - b.dir * L * 0.46, x1 = b.x + b.dir * L * 0.47;      // de la poupe à l'étrave
+  const N = 18, haut = [];
+  for (let i = 0; i <= N; i++) {
+    const u = i / N, x = x0 + (x1 - x0) * u;
+    const h = L * (0.004 + 0.016 * Math.pow(Math.max(0, Math.sin(t * 4.5 + i * 2.3 + b.ph)), 2) + 0.032 * Math.pow(u, 5));  // plus haute à l'étrave
+    haut.push([x, yv - h]);
+  }
+  const bas = L * 0.005;
+  ctx.save();
+  ctx.beginPath(); ctx.moveTo(x0, yv + bas);
+  for (let i = 0; i < haut.length - 1; i++) {
+    const [ax, ay] = haut[i], [bx, by] = haut[i + 1];
+    ctx.quadraticCurveTo(ax, ay, (ax + bx) / 2, (ay + by) / 2);
+  }
+  const [ex, ey] = haut[haut.length - 1];
+  ctx.quadraticCurveTo(ex + b.dir * L * 0.03, ey, ex + b.dir * L * 0.05, yv + bas * 0.3);
+  ctx.quadraticCurveTo(b.x, yv + bas * 1.6, x0, yv + bas);
+  ctx.closePath();
+  ctx.fillStyle = `rgba(${blanc},${blanc + 2},${blanc + 4},0.9)`; ctx.fill();
+  // seul le bord bosselé est cerné, comme l'écume peinte
+  ctx.beginPath(); ctx.moveTo(haut[0][0], haut[0][1]);
+  for (let i = 0; i < haut.length - 1; i++) { const [ax, ay] = haut[i], [bx, by] = haut[i + 1]; ctx.quadraticCurveTo(ax, ay, (ax + bx) / 2, (ay + by) / 2); }
+  ctx.strokeStyle = `rgba(60,110,140,${0.5 - 0.2 * meteo})`; ctx.lineWidth = Math.max(0.6, L * 0.0035); ctx.stroke();
+  ctx.restore();
+}
+
+/* ---------- cabane, étal, lampe et sa lumière ---------- */
+function premierPlan() {
+  if (meteo < 0.996) ctx.drawImage(IMG['avant-beau'], 0, 0, 1280, 800);   // opaque pendant le fondu ; retiré ensuite (pas de liseré clair)
+  if (meteo > 0.004) { ctx.globalAlpha = meteo >= 0.996 ? 1 : meteo; ctx.drawImage(IMG['avant-orage'], 0, 0, 1280, 800); ctx.globalAlpha = 1; }
+}
+let flamme = { x: 0, y: 0 }, intensite = 1;
+function lampe() {
+  if (meteo < 0.004) return;
+  // balancement : un pendule poussé par les rafales
+  const rafale = 0.6 + 0.4 * Math.sin(t * 0.37) * Math.sin(t * 0.23 + 1);
+  const ang = (4.5 * rafale * Math.sin(t * 2 * Math.PI / 1.9) + 0.8 * Math.sin(t * 3.1)) * Math.PI / 180;
+  const s = LAMPE.s, dx = (LAMPE.fx - LAMPE.hx) * s, dy = (LAMPE.fy - LAMPE.hy) * s;
+  flamme.x = ACCROCHE.x + dx * Math.cos(ang) - dy * Math.sin(ang);
+  flamme.y = ACCROCHE.y + dx * Math.sin(ang) + dy * Math.cos(ang);
+  intensite = 0.9 + 0.05 * Math.sin(t * 13.7) + 0.04 * Math.sin(t * 23.1 + 1) + 0.03 * Math.sin(t * 5.3);
+  // 1. la lumière : on révèle, autour de la flamme, l'étal et la cabane dans des couleurs chaudes
+  lumX.setTransform(1, 0, 0, 1, 0, 0); lumX.globalCompositeOperation = 'source-over'; lumX.clearRect(0, 0, 1920, 1200);
+  lumX.setTransform(K, 0, 0, K, 0, 0);
+  const R = 640, g = lumX.createRadialGradient(flamme.x, flamme.y, 0, flamme.x, flamme.y, R);
+  [[0, 1], [0.08, 0.97], [0.22, 0.8], [0.4, 0.5], [0.6, 0.24], [0.8, 0.08], [1, 0]].forEach(([o, a]) => g.addColorStop(o, `rgba(0,0,0,${a})`));
+  lumX.fillStyle = g; lumX.fillRect(flamme.x - R, flamme.y - R, 2 * R, 2 * R);
+  lumX.globalCompositeOperation = 'source-in'; lumX.setTransform(1, 0, 0, 1, 0, 0); lumX.drawImage(chaudC, 0, 0);
+  // la surface prend la couleur chaude (recouvrement) puis gagne de la lumière (addition)
+  ctx.globalAlpha = meteo * 0.78 * intensite; ctx.drawImage(lumC, 0, 0, 1280, 800);
+  ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = meteo * 0.55 * intensite; ctx.drawImage(lumC, 0, 0, 1280, 800);
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  // 2. la lampe elle-même
+  const im = IMG.lampe;
+  ctx.save(); ctx.globalAlpha = meteo; ctx.translate(ACCROCHE.x, ACCROCHE.y); ctx.rotate(ang);
+  ctx.drawImage(im, -LAMPE.hx * s, -LAMPE.hy * s, im.width * s, im.height * s); ctx.restore();
+}
+
+/* ---------- effets au premier plan : halo, pluie, éclaboussures, bords assombris ---------- */
+function initPluie() {
+  for (let i = 0; i < 420; i++) gouttes.push(nouvelleGoutte(true));
+}
+function nouvelleGoutte(partout) {
+  const pres = Math.random() < 0.3;                 // un tiers de gouttes proches, plus grandes et plus rapides
+  return { x: hasard(-100, 1400), y: partout ? hasard(-40, 800) : hasard(-60, -10), pres,
+           v: pres ? hasard(1150, 1450) : hasard(700, 950), l: pres ? hasard(22, 34) : hasard(10, 18), a: pres ? hasard(0.3, 0.5) : hasard(0.16, 0.3) };
+}
+function effets() {
+  fx.setTransform(1, 0, 0, 1, 0, 0); fx.clearRect(0, 0, fxc.width, fxc.height);
+  if (meteo < 0.004) return;
+  fx.setTransform(K, 0, 0, K, 0, 0);
+  // halo de la flamme (s'ajoute à ce qui est derrière, y compris la pluie qu'il éclaire)
+  fx.globalCompositeOperation = 'lighter';
+  const r1 = 36, r2 = 170;
+  let g = fx.createRadialGradient(flamme.x, flamme.y, 0, flamme.x, flamme.y, r2);
+  g.addColorStop(0, `rgba(255,190,100,${0.3 * meteo * intensite})`); g.addColorStop(0.4, `rgba(255,160,70,${0.1 * meteo * intensite})`); g.addColorStop(1, 'rgba(255,150,60,0)');
+  fx.fillStyle = g; fx.fillRect(flamme.x - r2, flamme.y - r2, 2 * r2, 2 * r2);
+  g = fx.createRadialGradient(flamme.x, flamme.y, 0, flamme.x, flamme.y, r1);
+  g.addColorStop(0, `rgba(255,235,180,${0.75 * meteo * intensite})`); g.addColorStop(1, 'rgba(255,200,120,0)');
+  fx.fillStyle = g; fx.fillRect(flamme.x - r1, flamme.y - r1, 2 * r1, 2 * r1);
+  fx.globalCompositeOperation = 'source-over';
+  // pluie : poussée par le vent (vers la gauche), éclairée en orange près de la lampe
+  const vent = -0.2;
+  fx.lineCap = 'round';
+  for (const d of gouttes) {
+    d.y += d.v * dt; d.x += d.v * vent * dt;
+    if (d.y > 810 || d.x < -120) { Object.assign(d, nouvelleGoutte(false)); if (d.pres && Math.random() < 0.6) ploufs.push({ x: hasard(340, 1280), y: hasard(330, 505), age: 0 }); continue; }
+    const dist = Math.hypot(d.x - flamme.x, d.y - flamme.y), chaud = Math.max(0, 1 - dist / 190);
+    const r = Math.round(200 + 55 * chaud), gg = Math.round(214 - 14 * chaud), b = Math.round(228 - 110 * chaud);
+    fx.strokeStyle = `rgba(${r},${gg},${b},${(d.a + 0.45 * chaud) * meteo})`; fx.lineWidth = d.pres ? 1.6 : 1;
+    fx.beginPath(); fx.moveTo(d.x, d.y); fx.lineTo(d.x - d.l * vent, d.y - d.l); fx.stroke();
+  }
+  // éclaboussures sur la glace de l'étal
+  for (let k = ploufs.length - 1; k >= 0; k--) {
+    const p = ploufs[k]; p.age += dt; const u = p.age / 0.3;
+    if (u >= 1) { ploufs.splice(k, 1); continue; }
+    fx.strokeStyle = `rgba(235,242,250,${0.55 * (1 - u) * meteo})`; fx.lineWidth = 1;
+    fx.beginPath(); fx.ellipse(p.x, p.y, 2 + 7 * u, 0.8 + 2.2 * u, 0, 0, 2 * Math.PI); fx.stroke();
+  }
+  // bords assombris
+  g = fx.createRadialGradient(640, 380, 300, 640, 400, 860);
+  g.addColorStop(0, 'rgba(5,10,18,0)'); g.addColorStop(1, `rgba(5,10,18,${0.45 * meteo})`);
+  fx.fillStyle = g; fx.fillRect(0, 0, 1280, 800);
+}
+
+/* ---------- boucle ---------- */
+let fpsN = 0, fpsT = 0;
+function image(ms) {
+  const s = ms / 1000; dt = Math.min(0.05, dernier ? s - dernier : 0); dernier = s; t += dt;
+  // le temps change en 3 s
+  const pas = dt / 3; meteo += Math.max(-pas, Math.min(pas, meteoCible - meteo));
+  ctx.setTransform(K, 0, 0, K, 0, 0);
+  ciel(); oiseaux(); mer(); jetee(); faisceau();
+  majBateaux(); dessinerSillage(); bateaux.forEach(dessinerBateau);
+  premierPlan(); lampe(); effets();
+  fpsN++; fpsT += dt;
+  if (fpsT > 0.5) { $('compteur').textContent = `${Math.round(fpsN / fpsT)} img/s · ${bateaux.length} bateau${bateaux.length > 1 ? 'x' : ''}`; fpsN = 0; fpsT = 0; }
+  requestAnimationFrame(image);
+}
+
+/* ---------- mise à l'échelle de la scène ---------- */
+function ajuster() {
+  const s = Math.min(innerWidth / 1280, innerHeight / 800);
+  $('scene').style.transform = `scale(${s})`;
+}
+addEventListener('resize', ajuster); ajuster();
+
+/* ---------- commandes ---------- */
+$('bMeteo').onclick = () => {
+  meteoCible = meteoCible ? 0 : 1;
+  $('bMeteo').textContent = meteoCible ? '☀ Beau temps' : '⛈ Mauvais temps';
+  $('capt').classList.toggle('orage', !!meteoCible);
+};
+$('bBateau').onclick = () => nouveauBateau();
+let captOui = true;
+$('bCapt').onclick = () => { captOui = !captOui; $('capt').classList.toggle('cache', !captOui); $('bCapt').textContent = `Capitaine : ${captOui ? 'oui' : 'non'}`; };
+
+/* ---------- le capitaine (vidéos de la mascotte, moteur commun) ---------- */
+async function capitaine() {
+  // publié seul : mascotte/ à côté de la page ; dans le dépôt : art/mascotte/
+  for (const base of ['mascotte/', '../mascotte/']) {
+    try {
+      const r = await fetch(base + 'mascotte-moteur.js', { method: 'HEAD' });
+      if (!r.ok) continue;
+      await new Promise((ok, ko) => { const s = document.createElement('script'); s.src = base + 'mascotte-moteur.js'; s.onload = ok; s.onerror = ko; document.head.appendChild(s); });
+      const M = creerMascotte({ canvas: $('capt'), base: base + 'v/' });
+      M.ambiance('pause');
+      return;
+    } catch (e) { /* essai suivant */ }
+  }
+  $('capt').classList.add('cache'); $('bCapt').disabled = true; $('bCapt').textContent = 'Capitaine : absent';
+}
+
+Promise.all(NOMS.map(charger)).then(() => {
+  preparer(); initPluie();
+  // deux bateaux déjà en mer à l'ouverture
+  nouveauBateau(hasard(450, 700)); nouveauBateau(hasard(850, 1150));
+  $('chargement').remove();
+  requestAnimationFrame(image);
+  capitaine();
+}).catch(e => { $('chargement').textContent = 'Images introuvables : ' + e; });
+
+// pour les essais automatiques
+window.MAQ = { get lum() { return lumC; }, get chaud() { return chaudC; }, get flamme() { return flamme; }, get meteo() { return meteo; }, set meteo(v) { meteo = meteoCible = v; $('capt').classList.toggle('orage', !!v); }, bateaux, nouveauBateau, vols, nouveauVol };
+</script>
+</body>
+</html>

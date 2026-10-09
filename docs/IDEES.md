@@ -2,7 +2,7 @@
 
 Tout ce qui n'est pas décidé : idées d'amélioration, concepts d'exercices à maquetter, questions laissées avec une valeur par défaut, points à observer avec l'enfant. Tenu en conception. Quand un point est tranché, la règle va dans `docs/SPEC.md`, la raison dans `docs/JOURNAL-CONCEPTION.md`, et la ligne est retirée d'ici.
 
-Dernière mise à jour : 6 octobre 2026 (mascotte, voiliers et lots ordonnés de `docs/LOTS.md`), après la revue du programme de CE1 du 30 septembre.
+Dernière mise à jour : 9 octobre 2026 (la monnaie avancée : l'étal du pêcheur), après le 6 octobre (mascotte, voiliers et lots ordonnés de `docs/LOTS.md`) et la revue du programme de CE1 du 30 septembre.
 
 ## 1. La feuille de route (décision du parent du 30 septembre)
 
@@ -23,7 +23,7 @@ Les lots prêts à lancer, dans l'ordre, sont dans **`docs/LOTS.md`** (décision
 
 **Phase 2, d'ici quelques semaines** (la multiplication et les tables sont devenues le lot « Multiplication » de `docs/LOTS.md`, demande du parent du 6 octobre) : les fractions (le programme les attend **au plus tard en période 2**, avant les vacances de Noël ; le parent les remet à plus tard, décision du 6 octobre) ; la multiplication (addition répétée, signe ×, commutativité, rangées) et les tables ; le partage (valeur d'une part, nombre de parts) ; l'addition et la soustraction posées jusqu'à 3 chiffres, avec retenues (la méthode de soustraction, par cassage ou par compensation, **à demander à l'enseignante** : l'école en choisit une du CE1 au CM2) ; ± centaines entières et calculs à 3 chiffres (234 + 60, 765 − 200) ; × 10 d'un nombre inférieur à 100.
 
-**Phase 3** : l'heure, la monnaie (le programme demande les **centimes** en période 2 et l'**écriture à virgule** dès la période 3 : la spécification actuelle, en euros entiers, est à revoir), les longueurs, les masses.
+**Phase 3** : l'heure, la monnaie (**avancée par le parent le 8 octobre 2026** : c'est une notion de la vie courante qu'il veut faire acquérir ; concept en section 2, « L'étal du pêcheur » ; le programme demande les **centimes** en période 2 et l'**écriture à virgule** dès la période 3 : la spécification actuelle, en euros entiers, est à revoir), les longueurs, les masses.
 
 **Exclu** : écrire les nombres en lettres.
 
@@ -32,6 +32,12 @@ Les lots prêts à lancer, dans l'ordre, sont dans **`docs/LOTS.md`** (décision
 ## 2. Concepts d'exercices à maquetter (phase 1)
 
 Retenus dans leur principe par le parent le 30 septembre ; chacun doit passer par une maquette validée avant d'être spécifié dans `docs/SPEC.md`.
+
+**L'étal du pêcheur** (la monnaie ; avancée par le parent le 8 octobre 2026, avant les autres concepts de cette section). Décisions du parent : une boutique de pêcheur avec la pêche du jour ; le capitaine (la mascotte) en marchand, dans la fenêtre de sa cabane ; de vraies pièces et de vrais billets en euros, **dessinés** (pas de photos) ; décor et objets générés par Nano Banana dans le style dessiné du récif ; quelques éléments animés. Le principe : un bouton ouvre le portefeuille de l'enfant ; elle fait glisser les pièces et les billets nécessaires pour acheter le produit demandé ; en montant en difficulté, le portefeuille est restreint pour qu'on ne puisse pas faire le compte juste, et il faut alors calculer la monnaie que le pêcheur rend. D'autres déclinaisons viendront ensuite.
+
+- **Décor** : maquette `art/etal/` (9 octobre 2026), à valider : cabane à gauche (la fenêtre tombe sur la place de la mascotte), étal de glace vu de face, comptoir au premier plan, port et phare ; nuages, vagues, oiseaux et bateaux animés ; un mode « mauvais temps » (pluie, phare tournant, feux des bateaux, lampe à huile qui se balance et éclaire l'étal). Reste à décider quand ce mode s'affiche (au hasard, selon la saison, à la demande ?).
+- **Proposé, non tranché** : niveaux (payer juste avec des pièces jusqu'à 10 €, puis avec des billets jusqu'à 20 € et 50 € ; portefeuille restreint où le compte juste exige un choix ; compte juste impossible : payer sans pièce de trop, le pêcheur rend la monnaie en comptant ; puis l'enfant calcule ce qu'il doit rendre ; deux produits à additionner) ; règle de validation « aucune pièce de trop » quand le compte juste est impossible ; aide par le saut sur la ligne graduée pour rendre la monnaie ; les centimes (période 2 au plus tard) et l'écriture à virgule (période 3) en niveaux suivants du même exercice.
+- **Points de vigilance** : les billets en euros ont des règles de reproduction (décision BCE/2013/10) : pièces et billets **stylisés et reconnaissables**, sans signature, numéro, sigle ni motif exact ; leur valeur écrite par le code (un générateur d'images écrit mal les chiffres). Les prix et sommes dits à voix haute multiplient les phrases à fabriquer : banque fixe de situations, ou montants affichés plutôt que dits.
 
 **La pêche** (centaines, dizaines, unités ; « 23 dizaines et 5 unités », 600 + 30 + 5). Trois réserves au bord d'un bateau : chaluts (100 poissons), filets (10), poissons seuls. La voix : « Pêche 235 poissons » ; l'enfant fait glisser chaluts, filets et poissons dans la cale, puis valide. Variantes, de la plus simple à la plus difficile :
 

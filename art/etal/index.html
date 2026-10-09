@@ -32,12 +32,9 @@ html,body{margin:0;height:100%;background:var(--fond);overflow:hidden;touch-acti
   transition:transform .38s cubic-bezier(.25,.9,.35,1),opacity .3s;filter:drop-shadow(0 3px 2px rgba(20,12,4,.45))}
 #caisse .m.glisse{transition:none}
 #pf{position:absolute;left:0;top:0;width:640px;height:422px;transform-origin:0 0;pointer-events:auto;z-index:3;filter:drop-shadow(0 5px 4px rgba(20,12,4,.5))}
-#pocheP{position:absolute;overflow:hidden;z-index:4;pointer-events:none;transition:opacity .25s}
-#pocheP img{position:absolute;bottom:-20px}
-#soucoupe{position:absolute;left:298px;top:604px;width:340px;height:170px;border-radius:50%;z-index:1;pointer-events:none;
-  background:radial-gradient(ellipse at 50% 40%,#c99a63 0%,#a8743f 55%,#7c5126 100%);border:4px solid #1d1712;
-  box-shadow:inset 0 10px 0 rgba(255,236,200,.25),inset 0 -14px 18px rgba(40,22,8,.55),0 8px 0 #5a3a1c,0 12px 10px rgba(0,0,0,.35)}
-#total{position:absolute;left:298px;top:566px;width:340px;text-align:center;font:600 24px Ardoise,"Comic Sans MS",sans-serif;color:#fff8e8;
+#pfAvant{position:absolute;left:0;top:0;width:640px;height:422px;transform-origin:0 0;pointer-events:none;z-index:5;opacity:0}
+#soucoupe{position:absolute;left:283px;top:597px;width:370px;z-index:1;pointer-events:none;filter:drop-shadow(0 6px 5px rgba(20,12,4,.45))}
+#total{position:absolute;left:298px;top:560px;width:340px;text-align:center;font:600 24px Ardoise,"Comic Sans MS",sans-serif;color:#fff8e8;
   text-shadow:0 2px 0 #1d1712,0 0 6px #1d1712;z-index:1;pointer-events:none;transition:opacity .3s}
 /* réglages de la maquette */
 #reglages{position:absolute;right:10px;top:52px;bottom:10px;width:340px;overflow-y:auto;z-index:8;background:rgba(255,255,255,.94);border:2px solid #16212a;
@@ -65,9 +62,9 @@ html,body{margin:0;height:100%;background:var(--fond);overflow:hidden;touch-acti
   <canvas id="capt" width="450" height="600" aria-hidden="true"></canvas>
   <div id="captVoile"></div>
   <div id="caisse">
-    <div id="soucoupe"></div><div id="total"></div>
+    <img id="soucoupe" src="img/soucoupe.webp" alt=""><div id="total"></div>
     <canvas id="pf" width="640" height="422" aria-label="portefeuille"></canvas>
-    <div id="pocheP"></div>
+    <canvas id="pfAvant" width="640" height="422"></canvas>
   </div>
   <canvas id="effets" width="1280" height="800"></canvas>
   <div id="nuit"></div>
@@ -174,6 +171,18 @@ const $ = id => document.getElementById(id);
 const cv = $('decor'), ctx = cv.getContext('2d', { alpha: false });   // opaque : composition plus légère
 const fxc = $('effets'), fx = fxc.getContext('2d');
 const hors = (w, h) => { const c = document.createElement('canvas'); c.width = Math.ceil(w); c.height = Math.ceil(h); return c; };
+const mips = {}, mipsS = {};
+/* un bateau lointain est très réduit : le navigateur, en réduisant d'un coup une grande image, la pixellise.
+   On prépare donc des versions à 1/2, 1/4, 1/8, réduites par étapes, et on pose la plus proche de la taille voulue. */
+function reductions(im) {
+  const L = [im]; let src = im;
+  while (src.width > 60) {
+    const c = hors(src.width / 2, src.height / 2), x = c.getContext('2d'); x.imageSmoothingQuality = 'high';
+    x.drawImage(src, 0, 0, c.width, c.height); L.push(c); src = c;
+  }
+  return L;
+}
+const niveau = (L, larg) => { let k = 0; while (k + 1 < L.length && L[k + 1].width >= larg) k++; return L[k]; };
 let merC, merX, tmpC, tmpX, chaudC, etalBeau, etalOrage, sombres = {};
 const police = () => { try { const f = new FontFace('Ardoise', 'url(polices/shantell-sans-600.woff2)'); document.fonts.add(f); return f.load().catch(() => null); } catch (e) { return Promise.resolve(); } };
 const assombrir = (src, w, h) => {      // même assombrissement que les bateaux, pour le mauvais temps
@@ -328,6 +337,7 @@ function preparer() {
   for (const n in TYPES) {
     const im = IMG['bateau-' + n];
     sombres[n] = assombrir(im, im.width, im.height);
+    mips[n] = reductions(im); mipsS[n] = reductions(sombres[n]);
   }
 }
 
@@ -498,8 +508,9 @@ function dessinerBateau(b) {
   ctx.translate(b.x, b.y + dy); ctx.rotate(rot);
   const miroir = b.dir !== T.cap ? -1 : 1;
   ctx.scale(miroir * ech, ech);
-  if (meteo < 0.996) ctx.drawImage(IMG['bateau-' + b.n], -T.w / 2, -T.wl, T.w, T.h);
-  if (meteo > 0.004) { ctx.globalAlpha = meteo; ctx.drawImage(sombres[b.n], -T.w / 2, -T.wl, T.w, T.h); ctx.globalAlpha = 1; }
+  const larg = b.L * K;                  // largeur voulue, en pixels du canvas
+  if (meteo < 0.996) ctx.drawImage(niveau(mips[b.n], larg), -T.w / 2, -T.wl, T.w, T.h);
+  if (meteo > 0.004) { ctx.globalAlpha = meteo; ctx.drawImage(niveau(mipsS[b.n], larg), -T.w / 2, -T.wl, T.w, T.h); ctx.globalAlpha = 1; }
   // feux allumés par mauvais temps (fenêtres chaudes, feu de mât blanc), et leur reflet sur l'eau
   if (meteo > 0.02) {
     ctx.globalCompositeOperation = 'lighter';
@@ -709,14 +720,26 @@ const IMG_V = { 10: 'piece-10c', 20: 'piece-20c', 50: 'piece-50c', 100: 'piece-1
 // tailles réelles : billets 120 à 140 mm de large ; pièces 19,75 à 25,75 mm de diamètre (rapports respectés)
 const LARG = { 500: 190, 1000: 201, 2000: 211, 5000: 222, 10: 67, 20: 76, 50: 82, 100: 79, 200: 88 };
 const PF_FERME = { l: 964, t: 586, s: 0.42 }, PF_OUVERT = { l: 655, t: 451, s: 0.92 };
-const BORD_PF = [[0, 55], [20, 48], [80, 37], [140, 28], [200, 20], [260, 12], [320, 4], [380, 12], [440, 18], [500, 26], [560, 34], [620, 49], [640, 55]];
-const bordPf = xf => { for (let i = 1; i < BORD_PF.length; i++) if (xf <= BORD_PF[i][0]) { const [a, b] = [BORD_PF[i - 1], BORD_PF[i]]; return a[1] + (b[1] - a[1]) * (xf - a[0]) / (b[0] - a[0]); } return 55; };
-const SOUC = { x: 468, y: 689, rx: 190, ry: 105 };
-let pfEtat = 'ferme', poche = null, items = [], ordreS = 0;
-const pfEl = $('pf'), pfCtx = pfEl.getContext('2d');
+/* le portefeuille ouvert (image 0), en pixels de l'image : le bord haut de l'avant de la grande poche (les billets
+   glissent derrière), et l'intérieur visible de la poche à pièces (les pièces y apparaissent). Tout le reste du cuir,
+   sous ce bord, est redessiné par-dessus l'argent rangé (calque #pfAvant). */
+const BORD_GRANDE_POCHE = [[0, 83], [40, 81], [100, 83], [160, 89], [220, 95], [270, 98], [300, 97], [330, 92], [380, 88], [440, 85], [500, 83], [560, 80], [610, 78], [640, 80]];
+const FENETRE_PIECES = [[376, 189], [470, 187], [586, 181], [556, 207], [550, 247], [490, 259], [440, 254], [409, 247], [411, 222], [396, 205]];
+const bordPoche = xf => { const B = BORD_GRANDE_POCHE; for (let i = 1; i < B.length; i++) if (xf <= B[i][0]) { const [a, b] = [B[i - 1], B[i]]; return a[1] + (b[1] - a[1]) * (xf - a[0]) / (b[0] - a[0]); } return 80; };
+const SOUC = { x: 468, y: 690, rx: 185, ry: 95 };
+let pfEtat = 'ferme', items = [], ordreS = 0;    // ferme · anim · ouvert (argent rangé) · sorti (argent dehors)
+const pfEl = $('pf'), pfCtx = pfEl.getContext('2d'), avEl = $('pfAvant');
 const vers = (o, xf, yf) => [o.l + o.s * xf, o.t + o.s * yf];
 const dessinerPf = k => { pfCtx.clearRect(0, 0, 640, 422); pfCtx.drawImage(IMG['portefeuille/p' + String(k).padStart(2, '0')], 0, 0); };
 const transfoPf = o => `translate(${o.l}px,${o.t}px) scale(${o.s})`;
+function preparerAvant() {               // le cuir « de devant » : l'image ouverte, moins la grande poche au-dessus de son bord et la fenêtre des pièces
+  const c = avEl.getContext('2d'); c.drawImage(IMG['portefeuille/p00'], 0, 0);
+  c.globalCompositeOperation = 'destination-out'; c.beginPath(); c.moveTo(0, 0); c.lineTo(640, 0);
+  for (let i = BORD_GRANDE_POCHE.length - 1; i >= 0; i--) c.lineTo(BORD_GRANDE_POCHE[i][0], BORD_GRANDE_POCHE[i][1] - 2);
+  c.closePath(); c.fill();
+  c.beginPath(); FENETRE_PIECES.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.closePath(); c.fill();
+  avEl.style.transform = transfoPf(PF_OUVERT);
+}
 
 function remplirPortefeuille() {
   items.forEach(it => it.el.remove()); items = [];
@@ -724,72 +747,92 @@ function remplirPortefeuille() {
   for (const v of [...C.b, ...C.p]) {
     const el = document.createElement('img'); el.src = `img/${IMG_V[v]}.webp`; el.className = 'm'; el.draggable = false;
     el.style.width = LARG[v] + 'px'; el.style.opacity = 0;
-    const it = { v, b: v >= 500, lieu: 'poche', el, x: 0, y: 0, r: 0, sc: 1, z: 2, op: 0 };
+    const it = { v, b: v >= 500, lieu: 'poche', el, x: 0, y: 0, r: 0, sc: 1, z: 4, op: 0, h: hasard(0, 1) };
     el.addEventListener('pointerdown', e => attraper(e, it));
     $('caisse').appendChild(el); items.push(it);
   }
-  poche = null; disposer(); majTotal();
+  if (pfEtat === 'sorti') pfEtat = 'ouvert';
+  disposer(); majTotal();
 }
-function poser(it, x, y, r, sc, z, op = 1) {
+function poser(it, x, y, r, sc, z, op = 1, touchable = true) {
   Object.assign(it, { x, y, r, sc, z, op });
   it.el.style.transform = `translate(${x}px,${y}px) translate(-50%,-50%) rotate(${r}deg) scale(${sc})`;
-  it.el.style.zIndex = z; it.el.style.opacity = op; it.el.style.pointerEvents = op ? 'auto' : 'none';   // invisible : ne capte pas le doigt
+  it.el.style.zIndex = z; it.el.style.opacity = op; it.el.style.pointerEvents = op && touchable ? 'auto' : 'none';
 }
 const hauteur = it => LARG[it.v] * (it.b ? 0.55 : 1);
-function disposer(saufBillets = false) {      // place chaque objet selon son lieu
-  const ouvert = pfEtat === 'ouvert';
-  const enPoche = k => items.filter(i => i.lieu === 'poche' && i.b === k).sort((a, b) => b.v - a.v);
-  const sortis = k => items.filter(i => i.lieu === 'sortie' && i.b === k).sort((a, b) => b.v - a.v);
-  // billets dans la poche : ils dépassent du haut du portefeuille, derrière lui
-  enPoche(true).forEach((it, k, A) => {
-    if (saufBillets && it.transit) return;
-    const xf = 330 + (k - (A.length - 1) / 2) * Math.min(64, 300 / A.length), [x, ye] = vers(PF_OUVERT, xf, bordPf(xf));
-    poser(it, x, ye - 20 + hauteur(it) * 0.8 / 2, (k - (A.length - 1) / 2) * 3, 0.8, 2, ouvert && poche !== 'b' ? 1 : 0);
-  });
-  // billets sortis : en éventail au-dessus du portefeuille
-  sortis(true).forEach((it, k, A) => {
-    if (it.transit) return;
-    const d = k - (A.length - 1) / 2, pas = Math.min(105, 560 / Math.max(1, A.length));
-    poser(it, 950 + d * pas, 350 + Math.abs(d) * 7, d * 5, 1, 20 + k);
-  });
-  // pièces dans la poche : invisibles ici (les « pièces qui dépassent » sont dans #pocheP)
-  enPoche(false).forEach(it => { const [x, y] = vers(PF_OUVERT, 487, 205); poser(it, x, y, 0, 0.4, 4, 0); });
-  // pièces sorties : une ou deux rangées au-dessus du portefeuille
-  sortis(false).forEach((it, k, A) => {
-    const parRang = Math.ceil(A.length / Math.ceil(A.length / 6)), rang = Math.floor(k / parRang), i = k % parRang;
-    const n = Math.min(parRang, A.length - rang * parRang);
-    poser(it, 950 + (i - (n - 1) / 2) * 96, 335 + rang * 82, (k * 37) % 30 - 15, 1, 20 + k);
-  });
-  // dans la soucoupe
-  items.filter(i => i.lieu === 'soucoupe').forEach(it => poser(it, it.sx, it.sy, it.sr, it.b ? 0.6 : 0.72, 6 + it.ordre));
-  majPocheP();
+const tries = (lieu, b) => items.filter(i => i.lieu === lieu && i.b === b).sort((x, y) => y.v - x.v);
+// rangés : billets dans la grande poche, pièces dans la poche à pièces (entre le fond et le devant du cuir)
+function posRangee(it, k, n) {
+  if (it.b) {
+    const xf = 320 + (k - (n - 1) / 2) * Math.min(80, 380 / Math.max(1, n)), sc = 0.85;
+    const haut = bordPoche(xf) - 40 - it.h * 14;             // le haut du billet dépasse de la poche, à des hauteurs différentes
+    const [x, y] = vers(PF_OUVERT, xf, haut); return [x, y + hauteur(it) * sc / 2, (k - (n - 1) / 2) * 2.5 + (it.h - 0.5) * 3, sc];
+  }
+  const rang = k % 2, i = Math.floor(k / 2), m = Math.ceil((n - rang) / 2), sc = 0.56;   // deux rangs : derrière plus haut, devant plus bas
+  const xf = 482 + (i - (m - 1) / 2) * Math.min(36, 150 / Math.max(1, m)) + (rang ? 14 : 0);
+  const yf = (rang ? 226 : 210) + it.h * 10;
+  const [x, y] = vers(PF_OUVERT, xf, yf); return [x, y + LARG[it.v] * sc * 0.08, (it.h - 0.5) * 50, sc];
 }
-function majPocheP() {                  // les pièces qui dépassent de la poche à pièces
-  const P = $('pocheP'), [x0, y0] = vers(PF_OUVERT, 380, 150), w = 215 * PF_OUVERT.s, h = 87 * PF_OUVERT.s;
-  Object.assign(P.style, { left: x0 + 'px', top: y0 + 'px', width: w + 'px', height: h + 'px', opacity: pfEtat === 'ouvert' && poche !== 'p' ? 1 : 0 });
-  const A = items.filter(i => i.lieu === 'poche' && !i.b).sort((a, b) => b.v - a.v).slice(0, 7);
-  P.innerHTML = A.map((it, k) => `<img src="img/${IMG_V[it.v]}.webp" style="width:${LARG[it.v] * 0.62}px;left:${8 + k * (w - 60) / Math.max(1, A.length - 1 || 1)}px;transform:rotate(${(k * 53) % 40 - 20}deg)">`).join('');
+// sortis : billets en éventail en haut, pièces en rang dessous
+function posSortie(it, k, n) {
+  if (it.b) { const d = k - (n - 1) / 2, pas = Math.min(112, 700 / Math.max(1, n)); return [820 + d * pas, 318 + Math.abs(d) * 6, d * 4, 1]; }
+  const pas = Math.min(94, 960 / Math.max(1, n)); return [772 + (k - (n - 1) / 2) * pas, 420 + (k % 2) * 6, (k * 37) % 30 - 15, 1];
+}
+function disposer() {
+  const ouvert = pfEtat === 'ouvert' || pfEtat === 'sorti';
+  for (const b of [true, false]) {
+    tries('poche', b).forEach((it, k, A) => { if (it.transit) return; const [x, y, r, sc] = posRangee(it, k, A.length); poser(it, x, y, r, sc, 4, ouvert ? 1 : 0, false); });
+    tries('sortie', b).forEach((it, k, A) => { if (it.transit) return; const [x, y, r, sc] = posSortie(it, k, A.length); poser(it, x, y, r, sc, 20 + k + (b ? 0 : 20)); });
+  }
+  items.filter(i => i.lieu === 'soucoupe').forEach(it => poser(it, it.sx, it.sy, it.sr, it.b ? 0.6 : 0.72, 60 + it.ordre));
+  avEl.style.opacity = pfEtat === 'ouvert' || pfEtat === 'sorti' ? 1 : 0;
 }
 function versSoucoupe(it) {
   const nB = items.filter(i => i.lieu === 'soucoupe' && i.b).length, nP = items.filter(i => i.lieu === 'soucoupe' && !i.b).length;
   it.lieu = 'soucoupe'; it.ordre = ++ordreS;
-  if (it.b) { it.sx = 410 + nB * 14 + hasard(-4, 4); it.sy = 680 + nB * 6 + hasard(-3, 3); it.sr = -14 + nB * 6 + hasard(-3, 3); }
-  else { const a = nP * 2.4, r = 14 + nP * 5; it.sx = 548 + Math.cos(a) * Math.min(r, 52) + hasard(-4, 4); it.sy = 690 + Math.sin(a) * Math.min(r * 0.6, 40) + hasard(-3, 3); it.sr = hasard(-30, 30); }
+  if (it.b) { it.sx = 405 + nB * 14 + hasard(-4, 4); it.sy = 680 + nB * 6 + hasard(-3, 3); it.sr = -14 + nB * 6 + hasard(-3, 3); }
+  else { const a = nP * 2.4, r = 14 + nP * 5; it.sx = 548 + Math.cos(a) * Math.min(r, 52) + hasard(-4, 4); it.sy = 690 + Math.sin(a) * Math.min(r * 0.6, 38) + hasard(-3, 3); it.sr = hasard(-30, 30); }
   disposer(); majTotal();
 }
-function versPortefeuille(it) {         // retour : dans la poche ouverte, sinon dans sa poche
-  const ouverte = pfEtat === 'ouvert' && poche === (it.b ? 'b' : 'p');
-  it.lieu = ouverte ? 'sortie' : 'poche';
+function versPortefeuille(it) {         // retour : avec l'argent sorti s'il l'est, sinon dans sa poche
+  it.lieu = pfEtat === 'sorti' ? 'sortie' : 'poche';
+  if (it.lieu === 'poche' && (pfEtat === 'ouvert')) { glisserDedans([it]); return; }
   disposer(); majTotal();
 }
 function majTotal() {
   const t = items.filter(i => i.lieu === 'soucoupe').reduce((a, i) => a + i.v, 0);
   $('total').textContent = t ? fmtPrix(t) : ''; $('total').style.opacity = totalVu ? 1 : 0;
 }
-
+// au-dessus de sa poche, encore entre le fond et le devant du cuir : l'étape du milieu pour sortir ou rentrer
+function audessus(it) {
+  if (it.b) { const [x, y] = vers(PF_OUVERT, 320, bordPoche(320)); return [it.x, y - 6 - hauteur(it) / 2]; }
+  const [x, y] = vers(PF_OUVERT, 482, 186); return [it.x, y - LARG[it.v] * 0.4];
+}
+function sortirTout() {                  // un toucher : billets et pièces sortent ensemble (billets en haut, pièces en bas)
+  pfEtat = 'sorti';
+  const A = items.filter(i => i.lieu === 'poche');
+  A.forEach((it, k) => {
+    it.transit = true; it.lieu = 'sortie';
+    const [x, y] = audessus(it); poser(it, x, y, it.r, it.b ? 1 : 0.8, 4);
+    setTimeout(() => { it.transit = false; disposer(); }, 210 + (it.b ? 0 : 25 * k));
+  });
+  disposer();
+}
+function glisserDedans(A, fin) {          // l'argent revient au-dessus de sa poche, puis y redescend derrière le cuir
+  A.forEach(it => {
+    it.lieu = 'poche'; it.transit = true;
+    const [x, y] = audessus(it); poser(it, x, y, 0, it.b ? 1 : 0.8, 30, 1, false);
+    setTimeout(() => { it.el.style.zIndex = 4; it.transit = false; disposer(); }, 300);
+  });
+  disposer(); majTotal();
+  if (fin) setTimeout(fin, 680);
+}
+function rangerEtFermer() {
+  glisserDedans(items.filter(i => i.lieu === 'sortie'), () => { pfEtat = 'ouvert'; fermerPf(); });
+}
 /* ouvrir et fermer : les images de la vidéo, pendant que le portefeuille vient au centre du comptoir */
 function animerPf(ouvrir, fin) {
-  pfEtat = 'anim'; const D = 620, t0 = performance.now();
+  pfEtat = 'anim'; disposer(); const D = 620, t0 = performance.now();
   pfEl.style.transition = `transform ${D}ms cubic-bezier(.3,.85,.35,1)`; pfEl.style.transform = transfoPf(ouvrir ? PF_OUVERT : PF_FERME);
   const pas = now => {
     const u = Math.max(0, Math.min(1, (now - t0) / D));   // l'horodatage de l'image peut précéder t0
@@ -798,49 +841,14 @@ function animerPf(ouvrir, fin) {
   };
   requestAnimationFrame(pas);
 }
-function ouvrirPoche(q) {
-  if (poche === q) { fermerPoche(); return; }
-  if (poche) fermerPoche();
-  poche = q;
-  const A = items.filter(i => i.lieu === 'poche' && i.b === (q === 'b'));
-  if (q === 'b') {                       // les billets glissent hors de la poche (derrière le cuir), puis passent devant et s'ouvrent en éventail
-    A.forEach(it => {
-      it.transit = true; it.lieu = 'sortie';
-      const [x, ye] = vers(PF_OUVERT, 330, bordPf(330));
-      poser(it, it.x, ye - 6 - hauteur(it) / 2, it.r, 1, 2, 1);
-      setTimeout(() => { it.transit = false; disposer(true); }, 230);
-    });
-    disposer(true);
-  } else {                               // les pièces sautent hors de la poche, l'une après l'autre
-    A.forEach((it, k) => { it.lieu = 'sortie'; it.el.style.transitionDelay = `${k * 35}ms`; setTimeout(() => it.el.style.transitionDelay = '', 500 + k * 35); });
-    disposer();
-  }
-}
-function fermerPoche() {
-  const q = poche; poche = null;
-  const A = items.filter(i => i.lieu === 'sortie' && i.b === (q === 'b'));
-  if (q === 'b') {                       // les billets remontent au-dessus de la poche, puis y redescendent derrière le cuir
-    A.forEach(it => {
-      it.lieu = 'poche'; it.transit = true;
-      const [x, ye] = vers(PF_OUVERT, 330, bordPf(330));
-      poser(it, it.x, ye - 6 - hauteur(it) / 2, 0, 1, 20, 1);
-      setTimeout(() => { it.transit = false; it.el.style.zIndex = 2; disposer(); }, 260);
-    });
-  } else A.forEach(it => { it.lieu = 'poche'; });
-  disposer(true);
-}
-function ouvrirPf() { if (pfEtat !== 'ferme') return; items.forEach(it => { if (it.lieu === 'poche') it.el.style.opacity = 0; }); animerPf(true); }
-function fermerPf() {
-  if (pfEtat !== 'ouvert') return;
-  items.forEach(it => { if (it.lieu === 'sortie') it.lieu = 'poche'; });
-  poche = null; pfEtat = 'anim'; disposer(); animerPf(false);
-}
+const ouvrirPf = () => { if (pfEtat === 'ferme') animerPf(true); };
+const fermerPf = () => { if (pfEtat === 'ouvert') animerPf(false); };
 
 /* toucher et glisser */
 const versScene = e => { const r = $('scene').getBoundingClientRect(), k = r.width / 1280; return [(e.clientX - r.left) / k, (e.clientY - r.top) / k]; };
 let prise = null;
 function attraper(e, it) {
-  if (pfEtat === 'anim' || it.transit) return;
+  if (pfEtat === 'anim' || it.transit || it.lieu === 'poche') return;
   e.preventDefault(); e.stopPropagation();
   const [x, y] = versScene(e);
   prise = { it, x0: x, y0: y, dx: it.x - x, dy: it.y - y, glisse: false, id: e.pointerId };
@@ -849,11 +857,8 @@ function attraper(e, it) {
 addEventListener('pointermove', e => {
   if (!prise || e.pointerId !== prise.id) return;
   const [x, y] = versScene(e), it = prise.it;
-  if (!prise.glisse && Math.hypot(x - prise.x0, y - prise.y0) > 8) {
-    if (it.lieu === 'poche') return;     // un billet qui dépasse : on le touche pour ouvrir la poche, on ne le tire pas
-    prise.glisse = true; it.el.classList.add('glisse');
-  }
-  if (prise.glisse) poser(it, x + prise.dx, y + prise.dy, it.r, (it.lieu === 'soucoupe' ? (it.b ? 0.6 : 0.72) : 1) * 1.06, 40);
+  if (!prise.glisse && Math.hypot(x - prise.x0, y - prise.y0) > 8) { prise.glisse = true; it.el.classList.add('glisse'); }
+  if (prise.glisse) poser(it, x + prise.dx, y + prise.dy, it.r, (it.lieu === 'soucoupe' ? (it.b ? 0.6 : 0.72) : 1) * 1.06, 90);
 });
 addEventListener('pointerup', e => {
   if (!prise || e.pointerId !== prise.id) return;
@@ -865,18 +870,16 @@ addEventListener('pointerup', e => {
     else disposer();
   } else if (it.lieu === 'sortie') versSoucoupe(it);       // un toucher : dans la soucoupe
   else if (it.lieu === 'soucoupe') versPortefeuille(it);   // ou en revient
-  else if (it.lieu === 'poche' && it.b) ouvrirPoche('b');
 });
-pfEl.addEventListener('pointerup', e => {
-  if (pfEtat === 'ferme') { ouvrirPf(); return; }
-  if (pfEtat !== 'ouvert') return;
-  const [x, y] = versScene(e), xf = (x - PF_OUVERT.l) / PF_OUVERT.s, yf = (y - PF_OUVERT.t) / PF_OUVERT.s;
-  if (yf < 125 && xf > 15 && xf < 625) ouvrirPoche('b');
-  else if (xf > 365 && xf < 610 && yf >= 125 && yf < 310) ouvrirPoche('p');
-  else fermerPf();
+// le portefeuille, où qu'on le touche : fermé → ouvert → argent sorti → argent rangé et portefeuille fermé
+pfEl.addEventListener('pointerup', () => {
+  if (prise) return;
+  if (pfEtat === 'ferme') ouvrirPf();
+  else if (pfEtat === 'ouvert') sortirTout();
+  else if (pfEtat === 'sorti') rangerEtFermer();
 });
 function caisse() {
-  pfEl.style.transform = transfoPf(PF_FERME); dessinerPf(PF_N - 1);
+  pfEl.style.transform = transfoPf(PF_FERME); dessinerPf(PF_N - 1); preparerAvant();
   remplirPortefeuille();
 }
 
@@ -935,7 +938,7 @@ async function capitaine() {
   $('capt').classList.add('cache'); $('bCapt').disabled = true; $('bCapt').textContent = 'Capitaine : absent';
 }
 
-const MONNAIE = ['piece-10c', 'piece-20c', 'piece-50c', 'piece-1e', 'piece-2e', 'billet-5', 'billet-10', 'billet-20', 'billet-50'];
+const MONNAIE = ['soucoupe', 'piece-10c', 'piece-20c', 'piece-50c', 'piece-1e', 'piece-2e', 'billet-5', 'billet-10', 'billet-20', 'billet-50'];
 const PF_N = 35;                        // images du portefeuille : 0 ouvert … 34 fermé
 Promise.all([...NOMS, ...Object.keys(PRODUITS).map(n => 'produit-' + n), ...MONNAIE,
              ...Array.from({ length: PF_N }, (_, k) => 'portefeuille/p' + String(k).padStart(2, '0'))].map(charger).concat(police())).then(() => {
@@ -951,7 +954,7 @@ Promise.all([...NOMS, ...Object.keys(PRODUITS).map(n => 'produit-' + n), ...MONN
 }).catch(e => { $('chargement').textContent = 'Images introuvables : ' + e; });
 
 // pour les essais automatiques
-window.MAQ = { get items() { return items; }, get pfEtat() { return pfEtat; }, get poche() { return poche; }, ouvrirPf, fermerPf, ouvrirPoche, versSoucoupe, orageArrive, R, get flamme() { return flamme; }, get meteo() { return meteo; }, set meteo(v) { poserMeteo(v); meteo = v; }, get peche() { return peche; }, tirerPeche, composerEtal, bateaux, nouveauBateau, vols, nouveauVol };
+window.MAQ = { get items() { return items; }, get pfEtat() { return pfEtat; }, sortirTout, rangerEtFermer, ouvrirPf, fermerPf, versSoucoupe, orageArrive, R, get flamme() { return flamme; }, get meteo() { return meteo; }, set meteo(v) { poserMeteo(v); meteo = v; }, get peche() { return peche; }, tirerPeche, composerEtal, bateaux, nouveauBateau, vols, nouveauVol };
 </script>
 </body>
 </html>

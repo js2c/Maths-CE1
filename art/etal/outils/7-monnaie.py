@@ -32,6 +32,10 @@ for n in ['billet-5', 'billet-10', 'billet-20', 'billet-50']:
     o = cadrer(detourer(cv2.imread(src(f'monnaie/{n}.jpg'))), 460)
     cv2.imwrite(img(f'{n}.webp'), o, [cv2.IMWRITE_WEBP_QUALITY, 88]); info[n] = [o.shape[1], o.shape[0]]
 
+# la soucoupe du comptoir (plateau de bois)
+o = cadrer(detourer(cv2.imread(src('monnaie/soucoupe.jpg'))), 560)
+cv2.imwrite(img('soucoupe.webp'), o, [cv2.IMWRITE_WEBP_QUALITY, 88]); info['soucoupe'] = [o.shape[1], o.shape[0]]
+
 # portefeuille : images 24 à 92 de la vidéo (ouvert → fermé), une sur deux
 tmp = tempfile.mkdtemp()
 subprocess.run(['ffmpeg', '-v', 'error', '-i', src('portefeuille.mp4'), os.path.join(tmp, 'f%03d.png')], check=True)

@@ -1,5 +1,5 @@
 {
- "date": "2026-10-08T22:26:46.532Z",
+ "date": "2026-10-09T06:22:04.394Z",
  "bulles": [
   {
    "W": 1280,
@@ -7,10 +7,10 @@
    "place": "tuile-hd",
    "texte": "La ligne des nombres. Tu lis, tu places et tu sautes sur la ligne.",
    "rect": [
-    524,
-    222,
-    996,
-    368
+    506,
+    226,
+    921,
+    354
    ],
    "tuile": [
     366,
@@ -25,10 +25,10 @@
    "place": "tuile-hg",
    "texte": "La multiplication. Des rangées de poissons, et les tables.",
    "rect": [
-    649,
-    176,
-    1076,
-    368
+    553,
+    226,
+    1094,
+    354
    ],
    "tuile": [
     1054,
@@ -40,13 +40,13 @@
   {
    "W": 1280,
    "nom": "2-ligne-haut-gauche-1",
-   "place": "tuile-dh",
+   "place": "tuile-gb",
    "texte": "La corde de zéro à dix, avec presque tous les nombres. Tu comptes les sauts de la tortue, de un en un.",
    "rect": [
-    583,
-    9,
-    1147,
-    246
+    8,
+    456,
+    395,
+    702
    ],
    "tuile": [
     421,
@@ -58,13 +58,13 @@
   {
    "W": 1280,
    "nom": "2-ligne-haut-droite-4",
-   "place": "tuile-hg",
+   "place": "tuile-gh",
    "texte": "La ligne qui ne commence pas à zéro. Regarde bien le nombre du départ.",
    "rect": [
-    491,
-    20,
-    1031,
-    166
+    509,
+    48,
+    983,
+    176
    ],
    "tuile": [
     1009,
@@ -77,12 +77,12 @@
    "W": 1280,
    "nom": "2-ligne-bas-gauche-9",
    "place": "tuile-gb",
-   "texte": "La ligne de zéro à mille, de cent en cent. Chaque saut vaut cent.",
+   "texte": "La ligne de zéro à mille, de cent en cent. Les grands nombres, jusqu'à mille.",
    "rect": [
     8,
     550,
-    409,
-    742
+    395,
+    757
    ],
    "tuile": [
     421,
@@ -94,13 +94,13 @@
   {
    "W": 1280,
    "nom": "2-ligne-bas-droite-12",
-   "place": "tuile-bg",
-   "texte": "La dictée des grands nombres. Tu entends un grand nombre, et tu l'écris en chiffres.",
+   "place": "tuile-gb",
+   "texte": "La dictée des grands nombres. Écoute le nombre, et écris-le en chiffres.",
    "rect": [
-    369,
-    630,
-    1031,
-    776
+    321,
+    620,
+    983,
+    752
    ],
    "tuile": [
     1009,
@@ -112,13 +112,13 @@
   {
    "W": 1280,
    "nom": "2-additions-haut-gauche-1",
-   "place": "tuile-hd",
+   "place": "tuile-gb",
    "texte": "Plus un et plus deux. La tortue fait un ou deux sauts.",
    "rect": [
-    549,
-    20,
-    1130,
-    166
+    8,
+    456,
+    395,
+    584
    ],
    "tuile": [
     421,
@@ -130,13 +130,13 @@
   {
    "W": 1280,
    "nom": "2-additions-haut-droite-4",
-   "place": "tuile-hg",
+   "place": "tuile-gh",
    "texte": "Les maisons de cinq, six et sept. Deux nombres qui font le nombre du toit.",
    "rect": [
-    488,
-    20,
-    1031,
-    166
+    506,
+    48,
+    983,
+    176
    ],
    "tuile": [
     1009,
@@ -153,8 +153,8 @@
    "rect": [
     8,
     550,
-    409,
-    787
+    395,
+    757
    ],
    "tuile": [
     421,
@@ -166,13 +166,13 @@
   {
    "W": 1280,
    "nom": "2-additions-bas-droite-12",
-   "place": "tuile-bg",
+   "place": "tuile-gb",
    "texte": "Passer la dizaine. On remplit d'abord la boîte de dix.",
    "rect": [
-    369,
-    630,
-    1031,
-    762
+    473,
+    620,
+    983,
+    748
    ],
    "tuile": [
     1009,
@@ -184,13 +184,13 @@
   {
    "W": 1280,
    "nom": "2-calcul-haut-gauche-1",
-   "place": "tuile-bd",
+   "place": "tuile-gb",
    "texte": "Plus un, plus deux, moins un, moins deux. Un petit pas en avant, ou en arrière.",
    "rect": [
-    626,
-    330,
-    1272,
-    476
+    7,
+    460,
+    472,
+    628
    ],
    "tuile": [
     498,
@@ -202,13 +202,13 @@
   {
    "W": 1280,
    "nom": "2-calcul-haut-droite-3",
-   "place": "tuile-gb",
+   "place": "tuile-bg",
    "texte": "Plus vingt, plus trente, moins vingt, moins trente. Seules les dizaines changent.",
    "rect": [
-    256,
-    250,
-    918,
-    396
+    308,
+    484,
+    970,
+    616
    ],
    "tuile": [
     930,
@@ -220,12 +220,12 @@
   {
    "W": 1280,
    "nom": "2-calcul-bas-gauche-7",
-   "place": "tuile-dh",
-   "texte": "Passer la dizaine en ajoutant. On va d'abord jusqu'à la dizaine, puis on ajoute le reste.",
+   "place": "tuile-gh",
+   "texte": "Passer la dizaine en ajoutant. On va d'abord jusqu'au nombre rond, puis on ajoute le reste.",
    "rect": [
-    660,
-    430,
-    1272,
+    7,
+    454,
+    472,
     622
    ],
    "tuile": [
@@ -238,13 +238,13 @@
   {
    "W": 1280,
    "nom": "2-calcul-bas-droite-9",
-   "place": "tuile-gb",
-   "texte": "Passer la dizaine en retirant. On recule d'abord jusqu'à la dizaine, puis on enlève le reste.",
+   "place": "tuile-hg",
+   "texte": "Passer la dizaine en retirant. On recule d'abord jusqu'au nombre rond, puis on enlève le reste.",
    "rect": [
+    308,
     256,
-    622,
-    918,
-    768
+    970,
+    388
    ],
    "tuile": [
     930,
@@ -256,13 +256,13 @@
   {
    "W": 1280,
    "nom": "2-voiliers-haut-gauche-1",
-   "place": "tuile-dh",
+   "place": "tuile-bg",
    "texte": "Des bouées de dix en dix, jusqu'à cent. Range le bateau entre deux dizaines.",
    "rect": [
-    583,
-    54,
-    1142,
-    246
+    8,
+    480,
+    461,
+    648
    ],
    "tuile": [
     421,
@@ -274,13 +274,13 @@
   {
    "W": 1280,
    "nom": "2-voiliers-haut-droite-4",
-   "place": "tuile-gb",
-   "texte": "Quatre bouées de dix en dix, jusqu'à mille. Range le bateau entre deux dizaines, après cent.",
+   "place": "tuile-bg",
+   "texte": "Quatre bouées de dix en dix, jusqu'à mille. Range le bateau entre deux dizaines, avec de grands nombres.",
    "rect": [
-    335,
-    246,
-    997,
-    392
+    539,
+    550,
+    1049,
+    718
    ],
    "tuile": [
     1009,
@@ -292,13 +292,13 @@
   {
    "W": 1280,
    "nom": "2-voiliers-bas-gauche-5",
-   "place": "tuile-bd",
-   "texte": "Des bouées de cent en cent, ou de dix en dix, et le bateau tout près d'une bouée. Le nombre est juste à côté d'une bouée : avant, ou après ?",
+   "place": "tuile-bg",
+   "texte": "Des bouées de cent en cent, ou de dix en dix, et le bateau tout près d'une bouée. Avant la bouée, ou après ?",
    "rect": [
-    549,
-    478,
-    1211,
-    715
+    8,
+    492,
+    461,
+    699
    ],
    "tuile": [
     421,
@@ -311,12 +311,12 @@
    "W": 1280,
    "nom": "2-voiliers-bas-droite-8",
    "place": "tuile-bg",
-   "texte": "Des bouées mélangées, et le bateau tout près d'une bouée. Les bouées ne sont pas toutes à la même distance : lis bien chaque nombre.",
+   "texte": "Des bouées mélangées, et le bateau tout près d'une bouée. Lis bien chaque nombre.",
    "rect": [
-    529,
-    478,
-    1031,
-    760
+    387,
+    632,
+    1049,
+    764
    ],
    "tuile": [
     1009,
@@ -328,13 +328,13 @@
   {
    "W": 1280,
    "nom": "2-multiplication-haut-gauche-1",
-   "place": "tuile-dh",
+   "place": "tuile-bg",
    "texte": "Des rangées égales. Tu ajoutes les rangées de poissons.",
    "rect": [
-    583,
-    54,
-    1005,
-    246
+    8,
+    480,
+    461,
+    608
    ],
    "tuile": [
     421,
@@ -346,13 +346,13 @@
   {
    "W": 1280,
    "nom": "2-multiplication-haut-droite-4",
-   "place": "tuile-hg",
+   "place": "tuile-gh",
    "texte": "La table de dix. Fois dix, ce sont des dizaines.",
    "rect": [
-    521,
-    64,
-    1031,
-    166
+    535,
+    86,
+    983,
+    176
    ],
    "tuile": [
     1009,
@@ -365,12 +365,12 @@
    "W": 1280,
    "nom": "2-multiplication-bas-gauche-5",
    "place": "tuile-bg",
-   "texte": "La table de cinq. Fois cinq, c'est la moitié de fois dix.",
+   "texte": "La table de cinq. On compte de cinq en cinq.",
    "rect": [
-    8,
-    478,
-    443,
-    624
+    30,
+    492,
+    461,
+    582
    ],
    "tuile": [
     421,
@@ -385,10 +385,10 @@
    "place": "tuile-bg",
    "texte": "La table de quatre. Fois quatre, c'est le double du double.",
    "rect": [
-    369,
-    478,
-    1031,
-    610
+    498,
+    632,
+    1049,
+    760
    ],
    "tuile": [
     1009,
@@ -400,13 +400,13 @@
   {
    "W": 1280,
    "nom": "30-lecons-L1",
-   "place": "tuile-bd",
+   "place": "tuile-bg",
    "texte": "On compte les sauts. La tortue saute : on compte ses sauts, pas les bouées.",
    "rect": [
-    628,
-    285,
-    1182,
-    431
+    53,
+    509,
+    540,
+    637
    ]
   },
   {
@@ -416,21 +416,21 @@
    "texte": "Des rangées égales. Trois fois quatre, c'est quatre plus quatre plus quatre.",
    "rect": [
     8,
-    481,
-    488,
-    673
+    534,
+    474,
+    663
    ]
   },
   {
    "W": 1280,
    "nom": "32-lecons-table-multiplication",
-   "place": "tuile-hg",
-   "texte": "La table de multiplication. Touche une case : je te dis le calcul.",
+   "place": "tuile-gh",
+   "texte": "La table de multiplication. Toutes les multiplications jusqu'à dix fois dix, dans une grille.",
    "rect": [
-    674,
-    401,
-    1142,
-    593
+    432,
+    471,
+    1094,
+    603
    ]
   },
   {
@@ -439,10 +439,10 @@
    "place": "tuile-gb",
    "texte": "Plus dix sur le mur de corail. Le petit poisson descend d'une rangée.",
    "rect": [
-    8,
+    30,
     517,
-    488,
-    663
+    474,
+    645
    ]
   },
   {
@@ -451,10 +451,10 @@
    "place": "tuile-hd",
    "texte": "La ligne des nombres. Tu lis, tu places et tu sautes sur la ligne.",
    "rect": [
-    524,
-    222,
-    996,
-    368
+    506,
+    226,
+    921,
+    354
    ],
    "tuile": [
     366,
@@ -469,10 +469,10 @@
    "place": "tuile-hg",
    "texte": "La multiplication. Des rangées de poissons, et les tables.",
    "rect": [
-    649,
-    176,
-    1076,
-    368
+    553,
+    226,
+    1094,
+    354
    ],
    "tuile": [
     1054,
@@ -484,13 +484,13 @@
   {
    "W": 1920,
    "nom": "2-ligne-haut-gauche-1",
-   "place": "tuile-dh",
+   "place": "tuile-gb",
    "texte": "La corde de zéro à dix, avec presque tous les nombres. Tu comptes les sauts de la tortue, de un en un.",
    "rect": [
-    583,
-    9,
-    1147,
-    246
+    8,
+    456,
+    395,
+    702
    ],
    "tuile": [
     421,
@@ -502,13 +502,13 @@
   {
    "W": 1920,
    "nom": "2-ligne-haut-droite-4",
-   "place": "tuile-hg",
+   "place": "tuile-gh",
    "texte": "La ligne qui ne commence pas à zéro. Regarde bien le nombre du départ.",
    "rect": [
-    491,
-    20,
-    1031,
-    166
+    509,
+    48,
+    983,
+    176
    ],
    "tuile": [
     1009,
@@ -521,12 +521,12 @@
    "W": 1920,
    "nom": "2-ligne-bas-gauche-9",
    "place": "tuile-gb",
-   "texte": "La ligne de zéro à mille, de cent en cent. Chaque saut vaut cent.",
+   "texte": "La ligne de zéro à mille, de cent en cent. Les grands nombres, jusqu'à mille.",
    "rect": [
     8,
     550,
-    409,
-    742
+    395,
+    757
    ],
    "tuile": [
     421,
@@ -538,13 +538,13 @@
   {
    "W": 1920,
    "nom": "2-ligne-bas-droite-12",
-   "place": "tuile-bg",
-   "texte": "La dictée des grands nombres. Tu entends un grand nombre, et tu l'écris en chiffres.",
+   "place": "tuile-gb",
+   "texte": "La dictée des grands nombres. Écoute le nombre, et écris-le en chiffres.",
    "rect": [
-    369,
-    630,
-    1031,
-    776
+    321,
+    620,
+    983,
+    752
    ],
    "tuile": [
     1009,
@@ -556,13 +556,13 @@
   {
    "W": 1920,
    "nom": "2-additions-haut-gauche-1",
-   "place": "tuile-hd",
+   "place": "tuile-gb",
    "texte": "Plus un et plus deux. La tortue fait un ou deux sauts.",
    "rect": [
-    549,
-    20,
-    1130,
-    166
+    8,
+    456,
+    395,
+    584
    ],
    "tuile": [
     421,
@@ -574,13 +574,13 @@
   {
    "W": 1920,
    "nom": "2-additions-haut-droite-4",
-   "place": "tuile-hg",
+   "place": "tuile-gh",
    "texte": "Les maisons de cinq, six et sept. Deux nombres qui font le nombre du toit.",
    "rect": [
-    488,
-    20,
-    1031,
-    166
+    506,
+    48,
+    983,
+    176
    ],
    "tuile": [
     1009,
@@ -597,8 +597,8 @@
    "rect": [
     8,
     550,
-    409,
-    787
+    395,
+    757
    ],
    "tuile": [
     421,
@@ -610,13 +610,13 @@
   {
    "W": 1920,
    "nom": "2-additions-bas-droite-12",
-   "place": "tuile-bg",
+   "place": "tuile-gb",
    "texte": "Passer la dizaine. On remplit d'abord la boîte de dix.",
    "rect": [
-    369,
-    630,
-    1031,
-    762
+    473,
+    620,
+    983,
+    748
    ],
    "tuile": [
     1009,
@@ -628,13 +628,13 @@
   {
    "W": 1920,
    "nom": "2-calcul-haut-gauche-1",
-   "place": "tuile-bd",
+   "place": "tuile-gb",
    "texte": "Plus un, plus deux, moins un, moins deux. Un petit pas en avant, ou en arrière.",
    "rect": [
-    626,
-    330,
-    1272,
-    476
+    7,
+    460,
+    472,
+    628
    ],
    "tuile": [
     498,
@@ -646,13 +646,13 @@
   {
    "W": 1920,
    "nom": "2-calcul-haut-droite-3",
-   "place": "tuile-gb",
+   "place": "tuile-bg",
    "texte": "Plus vingt, plus trente, moins vingt, moins trente. Seules les dizaines changent.",
    "rect": [
-    256,
-    250,
-    918,
-    396
+    308,
+    484,
+    970,
+    616
    ],
    "tuile": [
     930,
@@ -664,12 +664,12 @@
   {
    "W": 1920,
    "nom": "2-calcul-bas-gauche-7",
-   "place": "tuile-dh",
-   "texte": "Passer la dizaine en ajoutant. On va d'abord jusqu'à la dizaine, puis on ajoute le reste.",
+   "place": "tuile-gh",
+   "texte": "Passer la dizaine en ajoutant. On va d'abord jusqu'au nombre rond, puis on ajoute le reste.",
    "rect": [
-    660,
-    430,
-    1272,
+    7,
+    454,
+    472,
     622
    ],
    "tuile": [
@@ -682,13 +682,13 @@
   {
    "W": 1920,
    "nom": "2-calcul-bas-droite-9",
-   "place": "tuile-gb",
-   "texte": "Passer la dizaine en retirant. On recule d'abord jusqu'à la dizaine, puis on enlève le reste.",
+   "place": "tuile-hg",
+   "texte": "Passer la dizaine en retirant. On recule d'abord jusqu'au nombre rond, puis on enlève le reste.",
    "rect": [
+    308,
     256,
-    622,
-    918,
-    768
+    970,
+    388
    ],
    "tuile": [
     930,
@@ -700,13 +700,13 @@
   {
    "W": 1920,
    "nom": "2-voiliers-haut-gauche-1",
-   "place": "tuile-dh",
+   "place": "tuile-bg",
    "texte": "Des bouées de dix en dix, jusqu'à cent. Range le bateau entre deux dizaines.",
    "rect": [
-    583,
-    54,
-    1142,
-    246
+    8,
+    480,
+    461,
+    648
    ],
    "tuile": [
     421,
@@ -718,13 +718,13 @@
   {
    "W": 1920,
    "nom": "2-voiliers-haut-droite-4",
-   "place": "tuile-gb",
-   "texte": "Quatre bouées de dix en dix, jusqu'à mille. Range le bateau entre deux dizaines, après cent.",
+   "place": "tuile-bg",
+   "texte": "Quatre bouées de dix en dix, jusqu'à mille. Range le bateau entre deux dizaines, avec de grands nombres.",
    "rect": [
-    335,
-    246,
-    997,
-    392
+    539,
+    550,
+    1049,
+    718
    ],
    "tuile": [
     1009,
@@ -736,13 +736,13 @@
   {
    "W": 1920,
    "nom": "2-voiliers-bas-gauche-5",
-   "place": "tuile-bd",
-   "texte": "Des bouées de cent en cent, ou de dix en dix, et le bateau tout près d'une bouée. Le nombre est juste à côté d'une bouée : avant, ou après ?",
+   "place": "tuile-bg",
+   "texte": "Des bouées de cent en cent, ou de dix en dix, et le bateau tout près d'une bouée. Avant la bouée, ou après ?",
    "rect": [
-    549,
-    478,
-    1211,
-    715
+    8,
+    492,
+    461,
+    699
    ],
    "tuile": [
     421,
@@ -755,12 +755,12 @@
    "W": 1920,
    "nom": "2-voiliers-bas-droite-8",
    "place": "tuile-bg",
-   "texte": "Des bouées mélangées, et le bateau tout près d'une bouée. Les bouées ne sont pas toutes à la même distance : lis bien chaque nombre.",
+   "texte": "Des bouées mélangées, et le bateau tout près d'une bouée. Lis bien chaque nombre.",
    "rect": [
-    529,
-    478,
-    1031,
-    760
+    387,
+    632,
+    1049,
+    764
    ],
    "tuile": [
     1009,
@@ -772,13 +772,13 @@
   {
    "W": 1920,
    "nom": "2-multiplication-haut-gauche-1",
-   "place": "tuile-dh",
+   "place": "tuile-bg",
    "texte": "Des rangées égales. Tu ajoutes les rangées de poissons.",
    "rect": [
-    583,
-    54,
-    1005,
-    246
+    8,
+    480,
+    461,
+    608
    ],
    "tuile": [
     421,
@@ -790,13 +790,13 @@
   {
    "W": 1920,
    "nom": "2-multiplication-haut-droite-4",
-   "place": "tuile-hg",
+   "place": "tuile-gh",
    "texte": "La table de dix. Fois dix, ce sont des dizaines.",
    "rect": [
-    521,
-    64,
-    1031,
-    166
+    535,
+    86,
+    983,
+    176
    ],
    "tuile": [
     1009,
@@ -809,12 +809,12 @@
    "W": 1920,
    "nom": "2-multiplication-bas-gauche-5",
    "place": "tuile-bg",
-   "texte": "La table de cinq. Fois cinq, c'est la moitié de fois dix.",
+   "texte": "La table de cinq. On compte de cinq en cinq.",
    "rect": [
-    8,
-    478,
-    443,
-    624
+    30,
+    492,
+    461,
+    582
    ],
    "tuile": [
     421,
@@ -829,10 +829,10 @@
    "place": "tuile-bg",
    "texte": "La table de quatre. Fois quatre, c'est le double du double.",
    "rect": [
-    369,
-    478,
-    1031,
-    610
+    498,
+    632,
+    1049,
+    760
    ],
    "tuile": [
     1009,
@@ -844,13 +844,13 @@
   {
    "W": 1920,
    "nom": "30-lecons-L1",
-   "place": "tuile-bd",
+   "place": "tuile-bg",
    "texte": "On compte les sauts. La tortue saute : on compte ses sauts, pas les bouées.",
    "rect": [
-    628,
-    285,
-    1182,
-    431
+    53,
+    509,
+    540,
+    637
    ]
   },
   {
@@ -860,21 +860,21 @@
    "texte": "Des rangées égales. Trois fois quatre, c'est quatre plus quatre plus quatre.",
    "rect": [
     8,
-    481,
-    488,
-    673
+    534,
+    474,
+    663
    ]
   },
   {
    "W": 1920,
    "nom": "32-lecons-table-multiplication",
-   "place": "tuile-hg",
-   "texte": "La table de multiplication. Touche une case : je te dis le calcul.",
+   "place": "tuile-gh",
+   "texte": "La table de multiplication. Toutes les multiplications jusqu'à dix fois dix, dans une grille.",
    "rect": [
-    674,
-    401,
-    1142,
-    593
+    432,
+    471,
+    1094,
+    603
    ]
   },
   {
@@ -883,10 +883,10 @@
    "place": "tuile-gb",
    "texte": "Plus dix sur le mur de corail. Le petit poisson descend d'une rangée.",
    "rect": [
-    8,
+    30,
     517,
-    488,
-    663
+    474,
+    645
    ]
   }
  ],
@@ -919,93 +919,98 @@
  "clavier": [
   {
    "exo": "additions (échauffement et notion du jour)",
-   "tape": "3",
-   "attendu": "3"
+   "tape": "4",
+   "attendu": "4"
   },
   {
    "exo": "additions (échauffement et notion du jour)",
-   "tape": "2",
-   "attendu": "2"
+   "tape": "4",
+   "attendu": "4"
   },
   {
    "exo": "additions (échauffement et notion du jour)",
-   "tape": "7",
-   "attendu": "7"
+   "tape": "6",
+   "attendu": "6"
   },
   {
    "exo": "additions (échauffement et notion du jour)",
-   "tape": "5",
-   "attendu": "5"
+   "tape": "10",
+   "attendu": "10"
   },
   {
    "exo": "additions (échauffement et notion du jour)",
-   "tape": "5",
-   "attendu": "5"
+   "tape": "10",
+   "attendu": "10"
   },
   {
    "exo": "additions (échauffement et notion du jour)",
-   "tape": "9",
-   "attendu": "9"
+   "tape": "6",
+   "attendu": "6"
   },
   {
    "exo": "calcul rapide (calculs guidés d'un niveau nouveau)",
-   "tape": "74",
-   "attendu": "74"
+   "tape": "86",
+   "attendu": "86"
   },
   {
    "exo": "calcul rapide (calculs guidés d'un niveau nouveau)",
-   "tape": "25",
-   "attendu": "25"
+   "tape": "77",
+   "attendu": "77"
   },
   {
    "exo": "calcul rapide (calculs guidés d'un niveau nouveau)",
-   "tape": "97",
-   "attendu": "97"
+   "tape": "28",
+   "attendu": "28"
   },
   {
    "exo": "calcul rapide (calculs guidés d'un niveau nouveau)",
-   "tape": "49",
-   "attendu": "49"
+   "tape": "99",
+   "attendu": "99"
   },
   {
    "exo": "calcul rapide (calculs guidés d'un niveau nouveau)",
-   "tape": "38",
-   "attendu": "38"
+   "tape": "19",
+   "attendu": "19"
   },
   {
    "exo": "calcul rapide (calculs guidés d'un niveau nouveau)",
-   "tape": "85",
-   "attendu": "85"
-  },
-  {
-   "exo": "calcul rapide (questions)",
    "tape": "45",
    "attendu": "45"
   },
   {
    "exo": "calcul rapide (questions)",
-   "tape": "85",
-   "attendu": "85"
+   "tape": "73",
+   "attendu": "73"
   },
   {
    "exo": "calcul rapide (questions)",
-   "tape": "54",
-   "attendu": "54"
+   "tape": "21",
+   "attendu": "21"
   },
   {
    "exo": "calcul rapide (questions)",
+   "tape": "16",
+   "attendu": "16"
+  },
+  {
+   "exo": "calcul rapide (questions)",
+   "tape": "97",
+   "attendu": "97"
+  },
+  {
+   "exo": "multiplication",
+   "tape": "8",
+   "attendu": "8"
+  },
+  {
+   "exo": "multiplication",
    "tape": "18",
    "attendu": "18"
   },
   {
    "exo": "multiplication",
-   "tape": "16",
-   "attendu": "16"
-  },
-  {
-   "exo": "multiplication",
-   "tape": "14",
-   "attendu": "14"
+   "tape": "12",
+   "attendu": "12"
   },
   {
    "exo": "multiplication",
@@ -1013,24 +1018,19 @@
    "attendu": "10"
   },
   {
-   "exo": "multiplication",
-   "tape": "2",
-   "attendu": "2"
+   "exo": "dictée (ligne, niveau 12, avec son exemple guidé)",
+   "tape": "206",
+   "attendu": "206"
   },
   {
    "exo": "dictée (ligne, niveau 12, avec son exemple guidé)",
-   "tape": "489",
-   "attendu": "489"
+   "tape": "477",
+   "attendu": "477"
   },
   {
    "exo": "dictée (ligne, niveau 12, avec son exemple guidé)",
-   "tape": "810",
-   "attendu": "810"
-  },
-  {
-   "exo": "dictée (ligne, niveau 12, avec son exemple guidé)",
-   "tape": "940",
-   "attendu": "940"
+   "tape": "368",
+   "attendu": "368"
   }
  ]
 }

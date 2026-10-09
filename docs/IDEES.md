@@ -106,6 +106,7 @@ Le parent n'est pas encore convaincu par les remèdes proposés : la question es
 - **Le sélecteur de difficulté en deux touchers ?** Il n'était pas dans la fiche (exercices, niveaux, leçons) : une vague touchée dit ce qu'elle rapporte, la coche valide, et sans toucher il part seul au bout de 15 s. Le relecteur note qu'après « choisir » en deux touchers, cela fait encore deux touchers, et qu'on ne voit pas bien quelle vague est choisie. À décider par le parent.
 - **La bulle d'une tuile sur les écrans les plus pleins** (la ligne, 13 tuiles ; le calcul rapide) cache encore deux ou trois tuiles le temps de la phrase. Pistes : une bulle au-dessus de toute la grille, ou des descriptions encore plus courtes.
 - **L'invitation au toucher de l'écran de démarrage** (le logo qui se balance) : à juger avec l'enfant ; piste : une main dessinée qui tapote.
+- **Le temps de démarrage** : l'écran de démarrage attend aussi les 17 vidéos de la mascotte (la fiche le demande) ; mesuré au processeur ralenti ×4, 7,1 s au lieu de 4,8 s sur `main` (le budget de `CLAUDE.md` est de 3 s). Pistes si c'est trop long sur la tablette : n'attendre que les vidéos de l'accueil (repos, parole, salut) et charger les autres derrière.
 
 ## 4. Questions laissées avec une valeur par défaut
 

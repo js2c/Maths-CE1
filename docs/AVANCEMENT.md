@@ -2,12 +2,12 @@
 
 Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 à 3 ter (ce qui a été fait, décisions prises en cours de route, recettes) est dans `docs/archives/AVANCEMENT-lots-1-a-3ter.md`.
 
-## Où en est-on (8 octobre 2026)
+## Où en est-on (9 octobre 2026)
 
 - **En ligne** (https://js2c.github.io/Maths-CE1/) : lots 1, 1 bis, 2, 3, 3 bis, 3 ter et « Lagon en fond d'exercices », tous fusionnés (dernière demande de fusion : PR #30, le lagon).
 - **Ce que fait l'application** : `docs/SPEC.md` (spécification unique ; ce qui reste à construire y est marqué « à construire », section 13).
 - **Prochains lots** : les lots de `docs/LOTS.md` sont tous faits (le bloc « Sommes jusqu'à 30 » et « Multiplication », PR #42, attend sa fusion) ; la suite est à décider par le parent (`docs/IDEES.md`) ; le relecteur des lots 3 bis et 3 ter est abandonné.
-- **En attente du parent** : la fabrication des phrases des lots « Mascotte » (6), « Les voiliers » (835), « Correctifs » (8), « Les leçons » (126), « Sommes jusqu'à 30 » (384) et « Multiplication » (561), puis la publication et l'essai sur la tablette ; la relecture des choix faits sans lui au bloc « Sommes jusqu'à 30 » et « Multiplication » (PR #42, section « Choix faits sans le parent ») ; le lot « Correctifs » (PR #39) attend aussi sa fusion et une réponse sur la mascotte (11.1).
+- **En attente du parent** : la fabrication des phrases des lots « Mascotte » (6), « Les voiliers » (835), « Correctifs » (8), « Les leçons » (126), « Sommes jusqu'à 30 » (384) et « Multiplication » (561), puis la publication et l'essai sur la tablette ; la relecture des choix faits sans lui au bloc « Sommes jusqu'à 30 » et « Multiplication » (PR #42, section « Choix faits sans le parent ») ; le lot « Correctifs » (PR #39) attend aussi sa fusion et une réponse sur la mascotte (11.1) ; le lot « Correctifs de la tablette » (PR #46) attend la fabrication de ses 282 phrases, sa fusion, l'essai sur la tablette et la relecture de ses « Choix faits sans le parent ».
 - **Projet parallèle** : la refonte graphique (hors de ce fichier).
 
 ## Lots
@@ -32,10 +32,4 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
 
-### Reprise du lot « Correctifs de la tablette »
-
-- **Branche** : `claude/sweet-ptolemy-3g82xl` ; demande de fusion en brouillon « Lot : Correctifs de la tablette ».
-- **Fiche** : `docs/LOTS.md`, fiche 6 ; d'un seul tenant, sans arrêt pour une validation (les choix de la session vont dans `docs/JOURNAL-CONCEPTION.md`).
-- **Ordre des étapes** : 8 (fins de ligne), 5 (phrases sans fichier, contrôle des parcours), 4 (ardoise vide), 6 (clavier), 7 (toucher la mascotte), 1 (écran de démarrage, bienvenue), 2 (choisir en deux touchers), puis la recette.
-- **Fait** : les huit points de la fiche (le point 3, la fluidité des voiliers, est hors du lot), leurs tests unitaires et le parcours du lot (`tests/e2e/correctifs-tablette.mjs`), la documentation.
-- **Reste** : la recette complète (tous les parcours, mesures, séance à vitesse réelle, attentes, relecture indépendante), puis la demande de fusion à compléter et à sortir du brouillon.
+(Aucun lot en cours.)

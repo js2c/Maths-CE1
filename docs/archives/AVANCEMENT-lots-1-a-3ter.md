@@ -874,3 +874,11 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 - **Étape 2, « Multiplication »** : faite (proposition, maquette, code, tests unitaires, parcours `tests/e2e/multiplication.mjs` vert aux deux résolutions, `b-sequences` étendu, documents) ; reste la relecture indépendante et la recette commune du bloc.
 - **Reste (fin du bloc)** : tous les parcours `tests/e2e/*.mjs` (échecs relancés sur `main`, dans le worktree `wt-mesure` du bloc-notes de la session ou un clone de `main`) ; `perf.mjs` avant/après ; `b-sequences --test` complet ; `recette.mjs --delai 4.5` ; `recette-durees` avec et sans `--passer`, seuls ; les deux relectures indépendantes (`tests/recette-fonctionnelle/out-sommes30/`, `out-multiplication/`) ; `docs/LOTS.md` (les deux lots « fait ») ; la demande de fusion #42 complète, hors brouillon ; cette rubrique dans l'archive.
 - **Fini le 8 octobre 2026** : recette commune faite (PR #42, sortie du brouillon) ; les deux lots « fait » dans `docs/LOTS.md`.
+
+## Reprise du lot « Correctifs de la tablette »
+
+- **Branche** : `claude/sweet-ptolemy-3g82xl` ; demande de fusion en brouillon « Lot : Correctifs de la tablette ».
+- **Fiche** : `docs/LOTS.md`, fiche 6 ; d'un seul tenant, sans arrêt pour une validation (les choix de la session vont dans `docs/JOURNAL-CONCEPTION.md`).
+- **Ordre des étapes** : 8 (fins de ligne), 5 (phrases sans fichier, contrôle des parcours), 4 (ardoise vide), 6 (clavier), 7 (toucher la mascotte), 1 (écran de démarrage, bienvenue), 2 (choisir en deux touchers), puis la recette.
+- **Fait** : les huit points de la fiche (le point 3, la fluidité des voiliers, est hors du lot), leurs tests unitaires et le parcours du lot (`tests/e2e/correctifs-tablette.mjs`), la documentation.
+- **Fini le 9 octobre 2026** : recette complète faite (tous les parcours, mesures avant/après, séance à vitesse réelle, attentes avec et sans « passer », relecture indépendante : `tests/recette-fonctionnelle/out-correctifs-tablette/RELECTURE.md`) ; demande de fusion https://github.com/js2c/Maths-CE1/pull/46 complète, sortie du brouillon ; lot « fait » dans `docs/LOTS.md`.

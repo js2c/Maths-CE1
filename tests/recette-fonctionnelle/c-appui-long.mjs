@@ -5,7 +5,7 @@
 //   node tests/e2e/lot3ter.mjs --seul appui && node tests/recette-fonctionnelle/c-appui-long.mjs
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "../e2e/navigateur.mjs";
 
 const ROOT = new URL("../../", import.meta.url).pathname, SRC = join(ROOT, "tests/e2e/out/lot3ter"), OUT = join(ROOT, process.env.RECETTE_OUT ?? "tests/recette-fonctionnelle/out", "C-toucher");
 if (!existsSync(join(SRC, "appui.json"))) throw new Error("lancer d'abord : node tests/e2e/lot3ter.mjs --seul appui");

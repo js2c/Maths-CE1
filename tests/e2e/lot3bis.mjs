@@ -3,7 +3,7 @@
 // les maisons de 8 et 9 (deux questions sur trois à trou), le calcul rapide « très dur » au niveau 2 (la forme directe,
 // puis le trou sur le nombre de départ, « Combien plus 10 ? Ça fait 57. »). Captures en densité 2 (tests/e2e/out/lot3bis).
 //   node tests/e2e/lot3bis.mjs [--out dossier] [--seulement additions,calcul]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

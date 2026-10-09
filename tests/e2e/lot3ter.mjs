@@ -6,7 +6,7 @@
 //   appui    : T3, l'appui long de 0,8 s sur chaque bouton recensé : étiquette, rien de lancé, étiquette disparue 0,5 s après
 //              le lever ; toucher bref : lancé ; pavé et bulles-réponses : au premier contact (tableau : out/…/appui.json)
 //   node tests/e2e/lot3ter.mjs [--seul passer,parent,appui] [--out dossier]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -199,7 +199,7 @@ if (part("appui")) {
     await page.waitForSelector(".choix-ex"); await page.waitForTimeout(300);
     for (const ex of ["ligne", "additions", "calcul", "voiliers"]) await probe(page, "choisir", `.choix-ex[aria-label="${ex}"]`, ex);
     for (const ex of ["ligne", "additions", "calcul", "voiliers"]) {
-      await press(page, `.choix-ex[aria-label="${ex}"]`, 60).then((r) => r()); await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(500);
+      await press(page, `.choix-ex[aria-label="${ex}"]`, 60).then((r) => r()); await page.waitForTimeout(450); await press(page, `.choix-ex[aria-label="${ex}"]`, 60).then((r) => r()); await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(500);
       const keys = await page.evaluate(() => [...document.querySelectorAll(".choix-tuile")].map((e) => e.dataset.key));
       for (const k of keys) await probe(page, `niveaux ${ex}`, `.choix-tuile[data-key="${k}"]`, k, { shot: (ex === "calcul" && k === "7") || (ex === "ligne" && k === "1") });
       await probe(page, `niveaux ${ex}`, ".legende", "légende", { brief: async (p) => !!(await p.evaluate(() => window.__app.legendOpen)) });
@@ -208,8 +208,9 @@ if (part("appui")) {
       await page.waitForTimeout(300);
     }
     // une tuile : toucher bref, lancée (la ligne, niveau 3), puis le sélecteur de difficulté
-    await press(page, '.choix-ex[aria-label="ligne"]', 60).then((r) => r()); await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(400);
-    await probe(page, "niveaux ligne", '.choix-tuile[data-key="3"]', "3 (toucher bref)", { brief: async (p) => { await p.waitForTimeout(700); return (await p.locator(".cran").count()) > 0 || !!(await p.evaluate(() => window.__app.session)); } });
+    // (lot « Correctifs de la tablette » : deux touchers pour l'exercice, et pour la tuile : le toucher bref la sélectionne, le second la lance)
+    await press(page, '.choix-ex[aria-label="ligne"]', 60).then((r) => r()); await page.waitForTimeout(450); await press(page, '.choix-ex[aria-label="ligne"]', 60).then((r) => r()); await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(400);
+    await probe(page, "niveaux ligne", '.choix-tuile[data-key="3"]', "3 (deux touchers brefs)", { brief: async (p) => { await p.waitForTimeout(450); await press(p, '.choix-tuile[data-key="3"]', 60).then((r) => r()); await p.waitForTimeout(700); return (await p.locator(".cran").count()) > 0 || !!(await p.evaluate(() => window.__app.session)); } });
     check(!errors.length, `accueil et « choisir » : aucune erreur (${errors.join(" | ")})`); await context.close();
   }
   // 2. le sélecteur de difficulté, l'échauffement (pavé, coquillage, je ne sais pas, réécouter, passer l'échauffement, coche, maison), la correction, l'accueil en pause
@@ -222,7 +223,7 @@ if (part("appui")) {
     await page.waitForFunction(() => window.__app.session?.progress.etape === "echauffement", null, { timeout: 30000 });
     for (;;) { await nextQ(page); if (!(await page.evaluate(() => window.__app.facts.q.base))) break; await answer(page, true); await page.waitForTimeout(400); }
     await page.waitForTimeout(500);
-    await probe(page, "échauffement", ".speaker", "réécouter", { shot: true, brief: async (p, b0) => JSON.parse(await p.evaluate(SIG)).said > JSON.parse(b0).said });
+    await probe(page, "échauffement", ".mascotte-tap", "réécouter (la mascotte)", { shot: true, brief: async (p, b0) => JSON.parse(await p.evaluate(SIG)).said > JSON.parse(b0).said });
     await probe(page, "échauffement", '.key[data-key="effacer"]', "effacer", { first: true });
     await probe(page, "échauffement", '.key[data-key="valider"]', "coche du pavé", { first: true });
     // un chiffre : au premier contact

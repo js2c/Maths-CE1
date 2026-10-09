@@ -18,8 +18,8 @@
 //   cosmetique — B11 : accueil (bulles hors du rocher), album (médaillons), « réécouter » à l'accueil et en pause, L1 (« 0 saut »),
 //               L10 (rien sur le rocher, « 100 » une fois), bulles « 800 », « 900 », le bernard-l'ermite entier, « rejouer »
 //   reprise   — R12 : calcul guidé (niveau 7), la maison pendant le « bravo » d'un caillou, visite du récif, « continuer » :
-//               la consigne est redite (« On continue ! Plus 1 ? »)
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+//               la consigne est redite (« On continue ! Plus 1. » ; lot « Correctifs de la tablette » : la phrase du pont, qui a son fichier)
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
@@ -41,7 +41,7 @@ export const open = async (q = "", { prep = null, prepArg = null, size = [1280, 
   await page.goto(url + "?nosw&voix=rapide&son=non" + q); await page.waitForFunction(() => window.__ready !== undefined);
   return { page, context, errors };
 };
-const tap = async (page, sel) => { await page.tap(sel, { force: true }); await page.waitForTimeout(250); };
+const tap = async (page, sel, ms = 250) => { await page.tap(sel, { force: true }); await page.waitForTimeout(ms); };
 const shot = (page, name) => page.screenshot({ path: join(OUT, `${name}.png`) });
 // les boîtes (px logiques) des éléments d'un sélecteur
 const boxes = (page, sel) => page.evaluate((sel) => { const ui = document.querySelector("#ui"), k = ui.getBoundingClientRect().width / 1280, o = ui.getBoundingClientRect(); return [...document.querySelectorAll(sel)].map((e) => { const r = e.getBoundingClientRect(); return { key: e.dataset.key, x: (r.left - o.left) / k, y: (r.top - o.top) / k, w: r.width / k, h: r.height / k }; }); }, sel);
@@ -54,7 +54,7 @@ if (want("choisir")) {
     const { page, context, errors } = await open("&cran=conseille&sans=echauffement", { size, scale: size[0] > 1500 ? 1 : 2, prep });
     await page.waitForSelector(".choisir"); await tap(page, ".choisir"); await page.waitForSelector(".choix-ex");
     for (const ex of ["ligne", "additions", "calcul"]) { // (lot « Les leçons » : les leçons ont quitté « choisir », tests/e2e/lecons-menu.mjs)
-      await tap(page, `.choix-ex[aria-label="${ex}"]`); await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(500);
+      await tap(page, `.choix-ex[aria-label="${ex}"]`, 450); await tap(page, `.choix-ex[aria-label="${ex}"]`); await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(500);
       const b = await boxes(page, ".choix-tuile");
       const inside = b.every((r) => r.x >= 4 && r.y >= 4 && r.x + r.w <= 1276 && r.y + r.h <= 796);
       // la pieuvre (à gauche) et les algues de droite : aucune plaque avant x = 410 ni après x = 1165
@@ -84,7 +84,7 @@ if (want("legende")) {
   const { page, context, errors } = await open("&cran=conseille&sans=echauffement");
   await page.waitForSelector(".choisir"); await tap(page, ".choisir"); await page.waitForSelector(".choix-ex");
   for (const ex of ["ligne", "additions", "calcul"]) { // (lot « Les leçons » : les leçons ont quitté « choisir », tests/e2e/lecons-menu.mjs)
-    await tap(page, `.choix-ex[aria-label="${ex}"]`); await page.waitForSelector(".legende");
+    await tap(page, `.choix-ex[aria-label="${ex}"]`, 450); await tap(page, `.choix-ex[aria-label="${ex}"]`); await page.waitForSelector(".legende");
     const lb = (await boxes(page, ".legende"))[0], tiles = await boxes(page, ".choix-tuile");
     check(!tiles.some((r) => lb.x < r.x + r.w && r.x < lb.x + lb.w && lb.y < r.y + r.h && r.y < lb.y + lb.h), `${ex} : le bouton de la légende est hors de la zone des plaques`);
     const spoken = await page.evaluate(() => (window.__app.voice.log ?? []).length);
@@ -123,7 +123,7 @@ if (want("appui")) {
     check(st.lab && !st.tiles && (await inScreen(page, ".etiquette")), `« choisir », appui long de 0,8 s sur « ${ex} » : étiquette, rien de lancé`);
     await shot(page, `B3-appui-${ex}`);
   }
-  await tap(page, '.choix-ex[aria-label="calcul"]'); await page.waitForSelector(".choix-tuile");
+  await tap(page, '.choix-ex[aria-label="calcul"]', 450); await tap(page, '.choix-ex[aria-label="calcul"]'); await page.waitForSelector(".choix-tuile");
   check(true, "toucher bref sur « calcul » : ses niveaux s'ouvrent");
   check(!errors.length, `appui long : aucune erreur (${errors.join(" | ")})`); await context.close();
 }
@@ -351,7 +351,7 @@ if (want("cosmetique")) {
     // de 60 px de rayon, restent entre le rocher de gauche, jusqu'à x 285, et le corail de droite, depuis x 1155)
     const b = await boxes(page, ".play, .choisir, .leconskey, .reefkey, .albumkey");
     check(b.length === 5 && b.every((r) => r.x + r.w / 2 - 60 >= 285 && r.x + r.w / 2 + 60 <= 1155), `accueil : les cinq bulles entre le rocher de gauche et le corail de droite (${b.map((r) => Math.round(r.x + r.w / 2)).join(", ")})`);
-    await spy(page); await page.tap(".speaker", { force: true }); await page.waitForTimeout(600);
+    await spy(page); await page.tap(".mascotte-tap", { force: true }); await page.waitForTimeout(600);
     check(/Touche une bulle/.test(await said(page)), "accueil : « réécouter » dit ce qu'on peut faire");
     await tap(page, ".albumkey"); await page.waitForSelector(".album-tab"); await page.waitForTimeout(700); await shot(page, "B11-album");
     check((await page.locator(".album-tab").count()) === 4, "album : quatre médaillons de zone");
@@ -362,8 +362,9 @@ if (want("cosmetique")) {
     const { page, context, errors } = await open("&cran=conseille&choix=2:3&sans=echauffement&sansLecon");
     await page.tap(".play", { force: true }); await waitQ(page); await page.waitForTimeout(300);
     await page.tap(".session-home", { force: true }); await page.waitForSelector(".play.keep"); await page.waitForTimeout(400);
-    const vis = await page.evaluate(() => getComputedStyle(document.querySelector(".speaker")).visibility);
-    await spy(page); await page.tap(".speaker", { force: true }); await page.waitForTimeout(800);
+    const vis = await page.evaluate(() => getComputedStyle(document.querySelector(".mascotte-tap")).visibility);
+    // (lot « Correctifs de la tablette » : on touche la mascotte, qui remplace le bouton « réécouter »)
+    await spy(page); await page.tap(".mascotte-tap", { force: true }); await page.waitForTimeout(800);
     check(vis === "visible" && /C'est la pause/.test(await said(page)), `pause : « réécouter » visible (${vis}) et qui répond`);
     await shot(page, "B11-pause-reecouter");
     await page.tap(".play.keep", { force: true }); await waitQ(page); await page.waitForTimeout(300);
@@ -404,7 +405,7 @@ if (want("reprise")) {
   await page.evaluate(() => { window.__said = []; });
   await page.tap(".play.keep", { force: true }); await page.waitForTimeout(3000);
   const s = await said(page);
-  check(/^On continue ! Plus \d+ \?/.test(s), `calcul guidé, pause pendant le « bravo », visite du récif, « continuer » : la consigne est redite (« ${s} »)`);
+  check(/^On continue ! Plus \d+\./.test(s), `calcul guidé, pause pendant le « bravo », visite du récif, « continuer » : la consigne est redite (« ${s} »)`);
   await shot(page, "R12-reprise-calcul-guide");
   check(!errors.length, `reprise : aucune erreur (${errors.join(" | ")})`); await context.close();
 }

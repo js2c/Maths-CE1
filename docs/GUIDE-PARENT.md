@@ -340,6 +340,16 @@ Fait, lui aussi, sans vous demander de valider la maquette (votre décision du 7
 
 **Les phrases à fabriquer.** 561 phrases nouvelles, environ 4 Mo (chaque multiplication posée sous ses formes, les rangées dites, les 100 cases de la table) : la liste est dans `docs/maquettes/multiplication/PHRASES.md`. Avec celles des lots précédents encore en attente, la voix pèsera environ 74 Mo, sous la limite de 80 Mo que vous aviez fixée (il restera environ 6 Mo pour les lots suivants).
 
+## d undecies) Lot « Correctifs de la tablette » : vos remarques du premier essai, le 8 octobre
+
+- **Au lancement**, un écran avec le logo « Maths CE1 » et une barre qui se remplit pendant que l'application se charge (dessous, en petit : 2026, js2c et la version, utile si vous me signalez un défaut). Quand la barre est pleine, le logo se balance doucement : **touchez l'écran n'importe où**. Ce toucher autorise aussi la voix. Le capitaine dit alors bonjour (« Coucou ! Je suis content de te voir. »…), une seule fois par lancement.
+- **Choisir en deux touchers**, dans « choisir », le menu des leçons et « Encore ! » : le premier toucher entoure l'image d'une **bordure orange** (différente du halo doré du niveau conseillé) ; le capitaine dit son nom et ce qu'on y fait, et la phrase s'écrit dans une bulle qui part de l'image. **Le second toucher sur la même image la lance.** Toucher une autre image la choisit à la place ; toucher ailleurs annule. Le petit livre de la légende est toujours là pour vous.
+- **Pour réécouter, on touche le capitaine** (toute sa tête) : il redit la consigne. Le bouton « réécouter » en haut à droite a disparu ; il ne reste que dans le récif, où le capitaine n'est pas. Au bout de 25 secondes sans toucher, il dit « Prends ton temps. Touche-moi pour réécouter la consigne. ».
+- **Sur un ordinateur**, dans les exercices où l'on tape un nombre, le clavier marche comme le pavé : les chiffres (pavé numérique compris), « Retour arrière » efface, « Entrée » valide. Sur la tablette, rien ne change.
+- **Corrigés** : l'ardoise vide qui apparaissait derrière la bulle (elle n'apparaît plus qu'avec son calcul) ; les petites phrases dites par l'ancienne voix (« Plus 10 ? » des calculs guidés, et le bilan quand l'enfant gagne plus de 60 étoiles) ; l'avertissement « sw-files.json n'était pas à jour » quand vous publiez les voix depuis Windows (rien à faire de votre côté).
+- **Pas dans ce lot** : la fluidité des voiliers (votre décision) ; vos mesures et les pistes sont gardées dans `docs/IDEES.md`.
+- **Les phrases à fabriquer** : la liste est dans la demande de fusion ; `node tools\voix\publier.mjs`, comme d'habitude.
+
 ## e) Ce qui reste approximatif ou à ajuster
 
 **À vérifier sur la vraie tablette.** Écouter la voix (aucune phrase n'a été écoutée par une personne, la vérification a été automatique) et regarder les illustrations des cartes en grand. Toutes les mesures ont été faites sur un ordinateur, en ralentissant le processeur 4 fois pour imiter une tablette : démarrage en moins de 1,5 s, animation à 50 à 60 images par seconde la plupart du temps, avec des baisses vers 30 pendant certaines animations (l'application allège alors d'elle-même le décor). Il faut confirmer que tout reste fluide sur la tablette.

@@ -3,7 +3,7 @@
 // sélecteur) ; les additions d'une famille pas encore ouverte ; une leçon seule ; « passer » l'échauffement ; le
 // réglage « Échauffement : non » ; « Encore ! » ouvre le même écran. Captures en densité 2.
 //   node tests/e2e/choix.mjs [--out dossier]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
@@ -22,9 +22,9 @@ const open = async (q = "", prep = null) => {
   return { page, context, errors };
 };
 let taps = 0;
-const tap = async (page, sel) => { taps++; await page.tap(sel, { force: true }); await page.waitForTimeout(250); };
-// choisir un exercice puis une vignette (validation « simple », décision du parent du 28 septembre : un toucher dit le nom
-// et valide ; seance.json, choix.validation)
+const tap = async (page, sel) => { taps++; await page.tap(sel, { force: true }); await page.waitForTimeout(400); };
+// choisir un exercice puis une vignette (lot « Correctifs de la tablette » : en deux touchers, le premier sélectionne et dit
+// le nom et la description, le second lance ; avant, validation « simple », décision du parent du 28 septembre)
 const pick = async (page, sel) => { await page.waitForSelector(sel, { timeout: 10000 }); await tap(page, sel); };
 
 // 1. l'accueil, l'écran des exercices et les 13 niveaux ; la ligne au niveau 8 dès une base vide
@@ -38,13 +38,13 @@ const pick = async (page, sel) => { await page.waitForSelector(sel, { timeout: 1
   await page.waitForSelector(".choix-ex"); await page.waitForTimeout(400);
   check((await page.locator(".choix-ex").count()) === 5, "cinq exercices (ligne, additions, calcul rapide, voiliers, multiplication ; lot « Les leçons » : plus de leçons ici)");
   await page.screenshot({ path: join(OUT, "2-exercices.png") });
-  await tap(page, '.choix-ex[aria-label="ligne"]');
+  await tap(page, '.choix-ex[aria-label="ligne"]', 450); await tap(page, '.choix-ex[aria-label="ligne"]');
   await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(400);
   check((await page.locator(".choix-tuile").count()) === 13, "les 13 niveaux de la ligne, tous accessibles");
   check(await page.evaluate(() => document.querySelector('.choix-tuile[data-conseille="1"]')?.dataset.key) === "1", "base vide : le niveau 1 conseillé (lueur)");
   await page.screenshot({ path: join(OUT, "3-niveaux-ligne.png") });
-  await tap(page, '.choix-tuile[data-key="8"]');
-  check(taps === 3, `3 touchers de l'accueil au sélecteur (choisir, exercice, niveau : validation « simple ») : ${taps}`);
+  await tap(page, '.choix-tuile[data-key="8"]', 450); await tap(page, '.choix-tuile[data-key="8"]');
+  check(taps === 5, `5 touchers de l'accueil au sélecteur (choisir, l'exercice deux fois, le niveau deux fois : lot « Correctifs de la tablette ») : ${taps}`);
   await page.waitForFunction(() => window.__app.runner && window.__app.screen?.q, null, { timeout: 30000 });
   const qs = [];
   for (let i = 0; i < 4; i++) {
@@ -62,11 +62,11 @@ const pick = async (page, sel) => { await page.waitForSelector(sel, { timeout: 1
 // 2. les additions : les 7 familles ; la famille 5 (pas encore ouverte) devient la famille en cours et s'ouvre
 {
   const { page, context, errors } = await open("&cran=conseille&sans=echauffement&sansLecon");
-  await tap(page, ".choisir"); await pick(page, '.choix-ex[aria-label="additions"]');
+  await tap(page, ".choisir"); await pick(page, '.choix-ex[aria-label="additions"]'); await pick(page, '.choix-ex[aria-label="additions"]');
   await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(400);
   check((await page.locator(".choix-tuile").count()) === 13, "les 13 familles (lot « Sommes jusqu'à 30 »)");
   await page.screenshot({ path: join(OUT, "6-familles.png") });
-  await pick(page, '.choix-tuile[data-key="5"]');
+  await pick(page, '.choix-tuile[data-key="5"]'); await pick(page, '.choix-tuile[data-key="5"]');
   await page.waitForFunction(() => window.__app.runner?.famille && window.__app.facts?.q, null, { timeout: 30000 });
   const st = await page.evaluate(async () => ({ famille: window.__app.runner.famille, ouvertes: (await window.__app.store.get("niveaux", 2)).ouvertes, rec: window.__app.session.rec }));
   check(st.famille === 5 && st.ouvertes.includes(5) && st.rec.choix?.famille === 5 && st.rec.module === 2, `famille 5 en cours et ouverte (ouvertes : ${st.ouvertes})`);
@@ -111,7 +111,7 @@ const pick = async (page, sel) => { await page.waitForSelector(sel, { timeout: 1
   await page.waitForSelector(".again"); await tap(page, ".again");
   await page.waitForSelector(".choix-ex", { timeout: 15000 }); await page.waitForTimeout(400);
   check((await page.locator(".choix-ex").count()) === 5, "« Encore ! » : le même écran de choix");
-  await pick(page, '.choix-ex[aria-label="ligne"]'); await pick(page, '.choix-tuile[data-key="3"]');
+  await pick(page, '.choix-ex[aria-label="ligne"]'); await pick(page, '.choix-ex[aria-label="ligne"]'); await pick(page, '.choix-tuile[data-key="3"]'); await pick(page, '.choix-tuile[data-key="3"]');
   await page.waitForSelector(".cran", { timeout: 15000 });
   check(true, "puis le sélecteur sans étoiles");
   check(!errors.length, `aucune erreur (${errors.join(" | ")})`); await context.close();

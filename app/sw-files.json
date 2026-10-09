@@ -1,5 +1,5 @@
 {
- "version": "69e3eeba7584",
+ "version": "ec34a190effe",
  "files": [
   "./",
   "assets/art/aides@1x.webp",
@@ -15,6 +15,8 @@
   "assets/art/choix@2x.webp",
   "assets/art/defi@1x.webp",
   "assets/art/defi@2x.webp",
+  "assets/art/demarrage@1x.webp",
+  "assets/art/demarrage@2x.webp",
   "assets/art/ermite@1x.webp",
   "assets/art/ermite@2x.webp",
   "assets/art/lagon-vie@1x.webp",
@@ -10698,6 +10700,7 @@
   "js/session/album.js",
   "js/session/cards.js",
   "js/session/choice.js",
+  "js/session/demarrage.js",
   "js/session/free.js",
   "js/session/frieze.js",
   "js/session/legend.js",
@@ -10706,10 +10709,12 @@
   "js/session/reef.js",
   "js/session/rewards.js",
   "js/session/screens.js",
+  "js/session/selection.js",
   "js/session/selector.js",
   "js/session/session.js",
   "js/session/surprise.js",
   "js/voiliers/voiliers-scene.js",
-  "manifest.webmanifest"
+  "manifest.webmanifest",
+  "version.json"
  ]
 }

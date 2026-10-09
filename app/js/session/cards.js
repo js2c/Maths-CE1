@@ -109,7 +109,9 @@ export async function cardElement(app, card, { x, y, front = "recto", back = "do
 }
 
 // ce que dit la voix à l'ouverture d'une carte en grand : son nom, puis son anecdote
-export const cardLine = (text, c) => `${fill(text.data.recifCarte, { nom: c.nomLu ?? c.nom })} ${c.anecdote}`;
+// (lot « Correctifs de la tablette » : une carte sans anecdote encore, qui ne se gagne pas, faisait dire « null » ; le contrôle des
+// phrases sans fichier des parcours l'a trouvé dans un récif complet fabriqué pour un test)
+export const cardLine = (text, c) => [fill(text.data.recifCarte, { nom: c.nomLu ?? c.nom }), c.anecdote].filter(Boolean).join(" ");
 // UNE CARTE EN GRAND (récif, album) : au milieu, sur un voile ; la voix dit son nom et son anecdote une seule fois, à
 // l'ouverture ; toucher la carte la retourne (le verso porte l'anecdote écrite), sans relancer la voix ; la coche verte
 // ou le voile la range.

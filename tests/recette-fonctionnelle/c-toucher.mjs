@@ -155,15 +155,15 @@ async function appuiLong() {
   const long = async (p, sel) => { const c = await centre(p, sel); if (!c) return; await touch(p, "touchStart", ...c); await pause(p, 1500); await touch(p, "touchEnd", ...c); };
   // l'accueil
   let s = await ouvrir(nav, { base: "mois", nom: true, voix: "" });
-  for (const [sel, nom] of [[".play", "jouer"], [".choisir", "choisir"], [".speaker", "réécouter"]]) {
+  for (const [sel, nom] of [[".play", "jouer"], [".choisir", "choisir"], [".mascotte-tap", "réécouter (la mascotte)"]]) {
     await essai(S, s, { essai: "appui long", exo: "accueil", geste: `appui long sur « ${nom} »`, attente: 1500, action: (p) => long(p, sel) });
-    if (sel !== ".speaker") { await s.context.close(); s = await ouvrir(nav, { base: "mois", nom: true, voix: "" }); }
+    if (sel !== ".mascotte-tap") { await s.context.close(); s = await ouvrir(nav, { base: "mois", nom: true, voix: "" }); }
   }
   await s.context.close();
   // pendant une question : chaque pictogramme
   for (const [exo, nomExo] of EXOS) {
     s = await seance(exo); await toucher(s.page, ".play"); await question(s.page); await pause(s.page, 3000);
-    const sels = await s.page.evaluate(() => [[".speaker", "réécouter"], [".help", "aide (coquillage)"], [".nsp", "je ne sais pas"], [".answer", "une bulle-réponse"], ['.key[data-key="effacer"]', "effacer"], [".session-home", "maison"]].filter(([c]) => { const e = document.querySelector(c); return e && getComputedStyle(e).visibility !== "hidden"; }));
+    const sels = await s.page.evaluate(() => [[".mascotte-tap", "réécouter (la mascotte)"], [".help", "aide (coquillage)"], [".nsp", "je ne sais pas"], [".answer", "une bulle-réponse"], ['.key[data-key="effacer"]', "effacer"], [".session-home", "maison"]].filter(([c]) => { const e = document.querySelector(c); return e && getComputedStyle(e).visibility !== "hidden"; }));
     for (const [sel, nom] of sels) {
       if (!(await question(s.page, 20000))) break;
       await essai(S, s, { essai: "appui long", exo: nomExo, geste: `appui long sur « ${nom} »`, attente: 2000, action: (p) => long(p, sel) });
@@ -186,7 +186,7 @@ async function rien() {
   const ecrans = [
     ["accueil", { base: "mois", nom: true }, async () => {}],
     ["choisir : les exercices", { base: "mois", nom: true }, async (p) => { await toucher(p, ".choisir"); await attendre(p, () => document.querySelector(".choix-ex")); }],
-    ["choisir : les niveaux de la ligne", { base: "mois", nom: true }, async (p) => { await toucher(p, ".choisir"); await attendre(p, () => document.querySelector(".choix-ex")); await pause(p, 3000); await toucher(p, '.choix-ex[aria-label="ligne"]'); await attendre(p, () => document.querySelector(".choix-tuile")); }],
+    ["choisir : les niveaux de la ligne", { base: "mois", nom: true }, async (p) => { await toucher(p, ".choisir"); await attendre(p, () => document.querySelector(".choix-ex")); await pause(p, 3000); await toucher(p, '.choix-ex[aria-label="ligne"]'); await pause(p, 450); await toucher(p, '.choix-ex[aria-label="ligne"]'); await attendre(p, () => document.querySelector(".choix-tuile")); }],
     ["sélecteur de difficulté", { base: "mois", nom: true }, async (p) => { await toucher(p, ".play"); await attendre(p, () => document.querySelector(".cran")); }],
     ["échauffement : une question", { base: "mois", nom: true, params: "cran=conseille" }, async (p) => { await toucher(p, ".play"); await question(p); }],
     ["ligne graduée : une question", { base: "mois", nom: true, params: "choix=1:5&cran=conseille&sans=echauffement&sansLecon&guides=0" }, async (p) => { await toucher(p, ".play"); await question(p); }],

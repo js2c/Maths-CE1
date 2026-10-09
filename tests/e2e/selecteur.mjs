@@ -2,7 +2,7 @@
 // attente de 15 s), cran enregistré dans la séance ; la flèche qui montre la cible (lot « Mascotte ») ; le
 // calque d'effets et la tortue au-dessus de la mascotte ; formes à trou au cran « très dur ». Captures en densité 2.
 //   node tests/e2e/selecteur.mjs [--out dossier]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

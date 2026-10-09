@@ -4,7 +4,7 @@
 //   node tests/e2e/lot3ter.mjs && (cd art && node tools/still.mjs lot3terSheet --frame 0 --out out/lot3ter.png --scale 2) && node tests/recette-fonctionnelle/e-lot3ter.mjs
 import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "../e2e/navigateur.mjs";
 import { indexPartie } from "./commun.mjs";
 
 const ROOT = new URL("../../", import.meta.url).pathname, SRC = join(ROOT, "tests/e2e/out/lot3ter"), OUT = join(ROOT, process.env.RECETTE_OUT ?? "tests/recette-fonctionnelle/out", "E-lot3ter");

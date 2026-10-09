@@ -101,6 +101,13 @@ Le parent n'est pas encore convaincu par les remèdes proposés : la question es
   Le parent la fera publier en conception pour la tester sur la tablette **avant la fusion**. Objectif : au moins 30 images par seconde sur cette tablette, avec un rendu qu'il juge correct.
 - Ces changements passent par l'outil d'export et l'atelier, jamais par la maquette.
 
+### Après le lot « Correctifs de la tablette » (relecture indépendante du 8 octobre 2026)
+
+- **Le sélecteur de difficulté en deux touchers ?** Il n'était pas dans la fiche (exercices, niveaux, leçons) : une vague touchée dit ce qu'elle rapporte, la coche valide, et sans toucher il part seul au bout de 15 s. Le relecteur note qu'après « choisir » en deux touchers, cela fait encore deux touchers, et qu'on ne voit pas bien quelle vague est choisie. À décider par le parent.
+- **La bulle d'une tuile sur les écrans les plus pleins** (la ligne, 13 tuiles ; le calcul rapide) cache encore deux ou trois tuiles le temps de la phrase. Pistes : une bulle au-dessus de toute la grille, ou des descriptions encore plus courtes.
+- **L'invitation au toucher de l'écran de démarrage** (le logo qui se balance) : à juger avec l'enfant ; piste : une main dessinée qui tapote.
+- **Le temps de démarrage** : l'écran de démarrage attend aussi les 17 vidéos de la mascotte (la fiche le demande) ; mesuré au processeur ralenti ×4, 7,1 s au lieu de 4,8 s sur `main` (le budget de `CLAUDE.md` est de 3 s). Pistes si c'est trop long sur la tablette : n'attendre que les vidéos de l'accueil (repos, parole, salut) et charger les autres derrière.
+
 ## 4. Questions laissées avec une valeur par défaut
 
 - **Les pictogrammes de la pieuvre** (lot « Mascotte ») : la pieuvre a quitté l'application, sauf trois dessins de l'atelier : le bouton « je ne sais pas » (la pieuvre qui hausse les bras, choisi au lot 3 bis pour ne plus ressembler au « ? » des questions), l'étape « accueil » de la frise (une petite pieuvre) et l'icône de l'application. Par défaut, ils restent : les refaire est un choix graphique (un nouveau pictogramme « je ne sais pas » à faire valider), pas une conséquence du lot. Autres possibilités : une ancre ou une casquette de capitaine pour la frise ; pour « je ne sais pas », des épaules qui se haussent sans personnage.

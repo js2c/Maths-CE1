@@ -3,7 +3,7 @@
 // correspond à l'index, un texte de plusieurs phrases enchaîne ses fichiers, « réécouter » rejoue le
 // fichier, et un texte sans fichier passe par la synthèse. Échantillon : 40 phrases tirées de l'index.
 //   node tests/e2e/voix.mjs
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium, voixPermise } from "./navigateur.mjs";
 import { readFileSync } from "node:fs";
 import { serve } from "../serve.mjs";
 
@@ -34,7 +34,8 @@ for (const t of ["Place le poisson sur le nombre 37.", "0 plus 6 ?", "Bravo ! Ce
 // 3. « réécouter » rejoue le fichier de la dernière consigne
 const re = await page.evaluate(async () => { const v = window.__app.voice, n0 = v.files; await v.replay(); return { files: v.files - n0, listens: v.listens }; });
 check(re.files === 2 && re.listens === 2, `« réécouter » rejoue les fichiers de la consigne (${JSON.stringify(re)})`);
-// 4. un texte sans fichier (nom tapé par le parent) : synthèse du navigateur, phrase notée
+// 4. un texte sans fichier (nom tapé par le parent) : synthèse du navigateur, phrase notée (volontairement absente : permise)
+voixPermise(/^C.est moi, Zoé\.$/);
 const miss = await run("C'est moi, Zoé.");
 check(miss.files === 0 && miss.misses.includes("C'est moi, Zoé."), "un texte sans fichier passe par la synthèse et est noté");
 // 5. « stop » coupe un fichier en cours et libère aussitôt

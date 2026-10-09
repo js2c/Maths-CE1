@@ -7,11 +7,14 @@
 //  3. Une collection vide : la mer seule, la voix dit « recifVide ».
 //  4. La maison : l'accueil revient, ses boutons dessinés, le récif libéré (canvas retirés, lagon reparti).
 //   node tests/e2e/recif-vivant.mjs [--out dossier] [--seul 1280|1920]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium, voixPermise } from "./navigateur.mjs";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
 import { recifOuvert, toucherCreature } from "./recif-commun.mjs";
+// (un récif complet fabriqué pour le test : les créatures du grand large et des abysses, sans anecdote, ne se gagnent pas encore ;
+// leur nom n'est pas fabriqué)
+{ const C = JSON.parse(readFileSync(new URL("../../app/content/cartes.json", import.meta.url), "utf8")); const sans = new Set(C.cartes.filter((c) => !c.anecdote).map((c) => `C'est ${c.nomLu ?? c.nom}.`)); voixPermise({ test: (t) => sans.has(t) }); }
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const OUT = resolve(opt("--out", "tests/e2e/out/recif-vivant")), SEUL = opt("--seul", null);

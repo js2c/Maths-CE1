@@ -170,12 +170,21 @@ export const drawLens = (ctx: CanvasRenderingContext2D, cx: number, cy: number, 
 export const drawRing = (ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number, color = "#ffd23a", w = 7) =>
   ink(shim(ctx), blob(cx, cy, r, r, 77, 0.02, 20), color, { w, closed: true, shadow: 0.2, light: [-0.55, -0.83], seed: 78 });
 // lot 3 : la plaque choisie de l'écran « choisir » : un rectangle arrondi doré au feutre, avec son ombre d'encre
-export const drawTileRing = (ctx: CanvasRenderingContext2D, cx: number, cy: number, w: number, h: number, r = 26, color = "#ffd23a") => {
+export const drawTileRing = (ctx: CanvasRenderingContext2D, cx: number, cy: number, w: number, h: number, r = 26, color = "#ffd23a", lw = 7) => {
   const g = shim(ctx), x = cx - w / 2, y = cy - h / 2, pts: P[] = [];
   const arc = (ax: number, ay: number, a0: number) => { for (let i = 0; i <= 6; i++) { const t = a0 + (i / 6) * (Math.PI / 2); pts.push([ax + Math.cos(t) * r, ay + Math.sin(t) * r]); } };
   arc(x + w - r, y + r, -Math.PI / 2); arc(x + w - r, y + h - r, 0); arc(x + r, y + h - r, Math.PI / 2); arc(x + r, y + r, Math.PI);
-  ink(g, pts, INK, { w: 10, closed: true, shadow: 0, seed: 79 }, 0.35);
-  ink(g, pts, color, { w: 7, closed: true, shadow: 0.2, light: [-0.55, -0.83], seed: 80 });
+  ink(g, pts, INK, { w: lw + 3, closed: true, shadow: 0, seed: 79 }, lw > 7 ? 0.9 : 0.35);
+  ink(g, pts, color, { w: lw, closed: true, shadow: 0.2, light: [-0.55, -0.83], seed: 80 });
+};
+// (lot « Correctifs de la tablette ») LA TUILE SÉLECTIONNÉE au premier toucher (choisir en deux touchers) : une bordure épaisse
+// corail cernée d'encre, bien distincte du halo doré du niveau conseillé ; ronde pour les bulles des exercices
+export const SELECT = "#ff6a3d";
+export const drawSelectTile = (ctx: CanvasRenderingContext2D, cx: number, cy: number, w: number, h: number, r = 24) => drawTileRing(ctx, cx, cy, w, h, r, SELECT, 9);
+export const drawSelectRound = (ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number) => {
+  const g = shim(ctx), pts = blob(cx, cy, r, r, 77, 0.02, 20);
+  ink(g, pts, INK, { w: 12, closed: true, shadow: 0, seed: 81 }, 0.9);
+  ink(g, pts, SELECT, { w: 9, closed: true, shadow: 0.2, light: [-0.55, -0.83], seed: 82 });
 };
 // ---------------------------------------------------------------- la frise d'avancement
 // la corde fine où sont enfilés les pictogrammes et les petites bulles : `knots` les centres, dans l'ordre ;

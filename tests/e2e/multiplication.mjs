@@ -13,7 +13,7 @@
 //  7. la table de multiplication : la consigne, une case (« 3 fois 4, 12. »), 10 × 10 ;
 //  8. l'espace parent : le bloc de la multiplication, le point de départ.
 //   node tests/e2e/multiplication.mjs [--out dossier] [--seul 1280|1920]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
@@ -72,7 +72,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const b0 = await bulle(page); check(!b0.couvre, `${T} · la bulle ne couvre aucun exercice (${b0.place})`);
     await shot(page, "01-choisir-exercices");
     if (big) { const h = await hold(page, '[data-key="multiplication"]'); check(/multiplication/.test(h.label ?? ""), `${T} · appui long : l'étiquette de la multiplication (${h.label})`); await shot(page, "02-etiquette-multiplication"); await h.release(); }
-    await resetSaid(page); await tap(page, '[data-key="multiplication"]', 1200);
+    await resetSaid(page); await tap(page, '[data-key="multiplication"]', 450); await tap(page, '[data-key="multiplication"]', 1200); // (lot « Correctifs de la tablette » : deux touchers)
     await page.waitForSelector('[data-key="9"]', { timeout: 15000 }); await page.waitForTimeout(600);
     check((await said(page)).includes("La multiplication."), `${T} · le toucher dit « La multiplication. » (${await said(page)})`);
     const tiles = await page.evaluate(() => [...document.querySelectorAll("[data-key]")].filter((e) => /^\d+$/.test(e.dataset.key) && e.isConnected).map((e) => e.getBoundingClientRect()).map((b) => [b.left, b.top, b.right, b.bottom]));
@@ -210,7 +210,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const b = await bulle(page); check(!b.couvre, `${T} · la bulle du menu ne couvre aucune tuile (${b.place})`);
     await shot(page, "16-menu-lecons");
     if (big) { await tap(page, ".legende", 600); const n = await page.locator(".legende-ligne").count(); check(n === 16, `${T} · la légende du menu : 16 lignes (${n})`); await shot(page, "17-menu-legende"); await tap(page, ".legende-fermer", 400); }
-    await resetSaid(page); await tap(page, '.lecons-tuile[data-key="L14"]');
+    await resetSaid(page); await tap(page, '.lecons-tuile[data-key="L14"]', 450); await tap(page, '.lecons-tuile[data-key="L14"]');
     check((await said(page)).startsWith("On tourne les rangées."), `${T} · la tuile 14 dit « On tourne les rangées. » (${(await said(page)).slice(0, 60)})`);
     await page.waitForFunction(() => window.__said.some((t) => /tourne/.test(t) && !/^On tourne les rangées\.$/.test(t)), null, { timeout: 60000 }).catch(() => {}); await page.waitForTimeout(2500);
     await shot(page, "18-L14");
@@ -231,7 +231,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const { page, context, errors } = await open();
     await tap(page, ".leconskey"); await page.waitForSelector(".lecons-tuile"); await page.waitForTimeout(300);
     await resetSaid(page);
-    await tap(page, '.lecons-tuile[data-key="table.multiplication"]'); await page.waitForSelector(".table-grille", { timeout: 10000 }); await page.waitForTimeout(800);
+    await tap(page, '.lecons-tuile[data-key="table.multiplication"]', 450); await tap(page, '.lecons-tuile[data-key="table.multiplication"]'); await page.waitForSelector(".table-grille", { timeout: 10000 }); await page.waitForTimeout(800);
     check((await said(page)).includes("La table de multiplication."), `${T} · la tuile dit « La table de multiplication. » (${(await said(page)).slice(0, 80)})`);
     const g = await page.evaluate(() => { const b = document.querySelector(".table-grille").getBoundingClientRect(); return [b.left, b.top, b.right, b.bottom]; });
     check(g[0] >= 0 && g[2] <= W && g[1] >= 0 && g[3] <= H, `${T} · la grille tient dans l'écran (${g.map(Math.round)})`);

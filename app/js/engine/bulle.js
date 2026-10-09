@@ -63,26 +63,71 @@ export const largeurEquilibree = (naturel) => (naturel > 420 ? Math.ceil(naturel
 export const largeurMax = (boite) => Math.min(TEXTE_MAX, Math.max(120, ((boite[2] - boite[0]) / 2 - 8) * 2 / BAL_K));
 // l'ovale posé dans sa boîte : collé à gauche, au plus près de la hauteur de la pointe (en bas de la boîte si elle est plus
 // bas ; en haut de la boîte pour une bulle sous la tête) ; renvoie centre, demi-axes et rectangle occupé (pointe comprise)
+// (lot « Correctifs de la tablette » : `droite`, l'ovale collé à droite de sa boîte, pour une bulle à gauche de ce qu'elle
+// montre)
 export function poser(place, w, h) {
-  const { a, b } = ovale(w, h), [x0, y0, x1, y1] = place.boite, cx = x0 + a;
+  const { a, b } = ovale(w, h), [x0, y0, x1, y1] = place.boite, cx = place.droite ? x1 - a : x0 + a;
   const cy = place.haut ? y0 + b : Math.max(y0 + b, Math.min(place.pointe[1] - b * 0.35, y1 - b));
   const rect = [cx - a, cy - b, cx + a, cy + b];
-  return { cx, cy, a, b, rect, deborde: rect[2] > x1 + 1 || rect[3] > y1 + 1 || rect[1] < y0 - 1 };
+  return { cx, cy, a, b, rect, deborde: rect[2] > x1 + 1 || rect[3] > y1 + 1 || rect[1] < y0 - 1 || rect[0] < x0 - 1 };
 }
+// les places, puis les mêmes en lignes larges (essayées seulement si aucune place en lignes équilibrées n'est libre : une
+// longue consigne du calcul rapide, en quatre lignes, ne tenait qu'en couvrant l'ardoise ; en deux lignes, elle tient entre
+// l'ardoise et le pavé)
+// (500 px : deux lignes de 500 px tiennent entre l'ardoise et le pavé ; à 540, l'ovale, qui garde un cinquième de sa largeur
+// en hauteur, touchait le pavé ; en lignes larges, le texte est un peu plus petit, 26 px : app.css, .bulle.large)
+export const LIGNE_LARGE = 500;
+export const avecLarges = (places) => [...places, ...places.map((p) => ({ ...p, large: true }))];
 const aire = (r, o, m = 8) => Math.max(0, Math.min(r[2], o[2] + m) - Math.max(r[0], o[0] - m)) * Math.max(0, Math.min(r[3], o[3] + m) - Math.max(r[1], o[1] - m));
 // la première place sans obstacle (les obstacles : rectangles [gauche, haut, droite, bas]) ; sinon la première qui ne couvre
 // aucun obstacle dur et le moins d'obstacles souples ; sinon celle qui couvre le moins. `mesure(largeurMax)` donne la taille
 // du texte mis en page à cette largeur : [w, h]. `couvre` : l'aire des obstacles durs couverts ; `gene` : des souples.
+// (lot « Correctifs de la tablette », point 4 : `mesure(largeur, place)` ; une place `large` met le texte en lignes de
+// LIGNE_LARGE px au plus, au lieu des lignes équilibrées de 420 px : `avecLarges`)
 export function choisirPlace(obstacles, mesure, places = PLACES, souples = []) {
   let best = null;
   for (const place of places) {
-    const [w, h] = mesure(largeurMax(place.boite)), p = poser(place, w, h);
+    const [w, h] = mesure(largeurMax(place.boite), place), p = poser(place, w, h);
     const couvre = obstacles.reduce((s, o) => s + aire(p.rect, o), 0) + (p.deborde ? 1e6 : 0), gene = souples.reduce((s, o) => s + aire(p.rect, o, 0), 0);
-    const r = { place, w, h, ...p, couvre, gene, score: couvre * 1000 + gene };
+    // (lot « Correctifs de la tablette » : `touche`, ce qu'elle couvre vraiment, sans la marge de 8 px : la bulle ne s'efface que
+    // pour cela ; un frôlement de la marge, à la mesure près, l'effaçait sur les écrans de choix)
+    const touche = obstacles.some((o) => aire(p.rect, o, 0) > 1) || p.deborde;
+    const r = { place, w, h, ...p, couvre, gene, touche, score: couvre * 1000 + gene };
     if (!r.score) return r;
     if (!best || r.score < best.score) best = r;
   }
   return best;
+}
+// (lot « Correctifs de la tablette », choisir en deux touchers) LA BULLE D'UNE TUILE : au premier toucher d'une tuile, ce que
+// dit la mascotte s'écrit dans une bulle qui part d'un coin de la tuile. Huit places, deux par coin (au-dessus ou au-dessous,
+// à droite ou à gauche), d'abord du côté où l'écran a le plus de place ; la pointe vise le coin. `tuile` : [gauche, haut,
+// droite, bas] en px logiques.
+export function placesTuile([x0, y0, x1, y1]) {
+  // (la bulle se tient à 26 px de la tuile, la pointe vise 16 px à l'intérieur du coin : une pointe trop courte se tordait)
+  const m = 26, c = 40, k = 16, mx = (y0 + y1) / 2;
+  const coins = {
+    hd: { boite: [x1 - c, 8, 1272, y0 - m], pointe: [x1 - k, y0 + k] },
+    hg: { boite: [8, 8, x0 + c, y0 - m], pointe: [x0 + k, y0 + k], droite: true },
+    bd: { boite: [x1 - c, y1 + m, 1272, 792], pointe: [x1 - k, y1 - k], haut: true },
+    bg: { boite: [8, y1 + m, x0 + c, 792], pointe: [x0 + k, y1 - k], haut: true, droite: true },
+    dh: { boite: [x1 + m, 8, 1272, mx], pointe: [x1 - k, y0 + k] },
+    db: { boite: [x1 + m, mx, 1272, 792], pointe: [x1 - k, y1 - k], haut: true },
+    gh: { boite: [8, 8, x0 - m, mx], pointe: [x0 + k, y0 + k], droite: true },
+    gb: { boite: [8, mx, x0 - m, 792], pointe: [x0 + k, y1 - k], haut: true, droite: true },
+  };
+  const bas = mx < 400, droite = (x0 + x1) / 2 < 640;
+  const ordre = [bas ? (droite ? "bd" : "bg") : (droite ? "hd" : "hg"), bas ? (droite ? "bg" : "bd") : (droite ? "hg" : "hd"), droite ? (bas ? "db" : "dh") : (bas ? "gb" : "gh"), droite ? (bas ? "dh" : "db") : (bas ? "gh" : "gb"),
+    bas ? (droite ? "hd" : "hg") : (droite ? "bd" : "bg"), bas ? (droite ? "hg" : "hd") : (droite ? "bg" : "bd"), droite ? (bas ? "gb" : "gh") : (bas ? "db" : "dh"), droite ? (bas ? "gh" : "gb") : (bas ? "dh" : "db")];
+  // (une boîte trop étroite ou trop basse ferait une bulle en colonne : écartée, sauf s'il ne reste rien)
+  const toutes = ordre.map((k) => ({ nom: `tuile-${k}`, ...coins[k] })), assez = toutes.filter(({ boite: [a, b, c, d] }) => c - a >= 320 && d - b >= 100);
+  const base = assez.length ? assez : toutes;
+  // (relecture du lot : collée à son coin, la bulle cachait parfois toute une rangée de tuiles alors qu'il y avait de la place
+  // plus loin : les mêmes places, la bulle éloignée de 70 en 70 px, jusqu'à 210 px, essayées ensuite, la pointe s'allongeant jusqu'au coin)
+  const loin = base.flatMap((p) => [1, 2, 3].map((n) => {
+    const [a, b, c, d] = p.boite, dv = p.haut ? [0, 70 * n, 0, 0] : [0, 0, 0, -70 * n];
+    return { ...p, nom: p.nom, loin: n, boite: [a + dv[0], b + dv[1], c + dv[2], d + dv[3]] };
+  })).filter(({ boite: [a, b, c, d] }) => d - b >= 100);
+  return [...base, ...loin];
 }
 // le texte découpé en mots, les nombres à part (en rouge) ; les espaces insécables de la typographie française gardées
 // (un mot d'une lettre, « À », « à », « a », n'est jamais seul en fin de ligne : relecture du lot)
@@ -123,9 +168,13 @@ export class Bulle {
     document.fonts?.load?.(`600 ${POLICE.taille}px "Shantell Sans"`).catch(() => {});
   }
   clear() { this.timers.forEach(clearTimeout); this.timers = []; clearInterval(this.reveal); }
+  // (lot « Correctifs de la tablette ») la prochaine fois que la voix dit `texte`, la bulle part de la tuile : `places`
+  // (placesTuile) et `obstacles()` ({ durs, souples }) à elle ; `ancrer(null)` revient à la bulle de la mascotte
+  ancrer(a) { this.ancre = a; if (!a && this.mode) { this.mode = null; this.cacher(); } }
   // la voix commence un texte de `ms` millisecondes
   dire(texte, ms) {
     this.clear();
+    this.mode = this.ancre && this.ancre.texte === texte ? this.ancre : null; this.el.classList.toggle("tuile", !!this.mode);
     this.texte = texte; this.txt.textContent = "";
     this.words = mots(texte).map((parts, i) => {
       if (i) this.txt.append(" ");
@@ -134,7 +183,7 @@ export class Bulle {
       this.txt.append(s); return s;
     });
     this.layout();
-    if (this.place.couvre) { this.shown = false; this.el.classList.add("cachee"); return; } // nulle part sans couvrir une cible
+    if (this.place.touche) { this.shown = false; this.el.classList.add("cachee"); return; } // nulle part sans couvrir une cible
     this.el.classList.remove("cachee", "pop"); void this.el.offsetWidth; this.el.classList.add("pop");
     this.shown = true;
     // les mots apparaissent au rythme de la phrase (poids : la longueur de chaque mot)
@@ -173,12 +222,15 @@ export class Bulle {
     }
     this.grille = { gen: key, rects }; return rects;
   }
-  obstacles() { return { durs: [...obstacles(this.st.ui, this.st.k), ...this.dures()], souples: [...obstacles(this.st.ui, this.st.k, CARTE), ...this.dessins(), ...this.souplesEnPlus()] }; }
+  obstacles() {
+    if (this.mode?.obstacles) return this.mode.obstacles();
+    return { durs: [...obstacles(this.st.ui, this.st.k), ...this.dures()], souples: [...obstacles(this.st.ui, this.st.k, CARTE), ...this.dessins(), ...this.souplesEnPlus()] };
+  }
   layout() {
-    const cible = largeurEquilibree(this.mesure(4000)[0]), m = (w) => this.mesure(Math.min(w, cible));
+    const cible = largeurEquilibree(this.mesure(4000)[0]), m = (w, place) => { this.el.classList.toggle("large", !!place?.large); return this.mesure(Math.min(w, place?.large ? LIGNE_LARGE : cible)); };
     // (lot « Les leçons » : `places`, les places propres à un écran, la table d'addition : sous la tête, à gauche de la grille)
-    const { durs, souples } = this.obstacles(), p = choisirPlace(durs, m, this.places ?? PLACES, souples);
-    m(largeurMax(p.place.boite));
+    const { durs, souples } = this.obstacles(), p = choisirPlace(durs, m, avecLarges(this.mode?.places ?? this.places ?? PLACES), souples);
+    m(largeurMax(p.place.boite), p.place);
     Object.assign(this.txt.style, { left: `${(p.cx - p.w / 2).toFixed(1)}px`, top: `${(p.cy - p.h / 2).toFixed(1)}px` });
     const d = balloonPath(p.cx, p.cy, p.a, p.b, (Math.round(p.w) * 7 + Math.round(p.h)) % 13, p.place.pointe);
     this.paths.forEach((e) => e.setAttribute("d", d));
@@ -191,7 +243,7 @@ export class Bulle {
   verifier() {
     if (!this.shown || !this.place) return;
     const { durs, souples } = this.obstacles();
-    if (durs.some((o) => aire(this.place.rect, o) > 0)) { this.layout(); if (this.place.couvre) this.cacher(); return; }
+    if (durs.some((o) => aire(this.place.rect, o, 0) > 1)) { this.layout(); if (this.place.touche) this.cacher(); return; }
     if (this.place.gene || souples.some((o) => aire(this.place.rect, o, 0) > 0)) { const avant = this.place.place.nom; this.layout(); if (this.place.place.nom !== avant) { this.el.classList.remove("pop"); void this.el.offsetWidth; this.el.classList.add("pop"); } }
   }
   // pour les tests : où elle est, ce qu'elle dit, ce qu'elle couvre

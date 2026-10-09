@@ -4,7 +4,7 @@
 // montrée, le temps continue), premier record et ses 5 étoiles ; second défi avec un record à battre (le
 // drapeau). Vérifie la base (réponses `defi`, record, séance) et que chaque phrase dite a son fichier.
 // Captures dans tests/e2e/out/defi.
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
@@ -53,7 +53,7 @@ async function run(n, { record = null, answers = 12, wrongAt = 3 } = {}) {
   // (lot 3 bis, B6) la fin : le pavé rangé, les perles jusqu'au score, le grand drapeau du record, la phrase du résultat
   await page.waitForSelector(".defi-drapeau", { timeout: 15000 }).catch(() => {}); await page.waitForTimeout(600); await shot("5b-drapeau");
   const fin = await page.evaluate(() => ({ drapeau: !!document.querySelector(".defi-drapeau"), pave: [...document.querySelectorAll(".key")].some((k) => getComputedStyle(k).visibility !== "hidden"), ardoise: getComputedStyle(document.querySelector(".slate")).visibility }));
-  check(fin.drapeau && !fin.pave && fin.ardoise === "hidden", "fin du défi : pavé et ardoise rangés, le drapeau du record planté");
+  check(fin.drapeau && !fin.pave && fin.ardoise === "hidden", `fin du défi : pavé et ardoise rangés, le drapeau du record planté (${JSON.stringify(fin)})`);
   await page.waitForSelector(".tally", { timeout: 60000 }); await page.waitForTimeout(600); await shot("6-recompense");
   const db = await page.evaluate(async () => { const s = window.__app.store; return { se: (await s.all("seances")).at(-1), rep: await s.all("reponses"), rec: await s.get("recompenses", "defi") }; });
   const rep = db.rep.filter((r) => r.defi && r.seance === db.se.id);

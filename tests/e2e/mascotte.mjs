@@ -10,7 +10,7 @@
 //   - le journal des raccords de la mascotte : combien de fondus forcés ;
 //   - aucune erreur dans la page.
 //   node tests/e2e/mascotte.mjs [--out dossier] [--seul 1280|1920]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium, voixPermise } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
@@ -110,7 +110,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   await page.tap(".session-home", { force: true }); await page.waitForTimeout(800);
   e = await shot("17-pause");
   check(e.m.suspendue && !e.m.parle && !e.b.visible && e.m.ambiance === "pause", `${W} pause : la mascotte se tait et attend, plus de bulle`);
-  await page.tap(".speaker", { force: true }); check(await bulle(/pause/), `${W} pause : « réécouter » écrit la phrase de la pause`);
+  await page.tap(".mascotte-tap", { force: true }); check(await bulle(/pause/), `${W} pause : « réécouter » écrit la phrase de la pause`);
   await page.waitForTimeout(800); await shot("18-pause-reecouter");
   await page.waitForTimeout(4000); await page.tap(".bubble.play", { force: true });
   check(await bulle(/On continue/), `${W} reprise : « On continue ! » et la consigne`);
@@ -118,6 +118,8 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   check(!e.m.suspendue, `${W} reprise : la mascotte reprend`);
 
   // ---- 5. la flèche : « sauter » (sur la tortue), « placer » (sur le poisson, jamais sur la réponse)
+  // (« sauter » imposé au niveau 3, qui n'a pas ce format dans l'application : ses consignes, de 0 à 20, ne sont pas fabriquées)
+  voixPermise(/^La tortue (part de|est sur) \d+/, /^Elle fait \d+ sauts\./);
   await go(`&choix=1:3&format=sauter${ROW}`); await page.tap(".play", { force: true });
   check(await until(() => window.__app.fleche.visible, null, 60000), `${W} sauter : la flèche`); await page.waitForTimeout(700); await shot("20-fleche-sauter");
   await go(`&choix=1:2&format=placer${ROW}`); await page.tap(".play", { force: true });
@@ -128,11 +130,11 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   await go(`&choix=2:3&cran=facile&sans=echauffement,defi&sansLecon&guides=0`); await page.tap(".play", { force: true });
   await pave(); await page.locator(".nsp").filter({ visible: true }).first().tap({ force: true }).catch(() => {});
   await bulle(/./); await page.waitForTimeout(900); await shot("22-additions-correction");
-  await pave(); await page.tap(".speaker", { force: true }); await bulle(/./); await page.waitForTimeout(900); await shot("23-additions-consigne");
+  await pave(); await page.tap(".mascotte-tap", { force: true }); await bulle(/./); await page.waitForTimeout(900); await shot("23-additions-consigne");
   await go(`&choix=3:2&cran=conseille&sans=echauffement,defi&sansLecon`); await page.tap(".play", { force: true });
-  await pave(); await page.tap(".speaker", { force: true }); await bulle(/./); await page.waitForTimeout(700); await shot("24-calcul");
+  await pave(); await page.tap(".mascotte-tap", { force: true }); await bulle(/./); await page.waitForTimeout(700); await shot("24-calcul");
   await go(`&cran=conseille&sans=notion,defi`); await page.tap(".play", { force: true });
-  await pave(); await page.tap(".speaker", { force: true }); await bulle(/./); await page.waitForTimeout(700); await shot("25-echauffement");
+  await pave(); await page.tap(".mascotte-tap", { force: true }); await bulle(/./); await page.waitForTimeout(700); await shot("25-echauffement");
 
   // ---- 7. la dictée (niveau 12) : la correction montre le nombre décomposé, la flèche au-dessus
   await go(`&choix=1:12&cran=facile${ROW}`); await page.tap(".play", { force: true });
@@ -143,7 +145,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   // ---- 8. « choisir » : la bulle ne se pose jamais sur les tuiles
   await go(""); await page.tap(".bubble.choisir", { force: true }); await page.waitForSelector(".choix-ex", { timeout: 15000 });
   await bulle(/./); await page.waitForTimeout(800); await shot("30-choisir-exercices");
-  await page.tap(".choix-ex >> nth=0", { force: true }); await page.waitForSelector(".choix-tuile", { timeout: 15000 });
+  await page.tap(".choix-ex >> nth=0", { force: true }); await page.waitForTimeout(450); await page.tap(".choix-ex >> nth=0", { force: true }); await page.waitForSelector(".choix-tuile", { timeout: 15000 });
   await bulle(/./); await page.waitForTimeout(900); await shot("31-choisir-niveaux");
 
   // ---- 9. les leçons : la flèche à la place du bras de la pieuvre

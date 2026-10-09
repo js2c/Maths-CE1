@@ -10,7 +10,8 @@
 //  - la voix ne peut démarrer qu'après un premier toucher (règle des navigateurs) : `unlock()` est
 //    appelé dans ce premier toucher ;
 //  - `replay()` redit la dernière consigne (bouton « réécouter », donc le même fichier) et compte les écoutes ;
-//  - `misses` : les phrases dites sans fichier (vérifiées par les tests de parcours) ;
+//  - `misses` : les phrases dites sans fichier (vérifiées par les tests de parcours ; lot « Correctifs de la tablette » :
+//    chacune est aussi signalée à `__voixManquee`, posé par le navigateur des parcours, tests/e2e/navigateur.mjs) ;
 //  - `pause()` / `resume()` (bouton « maison ») : la phrase en cours s'arrête, ce qui suit attend ; à la
 //    reprise, la phrase interrompue est redite depuis son début ; `abandon()` : tout ce qui était prévu est
 //    oublié sans jamais se terminer (l'activité quittée reste figée, voir engine/clock.js) ;
@@ -56,9 +57,10 @@ export class Voice {
   speakNow(text, { instruction = false } = {}) {
     const parts = this.plan(text), talk = { text, instruction };
     if (parts) return this.playFiles(parts, talk);
-    if (this.index) for (const s of sentences(text)) if (!this.index[s]) this.misses.add(s);
+    if (this.index) for (const s of sentences(text)) if (!this.index[s]) this.miss(s);
     return this.speakSynth(text, talk);
   }
+  miss(s) { this.misses.add(s); try { globalThis.__voixManquee?.(s)?.catch?.(() => {}); } catch { /* (hors des tests) */ } }
   // (lot « Mascotte ») un texte commence (ou recommence après une pause) ; il s'arrête
   talk(t) { if (!t) return; this.talking = t; try { this.onTalk?.(t.text, t.ms, { instruction: t.instruction }); } catch (e) { console.warn(e); } }
   quiet(t) { if (!this.talking || (t && this.talking !== t)) return; this.talking = null; try { this.onSilence?.(); } catch (e) { console.warn(e); } }
@@ -83,7 +85,7 @@ export class Voice {
         timer = setTimeout(go, p.ms + 1500); // secours : `ended` n'est pas arrivé
         audio.onended = go;
         // fichier illisible (absent du cache, format refusé) : cette phrase est lue par la synthèse
-        audio.onerror = () => { if (over) return; over = true; clearTimeout(timer); this.misses.add(p.s); this.speakSynth(p.s, null).then(() => { if (done) return; this.cur = me; this.speaking = true; timer = setTimeout(next, GAP_MS); }); };
+        audio.onerror = () => { if (over) return; over = true; clearTimeout(timer); this.miss(p.s); this.speakSynth(p.s, null).then(() => { if (done) return; this.cur = me; this.speaking = true; timer = setTimeout(next, GAP_MS); }); };
         this.files++;
         audio.play().catch(() => {}); // lecture refusée (pas encore de toucher) : le délai de secours fait avancer
       };

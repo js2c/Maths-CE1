@@ -78,7 +78,9 @@ export async function reward(app, { session, hud }) {
   tally.classList.add("pop");
   ocean.mascotte.play("rejouir", { fort: true }); // (lot « Mascotte » : la grande joie de la fin de séance)
   // (lot 3 bis, R21 : jamais « tu as gagné 0 étoiles » : une séance sans étoile est saluée sans nombre)
-  const said = voice.say(earned ? fill(text.pick("recompense"), { etoiles: phrase(earned) }) : text.data.recompenseZero);
+  // (lot « Correctifs de la tablette », point 5 : au-delà de `bilanDitMax` étoiles, le nombre n'a pas de phrase fabriquée et
+  // passait par la synthèse du navigateur, une autre voix : une phrase sans nombre, le nombre reste écrit)
+  const said = voice.say(!earned ? text.data.recompenseZero : earned > (E.bilanDitMax ?? 60) ? text.data.recompenseBeaucoup : fill(text.pick("recompense"), { etoiles: phrase(earned) }));
   for (let i = 1; i <= 20 && shown < earned; i++) { shown = Math.round((earned * i) / 20); tally.repaint(); await wait(60); }
   shown = earned; tally.repaint();
   await said;

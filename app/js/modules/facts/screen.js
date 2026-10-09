@@ -28,12 +28,28 @@ export class FactsScreen {
     // une touche : la bulle-réponse réduite (jamais agrandie) et son chiffre encré
     const key = (x, y, label, paint) => { const b = spriteBox(app, { x: x - KEY / 2, y: y - KEY / 2, w: KEY, h: KEY, cls: "bubble key", label, paint }); b.dataset.key = label; this.els.push(b); return b; };
     const small = (name, k) => (ctx, px) => { const q = sprites.frame(name, 0); ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (KEY / 2) * px + q.dx * k, (KEY / 2) * px + q.dy * k, q.w * k, q.h * k); return px; };
+    const digits = [];
     for (let d = 0; d <= 9; d++) {
       const b = key(COLS[d % 5], ROWS[Math.floor(d / 5)], String(d), (ctx, px) => { small("reponse", 0.9)(ctx, px); ctx.setTransform(px, 0, 0, px, 0, 0); R.drawNumber(ctx, String(d), KEY / 2, KEY / 2 - 25, 50, { w: 7, seed: 900 + d }); });
-      onTap(b, () => this.type(String(d), b));
+      onTap(b, () => this.type(String(d), b)); digits.push(b);
     }
-    const del = key(SIDE, ROWS[0], "effacer", small("effacer", 0.8)); onBrief(app, del, () => { if (!this.typed || !this.tap("effacer")) return; pop(del); this.typed = this.typed.slice(0, -1); this.slate.repaint(); this.onTyped?.(this.typed); }, "effacer", { first: true });
-    const ok = key(SIDE, ROWS[1], "valider", small("valider", 0.7)); ok.classList.add("check"); onBrief(app, ok, () => { if (!this.typed || !this.tap("valider")) return; pop(ok); this.submit(); }, "valider", { first: true });
+    const del = key(SIDE, ROWS[0], "effacer", small("effacer", 0.8)), erase = () => { if (!this.typed || !this.tap("effacer")) return; pop(del); this.typed = this.typed.slice(0, -1); this.slate.repaint(); this.onTyped?.(this.typed); };
+    onBrief(app, del, erase, "effacer", { first: true });
+    const ok = key(SIDE, ROWS[1], "valider", small("valider", 0.7)), validate = () => { if (!this.typed || !this.tap("valider")) return; pop(ok); this.submit(); };
+    ok.classList.add("check"); onBrief(app, ok, validate, "valider", { first: true });
+    // (lot « Correctifs de la tablette », point 6) LE CLAVIER DE L'ORDINATEUR fait comme le pavé : les chiffres (pavé
+    // numérique compris), « Retour arrière » efface, « Entrée » vaut la coche. Seulement quand le pavé est à l'écran (ni en
+    // pause, ni pendant une visite, ni dans l'espace parent, qui a son propre clavier) ; mêmes règles que le toucher
+    // (la porte du pavé : rien pendant un retour). Rien ne change sur la tablette.
+    this.onKey = (e) => {
+      if (e.ctrlKey || e.metaKey || e.altKey || e.repeat || app.parent?.root?.isConnected) return;
+      const k = /^[0-9]$/.test(e.key) ? e.key : /^Numpad[0-9]$/.test(e.code) ? e.code.slice(6) : e.key === "Backspace" ? "effacer" : e.key === "Enter" ? "valider" : null;
+      const b = k === "effacer" ? del : k === "valider" ? ok : k ? digits[Number(k)] : null;
+      if (!b || !(b.checkVisibility ? b.checkVisibility({ visibilityProperty: true }) : getComputedStyle(b).visibility === "visible") || b.closest(".stash")) return;
+      e.preventDefault();
+      if (k === "effacer") erase(); else if (k === "valider") validate(); else this.type(k, b);
+    };
+    addEventListener("keydown", this.onKey);
     // (lot 3 ter, T3 : le pavé répond toujours au premier contact ; « effacer » et la coche montrent en plus leur étiquette à
     // l'appui long ; « je ne sais pas » et le coquillage d'aide valident au lever du doigt)
     // « je ne sais pas » (lot 1 bis) : compte comme une erreur (code NSP), montre la réponse, le fait revient
@@ -43,7 +59,10 @@ export class FactsScreen {
     onBrief(app, this.help, () => this.showHelp(), "aide");
     this.show(false);
   }
-  show(v) { for (const e of [this.slate, this.help, this.nsp, ...this.els]) e.style.visibility = v ? "visible" : "hidden"; }
+  // (lot « Correctifs de la tablette », point 4 : l'ardoise n'apparaît qu'avec un calcul à montrer ; avant, elle restait vide
+  // pendant les phrases d'annonce (« Maintenant, le calcul rapide ! », l'échauffement, le défi), derrière la bulle)
+  show(v) { for (const e of [this.help, this.nsp, ...this.els]) e.style.visibility = v ? "visible" : "hidden"; this.showSlate(v); }
+  showSlate(v = true) { this.slate.style.visibility = v && (this.q || this.slateQ) ? "visible" : "hidden"; }
   keys(v) { for (const e of [this.help, this.nsp, ...this.els]) e.style.visibility = v ? "visible" : "hidden"; }
   // l'ardoise : « a + b = » puis la case réponse (« ? » rouge, les chiffres tapés, ou la correction) ; formes à
   // trou (lot 2) : « a + ? = n » ou « ? + b = n », la case à la place du nombre qui manque
@@ -84,7 +103,7 @@ export class FactsScreen {
     const { voice } = this.app;
     this.q = q; this.typed = ""; this.ring = false; this.aide = false; this.locked = false; this.app.starFrom = SLATE; this.gate.open();
     this.help.style.visibility = q.base || q.cheminMode === "non" || q.image === "non" || q.pont ? "hidden" : "visible"; // pas d'aide pour « 4 + 0 » (lot 3 : ni sans chemin)
-    this.slate.repaint(); pop(this.slate);
+    this.slate.repaint(); this.showSlate(); pop(this.slate);
     // lot 2, étape 6 : un exemple guidé (l'appui visuel montre la réponse, on peut le passer), ou l'aide
     // affichée d'emblée (cran « plus facile » en notion du jour)
     const p = new Promise((res) => { this.resolve = res; });
@@ -118,7 +137,7 @@ export class FactsScreen {
   askDefi(q, { apresErreurMs = 900 } = {}) {
     this.defi = { apresErreurMs }; this.q = q; this.typed = ""; this.ring = false; this.aide = false; this.locked = false; this.app.starFrom = SLATE; this.gate.open();
     this.help.style.visibility = "hidden";
-    this.slate.repaint(); pop(this.slate); this.t0 = clock.now();
+    this.slate.repaint(); this.showSlate(); pop(this.slate); this.t0 = clock.now();
     return new Promise((res) => { this.resolve = res; });
   }
   // la minute est finie : la question en cours est abandonnée

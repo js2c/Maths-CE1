@@ -11,7 +11,7 @@
 import * as R from "../../art/runtime.js";
 import { fill } from "../numberline/screen.js";
 import { wait } from "../../engine/clock.js";
-import { skipKey } from "../../engine/ui.js";
+import { pop, skipKey } from "../../engine/ui.js";
 import { answerOf, classifyCalc } from "./calc.js";
 import { WallFish } from "./wallfish.js";
 
@@ -34,7 +34,9 @@ export class CalcScreen {
   get board() { return this.app.aidBoard; }
   consigne(q) {
     const T = this.app.text.data;
-    if (q.pont) return fill(q.op === "-" ? T.calcPont.moins : T.calcPont.plus, { k: q.b }).replace(/\.$/, " ?");
+    // (lot « Correctifs de la tablette », point 5 : « Plus 10 ? », composé ici, n'était pas dans l'inventaire de la voix et
+    // passait par la synthèse du navigateur ; c'est la phrase du pont, « Plus 10. », qui existe déjà)
+    if (q.pont) return fill(q.op === "-" ? T.calcPont.moins : T.calcPont.plus, { k: q.b });
     if (q.forme === "trouDroite") return fill(q.op === "-" ? T.calcTrouMoins : T.calcTrouPlus, { a: q.a, n: q.n });
     // (lot 3 bis : le trou sur le nombre de départ, « Combien plus 10 ? Ça fait 57. »)
     if (q.forme === "trouGauche") return fill(q.op === "-" ? T.calcTrouDepartMoins : T.calcTrouDepartPlus, { b: q.b, n: q.n });
@@ -88,10 +90,12 @@ export class CalcScreen {
   // un calcul guidé : le chemin en petit, chaque caillou à remplir au pavé (« Plus 2 ? »), le suivant quand il est trouvé
   async guided(q) {
     const fs = this.fs, { voice, text } = this.app, t0 = performance.now();
+    // (lot 3 bis, B4 ; R8) l'ardoise garde le calcul demandé (« 36 + 6 = ? ») ; chaque étape s'écrit sur son caillou
+    // (lot « Correctifs de la tablette », point 4 : le calcul est écrit sur l'ardoise dès la consigne ; elle était vide, ou
+    // montrait encore la question précédente, pendant « 21 plus 16 ? Suis le chemin… »)
+    fs.q = q; fs.slateQ = q; fs.typed = ""; fs.ring = false; fs.slate.repaint(); fs.showSlate(); pop(fs.slate);
     voice.stop(); await voice.say(`${this.consigne({ ...q, remplir: false })} ${text.data.calcGuide}`);
     let allOk = true, aide = false;
-    // (lot 3 bis, B4 ; R8) l'ardoise garde le calcul demandé (« 36 + 6 = ? ») ; chaque étape s'écrit sur son caillou
-    fs.slateQ = q;
     try {
       for (let i = 0; i < q.chemin.length; i++) {
         const s = q.chemin[i], step = { module: 3, pont: true, a: s.de, op: s.op, b: s.k, n: s.a, forme: "directe", niveau: q.niveau, parent: q, i };
@@ -205,7 +209,7 @@ export class CalcScreen {
     const talk = voice.say(phrase);
     await this.fish.swim(...R.wallCell(CALC_WALL, 45), 1400);
     await talk; await wait(300);
-    this.fishDone(); this.board.clear(); fs.slate.style.visibility = "visible";
+    this.fishDone(); this.board.clear(); fs.showSlate();
   }
   fishDone() { if (this.fish) { this.fish.remove(); this.fish = null; } }
   leave() { this.fishDone(); this.board?.clear(); this.facts().leave(); }

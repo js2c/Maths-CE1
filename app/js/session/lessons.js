@@ -4,8 +4,9 @@
 //    pictogramme plat de l'exercice à gauche (il ne réagit pas au toucher), puis une tuile par leçon : le numéro de la leçon
 //    en grand et la vignette du moment clé (planche « lecons », chargée le temps du menu) ; une leçon déjà vue porte la
 //    petite étoile. Dernière rangée : les tables à consulter (la table d'addition ; la table de multiplication viendra à sa
-//    droite). Un toucher bref dit le nom et lance (comme « choisir ») ; un appui long montre l'étiquette ; le petit livre
+//    droite). Un toucher bref sélectionne, un second lance (comme « choisir ») ; un appui long montre l'étiquette ; le petit livre
 //    ouvre la légende du parent. Renvoie { lecon } | { table } | null (quitté par la maison : `app.lessonsCancel`).
+//    (Lot « Correctifs de la tablette » : en deux touchers, comme « choisir » : session/selection.js.)
 //  - `lessonEnd` : la fin d'une leçon du menu, regardée ou passée : la bulle « À toi ! » (la tuile du niveau associé dedans,
 //    planche « lecons-atoi ») et la grande maison. Renvoie "atoi" ou "maison" ; rien ne se lance sans toucher.
 //  - `additionTable` : la table d'addition (de 0 + 0 à max + max). La grille est dessinée une fois (runtime.js,
@@ -17,6 +18,7 @@ import * as R from "../art/runtime.js";
 import { onBrief, onTap, pop, spriteBox } from "../engine/ui.js";
 import { MENTON } from "../engine/bulle.js";
 import { closeLegend, legendKey } from "./legend.js";
+import { deuxTouchers } from "./selection.js";
 import { paintDoublePlus, paintHouse, paintTenFrame, paintTwoFrames } from "../modules/facts/aids.js";
 import { paintRows } from "../modules/mult/screen.js";
 
@@ -53,8 +55,9 @@ export async function lessonsMenu(app, o) {
   await sprites.load("lecons");
   const sts = await Promise.all([1, 2, 3, 5].map((k) => o.store.get("niveaux", k)));
   const seen = new Set(sts.flatMap((st) => st?.lecons ?? []));
-  const els = [], clear = () => { closeLegend(app); els.forEach((e) => e.remove()); els.length = 0; sprites.unload("lecons"); app.lessonsCancel = null; };
+  const els = [], clear = () => { closeLegend(app); els.forEach((e) => e.remove()); els.length = 0; sprites.unload("lecons"); app.lessonsCancel = null; app.bulle?.ancrer(null); };
   let sel = null;
+  const tuiles = [], quoi = new Map(), noms = new Map();
   const result = new Promise((res) => {
     app.lessonsCancel = () => res(null);
     const { w: W, h: H } = MENU.tile;
@@ -69,17 +72,18 @@ export async function lessonsMenu(app, o) {
       const valide = it.kind === "lecon" && seen.has(it.id);
       const b = spriteBox(app, { x: it.x - W / 2, y: it.y - H / 2, w: W, h: H, cls: "bubble lecons-tuile", label: key, paint: (ctx, px) => {
         sprites.draw(ctx, sprite, 0, W / 2, H / 2);
-        if (sel === key) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawTileRing(ctx, W / 2, H / 2, W - 12, H - 12); ctx.setTransform(1, 0, 0, 1, 0, 0); }
+        if (sel === key) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawSelectTile(ctx, W / 2, H / 2, W - 12, H - 12); ctx.setTransform(1, 0, 0, 1, 0, 0); }
         if (valide) { const q = sprites.frame("etoile.doree", 0), k = 0.42; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (W - 24) * px + q.dx * k, 24 * px + q.dy * k, q.w * k, q.h * k); }
       } });
       b.dataset.key = key; if (valide) b.dataset.valide = "1"; els.push(b);
-      const name = it.kind === "lecon" ? text.data.choixLeconNom?.[it.id] ?? it.id : it.id === "multiplication" ? text.data.choixTableMult : text.data.choixTable;
-      // (comme « choisir », validation « simple » : le toucher dit le nom et lance ; le nom est dit jusqu'au bout)
-      onBrief(app, b, () => {
-        if (sel) return; sel = key; b.repaint(); pop(b); voice.stop(); voice.say(name);
-        setTimeout(() => res(it.kind === "lecon" ? { lecon: it.id } : { table: it.id }), 300);
-      }, () => tileLabel(app.legendes, it.kind === "lecon" ? it.id : TABLE_SIGNE[it.id]));
+      // (lot « Correctifs de la tablette » : comme « choisir », en deux touchers, session/selection.js : le premier dit le nom et
+      // une courte description, le second lance)
+      const D = text.data.choixDescription ?? {}, name = it.kind === "lecon" ? text.data.choixLeconNom?.[it.id] ?? it.id : it.id === "multiplication" ? text.data.choixTableMult : text.data.choixTable;
+      noms.set(key, [name, it.kind === "lecon" ? D.lecons?.[it.id] : D.tables?.[it.id]].filter(Boolean).join(" "));
+      quoi.set(key, it.kind === "lecon" ? { lecon: it.id } : { table: it.id }); tuiles.push(b);
+      b.__etiquette = tileLabel(app.legendes, it.kind === "lecon" ? it.id : TABLE_SIGNE[it.id]);
     }
+    deuxTouchers(app, { tuiles, texte: (k) => noms.get(k), etiquette: (k) => tuiles.find((t) => t.dataset.key === k)?.__etiquette ?? null, peindre: (k) => { sel = k; } }).then((k) => res(quoi.get(k)));
     // la légende du parent (le petit livre) : une ligne par leçon, et une pour la table d'addition
     legendKey(app, "lecons", { keys: [...menu.rangees.flatMap((r) => r.lecons), ...menu.tables.map((t) => TABLE_SIGNE[t]).filter(Boolean)], els });
     voice.say(text.data.choixLecon, { instruction: true });

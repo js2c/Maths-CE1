@@ -2,12 +2,12 @@
 
 Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 à 3 ter (ce qui a été fait, décisions prises en cours de route, recettes) est dans `docs/archives/AVANCEMENT-lots-1-a-3ter.md`.
 
-## Où en est-on (8 octobre 2026)
+## Où en est-on (9 octobre 2026)
 
 - **En ligne** (https://js2c.github.io/Maths-CE1/) : lots 1, 1 bis, 2, 3, 3 bis, 3 ter et « Lagon en fond d'exercices », tous fusionnés (dernière demande de fusion : PR #30, le lagon).
 - **Ce que fait l'application** : `docs/SPEC.md` (spécification unique ; ce qui reste à construire y est marqué « à construire », section 13).
 - **Prochains lots** : les lots de `docs/LOTS.md` sont tous faits (le bloc « Sommes jusqu'à 30 » et « Multiplication », PR #42, attend sa fusion) ; la suite est à décider par le parent (`docs/IDEES.md`) ; le relecteur des lots 3 bis et 3 ter est abandonné.
-- **En attente du parent** : la fabrication des phrases des lots « Mascotte » (6), « Les voiliers » (835), « Correctifs » (8), « Les leçons » (126), « Sommes jusqu'à 30 » (384) et « Multiplication » (561), puis la publication et l'essai sur la tablette ; la relecture des choix faits sans lui au bloc « Sommes jusqu'à 30 » et « Multiplication » (PR #42, section « Choix faits sans le parent ») ; le lot « Correctifs » (PR #39) attend aussi sa fusion et une réponse sur la mascotte (11.1).
+- **En attente du parent** : la fabrication des phrases des lots « Mascotte » (6), « Les voiliers » (835), « Correctifs » (8), « Les leçons » (126), « Sommes jusqu'à 30 » (384) et « Multiplication » (561), puis la publication et l'essai sur la tablette ; la relecture des choix faits sans lui au bloc « Sommes jusqu'à 30 » et « Multiplication » (PR #42, section « Choix faits sans le parent ») ; le lot « Correctifs » (PR #39) attend aussi sa fusion et une réponse sur la mascotte (11.1) ; le lot « Correctifs de la tablette » (PR #46) attend la fabrication de ses 282 phrases, sa fusion, l'essai sur la tablette et la relecture de ses « Choix faits sans le parent ».
 - **Projet parallèle** : la refonte graphique (hors de ce fichier).
 
 ## Lots
@@ -26,6 +26,7 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 | Correctifs | Les décisions du parent sur la confrontation de la spécification avec le code (`docs/ECARTS-SPEC.md`) : 7 correctifs, spécification réécrite | fait (PR #39) |
 | Les leçons | La bulle des leçons, le menu, « À toi ! », la table d'addition ; recette finie à l'étape 0 du bloc suivant (durées, relecture indépendante) | fait (PR #40, recette dans la PR #42) |
 | Sommes jusqu'à 30 et Multiplication | Familles d'additions 8 à 13, leçons L11 et L12 ; cinquième exercice (multiplication, 9 niveaux, tables de 2, 3, 4, 5 et 10), leçons L13 et L14, table de multiplication ; fait d'un seul bloc, sans arrêt pour validation | fait (PR #42) ; 945 phrases à fabriquer |
+| Correctifs de la tablette | Écran de démarrage (logo, barre de chargement, toucher qui autorise la voix), bienvenue au lancement ; choisir en deux touchers ; toucher la mascotte pour réécouter ; clavier de l'ordinateur ; ardoise jamais vide ; plus de phrase dite par l'ancienne voix (contrôle dans tous les parcours) ; fins de ligne sous Windows | fait (PR #46) ; 282 phrases à fabriquer |
 
 ## Reprise
 

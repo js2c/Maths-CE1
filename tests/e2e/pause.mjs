@@ -7,7 +7,7 @@
 // est interrompue (raison notée, étoiles gardées) et l'exercice choisi devient la séance du jour, sans refaire
 // l'échauffement déjà passé. Captures dans tests/e2e/out/pause.
 //   node tests/e2e/pause.mjs [--seul ligne] [--out dossier]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
@@ -136,7 +136,7 @@ if (!ONLY || ONLY === "choisir") {
   // 2. une leçon seule depuis la pause : jouée, puis retour à l'accueil en pause, la séance intacte
   // (lot « Les leçons » : par la bulle « les leçons » de l'accueil en pause)
   await tap(page, ".keep.leconskey", 900); await page.waitForSelector(".lecons-tuile", { timeout: 20000 });
-  await tap(page, '.lecons-tuile[data-key="L2"]', 300); await page.waitForSelector(".lessonkey", { timeout: 20000 }); await page.waitForTimeout(2500);
+  await tap(page, '.lecons-tuile[data-key="L2"]', 450); await tap(page, '.lecons-tuile[data-key="L2"]', 300); await page.waitForSelector(".lessonkey", { timeout: 20000 }); await page.waitForTimeout(2500);
   await page.screenshot({ path: join(OUT, "8-lecon-en-pause.png") });
   await tap(page, ".skip.lessonkey", 300); await page.waitForSelector(".keep.play", { timeout: 20000 }); await page.waitForTimeout(500);
   s1 = await state(page); diff = Object.keys(s0).filter((k) => s0[k] !== s1[k]);
@@ -144,7 +144,7 @@ if (!ONLY || ONLY === "choisir") {
   check(!diff.length, `une leçon jouée depuis la pause : retour à l'accueil en pause, séance intacte (${diff.map((k) => `${k} : ${s0[k]} -> ${s1[k]}`).join(" ; ")})`);
   check(L?.lecons?.[0]?.id === "L2" && L.pendantPause === old.id, "la leçon seule est notée (séance « libre », pendant la pause)");
   // 3. un autre exercice : la séance en pause est interrompue, l'exercice choisi est la séance du jour
-  await tap(page, ".keep.choisir", 900); await tap(page, '.choix-ex[aria-label="calcul"]', 900); await tap(page, '.choix-tuile[data-key="2"]', 300);
+  await tap(page, ".keep.choisir", 900); await tap(page, '.choix-ex[aria-label="calcul"]', 450); await tap(page, '.choix-ex[aria-label="calcul"]', 900); await tap(page, '.choix-tuile[data-key="2"]', 450); await tap(page, '.choix-tuile[data-key="2"]', 300);
   await page.waitForFunction((id) => window.__app.session?.id !== id && window.__app.session?.rec?.choix, old.id, { timeout: 30000 });
   await page.waitForFunction(() => window.__app.session.progress.etape === "notion", null, { timeout: 60000 }); await page.waitForTimeout(800);
   await page.screenshot({ path: join(OUT, "9-autre-exercice.png") });

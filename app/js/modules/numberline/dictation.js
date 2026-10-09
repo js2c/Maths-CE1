@@ -37,6 +37,9 @@ export class Dictation {
   async ask(q, cfg, { guide = false, lesson = null } = {}) {
     const { voice, text, sound, ocean } = this.app, k = this.app.vitesse ?? 1;
     this.fs = this.facts(); this.fs.show(true); this.fs.keys(false); this.app.starFrom = [790, 222];
+    // (lot « Correctifs de la tablette » : l'ardoise de la dictée, « ? », est là dès le début de la question, et pendant l'exemple
+    // guidé ; sans question posée, elle était vide, puis cachée)
+    this.fs.q = { ...q, dictee: true }; this.fs.typed = ""; this.fs.ring = false; this.fs.slate.repaint(); this.fs.showSlate();
     const n = q.answer, consigne = text.pick("ecrire", { n });
     // l'exemple guidé : on montre d'abord, on peut passer
     if (guide && !lesson) {

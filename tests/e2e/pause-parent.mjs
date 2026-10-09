@@ -4,7 +4,7 @@
 // sans récompense), la scène est rangée (bernard-l'ermite compris) et l'application revient à l'accueil, où une
 // nouvelle séance peut commencer. Hors pause, le bouton n'existe pas. Captures dans tests/e2e/out/pause-parent.
 //   node tests/e2e/pause-parent.mjs [--out dossier]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";

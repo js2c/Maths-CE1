@@ -8,7 +8,7 @@
 // d'un démarrage à neuf du même exercice (même page, sans rien quitter avant) : aucune aide, aucun chemin, aucun tableau,
 // aucun chiffre d'avant, pas de « passer » ni de poisson du mur qui traîne.
 //   node tests/e2e/etat-quitte.mjs [--seul additions] [--vers calcul] [--parallele 3]
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
@@ -87,7 +87,7 @@ const signature = (page) => page.evaluate(() => {
 async function launch(page, to) {
   const T = EX[to], old = await page.evaluate(() => window.__app.session?.id ?? null);
   if (process.env.TRACE) await page.evaluate(() => { window.__leaves = []; const f = window.__app.facts; if (f) { const o = f.leave.bind(f); f.leave = () => { window.__leaves.push(new Error().stack); o(); }; } });
-  await tap(page, `.choix-ex[aria-label="${T.ex}"]`, 700); await tap(page, `.choix-tuile[data-key="${T.key}"]`, 300);
+  await tap(page, `.choix-ex[aria-label="${T.ex}"]`, 450); await tap(page, `.choix-ex[aria-label="${T.ex}"]`, 700); await tap(page, `.choix-tuile[data-key="${T.key}"]`, 450); await tap(page, `.choix-tuile[data-key="${T.key}"]`, 300);
   // (la question de la NOUVELLE séance : pendant que l'ancienne s'arrête, sa question est encore là)
   await page.waitForFunction(`window.__app.session && window.__app.session.id !== ${JSON.stringify(old)} && ${T.ready}`, null, { timeout: 90000 }); await page.waitForTimeout(300);
   if (to !== "ligne") await pad(page, "1");

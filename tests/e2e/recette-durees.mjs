@@ -4,7 +4,7 @@
 // (lot 3 ter, T3 : « passer » et « je ne sais pas » valident au lever du doigt : chaque toucher simulé pose puis lève le doigt)
 // facile ») ; pour chaque parcours, la plus longue attente SANS AUCUNE COMMANDE (ni « passer », ni question
 // ouverte, ni bouton de leçon) : en tout, et hors voix (la voix parle : consigne, bravo, correction dite).
-import { chromium } from "../../art/node_modules/playwright-core/index.mjs";
+import { chromium } from "./navigateur.mjs";
 import { serve } from "../serve.mjs";
 const PASSER = process.argv.includes("--passer"); // l'enfant touche « passer » dès qu'il apparaît
 // (bloc « Sommes jusqu'à 30 » et « Multiplication ») --bloc : seulement les familles 8 à 12, leurs appuis et la multiplication

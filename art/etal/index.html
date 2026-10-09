@@ -15,16 +15,46 @@ html,body{margin:0;height:100%;background:var(--fond);overflow:hidden;touch-acti
 #decor,#effets{width:1280px;height:800px}
 #effets{pointer-events:none}
 #capt{left:25.6px!important;top:170px!important;width:198px;height:264px;clip-path:inset(0 0 28px 0)}
-#captVoile{position:absolute;left:25.6px;top:136px;width:198px;height:270px;background:rgba(10,18,32,.42);opacity:0;transition:opacity 2.5s ease;pointer-events:none}
-#captVoile.orage{opacity:1}
+#captVoile{position:absolute;left:25.6px;top:136px;width:198px;height:270px;background:rgb(10,18,32);opacity:0;transition:opacity 2.5s ease;pointer-events:none}
 #capt.cache+#captVoile{display:none}
-#voile{position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse 67% 72% at 50% 50%,rgba(5,10,18,0) 45%,rgba(5,10,18,.45) 100%)}
+#voile{position:absolute;inset:0;pointer-events:none;opacity:0}
+#nuit{position:absolute;inset:0;pointer-events:none;opacity:0;background:rgb(6,12,24)}
+/* la bulle du capitaine (maquette ; dans l'application : engine/bulle.js) */
+#bulle{position:absolute;left:236px;top:150px;max-width:330px;padding:12px 18px;background:#fffdf6;border:3px solid #1b1612;border-radius:26px 30px 28px 24px;
+  font:600 21px/1.25 Ardoise,"Comic Sans MS",sans-serif;color:#1b1612;opacity:0;transform:scale(.85);transform-origin:0 70%;transition:opacity .2s,transform .2s;pointer-events:none;z-index:6}
+#bulle.vue{opacity:1;transform:none}
+#bulle::before{content:"";position:absolute;left:-17px;top:42%;border:10px solid transparent;border-right:16px solid #1b1612}
+#bulle::after{content:"";position:absolute;left:-11px;top:calc(42% + 3px);border:7px solid transparent;border-right:12px solid #fffdf6}
+/* la caisse : portefeuille, monnaie, soucoupe */
+#caisse{position:absolute;inset:0;pointer-events:none;z-index:1}
+#effets,#nuit,#voile{z-index:2}
+#caisse .m{position:absolute;left:0;top:0;pointer-events:auto;will-change:transform;
+  transition:transform .38s cubic-bezier(.25,.9,.35,1),opacity .3s;filter:drop-shadow(0 3px 2px rgba(20,12,4,.45))}
+#caisse .m.glisse{transition:none}
+#pf{position:absolute;left:0;top:0;width:640px;height:422px;transform-origin:0 0;pointer-events:auto;z-index:3;filter:drop-shadow(0 5px 4px rgba(20,12,4,.5))}
+#pocheP{position:absolute;overflow:hidden;z-index:4;pointer-events:none;transition:opacity .25s}
+#pocheP img{position:absolute;bottom:-20px}
+#soucoupe{position:absolute;left:298px;top:604px;width:340px;height:170px;border-radius:50%;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 40%,#c99a63 0%,#a8743f 55%,#7c5126 100%);border:4px solid #1d1712;
+  box-shadow:inset 0 10px 0 rgba(255,236,200,.25),inset 0 -14px 18px rgba(40,22,8,.55),0 8px 0 #5a3a1c,0 12px 10px rgba(0,0,0,.35)}
+#total{position:absolute;left:298px;top:566px;width:340px;text-align:center;font:600 24px Ardoise,"Comic Sans MS",sans-serif;color:#fff8e8;
+  text-shadow:0 2px 0 #1d1712,0 0 6px #1d1712;z-index:1;pointer-events:none;transition:opacity .3s}
+/* réglages de la maquette */
+#reglages{position:absolute;right:10px;top:52px;bottom:10px;width:340px;overflow-y:auto;z-index:8;background:rgba(255,255,255,.94);border:2px solid #16212a;
+  border-radius:14px;padding:10px 14px;font:13px/1.3 system-ui,sans-serif;color:#16212a;display:none;touch-action:pan-y}
+#reglages.vu{display:block}
+#reglages h3{font-size:14px;margin:12px 0 4px}
+#reglages label{display:grid;grid-template-columns:1fr 46px;gap:2px 8px;margin:6px 0;align-items:center}
+#reglages input[type=range]{grid-column:1/3;width:100%;height:26px}
+#reglages output{text-align:right;font:600 12px ui-monospace,monospace}
+#reglages .ligne{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+#reglages button,#reglages select{font:600 13px system-ui,sans-serif;padding:6px 10px;border-radius:8px;border:1.5px solid #16212a;background:#fff}
 #capt.cache{display:none}
 #commandes{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:5}
 #commandes button{white-space:nowrap;font:600 15px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--texte);background:var(--pilule);
   border:2.5px solid var(--pilule-bord);border-radius:999px;padding:8px 13px;cursor:pointer;box-shadow:0 2px 0 var(--pilule-bord)}
 #commandes button:active{transform:translateY(2px);box-shadow:none}
-#compteur{position:absolute;top:12px;right:14px;z-index:5;font:600 13px/1.3 ui-monospace,Menlo,monospace;color:#16212a;
+#compteur{position:absolute;bottom:8px;left:8px;z-index:5;pointer-events:none;font:600 13px/1.3 ui-monospace,Menlo,monospace;color:#16212a;
   background:rgba(255,255,255,.7);padding:4px 8px;border-radius:8px}
 #chargement{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 24px system-ui,sans-serif;color:#fff;background:#0e1418;z-index:9}
 </style>
@@ -34,14 +64,24 @@ html,body{margin:0;height:100%;background:var(--fond);overflow:hidden;touch-acti
   <canvas id="decor" width="1920" height="1200"></canvas>
   <canvas id="capt" width="450" height="600" aria-hidden="true"></canvas>
   <div id="captVoile"></div>
+  <div id="caisse">
+    <div id="soucoupe"></div><div id="total"></div>
+    <canvas id="pf" width="640" height="422" aria-label="portefeuille"></canvas>
+    <div id="pocheP"></div>
+  </div>
   <canvas id="effets" width="1280" height="800"></canvas>
+  <div id="nuit"></div>
   <div id="voile"></div>
+  <div id="bulle"></div>
   <div id="commandes">
     <button id="bMeteo" type="button">⛈ Mauvais temps</button>
     <button id="bBateau" type="button">⛵ Un bateau</button>
     <button id="bPeche" type="button">🐟 Autre pêche</button>
+    <button id="bPrix" type="button">💶 Autres prix</button>
     <button id="bCapt" type="button">Capitaine : oui</button>
+    <button id="bRegl" type="button">⚙ Réglages</button>
   </div>
+  <div id="reglages"></div>
   <div id="compteur">–</div>
   <div id="chargement">Chargement…</div>
 </div></div>
@@ -59,7 +99,43 @@ html,body{margin:0;height:100%;background:var(--fond);overflow:hidden;touch-acti
 const K = 1.5;                       // résolution des images par rapport à la scène
 const PX = 0.5563;                   // pixels de l'illustration d'origine (2576 × 1438) → scène
 const IMG = {};
-const PRODUITS = {        // largeur affichée (scène), prix de la maquette
+
+/* ---------- réglages de la maquette (à trouver sur la tablette, puis à figer dans l'application) ---------- */
+const REGLAGES = [
+  ['Mauvais temps : assombrissement'],
+  ['nuit', 'Voile sombre sur toute la scène', 0, 0.5, 0.01, 0.08],
+  ['vignette', 'Bords assombris : force', 0, 0.9, 0.01, 0.5],
+  ['vignetteRayon', 'Bords assombris : zone claire au centre (%)', 15, 75, 1, 42],
+  ['capt', 'Capitaine assombri', 0, 0.8, 0.01, 0.4],
+  ['monnaie', 'Portefeuille et monnaie : luminosité', 0.4, 1, 0.01, 0.72],
+  ['Lumière de la lampe sur l\'étal (recalculée au relâchement)'],
+  ['lumCouleur', 'Couleur chaude (recouvrement)', 0, 1, 0.01, 0.75],
+  ['lumEclat', 'Éclat (lumière ajoutée)', 0, 1, 0.01, 0.55],
+  ['lumPortee', 'Portée (px)', 250, 1000, 10, 680],
+  ['Lumière sur les produits (recalculée au relâchement)'],
+  ['prod', 'Force', 0, 1.2, 0.01, 0.9],
+  ['prodMin', 'Minimum (produits loin de la lampe)', 0, 0.8, 0.01, 0.3],
+  ['prodPortee', 'Portée (px)', 150, 900, 10, 460],
+  ['prodReflet', 'Côté tourné vers la lampe : reflet', 0, 1, 0.01, 0.5],
+  ['Halo, phare, pluie'],
+  ['halo', 'Halo de la flamme : force', 0, 2, 0.01, 1.1],
+  ['haloTaille', 'Halo de la flamme : taille (px)', 80, 320, 5, 190],
+  ['phare', 'Faisceau du phare', 0, 1, 0.01, 0.45],
+  ['pluie', 'Pluie : densité', 0.1, 1.5, 0.05, 1],
+  ['pluieOpac', 'Pluie : opacité', 0.3, 2, 0.05, 1],
+  ['Orage en cours de séance'],
+  ['orageDepart', 'Mauvais temps dès l\'ouverture (%)', 0, 100, 5, 50],
+  ['orageProba', 'Sinon, l\'orage arrive en cours de séance (%)', 0, 100, 5, 50],
+  ['orageMin', 'Au plus tôt (min)', 0.5, 10, 0.5, 2],
+  ['orageMax', 'Au plus tard (min)', 1, 15, 0.5, 6]
+];
+const R = {};
+REGLAGES.forEach(r => { if (r.length > 1) R[r[0]] = r[5]; });
+try { Object.assign(R, JSON.parse(localStorage.getItem('etal-reglages') || '{}')); } catch (e) { /* stockage indisponible */ }
+const CUITS = new Set(['lumCouleur', 'lumEclat', 'lumPortee', 'prod', 'prodMin', 'prodPortee', 'prodReflet']);
+// Les prix ne sont pas écrits dans les images : chaque ardoise est dessinée par le code avec le prix que
+// l'exercice lui donne (peche[i].prix, en centimes). Ici, des prix d'exemple ; « Autres prix » les retire.
+const PRODUITS = {        // largeur affichée (scène), prix d'exemple en euros
   'sardines': { l: 150, prix: 3 }, 'maquereau': { l: 170, prix: 4 }, 'bar': { l: 175, prix: 12 }, 'dorade': { l: 160, prix: 9 },
   'sole': { l: 165, prix: 15, miroir: true }, 'seiche': { l: 150, prix: 7 }, 'crevettes': { l: 128, prix: 6 }, 'moules': { l: 118, prix: 5 },
   'huitres': { l: 128, prix: 8 }, 'saint-jacques': { l: 125, prix: 10 }, 'homard': { l: 150, prix: 19 }, 'tourteau': { l: 145, prix: 11 }
@@ -135,42 +211,89 @@ function tirerPeche() {
   peche = noms.map((n, i) => {
     const rang = i < 4 ? 0 : 1, c = i % 4;
     return { n, x: x0 + col * (c + 0.5) + (rang ? -col * 0.12 : col * 0.12) + hasard(-8, 8),
-             y: rang ? 452 : 378, rot: hasard(-4, 4) * Math.PI / 180, prix: PRODUITS[n].prix };
+             y: rang ? 452 : 378, rot: hasard(-4, 4) * Math.PI / 180, prix: PRODUITS[n].prix * 100 };
   });
 }
-function objetsEtal() {                 // ombres, produits et ardoises, sur un calque transparent de la scène
+const fmtPrix = c => c % 100 ? `${Math.floor(c / 100)},${String(c % 100).padStart(2, '0')} €` : `${c / 100} €`;
+let modePrix = 0;
+function tirerPrix() {                  // démonstration : entiers, puis avec 50 c, puis avec 10 et 20 c
+  modePrix = (modePrix + 1) % 3;
+  for (const p of peche) {
+    const e = Math.floor(hasard(1, 20));
+    p.prix = e * 100 + (modePrix === 0 ? 0 : modePrix === 1 ? choisir([0, 50]) : choisir([10, 20, 30, 40, 50, 60, 70, 80, 90]));
+  }
+}
+const flammeMoy = () => ({ x: ACCROCHE.x + (LAMPE.fx - LAMPE.hx) * LAMPE.s, y: ACCROCHE.y + (LAMPE.fy - LAMPE.hy) * LAMPE.s });
+const lumProduit = p => {               // lumière de la lampe reçue par un produit (mauvais temps)
+  const f = flammeMoy(), d = Math.hypot(p.x - f.x, p.y - f.y);
+  return Math.min(1, Math.max(R.prodMin, R.prod / (1 + (d / R.prodPortee) ** 2)));
+};
+const SOMBRE = [92, 104, 124];          // l'assombrissement du mauvais temps (multiplication)
+function produitEclaire(p) {            // le produit teinté par la flamme, plus clair du côté de la lampe (calque pré-calculé)
+  const im = IMG['produit-' + p.n], P = PRODUITS[p.n], D = Math.ceil(Math.hypot(p.w, p.h) * K) + 4;
+  const o = hors(D, D), c = o.getContext('2d');
+  const dessiner = () => { c.save(); c.translate(D / 2, D / 2); c.rotate(p.rot); if (P.miroir) c.scale(-1, 1); c.drawImage(im, -p.w * K / 2, -p.h * K / 2, p.w * K, p.h * K); c.restore(); };
+  dessiner();
+  c.globalCompositeOperation = 'multiply'; c.fillStyle = 'rgb(255,206,140)'; c.fillRect(0, 0, D, D);
+  c.globalCompositeOperation = 'destination-in'; dessiner();
+  const f = flammeMoy(), ux = f.x - p.x, uy = f.y - p.y, n = Math.hypot(ux, uy) || 1, r = D / 2;
+  const g = c.createLinearGradient(D / 2 + ux / n * r, D / 2 + uy / n * r, D / 2 - ux / n * r, D / 2 - uy / n * r);
+  g.addColorStop(0, `rgba(255,226,170,${R.prodReflet})`); g.addColorStop(0.5, 'rgba(255,226,170,0)'); g.addColorStop(1, `rgba(10,8,20,${R.prodReflet * 0.5})`);
+  c.globalCompositeOperation = 'source-atop'; c.fillStyle = g; c.fillRect(0, 0, D, D);
+  return o;
+}
+function objetsEtal(orage) {            // ombres, produits et ardoises, sur un calque transparent de la scène
   const o = hors(1920, 1200), c = o.getContext('2d'); c.setTransform(K, 0, 0, K, 0, 0);
+  const f = flammeMoy();
   for (const p of peche) {              // rangée du fond d'abord
     const im = IMG['produit-' + p.n], P = PRODUITS[p.n], w = P.l, h = w * im.height / im.width;
     p.y = Math.max(318 + h / 2, Math.min(500 - h / 2, p.y));   // rien ne déborde du bac de glace (haut et bas)
-    c.save(); c.translate(p.x, p.y); c.rotate(p.rot); if (P.miroir) c.scale(-1, 1);
-    c.shadowColor = 'rgba(15,35,55,0.45)'; c.shadowBlur = 9 * K; c.shadowOffsetY = 5 * K;
-    c.drawImage(im, -w / 2, -h / 2, w, h);
-    c.restore();
     p.w = w; p.h = h;
+    c.save(); c.translate(p.x, p.y);
+    if (orage) {                        // ombre portée à l'opposé de la lampe
+      const ux = p.x - f.x, uy = p.y - f.y, n = Math.hypot(ux, uy) || 1;
+      c.shadowColor = 'rgba(4,8,16,0.6)'; c.shadowBlur = 8 * K; c.shadowOffsetX = ux / n * 7 * K; c.shadowOffsetY = (uy / n * 7 + 3) * K;
+    } else { c.shadowColor = 'rgba(15,35,55,0.45)'; c.shadowBlur = 9 * K; c.shadowOffsetY = 5 * K; }
+    c.rotate(p.rot); if (P.miroir) c.scale(-1, 1);
+    c.drawImage(orage ? sombreProduit(p.n) : im, -w / 2, -h / 2, w, h);
+    c.restore();
+    if (orage) {                        // la lumière de la lampe sur le produit
+      const l = produitEclaire(p);
+      c.globalAlpha = lumProduit(p); c.drawImage(l, p.x - l.width / K / 2, p.y - l.height / K / 2, l.width / K, l.height / K); c.globalAlpha = 1;
+    }
   }
   for (const p of peche) {              // les ardoises, devant
+    const lum = orage ? lumProduit(p) : 1;
     const ax = Math.min(1235, p.x + p.w * 0.3), ay = Math.min(478, p.y + p.h * 0.28);
-    ardoise(c, ax, ay, `${p.prix} €`);
+    ardoise(c, ax, ay, fmtPrix(p.prix), lum);
   }
   return o;
 }
-function ardoise(c, x, y, txt) {        // un pique-prix : petite ardoise cadrée de bois, plantée dans la glace
-  const w = 54, h = 34;
-  c.save(); c.translate(x, y); c.rotate(-0.06);
-  c.strokeStyle = '#3b2a1c'; c.lineWidth = 3; c.beginPath(); c.moveTo(0, h / 2); c.lineTo(0, h / 2 + 16); c.stroke();
+const teinte = (hex, lum) => {          // une couleur assombrie comme le mauvais temps, puis éclairée par la flamme (lum de 0 à 1)
+  const v = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)), chaud = [255, 206, 140];
+  return `rgb(${v.map((x, i) => Math.round(x * SOMBRE[i] / 255 * (1 - lum) + x * chaud[i] / 255 * lum)).join(',')})`;
+};
+function ardoise(c, x, y, txt, lum = 1) {   // un pique-prix : petite ardoise cadrée de bois, plantée dans la glace
+  c.save(); c.font = '600 20px Ardoise, "Comic Sans MS", sans-serif';
+  const w = Math.max(54, Math.ceil(c.measureText(txt).width) + 16), h = 34;   // la largeur suit le prix (« 12,50 € »)
+  x = Math.min(x, 1262 - w / 2);
+  const col = h => lum >= 1 ? h : teinte(h, lum);
+  c.translate(x, y); c.rotate(-0.06);
+  c.strokeStyle = col('#3b2a1c'); c.lineWidth = 3; c.beginPath(); c.moveTo(0, h / 2); c.lineTo(0, h / 2 + 16); c.stroke();
   c.shadowColor = 'rgba(15,35,55,0.4)'; c.shadowBlur = 6; c.shadowOffsetY = 3;
-  c.fillStyle = '#9a6a3e'; c.beginPath(); c.roundRect(-w / 2 - 4, -h / 2 - 4, w + 8, h + 8, 4); c.fill();
+  c.fillStyle = col('#9a6a3e'); c.beginPath(); c.roundRect(-w / 2 - 4, -h / 2 - 4, w + 8, h + 8, 4); c.fill();
   c.shadowColor = 'transparent';
   c.lineWidth = 2; c.strokeStyle = '#1d1712'; c.stroke();
-  c.fillStyle = '#2a3034'; c.beginPath(); c.roundRect(-w / 2, -h / 2, w, h, 2); c.fill();
+  c.fillStyle = col('#2a3034'); c.beginPath(); c.roundRect(-w / 2, -h / 2, w, h, 2); c.fill();
   c.fillStyle = 'rgba(255,255,255,0.08)'; c.fillRect(-w / 2 + 3, -h / 2 + 3, w - 6, 5);
-  c.fillStyle = '#f4f1e8'; c.font = '600 20px Ardoise, "Comic Sans MS", sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.fillStyle = col('#f4f1e8'); c.textAlign = 'center'; c.textBaseline = 'middle';
   c.fillText(txt, 0, 1);
   c.restore();
 }
+const sombresP = {};
+const sombreProduit = n => sombresP[n] || (sombresP[n] = assombrir(IMG['produit-' + n], IMG['produit-' + n].width, IMG['produit-' + n].height));
 function composerEtal() {
-  const o = objetsEtal(), os = assombrir(o, 1920, 1200);
+  const o = objetsEtal(false), os = objetsEtal(true);
   etalBeau = hors(1920, 1200); let c = etalBeau.getContext('2d'); c.drawImage(IMG['avant-beau'], 0, 0); c.drawImage(o, 0, 0);
   etalOrage = hors(1920, 1200); c = etalOrage.getContext('2d'); c.drawImage(IMG['avant-orage'], 0, 0); c.drawImage(os, 0, 0);
   // l'étal et la cabane « éclairés » par la flamme : les couleurs du beau temps, teintées de la flamme ;
@@ -183,16 +306,16 @@ function composerEtal() {
   c.fillStyle = g; c.fillRect(0, 495 * K, 1920, 1200);
   c.globalCompositeOperation = 'destination-in'; c.drawImage(etalBeau, 0, 0);
   // la lumière, autour de la position moyenne de la flamme (la lampe ne s'écarte que de quelques pixels)
-  const s = LAMPE.s, fxm = ACCROCHE.x + (LAMPE.fx - LAMPE.hx) * s, fym = ACCROCHE.y + (LAMPE.fy - LAMPE.hy) * s;
+  const { x: fxm, y: fym } = flammeMoy();
   const lum = hors(1920, 1200), l = lum.getContext('2d'); l.setTransform(K, 0, 0, K, 0, 0);
-  const R = 640, gr = l.createRadialGradient(fxm, fym, 0, fxm, fym, R);
+  const P = R.lumPortee, gr = l.createRadialGradient(fxm, fym, 0, fxm, fym, P);
   [[0, 1], [0.08, 0.97], [0.22, 0.8], [0.4, 0.5], [0.6, 0.24], [0.8, 0.08], [1, 0]].forEach(([o, a]) => gr.addColorStop(o, `rgba(0,0,0,${a})`));
-  l.fillStyle = gr; l.fillRect(fxm - R, fym - R, 2 * R, 2 * R);
+  l.fillStyle = gr; l.fillRect(fxm - P, fym - P, 2 * P, 2 * P);
   l.setTransform(1, 0, 0, 1, 0, 0); l.globalCompositeOperation = 'source-in'; l.drawImage(chaudC, 0, 0);
   // la surface prend la couleur chaude (recouvrement) puis gagne de la lumière (addition)
   c = etalOrage.getContext('2d');
-  c.globalAlpha = 0.72; c.drawImage(lum, 0, 0);
-  c.globalCompositeOperation = 'lighter'; c.globalAlpha = 0.5; c.drawImage(lum, 0, 0);
+  c.globalAlpha = R.lumCouleur; c.drawImage(lum, 0, 0);
+  c.globalCompositeOperation = 'lighter'; c.globalAlpha = R.lumEclat; c.drawImage(lum, 0, 0);
   c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
   chaudC = null;                       // libéré : seule la version éclairée sert
 }
@@ -276,7 +399,7 @@ function faisceau() {
   // le pinceau : sa longueur visible suit le cosinus (il tourne autour de la tour)
   const ac = Math.abs(c), dir = Math.sign(c) || 1, demi = 6 + 26 * ac;
   if (ac > 0.01) {
-    ctx.globalAlpha = 0.42 * meteo * (0.55 + 0.45 * Math.max(0, s));
+    ctx.globalAlpha = R.phare * meteo * (0.55 + 0.45 * Math.max(0, s));
     ctx.translate(PHARE.x, PHARE.y); ctx.scale(dir * ac, demi / 32);
     ctx.drawImage(SPR.pinceau, 0, -32); ctx.setTransform(K, 0, 0, K, 0, 0);
   }
@@ -448,27 +571,37 @@ function lampe() {
 }
 /* ---------- effets au premier plan : halo, pluie, éclaboussures, bords assombris ---------- */
 function initPluie() {
-  for (let i = 0; i < 420; i++) gouttes.push(nouvelleGoutte(true));
+  for (let i = 0; i < 630; i++) gouttes.push(nouvelleGoutte(true));   // jusqu'à 150 % (réglage)
 }
 function nouvelleGoutte(partout) {
   const pres = Math.random() < 0.3;                 // un tiers de gouttes proches, plus grandes et plus rapides
   return { x: hasard(-100, 1400), y: partout ? hasard(-40, 800) : hasard(-60, -10), pres,
            v: pres ? hasard(1150, 1450) : hasard(700, 950), l: pres ? hasard(22, 34) : hasard(10, 18), a: pres ? hasard(0.3, 0.5) : hasard(0.16, 0.3) };
 }
-let fxVide = true;
+let fxVide = true, dernierVoile = '';
+const appliquerVignette = () => { $('voile').style.background = `radial-gradient(ellipse 68% 74% at 50% 48%,rgba(5,10,18,0) ${R.vignetteRayon}%,rgba(5,10,18,${R.vignette * 0.55}) ${(R.vignetteRayon + 100) / 2}%,rgba(5,10,18,${R.vignette}) 100%)`; dernierVoile = ''; };
 function effets() {
-  $('voile').style.opacity = meteo.toFixed(3);
+  const m = meteo.toFixed(3);
+  if (m !== dernierVoile) {             // voiles CSS : seulement quand le temps change
+    dernierVoile = m;
+    $('voile').style.opacity = m; $('nuit').style.opacity = (meteo * R.nuit).toFixed(3);
+    $('captVoile').style.opacity = (meteo * R.capt).toFixed(3);
+    const b = 1 - (1 - R.monnaie) * meteo; $('caisse').style.filter = b > 0.995 ? 'none' : `brightness(${b.toFixed(3)})`;
+  }
   if (meteo < 0.004) { if (!fxVide) { fx.clearRect(0, 0, 1280, 800); fxVide = true; } return; }
   fxVide = false;
   fx.clearRect(0, 0, 1280, 800);
   // halo de la flamme (s'ajoute à ce qui est derrière, y compris la pluie qu'il éclaire)
   fx.globalCompositeOperation = 'lighter';
-  fx.globalAlpha = meteo * intensite;
-  fx.drawImage(SPR.halo, flamme.x - 170, flamme.y - 170, 340, 340);
+  const H = R.haloTaille;
+  fx.globalAlpha = Math.min(1, meteo * intensite * R.halo);
+  fx.drawImage(SPR.halo, flamme.x - H, flamme.y - H, 2 * H, 2 * H);
+  if (R.halo > 1) { fx.globalAlpha = meteo * intensite * (R.halo - 1); fx.drawImage(SPR.halo, flamme.x - H, flamme.y - H, 2 * H, 2 * H); }
+  fx.globalAlpha = Math.min(1, meteo * intensite);
   fx.drawImage(SPR.flamme, flamme.x - 36, flamme.y - 36, 72, 72);
   fx.globalAlpha = 1; fx.globalCompositeOperation = 'source-over';
   // pluie : poussée par le vent (vers la gauche) ; trois tracés (gouttes lointaines, proches, et celles qu'éclaire la lampe)
-  const vent = -0.2, n = Math.round(gouttes.length * qualite);
+  const vent = -0.2, n = Math.min(gouttes.length, Math.round(420 * R.pluie * qualite)), op = meteo * R.pluieOpac;
   const loin = new Path2D(), pres = new Path2D(), chaudes = new Path2D();
   for (let i = 0; i < n; i++) {
     const d = gouttes[i];
@@ -479,9 +612,9 @@ function effets() {
     tr.moveTo(d.x, d.y); tr.lineTo(d.x - d.l * vent, d.y - d.l);
   }
   fx.lineCap = 'butt';
-  fx.strokeStyle = `rgba(200,214,228,${0.23 * meteo})`; fx.lineWidth = 1; fx.stroke(loin);
-  fx.strokeStyle = `rgba(205,216,230,${0.4 * meteo})`; fx.lineWidth = 1.6; fx.stroke(pres);
-  fx.strokeStyle = `rgba(255,214,150,${0.6 * meteo})`; fx.lineWidth = 1.3; fx.stroke(chaudes);
+  fx.strokeStyle = `rgba(200,214,228,${Math.min(1, 0.23 * op)})`; fx.lineWidth = 1; fx.stroke(loin);
+  fx.strokeStyle = `rgba(205,216,230,${Math.min(1, 0.4 * op)})`; fx.lineWidth = 1.6; fx.stroke(pres);
+  fx.strokeStyle = `rgba(255,214,150,${Math.min(1, 0.6 * op)})`; fx.lineWidth = 1.3; fx.stroke(chaudes);
   // éclaboussures sur la glace de l'étal
   if (ploufs.length) {
     const pl = new Path2D();
@@ -504,6 +637,7 @@ function image(ms) {
   ciel(); oiseaux(); mer(); jetee(); faisceau();
   majBateaux(); dessinerSillage(); bateaux.forEach(dessinerBateau);
   premierPlan(); lampe(); effets();
+  if (orageA !== null && t >= orageA) orageArrive();
   dtMoy += (dt - dtMoy) * 0.05;
   if (meteo > 0.5 && dtMoy > 0.021 && qualite > 0.45) { qualite -= 0.15; dtMoy = 1 / 60; }   // moins de gouttes, pas à pas
   fpsN++; fpsT += dt;
@@ -519,18 +653,271 @@ function ajuster() {
 addEventListener('resize', ajuster); ajuster();
 
 /* ---------- commandes ---------- */
-$('bMeteo').onclick = () => {
-  poserMeteo(meteoCible ? 0 : 1);
-};
+$('bMeteo').onclick = () => { if (meteoCible) poserMeteo(0); else orageArrive(); };
+$('bPrix').onclick = () => { tirerPrix(); composerEtal(); };
 $('bBateau').onclick = () => nouveauBateau();
 $('bPeche').onclick = () => { tirerPeche(); composerEtal(); };
 function poserMeteo(v) {
   meteoCible = v;
   $('bMeteo').textContent = v ? '☀ Beau temps' : '⛈ Mauvais temps';
-  $('captVoile').classList.toggle('orage', !!v);
+}
+/* l'orage qui arrive en cours de séance : le pêcheur s'exclame et se met à l'abri (phrases à fabriquer : PHRASES.md) */
+const REPLIQUES_ORAGE = [
+  'Oh là là, voilà la pluie ! Je me mets à l\'abri !',
+  'Le vent se lève ! Vite, à l\'abri !',
+  'Brr, l\'orage arrive ! Je rentre dans ma cabane.',
+  'Tempête en vue ! J\'allume ma lampe et je me mets à l\'abri.'
+];
+let orageA = null, derniereReplique = -1;
+function programmerOrage() {            // tiré à l'ouverture : l'orage viendra-t-il, et quand ?
+  orageA = !meteoCible && Math.random() * 100 < R.orageProba ? t + 60 * hasard(R.orageMin, Math.max(R.orageMin, R.orageMax)) : null;
+}
+function orageArrive() {
+  orageA = null; poserMeteo(1);
+  let k; do { k = Math.floor(Math.random() * REPLIQUES_ORAGE.length); } while (k === derniereReplique && REPLIQUES_ORAGE.length > 1);
+  derniereReplique = k;
+  setTimeout(() => dire(REPLIQUES_ORAGE[k]), 700);    // les premières gouttes, puis la réplique
+}
+let MASC = null, bulleT = 0;
+function dire(texte) {                  // maquette : bulle + synthèse vocale de secours (dans l'application : la voix fabriquée)
+  const ms = Math.max(1800, texte.length * 70);
+  const b = $('bulle'); b.textContent = texte; b.classList.add('vue');
+  clearTimeout(bulleT); bulleT = setTimeout(() => { b.classList.remove('vue'); MASC && MASC.silence(); }, ms + 1500);
+  if (MASC) { MASC.parole(texte, ms); setTimeout(() => MASC.silence(), ms); }
+  try {
+    const u = new SpeechSynthesisUtterance(texte); u.lang = 'fr-FR'; u.rate = 0.95;
+    const v = speechSynthesis.getVoices().find(v => /^fr/i.test(v.lang)); if (v) u.voice = v;
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  } catch (e) { /* pas de synthèse vocale */ }
 }
 let captOui = true;
 $('bCapt').onclick = () => { captOui = !captOui; $('capt').classList.toggle('cache', !captOui); $('bCapt').textContent = `Capitaine : ${captOui ? 'oui' : 'non'}`; };
+
+/* =====================================================================================
+   La caisse : le portefeuille (images de la vidéo du parent), sa poche à billets, sa poche à pièces,
+   et la soucoupe du comptoir. Billets et pièces sont des éléments HTML déplacés par transformations
+   CSS (composées par la carte graphique, sans redessiner la scène).
+   ===================================================================================== */
+let contenuPf = 'complet', totalVu = false;
+const CONTENUS = {                       // en centimes
+  complet: { b: [5000, 2000, 1000, 500, 500], p: [200, 200, 100, 100, 100, 50, 50, 20, 20, 10, 10] },
+  sans1:   { b: [2000, 1000, 500],           p: [200, 200, 200, 50, 50, 20, 10] },
+  billets: { b: [5000, 2000, 2000, 1000, 500], p: [] },
+  peu:     { b: [2000],                      p: [200, 50] }
+};
+const IMG_V = { 10: 'piece-10c', 20: 'piece-20c', 50: 'piece-50c', 100: 'piece-1e', 200: 'piece-2e', 500: 'billet-5', 1000: 'billet-10', 2000: 'billet-20', 5000: 'billet-50' };
+// tailles réelles : billets 120 à 140 mm de large ; pièces 19,75 à 25,75 mm de diamètre (rapports respectés)
+const LARG = { 500: 190, 1000: 201, 2000: 211, 5000: 222, 10: 67, 20: 76, 50: 82, 100: 79, 200: 88 };
+const PF_FERME = { l: 964, t: 586, s: 0.42 }, PF_OUVERT = { l: 655, t: 451, s: 0.92 };
+const BORD_PF = [[0, 55], [20, 48], [80, 37], [140, 28], [200, 20], [260, 12], [320, 4], [380, 12], [440, 18], [500, 26], [560, 34], [620, 49], [640, 55]];
+const bordPf = xf => { for (let i = 1; i < BORD_PF.length; i++) if (xf <= BORD_PF[i][0]) { const [a, b] = [BORD_PF[i - 1], BORD_PF[i]]; return a[1] + (b[1] - a[1]) * (xf - a[0]) / (b[0] - a[0]); } return 55; };
+const SOUC = { x: 468, y: 689, rx: 190, ry: 105 };
+let pfEtat = 'ferme', poche = null, items = [], ordreS = 0;
+const pfEl = $('pf'), pfCtx = pfEl.getContext('2d');
+const vers = (o, xf, yf) => [o.l + o.s * xf, o.t + o.s * yf];
+const dessinerPf = k => { pfCtx.clearRect(0, 0, 640, 422); pfCtx.drawImage(IMG['portefeuille/p' + String(k).padStart(2, '0')], 0, 0); };
+const transfoPf = o => `translate(${o.l}px,${o.t}px) scale(${o.s})`;
+
+function remplirPortefeuille() {
+  items.forEach(it => it.el.remove()); items = [];
+  const C = CONTENUS[contenuPf];
+  for (const v of [...C.b, ...C.p]) {
+    const el = document.createElement('img'); el.src = `img/${IMG_V[v]}.webp`; el.className = 'm'; el.draggable = false;
+    el.style.width = LARG[v] + 'px'; el.style.opacity = 0;
+    const it = { v, b: v >= 500, lieu: 'poche', el, x: 0, y: 0, r: 0, sc: 1, z: 2, op: 0 };
+    el.addEventListener('pointerdown', e => attraper(e, it));
+    $('caisse').appendChild(el); items.push(it);
+  }
+  poche = null; disposer(); majTotal();
+}
+function poser(it, x, y, r, sc, z, op = 1) {
+  Object.assign(it, { x, y, r, sc, z, op });
+  it.el.style.transform = `translate(${x}px,${y}px) translate(-50%,-50%) rotate(${r}deg) scale(${sc})`;
+  it.el.style.zIndex = z; it.el.style.opacity = op; it.el.style.pointerEvents = op ? 'auto' : 'none';   // invisible : ne capte pas le doigt
+}
+const hauteur = it => LARG[it.v] * (it.b ? 0.55 : 1);
+function disposer(saufBillets = false) {      // place chaque objet selon son lieu
+  const ouvert = pfEtat === 'ouvert';
+  const enPoche = k => items.filter(i => i.lieu === 'poche' && i.b === k).sort((a, b) => b.v - a.v);
+  const sortis = k => items.filter(i => i.lieu === 'sortie' && i.b === k).sort((a, b) => b.v - a.v);
+  // billets dans la poche : ils dépassent du haut du portefeuille, derrière lui
+  enPoche(true).forEach((it, k, A) => {
+    if (saufBillets && it.transit) return;
+    const xf = 330 + (k - (A.length - 1) / 2) * Math.min(64, 300 / A.length), [x, ye] = vers(PF_OUVERT, xf, bordPf(xf));
+    poser(it, x, ye - 20 + hauteur(it) * 0.8 / 2, (k - (A.length - 1) / 2) * 3, 0.8, 2, ouvert && poche !== 'b' ? 1 : 0);
+  });
+  // billets sortis : en éventail au-dessus du portefeuille
+  sortis(true).forEach((it, k, A) => {
+    if (it.transit) return;
+    const d = k - (A.length - 1) / 2, pas = Math.min(105, 560 / Math.max(1, A.length));
+    poser(it, 950 + d * pas, 350 + Math.abs(d) * 7, d * 5, 1, 20 + k);
+  });
+  // pièces dans la poche : invisibles ici (les « pièces qui dépassent » sont dans #pocheP)
+  enPoche(false).forEach(it => { const [x, y] = vers(PF_OUVERT, 487, 205); poser(it, x, y, 0, 0.4, 4, 0); });
+  // pièces sorties : une ou deux rangées au-dessus du portefeuille
+  sortis(false).forEach((it, k, A) => {
+    const parRang = Math.ceil(A.length / Math.ceil(A.length / 6)), rang = Math.floor(k / parRang), i = k % parRang;
+    const n = Math.min(parRang, A.length - rang * parRang);
+    poser(it, 950 + (i - (n - 1) / 2) * 96, 335 + rang * 82, (k * 37) % 30 - 15, 1, 20 + k);
+  });
+  // dans la soucoupe
+  items.filter(i => i.lieu === 'soucoupe').forEach(it => poser(it, it.sx, it.sy, it.sr, it.b ? 0.6 : 0.72, 6 + it.ordre));
+  majPocheP();
+}
+function majPocheP() {                  // les pièces qui dépassent de la poche à pièces
+  const P = $('pocheP'), [x0, y0] = vers(PF_OUVERT, 380, 150), w = 215 * PF_OUVERT.s, h = 87 * PF_OUVERT.s;
+  Object.assign(P.style, { left: x0 + 'px', top: y0 + 'px', width: w + 'px', height: h + 'px', opacity: pfEtat === 'ouvert' && poche !== 'p' ? 1 : 0 });
+  const A = items.filter(i => i.lieu === 'poche' && !i.b).sort((a, b) => b.v - a.v).slice(0, 7);
+  P.innerHTML = A.map((it, k) => `<img src="img/${IMG_V[it.v]}.webp" style="width:${LARG[it.v] * 0.62}px;left:${8 + k * (w - 60) / Math.max(1, A.length - 1 || 1)}px;transform:rotate(${(k * 53) % 40 - 20}deg)">`).join('');
+}
+function versSoucoupe(it) {
+  const nB = items.filter(i => i.lieu === 'soucoupe' && i.b).length, nP = items.filter(i => i.lieu === 'soucoupe' && !i.b).length;
+  it.lieu = 'soucoupe'; it.ordre = ++ordreS;
+  if (it.b) { it.sx = 410 + nB * 14 + hasard(-4, 4); it.sy = 680 + nB * 6 + hasard(-3, 3); it.sr = -14 + nB * 6 + hasard(-3, 3); }
+  else { const a = nP * 2.4, r = 14 + nP * 5; it.sx = 548 + Math.cos(a) * Math.min(r, 52) + hasard(-4, 4); it.sy = 690 + Math.sin(a) * Math.min(r * 0.6, 40) + hasard(-3, 3); it.sr = hasard(-30, 30); }
+  disposer(); majTotal();
+}
+function versPortefeuille(it) {         // retour : dans la poche ouverte, sinon dans sa poche
+  const ouverte = pfEtat === 'ouvert' && poche === (it.b ? 'b' : 'p');
+  it.lieu = ouverte ? 'sortie' : 'poche';
+  disposer(); majTotal();
+}
+function majTotal() {
+  const t = items.filter(i => i.lieu === 'soucoupe').reduce((a, i) => a + i.v, 0);
+  $('total').textContent = t ? fmtPrix(t) : ''; $('total').style.opacity = totalVu ? 1 : 0;
+}
+
+/* ouvrir et fermer : les images de la vidéo, pendant que le portefeuille vient au centre du comptoir */
+function animerPf(ouvrir, fin) {
+  pfEtat = 'anim'; const D = 620, t0 = performance.now();
+  pfEl.style.transition = `transform ${D}ms cubic-bezier(.3,.85,.35,1)`; pfEl.style.transform = transfoPf(ouvrir ? PF_OUVERT : PF_FERME);
+  const pas = now => {
+    const u = Math.max(0, Math.min(1, (now - t0) / D));   // l'horodatage de l'image peut précéder t0
+    dessinerPf(Math.round((ouvrir ? 1 - u : u) * (PF_N - 1)));
+    if (u < 1) requestAnimationFrame(pas); else { pfEtat = ouvrir ? 'ouvert' : 'ferme'; disposer(); fin && fin(); }
+  };
+  requestAnimationFrame(pas);
+}
+function ouvrirPoche(q) {
+  if (poche === q) { fermerPoche(); return; }
+  if (poche) fermerPoche();
+  poche = q;
+  const A = items.filter(i => i.lieu === 'poche' && i.b === (q === 'b'));
+  if (q === 'b') {                       // les billets glissent hors de la poche (derrière le cuir), puis passent devant et s'ouvrent en éventail
+    A.forEach(it => {
+      it.transit = true; it.lieu = 'sortie';
+      const [x, ye] = vers(PF_OUVERT, 330, bordPf(330));
+      poser(it, it.x, ye - 6 - hauteur(it) / 2, it.r, 1, 2, 1);
+      setTimeout(() => { it.transit = false; disposer(true); }, 230);
+    });
+    disposer(true);
+  } else {                               // les pièces sautent hors de la poche, l'une après l'autre
+    A.forEach((it, k) => { it.lieu = 'sortie'; it.el.style.transitionDelay = `${k * 35}ms`; setTimeout(() => it.el.style.transitionDelay = '', 500 + k * 35); });
+    disposer();
+  }
+}
+function fermerPoche() {
+  const q = poche; poche = null;
+  const A = items.filter(i => i.lieu === 'sortie' && i.b === (q === 'b'));
+  if (q === 'b') {                       // les billets remontent au-dessus de la poche, puis y redescendent derrière le cuir
+    A.forEach(it => {
+      it.lieu = 'poche'; it.transit = true;
+      const [x, ye] = vers(PF_OUVERT, 330, bordPf(330));
+      poser(it, it.x, ye - 6 - hauteur(it) / 2, 0, 1, 20, 1);
+      setTimeout(() => { it.transit = false; it.el.style.zIndex = 2; disposer(); }, 260);
+    });
+  } else A.forEach(it => { it.lieu = 'poche'; });
+  disposer(true);
+}
+function ouvrirPf() { if (pfEtat !== 'ferme') return; items.forEach(it => { if (it.lieu === 'poche') it.el.style.opacity = 0; }); animerPf(true); }
+function fermerPf() {
+  if (pfEtat !== 'ouvert') return;
+  items.forEach(it => { if (it.lieu === 'sortie') it.lieu = 'poche'; });
+  poche = null; pfEtat = 'anim'; disposer(); animerPf(false);
+}
+
+/* toucher et glisser */
+const versScene = e => { const r = $('scene').getBoundingClientRect(), k = r.width / 1280; return [(e.clientX - r.left) / k, (e.clientY - r.top) / k]; };
+let prise = null;
+function attraper(e, it) {
+  if (pfEtat === 'anim' || it.transit) return;
+  e.preventDefault(); e.stopPropagation();
+  const [x, y] = versScene(e);
+  prise = { it, x0: x, y0: y, dx: it.x - x, dy: it.y - y, glisse: false, id: e.pointerId };
+  it.el.setPointerCapture(e.pointerId);
+}
+addEventListener('pointermove', e => {
+  if (!prise || e.pointerId !== prise.id) return;
+  const [x, y] = versScene(e), it = prise.it;
+  if (!prise.glisse && Math.hypot(x - prise.x0, y - prise.y0) > 8) {
+    if (it.lieu === 'poche') return;     // un billet qui dépasse : on le touche pour ouvrir la poche, on ne le tire pas
+    prise.glisse = true; it.el.classList.add('glisse');
+  }
+  if (prise.glisse) poser(it, x + prise.dx, y + prise.dy, it.r, (it.lieu === 'soucoupe' ? (it.b ? 0.6 : 0.72) : 1) * 1.06, 40);
+});
+addEventListener('pointerup', e => {
+  if (!prise || e.pointerId !== prise.id) return;
+  const { it, glisse } = prise; prise = null; it.el.classList.remove('glisse');
+  const [x, y] = versScene(e), dansSouc = ((x - SOUC.x) / SOUC.rx) ** 2 + ((y - SOUC.y) / SOUC.ry) ** 2 < 1;
+  if (glisse) {
+    if (dansSouc && it.lieu !== 'soucoupe') versSoucoupe(it);
+    else if (!dansSouc && it.lieu === 'soucoupe') versPortefeuille(it);
+    else disposer();
+  } else if (it.lieu === 'sortie') versSoucoupe(it);       // un toucher : dans la soucoupe
+  else if (it.lieu === 'soucoupe') versPortefeuille(it);   // ou en revient
+  else if (it.lieu === 'poche' && it.b) ouvrirPoche('b');
+});
+pfEl.addEventListener('pointerup', e => {
+  if (pfEtat === 'ferme') { ouvrirPf(); return; }
+  if (pfEtat !== 'ouvert') return;
+  const [x, y] = versScene(e), xf = (x - PF_OUVERT.l) / PF_OUVERT.s, yf = (y - PF_OUVERT.t) / PF_OUVERT.s;
+  if (yf < 125 && xf > 15 && xf < 625) ouvrirPoche('b');
+  else if (xf > 365 && xf < 610 && yf >= 125 && yf < 310) ouvrirPoche('p');
+  else fermerPf();
+});
+function caisse() {
+  pfEl.style.transform = transfoPf(PF_FERME); dessinerPf(PF_N - 1);
+  remplirPortefeuille();
+}
+
+/* ---------- panneau de réglages ---------- */
+let recuireT = 0;
+function construireReglages() {
+  const P = $('reglages'); let h = '<b>Réglages de la maquette</b><br><small>Gardés sur cette tablette. « Copier » met les valeurs dans le presse-papiers, pour me les envoyer.</small>';
+  h += '<div class="ligne"><button id="rCopier">Copier les réglages</button><button id="rDefaut">Valeurs de départ</button></div>';
+  h += '<div class="ligne"><button id="rOrage">Orage maintenant</button><button id="rPluieAuto">Pluie auto : remise à 100 %</button></div>';
+  h += '<h3>Portefeuille</h3><div class="ligne"><select id="rContenu"><option value="complet">Bien garni</option><option value="sans1">Sans pièce de 1 €</option><option value="billets">Billets seulement</option><option value="peu">Restreint : 20 €, 2 €, 50 c</option></select>'
+     + '<label style="display:flex;gap:6px;margin:0"><input type="checkbox" id="rTotal"> total affiché</label></div>';
+  for (const r of REGLAGES) {
+    if (r.length === 1) { h += `<h3>${r[0]}</h3>`; continue; }
+    const [k, nom, min, max, pas] = r;
+    h += `<label>${nom}<output id="o-${k}">${R[k]}</output><input type="range" id="r-${k}" min="${min}" max="${max}" step="${pas}" value="${R[k]}"></label>`;
+  }
+  P.innerHTML = h;
+  for (const r of REGLAGES) if (r.length > 1) {
+    const k = r[0], el = $('r-' + k);
+    el.oninput = () => { R[k] = +el.value; $('o-' + k).textContent = el.value; sauver(); appliquer(k, false); };
+    el.onchange = () => appliquer(k, true);
+  }
+  $('rCopier').onclick = () => {
+    const txt = JSON.stringify(R);
+    (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => { $('rCopier').textContent = 'Copié ✓'; })
+      .catch(() => { prompt('Réglages à copier :', txt); });
+  };
+  $('rDefaut').onclick = () => { REGLAGES.forEach(r => { if (r.length > 1) R[r[0]] = r[5]; }); sauver(); construireReglages(); appliquerVignette(); composerEtal(); };
+  $('rOrage').onclick = () => orageArrive();
+  $('rPluieAuto').onclick = () => { qualite = 1; };
+  $('rContenu').value = contenuPf; $('rContenu').onchange = e => { contenuPf = e.target.value; remplirPortefeuille(); };
+  $('rTotal').checked = totalVu; $('rTotal').onchange = e => { totalVu = e.target.checked; majTotal(); };
+}
+const sauver = () => { try { localStorage.setItem('etal-reglages', JSON.stringify(R)); } catch (e) { /* stockage indisponible */ } };
+function appliquer(k, fin) {
+  if (k.startsWith('vignette')) appliquerVignette();
+  else if (k === 'nuit' || k === 'capt' || k === 'monnaie') dernierVoile = '';
+  else if (CUITS.has(k) && fin) { clearTimeout(recuireT); recuireT = setTimeout(composerEtal, 30); }
+  else if (k.startsWith('orage')) programmerOrage();
+}
+$('bRegl').onclick = () => $('reglages').classList.toggle('vu');
 
 /* ---------- le capitaine (vidéos de la mascotte, moteur commun) ---------- */
 async function capitaine() {
@@ -541,26 +928,30 @@ async function capitaine() {
       if (!r.ok) continue;
       await new Promise((ok, ko) => { const s = document.createElement('script'); s.src = base + 'mascotte-moteur.js'; s.onload = ok; s.onerror = ko; document.head.appendChild(s); });
       const M = creerMascotte({ canvas: $('capt'), base: base + 'v/' });
-      M.ambiance('pause');
+      M.ambiance('pause'); MASC = M;
       return;
     } catch (e) { /* essai suivant */ }
   }
   $('capt').classList.add('cache'); $('bCapt').disabled = true; $('bCapt').textContent = 'Capitaine : absent';
 }
 
-Promise.all([...NOMS, ...Object.keys(PRODUITS).map(n => 'produit-' + n)].map(charger).concat(police())).then(() => {
+const MONNAIE = ['piece-10c', 'piece-20c', 'piece-50c', 'piece-1e', 'piece-2e', 'billet-5', 'billet-10', 'billet-20', 'billet-50'];
+const PF_N = 35;                        // images du portefeuille : 0 ouvert … 34 fermé
+Promise.all([...NOMS, ...Object.keys(PRODUITS).map(n => 'produit-' + n), ...MONNAIE,
+             ...Array.from({ length: PF_N }, (_, k) => 'portefeuille/p' + String(k).padStart(2, '0'))].map(charger).concat(police())).then(() => {
   preparer(); initPluie();
   // le temps du jour : tiré au hasard, mauvais une fois sur deux, sans transition à l'ouverture
-  poserMeteo(Math.random() < 0.5 ? 1 : 0); meteo = meteoCible;
+  poserMeteo(Math.random() * 100 < R.orageDepart ? 1 : 0); meteo = meteoCible; programmerOrage();
   // deux bateaux déjà en mer à l'ouverture
   nouveauBateau(hasard(450, 700)); nouveauBateau(hasard(850, 1150));
+  appliquerVignette(); construireReglages(); caisse();
   $('chargement').remove();
   requestAnimationFrame(image);
   capitaine();
 }).catch(e => { $('chargement').textContent = 'Images introuvables : ' + e; });
 
 // pour les essais automatiques
-window.MAQ = { get flamme() { return flamme; }, get meteo() { return meteo; }, set meteo(v) { poserMeteo(v); meteo = v; }, get peche() { return peche; }, tirerPeche, composerEtal, bateaux, nouveauBateau, vols, nouveauVol };
+window.MAQ = { get items() { return items; }, get pfEtat() { return pfEtat; }, get poche() { return poche; }, ouvrirPf, fermerPf, ouvrirPoche, versSoucoupe, orageArrive, R, get flamme() { return flamme; }, get meteo() { return meteo; }, set meteo(v) { poserMeteo(v); meteo = v; }, get peche() { return peche; }, tirerPeche, composerEtal, bateaux, nouveauBateau, vols, nouveauVol };
 </script>
 </body>
 </html>

@@ -9,6 +9,7 @@ nb=(~bg).astype(np.uint8)
 yy,xx=np.mgrid[0:H,0:W]
 fg=((nb>0)&((xx<600)|(yy>=500)))|((yy>=549)&(xx>=440))   # sous le bord de l'étal, tout est premier plan
 mid=(nb>0)&(xx>=440)&(xx<1010)&(yy>=200)&(yy<380)
+fg&=~mid   # la jetée n'appartient qu'à son calque (sinon elle serait éclairée par la lampe)
 print('mid bbox',cv2.boundingRect(mid.astype(np.uint8)))
 
 def destreak(img,mask=None):

@@ -14,8 +14,11 @@ html,body{margin:0;height:100%;background:var(--fond);overflow:hidden;touch-acti
 #scene canvas{position:absolute;left:0;top:0}
 #decor,#effets{width:1280px;height:800px}
 #effets{pointer-events:none}
-#capt{left:25.6px!important;top:170px!important;width:198px;height:264px;clip-path:inset(0 0 28px 0);transition:filter 2.5s ease}
-#capt.orage{filter:brightness(.6) saturate(.75) sepia(.15)}
+#capt{left:25.6px!important;top:170px!important;width:198px;height:264px;clip-path:inset(0 0 28px 0)}
+#captVoile{position:absolute;left:25.6px;top:136px;width:198px;height:270px;background:rgba(10,18,32,.42);opacity:0;transition:opacity 2.5s ease;pointer-events:none}
+#captVoile.orage{opacity:1}
+#capt.cache+#captVoile{display:none}
+#voile{position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse 67% 72% at 50% 50%,rgba(5,10,18,0) 45%,rgba(5,10,18,.45) 100%)}
 #capt.cache{display:none}
 #commandes{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:5}
 #commandes button{white-space:nowrap;font:600 15px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--texte);background:var(--pilule);
@@ -30,7 +33,9 @@ html,body{margin:0;height:100%;background:var(--fond);overflow:hidden;touch-acti
 <div id="cadre"><div id="scene">
   <canvas id="decor" width="1920" height="1200"></canvas>
   <canvas id="capt" width="450" height="600" aria-hidden="true"></canvas>
-  <canvas id="effets" width="1920" height="1200"></canvas>
+  <div id="captVoile"></div>
+  <canvas id="effets" width="1280" height="800"></canvas>
+  <div id="voile"></div>
   <div id="commandes">
     <button id="bMeteo" type="button">⛈ Mauvais temps</button>
     <button id="bBateau" type="button">⛵ Un bateau</button>
@@ -90,10 +95,10 @@ const MAX_BATEAUX = 3;
 
 /* ---------- canvases ---------- */
 const $ = id => document.getElementById(id);
-const cv = $('decor'), ctx = cv.getContext('2d');
+const cv = $('decor'), ctx = cv.getContext('2d', { alpha: false });   // opaque : composition plus légère
 const fxc = $('effets'), fx = fxc.getContext('2d');
 const hors = (w, h) => { const c = document.createElement('canvas'); c.width = Math.ceil(w); c.height = Math.ceil(h); return c; };
-let merC, merX, tmpC, tmpX, lumC, lumX, chaudC, etalBeau, etalOrage, sombres = {};
+let merC, merX, tmpC, tmpX, chaudC, etalBeau, etalOrage, sombres = {};
 const police = () => { try { const f = new FontFace('Ardoise', 'url(polices/shantell-sans-600.woff2)'); document.fonts.add(f); return f.load().catch(() => null); } catch (e) { return Promise.resolve(); } };
 const assombrir = (src, w, h) => {      // même assombrissement que les bateaux, pour le mauvais temps
   const s = hors(w, h), x = s.getContext('2d');
@@ -102,6 +107,27 @@ const assombrir = (src, w, h) => {      // même assombrissement que les bateaux
 };
 
 /* ---------- la pêche du jour : 8 produits sur deux rangées, chacun avec son ardoise ---------- */
+/* lueurs et faisceaux : dessinés une fois, puis seulement posés (drawImage) */
+function lueur(rgb, stops, taille = 128) {
+  const c = hors(taille, taille), x = c.getContext('2d'), r = taille / 2, g = x.createRadialGradient(r, r, 0, r, r, r);
+  stops.forEach(([o, a]) => g.addColorStop(o, `rgba(${rgb},${a})`)); x.fillStyle = g; x.fillRect(0, 0, taille, taille); return c;
+}
+const SPR = {};
+function preparerSprites() {
+  SPR.fenetre = lueur('255,205,110', [[0, 0.95], [0.3, 0.45], [1, 0]]);
+  SPR.mat = lueur('255,250,235', [[0, 0.95], [0.3, 0.45], [1, 0]]);
+  SPR.phare = lueur('255,236,190', [[0, 0.9], [0.35, 0.45], [1, 0]]);
+  SPR.halo = lueur('255,175,85', [[0, 0.3], [0.4, 0.1], [1, 0]], 256);
+  SPR.flamme = lueur('255,230,170', [[0, 0.75], [1, 0]]);
+  // le reflet d'une fenêtre sur l'eau
+  let c = hors(16, 128), x = c.getContext('2d'), g = x.createLinearGradient(0, 0, 0, 128);
+  g.addColorStop(0, 'rgba(255,200,110,0.32)'); g.addColorStop(1, 'rgba(255,200,110,0)'); x.fillStyle = g; x.fillRect(0, 0, 16, 128); SPR.reflet = c;
+  // le pinceau du phare, pointe à gauche (x 0), long de 760, demi-largeur 32
+  c = hors(760, 64); x = c.getContext('2d'); g = x.createLinearGradient(0, 0, 760, 0);
+  g.addColorStop(0, 'rgba(255,236,190,1)'); g.addColorStop(0.5, 'rgba(255,236,190,0.35)'); g.addColorStop(1, 'rgba(255,236,190,0)');
+  x.fillStyle = g; x.beginPath(); x.moveTo(0, 30); x.lineTo(760, 0); x.lineTo(760, 64); x.lineTo(0, 34); x.closePath(); x.fill(); SPR.pinceau = c;
+}
+
 let peche = [];
 function tirerPeche() {
   const noms = Object.keys(PRODUITS).sort(() => Math.random() - 0.5).slice(0, 8);
@@ -156,13 +182,25 @@ function composerEtal() {
   const g = c.createLinearGradient(0, 495 * K, 0, 560 * K); g.addColorStop(0, 'rgba(20,10,0,0)'); g.addColorStop(1, 'rgba(20,10,0,.5)');
   c.fillStyle = g; c.fillRect(0, 495 * K, 1920, 1200);
   c.globalCompositeOperation = 'destination-in'; c.drawImage(etalBeau, 0, 0);
+  // la lumière, autour de la position moyenne de la flamme (la lampe ne s'écarte que de quelques pixels)
+  const s = LAMPE.s, fxm = ACCROCHE.x + (LAMPE.fx - LAMPE.hx) * s, fym = ACCROCHE.y + (LAMPE.fy - LAMPE.hy) * s;
+  const lum = hors(1920, 1200), l = lum.getContext('2d'); l.setTransform(K, 0, 0, K, 0, 0);
+  const R = 640, gr = l.createRadialGradient(fxm, fym, 0, fxm, fym, R);
+  [[0, 1], [0.08, 0.97], [0.22, 0.8], [0.4, 0.5], [0.6, 0.24], [0.8, 0.08], [1, 0]].forEach(([o, a]) => gr.addColorStop(o, `rgba(0,0,0,${a})`));
+  l.fillStyle = gr; l.fillRect(fxm - R, fym - R, 2 * R, 2 * R);
+  l.setTransform(1, 0, 0, 1, 0, 0); l.globalCompositeOperation = 'source-in'; l.drawImage(chaudC, 0, 0);
+  // la surface prend la couleur chaude (recouvrement) puis gagne de la lumière (addition)
+  c = etalOrage.getContext('2d');
+  c.globalAlpha = 0.72; c.drawImage(lum, 0, 0);
+  c.globalCompositeOperation = 'lighter'; c.globalAlpha = 0.5; c.drawImage(lum, 0, 0);
+  c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
+  chaudC = null;                       // libéré : seule la version éclairée sert
 }
 
 function preparer() {
   merC = hors(1280 * K, 112 * K); merX = merC.getContext('2d');
   tmpC = hors(1280 * K, 112 * K); tmpX = tmpC.getContext('2d');
-  lumC = hors(1920, 1200); lumX = lumC.getContext('2d');
-  tirerPeche(); composerEtal();
+  preparerSprites(); tirerPeche(); composerEtal();
   // bateaux assombris pour le mauvais temps
   for (const n in TYPES) {
     const im = IMG['bateau-' + n];
@@ -236,21 +274,16 @@ function faisceau() {
   const th = t * 2 * Math.PI / 7.5, c = Math.cos(th), s = Math.sin(th);
   ctx.save(); ctx.globalCompositeOperation = 'lighter';
   // le pinceau : sa longueur visible suit le cosinus (il tourne autour de la tour)
-  const L = 760 * Math.abs(c), dir = Math.sign(c) || 1, demi = 6 + 26 * Math.abs(c);
-  if (L > 8) {
-    const g = ctx.createLinearGradient(PHARE.x, 0, PHARE.x + dir * L, 0);
-    const a0 = 0.42 * meteo * (0.55 + 0.45 * Math.max(0, s));
-    g.addColorStop(0, `rgba(255,236,190,${a0})`); g.addColorStop(0.5, `rgba(255,236,190,${a0 * 0.35})`); g.addColorStop(1, 'rgba(255,236,190,0)');
-    ctx.fillStyle = g; ctx.beginPath();
-    ctx.moveTo(PHARE.x, PHARE.y - 2); ctx.lineTo(PHARE.x + dir * L, PHARE.y - demi); ctx.lineTo(PHARE.x + dir * L, PHARE.y + demi); ctx.lineTo(PHARE.x, PHARE.y + 2);
-    ctx.closePath(); ctx.fill();
+  const ac = Math.abs(c), dir = Math.sign(c) || 1, demi = 6 + 26 * ac;
+  if (ac > 0.01) {
+    ctx.globalAlpha = 0.42 * meteo * (0.55 + 0.45 * Math.max(0, s));
+    ctx.translate(PHARE.x, PHARE.y); ctx.scale(dir * ac, demi / 32);
+    ctx.drawImage(SPR.pinceau, 0, -32); ctx.setTransform(K, 0, 0, K, 0, 0);
   }
   // l'éclat quand le faisceau passe face à nous, et le halo permanent
-  const eclat = Math.pow(Math.max(0, s), 10);
-  const r = 9 + 70 * eclat;
-  const h = ctx.createRadialGradient(PHARE.x, PHARE.y, 0, PHARE.x, PHARE.y, r);
-  h.addColorStop(0, `rgba(255,246,215,${0.9 * meteo})`); h.addColorStop(0.35, `rgba(255,230,170,${(0.35 + 0.4 * eclat) * meteo})`); h.addColorStop(1, 'rgba(255,220,150,0)');
-  ctx.fillStyle = h; ctx.fillRect(PHARE.x - r, PHARE.y - r, 2 * r, 2 * r);
+  const eclat = Math.pow(Math.max(0, s), 10), r = 9 + 70 * eclat;
+  ctx.globalAlpha = meteo * (0.75 + 0.25 * eclat);
+  ctx.drawImage(SPR.phare, PHARE.x - r, PHARE.y - r, 2 * r, 2 * r);
   ctx.restore();
 }
 
@@ -351,16 +384,13 @@ function dessinerBateau(b) {
       const x = fxp - T.w / 2, y = fyp - T.wl;
       const scint = 0.85 + 0.15 * Math.sin(t * 9 + fxp);
       const r = (k === 'm' ? 1.5 + 0.022 * b.L : 2.5 + 0.04 * b.L) / ech;   // rayon voulu dans la scène, ramené à l'image
-      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-      const col = k === 'm' ? '255,250,235' : '255,205,110';
-      g.addColorStop(0, `rgba(${col},${0.95 * meteo * scint})`); g.addColorStop(0.3, `rgba(${col},${0.45 * meteo * scint})`); g.addColorStop(1, `rgba(${col},0)`);
-      ctx.fillStyle = g; ctx.fillRect(x - r, y - r, 2 * r, 2 * r);
+      ctx.globalAlpha = meteo * scint;
+      ctx.drawImage(k === 'm' ? SPR.mat : SPR.fenetre, x - r, y - r, 2 * r, 2 * r);
       if (k === 'f') {                                   // reflet tremblant sous le bateau
         const rh = T.h * 0.5, rw = r * 0.45, ox = Math.sin(t * 5 + fxp) * rw * 0.3;
-        const gr = ctx.createLinearGradient(0, 4, 0, rh);
-        gr.addColorStop(0, `rgba(255,200,110,${0.32 * meteo})`); gr.addColorStop(1, 'rgba(255,200,110,0)');
-        ctx.fillStyle = gr; ctx.fillRect(x - rw / 2 + ox, 4, rw, rh);
+        ctx.globalAlpha = meteo; ctx.drawImage(SPR.reflet, x - rw / 2 + ox, 4, rw, rh);
       }
+      ctx.globalAlpha = 1;
     }
     ctx.globalCompositeOperation = 'source-over';
   }
@@ -409,7 +439,6 @@ function lampe() {
   flamme.x = ACCROCHE.x + dx * Math.cos(ang) - dy * Math.sin(ang);
   flamme.y = ACCROCHE.y + dx * Math.sin(ang) + dy * Math.cos(ang);
   intensite = 0.9 + 0.05 * Math.sin(t * 13.7) + 0.04 * Math.sin(t * 23.1 + 1) + 0.03 * Math.sin(t * 5.3);
-  if (meteo > 0.004) eclairage();
   // la lampe : éteinte par beau temps, allumée par-dessus en fondu
   ctx.save(); ctx.translate(ACCROCHE.x, ACCROCHE.y); ctx.rotate(ang);
   const e = IMG['lampe-eteinte'], a = IMG.lampe;
@@ -417,20 +446,6 @@ function lampe() {
   if (meteo > 0.004) { ctx.globalAlpha = meteo >= 0.996 ? 1 : meteo; ctx.drawImage(a, -LAMPE.hx * s, -LAMPE.hy * s, a.width * s, a.height * s); }
   ctx.restore();
 }
-function eclairage() {
-  // 1. la lumière : on révèle, autour de la flamme, l'étal et la cabane dans des couleurs chaudes
-  lumX.setTransform(1, 0, 0, 1, 0, 0); lumX.globalCompositeOperation = 'source-over'; lumX.clearRect(0, 0, 1920, 1200);
-  lumX.setTransform(K, 0, 0, K, 0, 0);
-  const R = 640, g = lumX.createRadialGradient(flamme.x, flamme.y, 0, flamme.x, flamme.y, R);
-  [[0, 1], [0.08, 0.97], [0.22, 0.8], [0.4, 0.5], [0.6, 0.24], [0.8, 0.08], [1, 0]].forEach(([o, a]) => g.addColorStop(o, `rgba(0,0,0,${a})`));
-  lumX.fillStyle = g; lumX.fillRect(flamme.x - R, flamme.y - R, 2 * R, 2 * R);
-  lumX.globalCompositeOperation = 'source-in'; lumX.setTransform(1, 0, 0, 1, 0, 0); lumX.drawImage(chaudC, 0, 0);
-  // la surface prend la couleur chaude (recouvrement) puis gagne de la lumière (addition)
-  ctx.globalAlpha = meteo * 0.78 * intensite; ctx.drawImage(lumC, 0, 0, 1280, 800);
-  ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = meteo * 0.55 * intensite; ctx.drawImage(lumC, 0, 0, 1280, 800);
-  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
-}
-
 /* ---------- effets au premier plan : halo, pluie, éclaboussures, bords assombris ---------- */
 function initPluie() {
   for (let i = 0; i < 420; i++) gouttes.push(nouvelleGoutte(true));
@@ -440,46 +455,47 @@ function nouvelleGoutte(partout) {
   return { x: hasard(-100, 1400), y: partout ? hasard(-40, 800) : hasard(-60, -10), pres,
            v: pres ? hasard(1150, 1450) : hasard(700, 950), l: pres ? hasard(22, 34) : hasard(10, 18), a: pres ? hasard(0.3, 0.5) : hasard(0.16, 0.3) };
 }
+let fxVide = true;
 function effets() {
-  fx.setTransform(1, 0, 0, 1, 0, 0); fx.clearRect(0, 0, fxc.width, fxc.height);
-  if (meteo < 0.004) return;
-  fx.setTransform(K, 0, 0, K, 0, 0);
+  $('voile').style.opacity = meteo.toFixed(3);
+  if (meteo < 0.004) { if (!fxVide) { fx.clearRect(0, 0, 1280, 800); fxVide = true; } return; }
+  fxVide = false;
+  fx.clearRect(0, 0, 1280, 800);
   // halo de la flamme (s'ajoute à ce qui est derrière, y compris la pluie qu'il éclaire)
   fx.globalCompositeOperation = 'lighter';
-  const r1 = 36, r2 = 170;
-  let g = fx.createRadialGradient(flamme.x, flamme.y, 0, flamme.x, flamme.y, r2);
-  g.addColorStop(0, `rgba(255,190,100,${0.3 * meteo * intensite})`); g.addColorStop(0.4, `rgba(255,160,70,${0.1 * meteo * intensite})`); g.addColorStop(1, 'rgba(255,150,60,0)');
-  fx.fillStyle = g; fx.fillRect(flamme.x - r2, flamme.y - r2, 2 * r2, 2 * r2);
-  g = fx.createRadialGradient(flamme.x, flamme.y, 0, flamme.x, flamme.y, r1);
-  g.addColorStop(0, `rgba(255,235,180,${0.75 * meteo * intensite})`); g.addColorStop(1, 'rgba(255,200,120,0)');
-  fx.fillStyle = g; fx.fillRect(flamme.x - r1, flamme.y - r1, 2 * r1, 2 * r1);
-  fx.globalCompositeOperation = 'source-over';
-  // pluie : poussée par le vent (vers la gauche), éclairée en orange près de la lampe
-  const vent = -0.2;
-  fx.lineCap = 'round';
-  for (const d of gouttes) {
+  fx.globalAlpha = meteo * intensite;
+  fx.drawImage(SPR.halo, flamme.x - 170, flamme.y - 170, 340, 340);
+  fx.drawImage(SPR.flamme, flamme.x - 36, flamme.y - 36, 72, 72);
+  fx.globalAlpha = 1; fx.globalCompositeOperation = 'source-over';
+  // pluie : poussée par le vent (vers la gauche) ; trois tracés (gouttes lointaines, proches, et celles qu'éclaire la lampe)
+  const vent = -0.2, n = Math.round(gouttes.length * qualite);
+  const loin = new Path2D(), pres = new Path2D(), chaudes = new Path2D();
+  for (let i = 0; i < n; i++) {
+    const d = gouttes[i];
     d.y += d.v * dt; d.x += d.v * vent * dt;
     if (d.y > 810 || d.x < -120) { Object.assign(d, nouvelleGoutte(false)); if (d.pres && Math.random() < 0.6) ploufs.push({ x: hasard(340, 1280), y: hasard(330, 505), age: 0 }); continue; }
-    const dist = Math.hypot(d.x - flamme.x, d.y - flamme.y), chaud = Math.max(0, 1 - dist / 190);
-    const r = Math.round(200 + 55 * chaud), gg = Math.round(214 - 14 * chaud), b = Math.round(228 - 110 * chaud);
-    fx.strokeStyle = `rgba(${r},${gg},${b},${(d.a + 0.45 * chaud) * meteo})`; fx.lineWidth = d.pres ? 1.6 : 1;
-    fx.beginPath(); fx.moveTo(d.x, d.y); fx.lineTo(d.x - d.l * vent, d.y - d.l); fx.stroke();
+    const dx = d.x - flamme.x, dy = d.y - flamme.y;
+    const tr = dx * dx + dy * dy < 190 * 190 ? chaudes : d.pres ? pres : loin;
+    tr.moveTo(d.x, d.y); tr.lineTo(d.x - d.l * vent, d.y - d.l);
   }
+  fx.lineCap = 'butt';
+  fx.strokeStyle = `rgba(200,214,228,${0.23 * meteo})`; fx.lineWidth = 1; fx.stroke(loin);
+  fx.strokeStyle = `rgba(205,216,230,${0.4 * meteo})`; fx.lineWidth = 1.6; fx.stroke(pres);
+  fx.strokeStyle = `rgba(255,214,150,${0.6 * meteo})`; fx.lineWidth = 1.3; fx.stroke(chaudes);
   // éclaboussures sur la glace de l'étal
-  for (let k = ploufs.length - 1; k >= 0; k--) {
-    const p = ploufs[k]; p.age += dt; const u = p.age / 0.3;
-    if (u >= 1) { ploufs.splice(k, 1); continue; }
-    fx.strokeStyle = `rgba(235,242,250,${0.55 * (1 - u) * meteo})`; fx.lineWidth = 1;
-    fx.beginPath(); fx.ellipse(p.x, p.y, 2 + 7 * u, 0.8 + 2.2 * u, 0, 0, 2 * Math.PI); fx.stroke();
+  if (ploufs.length) {
+    const pl = new Path2D();
+    for (let k = ploufs.length - 1; k >= 0; k--) {
+      const p = ploufs[k]; p.age += dt; const u = p.age / 0.3;
+      if (u >= 1) { ploufs.splice(k, 1); continue; }
+      pl.moveTo(p.x + 2 + 7 * u, p.y); pl.ellipse(p.x, p.y, 2 + 7 * u, 0.8 + 2.2 * u, 0, 0, 2 * Math.PI);
+    }
+    fx.strokeStyle = `rgba(235,242,250,${0.4 * meteo})`; fx.lineWidth = 1; fx.stroke(pl);
   }
-  // bords assombris
-  g = fx.createRadialGradient(640, 380, 300, 640, 400, 860);
-  g.addColorStop(0, 'rgba(5,10,18,0)'); g.addColorStop(1, `rgba(5,10,18,${0.45 * meteo})`);
-  fx.fillStyle = g; fx.fillRect(0, 0, 1280, 800);
 }
 
 /* ---------- boucle ---------- */
-let fpsN = 0, fpsT = 0;
+let fpsN = 0, fpsT = 0, qualite = 1, dtMoy = 1 / 60;
 function image(ms) {
   const s = ms / 1000; dt = Math.min(0.05, dernier ? s - dernier : 0); dernier = s; t += dt;
   // le temps change en 3 s
@@ -488,8 +504,10 @@ function image(ms) {
   ciel(); oiseaux(); mer(); jetee(); faisceau();
   majBateaux(); dessinerSillage(); bateaux.forEach(dessinerBateau);
   premierPlan(); lampe(); effets();
+  dtMoy += (dt - dtMoy) * 0.05;
+  if (meteo > 0.5 && dtMoy > 0.021 && qualite > 0.45) { qualite -= 0.15; dtMoy = 1 / 60; }   // moins de gouttes, pas à pas
   fpsN++; fpsT += dt;
-  if (fpsT > 0.5) { $('compteur').textContent = `${Math.round(fpsN / fpsT)} img/s · ${bateaux.length} bateau${bateaux.length > 1 ? 'x' : ''}`; fpsN = 0; fpsT = 0; }
+  if (fpsT > 0.5) { $('compteur').textContent = `${Math.round(fpsN / fpsT)} img/s · ${bateaux.length} bateau${bateaux.length > 1 ? 'x' : ''}${qualite < 1 ? ` · pluie ${Math.round(qualite * 100)} %` : ''}`; fpsN = 0; fpsT = 0; }
   requestAnimationFrame(image);
 }
 
@@ -509,7 +527,7 @@ $('bPeche').onclick = () => { tirerPeche(); composerEtal(); };
 function poserMeteo(v) {
   meteoCible = v;
   $('bMeteo').textContent = v ? '☀ Beau temps' : '⛈ Mauvais temps';
-  $('capt').classList.toggle('orage', !!v);
+  $('captVoile').classList.toggle('orage', !!v);
 }
 let captOui = true;
 $('bCapt').onclick = () => { captOui = !captOui; $('capt').classList.toggle('cache', !captOui); $('bCapt').textContent = `Capitaine : ${captOui ? 'oui' : 'non'}`; };
@@ -542,7 +560,7 @@ Promise.all([...NOMS, ...Object.keys(PRODUITS).map(n => 'produit-' + n)].map(cha
 }).catch(e => { $('chargement').textContent = 'Images introuvables : ' + e; });
 
 // pour les essais automatiques
-window.MAQ = { get lum() { return lumC; }, get chaud() { return chaudC; }, get flamme() { return flamme; }, get meteo() { return meteo; }, set meteo(v) { poserMeteo(v); meteo = v; }, get peche() { return peche; }, tirerPeche, composerEtal, bateaux, nouveauBateau, vols, nouveauVol };
+window.MAQ = { get flamme() { return flamme; }, get meteo() { return meteo; }, set meteo(v) { poserMeteo(v); meteo = v; }, get peche() { return peche; }, tirerPeche, composerEtal, bateaux, nouveauBateau, vols, nouveauVol };
 </script>
 </body>
 </html>

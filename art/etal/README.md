@@ -40,4 +40,4 @@ python3 6-lampe-eteinte.py  # la lampe éteinte, éclaircie pour le plein jour
 ## Points ouverts
 
 - Le capitaine, assombri par un filtre, ne reçoit pas la lumière de la lampe.
-- Sur ordinateur sans carte graphique, 20 à 33 images/s ; à mesurer sur la tablette.
+- Fluidité : mesurée par le parent sur la tablette le 9 octobre 2026, 60 images/s par beau temps mais 20 par mauvais temps. Optimisé le 10 octobre (temps de calcul d'une image par mauvais temps : 32,5 ms → 9,5 ms en essai automatique, contre 7,8 ms par beau temps) : la lumière de la lampe est cuite une fois dans l'étal du mauvais temps au lieu de quatre passes plein écran par image ; lueurs, halos, reflets et pinceau du phare dessinés une fois puis seulement posés ; pluie tracée en trois traits groupés sur un calque à la taille de la scène ; assombrissement des bords et du capitaine par des voiles CSS au lieu d'un dégradé redessiné et d'un filtre sur la vidéo. Si l'image dépasse encore 21 ms en moyenne, la pluie s'allège d'elle-même (jusqu'à 45 % des gouttes ; le compteur l'indique). À remesurer sur la tablette.

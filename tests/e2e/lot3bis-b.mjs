@@ -41,7 +41,7 @@ export const open = async (q = "", { prep = null, prepArg = null, size = [1280, 
   await page.goto(url + "?nosw&voix=rapide&son=non" + q); await page.waitForFunction(() => window.__ready !== undefined);
   return { page, context, errors };
 };
-const tap = async (page, sel) => { await page.tap(sel, { force: true }); await page.waitForTimeout(250); };
+const tap = async (page, sel, ms = 250) => { await page.tap(sel, { force: true }); await page.waitForTimeout(ms); };
 const shot = (page, name) => page.screenshot({ path: join(OUT, `${name}.png`) });
 // les boîtes (px logiques) des éléments d'un sélecteur
 const boxes = (page, sel) => page.evaluate((sel) => { const ui = document.querySelector("#ui"), k = ui.getBoundingClientRect().width / 1280, o = ui.getBoundingClientRect(); return [...document.querySelectorAll(sel)].map((e) => { const r = e.getBoundingClientRect(); return { key: e.dataset.key, x: (r.left - o.left) / k, y: (r.top - o.top) / k, w: r.width / k, h: r.height / k }; }); }, sel);

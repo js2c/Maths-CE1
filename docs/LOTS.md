@@ -37,7 +37,7 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Entre « Les voiliers » et « Les leçons » : le lot « Correctifs »** (décision du parent du 6 octobre 2026, fiche 2 bis). La confrontation de la spécification avec le code est faite (`docs/ECARTS-SPEC.md`, #37) et ses écarts sont tranchés ; ce lot les applique. Il ne peut pas tourner en même temps qu'un autre lot (il modifie `docs/SPEC.md`). Il n'est pas dans le tableau ci-dessus : son état est tenu ici. **État : fait** (PR #39, à fusionner ; 8 phrases nouvelles, à fabriquer avec celles des lots « Mascotte » et « Les voiliers »).
 
-**Après les cinq lots : le lot « Correctifs de la tablette »** (premier essai du parent sur la tablette, 8 octobre 2026 ; fiche 6). **État : fait** (PR #46, à fusionner ; 278 phrases nouvelles, environ 2,2 Mo, à fabriquer).
+**Après les cinq lots : le lot « Correctifs de la tablette »** (premier essai du parent sur la tablette, 8 octobre 2026 ; fiche 6). **État : fait** (PR #46, à fusionner ; 282 phrases nouvelles, environ 2,2 Mo, à fabriquer).
 
 **Pourquoi cet ordre.**
 

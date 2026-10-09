@@ -10,7 +10,7 @@
 //   - le journal des raccords de la mascotte : combien de fondus forcés ;
 //   - aucune erreur dans la page.
 //   node tests/e2e/mascotte.mjs [--out dossier] [--seul 1280|1920]
-import { chromium } from "./navigateur.mjs";
+import { chromium, voixPermise } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
@@ -118,6 +118,8 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   check(!e.m.suspendue, `${W} reprise : la mascotte reprend`);
 
   // ---- 5. la flèche : « sauter » (sur la tortue), « placer » (sur le poisson, jamais sur la réponse)
+  // (« sauter » imposé au niveau 3, qui n'a pas ce format dans l'application : ses consignes, de 0 à 20, ne sont pas fabriquées)
+  voixPermise(/^La tortue (part de|est sur) \d+/, /^Elle fait \d+ sauts\./);
   await go(`&choix=1:3&format=sauter${ROW}`); await page.tap(".play", { force: true });
   check(await until(() => window.__app.fleche.visible, null, 60000), `${W} sauter : la flèche`); await page.waitForTimeout(700); await shot("20-fleche-sauter");
   await go(`&choix=1:2&format=placer${ROW}`); await page.tap(".play", { force: true });

@@ -129,7 +129,7 @@ for (const T of TAILLES) {
     await page.waitForFunction(() => window.__said.some((t) => t.startsWith("Il manque…")), null, { timeout: 30000 }); await page.waitForTimeout(400);
     await shot(page, "09-pas-assez", T);
     await attend(page);
-    await page.evaluate(async () => { const { solution } = await import("./js/modules/etal/etal.js"); const e = window.__app.etal, q = e.q, cfg = window.__app.module6.niveaux[q.niveau - 1]; const deja = e.api.soucoupe(), s = [...solution(cfg, q.prix, q.portefeuille)]; for (const v of deja) s.splice(s.indexOf(v), 1); for (const v of s) await e.api.deposer(v); });
+    await page.evaluate(async () => { const { solution } = await import("./js/modules/etal/etal.js"); const e = window.__app.etal, q = e.q, cfg = window.__app.module6.niveaux[q.niveau - 1]; const deja = e.api.soucoupe(), reste = [...q.portefeuille]; for (const v of deja) reste.splice(reste.indexOf(v), 1); for (const v of solution(cfg, q.prix - deja.reduce((x, y) => x + y, 0), reste)) await e.api.deposer(v); });
     await page.waitForTimeout(300); await coche(page); await attend(page);
     const r2 = (await reponses(page)).at(-1);
     check(!r2.juste && r2.corrigee && r2.erreur === "M1", `${W} : pas assez, complété : erreur corrigée M1 (${JSON.stringify(r2)})`);
@@ -200,7 +200,7 @@ for (const T of TAILLES) {
     await page.tap(".play", { force: true }); await attend(page); await page.waitForTimeout(500);
     let q = await question(page);
     check(q.type === "rendre" && q.billet > q.prix, `${W} : niveau 7, le billet dans la soucoupe (${q.prix} / ${q.billet})`);
-    for (const d of String((q.billet - q.prix) / 100)) await page.keyboard.press(d);
+    for (const d of String((q.billet - q.prix) / 100)) { await page.keyboard.press(d); await page.waitForTimeout(220); }
     await page.waitForTimeout(300);
     await shot(page, "20-niveau7-pave", T);
     await page.keyboard.press("Enter");
@@ -231,7 +231,7 @@ for (const T of TAILLES) {
     await shot(page, nom, T);
     await coche(page); await attend(page);
     check((await reponses(page)).at(-1).juste, `${W} : niveau ${n}, payé juste (${q.prix})`);
-    if (cran === "facile") check(/(euros? \d+\.|centimes\.)/.test(await said(page)), `${W} : niveau ${n}, « plus facile » : le total est dit`);
+    if (cran === "facile") check(((await said(page)).match(/\d+ euros?( \d+)?\.|\d+ centimes\./g) ?? []).length >= 2, `${W} : niveau ${n}, « plus facile » : le total est dit`);
     await fin(page, context, errors, `${W} niveau ${n}`);
   }
   // 7. niveau 1 : la mauvaise pièce (M7)

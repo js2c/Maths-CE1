@@ -211,6 +211,8 @@ const API = {
   // ---- pour les parcours de test
   // les boîtes de l'argent sorti et posé (px de la scène) : ce que l'enfant touche (la bulle ne les couvre jamais)
   boites: () => items.filter(i => (i.lieu === 'sortie' || i.lieu === 'soucoupe') && i.op > 0).map(i => { const w = LARG[i.v] * i.sc, h = hauteur(i) * i.sc; return [i.x - w / 2 - 6, i.y - h / 2 - 6, i.x + w / 2 + 6, i.y + h / 2 + 6]; }),
+  // les produits allumés, leur ardoise comprise (pour la bulle : elle ne les couvre jamais)
+  allumes: () => souleves.filter(s => s.el.style.visibility !== 'hidden').map(s => { const r = cadre(peche[s.i]); return [r.x0 + 14, r.y0 + 14, r.x0 + r.w - 14, r.y0 + r.h - 14]; }),
   // pour les parcours de test : la boîte à l'écran de chaque objet
   rects: () => items.map(i => { const r = i.el.getBoundingClientRect(); return { v: i.v, lieu: i.lieu, x: r.x + r.width / 2, y: r.y + r.height / 2 }; }),
   etat: () => ({ pf: pfEtat, meteo, meteoCible, qualite, items: items.map(i => ({ v: i.v, lieu: i.lieu })), soucoupe: API.soucoupe(), allumes: souleves.map(s => peche[s.i]?.n), peche: API.peche(), verrou: VERROU }),

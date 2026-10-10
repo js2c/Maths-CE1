@@ -147,6 +147,7 @@ export class EtalScreen {
     const e = this.api.etat(), out = [ZONES.soucoupe];
     if (this.q?.type === "rendre") out.push(ZONES.pave); else out.push(e.pf === "ferme" ? ZONES.ferme : ZONES.ouvert);
     out.push(...this.api.boites()); // (l'argent sorti, au-dessus du portefeuille, et celui de la soucoupe)
+    out.push(...this.api.allumes()); // (le produit allumé et son ardoise : la voix en parle)
     if (this.ligneVue) out.push(PLAQUE);
     return out;
   }
@@ -178,9 +179,17 @@ export class EtalScreen {
     const decor = () => { const ps = this.c.niveaux[1].prix; return 100 * (Math.floor(ps[0] / 100) + Math.floor(this.rnd() * ((ps[1] - ps[0]) / 100 + 6))); };
     for (const i of this.vendus ?? []) { const n = libres()[Math.floor(this.rnd() * libres().length)]; if (n) { remplacer.push([i, n, decor()]); noms[i] = n; } }
     this.vendus = [];
-    (q.produits ?? []).forEach((n, k) => {
+    // le produit allumé est toujours dans une colonne des bords (places 0, 3, 4, 7) : l'argent sorti du portefeuille, au-dessus
+    // de la glace, couvre les deux colonnes du milieu. Déjà au milieu, il change de place avec un autre produit.
+    const bord = (j) => j % 4 === 0 || j % 4 === 3, demandes = q.produits ?? [];
+    demandes.forEach((n, k) => {
       let i = noms.indexOf(n);
-      if (i < 0) { i = noms.findIndex((m, j) => !(q.produits ?? []).includes(m) && !allumes.includes(j)); remplacer.push([i, n, 0]); noms[i] = n; }
+      if (i < 0 || !bord(i)) {
+        const j = i, cible = [0, 3, 4, 7].filter((x) => !allumes.includes(x) && !demandes.includes(noms[x]));
+        i = cible[Math.floor(this.rnd() * cible.length)];
+        if (j >= 0) { const n2 = noms[i]; remplacer.push([j, n2, decor()]); noms[j] = n2; }
+        remplacer.push([i, n, 0]); noms[i] = n;
+      }
       prix[i] = q.prixProduits?.[k] ?? q.prix; allumes.push(i);
     });
     api.question({ remplacer, prix, allumes });

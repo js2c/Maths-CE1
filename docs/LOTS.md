@@ -504,7 +504,7 @@ Chacune suivie de « À toi ! » vers son niveau (section 3). Relancées selon l
 
 ### 8. Lot « Correctifs : passage de l'échauffement aux voiliers »
 
-(et autres défauts vus sur la tablette le 10 octobre 2026 : points 1 à 8)
+(et autres défauts vus sur la tablette le 10 octobre 2026 : points 1 à 8 ; et le nouveau logo de démarrage : point 9)
 
 **Origine** : essai du parent sur la tablette, le 10 octobre 2026. Les captures sont dans `docs/maquettes/correctifs-2/`.
 
@@ -549,6 +549,20 @@ Chacune suivie de « À toi ! » vers son niveau (section 3). Relancées selon l
 
    Vérifier sur agrandissement, à 1280 × 800, 1920 × 1200 et à la taille de la tablette (1138 × 711, densité 2,25).
 
+**Et une amélioration**
+
+9. **Le nouveau logo de l'écran de démarrage** (décision du parent du 10 octobre 2026 ; maquette validée : `art/logo/`, lire son `README.md`).
+   - **Remplacer le logo dessiné** (`demarrage.logo`, `art/src/canvas-core/sea/demarrage.ts`) par les calques de la maquette : texte, étoile, ombre, et leurs places (`art/logo/images/position.json`).
+   - **Les images vont dans `app/assets/logo/`**, copiées par un outil d'export, `art/tools/export-logo.mjs`, comme pour le récif et les voiliers. On ne les copie jamais à la main, et l'outil ne modifie jamais la maquette.
+   - **Reprendre les mouvements de la maquette tels quels**, avec ses valeurs : le va-et-vient du logo et de son ombre, le tour de l'étoile puis 2 s d'arrêt, les bulles qui montent, les étincelles, les faisceaux du lagon, le fond d'eau. S'il faut changer un mouvement, on change d'abord la maquette.
+   - **Garder sans changement** la barre de chargement (qui avance réellement), la ligne « 2026 · js2c · version », le toucher qui ferme l'écran et autorise la voix, et le fondu de sortie.
+   - **Le logo s'affiche dès l'ouverture.** Ses images (environ 165 Ko en @2x) sont chargées les toutes premières, comme l'est aujourd'hui la planche `demarrage`. Le démarrage tient toujours en moins de 3 s.
+   - **Retirer de la planche `demarrage` le logo dessiné**, qui ne sert plus, par `export-app.mjs`. La barre reste.
+   - **À la fermeture de l'écran**, arrêter la boucle d'animation et libérer les images.
+   - **Mesurer le temps d'image sur cet écran.** Si la moyenne dépasse 20 ms, alléger : moins de bulles, puis faisceaux figés. C'est la règle de `CLAUDE.md`.
+   - **Le logo de l'espace parent et l'icône de l'application ne changent pas** : ce n'est pas demandé.
+   - **Mettre à jour** `docs/SPEC.md` (section 2, l'écran de démarrage) et `docs/ARCHITECTURE.md`, avec l'outil d'export.
+
 **Voix** : en principe aucune phrase nouvelle. S'il y en a, les lister dans la demande de fusion.
 
 **Recette** : la méthode commune, avec :
@@ -556,3 +570,4 @@ Chacune suivie de « À toi ! » vers son niveau (section 3). Relancées selon l
 - des captures à 1138 × 711, densité 2,25 ;
 - une capture de chaque écran de choix avec une tuile sélectionnée ;
 - le démarrage des voiliers filmé image par image, sans aucune image de l'ancienne mer.
+- l'écran de démarrage, à 1280 × 800 et à 1138 × 711 (densité 2,25), comparé à la maquette `art/logo/` : une capture fixe, puis une suite d'images sur 4 s (le va-et-vient, le tour de l'étoile, les bulles qui montent) ; le temps d'image mesuré sur cet écran.

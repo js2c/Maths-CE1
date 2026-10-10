@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Logo de démarrage</title>
+<!-- MAQUETTE DU LOGO DE DÉMARRAGE, validée par le parent le 10 octobre 2026 (README.md de ce dossier). Référence des mouvements
+     pour l'application (app/js/session/demarrage.js) : ne pas la modifier pour l'intégration. -->
+<style>
+:root { --eau-haut: #2a8f97; --eau: #146f7a; --eau-bas: #0b4f5b; --fond: #0a4a55; }
+/* l'écran est sous l'eau dans les deux thèmes : mêmes couleurs */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --eau: #146f7a; --eau-bas: #0b4f5b; --fond: #0a4a55; } }
+:root[data-theme="dark"] { --eau: #146f7a; --eau-bas: #0b4f5b; --fond: #0a4a55; }
+html, body { margin: 0; height: 100%; background: var(--fond); overflow: hidden; touch-action: none; }
+body { display: grid; place-items: center; }
+#cadre { position: relative; overflow: hidden; }
+#scene { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; transform-origin: 0 0; cursor: pointer; }
+.couche { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; pointer-events: none; }
+#fond { background:
+  radial-gradient(ellipse 760px 520px at 50% -6%, rgba(120, 214, 214, 0.45) 0%, rgba(80, 180, 186, 0.18) 45%, rgba(0, 0, 0, 0) 75%),
+  radial-gradient(ellipse 1100px 720px at 50% 42%, var(--eau) 0%, #11646f 55%, var(--eau-bas) 100%); }
+#voile { background: radial-gradient(ellipse 900px 620px at 50% 46%, rgba(0,0,0,0) 55%, rgba(3, 30, 38, 0.35) 100%); }
+/* le logo : un groupe qui avance et recule doucement (« va-et-vient d'avant en arrière ») */
+#logo { position: absolute; left: 298px; top: 76px; width: 684px; height: 447px; transform-origin: 50% 55%;
+  animation: respire 3.6s ease-in-out infinite; will-change: transform; }
+#logo img { position: absolute; display: block; pointer-events: none; user-select: none; -webkit-user-drag: none; }
+#texte { left: 0; top: 0; width: 684px; height: 447px; }
+#ombre { left: -48px; top: -48px; width: 780px; height: 543px; animation: ombre 3.6s ease-in-out infinite; will-change: transform, opacity; }
+#etoile { left: 195px; top: 307px; width: 112px; height: 113px; transform-origin: 50% 52%;
+  animation: tour 3.2s infinite; will-change: transform; }
+@keyframes respire { 0%, 100% { transform: scale(0.975) translateY(3px); } 50% { transform: scale(1.03) translateY(-5px); } }
+@keyframes ombre { 0%, 100% { transform: translate(4px, 10px) scale(0.99); opacity: 0.75; } 50% { transform: translate(8px, 24px) scale(1.02); opacity: 0.5; } }
+/* l'étoile fait un tour sur elle-même (1,2 s), puis s'arrête 2 s */
+@keyframes tour {
+  0% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.45, 0, 0.3, 1); }
+  37.5%, 100% { transform: rotate(360deg); } }
+/* la barre de chargement (celle de l'application) et les petites lignes */
+.barre { position: absolute; left: 374px; top: 571px; width: 532px; height: 58px; }
+#plein { clip-path: inset(0 97.7% 0 0); transition: clip-path 0.25s linear; }
+#scene.pret .barre { animation: barre-prete 1.6s ease-in-out infinite; }
+@keyframes barre-prete { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.12); } }
+#info { position: absolute; left: 468px; top: 700px; width: 343px; height: 34px; }
+#scene.partir { opacity: 0; transition: opacity 0.4s ease-out; }
+#fps { position: fixed; right: 8px; bottom: 6px; font: 12px/1.2 system-ui, sans-serif; color: rgba(200, 235, 235, 0.55); pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { #logo, #ombre, #etoile { animation-duration: 0s; } }
+</style>
+</head>
+<body>
+<div id="cadre">
+  <div id="scene">
+    <div id="fond" class="couche"></div>
+    <canvas id="rayons" class="couche"></canvas>
+    <canvas id="bulles" class="couche"></canvas>
+    <div id="voile" class="couche"></div>
+    <div id="logo">
+      <img id="ombre" alt="" src="images/ombre.webp">
+      <img id="texte" alt="Maths CE1" src="images/texte@2x.webp">
+      <img id="etoile" alt="" src="images/etoile@2x.webp">
+    </div>
+    <canvas id="devant" class="couche"></canvas>
+    <img id="vide" class="barre" alt="" src="images/barre-vide.webp">
+    <img id="plein" class="barre" alt="" src="images/barre-pleine.webp">
+    <img id="info" alt="2026 · js2c · version" src="images/info.png">
+  </div>
+</div>
+<div id="fps"></div>
+<script>
+"use strict";
+const W = 1280, H = 800;
+const scene = document.getElementById("scene"), cadre = document.getElementById("cadre");
+const cRay = document.getElementById("rayons"), cBul = document.getElementById("bulles"), cDev = document.getElementById("devant");
+let k = 1, dpr = 1;
+
+// ------------------------------------------------ hasard reproductible et bruit lisse (comme le lagon)
+function parkMiller(seed) { let s = seed % 2147483647; if (s <= 0) s += 2147483646; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+const rnd = parkMiller(97), R = (a, b) => a + (b - a) * rnd();
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+const TAB = Array.from({ length: 256 }, () => rnd() * 2 - 1);
+function noise(x) { const i = Math.floor(x), f = x - i, u = f * f * (3 - 2 * f); return TAB[i & 255] * (1 - u) + TAB[(i + 1) & 255] * u; }
+
+// ------------------------------------------------ mise à l'échelle de la scène dans l'écran
+function ajuster() {
+  k = Math.min(innerWidth / W, innerHeight / H); dpr = Math.min(window.devicePixelRatio || 1, 3);
+  cadre.style.width = `${W * k}px`; cadre.style.height = `${H * k}px`;
+  scene.style.transform = `scale(${k})`;
+  const rk = Math.min(1, k * dpr);                     // les faisceaux sont flous : la résolution 1x suffit
+  cRay.width = Math.round(W * rk); cRay.height = Math.round(H * rk); cRay.rk = rk;
+  for (const c of [cBul, cDev]) { c.width = Math.round(W * k * dpr); c.height = Math.round(H * k * dpr); c.s = k * dpr; }
+}
+addEventListener("resize", ajuster); ajuster();
+
+// ------------------------------------------------ les faisceaux de lumière (le code du lagon : textures, souffle, dérive)
+function makeShaft() {
+  const w = 96, h = 512, c = document.createElement("canvas"); c.width = w; c.height = h;
+  const g = c.getContext("2d"), im = g.createImageData(w, h);
+  const n = 3 + Math.floor(rnd() * 4), comps = [];
+  for (let i = 0; i < n; i++) comps.push({ c: R(0.2, 0.8), s: R(0.03, 0.13), a: R(0.4, 1) });
+  const prof = new Float32Array(w); let mx = 0;
+  for (let x = 0; x < w; x++) { const u = x / (w - 1); let v = 0; for (const q of comps) v += q.a * Math.exp(-((u - q.c) ** 2) / (2 * q.s * q.s)); prof[x] = v; mx = Math.max(mx, v); }
+  const ph = R(0, 10);
+  for (let y = 0; y < h; y++) {
+    const v = y / (h - 1), vert = smooth(0, 0.06, v) * Math.pow(1 - v, 1.6) * (0.85 + 0.15 * Math.sin(v * 23 + ph));
+    for (let x = 0; x < w; x++) { const o = (y * w + x) * 4; im.data[o] = 255; im.data[o + 1] = 250; im.data[o + 2] = 226; im.data[o + 3] = Math.round((prof[x] / mx) * vert * 255); }
+  }
+  g.putImageData(im, 0, 0); return c;
+}
+const shafts = Array.from({ length: 6 }, makeShaft);
+const rays = [];
+for (let x = -380; x < 1420; x += R(55, 130)) {
+  // plus vifs au milieu, là où la lumière tombe dans la référence
+  const centre = 1 - 0.45 * smooth(250, 760, Math.abs(x + 160 - 640));
+  rays.push({ x, tex: Math.floor(rnd() * shafts.length), w: R(70, 240), len: R(850, 1250), a: R(0.13, 0.27) * centre,
+    ang: 0.2 + R(-0.035, 0.035), sw: R(0.012, 0.03), drift: R(15, 45), sp: R(0.05, 0.12), fl: R(0.12, 0.3), ph: R(0, 20) });
+}
+function dessinerRayons(t) {
+  const ctx = cRay.getContext("2d"), rk = cRay.rk;
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cRay.width, cRay.height); ctx.setTransform(rk, 0, 0, rk, 0, 0);
+  ctx.globalCompositeOperation = "screen";
+  for (const q of rays) {
+    const band = 0.3 + 0.95 * (0.5 + 0.5 * noise(q.x * 0.0011 + t * 0.07));
+    const breath = 0.35 + 0.65 * (0.5 + 0.5 * noise(t * q.fl + q.ph));
+    ctx.globalAlpha = clamp(q.a * band * breath, 0, 1);
+    const x0 = q.x + q.drift * noise(t * q.sp * 0.8 + q.ph * 1.7);
+    ctx.save(); ctx.translate(x0, 0); ctx.rotate(-(q.ang + q.sw * noise(t * q.sp + q.ph)));
+    ctx.drawImage(shafts[q.tex], -q.w / 2, -20, q.w, q.len); ctx.restore();
+  }
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
+}
+
+// ------------------------------------------------ les bulles d'air (dessinées une fois, puis seulement posées)
+function spriteBulle(r) {
+  const s = Math.ceil(r * 2 + 4), c = document.createElement("canvas"); c.width = c.height = s;
+  const g = c.getContext("2d"), m = s / 2;
+  // corps : presque transparent, un peu plus clair au bord (une bulle est un reflet, pas une boule)
+  let gr = g.createRadialGradient(m - r * 0.25, m - r * 0.3, r * 0.1, m, m, r);
+  gr.addColorStop(0, "rgba(220,250,250,0.05)"); gr.addColorStop(0.72, "rgba(190,240,240,0.10)"); gr.addColorStop(1, "rgba(235,255,255,0.42)");
+  g.fillStyle = gr; g.beginPath(); g.arc(m, m, r, 0, Math.PI * 2); g.fill();
+  // liseré irisé : rose en bas à droite, vert d'eau en haut à gauche, comme les bulles de la référence
+  g.lineWidth = Math.max(1, r * 0.09);
+  g.strokeStyle = "rgba(255,255,255,0.55)"; g.beginPath(); g.arc(m, m, r - g.lineWidth / 2, 0, Math.PI * 2); g.stroke();
+  g.strokeStyle = "rgba(255,170,200,0.35)"; g.beginPath(); g.arc(m, m, r - g.lineWidth, 0.1 * Math.PI, 0.6 * Math.PI); g.stroke();
+  g.strokeStyle = "rgba(150,255,210,0.35)"; g.beginPath(); g.arc(m, m, r - g.lineWidth, 1.1 * Math.PI, 1.45 * Math.PI); g.stroke();
+  // reflets : un arc vif en haut à gauche, un point en bas à droite
+  g.strokeStyle = "rgba(255,255,255,0.9)"; g.lineCap = "round"; g.lineWidth = Math.max(1.2, r * 0.16);
+  g.beginPath(); g.arc(m, m, r * 0.62, 1.12 * Math.PI, 1.42 * Math.PI); g.stroke();
+  g.fillStyle = "rgba(255,255,255,0.7)"; g.beginPath(); g.arc(m + r * 0.45, m + r * 0.42, Math.max(0.8, r * 0.09), 0, Math.PI * 2); g.fill();
+  return c;
+}
+const TAILLES = [3, 5, 8, 12, 17, 24]; let sprites = [];
+function preparerSprites() { const s = k * dpr; sprites = TAILLES.map((r) => spriteBulle(r * s * 1.0)); }
+preparerSprites(); addEventListener("resize", preparerSprites);
+
+const bulles = [];
+function nouvelle(type, y) {
+  const b = { type, ph: R(0, 6.28), f: R(1.2, 2.4) };
+  if (type === "colonne") { b.ti = 2 + Math.floor(rnd() * 4); b.x0 = 1004 + R(-14, 14); b.amp = R(4, 10); b.y = y ?? R(560, 640); b.v = R(55, 80) + TAILLES[b.ti] * 2; }
+  else if (type === "etoile") { b.ti = Math.floor(rnd() * 3); b.x0 = 550 + R(-40, 40); b.amp = R(3, 7); b.y = y ?? R(470, 520); b.v = R(30, 50); }
+  else { b.ti = Math.floor(rnd() * 4); b.x0 = R(20, W - 20); b.amp = R(4, 14); b.y = y ?? H + R(10, 120); b.v = R(18, 40) + TAILLES[b.ti] * 2.5; }
+  b.r = TAILLES[b.ti]; return b;
+}
+for (let i = 0; i < 9; i++) bulles.push(nouvelle("colonne", R(-20, 640)));
+for (let i = 0; i < 4; i++) bulles.push(nouvelle("etoile", R(150, 520)));
+for (let i = 0; i < 22; i++) bulles.push(nouvelle("eau", R(0, H)));
+
+// petites étincelles dorées qui scintillent près des lettres (elles étaient fixes dans la référence)
+const ETINCELLES = [[694, 158, 9], [376, 245, 6], [529, 469, 5], [967, 400, 7], [1042, 474, 5], [258, 359, 4], [452, 498, 4], [858, 166, 4]]
+  .map(([x, y, r], i) => ({ x, y, r, ph: i * 1.7, f: R(0.5, 0.9) }));
+
+function dessinerBulles(t, dt) {
+  const ctx = cBul.getContext("2d"), s = cBul.s;
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cBul.width, cBul.height);
+  for (let i = 0; i < bulles.length; i++) {
+    const b = bulles[i];
+    b.y -= b.v * dt;
+    // la bulle accélère un peu en montant, et se dandine
+    const x = b.x0 + b.amp * Math.sin(t * b.f + b.ph) + 0.4 * b.amp * Math.sin(t * b.f * 2.3 + b.ph * 2);
+    const fin = b.type === "etoile" ? 260 : -40;
+    if (b.y < fin) { bulles[i] = nouvelle(b.type); continue; }
+    let a = smooth(fin, fin + 90, b.y);                           // s'efface en arrivant en haut
+    if (b.type === "etoile") a *= 0.85;
+    const sp = sprites[b.ti], sx = x * s - sp.width / 2, sy = b.y * s - sp.height / 2;
+    // légère respiration de la forme (une bulle n'est jamais tout à fait ronde)
+    const sq = 1 + 0.05 * Math.sin(t * b.f * 3 + b.ph);
+    ctx.globalAlpha = a;
+    ctx.drawImage(sp, sx - (sp.width * (sq - 1)) / 2, sy + (sp.height * (sq - 1)) / 2, sp.width * sq, sp.height / sq);
+  }
+  // étincelles : une croix à quatre branches qui grandit et s'éteint
+  ctx.globalCompositeOperation = "lighter";
+  for (const e of ETINCELLES) {
+    const p = 0.5 + 0.5 * Math.sin(t * e.f * 2.2 + e.ph), r = e.r * s * (0.35 + 0.9 * p * p);
+    ctx.globalAlpha = 0.25 + 0.75 * p * p;
+    const x = e.x * s, y = e.y * s;
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r * 1.1);
+    g.addColorStop(0, "rgba(255,248,200,0.95)"); g.addColorStop(1, "rgba(255,210,90,0)");
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * 1.1, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "rgba(255,246,205,0.9)";
+    ctx.beginPath(); ctx.moveTo(x, y - r * 2); ctx.quadraticCurveTo(x, y, x + r * 2, y); ctx.quadraticCurveTo(x, y, x, y + r * 2); ctx.quadraticCurveTo(x, y, x - r * 2, y); ctx.quadraticCurveTo(x, y, x, y - r * 2); ctx.fill();
+  }
+  ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1;
+}
+
+// ------------------------------------------------ le chargement simulé (dans l'application : les vraies tâches)
+const plein = document.getElementById("plein");
+let part = 0, pret = false, partie = false;
+function montrer(p) { const marge = 12 / 532, droite = (1 - marge) * (1 - p) * 100; plein.style.clipPath = `inset(0 ${droite.toFixed(2)}% 0 0)`; }
+function charger() {
+  part = 0; pret = false; montrer(0); scene.classList.remove("pret", "partir");
+  const etapes = [0.12, 0.3, 0.38, 0.55, 0.7, 0.86, 1]; let i = 0;
+  const pas = () => { part = etapes[i++]; montrer(part); if (i < etapes.length) setTimeout(pas, R(250, 550)); else { pret = true; scene.classList.add("pret"); } };
+  setTimeout(pas, 400);
+}
+scene.addEventListener("pointerdown", (e) => {
+  e.preventDefault(); if (!pret || partie) return;
+  partie = true; scene.classList.add("partir");
+  setTimeout(() => { partie = false; charger(); }, 1600);       // maquette : on recommence
+});
+charger();
+
+// ------------------------------------------------ la boucle : faisceaux 20 fois par seconde, bulles à chaque image
+const fpsEl = document.getElementById("fps");
+let t0 = performance.now(), last = t0, lastRay = -1, n = 0, acc = 0;
+function boucle(now) {
+  const dt = Math.min(0.1, (now - last) / 1000); last = now; const t = (now - t0) / 1000;
+  if (t - lastRay >= 0.05) { dessinerRayons(t); lastRay = t; }
+  dessinerBulles(t, dt);
+  n++; acc += dt; if (acc >= 1) { fpsEl.textContent = `${Math.round(n / acc)} images/s`; n = 0; acc = 0; }
+  requestAnimationFrame(boucle);
+}
+requestAnimationFrame(boucle);
+</script>
+</body>
+</html>

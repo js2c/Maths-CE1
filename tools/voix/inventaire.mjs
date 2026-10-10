@@ -13,7 +13,7 @@ import { catalog } from "../../app/js/modules/facts/facts.js";
 import { allMults, multsOf } from "../../app/js/modules/mult/mult.js";
 
 const CONTENT = new URL("../../app/content/", import.meta.url);
-export const lireContenu = () => Object.fromEntries(["textes", "lecons", "cartes", "module1", "module2", "module3", "module4", "module5", "seance"].map((k) => [k, JSON.parse(readFileSync(new URL(`${k}.json`, CONTENT), "utf8"))]));
+export const lireContenu = () => Object.fromEntries(["textes", "lecons", "cartes", "module1", "module2", "module3", "module4", "module5", "module6", "seance"].map((k) => [k, JSON.parse(readFileSync(new URL(`${k}.json`, CONTENT), "utf8"))]));
 
 const range = (a, b, s = 1) => { const out = []; for (let v = a; v <= b; v += s) out.push(v); return out; };
 const TOUS = range(0, 100); // tout nombre de la ligne graduée (le module 1 va de 0 à 100)
@@ -161,6 +161,27 @@ function domaines(C) {
         multTrouGauche: uniq(trou.map(({ b, n }) => ({ b, n }))),
         multAideTrou: uniq(trou.map(({ n }) => ({ n }))),
         tableCaseMult: range(tm.min, tm.max).flatMap((a) => range(tm.min, tm.max).map((b) => ({ a, b, n: a * b }))),
+      };
+    })(),
+    // lot « L'étal du pêcheur » (modules/etal/etal.js, montantDit ; modules/etal/screen.js) : tout montant que le pêcheur peut
+    // dire, en centimes : les prix de chaque niveau (module6.json, prix), et tout ce qui peut être compté dans la soucoupe, ce qui
+    // manque, la monnaie rendue (au plus le portefeuille le plus garni du niveau, totalMax, au pas de ses plus petites pièces) ;
+    // l'aide du niveau 7, « Compte à partir de 13, jusqu'à 20. » (le prix et le billet, en euros)
+    ...(() => {
+      if (!C.module6) return {};
+      const M6 = C.module6.niveaux, set = new Set();
+      for (const c of M6) {
+        if (c.prix) for (let v = c.prix[0]; v <= c.prix[1]; v += c.prix[2]) set.add(v);
+        if (c.portefeuille) { const pas = Math.min(...Object.keys(c.portefeuille).map(Number), c.prix?.[2] ?? 100); for (let v = pas; v <= c.totalMax; v += pas) set.add(v); }
+      }
+      const m = [...set].sort((a, b) => a - b), e = (v) => Math.floor(v / 100), r = (v) => v % 100;
+      const r7 = M6.find((c) => c.type === "rendre"), aide = r7 ? range(r7.prix[0] / 100, r7.prix[1] / 100).flatMap((a) => r7.billets.filter((b) => b / 100 > a).map((b) => ({ a, b: b / 100 }))) : [];
+      return {
+        "etalMontant.euros": m.filter((v) => e(v) >= 2 && !r(v)).map((v) => ({ e: e(v) })),
+        "etalMontant.eurosCentimes": m.filter((v) => e(v) >= 2 && r(v)).map((v) => ({ e: e(v), c: r(v) })),
+        "etalMontant.euroCentimes": m.filter((v) => e(v) === 1 && r(v)).map((v) => ({ c: r(v) })),
+        "etalMontant.centimes": m.filter((v) => !e(v)).map((v) => ({ c: r(v) })),
+        etalAideRendre: aide,
       };
     })(),
     // le défi record (lot 3 bis, B6) : le score en perles, 2 ou plus (une seule : les phrases « …Un »)

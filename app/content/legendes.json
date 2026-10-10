@@ -40,7 +40,8 @@
     "cranLibre.dur": "Plus dur. Des questions plus difficiles.",
     "cranLibre.tresdur": "Très dur. Les questions les plus difficiles.",
     "voiliers": "Ranger un nombre entre des bouées, jusqu'à 1 000.",
-    "multiplication": "Les tables de multiplication, des rangées égales de poissons."
+    "multiplication": "Les tables de multiplication, des rangées égales de poissons.",
+    "etal": "L'étal du pêcheur, payer avec des pièces et des billets."
   },
   "titres": { "travail": "Ce qui est travaillé", "exemple": "Exemple" },
   "ligne": [
@@ -106,6 +107,18 @@
     { "n": 8, "travail": "La table de 4, le double du double.", "exemple": "4 × 6 = 24" },
     { "n": 9, "travail": "Les tables de 2, 3, 4, 5 et 10 mélangées.", "exemple": "? × 5 = 20" }
   ],
+  "etal": [
+    { "n": 1, "travail": "Pièces et billets, poser dans la soucoupe la pièce ou le billet demandé, de 1 à 50 euros.", "exemple": "Pose un billet de 10 euros." },
+    { "n": 2, "travail": "Payer juste avec des pièces de 1 et 2 euros, prix de 2 à 10 euros.", "exemple": "7 = 2 + 2 + 2 + 1" },
+    { "n": 3, "travail": "Payer juste avec des billets de 5 et 10 euros et des pièces, prix de 6 à 20 euros.", "exemple": "17 = 10 + 5 + 2" },
+    { "n": 4, "travail": "Payer juste jusqu'à 50 euros, avec des billets de 5 à 50 euros.", "exemple": "34 = 20 + 10 + 2 + 2" },
+    { "n": 5, "travail": "Payer juste avec un portefeuille restreint, une ou deux façons seulement.", "exemple": "7 sans pièce de 1, 5 + 2" },
+    { "n": 6, "travail": "Le compte juste est impossible, payer sans pièce de trop, le pêcheur rend la monnaie.", "exemple": "13 avec 20, il rend 7" },
+    { "n": 7, "travail": "Rendre la monnaie, dire au pavé combien le pêcheur rend.", "exemple": "13 payés avec 20, 7" },
+    { "n": 8, "travail": "Deux produits, payer juste le total.", "exemple": "3 + 4 = 7" },
+    { "n": 9, "travail": "Les centimes, prix ronds ou en 50 centimes, écrits avec une virgule.", "exemple": "3,50 = 2 + 1 + 0,50" },
+    { "n": 10, "travail": "Les centimes, prix en 10, 20 et 50 centimes.", "exemple": "2,70 = 2 + 0,50 + 0,20" }
+  ],
   "lecons": [
     { "n": "L1", "travail": "On compte les sauts, pas les bouées.", "exemple": "De 0 à 3, 3 sauts" },
     { "n": "L2", "travail": "Un saut peut valoir dix.", "exemple": "10, 20, 30" },
@@ -121,6 +134,10 @@
     { "n": "L12", "travail": "Faire dix d'abord, on remplit la boîte, puis on ajoute le reste.", "exemple": "8 + 5 = 13" },
     { "n": "L13", "travail": "Des rangées égales, 3 fois 4, c'est 4 + 4 + 4.", "exemple": "3 × 4 = 12" },
     { "n": "L14", "travail": "On tourne les rangées, 3 × 5 fait autant que 5 × 3.", "exemple": "3 × 5 = 5 × 3" },
+    { "n": "L15", "travail": "Pièces et billets, une pièce de 2 euros vaut deux pièces de 1 euro, on compte la valeur.", "exemple": "2 + 2 + 2 = 6" },
+    { "n": "L16", "travail": "Payer juste, du plus gros au plus petit.", "exemple": "17, 10, 15, 16, 17" },
+    { "n": "L17", "travail": "Rendre la monnaie, on compte à partir du prix jusqu'à ce qu'on a donné.", "exemple": "de 13 à 20, 7" },
+    { "n": "L18", "travail": "Les centimes, 100 centimes font 1 euro, 3,50 c'est 3 euros et 50 centimes.", "exemple": "0,50 + 0,50 = 1" },
     { "n": "+", "travail": "La table d'addition, toucher une case dit et montre le calcul.", "exemple": "7 + 5 = 12" },
     { "n": "×", "travail": "La table de multiplication, toucher une case dit et montre le calcul.", "exemple": "3 × 4 = 12" }
   ]

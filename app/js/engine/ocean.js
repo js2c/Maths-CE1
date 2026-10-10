@@ -34,9 +34,12 @@ export class Ocean {
     stage.onResize(() => { this.placeMascotte(); this.actors.forEach((a) => a.resize()); });
   }
   placeMascotte() {
-    const k = this.st.k, m = MASCOTTE;
-    Object.assign(this.mascotteEl.style, { left: `${m.x * k}px`, top: `${m.y * k}px`, width: `${m.w * k}px`, height: `${m.h * k}px` });
+    const k = this.st.k, m = this.ailleurs ?? MASCOTTE;
+    Object.assign(this.mascotteEl.style, { left: `${m.x * k}px`, top: `${m.y * k}px`, width: `${m.w * k}px`, height: `${m.h * k}px`, clipPath: m.rogne ? `inset(0 0 ${((m.rogne / m.h) * 100).toFixed(3)}% 0)` : "" });
   }
+  // (lot « L'étal du pêcheur ») une autre place, le temps d'un exercice : dans la fenêtre de la cabane, abaissée, réduite et
+  // rognée au rebord (content/etal.json, mascotte : { x, y, w, h, rogne }) ; null : sa place habituelle
+  poste(m) { this.ailleurs = m ?? null; this.placeMascotte(); }
   // un acteur qui montre un sprite (ou plusieurs, de même ancrage : les boucles d'un personnage) : canvas
   // à la taille de la plus grande image, ancré comme le sprite
   spriteActor(parent, name, others = []) {

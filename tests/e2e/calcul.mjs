@@ -79,8 +79,8 @@ for (const cran of ["conseille", "facile", "tresdur"]) {
 {
   const { page, context, errors } = await open();
   await page.tap(".choisir", { force: true }); await page.waitForSelector(".choix-ex"); await page.waitForTimeout(400);
-  // (lot « Les voiliers » : cinq exercices ; lot « Les leçons » : quatre, les leçons ont leur bulle à l'accueil)
-  check((await page.locator(".choix-ex").count()) === 5, "cinq exercices (ligne, additions, calcul rapide, voiliers, multiplication)");
+  // (lot « Les voiliers » : cinq exercices ; lot « Les leçons » : quatre, les leçons ont leur bulle à l'accueil ; lot « L'étal du pêcheur » : six)
+  check((await page.locator(".choix-ex").count()) === 6, "six exercices (ligne, additions, calcul rapide, voiliers, multiplication, étal)");
   await shot(page, "11-choisir-exercices");
   await page.tap('.choix-ex[aria-label="calcul"]', { force: true }); await page.waitForTimeout(450); await page.tap('.choix-ex[aria-label="calcul"]', { force: true }); await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(400);
   check((await page.locator(".choix-tuile").count()) === 9, "les 9 niveaux du calcul rapide, tous accessibles");

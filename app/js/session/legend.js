@@ -14,7 +14,7 @@ const COL = { vign: 70, travail: 160, exemple: 670, fin: 925 }, EM = 23, EX_EM =
 // la vignette d'un niveau, comme sur sa plaque de « choisir »
 // (lot « Les leçons » : les leçons ont la tuile de leur menu, la table d'addition la sienne, « + »)
 // (lot « Multiplication » : les plaques de la multiplication, et la tuile de sa table, « × », dans le menu des leçons)
-export const legendSprite = (ex, n) => (ex === "ligne" ? `choix.ligne.${n}` : ex === "additions" ? `choix.famille.${n}` : ex === "calcul" ? `choix.calcul.${n}` : ex === "voiliers" ? `choix.voiliers.${n}` : ex === "multiplication" ? `choix.multiplication.${n}` : n === "+" ? "lecons.table.plus" : n === "×" ? "lecons.table.fois" : `lecons.tuile.${n}`);
+export const legendSprite = (ex, n) => (ex === "ligne" ? `choix.ligne.${n}` : ex === "additions" ? `choix.famille.${n}` : ex === "calcul" ? `choix.calcul.${n}` : ex === "voiliers" ? `choix.voiliers.${n}` : ex === "multiplication" ? `choix.multiplication.${n}` : ex === "etal" ? `choix.etal.${n}` : n === "+" ? "lecons.table.plus" : n === "×" ? "lecons.table.fois" : `lecons.tuile.${n}`);
 // les lignes du tableau d'un exercice, dans l'ordre des plaques (`keys`) : { n, travail: [lignes], exemple: [lignes] }
 export function legendRows(legendes, ex, keys = null) {
   const rows = legendes?.[ex] ?? [], by = new Map(rows.map((r) => [String(r.n), r]));
@@ -22,9 +22,9 @@ export function legendRows(legendes, ex, keys = null) {
 }
 
 // le bouton
-export function legendKey(app, ex, { keys = null, els }) {
+export function legendKey(app, ex, { keys = null, els, at = LEGEND_AT }) {
   const { sprites } = app, r = 40;
-  const b = spriteBox(app, { x: LEGEND_AT[0] - r - 12, y: LEGEND_AT[1] - r - 12, w: 2 * r + 24, h: 2 * r + 24, cls: "bubble legende", label: "légende", paint: (ctx) => sprites.draw(ctx, "legende", 0, r + 12, r + 12) });
+  const b = spriteBox(app, { x: at[0] - r - 12, y: at[1] - r - 12, w: 2 * r + 24, h: 2 * r + 24, cls: "bubble legende", label: "légende", paint: (ctx) => sprites.draw(ctx, "legende", 0, r + 12, r + 12) });
   els.push(b);
   onBrief(app, b, () => { pop(b); openLegend(app, ex, { keys, els }); }, "legende");
   return b;

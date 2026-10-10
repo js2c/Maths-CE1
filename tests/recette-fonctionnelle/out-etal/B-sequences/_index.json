@@ -1,0 +1,90 @@
+{
+ "titre": "Partie B · les séquences de questions",
+ "intro": "Le texte des séances telles que le moteur les génère (runners de l'application, sans navigateur) : pour chaque exercice × niveau (ou famille) × cran, en base neuve et en « un mois », avec trois comportements de l'enfant. Commencer par `SYNTHESE.md`.",
+ "lignes": [
+  [
+   "SYNTHESE.md",
+   "une ligne par séance simulée (base × exercice × cran × comportement) : réponses différentes, répétitions, suites prévisibles, leçons, étoiles ; et le tableau des étoiles « pressée » comparées à « appliquée »"
+  ],
+  [
+   "neuve/etal-01.md",
+   "base neuve (premier lancement) : etal 01, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/etal-02.md",
+   "base neuve (premier lancement) : etal 02, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/etal-03.md",
+   "base neuve (premier lancement) : etal 03, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/etal-04.md",
+   "base neuve (premier lancement) : etal 04, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/etal-05.md",
+   "base neuve (premier lancement) : etal 05, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/etal-06.md",
+   "base neuve (premier lancement) : etal 06, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/etal-07.md",
+   "base neuve (premier lancement) : etal 07, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/etal-08.md",
+   "base neuve (premier lancement) : etal 08, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/etal-09.md",
+   "base neuve (premier lancement) : etal 09, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "neuve/etal-10.md",
+   "base neuve (premier lancement) : etal 10, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/etal-01.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : etal 01, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/etal-02.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : etal 02, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/etal-03.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : etal 03, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/etal-04.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : etal 04, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/etal-05.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : etal 05, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/etal-06.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : etal 06, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/etal-07.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : etal 07, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/etal-08.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : etal 08, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/etal-09.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : etal 09, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ],
+  [
+   "mois/etal-10.md",
+   "un mois (tools/sauvegarde-test.mjs reel 2 4) : etal 10, les 4 crans × 3 comportements (appliquée, réelle, pressée), une séance complète chacun"
+  ]
+ ]
+}

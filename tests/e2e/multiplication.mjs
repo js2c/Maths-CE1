@@ -204,12 +204,12 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const { page, context, errors } = await open();
     await tap(page, ".leconskey"); await page.waitForSelector(".lecons-tuile"); await page.waitForTimeout(700);
     const keys = await page.evaluate(() => [...document.querySelectorAll(".lecons-tuile")].map((e) => e.dataset.key).join(","));
-    check(keys === "L1,L2,L3,L10,L4,L5,L6,L11,L12,L7,L8,L9,L13,L14,table.addition,table.multiplication", `${T} · le menu : L13, L14 et les deux tables (${keys})`);
+    check(keys === "L1,L2,L3,L10,L4,L5,L6,L11,L12,L7,L8,L9,L13,L14,L15,L16,L17,L18,table.addition,table.multiplication", `${T} · le menu : L13, L14 et les deux tables (${keys})`);
     const rr = await page.evaluate(() => [...document.querySelectorAll(".lecons-tuile, .lecons-rangee")].map((e) => e.getBoundingClientRect()).map((b) => [b.left, b.top, b.right, b.bottom]));
     check(rr.every((b) => b[0] >= 0 && b[2] <= W + 1 && b[3] <= H + 1), `${T} · les seize tuiles et les quatre pictogrammes tiennent dans l'écran`);
     const b = await bulle(page); check(!b.couvre, `${T} · la bulle du menu ne couvre aucune tuile (${b.place})`);
     await shot(page, "16-menu-lecons");
-    if (big) { await tap(page, ".legende", 600); const n = await page.locator(".legende-ligne").count(); check(n === 16, `${T} · la légende du menu : 16 lignes (${n})`); await shot(page, "17-menu-legende"); await tap(page, ".legende-fermer", 400); }
+    if (big) { await tap(page, ".legende", 600); const n = await page.locator(".legende-ligne").count(); check(n === 20, `${T} · la légende du menu : 20 lignes (${n})`); await shot(page, "17-menu-legende"); await tap(page, ".legende-fermer", 400); }
     await resetSaid(page); await tap(page, '.lecons-tuile[data-key="L14"]', 450); await tap(page, '.lecons-tuile[data-key="L14"]');
     check((await said(page)).startsWith("On tourne les rangées."), `${T} · la tuile 14 dit « On tourne les rangées. » (${(await said(page)).slice(0, 60)})`);
     await page.waitForFunction(() => window.__said.some((t) => /tourne/.test(t) && !/^On tourne les rangées\.$/.test(t)), null, { timeout: 60000 }).catch(() => {}); await page.waitForTimeout(2500);

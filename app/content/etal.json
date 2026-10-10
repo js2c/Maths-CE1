@@ -1,0 +1,29 @@
+{
+  "_doc": "La scène de l'étal du pêcheur (module 6, docs/SPEC.md, section 7 quater) : les réglages de la maquette validée (art/etal/index.html, panneau « Réglages »), figés ici. Le parent a demandé les VALEURS DE DÉPART de la maquette (prompt du lot, 10 octobre 2026) : ce sont elles. Pour les changer : ouvrir la maquette sur la tablette, régler, « Copier les réglages », et recopier les valeurs ici (mêmes noms). reglages : nuit (voile sombre sur toute la scène par mauvais temps), vignette et vignetteRayon (bords assombris : force, zone claire au centre en %), capt (capitaine assombri), monnaie et monnaieChaud (portefeuille, monnaie, soucoupe : luminosité et teinte de la lampe par mauvais temps), lumCouleur, lumEclat, lumPortee (lumière de la lampe sur l'étal : couleur chaude, éclat, portée en px), prod, prodMin, prodPortee, prodReflet (lumière de la lampe sur les produits : force, minimum loin de la lampe, portée, reflet du côté de la lampe), halo et haloTaille (halo de la flamme), phare (faisceau du phare), pluie et pluieOpac (densité et opacité de la pluie), orageDepart (mauvais temps dès l'entrée dans l'exercice, en %), orageProba (sinon, l'orage arrive en cours de partie, en %), orageMin et orageMax (au plus tôt et au plus tard, en minutes de partie). La pluie s'allège d'elle-même (jusqu'à 45 % des gouttes) si une image prend plus de 21 ms en moyenne, comme dans la maquette.",
+  "reglages": {
+    "nuit": 0.08,
+    "vignette": 0.7,
+    "vignetteRayon": 36,
+    "capt": 0.4,
+    "monnaie": 0.95,
+    "monnaieChaud": 0.25,
+    "lumCouleur": 0.85,
+    "lumEclat": 0.8,
+    "lumPortee": 820,
+    "prod": 1,
+    "prodMin": 0.45,
+    "prodPortee": 460,
+    "prodReflet": 0.5,
+    "halo": 1.1,
+    "haloTaille": 190,
+    "phare": 0.45,
+    "pluie": 1,
+    "pluieOpac": 1,
+    "orageDepart": 50,
+    "orageProba": 50,
+    "orageMin": 2,
+    "orageMax": 6
+  },
+  "_mascotte": "La mascotte de l'application à la place du capitaine de la maquette (art/etal/README.md) : la fenêtre de la cabane tombe sur sa place ; elle y est abaissée et réduite comme dans la maquette (x, y, largeur, hauteur en px de la scène 1280 × 800) et rognée au rebord de la fenêtre (rogne : px coupés en bas).",
+  "mascotte": { "x": 25.6, "y": 170, "w": 198, "h": 264, "rogne": 28 }
+}

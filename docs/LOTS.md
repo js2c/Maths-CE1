@@ -30,6 +30,7 @@ Ce document a trois parties : **pour le parent**, comment lancer un lot ; **pour
 | 3 | « Les leçons » (avec la table d'addition) | la spécification (section 3, « Les leçons ») ; les écrans sont à maquetter | oui (validée le 7 octobre 2026) | 126 phrases (la table d'addition, 121), environ 10 min | fait (PR #40 ; recette finie dans la PR #42 : durées des attentes, relecture indépendante) ; 126 phrases à fabriquer |
 | 4 | « Sommes jusqu'à 30 » | le principe (section 13) et une proposition par défaut ; le contenu est à concevoir | non (bloc sans arrêt, décision du 7 octobre) | 384 phrases, environ 2,7 Mo | fait (PR #42, avec « Multiplication ») ; 384 phrases à fabriquer |
 | 5 | « Multiplication » (et les tables) | le principe (`docs/IDEES.md`, phase 2) ; tout est à concevoir | non (bloc sans arrêt, décision du 7 octobre) | 561 phrases, environ 4 Mo | fait (PR #42, avec « Sommes jusqu'à 30 ») ; 561 phrases à fabriquer |
+| 6 | « L'étal du pêcheur » (la monnaie) | tout : maquette validée (`art/etal/`, 10 octobre 2026), règles de la fiche 7 | non (d'un seul tenant) | 394 phrases, environ 2,7 Mo (moins de 600 demandées) | fait (PR #49) ; 394 phrases à fabriquer |
 
 **« Sommes jusqu'à 30 » et « Multiplication » : d'un seul bloc, sans arrêt** (décision du parent du 7 octobre 2026) : la colonne « Maquette à valider » ne vaut plus pour eux ; la session fait la proposition et la maquette, puis les applique elle-même (fiche « 4 et 5 »).
 
@@ -37,9 +38,9 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Entre « Les voiliers » et « Les leçons » : le lot « Correctifs »** (décision du parent du 6 octobre 2026, fiche 2 bis). La confrontation de la spécification avec le code est faite (`docs/ECARTS-SPEC.md`, #37) et ses écarts sont tranchés ; ce lot les applique. Il ne peut pas tourner en même temps qu'un autre lot (il modifie `docs/SPEC.md`). Il n'est pas dans le tableau ci-dessus : son état est tenu ici. **État : fait** (PR #39, à fusionner ; 8 phrases nouvelles, à fabriquer avec celles des lots « Mascotte » et « Les voiliers »).
 
-**Ensuite : le lot « L'étal du pêcheur »** (la monnaie, avancée par le parent le 8 octobre 2026 ; maquette validée le 10 octobre, `art/etal/`, PR #47 ; fiche 7). **État : à faire**, après la fusion de la PR #47 et du lot « Correctifs de la tablette ».
+**Ensuite : le lot « L'étal du pêcheur »** (la monnaie, avancée par le parent le 8 octobre 2026 ; maquette validée le 10 octobre, `art/etal/`, PR #47 ; fiche 7). **État : fait** (PR #49, à fusionner ; 394 phrases nouvelles, environ 2,7 Mo, à fabriquer : `docs/maquettes/etal/PHRASES.md` ; avec elles, la voix pèsera environ 79,3 Mo, tout près de la limite de 80 Mo).
 
-**Après les cinq lots : le lot « Correctifs de la tablette »** (premier essai du parent sur la tablette, 8 octobre 2026 ; fiche 6). **État : fait** (PR #46, à fusionner ; 282 phrases nouvelles, environ 2,2 Mo, à fabriquer).
+**Après les cinq lots : le lot « Correctifs de la tablette »** (premier essai du parent sur la tablette, 8 octobre 2026 ; fiche 6). **État : fait** (PR #46, fusionnée ; ses 282 phrases sont fabriquées).
 
 **Puis (essai du parent du 10 octobre 2026) : le lot « Correctifs : passage de l'échauffement aux voiliers »** (fiche 8 : les défauts vus sur la tablette, le nouveau démarrage, l'accueil en deux touchers, la voix de secours, les icônes), **puis le lot « Recette de l'enfant et nettoyage des couches »** (fiche 9). « L'étal du pêcheur » est déjà presque fini (PR #49) : ces deux lots partent **après sa fusion**, et couvrent aussi l'étal (sa tuile, ses niveaux et ses leçons sont des écrans en deux touchers ; l'enfant imprévisible y joue aussi). Ils ne peuvent pas tourner en même temps qu'un autre lot. **État : à faire.**
 

@@ -23,11 +23,12 @@ import { Module3Runner } from "../modules/calc/runner.js";
 import { median } from "../modules/facts/facts.js";
 import { Module4Runner } from "../modules/voiliers/runner.js";
 import { Module5Runner } from "../modules/mult/runner.js";
+import { Module6Runner } from "../modules/etal/runner.js";
 
 const PROPOSE_STOP_MS = 10 * 60000;
 
 export class FreeTraining {
-  constructor(app, { store, module1, module2, module3 = null, module4 = null, module5 = null, rnd, seance = null }) { this.app = app; this.store = store; this.m1 = module1; this.m2 = module2; this.m3 = module3; this.m4 = module4; this.m5 = module5; this.rnd = rnd; this.seance = seance; this.rec = null; this.cran = "conseille"; }
+  constructor(app, { store, module1, module2, module3 = null, module4 = null, module5 = null, module6 = null, rnd, seance = null }) { this.app = app; this.store = store; this.m1 = module1; this.m2 = module2; this.m3 = module3; this.m4 = module4; this.m5 = module5; this.m6 = module6; this.rnd = rnd; this.seance = seance; this.rec = null; this.cran = "conseille"; }
   // le sélecteur, sans étoiles
   async pickCran() {
     const sel = this.seance?.selecteur; if (!sel?.actif) return (this.cran = "conseille");
@@ -54,7 +55,7 @@ export class FreeTraining {
     const { app } = this;
     this.t0 ??= app.clock.now();
     app.voice.stop(); await app.voice.say(`${app.text.data.encore} ${app.text.data.libre}`);
-    const c = await choose(app, { stars: false, store: this.store, content: { module1: this.m1, module2: this.m2, module3: this.m3, module4: this.m4, module5: this.m5, seance: this.seance ?? {} } });
+    const c = await choose(app, { stars: false, store: this.store, content: { module1: this.m1, module2: this.m2, module3: this.m3, module4: this.m4, module5: this.m5, module6: this.m6, seance: this.seance ?? {} } });
     return this.start(c);
   }
   // l'exercice choisi ({ module, niveau } ou { module: 2, famille }), sans fin ; (lot « Les leçons » : `apresLecon`, la leçon
@@ -66,6 +67,7 @@ export class FreeTraining {
     if (c.module === 2) return this.facts(c.famille);
     if (c.module === 3) return this.calc(c.niveau);
     if (c.module === 5) return this.mult(c.niveau);
+    if (c.module === 6) return this.etal(c.niveau);
     return this.voiliers(c.niveau);
   }
   // la ligne graduée au niveau choisi, sans fin
@@ -136,6 +138,21 @@ export class FreeTraining {
     for (;;) {
       const x = runner.next(); if (!x) { runner.var = new runner.var.constructor(runner.var.c); continue; }
       const r = await app.voiliers.ask(x.q);
+      const { events } = await runner.record(r, x.cfg);
+      for (const e of events) if (e.type === "montee") await app.rewards.arcFromFree();
+      if (!x.q.guide) await this.answered(r.ok);
+    }
+  }
+  // lot « L'étal du pêcheur » : l'étal au niveau choisi, sans fin (réponses marquées « libre ») ; la maison le quitte (main.js,
+  // abandonActivity : la scène s'en va) ; pas de leçon ici (le menu des leçons les propose), l'exemple guidé la première fois
+  async etal(niveau) {
+    const { app } = this; await this.pickCran();
+    const runner = await new Module6Runner({ store: this.store, content: this.m6, rnd: this.rnd, seance: await this.seanceId(), variete: this.seance?.variete, cran: () => this.cran, choix: niveau }).load();
+    runner.libre = true; this.runner = runner;
+    await app.etal.enter({ rnd: this.rnd });
+    for (;;) {
+      const x = runner.next(); if (!x) { runner.var = new runner.var.constructor(runner.var.c); continue; }
+      const r = await app.etal.ask(x.q);
       const { events } = await runner.record(r, x.cfg);
       for (const e of events) if (e.type === "montee") await app.rewards.arcFromFree();
       if (!x.q.guide) await this.answered(r.ok);

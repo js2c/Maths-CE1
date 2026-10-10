@@ -34,7 +34,7 @@ test("B3 : une étiquette pour chaque pictogramme de l'accueil et de « choisir 
 });
 
 test("B2 : la légende a une ligne par niveau (13, 7, 9) et par leçon proposée, chacune avec ce qui est travaillé et un exemple", () => {
-  const keys = { ligne: m1.niveaux.map((n) => n.niveau), additions: m2.familles.map((f) => f.id), calcul: m3.niveaux.map((n) => n.niveau), multiplication: m5.niveaux.map((n) => n.niveau), lecons: [...seance.menuLecons.rangees.flatMap((r) => r.lecons), "+", "×"] }; // (lot « Les leçons » : les leçons du menu, et la table d'addition ; lot « Multiplication » : ses niveaux, sa table)
+  const keys = { ligne: m1.niveaux.map((n) => n.niveau), additions: m2.familles.map((f) => f.id), calcul: m3.niveaux.map((n) => n.niveau), multiplication: m5.niveaux.map((n) => n.niveau), etal: JSON.parse(readFileSync(new URL("../../app/content/module6.json", import.meta.url), "utf8")).niveaux.map((n) => n.niveau), lecons: [...seance.menuLecons.rangees.flatMap((r) => r.lecons), "+", "×"] }; // (lot « Les leçons » : les leçons du menu, et la table d'addition ; lot « Multiplication » : ses niveaux, sa table)
   for (const [ex, ks] of Object.entries(keys)) {
     const rows = legendRows(legendes, ex, ks);
     assert.equal(rows.length, ks.length, ex);
@@ -68,7 +68,7 @@ test("B10 : erreurs d'additions détaillées (se trompe de 1, un des deux nombre
 
 test("B12 : le guide du parent reprend la légende des niveaux (le même texte que legendes.json) et les durées d'appui", () => {
   const guide = readFileSync(new URL("../../docs/GUIDE-PARENT.md", import.meta.url), "utf8"), nb = (s) => s.replace(/ /g, " ");
-  for (const ex of ["ligne", "additions", "calcul", "multiplication", "lecons"]) for (const r of legendes[ex]) assert.ok(guide.includes(`| ${r.n} | ${nb(r.travail)} | ${nb(r.exemple)} |`), `${ex} ${r.n} : la ligne du guide diffère du contenu`);
+  for (const ex of ["ligne", "additions", "calcul", "multiplication", "etal", "lecons"]) for (const r of legendes[ex]) assert.ok(guide.includes(`| ${r.n} | ${nb(r.travail)} | ${nb(r.exemple)} |`), `${ex} ${r.n} : la ligne du guide diffère du contenu`);
   const parent = JSON.parse(readFileSync(new URL("../../app/content/parent.json", import.meta.url), "utf8"));
   assert.match(guide, new RegExp(`garder le doigt ${parent.appuiLongMs / 1000} secondes|dure \\*\\*${parent.appuiLongMs / 1000} secondes`));
   assert.equal(legendes.appuiLong.ms, 500); assert.match(guide, /une demi-seconde/);

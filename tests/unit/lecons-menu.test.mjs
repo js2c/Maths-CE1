@@ -13,14 +13,14 @@ const read = (f) => JSON.parse(readFileSync(new URL(`../../app/content/${f}.json
 const [seance, lecons, textes, legendes, m1, m2, m3, m5] = ["seance", "lecons", "textes", "legendes", "module1", "module2", "module3", "module5"].map(read);
 const menu = seance.menuLecons;
 
-test("menu : les quatorze leçons (lot « Sommes jusqu'à 30 » : L11 et L12 ; lot « Multiplication » : L13 et L14), chacune une fois, rangées par exercice ; les tables d'addition et de multiplication au bout de la dernière rangée", () => {
+test("menu : les dix-huit leçons (lot « Sommes jusqu'à 30 » : L11 et L12 ; lot « Multiplication » : L13 et L14 ; lot « L'étal du pêcheur » : L15 à L18, une cinquième rangée), chacune une fois, rangées par exercice ; les tables d'addition et de multiplication au bout de la dernière rangée", () => {
   const ids = menu.rangees.flatMap((r) => r.lecons);
   assert.deepEqual([...ids].sort(), Object.keys(lecons).filter((k) => k !== "_doc").sort());
-  assert.deepEqual(menu.rangees.map((r) => r.exercice), ["ligne", "additions", "calcul", "multiplication"]);
-  assert.deepEqual(menu.rangees.map((r) => r.lecons), [["L1", "L2", "L3", "L10"], ["L4", "L5", "L6", "L11", "L12"], ["L7", "L8", "L9"], ["L13", "L14"]]);
+  assert.deepEqual(menu.rangees.map((r) => r.exercice), ["ligne", "additions", "calcul", "multiplication", "etal"]);
+  assert.deepEqual(menu.rangees.map((r) => r.lecons), [["L1", "L2", "L3", "L10"], ["L4", "L5", "L6", "L11", "L12"], ["L7", "L8", "L9"], ["L13", "L14"], ["L15", "L16", "L17", "L18"]]);
   assert.deepEqual(menu.tables, ["addition", "multiplication"]);
   const L = menuLayout(menu);
-  assert.equal(L.filter((x) => x.kind === "lecon").length, 14); assert.equal(L.filter((x) => x.kind === "icone").length, 4); assert.deepEqual(L.filter((x) => x.kind === "table").map((x) => x.id), ["addition", "multiplication"]);
+  assert.equal(L.filter((x) => x.kind === "lecon").length, 18); assert.equal(L.filter((x) => x.kind === "icone").length, 5); assert.deepEqual(L.filter((x) => x.kind === "table").map((x) => x.id), ["addition", "multiplication"]);
   // les deux tables : dans la rangée de la multiplication, à droite de ses deux leçons (tablesPlace : rangée 4, colonnes 4 et 5)
   const last = L.filter((x) => x.y === L.find((y) => y.id === "L13").y).map((x) => x.id ?? x.ex); assert.deepEqual(last, ["multiplication", "L13", "L14", "addition", "multiplication"]);
   // chaque leçon a son nom dit au toucher, sa ligne de légende et son numéro
@@ -34,7 +34,7 @@ test("menu : les tuiles tiennent dans la scène, ne se chevauchent pas, évitent
   for (const t of tiles) {
     const r = rect(t);
     assert.ok(r[0] >= 420 && r[2] <= 1275 && r[1] >= 130 && r[3] <= 790, `${t.id} dans la scène : ${r}`);
-    assert.ok(!inter(r, [LEGEND_AT[0] - 52, LEGEND_AT[1] - 52, LEGEND_AT[0] + 52, LEGEND_AT[1] + 52]), `${t.id} et le petit livre`);
+    assert.ok(!inter(r, [MENU.legende[0] - 52, MENU.legende[1] - 52, MENU.legende[0] + 52, MENU.legende[1] + 52]), `${t.id} et le petit livre`);
     assert.ok(w >= 64 && h >= 64);
   }
   for (let i = 0; i < tiles.length; i++) for (let j = i + 1; j < tiles.length; j++) assert.ok(!inter(rect(tiles[i]), rect(tiles[j])), `${tiles[i].id} / ${tiles[j].id}`);
@@ -45,7 +45,7 @@ test("menu : les tuiles tiennent dans la scène, ne se chevauchent pas, évitent
 });
 
 test("« À toi ! » : chaque leçon a son exercice associé (le tableau de la spécification), dont elle est la leçon d'entrée", () => {
-  const want = { L1: [1, 1], L2: [1, 5], L3: [1, 4], L10: [1, 9], L4: [2, 2], L5: [2, 3], L6: [2, 4], L7: [3, 2], L8: [3, 6], L9: [3, 7], L11: [2, 8], L12: [2, 11], L13: [5, 1], L14: [5, 6] };
+  const want = { L15: [6, 1], L16: [6, 2], L17: [6, 7], L18: [6, 9], L1: [1, 1], L2: [1, 5], L3: [1, 4], L10: [1, 9], L4: [2, 2], L5: [2, 3], L6: [2, 4], L7: [3, 2], L8: [3, 6], L9: [3, 7], L11: [2, 8], L12: [2, 11], L13: [5, 1], L14: [5, 6] };
   for (const [id, [mod, n]] of Object.entries(want)) {
     const e = exerciseOf(lecons, id);
     assert.equal(e.module, mod, id); assert.equal(e.apresLecon, id);

@@ -115,7 +115,7 @@ await page.tap(".again", { force: true });
 // (lot 3 : « Encore ! » ouvre l'écran « choisir », sans étoiles : l'exercice, puis le niveau ; deux touchers chacun)
 await page.waitForSelector(".choix-ex", { timeout: 20000 }); await page.waitForTimeout(600);
 await shot("7-encore-menu");
-check((await page.locator(".choix-ex").count()) === 5, "entraînement libre : l'écran « choisir » (ligne, additions, calcul rapide, voiliers, multiplication ; lot « Les leçons » : les leçons ont leur bulle à l'accueil)");
+check((await page.locator(".choix-ex").count()) === 6, "entraînement libre : l'écran « choisir » (ligne, additions, calcul rapide, voiliers, multiplication, étal ; lot « Les leçons » : les leçons ont leur bulle à l'accueil)");
 await page.tap('.choix-ex[aria-label="ligne"]', { force: true }); await page.waitForTimeout(450); await page.tap('.choix-ex[aria-label="ligne"]', { force: true }); await page.waitForTimeout(250);
 await page.waitForSelector('.choix-tuile[data-conseille="1"]', { timeout: 10000 });
 await page.tap('.choix-tuile[data-conseille="1"]', { force: true }); await page.waitForTimeout(450); await page.tap('.choix-tuile[data-conseille="1"]', { force: true }); await page.waitForTimeout(250);

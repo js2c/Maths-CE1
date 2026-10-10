@@ -9,6 +9,7 @@ import { blob, clipped, fillShape, ink, lerpP, mix, smooth } from "../gallery";
 import { numberStrokes, taper } from "../ocean";
 import { cel, contour, INK } from "../oceanMarker";
 import { wordStrokes, wordWidth } from "./letters";
+import { decale, ENTOURAGE, galetForme, GALETS, GALET_H, GALET_W } from "./galets";
 
 export { INK };
 // les primitives du style n'ont besoin que du contexte courant : un Gfx minimal suffit
@@ -192,6 +193,15 @@ export const drawSelectRound = (ctx: CanvasRenderingContext2D, cx: number, cy: n
   const g = shim(ctx), pts = blob(cx, cy, r, r, graine, 0.02, 20);
   ink(g, pts, INK, { w: 12, closed: true, shadow: 0, seed: 81 }, 0.9);
   ink(g, pts, SELECT, { w: 9, closed: true, shadow: 0.2, light: [-0.55, -0.83], seed: 82 });
+};
+// (lot « Correctifs : passage… », point 10) LE GALET SÉLECTIONNÉ de l'accueil : l'entourage corail cerné d'encre, son trait à
+// ENTOURAGE px du bord du galet, le long de la normale (sea/galets.ts, `decale`) : il suit exactement sa forme. `id` : le galet
+// (GALETS, exportés aussi pour l'application).
+export { GALETS, GALET_W, GALET_H };
+export const drawSelectGalet = (ctx: CanvasRenderingContext2D, cx: number, cy: number, id: string) => {
+  const g = shim(ctx), pts = decale(galetForme(cx, cy, GALETS[id]), ENTOURAGE);
+  ink(g, pts, INK, { w: 12, closed: true, shadow: 0, seed: 83 }, 0.9);
+  ink(g, pts, SELECT, { w: 9, closed: true, shadow: 0.2, light: [-0.55, -0.83], seed: 84 });
 };
 // ---------------------------------------------------------------- la frise d'avancement
 // la corde fine où sont enfilés les pictogrammes et les petites bulles : `knots` les centres, dans l'ordre ;

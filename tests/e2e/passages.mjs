@@ -13,7 +13,7 @@
 // bouton de l'échauffement, double « je ne sais pas ».
 //   node tests/e2e/passages.mjs [--court] [--lent 6] [--seul choisir,jouer,pause,etapes] [--out dossier]
 //   --court : un moment par exercice (pour un contrôle rapide) ; --lent N : processeur ralenti N fois (tablette lente)
-import { chromium } from "./navigateur.mjs";
+import { accueilReel, chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
@@ -30,7 +30,8 @@ const EXOS = [{ id: "ligne", module: 1 }, { id: "additions", module: 2 }, { id: 
 const MOMENTS = ["intro", "question", "tape", "aide", "correction", "coche5s"];
 
 async function open(q = "", prep = null) {
-  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true }), page = await context.newPage(), errors = [];
+  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true }); await accueilReel(context);
+  const page = await context.newPage(), errors = [];
   page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error" && !/Failed to load resource/.test(m.text())) errors.push(m.text()); });
   await page.goto(url + "?nosw&voix=rapide&son=non"); await page.waitForFunction(() => window.__ready !== undefined);
   if (prep) { await page.evaluate(prep); }

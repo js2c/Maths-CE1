@@ -49,6 +49,8 @@ import { Frieze } from "./session/frieze.js";
 import { FreeTraining } from "./session/free.js";
 import { allowedCrans, chooseCran } from "./session/selector.js";
 import { choose } from "./session/choice.js";
+import { deuxTouchers } from "./session/selection.js";
+import * as R from "./art/runtime.js";
 import { additionTable, exerciseOf, lessonEnd, lessonsMenu } from "./session/lessons.js";
 import { clock } from "./engine/clock.js";
 import { onBrief, pop, skipKey } from "./engine/ui.js";
@@ -431,64 +433,84 @@ app.parent = parent;
 // (pendant une pause, le parent peut terminer la séance : endPausedSession)
 const openParent = async () => { voice.stop(); sound.suspend(); const r = await parent.open(); if (r?.terminer) await endPausedSession({ par: "parent", raison: "terminée par le parent pendant une pause" }); if (r?.reload) location.reload(); sound.setPrefs(await store.setting("son")); sound.resume(); };
 const big = (name, cx, cy, label, cls = "bubble") => spriteBox(app, { x: cx - 90, y: cy - 90, w: 180, h: 180, cls, label, paint: (ctx) => sprites.draw(ctx, name, 0, 90, 90) });
+// (lot « Correctifs : passage de l'échauffement aux voiliers », point 10 ; demande du parent du 10 octobre 2026) LES GALETS DE
+// L'ACCUEIL : plus grands (au moins 200 px de large) et chacun sa forme de galet (atelier : sea/galets.ts, sprites
+// « accueil.galet.* ») ; le bouton est la boîte du galet, son dessin (ombre comprise) déborde un peu. Sélectionné, l'entourage
+// corail suit exactement sa forme (runtime.js, drawSelectGalet) ; la bulle part du galet (`__cadre`, son ovale).
+let homeSel = null;
+const galet = (id, cx, label, cls) => {
+  const f = R.GALETS[id], w = Math.round(2 * f.rx), h = Math.round(2 * f.ry), W = R.GALET_W, H = R.GALET_H, px = stage.px;
+  const b = spriteBox(app, { x: cx - w / 2, y: GALET_Y - h / 2, w, h, cls: `bubble galet ${cls}`, label, paint: () => {} });
+  const c = b.querySelector("canvas"); c.width = Math.round(W * px); c.height = Math.round(H * px);
+  Object.assign(c.style, { position: "absolute", left: `${(w - W) / 2}px`, top: `${(h - H) / 2}px`, width: `${W}px`, height: `${H}px` });
+  b.repaint = () => {
+    const ctx = c.getContext("2d"); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height);
+    sprites.draw(ctx, `accueil.galet.${id}`, 0, W / 2, H / 2);
+    if (homeSel === id) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawSelectGalet(ctx, W / 2, H / 2, id); }
+  };
+  b.repaint(); b.dataset.key = id;
+  b.__cadre = [cx - f.rx * 0.8, GALET_Y - f.ry * 0.8, cx + f.rx * 0.8, GALET_Y + f.ry * 0.8];
+  return b;
+};
 let homeEls = [], bienvenueEnCours = false;
 // (une bulle touchée pendant la bienvenue du lancement la coupe : la suite parle aussitôt)
-const clearHome = () => { homeEls.forEach((e) => e.remove()); homeEls = []; if (bienvenueEnCours) { bienvenueEnCours = false; voice.stop(); } };
+const clearHome = () => { homeEls.forEach((e) => e.remove()); homeEls = []; homeSel = null; if (bienvenueEnCours) { bienvenueEnCours = false; voice.stop(); } };
 async function showHome({ done, first = false, bienvenue = false }) {
   clearHome(); ocean.mascotte.ambiance("pause"); fleche.cacher();
-  // (lot 3 bis, R22) ce que « réécouter » redit à l'accueil
+  // (lot 3 bis, R22) ce que « réécouter » redit à l'accueil (point 10 : « Touche une bulle : je te dis ce que c'est. Touche-la
+  // encore pour y aller. »)
   voice.instruction = done ? text.data.accueilConsigneFaite : text.data.accueilConsigne;
   // (lot « Correctifs de la tablette ») à l'arrivée sur l'accueil, après l'écran de démarrage : la mascotte salue et souhaite
   // la bienvenue (une fois par lancement ; distincte de la bienvenue qui suit « jouer », qui reste)
   // (relecture du lot : tant que l'enfant n'a jamais touché la mascotte, la bienvenue le lui apprend : « Pour réécouter, touche-moi ! »)
+  // (point 10 : elle s'arrête dès que l'enfant sélectionne un galet : la mascotte dit alors ce que c'est)
   if (bienvenue) {
     bienvenueEnCours = true; ocean.mascotte.play("saluer");
     const astuce = !(await store.setting("mascotteTouchee"));
     voice.say(astuce ? `${text.pick("bienvenueLancement")} ${text.data.astuceMascotte}` : text.pick("bienvenueLancement")).then(() => { bienvenueEnCours = false; });
   }
-  const reefKey = big("recif", HOME_X[3], 650, "le récif", "bubble reefkey"), albumKey = big("album", HOME_X[4], 650, "l'album", "bubble albumkey");
-  // (lot « Les leçons ») la bulle « les leçons », avant comme après la séance du jour
-  const lessonsKey = big("accueil.lecons", HOME_X[2], 650, "les leçons", "bubble leconskey");
-  homeEls.push(reefKey, albumKey, lessonsKey, parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }));
-  onBrief(app, lessonsKey, () => openLessons(), "lecons");
+  // les galets : jouer (ou, la séance du jour faite, « Encore ! », l'entraînement libre, le même écran « choisir » sans étoiles,
+  // et la lune en décor), choisir (lot 3 : l'exercice et le niveau), les leçons, le récif, l'album
+  const tuiles = done
+    ? [galet("encore", GALET_X[1], "encore", "play again"), galet("lecons", GALET_X[2], "les leçons", "leconskey"), galet("recif", GALET_X[3], "le récif", "reefkey"), galet("album", GALET_X[4], "l'album", "albumkey")]
+    : [galet("jouer", GALET_X[0], "jouer", "play"), galet("choisir", GALET_X[1], "choisir", "choisir"), galet("lecons", GALET_X[2], "les leçons", "leconskey"), galet("recif", GALET_X[3], "le récif", "reefkey"), galet("album", GALET_X[4], "l'album", "albumkey")];
+  homeEls.push(...tuiles, parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }));
+  if (done) homeEls.push(await goodNight(app, { first }));
   const visit = (place) => async () => { voice.unlock(); voice.stop(); clearHome(); await place.visit(); showHome({ done: await doneToday(store) }); };
-  // (lot 3 bis, B3) les bulles de l'accueil : un toucher bref les lance, un appui long montre leur étiquette
-  onBrief(app, reefKey, visit(reef), "recif"); onBrief(app, albumKey, visit(album), "album");
-  if (done) {
-    // la séance du jour est faite : la lune (un décor) et « Encore ! », l'entraînement libre (le même écran « choisir »,
-    // sans étoiles)
-    const again = big("encore", HOME_X[1], 650, "encore", "bubble play again");
-    homeEls.push(again);
-    onBrief(app, again, () => { voice.unlock(); clearHome(); freeTraining(); }, "encore");
-    homeEls.push(await goodNight(app, { first }));
-    return;
-  }
-  // la séance du jour : « jouer » (la séance proposée par l'application) ou « choisir » (lot 3 : l'exercice et le niveau)
-  const play = big("jouer", HOME_X[0], 650, "jouer", "bubble play"), pickKey = big("choisir", HOME_X[1], 650, "choisir", "bubble choisir");
-  homeEls.push(play, pickKey);
-  let played = false;
-  onBrief(app, play, async () => {
-    if (played) return; played = true; voice.unlock(); clearHome();
-    // pour les captures et les tests : ?lecon=L1 joue seulement cette leçon
-    if (P.get("lecon")) { window.__lecon = await lessons.play(P.get("lecon")); return; }
-    // ?module=2 (tests) : la notion du jour imposée pour cette séance
-    if (P.get("module")) await store.setSetting("moduleImpose", { module: Number(P.get("module")), t: Date.now() });
-    // ?choix=1:8 ou ?choix=2:5 (tests, captures) : l'exercice choisi sans passer par l'écran « choisir »
-    const ch = P.get("choix")?.split(":").map(Number);
-    await runSession(ch ? (ch[0] === 2 ? { module: 2, famille: ch[1] } : { module: ch[0], niveau: ch[1] }) : null);
-  }, "jouer");
-  onBrief(app, pickKey, async () => {
-    voice.unlock(); clearHome();
-    mode = "choix"; homeKey.style.visibility = "visible";
-    const c = await choose(app, { store, content: { module1, module2, module3, module4, module5, module6, seance } });
-    mode = null; homeKey.style.visibility = "hidden";
-    await runSession(c);
-  }, "choisir");
+  const actions = {
+    // la séance du jour, proposée par l'application
+    jouer: async () => {
+      voice.unlock(); clearHome();
+      // pour les captures et les tests : ?lecon=L1 joue seulement cette leçon
+      if (P.get("lecon")) { window.__lecon = await lessons.play(P.get("lecon")); return; }
+      // ?module=2 (tests) : la notion du jour imposée pour cette séance
+      if (P.get("module")) await store.setSetting("moduleImpose", { module: Number(P.get("module")), t: Date.now() });
+      // ?choix=1:8 ou ?choix=2:5 (tests, captures) : l'exercice choisi sans passer par l'écran « choisir »
+      const ch = P.get("choix")?.split(":").map(Number);
+      await runSession(ch ? (ch[0] === 2 ? { module: 2, famille: ch[1] } : { module: ch[0], niveau: ch[1] }) : null);
+    },
+    choisir: async () => {
+      voice.unlock(); clearHome();
+      mode = "choix"; homeKey.style.visibility = "visible";
+      const c = await choose(app, { store, content: { module1, module2, module3, module4, module5, module6, seance } });
+      mode = null; homeKey.style.visibility = "hidden";
+      await runSession(c);
+    },
+    encore: () => { voice.unlock(); clearHome(); freeTraining(); },
+    lecons: () => openLessons(),
+    recif: visit(reef), album: visit(album),
+  };
+  // (point 10) EN DEUX TOUCHERS, comme les écrans de choix (session/selection.js) : le premier sélectionne le galet, la mascotte
+  // dit ce que c'est (accueilDescription), la bulle part du galet ; le second y va ; un toucher ailleurs désélectionne ; deux
+  // touchers rapides y vont aussitôt (point 11)
+  deuxTouchers(app, { tuiles, texte: (k) => text.data.accueilDescription[k], peindre: (k) => { homeSel = k; }, commandes: ".logo", unToucher: !!window.__accueilUnToucher }).then((k) => actions[k]?.());
 }
 // les bulles de l'accueil : jouer, choisir (ou « Encore ! »), les leçons, le récif, l'album
 // (lot 3 bis, R20 : l'album était posé sur le rocher de droite ; les bulles se décalent vers la gauche, sous la mascotte)
 // (lot « Les leçons » : cinq bulles, 180 px de l'une à l'autre)
 const HOME_X = [370, 550, 730, 910, 1090];
+// (point 10) les galets de l'accueil : plus grands, environ 228 px de l'un à l'autre, entre le bouton de l'espace parent et le bord droit
+const GALET_X = [250, 478, 705, 933, 1160], GALET_Y = 652;
 // LES LEÇONS (lot « Les leçons », session/lessons.js) : le menu ; une leçon, puis l'écran « À toi ! » (l'exercice associé :
 // séance du jour s'il n'y en a pas encore eu, entraînement libre sinon) ; la table d'addition ; la maison ramène à l'accueil
 async function openLessons() {

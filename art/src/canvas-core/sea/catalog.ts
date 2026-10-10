@@ -4,10 +4,10 @@
 // image à l'échelle 1 et 2, la recadre au plus juste, et range tout en planches WebP + `atlas.json`.
 // Les positions dans l'atlas sont relatives à l'ancrage : l'application pose un sprite par son ancrage.
 import type { Gfx, P } from "../core";
-import { BUBBLE_R, drawAnswerBubble, drawBubble, drawCheck, drawFish, drawMoon, drawEraseKey, drawShellKey, drawSlate, drawReplayKey, drawTally, SLATE_H, SLATE_W, TALLY_H, TALLY_W, drawPlay, drawSpeaker, drawStar, FISH_KINDS, FISH_N } from "./decor";
+import { BUBBLE_R, drawAnswerBubble, drawBubble, drawCheck, drawFish, drawMoon, drawEraseKey, drawShellKey, drawSlate, drawReplayKey, drawTally, SLATE_H, SLATE_W, TALLY_H, TALLY_W, drawPlay, drawPlayIcon, drawSpeaker, drawStar, FISH_KINDS, FISH_N } from "./decor";
 import { drawFleche, FLECHE_H, FLECHE_O, FLECHE_W } from "./fleche";
 import { drawTurtle, TURTLE_CLIPS, TURTLE_FPS } from "./turtle";
-import { CARD_H, CARD_W, drawBigShell, drawShinySweep, SWEEP_H, SWEEP_W, drawCardBack, drawCardBanner, drawCardFrame, drawCardVerso, drawCardWater, drawGlint, drawGoldStar, drawHomeKey, drawRainbowStar, drawReefKey, SHELL_N } from "./treasure";
+import { CARD_H, CARD_W, drawBigShell, drawShinySweep, SWEEP_H, SWEEP_W, drawCardBack, drawCardBanner, drawCardFrame, drawCardVerso, drawCardWater, drawGlint, drawGoldStar, drawHomeKey, drawRainbowStar, drawReefIcon, drawReefKey, SHELL_N } from "./treasure";
 import { CRAN_W, drawCranGlow, drawCranKey, GLOW_CR } from "./selector";
 import { drawFishNet, drawTrawl, NET_H, NET_W, TRAWL } from "./hundreds";
 import { DEFI_N, drawRecordFlag, drawScorePearl, drawStepChallenge, drawTimerBubble, TIMER_W } from "./challenge";
@@ -17,12 +17,13 @@ import { drawCalcTile, drawExerciseCalc, drawStepCalc, drawWallFish, WALL_FISH_N
 import { drawExerciseMult, drawMultTile, drawStepMult } from "./mult";
 import { drawExerciseVoiliers, drawStepVoiliers, drawVoiliersTile } from "./voiliers";
 import { drawEtalTile, drawExerciseEtal, drawStepEtal } from "./etal";
-import { GLOW_PAD, drawChooseKey, drawExerciseLine, drawFamilyTile, drawLineTile, drawTileGlow, TILE_H, TILE_W } from "./choice";
+import { GLOW_PAD, drawChooseIcon, drawChooseKey, drawExerciseLine, drawOpenBook, drawFamilyTile, drawLineTile, drawTileGlow, TILE_H, TILE_W } from "./choice";
 import { ATOI_R, drawAToiKey, drawBigHomeKey, drawLessonMenuTile, drawLessonsKey, drawRowIcon, drawTableTile, HOME_BIG_S, LESSON_ATOI, LESSON_IDS } from "./lecons";
 import { drawBigFlag, drawCloseKey, drawHintKey, drawLegendKey, drawShrugKey, drawSmallFish, drawStarTrail, drawTagFish, drawTallNet, drawZoneTab, FLAG_N, HOUSE_FISH, LEGEND_R, NETV_H, NETV_W, TAG, TAG_FISH_N, TRAIL_H, TRAIL_W, ZONE_TAB_R } from "./lot3bis";
 import { drawWarmupSkipKey } from "./lot3ter";
 import { BAR_H, BAR_W, drawBar } from "./demarrage";
-import { drawAgainKey, drawAlbumKey, drawFreeFacts, drawFreeLessons, drawFreeLine, drawMoonDecor, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepGlow, drawStepShell, GLOW_R, STEP_R } from "./ui";
+import { drawGalet, GALET_H, GALET_W } from "./galets";
+import { drawAgainIcon, drawAgainKey, drawAlbumIcon, drawAlbumKey, drawFreeFacts, drawFreeLessons, drawFreeLine, drawMoonDecor, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepGlow, drawStepShell, GLOW_R, STEP_R } from "./ui";
 
 // la tortue dans l'application : longueur ~110 px logiques, assez petite pour tenir sur une bouée
 export const TURTLE_S = 1;
@@ -196,6 +197,8 @@ export const SPECS: Spec[] = [
   // rangée ; la planche « lecons-atoi », chargée le temps de la fin d'une leçon : la bulle « À toi ! » de chaque leçon (la
   // tuile du niveau associé dedans) et la grande maison. La grille de la table est dessinée en direct (runtime.ts, drawAddTable).
   { name: "accueil.lecons", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawLessonsKey(g, 90, 90) },
+  // (lot « Correctifs : passage… », point 10) les galets de l'accueil : chacun sa forme, le pictogramme de sa bulle agrandi
+  ...([["jouer", drawPlayIcon], ["choisir", drawChooseIcon], ["encore", drawAgainIcon], ["lecons", (g: Gfx, x: number, y: number) => drawOpenBook(g, x, y + 4, 0.88, 5620)], ["recif", drawReefIcon], ["album", drawAlbumIcon]] as const).map(([id, icone], i): Spec => ({ name: `accueil.galet.${id}`, sheet: "petits", W: GALET_W, H: GALET_H, origin: [GALET_W / 2, GALET_H / 2], frames: 1, draw: (g) => drawGalet(g, GALET_W / 2, GALET_H / 2, id, icone, i) })),
   ...LESSON_IDS.map((id): Spec => ({ name: `lecons.tuile.${id}`, sheet: "lecons", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawLessonMenuTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, id) })),
   { name: "lecons.table.plus", sheet: "lecons", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawTableTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, "+") },
   { name: "lecons.table.fois", sheet: "lecons", W: TILE_W + 30, H: TILE_H + 30, origin: [TILE_W / 2 + 12, TILE_H / 2 + 12], frames: 1, draw: (g) => drawTableTile(g, TILE_W / 2 + 12, TILE_H / 2 + 12, "×") },

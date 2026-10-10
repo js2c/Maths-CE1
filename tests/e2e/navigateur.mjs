@@ -7,7 +7,7 @@
 //  - une phrase de l'inventaire pas encore fabriquée est seulement signalée (le parent la fabriquera, docs/VOIX.md ;
 //    VOIX_A_FABRIQUER=stricte : elle fait échouer aussi) ;
 //  - une phrase volontairement absente (un texte d'essai) est permise par `voixPermise(/…/)`.
-// Il pose aussi `__demarrageAuto` (l'écran de démarrage s'efface seul, ci-dessous).
+// Il pose aussi `__demarrageAuto` (l'écran de démarrage s'efface seul, ci-dessous) et `__accueilUnToucher` (l'accueil en un toucher).
 import { chromium as pw } from "../../art/node_modules/playwright-core/index.mjs";
 import { inventaire } from "../../tools/voix/inventaire.mjs";
 
@@ -21,10 +21,14 @@ const noter = (_source, s) => { if (typeof s === "string") manquees.set(s, (manq
 // posé après celui-ci : demarrageReel(contexte).)
 const brancher = async (cible) => {
   try { await cible.exposeBinding("__voixManquee", noter); } catch { /* déjà posé */ }
-  try { await cible.addInitScript(() => { window.__demarrageAuto ??= true; }); } catch { /* déjà posé */ }
+  try { await cible.addInitScript(() => { window.__demarrageAuto ??= true; window.__accueilUnToucher ??= true; }); } catch { /* déjà posé */ }
   return cible;
 };
 export const demarrageReel = (cible) => cible.addInitScript(() => { window.__demarrageAuto = false; });
+// (lot « Correctifs : passage de l'échauffement aux voiliers », point 10 : l'accueil est en deux touchers ; dans les parcours
+// écrits avant, un galet de l'accueil s'ouvre au premier toucher : `__accueilUnToucher`. Les parcours du lot, qui essaient
+// l'accueil réel, le remettent à false : accueilReel(contexte).)
+export const accueilReel = (cible) => cible.addInitScript(() => { window.__accueilUnToucher = false; });
 
 const envelopper = (browser) => {
   const newContext = browser.newContext.bind(browser), newPage = browser.newPage.bind(browser);

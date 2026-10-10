@@ -90,8 +90,9 @@ test("table d'addition : l'appui montré est celui des aides des additions jusqu
 });
 
 test("les phrases du lot : accueil à cinq bulles, fin de leçon, table d'addition (« 7 plus 5, 12. »)", () => {
-  assert.equal(textes.accueilConsigne, "Touche une bulle : jouer, choisir, les leçons, le récif ou l'album.");
-  assert.match(textes.accueilConsigneFaite, /regarder les leçons/);
+  // (lot « Correctifs : passage… », point 10 : l'accueil en deux touchers, la consigne change : tests/unit/passages.test.mjs)
+  assert.equal(textes.accueilConsigne, "Touche une bulle : je te dis ce que c'est. Touche-la encore pour y aller.");
+  assert.match(textes.accueilDescription.lecons, /^Les leçons\./);
   assert.equal(textes.finLecon, "À toi ! Touche la grande bulle pour t'entraîner.");
   assert.equal(textes.choixTable, "La table d'addition."); assert.equal(textes.tableConsigne, "Touche une case : je te dis le calcul.");
   assert.equal(textes.tableCase.replace("{a}", 7).replace("{b}", 5).replace("{n}", 12), "7 plus 5, 12.");

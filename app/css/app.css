@@ -155,7 +155,9 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .bulle-texte .m.on { opacity: 1; }
 .bulle-texte .nb { color: #d63a26; font-weight: 700; }
 /* (lot « Correctifs de la tablette ») la tuile sélectionnée (premier toucher) invite au second, comme « jouer » */
-.choix-tuile.choisie, .choix-ex.choisie, .lecons-tuile.choisie { animation: invite 1.6s ease-in-out infinite; }
+.choix-tuile.choisie, .choix-ex.choisie, .lecons-tuile.choisie, .galet.choisie { animation: invite 1.6s ease-in-out infinite; }
+/* (lot « Correctifs : passage… », point 10) les galets de l'accueil : le bouton est la boîte du galet, son dessin déborde un peu */
+.galet { overflow: visible; }
 /* (lot « Correctifs de la tablette ») la bulle d'une tuile, sur les écrans de choix pleins de tuiles : un peu plus petite */
 .bulle.tuile .bulle-texte, .bulle.large .bulle-texte { font-size: 26px; }
 .bulle.pop { animation: bulle-pop 0.38s ease-out; }

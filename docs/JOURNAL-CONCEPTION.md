@@ -109,6 +109,21 @@ Le parent a validé la maquette (`art/lecons/`, captures et questions dans `docs
 - **La table d'addition** : de 0 + 0 à 10 + 10 ; cases de 64 px ; la phrase d'une case est « 7 plus 5, 12. » (121 phrases) ; l'appui montré est celui des aides des additions (cadre, reflet, double + 1, sauts, maison) et, au-delà de 10, deux cadres de 10 (le passage de la dizaine), sauf + 1 et + 2 (les sauts) ; rien pour + 0 ; teintes légères des seuls doubles et amis de 10 ; une case compte au premier contact, comme le pavé ; pas d'étoiles (compteur masqué) ; une ligne dans la légende du parent.
 - **L10** : chaque petit filet du chalut montre dix poissons, en deux rangées de cinq.
 
+## Demandes du 10 octobre 2026, midi (après l'essai sur la tablette)
+
+- **Ajoutées au lot 8** (fiche 8, points 9 à 14) : « Toucher pour continuer » sous la barre ; l'accueil en deux touchers, avec des boutons plus grands en forme de galet ; le double toucher rapide qui lance aussitôt, sur tous les écrans en deux touchers ; la voix de secours entendue et la purge des anciennes voix ; le nouveau bouton de l'espace parent (image du parent) ; l'icône de l'application tirée du logo.
+- **La voix « ancienne » de la tuile multiplication** : la conception a vérifié qu'aucun fichier son de `main` n'est antérieur au passage à Chatterbox, et que la tuile a ses deux fichiers. Ce que le parent a entendu est la synthèse du navigateur. La cause la plus probable est la mise à jour de l'application (`sw.js`), à prouver par le lot. Le parent veut purger toutes les anciennes voix : la synthèse de secours et Piper sont retirés.
+- **Le double toucher** : la relecture du lot « Correctifs de la tablette » avait choisi d'ignorer un second toucher arrivé moins de 0,3 s après le premier. Le parent veut l'inverse.
+- **Propositions de la conception, validées par le parent** (« ok pour ces 2 propositions ») : les phrases des boutons de l'accueil (fiche 8, point 10), et le nom « Maths CE1 » sous l'icône.
+- **Nouveau lot : « Recette de l'enfant et nettoyage des couches »** (fiche 9), à la demande du parent (« le jeu est devenu un oignon »). La conception en fait un lot à part, après le lot 8 (et après « L'étal du pêcheur », déjà en cours, PR #49), pour deux raisons : le lot 8 est déjà long, et une seule session risquerait de manquer de place, comme celle des leçons ; et le nettoyage doit partir des correctifs faits.
+
+## Décision du 10 octobre 2026 (le logo de démarrage)
+
+- **Le parent a donné une image de référence** pour le logo : « Maths CE1 » en lettres de gelée jaune et corail, avec un contour bleu nuit, une étoile de mer et des bulles. Il a demandé : des bulles qui montent, un léger va-et-vient du texte d'avant en arrière, une étoile qui fait un tour puis reprend 2 s plus tard, des faisceaux comme dans le lagon, et la barre de chargement conservée.
+- **La conception a découpé le texte et l'étoile dans la référence** plutôt que de les redessiner dans l'atelier. Le rendu demandé, un relief brillant et des reflets peints, n'est pas celui du style « BD au marqueur », et la référence est l'image voulue. C'est donc une exception de plus, comme le lagon ou la mascotte (`CLAUDE.md`).
+- **Des étincelles qui scintillent** ont été ajoutées par la conception, là où la référence en avait de fixes. Le parent a validé la maquette avec elles (`art/logo/`).
+- **Intégration validée par le parent** (« ok pour intégration ») : point 9 du lot « Correctifs : passage de l'échauffement aux voiliers ».
+
 ## Lot « Correctifs de la tablette » (8 octobre 2026) : les choix de la session, à revoir par le parent
 
 Fait d'un seul tenant, sans arrêt pour validation (fiche 6 de `docs/LOTS.md`). Les décisions du parent du 8 octobre sont reportées dans `docs/SPEC.md` ; chaque point ci-dessous est **un choix de la session, à revoir par le parent**.

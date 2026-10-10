@@ -42,6 +42,8 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Après les cinq lots : le lot « Correctifs de la tablette »** (premier essai du parent sur la tablette, 8 octobre 2026 ; fiche 6). **État : fait** (PR #46, fusionnée ; ses 282 phrases sont fabriquées).
 
+**Puis (essai du parent du 10 octobre 2026) : le lot « Correctifs : passage de l'échauffement aux voiliers »** (fiche 8 : les défauts vus sur la tablette, le nouveau démarrage, l'accueil en deux touchers, la voix de secours, les icônes), **puis le lot « Recette de l'enfant et nettoyage des couches »** (fiche 9). « L'étal du pêcheur » est fusionné (PR #49) : ces deux lots partent de `main` qui le contient, et couvrent aussi l'étal (sa tuile, ses niveaux et ses leçons sont des écrans en deux touchers ; l'enfant imprévisible y joue aussi). Ils ne peuvent pas tourner en même temps qu'un autre lot. **État : à faire.**
+
 **Pourquoi cet ordre.**
 
 - Les correctifs de la confrontation avant les leçons et les sommes : ces lots s'appuient sur les règles du module 2 telles qu'elles seront écrites.
@@ -502,3 +504,203 @@ Chacune suivie de « À toi ! » vers son niveau (section 3). Relancées selon l
 - un parcours `tests/e2e/etal.mjs` avec les captures (1280 × 800 et 1920 × 1200) de chaque situation : beau temps, mauvais temps, arrivée de l'orage et réplique, portefeuille fermé, ouvert, argent sorti, paiement juste, « pas assez », « trop », pièce de trop, rendu de monnaie par le pêcheur, niveau 7 au pavé, deux produits, centimes, « je ne sais pas », correction, exemple guidé, pause et reprise, chaque leçon ;
 - mesure du temps d'image, beau et mauvais temps, portefeuille ouvert ;
 - relecture indépendante (méthode commune).
+
+### 8. Lot « Correctifs : passage de l'échauffement aux voiliers »
+
+(et autres défauts vus sur la tablette le 10 octobre 2026 : points 1 à 8 ; le nouveau démarrage, l'accueil, la voix et les icônes, demandés le même jour : points 9 à 14)
+
+**Origine** : essai du parent sur la tablette, le 10 octobre 2026. Les captures sont dans `docs/maquettes/correctifs-2/`.
+
+**Comme les lots 4, 5 et 6 : d'un seul tenant, sans arrêt pour une validation.** Les choix de la session vont dans le journal, marqués « choix de la session, à revoir par le parent », et dans une section « Choix faits sans le parent » de la demande de fusion.
+
+**Les défauts à corriger**
+
+1. **L'écran de l'échauffement reste par-dessus les voiliers** (capture 01, tablette). Après « passer l'échauffement », le jeu des voiliers démarre, mais il reste par-dessus :
+   - le pavé de l'échauffement (chiffres, effacer, coche) ;
+   - le coquillage d'aide ;
+   - le bernard-l'ermite ;
+   - un second bouton « je ne sais pas », celui de l'échauffement, en plus de celui des voiliers.
+
+   **Le défaut est certain : le parent l'a eu sur la tablette.** La session de conception ne l'a pas reproduit en passant l'échauffement depuis la première question, après une erreur ou après avoir touché le coquillage. Il dépend donc du moment où l'on passe, du chemin d'entrée, ou de la lenteur de la tablette, par exemple une minuterie qui se déclenche après le passage à l'étape suivante.
+   - **Reproduire en essayant chaque chemin** : « jouer », « choisir » avec le choix en deux touchers, « Encore ! ».
+   - **Et chaque moment de l'échauffement** : pendant la phrase d'introduction, pendant une question, chiffres tapés, pendant l'aide, pendant une correction avec le bernard-l'ermite, pendant l'exemple guidé, confirmation par la coche, confirmation automatique après 5 s.
+   - **Corriger la cause, pas le symptôme** : à la fin de l'échauffement, quelle que soit la façon dont il finit, tout ce qu'il a posé à l'écran est retiré, et ses minuteries sont arrêtées.
+   - **Vérifier les autres passages entre étapes** de la même façon : échauffement vers chaque exercice (ligne, additions, calcul rapide, voiliers, multiplication), notion du jour vers le défi, défi vers la récompense, pause et reprise.
+2. **Un contrôle durable.** Un parcours `tests/e2e` passe par chaque exercice précédé d'un échauffement passé, à chacun des moments ci-dessus. Il échoue si un élément d'une étape précédente reste visible : pavé, coquillage, personnage guide, double bouton.
+
+   Le parcours actuel des voiliers désactive l'échauffement : c'est pourquoi ce défaut n'a pas été vu.
+3. **Le texte qui déborde de la bulle** (capture 02, conteneur) : « trois-cent-soixante-neuf » sort de la bulle, dans les voiliers. Dans toute l'application, la bulle s'agrandit ou passe à la ligne pour contenir son texte. Le long mot composé peut se couper aux traits d'union.
+4. **Une bulle vide visible** (capture 03, conteneur) : pendant une question de l'échauffement, une bulle vide et pâle reste à côté de la mascotte. Une bulle sans texte ne s'affiche jamais.
+5. **À vérifier** :
+   - **Le clavier pendant l'échauffement.** En conception, des chiffres tapés au clavier ne se sont pas inscrits. Le moment n'était peut-être pas le bon : la question était peut-être encore en train d'apparaître.
+   - **Le cadrage à la taille exacte de la tablette** (écran 1138 × 711, densité 2,25). Sur la capture 01, la maison et la mascotte semblent coupées à gauche. Faire les captures à cette taille sur les écrans de jeu.
+6. **L'ancienne mer calculée des voiliers apparaît un instant** (vue par le parent sur la tablette).
+   - Depuis la mer illustrée (#48), le module garde la mer procédurale « en secours » (`app/js/voiliers/voiliers-scene.js`, `render`, « repli : la mer procédurale »). Elle est dessinée tant que l'illustration n'est pas prête : c'est le flash du début.
+   - **La retirer de l'application**, par l'outil d'export, jamais à la main : son programme, son contexte de dessin, ses réglages.
+   - Tant que la mer illustrée n'est pas prête, montrer sa première image fixe, ou le dégradé fixe de la mer, sans calcul.
+   - Si la mer illustrée ne peut pas fonctionner (pas de WebGL), une image fixe de la mer.
+   - La maquette `art/voiliers/` garde sa mer à elle : seule l'application l'abandonne.
+   - Mesurer le gain : poids du module, mémoire, temps de démarrage du jeu.
+7. **Plus d'étiquette d'appui long dans les menus** (capture 04) : sur les écrans de choix (exercices, niveaux, leçons, tables, entraînement), l'appui long faisait apparaître une étiquette rectangulaire.
+   - Depuis le choix en deux touchers, cette étiquette **double** la bulle de la mascotte, avec un autre texte : deux descriptions à la fois.
+   - La supprimer sur ces écrans : seule la bulle reste. L'appui long n'y fait plus rien de particulier ; il ne lance toujours rien.
+   - Ailleurs (maison, coquillage, « je ne sais pas », etc.), ne rien changer.
+   - Mettre `docs/SPEC.md` à jour (appui long).
+8. **L'entourage de sélection ne suit pas la tuile** (captures 04 et 05) : sur les tuiles carrées à coins arrondis (niveaux, leçons), l'entourage rouge est décalé dans les angles. Il doit :
+   - suivre exactement la forme de chaque tuile : cercle pour les exercices, carré aux coins arrondis du même rayon pour les niveaux et les leçons ;
+   - être centré, à distance régulière du bord.
+
+   Vérifier sur agrandissement, à 1280 × 800, 1920 × 1200 et à la taille de la tablette (1138 × 711, densité 2,25).
+
+**Et une amélioration**
+
+9. **Le nouveau logo de l'écran de démarrage** (décision du parent du 10 octobre 2026 ; maquette validée : `art/logo/`, lire son `README.md`).
+   - **Remplacer le logo dessiné** (`demarrage.logo`, `art/src/canvas-core/sea/demarrage.ts`) par les calques de la maquette : texte, étoile, ombre, et leurs places (`art/logo/images/position.json`).
+   - **Les images vont dans `app/assets/logo/`**, copiées par un outil d'export, `art/tools/export-logo.mjs`, comme pour le récif et les voiliers. On ne les copie jamais à la main, et l'outil ne modifie jamais la maquette.
+   - **Reprendre les mouvements de la maquette tels quels**, avec ses valeurs : le va-et-vient du logo et de son ombre, le tour de l'étoile puis 2 s d'arrêt, les bulles qui montent, les étincelles, les faisceaux du lagon, le fond d'eau. S'il faut changer un mouvement, on change d'abord la maquette.
+   - **« Toucher pour continuer »** (demande du parent du 10 octobre, midi) : une fois la barre pleine, ce texte apparaît dessous, en blanc et en gras, cerné de bleu nuit, et avance et recule doucement. Il est dans la maquette, avec sa police (Shantell Sans, celle de la bulle) ; la ligne « 2026 · js2c · version » descend pour lui laisser la place.
+   - **Garder sans changement** la barre de chargement (qui avance réellement), la ligne « 2026 · js2c · version » (seule sa place change), le toucher qui ferme l'écran et autorise la voix, et le fondu de sortie.
+   - **Le logo s'affiche dès l'ouverture.** Ses images (environ 165 Ko en @2x) sont chargées les toutes premières, comme l'est aujourd'hui la planche `demarrage`. Le démarrage tient toujours en moins de 3 s.
+   - **Retirer de la planche `demarrage` le logo dessiné**, qui ne sert plus, par `export-app.mjs`. La barre reste.
+   - **À la fermeture de l'écran**, arrêter la boucle d'animation et libérer les images.
+   - **Mesurer le temps d'image sur cet écran.** Si la moyenne dépasse 20 ms, alléger : moins de bulles, puis faisceaux figés. C'est la règle de `CLAUDE.md`.
+   - **L'icône de l'application et le bouton de l'espace parent** : points 13 et 14.
+   - **Mettre à jour** `docs/SPEC.md` (section 2, l'écran de démarrage) et `docs/ARCHITECTURE.md`, avec l'outil d'export.
+
+10. **L'accueil en deux touchers, avec des boutons plus grands et en forme de galet** (demande du parent du 10 octobre ; capture 06).
+   - **Les cinq boutons de l'accueil** (jouer ou « Encore ! », choisir, les leçons, le récif, l'album) deviennent **plus grands**, aussi grands que la place le permet (au moins 200 px de large), et **patatoïdes** : chacun a sa forme de galet, irrégulière, différente des autres. Ces formes sont dessinées dans l'atelier, dans le style A ; les pictogrammes restent, agrandis avec elles.
+   - **Même principe que les écrans de choix** (`session/selection.js`) :
+     - un toucher sélectionne le bouton : entourage rouge épais, qui suit exactement la forme du galet (comme au point 8), bulle qui part du bouton, et la mascotte dit ce que c'est ;
+     - un second toucher entre dans le menu ;
+     - un toucher ailleurs désélectionne.
+   - **Les phrases** (nouvelles, à fabriquer ; proposées par la conception, validées par le parent le 10 octobre) :
+     - jouer : « Jouer. Je choisis les exercices du soir pour toi. » ;
+     - « Encore ! » : « Encore ! Tu rejoues autant que tu veux. » ;
+     - choisir : « Choisir. C'est toi qui choisis l'exercice. » ;
+     - les leçons : « Les leçons. Je t'explique avec des images. » ;
+     - le récif : « Le récif. Viens voir tes créatures. » ;
+     - l'album : « L'album. Toutes tes cartes sont rangées ici. »
+     - La consigne de l'accueil, redite quand on touche la mascotte, devient : « Touche une bulle : je te dis ce que c'est. Touche-la encore pour y aller. » ; celle de la séance finie, de même.
+   - La bienvenue au lancement ne change pas. Elle s'arrête dès que l'enfant sélectionne un bouton.
+   - **Vérifier les captures à la taille de la tablette** : rien ne chevauche la mascotte, le bouton de l'espace parent ni la lune.
+11. **Le double toucher rapide lance aussitôt** (demande du parent du 10 octobre). Sur tous les écrans en deux touchers (l'accueil, les exercices, les niveaux, les leçons, les tables, l'entraînement libre), deux touchers rapides sur la même tuile la lancent directement, sans s'arrêter sur la sélection. La mascotte se tait, et la bulle ne s'ouvre pas, ou se referme aussitôt.
+   - **La cause est connue** : dans `session/selection.js`, un second toucher arrivé moins de 0,3 s après le premier est ignoré (`secondToucherMs`). C'était un choix de la relecture du lot « Correctifs de la tablette », contre le doigt qui rebondit ; le parent le remplace.
+   - **Ne garder qu'un filtre très court contre le rebond** (de l'ordre de 60 ms, à mesurer avec les événements réels de Chrome sur Android). Vérifier aussi que Chrome ne prend pas le double toucher pour un zoom (`touch-action`).
+   - Le test de la règle (`Selection`) couvre : double toucher rapide, double toucher trop lent (deux touchers ordinaires), rebond.
+12. **La voix de secours entendue, et la purge des anciennes voix** (« les multiplications », dit avec l'ancienne voix dans le menu des exercices ; capture 07).
+   - **Ce que la conception a vérifié sur `main`** (10 octobre) :
+     - les 10 660 fichiers de `app/assets/voix/` viennent tous des fabrications du parent avec Chatterbox (8 et 10 octobre). Aucun n'existait avant le passage à Chatterbox (4 octobre) : il ne reste aucun fichier Piper ;
+     - les deux phrases de cette tuile, « La multiplication. » et « Des rangées de poissons, et les tables. », ont leur fichier. La hauteur de voix mesurée sur ces fichiers est celle du parent ;
+     - la voix entendue est donc la **synthèse du navigateur**, la voix de secours de `engine/voice.js`. Elle parle quand la phrase n'est pas dans l'index que la page a chargé, ou quand son fichier ne se lit pas (`audio.onerror`).
+   - **La cause la plus probable : la mise à jour de l'application sur la tablette** (`app/sw.js`).
+     - Le cache sert d'abord : le premier lancement après une mise à jour tourne encore avec la version précédente.
+     - La nouvelle version s'installe en arrière-plan, puis prend la main **en cours de partie** (`skipWaiting`, `clients.claim`), et supprime l'ancien cache. La page en cours garde l'ancien index ; un fichier qu'il nomme et que la nouvelle version a retiré n'est plus nulle part : la synthèse prend le relais.
+     - L'installation met en cache plus de 10 000 fichiers d'un seul bloc (`cache.addAll`) : un seul échec réseau la fait échouer entière, et la tablette reste sur l'ancienne version.
+   - **D'abord, reproduire et prouver la cause** : servir deux versions de l'application en local, ouvrir la première, publier la seconde (un son changé ou retiré, une phrase nouvelle), puis rouvrir et jouer. Noter chaque phrase lue par la synthèse et pourquoi. Si la cause est ailleurs, la trouver, puis la corriger.
+   - **Corriger la mise à jour** :
+     - une page ne mélange jamais deux versions ;
+     - une nouvelle version ne prend la main qu'au lancement suivant, ou pendant l'écran de démarrage, avant le toucher ;
+     - l'installation se fait par paquets, avec des reprises, et un échec ne bloque pas les mises à jour suivantes ;
+     - l'ancien cache n'est supprimé qu'une fois la nouvelle version complète et active.
+   - **Purger les anciennes voix (demande du parent)** :
+     - **retirer la synthèse du navigateur de l'application.** Une phrase sans fichier lisible n'est plus dite par une autre voix : la bulle l'écrit le temps que la phrase aurait duré, et l'incident est noté ;
+     - **noter ces incidents dans l'espace parent**, sous un titre « Phrases sans voix » : la phrase, la date, la version, la cause (absente de l'index, ou fichier illisible). Le parent voit ainsi ce qui manque, au lieu d'entendre une autre voix ;
+     - **retirer Piper de l'outil de fabrication** (`PIPER`, `piper_lot.py`, les modèles), pour qu'aucune fabrication ne puisse mêler les deux voix ;
+     - **mettre à jour `CLAUDE.md`** (« Voix » : la Web Speech API n'existe plus), `docs/VOIX.md`, `docs/ARCHITECTURE.md` et `docs/SPEC.md`.
+   - **Un contrôle durable** : le parcours des deux versions ci-dessus devient un test (`tests/e2e/mise-a-jour.mjs`). Il échoue si une phrase n'est pas lue depuis son fichier.
+13. **Le nouveau bouton de l'espace parent** (image donnée par le parent ; découpée dans `art/boutons/`, `decoupe.py`, déterministe).
+   - Remplacer l'image du bouton (aujourd'hui l'icône de l'application, la pieuvre, `parent/parent.js`, `parentLogo`) par `art/boutons/images/parents@1x.webp` et `@2x.webp`, copiés par un outil d'export (comme au point 9), dans `app/assets/boutons/`.
+   - Même place, en bas à gauche de l'accueil, 108 px de large (au lieu de 92).
+   - **L'appui long ne change pas.** L'anneau qui se remplit pendant l'appui suit la forme du bouton, un carré aux coins arrondis, et non plus un cercle. Le bouton n'a plus le cadre et l'ombre en CSS d'avant : l'image a les siens.
+14. **L'icône de l'application** (sur l'écran de la tablette, quand l'application est installée) : le logo de démarrage, au lieu de la pieuvre.
+   - Les icônes sont faites par `art/logo/icone.py` (déterministe) dans `art/logo/icone/` :
+     - `icone-512.png` et `icone-192.png` (« any ») ;
+     - `icone-maskable-512.png` : Android la découpe en rond ou en carré arrondi, et le logo tient dans le cercle central ;
+     - `icone-180.png` (iPhone, iPad).
+   - Les copier dans `app/icons/` par l'outil d'export ; mettre à jour `manifest.webmanifest` (les trois usages) et `index.html` (icône de l'onglet, `apple-touch-icon`).
+   - **Validé par le parent** : le nom affiché sous l'icône devient « Maths CE1 » (`name` et `short_name`, aujourd'hui « L'océan des nombres » et « Océan »), pour aller avec le logo.
+   - Sur la tablette, une icône déjà installée ne change souvent qu'après avoir désinstallé puis réinstallé l'application. Le dire dans `docs/GUIDE-PARENT.md` : désinstaller ne perd pas la progression tant qu'on ne vide pas les données du site, mais faire d'abord un export par sécurité.
+
+**Voix** : les phrases du point 10 (six descriptions et deux consignes). Les lister exactement dans la demande de fusion, avec leur poids.
+
+**Recette** : la méthode commune, avec :
+- le parcours du point 2 ;
+- des captures à 1138 × 711, densité 2,25 ;
+- une capture de chaque écran de choix avec une tuile sélectionnée ;
+- le démarrage des voiliers filmé image par image, sans aucune image de l'ancienne mer.
+- l'écran de démarrage, à 1280 × 800 et à 1138 × 711 (densité 2,25), comparé à la maquette `art/logo/` : une capture fixe, puis une suite d'images sur 4 s (le va-et-vient, le tour de l'étoile, les bulles qui montent, « Toucher pour continuer ») ; le temps d'image mesuré sur cet écran ;
+- l'accueil : chaque bouton sélectionné, à la taille de la tablette ; un double toucher rapide sur chaque écran en deux touchers ;
+- le parcours des deux versions (point 12), et la liste des phrases lues par la synthèse avant et après le correctif ;
+- le bouton de l'espace parent pendant l'appui long, et les icônes (dont la maskable découpée en rond).
+
+### 9. Lot « Recette de l'enfant et nettoyage des couches »
+
+**Origine** : le parent, le 10 octobre 2026 : « le jeu est devenu un oignon, c'est-à-dire un empilement de couches dont les anciennes sont encore présentes sous la surface, et peuvent créer des bugs ». Il demande une recette où l'on se met dans la peau de l'enfant et où l'on teste tout, y compris les actions inattendues : toucher à côté, passer l'entraînement, revenir au menu en pleine partie pour changer de jeu, etc.
+
+**Quand** : après la fusion du lot « Correctifs : passage de l'échauffement aux voiliers » (fiche 8), dont il prolonge le point 1, et donc après « L'étal du pêcheur » (PR #49), qu'il couvre aussi. Avant tout nouveau lot qui ajoute un écran, pour ne pas ajouter de couche sur une base qu'on n'a pas nettoyée.
+
+**Comme les lots 4 à 8 : d'un seul tenant, sans arrêt pour une validation.** Ce lot ne change pas ce que fait l'application ; il retire ce qui ne sert plus et corrige ce qui déraille. Tout changement de comportement visible va dans le journal (« choix de la session, à revoir par le parent ») et dans la demande de fusion.
+
+**1. L'inventaire des couches** (avant de modifier le code), dans `docs/COUCHES.md` :
+- Pour chaque écran et chaque étape, lister ce qu'il pose et ce qu'il lance, puis chaque façon d'en sortir.
+  - Les écrans et étapes : démarrage, accueil, choisir, niveaux, leçons, tables, chaque étape de la séance (échauffement, notion du jour, défi, récompense, fin), pause, entraînement libre, récif, album, espace parent, et l'écran de chaque exercice, l'étal compris.
+  - Ce qu'il pose : éléments, canvas, planches d'images.
+  - Ce qu'il lance : minuteries, boucles d'animation, écouteurs posés sur le document, phrases dites, ambiance et bulle de la mascotte, flèche, sons.
+  - Les façons d'en sortir : fin normale, maison, pause, espace parent, « passer », écran mis en veille, rechargement.
+- **Chercher ce qui ne sert plus** :
+  - le code jamais exécuté, mesuré par la couverture du code pendant les parcours et les simulations (Playwright, `coverage`) ;
+  - les fichiers de `app/` jamais chargés ;
+  - les images des planches jamais dessinées ;
+  - les règles CSS qui ne visent plus rien ;
+  - les clés de contenu et les réglages jamais lus ;
+  - les anciens modes encore codés (la validation simple, le mode « double », les restes de la pieuvre dans le code, les anciens fonds).
+- **Pour chacun** : le retirer, ou le garder en écrivant pourquoi.
+- **Les petites pieuvres encore visibles** (bouton « je ne sais pas », frise) ne sont pas du code mort : leur remplacement attend une décision du parent (`docs/JOURNAL-CONCEPTION.md`). Les lister, sans les retirer.
+
+**2. Une seule règle de sortie** : chaque étape inscrit ce qu'elle crée auprès d'un même propriétaire : éléments, minuteries, écouteurs, phrases, état de la mascotte. Quitter l'étape, de quelque façon que ce soit, retire tout. Généraliser ainsi le correctif du point 1 du lot 8 à tous les écrans et étapes de l'inventaire, et retirer les nettoyages au cas par cas qu'elle remplace.
+
+**3. L'enfant imprévisible** : un parcours automatique, `tests/e2e/enfant.mjs`, tiré au hasard mais reproductible (une graine). Il enchaîne des centaines d'actions d'enfant :
+- toucher la cible, ou juste à côté (de 10 à 60 px), ou l'eau vide ;
+- deux ou trois touchers rapides, un appui long, deux doigts ;
+- toucher pendant une animation ou une phrase ;
+- toucher la mascotte encore et encore ;
+- « je ne sais pas » plusieurs fois de suite ;
+- passer l'échauffement à n'importe quel moment ;
+- la maison en pleine question, puis un autre jeu par « choisir » ;
+- une leçon quittée en route ;
+- aller-retours rapides entre les menus ;
+- pause, puis reprise ;
+- l'écran mis en veille, puis repris 5 minutes plus tard ;
+- l'espace parent ouvert pendant une pause ;
+- la page rechargée en pleine séance.
+
+**Après chaque action, et chaque seconde, il vérifie** :
+- aucun élément d'une étape quittée n'est visible (grâce au propriétaire du point 2) ;
+- une seule mascotte, au plus une bulle, un seul « je ne sais pas » ;
+- aucune phrase d'une étape quittée n'est dite, et aucune phrase n'est dite sans son fichier ;
+- aucune erreur dans la console, aucune promesse rejetée sans être traitée ;
+- jamais d'impasse : un élément à toucher apparaît en moins de 20 s ;
+- pas de fuite : après 20 tours accueil, jeu, accueil, le nombre d'éléments, de canvas, de minuteries et d'écouteurs revient à celui du départ ;
+- le temps d'image.
+
+**Le faire tourner aussi sur une tablette lente simulée** : processeur ralenti de 4 à 6 fois (`Emulation.setCPUThrottlingRate`), à 1138 × 711 et densité 2,25. Les minuteries qui arrivent en retard sont la cause soupçonnée du point 1 du lot 8.
+
+**Graines et réductions** : une version courte (quelques graines) entre dans les tests de GitHub. La version longue, au moins 200 graines de 300 actions, ralentie et non ralentie, tourne pendant le lot. Chaque défaut trouvé est réduit à la plus courte suite d'actions qui le montre, puis devient un test de non-régression.
+
+**4. L'enfant joué par un agent** : un agent indépendant, qui n'a vu ni le code ni le travail, joue au moins 30 minutes à vitesse réelle, par Playwright, avec des captures.
+- Il reçoit seulement la section « Les deux personnes à incarner » de `docs/archives/PROMPT-RECETTE-LOT3.md` et le mode d'emploi du parcours.
+- Il fait exprès des actions inattendues, en plus de jouer normalement.
+- Il rend des constats numérotés (bloquant, gênant, cosmétique), chacun avec sa capture et la suite d'actions qui le reproduit.
+- Corriger les bloquants et les gênants, puis le relancer une seconde fois sur la version corrigée.
+- Son rapport va dans `tests/recette-fonctionnelle/out-enfant/`.
+
+**5. Pour le parent** : une courte liste d'essais à faire sur la tablette (10 minutes), dans `docs/GUIDE-PARENT.md`, pour ce que l'automatique ne voit pas : le toucher réel, la fluidité, le son.
+
+**Voix** : aucune phrase nouvelle attendue. Les phrases qui ne servent plus seront effacées à la prochaine fabrication du parent ; les lister.
+
+**Recette** : la méthode commune, avec, dans la demande de fusion :
+- `docs/COUCHES.md` ;
+- ce qui a été retiré, et le poids de l'application avant et après (code, fichiers, images) ;
+- pour l'enfant imprévisible : le nombre de graines et d'actions, les défauts trouvés, leurs tests de non-régression ;
+- le rapport de l'agent et le traitement de chaque constat ;
+- le temps d'image, avec et sans ralentissement.

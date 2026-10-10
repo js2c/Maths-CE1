@@ -47,6 +47,9 @@ function parkMiller(seed) { let s = seed % 2147483647; if (s <= 0) s += 21474836
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 const W = 1280, H = 800, TAILLES = [3, 5, 8, 12, 17, 24];
+// pendant le chargement : l'intervalle minimal entre deux images (ms), et le repos après une image, en multiples de son temps
+// de dessin (`suivante`)
+const CHARGEMENT_MS = 66, REPOS = 2;
 // ce que la maquette fabrique une fois (dans son ordre de tirage, pour les mêmes faisceaux et les mêmes bulles)
 function fabriquer() {
   const rnd = parkMiller(97), Rr = (a, b) => a + (b - a) * rnd();
@@ -154,7 +157,7 @@ export class Demarrage {
   // la boucle : faisceaux 20 fois par seconde, bulles à chaque image ; le temps d'image est mesuré (après 0,5 s)
   boucle(now) {
     if (!this.raf) return;
-    this.raf = requestAnimationFrame((n) => this.boucle(n));
+    const w0 = performance.now();
     const dt = Math.min(0.1, (now - this.last) / 1000), t = (now - this.t0) / 1000, M = this.mesure;
     // (pendant le chargement, l'intervalle entre deux images mesure surtout le chargement : il est noté à part, et l'allègement
     // ne se décide qu'une fois tout chargé, quand l'écran attend le toucher)
@@ -170,7 +173,18 @@ export class Demarrage {
     // (allègement de niveau 2 : les faisceaux figés)
     if (t - this.lastRay >= 0.05 && (M.niveau < 2 || this.lastRay < 0)) { this.rayons(t); this.lastRay = t; }
     this.bulles(t, dt);
+    this.suivante(performance.now() - w0);
     window.__demarrageMesure = { niveau: M.niveau, images: M.images, moyenneMs: M.moyenneMs, chargementMs: M.chargementMs, bulles: this.anim.bulles.length };
+  }
+  // l'image suivante. (Recette du lot : une boucle d'animation redemandée à chaque rafraîchissement de l'écran oblige la page
+  // à fabriquer une image complète à chaque fois ; pendant le chargement, cela retardait tout le reste : démarrage mesuré à 10
+  // à 13 s au lieu de 5 à 6 s, processeur ralenti 4 fois. Tant que tout n'est pas chargé, l'image suivante est donc demandée
+  // après un repos : au moins `CHARGEMENT_MS`, et deux fois le temps de dessin de la dernière. Chargement fini, à chaque
+  // rafraîchissement.)
+  suivante(travail) {
+    const go = () => { if (this.raf) this.raf = requestAnimationFrame((n) => this.boucle(n)); };
+    if (this.pret) return go();
+    clearTimeout(this.minuterie); this.minuterie = setTimeout(go, Math.max(CHARGEMENT_MS, REPOS * travail));
   }
   rayons(t) {
     const c = this.cRay, ctx = c.getContext("2d"), rk = c.k, { noise, shafts, rays } = this.anim;
@@ -258,7 +272,7 @@ export class Demarrage {
   fermer() {
     this.el.classList.add("partir");
     return new Promise((res) => setTimeout(() => {
-      cancelAnimationFrame(this.raf); this.raf = 0;
+      cancelAnimationFrame(this.raf); clearTimeout(this.minuterie); this.raf = 0;
       for (const c of this.el.querySelectorAll("canvas")) { c.width = c.height = 0; }
       for (const i of this.el.querySelectorAll("img")) i.removeAttribute("src");
       this.anim = null; this.bulleImgs = null; this.logo = null;

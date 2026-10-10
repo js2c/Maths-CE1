@@ -6,8 +6,8 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 - **En ligne** (https://js2c.github.io/Maths-CE1/) : lots 1, 1 bis, 2, 3, 3 bis, 3 ter et « Lagon en fond d'exercices », tous fusionnés (dernière demande de fusion : PR #30, le lagon).
 - **Ce que fait l'application** : `docs/SPEC.md` (spécification unique ; ce qui reste à construire y est marqué « à construire », section 13).
-- **Prochains lots** : les lots de `docs/LOTS.md` sont faits, « L'étal du pêcheur » compris (PR #49, à fusionner) ; la suite est à décider par le parent (`docs/IDEES.md`).
-- **En attente du parent** : la fabrication des 394 phrases de l'étal (`docs/maquettes/etal/PHRASES.md` ; avec elles, la voix pèsera environ 79,3 Mo, tout près de la limite de 80 Mo), la fusion de la PR #49, l'essai sur la tablette et la relecture de ses « Choix faits sans le parent » ; les phrases des lots précédents sont toutes fabriquées.
+- **Prochains lots** : « Correctifs : passage de l'échauffement aux voiliers » est fait (à fusionner) ; ensuite « Recette de l'enfant et nettoyage des couches » (`docs/LOTS.md`, fiche 9).
+- **En attente du parent** : la fabrication des 394 phrases de l'étal (`docs/maquettes/etal/PHRASES.md`) et des 12 phrases du lot « Correctifs : passage de l'échauffement aux voiliers » (avec elles, la voix pèsera environ 79,4 Mo, tout près de la limite de 80 Mo), la fusion de ce lot, l'essai sur la tablette et la relecture de ses « Choix faits sans le parent » (`docs/JOURNAL-CONCEPTION.md`).
 - **Projet parallèle** : la refonte graphique (hors de ce fichier).
 
 ## Lots
@@ -28,20 +28,10 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 | Sommes jusqu'à 30 et Multiplication | Familles d'additions 8 à 13, leçons L11 et L12 ; cinquième exercice (multiplication, 9 niveaux, tables de 2, 3, 4, 5 et 10), leçons L13 et L14, table de multiplication ; fait d'un seul bloc, sans arrêt pour validation | fait (PR #42) ; 945 phrases à fabriquer |
 | Correctifs de la tablette | Écran de démarrage (logo, barre de chargement, toucher qui autorise la voix), bienvenue au lancement ; choisir en deux touchers ; toucher la mascotte pour réécouter ; clavier de l'ordinateur ; ardoise jamais vide ; plus de phrase dite par l'ancienne voix (contrôle dans tous les parcours) ; fins de ligne sous Windows | fait (PR #46) ; voix fabriquées |
 | L'étal du pêcheur | Sixième exercice, la monnaie (module 6) : la maquette de l'étal intégrée, 10 niveaux (pièces et billets, payer juste, sans pièce de trop, rendre la monnaie, deux produits, centimes), l'orage, leçons L15 à L18, espace parent ; d'un seul tenant | fait (PR #49) ; 394 phrases à fabriquer |
+| Correctifs : passage de l'échauffement aux voiliers | L'essai du parent du 10 octobre : un échauffement quitté ne repart plus par-dessus l'exercice suivant, la bulle toujours pleine, la mer des voiliers sans l'ancienne mer, plus d'étiquette d'appui long sur les écrans de choix, l'entourage qui suit la tuile, le logo et le bouton « Parents » du parent, l'accueil en cinq galets et deux touchers, plus de voix de secours (phrases sans voix notées pour le parent), mises à jour sans mélange de versions, l'icône ; d'un seul tenant | fait (branche `claude/practical-franklin-gr2y0x`, demande de fusion à fusionner) ; 12 phrases à fabriquer |
 
 ## Reprise
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
 
-### Reprise du lot « Correctifs : passage de l'échauffement aux voiliers »
-
-- Branche `claude/practical-franklin-gr2y0x`, partie de `main` (167eec50, étal fusionné), demande de fusion en brouillon « Lot : Correctifs : passage de l'échauffement aux voiliers ».
-- Fiche 8 de `docs/LOTS.md`, d'un seul tenant (choix de la session dans `docs/JOURNAL-CONCEPTION.md`).
-- Fait : points 1 à 14 (code, tests unitaires, parcours `tests/e2e/passages.mjs`, `tests/e2e/mise-a-jour.mjs`,
-  `tests/e2e/correctifs-2.mjs` et ses captures), la documentation, la relecture indépendante et ses correctifs
-  (`tests/recette-fonctionnelle/out-correctifs-2/RELECTURE.md`), séquences et simulation par profil.
-- En cours (10 octobre 2026, fin d'après-midi) : tous les parcours `tests/e2e` (les anciens qui vérifiaient l'étiquette
-  d'appui long des écrans de choix sont mis à jour) ; ceux qui échouent sont relancés seuls, puis sur `main`.
-- Reste : mesures avant et après (`perf.mjs`), séance à vitesse réelle, attentes avec et sans « passer », lot « fait » dans
-  `docs/LOTS.md`, la demande de fusion (GitHub injoignable depuis la session : à ouvrir dès que possible ; son texte est
-  prêt).
+(Aucune session en cours.)

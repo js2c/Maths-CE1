@@ -889,3 +889,10 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 - **Réglages de la maquette** : le parent a demandé les **valeurs de départ** de la maquette (prompt du 10 octobre 2026), reportées dans `app/content/etal.json`.
 - **Étapes** : 0 branche et mesures avant ; 1 export de la scène (`art/tools/export-etal.mjs`) et `etal.json` ; 2 règles du module 6 (`modules/etal/`, `module6.json`) et tests unitaires ; 3 l'écran et son branchement (choisir, entraînement libre, frise, espace parent) ; 4 textes, voix, leçons L15 à L18, pictogrammes ; 5 recette, documents, demande de fusion prête.
 - **Fini le 10 octobre 2026** : recette complète faite (tous les parcours, comparés à `main` quand ils échouent ; mesures de fluidité avant et après, beau temps et orage, la maquette seule ; simulation par profil ; séquences ; séance à vitesse réelle ; attentes avec et sans « passer » ; relecture indépendante, `tests/recette-fonctionnelle/out-etal/RELECTURE.md`, et ses correctifs). Demande de fusion #49 sortie du brouillon ; 394 phrases à fabriquer par le parent.
+
+## Reprise du lot « Correctifs : passage de l'échauffement aux voiliers »
+
+- **Branche** : `claude/practical-franklin-gr2y0x`, partie de `main` (167eec50, étal fusionné) ; demande de fusion « Lot : Correctifs : passage de l'échauffement aux voiliers » (GitHub injoignable depuis la session pendant tout le lot : son texte est prêt dans la session).
+- **Fiche** : `docs/LOTS.md`, fiche 8 ; d'un seul tenant (choix de la session dans `docs/JOURNAL-CONCEPTION.md`).
+- **Fait** : points 1 à 14, tests unitaires, parcours `tests/e2e/passages.mjs`, `tests/e2e/mise-a-jour.mjs`, `tests/e2e/correctifs-2.mjs` (captures), documentation, relecture indépendante (`tests/recette-fonctionnelle/out-correctifs-2/RELECTURE.md`) et ses correctifs.
+- **Fini le 10 octobre 2026** : recette complète (tous les parcours, comparés à `main` quand ils échouent ; mesures avant et après, dont un correctif du démarrage trouvé par la mesure ; simulation par profil ; séquences ; séance à vitesse réelle ; attentes avec et sans « passer »). 12 phrases à fabriquer par le parent.

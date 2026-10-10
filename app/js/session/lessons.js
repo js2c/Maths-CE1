@@ -27,7 +27,9 @@ import { paintRows } from "../modules/mult/screen.js";
 // la mascotte (sous sa tête, jusqu'à x 404) et le petit livre de la légende (1218, 214)
 // (lot « Sommes jusqu'à 30 » : la rangée des additions a cinq leçons, L11 et L12 en plus ; les colonnes se resserrent, de
 // 165 à 155 px, pour en tenir cinq ; la cinquième colonne n'a rien sur la rangée de la ligne, sous le petit livre)
-export const MENU = { rowY: [205, 361, 517, 673], colX: [575, 730, 885, 1040, 1195], iconX: 452, tile: { w: 150, h: 136 }, icon: { w: 92, h: 90 } };
+// (lot « L'étal du pêcheur » : une cinquième rangée, la monnaie (L15 à L18) ; les tuiles sont réduites (k : 0,86), les rangées
+// resserrées, et le petit livre de la légende remonte dans la case vide de la première rangée, `legende`)
+export const MENU = { rowY: [190, 324, 458, 592, 726], colX: [575, 730, 885, 1040, 1195], iconX: 452, tile: { w: 129, h: 117 }, k: 0.86, icon: { w: 92, h: 90 }, legende: [1210, 186] };
 // les éléments du menu et leur place : { kind: "icone", ex } | { kind: "lecon", id } | { kind: "table", id }, avec x, y
 export function menuLayout(menu, M = MENU) {
   const out = [];
@@ -53,7 +55,7 @@ export const TABLE_SIGNE = { addition: "+", multiplication: "×" };
 export async function lessonsMenu(app, o) {
   const { sprites, voice, text } = app, menu = o.seance.menuLecons ?? { rangees: [], tables: [] };
   await sprites.load("lecons");
-  const sts = await Promise.all([1, 2, 3, 5].map((k) => o.store.get("niveaux", k)));
+  const sts = await Promise.all([1, 2, 3, 5, 6].map((k) => o.store.get("niveaux", k)));
   const seen = new Set(sts.flatMap((st) => st?.lecons ?? []));
   const els = [], clear = () => { closeLegend(app); els.forEach((e) => e.remove()); els.length = 0; sprites.unload("lecons"); app.lessonsCancel = null; app.bulle?.ancrer(null); };
   let sel = null;
@@ -71,7 +73,7 @@ export async function lessonsMenu(app, o) {
       if (!sprite) continue;
       const valide = it.kind === "lecon" && seen.has(it.id);
       const b = spriteBox(app, { x: it.x - W / 2, y: it.y - H / 2, w: W, h: H, cls: "bubble lecons-tuile", label: key, paint: (ctx, px) => {
-        sprites.draw(ctx, sprite, 0, W / 2, H / 2);
+        const q = sprites.frame(sprite, 0), k = MENU.k ?? 1; if (q) ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (W / 2) * px + q.dx * k, (H / 2) * px + q.dy * k, q.w * k, q.h * k);
         if (sel === key) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawSelectTile(ctx, W / 2, H / 2, W - 12, H - 12); ctx.setTransform(1, 0, 0, 1, 0, 0); }
         if (valide) { const q = sprites.frame("etoile.doree", 0), k = 0.42; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (W - 24) * px + q.dx * k, 24 * px + q.dy * k, q.w * k, q.h * k); }
       } });
@@ -85,7 +87,7 @@ export async function lessonsMenu(app, o) {
     }
     deuxTouchers(app, { tuiles, texte: (k) => noms.get(k), etiquette: (k) => tuiles.find((t) => t.dataset.key === k)?.__etiquette ?? null, peindre: (k) => { sel = k; } }).then((k) => res(quoi.get(k)));
     // la légende du parent (le petit livre) : une ligne par leçon, et une pour la table d'addition
-    legendKey(app, "lecons", { keys: [...menu.rangees.flatMap((r) => r.lecons), ...menu.tables.map((t) => TABLE_SIGNE[t]).filter(Boolean)], els });
+    legendKey(app, "lecons", { keys: [...menu.rangees.flatMap((r) => r.lecons), ...menu.tables.map((t) => TABLE_SIGNE[t]).filter(Boolean)], els, at: MENU.legende });
     voice.say(text.data.choixLecon, { instruction: true });
   });
   const r = await result;

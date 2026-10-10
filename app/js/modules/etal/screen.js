@@ -386,12 +386,17 @@ export class EtalScreen {
     nl.turtle.speed = app.vitesse ?? 1; nl.turtle.sitOn(spec, 0);
     if (!saut) return;
     await this.dire(String(a)).then(g);
-    const p = nl.turtle.seat(0), r = nl.turtle.seat(n - 1), arc = { a: [p[0], p[1] + 4], b: [r[0], r[1] + 4], h: Math.min(70, 22 + Math.abs(r[0] - p[0]) * 0.45) - 4, label: `+${b - a}`, live: true, p: 0 };
-    nl.arcs.push(arc);
-    await nl.turtle.jump(n - 1).then(g);
-    arc.live = false; arc.p = 1; nl.paintFx(true);
+    await this.sauter().then(g);
     await this.dire(String(b)).then(g);
     await this.dire(`${T.etalCaFait} ${montantDit(T, q.billet - q.prix)}`).then(g);
+  }
+  // la tortue saute d'un coup du prix au billet, un grand arc marqué « + 7 » (la ligne est à l'écran)
+  async sauter() {
+    const nl = this.app.lineScreen(), spec = nl.spec, n = spec.n, a = nl.q.min, b = nl.q.max;
+    const p = nl.turtle.seat(0), r = nl.turtle.seat(n - 1), arc = { a: [p[0], p[1] + 4], b: [r[0], r[1] + 4], h: Math.min(70, 22 + Math.abs(r[0] - p[0]) * 0.45) - 4, label: `+${b - a}`, live: true, p: 0 };
+    nl.arcs.push(arc);
+    await nl.turtle.jump(n - 1);
+    arc.live = false; arc.p = 1; nl.paintFx(true);
   }
   // l'exemple guidé : le pêcheur paie à la place de l'enfant en comptant (niveau 7 : le saut sur la ligne) ; « passer » l'arrête
   async exemple(q, cfg, dit, vivant) {

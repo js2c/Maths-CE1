@@ -289,7 +289,11 @@
       "L11": "Une boîte pleine, et ce qui reste.",
       "L12": "On remplit la boîte, puis on ajoute le reste.",
       "L13": "Trois fois quatre, c'est quatre plus quatre plus quatre.",
-      "L14": "Trois fois cinq, c'est pareil que cinq fois trois."
+      "L14": "Trois fois cinq, c'est pareil que cinq fois trois.",
+      "L15": "Une pièce de deux euros vaut deux pièces de un euro.",
+      "L16": "On paie juste, du plus gros au plus petit.",
+      "L17": "On compte à partir du prix, jusqu'à ce qu'on a donné.",
+      "L18": "Cent centimes, ça fait un euro."
     },
     "tables": {
       "addition": "Toutes les additions de zéro à dix, dans une grille.",
@@ -352,7 +356,11 @@
     "L11": "Dix et encore.",
     "L12": "Faire dix d'abord.",
     "L13": "Des rangées égales.",
-    "L14": "On tourne les rangées."
+    "L14": "On tourne les rangées.",
+    "L15": "Pièces et billets.",
+    "L16": "Payer juste.",
+    "L17": "Rendre la monnaie.",
+    "L18": "Les centimes."
   },
   "rappelDouble": "{a} plus {b}, c'est {d} plus {d}, et encore 1.",
   "multFois": "{a} fois {b} ?",

@@ -208,6 +208,21 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 | 8 | La table de 4, le double du double. | 4 × 6 = 24 |
 | 9 | Les tables de 2, 3, 4, 5 et 10 mélangées. | ? × 5 = 20 |
 
+**L'étal du pêcheur**
+
+| Niveau | Ce qui est travaillé | Exemple |
+| --- | --- | --- |
+| 1 | Pièces et billets, poser dans la soucoupe la pièce ou le billet demandé, de 1 à 50 euros. | Pose un billet de 10 euros. |
+| 2 | Payer juste avec des pièces de 1 et 2 euros, prix de 2 à 10 euros. | 7 = 2 + 2 + 2 + 1 |
+| 3 | Payer juste avec des billets de 5 et 10 euros et des pièces, prix de 6 à 20 euros. | 17 = 10 + 5 + 2 |
+| 4 | Payer juste jusqu'à 50 euros, avec des billets de 5 à 50 euros. | 34 = 20 + 10 + 2 + 2 |
+| 5 | Payer juste avec un portefeuille restreint, une ou deux façons seulement. | 7 sans pièce de 1, 5 + 2 |
+| 6 | Le compte juste est impossible, payer sans pièce de trop, le pêcheur rend la monnaie. | 13 avec 20, il rend 7 |
+| 7 | Rendre la monnaie, dire au pavé combien le pêcheur rend. | 13 payés avec 20, 7 |
+| 8 | Deux produits, payer juste le total. | 3 + 4 = 7 |
+| 9 | Les centimes, prix ronds ou en 50 centimes, écrits avec une virgule. | 3,50 = 2 + 1 + 0,50 |
+| 10 | Les centimes, prix en 10, 20 et 50 centimes. | 2,70 = 2 + 0,50 + 0,20 |
+
 **Les leçons**
 
 | Leçon | Ce qui est travaillé | Exemple |
@@ -226,6 +241,10 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 | L12 | Faire dix d'abord, on remplit la boîte, puis on ajoute le reste. | 8 + 5 = 13 |
 | L13 | Des rangées égales, 3 fois 4, c'est 4 + 4 + 4. | 3 × 4 = 12 |
 | L14 | On tourne les rangées, 3 × 5 fait autant que 5 × 3. | 3 × 5 = 5 × 3 |
+| L15 | Pièces et billets, une pièce de 2 euros vaut deux pièces de 1 euro, on compte la valeur. | 2 + 2 + 2 = 6 |
+| L16 | Payer juste, du plus gros au plus petit. | 17, 10, 15, 16, 17 |
+| L17 | Rendre la monnaie, on compte à partir du prix jusqu'à ce qu'on a donné. | de 13 à 20, 7 |
+| L18 | Les centimes, 100 centimes font 1 euro, 3,50 c'est 3 euros et 50 centimes. | 0,50 + 0,50 = 1 |
 | + | La table d'addition, toucher une case dit et montre le calcul. | 7 + 5 = 12 |
 | × | La table de multiplication, toucher une case dit et montre le calcul. | 3 × 4 = 12 |
 

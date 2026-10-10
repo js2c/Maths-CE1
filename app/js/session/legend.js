@@ -22,9 +22,9 @@ export function legendRows(legendes, ex, keys = null) {
 }
 
 // le bouton
-export function legendKey(app, ex, { keys = null, els }) {
+export function legendKey(app, ex, { keys = null, els, at = LEGEND_AT }) {
   const { sprites } = app, r = 40;
-  const b = spriteBox(app, { x: LEGEND_AT[0] - r - 12, y: LEGEND_AT[1] - r - 12, w: 2 * r + 24, h: 2 * r + 24, cls: "bubble legende", label: "légende", paint: (ctx) => sprites.draw(ctx, "legende", 0, r + 12, r + 12) });
+  const b = spriteBox(app, { x: at[0] - r - 12, y: at[1] - r - 12, w: 2 * r + 24, h: 2 * r + 24, cls: "bubble legende", label: "légende", paint: (ctx) => sprites.draw(ctx, "legende", 0, r + 12, r + 12) });
   els.push(b);
   onBrief(app, b, () => { pop(b); openLegend(app, ex, { keys, els }); }, "legende");
   return b;

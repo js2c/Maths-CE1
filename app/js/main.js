@@ -57,6 +57,7 @@ import { onBrief, pop, skipKey } from "./engine/ui.js";
 import { ParentSpace, parentLogo } from "./parent/parent.js";
 import { chargerLogo, Demarrage } from "./session/demarrage.js";
 import { fermerTout, Portee } from "./engine/portee.js";
+import { suivreMiseAJour } from "./engine/miseajour.js";
 
 // les vidéos de la mascotte (engine/mascotte.js, CLIPS) : autant de pas dans la barre de chargement
 const MASCOTTE_VIDEOS = 17;
@@ -67,7 +68,10 @@ const json = async (p) => (await fetch(p)).json();
 const stage = new Stage(document.getElementById("stage"));
 // hors ligne : le service worker met toute l'application en cache (pas en file://, ni pendant les tests qui
 // le désactivent), avec une seule résolution des planches d'images : celle que cet écran utilise (sprites.js)
-if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !location.search.includes("nosw")) navigator.serviceWorker.register(`sw.js?r=${stage.px > 1.2 ? 2 : 1}`).catch(() => {});
+// (lot « Correctifs : passage… », point 12 : une nouvelle version attend ; elle ne prend la main qu'au lancement suivant, ou
+// pendant l'écran de démarrage, avant le toucher : la page se recharge alors aussitôt, engine/miseajour.js)
+let demarrageTouche = false;
+if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !location.search.includes("nosw")) navigator.serviceWorker.register(`sw.js?r=${stage.px > 1.2 ? 2 : 1}`).then((reg) => suivreMiseAJour(reg, { touche: () => demarrageTouche, journal: (e) => { try { journal(e); } catch { /* (pas encore prêt) */ } } })).catch(() => {});
 // (lot « Correctifs de la tablette ») L'ÉCRAN DE DÉMARRAGE (session/demarrage.js) : l'atlas et la petite planche du logo
 // d'abord, puis tout le reste, chaque chargement faisant avancer la barre : les contenus et l'index de la voix, les planches
 // du premier écran, les vidéos de la mascotte (créée tout de suite : ses vidéos se chargent pendant le reste)
@@ -78,7 +82,9 @@ const sprites = new Sprites(atlas, stage.px);
 await sprites.load("demarrage").catch(() => {});
 const demarrage = new Demarrage(stage, sprites, logo);
 performance.mark("demarrage-visible");
-json("version.json").then((v) => demarrage.infos(v?.version), () => demarrage.infos(null));
+// (la version : écrite sur l'écran de démarrage, et notée avec chaque phrase sans voix, point 12)
+let versionApp = null;
+json("version.json").then((v) => { versionApp = v?.version ?? null; demarrage.infos(versionApp); }, () => demarrage.infos(null));
 // (lot « Mascotte ») le journal des raccords de la mascotte : gardé pour la recette (combien de fondus forcés)
 const journalMascotte = []; window.__journalMascotte = journalMascotte;
 const videoChargee = demarrage.annoncer(MASCOTTE_VIDEOS, 1);
@@ -105,8 +111,22 @@ const rnd = rng(Date.now() & 0xffffffff);
 // pour les tests et les captures : ?module=2 ?cran=dur ?surprise=visite:tortue ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape ?sansLecon ?lecon=L1 ?etoiles=N
 const P = new URLSearchParams(location.search);
 const text = { data: textes, pick: (k, v = {}) => { const e = textes[k]; return fill(Array.isArray(e) ? e[Math.floor(rnd() * e.length)] : e, v); } };
-// les phrases fabriquées à l'avance (assets/voix/) ; ?voix=synthese : seulement la synthèse du navigateur (comparaison)
-const voice = new Voice({ rate: 0.9, fast: P.get("voix") === "rapide" }).setIndex(P.get("voix") === "synthese" ? null : voix);
+// les phrases fabriquées à l'avance (assets/voix/)
+const voice = new Voice({ rate: 0.9, fast: P.get("voix") === "rapide" }).setIndex(voix);
+let notesSansVoix = Promise.resolve();
+// (lot « Correctifs : passage de l'échauffement aux voiliers », point 12) LES PHRASES SANS VOIX : plus de synthèse du navigateur ;
+// une phrase sans fichier lisible est notée pour l'espace parent (« Phrases sans voix ») : la phrase, la date, la version, la
+// cause (« absente de l'index » ou « fichier illisible ») ; une ligne par phrase, cause et version, avec le nombre de fois
+// (les 100 plus récentes)
+voice.onManque = (phrase, cause) => { notesSansVoix = notesSansVoix.then(async () => {
+  try {
+    const l = (await store.setting("phrasesSansVoix")) ?? [], t = Date.now(), v = versionApp ?? "?";
+    const e = l.find((x) => x.phrase === phrase && x.cause === cause && x.version === v);
+    if (e) { e.fois++; e.derniere = t; } else l.push({ phrase, cause, version: v, premiere: t, derniere: t, fois: 1 });
+    l.sort((a, b) => a.derniere - b.derniere); await store.setSetting("phrasesSansVoix", l.slice(-100));
+    console.warn("phrase sans voix, notée pour l'espace parent :", phrase, cause);
+  } catch { /* le journal ne doit jamais gêner l'enfant */ }
+}); };
 // (lot « Mascotte ») la mascotte parle quand la voix parle, et ce qu'elle dit s'écrit dans sa bulle (pas dans le récif
 // vivant, où elle n'est pas) ; la bulle s'efface 1,5 s après la phrase ; la flèche montre à la place du bras de la pieuvre
 // (la bande de la ligne graduée affichée est un obstacle de la bulle, sauf pendant la pause, où elle est cachée)
@@ -774,6 +794,7 @@ async function freeTraining(start = null) {
 // toucher, qui autorise aussi la voix ; puis l'accueil, où la mascotte souhaite la bienvenue (une fois par lancement)
 await ocean.mascotte.pret;
 const toucheDemarrage = await demarrage.attendreToucher();
+demarrageTouche = true;
 if (toucheDemarrage) { voice.unlock(); sound.unlock(); }
 stage.paused = false; // (la scène reprend sous le fondu de sortie)
 await demarrage.fermer();

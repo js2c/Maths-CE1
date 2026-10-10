@@ -492,6 +492,15 @@ export class ParentSpace {
     page.append(exp, rest, this.settingsBox());
     // lot 3, étape 5 : les incidents techniques (une erreur de page, une image introuvable), avec leur contexte ; rien
     // n'est affiché s'il n'y en a pas. Utile pour signaler un problème (la sauvegarde complète les contient aussi).
+    // (lot « Correctifs : passage de l'échauffement aux voiliers », point 12) les phrases sans voix : plus jamais dites par une
+    // autre voix (la synthèse du navigateur n'existe plus) ; la bulle les a écrites ; le parent voit ce qui manque
+    this.store.setting("phrasesSansVoix").then((l) => {
+      if (!l?.length) return;
+      page.append(h("div", { class: "pa-card-box pa-incidents pa-sans-voix" }, h("h2", {}, "Phrases sans voix"),
+        h("p", { class: "pa-note" }, "Des phrases que l'application devait dire, mais dont elle n'a pas trouvé l'enregistrement : elle ne les a pas dites (la bulle de la mascotte les a écrites). « Absente de l'index » : la phrase n'a jamais été fabriquée (relancer la fabrication des voix, docs/VOIX.md). « Fichier illisible » : l'enregistrement existe mais n'a pas pu être lu (souvent pendant une mise à jour ; si cela revient, signaler)."),
+        h("table", { class: "pa-table" }, h("thead", {}, h("tr", {}, ["Phrase", "Date", "Version", "Cause", "Fois"].map((t) => h("th", {}, t)))),
+          h("tbody", {}, [...l].reverse().map((e) => h("tr", {}, h("td", {}, `« ${e.phrase} »`), h("td", {}, `${D.fmtDay(e.derniere)} à ${D.fmtTime(e.derniere)}`), h("td", {}, String(e.version ?? "?").slice(0, 7)), h("td", {}, e.cause), h("td", {}, String(e.fois))))))));
+    });
     this.store.setting("journalErreurs").then((l) => {
       if (!l?.length) return;
       page.append(h("div", { class: "pa-card-box pa-incidents" }, h("h2", {}, "Incidents techniques"),

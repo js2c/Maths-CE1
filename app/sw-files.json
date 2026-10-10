@@ -1,5 +1,5 @@
 {
- "version": "b6295a410f0c",
+ "version": "85b1b8e2a3b1",
  "files": [
   "./",
   "assets/art/aides@1x.webp",
@@ -11022,6 +11022,7 @@
   "js/engine/lagon.js",
   "js/engine/line.js",
   "js/engine/mascotte.js",
+  "js/engine/miseajour.js",
   "js/engine/ocean.js",
   "js/engine/phrases.js",
   "js/engine/portee.js",

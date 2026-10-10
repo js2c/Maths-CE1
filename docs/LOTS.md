@@ -42,7 +42,7 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Après les cinq lots : le lot « Correctifs de la tablette »** (premier essai du parent sur la tablette, 8 octobre 2026 ; fiche 6). **État : fait** (PR #46, fusionnée ; ses 282 phrases sont fabriquées).
 
-**Puis (essai du parent du 10 octobre 2026) : le lot « Correctifs : passage de l'échauffement aux voiliers »** (fiche 8 : les défauts vus sur la tablette, le nouveau démarrage, l'accueil en deux touchers, la voix de secours, les icônes), **puis le lot « Recette de l'enfant et nettoyage des couches »** (fiche 9). « L'étal du pêcheur » est déjà presque fini (PR #49) : ces deux lots partent **après sa fusion**, et couvrent aussi l'étal (sa tuile, ses niveaux et ses leçons sont des écrans en deux touchers ; l'enfant imprévisible y joue aussi). Ils ne peuvent pas tourner en même temps qu'un autre lot. **État : à faire.**
+**Puis (essai du parent du 10 octobre 2026) : le lot « Correctifs : passage de l'échauffement aux voiliers »** (fiche 8 : les défauts vus sur la tablette, le nouveau démarrage, l'accueil en deux touchers, la voix de secours, les icônes), **puis le lot « Recette de l'enfant et nettoyage des couches »** (fiche 9). « L'étal du pêcheur » est fusionné (PR #49) : ces deux lots partent de `main` qui le contient, et couvrent aussi l'étal (sa tuile, ses niveaux et ses leçons sont des écrans en deux touchers ; l'enfant imprévisible y joue aussi). Ils ne peuvent pas tourner en même temps qu'un autre lot. **État : à faire.**
 
 **Pourquoi cet ordre.**
 

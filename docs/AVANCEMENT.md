@@ -2,12 +2,12 @@
 
 Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 à 3 ter (ce qui a été fait, décisions prises en cours de route, recettes) est dans `docs/archives/AVANCEMENT-lots-1-a-3ter.md`.
 
-## Où en est-on (9 octobre 2026)
+## Où en est-on (10 octobre 2026)
 
 - **En ligne** (https://js2c.github.io/Maths-CE1/) : lots 1, 1 bis, 2, 3, 3 bis, 3 ter et « Lagon en fond d'exercices », tous fusionnés (dernière demande de fusion : PR #30, le lagon).
 - **Ce que fait l'application** : `docs/SPEC.md` (spécification unique ; ce qui reste à construire y est marqué « à construire », section 13).
-- **Prochains lots** : les lots de `docs/LOTS.md` sont tous faits (le bloc « Sommes jusqu'à 30 » et « Multiplication », PR #42, attend sa fusion) ; la suite est à décider par le parent (`docs/IDEES.md`) ; le relecteur des lots 3 bis et 3 ter est abandonné.
-- **En attente du parent** : la fabrication des phrases des lots « Mascotte » (6), « Les voiliers » (835), « Correctifs » (8), « Les leçons » (126), « Sommes jusqu'à 30 » (384) et « Multiplication » (561), puis la publication et l'essai sur la tablette ; la relecture des choix faits sans lui au bloc « Sommes jusqu'à 30 » et « Multiplication » (PR #42, section « Choix faits sans le parent ») ; le lot « Correctifs » (PR #39) attend aussi sa fusion et une réponse sur la mascotte (11.1) ; le lot « Correctifs de la tablette » (PR #46) attend la fabrication de ses 282 phrases, sa fusion, l'essai sur la tablette et la relecture de ses « Choix faits sans le parent ».
+- **Prochains lots** : les lots de `docs/LOTS.md` sont faits, « L'étal du pêcheur » compris (PR #49, à fusionner) ; la suite est à décider par le parent (`docs/IDEES.md`).
+- **En attente du parent** : la fabrication des 394 phrases de l'étal (`docs/maquettes/etal/PHRASES.md` ; avec elles, la voix pèsera environ 79,3 Mo, tout près de la limite de 80 Mo), la fusion de la PR #49, l'essai sur la tablette et la relecture de ses « Choix faits sans le parent » ; les phrases des lots précédents sont toutes fabriquées.
 - **Projet parallèle** : la refonte graphique (hors de ce fichier).
 
 ## Lots
@@ -26,15 +26,11 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 | Correctifs | Les décisions du parent sur la confrontation de la spécification avec le code (`docs/ECARTS-SPEC.md`) : 7 correctifs, spécification réécrite | fait (PR #39) |
 | Les leçons | La bulle des leçons, le menu, « À toi ! », la table d'addition ; recette finie à l'étape 0 du bloc suivant (durées, relecture indépendante) | fait (PR #40, recette dans la PR #42) |
 | Sommes jusqu'à 30 et Multiplication | Familles d'additions 8 à 13, leçons L11 et L12 ; cinquième exercice (multiplication, 9 niveaux, tables de 2, 3, 4, 5 et 10), leçons L13 et L14, table de multiplication ; fait d'un seul bloc, sans arrêt pour validation | fait (PR #42) ; 945 phrases à fabriquer |
-| Correctifs de la tablette | Écran de démarrage (logo, barre de chargement, toucher qui autorise la voix), bienvenue au lancement ; choisir en deux touchers ; toucher la mascotte pour réécouter ; clavier de l'ordinateur ; ardoise jamais vide ; plus de phrase dite par l'ancienne voix (contrôle dans tous les parcours) ; fins de ligne sous Windows | fait (PR #46) ; 282 phrases à fabriquer |
+| Correctifs de la tablette | Écran de démarrage (logo, barre de chargement, toucher qui autorise la voix), bienvenue au lancement ; choisir en deux touchers ; toucher la mascotte pour réécouter ; clavier de l'ordinateur ; ardoise jamais vide ; plus de phrase dite par l'ancienne voix (contrôle dans tous les parcours) ; fins de ligne sous Windows | fait (PR #46) ; voix fabriquées |
+| L'étal du pêcheur | Sixième exercice, la monnaie (module 6) : la maquette de l'étal intégrée, 10 niveaux (pièces et billets, payer juste, sans pièce de trop, rendre la monnaie, deux produits, centimes), l'orage, leçons L15 à L18, espace parent ; d'un seul tenant | fait (PR #49) ; 394 phrases à fabriquer |
 
 ## Reprise
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
 
-### Reprise du lot « L'étal du pêcheur » (fiche 7 de `docs/LOTS.md`)
-
-- **Branche** : `claude/sleepy-einstein-pr9k77` ; demande de fusion en brouillon « Lot : L'étal du pêcheur ».
-- **Réglages de la maquette** : le parent a demandé les **valeurs de départ** de la maquette (prompt du 10 octobre 2026), reportées dans `app/content/etal.json`.
-- **Étapes** : 0 branche et mesures avant ; 1 export de la scène (`art/tools/export-etal.mjs`) et `etal.json` ; 2 règles du module 6 (`modules/etal/`, `module6.json`) et tests unitaires ; 3 l'écran et son branchement (choisir, entraînement libre, frise, espace parent) ; 4 textes, voix, leçons L15 à L18, pictogrammes ; 5 recette, documents, demande de fusion prête.
-- **Où on en est** (10 octobre, matin) : étapes 0 à 4 faites ; étape 5 presque finie : parcours `tests/e2e/etal.mjs` (deux tailles, tout est bon), captures dans `tests/recette-fonctionnelle/out-etal/captures`, séquences (`b-sequences --test` : 252 combinaisons, 0 en défaut), `npm test` (seul échec : les 394 phrases à fabriquer), documents (SPEC 7 quater et renvois, ARCHITECTURE, GUIDE-PARENT, CLAUDE.md, JOURNAL, IDEES, LOTS), `main` fusionnée. Reste : finir la série des autres parcours (contrôles de compte mis à jour ; `calcul` échoue aussi sur `main`), les mesures `perf.mjs --etal beau|orage` et la maquette seule, `recette.mjs --delai 4.5`, `recette-durees.mjs` (avec et sans `--passer`), la relecture indépendante (`out-etal/RELECTURE.md`) et ses correctifs, `tools/precache.mjs`, le texte de la demande de fusion #49, sortir du brouillon.
+(Aucune session en cours.)

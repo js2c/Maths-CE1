@@ -6,8 +6,10 @@
 //    - mode A (arrivages) : 2 créatures arrivent en vitrine par semaine d'école (calendrier.json), dans l'ordre des zones,
 //      une rare toutes les 3 ou 4 ; mode B (libre) : toute la zone ouverte est en vitrine ;
 //    - une zone s'ouvre quand ses communes et rares sont toutes achetées ET que son contenu est prêt (grand large le
-//      1er février 2027, abysses le 26 avril 2027 : SPEC, section 10) ; son coquillage offre une commune de la zone ;
-//    - les légendaires : une étoile dorée, la zone finie (comme aujourd'hui) ;
+//      1er février 2027, abysses le 26 avril 2027 : SPEC, section 10) ; son coquillage offre une commune de la zone, tirée au hasard ;
+//    - la série : toutes les 10 séances, un coquillage fait briller une créature possédée tirée au hasard (20 étoiles si toutes
+//      brillent déjà) ; les 5 étoiles toutes les 3 séances sont déjà dans le flux ;
+//    - les légendaires : une étoile de diamant (aujourd'hui « dorée »), la zone finie ;
 //    - l'enfant (hypothèse) : un vœu tiré au hasard dans la vitrine ; elle l'achète dès qu'elle a assez, sinon elle
 //      économise ; quand la vitrine est vide, elle fait briller la moins chère ; une créature achetée sort brillante une
 //      fois sur cinq.
@@ -47,10 +49,11 @@ export function boutique(fl, { mode, prix, parSemaine = 2, chance = 0.2, graine 
   let st = 0, dorees = 0, sansAchat = 0, rienAAcheter = 0, achats = 0, vide = 0;
   const cout = (c, b) => (b ? prix.briller[c.rarete] : prix[c.rarete]);
   const finie = (z) => C.cartes.filter((c) => c.zone === z && c.rarete !== "legendaire").every((c) => own[c.id]);
-  for (const f of fl) {
+  for (const [i, f] of fl.entries()) {
     const t = new Date(f.d + "T18:00").getTime(); st += f.e; if (f.doree) dorees++;
+    if ((i + 1) % 10 === 0) { const ternes = C.cartes.filter((c) => own[c.id] && !own[c.id].b); if (ternes.length) own[ternes[Math.floor(R() * ternes.length)].id].b = true; else st += 20; }
     for (;;) { const nx = ZONES[ZONES.indexOf(open.at(-1)) + 1]; if (!nx || !finie(open.at(-1)) || f.d < PRET[nx]) break; open.push(nx); dates[`zone ${nx}`] = f.d;
-      const offerte = C.cartes.filter((c) => c.zone === nx && c.rarete === "commune")[0]; own[offerte.id] = { b: false }; }
+      const communes = C.cartes.filter((c) => c.zone === nx && c.rarete === "commune" && !own[c.id]), offerte = communes[Math.floor(R() * communes.length)]; own[offerte.id] = { b: false }; }
     const leg = C.cartes.find((c) => c.rarete === "legendaire" && open.includes(c.zone) && !own[c.id] && finie(c.zone));
     if (leg && dorees > 0) { dorees--; own[leg.id] = { b: false }; }
     const arrivees = mode === "A" ? parSemaine * schoolWeeks(cal, base, t) : Infinity;

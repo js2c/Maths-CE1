@@ -5,6 +5,7 @@ les 60 créatures détourées du récif vivant (app/assets/recif/), trois courte
 (app/assets/mascotte/, fond vert retiré comme le fait l'application : app/js/engine/mascotte.js, fonction key).
 
     python3 art/boutique/outils/preparer.py      (depuis la racine du dépôt ; demande ffmpeg et Pillow)
+    SANS_MASCOTTE=1 python3 art/boutique/outils/preparer.py   (sans refaire les boucles de la mascotte, la partie lente)
 
 Les images produites ne sont pas versionnées (.gitignore) : `fabriquer.mjs` les embarque dans index.html.
 """
@@ -42,23 +43,27 @@ for nom in ["coquillage", "coquillage.or"]:
         im = Image.open(os.path.join(APP, "assets/art", s["sheet"] + "@2x.webp")).convert("RGBA").crop((x, y, x + w, y + h))
         im.resize((round(w * .6), round(h * .6)), Image.LANCZOS).save(os.path.join(IMG, f"{nom.replace('.', '-')}-{i}.webp"), quality=90, method=6)
 
-# les légendaires : l'étoile et le coquillage « de platine » (proposition, demande du parent du 10 octobre 2026 : les étoiles de mer
-# sont déjà jaunes, « étoile dorée » prête à confusion) : l'étoile dorée et le coquillage doré de l'atelier, recoloriés (le trait
-# d'encre garde sa couleur, les aplats passent du jaune au platine : gris bleuté clair, reflets presque blancs)
-def platine(im):
-    out = im.copy(); px = out.load()
-    for y in range(out.height):
-        for x in range(out.width):
+# les légendaires : le coquillage de diamant (décision du parent du 10 octobre 2026 : « étoile de diamant », « coquillage de diamant ») :
+# le coquillage doré de l'atelier, irisé comme une nacre précieuse (le trait d'encre garde sa couleur ; les ombres prennent des
+# teintes pastel qui tournent sur la coquille, rose, lilas, bleu, vert d'eau, or pâle ; les lumières sont presque blanches).
+# L'étoile de diamant, elle, est dessinée en direct par la maquette (svgDiamant, dans source.html).
+import colorsys
+def diamant(im):
+    out = im.copy(); px = out.load(); w, h = out.size
+    for y in range(h):
+        for x in range(w):
             r, g, b, a = px[x, y]
             if not a: continue
             l = 0.3 * r + 0.59 * g + 0.11 * b
             if l < 70: continue
-            t = min(1, (l - 70) / 170) ** 0.8
-            px[x, y] = (round(104 + t * 142), round(116 + t * 134), round(132 + t * 123), a)
+            t = min(1, (l - 70) / 175)
+            hue = (0.55 + 0.9 * x / w + 0.45 * y / h) % 1
+            pr, pg, pb = colorsys.hsv_to_rgb(hue, 0.40, 1)
+            k = 0.80 + 0.20 * t; m = max(0, (t - 0.72) / 0.28) ** 1.4
+            px[x, y] = tuple(round(255 * min(1, (c * (1 - m) + m) * k)) for c in (pr, pg, pb)) + (a,)
     return out
-platine(sprite("etoile.doree", 0.75)).save(os.path.join(IMG, "etoile-platine.webp"), quality=90, method=6)
 for i in (0, 11):
-    platine(Image.open(os.path.join(IMG, f"coquillage-or-{i}.webp")).convert("RGBA")).save(os.path.join(IMG, f"coquillage-platine-{i}.webp"), quality=90, method=6)
+    diamant(Image.open(os.path.join(IMG, f"coquillage-or-{i}.webp")).convert("RGBA")).save(os.path.join(IMG, f"coquillage-diamant-{i}.webp"), quality=90, method=6)
 
 # les créatures : 260 px de grand côté (une vignette fait 150 px de la scène, soit 300 pixels de la tablette au plus)
 CORR = {"benitier": "benitier-geant", "meduse": "meduse-criniere", "ver-tubicole": "ver-tubicole-geant", "requin-du-groenland": "requin-groenland"}
@@ -87,7 +92,7 @@ def clip(nom, sortie, debut=0, duree=None):
             out.putdata([cle(px) for px in im.getdata()]); images.append(out)
         images[0].save(os.path.join(IMG, sortie + ".webp"), save_all=True, append_images=images[1:], duration=83, loop=0, quality=70, method=4)
         print(sortie, len(images), "images", os.path.getsize(os.path.join(IMG, sortie + ".webp")) // 1024, "Ko")
-clip("idle-respiration", "mascotte-attente")
-clip("talk-a", "mascotte-parle", 0, 4)
-clip("success", "mascotte-joie", 0, 3.5)
+if not os.environ.get("SANS_MASCOTTE"): clip("idle-respiration", "mascotte-attente")
+if not os.environ.get("SANS_MASCOTTE"): clip("talk-a", "mascotte-parle", 0, 4)
+if not os.environ.get("SANS_MASCOTTE"): clip("success", "mascotte-joie", 0, 3.5)
 print("images prêtes :", IMG)

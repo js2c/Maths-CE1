@@ -20,6 +20,8 @@ async function parcours(nom, viewport, dpr) {
   const k = Math.min(viewport.width / 1280, viewport.height / 800), ox = (viewport.width - 1280 * k) / 2, oy = (viewport.height - 800 * k) / 2;
   const tap = async (x, y, att = 450) => { await page.touchscreen.tap(ox + x * k, oy + y * k); await page.waitForTimeout(att); };
   const tapSel = async (sel, att = 450) => { const b = await page.locator(sel).first().boundingBox(); await page.touchscreen.tap(b.x + b.width / 2, b.y + b.height / 2); await page.waitForTimeout(att); };
+  // attendre que la bulle écrive un texte (puis qu'il soit écrit en entier)
+  const texte = async (t, apres = 2200) => { await page.waitForFunction((t) => document.querySelector(".bulle-texte")?.textContent.includes(t), t, { timeout: 40000 }); await page.waitForTimeout(apres); };
   const shot = (f) => page.screenshot({ path: join(OUT, `${nom}-${f}.png`) });
   const etat = (s) => page.evaluate((s) => { localStorage.setItem("maths-ce1-maquette-boutique-1", JSON.stringify(s)); }, s);
   const octobre = { mode: "A", prix: "propose", owned: { "poisson-clown": { b: false }, "etoile-de-mer": { b: false }, crabe: { b: true }, crevette: { b: false } }, etoiles: 58, arrivees: 6, zones: ["lagon"], dorees: 0, nouveautes: [], arrivee: null };
@@ -52,22 +54,24 @@ async function parcours(nom, viewport, dpr) {
   await tapSel('.vt[data-id="raie-manta"]', 6000); await shot("13-libre-rare");
   await tapSel('.vt[data-id="grand-requin-blanc"]', 5500); await shot("14-legendaire");
   await tapSel('.onglet[aria-label="abysses"]', 5800); await shot("15-zone-fermee");
-  // la fin de séance : le bilan, puis l'invitation à la boutique
-  await page.evaluate(() => document.querySelector("#p-seance").click()); await page.waitForTimeout(5200); await shot("16-fin-bilan");
+  // la fin de séance : le bilan, puis l'invitation ; le bouton mène droit à la boutique
+  await page.evaluate(() => document.querySelector("#p-seance").click()); await texte("Tu peux choisir", 5000); await shot("16-fin-vers-boutique");
   // octobre, mode arrivages : deux séances (un lundi)
   await etat({ ...octobre, etoiles: 40 }); await page.goto(URL0 + "?ecran=recif"); await page.waitForTimeout(800);
-  await page.evaluate(() => { window.__maquette.S.seances = 1; document.querySelector("#p-seance").click(); }); await page.waitForTimeout(5400); await shot("17-fin-arrivage");
-  // zone finie : le lagon complet, fin de séance : le coquillage ouvre le récif de corail et offre son premier habitant
+  await page.evaluate(() => { window.__maquette.S.seances = 1; document.querySelector("#p-seance").click(); }); await texte("De nouvelles créatures", 1200); await shot("17-fin-arrivage");
+  // la 10e séance de la série : le coquillage fait briller une créature tirée au hasard
+  await etat({ ...octobre, etoiles: 10 }); await page.goto(URL0 + "?ecran=recif"); await page.waitForTimeout(800);
+  await page.evaluate(() => document.querySelector("#p-serie").click()); await texte("Elle est brillante", 1200); await shot("18-fin-coquillage-serie");
+  // zone finie : le lagon complet, fin de séance : le coquillage ouvre le récif de corail et offre un premier habitant (une commune au hasard)
   await etat({ ...octobre, mode: "B", owned: Object.fromEntries(["poisson-clown", "etoile-de-mer", "crabe", "crevette", "bernard-l-ermite", "moule", "oursin", "anemone", "concombre-de-mer", "coquille-saint-jacques", "poisson-chirurgien", "hippocampe", "poisson-ballon", "limace-de-mer", "raie-pastenague"].map((id) => [id, { b: false }])), etoiles: 30 });
-  await page.goto(URL0 + "?ecran=recif"); await page.waitForTimeout(800); await shot("18-recif-lagon-complet");
-  await page.evaluate(() => document.querySelector("#p-seance").click()); await page.waitForTimeout(8600); await shot("19-fin-zone-coquillage");
-  await page.waitForTimeout(6000);
-  // une légendaire : le grand large fini, une étoile de platine : le coquillage de platine
-  await etat({ ...octobre, mode: "B", zones: ["lagon", "corail", "large"], dorees: 1, etoiles: 10, owned: Object.fromEntries(["lagon", "corail", "large"].flatMap((z) => (z === "large" ? ["dauphin", "poisson-volant", "thon-rouge", "espadon", "meduse-criniere", "tortue-luth", "poisson-lune", "otarie", "requin-bleu", "requin-marteau", "requin-baleine", "raie-manta", "baleine-a-bosse"] : [])).map((id) => [id, { b: false }])) });
   await page.goto(URL0 + "?ecran=recif"); await page.waitForTimeout(800);
-  await page.evaluate(() => document.querySelector("#p-seance").click()); await page.waitForTimeout(8000); await shot("20-fin-zone-abysses");
-  await page.waitForTimeout(9500); await shot("21-fin-legendaire-platine");
-  await page.waitForTimeout(7000);
+  await page.evaluate(() => document.querySelector("#p-seance").click()); await texte("premier habitant", 2500); await shot("19-fin-zone-ouverte");
+  // une étoile de diamant gagnée, puis une légendaire : le grand large fini, le coquillage de diamant
+  await etat({ ...octobre, mode: "B", zones: ["lagon", "corail", "large"], dorees: 1, diamantsNouveaux: 1, etoiles: 10, owned: Object.fromEntries(["dauphin", "poisson-volant", "thon-rouge", "espadon", "meduse-criniere", "tortue-luth", "poisson-lune", "otarie", "requin-bleu", "requin-marteau", "requin-baleine", "raie-manta", "baleine-a-bosse"].map((id) => [id, { b: false }])) });
+  await page.goto(URL0 + "?ecran=recif"); await page.waitForTimeout(800);
+  await page.evaluate(() => document.querySelector("#p-seance").click()); await texte("Et une étoile de diamant", 1500); await shot("20-fin-etoile-diamant");
+  await texte("coquillage de diamant", 2500); await shot("21-fin-coquillage-diamant");
+  await page.waitForTimeout(6000);
   // l'espace parent
   await page.evaluate(() => window.__maquette.ouvrirParent()); await page.waitForTimeout(400); await shot("22-parent");
   await ctx.close();

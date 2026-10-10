@@ -83,7 +83,8 @@ button { font: inherit; color: inherit; }
 .vt .prix b { font: 600 36px/1 "Shantell Sans", cursive; color: #18213b; }
 .vt .prix img.et { width: 34px; height: 35px; }
 .vt .prix svg.briller { width: 30px; height: 30px; margin-right: 1px; }
-.vt .prix img.platine { width: 54px; height: 55px; margin-top: -6px; }
+.vt .prix svg.diamant { width: 58px; height: 58px; margin-top: -8px; }
+.diamant-grand { position: absolute; left: 560px; top: 290px; width: 200px; height: 200px; pointer-events: none; filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.75)); }
 .vt .badge { position: absolute; left: -14px; top: -14px; width: 50px; height: 50px; pointer-events: none; }
 .vt .sablier { width: 36px; height: 40px; pointer-events: none; }
 .vt .sablier svg { width: 100%; height: 100%; display: block; }
@@ -209,11 +210,12 @@ button { font: inherit; color: inherit; }
   <label class="choix"><input type="radio" name="prix" value="cher"><b>Plus chers</b> : commune 50, rare 120 ; faire briller 150 et 300.</label>
   <h3>Simuler</h3>
   <button class="p" id="p-seance">Fin de séance (+ 60 étoiles)</button>
+  <button class="p" id="p-serie">Fin de séance, la 10e de la série</button>
   <button class="p" id="p-lundi">Lundi suivant (arrivage)</button>
-  <p class="petit">« Fin de séance » montre la récompense (ouverture d'une zone, légendaire, arrivages) ; « Lundi suivant » fait arriver 2 créatures (mode Arrivages).</p>
+  <p class="petit">« Fin de séance » montre la récompense (étoile de diamant, ouverture d'une zone, légendaire, arrivages) ; « la 10e de la série » montre le coquillage de la série ; « Lundi suivant » fait arriver 2 créatures (mode Arrivages).</p>
   <h3>Étoiles</h3>
   <button class="p clair" data-et="-50">− 50</button><button class="p clair" data-et="10">+ 10</button><button class="p clair" data-et="50">+ 50</button><button class="p clair" data-et="200">+ 200</button><button class="p clair" data-et="0">mettre à 0</button>
-  <button class="p clair" id="p-doree">+ 1 étoile de platine</button>
+  <button class="p clair" id="p-doree">+ 1 étoile de diamant (à la prochaine fin de séance)</button>
   <h3>Partir de…</h3>
   <button class="p clair" data-pre="rentree">La rentrée (rien)</button><button class="p clair" data-pre="octobre">Octobre (4 créatures)</button><button class="p clair" data-pre="fevrier">Février (30 créatures)</button>
   <h3>Pendant une séance</h3>
@@ -300,12 +302,15 @@ const P = {
   achat: "Bravo ! Cette créature va vivre dans ton récif !",
   brillante: "Oh ! Elle est brillante !",
   zoneFinie: "Bravo ! Tu as toutes les créatures de cette zone ! Une nouvelle zone va bientôt s'ouvrir.",
-  // (les légendaires : des étoiles de platine, pour ne pas confondre avec les étoiles de mer, jaunes : demande du parent du 10 octobre 2026)
-  legende: "C'est une créature légendaire ! Elle se gagne avec les étoiles de platine.",
+  // (les légendaires : des étoiles de diamant, pour ne pas confondre avec les étoiles de mer, jaunes : décision du parent du 10 octobre 2026)
+  legende: "C'est une créature légendaire ! Elle se gagne avec les étoiles de diamant.",
   bilan: (n) => `Bravo ! Ce soir, tu as gagné ${n} étoiles de mer.`,
   peutAcheter: "Tu peux choisir une créature à la boutique !",
   premierHabitant: "Et voici son premier habitant !",
-  coquillagePlatine: "Ton étoile de platine ouvre un coquillage de platine !",
+  coquillageDiamant: "Ton étoile de diamant ouvre un coquillage de diamant !",
+  etoileDiamant: "Et une étoile de diamant ! Tu as joué souvent, semaine après semaine.",
+  serie: "Tu viens jouer souvent : voici un coquillage !",
+  serieEtoiles: "Toutes tes créatures brillent déjà : voici 20 étoiles !",
 };
 
 // ============================================================================ la scène
@@ -324,6 +329,34 @@ const popper = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.cla
 
 // les dessins de la maquette (style A : aplats, contour d'encre épais, une ombre nette ; à redessiner dans l'atelier à l'intégration)
 const ENCRE = "#18132a";
+// l'étoile de diamant (les légendaires) : une étoile taillée comme une pierre, dix facettes irisées éclairées d'en haut à gauche,
+// une table au centre, un reflet qui la traverse et des étincelles ; le dessin le plus précieux de l'application
+let nDiamant = 0;
+function svgDiamant(cls = "diamant") {
+  const id = `dm${++nDiamant}`, C = [50, 54], pt = (a, r) => [C[0] + r * Math.cos((a * Math.PI) / 180), C[1] + r * Math.sin((a * Math.PI) / 180)];
+  const P = [0, 1, 2, 3, 4].map((i) => pt(-90 + 72 * i, 45)), Q = [0, 1, 2, 3, 4].map((i) => pt(-54 + 72 * i, 20));
+  const contour = P.flatMap((p, i) => [p, Q[i]]), f = (xs) => xs.map((p) => p.map((v) => v.toFixed(1)).join(" ")).join(" ");
+  const TEINTES = ["#ff9ccf", "#b39bff", "#86d3ff", "#93edc2", "#ffdc7d"];
+  let facettes = "";
+  contour.forEach((a, i) => {
+    const b = contour[(i + 1) % 10], m = [(a[0] + b[0]) / 2 - C[0], (a[1] + b[1]) / 2 - C[1]];
+    const lum = 0.5 + 0.5 * Math.cos(Math.atan2(m[1], m[0]) - Math.atan2(-1, -1)), t = TEINTES[Math.floor(i / 2) % 5];
+    facettes += `<polygon points="${f([C, a, b])}" fill="${t}"/><polygon points="${f([C, a, b])}" fill="${lum > 0.5 ? "#fff" : "#4b3f8f"}" opacity="${(lum > 0.5 ? 0.12 + 0.62 * (lum - 0.5) * 2 : 0.05 + 0.22 * (0.5 - lum) * 2).toFixed(2)}"/>`;
+  });
+  const table = contour.map((p) => [C[0] + (p[0] - C[0]) * 0.36, C[1] + (p[1] - C[1]) * 0.36]);
+  return `<svg viewBox="0 0 100 100" class="${cls}"><defs><linearGradient id="${id}r" x1="-1" y1="0" x2="0" y2="1"><stop offset="0.35" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.95"/><stop offset="0.65" stop-color="#fff" stop-opacity="0"/>
+    <animate attributeName="x1" values="-1;-1;2" keyTimes="0;0.55;1" dur="3.4s" repeatCount="indefinite"/><animate attributeName="x2" values="0;0;3" keyTimes="0;0.55;1" dur="3.4s" repeatCount="indefinite"/></linearGradient>
+    <clipPath id="${id}c"><polygon points="${f(contour)}"/></clipPath></defs>
+    <radialGradient id="${id}h"><stop offset="0.45" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.7" stop-color="#d9c9ff" stop-opacity="0.25"/><stop offset="1" stop-color="#9fe6ff" stop-opacity="0"/></radialGradient><circle cx="50" cy="54" r="50" fill="url(#${id}h)"/>
+    <polygon points="${f(contour)}" transform="translate(4 5)" fill="rgba(10,30,40,0.3)"/>
+    <g clip-path="url(#${id}c)">${facettes}<polygon points="${f(table)}" fill="#fbf8ff"/><polygon points="${f(table)}" fill="none" stroke="#8f7ff0" stroke-opacity="0.7" stroke-width="1.3"/>
+      ${contour.map((p) => `<line x1="${C[0]}" y1="${C[1]}" x2="${p[0].toFixed(1)}" y2="${p[1].toFixed(1)}" stroke="${ENCRE}" stroke-opacity="0.22" stroke-width="1.1"/>`).join("")}
+      <rect x="0" y="0" width="100" height="100" fill="url(#${id}r)"/></g>
+    <polygon points="${f(contour)}" fill="none" stroke="${ENCRE}" stroke-width="4.2" stroke-linejoin="round"/>
+    <path d="M46.5 24 L48.5 17" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/><path d="M27 45 L33 45.5" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+    ${[[84, 18, 0], [14, 72, 1.1], [88, 80, 2.2]].map(([x, y, d]) => `<g transform="translate(${x} ${y})"><path d="M0 -9 C 1.3 -2.5 2.5 -1.3 9 0 C 2.5 1.3 1.3 2.5 0 9 C -1.3 2.5 -2.5 1.3 -9 0 C -2.5 -1.3 -1.3 -2.5 0 -9 Z" fill="#fff" stroke="${ENCRE}" stroke-width="1.3"><animate attributeName="opacity" values="0;1;0;0" keyTimes="0;0.3;0.6;1" dur="2.4s" begin="${d}s" repeatCount="indefinite"/></path></g>`).join("")}
+  </svg>`;
+}
 const SVG_COCHE = `<svg viewBox="0 0 60 60"><path d="M10 33 L24 46 L51 14" fill="none" stroke="rgba(10,30,40,0.3)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" transform="translate(3 3)"/><path d="M10 31 L24 44 L51 12" fill="none" stroke="${ENCRE}" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 31 L24 44 L51 12" fill="none" stroke="#3fb76a" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 30 L23 39" stroke="#a8ecbe" stroke-width="3" stroke-linecap="round"/></svg>`;
 const SVG_CROIX = `<svg viewBox="0 0 60 60"><g transform="translate(3 3)" stroke="rgba(10,30,40,0.3)" stroke-width="14" stroke-linecap="round"><path d="M15 15 L45 45"/><path d="M45 15 L15 45"/></g><g stroke="${ENCRE}" stroke-width="15" stroke-linecap="round"><path d="M15 15 L45 45"/><path d="M45 15 L15 45"/></g><g stroke="#e5484d" stroke-width="8" stroke-linecap="round"><path d="M15 15 L45 45"/><path d="M45 15 L15 45"/></g><path d="M17 16 L24 23" stroke="#ffb3b5" stroke-width="2.6" stroke-linecap="round"/></svg>`;
 const SVG_ETINCELLE = (c = "#fff6c4") => `<svg viewBox="-12 -12 24 24"><path d="M0 -11 C 1.6 -3 3 -1.6 11 0 C 3 1.6 1.6 3 0 11 C -1.6 3 -3 1.6 -11 0 C -3 -1.6 -1.6 -3 0 -11 Z" fill="${c}" stroke="${ENCRE}" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
@@ -476,7 +509,7 @@ function tuileHTML(c) {
   if (e === "vendre") prix = `<b>${prixDe(c)}</b>${et}`;
   else if (e === "terne") prix = `${SVG_BRILLER}<b>${prixBriller(c)}</b>${et}`;
   else if (e === "bientot") prix = `<div class="sablier">${SVG_SABLIER}</div>`;
-  else if (e === "legende") prix = `<img class="platine" src="${src("img/etoile-platine.webp")}" alt="">`;
+  else if (e === "legende") prix = svgDiamant();
   if (S.owned[c.id]) badge = `<img class="badge" src="${src("img/recif.webp")}" alt="">`;
   const eti = [[18, 22, 0], [128, 30, 0.8], [132, 112, 1.5], [26, 108, 2.1]].map(([x, y, d]) => `<div class="etincelle" style="left:${x}px;top:${y}px;animation-delay:${d}s">${SVG_ETINCELLE()}</div>`).join("");
   return `<img class="crea" src="${src(`img/creatures/${c.id}.webp`)}" alt=""><div class="prix">${prix}</div>${badge}<div class="reflet"></div>${eti}`;
@@ -601,34 +634,57 @@ async function montrerFin() {
       { duration: 1300, delay: 200 + i * 90, easing: "ease-in", fill: "forwards" }).finished.then(() => im.remove())); }
   animerCompteur(avant, S.etoiles, 1300 + 12 * 90);
   await dire(P.bilan(gain)); await Promise.all(vols);
-  // 2. les occasions du coquillage : une zone qui s'ouvre (son premier habitant offert), une légendaire (étoile de platine)
+  // 2. une étoile de diamant gagnée (4 semaines réussies)
+  if (S.diamantsNouveaux) {
+    f.insertAdjacentHTML("beforeend", svgDiamant("diamant-grand")); const d = f.lastElementChild; popper(d); gerbe([660, 390], 18, 180); mascotte("joie", 3000);
+    await dire(P.etoileDiamant); S.diamantsNouveaux = 0; garder();
+    await d.animate([{ transform: "scale(1)", opacity: 1 }, { transform: "translate(0, 140px) scale(0.3)", opacity: 0 }], { duration: 600, easing: "ease-in", fill: "forwards" }).finished; d.remove();
+  }
+  // 3. les occasions du coquillage : la série (toutes les 10 séances), une zone qui s'ouvre (son premier habitant offert, une
+  // commune tirée au hasard), une légendaire (étoile de diamant)
+  if (S.serieDixieme) {
+    S.serieDixieme = false;
+    const ternes = D.cartes.filter((c) => S.owned[c.id] && !S.owned[c.id].b);
+    if (ternes.length) { const c = ternes[Math.floor(Math.random() * ternes.length)]; await coquillage("img/coquillage-0.webp", "img/coquillage-11.webp", c, `${P.serie} ${P.cEst(c)} ${P.brillante}`, true); S.owned[c.id].b = true; garder(); }
+    else { const de = S.etoiles; S.etoiles += 20; garder(); animerCompteur(de, S.etoiles, 900); await dire(P.serieEtoiles); }
+  }
   const z = prochaineZone();
   if (z) {
-    S.zones.push(z); const zo = D.zones.find((x) => x.id === z), offert = gagnables(z).find((c) => c.rarete === "commune" && !S.owned[c.id]);
+    const communes = gagnables(z).filter((c) => c.rarete === "commune" && !S.owned[c.id]);
+    S.zones.push(z); const zo = D.zones.find((x) => x.id === z), offert = communes[Math.floor(Math.random() * communes.length)];
     await coquillage("img/coquillage-0.webp", "img/coquillage-11.webp", offert, `${zo.ouvertureLu.split("!")[0]}! ${P.premierHabitant} ${P.cEst(offert)}`);
     S.owned[offert.id] = { b: false }; garder();
   }
   const leg = D.cartes.find((c) => c.rarete === "legendaire" && S.zones.includes(c.zone) && !S.owned[c.id] && zoneFinie(c.zone));
-  if (leg && S.dorees > 0) { S.dorees--; await coquillage("img/coquillage-platine-0.webp", "img/coquillage-platine-11.webp", leg, `${P.coquillagePlatine} ${P.cEst(leg)}`); S.owned[leg.id] = { b: false }; garder(); }
-  // 3. les arrivages de la semaine (mode Arrivages)
+  if (leg && S.dorees > 0) { S.dorees--; await coquillage("img/coquillage-diamant-0.webp", "img/coquillage-diamant-11.webp", leg, `${P.coquillageDiamant} ${P.cEst(leg)}`, false, true); S.owned[leg.id] = { b: false }; garder(); }
+  // 4. les arrivages de la semaine (mode Arrivages)
   if (S.mode === "A" && S.nouveautes.length) {
     const a = document.createElement("div"); a.className = "arrivage"; a.style.left = "560px"; a.style.top = "360px";
     a.innerHTML = S.nouveautes.slice(0, 4).map((id) => `<div class="mini"><img src="${src(`img/creatures/${id}.webp`)}" alt=""></div>`).join(""); f.append(a);
     for (const m of a.children) popper(m);
     await dire(P.arrivees); await attendre(400); a.remove();
   }
-  // 4. de quoi acheter : une invitation à la boutique
-  if (peutAcheter()) await dire(P.peutAcheter);
-  $("#f-recif").style.visibility = "visible"; verrou = false;
+  // 5. de quoi acheter : une invitation, et le bouton mène droit à la boutique (sinon au récif : décision du parent du 10 octobre 2026)
+  const versBoutique = peutAcheter(), fb = $("#f-recif");
+  fb.innerHTML = versBoutique ? SVG_BOUTIQUE : `<img src="${src("img/recif.webp")}" alt="">`; fb.setAttribute("aria-label", versBoutique ? "la boutique" : "le récif"); fb.dataset.vers = versBoutique ? "boutique" : "recif";
+  if (versBoutique) await dire(P.peutAcheter);
+  fb.style.visibility = "visible"; verrou = false;
 }
-async function coquillage(ferme, ouvert, c, texte) {
+// un coquillage des occasions : il s'ouvre, la créature en sort (`briller` : elle sort en brillant ; `diamant` : l'étoile de diamant
+// vole d'abord jusqu'au coquillage)
+async function coquillage(ferme, ouvert, c, texte, briller = false, diamant = false) {
   const f = $("#fin-contenu"), im = new Image(); im.src = src(ferme); im.className = "coquillage-occasion"; f.append(im); popper(im);
-  await attendre(900); im.src = src(ouvert); gerbe([690, 560], 16, 170);
+  if (diamant) {
+    f.insertAdjacentHTML("beforeend", svgDiamant("diamant-grand")); const d = f.lastElementChild; d.style.cssText = "width:110px;height:110px;left:635px;top:150px";
+    await d.animate([{ transform: "translate(0, 0) scale(0.6)", opacity: 0 }, { transform: "translate(0, 0) scale(1)", opacity: 1, offset: 0.3 }, { transform: "translate(0, 360px) scale(0.4)", opacity: 0.4 }], { duration: 1300, easing: "ease-in", fill: "forwards" }).finished; d.remove();
+  } else await attendre(900);
+  im.src = src(ouvert); gerbe([690, 560], diamant ? 26 : 16, diamant ? 220 : 170);
   const cr = new Image(); cr.src = src(`img/creatures/${c.id}.webp`); cr.style.cssText = "position:absolute;left:570px;top:300px;width:240px;height:200px;object-fit:contain"; f.append(cr);
   cr.animate([{ transform: "translateY(120px) scale(0.3)", opacity: 0 }, { transform: "translateY(0) scale(1)", opacity: 1 }], { duration: 700, easing: "cubic-bezier(.3,1.4,.5,1)" });
+  if (briller) { cr.style.filter = "drop-shadow(0 0 10px #fff7c8) drop-shadow(0 0 22px rgba(190,230,255,0.9))"; setTimeout(() => gerbe([690, 400], 16, 150), 600); }
   mascotte("joie", 3000); await dire(texte); await attendre(300); im.remove(); cr.remove();
 }
-$("#f-recif").addEventListener("click", (e) => { if (verrou) return; popper(e.currentTarget); setTimeout(() => aller("recif"), 250); });
+$("#f-recif").addEventListener("click", (e) => { if (verrou) return; popper(e.currentTarget); setTimeout(() => aller(e.currentTarget.dataset.vers === "boutique" ? "boutique" : "recif"), 250); });
 
 // ============================================================================ l'espace parent (appui long d'une seconde sur le petit rond)
 const acces = $("#acces-parent"); let appui = 0;
@@ -644,7 +700,7 @@ function etatParent() {
   const g = D.cartes.filter((c) => c.rarete !== "legendaire"), nb = g.filter((c) => S.owned[c.id]).length, br = Object.values(S.owned).filter((o) => o.b).length;
   const vitrine = D.cartes.filter((c) => etat(c) === "vendre").length;
   $("#p-etat").innerHTML = `<b>${S.etoiles}</b> étoiles · <b>${nb}</b> créatures sur 55 (+ ${D.cartes.filter((c) => c.rarete === "legendaire" && S.owned[c.id]).length} légendaires sur 5) · <b>${br}</b> brillantes<br>
-    En vitrine : <b>${vitrine}</b> à acheter · zones ouvertes : ${S.zones.length} · étoiles de platine : ${S.dorees}` + (S.mode === "A" ? ` · arrivées : ${Math.min(S.arrivees, 55)}` : "");
+    En vitrine : <b>${vitrine}</b> à acheter · zones ouvertes : ${S.zones.length} · étoiles de diamant : ${S.dorees}` + (S.mode === "A" ? ` · arrivées : ${Math.min(S.arrivees, 55)}` : "");
 }
 function fermerParent() { $("#parent").classList.remove("ouvert"); garder(); aller(ecran === "fin" ? "recif" : ecran); }
 $("#p-fermer").addEventListener("click", fermerParent);
@@ -652,7 +708,7 @@ $("#parent").addEventListener("click", (e) => { if (e.target.id === "parent") fe
 for (const n of ["mode", "prix"]) for (const i of document.querySelectorAll(`input[name=${n}]`)) i.addEventListener("change", () => { S[n] = i.value; S.nouveautes = []; garder(); etatParent(); });
 $("#p-pause").addEventListener("change", (e) => { S.pause = e.target.checked; garder(); });
 for (const b of document.querySelectorAll("[data-et]")) b.addEventListener("click", () => { const d = +b.dataset.et; S.etoiles = d ? Math.max(0, S.etoiles + d) : 0; garder(); etatParent(); });
-$("#p-doree").addEventListener("click", () => { S.dorees++; garder(); etatParent(); });
+$("#p-doree").addEventListener("click", () => { S.dorees++; S.diamantsNouveaux = (S.diamantsNouveaux ?? 0) + 1; garder(); etatParent(); });
 for (const b of document.querySelectorAll("[data-pre]")) b.addEventListener("click", () => { Object.assign(S, PRESETS[b.dataset.pre](), { nouveautes: [], arrivee: null }); garder(); etatParent(); });
 $("#p-effacer").addEventListener("click", () => { try { localStorage.removeItem(CLE); } catch (e) {} S = base(); premiereVisite = true; garder(); ouvrirParent(); });
 // une semaine d'école passe : 2 créatures arrivent (mode Arrivages)
@@ -663,12 +719,16 @@ function lundi() {
   S.nouveautes = [...new Set([...S.nouveautes, ...neuves])]; return neuves;
 }
 $("#p-lundi").addEventListener("click", () => { lundi(); garder(); $("#parent").classList.remove("ouvert"); aller(ecran === "fin" ? "recif" : ecran); });
-$("#p-seance").addEventListener("click", () => {
-  // une séance : environ 60 étoiles (la simulation : 50 à 70 selon l'enfant) ; une séance sur trois (2 par semaine), c'est un lundi de plus
+// une séance : environ 60 étoiles (la simulation : 50 à 70 selon l'enfant) ; à 2 séances par semaine, une sur deux commence une
+// semaine (un lundi d'arrivage) ; toutes les 10 séances de la série, le coquillage de la série
+function finDeSeance(dixieme = false) {
   const gain = 54 + Math.floor(Math.random() * 13); S.gainDernier = gain; S.etoiles += gain;
   S.seances = (S.seances ?? 0) + 1; if (S.mode === "A" && S.seances % 2 === 0) lundi();
+  if (dixieme || S.seances % 10 === 0) { S.serieDixieme = true; if (dixieme) S.seances = Math.ceil(S.seances / 10) * 10; }
   garder(); $("#parent").classList.remove("ouvert"); aller("fin");
-});
+}
+$("#p-seance").addEventListener("click", () => finDeSeance());
+$("#p-serie").addEventListener("click", () => finDeSeance(true));
 
 // ============================================================================ démarrage
 (async function demarrer() {

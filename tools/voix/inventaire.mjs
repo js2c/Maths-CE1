@@ -11,7 +11,6 @@ import { e7Words } from "../../app/js/modules/numberline/dictation.js";
 import { calcsOf, chemin } from "../../app/js/modules/calc/calc.js";
 import { catalog } from "../../app/js/modules/facts/facts.js";
 import { allMults, multsOf } from "../../app/js/modules/mult/mult.js";
-import { PRODUITS } from "../../app/js/modules/etal/etal.js";
 
 const CONTENT = new URL("../../app/content/", import.meta.url);
 export const lireContenu = () => Object.fromEntries(["textes", "lecons", "cartes", "module1", "module2", "module3", "module4", "module5", "module6", "seance"].map((k) => [k, JSON.parse(readFileSync(new URL(`${k}.json`, CONTENT), "utf8"))]));
@@ -167,8 +166,7 @@ function domaines(C) {
     // lot « L'étal du pêcheur » (modules/etal/etal.js, montantDit ; modules/etal/screen.js) : tout montant que le pêcheur peut
     // dire, en centimes : les prix de chaque niveau (module6.json, prix), et tout ce qui peut être compté dans la soucoupe, ce qui
     // manque, la monnaie rendue (au plus le portefeuille le plus garni du niveau, totalMax, au pas de ses plus petites pièces) ;
-    // « Achète les sardines et le maquereau. » (niveau 8 : les 66 paires, dans l'ordre de PRODUITS) ; l'aide du niveau 7,
-    // « Compte à partir de 13, jusqu'à 20. » (le prix et le billet, en euros)
+    // l'aide du niveau 7, « Compte à partir de 13, jusqu'à 20. » (le prix et le billet, en euros)
     ...(() => {
       if (!C.module6) return {};
       const M6 = C.module6.niveaux, set = new Set();
@@ -177,14 +175,12 @@ function domaines(C) {
         if (c.portefeuille) { const pas = Math.min(...Object.keys(c.portefeuille).map(Number), c.prix?.[2] ?? 100); for (let v = pas; v <= c.totalMax; v += pas) set.add(v); }
       }
       const m = [...set].sort((a, b) => a - b), e = (v) => Math.floor(v / 100), r = (v) => v % 100;
-      const A = C.module6.articles ?? {}, paires = PRODUITS.flatMap((a, i) => PRODUITS.slice(i + 1).map((b) => ({ a: A[a], b: A[b] })));
       const r7 = M6.find((c) => c.type === "rendre"), aide = r7 ? range(r7.prix[0] / 100, r7.prix[1] / 100).flatMap((a) => r7.billets.filter((b) => b / 100 > a).map((b) => ({ a, b: b / 100 }))) : [];
       return {
         "etalMontant.euros": m.filter((v) => e(v) >= 2 && !r(v)).map((v) => ({ e: e(v) })),
         "etalMontant.eurosCentimes": m.filter((v) => e(v) >= 2 && r(v)).map((v) => ({ e: e(v), c: r(v) })),
         "etalMontant.euroCentimes": m.filter((v) => e(v) === 1 && r(v)).map((v) => ({ c: r(v) })),
         "etalMontant.centimes": m.filter((v) => !e(v)).map((v) => ({ c: r(v) })),
-        etalPaire: paires,
         etalAideRendre: aide,
       };
     })(),

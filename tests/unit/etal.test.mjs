@@ -105,7 +105,7 @@ test("tout ce que le pêcheur peut dire a sa phrase : prix, montants comptés, m
   }
   for (const n of PRODUITS) for (const k of ["achete", "coute", "nom"]) dit(T.etalProduit[n][k]);
   for (const v of N(1).valeurs) { dit(T.etalPoser[v]); dit(T.etalCestUn[v]); dit(T.etalCestCeluiLa[v]); }
-  for (let a = 0; a < PRODUITS.length; a++) for (let b = a + 1; b < PRODUITS.length; b++) dit(`Achète ${M6.articles[PRODUITS[a]]} et ${M6.articles[PRODUITS[b]]}.`);
+  dit(T.etalPaire); dit(T.etalPaieLesDeux);
   for (const c of [1, 2, 7, 19]) dit(String(c));
   assert.deepEqual(manque, []);
   // l'étal : moins de 600 phrases nouvelles (fiche du lot)

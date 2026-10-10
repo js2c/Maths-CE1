@@ -2,7 +2,7 @@
 
 Tout ce qui n'est pas décidé : idées d'amélioration, concepts d'exercices à maquetter, questions laissées avec une valeur par défaut, points à observer avec l'enfant. Tenu en conception. Quand un point est tranché, la règle va dans `docs/SPEC.md`, la raison dans `docs/JOURNAL-CONCEPTION.md`, et la ligne est retirée d'ici.
 
-Dernière mise à jour : 9 octobre 2026 (la monnaie avancée : l'étal du pêcheur), après le 6 octobre (mascotte, voiliers et lots ordonnés de `docs/LOTS.md`) et la revue du programme de CE1 du 30 septembre.
+Dernière mise à jour : 10 octobre 2026 (l'étal du pêcheur fait : `docs/SPEC.md`, section 7 quater), après le 9 octobre (la monnaie avancée), après le 6 octobre (mascotte, voiliers et lots ordonnés de `docs/LOTS.md`) et la revue du programme de CE1 du 30 septembre.
 
 ## 1. La feuille de route (décision du parent du 30 septembre)
 
@@ -23,7 +23,7 @@ Les lots prêts à lancer, dans l'ordre, sont dans **`docs/LOTS.md`** (décision
 
 **Phase 2, d'ici quelques semaines** (la multiplication et les tables sont devenues le lot « Multiplication » de `docs/LOTS.md`, demande du parent du 6 octobre) : les fractions (le programme les attend **au plus tard en période 2**, avant les vacances de Noël ; le parent les remet à plus tard, décision du 6 octobre) ; la multiplication (addition répétée, signe ×, commutativité, rangées) et les tables ; le partage (valeur d'une part, nombre de parts) ; l'addition et la soustraction posées jusqu'à 3 chiffres, avec retenues (la méthode de soustraction, par cassage ou par compensation, **à demander à l'enseignante** : l'école en choisit une du CE1 au CM2) ; ± centaines entières et calculs à 3 chiffres (234 + 60, 765 − 200) ; × 10 d'un nombre inférieur à 100.
 
-**Phase 3** : l'heure, la monnaie (**avancée par le parent le 8 octobre 2026** : c'est une notion de la vie courante qu'il veut faire acquérir ; concept en section 2, « L'étal du pêcheur » ; le programme demande les **centimes** en période 2 et l'**écriture à virgule** dès la période 3 : la spécification actuelle, en euros entiers, est à revoir), les longueurs, les masses.
+**Phase 3** : l'heure, la monnaie (**avancée par le parent le 8 octobre 2026** : c'est une notion de la vie courante qu'il veut faire acquérir ; concept en section 2, « L'étal du pêcheur » ; le programme demande les **centimes** en période 2 et l'**écriture à virgule** dès la période 3 ; **fait** au lot « L'étal du pêcheur », centimes et virgule compris, `docs/SPEC.md`, section 7 quater), les longueurs, les masses.
 
 **Exclu** : écrire les nombres en lettres.
 
@@ -33,7 +33,7 @@ Les lots prêts à lancer, dans l'ordre, sont dans **`docs/LOTS.md`** (décision
 
 Retenus dans leur principe par le parent le 30 septembre ; chacun doit passer par une maquette validée avant d'être spécifié dans `docs/SPEC.md`.
 
-**L'étal du pêcheur** (la monnaie ; avancée par le parent le 8 octobre 2026, avant les autres concepts de cette section). Décisions du parent : une boutique de pêcheur avec la pêche du jour ; le capitaine (la mascotte) en marchand, dans la fenêtre de sa cabane ; de vraies pièces et de vrais billets en euros, **dessinés** (pas de photos) ; décor et objets générés par Nano Banana dans le style dessiné du récif ; quelques éléments animés. Le principe : un bouton ouvre le portefeuille de l'enfant ; elle fait glisser les pièces et les billets nécessaires pour acheter le produit demandé ; en montant en difficulté, le portefeuille est restreint pour qu'on ne puisse pas faire le compte juste, et il faut alors calculer la monnaie que le pêcheur rend. D'autres déclinaisons viendront ensuite.
+**L'étal du pêcheur** (la monnaie ; avancée par le parent le 8 octobre 2026, avant les autres concepts de cette section ; **fait** au lot « L'étal du pêcheur », le 10 octobre : `docs/SPEC.md`, section 7 quater ; ce qui suit est l'historique du concept). Décisions du parent : une boutique de pêcheur avec la pêche du jour ; le capitaine (la mascotte) en marchand, dans la fenêtre de sa cabane ; de vraies pièces et de vrais billets en euros, **dessinés** (pas de photos) ; décor et objets générés par Nano Banana dans le style dessiné du récif ; quelques éléments animés. Le principe : un bouton ouvre le portefeuille de l'enfant ; elle fait glisser les pièces et les billets nécessaires pour acheter le produit demandé ; en montant en difficulté, le portefeuille est restreint pour qu'on ne puisse pas faire le compte juste, et il faut alors calculer la monnaie que le pêcheur rend. D'autres déclinaisons viendront ensuite.
 
 - **Décor** : maquette `art/etal/` (9 octobre 2026), à valider : cabane à gauche (la fenêtre tombe sur la place de la mascotte), étal de glace vu de face, comptoir au premier plan, port et phare ; nuages, vagues, oiseaux et bateaux animés ; un mode « mauvais temps » (pluie, phare tournant, feux des bateaux, lampe à huile qui se balance et éclaire l'étal). Le temps est tiré au hasard, mauvais une fois sur deux (décision du parent du 9 octobre 2026). La pêche du jour (12 produits générés par le parent, 8 à la fois) est posée sur la glace, avec une ardoise de prix devant chacun. Le 10 octobre : orage possible en cours de séance (le pêcheur s'exclame et se met à l'abri) ; portefeuille animé (vidéo du parent), poches à billets et à pièces, soucoupe ; pas de chat ni de mouette (décision du parent : le port, les bateaux et le phare suffisent). Le 10 octobre : maquette validée, l'exercice devient le lot « L'étal du pêcheur » (`docs/LOTS.md`, fiche 7), qui reprend les propositions ci-dessous.
 - **Proposé, non tranché** : niveaux (payer juste avec des pièces jusqu'à 10 €, puis avec des billets jusqu'à 20 € et 50 € ; portefeuille restreint où le compte juste exige un choix ; compte juste impossible : payer sans pièce de trop, le pêcheur rend la monnaie en comptant ; puis l'enfant calcule ce qu'il doit rendre ; deux produits à additionner) ; règle de validation « aucune pièce de trop » quand le compte juste est impossible ; aide par le saut sur la ligne graduée pour rendre la monnaie ; les centimes (période 2 au plus tard) et l'écriture à virgule (période 3) en niveaux suivants du même exercice.
@@ -163,6 +163,16 @@ Le parent n'est pas encore convaincu par les remèdes proposés : la question es
 **Graphisme** (projet parallèle, hors de ce fichier) : la refonte graphique (PR 24 et 26). Le récif vivant est intégré comme collection depuis le 5 octobre 2026 (`docs/SPEC.md`, section 10). Piste notée le 30 septembre, après le constat sur la leçon L10 (rendu daté) : **composition hybride** — les éléments (un poisson, un filet, un chalut, un sac) générés isolément par Nano Banana sur fond uni, détourés, puis **posés et comptés par le code** (le code garantit les quantités exactes, l'image la qualité). C'est la démarche déjà retenue pour le récif vivant.
 
 ## 6. À observer avec l'enfant, à vérifier sur la tablette
+
+**L'étal du pêcheur** (10 octobre 2026), après son lot (les choix de la session : `docs/JOURNAL-CONCEPTION.md`) :
+
+- **L'étal dans la rotation de « jouer »** : non pour l'instant (valeur par défaut de la fiche) ; à reconsidérer après quelques parties choisies.
+- **La durée d'un achat** : environ 14 achats en 6 minutes d'après la simulation ; si l'enfant s'y perd (ouvrir, sortir, poser, valider), alléger les premiers niveaux (portefeuille déjà ouvert ?).
+- **Le niveau 6** : le portefeuille tiré offre souvent la solution « un seul billet » (13 € avec un billet de 20 €) ; c'est juste, mais l'exercice « sans pièce de trop » y est alors facile. Le tirer pour que la solution demande plus souvent deux objets ?
+- **La voix** pèsera environ 79,3 Mo, contre la limite de 80 Mo : le prochain lot qui ajoute des phrases demandera de relever la limite ou d'alléger les fichiers (débit plus bas ?).
+- **Le niveau 8** : « Achète les deux. » (une phrase pour toutes les paires, pour tenir dans la limite de la voix) ; si la limite est relevée, une phrase par paire (« Achète le bar et la sole. », 66 phrases) serait plus naturelle.
+- **Le total écrit** (30 px) et la valeur écrite sous l'argent au cran « plus facile » : lisibles sur la tablette ?
+- **D'autres déclinaisons** de la monnaie : comparer deux prix, « peux-tu acheter ? », le prix de trois produits, les problèmes de la vie courante à l'étal.
 
 **Mascotte et voiliers** (6 octobre 2026), après leurs lots :
 

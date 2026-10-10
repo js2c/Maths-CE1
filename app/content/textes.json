@@ -500,7 +500,7 @@
     "homard": { "achete": "Achète le homard.", "coute": "Il coûte…", "nom": "Le homard coûte…" },
     "tourteau": { "achete": "Achète le tourteau.", "coute": "Il coûte…", "nom": "Le tourteau coûte…" }
   },
-  "etalPaire": "Achète {a} et {b}.",
+  "etalPaire": "Achète les deux.",
   "etalPaieLesDeux": "Paie les deux ensemble.",
   "etalPoser": {
     "100": "Pose une pièce de 1 euro.",

@@ -190,7 +190,7 @@ export class EtalScreen {
   phrase(q) {
     const T = this.app.text.data, M = (c) => montantDit(T, c), P = (n) => T.etalProduit[n];
     if (q.type === "poser") return T.etalPoser[q.valeur];
-    if (q.type === "deux") { const [a, b] = q.produits; return `${fill(T.etalPaire, { a: this.c.articles[a], b: this.c.articles[b] })} ${P(a).nom} ${M(q.prixProduits[0])} ${P(b).nom} ${M(q.prixProduits[1])} ${T.etalPaieLesDeux}`; }
+    if (q.type === "deux") { const [a, b] = q.produits; return `${T.etalPaire} ${P(a).nom} ${M(q.prixProduits[0])} ${P(b).nom} ${M(q.prixProduits[1])} ${T.etalPaieLesDeux}`; }
     const base = `${P(q.produits[0]).achete} ${P(q.produits[0]).coute} ${M(q.prix)}`;
     return q.type === "rendre" ? `${base} ${T.etalRendre[q.billet]}` : base;
   }

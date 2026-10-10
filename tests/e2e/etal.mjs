@@ -56,7 +56,8 @@ const payer = (page, quoi) => page.evaluate(async (quoi) => {
   const restant = () => { const w = [...q.portefeuille]; for (const v of sol) w.splice(w.indexOf(v), 1); return w; };
   let vs = sol;
   if (quoi === "pasAssez") vs = sol.length > 1 ? sol.slice(0, -1) : [Math.min(...q.portefeuille)];
-  if (quoi === "trop" || quoi === "pieceDeTrop") vs = [...sol, Math.min(...restant())];
+  // (pas autant d'objets que le prix en euros : ce serait M4, « le nombre au lieu de la valeur », sans deuxième essai)
+  if (quoi === "trop" || quoi === "pieceDeTrop") { const r = restant().sort((x, y) => x - y); vs = [...sol, r[0]]; if (vs.length * 100 === q.prix && r.length > 1) vs.push(r[1]); }
   if (quoi === "mauvais") vs = [q.portefeuille.find((v) => v !== q.valeur)];
   for (const v of vs) { await e.api.deposer(v); await new Promise((r) => setTimeout(r, 120)); }
   return vs;

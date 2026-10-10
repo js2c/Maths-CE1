@@ -140,7 +140,7 @@ export const comptes = (valeurs, depuis = 0) => { let s = depuis; return valeurs
 // ---------------------------------------------------------------- les produits
 // les douze produits de la maquette (art/etal/index.html, PRODUITS), dans l'ordre de textes.json (etalProduit)
 export const PRODUITS = ["sardines", "maquereau", "bar", "dorade", "sole", "seiche", "crevettes", "moules", "huitres", "saint-jacques", "homard", "tourteau"];
-// deux produits (niveau 8) : toujours dans l'ordre de PRODUITS (une phrase par paire, « Achète les sardines et le maquereau. »)
+// deux produits (niveau 8) : toujours dans l'ordre de PRODUITS (« Achète les deux. », puis le premier, puis le second)
 export const paire = (a, b) => (PRODUITS.indexOf(a) < PRODUITS.indexOf(b) ? [a, b] : [b, a]);
 // le prix d'un produit du niveau 8 : deux prix dont le total est dans la fourchette du niveau
 export function deuxPrix(cfg, total, R) {

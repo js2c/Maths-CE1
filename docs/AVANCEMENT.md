@@ -37,8 +37,11 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 - Branche `claude/practical-franklin-gr2y0x`, partie de `main` (167eec50, étal fusionné), demande de fusion en brouillon « Lot : Correctifs : passage de l'échauffement aux voiliers ».
 - Fiche 8 de `docs/LOTS.md`, d'un seul tenant (choix de la session dans `docs/JOURNAL-CONCEPTION.md`).
-- Fait (code, tests unitaires, parcours `tests/e2e/passages.mjs` et `tests/e2e/mise-a-jour.mjs`) : points 1 à 14.
-- Reste : la documentation (SPEC, ARCHITECTURE, VOIX, GUIDE-PARENT, CLAUDE.md, journal), le parcours du lot
-  `tests/e2e/correctifs-2.mjs` (captures), la recette de la méthode commune, la relecture indépendante, la demande de fusion
-  (GitHub injoignable depuis la session au départ : à ouvrir dès que possible).
-
+- Fait : points 1 à 14 (code, tests unitaires, parcours `tests/e2e/passages.mjs`, `tests/e2e/mise-a-jour.mjs`,
+  `tests/e2e/correctifs-2.mjs` et ses captures), la documentation, la relecture indépendante et ses correctifs
+  (`tests/recette-fonctionnelle/out-correctifs-2/RELECTURE.md`), séquences et simulation par profil.
+- En cours (10 octobre 2026, fin d'après-midi) : tous les parcours `tests/e2e` (les anciens qui vérifiaient l'étiquette
+  d'appui long des écrans de choix sont mis à jour) ; ceux qui échouent sont relancés seuls, puis sur `main`.
+- Reste : mesures avant et après (`perf.mjs`), séance à vitesse réelle, attentes avec et sans « passer », lot « fait » dans
+  `docs/LOTS.md`, la demande de fusion (GitHub injoignable depuis la session : à ouvrir dès que possible ; son texte est
+  prêt).

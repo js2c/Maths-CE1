@@ -74,7 +74,7 @@ export async function lessonsMenu(app, o) {
       const valide = it.kind === "lecon" && seen.has(it.id);
       const b = spriteBox(app, { x: it.x - W / 2, y: it.y - H / 2, w: W, h: H, cls: "bubble lecons-tuile", label: key, paint: (ctx, px) => {
         const q = sprites.frame(sprite, 0), k = MENU.k ?? 1; if (q) ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (W / 2) * px + q.dx * k, (H / 2) * px + q.dy * k, q.w * k, q.h * k);
-        if (sel === key) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawSelectTile(ctx, W / 2, H / 2, W - 12, H - 12); ctx.setTransform(1, 0, 0, 1, 0, 0); }
+        if (sel === key) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawSelectTile(ctx, W / 2, H / 2, W, H, 22 * MENU.k); ctx.setTransform(1, 0, 0, 1, 0, 0); }
         if (valide) { const q = sprites.frame("etoile.doree", 0), k = 0.42; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (W - 24) * px + q.dx * k, 24 * px + q.dy * k, q.w * k, q.h * k); }
       } });
       b.dataset.key = key; if (valide) b.dataset.valide = "1"; els.push(b);
@@ -83,9 +83,8 @@ export async function lessonsMenu(app, o) {
       const D = text.data.choixDescription ?? {}, name = it.kind === "lecon" ? text.data.choixLeconNom?.[it.id] ?? it.id : it.id === "multiplication" ? text.data.choixTableMult : text.data.choixTable;
       noms.set(key, [name, it.kind === "lecon" ? D.lecons?.[it.id] : D.tables?.[it.id]].filter(Boolean).join(" "));
       quoi.set(key, it.kind === "lecon" ? { lecon: it.id } : { table: it.id }); tuiles.push(b);
-      b.__etiquette = tileLabel(app.legendes, it.kind === "lecon" ? it.id : TABLE_SIGNE[it.id]);
     }
-    deuxTouchers(app, { tuiles, texte: (k) => noms.get(k), etiquette: (k) => tuiles.find((t) => t.dataset.key === k)?.__etiquette ?? null, peindre: (k) => { sel = k; } }).then((k) => res(quoi.get(k)));
+    deuxTouchers(app, { tuiles, texte: (k) => noms.get(k), peindre: (k) => { sel = k; } }).then((k) => res(quoi.get(k)));
     // la légende du parent (le petit livre) : une ligne par leçon, et une pour la table d'addition
     legendKey(app, "lecons", { keys: [...menu.rangees.flatMap((r) => r.lecons), ...menu.tables.map((t) => TABLE_SIGNE[t]).filter(Boolean)], els, at: MENU.legende });
     voice.say(text.data.choixLecon, { instruction: true });
@@ -94,12 +93,6 @@ export async function lessonsMenu(app, o) {
   clear();
   return r;
 }
-// l'étiquette d'une tuile (appui long) : « 7 · Plus 10 sur le mur de corail, on descend d'une rangée », « + · La table… »
-export function tileLabel(legendes, key) {
-  const row = (legendes?.lecons ?? []).find((r) => r.n === key);
-  return row ? `${key === "+" || key === "×" ? key : lessonNumber(key)} · ${row.travail.replace(/\.$/, "")}` : null;
-}
-
 // ---------------------------------------------------------------- la fin d'une leçon du menu
 export const END = { atoi: [560, 480], maison: [815, 480] };
 export async function lessonEnd(app, { id }) {

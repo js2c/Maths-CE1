@@ -6,7 +6,9 @@
 //    et le même texte s'écrit dans une bulle qui part d'un coin de la tuile (engine/bulle.js, placesTuile) ;
 //  - second toucher sur la même tuile : elle se lance ; un toucher sur une autre tuile la sélectionne à la place ; un toucher
 //    hors des tuiles désélectionne ;
-//  - l'appui long ne lance rien (il montre l'étiquette, engine/ui.js) ; le petit livre de la légende reste, pour le parent.
+//  - l'appui long ne lance rien, et ne montre rien de plus (lot « Correctifs : passage de l'échauffement aux voiliers », point 7 :
+//    l'étiquette rectangulaire qu'il montrait doublait la bulle de la mascotte, avec un autre texte) ; le petit livre de la
+//    légende reste, pour le parent.
 // La règle seule (sans DOM) est `Selection` (testée : tests/unit/correctifs-tablette.test.mjs).
 import { onBrief, pop } from "../engine/ui.js";
 import { placesTuile } from "../engine/bulle.js";
@@ -26,9 +28,9 @@ export const voisines = (r, toutes, portee = 1.45) => {
   return toutes.filter((o) => o !== r && Math.abs((o[0] + o[2]) / 2 - cx) < w * portee && Math.abs((o[1] + o[3]) / 2 - cy) < h * portee);
 };
 
-// l'écran : `tuiles` (boutons, chacun avec dataset.key), `texte(clé)` (ce que dit la mascotte), `etiquette(clé)` (l'appui long),
+// l'écran : `tuiles` (boutons, chacun avec dataset.key), `texte(clé)` (ce que dit la mascotte),
 // `peindre(clé | null)` (la tuile sélectionnée est redessinée avec sa bordure). Renvoie une promesse : la clé lancée.
-export function deuxTouchers(app, { tuiles, texte, etiquette = () => null, peindre = () => {} }) {
+export function deuxTouchers(app, { tuiles, texte, peindre = () => {} }) {
   const { voice, bulle, stage } = app, sel = new Selection();
   // (la place d'un bouton : celle de son style, en px de la scène ; sa boîte à l'écran est réduite pendant son petit rebond)
   const rect = (b) => { const x = parseFloat(b.style.left), y = parseFloat(b.style.top); return [x, y, x + parseFloat(b.style.width), y + parseFloat(b.style.height)]; };
@@ -62,7 +64,7 @@ export function deuxTouchers(app, { tuiles, texte, etiquette = () => null, peind
         const fixes = [...stage.ui.querySelectorAll(".homekey, .session-home, .choix-retour, .legende, .mascotte-tap")].filter((e) => e.checkVisibility?.({ visibilityProperty: true }) ?? true).map(rect);
         bulle.ancrer({ texte: t, places: placesTuile(r0), obstacles: () => ({ durs: [r0.map((v, i) => v + (i < 2 ? -4 : 4)), ...fixes], souples: [...proches, ...proches, ...etoiles, ...toutes.filter((o) => o.join() !== r0.join())] }) });
         voice.stop(); voice.say(t);
-      }, () => etiquette(b.dataset.key));
+      }, null); // (point 7 : sans étiquette)
     }
   });
 }

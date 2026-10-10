@@ -19,17 +19,21 @@ import { initialMultState, recommendedMult } from "../modules/mult/runner.js";
 
 // (lot 3 bis, B1 : plaques de 150 × 136 numérotées, en 4 colonnes de x 496 à 1084, entre les bras de la pieuvre et les
 // algues de droite ; le calcul rapide : ses neuf plaques sur le chemin de cailloux, CALC_AT = le centre de la plaque 1)
-export const TILE = { w: 150, h: 136, pitchX: 196, pitchY: 152, cx: 790, top: 246, cols: 4 }, EX_Y = 470, CHECK = [850, 712], BACK = [420, 108];
+export const TILE = { w: 150, h: 136, r: 22, pitchX: 196, pitchY: 152, cx: 790, top: 246, cols: 4 }, EX_Y = 470, CHECK = [850, 712], BACK = [420, 108];
 export const CALC_AT = [573, 250], GLOW = { w: 214, h: 200 };
 // les exercices proposés, dans l'ordre
+// (lot « Correctifs : passage de l'échauffement aux voiliers », point 8 : `graine`, celle de la bulle de l'exercice dans l'atelier,
+// drawAnswerBubble(g, cx, cy, i, 70) : graine 300 + i ; l'entourage de sélection reprend sa forme : tests/unit/passages.test.mjs)
 export const EXERCISES = [
-  { id: "ligne", sprite: "choix.ex.ligne", module: 1 },
-  { id: "additions", sprite: "libre.faits", module: 2 },
-  { id: "calcul", sprite: "choix.ex.calcul", module: 3 },
-  { id: "voiliers", sprite: "choix.ex.voiliers", module: 4 },
-  { id: "multiplication", sprite: "choix.ex.multiplication", module: 5 },
-  { id: "etal", sprite: "choix.ex.etal", module: 6 },
+  { id: "ligne", sprite: "choix.ex.ligne", module: 1, graine: 325 },
+  { id: "additions", sprite: "libre.faits", module: 2, graine: 322 },
+  { id: "calcul", sprite: "choix.ex.calcul", module: 3, graine: 327 },
+  { id: "voiliers", sprite: "choix.ex.voiliers", module: 4, graine: 328 },
+  { id: "multiplication", sprite: "choix.ex.multiplication", module: 5, graine: 328 },
+  { id: "etal", sprite: "choix.ex.etal", module: 6, graine: 328 },
 ];
+// la bulle d'un exercice (rayon 70 dans l'atelier, son trait compris : 75) ; l'entourage passe à 6 px de son bord
+export const EX_BULLE_R = 70, EX_ENTOURAGE_R = 81;
 // (lot « Les voiliers » : les exercices sur une rangée, entre la tête de la mascotte et le bord droit ; lot « Multiplication » :
 // cinq exercices, l'écart resserré de 190 à 172 px)
 // (lot « L'étal du pêcheur » : six exercices, de x 350 à 1180 : entre la tête de la mascotte et le bord droit)
@@ -65,12 +69,6 @@ export function levelItems(ex, { st1 = null, st2 = null, st3 = null, st4 = null,
   const st = st2 ?? initialFamilies(module2), cur = currentFamily(module2, st);
   return module2.familles.map((f) => ({ key: f.id, sprite: `choix.famille.${f.id}`, conseille: f.id === cur, valide: (st.acquises ?? []).includes(f.id) }));
 }
-// (lot 3 ter, T3) l'étiquette d'une tuile de niveau ou de famille : sa ligne de la légende (legendes.json),
-// « 7 · Ajouter en passant la dizaine, on complète d'abord jusqu'à 10 », sans le point final
-export function tileLabel(legendes, ex, k) {
-  const row = (legendes?.[ex] ?? []).find((r) => String(r.n) === String(k));
-  return row ? `${k} · ${row.travail.replace(/\.$/, "")}` : null;
-}
 // où va la vignette i sur n : rangées de `cols`, centrées ; le calcul rapide : sur le chemin de cailloux (R.CALC_STOPS)
 export function tilePos(i, n, T = TILE, ex = null, stops = null) {
   if (ex === "calcul" && stops?.[i]) return [CALC_AT[0] + stops[i][0], CALC_AT[1] + stops[i][1]];
@@ -97,16 +95,16 @@ export async function choose(app, o) {
   const sel = { key: null };
   // (lot 3 bis, B3 : les pictogrammes des exercices ; lot 3 ter, T3 : toutes les tuiles et le retour : un toucher bref agit au
   // lever du doigt, un appui long montre l'étiquette et ne lance rien ; `label(clé)` : le texte de l'étiquette)
-  const pick = (buttons, name, label = (k) => k) => { sel.key = null; return deuxTouchers(app, { tuiles: buttons, texte: name, etiquette: label, peindre: (k) => { sel.key = k; } }); };
+  const pick = (buttons, name) => { sel.key = null; return deuxTouchers(app, { tuiles: buttons, texte: name, peindre: (k) => { sel.key = k; } }); };
   const D = text.data.choixDescription ?? {}, dire = (nom, desc) => [nom, desc].filter(Boolean).join(" ");
   for (;;) {
     // 1. l'exercice
     const xs = EXERCISES, exBtn = xs.map((e, i) => {
-      const b = spriteBox(app, { x: EX_CX + (i - (xs.length - 1) / 2) * EX_PITCH - 90, y: EX_Y - 90, w: 180, h: 180, cls: "bubble choix-ex", label: e.id, paint: (ctx, px) => { sprites.draw(ctx, e.sprite, 0, 90, 90); if (sel.key === e.id) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawSelectRound(ctx, 90, 90, 80); } } });
+      const b = spriteBox(app, { x: EX_CX + (i - (xs.length - 1) / 2) * EX_PITCH - 90, y: EX_Y - 90, w: 180, h: 180, cls: "bubble choix-ex", label: e.id, paint: (ctx, px) => { sprites.draw(ctx, e.sprite, 0, 90, 90); if (sel.key === e.id) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawSelectRound(ctx, 90, 90, EX_ENTOURAGE_R, e.graine); } } });
       b.dataset.key = e.id; els.push(b); return b;
     });
     voice.stop(); voice.say(text.data.choixExercice, { instruction: true });
-    const ex = await Promise.race([pick(exBtn, (k) => dire(text.data.choixNom[k], D.exercices?.[k]), (k) => app.legendes?.etiquettes?.[k]), cancelled]);
+    const ex = await Promise.race([pick(exBtn, (k) => dire(text.data.choixNom[k], D.exercices?.[k])), cancelled]);
     if (ex === CANCEL) return done();
     clear();
     // 2. le niveau, la famille ou la leçon
@@ -122,7 +120,7 @@ export async function choose(app, o) {
       const b = spriteBox(app, { x: x - W / 2, y: y - H / 2, w: W, h: H, cls: "bubble choix-tuile", label: `${ex} ${it.key}`, paint: (ctx, px) => {
         sprites.draw(ctx, it.sprite, 0, W / 2, H / 2);
         ctx.setTransform(px, 0, 0, px, 0, 0);
-        if (sel.key === String(it.key)) R.drawSelectTile(ctx, W / 2, H / 2, W - 12, H - 12);
+        if (sel.key === String(it.key)) R.drawSelectTile(ctx, W / 2, H / 2, W, H, TILE.r); // (point 8 : la forme de la tuile)
         if (it.valide) { ctx.setTransform(1, 0, 0, 1, 0, 0); const q = sprites.frame("etoile.doree", 0), k = 0.42; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (W - 24) * px + q.dx * k, 24 * px + q.dy * k, q.w * k, q.h * k); }
       } });
       b.dataset.key = String(it.key); b.dataset.conseille = it.conseille ? "1" : ""; b.dataset.valide = it.valide ? "1" : ""; els.push(b); return b;
@@ -133,7 +131,7 @@ export async function choose(app, o) {
     voice.say(text.data.choixNiveau, { instruction: true });
     const name = (k) => dire(ex === "ligne" ? text.data.choixLigne[k] : ex === "additions" ? text.data.choixFamille[k] : ex === "calcul" ? text.data.choixCalcul[k] : ex === "multiplication" ? text.data.choixMult[k] : ex === "etal" ? text.data.choixEtal[k] : text.data.choixVoiliers[k], D[ex]?.[k]);
     const backP = new Promise((res) => onBrief(app, back, () => { pop(back); res(null); }, "retourExercices"));
-    const key = await Promise.race([pick(tiles, name, (k) => tileLabel(app.legendes, ex, k)), backP, cancelled]);
+    const key = await Promise.race([pick(tiles, name), backP, cancelled]);
     if (key === CANCEL) return done();
     clear();
     if (key === null) continue;

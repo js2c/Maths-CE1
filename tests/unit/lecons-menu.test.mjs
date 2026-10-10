@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { END, exerciseOf, lessonNumber, MENU, menuLayout, TABLE, TABLE_PLACES, tableAid, tableHit, tileLabel } from "../../app/js/session/lessons.js";
+import { END, exerciseOf, lessonNumber, MENU, menuLayout, TABLE, TABLE_PLACES, tableAid, tableHit } from "../../app/js/session/lessons.js";
 import { aidFor } from "../../app/js/modules/facts/facts.js";
 import { LESSON_OF_LEVEL } from "../../app/js/modules/numberline/runner.js";
 import { BOUCHE, MASCOTTE } from "../../app/js/engine/bulle.js";
@@ -24,8 +24,8 @@ test("menu : les dix-huit leçons (lot « Sommes jusqu'à 30 » : L11 et L12 ; l
   // les deux tables : dans la rangée de la multiplication, à droite de ses deux leçons (tablesPlace : rangée 4, colonnes 4 et 5)
   const last = L.filter((x) => x.y === L.find((y) => y.id === "L13").y).map((x) => x.id ?? x.ex); assert.deepEqual(last, ["multiplication", "L13", "L14", "addition", "multiplication"]);
   // chaque leçon a son nom dit au toucher, sa ligne de légende et son numéro
-  for (const id of ids) { assert.ok(textes.choixLeconNom[id], id); assert.ok(tileLabel(legendes, id)?.startsWith(`${lessonNumber(id)} · `), id); }
-  assert.ok(tileLabel(legendes, "+").startsWith("+ · ")); assert.ok(tileLabel(legendes, "×").startsWith("× · ")); assert.equal(lessonNumber("L10"), 10);
+  for (const id of ids) { assert.ok(textes.choixLeconNom[id], id); assert.ok(legendes.lecons.some((r) => r.n === id), id); }
+  assert.ok(legendes.lecons.some((r) => r.n === "+") && legendes.lecons.some((r) => r.n === "×")); assert.equal(lessonNumber("L10"), 10);
 });
 
 test("menu : les tuiles tiennent dans la scène, ne se chevauchent pas, évitent la bulle sous la tête et le petit livre", () => {

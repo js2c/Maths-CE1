@@ -180,9 +180,16 @@ export const drawTileRing = (ctx: CanvasRenderingContext2D, cx: number, cy: numb
 // (lot « Correctifs de la tablette ») LA TUILE SÉLECTIONNÉE au premier toucher (choisir en deux touchers) : une bordure épaisse
 // corail cernée d'encre, bien distincte du halo doré du niveau conseillé ; ronde pour les bulles des exercices
 export const SELECT = "#ff6a3d";
-export const drawSelectTile = (ctx: CanvasRenderingContext2D, cx: number, cy: number, w: number, h: number, r = 24) => drawTileRing(ctx, cx, cy, w, h, r, SELECT, 9);
-export const drawSelectRound = (ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number) => {
-  const g = shim(ctx), pts = blob(cx, cy, r, r, 77, 0.02, 20);
+// (lot « Correctifs : passage de l'échauffement aux voiliers », point 8 : l'entourage suit exactement la tuile. `w`, `h`, `r` :
+// la taille et le rayon des coins DE LA TUILE ; l'entourage est le même rectangle arrondi, rentré de `dans` (6 px : le trait
+// d'encre de 12 px couvre alors le bord de la tuile, de 0 à 12 px), avec le rayon rentré d'autant : concentrique, à distance
+// égale du bord partout, angles compris. Avant : un rayon de 24 px fixe, plus rond que la tuile (22 px, rentré de 6 : 16),
+// qui s'écartait du bord dans les angles.)
+export const drawSelectTile = (ctx: CanvasRenderingContext2D, cx: number, cy: number, w: number, h: number, r = 22, dans = 6) => drawTileRing(ctx, cx, cy, w - 2 * dans, h - 2 * dans, Math.max(3, r - dans), SELECT, 9);
+// (point 8 : la bulle d'un exercice est un ovale tremblé, `blob` de graine 300 + i (sea/decor.ts, drawAnswerBubble) : l'entourage
+// reprend la même forme, agrandie (la graine de la bulle, `graine`), donc à distance régulière de son bord)
+export const drawSelectRound = (ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number, graine = 77) => {
+  const g = shim(ctx), pts = blob(cx, cy, r, r, graine, 0.02, 20);
   ink(g, pts, INK, { w: 12, closed: true, shadow: 0, seed: 81 }, 0.9);
   ink(g, pts, SELECT, { w: 9, closed: true, shadow: 0.2, light: [-0.55, -0.83], seed: 82 });
 };

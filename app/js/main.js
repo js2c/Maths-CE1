@@ -54,6 +54,7 @@ import { clock } from "./engine/clock.js";
 import { onBrief, pop, skipKey } from "./engine/ui.js";
 import { ParentSpace, parentLogo } from "./parent/parent.js";
 import { Demarrage } from "./session/demarrage.js";
+import { fermerTout, Portee } from "./engine/portee.js";
 
 // les vidéos de la mascotte (engine/mascotte.js, CLIPS) : autant de pas dans la barre de chargement
 const MASCOTTE_VIDEOS = 17;
@@ -140,7 +141,7 @@ addEventListener("error", (ev) => journal({ type: "erreur de page", message: ev.
 addEventListener("unhandledrejection", (ev) => journal({ type: "erreur de page", message: String(ev.reason?.message ?? ev.reason), pile: ev.reason?.stack?.split("\n").slice(0, 4).join(" | ") ?? null }));
 const rewards = await new Rewards(store, cartes, calendrier).load();
 if (P.get("etoiles")) { rewards.st.total = Number(P.get("etoiles")); await rewards.save(); } // tests : un trésor de départ
-const app = { stage, sprites, ocean, lagon, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, legendes, line: new LineView(stage), bulle, fleche };
+const app = { stage, sprites, ocean, lagon, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, legendes, line: new LineView(stage), bulle, fleche, portees: new Set() };
 // la vitesse des animations des exemples guidés et des corrections (1 : la vitesse d'origine ; la voix garde son débit)
 app.vitesse = seance.vitesseAnimations ?? 1;
 app.toucher = seance.toucher ?? {}; // (lot 3 bis, A5 : le double toucher)
@@ -221,13 +222,26 @@ const handlers = {
     if (seance.selecteur?.actif) await session.setCran(P.get("cran") ?? await chooseCran(app, { allowed: allowedCrans(await store.setting("cransAutorises")), attenteS: seance.selecteur.attenteS }));
   },
   // échauffement : faits d'addition dus (familles 1 et 2 au lot 1), précédés des questions du temps de base
+  // (lot « Correctifs : passage de l'échauffement aux voiliers », point 1) l'échauffement a sa PORTÉE (engine/portee.js) : quelle
+  // que soit la façon dont il finit (fin normale, passé, ou abandonné : pause, puis un autre exercice choisi), son bouton
+  // « passer l'échauffement », sa coche et leur minuterie sont retirés, le pavé, le coquillage et « je ne sais pas » rangés.
+  // Avant, un échauffement abandonné laissait son bouton à l'écran : touché plus tard (pendant les voiliers), il faisait
+  // repartir la séance abandonnée, dont la notion du jour (les additions : pavé, coquillage, bernard-l'ermite) s'affichait
+  // par-dessus (capture 01 du parent).
   echauffement: async (ctx) => {
-    const screen = (app.facts ??= new FactsScreen(app, module2)), warmup = await new Warmup({ store, content: module2, rnd, seance: ctx.session.id, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load();
-    const step = { ...ctx.step, ...(P.get("faits") ? { questions: [Number(P.get("faits")), Number(P.get("faits"))] } : {}) };
-    app.warmup = warmup;
-    // lot 3 ter (T1) : le bouton « passer l'échauffement », présent pendant tout l'échauffement, confirmé par la coche
-    const skip = (onSkip) => warmupSkipKey(onSkip);
-    await runWarmup({ ...ctx, step, warmup, screen, rnd, skip, intro: async (skipped) => { await voice.say(text.pick("echauffement")); if (!warmup.base.mesures.length && !skipped()) await voice.say(text.data.pave); } });
+    const portee = new Portee("échauffement", app.portees);
+    let fini = false;
+    try {
+      const screen = (app.facts ??= new FactsScreen(app, module2)), warmup = await new Warmup({ store, content: module2, rnd, seance: ctx.session.id, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load();
+      portee.fin(() => { if (!fini) screen.abandon(); screen.leave(); if (app.warmup === warmup) app.warmup = null; });
+      const step = { ...ctx.step, ...(P.get("faits") ? { questions: [Number(P.get("faits")), Number(P.get("faits"))] } : {}) };
+      app.warmup = warmup;
+      // lot 3 ter (T1) : le bouton « passer l'échauffement », présent pendant tout l'échauffement, confirmé par la coche (et
+      // sans effet une fois l'échauffement fermé ou la séance interrompue)
+      const skip = (onSkip) => portee.el(warmupSkipKey(() => { if (!portee.fermee && !ctx.session.stopped) onSkip(); }));
+      await runWarmup({ ...ctx, step, warmup, screen, rnd, skip, intro: async (skipped) => { await voice.say(text.pick("echauffement")); if (!warmup.base.mesures.length && !skipped()) await voice.say(text.data.pave); } });
+      fini = true;
+    } finally { portee.fermer(); }
   },
   notion: async (ctx) => {
     frieze.notionIcon(ctx.session.rec.module);
@@ -388,7 +402,7 @@ function warmupSkipKey(onSkip) {
   onBrief(app, key, () => ws.tap(), "passerEchauffement");
   onBrief(app, check, () => { pop(check); ws.check(); }, "ouiPasserEchauffement");
   app.warmupSkip = ws;
-  return { remove() { ws.stop(); key.remove(); check.remove(); if (app.warmupSkip === ws) app.warmupSkip = null; } };
+  return { remove() { ws.stop(); key.remove(); check.remove(); stage.root.classList.remove("attente-passer"); app.warmupPending = false; if (app.warmupSkip === ws) app.warmupSkip = null; } };
 }
 // pour les mesures : ?sans=echauffement (ou une autre étape) la saute
 for (const id of (P.get("sans") ?? "").split(",").filter(Boolean)) delete handlers[id];
@@ -510,6 +524,8 @@ async function runSession(choix = null) {
   const defi = seance.etapes.find((e) => e.id === "defi");
   frieze.only([...sans, ...(defi && handlers.defi && !(await challengeReady(store, defi)) ? ["defi"] : [])]);
   await session.run();
+  // (une séance interrompue dont l'étape abandonnée s'est réveillée : ce n'est plus elle qui mène l'écran)
+  if (session.stopped) return;
   mode = null; frieze.show(false); homeKey.style.visibility = "hidden";
   sound.stopMusic();
   showHome({ done: true, first: true });
@@ -678,9 +694,13 @@ function sandbox() {
 }
 // l'activité en cours est abandonnée pour de bon (engine/clock.js) et la scène rangée
 function abandonActivity() {
+  // (lot « Correctifs : passage de l'échauffement aux voiliers », point 1) les portées des étapes en cours sont fermées : tout ce
+  // qu'elles ont posé ou lancé est retiré (engine/portee.js)
+  fermerTout(app.portees);
   clock.abandon(); voice.abandon(); bulle.cacher(); fleche.cacher(); ocean.mascotte.release(); ocean.mascotte.ambiance("pause");
   app.choiceClear?.(); app.choiceClear = null; if (app.facts) app.facts.notion = false; app.calc?.fishDone(); // (lot 3 : l'écran « choisir », les additions libres, le poisson du mur)
   app.screen?.leave(); app.facts?.leave(); app.dictation?.hide?.(); lessons.abandon(); app.voiliers?.leave(); app.etal?.leave();
+  if (app.facts) { app.calc?.leave(); app.mult?.leave(); } // (lot « Correctifs : passage… » : leurs calques d'aide, comme à la fin de leur notion du jour)
   // (correctif du 28 septembre 2026) le défi record quitté en cours : sa bulle-sablier et ses perles restaient à l'écran
   if (app.challenge) { app.challenge.remove(); app.challenge = null; sprites.unload("defi"); }
   for (const s of [app.screen, app.facts]) if (s) { s.resolve = null; s.locked = true; }

@@ -29,11 +29,13 @@ import { Module5Runner } from "../../app/js/modules/mult/runner.js";
 import { classifyMult, multAnswer, multKey, multQuestion } from "../../app/js/modules/mult/mult.js";
 import { MultScreen } from "../../app/js/modules/mult/screen.js";
 import { checkSequence } from "../../app/js/modules/variete.js";
+import { Module6Runner, soucoupeTexte } from "../../app/js/modules/etal/runner.js";
+import { juger, montantDit, montantEcrit, solution } from "../../app/js/modules/etal/etal.js";
 import { runChallenge } from "../../app/js/modules/facts/challenge.js";
 
 const ROOT = new URL("../../", import.meta.url).pathname;
 const load = (f) => JSON.parse(readFileSync(join(ROOT, "app/content", f), "utf8"));
-const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), module3 = load("module3.json"), module4 = load("module4.json"), module5 = load("module5.json"), cartes = load("cartes.json"), calendrier = load("calendrier.json"), T = load("textes.json"), lecons = load("lecons.json");
+const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), module3 = load("module3.json"), module4 = load("module4.json"), module5 = load("module5.json"), module6 = load("module6.json"), cartes = load("cartes.json"), calendrier = load("calendrier.json"), T = load("textes.json"), lecons = load("lecons.json");
 const OUT = join(ROOT, process.env.RECETTE_OUT ?? "tests/recette-fonctionnelle/out", "B-sequences");
 mkdirSync(OUT, { recursive: true });
 // --test (lot 3 bis, docs/SPEC-LOT3BIS.md, §0) : rien n'est écrit ; les quatre règles de la réponse qui varie sont vérifiées
@@ -228,6 +230,34 @@ async function uneSeance({ base, choix, cran, comp }) {
           } };
           await runNotion({ ...ctx, step: { ...ctx.step, ...(ctx.step.module4 ?? {}) }, runner, screen: scr, rnd: R, lesson }); cur = null; return;
         }
+        // lot « L'étal du pêcheur » : un achat par question ; la « réponse » est le prix (au niveau 1, la valeur à poser ; au
+        // niveau 7, ce que le pêcheur rend) ; deux essais (compléter, ou valider après qu'il a rendu ce qui était en trop)
+        if (m === 6) {
+          const runner = wrapRunner(await new Module6Runner({ store, content: module6, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, choix: ctx.session.choix?.module === 6 ? ctx.session.choix.niveau : null }).load());
+          let dernier = null;
+          const P = (n) => T.etalProduit[n], M = (c) => montantDit(T, c);
+          const scr = { ask: async (q) => {
+            const cfg = module6.niveaux[q.niveau - 1], k = `${q.type}${q.niveau >= 9}`, cons = q.premier || dernier !== k ? `${q.niveau >= 9 ? T.etalConsigne.centimes : T.etalConsigne[q.type]} ` : ""; dernier = k;
+            const phrase = q.type === "poser" ? T.etalPoser[q.valeur] : q.type === "deux" ? `${fill(T.etalPaire, { a: module6.articles[q.produits[0]], b: module6.articles[q.produits[1]] })} ${P(q.produits[0]).nom} ${M(q.prixProduits[0])} ${P(q.produits[1]).nom} ${M(q.prixProduits[1])} ${T.etalPaieLesDeux}` : `${P(q.produits[0]).achete} ${P(q.produits[0]).coute} ${M(q.prix)}${q.type === "rendre" ? ` ${T.etalRendre[q.billet]}` : ""}`;
+            const att = q.type === "poser" ? q.valeur : q.type === "rendre" ? q.billet - q.prix : q.prix, sol = solution(cfg, q.prix ?? 0, q.portefeuille, q.valeur) ?? [];
+            const forme = `${q.type === "poser" ? `poser ${montantEcrit(q.valeur)}` : q.type === "rendre" ? `${montantEcrit(q.prix)} payés avec ${montantEcrit(q.billet)}` : `${q.produits.join(" et ")} à ${montantEcrit(q.prix)}`} (niveau ${q.niveau}${q.revient ? ", revient" : ""}) · portefeuille ${q.portefeuille.map(montantEcrit).join(" ")}`;
+            if (q.guide) { row({ cle: `exemple:${att}`, forme: `EXEMPLE GUIDÉ : ${forme}`, voix: `${cons}${phrase} ${T.etalExemple}`, attendue: "", donnee: `(le pêcheur paie : ${soucoupeTexte(sol)})` }); add(D.demo + 8000); return { q, ok: true, ms: 0, listens: 1 }; }
+            const faux = C.hasard || R() < C.erreur, nsp = faux && R() < C.nsp;
+            let ok = !faux, corrigee = false, code = null, donnee;
+            if (nsp) { code = "NSP"; donnee = "je ne sais pas"; }
+            else if (q.type === "rendre") { const v = ok ? att / 100 : q.prix / 100; donnee = v; if (!ok) code = "M5"; }
+            else if (!ok) { const vs = q.type === "poser" ? [q.portefeuille.find((v) => v !== q.valeur)] : sol.length > 1 ? sol.slice(0, -1) : [Math.min(...q.portefeuille)]; const j = juger(cfg, q, vs); code = j.code ?? "M1"; donnee = soucoupeTexte(vs); corrigee = ["M1", "M2", "M3"].includes(code) && R() < 0.6; }
+            else donnee = soucoupeTexte(sol);
+            const x = row({ cle: runner.cand(q).cle, forme, voix: `${cons}${phrase}`, attendue: att, donnee });
+            add(D.consigne + 4000 + C.ms * 2 + (ok ? D.bravo + 3000 : corrigee ? D.correction : D.correction + 6000));
+            if (code === "M1") x.suite.push(`« ${T.etalManque} ${M(Math.max(10, (q.prix ?? 0) - sol.slice(0, -1).reduce((a, b) => a + b, 0)))} ${T.etalComplete} »`);
+            if (code === "M5") x.suite.push(`« ${T.etalRendPrix} » puis la ligne : « ${q.prix / 100} … ${q.billet / 100} », « ${T.etalCaFait} ${M(att)} »`);
+            if (code === "M7") x.suite.push(`« ${T.etalCestUn[q.portefeuille.find((v) => v !== q.valeur)]} » puis « ${T.etalCestCeluiLa[q.valeur]} »`);
+            if (nsp) x.suite.push(`« ${T.erreur.NSP} » « ${T.etalCorrection} » ${soucoupeTexte(sol)}`);
+            return { q, ok, corrigee, code, nsp, soucoupe: [], ms: C.ms * 2, listens: 1, essais: ok ? 1 : 2 };
+          } };
+          await runNotion({ ...ctx, step: { ...ctx.step, ...(ctx.step.module6 ?? {}) }, runner, screen: scr, rnd: R, lesson }); cur = null; return;
+        }
         // lot « Multiplication » : la consigne et la correction de l'écran lui-même (mult/screen.js)
         if (m === 5) {
           const baseMs5 = median((await store.setting("tempsDeBase"))?.mesures ?? []) ?? module2.base.defautS * 1000;
@@ -326,6 +356,7 @@ const EXOS = [
   ...module2.familles.map((f) => ({ id: `additions-famille-${f.id}`, choix: { module: 2, famille: f.id }, nom: `Additions, famille ${f.id} (${f.nom})` })),
   ...module3.niveaux.map((c) => ({ id: `calcul-${c.niveau}`, choix: { module: 3, niveau: c.niveau }, nom: `Calcul rapide, niveau ${c.niveau} (${c.type}, ${c.support})` })),
   ...module5.niveaux.map((c) => ({ id: `multiplication-${c.niveau}`, choix: { module: 5, niveau: c.niveau }, nom: `Multiplication, niveau ${c.niveau} (${c.type}${c.table ? ` ${c.table}` : ""})` })),
+  ...module6.niveaux.map((c) => ({ id: `etal-${String(c.niveau).padStart(2, "0")}`, choix: { module: 6, niveau: c.niveau }, nom: `Étal du pêcheur, niveau ${c.niveau} (${c.type})`, passages: c.type === "poser" ? c.valeurs.length : undefined })),
   ...module4.niveaux.map((c) => ({ id: `voiliers-${c.niveau}`, choix: { module: 4, niveau: c.niveau }, nom: `Voiliers, niveau ${c.niveau} (${c.bouees} bouées, ${c.ecart}, ${c.place})`, passages: c.ecart === "double" ? 12 : c.bouees + 1 })),
 ].filter((e) => !only || (e.choix.module === only[0] && (only[1] == null || (e.choix.niveau ?? e.choix.famille) === only[1]))); // (--seulement 4 : tout le module 4)
 if (TEST) {

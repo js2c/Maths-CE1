@@ -33,4 +33,10 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
 
-(Aucune session en cours.)
+### Reprise du lot « Correctifs : passage de l'échauffement aux voiliers »
+
+- Branche `claude/practical-franklin-gr2y0x`, partie de `main` (167eec50, étal fusionné), demande de fusion en brouillon « Lot : Correctifs : passage de l'échauffement aux voiliers ».
+- Fiche 8 de `docs/LOTS.md`, d'un seul tenant (choix de la session dans `docs/JOURNAL-CONCEPTION.md`).
+- Fait : (rien encore)
+- Reste : points 1 à 14 de la fiche, puis la recette.
+

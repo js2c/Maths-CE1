@@ -77,7 +77,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     await shot(page, "03-menu"); await note(page, "accueil, puis la bulle « les leçons »");
     const t7 = await hold(page, '.lecons-tuile[data-key="L7"]'); check(t7.label === "L7", `${T} · appui long sur la tuile 7 : son étiquette`);
     if (big) await shot(page, "04-menu-etiquette");
-    await t7.release(); check(!(await page.evaluate(() => window.__app.lessons.p ?? window.__app.lessons.p2?.p ?? null)) && (await page.locator(".lecons-tuile").count()) === 16, `${T} · l'appui long ne lance pas la leçon`);
+    await t7.release(); check(!(await page.evaluate(() => window.__app.lessons.p ?? window.__app.lessons.p2?.p ?? null)) && (await page.locator(".lecons-tuile").count()) === 20, `${T} · l'appui long ne lance pas la leçon`);
     await tap(page, ".legende", 600);
     const rows = await page.locator(".legende-ligne").count(); check(rows === 20, `${T} · la légende du parent : une ligne par leçon et une par table (${rows})`);
     await shot(page, "05-legende");

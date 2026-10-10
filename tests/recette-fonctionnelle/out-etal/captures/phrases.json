@@ -1,0 +1,690 @@
+[
+ {
+  "capture": "01-choisir-exercices-1280.png",
+  "dit": [
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "L'étal du pêcheur. Tu fais les courses chez le pêcheur, avec des pièces et des billets."
+  ],
+  "bulle": "L'étal du pêcheur. Tu fais les courses chez le pêcheur, avec des pièces et des billets."
+ },
+ {
+  "capture": "02-choisir-niveaux-1280.png",
+  "dit": [
+   "Choisis ! Touche une image : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Les centimes : des pièces de cinquante centimes. Deux pièces de cinquante centimes font un euro."
+  ],
+  "bulle": "Les centimes : des pièces de cinquante centimes. Deux pièces de cinquante centimes font un euro."
+ },
+ {
+  "capture": "03-exemple-guide-1280.png",
+  "dit": [
+   "Bienvenue à bord ! On s'entraîne ensemble ?",
+   "Bonjour, bonjour ! Regarde ma pêche du jour.",
+   "Ouvre ton portefeuille, et paie juste le prix : pose l'argent dans la soucoupe, puis touche la coche. Achète la sole. Elle coûte… 14 euros.",
+   "Regarde bien : cette fois, je paie à ta place, en comptant.",
+   "10",
+   "12"
+  ],
+  "bulle": "12"
+ },
+ {
+  "capture": "04-beau-temps-portefeuille-ferme-1280.png",
+  "dit": [
+   "14 euros.",
+   "À ton tour !",
+   "Achète le maquereau. Il coûte… 19 euros."
+  ],
+  "bulle": "Achète le maquereau. Il coûte… 19 euros."
+ },
+ {
+  "capture": "05-portefeuille-ouvert-1280.png",
+  "dit": [],
+  "bulle": null
+ },
+ {
+  "capture": "06-argent-sorti-1280.png",
+  "dit": [],
+  "bulle": null
+ },
+ {
+  "capture": "07-paiement-juste-1280.png",
+  "dit": [],
+  "bulle": null
+ },
+ {
+  "capture": "08-compte-1280.png",
+  "dit": [
+   "10",
+   "15",
+   "17"
+  ],
+  "bulle": "17"
+ },
+ {
+  "capture": "09-pas-assez-1280.png",
+  "dit": [
+   "19 euros.",
+   "Merci beaucoup !",
+   "Achète les crevettes. Elles coûtent… 10 euros.",
+   "1 euro.",
+   "Il manque… 9 euros. Complète, puis touche la coche."
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "10-trop-1280.png",
+  "dit": [
+   "5",
+   "7",
+   "9",
+   "10 euros.",
+   "Merci !",
+   "Achète les moules. Elles coûtent… 6 euros.",
+   "5",
+   "6",
+   "7 euros.",
+   "Tu peux faire le compte juste. Je te rends ce qui est en trop."
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "11-correction-1280.png",
+  "dit": [
+   "Essaie encore, puis touche la coche.",
+   "10",
+   "15",
+   "20",
+   "21 euros.",
+   "Hmm, regardons ensemble.",
+   "Regarde, on peut payer comme ça.",
+   "5",
+   "6 euros."
+  ],
+  "bulle": "6 euros."
+ },
+ {
+  "capture": "12-je-ne-sais-pas-1280.png",
+  "dit": [
+   "Achète la seiche. Elle coûte… 16 euros.",
+   "Ce n'est pas grave, regardons ensemble.",
+   "Regarde, on peut payer comme ça.",
+   "10",
+   "15"
+  ],
+  "bulle": "15"
+ },
+ {
+  "capture": "13-pause-1280.png",
+  "dit": [
+   "16 euros.",
+   "Achète la dorade. Elle coûte… 15 euros."
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "14-reprise-1280.png",
+  "dit": [
+   "On continue ! Achète la dorade. Elle coûte… 15 euros."
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "15-mauvais-temps-1280.png",
+  "dit": [
+   "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+   "Regarde, quelqu'un vient te dire bonjour !",
+   "Bienvenue à mon étal ! Aujourd'hui, c'est toi qui fais les courses.",
+   "Avec ton portefeuille, tu ne peux pas payer juste. Donne assez, sans pièce de trop : je te rendrai la monnaie. Achète les huîtres. Elles coûtent… 6 euros."
+  ],
+  "bulle": "Avec ton portefeuille, tu ne peux pas payer juste. Donne assez, sans pièce de trop : je te rendrai la monnaie. Achète les huîtres. Elles coûtent… 6 euros."
+ },
+ {
+  "capture": "16-monnaie-rendue-1280.png",
+  "dit": [
+   "20 euros.",
+   "Merci beaucoup !",
+   "Je te rends la monnaie.",
+   "6",
+   "8"
+  ],
+  "bulle": "8"
+ },
+ {
+  "capture": "17-piece-de-trop-1280.png",
+  "dit": [
+   "10",
+   "20 euros.",
+   "Je te rends… 14 euros.",
+   "Achète la dorade. Elle coûte… 19 euros.",
+   "20",
+   "22 euros.",
+   "Celle-là, garde-la !",
+   "Essaie encore, puis touche la coche."
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "18-orage-arrive-1280.png",
+  "dit": [
+   "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+   "Bienvenue à mon étal ! Aujourd'hui, c'est toi qui fais les courses.",
+   "Ouvre ton portefeuille, et paie juste le prix : pose l'argent dans la soucoupe, puis touche la coche. Achète le bar. Il coûte… 4 euros.",
+   "2",
+   "4 euros.",
+   "C'est juste, merci !",
+   "Oh là là, voilà la pluie ! Je me mets à l'abri !",
+   "Achète le homard. Il coûte… 2 euros."
+  ],
+  "bulle": "Achète le homard. Il coûte… 2 euros."
+ },
+ {
+  "capture": "19-sous-la-pluie-1280.png",
+  "dit": [],
+  "bulle": null
+ },
+ {
+  "capture": "20-niveau7-pave-1280.png",
+  "dit": [
+   "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+   "Bonjour, bonjour ! Regarde ma pêche du jour.",
+   "Cette fois, c'est moi qui te rends la monnaie. Dis-moi combien : tape-le, puis touche la coche. Achète le bar. Il coûte… 5 euros. Tu me donnes un billet de 20 euros. Combien je te rends ?"
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "21-niveau7-juste-1280.png",
+  "dit": [
+   "Exactement !",
+   "Je te rends la monnaie.",
+   "5",
+   "10"
+  ],
+  "bulle": "10"
+ },
+ {
+  "capture": "22-niveau7-ligne-1280.png",
+  "dit": [
+   "20 euros.",
+   "Je te rends… 15 euros.",
+   "Achète les coquilles Saint-Jacques. Elles coûtent… 4 euros. Tu me donnes un billet de 20 euros. Combien je te rends ?",
+   "Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet.",
+   "4",
+   "20",
+   "Ça fait… 16 euros."
+  ],
+  "bulle": "Ça fait… 16 euros."
+ },
+ {
+  "capture": "23-niveau7-ligne-demblee-1280.png",
+  "dit": [
+   "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+   "Bonjour, bonjour ! Regarde ma pêche du jour.",
+   "Cette fois, c'est moi qui te rends la monnaie. Dis-moi combien : tape-le, puis touche la coche. Achète la sole. Elle coûte… 1 euro. Tu me donnes un billet de 20 euros. Combien je te rends ?"
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "24-deux-produits-1280.png",
+  "dit": [
+   "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+   "Bienvenue à mon étal ! Aujourd'hui, c'est toi qui fais les courses.",
+   "Tu achètes deux choses. Paie juste les deux ensemble, puis touche la coche. Achète les deux. Les moules coûtent… 2 euros. Le homard coûte… 7 euros. Paie les deux ensemble."
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "25-centimes-50-1280.png",
+  "dit": [
+   "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+   "Bienvenue à mon étal ! Aujourd'hui, c'est toi qui fais les courses.",
+   "Il y a des centimes ! Paie juste le prix, puis touche la coche. Achète les sardines. Elles coûtent… 10 euros.",
+   "5 euros.",
+   "7 euros.",
+   "9 euros.",
+   "10 euros."
+  ],
+  "bulle": "10 euros."
+ },
+ {
+  "capture": "26-centimes-1280.png",
+  "dit": [
+   "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+   "Bonjour, bonjour ! Regarde ma pêche du jour.",
+   "Il y a des centimes ! Paie juste le prix, puis touche la coche. Achète les coquilles Saint-Jacques. Elles coûtent… 4 euros 60.",
+   "2 euros.",
+   "4 euros.",
+   "4 euros 50.",
+   "4 euros 60."
+  ],
+  "bulle": "4 euros 60."
+ },
+ {
+  "capture": "27-niveau1-mauvaise-piece-1280.png",
+  "dit": [
+   "Bienvenue à bord ! On s'entraîne ensemble ?",
+   "Bonjour, bonjour ! Regarde ma pêche du jour.",
+   "Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose un billet de 5 euros.",
+   "Ça, c'est un billet de 50 euros.",
+   "Le billet de 5 euros, c'est celui-là."
+  ],
+  "bulle": "Le billet de 5 euros, c'est celui-là."
+ },
+ {
+  "capture": "28-lecon-L15-1280.png",
+  "dit": [
+   "Voici des pièces et des billets d'euros.",
+   "Une pièce de 2 euros…",
+   "… vaut autant que deux pièces de 1 euro."
+  ],
+  "bulle": "… vaut autant que deux pièces de 1 euro."
+ },
+ {
+  "capture": "28-lecon-L16-1280.png",
+  "dit": [
+   "Les sardines coûtent 17 euros. Voici ton portefeuille.",
+   "Pour payer juste, on commence par le plus gros : 10…",
+   "… 15…",
+   "… 16, 17 !"
+  ],
+  "bulle": "… 16, 17 !"
+ },
+ {
+  "capture": "28-lecon-L17-1280.png",
+  "dit": [
+   "Le bar coûte 13 euros. Tu donnes un billet de 20 euros : c'est trop.",
+   "Combien je te rends ? On compte à partir du prix : 13…",
+   "… jusqu'au billet que tu as donné : 20.",
+   "De 13 à 20, ça fait 7. Je te rends 7 euros."
+  ],
+  "bulle": "De 13 à 20, ça fait 7. Je te rends 7 euros."
+ },
+ {
+  "capture": "28-lecon-L18-1280.png",
+  "dit": [
+   "Voici des pièces de centimes. 100 centimes, ça fait 1 euro.",
+   "Deux pièces de 50 centimes font 1 euro.",
+   "Les moules coûtent 3 euros 50 : c'est 3 euros et 50 centimes."
+  ],
+  "bulle": "Les moules coûtent 3 euros 50 : c'est 3 euros et 50 centimes."
+ },
+ {
+  "capture": "29-menu-lecons-1280.png",
+  "dit": [
+   "Les leçons.",
+   "Quelle leçon veux-tu regarder ? Touche une image : je te dis ce que c'est. Touche-la encore pour la regarder.",
+   "Rendre la monnaie. On compte à partir du prix, jusqu'à ce qu'on a donné."
+  ],
+  "bulle": "Rendre la monnaie. On compte à partir du prix, jusqu'à ce qu'on a donné."
+ },
+ {
+  "capture": "01-choisir-exercices-1920.png",
+  "dit": [
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "L'étal du pêcheur. Tu fais les courses chez le pêcheur, avec des pièces et des billets."
+  ],
+  "bulle": "L'étal du pêcheur. Tu fais les courses chez le pêcheur, avec des pièces et des billets."
+ },
+ {
+  "capture": "02-choisir-niveaux-1920.png",
+  "dit": [
+   "Choisis ! Touche une image : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Les centimes : des pièces de cinquante centimes. Deux pièces de cinquante centimes font un euro."
+  ],
+  "bulle": "Les centimes : des pièces de cinquante centimes. Deux pièces de cinquante centimes font un euro."
+ },
+ {
+  "capture": "03-exemple-guide-1920.png",
+  "dit": [
+   "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+   "Bonjour, bonjour ! Regarde ma pêche du jour.",
+   "Ouvre ton portefeuille, et paie juste le prix : pose l'argent dans la soucoupe, puis touche la coche. Achète la seiche. Elle coûte… 6 euros.",
+   "Regarde bien : cette fois, je paie à ta place, en comptant.",
+   "5",
+   "6 euros."
+  ],
+  "bulle": "6 euros."
+ },
+ {
+  "capture": "04-beau-temps-portefeuille-ferme-1920.png",
+  "dit": [
+   "À ton tour !",
+   "Achète le tourteau. Il coûte… 15 euros."
+  ],
+  "bulle": "Achète le tourteau. Il coûte… 15 euros."
+ },
+ {
+  "capture": "05-portefeuille-ouvert-1920.png",
+  "dit": [],
+  "bulle": null
+ },
+ {
+  "capture": "06-argent-sorti-1920.png",
+  "dit": [],
+  "bulle": null
+ },
+ {
+  "capture": "07-paiement-juste-1920.png",
+  "dit": [],
+  "bulle": null
+ },
+ {
+  "capture": "08-compte-1920.png",
+  "dit": [
+   "10",
+   "15 euros.",
+   "Merci !"
+  ],
+  "bulle": "Merci !"
+ },
+ {
+  "capture": "09-pas-assez-1920.png",
+  "dit": [
+   "Achète les crevettes. Elles coûtent… 17 euros.",
+   "10",
+   "15 euros.",
+   "Il manque… 2 euros. Complète, puis touche la coche."
+  ],
+  "bulle": "Il manque… 2 euros. Complète, puis touche la coche."
+ },
+ {
+  "capture": "10-trop-1920.png",
+  "dit": [
+   "10",
+   "15",
+   "17 euros.",
+   "Merci beaucoup !",
+   "Achète le maquereau. Il coûte… 12 euros.",
+   "10",
+   "12",
+   "13 euros.",
+   "Tu peux faire le compte juste. Je te rends ce qui est en trop."
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "11-correction-1920.png",
+  "dit": [
+   "Essaie encore, puis touche la coche.",
+   "10",
+   "15",
+   "20",
+   "22 euros.",
+   "Hmm, regardons ensemble.",
+   "Regarde, on peut payer comme ça.",
+   "10",
+   "12 euros."
+  ],
+  "bulle": "12 euros."
+ },
+ {
+  "capture": "12-je-ne-sais-pas-1920.png",
+  "dit": [
+   "Achète les moules. Elles coûtent… 9 euros.",
+   "Ce n'est pas grave, regardons ensemble.",
+   "Regarde, on peut payer comme ça.",
+   "5",
+   "7"
+  ],
+  "bulle": "7"
+ },
+ {
+  "capture": "13-pause-1920.png",
+  "dit": [
+   "9 euros.",
+   "Achète les coquilles Saint-Jacques. Elles coûtent… 15 euros."
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "14-reprise-1920.png",
+  "dit": [
+   "On continue ! Achète les coquilles Saint-Jacques. Elles coûtent… 15 euros."
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "15-mauvais-temps-1920.png",
+  "dit": [
+   "Bienvenue à bord ! On s'entraîne ensemble ?",
+   "Bienvenue à mon étal ! Aujourd'hui, c'est toi qui fais les courses.",
+   "Avec ton portefeuille, tu ne peux pas payer juste. Donne assez, sans pièce de trop : je te rendrai la monnaie. Achète le homard. Il coûte… 12 euros."
+  ],
+  "bulle": "Avec ton portefeuille, tu ne peux pas payer juste. Donne assez, sans pièce de trop : je te rendrai la monnaie. Achète le homard. Il coûte… 12 euros."
+ },
+ {
+  "capture": "16-monnaie-rendue-1920.png",
+  "dit": [
+   "20 euros.",
+   "Merci beaucoup !",
+   "Je te rends la monnaie.",
+   "12",
+   "13",
+   "15"
+  ],
+  "bulle": "15"
+ },
+ {
+  "capture": "17-piece-de-trop-1920.png",
+  "dit": [
+   "20 euros.",
+   "Je te rends… 8 euros.",
+   "Achète les moules. Elles coûtent… 18 euros.",
+   "20",
+   "22 euros.",
+   "Celle-là, garde-la !",
+   "Essaie encore, puis touche la coche."
+  ],
+  "bulle": "Essaie encore, puis touche la coche."
+ },
+ {
+  "capture": "18-orage-arrive-1920.png",
+  "dit": [
+   "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+   "Bonjour, bonjour ! Regarde ma pêche du jour.",
+   "Ouvre ton portefeuille, et paie juste le prix : pose l'argent dans la soucoupe, puis touche la coche. Achète les moules. Elles coûtent… 10 euros.",
+   "2",
+   "4",
+   "6",
+   "8",
+   "9",
+   "10 euros.",
+   "C'est juste, merci !",
+   "Oh là là, voilà la pluie ! Je me mets à l'abri !",
+   "Achète les huîtres. Elles coûtent… 3 euros."
+  ],
+  "bulle": "Achète les huîtres. Elles coûtent… 3 euros."
+ },
+ {
+  "capture": "19-sous-la-pluie-1920.png",
+  "dit": [],
+  "bulle": null
+ },
+ {
+  "capture": "20-niveau7-pave-1920.png",
+  "dit": [
+   "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+   "Regarde, quelqu'un vient te dire bonjour !",
+   "Bonjour, bonjour ! Regarde ma pêche du jour.",
+   "Cette fois, c'est moi qui te rends la monnaie. Dis-moi combien : tape-le, puis touche la coche. Achète le homard. Il coûte… 11 euros. Tu me donnes un billet de 20 euros. Combien je te rends ?"
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "21-niveau7-juste-1920.png",
+  "dit": [
+   "Exactement !",
+   "Je te rends la monnaie.",
+   "11",
+   "13"
+  ],
+  "bulle": "13"
+ },
+ {
+  "capture": "22-niveau7-ligne-1920.png",
+  "dit": [
+   "15",
+   "20 euros.",
+   "Je te rends… 9 euros.",
+   "Achète les coquilles Saint-Jacques. Elles coûtent… 5 euros. Tu me donnes un billet de 10 euros. Combien je te rends ?",
+   "Hmm, regardons ensemble.",
+   "5",
+   "10",
+   "Ça fait… 5 euros."
+  ],
+  "bulle": "Ça fait… 5 euros."
+ },
+ {
+  "capture": "23-niveau7-ligne-demblee-1920.png",
+  "dit": [
+   "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+   "Regarde, quelqu'un vient te dire bonjour !",
+   "Bonjour, bonjour ! Regarde ma pêche du jour.",
+   "Cette fois, c'est moi qui te rends la monnaie. Dis-moi combien : tape-le, puis touche la coche. Achète les huîtres. Elles coûtent… 7 euros. Tu me donnes un billet de 20 euros. Combien je te rends ?"
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "24-deux-produits-1920.png",
+  "dit": [
+   "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+   "Bonjour, bonjour ! Regarde ma pêche du jour.",
+   "Tu achètes deux choses. Paie juste les deux ensemble, puis touche la coche. Achète les deux. La sole coûte… 14 euros. Les coquilles Saint-Jacques coûtent… 6 euros. Paie les deux ensemble."
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "25-centimes-50-1920.png",
+  "dit": [
+   "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+   "Regarde, quelqu'un vient te dire bonjour !",
+   "Bienvenue à mon étal ! Aujourd'hui, c'est toi qui fais les courses.",
+   "Il y a des centimes ! Paie juste le prix, puis touche la coche. Achète le maquereau. Il coûte… 2 euros.",
+   "2 euros."
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "26-centimes-1920.png",
+  "dit": [
+   "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+   "Bonjour, bonjour ! Regarde ma pêche du jour.",
+   "Il y a des centimes ! Paie juste le prix, puis touche la coche. Achète le maquereau. Il coûte… 2 euros 90.",
+   "2 euros.",
+   "2 euros 50.",
+   "2 euros 70.",
+   "2 euros 90."
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "27-niveau1-mauvaise-piece-1920.png",
+  "dit": [
+   "Bienvenue à bord ! On s'entraîne ensemble ?",
+   "Bienvenue à mon étal ! Aujourd'hui, c'est toi qui fais les courses.",
+   "Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose un billet de 10 euros.",
+   "Ça, c'est un billet de 50 euros.",
+   "Le billet de 10 euros, c'est celui-là."
+  ],
+  "bulle": "Le billet de 10 euros, c'est celui-là."
+ },
+ {
+  "capture": "28-lecon-L15-1920.png",
+  "dit": [
+   "Voici des pièces et des billets d'euros.",
+   "Une pièce de 2 euros…",
+   "… vaut autant que deux pièces de 1 euro."
+  ],
+  "bulle": "… vaut autant que deux pièces de 1 euro."
+ },
+ {
+  "capture": "28-lecon-L16-1920.png",
+  "dit": [
+   "Les sardines coûtent 17 euros. Voici ton portefeuille.",
+   "Pour payer juste, on commence par le plus gros : 10…",
+   "… 15…",
+   "… 16, 17 !",
+   "17 euros : c'est juste ! Il n'y a rien en trop, et il ne manque rien."
+  ],
+  "bulle": "17 euros : c'est juste ! Il n'y a rien en trop, et il ne manque rien."
+ },
+ {
+  "capture": "28-lecon-L17-1920.png",
+  "dit": [
+   "Le bar coûte 13 euros. Tu donnes un billet de 20 euros : c'est trop.",
+   "Combien je te rends ? On compte à partir du prix : 13…",
+   "… jusqu'au billet que tu as donné : 20.",
+   "De 13 à 20, ça fait 7. Je te rends 7 euros."
+  ],
+  "bulle": "De 13 à 20, ça fait 7. Je te rends 7 euros."
+ },
+ {
+  "capture": "28-lecon-L18-1920.png",
+  "dit": [
+   "Voici des pièces de centimes. 100 centimes, ça fait 1 euro.",
+   "Deux pièces de 50 centimes font 1 euro.",
+   "Les moules coûtent 3 euros 50 : c'est 3 euros et 50 centimes."
+  ],
+  "bulle": "Les moules coûtent 3 euros 50 : c'est 3 euros et 50 centimes."
+ },
+ {
+  "capture": "29-menu-lecons-1920.png",
+  "dit": [
+   "Les leçons.",
+   "Quelle leçon veux-tu regarder ? Touche une image : je te dis ce que c'est. Touche-la encore pour la regarder.",
+   "Rendre la monnaie. On compte à partir du prix, jusqu'à ce qu'on a donné."
+  ],
+  "bulle": "Rendre la monnaie. On compte à partir du prix, jusqu'à ce qu'on a donné."
+ },
+ {
+  "capture": "30-jouer-impose-1280.png",
+  "dit": [
+   "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+   "Regarde, quelqu'un vient te dire bonjour !",
+   "Bienvenue à mon étal ! Aujourd'hui, c'est toi qui fais les courses.",
+   "Ouvre ton portefeuille, et paie juste le prix : pose l'argent dans la soucoupe, puis touche la coche. Achète le bar. Il coûte… 4 euros."
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "31-parent-etal-1280.png",
+  "dit": [
+   "2",
+   "4",
+   "5 euros.",
+   "Tu peux faire le compte juste. Je te rends ce qui est en trop.",
+   "Essaie encore, puis touche la coche.",
+   "2",
+   "4 euros.",
+   "Merci beaucoup !",
+   "Achète les sardines. Elles coûtent… 9 euros."
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "32-parent-journal-1280.png",
+  "dit": [],
+  "bulle": null
+ },
+ {
+  "capture": "33-libre-quitte-1280.png",
+  "dit": [
+   "Tu veux encore jouer ? Choisis ! Ici, on s'entraîne pour le plaisir.",
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "L'étal du pêcheur. Tu fais les courses chez le pêcheur, avec des pièces et des billets.",
+   "Choisis ! Touche une image : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Paie juste, jusqu'à cinquante euros. Du plus gros au plus petit, en comptant.",
+   "Choisis ton niveau.",
+   "Plus facile.",
+   "Ouvre ton portefeuille, et paie juste le prix : pose l'argent dans la soucoupe, puis touche la coche. Achète la seiche. Elle coûte… 24 euros.",
+   "20 euros.",
+   "22 euros.",
+   "24 euros.",
+   "20",
+   "22",
+   "24 euros.",
+   "Merci beaucoup !",
+   "Achète les crevettes. Elles coûtent… 41 euros."
+  ],
+  "bulle": null
+ }
+]

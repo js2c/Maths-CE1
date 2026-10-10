@@ -145,6 +145,8 @@ const API = {
   },
   // les produits allumés reviennent à leur place, sans halo (ils restent posés à part jusqu'à la question suivante)
   eteindre() { souleves.forEach(s => s.el.classList.remove('allume')); },
+  // les produits posés à part, cachés (la ligne graduée du niveau 7 passe devant l'étal)
+  cacher(v) { souleves.forEach(s => { s.el.style.visibility = v ? 'hidden' : ''; }); },
   rallumer() { souleves.forEach(s => s.el.classList.add('allume')); },
   // le produit acheté est emballé : il glisse hors de l'étal, vers la fenêtre du pêcheur
   async emballer() { souleves.forEach(s => s.el.classList.add('emballe')); await attendre(900); souleves.forEach(s => { s.el.style.visibility = 'hidden'; }); },
@@ -207,6 +209,10 @@ const API = {
   // ---- la vitesse des gestes (corrections, « passer »)
   vitesse(k) { VIT.k = k; },
   // ---- pour les parcours de test
+  // les boîtes de l'argent sorti et posé (px de la scène) : ce que l'enfant touche (la bulle ne les couvre jamais)
+  boites: () => items.filter(i => (i.lieu === 'sortie' || i.lieu === 'soucoupe') && i.op > 0).map(i => { const w = LARG[i.v] * i.sc, h = hauteur(i) * i.sc; return [i.x - w / 2 - 6, i.y - h / 2 - 6, i.x + w / 2 + 6, i.y + h / 2 + 6]; }),
+  // pour les parcours de test : la boîte à l'écran de chaque objet
+  rects: () => items.map(i => { const r = i.el.getBoundingClientRect(); return { v: i.v, lieu: i.lieu, x: r.x + r.width / 2, y: r.y + r.height / 2 }; }),
   etat: () => ({ pf: pfEtat, meteo, meteoCible, qualite, items: items.map(i => ({ v: i.v, lieu: i.lieu })), soucoupe: API.soucoupe(), allumes: souleves.map(s => peche[s.i]?.n), peche: API.peche(), verrou: VERROU }),
   stop() { VIVANT = false; cancelAnimationFrame(RAF); retirerSouleves(); },
 };

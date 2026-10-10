@@ -36,12 +36,12 @@ import { compteDit, comptes, enTrop, juger, jugerRendu, montantDit, PRODUITS, re
 export const COCHE = [158, 700, 160], AIDE = [150, 528, 130], NSP = [1062, 192, 132];
 // les zones que la bulle de la mascotte ne couvre jamais (la caisse : le portefeuille, ouvert ou fermé, la soucoupe ; l'argent
 // sorti ; le pavé du niveau 7) et celles qu'elle évite si possible (la glace et ses produits)
-export const ZONES = { soucoupe: [276, 556, 660, 800], ferme: [960, 580, 1240, 770], ouvert: [650, 452, 1250, 780], sorti: [300, 250, 1260, 470], pave: [650, 440, 1250, 780] };
+export const ZONES = { soucoupe: [276, 556, 660, 800], ferme: [960, 580, 1240, 770], ouvert: [650, 452, 1250, 780], pave: [650, 440, 1250, 780] };
 export const GLACE = [300, 318, 1280, 505];
 // le pavé du niveau 7 : deux rangées de cinq touches, à la place du portefeuille ; l'ardoise du nombre tapé au-dessus
 const KEY = 104, PAD_X = [716, 822, 928, 1034, 1140], PAD_Y = [612, 722], PAD_SLATE = [930, 512];
 // la ligne graduée du niveau 7 (correction, aide), sur une plaque claire posée sur la glace
-export const LIGNE = { x0: 330, x1: 1170, y: 452 }, PLAQUE = [284, 352, 1216, 548];
+export const LIGNE = { x0: 330, x1: 1170, y: 452 }, PLAQUE = [284, 352, 1216, 584];
 const SKIPPED = Symbol("correction passée");
 
 export class EtalScreen {
@@ -57,7 +57,7 @@ export class EtalScreen {
     // (?meteo=orage|beau|arrive : tests et captures)
     const forcee = new URLSearchParams(location.search).get("meteo");
     const orage = forcee ? forcee === "orage" : rnd() * 100 < Rg.orageDepart;
-    this.orageA = orage ? null : forcee === "arrive" ? 1000 : forcee === "beau" ? null : rnd() * 100 < Rg.orageProba ? 60000 * (Rg.orageMin + rnd() * Math.max(0, Rg.orageMax - Rg.orageMin)) : null;
+    this.orageA = orage ? null : forcee === "arrive" ? 8000 : forcee === "beau" ? null : rnd() * 100 < Rg.orageProba ? 60000 * (Rg.orageMin + rnd() * Math.max(0, Rg.orageMax - Rg.orageMin)) : null;
     this.t0 = clock.now(); this.meteoDepart = orage;
     // la pêche du jour : 8 produits sur 12, au hasard, avec des prix de décor (ceux de l'exercice sont posés à chaque question)
     const noms = [...PRODUITS].sort(() => rnd() - 0.5).slice(0, 8), prix = Object.fromEntries(noms.map((n) => [n, 100 * (2 + Math.floor(rnd() * 15))]));
@@ -146,7 +146,7 @@ export class EtalScreen {
     if (!this.api) return [];
     const e = this.api.etat(), out = [ZONES.soucoupe];
     if (this.q?.type === "rendre") out.push(ZONES.pave); else out.push(e.pf === "ferme" ? ZONES.ferme : ZONES.ouvert);
-    if (e.pf === "sorti") out.push(ZONES.sorti);
+    out.push(...this.api.boites()); // (l'argent sorti, au-dessus du portefeuille, et celui de la soucoupe)
     if (this.ligneVue) out.push(PLAQUE);
     return out;
   }
@@ -377,11 +377,11 @@ export class EtalScreen {
   // billet (« 13… 20, ça fait 7 euros. ») ; null : rangée
   async ligne(q, { saut = false, g = (p) => p } = {}) {
     const { app } = this, { line } = app, nl = app.lineScreen();
-    if (!q) { if (this.ligneVue) { nl.turtle.hide(); nl.arcs = []; line.fxClear(); line.clear(); this.plaque?.classList.remove("vue"); this.ligneVue = false; this.api?.rallumer(); } return; }
+    if (!q) { if (this.ligneVue) { nl.turtle.hide(); nl.arcs = []; line.fxClear(); line.clear(); this.plaque?.classList.remove("vue"); this.ligneVue = false; this.api?.cacher(false); this.api?.rallumer(); } return; }
     const a = q.prix / 100, b = q.billet / 100, n = b - a + 1, T = app.text.data;
     const spec = { x0: LIGNE.x0, x1: LIGNE.x1, y: LIGNE.y, n, labels: Array.from({ length: n }, (_, i) => (n <= 12 || i === 0 || i === n - 1 || (a + i) % 5 === 0 ? String(a + i) : "")), k: 0, lit: [0, n - 1] };
     const [bmp] = await line.render([spec]); line.show(bmp);
-    this.plaque.classList.add("vue"); this.ligneVue = true; this.api.eteindre();
+    this.plaque.classList.add("vue"); this.ligneVue = true; this.api.eteindre(); this.api.cacher(true);
     nl.spec = spec; nl.q = { min: a, max: b, step: 1 }; nl.arcs = []; nl.overlay = []; line.fxClear();
     nl.turtle.speed = app.vitesse ?? 1; nl.turtle.sitOn(spec, 0);
     if (!saut) return;
@@ -411,6 +411,8 @@ export class EtalScreen {
     }
     await wait(this.skipped ? 100 : 700).then(g);
     await api.rendre().then(g); this.ligne(null); api.eteindre();
+    // (le portefeuille se referme : c'est à l'enfant de l'ouvrir)
+    await api.fermer().then(g);
     if (!this.skipped) await app.voice.say(app.text.pick("aToi")).then(g);
     const passe = this.skippedOnce; this.skippedOnce = false; this.passable(false); api.vitesse(1);
     return { q, ok: true, ms: 0, listens: app.voice.listens, exemplePasse: passe, essais: 0 };

@@ -111,7 +111,13 @@ export class Module6Runner {
     const etoiles = r.ok ? (q.revient ? 2 : 1) : r.corrigee ? 1 : 0;
     const [a, b] = this.rules.retourErreur ?? [3, 5];
     if (!r.ok && !r.corrigee && !q.revient && this.var.times(this.cand(q).cle) < this.var.c.memeQuestionMax) this.replays.push({ q: { ...q }, cfg, in: a + Math.floor(this.rnd() * (b - a + 1)) });
-    const relaunch = (id, raison) => { if (id && !this.played.has(id)) { this.played.add(id); events.push({ type: "lecon", id, raison }); } };
+    // (simulation du lot : sans limite, une enfant en difficulté revoyait la même leçon à chaque séance, vingt séances de suite ;
+    // une leçon relancée par une difficulté ou une erreur répétée ne l'est plus pendant `relanceJours` jours ; choix de la session)
+    const relaunch = (id, raison) => {
+      const der = this.st.relances?.[id], jours = this.c.relanceJours ?? 7;
+      if (!id || this.played.has(id) || (der && this.clock() - der < jours * 86400000)) return;
+      this.played.add(id); (this.st.relances ??= {})[id] = this.clock(); events.push({ type: "lecon", id, raison });
+    };
     // le taux de la séance (redescente) : pas les achats au-dessus du conseillé
     if (this.choix == null ? q.niveau <= this.st.niveau : q.niveau === this.st.niveau) { this.rateN++; if (r.ok) this.rateOk++; }
     const aide = !!r.aide || !!r.aideDEmblee;

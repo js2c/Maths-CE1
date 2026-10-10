@@ -504,6 +504,8 @@ Chacune suivie de « À toi ! » vers son niveau (section 3). Relancées selon l
 
 ### 8. Lot « Correctifs : passage de l'échauffement aux voiliers »
 
+(et autres défauts vus sur la tablette le 10 octobre 2026 : points 1 à 8)
+
 **Origine** : essai du parent sur la tablette, le 10 octobre 2026. Les captures sont dans `docs/maquettes/correctifs-2/`.
 
 **Comme les lots 4, 5 et 6 : d'un seul tenant, sans arrêt pour une validation.** Les choix de la session vont dans le journal, marqués « choix de la session, à revoir par le parent », et dans une section « Choix faits sans le parent » de la demande de fusion.
@@ -516,7 +518,7 @@ Chacune suivie de « À toi ! » vers son niveau (section 3). Relancées selon l
    - le bernard-l'ermite ;
    - un second bouton « je ne sais pas », celui de l'échauffement, en plus de celui des voiliers.
 
-   La session n'a pas pu le reproduire en conception en passant l'échauffement depuis la première question, après une erreur ou après avoir touché le coquillage : le défaut dépend donc du moment où l'on passe, ou du chemin d'entrée.
+   **Le défaut est certain : le parent l'a eu sur la tablette.** La session de conception ne l'a pas reproduit en passant l'échauffement depuis la première question, après une erreur ou après avoir touché le coquillage. Il dépend donc du moment où l'on passe, du chemin d'entrée, ou de la lenteur de la tablette, par exemple une minuterie qui se déclenche après le passage à l'étape suivante.
    - **Reproduire en essayant chaque chemin** : « jouer », « choisir » avec le choix en deux touchers, « Encore ! ».
    - **Et chaque moment de l'échauffement** : pendant la phrase d'introduction, pendant une question, chiffres tapés, pendant l'aide, pendant une correction avec le bernard-l'ermite, pendant l'exemple guidé, confirmation par la coche, confirmation automatique après 5 s.
    - **Corriger la cause, pas le symptôme** : à la fin de l'échauffement, quelle que soit la façon dont il finit, tout ce qu'il a posé à l'écran est retiré, et ses minuteries sont arrêtées.
@@ -532,4 +534,8 @@ Chacune suivie de « À toi ! » vers son niveau (section 3). Relancées selon l
 
 **Voix** : en principe aucune phrase nouvelle. S'il y en a, les lister dans la demande de fusion.
 
-**Recette** : la méthode commune, avec le parcours du point 2 et des captures à 1138 × 711, densité 2,25.
+**Recette** : la méthode commune, avec :
+- le parcours du point 2 ;
+- des captures à 1138 × 711, densité 2,25 ;
+- une capture de chaque écran de choix avec une tuile sélectionnée ;
+- le démarrage des voiliers filmé image par image, sans aucune image de l'ancienne mer.

@@ -5,6 +5,8 @@
 //   --webgl    : WebGL logiciel (SwiftShader) dans Chromium sans processeur graphique (le miroitement du lagon)
 //   --voiliers : la séance porte sur le jeu des voiliers (lot « Les voiliers » : la mer en WebGL et la mascotte réunies ;
 //                la qualité de la mer baisse d'elle-même si le temps d'image moyen dépasse 20 ms) ; avec --webgl
+//   --etal beau|orage : la séance porte sur l'étal du pêcheur (lot « L'étal du pêcheur »), par beau ou mauvais temps, le
+//                portefeuille ouvert et l'argent sorti pendant la mesure (la pluie s'allège d'elle-même au-delà de 21 ms)
 // Mesure :
 //   - démarrage : du début de la navigation à « premier écran prêt » (planches du premier écran
 //     décodées et deux images dessinées : repère performance « app-ready »), à froid puis à chaud ;
@@ -18,7 +20,7 @@ import { serve } from "../serve.mjs";
 import { recifOuvert } from "./recif-commun.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
-const OUT = resolve(opt("--out", "tests/e2e/out")), RATE = Number(opt("--throttle", 4)), SECONDS = Number(opt("--seconds", 12)), VIDEO = args.includes("--video"), NIVEAU = opt("--niveau", null), WEBGL = args.includes("--webgl"), VOIL = args.includes("--voiliers");
+const OUT = resolve(opt("--out", "tests/e2e/out")), RATE = Number(opt("--throttle", 4)), SECONDS = Number(opt("--seconds", 12)), VIDEO = args.includes("--video"), NIVEAU = opt("--niveau", null), WEBGL = args.includes("--webgl"), VOIL = args.includes("--voiliers"), ETAL = opt("--etal", null);
 mkdirSync(OUT, { recursive: true });
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", ...(WEBGL ? ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] : [])] });
@@ -33,7 +35,7 @@ await cdp.send("Emulation.setCPUThrottlingRate", { rate: RATE });
 // ---- démarrage à froid (cache vide), puis à chaud (cache HTTP rempli)
 const startup = async () => { await page.waitForFunction(() => window.__ready !== undefined, null, { timeout: 60000 }); return page.evaluate(() => Math.round(performance.getEntriesByName("app-ready")[0].startTime)); };
 // (sans la leçon L1 : avec la voix fabriquée, elle dure plus d'une minute avant la première question)
-await page.goto(url + opt("--query", VOIL ? "?sans=echauffement&choix=4:1&cran=conseille" : "?sans=echauffement&sansLecon&module=1")); const cold = await startup();
+await page.goto(url + opt("--query", ETAL ? `?sans=echauffement&choix=6:3&cran=conseille&sansLecon&meteo=${ETAL}` : VOIL ? "?sans=echauffement&choix=4:1&cran=conseille" : "?sans=echauffement&sansLecon&module=1")); const cold = await startup();
 await page.reload(); const warm = await startup();
 console.log(`démarrage (processeur ÷${RATE}) : à froid ${cold} ms, à chaud ${warm} ms`);
 await page.waitForTimeout(1500);
@@ -41,7 +43,8 @@ await page.screenshot({ path: join(OUT, "1-accueil.png") });
 
 // ---- séance : on touche « jouer », puis on répond (juste, puis faux, puis juste…) en mesurant les images
 await page.tap(".play", { force: true });
-if (VOIL) await page.waitForFunction(() => window.__app.voiliers?.attend, null, { timeout: 120000 }); else await page.waitForSelector(".answer", { timeout: 180000 });
+if (ETAL) { await page.evaluate(() => window.__app.store.put("niveaux", { module: 6, niveau: 1, obtenus: [], redescentes: [], fenetre: [], vus: 0, taux: [], lecons: [], exemples: [3] })); await page.waitForFunction(() => window.__app.etal?.attend, null, { timeout: 120000 }); await page.evaluate(async () => { const a = window.__app.etal.api; await a.ouvrir(); a.sortir(); }); }
+else if (VOIL) await page.waitForFunction(() => window.__app.voiliers?.attend, null, { timeout: 120000 }); else await page.waitForSelector(".answer", { timeout: 180000 });
 await page.waitForTimeout(1200);
 await page.screenshot({ path: join(OUT, "2-question.png") });
 await page.waitForTimeout(500);
@@ -50,12 +53,13 @@ await page.evaluate(() => { window.__gaps = []; window.__slow = []; let last = p
 if (NIVEAU !== null) await page.evaluate((n) => { const s = window.__app.stage; s.perf.level = n; s.measure = (w) => { window.__work.push(w); }; }, Number(NIVEAU));
 
 const answer = async (right) => {
+  if (ETAL) return page.evaluate(async (r) => { const { solution } = await import("./js/modules/etal/etal.js"); const e = window.__app.etal, q = e.q, cfg = window.__app.module6.niveaux[q.niveau - 1], s = solution(cfg, q.prix, q.portefeuille); for (const v of r ? s : s.slice(0, -1).concat(s.length > 1 ? [] : [Math.min(...q.portefeuille)])) await e.api.deposer(v); e.onCoche?.(); }, right);
   if (VOIL) return page.evaluate((r) => { const v = window.__app.voiliers, q = v.q; v.api.deposer(r ? (q.double ? q.k : q.k) : q.k === 0 ? 1 : 0); }, right);
   const v = await page.evaluate((r) => { const q = window.__app.screen?.q ?? null; return q ? (r ? q.answer : q.choices.find((c) => c.value !== q.answer).value) : null; }, right);
   await page.tap(`.answer[data-value="${v}"]`, { force: true });
 };
 // la mesure : aucune capture pendant cette boucle (une capture fige le rendu et fausserait les chiffres)
-const next = async () => { if (VOIL) await page.waitForFunction(() => window.__app.voiliers?.attend, null, { timeout: 120000 }); else await page.waitForFunction(() => document.querySelectorAll(".answer").length && !window.__app.screen?.locked, null, { timeout: 30000 }); await page.waitForTimeout(1500); };
+const next = async () => { if (ETAL) { await page.waitForFunction(() => window.__app.etal?.attend, null, { timeout: 120000 }); await page.waitForTimeout(1500); return; } if (VOIL) await page.waitForFunction(() => window.__app.voiliers?.attend, null, { timeout: 120000 }); else await page.waitForFunction(() => document.querySelectorAll(".answer").length && !window.__app.screen?.locked, null, { timeout: 30000 }); await page.waitForTimeout(1500); };
 const t0 = Date.now(); let k = 0;
 while (Date.now() - t0 < SECONDS * 1000) { await answer(k % 3 !== 1); await page.waitForTimeout(300); await next(); k++; }
 const gaps = await page.evaluate(() => window.__gaps), work = await page.evaluate(() => window.__work), slow = await page.evaluate(() => window.__slow);
@@ -81,9 +85,9 @@ await page.tap(".homekey:not(.session-home)", { force: true }); await page.waitF
 const memBack = await memNow();
 await page.tap(".keep.play", { force: true }); await page.waitForTimeout(800);
 console.log(`mémoire décodée des planches : en pause ${memPause} Mo, récif ouvert en pause ${memReef} Mo, après le retour ${memBack} Mo`);
-const result = { date: new Date().toISOString(), ecran: "1280x800, densité 2, tactile", processeur: `ralenti ×${RATE}`, niveau_fixe: NIVEAU, webgl: await page.evaluate(() => !!document.createElement("canvas").getContext("webgl")), demarrage_ms: { froid: cold, chaud: warm }, intervalles_ms: stats(gaps), travail_par_image_ms: stats(work), niveau_allegement: perfLevel, sprites_decodes_Mo: mem, questions: k, recif_en_pause: { memoire_en_pause_Mo: memPause, memoire_recif_ouvert_Mo: memReef, memoire_apres_retour_Mo: memBack, intervalles_ms: stats(reefGaps) }, images_lentes: slow.map(([t, d, c]) => `${d} ms (${c})`), erreurs: errors , ...(VOIL ? { voiliers: true, qualite_de_la_mer: mer } : {}) };
+const result = { date: new Date().toISOString(), ecran: "1280x800, densité 2, tactile", processeur: `ralenti ×${RATE}`, niveau_fixe: NIVEAU, webgl: await page.evaluate(() => !!document.createElement("canvas").getContext("webgl")), demarrage_ms: { froid: cold, chaud: warm }, intervalles_ms: stats(gaps), travail_par_image_ms: stats(work), niveau_allegement: perfLevel, sprites_decodes_Mo: mem, questions: k, recif_en_pause: { memoire_en_pause_Mo: memPause, memoire_recif_ouvert_Mo: memReef, memoire_apres_retour_Mo: memBack, intervalles_ms: stats(reefGaps) }, images_lentes: slow.map(([t, d, c]) => `${d} ms (${c})`), erreurs: errors , ...(VOIL ? { voiliers: true, qualite_de_la_mer: mer } : {}), ...(ETAL ? { etal: ETAL, pluie: await page.evaluate(() => window.__app.etal?.api?.etat().qualite ?? null) } : {}) };
 console.log(JSON.stringify(result, null, 1));
-writeFileSync(join(OUT, `mesures-x${RATE}${VOIL ? "-voiliers" : ""}.json`), JSON.stringify(result, null, 1));
+writeFileSync(join(OUT, `mesures-x${RATE}${VOIL ? "-voiliers" : ""}${ETAL ? `-etal-${ETAL}` : ""}.json`), JSON.stringify(result, null, 1));
 await context.close();
 if (VIDEO) { const v = readdirSync(OUT).filter((f) => f.endsWith(".webm")).map((f) => join(OUT, f)); if (v.length) renameSync(v[v.length - 1], join(OUT, "seance.webm")); }
 await browser.close(); srv.close();

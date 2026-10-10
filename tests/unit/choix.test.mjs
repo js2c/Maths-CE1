@@ -16,7 +16,7 @@ import { Warmup } from "../../app/js/modules/facts/warmup.js";
 import { runWarmup } from "../../app/js/modules/facts/screen.js";
 import { makeEstimate, makeJump, makePlace, makeRead, makeWrite } from "../../app/js/modules/numberline/generator.js";
 import { Module1Runner } from "../../app/js/modules/numberline/runner.js";
-import { EXERCISES, levelItems, tilePos, TILE } from "../../app/js/session/choice.js";
+import { EX_CX, EX_PITCH, EXERCISES, levelItems, tilePos, TILE } from "../../app/js/session/choice.js";
 import { CALC_STOPS } from "../../app/js/art/runtime.js";
 import { Session } from "../../app/js/session/session.js";
 
@@ -43,7 +43,9 @@ test("écran de choix : 13 niveaux, 13 familles (lot « Sommes jusqu'à 30 »), 
   const F = levelItems("additions", { st2: { ...initialFamilies(m2, NOW), ouvertes: [1, 2, 3], acquises: [1, 2] }, module1: m1, module2: m2 });
   assert.equal(F.length, 13); assert.equal(F.find((x) => x.conseille).key, 3); assert.deepEqual(F.filter((x) => x.valide).map((x) => x.key), [1, 2]);
   // (lot « Les leçons » : les leçons ont quitté l'écran « choisir » pour leur bulle de l'accueil, session/lessons.js)
-  assert.deepEqual(EXERCISES.map((e) => e.id), ["ligne", "additions", "calcul", "voiliers", "multiplication"]);
+  assert.deepEqual(EXERCISES.map((e) => e.id), ["ligne", "additions", "calcul", "voiliers", "multiplication", "etal"]);
+  // (lot « L'étal du pêcheur » : six exercices sur une rangée, entre la tête de la mascotte (x 232) et le bord droit)
+  for (let i = 0; i < EXERCISES.length; i++) { const x = EX_CX + (i - (EXERCISES.length - 1) / 2) * EX_PITCH; assert.ok(x - 90 > 232 && x + 90 <= 1280, `exercice ${i} : ${x}`); }
   // lot 3, étape 4 : le calcul rapide, 9 niveaux, tous accessibles
   const C = levelItems("calcul", { st3: { acquis: [1, 2], lecons: ["L7"] }, module1: m1, module2: m2, module3: m3 });
   assert.equal(C.length, 9); assert.equal(C.find((x) => x.conseille).key, 3); assert.deepEqual(C.filter((x) => x.valide).map((x) => x.key), [1, 2]);

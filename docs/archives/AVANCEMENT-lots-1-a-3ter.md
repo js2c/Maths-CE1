@@ -882,3 +882,10 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 - **Ordre des étapes** : 8 (fins de ligne), 5 (phrases sans fichier, contrôle des parcours), 4 (ardoise vide), 6 (clavier), 7 (toucher la mascotte), 1 (écran de démarrage, bienvenue), 2 (choisir en deux touchers), puis la recette.
 - **Fait** : les huit points de la fiche (le point 3, la fluidité des voiliers, est hors du lot), leurs tests unitaires et le parcours du lot (`tests/e2e/correctifs-tablette.mjs`), la documentation.
 - **Fini le 9 octobre 2026** : recette complète faite (tous les parcours, mesures avant/après, séance à vitesse réelle, attentes avec et sans « passer », relecture indépendante : `tests/recette-fonctionnelle/out-correctifs-tablette/RELECTURE.md`) ; demande de fusion https://github.com/js2c/Maths-CE1/pull/46 complète, sortie du brouillon ; lot « fait » dans `docs/LOTS.md`.
+
+## Reprise du lot « L'étal du pêcheur »
+
+- **Branche** : `claude/sleepy-einstein-pr9k77` ; demande de fusion en brouillon « Lot : L'étal du pêcheur ».
+- **Réglages de la maquette** : le parent a demandé les **valeurs de départ** de la maquette (prompt du 10 octobre 2026), reportées dans `app/content/etal.json`.
+- **Étapes** : 0 branche et mesures avant ; 1 export de la scène (`art/tools/export-etal.mjs`) et `etal.json` ; 2 règles du module 6 (`modules/etal/`, `module6.json`) et tests unitaires ; 3 l'écran et son branchement (choisir, entraînement libre, frise, espace parent) ; 4 textes, voix, leçons L15 à L18, pictogrammes ; 5 recette, documents, demande de fusion prête.
+- **Fini le 10 octobre 2026** : recette complète faite (tous les parcours, comparés à `main` quand ils échouent ; mesures de fluidité avant et après, beau temps et orage, la maquette seule ; simulation par profil ; séquences ; séance à vitesse réelle ; attentes avec et sans « passer » ; relecture indépendante, `tests/recette-fonctionnelle/out-etal/RELECTURE.md`, et ses correctifs). Demande de fusion #49 sortie du brouillon ; 394 phrases à fabriquer par le parent.

@@ -1,7 +1,7 @@
 // LOT « LES LEÇONS » (docs/LOTS.md, fiche 3 ; docs/SPEC.md, section 3, « Les leçons ») : le parcours de chaque situation
 // nouvelle, en 1280 × 800 (densité 2) et 1920 × 1200 (densité 1), captures dans tests/e2e/out/lecons-menu :
 //  1. l'accueil à cinq bulles ; l'appui long sur « les leçons » (étiquette, rien ne se lance) ; le menu (dix leçons, la table,
-//     quatre pictogrammes de rangée, le petit livre) ; l'appui long sur une tuile ; la légende du parent ;
+//     cinq pictogrammes de rangée depuis le lot « L'étal du pêcheur », le petit livre) ; l'appui long sur une tuile ; la légende du parent ;
 //  2. une leçon regardée jusqu'au bout, puis « À toi ! » : 3 étoiles, l'écran « À toi ! » (une seule maison), le sélecteur,
 //     puis l'exercice associé comme séance du jour, sans échauffement (« après une leçon »), sans salut ni leçon d'entrée ;
 //     la pause pendant cet exercice : l'accueil en pause a la bulle « les leçons » ; une leçon depuis la pause revient à la
@@ -68,18 +68,18 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     if (big) await shot(page, "02-accueil-etiquette");
     await h.release(); check((await page.locator(".lecons-tuile").count()) === 0, `${T} · l'appui long ne lance rien`);
     await tap(page, ".leconskey"); await page.waitForSelector(".lecons-tuile"); await page.waitForTimeout(700);
-    check((await page.locator(".lecons-tuile").count()) === 16, `${T} · le menu : quatorze leçons (L11 et L12 depuis le lot « Sommes jusqu'à 30 », L13 et L14 depuis le lot « Multiplication ») et les tables d'addition et de multiplication`);
-    check((await page.locator(".lecons-rangee").count()) === 4 && (await page.locator(".legende").count()) === 1, `${T} · quatre pictogrammes de rangée et le petit livre`);
+    check((await page.locator(".lecons-tuile").count()) === 20, `${T} · le menu : dix-huit leçons (L11 et L12 depuis le lot « Sommes jusqu'à 30 », L13 et L14 depuis le lot « Multiplication », L15 à L18 depuis le lot « L'étal du pêcheur ») et les tables d'addition et de multiplication`);
+    check((await page.locator(".lecons-rangee").count()) === 5 && (await page.locator(".legende").count()) === 1, `${T} · cinq pictogrammes de rangée et le petit livre`);
     check(/Les leçons\. \| Quelle leçon veux-tu regarder \? Touche une image : je te dis ce que c.est\. Touche-la encore pour la regarder\./.test(await said(page)), `${T} · « Les leçons. », puis la consigne du menu`);
     const keys = await page.evaluate(() => [...document.querySelectorAll(".lecons-tuile")].map((e) => e.dataset.key).join(","));
-    check(keys === "L1,L2,L3,L10,L4,L5,L6,L11,L12,L7,L8,L9,L13,L14,table.addition,table.multiplication", `${T} · l'ordre des tuiles (${keys})`);
+    check(keys === "L1,L2,L3,L10,L4,L5,L6,L11,L12,L7,L8,L9,L13,L14,L15,L16,L17,L18,table.addition,table.multiplication", `${T} · l'ordre des tuiles (${keys})`);
     const b = await bulle(page); check(b.visible && !b.couvre, `${T} · la bulle du menu ne couvre aucune tuile (${b.place})`);
     await shot(page, "03-menu"); await note(page, "accueil, puis la bulle « les leçons »");
     const t7 = await hold(page, '.lecons-tuile[data-key="L7"]'); check(t7.label === "L7", `${T} · appui long sur la tuile 7 : son étiquette`);
     if (big) await shot(page, "04-menu-etiquette");
-    await t7.release(); check(!(await page.evaluate(() => window.__app.lessons.p ?? window.__app.lessons.p2?.p ?? null)) && (await page.locator(".lecons-tuile").count()) === 16, `${T} · l'appui long ne lance pas la leçon`);
+    await t7.release(); check(!(await page.evaluate(() => window.__app.lessons.p ?? window.__app.lessons.p2?.p ?? null)) && (await page.locator(".lecons-tuile").count()) === 20, `${T} · l'appui long ne lance pas la leçon`);
     await tap(page, ".legende", 600);
-    const rows = await page.locator(".legende-ligne").count(); check(rows === 16, `${T} · la légende du parent : une ligne par leçon et une par table (${rows})`);
+    const rows = await page.locator(".legende-ligne").count(); check(rows === 20, `${T} · la légende du parent : une ligne par leçon et une par table (${rows})`);
     await shot(page, "05-legende");
     await tap(page, ".legende-fermer", 400);
     await tap(page, ".homekey", 800); check((await visible(page, ".leconskey")) === 1 && (await page.locator(".lecons-tuile").count()) === 0, `${T} · la maison ramène le menu à l'accueil`);

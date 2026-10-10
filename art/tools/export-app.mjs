@@ -21,6 +21,7 @@ import { detect } from "./detect.mjs";
 import { exportLagon } from "./export-lagon.mjs";
 import { exportRecif } from "./export-recif.mjs";
 import { exportVoiliers } from "./export-voiliers.mjs";
+import { exportEtal } from "./export-etal.mjs";
 
 const args = process.argv.slice(2), opt = (k) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : undefined; };
 const only = opt("--only"), check = !args.includes("--no-check");
@@ -92,6 +93,8 @@ if (!only || only.includes("lagon")) bad += await exportLagon({ browser, atlas, 
 if (!only || only.includes("recif")) exportRecif();
 // lot « Les voiliers » : le jeu des voiliers, extrait de sa maquette (art/voiliers/)
 if (!only || only.includes("voiliers")) exportVoiliers();
+// lot « L'étal du pêcheur » : la scène de l'étal, extraite de sa maquette (art/etal/)
+if (!only || only.includes("etal")) exportEtal();
 atlas.hash = createHash("md5").update(JSON.stringify(atlas.sprites)).digest("hex").slice(0, 10);
 writeFileSync(atlasPath, JSON.stringify(atlas));
 console.log(`atlas    -> ${atlasPath} (${Object.keys(atlas.sprites).length} sprites, empreinte ${atlas.hash})`);

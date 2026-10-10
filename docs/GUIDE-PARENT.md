@@ -208,6 +208,21 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 | 8 | La table de 4, le double du double. | 4 × 6 = 24 |
 | 9 | Les tables de 2, 3, 4, 5 et 10 mélangées. | ? × 5 = 20 |
 
+**L'étal du pêcheur**
+
+| Niveau | Ce qui est travaillé | Exemple |
+| --- | --- | --- |
+| 1 | Pièces et billets, poser dans la soucoupe la pièce ou le billet demandé, de 1 à 50 euros. | Pose un billet de 10 euros. |
+| 2 | Payer juste avec des pièces de 1 et 2 euros, prix de 2 à 10 euros. | 7 = 2 + 2 + 2 + 1 |
+| 3 | Payer juste avec des billets de 5 et 10 euros et des pièces, prix de 6 à 20 euros. | 17 = 10 + 5 + 2 |
+| 4 | Payer juste jusqu'à 50 euros, avec des billets de 5 à 50 euros. | 34 = 20 + 10 + 2 + 2 |
+| 5 | Payer juste avec un portefeuille restreint, une ou deux façons seulement. | 7 sans pièce de 1, 5 + 2 |
+| 6 | Le compte juste est impossible, payer sans pièce de trop, le pêcheur rend la monnaie. | 13 avec 20, il rend 7 |
+| 7 | Rendre la monnaie, dire au pavé combien le pêcheur rend. | 13 payés avec 20, 7 |
+| 8 | Deux produits, payer juste le total. | 3 + 4 = 7 |
+| 9 | Les centimes, prix ronds ou en 50 centimes, écrits avec une virgule. | 3,50 = 2 + 1 + 0,50 |
+| 10 | Les centimes, prix en 10, 20 et 50 centimes. | 2,70 = 2 + 0,50 + 0,20 |
+
 **Les leçons**
 
 | Leçon | Ce qui est travaillé | Exemple |
@@ -226,6 +241,10 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 | L12 | Faire dix d'abord, on remplit la boîte, puis on ajoute le reste. | 8 + 5 = 13 |
 | L13 | Des rangées égales, 3 fois 4, c'est 4 + 4 + 4. | 3 × 4 = 12 |
 | L14 | On tourne les rangées, 3 × 5 fait autant que 5 × 3. | 3 × 5 = 5 × 3 |
+| L15 | Pièces et billets, une pièce de 2 euros vaut deux pièces de 1 euro, on compte la valeur. | 2 + 2 + 2 = 6 |
+| L16 | Payer juste, du plus gros au plus petit. | 17, 10, 15, 16, 17 |
+| L17 | Rendre la monnaie, on compte à partir du prix jusqu'à ce qu'on a donné. | de 13 à 20, 7 |
+| L18 | Les centimes, 100 centimes font 1 euro, 3,50 c'est 3 euros et 50 centimes. | 0,50 + 0,50 = 1 |
 | + | La table d'addition, toucher une case dit et montre le calcul. | 7 + 5 = 12 |
 | × | La table de multiplication, toucher une case dit et montre le calcul. | 3 × 4 = 12 |
 
@@ -349,6 +368,21 @@ Fait, lui aussi, sans vous demander de valider la maquette (votre décision du 7
 - **Corrigés** : l'ardoise vide qui apparaissait derrière la bulle (elle n'apparaît plus qu'avec son calcul) ; les petites phrases dites par l'ancienne voix (« Plus 10 ? » des calculs guidés, et le bilan quand l'enfant gagne plus de 60 étoiles) ; l'avertissement « sw-files.json n'était pas à jour » quand vous publiez les voix depuis Windows (rien à faire de votre côté).
 - **Pas dans ce lot** : la fluidité des voiliers (votre décision) ; vos mesures et les pistes sont gardées dans `docs/IDEES.md`.
 - **Les phrases à fabriquer** : la liste est dans la demande de fusion ; `node tools\voix\publier.mjs`, comme d'habitude.
+
+## d duodecies) Lot « L'étal du pêcheur » : un sixième exercice, la monnaie
+
+Fait d'un seul tenant, à partir de la maquette que vous avez validée (`art/etal/`) : ce que la session a décidé seule est listé en tête de la demande de fusion et dans `docs/JOURNAL-CONCEPTION.md` (« choix de la session, à revoir par le parent »).
+
+- **Où le trouver.** Dans **choisir**, la sixième bulle (un billet et deux pièces), puis l'un des 10 niveaux ; aussi avec « Encore ! ». L'étal **ne tourne pas** avec les exercices de « jouer », comme les voiliers : vous pouvez l'imposer pour la prochaine séance « jouer » (espace parent, **Données et réglages**).
+- **Ce que fait l'enfant.** C'est la scène de la maquette : le ciel, la mer, la cabane du pêcheur, sa pêche sur la glace. Le capitaine est dans la fenêtre de la cabane. Un produit s'allume et la voix dit son prix (« Achète les sardines. Elles coûtent… 3 euros. ») ; l'enfant ouvre son portefeuille d'un toucher, sort l'argent d'un toucher, pose pièces et billets dans la soucoupe (toucher ou glisser ; un toucher dans la soucoupe reprend une pièce), puis touche la **coche**. Le pêcheur compte à voix haute (« 2… 3 euros. »). Les niveaux : 1, reconnaître les pièces et les billets ; 2 à 4, payer juste (jusqu'à 10, 20, puis 50 €) ; 5, payer juste avec peu de pièces ; 6, le compte juste est impossible : donner assez, sans pièce de trop, et le pêcheur rend la monnaie ; 7, dire au pavé combien le pêcheur rend ; 8, deux produits ; 9 et 10, les centimes (3,50 €).
+- **Le temps qu'il fait** : une fois sur deux, il fait mauvais dès le début (la lampe s'allume, il pleut) ; sinon, l'orage arrive parfois en cours de partie, toujours entre deux achats, et le capitaine dit une des quatre répliques que vous avez écrites. Cela ne change rien à l'exercice.
+- **La difficulté** : « plus facile », le total est écrit et dit à chaque pièce posée, la valeur écrite sous chaque pièce ; « conseillé », le coquillage aide ; « plus dur » et « très dur », des prix plus hauts et, au « très dur », plus de petites pièces dans le portefeuille. Elle ne change pas le niveau.
+- **Une erreur** : s'il manque de l'argent, le pêcheur dit combien et l'enfant complète une fois ; si elle donne trop, il lui rend tout son argent et elle recommence ; sinon, il montre une bonne façon de payer, et l'achat revient quelques questions plus loin. Au niveau 7, la correction est le saut de la tortue sur une ligne, du prix au billet (« + 7 »).
+- **Quatre leçons nouvelles**, jouées à l'étal même, dans une cinquième rangée du menu des leçons : **15 · Pièces et billets**, **16 · Payer juste**, **17 · Rendre la monnaie**, **18 · Les centimes**. Pour faire tenir cette rangée, les tuiles du menu sont un peu plus petites, et le petit livre de la légende est en haut à droite.
+- **Pour vous**, dans l'espace parent : un bloc « Module 6 · L'étal du pêcheur » (niveau, historique, semaine par semaine) ; dans le journal des erreurs, sept erreurs en une phrase, précédées de « étal » (« n'a pas donné assez », « a donné une pièce de trop »…) ; pour chaque achat, ce qui a été posé, la monnaie rendue et le contenu du portefeuille ; le niveau et le temps de la partie dans l'historique des séances ; le niveau de l'étal dans le **point de départ** ; la légende des 10 niveaux.
+- **À vérifier sur la tablette** : la fluidité (vous l'aviez mesurée à 60 images par seconde avec la maquette ; l'application ajoute peu) ; le geste du doigt sur les pièces ; que le capitaine dans la fenêtre et sa bulle ne gênent pas ; la durée d'une partie (environ 14 achats en 10 minutes, d'après la simulation).
+
+**Les phrases à fabriquer.** 394 phrases nouvelles, environ 2,7 Mo (surtout les montants : « 3 euros. », « 1 euro 50. », « 30 centimes. »…) : la liste est dans `docs/maquettes/etal/PHRASES.md` ; `node tools\voix\publier.mjs`, comme d'habitude. Avec elles, la voix pèsera environ **79,3 Mo, tout près de la limite de 80 Mo** que vous aviez fixée : le prochain lot qui ajoute des phrases demandera de relever cette limite ou d'alléger les fichiers (à vous de décider).
 
 ## e) Ce qui reste approximatif ou à ajuster
 

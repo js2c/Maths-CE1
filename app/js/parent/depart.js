@@ -76,3 +76,13 @@ export async function setMultLevel(store, niveau, now = Date.now()) {
   await store.put("niveaux", st);
   return st;
 }
+
+// lot « L'étal du pêcheur » : le niveau de l'étal choisi par le parent (point de départ), comme les voiliers ; noté comme son
+// choix, sans étoile
+export async function setEtalLevel(store, niveau, now = Date.now()) {
+  const st0 = (await store.get("niveaux", 6)) ?? { ...initialLevelState(6, now), exemples: [] };
+  if (st0.niveau === niveau) return st0;
+  const st = { ...st0, niveau, fenetre: [], vus: 0, taux: [], obtenus: [...(st0.obtenus ?? []), { niveau, date: now, parent: true, de: st0.niveau }] };
+  await store.put("niveaux", st);
+  return st;
+}

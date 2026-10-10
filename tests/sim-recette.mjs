@@ -19,10 +19,11 @@ import { runChallenge } from "../app/js/modules/facts/challenge.js";
 import { Module4Runner } from "../app/js/modules/voiliers/runner.js";
 import { Module5Runner, multMastery } from "../app/js/modules/mult/runner.js";
 import { codeErreur } from "../app/js/modules/voiliers/voiliers.js";
+import { Module6Runner } from "../app/js/modules/etal/runner.js";
 
 const load = (f) => JSON.parse(readFileSync(new URL(`../app/content/${f}`, import.meta.url)));
 const module5 = load("module5.json");
-const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), module3 = load("module3.json"), module4 = load("module4.json"), cartes0 = load("cartes.json"), calendrier = load("calendrier.json");
+const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), module3 = load("module3.json"), module4 = load("module4.json"), module6 = load("module6.json"), cartes0 = load("cartes.json"), calendrier = load("calendrier.json");
 // les zones 3 et 4 « prêtes » (illustrations et anecdotes fictives) pour vérifier le rythme des cartes sur l'année
 const pretes = (c) => ({ ...c, cartes: c.cartes.map((x) => ({ ...x, illustration: x.illustration ?? `fictif/${x.id}.webp`, anecdote: x.anecdote ?? "Anecdote fictive." })) });
 const gen = (cfg, r, o = {}) => (o.format === "ecrire" ? makeWrite(cfg, r, o) : o.format === "sauter" ? makeJump(cfg, r) : o.format === "placer" ? makePlace(cfg, r, o) : o.format === "estimer" ? makeEstimate(cfg, r, o) : makeRead(cfg, r, o));
@@ -37,11 +38,14 @@ const ERR = { 1: "E1", 2: "E1", 3: "E1", 4: "E3", 5: "E2", 6: "E5", 7: "E2", 8: 
 // lot « Les voiliers » : voiliers(n) : probabilité de ranger un bateau du premier coup au niveau n (hypothèse : le niveau
 // 1 se fait sans peine, les nombres près d'une bouée et le double encadrement coûtent) ; le deuxième essai réussit plus
 // souvent (VOILIERS.deuxieme) ; avec le vent, un peu moins ; avec les pirates, le premier essai seulement, et parfois trop tard
-const reel = { voiliers: (n) => [0, 0.88, 0.8, 0.8, 0.72, 0.6, 0.55, 0.6, 0.5, 0.5][n], calcul: (n) => [0, 0.9, 0.8, 0.7, 0.8, 0.7, 0.55, 0.45, 0.6, 0.4][n], mult: (n) => [0, 0.9, 0.85, 0.8, 0.85, 0.75, 0.7, 0.65, 0.6, 0.55][n], calculMs: 6000, ligne: (n) => [0, 0.95, 0.9, 0.85, 0.55, 0.45, 0.45, 0.4, 0.45, 0.5, 0.45, 0.4, 0.5, 0.45][n], apprend: 0.006, fait: 0.9, fait20: 0.8, faitMs: 5000, baseMs: 3500, nsp: 0.3, trou: 0.85 };
+// lot « L'étal du pêcheur » : etal(n) : probabilité de payer juste du premier coup au niveau n (hypothèse : le niveau 1 se fait
+// sans peine ; le portefeuille restreint, la monnaie impossible et les centimes coûtent) ; au deuxième essai (compléter, ou
+// valider après que le pêcheur a rendu ce qui était en trop), `ETAL.deuxieme` de plus
+const reel = { etal: (n) => [0, 0.92, 0.85, 0.78, 0.68, 0.6, 0.58, 0.6, 0.65, 0.62, 0.5][n], voiliers: (n) => [0, 0.88, 0.8, 0.8, 0.72, 0.6, 0.55, 0.6, 0.5, 0.5][n], calcul: (n) => [0, 0.9, 0.8, 0.7, 0.8, 0.7, 0.55, 0.45, 0.6, 0.4][n], mult: (n) => [0, 0.9, 0.85, 0.8, 0.85, 0.75, 0.7, 0.65, 0.6, 0.55][n], calculMs: 6000, ligne: (n) => [0, 0.95, 0.9, 0.85, 0.55, 0.45, 0.45, 0.4, 0.45, 0.5, 0.45, 0.4, 0.5, 0.45][n], apprend: 0.006, fait: 0.9, fait20: 0.8, faitMs: 5000, baseMs: 3500, nsp: 0.3, trou: 0.85 };
 export const PROFILS = {
-  sait: { nom: "sait déjà (rapide)", voiliers: (n) => (n <= 4 ? 0.95 : 0.88), calcul: (n) => (n <= 5 ? 0.95 : 0.88), mult: (n) => (n <= 5 ? 0.95 : 0.88), calculMs: 4000, ligne: (n) => (n <= 5 ? 0.97 : 0.85), apprend: 0.004, fait: 0.97, fait20: 0.92, faitMs: 3500, baseMs: 3000, nsp: 0.2, trou: 0.95 },
+  sait: { nom: "sait déjà (rapide)", etal: (n) => (n <= 4 ? 0.95 : 0.88), voiliers: (n) => (n <= 4 ? 0.95 : 0.88), calcul: (n) => (n <= 5 ? 0.95 : 0.88), mult: (n) => (n <= 5 ? 0.95 : 0.88), calculMs: 4000, ligne: (n) => (n <= 5 ? 0.97 : 0.85), apprend: 0.004, fait: 0.97, fait20: 0.92, faitMs: 3500, baseMs: 3000, nsp: 0.2, trou: 0.95 },
   reel: { nom: "profil de l'évaluation (ligne faible au-delà de 20, faits en partie sus)", ...reel },
-  diff: { nom: "en difficulté", voiliers: (n) => [0, 0.78, 0.65, 0.65, 0.55, 0.45, 0.4, 0.45, 0.35, 0.35][n], calcul: (n) => [0, 0.8, 0.65, 0.55, 0.65, 0.55, 0.4, 0.3, 0.45, 0.3][n], mult: (n) => [0, 0.8, 0.7, 0.65, 0.7, 0.6, 0.55, 0.5, 0.45, 0.4][n], calculMs: 9000, ligne: (n) => [0, 0.85, 0.75, 0.7, 0.45, 0.35, 0.35, 0.3, 0.35, 0.4, 0.35, 0.3, 0.4, 0.35][n], apprend: 0.004, fait: 0.75, fait20: 0.6, faitMs: 8000, baseMs: 4000, nsp: 0.4, trou: 0.75 },
+  diff: { nom: "en difficulté", etal: (n) => [0, 0.85, 0.75, 0.65, 0.55, 0.45, 0.42, 0.45, 0.5, 0.48, 0.38][n], voiliers: (n) => [0, 0.78, 0.65, 0.65, 0.55, 0.45, 0.4, 0.45, 0.35, 0.35][n], calcul: (n) => [0, 0.8, 0.65, 0.55, 0.65, 0.55, 0.4, 0.3, 0.45, 0.3][n], mult: (n) => [0, 0.8, 0.7, 0.65, 0.7, 0.6, 0.55, 0.5, 0.45, 0.4][n], calculMs: 9000, ligne: (n) => [0, 0.85, 0.75, 0.7, 0.45, 0.35, 0.35, 0.3, 0.35, 0.4, 0.35, 0.3, 0.4, 0.35][n], apprend: 0.004, fait: 0.75, fait20: 0.6, faitMs: 8000, baseMs: 4000, nsp: 0.4, trou: 0.75 },
   tresdur: { nom: "profil de l'évaluation, choisit toujours « très dur »", ...reel, cran: "tresdur" },
   facile: { nom: "profil de l'évaluation, choisit toujours « plus facile »", ...reel, cran: "facile" },
 };
@@ -58,7 +62,10 @@ export const pFait = (P, q) => (q.a + q.b > 10 ? Math.min(0.97, (P.fait20 ?? P.f
 const noteFait = (q, ok) => { if (ok && q.a + q.b > 10) JUSTES.set(`${q.a}+${q.b}`, (JUSTES.get(`${q.a}+${q.b}`) ?? 0) + 1); };
 export const msFait = (P, q) => P.faitMs * (q.a + q.b > 10 ? P.lent20 ?? 1.3 : 1);
 export const VOILIERS = { deuxieme: 0.2, vent: 0.04, pirates: 0.08, rattrape: 0.08 };
-const T = { bateau: 9500, bateauCorrige: 19000, bateauManque: 24000, bateauCoule: 13000, exempleVoilier: 16000, calc: 9000, calcFaux: 24000, calcGuide: 26000, phrase: 3000, defiEnPlus: 500, chauffe: 7000, chauffeFaux: 9000, notion: 15000, notionFaux: 30000, guide: 30000, lecon: 75000, add: 8000, addFaux: 16000, addGuide: 16000 };
+// lot « L'étal du pêcheur » : un achat payé juste (le produit et son prix dits, ouvrir, sortir, poser, la coche, le compte, l'emballage),
+// au deuxième essai, manqué (la correction), l'exemple guidé ; le niveau 7 se tape au pavé, plus court
+export const ETAL = { deuxieme: 0.25 };
+const T = { achat: 24000, achatCorrige: 40000, achatManque: 46000, achatRendre: 14000, achatRendreFaux: 26000, exempleEtal: 26000, bateau: 9500, bateauCorrige: 19000, bateauManque: 24000, bateauCoule: 13000, exempleVoilier: 16000, calc: 9000, calcFaux: 24000, calcGuide: 26000, phrase: 3000, defiEnPlus: 500, chauffe: 7000, chauffeFaux: 9000, notion: 15000, notionFaux: 30000, guide: 30000, lecon: 75000, add: 8000, addFaux: 16000, addGuide: 16000 };
 
 // lot 3 : `choix` ({ module: 1, niveau } ou { module: 2, famille }) : l'enfant choisit toujours cet exercice (écran
 // « choisir ») ; `cran` : le cran qu'elle choisit (remplace celui du profil). Hypothèse du lot 3 (docs/SPEC-LOT3.md,
@@ -137,6 +144,27 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
           } };
           const step = { ...ctx.step, ...(ctx.step.module4 ?? {}) };
           await runNotion({ ...ctx, step, runner, screen: scr, rnd: R });
+          log.niv1 = runner.st.niveau;
+          return;
+        }
+        // lot « L'étal du pêcheur » : le module 6 (choisi, ou imposé par le parent)
+        if (ctx.session.rec.module === 6) {
+          const runner = await new Module6Runner({ store, content: module6, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, choix: ctx.session.choix?.module === 6 ? ctx.session.choix.niveau || null : null }).load();
+          log.module = 6; log.niv0 = runner.niveau; log.etal = [];
+          const scr = { ask: async (q) => {
+            const lbl = q.type === "poser" ? `p${q.valeur / 100}` : q.type === "rendre" ? `${q.prix / 100}/${q.billet / 100}` : String(q.prix / 100);
+            if (q.guide) { add(T.exempleEtal); log.etal.push(`ex${lbl}`); return { q, ok: true, ms: 0, listens: 1 }; }
+            const niv = `e${q.niveau}`; essais[niv] = (essais[niv] ?? 0) + 1;
+            const p = Math.max(0.05, Math.min(0.97, P.etal(q.niveau) + P.apprend * essais[niv] + (q.cran === "facile" ? 0.06 : q.cran === "dur" ? -0.04 : q.cran === "tresdur" ? -0.08 : 0) + (q.simple ? 0.06 : 0)));
+            const nsp = R() < (1 - p) * P.nsp * 0.5; if (nsp) { log.nsp++; add(T.achatManque); log.etal.push(`${lbl}?`); (log.notionOk ??= []).push(false); return { q, ok: false, code: "NSP", nsp: true, ms: 15000, listens: 1 }; }
+            const ok = R() < p, rendre = q.type === "rendre", deux = !ok && !rendre && q.type !== "poser" && R() < 0.8;
+            const corrigee = deux && R() < Math.min(0.97, p + ETAL.deuxieme);
+            const code = ok ? null : q.type === "poser" ? "M7" : rendre ? (R() < 0.4 ? "M5" : "M6") : !deux ? "M4" : q.type === "monnaie" ? (R() < 0.5 ? "M1" : "M3") : R() < 0.6 ? "M1" : "M2";
+            add(rendre ? (ok ? T.achatRendre : T.achatRendreFaux) : ok ? T.achat : corrigee ? T.achatCorrige : T.achatManque);
+            log.etal.push(`${lbl}${ok ? "" : corrigee ? "c" : "✗"}`); (log.notionOk ??= []).push(ok);
+            return { q, ok, corrigee, code, ms: ok ? 9000 + R() * 9000 : 20000, listens: 1, essais: ok ? 1 : 2, soucoupe: [] };
+          } };
+          await runNotion({ ...ctx, step: { ...ctx.step, ...(ctx.step.module6 ?? {}) }, runner, screen: scr, rnd: R, lesson: async (id) => { add(T.lecon); log.lecons.push(id); return { vue: true }; } });
           log.niv1 = runner.st.niveau;
           return;
         }

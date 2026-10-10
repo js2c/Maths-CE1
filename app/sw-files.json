@@ -1,5 +1,5 @@
 {
- "version": "8b413249ae14",
+ "version": "26241a2b6484",
  "files": [
   "./",
   "assets/art/aides@1x.webp",
@@ -316,8 +316,6 @@
   "assets/voiliers/buoys-1-tex.webp",
   "assets/voiliers/buoys-2-tex.webp",
   "assets/voiliers/buoys-3-tex.webp",
-  "assets/voiliers/ciel-clouds.png",
-  "assets/voiliers/ciel-coast.png",
   "assets/voiliers/donnees.json",
   "assets/voiliers/mer-atlas.webp",
   "assets/voiliers/mer-ciel.webp",

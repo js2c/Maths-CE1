@@ -29,3 +29,13 @@ test("la scène : les raccords de l'application, rien de la page ni de la séanc
   const html = read("art/voiliers/index.html");
   for (const t of ["const WAVES=[[-1.75,40,.85,0]", "function rideWaves(o,t,dt){", "function addRow(vals,row,wz,fadeIn){", "const Z_LINE=F*HC/(LINE_Y-HY),PULL=29;"]) { assert.ok(html.includes(t), t); assert.ok(m.includes(t), t); }
 });
+
+test("lot « Correctifs : passage… », point 6 : l'application n'a plus la mer calculée de la maquette (qui la garde)", () => {
+  const m = read("app/js/voiliers/voiliers-scene.js"), html = read("art/voiliers/index.html"), d = JSON.parse(read("app/assets/voiliers/donnees.json"));
+  for (const t of ["const SEA_FS=", "uCoast", "cloudUniforms", "bindPS", "seaTex(", "gl.drawArrays(gl.TRIANGLES,0,3)"]) { assert.ok(!m.includes(t), t); assert.ok(html.includes(t), `la maquette garde ${t}`); }
+  assert.equal(d.SKY, undefined, "ni la côte ni les nuages dessinés");
+  for (const f of ["ciel-coast.png", "ciel-clouds.png"]) assert.ok(!existsSync(new URL(`../../app/assets/voiliers/${f}`, import.meta.url)), f);
+  // en attendant la mer illustrée (ou sans textures de 4 096 px) : la mer fixe, son fond et son ciel
+  assert.ok(m.includes("else ILL.fixe(sh,sa,"));
+  assert.match(m, /load\(MER\.fond,2,false,t=>\{tFond=t;\}\);load\(MER\.ciel,4,false/);
+});

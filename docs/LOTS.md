@@ -531,6 +531,23 @@ Chacune suivie de « À toi ! » vers son niveau (section 3). Relancées selon l
 5. **À vérifier** :
    - **Le clavier pendant l'échauffement.** En conception, des chiffres tapés au clavier ne se sont pas inscrits. Le moment n'était peut-être pas le bon : la question était peut-être encore en train d'apparaître.
    - **Le cadrage à la taille exacte de la tablette** (écran 1138 × 711, densité 2,25). Sur la capture 01, la maison et la mascotte semblent coupées à gauche. Faire les captures à cette taille sur les écrans de jeu.
+6. **L'ancienne mer calculée des voiliers apparaît un instant** (vue par le parent sur la tablette).
+   - Depuis la mer illustrée (#48), le module garde la mer procédurale « en secours » (`app/js/voiliers/voiliers-scene.js`, `render`, « repli : la mer procédurale »). Elle est dessinée tant que l'illustration n'est pas prête : c'est le flash du début.
+   - **La retirer de l'application**, par l'outil d'export, jamais à la main : son programme, son contexte de dessin, ses réglages.
+   - Tant que la mer illustrée n'est pas prête, montrer sa première image fixe, ou le dégradé fixe de la mer, sans calcul.
+   - Si la mer illustrée ne peut pas fonctionner (pas de WebGL), une image fixe de la mer.
+   - La maquette `art/voiliers/` garde sa mer à elle : seule l'application l'abandonne.
+   - Mesurer le gain : poids du module, mémoire, temps de démarrage du jeu.
+7. **Plus d'étiquette d'appui long dans les menus** (capture 04) : sur les écrans de choix (exercices, niveaux, leçons, tables, entraînement), l'appui long faisait apparaître une étiquette rectangulaire.
+   - Depuis le choix en deux touchers, cette étiquette **double** la bulle de la mascotte, avec un autre texte : deux descriptions à la fois.
+   - La supprimer sur ces écrans : seule la bulle reste. L'appui long n'y fait plus rien de particulier ; il ne lance toujours rien.
+   - Ailleurs (maison, coquillage, « je ne sais pas », etc.), ne rien changer.
+   - Mettre `docs/SPEC.md` à jour (appui long).
+8. **L'entourage de sélection ne suit pas la tuile** (captures 04 et 05) : sur les tuiles carrées à coins arrondis (niveaux, leçons), l'entourage rouge est décalé dans les angles. Il doit :
+   - suivre exactement la forme de chaque tuile : cercle pour les exercices, carré aux coins arrondis du même rayon pour les niveaux et les leçons ;
+   - être centré, à distance régulière du bord.
+
+   Vérifier sur agrandissement, à 1280 × 800, 1920 × 1200 et à la taille de la tablette (1138 × 711, densité 2,25).
 
 **Voix** : en principe aucune phrase nouvelle. S'il y en a, les lister dans la demande de fusion.
 

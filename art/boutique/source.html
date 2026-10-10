@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0b5563">
+<title>Boutique du récif</title>
+<!--
+  MAQUETTE — la boutique du récif (art/boutique/README.md). Ce fichier est la SOURCE : `node art/boutique/outils/fabriquer.mjs`
+  en fait art/boutique/index.html, autonome (images, police, bulle de l'application et créatures embarquées).
+  Rien ici n'est l'application : aucun fichier de app/ n'est modifié, ils sont seulement lus à la fabrication.
+-->
+<style>
+/* la scène de l'application : 1280 × 800 px logiques, mise à l'échelle de l'écran (comme app/js/engine/stage.js) */
+html, body { margin: 0; height: 100%; background: #0b5563; overflow: hidden; }
+body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; font-family: "Shantell Sans", "Comic Sans MS", cursive; }
+#stage { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; overflow: hidden; transform-origin: 0 0; background: #0b5563; }
+#fond { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; }
+#ui { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; }
+.ecran { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; display: none; }
+.ecran.actif { display: block; }
+button { font: inherit; color: inherit; }
+
+/* la bulle de la mascotte : app/css/app.css, repris tel quel */
+.bulle { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; z-index: 20; pointer-events: none !important; transition: opacity 0.35s; }
+.bulle.cachee { opacity: 0; }
+.bulle > svg { position: absolute; left: 0; top: 0; overflow: visible; }
+.bulle .ombre { fill: rgba(10, 20, 30, 0.24); }
+.bulle .epais { fill: none; stroke: #111; stroke-width: 5; stroke-linejoin: round; }
+.bulle .trait { fill: #fffef8; stroke: #111; stroke-width: 4; stroke-linejoin: round; }
+.bulle-texte { position: absolute; width: max-content; box-sizing: border-box; text-align: center; color: #111; font: 600 30px/1.16 "Shantell Sans", "Comic Sans MS", cursive; letter-spacing: 0.01em; hyphens: none; overflow-wrap: normal; }
+.bulle-texte .m { opacity: 0; transition: opacity 0.12s; white-space: nowrap; }
+.bulle-texte .m.on { opacity: 1; }
+.bulle-texte .nb { color: #d63a26; font-weight: 700; }
+.bulle.tuile .bulle-texte, .bulle.large .bulle-texte { font-size: 26px; }
+.bulle.pop { animation: bulle-pop 0.38s ease-out; }
+@keyframes bulle-pop { 0% { transform: scale(0.9); opacity: 0.4; } 70% { transform: scale(1); opacity: 1; } 85% { transform: scale(0.985); } 100% { transform: scale(1); } }
+@keyframes invite { 0%, 100% { transform: scale(1); } 50% { transform: scale(0.93); } }
+@keyframes pop { 0% { transform: scale(0.82); } 60% { transform: scale(1); } 80% { transform: scale(0.95); } 100% { transform: scale(1); } }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-10px); } 40% { transform: translateX(9px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(4px); } }
+.pop { animation: pop 0.45s ease-out; }
+.invite { animation: invite 1.6s ease-in-out infinite; }
+
+/* la mascotte : trois courtes boucles détourées (attente, parle, joie), à sa place de l'application (x 22 à 232, y 136 à 416) */
+#mascotte { position: absolute; left: 22px; top: 136px; width: 210px; height: 280px; z-index: 6; }
+#mascotte img { position: absolute; inset: 0; width: 100%; height: 100%; visibility: hidden; }
+#mascotte img.on { visibility: visible; }
+#mascotte.tape { animation: touche-tete 0.35s ease-out; transform-origin: 50% 80%; }
+@keyframes touche-tete { 0% { transform: scale(0.96); } 60% { transform: scale(1); } 80% { transform: scale(0.985); } 100% { transform: scale(1); } }
+.mascotte-tap { position: absolute; left: 22px; top: 136px; width: 210px; height: 280px; padding: 0; border: 0; background: none; outline: none; z-index: 7; cursor: pointer; }
+
+/* les boutons ronds (bulles de l'application) : un pictogramme de l'atelier dans une bulle crème cerclée d'encre */
+.rond { position: absolute; padding: 0; border: 0; background: none; outline: none; cursor: pointer; touch-action: manipulation; }
+.rond img, .rond svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+.rond.inerte { cursor: default; }
+
+/* le compteur d'étoiles, en haut à droite, comme dans l'application */
+.compteur { position: absolute; left: 974px; top: 34px; height: 82px; display: flex; align-items: center; gap: 14px; pointer-events: none; z-index: 8; }
+.compteur img { width: 60px; height: 62px; }
+.compteur span { font: 600 64px/1 "Shantell Sans", cursive; color: #18213b; min-width: 120px; }
+.compteur.bat img { animation: pop 0.3s ease-out; }
+
+/* les onglets des zones (les pictogrammes de l'album) */
+.onglet { position: absolute; top: 22px; width: 96px; height: 96px; border-radius: 50%; padding: 0; border: 0; outline: none; cursor: pointer;
+  background: radial-gradient(circle at 35% 30%, #fffdf6 0 55%, #f1e8d6 100%); box-shadow: 0 0 0 4px #18132a, 6px 7px 0 4px rgba(10, 30, 40, 0.28); }
+.onglet img { position: absolute; left: 10px; top: 10px; width: 76px; height: 76px; pointer-events: none; }
+.onglet.actif { box-shadow: 0 0 0 3px #18132a, 0 0 0 10px #ff6a3d, 0 0 0 12px #18132a, 6px 7px 0 12px rgba(10, 30, 40, 0.28); }
+.onglet.fermee { background: radial-gradient(circle at 35% 30%, #ece6da 0 55%, #d8cfbf 100%); }
+.onglet.fermee img { filter: grayscale(0.7) brightness(0.92) opacity(0.75); }
+.onglet .cadenas { position: absolute; right: -8px; bottom: -8px; width: 44px; height: 44px; }
+.onglet .perles { position: absolute; left: 50%; bottom: -21px; transform: translateX(-50%); display: flex; gap: 1px; pointer-events: none; }
+.onglet .perles i { width: 5px; height: 5px; border-radius: 50%; background: rgba(255, 255, 255, 0.35); box-shadow: 0 0 0 1px rgba(10, 30, 40, 0.35); }
+.onglet .perles i.on { background: #fff3c4; box-shadow: 0 0 0 1px #18132a; }
+
+/* les tuiles de la vitrine : la tuile crème des écrans de choix, cernée d'encre, une ombre nette */
+.vt { position: absolute; width: 170px; height: 196px; padding: 0; border: 0; outline: none; cursor: pointer; border-radius: 22px; touch-action: manipulation;
+  background: linear-gradient(#fdf9f0, #f6efe0); box-shadow: 0 0 0 4px #18132a, 7px 8px 0 4px rgba(10, 30, 40, 0.26); }
+.vt::before { content: ""; position: absolute; left: 12px; right: 12px; top: 148px; height: 2px; background: rgba(24, 19, 42, 0.12); border-radius: 2px; }
+.vt.rare { background: linear-gradient(#fbfcff, #e9eef4); box-shadow: 0 0 0 4px #18132a, inset 0 0 0 5px #b9c3cf, inset 0 0 0 7px #eef2f7, inset 0 0 0 8px #8c97a5, 7px 8px 0 4px rgba(10, 30, 40, 0.26); }
+.vt.legendaire { background: linear-gradient(#fff6d2, #f2d77e); box-shadow: 0 0 0 4px #18132a, inset 0 0 0 5px #e7b93a, inset 0 0 0 7px #fff1b8, inset 0 0 0 8px #b98516, 7px 8px 0 4px rgba(10, 30, 40, 0.26); }
+.vt .crea { position: absolute; left: 12px; top: 12px; width: 146px; height: 128px; object-fit: contain; pointer-events: none; filter: drop-shadow(3px 4px 0 rgba(10, 30, 40, 0.18)); }
+.vt .prix { position: absolute; left: 0; right: 0; top: 150px; height: 42px; display: flex; align-items: center; justify-content: center; gap: 4px; pointer-events: none; }
+.vt .prix b { font: 600 36px/1 "Shantell Sans", cursive; color: #18213b; }
+.vt .prix img.et { width: 34px; height: 35px; }
+.vt .prix svg.briller { width: 30px; height: 30px; margin-right: 1px; }
+.vt .prix svg.diamant { width: 58px; height: 58px; margin-top: -8px; }
+.diamant-grand { position: absolute; left: 560px; top: 290px; width: 200px; height: 200px; pointer-events: none; filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.75)); }
+.vt .badge { position: absolute; left: -14px; top: -14px; width: 50px; height: 50px; pointer-events: none; }
+.vt .sablier { width: 36px; height: 40px; pointer-events: none; }
+.vt .sablier svg { width: 100%; height: 100%; display: block; }
+/* pas encore arrivée (arrivages) : une ombre de la créature ; zone fermée : pareil, plus sombre */
+.vt.bientot { background: linear-gradient(#ece5d6, #e2d9c6); }
+.vt.bientot .crea { filter: brightness(0) opacity(0.28); }
+.vt.fermee { background: linear-gradient(#d9d3c6, #cfc8b8); }
+.vt.fermee .crea { filter: brightness(0) opacity(0.22); }
+.vt.legendaire.cachee .crea { filter: brightness(0) sepia(1) saturate(4) hue-rotate(5deg) brightness(0.75) opacity(0.6); }
+/* déjà dans le récif : la créature, le pictogramme du récif dans le coin ; le prix devient celui pour la faire briller */
+.vt.terne .prix b { font-size: 32px; }
+/* brillante : un reflet irisé la balaie toutes les 3,5 s, quelques étincelles (comme les cartes brillantes) */
+.vt .reflet { position: absolute; inset: 0; border-radius: 22px; overflow: hidden; pointer-events: none; display: none; }
+.vt.brillante .reflet { display: block; }
+.vt .reflet::after { content: ""; position: absolute; top: -40%; bottom: -40%; width: 60%; left: -80%; transform: rotate(18deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 200, 240, 0.35) 30%, rgba(255, 255, 255, 0.7) 50%, rgba(170, 230, 255, 0.4) 70%, transparent); animation: reflet 3.5s ease-in-out infinite; }
+@keyframes reflet { 0%, 55% { left: -80%; } 100% { left: 130%; } }
+.vt .etincelle { position: absolute; width: 22px; height: 22px; pointer-events: none; display: none; animation: scintille 2.4s ease-in-out infinite; }
+.vt.brillante .etincelle { display: block; }
+@keyframes scintille { 0%, 100% { transform: scale(0.3) rotate(0deg); opacity: 0; } 40% { transform: scale(1) rotate(30deg); opacity: 1; } 70% { transform: scale(0.6) rotate(50deg); opacity: 0.6; } }
+/* arrivées depuis la dernière visite : un halo doré qui respire */
+.vt.nouvelle { box-shadow: 0 0 0 4px #18132a, 0 0 22px 10px rgba(255, 226, 120, 0.85), 7px 8px 0 4px rgba(10, 30, 40, 0.26); animation: nouvelle 1.4s ease-in-out infinite; }
+@keyframes nouvelle { 50% { box-shadow: 0 0 0 4px #18132a, 0 0 34px 16px rgba(255, 226, 120, 0.55), 7px 8px 0 4px rgba(10, 30, 40, 0.26); } }
+/* la tuile sélectionnée (premier toucher) : la bordure corail épaisse cernée d'encre des écrans de choix ; elle invite au second toucher */
+.vt.choisie { box-shadow: 0 0 0 2px #18132a, 0 0 0 11px #ff6a3d, 0 0 0 13px #18132a, 7px 8px 0 13px rgba(10, 30, 40, 0.26); animation: invite 1.6s ease-in-out infinite; z-index: 3; }
+.vt.secoue { animation: shake 0.5s ease-out; }
+
+/* la confirmation d'un achat : une croix rouge (annuler) et une coche verte (acheter), contre la tuile sélectionnée */
+#confirmer { position: absolute; display: none; gap: 18px; z-index: 5; }
+#confirmer.on { display: flex; }
+.conf { position: relative; width: 88px; height: 88px; border-radius: 50%; padding: 0; border: 0; outline: none; cursor: pointer; touch-action: manipulation;
+  background: radial-gradient(circle at 35% 30%, #fffdf6 0 55%, #f1e8d6 100%); box-shadow: 0 0 0 4px #18132a, 6px 7px 0 4px rgba(10, 30, 40, 0.3); }
+.conf svg { position: absolute; left: 14px; top: 14px; width: 60px; height: 60px; pointer-events: none; }
+.conf.oui { animation: invite 1.6s ease-in-out infinite; }
+
+/* le vol des étoiles, la créature qui sort de la vitrine, les étincelles */
+#vol { position: absolute; inset: 0; pointer-events: none; z-index: 30; }
+#vol img, #vol svg, #vol div { position: absolute; left: 0; top: 0; will-change: transform, opacity; }
+.voile { position: absolute; inset: 0; background: radial-gradient(circle at 50% 48%, rgba(255, 250, 220, 0.45), rgba(8, 40, 50, 0.35) 60%); opacity: 0; transition: opacity 0.4s; pointer-events: none; z-index: 25; }
+.voile.on { opacity: 1; }
+
+/* le récif (une version simplifiée : dans l'application, c'est le récif vivant) */
+.habitant { position: absolute; pointer-events: none; transform-origin: 50% 100%; }
+.habitant.nage { animation: flotte 5s ease-in-out infinite; }
+@keyframes flotte { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
+.habitant.halo { filter: drop-shadow(0 0 8px #fff7c8) drop-shadow(0 0 18px rgba(255, 240, 170, 0.8)); }
+.bulles-deco { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.bulles-deco i { position: absolute; bottom: -20px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.55); background: rgba(255, 255, 255, 0.12); animation: monte linear infinite; }
+@keyframes monte { from { transform: translateY(0); opacity: 0; } 10% { opacity: 1; } to { transform: translateY(-860px); opacity: 0.2; } }
+
+/* la fin de séance (une version simplifiée de la récompense) */
+.arrivage { position: absolute; left: 700px; top: 520px; display: flex; gap: 20px; }
+.arrivage .mini { position: relative; width: 150px; height: 150px; border-radius: 20px; background: linear-gradient(#fdf9f0, #f6efe0); box-shadow: 0 0 0 4px #18132a, 6px 7px 0 4px rgba(10, 30, 40, 0.26); }
+.arrivage .mini img { position: absolute; left: 12px; top: 12px; width: 126px; height: 126px; object-fit: contain; }
+.coquillage-occasion { position: absolute; left: 540px; top: 500px; width: 300px; pointer-events: none; }
+
+/* l'accès du parent : un petit rond discret en bas à droite, à garder appuyé une seconde (comme le logo de l'application) */
+.acces-parent { position: absolute; right: 8px; bottom: 8px; width: 64px; height: 64px; border-radius: 50%; border: 0; padding: 0; z-index: 40; cursor: pointer;
+  background: rgba(255, 255, 255, 0.08); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.16); }
+.acces-parent svg { width: 34px; height: 34px; opacity: 0.35; }
+.acces-parent.charge { background: rgba(255, 255, 255, 0.28); transition: background 1s linear; }
+#parent { position: fixed; inset: 0; display: none; z-index: 100; background: rgba(4, 22, 28, 0.55); font: 16px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #17202a; touch-action: pan-y; user-select: text; }
+#parent.ouvert { display: block; }
+#parent .boite { position: absolute; right: 0; top: 0; bottom: 0; width: min(520px, 100%); overflow-y: auto; background: #fbf7ee; padding: 18px 20px 30px; box-sizing: border-box; box-shadow: -8px 0 24px rgba(0, 0, 0, 0.3); }
+#parent h2 { margin: 0 0 4px; font-size: 22px; }
+#parent h3 { margin: 18px 0 6px; font-size: 16px; color: #0b5563; text-transform: uppercase; letter-spacing: 0.04em; }
+#parent p { margin: 4px 0; }
+#parent .petit { font-size: 13px; color: #5b6570; }
+#parent label.choix { display: block; padding: 10px 12px; margin: 6px 0; border-radius: 10px; background: #fff; box-shadow: 0 0 0 1px #d7cfbf; cursor: pointer; }
+#parent label.choix:has(input:checked) { box-shadow: 0 0 0 3px #ff6a3d; }
+#parent label.choix input { margin-right: 8px; transform: scale(1.3); }
+#parent button.p { min-height: 48px; padding: 8px 14px; margin: 4px 6px 4px 0; border-radius: 10px; border: 0; background: #0b5563; color: #fff; font: 600 15px system-ui, sans-serif; cursor: pointer; }
+#parent button.p.clair { background: #fff; color: #0b5563; box-shadow: inset 0 0 0 2px #0b5563; }
+#parent button.p.rouge { background: #b8402c; }
+#parent .etat { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: #e8f1f0; font-size: 14px; }
+#parent .fermer { position: absolute; right: 12px; top: 10px; width: 48px; height: 48px; border-radius: 50%; border: 0; background: #0b5563; color: #fff; font-size: 26px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <img id="fond" alt="">
+  <div class="bulles-deco" id="deco"></div>
+  <div id="ui">
+    <!-- le récif (version simplifiée) -->
+    <div class="ecran" id="recif">
+      <div id="habitants"></div>
+      <button class="rond inerte" id="r-maison" style="left:20px;top:642px;width:140px;height:140px" aria-label="maison"></button>
+      <button class="rond inerte" id="r-album" style="left:20px;top:490px;width:140px;height:140px" aria-label="album"></button>
+      <button class="rond" id="r-boutique" style="left:20px;top:338px;width:140px;height:140px" aria-label="boutique"></button>
+      <button class="rond inerte" id="r-reecouter" style="left:1150px;top:26px;width:104px;height:108px" aria-label="réécouter"></button>
+    </div>
+    <!-- la boutique -->
+    <div class="ecran" id="boutique">
+      <button class="rond" id="b-retour" style="left:22px;top:14px;width:112px;height:116px" aria-label="retour au récif"></button>
+      <div id="onglets"></div>
+      <div id="vitrine"></div>
+      <div id="confirmer"><button class="conf non" id="annuler" aria-label="annuler"></button><button class="conf oui" id="acheter" aria-label="acheter"></button></div>
+    </div>
+    <!-- la fin de séance -->
+    <div class="ecran" id="fin">
+      <div id="fin-contenu"></div>
+      <button class="rond invite" id="f-recif" style="left:1100px;top:610px;width:150px;height:155px" aria-label="le récif"></button>
+    </div>
+    <div class="compteur" id="compteur"><img alt=""><span>0</span></div>
+    <div id="mascotte"><img class="on" data-k="attente" alt=""><img data-k="parle" alt=""><img data-k="joie" alt=""></div>
+    <button class="mascotte-tap" id="tete" aria-label="réécouter"></button>
+    <div class="voile" id="voile"></div>
+    <div id="vol"></div>
+  </div>
+  <button class="acces-parent" id="acces-parent" aria-label="espace parent"><svg viewBox="0 0 24 24"><path fill="#fff" d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm8.4 4.6.1-1.1-.1-1.1 2-1.6-2-3.4-2.4 1a8 8 0 0 0-1.9-1.1L15.8 3h-3.9l-.4 2.7c-.7.3-1.3.6-1.9 1.1l-2.4-1-2 3.4 2 1.6-.1 1.1.1 1.1-2 1.6 2 3.4 2.4-1c.6.5 1.2.8 1.9 1.1l.4 2.7h3.9l.4-2.7c.7-.3 1.3-.6 1.9-1.1l2.4 1 2-3.4-2-1.6Z"/></svg></button>
+</div>
+
+<!-- l'espace parent de la maquette (texte pour le parent ; l'enfant ne le voit pas) -->
+<div id="parent"><div class="boite">
+  <button class="fermer" id="p-fermer" aria-label="fermer">×</button>
+  <h2>Réglages du parent</h2>
+  <p class="petit">Maquette de la boutique. Ces réglages ne servent qu'à comparer ; ils sont gardés sur cette tablette.</p>
+  <h3>Le rythme de la collection</h3>
+  <label class="choix"><input type="radio" name="mode" value="A"><b>Arrivages</b> : 2 créatures nouvelles arrivent à la boutique chaque semaine d'école (le lundi). Plus de séances donnent plus d'étoiles, mais pas plus de créatures : les étoiles en trop font briller.</label>
+  <label class="choix"><input type="radio" name="mode" value="B"><b>Libre</b> : toutes les créatures des zones ouvertes sont en vitrine. Plus de séances, plus vite. La zone suivante s'ouvre quand la zone est finie (et que son contenu est prêt).</label>
+  <h3>Les prix</h3>
+  <label class="choix"><input type="radio" name="prix" value="propose"><b>Proposés</b> : commune 40, rare 100 ; faire briller 150 et 300.</label>
+  <label class="choix"><input type="radio" name="prix" value="cher"><b>Plus chers</b> : commune 50, rare 120 ; faire briller 150 et 300.</label>
+  <h3>Simuler</h3>
+  <button class="p" id="p-seance">Fin de séance (+ 60 étoiles)</button>
+  <button class="p" id="p-serie">Fin de séance, la 10e de la série</button>
+  <button class="p" id="p-lundi">Lundi suivant (arrivage)</button>
+  <p class="petit">« Fin de séance » montre la récompense (étoile de diamant, ouverture d'une zone, légendaire, arrivages) ; « la 10e de la série » montre le coquillage de la série ; « Lundi suivant » fait arriver 2 créatures (mode Arrivages).</p>
+  <h3>Étoiles</h3>
+  <button class="p clair" data-et="-50">− 50</button><button class="p clair" data-et="10">+ 10</button><button class="p clair" data-et="50">+ 50</button><button class="p clair" data-et="200">+ 200</button><button class="p clair" data-et="0">mettre à 0</button>
+  <button class="p clair" id="p-doree">+ 1 étoile de diamant (à la prochaine fin de séance)</button>
+  <h3>Partir de…</h3>
+  <button class="p clair" data-pre="rentree">La rentrée (rien)</button><button class="p clair" data-pre="octobre">Octobre (4 créatures)</button><button class="p clair" data-pre="fevrier">Février (30 créatures)</button>
+  <h3>Pendant une séance</h3>
+  <label class="choix"><input type="checkbox" id="p-pause"> Séance en pause : la boutique est fermée (son bouton disparaît du récif).</label>
+  <div class="etat" id="p-etat"></div>
+  <p><button class="p rouge" id="p-effacer">Tout effacer</button></p>
+</div></div>
+
+<script>
+"use strict";
+// ============================================================================ les données (fabriquer.mjs les remplit)
+const D = /*DONNEES*/null;          // { cartes: [{ id, nomLu, nom, zone, rarete }], zones: [{ id, nom, ouvertureLu, fermeeLu }], legendaireLu }
+const IMAGES = /*IMAGES*/{};        // chemin -> data: URI
+const src = (p) => IMAGES[p] || p;
+
+// ============================================================================ la bulle de l'application (app/js/engine/bulle.js)
+/*BULLE*/
+
+// ============================================================================ les règles proposées (README, « Les règles »)
+const GRILLES = {
+  propose: { commune: 40, rare: 100, briller: { commune: 150, rare: 300 } },
+  cher: { commune: 50, rare: 120, briller: { commune: 150, rare: 300 } },
+};
+const ARRIVAGE = 2;          // mode Arrivages : créatures nouvelles par semaine d'école
+const CHANCE_BRILLANTE = 0.2; // une créature achetée sort brillante une fois sur cinq (comme aujourd'hui une carte nouvelle)
+const ZONES = D.zones.map((z) => z.id);
+const FICHE = Object.fromEntries(D.cartes.map((c) => [c.id, c]));
+// dans une zone : communes, rares, légendaires (l'ordre de l'album)
+const parZone = (z) => ["commune", "rare", "legendaire"].flatMap((r) => D.cartes.filter((c) => c.zone === z && c.rarete === r));
+// l'ordre des arrivages (mode Arrivages) : zone par zone, une rare toutes les 3 ou 4 créatures (comme la simulation)
+const ORDRE = ZONES.flatMap((z) => {
+  const c = D.cartes.filter((x) => x.zone === z && x.rarete === "commune"), r = D.cartes.filter((x) => x.zone === z && x.rarete === "rare"), out = [];
+  const k = Math.ceil(c.length / (r.length + 1));
+  while (c.length || r.length) { out.push(...c.splice(0, k)); if (r.length) out.push(r.shift()); }
+  return out.map((x) => x.id);
+});
+const gagnables = (z) => D.cartes.filter((c) => c.zone === z && c.rarete !== "legendaire");
+
+// ============================================================================ l'état (gardé sur la tablette, si elle le permet)
+const CLE = "maths-ce1-maquette-boutique-1";
+const PRESETS = {
+  rentree: () => ({ owned: {}, etoiles: 0, arrivees: ARRIVAGE, zones: ["lagon"], dorees: 0 }),
+  octobre: () => ({ owned: Object.fromEntries(["poisson-clown", "etoile-de-mer", "crabe", "crevette"].map((id) => [id, { b: id === "crabe" }])), etoiles: 58, arrivees: 6, zones: ["lagon"], dorees: 0 }),
+  fevrier: () => {
+    const owned = {}; let i = 0;
+    for (const c of [...gagnables("lagon"), ...gagnables("corail")]) owned[c.id] = { b: i++ % 4 === 1 };
+    return { owned, etoiles: 136, arrivees: 34, zones: ["lagon", "corail", "large"], dorees: 1 };
+  },
+};
+const base = () => ({ mode: "A", prix: "propose", pause: false, nouveautes: [], vues: 0, arrivee: null, gainDernier: 0, ...PRESETS.octobre() });
+let S;
+try { S = { ...base(), ...JSON.parse(localStorage.getItem(CLE) || "{}") }; } catch (e) { S = base(); }
+const garder = () => { try { localStorage.setItem(CLE, JSON.stringify(S)); } catch (e) { /* (navigation privée : rien n'est gardé) */ } };
+
+const G = () => GRILLES[S.prix];
+const prixDe = (c) => G()[c.rarete];
+const prixBriller = (c) => G().briller[c.rarete];
+// où en est une créature dans la boutique : légendaire, à vendre, pas encore arrivée, zone fermée, possédée (terne ou brillante)
+function etat(c) {
+  const o = S.owned[c.id];
+  if (c.rarete === "legendaire") return o ? (o.b ? "brillante" : "legende-a-toi") : "legende";
+  if (o) return o.b ? "brillante" : "terne";
+  if (!S.zones.includes(c.zone)) return "fermee";
+  if (S.mode === "A") { const pool = ORDRE.filter((id) => S.zones.includes(FICHE[id].zone)); if (!pool.slice(0, S.arrivees).includes(c.id)) return "bientot"; }
+  return "vendre";
+}
+const zoneFinie = (z) => gagnables(z).every((c) => S.owned[c.id]);
+const prochaineZone = () => { const i = ZONES.indexOf(S.zones.at(-1)); return zoneFinie(S.zones.at(-1)) ? ZONES[i + 1] ?? null : null; };
+
+// ============================================================================ les phrases (README, « Les phrases »)
+const nomLu = (c) => c.nomLu;
+const P = {
+  bienvenue: "Bienvenue à la boutique !",
+  consigne: "Touche une créature : je te dis son prix. Pour l'acheter, touche la coche verte.",
+  arrivees: "De nouvelles créatures sont arrivées à la boutique !",
+  cEst: (c) => `C'est ${nomLu(c)} !`,
+  prix: (n) => `Pour l'avoir, il faut ${n} étoiles.`,
+  dejaLa: "Cette créature est déjà dans ton récif.",
+  briller: (n) => `Pour la faire briller, il faut ${n} étoiles.`,
+  brilleDeja: "Cette créature brille déjà dans ton récif.",
+  bientot: "Cette créature arrive bientôt à la boutique !",
+  coche: "Si tu es d'accord, touche la coche verte.",
+  manque: (n) => (n === 1 ? "Il te manque une étoile." : `Il te manque ${n} étoiles.`),
+  achat: "Bravo ! Cette créature va vivre dans ton récif !",
+  brillante: "Oh ! Elle est brillante !",
+  zoneFinie: "Bravo ! Tu as toutes les créatures de cette zone ! Une nouvelle zone va bientôt s'ouvrir.",
+  // (les légendaires : des étoiles de diamant, pour ne pas confondre avec les étoiles de mer, jaunes : décision du parent du 10 octobre 2026)
+  legende: "C'est une créature légendaire ! Elle se gagne avec les étoiles de diamant.",
+  bilan: (n) => `Bravo ! Ce soir, tu as gagné ${n} étoiles de mer.`,
+  peutAcheter: "Tu peux choisir une créature à la boutique !",
+  premierHabitant: "Et voici son premier habitant !",
+  coquillageDiamant: "Ton étoile de diamant ouvre un coquillage de diamant !",
+  etoileDiamant: "Et une étoile de diamant ! Tu as joué souvent, semaine après semaine.",
+  serie: "Tu viens jouer souvent : voici un coquillage !",
+  serieEtoiles: "Toutes tes créatures brillent déjà : voici 20 étoiles !",
+};
+
+// ============================================================================ la scène
+const $ = (s, r = document) => r.querySelector(s);
+const stageEl = $("#stage"), ui = $("#ui");
+const SCENE = { ui, root: stageEl, k: 1 };
+function ajuster() {
+  const w = innerWidth, h = innerHeight, k = Math.min(w / 1280, h / 800);
+  SCENE.k = k; stageEl.style.transform = `translate(${((w - 1280 * k) / 2).toFixed(1)}px, ${((h - 800 * k) / 2).toFixed(1)}px) scale(${k})`;
+}
+addEventListener("resize", ajuster); ajuster();
+const attendre = (ms) => new Promise((r) => setTimeout(r, ms));
+const rect = (el) => { const r = el.getBoundingClientRect(), r0 = ui.getBoundingClientRect(), k = SCENE.k; return [(r.left - r0.left) / k, (r.top - r0.top) / k, (r.right - r0.left) / k, (r.bottom - r0.top) / k]; };
+const centre = (el) => { const r = rect(el); return [(r[0] + r[2]) / 2, (r[1] + r[3]) / 2]; };
+const popper = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };
+
+// les dessins de la maquette (style A : aplats, contour d'encre épais, une ombre nette ; à redessiner dans l'atelier à l'intégration)
+const ENCRE = "#18132a";
+// l'étoile de diamant (les légendaires) : une étoile taillée comme une pierre, dix facettes irisées éclairées d'en haut à gauche,
+// une table au centre, un reflet qui la traverse et des étincelles ; le dessin le plus précieux de l'application
+let nDiamant = 0;
+function svgDiamant(cls = "diamant") {
+  const id = `dm${++nDiamant}`, C = [50, 54], pt = (a, r) => [C[0] + r * Math.cos((a * Math.PI) / 180), C[1] + r * Math.sin((a * Math.PI) / 180)];
+  const P = [0, 1, 2, 3, 4].map((i) => pt(-90 + 72 * i, 45)), Q = [0, 1, 2, 3, 4].map((i) => pt(-54 + 72 * i, 20));
+  const contour = P.flatMap((p, i) => [p, Q[i]]), f = (xs) => xs.map((p) => p.map((v) => v.toFixed(1)).join(" ")).join(" ");
+  const TEINTES = ["#ff9ccf", "#b39bff", "#86d3ff", "#93edc2", "#ffdc7d"];
+  let facettes = "";
+  contour.forEach((a, i) => {
+    const b = contour[(i + 1) % 10], m = [(a[0] + b[0]) / 2 - C[0], (a[1] + b[1]) / 2 - C[1]];
+    const lum = 0.5 + 0.5 * Math.cos(Math.atan2(m[1], m[0]) - Math.atan2(-1, -1)), t = TEINTES[Math.floor(i / 2) % 5];
+    facettes += `<polygon points="${f([C, a, b])}" fill="${t}"/><polygon points="${f([C, a, b])}" fill="${lum > 0.5 ? "#fff" : "#4b3f8f"}" opacity="${(lum > 0.5 ? 0.12 + 0.62 * (lum - 0.5) * 2 : 0.05 + 0.22 * (0.5 - lum) * 2).toFixed(2)}"/>`;
+  });
+  const table = contour.map((p) => [C[0] + (p[0] - C[0]) * 0.36, C[1] + (p[1] - C[1]) * 0.36]);
+  return `<svg viewBox="0 0 100 100" class="${cls}"><defs><linearGradient id="${id}r" x1="-1" y1="0" x2="0" y2="1"><stop offset="0.35" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.95"/><stop offset="0.65" stop-color="#fff" stop-opacity="0"/>
+    <animate attributeName="x1" values="-1;-1;2" keyTimes="0;0.55;1" dur="3.4s" repeatCount="indefinite"/><animate attributeName="x2" values="0;0;3" keyTimes="0;0.55;1" dur="3.4s" repeatCount="indefinite"/></linearGradient>
+    <clipPath id="${id}c"><polygon points="${f(contour)}"/></clipPath></defs>
+    <radialGradient id="${id}h"><stop offset="0.45" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.7" stop-color="#d9c9ff" stop-opacity="0.25"/><stop offset="1" stop-color="#9fe6ff" stop-opacity="0"/></radialGradient><circle cx="50" cy="54" r="50" fill="url(#${id}h)"/>
+    <polygon points="${f(contour)}" transform="translate(4 5)" fill="rgba(10,30,40,0.3)"/>
+    <g clip-path="url(#${id}c)">${facettes}<polygon points="${f(table)}" fill="#fbf8ff"/><polygon points="${f(table)}" fill="none" stroke="#8f7ff0" stroke-opacity="0.7" stroke-width="1.3"/>
+      ${contour.map((p) => `<line x1="${C[0]}" y1="${C[1]}" x2="${p[0].toFixed(1)}" y2="${p[1].toFixed(1)}" stroke="${ENCRE}" stroke-opacity="0.22" stroke-width="1.1"/>`).join("")}
+      <rect x="0" y="0" width="100" height="100" fill="url(#${id}r)"/></g>
+    <polygon points="${f(contour)}" fill="none" stroke="${ENCRE}" stroke-width="4.2" stroke-linejoin="round"/>
+    <path d="M46.5 24 L48.5 17" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/><path d="M27 45 L33 45.5" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+    ${[[84, 18, 0], [14, 72, 1.1], [88, 80, 2.2]].map(([x, y, d]) => `<g transform="translate(${x} ${y})"><path d="M0 -9 C 1.3 -2.5 2.5 -1.3 9 0 C 2.5 1.3 1.3 2.5 0 9 C -1.3 2.5 -2.5 1.3 -9 0 C -2.5 -1.3 -1.3 -2.5 0 -9 Z" fill="#fff" stroke="${ENCRE}" stroke-width="1.3"><animate attributeName="opacity" values="0;1;0;0" keyTimes="0;0.3;0.6;1" dur="2.4s" begin="${d}s" repeatCount="indefinite"/></path></g>`).join("")}
+  </svg>`;
+}
+const SVG_COCHE = `<svg viewBox="0 0 60 60"><path d="M10 33 L24 46 L51 14" fill="none" stroke="rgba(10,30,40,0.3)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" transform="translate(3 3)"/><path d="M10 31 L24 44 L51 12" fill="none" stroke="${ENCRE}" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 31 L24 44 L51 12" fill="none" stroke="#3fb76a" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 30 L23 39" stroke="#a8ecbe" stroke-width="3" stroke-linecap="round"/></svg>`;
+const SVG_CROIX = `<svg viewBox="0 0 60 60"><g transform="translate(3 3)" stroke="rgba(10,30,40,0.3)" stroke-width="14" stroke-linecap="round"><path d="M15 15 L45 45"/><path d="M45 15 L15 45"/></g><g stroke="${ENCRE}" stroke-width="15" stroke-linecap="round"><path d="M15 15 L45 45"/><path d="M45 15 L15 45"/></g><g stroke="#e5484d" stroke-width="8" stroke-linecap="round"><path d="M15 15 L45 45"/><path d="M45 15 L15 45"/></g><path d="M17 16 L24 23" stroke="#ffb3b5" stroke-width="2.6" stroke-linecap="round"/></svg>`;
+const SVG_ETINCELLE = (c = "#fff6c4") => `<svg viewBox="-12 -12 24 24"><path d="M0 -11 C 1.6 -3 3 -1.6 11 0 C 3 1.6 1.6 3 0 11 C -1.6 3 -3 1.6 -11 0 C -3 -1.6 -1.6 -3 0 -11 Z" fill="${c}" stroke="${ENCRE}" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+const SVG_BRILLER = `<svg viewBox="0 0 30 30" class="briller"><g transform="translate(13 15)"><path d="M0 -12 C 1.8 -3.5 3.5 -1.8 12 0 C 3.5 1.8 1.8 3.5 0 12 C -1.8 3.5 -3.5 1.8 -12 0 C -3.5 -1.8 -1.8 -3.5 0 -12 Z" fill="#ffe36b" stroke="${ENCRE}" stroke-width="2.2" stroke-linejoin="round"/></g><g transform="translate(24 6) scale(0.42)"><path d="M0 -12 C 1.8 -3.5 3.5 -1.8 12 0 C 3.5 1.8 1.8 3.5 0 12 C -1.8 3.5 -3.5 1.8 -12 0 C -3.5 -1.8 -1.8 -3.5 0 -12 Z" fill="#bfe9ff" stroke="${ENCRE}" stroke-width="4" stroke-linejoin="round"/></g></svg>`;
+const SVG_SABLIER = `<svg viewBox="0 0 40 44"><g transform="translate(2.5 3)" fill="rgba(10,30,40,0.25)"><path d="M8 3 H32 V8 C32 15 24 18 24 22 C24 26 32 29 32 36 V41 H8 V36 C8 29 16 26 16 22 C16 18 8 15 8 8 Z"/></g><path d="M8 3 H32 V8 C32 15 24 18 24 22 C24 26 32 29 32 36 V41 H8 V36 C8 29 16 26 16 22 C16 18 8 15 8 8 Z" fill="#dff3f6" stroke="${ENCRE}" stroke-width="3" stroke-linejoin="round"/><path d="M12 9 H28 C27 13 22 15 20 18 C18 15 13 13 12 9 Z" fill="#f2c25a"/><path d="M11 38 C12 33 17 31 20 30 C23 31 28 33 29 38 Z" fill="#f2c25a"/><path d="M20 19 V30" stroke="#e0a83a" stroke-width="2"/><rect x="5" y="1" width="30" height="5" rx="2.5" fill="#b77a45" stroke="${ENCRE}" stroke-width="3"/><rect x="5" y="38" width="30" height="5" rx="2.5" fill="#b77a45" stroke="${ENCRE}" stroke-width="3"/></svg>`;
+const SVG_CADENAS = `<svg viewBox="0 0 44 44"><path d="M13 20 V14 C13 8 17 5 22 5 C27 5 31 8 31 14 V20" fill="none" stroke="${ENCRE}" stroke-width="9" stroke-linecap="round"/><path d="M13 20 V14 C13 8 17 5 22 5 C27 5 31 8 31 14 V20" fill="none" stroke="#c9cdd3" stroke-width="4" stroke-linecap="round"/><rect x="9" y="22" width="29" height="20" rx="5" fill="rgba(10,30,40,0.3)"/><rect x="6" y="19" width="32" height="21" rx="5" fill="#f2b33d" stroke="${ENCRE}" stroke-width="3.5"/><circle cx="22" cy="28" r="3.3" fill="${ENCRE}"/><path d="M22 29 V34" stroke="${ENCRE}" stroke-width="3" stroke-linecap="round"/></svg>`;
+// la boutique : un étal à auvent rayé, une étoile de mer posée dessus, dans la bulle crème des boutons de l'application
+const SVG_BOUTIQUE = `<svg viewBox="0 0 140 140">
+  <circle cx="74" cy="76" r="60" fill="rgba(10,30,40,0.28)"/>
+  <circle cx="68" cy="69" r="60" fill="#fffaf0" stroke="${ENCRE}" stroke-width="4.5"/>
+  <path d="M28 56 C 36 46 100 46 108 56" fill="none" stroke="#e9e1d0" stroke-width="3"/>
+  <rect x="40" y="58" width="6" height="44" fill="#9a6338" stroke="${ENCRE}" stroke-width="3"/><rect x="90" y="58" width="6" height="44" fill="#9a6338" stroke="${ENCRE}" stroke-width="3"/>
+  <rect x="31" y="90" width="74" height="22" rx="4" fill="#c98a52" stroke="${ENCRE}" stroke-width="3.5"/><path d="M33 99 H103" stroke="#a96d3c" stroke-width="2.5"/><path d="M87 92 V110" stroke="#a96d3c" stroke-width="2.5"/>
+  <path d="M27 40 L109 40 L113 60 C 108 67 99 67 95 60 C 90 67 81 67 77 60 C 72 67 63 67 59 60 C 54 67 45 67 41 60 C 36 67 27 67 23 60 Z" fill="#fffdf6" stroke="${ENCRE}" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M41 40 L41 60 C 36 67 27 67 23 60 L27 40 Z" fill="#ff6a3d"/><path d="M77 40 L77 60 C 72 67 63 67 59 60 L59 40 Z" fill="#ff6a3d"/><path d="M113 60 C 108 67 99 67 95 60 L95 40 L109 40 Z" fill="#ff6a3d"/>
+  <path d="M27 40 L109 40 L113 60 C 108 67 99 67 95 60 C 90 67 81 67 77 60 C 72 67 63 67 59 60 C 54 67 45 67 41 60 C 36 67 27 67 23 60 Z" fill="none" stroke="${ENCRE}" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M34 40 L39 30 H97 L102 40" fill="#2f8f9b" stroke="${ENCRE}" stroke-width="3.5" stroke-linejoin="round"/>
+  <g transform="translate(58 82) rotate(-8)"><path d="M0 -13 L4 -4 L13 -3 L6 3 L8 12 L0 7 L-8 12 L-6 3 L-13 -3 L-4 -4 Z" fill="#ffcf3a" stroke="${ENCRE}" stroke-width="2.6" stroke-linejoin="round"/></g>
+  <path d="M74 86 C 80 78 92 79 96 86 C 92 93 80 94 74 86 Z" fill="#7cc8d6" stroke="${ENCRE}" stroke-width="2.6"/><path d="M96 86 L103 80 L103 92 Z" fill="#7cc8d6" stroke="${ENCRE}" stroke-width="2.6" stroke-linejoin="round"/><circle cx="80" cy="85" r="1.8" fill="${ENCRE}"/>
+</svg>`;
+const bulleRonde = (img, pad = 18) => `<svg viewBox="0 0 140 140"><circle cx="74" cy="76" r="60" fill="rgba(10,30,40,0.28)"/><circle cx="68" cy="69" r="60" fill="#fffaf0" stroke="${ENCRE}" stroke-width="4.5"/></svg><img src="${src(img)}" style="left:${pad}px;top:${pad - 2}px;width:${140 - 2 * pad}px;height:${140 - 2 * pad}px;inset:auto" alt="">`;
+
+// ============================================================================ la mascotte et la voix (ici : la bulle seule)
+const bulle = new Bulle(SCENE);
+// sur la boutique, la bulle de la mascotte se met sous la tête (les tuiles commencent à x 340), comme sur les écrans de choix
+const PLACES_BOUTIQUE = [{ nom: "dessous", boite: [8, MASCOTTE.y + MASCOTTE.h + 34, 326, 792], pointe: MENTON, haut: true }, ...PLACES];
+const tete = $("#mascotte");
+let anim = "attente", animFin = 0, finParole = 0, dernier = null;
+function mascotte(k, ms = 0) {
+  if (k === "attente" && Date.now() < animFin) return;
+  anim = k; animFin = k === "joie" ? Date.now() + ms : 0;
+  for (const im of tete.querySelectorAll("img")) im.classList.toggle("on", im.dataset.k === k);
+  if (ms && k === "joie") setTimeout(() => { animFin = 0; mascotte(Date.now() < finParole ? "parle" : "attente"); }, ms);
+}
+// dire un texte : la bulle l'écrit au rythme d'une voix (environ 65 ms par lettre), la mascotte parle, puis se tait
+// `tuile` : la bulle part de cette tuile (écrans de choix, lot « Correctifs de la tablette »)
+function dire(texte, { tuile = null } = {}) {
+  const ms = Math.max(1300, 300 + texte.length * 65);
+  if (tuile) {
+    const r = rect(tuile);
+    bulle.ancrer({ texte, places: placesTuile(r), obstacles: () => obstaclesTuile(tuile) });
+  } else { bulle.ancrer(null); bulle.places = ecran === "boutique" ? PLACES_BOUTIQUE : PLACES; }
+  bulle.dire(texte, ms);
+  finParole = Date.now() + ms;
+  if (anim !== "joie") mascotte("parle");
+  clearTimeout(dire.t); dire.t = setTimeout(() => { bulle.silence(); if (anim === "parle") mascotte("attente"); }, ms);
+  dernier = { texte, tuile };
+  return attendre(ms + 250);
+}
+function obstaclesTuile(tuile) {
+  const r = rect(tuile), autres = [...document.querySelectorAll("#vitrine .vt")].filter((t) => t !== tuile).map(rect);
+  const durs = [r, rect($("#b-retour")), [MASCOTTE.x, MASCOTTE.y, MASCOTTE.x + MASCOTTE.w, MASCOTTE.y + MASCOTTE.h], ...[...document.querySelectorAll(".onglet")].map(rect)];
+  if ($("#confirmer").classList.contains("on")) for (const b of document.querySelectorAll(".conf")) durs.push(rect(b));
+  return { durs, souples: [rect($("#compteur")), ...autres] };
+}
+$("#tete").addEventListener("click", () => { popper(tete); tete.classList.remove("tape"); void tete.offsetWidth; tete.classList.add("tape"); if (verrou) return;
+  if (ecran === "boutique" && !dernier?.tuile) dire(P.consigne); else if (dernier) dire(dernier.texte, { tuile: dernier.tuile?.isConnected ? dernier.tuile : null }); });
+
+// ============================================================================ le compteur d'étoiles
+const compteur = $("#compteur"), cpt = compteur.querySelector("span");
+let affiche = 0;
+function montrerEtoiles(n) { affiche = n; cpt.textContent = String(Math.max(0, Math.round(n))); }
+// le compteur ne baisse jamais d'un coup : il suit les étoiles qui volent (SPEC, section 10)
+function animerCompteur(de, a, ms) {
+  return new Promise((r) => { const t0 = performance.now(); const pas = () => { const t = Math.min(1, (performance.now() - t0) / ms); montrerEtoiles(de + (a - de) * t);
+    if (Math.round(de + (a - de) * t) !== Math.round(de + (a - de) * Math.max(0, t - 0.02))) { compteur.classList.remove("bat"); void compteur.offsetWidth; compteur.classList.add("bat"); }
+    if (t < 1) requestAnimationFrame(pas); else r(); }; requestAnimationFrame(pas); });
+}
+
+// ============================================================================ les écrans
+let ecran = null, verrou = false;
+function aller(id) {
+  ecran = id;
+  for (const e of document.querySelectorAll(".ecran")) e.classList.toggle("actif", e.id === id);
+  // pas de mascotte ni de compteur dans le récif (SPEC, section 10, « Autour »)
+  const recif = id === "recif";
+  tete.style.display = recif ? "none" : ""; $("#tete").style.display = recif ? "none" : ""; compteur.style.display = recif ? "none" : "";
+  bulle.ancrer(null); bulle.cacher?.(); clearTimeout(dire.t); mascotte("attente"); dernier = null;
+  ({ recif: montrerRecif, boutique: montrerBoutique, fin: montrerFin })[id]();
+}
+
+// ---------------------------------------------------------------------------- le récif (simplifié)
+// les places des créatures du lagon dans le récif vivant (app/js/recif/recif-vivant.js : x, y, longueur en px du panorama de
+// 1 774 px de haut ; ramenées à la scène : × 800 / 1 774). Les autres zones sont plus loin dans la mer.
+const PLACE_LAGON = { "moule": [668, 1402, 125, 1], "anemone": [930, 1362, 220, 1], "poisson-clown": [1085, 1205, 165], "limace-de-mer": [1400, 1300, 125, 1], "oursin": [2205, 1345, 165, 1],
+  "etoile-de-mer": [430, 1590, 215, 1], "crabe": [1180, 1570, 265, 1], "crevette": [1480, 1440, 150], "bernard-l-ermite": [1840, 1560, 150, 1], "coquille-saint-jacques": [830, 1715, 165, 1],
+  "concombre-de-mer": [2110, 1725, 250, 1], "hippocampe": [1935, 1010, 106], "poisson-chirurgien": [560, 790, 250], "poisson-ballon": [2080, 650, 320], "raie-pastenague": [1340, 930, 540] };
+const KP = 800 / 1774;
+function montrerRecif() {
+  const h = $("#habitants"); h.innerHTML = "";
+  for (const [id, [x, y, len, sol]] of Object.entries(PLACE_LAGON)) {
+    if (!S.owned[id]) continue;
+    const im = new Image(); im.src = src(`img/creatures/${id}.webp`); im.className = "habitant" + (sol ? "" : " nage");
+    const w = len * KP * 1.05; im.style.width = `${w}px`; im.style.left = `${x * KP - w / 2}px`; im.style.top = `${y * KP - w * 0.45}px`;
+    im.style.animationDelay = `${-((x * 7) % 5000)}ms`;
+    if (S.owned[id].b) im.style.filter = "drop-shadow(0 0 6px rgba(255,250,210,0.9))";
+    h.append(im);
+  }
+  $("#r-boutique").style.display = S.pause ? "none" : "";
+  $("#r-boutique").classList.toggle("invite", !S.pause && peutAcheter());
+  // la créature qui vient d'arriver : elle entre à la nage, avec son halo, puis rejoint sa place (ou sa zone, plus loin)
+  if (S.arrivee && FICHE[S.arrivee]) {
+    const c = FICHE[S.arrivee], p = PLACE_LAGON[c.id], im = new Image(); im.src = src(`img/creatures/${c.id}.webp`); im.className = "habitant halo";
+    const w = p ? p[2] * KP * 1.05 : 230; im.style.width = `${w}px`; h.append(im);
+    const fin = p ? [p[0] * KP - w / 2, p[1] * KP - w * 0.45] : [1400, 260];
+    const deb = [-w - 40, 300];
+    const a = im.animate([{ transform: `translate(${deb[0]}px, ${deb[1]}px) scale(0.6)`, opacity: 0 }, { offset: 0.15, opacity: 1 }, { transform: `translate(${(deb[0] + fin[0]) / 2 + 120}px, ${Math.min(deb[1], fin[1]) - 80}px) scale(${p ? 2 : 1.3})`, offset: 0.55 },
+      { transform: `translate(${fin[0]}px, ${fin[1]}px) scale(1)`, opacity: p ? 1 : 0 }], { duration: 3600, easing: "ease-in-out", fill: "forwards" });
+    a.onfinish = () => { if (p) { im.classList.remove("halo"); im.classList.add(p[3] ? "x" : "nage"); im.style.left = `${fin[0]}px`; im.style.top = `${fin[1]}px`; im.getAnimations().forEach((x) => x.cancel()); im.style.transform = ""; } else im.remove(); };
+    // la propre créature d'avant, à sa place, est cachée le temps de l'arrivée
+    for (const x of h.querySelectorAll(".habitant:not(.halo)")) if (x.src === im.src) x.remove();
+    S.arrivee = null; garder();
+  }
+}
+const peutAcheter = () => D.cartes.some((c) => { const e = etat(c); return (e === "vendre" && S.etoiles >= prixDe(c)) || (e === "terne" && S.etoiles >= prixBriller(c)); });
+$("#r-boutique").addEventListener("click", (e) => { popper(e.currentTarget); setTimeout(() => aller("boutique"), 250); });
+for (const id of ["#r-maison", "#r-album", "#r-reecouter"]) $(id).addEventListener("click", (e) => popper(e.currentTarget));
+
+// ---------------------------------------------------------------------------- la boutique
+const COLS = 5, TX = 340, TY = 150, TW = 170, TH = 196, GX = 18, GY = 14;
+let zoneVue = "lagon", choisie = null, choisieT = 0, premiereVisite = true;
+function zoneParDefaut() {
+  // la zone où il y a quelque chose à faire : une arrivée, sinon la dernière ouverte
+  for (const z of S.zones) if (parZone(z).some((c) => S.nouveautes.includes(c.id))) return z;
+  for (const z of S.zones) if (parZone(z).some((c) => etat(c) === "vendre")) return z;
+  return S.zones.at(-1);
+}
+function montrerBoutique() {
+  montrerEtoiles(S.etoiles);
+  zoneVue = zoneParDefaut(); choisie = null; dessinerOnglets(); dessinerVitrine();
+  const arrivees = S.nouveautes.length > 0;
+  setTimeout(() => { if (ecran !== "boutique") return; dire((premiereVisite ? P.bienvenue + " " : arrivees ? P.arrivees + " " : "") + P.consigne); premiereVisite = false; }, 350);
+}
+function dessinerOnglets() {
+  const o = $("#onglets"); o.innerHTML = "";
+  ZONES.forEach((z, i) => {
+    const b = document.createElement("button"); b.className = "onglet" + (z === zoneVue ? " actif" : "") + (S.zones.includes(z) ? "" : " fermee");
+    b.style.left = `${410 + i * 116}px`; b.setAttribute("aria-label", z);
+    b.innerHTML = `<img src="${src(`img/album-zone-${z}.webp`)}" alt="">` + (S.zones.includes(z) ? "" : `<div class="cadenas">${SVG_CADENAS}</div>`);
+    // 15 perles sous l'onglet (comme l'album) : les créatures de la zone déjà dans le récif
+    const pr = document.createElement("div"); pr.className = "perles"; pr.innerHTML = parZone(z).map((c) => `<i class="${S.owned[c.id] ? "on" : ""}"></i>`).join(""); b.append(pr);
+    b.addEventListener("click", () => { if (verrou) return; popper(b); deselection(); zoneVue = z; dessinerOnglets(); dessinerVitrine();
+      if (!S.zones.includes(z)) dire(D.zones.find((x) => x.id === z).fermeeLu); });
+    o.append(b);
+  });
+}
+function tuileHTML(c) {
+  const e = etat(c), et = `<img class="et" src="${src("img/etoile.webp")}" alt="">`;
+  let prix = "", badge = "";
+  if (e === "vendre") prix = `<b>${prixDe(c)}</b>${et}`;
+  else if (e === "terne") prix = `${SVG_BRILLER}<b>${prixBriller(c)}</b>${et}`;
+  else if (e === "bientot") prix = `<div class="sablier">${SVG_SABLIER}</div>`;
+  else if (e === "legende") prix = svgDiamant();
+  if (S.owned[c.id]) badge = `<img class="badge" src="${src("img/recif.webp")}" alt="">`;
+  const eti = [[18, 22, 0], [128, 30, 0.8], [132, 112, 1.5], [26, 108, 2.1]].map(([x, y, d]) => `<div class="etincelle" style="left:${x}px;top:${y}px;animation-delay:${d}s">${SVG_ETINCELLE()}</div>`).join("");
+  return `<img class="crea" src="${src(`img/creatures/${c.id}.webp`)}" alt=""><div class="prix">${prix}</div>${badge}<div class="reflet"></div>${eti}`;
+}
+function dessinerVitrine() {
+  const v = $("#vitrine"); v.innerHTML = ""; $("#confirmer").classList.remove("on");
+  parZone(zoneVue).forEach((c, i) => {
+    const e = etat(c), b = document.createElement("button");
+    b.className = `vt ${c.rarete} ${e}` + (e === "brillante" ? " brillante" : "") + (e === "legende" ? " cachee" : "") + (S.nouveautes.includes(c.id) ? " nouvelle" : "");
+    b.dataset.id = c.id; b.setAttribute("aria-label", c.nom);
+    b.style.left = `${TX + (i % COLS) * (TW + GX)}px`; b.style.top = `${TY + Math.floor(i / COLS) * (TH + GY)}px`;
+    b.innerHTML = tuileHTML(c);
+    b.addEventListener("click", (ev) => { ev.stopPropagation(); toucherTuile(b, c); });
+    v.append(b);
+  });
+}
+function deselection() { if (choisie) choisie.classList.remove("choisie"); choisie = null; $("#confirmer").classList.remove("on"); bulle.ancrer(null); }
+$("#boutique").addEventListener("click", (e) => { if (e.target.closest(".vt, .conf, .onglet, .rond")) return; if (!verrou) deselection(); });
+// la croix et la coche, seulement quand elle a assez d'étoiles : sous la tuile (au-dessus pour la dernière rangée)
+const coutDe = (c) => (etat(c) === "vendre" ? prixDe(c) : etat(c) === "terne" ? prixBriller(c) : null);
+function placerConfirmation(b) {
+  const k = $("#confirmer"), c = FICHE[b.dataset.id], cout = coutDe(c), [x0, y0, x1, y1] = rect(b);
+  if (cout === null || S.etoiles < cout) { k.classList.remove("on"); return; }
+  const l = 88 * 2 + 18; k.style.left = `${Math.min(1272 - l, (x0 + x1) / 2 - l / 2)}px`; k.style.top = `${y1 + 92 > 800 ? y0 - 66 : y1 + 2}px`; k.classList.add("on");
+}
+// premier toucher : la tuile est sélectionnée, la mascotte dit ce que c'est et son prix ; second toucher : elle achète
+async function toucherTuile(b, c) {
+  if (verrou) return;
+  const e = etat(c);
+  if (S.nouveautes.includes(c.id)) { S.nouveautes = S.nouveautes.filter((x) => x !== c.id); b.classList.remove("nouvelle"); garder(); }
+  if (choisie !== b) { deselection(); choisie = b; b.classList.add("choisie"); }
+  // (un second toucher redit la même chose : seule la coche verte achète, demande du parent du 10 octobre 2026)
+  placerConfirmation(b); dire(texteTuile(c, e), { tuile: b });
+}
+function texteTuile(c, e) {
+  const suite = (cout) => (S.etoiles >= cout ? P.coche : P.manque(cout - S.etoiles));
+  if (e === "vendre") return `${P.cEst(c)} ${P.prix(prixDe(c))} ${suite(prixDe(c))}`;
+  if (e === "terne") return `${P.cEst(c)} ${P.dejaLa} ${P.briller(prixBriller(c))} ${suite(prixBriller(c))}`;
+  if (e === "brillante" || e === "legende-a-toi") return `${P.cEst(c)} ${P.brilleDeja}`;
+  if (e === "bientot") return P.bientot;
+  if (e === "legende") return P.legende;
+  if (e === "fermee") return D.zones.find((z) => z.id === c.zone).fermeeLu;
+  return P.cEst(c);
+}
+$("#acheter").addEventListener("click", (ev) => {
+  ev.stopPropagation(); if (verrou || !choisie) return;
+  const b = choisie, c = FICHE[b.dataset.id], e = etat(c); popper(ev.currentTarget);
+  if (e === "vendre" && S.etoiles >= prixDe(c)) acheter(b, c); else if (e === "terne" && S.etoiles >= prixBriller(c)) fairebriller(b, c);
+});
+$("#annuler").addEventListener("click", (ev) => { ev.stopPropagation(); if (verrou) return; popper(ev.currentTarget); clearTimeout(dire.t); bulle.silence(); mascotte("attente"); setTimeout(deselection, 150); });
+
+// ---------------------------------------------------------------------------- l'achat : les étoiles volent vers la créature
+async function volEtoiles(cible, prix) {
+  const vol = $("#vol"), [cx, cy] = centre(cible), [sx, sy] = [1004, 76], n = Math.max(6, Math.min(16, Math.round(prix / 8))), duree = 820, ecart = 70;
+  const de = S.etoiles, a = S.etoiles - prix;
+  const total = duree + ecart * (n - 1);
+  animerCompteur(de, a, total);
+  const vols = [];
+  for (let i = 0; i < n; i++) {
+    const im = new Image(); im.src = src("img/etoile.webp"); im.style.width = "46px"; im.style.height = "47px"; im.style.opacity = "0"; vol.append(im);
+    const mx = (sx + cx) / 2 + (i % 2 ? 60 : -60), my = Math.min(sy, cy) - 90 - (i % 3) * 30, kf = [];
+    for (let j = 0; j <= 12; j++) { const t = j / 12, x = (1 - t) ** 2 * sx + 2 * (1 - t) * t * mx + t * t * cx, y = (1 - t) ** 2 * sy + 2 * (1 - t) * t * my + t * t * cy;
+      kf.push({ transform: `translate(${x - 23}px, ${y - 23}px) rotate(${t * 220}deg) scale(${1 - 0.45 * t})`, opacity: t < 0.08 ? t / 0.08 : t > 0.92 ? (1 - t) / 0.08 : 1 }); }
+    const an = im.animate(kf, { duration: duree, delay: i * ecart, easing: "cubic-bezier(.45,.05,.55,.95)", fill: "forwards" });
+    vols.push(an.finished.then(() => { im.remove(); popper(cible); }));
+  }
+  await Promise.all(vols);
+  S.etoiles = a; montrerEtoiles(a); garder();
+}
+function gerbe([x, y], n = 14, r = 120) {
+  const vol = $("#vol");
+  for (let i = 0; i < n; i++) {
+    const d = document.createElement("div"); d.innerHTML = SVG_ETINCELLE(i % 3 ? "#fff6c4" : "#bfe9ff"); d.style.width = d.style.height = `${18 + (i % 4) * 6}px`; vol.append(d);
+    const ang = (i / n) * Math.PI * 2 + Math.random() * 0.3, rr = r * (0.7 + Math.random() * 0.5);
+    d.animate([{ transform: `translate(${x - 12}px, ${y - 12}px) scale(0.2)`, opacity: 1 }, { transform: `translate(${x - 12 + Math.cos(ang) * rr}px, ${y - 12 + Math.sin(ang) * rr}px) scale(1) rotate(90deg)`, opacity: 0 }],
+      { duration: 900 + (i % 5) * 80, easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" }).finished.then(() => d.remove());
+  }
+}
+async function acheter(b, c) {
+  verrou = true; $("#confirmer").classList.remove("on"); b.classList.remove("choisie"); bulle.ancrer(null); bulle.cacher();
+  await volEtoiles(b, prixDe(c));
+  const brillante = Math.random() < CHANCE_BRILLANTE;
+  S.owned[c.id] = { b: brillante }; S.arrivee = c.id; garder();
+  // la créature sort de la vitrine, grandit au milieu, puis part vers le récif
+  const crea = b.querySelector(".crea"), [x0, y0, x1, y1] = rect(crea), vol = $("#vol"), im = new Image(); im.src = crea.src;
+  im.style.width = `${x1 - x0}px`; im.style.height = `${y1 - y0}px`; im.style.objectFit = "contain"; vol.append(im);
+  crea.style.visibility = "hidden"; $("#voile").classList.add("on"); mascotte("joie", 3600);
+  const dep = `translate(${x0}px, ${y0}px)`, mil = `translate(${640 - (x1 - x0) / 2}px, ${390 - (y1 - y0) / 2}px) scale(2.3)`;
+  await im.animate([{ transform: dep + " scale(1)" }, { transform: mil }], { duration: 700, easing: "cubic-bezier(.3,1.4,.5,1)", fill: "forwards" }).finished;
+  gerbe([640, 390], 18, 190); if (brillante) im.style.filter = "drop-shadow(0 0 10px #fff7c8) drop-shadow(0 0 22px rgba(190,230,255,0.9))";
+  const flotte = im.animate([{ transform: mil }, { transform: mil.replace("scale(2.3)", "scale(2.38)") + " rotate(-2deg)" }, { transform: mil }], { duration: 1600, iterations: Infinity, easing: "ease-in-out" });
+  await dire(brillante ? `${P.achat} ${P.brillante}` : P.achat);
+  flotte.cancel();
+  const retour = $("#b-retour"), [rx, ry] = centre(retour);
+  $("#voile").classList.remove("on");
+  await im.animate([{ transform: mil, opacity: 1 }, { transform: `translate(${rx - (x1 - x0) / 2}px, ${ry - (y1 - y0) / 2}px) scale(0.25)`, opacity: 0.2 }], { duration: 750, easing: "cubic-bezier(.6,0,.8,.4)", fill: "forwards" }).finished;
+  im.remove(); popper(retour); bulle.cacher();
+  dessinerOnglets(); dessinerVitrine(); choisie = null; verrou = false;
+  if (zoneFinie(c.zone) && S.zones.at(-1) === c.zone && ZONES.indexOf(c.zone) < ZONES.length - 1) dire(P.zoneFinie);
+}
+async function fairebriller(b, c) {
+  verrou = true; $("#confirmer").classList.remove("on"); b.classList.remove("choisie"); bulle.ancrer(null); bulle.cacher();
+  await volEtoiles(b, prixBriller(c));
+  S.owned[c.id].b = true; garder();
+  gerbe(centre(b), 16, 130); mascotte("joie", 3000);
+  b.className = `vt ${c.rarete} brillante`; b.innerHTML = tuileHTML(c); popper(b);
+  await dire(`${P.cEst(c)} ${P.brillante}`, { tuile: b });
+  dessinerOnglets(); choisie = null; verrou = false;
+}
+$("#b-retour").addEventListener("click", (e) => { if (verrou) return; popper(e.currentTarget); setTimeout(() => aller("recif"), 250); });
+
+// ---------------------------------------------------------------------------- la fin de séance (simplifiée) : bilan, occasions, arrivages
+async function montrerFin() {
+  const f = $("#fin-contenu"); f.innerHTML = ""; $("#f-recif").style.visibility = "hidden"; verrou = true;
+  const gain = S.gainDernier || 60, avant = S.etoiles - gain;
+  montrerEtoiles(avant);
+  // 1. le bilan : les étoiles de la séance volent jusqu'au compteur
+  const vol = $("#vol"), vols = [];
+  for (let i = 0; i < 12; i++) { const im = new Image(); im.src = src("img/etoile.webp"); im.style.width = "52px"; im.style.height = "53px"; vol.append(im);
+    const x0 = 560 + (i % 4) * 60, y0 = 360 + Math.floor(i / 4) * 60;
+    vols.push(im.animate([{ transform: `translate(${x0}px, ${y0}px) scale(0.2)`, opacity: 0 }, { transform: `translate(${x0}px, ${y0 - 20}px) scale(1)`, opacity: 1, offset: 0.3 }, { transform: `translate(980px, 50px) scale(0.6)`, opacity: 1 }],
+      { duration: 1300, delay: 200 + i * 90, easing: "ease-in", fill: "forwards" }).finished.then(() => im.remove())); }
+  animerCompteur(avant, S.etoiles, 1300 + 12 * 90);
+  await dire(P.bilan(gain)); await Promise.all(vols);
+  // 2. une étoile de diamant gagnée (4 semaines réussies)
+  if (S.diamantsNouveaux) {
+    f.insertAdjacentHTML("beforeend", svgDiamant("diamant-grand")); const d = f.lastElementChild; popper(d); gerbe([660, 390], 18, 180); mascotte("joie", 3000);
+    await dire(P.etoileDiamant); S.diamantsNouveaux = 0; garder();
+    await d.animate([{ transform: "scale(1)", opacity: 1 }, { transform: "translate(0, 140px) scale(0.3)", opacity: 0 }], { duration: 600, easing: "ease-in", fill: "forwards" }).finished; d.remove();
+  }
+  // 3. les occasions du coquillage : la série (toutes les 10 séances), une zone qui s'ouvre (son premier habitant offert, une
+  // commune tirée au hasard), une légendaire (étoile de diamant)
+  if (S.serieDixieme) {
+    S.serieDixieme = false;
+    const ternes = D.cartes.filter((c) => S.owned[c.id] && !S.owned[c.id].b);
+    if (ternes.length) { const c = ternes[Math.floor(Math.random() * ternes.length)]; await coquillage("img/coquillage-0.webp", "img/coquillage-11.webp", c, `${P.serie} ${P.cEst(c)} ${P.brillante}`, true); S.owned[c.id].b = true; garder(); }
+    else { const de = S.etoiles; S.etoiles += 20; garder(); animerCompteur(de, S.etoiles, 900); await dire(P.serieEtoiles); }
+  }
+  const z = prochaineZone();
+  if (z) {
+    const communes = gagnables(z).filter((c) => c.rarete === "commune" && !S.owned[c.id]);
+    S.zones.push(z); const zo = D.zones.find((x) => x.id === z), offert = communes[Math.floor(Math.random() * communes.length)];
+    await coquillage("img/coquillage-0.webp", "img/coquillage-11.webp", offert, `${zo.ouvertureLu.split("!")[0]}! ${P.premierHabitant} ${P.cEst(offert)}`);
+    S.owned[offert.id] = { b: false }; garder();
+  }
+  const leg = D.cartes.find((c) => c.rarete === "legendaire" && S.zones.includes(c.zone) && !S.owned[c.id] && zoneFinie(c.zone));
+  if (leg && S.dorees > 0) { S.dorees--; await coquillage("img/coquillage-diamant-0.webp", "img/coquillage-diamant-11.webp", leg, `${P.coquillageDiamant} ${P.cEst(leg)}`, false, true); S.owned[leg.id] = { b: false }; garder(); }
+  // 4. les arrivages de la semaine (mode Arrivages)
+  if (S.mode === "A" && S.nouveautes.length) {
+    const a = document.createElement("div"); a.className = "arrivage"; a.style.left = "560px"; a.style.top = "360px";
+    a.innerHTML = S.nouveautes.slice(0, 4).map((id) => `<div class="mini"><img src="${src(`img/creatures/${id}.webp`)}" alt=""></div>`).join(""); f.append(a);
+    for (const m of a.children) popper(m);
+    await dire(P.arrivees); await attendre(400); a.remove();
+  }
+  // 5. de quoi acheter : une invitation, et le bouton mène droit à la boutique (sinon au récif : décision du parent du 10 octobre 2026)
+  const versBoutique = peutAcheter(), fb = $("#f-recif");
+  fb.innerHTML = versBoutique ? SVG_BOUTIQUE : `<img src="${src("img/recif.webp")}" alt="">`; fb.setAttribute("aria-label", versBoutique ? "la boutique" : "le récif"); fb.dataset.vers = versBoutique ? "boutique" : "recif";
+  if (versBoutique) await dire(P.peutAcheter);
+  fb.style.visibility = "visible"; verrou = false;
+}
+// un coquillage des occasions : il s'ouvre, la créature en sort (`briller` : elle sort en brillant ; `diamant` : l'étoile de diamant
+// vole d'abord jusqu'au coquillage)
+async function coquillage(ferme, ouvert, c, texte, briller = false, diamant = false) {
+  const f = $("#fin-contenu"), im = new Image(); im.src = src(ferme); im.className = "coquillage-occasion"; f.append(im); popper(im);
+  if (diamant) {
+    f.insertAdjacentHTML("beforeend", svgDiamant("diamant-grand")); const d = f.lastElementChild; d.style.cssText = "width:110px;height:110px;left:635px;top:150px";
+    await d.animate([{ transform: "translate(0, 0) scale(0.6)", opacity: 0 }, { transform: "translate(0, 0) scale(1)", opacity: 1, offset: 0.3 }, { transform: "translate(0, 360px) scale(0.4)", opacity: 0.4 }], { duration: 1300, easing: "ease-in", fill: "forwards" }).finished; d.remove();
+  } else await attendre(900);
+  im.src = src(ouvert); gerbe([690, 560], diamant ? 26 : 16, diamant ? 220 : 170);
+  const cr = new Image(); cr.src = src(`img/creatures/${c.id}.webp`); cr.style.cssText = "position:absolute;left:570px;top:300px;width:240px;height:200px;object-fit:contain"; f.append(cr);
+  cr.animate([{ transform: "translateY(120px) scale(0.3)", opacity: 0 }, { transform: "translateY(0) scale(1)", opacity: 1 }], { duration: 700, easing: "cubic-bezier(.3,1.4,.5,1)" });
+  if (briller) { cr.style.filter = "drop-shadow(0 0 10px #fff7c8) drop-shadow(0 0 22px rgba(190,230,255,0.9))"; setTimeout(() => gerbe([690, 400], 16, 150), 600); }
+  mascotte("joie", 3000); await dire(texte); await attendre(300); im.remove(); cr.remove();
+}
+$("#f-recif").addEventListener("click", (e) => { if (verrou) return; popper(e.currentTarget); setTimeout(() => aller(e.currentTarget.dataset.vers === "boutique" ? "boutique" : "recif"), 250); });
+
+// ============================================================================ l'espace parent (appui long d'une seconde sur le petit rond)
+const acces = $("#acces-parent"); let appui = 0;
+acces.addEventListener("pointerdown", () => { acces.classList.add("charge"); appui = setTimeout(ouvrirParent, 1000); });
+for (const ev of ["pointerup", "pointerleave", "pointercancel"]) acces.addEventListener(ev, () => { clearTimeout(appui); acces.classList.remove("charge"); });
+addEventListener("keydown", (e) => { if (e.key === "p") ouvrirParent(); });
+function ouvrirParent() {
+  acces.classList.remove("charge"); $("#parent").classList.add("ouvert");
+  for (const n of ["mode", "prix"]) for (const i of document.querySelectorAll(`input[name=${n}]`)) i.checked = i.value === S[n];
+  $("#p-pause").checked = !!S.pause; etatParent();
+}
+function etatParent() {
+  const g = D.cartes.filter((c) => c.rarete !== "legendaire"), nb = g.filter((c) => S.owned[c.id]).length, br = Object.values(S.owned).filter((o) => o.b).length;
+  const vitrine = D.cartes.filter((c) => etat(c) === "vendre").length;
+  $("#p-etat").innerHTML = `<b>${S.etoiles}</b> étoiles · <b>${nb}</b> créatures sur 55 (+ ${D.cartes.filter((c) => c.rarete === "legendaire" && S.owned[c.id]).length} légendaires sur 5) · <b>${br}</b> brillantes<br>
+    En vitrine : <b>${vitrine}</b> à acheter · zones ouvertes : ${S.zones.length} · étoiles de diamant : ${S.dorees}` + (S.mode === "A" ? ` · arrivées : ${Math.min(S.arrivees, 55)}` : "");
+}
+function fermerParent() { $("#parent").classList.remove("ouvert"); garder(); aller(ecran === "fin" ? "recif" : ecran); }
+$("#p-fermer").addEventListener("click", fermerParent);
+$("#parent").addEventListener("click", (e) => { if (e.target.id === "parent") fermerParent(); });
+for (const n of ["mode", "prix"]) for (const i of document.querySelectorAll(`input[name=${n}]`)) i.addEventListener("change", () => { S[n] = i.value; S.nouveautes = []; garder(); etatParent(); });
+$("#p-pause").addEventListener("change", (e) => { S.pause = e.target.checked; garder(); });
+for (const b of document.querySelectorAll("[data-et]")) b.addEventListener("click", () => { const d = +b.dataset.et; S.etoiles = d ? Math.max(0, S.etoiles + d) : 0; garder(); etatParent(); });
+$("#p-doree").addEventListener("click", () => { S.dorees++; S.diamantsNouveaux = (S.diamantsNouveaux ?? 0) + 1; garder(); etatParent(); });
+for (const b of document.querySelectorAll("[data-pre]")) b.addEventListener("click", () => { Object.assign(S, PRESETS[b.dataset.pre](), { nouveautes: [], arrivee: null }); garder(); etatParent(); });
+$("#p-effacer").addEventListener("click", () => { try { localStorage.removeItem(CLE); } catch (e) {} S = base(); premiereVisite = true; garder(); ouvrirParent(); });
+// une semaine d'école passe : 2 créatures arrivent (mode Arrivages)
+function lundi() {
+  if (S.mode !== "A") return [];
+  const pool = () => ORDRE.filter((id) => S.zones.includes(FICHE[id].zone)), avant = pool().slice(0, S.arrivees);
+  S.arrivees += ARRIVAGE; const apres = pool().slice(0, S.arrivees), neuves = apres.filter((id) => !avant.includes(id) && !S.owned[id]);
+  S.nouveautes = [...new Set([...S.nouveautes, ...neuves])]; return neuves;
+}
+$("#p-lundi").addEventListener("click", () => { lundi(); garder(); $("#parent").classList.remove("ouvert"); aller(ecran === "fin" ? "recif" : ecran); });
+// une séance : environ 60 étoiles (la simulation : 50 à 70 selon l'enfant) ; à 2 séances par semaine, une sur deux commence une
+// semaine (un lundi d'arrivage) ; toutes les 10 séances de la série, le coquillage de la série
+function finDeSeance(dixieme = false) {
+  const gain = 54 + Math.floor(Math.random() * 13); S.gainDernier = gain; S.etoiles += gain;
+  S.seances = (S.seances ?? 0) + 1; if (S.mode === "A" && S.seances % 2 === 0) lundi();
+  if (dixieme || S.seances % 10 === 0) { S.serieDixieme = true; if (dixieme) S.seances = Math.ceil(S.seances / 10) * 10; }
+  garder(); $("#parent").classList.remove("ouvert"); aller("fin");
+}
+$("#p-seance").addEventListener("click", () => finDeSeance());
+$("#p-serie").addEventListener("click", () => finDeSeance(true));
+
+// ============================================================================ démarrage
+(async function demarrer() {
+  try { const ff = new FontFace("Shantell Sans", `url(${src("img/shantell-sans-600.woff2")})`, { weight: "600 700" }); document.fonts.add(await ff.load()); } catch (e) { /* (police de secours) */ }
+  $("#fond").src = src("img/lagon.webp");
+  for (const im of tete.querySelectorAll("img")) im.src = src(`img/mascotte-${im.dataset.k}.webp`);
+  compteur.querySelector("img").src = src("img/etoile.webp");
+  $("#r-maison").innerHTML = `<img src="${src("img/maison.webp")}" alt="">`;
+  $("#r-album").innerHTML = `<img src="${src("img/album.webp")}" alt="">`;
+  $("#r-reecouter").innerHTML = `<img src="${src("img/reecouter.webp")}" alt="">`;
+  $("#r-boutique").innerHTML = SVG_BOUTIQUE;
+  $("#acheter").innerHTML = SVG_COCHE; $("#annuler").innerHTML = SVG_CROIX;
+  $("#b-retour").innerHTML = `<img src="${src("img/recif.webp")}" alt="">`;
+  $("#f-recif").innerHTML = `<img src="${src("img/recif.webp")}" alt="">`;
+  const deco = $("#deco"); for (let i = 0; i < 9; i++) { const b = document.createElement("i"), r = 6 + (i * 7) % 14; b.style.cssText = `left:${(i * 137) % 1240 + 20}px;width:${r}px;height:${r}px;animation-duration:${9 + (i * 5) % 9}s;animation-delay:${-i * 1.7}s`; deco.append(b); }
+  aller(new URLSearchParams(location.search).get("ecran") || "recif");
+  window.__maquette = { S, aller, dire, ouvrirParent, lundi };
+})();
+</script>
+</body>
+</html>

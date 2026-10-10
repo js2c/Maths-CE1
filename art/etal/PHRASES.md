@@ -1,6 +1,6 @@
 # Les phrases à fabriquer pour l'étal (à reporter dans `app/content/textes.json` au lot de l'étal)
 
-La maquette les fait dire par la synthèse vocale du navigateur, en secours ; dans l'application, chacune sera un fichier fabriqué avec Chatterbox, comme les autres phrases (`docs/VOIX.md`), avec le reste des voix des lots, en une seule fois.
+Aucune voix n'est fabriquée ici (ni dans une session Claude Code) : la maquette n'affiche que la bulle. Le parent fabriquera ces phrases plus tard, sur son ordinateur, avec Chatterbox, avec le reste des voix des lots (`docs/VOIX.md`).
 
 ## L'orage arrive (`etalOrage`, une tirée au hasard, jamais deux fois de suite la même)
 

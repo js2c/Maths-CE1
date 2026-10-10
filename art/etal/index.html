@@ -32,7 +32,10 @@ html,body{margin:0;height:100%;background:var(--fond);overflow:hidden;touch-acti
   transition:transform .38s cubic-bezier(.25,.9,.35,1),opacity .3s;filter:drop-shadow(0 3px 2px rgba(20,12,4,.45))}
 #caisse .m.glisse{transition:none}
 #pf{position:absolute;left:0;top:0;width:640px;height:422px;transform-origin:0 0;pointer-events:auto;z-index:3;filter:drop-shadow(0 5px 4px rgba(20,12,4,.5))}
-#pfAvant{position:absolute;left:0;top:0;width:640px;height:422px;transform-origin:0 0;pointer-events:none;z-index:5;opacity:0}
+#pfFond,#pfAvant{position:absolute;left:0;top:0;transform-origin:0 0;opacity:0;transition:opacity .15s}
+#pfFond{z-index:3;pointer-events:none;filter:drop-shadow(0 5px 4px rgba(20,12,4,.5))}
+#pfFond.vu{pointer-events:auto}
+#pfAvant{z-index:5;pointer-events:none}
 #soucoupe{position:absolute;left:283px;top:597px;width:370px;z-index:1;pointer-events:none;filter:drop-shadow(0 6px 5px rgba(20,12,4,.45))}
 #total{position:absolute;left:298px;top:560px;width:340px;text-align:center;font:600 24px Ardoise,"Comic Sans MS",sans-serif;color:#fff8e8;
   text-shadow:0 2px 0 #1d1712,0 0 6px #1d1712;z-index:1;pointer-events:none;transition:opacity .3s}
@@ -64,7 +67,7 @@ html,body{margin:0;height:100%;background:var(--fond);overflow:hidden;touch-acti
   <div id="caisse">
     <img id="soucoupe" src="img/soucoupe.webp" alt=""><div id="total"></div>
     <canvas id="pf" width="640" height="422" aria-label="portefeuille"></canvas>
-    <canvas id="pfAvant" width="640" height="422"></canvas>
+    <img id="pfFond" src="img/pf-ouvert-fond.webp" alt="" draggable="false"><img id="pfAvant" src="img/pf-ouvert-avant.webp" alt="" draggable="false">
   </div>
   <canvas id="effets" width="1280" height="800"></canvas>
   <div id="nuit"></div>
@@ -101,17 +104,18 @@ const IMG = {};
 const REGLAGES = [
   ['Mauvais temps : assombrissement'],
   ['nuit', 'Voile sombre sur toute la scène', 0, 0.5, 0.01, 0.08],
-  ['vignette', 'Bords assombris : force', 0, 0.9, 0.01, 0.5],
-  ['vignetteRayon', 'Bords assombris : zone claire au centre (%)', 15, 75, 1, 42],
+  ['vignette', 'Bords assombris : force', 0, 0.95, 0.01, 0.7],
+  ['vignetteRayon', 'Bords assombris : zone claire au centre (%)', 15, 75, 1, 36],
   ['capt', 'Capitaine assombri', 0, 0.8, 0.01, 0.4],
-  ['monnaie', 'Portefeuille et monnaie : luminosité', 0.4, 1, 0.01, 0.72],
+  ['monnaie', 'Portefeuille, monnaie, soucoupe : luminosité', 0.4, 1.3, 0.01, 0.95],
+  ['monnaieChaud', 'Portefeuille, monnaie, soucoupe : teinte de la lampe', 0, 0.6, 0.01, 0.25],
   ['Lumière de la lampe sur l\'étal (recalculée au relâchement)'],
-  ['lumCouleur', 'Couleur chaude (recouvrement)', 0, 1, 0.01, 0.75],
-  ['lumEclat', 'Éclat (lumière ajoutée)', 0, 1, 0.01, 0.55],
-  ['lumPortee', 'Portée (px)', 250, 1000, 10, 680],
+  ['lumCouleur', 'Couleur chaude (recouvrement)', 0, 1, 0.01, 0.85],
+  ['lumEclat', 'Éclat (lumière ajoutée)', 0, 1.2, 0.01, 0.8],
+  ['lumPortee', 'Portée (px)', 250, 1200, 10, 820],
   ['Lumière sur les produits (recalculée au relâchement)'],
-  ['prod', 'Force', 0, 1.2, 0.01, 0.9],
-  ['prodMin', 'Minimum (produits loin de la lampe)', 0, 0.8, 0.01, 0.3],
+  ['prod', 'Force', 0, 1.2, 0.01, 1],
+  ['prodMin', 'Minimum (produits loin de la lampe)', 0, 0.9, 0.01, 0.45],
   ['prodPortee', 'Portée (px)', 150, 900, 10, 460],
   ['prodReflet', 'Côté tourné vers la lampe : reflet', 0, 1, 0.01, 0.5],
   ['Halo, phare, pluie'],
@@ -597,7 +601,8 @@ function effets() {
     dernierVoile = m;
     $('voile').style.opacity = m; $('nuit').style.opacity = (meteo * R.nuit).toFixed(3);
     $('captVoile').style.opacity = (meteo * R.capt).toFixed(3);
-    const b = 1 - (1 - R.monnaie) * meteo; $('caisse').style.filter = b > 0.995 ? 'none' : `brightness(${b.toFixed(3)})`;
+    const b = 1 - (1 - R.monnaie) * meteo, w = R.monnaieChaud * meteo;
+    $('caisse').style.filter = Math.abs(b - 1) < 0.005 && w < 0.005 ? 'none' : `brightness(${b.toFixed(3)}) sepia(${w.toFixed(3)})`;
   }
   if (meteo < 0.004) { if (!fxVide) { fx.clearRect(0, 0, 1280, 800); fxVide = true; } return; }
   fxVide = false;
@@ -690,16 +695,11 @@ function orageArrive() {
   setTimeout(() => dire(REPLIQUES_ORAGE[k]), 700);    // les premières gouttes, puis la réplique
 }
 let MASC = null, bulleT = 0;
-function dire(texte) {                  // maquette : bulle + synthèse vocale de secours (dans l'application : la voix fabriquée)
+function dire(texte) {                  // maquette : la bulle seule (les voix seront fabriquées plus tard avec Chatterbox, PHRASES.md)
   const ms = Math.max(1800, texte.length * 70);
   const b = $('bulle'); b.textContent = texte; b.classList.add('vue');
   clearTimeout(bulleT); bulleT = setTimeout(() => { b.classList.remove('vue'); MASC && MASC.silence(); }, ms + 1500);
   if (MASC) { MASC.parole(texte, ms); setTimeout(() => MASC.silence(), ms); }
-  try {
-    const u = new SpeechSynthesisUtterance(texte); u.lang = 'fr-FR'; u.rate = 0.95;
-    const v = speechSynthesis.getVoices().find(v => /^fr/i.test(v.lang)); if (v) u.voice = v;
-    speechSynthesis.cancel(); speechSynthesis.speak(u);
-  } catch (e) { /* pas de synthèse vocale */ }
 }
 let captOui = true;
 $('bCapt').onclick = () => { captOui = !captOui; $('capt').classList.toggle('cache', !captOui); $('bCapt').textContent = `Capitaine : ${captOui ? 'oui' : 'non'}`; };
@@ -719,27 +719,26 @@ const CONTENUS = {                       // en centimes
 const IMG_V = { 10: 'piece-10c', 20: 'piece-20c', 50: 'piece-50c', 100: 'piece-1e', 200: 'piece-2e', 500: 'billet-5', 1000: 'billet-10', 2000: 'billet-20', 5000: 'billet-50' };
 // tailles réelles : billets 120 à 140 mm de large ; pièces 19,75 à 25,75 mm de diamètre (rapports respectés)
 const LARG = { 500: 190, 1000: 201, 2000: 211, 5000: 222, 10: 67, 20: 76, 50: 82, 100: 79, 200: 88 };
-const PF_FERME = { l: 964, t: 586, s: 0.42 }, PF_OUVERT = { l: 655, t: 451, s: 0.92 };
-/* le portefeuille ouvert (image 0), en pixels de l'image : le bord haut de l'avant de la grande poche (les billets
-   glissent derrière), et l'intérieur visible de la poche à pièces (les pièces y apparaissent). Tout le reste du cuir,
-   sous ce bord, est redessiné par-dessus l'argent rangé (calque #pfAvant). */
-const BORD_GRANDE_POCHE = [[0, 83], [40, 81], [100, 83], [160, 89], [220, 95], [270, 98], [300, 97], [330, 92], [380, 88], [440, 85], [500, 83], [560, 80], [610, 78], [640, 80]];
-const FENETRE_PIECES = [[376, 189], [470, 187], [586, 181], [556, 207], [550, 247], [490, 259], [440, 254], [409, 247], [411, 222], [396, 205]];
-const bordPoche = xf => { const B = BORD_GRANDE_POCHE; for (let i = 1; i < B.length; i++) if (xf <= B[i][0]) { const [a, b] = [B[i - 1], B[i]]; return a[1] + (b[1] - a[1]) * (xf - a[0]) / (b[0] - a[0]); } return 80; };
+const PF_FERME = { l: 964, t: 586, s: 0.42 }, PF_OUVERT = { l: 659, t: 458, s: 0.915 };
+/* le portefeuille ouvert : l'illustration du parent (outils/8-portefeuille-ouvert.py), en deux calques — le fond
+   (portefeuille vidé) et le cuir de devant ; billets et pièces rangés passent entre les deux. Coordonnées en pixels
+   de l'illustration (1 200 × 896), cadre découpé à partir de (108, 212). */
+const PF_IMG = { x0: 108, y0: 212, w: 984, h: 492 };
+const PF_NEUF = { l: 657, t: 462, s: 0.598 };
+const enScene = (x, y) => [PF_NEUF.l + PF_NEUF.s * (x - PF_IMG.x0), PF_NEUF.t + PF_NEUF.s * (y - PF_IMG.y0)];
+const BORD_AVANT = [[110, 290], [200, 294], [300, 308], [400, 317], [480, 327], [520, 329], [620, 318], [720, 317], [800, 308], [880, 304], [960, 297], [1040, 290], [1090, 285]];
+const interp = (P, x) => { for (let i = 1; i < P.length; i++) if (x <= P[i][0]) { const [a, b] = [P[i - 1], P[i]]; return a[1] + (b[1] - a[1]) * (x - a[0]) / (b[0] - a[0]); } return P[P.length - 1][1]; };
+const BORD_POCHE_P = [[676, 548], [720, 557], [770, 566], [820, 573], [870, 578], [920, 574], [970, 563], [1022, 550]];
 const SOUC = { x: 468, y: 690, rx: 185, ry: 95 };
 let pfEtat = 'ferme', items = [], ordreS = 0;    // ferme · anim · ouvert (argent rangé) · sorti (argent dehors)
-const pfEl = $('pf'), pfCtx = pfEl.getContext('2d'), avEl = $('pfAvant');
+const pfEl = $('pf'), pfCtx = pfEl.getContext('2d'), fondEl = $('pfFond'), avEl = $('pfAvant');
 const vers = (o, xf, yf) => [o.l + o.s * xf, o.t + o.s * yf];
 const dessinerPf = k => { pfCtx.clearRect(0, 0, 640, 422); pfCtx.drawImage(IMG['portefeuille/p' + String(k).padStart(2, '0')], 0, 0); };
 const transfoPf = o => `translate(${o.l}px,${o.t}px) scale(${o.s})`;
-function preparerAvant() {               // le cuir « de devant » : l'image ouverte, moins la grande poche au-dessus de son bord et la fenêtre des pièces
-  const c = avEl.getContext('2d'); c.drawImage(IMG['portefeuille/p00'], 0, 0);
-  c.globalCompositeOperation = 'destination-out'; c.beginPath(); c.moveTo(0, 0); c.lineTo(640, 0);
-  for (let i = BORD_GRANDE_POCHE.length - 1; i >= 0; i--) c.lineTo(BORD_GRANDE_POCHE[i][0], BORD_GRANDE_POCHE[i][1] - 2);
-  c.closePath(); c.fill();
-  c.beginPath(); FENETRE_PIECES.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.closePath(); c.fill();
-  avEl.style.transform = transfoPf(PF_OUVERT);
+function preparerPfNeuf() {
+  for (const el of [fondEl, avEl]) { el.style.width = PF_IMG.w + 'px'; el.style.transform = `translate(${PF_NEUF.l}px,${PF_NEUF.t}px) scale(${PF_NEUF.s})`; }
 }
+const neufVu = v => { fondEl.style.opacity = avEl.style.opacity = v ? 1 : 0; fondEl.classList.toggle('vu', v); pfEl.style.opacity = v ? 0 : 1; };
 
 function remplirPortefeuille() {
   items.forEach(it => it.el.remove()); items = [];
@@ -763,15 +762,16 @@ const hauteur = it => LARG[it.v] * (it.b ? 0.55 : 1);
 const tries = (lieu, b) => items.filter(i => i.lieu === lieu && i.b === b).sort((x, y) => y.v - x.v);
 // rangés : billets dans la grande poche, pièces dans la poche à pièces (entre le fond et le devant du cuir)
 function posRangee(it, k, n) {
-  if (it.b) {
-    const xf = 320 + (k - (n - 1) / 2) * Math.min(80, 380 / Math.max(1, n)), sc = 0.85;
-    const haut = bordPoche(xf) - 40 - it.h * 14;             // le haut du billet dépasse de la poche, à des hauteurs différentes
-    const [x, y] = vers(PF_OUVERT, xf, haut); return [x, y + hauteur(it) * sc / 2, (k - (n - 1) / 2) * 2.5 + (it.h - 0.5) * 3, sc];
+  if (it.b) {                            // dans la grande poche : le haut dépasse, comme dans l'illustration
+    const sc = 1, xi = 645 + (k - (n - 1) / 2) * Math.min(90, 250 / Math.max(1, n - 1 || 1)) + (it.h - 0.5) * 16;   // centres entre 520 et 770 : les billets restent dans la poche
+    const haut = 150 + (k % 3) * 22 + it.h * 18;                       // haut du billet (pixels de l'illustration)
+    const [x, y] = enScene(xi, haut); return [x, y + hauteur(it) * sc / 2, -5 + (k % 3) * 4 + (it.h - 0.5) * 4, sc];
   }
-  const rang = k % 2, i = Math.floor(k / 2), m = Math.ceil((n - rang) / 2), sc = 0.56;   // deux rangs : derrière plus haut, devant plus bas
-  const xf = 482 + (i - (m - 1) / 2) * Math.min(36, 150 / Math.max(1, m)) + (rang ? 14 : 0);
-  const yf = (rang ? 226 : 210) + it.h * 10;
-  const [x, y] = vers(PF_OUVERT, xf, yf); return [x, y + LARG[it.v] * sc * 0.08, (it.h - 0.5) * 50, sc];
+  const rang = k % 2, i = Math.floor(k / 2), m = Math.ceil((n - rang) / 2), sc = 0.9;   // deux rangs : derrière plus haut, devant plus bas
+  const xi = 862 + (i - (m - 1) / 2) * Math.min(62, 200 / Math.max(1, m - 1 || 1)) + (rang ? 26 : -8);
+  const bas = interp(BORD_POCHE_P, xi);                                  // un peu plus de la moitié de la pièce dépasse du bord de la poche
+  const [x, y] = enScene(xi, bas - (rang ? 12 : 36) - it.h * 8);
+  return [x, y, (it.h - 0.5) * 40, sc];
 }
 // sortis : billets en éventail en haut, pièces en rang dessous
 function posSortie(it, k, n) {
@@ -781,11 +781,10 @@ function posSortie(it, k, n) {
 function disposer() {
   const ouvert = pfEtat === 'ouvert' || pfEtat === 'sorti';
   for (const b of [true, false]) {
-    tries('poche', b).forEach((it, k, A) => { if (it.transit) return; const [x, y, r, sc] = posRangee(it, k, A.length); poser(it, x, y, r, sc, 4, ouvert ? 1 : 0, false); });
+    tries('poche', b).forEach((it, k, A) => { if (it.transit) return; const [x, y, r, sc] = posRangee(it, k, A.length); poser(it, x, y, r, sc, 4 + (b ? 0 : k % 2), ouvert ? 1 : 0, false); });
     tries('sortie', b).forEach((it, k, A) => { if (it.transit) return; const [x, y, r, sc] = posSortie(it, k, A.length); poser(it, x, y, r, sc, 20 + k + (b ? 0 : 20)); });
   }
   items.filter(i => i.lieu === 'soucoupe').forEach(it => poser(it, it.sx, it.sy, it.sr, it.b ? 0.6 : 0.72, 60 + it.ordre));
-  avEl.style.opacity = pfEtat === 'ouvert' || pfEtat === 'sorti' ? 1 : 0;
 }
 function versSoucoupe(it) {
   const nB = items.filter(i => i.lieu === 'soucoupe' && i.b).length, nP = items.filter(i => i.lieu === 'soucoupe' && !i.b).length;
@@ -805,8 +804,8 @@ function majTotal() {
 }
 // au-dessus de sa poche, encore entre le fond et le devant du cuir : l'étape du milieu pour sortir ou rentrer
 function audessus(it) {
-  if (it.b) { const [x, y] = vers(PF_OUVERT, 320, bordPoche(320)); return [it.x, y - 6 - hauteur(it) / 2]; }
-  const [x, y] = vers(PF_OUVERT, 482, 186); return [it.x, y - LARG[it.v] * 0.4];
+  if (it.b) { const [, y] = enScene(470, 150); return [it.x, y - hauteur(it) * 0.15]; }
+  const [, y] = enScene(860, 455); return [it.x, y - LARG[it.v] * 0.35];
 }
 function sortirTout() {                  // un toucher : billets et pièces sortent ensemble (billets en haut, pièces en bas)
   pfEtat = 'sorti';
@@ -832,12 +831,12 @@ function rangerEtFermer() {
 }
 /* ouvrir et fermer : les images de la vidéo, pendant que le portefeuille vient au centre du comptoir */
 function animerPf(ouvrir, fin) {
-  pfEtat = 'anim'; disposer(); const D = 620, t0 = performance.now();
+  pfEtat = 'anim'; if (!ouvrir) neufVu(false); disposer(); const D = 620, t0 = performance.now();
   pfEl.style.transition = `transform ${D}ms cubic-bezier(.3,.85,.35,1)`; pfEl.style.transform = transfoPf(ouvrir ? PF_OUVERT : PF_FERME);
   const pas = now => {
     const u = Math.max(0, Math.min(1, (now - t0) / D));   // l'horodatage de l'image peut précéder t0
     dessinerPf(Math.round((ouvrir ? 1 - u : u) * (PF_N - 1)));
-    if (u < 1) requestAnimationFrame(pas); else { pfEtat = ouvrir ? 'ouvert' : 'ferme'; disposer(); fin && fin(); }
+    if (u < 1) requestAnimationFrame(pas); else { pfEtat = ouvrir ? 'ouvert' : 'ferme'; if (ouvrir) neufVu(true); disposer(); fin && fin(); }
   };
   requestAnimationFrame(pas);
 }
@@ -871,15 +870,23 @@ addEventListener('pointerup', e => {
   } else if (it.lieu === 'sortie') versSoucoupe(it);       // un toucher : dans la soucoupe
   else if (it.lieu === 'soucoupe') versPortefeuille(it);   // ou en revient
 });
-// le portefeuille, où qu'on le touche : fermé → ouvert → argent sorti → argent rangé et portefeuille fermé
-pfEl.addEventListener('pointerup', () => {
+// le portefeuille : fermé → un toucher l'ouvre ; ouvert, un toucher dessus sort tout ou range tout (il reste ouvert) ;
+// un toucher à côté (le décor) range ce qui est sorti et le referme, comme pour en sortir
+const toucherPf = () => {
   if (prise) return;
   if (pfEtat === 'ferme') ouvrirPf();
   else if (pfEtat === 'ouvert') sortirTout();
+  else if (pfEtat === 'sorti') glisserDedans(items.filter(i => i.lieu === 'sortie'), () => { pfEtat = 'ouvert'; });
+};
+pfEl.addEventListener('pointerup', toucherPf);
+fondEl.addEventListener('pointerup', toucherPf);
+$('scene').addEventListener('pointerup', e => {
+  if (prise || e.target.closest('.m, #pf, #pfFond, #commandes, #reglages, #bulle, #capt')) return;
+  if (pfEtat === 'ouvert') fermerPf();
   else if (pfEtat === 'sorti') rangerEtFermer();
 });
 function caisse() {
-  pfEl.style.transform = transfoPf(PF_FERME); dessinerPf(PF_N - 1); preparerAvant();
+  pfEl.style.transform = transfoPf(PF_FERME); dessinerPf(PF_N - 1); preparerPfNeuf();
   remplirPortefeuille();
 }
 
@@ -916,7 +923,7 @@ function construireReglages() {
 const sauver = () => { try { localStorage.setItem('etal-reglages', JSON.stringify(R)); } catch (e) { /* stockage indisponible */ } };
 function appliquer(k, fin) {
   if (k.startsWith('vignette')) appliquerVignette();
-  else if (k === 'nuit' || k === 'capt' || k === 'monnaie') dernierVoile = '';
+  else if (k === 'nuit' || k === 'capt' || k.startsWith('monnaie')) dernierVoile = '';
   else if (CUITS.has(k) && fin) { clearTimeout(recuireT); recuireT = setTimeout(composerEtal, 30); }
   else if (k.startsWith('orage')) programmerOrage();
 }
@@ -938,7 +945,7 @@ async function capitaine() {
   $('capt').classList.add('cache'); $('bCapt').disabled = true; $('bCapt').textContent = 'Capitaine : absent';
 }
 
-const MONNAIE = ['soucoupe', 'piece-10c', 'piece-20c', 'piece-50c', 'piece-1e', 'piece-2e', 'billet-5', 'billet-10', 'billet-20', 'billet-50'];
+const MONNAIE = ['soucoupe', 'pf-ouvert-fond', 'pf-ouvert-avant', 'piece-10c', 'piece-20c', 'piece-50c', 'piece-1e', 'piece-2e', 'billet-5', 'billet-10', 'billet-20', 'billet-50'];
 const PF_N = 35;                        // images du portefeuille : 0 ouvert … 34 fermé
 Promise.all([...NOMS, ...Object.keys(PRODUITS).map(n => 'produit-' + n), ...MONNAIE,
              ...Array.from({ length: PF_N }, (_, k) => 'portefeuille/p' + String(k).padStart(2, '0'))].map(charger).concat(police())).then(() => {

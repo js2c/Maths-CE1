@@ -54,6 +54,7 @@
         "9": "double encadrement : entre deux centaines, puis entre deux dizaines (347 entre 300 et 400, puis entre 340 et 350)"
       }
     },
+    "6": {"nom": "L'étal du pêcheur", "niveaux": {"1": "poser la pièce ou le billet demandé, de 1 € à 50 €", "2": "payer juste avec des pièces de 1 € et 2 €, prix de 2 € à 10 € (7 € = 2 + 2 + 2 + 1)", "3": "payer juste avec des billets de 5 € et 10 € et des pièces, prix de 6 € à 20 € (17 € = 10 + 5 + 2)", "4": "payer juste jusqu'à 50 €, billets de 5 € à 50 € (34 € = 20 + 10 + 2 + 2)", "5": "payer juste avec un portefeuille où le compte juste n'existe que d'une ou deux façons (7 € sans pièce de 1 € : 5 + 2)", "6": "le compte juste est impossible : payer sans pièce de trop, le pêcheur rend la monnaie (13 € avec un billet de 20 €)", "7": "rendre la monnaie : le billet est donné, l'enfant tape ce que le pêcheur rend (13 € payés avec 20 € : 7)", "8": "deux produits : payer juste le total (3 € + 4 €)", "9": "les centimes : prix ronds ou en 50 centimes (3,50 € = 2 + 1 + 50 c)", "10": "les centimes : prix en 10, 20 et 50 centimes (2,70 € = 2 + 50 c + 20 c)"}},
     "5": {
       "nom": "La multiplication",
       "niveaux": {
@@ -77,7 +78,7 @@
     "base": "temps de base",
     "directe": "a + b = ?", "trouDroite": "a + ? = n", "trouGauche": "? + b = n"
   },
-  "erreursExercice": { "_doc": "Lot 3 bis (B10) : l'exercice affiché devant chaque erreur du journal, d'après son code (premières lettres).", "E": "ligne", "C": "calcul", "V": "voiliers", "rattrape": "voiliers", "M": "multiplication", "soustraction": "additions", "unDesNombres": "additions", "plusOuMoins1": "additions", "dizaine": "additions", "NSP": "?", "autre": "—" },
+  "erreursExercice": { "_doc": "Lot 3 bis (B10) : l'exercice affiché devant chaque erreur du journal, d'après son code (premières lettres ; lot « L'étal du pêcheur » : ses codes sont préfixés « etal. » dans le journal, M1 désignant déjà une erreur de la multiplication).", "e": "étal", "E": "ligne", "C": "calcul", "V": "voiliers", "rattrape": "voiliers", "M": "multiplication", "soustraction": "additions", "unDesNombres": "additions", "plusOuMoins1": "additions", "dizaine": "additions", "NSP": "?", "autre": "—" },
   "journalNote": "Pour la ligne graduée, le calcul rapide et la multiplication, une mauvaise réponse révèle souvent une erreur type, décrite ci-dessous en une phrase ; aux additions, l'application distingue cinq cas (se trompe de 1, a répondu l'un des deux nombres, a fait une soustraction, a oublié la dizaine au-delà de 10, autre). L'application corrige chaque erreur avec une animation, et relance une leçon si la même erreur revient deux fois dans une séance. Au calcul rapide, une réponse juste mais lente est notée sans reproche : l'application rejoue le raccourci. Le bouton « je ne sais pas » a sa propre ligne : ce n'est pas une erreur, mais la question revient comme après une erreur. Aux voiliers, l'application nomme quatre cas (V1 à V4, ci-dessous) ; un bateau rangé au deuxième essai compte comme une erreur corrigée : l'erreur figure dans le journal, et l'étoile est gagnée.",
   "erreurs": {
     "E1": "compte les traits au lieu des sauts",
@@ -98,13 +99,14 @@
     "V4": "s'est trompée de centaine",
     "rattrape": "le bateau a été rattrapé par les pirates avant d'être rangé",
     "M1": "a additionné au lieu de multiplier (3 × 4 = 7)",
-    "M2": "une rangée ou une colonne de trop ou de moins (3 × 4 = 8, 16, 9 ou 15)"
+    "M2": "une rangée ou une colonne de trop ou de moins (3 × 4 = 8, 16, 9 ou 15)", "etal.M1": "n'a pas donné assez (a payé moins que le prix)", "etal.M2": "a donné trop alors que le compte juste était possible", "etal.M3": "a donné une pièce de trop (le compte juste était impossible)", "etal.M4": "a compté les pièces au lieu de leur valeur", "etal.M5": "a rendu le prix au lieu de la différence", "etal.M6": "s'est trompée en rendant la monnaie", "etal.M7": "a posé une autre pièce ou un autre billet que celui demandé"
   },
   "pointDeDepart": {
     "niveauxMax": 13,
     "familles": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
     "calculMax": 9,
     "voiliersMax": 9,
+    "etalMax": 10,
     "multiplicationMax": 9
   }
 }

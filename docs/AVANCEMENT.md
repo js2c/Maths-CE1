@@ -37,4 +37,4 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 - **Branche** : `claude/sleepy-einstein-pr9k77` ; demande de fusion en brouillon « Lot : L'étal du pêcheur ».
 - **Réglages de la maquette** : le parent a demandé les **valeurs de départ** de la maquette (prompt du 10 octobre 2026), reportées dans `app/content/etal.json`.
 - **Étapes** : 0 branche et mesures avant ; 1 export de la scène (`art/tools/export-etal.mjs`) et `etal.json` ; 2 règles du module 6 (`modules/etal/`, `module6.json`) et tests unitaires ; 3 l'écran et son branchement (choisir, entraînement libre, frise, espace parent) ; 4 textes, voix, leçons L15 à L18, pictogrammes ; 5 recette, documents, demande de fusion prête.
-- **Où on en est** : étape 0.
+- **Où on en est** : étapes 0 à 4 faites (export, règles et tests, écran, branchements, leçons L15 à L18, menu des leçons à cinq rangées, espace parent, pictogrammes). Reste : le parcours `tests/e2e/etal.mjs` et ses captures, la simulation et les séquences étendues au module 6, les mesures, la relecture indépendante, les documents (SPEC 7 quater, ARCHITECTURE, GUIDE-PARENT, LOTS), la demande de fusion.

@@ -44,7 +44,7 @@ const KEY = 104, PAD_X = [716, 822, 928, 1034, 1140], PAD_Y = [612, 722], PAD_SL
 export const LIGNE = { x0: 330, x1: 1170, y: 452 }, PLAQUE = [284, 352, 1216, 584];
 // (relecture du lot, R6) avec le pavé du niveau 7 à l'écran, la ligne et sa plaque montent au-dessus de lui (sans quoi l'ardoise
 // du nombre tapé et la première rangée de touches couvraient la fin de la ligne, là où l'enfant compte jusqu'au billet)
-export const LIGNE_HAUTE = { x0: 330, x1: 1170, y: 384 }, PLAQUE_HAUTE = [284, 290, 1216, 468];
+export const LIGNE_HAUTE = { x0: 330, x1: 1170, y: 336 }, PLAQUE_HAUTE = [284, 244, 1216, 466];
 const SKIPPED = Symbol("correction passée");
 
 export class EtalScreen {
@@ -404,7 +404,8 @@ export class EtalScreen {
     if (!q) { if (this.ligneVue) { nl.turtle.hide(); nl.arcs = []; line.fxClear(); line.clear(); this.plaque?.classList.remove("vue"); this.ligneVue = false; this.api?.cacher(false); this.api?.rallumer(); } return; }
     const a = q.prix / 100, b = q.billet / 100, n = b - a + 1, T = app.text.data;
     const haute = this.keys?.[0]?.style.visibility === "visible", L = haute ? LIGNE_HAUTE : LIGNE; this.placerPlaque(haute ? PLAQUE_HAUTE : PLAQUE);
-    const spec = { x0: L.x0, x1: L.x1, y: L.y, n, labels: Array.from({ length: n }, (_, i) => (n <= 12 || i === 0 || i === n - 1 || (a + i) % 5 === 0 ? String(a + i) : "")), k: 0, lit: [0, n - 1] };
+    // (les nombres : tous jusqu'à 12 graduations ; au-delà, les bouts et les multiples de 5, sauf collés à un bout : « 4 5 » se touchaient)
+    const spec = { x0: L.x0, x1: L.x1, y: L.y, n, labels: Array.from({ length: n }, (_, i) => (n <= 12 || i === 0 || i === n - 1 || ((a + i) % 5 === 0 && i > 1 && i < n - 2) ? String(a + i) : "")), k: 0, lit: [0, n - 1] };
     const [bmp] = await line.render([spec]); line.show(bmp);
     this.plaque.classList.add("vue"); this.ligneVue = true; this.api.eteindre(); this.api.cacher(true);
     nl.spec = spec; nl.q = { min: a, max: b, step: 1 }; nl.arcs = []; nl.overlay = []; line.fxClear();
@@ -434,7 +435,7 @@ export class EtalScreen {
     this.passable(true);
     await dit.then(g); if (!vivant()) return new Promise(() => {});
     api.vitesse(app.vitesse ?? 1);
-    if (q.type === "rendre") { await this.dire(T.etalExemple).then(g); await this.ligne(q, { saut: true, g }); }
+    if (q.type === "rendre") { await this.dire(T.etalExempleRendre).then(g); await this.ligne(q, { saut: true, g }); }
     else {
       await this.payerPourToi(q, cfg, g, { phrase: q.type === "poser" ? T.etalCestCeluiLa[q.valeur] : T.etalExemple });
       if (q.type === "monnaie") { const s = api.total(); if (s > q.prix) { await api.prendre().then(g); await this.rendreMonnaie(q.prix, s - q.prix, g); } }

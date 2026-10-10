@@ -172,6 +172,8 @@ for (const T of TAILLES) {
     await attend(page);
     const r = (await reponses(page)).at(-1);
     check(r.juste && r.etal.rendu > 0, `${W} : niveau 6, juste sans pièce de trop, monnaie rendue (${JSON.stringify(r.etal)})`);
+    // (une pièce de trop n'est possible que s'il reste de l'argent hors de la solution : sinon, payer juste et passer à l'achat suivant)
+    for (let i = 0; i < 4 && !(await page.evaluate(async () => { const { solution } = await import("./js/modules/etal/etal.js"); const q = window.__app.etal.q, cfg = window.__app.module6.niveaux[q.niveau - 1]; return q.portefeuille.length > solution(cfg, q.prix, q.portefeuille).length; })); i++) { await payer(page, "juste"); await coche(page); await attend(page); }
     await payer(page, "pieceDeTrop"); await coche(page);
     await page.waitForFunction(() => window.__said.some((t) => /^Celles?-là, garde-l/.test(t)), null, { timeout: 30000 }); await page.waitForTimeout(500);
     await shot(page, "17-piece-de-trop", T);

@@ -1,6 +1,6 @@
 # Les phrases nouvelles du lot « L'étal du pêcheur »
 
-**393 phrases** à fabriquer (environ 2,7 Mo, estimés d'après la taille des phrases déjà fabriquées de même longueur). Liste tirée de l'inventaire (`tools/voix/inventaire.mjs`), comparé à l'index de la voix de `main` (les 282 phrases du lot « Correctifs de la tablette » y sont déjà). Clé de `textes.json` (ou leçon) : les phrases, une par ligne.
+**394 phrases** à fabriquer (environ 2,7 Mo, estimés d'après la taille des phrases déjà fabriquées de même longueur). Liste tirée de l'inventaire (`tools/voix/inventaire.mjs`), comparé à l'index de la voix de `main` (les 282 phrases du lot « Correctifs de la tablette » y sont déjà). Clé de `textes.json` (ou leçon) : les phrases, une par ligne.
 
 ## choixDescription.exercices.etal (1)
 
@@ -400,6 +400,10 @@
 ## etalExemple (1)
 
 - Regarde bien : cette fois, je paie à ta place, en comptant.
+
+## etalExempleRendre (1)
+
+- Regarde bien : je compte à partir du prix, jusqu'au billet.
 
 ## etalAide (1)
 

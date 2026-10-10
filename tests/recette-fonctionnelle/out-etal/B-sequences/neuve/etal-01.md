@@ -22,7 +22,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 5 | échauffement | 3 + 2 = ? (fait nouveau) | Combien font 3 plus 2 ? | 5 | 5 |  |
 | 6 | échauffement | 1 + 7 = ? (fait nouveau) | Combien font 1 plus 7 ? | 8 | 8 | +1★ |
 | 7 | notion | LEÇON L15 | (leçon animée L15, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L15) |
-| 8 | notion | EXEMPLE GUIDÉ : poser 50 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose un billet de 50 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 50 € (50 €)) |  |
+| 8 | notion | EXEMPLE GUIDÉ : poser 50 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose un billet de 50 euros. Le billet de 50 euros, c'est celui-là. |  | (le pêcheur paie : 50 € (50 €)) |  |
 | 9 | notion | poser 1 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose une pièce de 1 euro. | 100 | 1 € (1 €) |  |
 | 10 | notion | poser 5 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 5 euros. | 500 | 5 € (5 €) | +1★ |
 | 11 | notion | poser 10 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 10 euros. | 1000 | 10 € (10 €) |  |
@@ -56,7 +56,7 @@ Récompense et fin : +10★ (fin)
 | 5 | échauffement | 1 + 2 = ? (fait nouveau) | 1 plus 2 ? | 3 | 3 |  |
 | 6 | échauffement | 2 + 5 = ? (fait nouveau) | 2 plus 5 ? | 7 | 7 | +1★ |
 | 7 | notion | LEÇON L15 | (leçon animée L15, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L15) |
-| 8 | notion | EXEMPLE GUIDÉ : poser 5 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose un billet de 5 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 5 € (5 €)) |  |
+| 8 | notion | EXEMPLE GUIDÉ : poser 5 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose un billet de 5 euros. Le billet de 5 euros, c'est celui-là. |  | (le pêcheur paie : 5 € (5 €)) |  |
 | 9 | notion | poser 50 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 50 euros. | 5000 | 50 € (50 €) |  |
 | 10 | notion | poser 10 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 10 euros. | 1000 | 10 € (10 €) | +1★ |
 | 11 | notion | poser 20 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 20 euros. | 2000 | 20 € (20 €) |  |
@@ -95,7 +95,7 @@ Récompense et fin : +10★ (fin)
 | 11 | échauffement | 2 + 3 = ? (fait nouveau) | Combien font 2 plus 3 ? | 5 | 4 | correction : « 2 plus 3, ça fait 5. » |
 | 12 | échauffement | 1 + 7 = ? (fait nouveau) | 1 plus 7 ? | 8 | 17 | correction : « 1 plus 7, ça fait 8. » |
 | 13 | notion | LEÇON L15 | (leçon animée L15, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L15) |
-| 14 | notion | EXEMPLE GUIDÉ : poser 5 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose un billet de 5 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 5 € (5 €)) |  |
+| 14 | notion | EXEMPLE GUIDÉ : poser 5 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose un billet de 5 euros. Le billet de 5 euros, c'est celui-là. |  | (le pêcheur paie : 5 € (5 €)) |  |
 | 15 | notion | poser 20 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 20 euros. | 2000 | 50 € (50 €) | « Ça, c'est un billet de 50 euros. » puis « Le billet de 20 euros, c'est celui-là. » |
 | 16 | notion | poser 50 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 50 euros. | 5000 | 20 € (20 €) | « Ça, c'est un billet de 20 euros. » puis « Le billet de 50 euros, c'est celui-là. » |
 | 17 | notion | poser 10 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 10 euros. | 1000 | 50 € (50 €) | « Ça, c'est un billet de 50 euros. » puis « Le billet de 10 euros, c'est celui-là. » |
@@ -133,7 +133,7 @@ Récompense et fin : +10★ (fin)
 | 8 | échauffement | 4 + 1 = ? (fait nouveau) | Combien font 4 plus 1 ? | 5 | 5 | +1★ |
 | 9 | échauffement | 1 + 4 = ? (fait nouveau) | 1 plus 4 ? | 5 | 5 | +1★ |
 | 10 | notion | LEÇON L15 | (leçon animée L15, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L15) |
-| 11 | notion | EXEMPLE GUIDÉ : poser 1 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose une pièce de 1 euro. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 1 € (1 €)) |  |
+| 11 | notion | EXEMPLE GUIDÉ : poser 1 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose une pièce de 1 euro. La pièce de 1 euro, c'est celle-là. |  | (le pêcheur paie : 1 € (1 €)) |  |
 | 12 | notion | poser 10 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 10 euros. | 1000 | 10 € (10 €) | +1★ |
 | 13 | notion | poser 5 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 5 euros. | 500 | 5 € (5 €) | +1★ |
 | 14 | notion | poser 20 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 20 euros. | 2000 | 20 € (20 €) | +1★ |
@@ -170,7 +170,7 @@ Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle)
 | 8 | échauffement | 6 + 2 = ? (fait nouveau) | 6 plus 2 ? | 8 | 8 | +1★ |
 | 9 | échauffement | 2 + 4 = ? (fait nouveau) | Combien font 2 plus 4 ? | 6 | 6 | +1★ |
 | 10 | notion | LEÇON L15 | (leçon animée L15, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L15) |
-| 11 | notion | EXEMPLE GUIDÉ : poser 50 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose un billet de 50 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 50 € (50 €)) |  |
+| 11 | notion | EXEMPLE GUIDÉ : poser 50 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose un billet de 50 euros. Le billet de 50 euros, c'est celui-là. |  | (le pêcheur paie : 50 € (50 €)) |  |
 | 12 | notion | poser 10 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 10 euros. | 1000 | 50 € (50 €) | « Ça, c'est un billet de 50 euros. » puis « Le billet de 10 euros, c'est celui-là. » |
 | 13 | notion | poser 2 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose une pièce de 2 euros. | 200 | 2 € (2 €) | +1★ |
 | 14 | notion | poser 5 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 5 euros. | 500 | 5 € (5 €) | +1★ |
@@ -210,7 +210,7 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle) (brillante)
 | 11 | échauffement | 1 + 5 = ? (fait nouveau) | Combien font 1 plus 5 ? | 6 | 9 | correction : « 1 plus 5, ça fait 6. » |
 | 12 | échauffement | 1 + 7 = ? (fait nouveau) | 1 plus 7 ? | 8 | 9 | correction : « 1 plus 7, ça fait 8. » |
 | 13 | notion | LEÇON L15 | (leçon animée L15, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L15) |
-| 14 | notion | EXEMPLE GUIDÉ : poser 1 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose une pièce de 1 euro. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 1 € (1 €)) |  |
+| 14 | notion | EXEMPLE GUIDÉ : poser 1 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose une pièce de 1 euro. La pièce de 1 euro, c'est celle-là. |  | (le pêcheur paie : 1 € (1 €)) |  |
 | 15 | notion | poser 20 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 20 euros. | 2000 | 50 € (50 €) | « Ça, c'est un billet de 50 euros. » puis « Le billet de 20 euros, c'est celui-là. » |
 | 16 | notion | poser 5 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 5 euros. | 500 | 50 € (50 €) | « Ça, c'est un billet de 50 euros. » puis « Le billet de 5 euros, c'est celui-là. » |
 | 17 | notion | poser 50 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 50 euros. | 5000 | 20 € (20 €) | « Ça, c'est un billet de 20 euros. » puis « Le billet de 50 euros, c'est celui-là. » |
@@ -248,7 +248,7 @@ Récompense et fin : +10★ (fin)
 | 8 | échauffement | 5 + 2 = ? (fait nouveau) | 5 plus 2 ? | 7 | 7 | +2★ |
 | 9 | échauffement | 8 + 1 = ? (fait nouveau) | 8 plus 1 ? | 9 | 9 | +1★ |
 | 10 | notion | LEÇON L15 | (leçon animée L15, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L15) |
-| 11 | notion | EXEMPLE GUIDÉ : poser 1 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose une pièce de 1 euro. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 1 € (1 €)) |  |
+| 11 | notion | EXEMPLE GUIDÉ : poser 1 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose une pièce de 1 euro. La pièce de 1 euro, c'est celle-là. |  | (le pêcheur paie : 1 € (1 €)) |  |
 | 12 | notion | poser 10 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 10 euros. | 1000 | 10 € (10 €) | +2★ |
 | 13 | notion | poser 20 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 20 euros. | 2000 | 20 € (20 €) | +1★ |
 | 14 | notion | poser 2 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose une pièce de 2 euros. | 200 | 2 € (2 €) | +2★ |
@@ -289,7 +289,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle)
 | 12 | échauffement | 3 + 2 = ? (fait nouveau) | Combien font 3 plus 2 ? | 5 | 5 | +2★ |
 | 13 | échauffement | 8 + 2 = ? (fait nouveau) | 8 plus 2 ? | 10 | 10 | +1★ |
 | 14 | notion | LEÇON L15 | (leçon animée L15, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L15) |
-| 15 | notion | EXEMPLE GUIDÉ : poser 20 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose un billet de 20 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 20 € (20 €)) |  |
+| 15 | notion | EXEMPLE GUIDÉ : poser 20 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose un billet de 20 euros. Le billet de 20 euros, c'est celui-là. |  | (le pêcheur paie : 20 € (20 €)) |  |
 | 16 | notion | poser 10 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 10 euros. | 1000 | 10 € (10 €) | +2★ |
 | 17 | notion | poser 2 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose une pièce de 2 euros. | 200 | 2 € (2 €) | +1★ |
 | 18 | notion | poser 1 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose une pièce de 1 euro. | 100 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » « Regarde, on peut payer comme ça. » 1 € (1 €) |
@@ -329,7 +329,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-ballon (nouvelle) (brillante) 
 | 13 | échauffement | 7 + 2 = ? (fait nouveau) | 7 plus 2 ? | 9 | 9 | +2★ (erreur corrigée) |
 | 14 | échauffement | 2 + 7 = ? (fait nouveau) | 2 plus 7 ? | 9 | 8 | correction : « 2 plus 7, ça fait 9. » |
 | 15 | notion | LEÇON L15 | (leçon animée L15, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L15) |
-| 16 | notion | EXEMPLE GUIDÉ : poser 2 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose une pièce de 2 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 2 € (2 €)) |  |
+| 16 | notion | EXEMPLE GUIDÉ : poser 2 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose une pièce de 2 euros. La pièce de 2 euros, c'est celle-là. |  | (le pêcheur paie : 2 € (2 €)) |  |
 | 17 | notion | poser 10 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 10 euros. | 1000 | 50 € (50 €) | « Ça, c'est un billet de 50 euros. » puis « Le billet de 10 euros, c'est celui-là. » |
 | 18 | notion | poser 5 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 5 euros. | 500 | 50 € (50 €) | « Ça, c'est un billet de 50 euros. » puis « Le billet de 5 euros, c'est celui-là. » |
 | 19 | notion | poser 20 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 20 euros. | 2000 | 50 € (50 €) | « Ça, c'est un billet de 50 euros. » puis « Le billet de 20 euros, c'est celui-là. » |
@@ -367,7 +367,7 @@ Récompense et fin : +10★ (fin)
 | 8 | échauffement | 1 + 5 = ? (fait nouveau) | 1 plus 5 ? | 6 | 6 | +2★ |
 | 9 | échauffement | 5 + 1 = ? (fait nouveau) | 5 plus 1 ? | 6 | 6 | +2★ |
 | 10 | notion | LEÇON L15 | (leçon animée L15, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L15) |
-| 11 | notion | EXEMPLE GUIDÉ : poser 20 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose un billet de 20 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 20 € (20 €)) |  |
+| 11 | notion | EXEMPLE GUIDÉ : poser 20 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose un billet de 20 euros. Le billet de 20 euros, c'est celui-là. |  | (le pêcheur paie : 20 € (20 €)) |  |
 | 12 | notion | poser 2 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose une pièce de 2 euros. | 200 | 2 € (2 €) | +2★ |
 | 13 | notion | poser 1 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose une pièce de 1 euro. | 100 | 1 € (1 €) | +2★ |
 | 14 | notion | poser 50 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 50 euros. | 5000 | 50 € (50 €) | +2★ |
@@ -406,7 +406,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte oursin (nou
 | 10 | échauffement | 2 + 5 = ? (fait nouveau) | Combien font 2 plus 5 ? | 7 | 7 | +4★ (erreur corrigée) |
 | 11 | échauffement | 2 + 5 = ? (fait nouveau) | 2 plus 5 ? | 7 | 7 | +2★ |
 | 12 | notion | LEÇON L15 | (leçon animée L15, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L15) |
-| 13 | notion | EXEMPLE GUIDÉ : poser 50 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose un billet de 50 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 50 € (50 €)) |  |
+| 13 | notion | EXEMPLE GUIDÉ : poser 50 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose un billet de 50 euros. Le billet de 50 euros, c'est celui-là. |  | (le pêcheur paie : 50 € (50 €)) |  |
 | 14 | notion | poser 20 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 20 euros. | 2000 | 20 € (20 €) | +2★ |
 | 15 | notion | poser 5 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 5 euros. | 500 | 5 € (5 €) | +2★ |
 | 16 | notion | poser 10 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 10 euros. | 1000 | 10 € (10 €) | +2★ |
@@ -447,7 +447,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte poisson-clown
 | 12 | échauffement | 2 + 8 = ? (fait nouveau) | Combien font 2 plus 8 ? | 10 | 9 | correction : « 2 plus 8, ça fait 10. » |
 | 13 | échauffement | 2 + 3 = ? (fait nouveau) | Combien font 2 plus 3 ? | 5 | 9 | correction : « 2 plus 3, ça fait 5. » |
 | 14 | notion | LEÇON L15 | (leçon animée L15, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L15) |
-| 15 | notion | EXEMPLE GUIDÉ : poser 1 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose une pièce de 1 euro. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 1 € (1 €)) |  |
+| 15 | notion | EXEMPLE GUIDÉ : poser 1 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche. Pose une pièce de 1 euro. La pièce de 1 euro, c'est celle-là. |  | (le pêcheur paie : 1 € (1 €)) |  |
 | 16 | notion | poser 20 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 20 euros. | 2000 | 50 € (50 €) | « Ça, c'est un billet de 50 euros. » puis « Le billet de 20 euros, c'est celui-là. » |
 | 17 | notion | poser 2 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose une pièce de 2 euros. | 200 | 50 € (50 €) | « Ça, c'est un billet de 50 euros. » puis « La pièce de 2 euros, c'est celle-là. » |
 | 18 | notion | poser 5 € (niveau 1) · portefeuille 50 € 20 € 10 € 5 € 2 € 1 € | Pose un billet de 5 euros. | 500 | 50 € (50 €) | « Ça, c'est un billet de 50 euros. » puis « Le billet de 5 euros, c'est celui-là. » |

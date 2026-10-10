@@ -555,6 +555,7 @@
   "etalValeur": "Attention : on compte ce que valent les pièces et les billets, pas combien il y en a.",
   "etalCorrection": "Regarde, on peut payer comme ça.",
   "etalExemple": "Regarde bien : cette fois, je paie à ta place, en comptant.",
+  "etalExempleRendre": "Regarde bien : je compte à partir du prix, jusqu'au billet.",
   "etalAide": "Je compte avec toi !",
   "etalAideRendre": "Compte à partir de {a}, jusqu'à {b}.",
   "etalRendPrix": "Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet.",

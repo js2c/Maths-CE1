@@ -80,3 +80,31 @@ Gravité : **bloquant** (l'exercice ne fait pas travailler la compétence), **g�
 - **La pause et la reprise** redisent la consigne (« On continue ! Achète la dorade… ») ; le temps qu'il fait ne change rien à l'exercice.
 - **Les étoiles de la séance** suivent bien le cran pour une enfant appliquée ; « pressée » ne monte jamais de niveau et redescend de cran.
 - **Pour le parent** : le choix des niveaux est clair (vignettes avec ardoise et argent, description dite), le journal des erreurs donne un exemple concret (« bar à 4 € → 2 € + 2 € + 1 € (5 €) au lieu de 4 € »), la fiche du module explique les crans.
+
+## Traitement par la session (10 octobre 2026)
+
+| n° | Traitement |
+| --- | --- |
+| R1 | **Corrigé.** Au « trop » (M2) et à la pièce de trop (M3), le pêcheur rend tout l'argent (au niveau 6, après un halo sur les objets inutiles) ; le deuxième essai est à refaire en entier (« Essaie encore… », « Recommence sans elle, puis touche la coche. »). L'enfant simulée « pressée » donne maintenant trop une fois sur deux (R25). |
+| R2 | **Corrigé.** Niveau 6 : la solution « un seul billet » au plus un achat sur trois, jamais deux fois de suite (mesuré : 15 % des achats ; test unitaire). |
+| R3 | **Laissé** : « Il manque… 2 euros. » est la règle de la fiche du parent ; question ouverte (`docs/IDEES.md`). Le deuxième essai demande maintenant un vrai paiement au « trop » (R1). |
+| R4 | **Corrigé.** Niveau 7 : jamais un prix égal à la moitié du billet. |
+| R5 | **Corrigé en partie.** La tortue saute jusqu'à la dizaine, puis jusqu'au billet (4 → 10 → 20 : « + 6 », « + 10 ») ; les nombres des arcs à l'encre, sous le haut de la plaque. Les ponts plus fins (4 → 5 → 10) et « 1 + 5 + 10 » : gardés dans `docs/IDEES.md`. |
+| R6 | **Corrigé.** Avec le pavé à l'écran, la plaque et la ligne montent au-dessus de lui. |
+| R7 | **Corrigé.** Le total écrit est caché pendant que le pêcheur compte la monnaie à partir du prix ; il reparaît avec « Je te rends… 7 euros. ». |
+| R8 | **Corrigé.** Niveau 9 : trois prix sur quatre avec 50 c (mesuré : 86 %), l'exemple guidé toujours. |
+| R9 | **Corrigé.** Au niveau 6, la leçon relancée (difficulté persistante, M1 à M3 deux fois) est L17 « Rendre la monnaie ». |
+| R10 | **Corrigé.** L17 : « De 13 à 20, ça fait 7. » puis « Je te rends 7 euros. » avec les gestes (l'image suit la voix) ; L15 laisse voir les deux pièces de 1 € un instant ; « rejouer » est monté dans le ciel, à gauche de « passer ». |
+| R11 | **Corrigé.** La vignette de L17 a ses nombres dans sa tuile (ils étaient tracés dans un groupe qui les décalait). |
+| R12 | **Corrigé.** « Au niveau 2 ; aucune montée enregistrée. » quand le niveau a changé sans montée enregistrée (le cas du parcours, qui pose le niveau directement). |
+| R13 | **Corrigé.** « Tu ne peux pas payer juste. Donne un peu plus : je te rendrai la monnaie. » (phrase à fabriquer). |
+| R14 | **Corrigé.** La soucoupe range l'argent sans recouvrement : billets à gauche, l'un sous l'autre, leur valeur en haut ; pièces à droite, en rangées de trois (retouche de l'export, la maquette n'est pas modifiée). |
+| R15 | **Corrigé.** Au niveau 7, l'exemple guidé dit « Regarde bien : je compte à partir du prix, jusqu'au billet. » ; au niveau 1, l'application disait déjà « Le billet de 10 euros, c'est celui-là. » (la simulation reconstituait mal la phrase : corrigé aussi). |
+| R16 à R19, R22, R26 | Cosmétiques, laissés (R16 : l'argent sorti sur la glace est la maquette validée ; le produit allumé est maintenant toujours dans une colonne des bords, hors de l'argent sorti). |
+| R20 | **Corrigé.** « On compte à partir du prix, jusqu'à l'argent qu'on a donné. » |
+| R21 | **Corrigé.** Pas de multiple de 5 écrit à côté d'un bout de la ligne. |
+| R23 | Laissé (`docs/IDEES.md`). |
+| R24 | **Corrigé.** La voie rapide est dite au parent ; le journal des erreurs présente l'étal. |
+| R25 | **Corrigé.** `b-sequences.mjs` calcule le manque avec `juger`, et l'enfant simulée donne aussi trop. |
+
+Aussi : au cran « plus dur », la moitié haute des prix garde au moins six prix (au niveau 2, il n'y en avait que cinq : une séance simulée n'en tirait que quatre). Parcours `tests/e2e/etal.mjs` relancé après les correctifs.

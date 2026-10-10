@@ -153,11 +153,12 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .bulle-texte.coupe .m { white-space: normal; } /* …sauf s'il ne tient pas dans la place (lot « Correctifs : passage… », point 3) ; le reste du mot sur la ligne suivante */
 .bulle.instant { transition: none; } /* (point 4 : cachée sans fondu, quand elle couvrirait une cible ou n'a pas de texte) */
 .bulle-texte .m.on { opacity: 1; }
+.bulle.pop .bulle-texte .m.on { transition: none; } /* (relecture du lot « Correctifs : passage… » : les premiers mots sont là dès que la bulle naît ; sinon l'ovale apparaissait un instant vide) */
 .bulle-texte .nb { color: #d63a26; font-weight: 700; }
 /* (lot « Correctifs de la tablette ») la tuile sélectionnée (premier toucher) invite au second, comme « jouer » */
 .choix-tuile.choisie, .choix-ex.choisie, .lecons-tuile.choisie, .galet.choisie { animation: invite 1.6s ease-in-out infinite; }
 /* (lot « Correctifs : passage… », point 10) les galets de l'accueil : le bouton est la boîte du galet, son dessin déborde un peu */
-.galet { overflow: visible; }
+.galet, .choix-tuile, .lecons-tuile { overflow: visible; } /* (et l'entourage de sélection, posé autour de la tuile : engine/ui.js, entourage) */
 /* (lot « Correctifs de la tablette ») la bulle d'une tuile, sur les écrans de choix pleins de tuiles : un peu plus petite */
 .bulle.tuile .bulle-texte, .bulle.large .bulle-texte { font-size: 26px; }
 .bulle.pop { animation: bulle-pop 0.38s ease-out; }
@@ -188,8 +189,8 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .demarrage-continuer { position: absolute; left: 340px; top: 652px; width: 600px; height: 64px; display: flex; align-items: center; justify-content: center;
   font: 600 38px/1 "Shantell Sans", system-ui, sans-serif; color: #fff; letter-spacing: 0.5px; pointer-events: none; user-select: none;
   text-shadow: 0 0 1px #fff, 0 0 1px #fff, 2px 2px 0 #15122a, -2px 2px 0 #15122a, 2px -2px 0 #15122a, -2px -2px 0 #15122a, 0 3px 0 #15122a, 3px 0 0 #15122a, 0 -3px 0 #15122a, -3px 0 0 #15122a, 4px 6px 0 rgba(6, 26, 40, 0.45);
-  opacity: 0; transform: scale(0.9); }
-.demarrage.pret .demarrage-continuer { animation: demarrage-apparait 0.5s ease-out forwards, demarrage-va-et-vient 2.4s ease-in-out 0.5s infinite; }
+  opacity: 0; transform: scale(0.9); visibility: hidden; } /* (relecture : invisible tant que le chargement n'est pas fini) */
+.demarrage.pret .demarrage-continuer { visibility: visible; animation: demarrage-apparait 0.5s ease-out forwards, demarrage-va-et-vient 2.4s ease-in-out 0.5s infinite; }
 @keyframes demarrage-apparait { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 @keyframes demarrage-va-et-vient { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 1; transform: scale(1.07); } }
 .demarrage.partir { opacity: 0; transition: opacity 0.4s ease-out; pointer-events: none; }

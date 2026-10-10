@@ -71,6 +71,8 @@ test("point 7 : sur les écrans de choix, l'appui long d'une tuile ne montre plu
   const src = (f) => readFileSync(new URL(`../../app/js/session/${f}`, import.meta.url), "utf8");
   assert.match(src("selection.js"), /\}, null\); \/\/ \(point 7 : sans étiquette\)/);
   for (const f of ["choice.js", "lessons.js", "selection.js"]) assert.doesNotMatch(src(f), /tileLabel|etiquette:/, f);
+  // (point 8, relecture : l'entourage des tuiles est posé autour d'elles, 7 px au-dehors, et ne rogne pas leur dessin)
+  for (const f of ["choice.js", "lessons.js"]) assert.match(src(f), /entourage\(app, b, [^\n]*R\.drawSelectTile\([^\n]*, -7\)\)/, f);
 });
 
 test("point 8 : l'entourage d'un exercice reprend la forme de sa bulle (la même graine que dans l'atelier)", async () => {

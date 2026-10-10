@@ -11,6 +11,18 @@ export function spriteBox(app, { x, y, w, h, cls = "bubble", label = "", still =
   b.repaint();
   return b;
 }
+// (lot « Correctifs : passage de l'échauffement aux voiliers », point 8 et relecture : l'entourage de sélection d'une tuile est
+// posé AUTOUR d'elle, sur un calque débordant de `m` px de chaque côté, pour ne rien rogner de son dessin) `dessin(ctx, x, y)` :
+// en px logiques, la tuile occupant (x, y) à (x + largeur, y + hauteur) ; `visible` false le retire
+export function entourage(app, b, visible, dessin, m = 18) {
+  if (!visible) { b.__entourage?.remove(); b.__entourage = null; return; }
+  const w = parseFloat(b.style.width), h = parseFloat(b.style.height), px = app.stage.px;
+  const c = (b.__entourage ??= document.createElement("canvas"));
+  c.className = "entourage"; c.width = Math.round((w + 2 * m) * px); c.height = Math.round((h + 2 * m) * px);
+  Object.assign(c.style, { position: "absolute", left: `${-m}px`, top: `${-m}px`, width: `${w + 2 * m}px`, height: `${h + 2 * m}px`, pointerEvents: "none" });
+  const ctx = c.getContext("2d"); ctx.setTransform(px, 0, 0, px, 0, 0); ctx.clearRect(0, 0, w + 2 * m, h + 2 * m); dessin(ctx, m, m);
+  if (!c.isConnected) b.append(c);
+}
 // un toucher franc : pointerdown (pas de délai de clic)
 export const onTap = (el, f) => el.addEventListener("pointerdown", (e) => { e.preventDefault(); f(e); });
 // (lot 3 bis, B3 ; lot 3 ter, T3 : partout) L'APPUI LONG sur un bouton de choix ou de commande : un toucher bref (lever le

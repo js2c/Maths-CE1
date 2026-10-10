@@ -10,7 +10,7 @@
 // Renvoie { module: 1, niveau } | { module: 2, famille } | { module: 3 ou 4, niveau } (| null : quitté sans valider, `app.choiceCancel`). Fonctions pures (`levelItems`) testées par
 // tests/unit/choix.test.mjs.
 import * as R from "../art/runtime.js";
-import { onBrief, pop, spriteBox } from "../engine/ui.js";
+import { entourage, onBrief, pop, spriteBox } from "../engine/ui.js";
 import { closeLegend, legendKey } from "./legend.js";
 import { deuxTouchers } from "./selection.js";
 import { currentFamily, initialFamilies, ruleShare } from "../modules/facts/families.js";
@@ -120,9 +120,10 @@ export async function choose(app, o) {
       const b = spriteBox(app, { x: x - W / 2, y: y - H / 2, w: W, h: H, cls: "bubble choix-tuile", label: `${ex} ${it.key}`, paint: (ctx, px) => {
         sprites.draw(ctx, it.sprite, 0, W / 2, H / 2);
         ctx.setTransform(px, 0, 0, px, 0, 0);
-        if (sel.key === String(it.key)) R.drawSelectTile(ctx, W / 2, H / 2, W, H, TILE.r); // (point 8 : la forme de la tuile)
         if (it.valide) { ctx.setTransform(1, 0, 0, 1, 0, 0); const q = sprites.frame("etoile.doree", 0), k = 0.42; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (W - 24) * px + q.dx * k, 24 * px + q.dy * k, q.w * k, q.h * k); }
       } });
+      // (point 8 : l'entourage autour de la tuile, de sa forme exacte, 7 px au-dehors : il ne rogne rien de son dessin)
+      const peindre = b.repaint; b.repaint = (f) => { peindre(f); entourage(app, b, sel.key === String(it.key), (c, x, y) => R.drawSelectTile(c, x + W / 2, y + H / 2, W, H, TILE.r, -7)); };
       b.dataset.key = String(it.key); b.dataset.conseille = it.conseille ? "1" : ""; b.dataset.valide = it.valide ? "1" : ""; els.push(b); return b;
     });
     // (lot 3 bis, B2) la légende des niveaux, pour le parent : ne choisit rien, ne lance rien

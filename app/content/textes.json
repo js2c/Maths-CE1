@@ -111,7 +111,6 @@
   "etoileArc": "Et une étoile arc-en-ciel ! Un jour, elle t'ouvrira un nouveau coin du récif.",
   "accueilConsigne": "Touche une bulle : je te dis ce que c'est. Touche-la encore pour y aller.",
   "accueilConsigneFaite": "La séance du jour est finie. Touche une bulle : je te dis ce que c'est. Touche-la encore pour y aller.",
-  "_accueilDescription": "Lot « Correctifs : passage de l'échauffement aux voiliers », point 10 (phrases proposées par la conception, validées par le parent le 10 octobre 2026) : l'accueil en deux touchers ; au premier toucher d'un galet, la mascotte dit ce que c'est, au second on y va.",
   "accueilDescription": {
     "jouer": "Jouer. Je choisis les exercices du soir pour toi.",
     "encore": "Encore ! Tu rejoues autant que tu veux.",

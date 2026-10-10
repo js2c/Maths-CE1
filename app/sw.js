@@ -14,7 +14,7 @@
 //    croissante) ; un échec n'est pas perdu : ce qui est déjà dans le cache de la nouvelle version y reste, et la tentative
 //    suivante (le navigateur la refait à la prochaine ouverture) reprend là où elle s'est arrêtée ;
 //  - l'ancien cache n'est supprimé qu'une fois la nouvelle version complète et active.
-const VERSION = "85b1b8e2a3b1";
+const VERSION = "25ba884b7dd3";
 const CACHE = `ocean-${VERSION}`;
 const PAQUET = 32, ESSAIS = 4;
 // la résolution des planches d'images de cet écran (main.js : sw.js?r=1 ou ?r=2) : on ne met en cache que

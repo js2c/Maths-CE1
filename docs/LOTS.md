@@ -501,3 +501,35 @@ Chacune suivie de « À toi ! » vers son niveau (section 3). Relancées selon l
 - un parcours `tests/e2e/etal.mjs` avec les captures (1280 × 800 et 1920 × 1200) de chaque situation : beau temps, mauvais temps, arrivée de l'orage et réplique, portefeuille fermé, ouvert, argent sorti, paiement juste, « pas assez », « trop », pièce de trop, rendu de monnaie par le pêcheur, niveau 7 au pavé, deux produits, centimes, « je ne sais pas », correction, exemple guidé, pause et reprise, chaque leçon ;
 - mesure du temps d'image, beau et mauvais temps, portefeuille ouvert ;
 - relecture indépendante (méthode commune).
+
+### 8. Lot « Correctifs : passage de l'échauffement aux voiliers »
+
+**Origine** : essai du parent sur la tablette, le 10 octobre 2026. Les captures sont dans `docs/maquettes/correctifs-2/`.
+
+**Comme les lots 4, 5 et 6 : d'un seul tenant, sans arrêt pour une validation.** Les choix de la session vont dans le journal, marqués « choix de la session, à revoir par le parent », et dans une section « Choix faits sans le parent » de la demande de fusion.
+
+**Les défauts à corriger**
+
+1. **L'écran de l'échauffement reste par-dessus les voiliers** (capture 01, tablette). Après « passer l'échauffement », le jeu des voiliers démarre, mais il reste par-dessus :
+   - le pavé de l'échauffement (chiffres, effacer, coche) ;
+   - le coquillage d'aide ;
+   - le bernard-l'ermite ;
+   - un second bouton « je ne sais pas », celui de l'échauffement, en plus de celui des voiliers.
+
+   La session n'a pas pu le reproduire en conception en passant l'échauffement depuis la première question, après une erreur ou après avoir touché le coquillage : le défaut dépend donc du moment où l'on passe, ou du chemin d'entrée.
+   - **Reproduire en essayant chaque chemin** : « jouer », « choisir » avec le choix en deux touchers, « Encore ! ».
+   - **Et chaque moment de l'échauffement** : pendant la phrase d'introduction, pendant une question, chiffres tapés, pendant l'aide, pendant une correction avec le bernard-l'ermite, pendant l'exemple guidé, confirmation par la coche, confirmation automatique après 5 s.
+   - **Corriger la cause, pas le symptôme** : à la fin de l'échauffement, quelle que soit la façon dont il finit, tout ce qu'il a posé à l'écran est retiré, et ses minuteries sont arrêtées.
+   - **Vérifier les autres passages entre étapes** de la même façon : échauffement vers chaque exercice (ligne, additions, calcul rapide, voiliers, multiplication), notion du jour vers le défi, défi vers la récompense, pause et reprise.
+2. **Un contrôle durable.** Un parcours `tests/e2e` passe par chaque exercice précédé d'un échauffement passé, à chacun des moments ci-dessus. Il échoue si un élément d'une étape précédente reste visible : pavé, coquillage, personnage guide, double bouton.
+
+   Le parcours actuel des voiliers désactive l'échauffement : c'est pourquoi ce défaut n'a pas été vu.
+3. **Le texte qui déborde de la bulle** (capture 02, conteneur) : « trois-cent-soixante-neuf » sort de la bulle, dans les voiliers. Dans toute l'application, la bulle s'agrandit ou passe à la ligne pour contenir son texte. Le long mot composé peut se couper aux traits d'union.
+4. **Une bulle vide visible** (capture 03, conteneur) : pendant une question de l'échauffement, une bulle vide et pâle reste à côté de la mascotte. Une bulle sans texte ne s'affiche jamais.
+5. **À vérifier** :
+   - **Le clavier pendant l'échauffement.** En conception, des chiffres tapés au clavier ne se sont pas inscrits. Le moment n'était peut-être pas le bon : la question était peut-être encore en train d'apparaître.
+   - **Le cadrage à la taille exacte de la tablette** (écran 1138 × 711, densité 2,25). Sur la capture 01, la maison et la mascotte semblent coupées à gauche. Faire les captures à cette taille sur les écrans de jeu.
+
+**Voix** : en principe aucune phrase nouvelle. S'il y en a, les lister dans la demande de fusion.
+
+**Recette** : la méthode commune, avec le parcours du point 2 et des captures à 1138 × 711, densité 2,25.

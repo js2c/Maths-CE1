@@ -37,6 +37,8 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Entre « Les voiliers » et « Les leçons » : le lot « Correctifs »** (décision du parent du 6 octobre 2026, fiche 2 bis). La confrontation de la spécification avec le code est faite (`docs/ECARTS-SPEC.md`, #37) et ses écarts sont tranchés ; ce lot les applique. Il ne peut pas tourner en même temps qu'un autre lot (il modifie `docs/SPEC.md`). Il n'est pas dans le tableau ci-dessus : son état est tenu ici. **État : fait** (PR #39, à fusionner ; 8 phrases nouvelles, à fabriquer avec celles des lots « Mascotte » et « Les voiliers »).
 
+**Ensuite : le lot « L'étal du pêcheur »** (la monnaie, avancée par le parent le 8 octobre 2026 ; maquette validée le 10 octobre, `art/etal/`, PR #47 ; fiche 7). **État : à faire**, après la fusion de la PR #47 et du lot « Correctifs de la tablette ».
+
 **Après les cinq lots : le lot « Correctifs de la tablette »** (premier essai du parent sur la tablette, 8 octobre 2026 ; fiche 6). **État : fait** (PR #46, à fusionner ; 282 phrases nouvelles, environ 2,2 Mo, à fabriquer).
 
 **Pourquoi cet ordre.**
@@ -403,3 +405,99 @@ Le parent les fabrique ensuite avec `node tools\voix\publier.mjs`. Rester sous 8
 - l'écran de démarrage capturé ;
 - le clavier essayé dans chaque exercice à pavé ;
 - le contrôle des phrases sans fichier sur tous les parcours.
+
+### 7. Lot « L'étal du pêcheur » (la monnaie)
+
+**But** : la maquette `art/etal/` (décor, pêche du jour, orage, portefeuille, soucoupe ; validée par le parent le 10 octobre 2026) devient le **module 6** de l'application : un exercice de monnaie à l'étal du pêcheur, avec ses niveaux, ses crans, ses corrections, ses leçons, son enregistrement et son espace parent. Avancé à la demande du parent (8 octobre 2026) : la monnaie est une notion de la vie courante qu'il veut faire acquérir. Concept et décisions : `docs/IDEES.md`, section 2, « L'étal du pêcheur » ; ce qui en reste dans `docs/SPEC.md`, section 13, « L'heure et la monnaie », est remplacé par une section **7 quater** (le module 6). Lire `art/etal/README.md`, `art/etal/PHRASES.md`, `art/mascotte/README.md`, et la fiche du lot « Les voiliers » (même méthode d'intégration).
+
+**Comme le bloc 4 et 5 : d'un seul tenant, sans arrêt pour une validation** (la maquette visuelle est validée ; les règles ci-dessous sont celles du parent ou proposées par la conception). Si une règle pose problème en simulation, la session tranche elle-même ; chaque choix va dans `docs/JOURNAL-CONCEPTION.md`, marqué « choix de la session, à revoir par le parent », et dans une section « Choix faits sans le parent » en tête de la demande de fusion.
+
+**Prérequis** : la demande de fusion de la maquette (#47) et le lot « Correctifs de la tablette » sont fusionnés sur `main`.
+
+**Méthode d'intégration** (celle des voiliers et du récif vivant) :
+
+- un outil de l'atelier, `art/tools/export-etal.mjs`, reprend les images de `art/etal/img/` dans `app/assets/etal/` et fabrique le module de la scène à partir du script de la maquette ; la maquette n'est jamais modifiée ; les retouches (raccords avec l'application) sont faites et contrôlées par l'export ;
+- **gardé tel quel** : le décor et ses animations (ciel, mer en trois bandes, oiseaux, bateaux et leurs versions réduites, phare, pluie, lampe, lumière cuite dans l'étal), la pêche du jour et ses ardoises de prix écrites par le code, le portefeuille (vidéo d'ouverture, portefeuille ouvert en deux calques, argent rangé entre les deux, sortie et rangement en un toucher, fermeture d'un toucher à côté), la soucoupe, le glisser et le toucher de l'argent ;
+- **retiré** : les boutons de la maquette, le panneau de réglages et le compteur. Les valeurs des réglages deviennent des constantes de `app/content/etal.json` : celles que le parent donne dans son prompt (« Copier les réglages » de la maquette), sinon les valeurs de départ de la maquette ;
+- **la mascotte** : celle de l'application, à sa place (la fenêtre de la cabane tombe sur sa place, `art/etal/README.md`), abaissée et rognée au rebord de la fenêtre comme dans la maquette ; sa bulle, sa flèche, ses réactions comme partout ; le voile de l'orage sur elle ;
+- **les boutons de l'application** (maison, pause, « passer », « je ne sais pas », la coche) à leur place habituelle, sauf s'ils tombent sur le portefeuille, la soucoupe ou les produits : alors les placer sur le comptoir ou le décor, captures à l'appui, et le dire. La coche de validation (« J'ai payé ») est grande et près de la soucoupe.
+- **Fluidité** : 60 images/s mesurées par le parent sur la tablette avec la maquette (beau et mauvais temps). Mesurer avec `tests/e2e/perf.mjs` avant et après ; garder l'allègement automatique de la pluie ; si l'intégration coûte plus que la maquette, le dire.
+
+**Le déroulement d'une question** (« acheter ») :
+
+1. Un produit de l'étal s'allume (léger soulèvement, halo, son ardoise de prix aussi). Le pêcheur : « Achète les sardines. » puis « Elles coûtent 3 euros. » (deux phrases enchaînées, voir « Voix »). Le prix est écrit sur l'ardoise : la voix le redit, l'ardoise le montre.
+2. L'enfant ouvre le portefeuille, sort l'argent, dépose billets et pièces dans la soucoupe (toucher ou glisser) ; elle peut en reprendre (toucher dans la soucoupe).
+3. Elle touche la coche. Le pêcheur compte ce qu'il y a dans la soucoupe, à voix haute, objet par objet, du plus gros au plus petit (« 2… 3 euros »), avec un halo sur l'objet compté (en « plus facile », ce compte est montré et dit à chaque objet posé).
+4. Juste : il prend l'argent (qui glisse vers sa fenêtre), emballe le produit (le produit glisse hors de l'étal, un nouveau prend sa place à la question suivante), réaction de la mascotte. S'il doit rendre la monnaie (niveaux de rendu), il pose la monnaie dans la soucoupe en comptant à partir du prix (« 13… 14, 15… 20 ») : l'argent rendu revient ensuite dans le portefeuille de l'enfant.
+5. Faux : correction (voir plus bas), puis la question revient plus loin, comme partout (section 9).
+
+**Les niveaux** (dans `app/content/module6.json` ; les prix et le contenu du portefeuille sont tirés par le code à chaque question, jamais écrits dans les images) :
+
+| Niveau | Contenu | Portefeuille | Prix | Exemple |
+| --- | --- | --- | --- | --- |
+| 1 | Pièces et billets : poser la pièce ou le billet demandé | 1 € à 50 €, un de chaque | — | « Pose un billet de 10 euros. » |
+| 2 | Payer juste avec des pièces | pièces de 1 € et 2 € | 2 à 10 € | 7 € = 2 + 2 + 2 + 1 |
+| 3 | Payer juste avec billets et pièces | billets de 5 et 10 €, pièces de 1 et 2 € | 6 à 20 € | 17 € = 10 + 5 + 2 |
+| 4 | Payer juste jusqu'à 50 € | billets de 5 à 50 €, pièces de 1 et 2 € | 11 à 50 € | 34 € = 20 + 10 + 2 + 2 |
+| 5 | Payer juste avec un portefeuille restreint : le compte juste existe, mais il faut le trouver | tiré pour qu'il n'y ait qu'une ou deux façons (par exemple sans pièce de 1 €) | 3 à 30 € | 7 € sans pièce de 1 € : 5 + 2 |
+| 6 | Le compte juste est impossible : payer sans pièce de trop ; le pêcheur rend la monnaie et compte | tiré pour que le compte juste soit impossible | 3 à 20 € | 13 € avec un billet de 20 € et des pièces de 2 € : donner 20 € |
+| 7 | Rendre la monnaie : le paiement est montré (le billet est déjà dans la soucoupe) ; « Combien je te rends ? » au pavé | — | 1 à 19 €, billet de 5, 10 ou 20 € | 13 € payés avec 20 € → 7 |
+| 8 | Deux produits : « Achète les sardines et le maquereau. » ; payer juste le total | billets de 5 à 20 €, pièces | total 5 à 30 € | 3 + 4 = 7 € |
+| 9 | Les centimes : prix ronds ou en 50 c, écriture à virgule sur l'ardoise | ajoute les pièces de 50 c | 1,50 à 10 € | 3,50 € = 2 + 1 + 50 c |
+| 10 | Les centimes : prix en 10 c, 20 c, 50 c | ajoute les pièces de 10 et 20 c | 0,30 à 10 € | 2,70 € = 2 + 50 c + 20 c |
+
+- **Ordre et montée** : règles communes (section 9). Le niveau 1 est court (une poignée de questions, voie rapide). Les centimes (9 et 10) sont attendus par le programme au plus tard en période 2 ; ils restent accessibles par « choisir » dès le départ.
+- **Le contenu du portefeuille** est tiré à chaque question selon le niveau ; ce qui a été dépensé ne manque pas à la question suivante (le portefeuille est regarni à chaque question). Contrôle automatique : au niveau 5, le compte juste existe toujours ; au niveau 6, il n'existe jamais, et un paiement sans pièce de trop existe toujours.
+- **La règle de validation** : quand le compte juste est possible (niveaux 2 à 5, 8 à 10), il est exigé. Quand il est impossible (niveau 6), le paiement est juste s'il suffit et si on ne peut retirer aucun objet sans qu'il ne suffise plus (« aucune pièce de trop »).
+- **La réponse qui varie** (section 9) : prix, produits et contenus tirés sans remise ; contrôlé par `b-sequences.mjs`, étendu au module 6 (la « réponse » est le prix).
+
+**Les crans** (section 4 ; avec « jouer » comme avec « choisir », le cran ne change pas le niveau, comme aux voiliers) :
+
+- **plus facile** : le total de la soucoupe est affiché et dit à chaque objet posé ; la valeur s'écrit sur chaque pièce et billet sortis ; au niveau 7, la ligne de l'aide est montrée d'emblée ;
+- **conseillé** : le total est montré au moment du compte (après la coche) ;
+- **plus dur** : pas de total ; prix dans le haut de la fourchette du niveau ;
+- **très dur** : pas de total, prix en haut de fourchette, et un portefeuille plus garni de petites pièces (le chemin le plus long n'est pas le bon).
+
+**Erreurs, corrections, aides** :
+
+- **M1 « pas assez »** : le pêcheur compte, puis « Il manque 2 euros. » ; l'argent reste dans la soucoupe, l'enfant peut compléter **une fois** (deuxième essai, comme aux voiliers), sinon correction ;
+- **M2 « trop » quand le compte juste existe** : « Tu peux faire le compte juste. » ; il rend ce qui est en trop, deuxième essai ;
+- **M3 « une pièce de trop »** (niveau 6) : il rend la pièce inutile (« Celle-là, garde-la ! ») ;
+- **M4 « le nombre au lieu de la valeur »** : la soucoupe contient autant d'objets que le prix en euros (heuristique) : correction qui compte les valeurs ;
+- **M5 « rend le prix au lieu de la différence »** et **M6 « erreur de rendu »** (niveau 7) ;
+- **M7 « mauvaise pièce ou mauvais billet »** (niveau 1) ;
+- **NSP** comme partout.
+- **La correction** montre une bonne façon de payer : l'argent de l'enfant revient au portefeuille, puis les objets d'une solution glissent un par un dans la soucoupe pendant que le pêcheur compte. Au niveau 7 : le saut sur une ligne graduée, du prix à la somme donnée (les primitives de la ligne de l'application), « 13… 20, ça fait 7 ».
+- **L'aide (coquillage)** : le total affiché et dit à chaque objet posé, plus la valeur sur chaque objet ; au niveau 7, la ligne.
+
+**Les leçons** (section 8 ; menu des leçons : une rangée « monnaie ») :
+
+- **L15 « Pièces et billets »** : une pièce de 2 € vaut deux pièces de 1 € ; un billet de 5 € vaut cinq pièces de 1 € ; on compte la valeur, pas le nombre (trois pièces de 2 € : 2, 4, 6) ;
+- **L16 « Payer juste »** : du plus gros au plus petit (17 € : 10, 15, 16, 17) ;
+- **L17 « Rendre la monnaie »** : on compte à partir du prix jusqu'à ce qu'on a donné (13… 20 : 7 euros) ;
+- **L18 « Les centimes »** : 100 centimes font 1 euro ; 3,50 € c'est 3 euros et 50 centimes ; deux pièces de 50 c font 1 € ; « deux euros cinq » et « deux euros cinquante » ne sont pas la même chose.
+
+Chacune suivie de « À toi ! » vers son niveau (section 3). Relancées selon les règles communes (difficulté persistante, même erreur deux fois).
+
+**L'orage** (décision du parent du 10 octobre 2026) : à l'entrée de l'exercice, mauvais temps une fois sur deux (`etal.json`) ; sinon, une fois sur deux, il arrive en cours de partie (entre 2 et 6 min, tiré au hasard) : la mascotte dit une des quatre répliques de `art/etal/PHRASES.md` (jamais deux fois de suite la même), à un moment où elle ne parle pas d'une question (entre deux questions). Le temps ne change rien à l'exercice. Par mauvais temps, la lampe s'allume et éclaire l'étal, les produits, le portefeuille et la soucoupe comme dans la maquette.
+
+**Récompenses** : les règles de la section 10 (étoiles selon le cran, erreur corrigée, niveau franchi). La monnaie de l'exercice n'est **jamais** celle des étoiles.
+
+**Accès** : une tuile de l'écran « choisir » (un portefeuille ou une pièce, dessinés dans l'atelier, style A), ses 10 niveaux (légende du parent), l'entraînement libre ; pictogramme de frise. **Hors de la rotation de « jouer »**, comme les voiliers (`seance.json`, `alternance.horsRotation`) ; le parent peut l'imposer pour la prochaine séance « jouer ». Question ouverte pour le parent (valeur par défaut : hors rotation).
+
+**Espace parent** : réponses, codes M1 à M7 et NSP, progression, légende des 10 niveaux, notes de la séance (prix, contenu de la soucoupe, rendu).
+
+**Voix** — **aucune voix n'est fabriquée dans ce lot** (`CLAUDE.md`, « Voix ») ; le parent les fabrique plus tard, sur son ordinateur, avec Chatterbox (`docs/VOIX.md`). La session :
+
+- écrit les phrases dans `app/content/textes.json` (et les leçons) et les fait entrer dans l'inventaire (`tools/voix/inventaire.mjs`) ;
+- limite leur nombre par des phrases enchaînées : le produit (« Achète les sardines. », 12 phrases, avec le bon article et l'accord : « Elles coûtent » / « Il coûte ») puis le prix (« 3 euros. », « 3 euros 50. », « 2 euros 70. »…, autant que de prix possibles), les montants comptés (« 2… », « 3 euros. »), les manques et les rendus ; viser moins de 600 phrases nouvelles ; les prix tirés seulement parmi ceux qui ont une phrase ;
+- reprend les quatre répliques de l'orage de `art/etal/PHRASES.md` ;
+- donne dans la demande de fusion la liste exacte des phrases nouvelles, leur nombre et leur poids estimé.
+
+**Recette, en plus de la méthode commune** :
+
+- tests unitaires des règles : tirage des portefeuilles (existence ou absence du compte juste), validation « aucune pièce de trop », rendu, tirage des prix parmi ceux qui ont une phrase ;
+- simulation par profil (`tests/sim-seances.mjs`, étendu au module 6) et séquences lues ;
+- un parcours `tests/e2e/etal.mjs` avec les captures (1280 × 800 et 1920 × 1200) de chaque situation : beau temps, mauvais temps, arrivée de l'orage et réplique, portefeuille fermé, ouvert, argent sorti, paiement juste, « pas assez », « trop », pièce de trop, rendu de monnaie par le pêcheur, niveau 7 au pavé, deux produits, centimes, « je ne sais pas », correction, exemple guidé, pause et reprise, chaque leçon ;
+- mesure du temps d'image, beau et mauvais temps, portefeuille ouvert ;
+- relecture indépendante (méthode commune).

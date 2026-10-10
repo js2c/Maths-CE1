@@ -720,15 +720,15 @@ const IMG_V = { 10: 'piece-10c', 20: 'piece-20c', 50: 'piece-50c', 100: 'piece-1
 // tailles réelles : billets 120 à 140 mm de large ; pièces 19,75 à 25,75 mm de diamètre (rapports respectés)
 const LARG = { 500: 190, 1000: 201, 2000: 211, 5000: 222, 10: 67, 20: 76, 50: 82, 100: 79, 200: 88 };
 const PF_FERME = { l: 964, t: 586, s: 0.42 }, PF_OUVERT = { l: 659, t: 458, s: 0.915 };
-/* le portefeuille ouvert : l'illustration du parent (outils/8-portefeuille-ouvert.py), en deux calques — le fond
-   (portefeuille vidé) et le cuir de devant ; billets et pièces rangés passent entre les deux. Coordonnées en pixels
-   de l'illustration (1 200 × 896), cadre découpé à partir de (108, 212). */
-const PF_IMG = { x0: 108, y0: 212, w: 984, h: 492 };
-const PF_NEUF = { l: 657, t: 462, s: 0.598 };
+/* le portefeuille ouvert : l'illustration du parent du portefeuille vide (outils/8-portefeuille-ouvert.py), en deux
+   calques — le portefeuille, et le cuir de devant ; billets et pièces rangés passent entre les deux. Coordonnées en
+   pixels de l'illustration (1 200 × 896), cadre découpé à partir de (110, 184). */
+const PF_IMG = { x0: 110, y0: 184, w: 982, h: 518 };
+const PF_NEUF = { l: 657, t: 460, s: 0.598 };
 const enScene = (x, y) => [PF_NEUF.l + PF_NEUF.s * (x - PF_IMG.x0), PF_NEUF.t + PF_NEUF.s * (y - PF_IMG.y0)];
 const BORD_AVANT = [[110, 290], [200, 294], [300, 308], [400, 317], [480, 327], [520, 329], [620, 318], [720, 317], [800, 308], [880, 304], [960, 297], [1040, 290], [1090, 285]];
 const interp = (P, x) => { for (let i = 1; i < P.length; i++) if (x <= P[i][0]) { const [a, b] = [P[i - 1], P[i]]; return a[1] + (b[1] - a[1]) * (x - a[0]) / (b[0] - a[0]); } return P[P.length - 1][1]; };
-const BORD_POCHE_P = [[676, 548], [720, 557], [770, 566], [820, 573], [870, 578], [920, 574], [970, 563], [1022, 550]];
+const BORD_POCHE_P = [[676, 538], [690, 538], [720, 556], [750, 562], [780, 568], [810, 575], [840, 578], [870, 577], [900, 573], [930, 567], [960, 561], [990, 555], [1020, 545], [1042, 542]];
 const SOUC = { x: 468, y: 690, rx: 185, ry: 95 };
 let pfEtat = 'ferme', items = [], ordreS = 0;    // ferme · anim · ouvert (argent rangé) · sorti (argent dehors)
 const pfEl = $('pf'), pfCtx = pfEl.getContext('2d'), fondEl = $('pfFond'), avEl = $('pfAvant');
@@ -764,7 +764,7 @@ const tries = (lieu, b) => items.filter(i => i.lieu === lieu && i.b === b).sort(
 function posRangee(it, k, n) {
   if (it.b) {                            // dans la grande poche : le haut dépasse, comme dans l'illustration
     const sc = 1, xi = 645 + (k - (n - 1) / 2) * Math.min(90, 250 / Math.max(1, n - 1 || 1)) + (it.h - 0.5) * 16;   // centres entre 520 et 770 : les billets restent dans la poche
-    const haut = 150 + (k % 3) * 22 + it.h * 18;                       // haut du billet (pixels de l'illustration)
+    const haut = 108 + (k % 3) * 20 + it.h * 16;                       // haut du billet (pixels de l'illustration) ; le bas reste caché, au-dessus du rabat de la poche à pièces
     const [x, y] = enScene(xi, haut); return [x, y + hauteur(it) * sc / 2, -5 + (k % 3) * 4 + (it.h - 0.5) * 4, sc];
   }
   const rang = k % 2, i = Math.floor(k / 2), m = Math.ceil((n - rang) / 2), sc = 0.9;   // deux rangs : derrière plus haut, devant plus bas
@@ -804,15 +804,15 @@ function majTotal() {
 }
 // au-dessus de sa poche, encore entre le fond et le devant du cuir : l'étape du milieu pour sortir ou rentrer
 function audessus(it) {
-  if (it.b) { const [, y] = enScene(470, 150); return [it.x, y - hauteur(it) * 0.15]; }
-  const [, y] = enScene(860, 455); return [it.x, y - LARG[it.v] * 0.35];
+  if (it.b) { const [, y] = enScene(645, 108); return [it.x, y - hauteur(it) * 0.15]; }
+  const [, y] = enScene(860, 470); return [it.x, y - LARG[it.v] * 0.2];   // au-dessus de la poche, devant son rabat
 }
 function sortirTout() {                  // un toucher : billets et pièces sortent ensemble (billets en haut, pièces en bas)
   pfEtat = 'sorti';
   const A = items.filter(i => i.lieu === 'poche');
   A.forEach((it, k) => {
     it.transit = true; it.lieu = 'sortie';
-    const [x, y] = audessus(it); poser(it, x, y, it.r, it.b ? 1 : 0.8, 4);
+    const [x, y] = audessus(it); poser(it, x, y, it.r, it.b ? 1 : 0.8, it.b ? 4 : 30);   // les pièces montent devant le rabat (et le cuir au-dessus)
     setTimeout(() => { it.transit = false; disposer(); }, 210 + (it.b ? 0 : 25 * k));
   });
   disposer();

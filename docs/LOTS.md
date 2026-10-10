@@ -41,7 +41,7 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Après les cinq lots : le lot « Correctifs de la tablette »** (premier essai du parent sur la tablette, 8 octobre 2026 ; fiche 6). **État : fait** (PR #46, à fusionner ; 282 phrases nouvelles, environ 2,2 Mo, à fabriquer).
 
-**Puis (essai du parent du 10 octobre 2026) : le lot « Correctifs : passage de l'échauffement aux voiliers »** (fiche 8 : les défauts vus sur la tablette, le nouveau démarrage, l'accueil en deux touchers, la voix de secours, les icônes), **puis le lot « Recette de l'enfant et nettoyage des couches »** (fiche 9). Ordre conseillé : ces deux lots avant « L'étal du pêcheur », pour ne pas ajouter un écran sur une base qu'on n'a pas encore nettoyée. Ils ne peuvent pas tourner en même temps qu'un autre lot. **État : à faire.**
+**Puis (essai du parent du 10 octobre 2026) : le lot « Correctifs : passage de l'échauffement aux voiliers »** (fiche 8 : les défauts vus sur la tablette, le nouveau démarrage, l'accueil en deux touchers, la voix de secours, les icônes), **puis le lot « Recette de l'enfant et nettoyage des couches »** (fiche 9). « L'étal du pêcheur » est déjà presque fini (PR #49) : ces deux lots partent **après sa fusion**, et couvrent aussi l'étal (sa tuile, ses niveaux et ses leçons sont des écrans en deux touchers ; l'enfant imprévisible y joue aussi). Ils ne peuvent pas tourner en même temps qu'un autre lot. **État : à faire.**
 
 **Pourquoi cet ordre.**
 
@@ -572,7 +572,7 @@ Chacune suivie de « À toi ! » vers son niveau (section 3). Relancées selon l
      - un toucher sélectionne le bouton : entourage rouge épais, qui suit exactement la forme du galet (comme au point 8), bulle qui part du bouton, et la mascotte dit ce que c'est ;
      - un second toucher entre dans le menu ;
      - un toucher ailleurs désélectionne.
-   - **Les phrases** (nouvelles, à fabriquer ; proposition de la conception, à revoir par le parent) :
+   - **Les phrases** (nouvelles, à fabriquer ; proposées par la conception, validées par le parent le 10 octobre) :
      - jouer : « Jouer. Je choisis les exercices du soir pour toi. » ;
      - « Encore ! » : « Encore ! Tu rejoues autant que tu veux. » ;
      - choisir : « Choisir. C'est toi qui choisis l'exercice. » ;
@@ -617,7 +617,7 @@ Chacune suivie de « À toi ! » vers son niveau (section 3). Relancées selon l
      - `icone-maskable-512.png` : Android la découpe en rond ou en carré arrondi, et le logo tient dans le cercle central ;
      - `icone-180.png` (iPhone, iPad).
    - Les copier dans `app/icons/` par l'outil d'export ; mettre à jour `manifest.webmanifest` (les trois usages) et `index.html` (icône de l'onglet, `apple-touch-icon`).
-   - **Choix de la conception, à revoir par le parent** : le nom affiché sous l'icône devient « Maths CE1 » (`name` et `short_name`, aujourd'hui « L'océan des nombres » et « Océan »), pour aller avec le logo.
+   - **Validé par le parent** : le nom affiché sous l'icône devient « Maths CE1 » (`name` et `short_name`, aujourd'hui « L'océan des nombres » et « Océan »), pour aller avec le logo.
    - Sur la tablette, une icône déjà installée ne change souvent qu'après avoir désinstallé puis réinstallé l'application. Le dire dans `docs/GUIDE-PARENT.md` : désinstaller ne perd pas la progression tant qu'on ne vide pas les données du site, mais faire d'abord un export par sécurité.
 
 **Voix** : les phrases du point 10 (six descriptions et deux consignes). Les lister exactement dans la demande de fusion, avec leur poids.
@@ -636,13 +636,13 @@ Chacune suivie de « À toi ! » vers son niveau (section 3). Relancées selon l
 
 **Origine** : le parent, le 10 octobre 2026 : « le jeu est devenu un oignon, c'est-à-dire un empilement de couches dont les anciennes sont encore présentes sous la surface, et peuvent créer des bugs ». Il demande une recette où l'on se met dans la peau de l'enfant et où l'on teste tout, y compris les actions inattendues : toucher à côté, passer l'entraînement, revenir au menu en pleine partie pour changer de jeu, etc.
 
-**Quand** : après la fusion du lot « Correctifs : passage de l'échauffement aux voiliers » (fiche 8), dont il prolonge le point 1. Avant tout lot qui ajoute un écran (l'étal), pour ne pas ajouter de couche sur une base qu'on n'a pas nettoyée.
+**Quand** : après la fusion du lot « Correctifs : passage de l'échauffement aux voiliers » (fiche 8), dont il prolonge le point 1, et donc après « L'étal du pêcheur » (PR #49), qu'il couvre aussi. Avant tout nouveau lot qui ajoute un écran, pour ne pas ajouter de couche sur une base qu'on n'a pas nettoyée.
 
 **Comme les lots 4 à 8 : d'un seul tenant, sans arrêt pour une validation.** Ce lot ne change pas ce que fait l'application ; il retire ce qui ne sert plus et corrige ce qui déraille. Tout changement de comportement visible va dans le journal (« choix de la session, à revoir par le parent ») et dans la demande de fusion.
 
 **1. L'inventaire des couches** (avant de modifier le code), dans `docs/COUCHES.md` :
 - Pour chaque écran et chaque étape, lister ce qu'il pose et ce qu'il lance, puis chaque façon d'en sortir.
-  - Les écrans et étapes : démarrage, accueil, choisir, niveaux, leçons, tables, chaque étape de la séance (échauffement, notion du jour, défi, récompense, fin), pause, entraînement libre, récif, album, espace parent, et l'écran de chaque exercice.
+  - Les écrans et étapes : démarrage, accueil, choisir, niveaux, leçons, tables, chaque étape de la séance (échauffement, notion du jour, défi, récompense, fin), pause, entraînement libre, récif, album, espace parent, et l'écran de chaque exercice, l'étal compris.
   - Ce qu'il pose : éléments, canvas, planches d'images.
   - Ce qu'il lance : minuteries, boucles d'animation, écouteurs posés sur le document, phrases dites, ambiance et bulle de la mascotte, flèche, sons.
   - Les façons d'en sortir : fin normale, maison, pause, espace parent, « passer », écran mis en veille, rechargement.

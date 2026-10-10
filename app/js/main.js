@@ -31,6 +31,8 @@ import { initialMultState, Module5Runner, multMastery } from "./modules/mult/run
 import { MultScreen } from "./modules/mult/screen.js";
 import { Module4Runner } from "./modules/voiliers/runner.js";
 import { VoiliersScreen } from "./modules/voiliers/screen.js";
+import { initialEtalState, Module6Runner } from "./modules/etal/runner.js";
+import { EtalScreen } from "./modules/etal/screen.js";
 import { median } from "./modules/facts/facts.js";
 import { Hermit } from "./engine/hermit.js";
 import { runChallenge } from "./modules/facts/challenge.js";
@@ -78,7 +80,7 @@ const videoChargee = demarrage.annoncer(MASCOTTE_VIDEOS, 1);
 const ocean = new Ocean(stage, sprites, atlas, { rapide: location.search.includes("voix=rapide"), progres: videoChargee, journal: (texte, genre, info) => { journalMascotte.push({ t: Math.round(performance.now()), texte, genre, ...info }); if (journalMascotte.length > 2000) journalMascotte.shift(); } });
 const T = (p, poids = 1) => demarrage.tache(p, poids);
 const [module1, module2, textes, seance, lecons, cartes, calendrier, parentContent, voix] = await Promise.all([T(json("content/module1.json")), T(json("content/module2.json")), T(json("content/textes.json")), T(json("content/seance.json")), T(json("content/lecons.json")), T(json("content/cartes.json")), T(json("content/calendrier.json")), T(json("content/parent.json")), T(json("assets/voix/index.json").catch(() => null), 3)]);
-const [sonContent, sonIndex, module3, legendes, module4, module5] = await Promise.all([T(json("content/son.json")), T(json("assets/son/index.json").catch(() => null)), T(json("content/module3.json")), T(json("content/legendes.json")), T(json("content/module4.json")), T(json("content/module5.json"))]);
+const [sonContent, sonIndex, module3, legendes, module4, module5, module6, etalConf] = await Promise.all([T(json("content/son.json")), T(json("assets/son/index.json").catch(() => null)), T(json("content/module3.json")), T(json("content/legendes.json")), T(json("content/module4.json")), T(json("content/module5.json")), T(json("content/module6.json")), T(json("content/etal.json"))]);
 // la base locale ; au premier lancement, on demande au navigateur de ne jamais l'effacer de lui-même
 const store = await Store.open();
 if (!(await store.setting("premierLancement"))) { await store.setSetting("premierLancement", new Date().toISOString()); await store.setSetting("stockagePersistant", await persist()); }
@@ -103,10 +105,11 @@ const voice = new Voice({ rate: 0.9, fast: P.get("voix") === "rapide" }).setInde
 // (lot « Les voiliers » : pendant le jeu, la bande des bouées et le bateau de l'enfant quand il arrive ou attend le geste ;
 // quand il va seul au bon passage, il est seulement évité si possible)
 const bulle = new Bulle(stage, {
-  dures: () => { if (stage.root.classList.contains("paused")) return []; const b = app.line.bande; return [...(b ? [b] : []), ...(app.voiliers?.actif ? app.voiliers.obstacles() : [])]; },
+  // (lot « L'étal du pêcheur » : la caisse, le portefeuille, l'argent sorti, le pavé du niveau 7 ; la glace et ses produits, si possible)
+  dures: () => { if (stage.root.classList.contains("paused")) return []; const b = app.line.bande; return [...(b ? [b] : []), ...(app.voiliers?.actif ? app.voiliers.obstacles() : []), ...(app.etal?.actif ? app.etal.obstacles() : [])]; },
   // (relecture du lot « Multiplication » : l'ardoise de la multiplication, large au niveau 1, « 5 + 5 + 5 + 5 + 5 = ? », est
   // évitée si possible)
-  souples: () => (stage.root.classList.contains("paused") ? [] : [...(app.voiliers?.actif ? app.voiliers.souples() : []), ...(app.facts?.q?.module === 5 && app.facts.slate?.style.visibility !== "hidden" ? [[495, 120, 1085, 300]] : [])]),
+  souples: () => (stage.root.classList.contains("paused") ? [] : [...(app.voiliers?.actif ? app.voiliers.souples() : []), ...(app.etal?.actif ? app.etal.souples() : []), ...(app.facts?.q?.module === 5 && app.facts.slate?.style.visibility !== "hidden" ? [[495, 120, 1085, 300]] : [])]),
 }), fleche = new Fleche(ocean);
 // (relecture du lot : pendant une question de dictée, la bulle n'écrit rien : elle écrirait en chiffres le nombre à écrire)
 const dicteeEnCours = () => !!(app.facts?.q?.dictee && !app.facts.locked);
@@ -152,6 +155,8 @@ app.module3 = module3;
 app.mult = new MultScreen(app, () => (app.facts ??= new FactsScreen(app, module2))); app.module5 = module5;
 // lot « Les voiliers » : le module 4 (sa scène est installée le temps de la notion du jour)
 app.module4 = module4; app.voiliers = new VoiliersScreen(app, module4);
+// lot « L'étal du pêcheur » : le module 6 (sa scène est installée le temps de la notion du jour)
+app.module6 = module6; app.etal = new EtalScreen(app, module6, etalConf);
 window.__app = app;
 // la musique baisse pendant que la voix parle
 stage.ticks.add(() => sound.duck(voice.speaking));
@@ -230,6 +235,7 @@ const handlers = {
     if (ctx.session.rec.module === 3) return notion3(ctx);
     if (ctx.session.rec.module === 4) return notion4(ctx);
     if (ctx.session.rec.module === 5) return notion5(ctx);
+    if (ctx.session.rec.module === 6) return notion6(ctx);
     const screen = app.lineScreen();
     // lot 3 : le niveau choisi par l'enfant (écran « choisir ») : toutes les questions à ce niveau
     const runner = await new Module1Runner({ screen, store, content: module1, rnd, seance: ctx.session.id, variete: seance.variete, offset: () => ctx.session.offset, cran: () => ctx.session.cran, choix: ctx.session.choix?.niveau ?? null }).load();
@@ -329,6 +335,22 @@ async function notion4(ctx) {
   }
   try {
     await runNotion({ ...ctx, step, runner, screen: { ask: (q) => scr.ask(q) }, lesson: async () => false, rnd });
+  } finally { scr.leave(); }
+}
+// LOT « L'ÉTAL DU PÊCHEUR » (docs/SPEC.md, section 7 quater) : la notion du jour à l'étal, choisie par l'enfant ou imposée par
+// le parent : la scène de la maquette (modules/etal/screen.js), un achat par question, la leçon d'entrée du niveau (L15 à L18)
+// ou l'exemple guidé la première fois qu'un niveau est joué
+async function notion6(ctx) {
+  const { session } = ctx, conf = ctx.step.module6 ?? ctx.step;
+  const step = { ...ctx.step, ...conf, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}) };
+  const runner = await new Module6Runner({ store, content: module6, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, choix: session.choix?.module === 6 ? session.choix.niveau : null }).load();
+  app.runner = runner; afterLesson(session, runner); session.rec.niveauEtal = runner.niveau; await session.save();
+  const scr = app.etal;
+  await scr.enter({ rnd });
+  session.rec.etalMeteo = scr.meteoDepart ? "mauvais temps" : scr.orageA != null ? "orage en cours de partie" : "beau temps"; await session.save();
+  try {
+    await voice.say(text.pick("etalNotion"));
+    await runNotion({ ...ctx, step, runner, screen: { ask: (q) => scr.ask(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
   } finally { scr.leave(); }
 }
 // LOT 3 TER (docs/SPEC-LOT3TER.md, T1 ; décision du parent) : « PASSER L'ÉCHAUFFEMENT ». Un bouton dédié (son propre
@@ -439,7 +461,7 @@ async function showHome({ done, first = false, bienvenue = false }) {
   onBrief(app, pickKey, async () => {
     voice.unlock(); clearHome();
     mode = "choix"; homeKey.style.visibility = "visible";
-    const c = await choose(app, { store, content: { module1, module2, module3, module4, module5, seance } });
+    const c = await choose(app, { store, content: { module1, module2, module3, module4, module5, module6, seance } });
     mode = null; homeKey.style.visibility = "hidden";
     await runSession(c);
   }, "choisir");
@@ -507,8 +529,8 @@ async function lessonAlone(id, { pause = false, fin = false } = {}) {
   if (!r) return null;
   // (relecture de l'étape 0 du bloc « Sommes jusqu'à 30 » et « Multiplication » : en base neuve, l'état de l'exercice n'existait
   // pas encore et la leçon vue n'était pas notée, sa tuile restait sans étoile ; lot « Multiplication » : L13 et L14, module 5)
-  const L = lecons[id], key = [2, 3, 5].includes(L?.module) ? L.module : 1, now = Date.now();
-  const st = (await store.get("niveaux", key)) ?? (key === 1 ? initialLevelState(1, now) : key === 2 ? initialFamilies(module2, now) : key === 3 ? initialCalcState(now) : initialMultState(now));
+  const L = lecons[id], key = [2, 3, 5, 6].includes(L?.module) ? L.module : 1, now = Date.now();
+  const st = (await store.get("niveaux", key)) ?? (key === 1 ? initialLevelState(1, now) : key === 2 ? initialFamilies(module2, now) : key === 3 ? initialCalcState(now) : key === 6 ? initialEtalState(now) : initialMultState(now));
   if ((r?.vue || r?.passee) && st && !(st.lecons ??= []).includes(id)) { st.lecons.push(id); await store.put("niveaux", st); }
   const today = new Date().toDateString(), done = await store.setting("leconsChoisies"), ids = done?.jour === today ? done.ids : [];
   let etoiles = 0;
@@ -534,7 +556,7 @@ const progress = (p) => {
 };
 // attend-on une réponse de l'enfant (la consigne est finie ou en cours) ?
 // (lot « Les voiliers » : un bateau attend le geste de l'enfant)
-const awaiting = () => [app.screen, app.facts].some((s) => s && s.resolve && !s.locked) || !!app.voiliers?.attend;
+const awaiting = () => [app.screen, app.facts].some((s) => s && s.resolve && !s.locked) || !!app.voiliers?.attend || !!app.etal?.attend;
 // (lot « Mascotte ») la relance : 25 s sans toucher pendant une question, une phrase d'aide (12 s : un geste, la mascotte le
 // fait seule) ; seulement si une question attend sa réponse, hors pause et sans autre phrase en cours
 // (lot « Les voiliers » : pas avec le vent ni les pirates, où le bateau avance seul : relecture du lot)
@@ -593,7 +615,7 @@ async function visitInPause(fn) {
 // l'écran « choisir » depuis la pause : la maison y revient sans rien valider
 async function pickInPause() {
   mode = "pause-choix"; homeKey.style.visibility = "visible";
-  const c = await choose(app, { store, content: { module1, module2, module3, module4, module5, seance } });
+  const c = await choose(app, { store, content: { module1, module2, module3, module4, module5, module6, seance } });
   mode = "seance"; homeKey.style.visibility = "hidden";
   if (!c) return null;
   return { exercice: c };
@@ -624,8 +646,9 @@ sprites.keep = ALWAYS; // jamais libérées (engine/sprites.js, unload)
 function sandbox() {
   const o = ocean, st = stage, kids = (el) => new Set(el.children);
   const ui = kids(st.ui), front = kids(o.frontEl), root = kids(st.root);
-  const hidden = [...[...ui].filter((e) => !e.matches(".stars, .speaker, .mascotte-tap, .session-home, .bulle")), ...front, ...[...root].filter((e) => e.matches("#line, #fx, #aides, .aid-board, canvas.voiliers"))];
+  const hidden = [...[...ui].filter((e) => !e.matches(".stars, .speaker, .mascotte-tap, .session-home, .bulle")), ...front, ...[...root].filter((e) => e.matches("#line, #fx, #aides, .aid-board, canvas.voiliers, canvas.etal-decor, .etal-plaque"))];
   hidden.forEach((e) => e.classList.add("stash"));
+  o.poste(null); // (lot « L'étal du pêcheur » : la mascotte reprend sa place habituelle le temps de la visite)
   const actors = [...o.actors], oFront = [...o.front], ticks = new Set(st.ticks), sheets = sprites.held();
   // (l'écran de la ligne de la séance reste en place, masqué : une leçon en pause a le sien ; les additions, le calque des
   // aides et le bernard-l'ermite sont mis de côté : une leçon des additions ou du calcul rapide prend les siens)
@@ -646,6 +669,8 @@ function sandbox() {
     bulle.cacher(); fleche.cacher(); o.mascotte.ambiance("pause");
     // (lot « Les voiliers » : une visite du récif a remis le lagon en marche ; sous la mer des voiliers, il attend)
     if (app.voiliers?.actif) { app.lagon?.pause(true); app.voiliers.api?.redessiner(); }
+    // (lot « L'étal du pêcheur » : de même sous l'étal ; la mascotte retrouve la fenêtre de la cabane)
+    if (app.etal?.actif) { app.lagon?.pause(true); ocean.poste(etalConf.mascotte); }
     sprites.pinned = null;
     for (const k of sprites.held()) if (!sheets.has(k) && !ALWAYS.has(k)) sprites.unload(k);
     st.root.classList.add("paused");
@@ -655,7 +680,7 @@ function sandbox() {
 function abandonActivity() {
   clock.abandon(); voice.abandon(); bulle.cacher(); fleche.cacher(); ocean.mascotte.release(); ocean.mascotte.ambiance("pause");
   app.choiceClear?.(); app.choiceClear = null; if (app.facts) app.facts.notion = false; app.calc?.fishDone(); // (lot 3 : l'écran « choisir », les additions libres, le poisson du mur)
-  app.screen?.leave(); app.facts?.leave(); app.dictation?.hide?.(); lessons.abandon(); app.voiliers?.leave();
+  app.screen?.leave(); app.facts?.leave(); app.dictation?.hide?.(); lessons.abandon(); app.voiliers?.leave(); app.etal?.leave();
   // (correctif du 28 septembre 2026) le défi record quitté en cours : sa bulle-sablier et ses perles restaient à l'écran
   if (app.challenge) { app.challenge.remove(); app.challenge = null; sprites.unload("defi"); }
   for (const s of [app.screen, app.facts]) if (s) { s.resolve = null; s.locked = true; }
@@ -694,7 +719,7 @@ onBrief(app, homeKey, () => {
 // (lot « Les leçons » : `start`, l'exercice lancé par « À toi ! » après une leçon, quand la séance du jour est faite)
 async function freeTraining(start = null) {
   mode = "libre"; homeKey.style.visibility = "visible"; sound.startMusic(pickMusic(sonIndex, rnd));
-  const free = new FreeTraining(app, { store, module1, module2, module3, module4, module5, rnd, seance });
+  const free = new FreeTraining(app, { store, module1, module2, module3, module4, module5, module6, rnd, seance });
   app.free = free;
   await (start ? free.start(start) : free.menu());
 }

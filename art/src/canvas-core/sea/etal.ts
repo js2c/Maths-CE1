@@ -138,14 +138,21 @@ export const vL16 = (g: Gfx) => {
   g.group("plain", () => ["10", "15", "16", "17"].forEach((t, i) => drawNumber(cx2d(g), t, [-58, -10, 30, 60][i], -30, 17, { color: i === 3 ? RED : INK, w: 2.8, seed: 10218 + i })));
 };
 // L17 · Rendre la monnaie : de 13 à 20, le saut « + 7 »
-export const vL17 = (g: Gfx) => g.group("plain", () => {
-  const ctx = cx2d(g), x0 = -70, x1 = 70, y = 14;
-  ink(g, [[x0 - 6, y], [x1 + 6, y]], INK, { w: 3, shadow: 0, taper: [0.1, 0.1], seed: 10230 });
-  for (let i = 0; i <= 7; i++) { const x = x0 + (i * (x1 - x0)) / 7; ink(g, [[x, y - 6], [x, y + 6]], INK, { w: 2.2, shadow: 0, seed: 10231 + i }); }
-  ink(g, smooth([[x0, y - 6], [0, y - 46], [x1, y - 6]], false, 10), "#ffd23a", { w: 5, shadow: 0, taper: [0.05, 0.2], seed: 10240 });
-  drawWord(ctx, "+7", 0, y - 66, 18, { color: INK, w: 3, seed: 10241 });
-  drawNumber(ctx, "13", x0, y + 10, 16, { color: INK, w: 2.6, seed: 10242 }); drawNumber(ctx, "20", x1, y + 10, 16, { color: INK, w: 2.6, seed: 10243 });
-});
+// (relecture du lot, R11 : les nombres dans leur propre groupe, après les traits ; tracés dans le même groupe qu'eux, ils
+// partaient dans la tuile voisine)
+export const vL17 = (g: Gfx) => {
+  const x0 = -70, x1 = 70, y = 14;
+  g.group("plain", () => {
+    ink(g, [[x0 - 6, y], [x1 + 6, y]], INK, { w: 3, shadow: 0, taper: [0.1, 0.1], seed: 10230 });
+    for (let i = 0; i <= 7; i++) { const x = x0 + (i * (x1 - x0)) / 7; ink(g, [[x, y - 6], [x, y + 6]], INK, { w: 2.2, shadow: 0, seed: 10231 + i }); }
+    ink(g, smooth([[x0, y - 6], [0, y - 46], [x1, y - 6]], false, 10), "#ffd23a", { w: 5, shadow: 0, taper: [0.05, 0.2], seed: 10240 });
+  });
+  g.group("plain", () => {
+    const ctx = cx2d(g);
+    drawWord(ctx, "+7", 0, y - 66, 18, { color: INK, w: 3, seed: 10241 });
+    drawNumber(ctx, "13", x0, y + 10, 16, { color: INK, w: 2.6, seed: 10242 }); drawNumber(ctx, "20", x1, y + 10, 16, { color: INK, w: 2.6, seed: 10243 });
+  });
+};
 // L18 · Les centimes : deux pièces de 50 centimes = une pièce de 1 €
 export const vL18 = (g: Gfx) => {
   drawCoin(g, -62, 0, 18, 50, 10250); drawCoin(g, -24, 0, 18, 50, 10252);

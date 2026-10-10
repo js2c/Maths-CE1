@@ -702,8 +702,9 @@ function disposer() {
 function versSoucoupe(it) {
   const nB = items.filter(i => i.lieu === 'soucoupe' && i.b).length, nP = items.filter(i => i.lieu === 'soucoupe' && !i.b).length;
   it.lieu = 'soucoupe'; it.ordre = ++ordreS;
-  if (it.b) { it.sx = 405 + nB * 14 + hasard(-4, 4); it.sy = 680 + nB * 6 + hasard(-3, 3); it.sr = -14 + nB * 6 + hasard(-3, 3); }
-  else { const a = nP * 2.4, r = 14 + nP * 5; it.sx = 548 + Math.cos(a) * Math.min(r, 52) + hasard(-4, 4); it.sy = 690 + Math.sin(a) * Math.min(r * 0.6, 38) + hasard(-3, 3); it.sr = hasard(-30, 30); }
+  const libre = b => { const pris = new Set(items.filter(i => i !== it && i.lieu === 'soucoupe' && !!i.b === b).map(i => i.place)); let k = 0; while (pris.has(k)) k++; return k; }; void nB; void nP;
+  if (it.b) { const k = it.place = libre(true); it.sx = 392 + (k % 2) * 20 + hasard(-3, 3); it.sy = 636 + k * 30 + hasard(-2, 2); it.sr = -6 + (k % 2) * 6 + hasard(-2, 2); }
+  else { const k = it.place = libre(false); it.sx = 514 + (k % 3) * 56 + hasard(-3, 3); it.sy = 630 + Math.floor(k / 3) * 66 + hasard(-3, 3); it.sr = hasard(-20, 20); }
   disposer(); majTotal();
 }
 function versPortefeuille(it) {         // retour : avec l'argent sorti s'il l'est, sinon dans sa poche
@@ -845,7 +846,9 @@ function etiquette(it) {
   const voir = ETIQ && it.lieu !== 'poche' && it.op > 0;
   if (!voir) { if (it.lab) it.lab.style.opacity = 0; return; }
   if (!it.lab) { it.lab = document.createElement('div'); it.lab.className = 'etal-valeur'; it.lab.textContent = ecrite(it.v); $('caisse').appendChild(it.lab); }
-  it.lab.style.transform = 'translate(' + it.x + 'px,' + (it.y + hauteur(it) * it.sc * 0.42) + 'px) translate(-50%,-50%)';
+  // (un billet dans la soucoupe : sa valeur en haut, que le billet posé ensuite, plus bas, ne cache pas)
+  const dy = hauteur(it) * it.sc * 0.42 * (it.b && it.lieu === 'soucoupe' ? -1 : 1);
+  it.lab.style.transform = 'translate(' + it.x + 'px,' + (it.y + dy) + 'px) translate(-50%,-50%)';
   it.lab.style.zIndex = it.z + 1; it.lab.style.opacity = 1;
 }
 const enSoucoupe = () => items.filter(i => i.lieu === 'soucoupe');

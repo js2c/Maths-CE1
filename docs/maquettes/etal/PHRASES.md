@@ -1,6 +1,6 @@
 # Les phrases nouvelles du lot « L'étal du pêcheur »
 
-**391 phrases** à fabriquer (environ 2,7 Mo, estimés d'après la taille des phrases déjà fabriquées de même longueur). Liste tirée de l'inventaire (`tools/voix/inventaire.mjs`), comparé à l'index de la voix de `main` (les 282 phrases du lot « Correctifs de la tablette » y sont déjà). Clé de `textes.json` (ou leçon) : les phrases, une par ligne.
+**393 phrases** à fabriquer (environ 2,7 Mo, estimés d'après la taille des phrases déjà fabriquées de même longueur). Liste tirée de l'inventaire (`tools/voix/inventaire.mjs`), comparé à l'index de la voix de `main` (les 282 phrases du lot « Correctifs de la tablette » y sont déjà). Clé de `textes.json` (ou leçon) : les phrases, une par ligne.
 
 ## choixDescription.exercices.etal (1)
 
@@ -23,7 +23,7 @@
 
 - Une pièce de deux euros vaut deux pièces de un euro.
 - On paie juste, du plus gros au plus petit.
-- On compte à partir du prix, jusqu'à ce qu'on a donné.
+- On compte à partir du prix, jusqu'à l'argent qu'on a donné.
 - Cent centimes, ça fait un euro.
 
 ## choixNom.etal (1)
@@ -51,8 +51,8 @@
 - Ouvre ton portefeuille, et paie juste le prix : pose l'argent dans la soucoupe, puis touche la coche.
 - Regarde bien ton portefeuille : on peut payer juste, mais il faut chercher.
 - Pose l'argent dans la soucoupe, puis touche la coche.
-- Avec ton portefeuille, tu ne peux pas payer juste.
-- Donne assez, sans pièce de trop : je te rendrai la monnaie.
+- Tu ne peux pas payer juste.
+- Donne un peu plus : je te rendrai la monnaie.
 - Cette fois, c'est moi qui te rends la monnaie.
 - Dis-moi combien : tape-le, puis touche la coche.
 - Tu achètes deux choses.
@@ -367,7 +367,15 @@
 ## etalTrop (2)
 
 - Tu peux faire le compte juste.
-- Je te rends ce qui est en trop.
+- Je te rends ton argent.
+
+## etalSansElle.la (1)
+
+- Recommence sans elle, puis touche la coche.
+
+## etalSansElle.les (1)
+
+- Recommence sans elles, puis touche la coche.
 
 ## etalEssaieEncore (1)
 

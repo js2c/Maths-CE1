@@ -133,13 +133,13 @@ for (const T of TAILLES) {
     await page.waitForTimeout(300); await coche(page); await attend(page);
     const r2 = (await reponses(page)).at(-1);
     check(!r2.juste && r2.corrigee && r2.erreur === "M1", `${W} : pas assez, complété : erreur corrigée M1 (${JSON.stringify(r2)})`);
-    // « trop » : il rend ce qui est en trop ; puis on valide trop encore : la correction
+    // « trop » : il rend tout l'argent (relecture du lot, R1) ; puis on paie trop encore : la correction
     await payer(page, "trop"); await coche(page);
     await page.waitForFunction(() => window.__said.some((t) => t.startsWith("Tu peux faire le compte juste.")), null, { timeout: 30000 }); await page.waitForTimeout(500);
     await shot(page, "10-trop", T);
     await attend(page);
-    await page.evaluate(async () => { const e = window.__app.etal, w = e.api.etat().items.filter((i) => i.lieu !== "soucoupe").map((i) => i.v); for (const v of w.slice(0, 2)) await e.api.deposer(v); });
-    await page.waitForTimeout(300); await coche(page);
+    check((await page.evaluate(() => window.__app.etal.api.soucoupe().length)) === 0, `${W} : trop : tout l'argent est rendu, la soucoupe est vide`);
+    await payer(page, "trop"); await page.waitForTimeout(300); await coche(page);
     await page.waitForFunction(() => window.__said.some((t) => t === "Regarde, on peut payer comme ça."), null, { timeout: 30000 }); await page.waitForTimeout(1200);
     await shot(page, "11-correction", T);
     await attend(page);
@@ -175,9 +175,11 @@ for (const T of TAILLES) {
     await payer(page, "pieceDeTrop"); await coche(page);
     await page.waitForFunction(() => window.__said.some((t) => /^Celles?-là, garde-l/.test(t)), null, { timeout: 30000 }); await page.waitForTimeout(500);
     await shot(page, "17-piece-de-trop", T);
-    await attend(page); await coche(page); await attend(page);
+    await attend(page);
+    check((await page.evaluate(() => window.__app.etal.api.soucoupe().length)) === 0, `${W} : une pièce de trop : tout l'argent est rendu`);
+    await payer(page, "juste"); await page.waitForTimeout(300); await coche(page); await attend(page);
     const r2 = (await reponses(page)).at(-1);
-    check(r2.corrigee && r2.erreur === "M3", `${W} : une pièce de trop, rendue, puis validé : M3 corrigée (${JSON.stringify(r2)})`);
+    check(r2.corrigee && r2.erreur === "M3", `${W} : une pièce de trop, puis repayé juste : M3 corrigée (${JSON.stringify(r2)})`);
     await fin(page, context, errors, `${W} mauvais temps`);
   }
   // 4. l'orage arrive en cours de partie (?meteo=arrive : au bout d'une seconde), entre deux questions
@@ -272,7 +274,7 @@ for (const T of TAILLES) {
   await page.tap(".play", { force: true }); await attend(page);
   check(await page.evaluate(() => window.__app.session.rec.module === 6 && window.__app.frieze.icon === "frise.etal"), "module imposé : l'étal, son pictogramme dans la frise");
   await shot(page, "30-jouer-impose", T);
-  await payer(page, "trop"); await coche(page); await attend(page); await coche(page); await attend(page);
+  await payer(page, "trop"); await coche(page); await attend(page); await payer(page, "juste"); await coche(page); await attend(page);
   await page.evaluate(async () => { await window.__app.store.setSetting("codeParent", "1234"); });
   page.evaluate(() => window.__app.parent.open()).catch(() => {}); await page.waitForSelector(".pa-keys", { timeout: 10000 });
   for (const d of "1234") { await page.dispatchEvent(`.pa-keys button[data-key="${d}"]`, "pointerdown"); await page.waitForTimeout(80); }

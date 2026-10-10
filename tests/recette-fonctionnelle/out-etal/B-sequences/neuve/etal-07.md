@@ -9,9 +9,9 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 ### Étal du pêcheur, niveau 7 (rendre), cran « plus facile » · appliquée
 
 - comportement : tout juste, 4 s par réponse
-- notion du jour : 14 questions ; **10 réponses attendues différentes** ; même réponse que la précédente : **8 %** ; plus longue suite prévisible : **2 (700, 700 : même réponse)**
+- notion du jour : 14 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : L17 × 1
-- étoiles de la séance : **23** (appliquée 23, réelle 22, pressée 13) ; cran à la fin : plus facile ; réussite 100 % sur 21 réponses ; durée simulée 7.5 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **23** (appliquée 23, réelle 23, pressée 13) ; cran à la fin : plus facile ; réussite 100 % sur 21 réponses ; durée simulée 7.5 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -23,29 +23,29 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 6 | échauffement | 7 + 2 = ? (fait nouveau) | 7 plus 2 ? | 9 | 9 | +1★ |
 | 7 | notion | LEÇON L17 | (leçon animée L17, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L17) |
 | 8 | notion | EXEMPLE GUIDÉ : 12 € payés avec 20 € (niveau 7) · portefeuille  | Cette fois, c'est moi qui te rends la monnaie. Dis-moi combien : tape-le, puis touche la coche. Achète les huîtres. Elles coûtent… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : rien) |  |
-| 9 | notion | 6 € payés avec 10 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 6 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 400 | 4 |  |
-| 10 | notion | 3 € payés avec 10 € (niveau 7) · portefeuille  | Achète la sole. Elle coûte… 3 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 700 | 7 | +1★ |
-| 11 | notion | 9 € payés avec 10 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 9 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 100 | 1 |  |
-| 12 | notion | 8 € payés avec 10 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 8 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 200 | 2 | +1★ |
-| 13 | notion | 8 € payés avec 20 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 8 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1200 | 12 |  |
-| 14 | notion | 6 € payés avec 20 € (niveau 7) · portefeuille  | Achète la sole. Elle coûte… 6 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1400 | 14 | +1★ |
-| 15 | notion | 3 € payés avec 10 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 3 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 700 | 7 |  |
-| 16 | notion | 13 € payés avec 20 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | 7 | +1★ |
-| 17 | notion | 2 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 2 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1800 | 18 |  |
-| 18 | notion | 7 € payés avec 20 € (niveau 7) · portefeuille  | Achète la sole. Elle coûte… 7 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1300 | 13 | +1★ |
-| 19 | notion | 11 € payés avec 20 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 11 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 900 | 9 |  |
-| 20 | notion | 2 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 2 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1800 | 18 | +1★ |
-| 21 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 8 |  |
-| 22 | notion | 19 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 1 | +1★ |
+| 9 | notion | 2 € payés avec 5 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 2 euros. Tu me donnes un billet de 5 euros. Combien je te rends ? | 300 | 3 |  |
+| 10 | notion | 13 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | 7 | +1★ |
+| 11 | notion | 6 € payés avec 20 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 6 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1400 | 14 |  |
+| 12 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 6 | +1★ |
+| 13 | notion | 16 € payés avec 20 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 16 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 400 | 4 |  |
+| 14 | notion | 5 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 5 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1500 | 15 | +1★ |
+| 15 | notion | 8 € payés avec 20 € (niveau 7) · portefeuille  | Achète la sole. Elle coûte… 8 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1200 | 12 |  |
+| 16 | notion | 7 € payés avec 10 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 7 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 300 | 3 | +1★ |
+| 17 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 6 |  |
+| 18 | notion | 15 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 15 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 500 | 5 | +1★ |
+| 19 | notion | 6 € payés avec 20 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 6 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1400 | 14 |  |
+| 20 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 8 | +1★ |
+| 21 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 6 |  |
+| 22 | notion | 17 € payés avec 20 € (niveau 7) · portefeuille  | Achète la sole. Elle coûte… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 3 | +1★ |
 
 Récompense et fin : +10★ (fin)
 
 ### Étal du pêcheur, niveau 7 (rendre), cran « plus facile » · réelle
 
 - comportement : 25 % d'erreurs (dont 1 sur 5 en « je ne sais pas »), 5 s par réponse
-- notion du jour : 11 questions ; **7 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
+- notion du jour : 12 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : L17 × 1
-- étoiles de la séance : **22** (appliquée 23, réelle 22, pressée 13) ; cran à la fin : plus facile ; réussite 74 % sur 23 réponses ; durée simulée 8.8 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **23** (appliquée 23, réelle 23, pressée 13) ; cran à la fin : plus facile ; réussite 83 % sur 24 réponses ; durée simulée 8.8 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -63,25 +63,26 @@ Récompense et fin : +10★ (fin)
 | 12 | notion | LEÇON L17 | (leçon animée L17, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L17) |
 | 13 | notion | EXEMPLE GUIDÉ : 19 € payés avec 20 € (niveau 7) · portefeuille  | Cette fois, c'est moi qui te rends la monnaie. Dis-moi combien : tape-le, puis touche la coche. Achète le maquereau. Il coûte… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : rien) |  |
 | 14 | notion | 18 € payés avec 20 € (niveau 7) · portefeuille  | Achète la sole. Elle coûte… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | 2 | +1★ |
-| 15 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 14 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 14 … 20 », « Ça fait… 6 euros. » |
-| 16 | notion | 15 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 15 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 500 | 5 |  |
-| 17 | notion | 9 € payés avec 20 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 9 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1100 | 11 | +1★ |
-| 18 | notion | 3 € payés avec 5 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 3 euros. Tu me donnes un billet de 5 euros. Combien je te rends ? | 200 | 2 |  |
-| 19 | notion | 14 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète la dorade. Elle coûte… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 6 | +1★ (erreur corrigée) |
-| 20 | notion | 1 € payés avec 5 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 1 euro. Tu me donnes un billet de 5 euros. Combien je te rends ? | 400 | 4 | +1★ |
-| 21 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » « Regarde, on peut payer comme ça. » rien |
-| 22 | notion | 9 € payés avec 20 € (niveau 7) · portefeuille  | Achète la sole. Elle coûte… 9 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1100 | 9 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 9 … 20 », « Ça fait… 11 euros. » |
-| 23 | notion | 19 € payés avec 20 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 1 |  |
-| 24 | notion | 7 € payés avec 10 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 7 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 300 | 3 | +1★ |
+| 15 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 6 |  |
+| 16 | notion | 1 € payés avec 5 € (niveau 7) · portefeuille  | Achète la sole. Elle coûte… 1 euro. Tu me donnes un billet de 5 euros. Combien je te rends ? | 400 | 4 | +1★ |
+| 17 | notion | 11 € payés avec 20 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 11 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 900 | 9 |  |
+| 18 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète le maquereau. Il coûte… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 8 | +1★ |
+| 19 | notion | 8 € payés avec 20 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 8 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1200 | 12 |  |
+| 20 | notion | 19 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 1 | +1★ |
+| 21 | notion | 7 € payés avec 10 € (niveau 7) · portefeuille  | Achète le maquereau. Il coûte… 7 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 300 | 3 |  |
+| 22 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète la sole. Elle coûte… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 8 | +1★ |
+| 23 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 14 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 14 … 20 », « Ça fait… 6 euros. » |
+| 24 | notion | 13 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | 7 |  |
+| 25 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 8 | +1★ |
 
 Récompense et fin : +10★ (fin)
 
 ### Étal du pêcheur, niveau 7 (rendre), cran « plus facile » · pressée
 
 - comportement : réponses au hasard, 1 s par réponse
-- notion du jour : 13 questions ; **6 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
+- notion du jour : 13 questions ; **7 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : L17 × 1
-- étoiles de la séance : **13** (appliquée 23, réelle 22, pressée 13) ; cran à la fin : plus facile ; réussite 4 % sur 26 réponses ; durée simulée 10.7 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **13** (appliquée 23, réelle 23, pressée 13) ; cran à la fin : plus facile ; réussite 4 % sur 26 réponses ; durée simulée 10.7 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -99,19 +100,19 @@ Récompense et fin : +10★ (fin)
 | 12 | échauffement | 1 + 7 = ? (fait nouveau) | 1 plus 7 ? | 8 | 20 | correction : « 1 plus 7, ça fait 8. » |
 | 13 | notion | LEÇON L17 | (leçon animée L17, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L17) |
 | 14 | notion | EXEMPLE GUIDÉ : 11 € payés avec 20 € (niveau 7) · portefeuille  | Cette fois, c'est moi qui te rends la monnaie. Dis-moi combien : tape-le, puis touche la coche. Achète le maquereau. Il coûte… 11 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : rien) |  |
-| 15 | notion | 17 € payés avec 20 € (niveau 7) · portefeuille  | Achète la seiche. Elle coûte… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 17 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 17 … 20 », « Ça fait… 3 euros. » |
-| 16 | notion | 16 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 16 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 400 | 16 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 16 … 20 », « Ça fait… 4 euros. » |
-| 17 | notion | 10 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 10 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1000 | 10 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 10 … 20 », « Ça fait… 10 euros. » |
-| 18 | notion | 7 € payés avec 20 € (niveau 7) · portefeuille  | Achète la seiche. Elle coûte… 7 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1300 | 7 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 7 … 20 », « Ça fait… 13 euros. » |
-| 19 | notion | 16 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète le tourteau. Il coûte… 16 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 400 | 16 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 16 … 20 », « Ça fait… 4 euros. » |
-| 20 | notion | 17 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète la seiche. Elle coûte… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 17 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 17 … 20 », « Ça fait… 3 euros. » |
-| 21 | notion | 10 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète la dorade. Elle coûte… 10 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1000 | 10 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 10 … 20 », « Ça fait… 10 euros. » |
-| 22 | notion | 7 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète la seiche. Elle coûte… 7 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1300 | 7 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 7 … 20 », « Ça fait… 13 euros. » |
-| 23 | notion | 2 € payés avec 5 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 2 euros. Tu me donnes un billet de 5 euros. Combien je te rends ? | 300 | 2 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 2 … 5 », « Ça fait… 3 euros. » |
-| 24 | notion | 1 € payés avec 5 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 1 euro. Tu me donnes un billet de 5 euros. Combien je te rends ? | 400 | 1 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 1 … 5 », « Ça fait… 4 euros. » |
-| 25 | notion | 10 € payés avec 20 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 10 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1000 | 10 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 10 … 20 », « Ça fait… 10 euros. » |
-| 26 | notion | 4 € payés avec 20 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 4 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1600 | 4 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 4 … 20 », « Ça fait… 16 euros. » |
-| 27 | notion | 8 € payés avec 20 € (niveau 7) · portefeuille  | Achète la seiche. Elle coûte… 8 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1200 | 8 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 8 … 20 », « Ça fait… 12 euros. » |
+| 15 | notion | 1 € payés avec 5 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 1 euro. Tu me donnes un billet de 5 euros. Combien je te rends ? | 400 | 1 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 1 … 5 », « Ça fait… 4 euros. » |
+| 16 | notion | 18 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | 18 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 18 … 20 », « Ça fait… 2 euros. » |
+| 17 | notion | 17 € payés avec 20 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 17 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 17 … 20 », « Ça fait… 3 euros. » |
+| 18 | notion | 1 € payés avec 5 € (niveau 7, revient) · portefeuille  | Achète le homard. Il coûte… 1 euro. Tu me donnes un billet de 5 euros. Combien je te rends ? | 400 | 1 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 1 … 5 », « Ça fait… 4 euros. » |
+| 19 | notion | 2 € payés avec 20 € (niveau 7) · portefeuille  | Achète la seiche. Elle coûte… 2 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1800 | 2 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 2 … 20 », « Ça fait… 18 euros. » |
+| 20 | notion | 18 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | 18 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 18 … 20 », « Ça fait… 2 euros. » |
+| 21 | notion | 17 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète les crevettes. Elles coûtent… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 17 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 17 … 20 », « Ça fait… 3 euros. » |
+| 22 | notion | 18 € payés avec 20 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | 18 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 18 … 20 », « Ça fait… 2 euros. » |
+| 23 | notion | 2 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète la seiche. Elle coûte… 2 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1800 | 2 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 2 … 20 », « Ça fait… 18 euros. » |
+| 24 | notion | 5 € payés avec 20 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 5 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1500 | 5 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 5 … 20 », « Ça fait… 15 euros. » |
+| 25 | notion | 9 € payés avec 10 € (niveau 7) · portefeuille  | Achète la sole. Elle coûte… 9 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 100 | 9 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 9 … 10 », « Ça fait… 1 euro. » |
+| 26 | notion | 2 € payés avec 10 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 2 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 800 | 2 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 2 … 10 », « Ça fait… 8 euros. » |
+| 27 | notion | 6 € payés avec 10 € (niveau 7) · portefeuille  | Achète le maquereau. Il coûte… 6 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 400 | 6 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 6 … 10 », « Ça fait… 4 euros. » |
 
 Récompense et fin : +10★ (fin)
 
@@ -120,9 +121,9 @@ Récompense et fin : +10★ (fin)
 ### Étal du pêcheur, niveau 7 (rendre), cran « conseillé » · appliquée
 
 - comportement : tout juste, 4 s par réponse
-- notion du jour : 14 questions ; **11 réponses attendues différentes** ; même réponse que la précédente : **8 %** ; plus longue suite prévisible : **2 (300, 300 : même réponse)**
+- notion du jour : 14 questions ; **11 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : L17 × 1
-- étoiles de la séance : **36** (appliquée 36, réelle 33, pressée 14) ; cran à la fin : conseillé ; réussite 100 % sur 24 réponses ; durée simulée 7.9 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **36** (appliquée 36, réelle 34, pressée 14) ; cran à la fin : conseillé ; réussite 100 % sur 24 réponses ; durée simulée 7.9 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -137,29 +138,29 @@ Récompense et fin : +10★ (fin)
 | 9 | échauffement | 4 + 2 = ? (fait nouveau) | 4 plus 2 ? | 6 | 6 | +1★ |
 | 10 | notion | LEÇON L17 | (leçon animée L17, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L17) |
 | 11 | notion | EXEMPLE GUIDÉ : 4 € payés avec 5 € (niveau 7) · portefeuille  | Cette fois, c'est moi qui te rends la monnaie. Dis-moi combien : tape-le, puis touche la coche. Achète le tourteau. Il coûte… 4 euros. Tu me donnes un billet de 5 euros. Combien je te rends ? Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : rien) |  |
-| 12 | notion | 17 € payés avec 20 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 3 | +1★ |
-| 13 | notion | 16 € payés avec 20 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 16 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 400 | 4 | +1★ |
-| 14 | notion | 6 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 6 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1400 | 14 | +1★ |
-| 15 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 6 | +1★ |
-| 16 | notion | 1 € payés avec 10 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 1 euro. Tu me donnes un billet de 10 euros. Combien je te rends ? | 900 | 9 | MONTÉE (niveau 1 → 8) ; +1★ ; étoile arc-en-ciel (niveau franchi) |
-| 17 | notion | 8 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 8 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1200 | 12 | +1★ |
-| 18 | notion | 9 € payés avec 20 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 9 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1100 | 11 | +1★ |
-| 19 | notion | 2 € payés avec 10 € (niveau 7) · portefeuille  | Achète le maquereau. Il coûte… 2 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 800 | 8 | +1★ |
-| 20 | notion | 13 € payés avec 20 € (niveau 7) · portefeuille  | Achète la seiche. Elle coûte… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | 7 | +1★ |
-| 21 | notion | 5 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 5 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1500 | 15 | +1★ |
-| 22 | notion | 7 € payés avec 10 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 7 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 300 | 3 | +1★ |
-| 23 | notion | 17 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 3 | +1★ |
-| 24 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 8 | +1★ |
-| 25 | notion | 19 € payés avec 20 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 1 | +1★ |
+| 12 | notion | 3 € payés avec 10 € (niveau 7) · portefeuille  | Achète le maquereau. Il coûte… 3 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 700 | 7 | +1★ |
+| 13 | notion | 3 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 3 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1700 | 17 | +1★ |
+| 14 | notion | 9 € payés avec 20 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 9 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1100 | 11 | +1★ |
+| 15 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète la seiche. Elle coûte… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 8 | +1★ |
+| 16 | notion | 5 € payés avec 20 € (niveau 7) · portefeuille  | Achète le maquereau. Il coûte… 5 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1500 | 15 | MONTÉE (niveau 1 → 8) ; +1★ ; étoile arc-en-ciel (niveau franchi) |
+| 17 | notion | 1 € payés avec 10 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 1 euro. Tu me donnes un billet de 10 euros. Combien je te rends ? | 900 | 9 | +1★ |
+| 18 | notion | 7 € payés avec 20 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 7 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1300 | 13 | +1★ |
+| 19 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 8 | +1★ |
+| 20 | notion | 19 € payés avec 20 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 1 | +1★ |
+| 21 | notion | 6 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 6 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1400 | 14 | +1★ |
+| 22 | notion | 9 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 9 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1100 | 11 | +1★ |
+| 23 | notion | 3 € payés avec 5 € (niveau 7) · portefeuille  | Achète la seiche. Elle coûte… 3 euros. Tu me donnes un billet de 5 euros. Combien je te rends ? | 200 | 2 | +1★ |
+| 24 | notion | 4 € payés avec 10 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 4 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 600 | 6 | +1★ |
+| 25 | notion | 11 € payés avec 20 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 11 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 900 | 9 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle)
+Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle)
 
 ### Étal du pêcheur, niveau 7 (rendre), cran « conseillé » · réelle
 
 - comportement : 25 % d'erreurs (dont 1 sur 5 en « je ne sais pas »), 5 s par réponse
-- notion du jour : 12 questions ; **8 réponses attendues différentes** ; même réponse que la précédente : **9 %** ; plus longue suite prévisible : **2 (300, 300 : même réponse)**
+- notion du jour : 12 questions ; **8 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : L17 × 1
-- étoiles de la séance : **33** (appliquée 36, réelle 33, pressée 14) ; cran à la fin : conseillé ; réussite 79 % sur 24 réponses ; durée simulée 9 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **34** (appliquée 36, réelle 34, pressée 14) ; cran à la fin : conseillé ; réussite 83 % sur 24 réponses ; durée simulée 8.8 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -176,27 +177,27 @@ Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle)
 | 11 | échauffement | 8 + 2 = ? (fait nouveau) | 8 plus 2 ? | 10 | 10 | +1★ |
 | 12 | notion | LEÇON L17 | (leçon animée L17, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L17) |
 | 13 | notion | EXEMPLE GUIDÉ : 7 € payés avec 20 € (niveau 7) · portefeuille  | Cette fois, c'est moi qui te rends la monnaie. Dis-moi combien : tape-le, puis touche la coche. Achète les moules. Elles coûtent… 7 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : rien) |  |
-| 14 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 8 | +1★ |
-| 15 | notion | 10 € payés avec 20 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 10 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1000 | 10 | +1★ |
-| 16 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 14 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 14 … 20 », « Ça fait… 6 euros. » |
-| 17 | notion | 2 € payés avec 20 € (niveau 7) · portefeuille  | Achète la seiche. Elle coûte… 2 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1800 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » « Regarde, on peut payer comme ça. » rien |
-| 18 | notion | 18 € payés avec 20 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | 2 | +1★ |
-| 19 | notion | 14 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 6 | +2★ (erreur corrigée) |
-| 20 | notion | 7 € payés avec 10 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 7 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 300 | 3 | +1★ |
-| 21 | notion | 17 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 3 | +1★ |
-| 22 | notion | 2 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète la seiche. Elle coûte… 2 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1800 | 18 | +2★ (erreur corrigée) |
-| 23 | notion | 5 € payés avec 10 € (niveau 7) · portefeuille  | Achète le maquereau. Il coûte… 5 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 500 | 5 | MONTÉE (niveau 1 → 8) ; +1★ ; étoile arc-en-ciel (niveau franchi) |
-| 24 | notion | 17 € payés avec 20 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 17 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 17 … 20 », « Ça fait… 3 euros. » |
-| 25 | notion | 9 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 9 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1100 | 11 | +1★ |
+| 14 | notion | 15 € payés avec 20 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 15 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 500 | 5 | +1★ |
+| 15 | notion | 17 € payés avec 20 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 3 | +1★ |
+| 16 | notion | 9 € payés avec 20 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 9 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1100 | 9 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 9 … 20 », « Ça fait… 11 euros. » |
+| 17 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 8 | +1★ |
+| 18 | notion | 19 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 1 | +1★ |
+| 19 | notion | 9 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète les sardines. Elles coûtent… 9 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1100 | 11 | +2★ (erreur corrigée) |
+| 20 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 6 | +1★ |
+| 21 | notion | 13 € payés avec 20 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | 7 | +1★ |
+| 22 | notion | 7 € payés avec 20 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 7 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1300 | 7 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 7 … 20 », « Ça fait… 13 euros. » |
+| 23 | notion | 9 € payés avec 10 € (niveau 7) · portefeuille  | Achète la sole. Elle coûte… 9 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 100 | 1 | MONTÉE (niveau 1 → 8) ; +1★ ; étoile arc-en-ciel (niveau franchi) |
+| 24 | notion | 3 € payés avec 10 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 3 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 700 | 7 | +1★ |
+| 25 | notion | 7 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète les crevettes. Elles coûtent… 7 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1300 | 13 | +2★ (erreur corrigée) |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; carte moule (nouvelle)
 
 ### Étal du pêcheur, niveau 7 (rendre), cran « conseillé » · pressée
 
 - comportement : réponses au hasard, 1 s par réponse
-- notion du jour : 13 questions ; **7 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
+- notion du jour : 13 questions ; **6 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : L17 × 1
-- étoiles de la séance : **14** (appliquée 36, réelle 33, pressée 14) ; cran à la fin : conseillé ; réussite 7 % sur 27 réponses ; durée simulée 10.8 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **14** (appliquée 36, réelle 34, pressée 14) ; cran à la fin : conseillé ; réussite 7 % sur 27 réponses ; durée simulée 10.8 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -215,19 +216,19 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
 | 13 | échauffement | 1 + 7 = ? (fait nouveau) | Combien font 1 plus 7 ? | 8 | 9 | correction : « 1 plus 7, ça fait 8. » |
 | 14 | notion | LEÇON L17 | (leçon animée L17, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L17) |
 | 15 | notion | EXEMPLE GUIDÉ : 1 € payés avec 20 € (niveau 7) · portefeuille  | Cette fois, c'est moi qui te rends la monnaie. Dis-moi combien : tape-le, puis touche la coche. Achète la sole. Elle coûte… 1 euro. Tu me donnes un billet de 20 euros. Combien je te rends ? Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : rien) |  |
-| 16 | notion | 1 € payés avec 5 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 1 euro. Tu me donnes un billet de 5 euros. Combien je te rends ? | 400 | 1 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 1 … 5 », « Ça fait… 4 euros. » |
-| 17 | notion | 13 € payés avec 20 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | 13 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 13 … 20 », « Ça fait… 7 euros. » |
+| 16 | notion | 17 € payés avec 20 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 17 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 17 … 20 », « Ça fait… 3 euros. » |
+| 17 | notion | 6 € payés avec 10 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 6 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 400 | 6 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 6 … 10 », « Ça fait… 4 euros. » |
 | 18 | notion | 11 € payés avec 20 € (niveau 7) · portefeuille  | Achète la seiche. Elle coûte… 11 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 900 | 11 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 11 … 20 », « Ça fait… 9 euros. » |
-| 19 | notion | 1 € payés avec 5 € (niveau 7, revient) · portefeuille  | Achète les crevettes. Elles coûtent… 1 euro. Tu me donnes un billet de 5 euros. Combien je te rends ? | 400 | 1 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 1 … 5 », « Ça fait… 4 euros. » |
-| 20 | notion | 19 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 19 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 19 … 20 », « Ça fait… 1 euro. » |
-| 21 | notion | 9 € payés avec 20 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 9 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1100 | 9 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 9 … 20 », « Ça fait… 11 euros. » |
-| 22 | notion | 13 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète les huîtres. Elles coûtent… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | 13 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 13 … 20 », « Ça fait… 7 euros. » |
+| 19 | notion | 17 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète les sardines. Elles coûtent… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 17 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 17 … 20 », « Ça fait… 3 euros. » |
+| 20 | notion | 13 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | 13 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 13 … 20 », « Ça fait… 7 euros. » |
+| 21 | notion | 1 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 1 euro. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1900 | 1 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 1 … 20 », « Ça fait… 19 euros. » |
+| 22 | notion | 6 € payés avec 10 € (niveau 7, revient) · portefeuille  | Achète les crevettes. Elles coûtent… 6 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 400 | 6 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 6 … 10 », « Ça fait… 4 euros. » |
 | 23 | notion | 11 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète la seiche. Elle coûte… 11 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 900 | 11 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 11 … 20 », « Ça fait… 9 euros. » |
-| 24 | notion | 5 € payés avec 10 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 5 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 500 | 5 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 5 … 10 », « Ça fait… 5 euros. » |
-| 25 | notion | 19 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète la dorade. Elle coûte… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 19 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 19 … 20 », « Ça fait… 1 euro. » |
-| 26 | notion | 5 € payés avec 10 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 5 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 500 | 5 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 5 … 10 », « Ça fait… 5 euros. » |
-| 27 | notion | 3 € payés avec 5 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 3 euros. Tu me donnes un billet de 5 euros. Combien je te rends ? | 200 | 3 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 3 … 5 », « Ça fait… 2 euros. » |
-| 28 | notion | 6 € payés avec 10 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 6 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 400 | 6 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 6 … 10 », « Ça fait… 4 euros. » |
+| 24 | notion | 1 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 1 euro. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1900 | 1 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 1 … 20 », « Ça fait… 19 euros. » |
+| 25 | notion | 13 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète le tourteau. Il coûte… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | 13 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 13 … 20 », « Ça fait… 7 euros. » |
+| 26 | notion | 8 € payés avec 10 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 8 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 200 | 8 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 8 … 10 », « Ça fait… 2 euros. » |
+| 27 | notion | 1 € payés avec 10 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 1 euro. Tu me donnes un billet de 10 euros. Combien je te rends ? | 900 | 1 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 1 … 10 », « Ça fait… 9 euros. » |
+| 28 | notion | 3 € payés avec 5 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 3 euros. Tu me donnes un billet de 5 euros. Combien je te rends ? | 200 | 3 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 3 … 5 », « Ça fait… 2 euros. » |
 
 Récompense et fin : +10★ (fin)
 
@@ -236,7 +237,7 @@ Récompense et fin : +10★ (fin)
 ### Étal du pêcheur, niveau 7 (rendre), cran « plus dur » · appliquée
 
 - comportement : tout juste, 4 s par réponse
-- notion du jour : 14 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
+- notion du jour : 14 questions ; **8 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : L17 × 1
 - étoiles de la séance : **47** (appliquée 47, réelle 46, pressée 15) ; cran à la fin : plus dur ; réussite 100 % sur 24 réponses ; durée simulée 7.9 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
@@ -253,29 +254,29 @@ Récompense et fin : +10★ (fin)
 | 9 | échauffement | 1 + 6 = ? (fait nouveau) | Combien font 1 plus 6 ? | 7 | 7 | +1★ |
 | 10 | notion | LEÇON L17 | (leçon animée L17, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L17) |
 | 11 | notion | EXEMPLE GUIDÉ : 15 € payés avec 20 € (niveau 7) · portefeuille  | Cette fois, c'est moi qui te rends la monnaie. Dis-moi combien : tape-le, puis touche la coche. Achète le homard. Il coûte… 15 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : rien) |  |
-| 12 | notion | 17 € payés avec 20 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 3 | +2★ |
-| 13 | notion | 11 € payés avec 20 € (niveau 7) · portefeuille  | Achète le maquereau. Il coûte… 11 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 900 | 9 | +1★ |
-| 14 | notion | 19 € payés avec 20 € (niveau 7) · portefeuille  | Achète la seiche. Elle coûte… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 1 | +2★ |
-| 15 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 8 | +1★ |
-| 16 | notion | 16 € payés avec 20 € (niveau 7) · portefeuille  | Achète le maquereau. Il coûte… 16 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 400 | 4 | MONTÉE (niveau 1 → 8) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
-| 17 | notion | 18 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | 2 | +1★ |
-| 18 | notion | 16 € payés avec 20 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 16 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 400 | 4 | +2★ |
-| 19 | notion | 18 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | 2 | +1★ |
-| 20 | notion | 11 € payés avec 20 € (niveau 7) · portefeuille  | Achète le maquereau. Il coûte… 11 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 900 | 9 | +2★ |
-| 21 | notion | 13 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | 7 | +1★ |
-| 22 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 8 | +2★ |
-| 23 | notion | 15 € payés avec 20 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 15 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 500 | 5 | +1★ |
-| 24 | notion | 11 € payés avec 20 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 11 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 900 | 9 | +2★ |
-| 25 | notion | 10 € payés avec 20 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 10 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1000 | 10 | +1★ |
+| 12 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète la seiche. Elle coûte… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 6 | +2★ |
+| 13 | notion | 16 € payés avec 20 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 16 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 400 | 4 | +1★ |
+| 14 | notion | 19 € payés avec 20 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 1 | +2★ |
+| 15 | notion | 11 € payés avec 20 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 11 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 900 | 9 | +1★ |
+| 16 | notion | 16 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 16 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 400 | 4 | MONTÉE (niveau 1 → 8) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
+| 17 | notion | 17 € payés avec 20 € (niveau 7) · portefeuille  | Achète la sole. Elle coûte… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 3 | +1★ |
+| 18 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète la seiche. Elle coûte… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 8 | +2★ |
+| 19 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 6 | +1★ |
+| 20 | notion | 17 € payés avec 20 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 3 | +2★ |
+| 21 | notion | 18 € payés avec 20 € (niveau 7) · portefeuille  | Achète la seiche. Elle coûte… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | 2 | +1★ |
+| 22 | notion | 15 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 15 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 500 | 5 | +2★ |
+| 23 | notion | 11 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 11 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 900 | 9 | +1★ |
+| 24 | notion | 18 € payés avec 20 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | 2 | +2★ |
+| 25 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 8 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle)
+Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle) (brillante)
 
 ### Étal du pêcheur, niveau 7 (rendre), cran « plus dur » · réelle
 
 - comportement : 25 % d'erreurs (dont 1 sur 5 en « je ne sais pas »), 5 s par réponse
 - notion du jour : 12 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : L17 × 1
-- étoiles de la séance : **46** (appliquée 47, réelle 46, pressée 15) ; cran à la fin : plus dur ; réussite 88 % sur 24 réponses ; durée simulée 8.7 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **46** (appliquée 47, réelle 46, pressée 15) ; cran à la fin : plus dur ; réussite 92 % sur 24 réponses ; durée simulée 8.5 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -291,21 +292,21 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle)
 | 10 | échauffement | 9 + 1 = ? (fait nouveau) | Combien font 9 plus 1 ? | 10 | 10 | +2★ |
 | 11 | échauffement | 4 + 2 = ? (fait nouveau) | 4 plus 2 ? | 6 | 6 | +1★ |
 | 12 | notion | LEÇON L17 | (leçon animée L17, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L17) |
-| 13 | notion | EXEMPLE GUIDÉ : 10 € payés avec 20 € (niveau 7) · portefeuille  | Cette fois, c'est moi qui te rends la monnaie. Dis-moi combien : tape-le, puis touche la coche. Achète la seiche. Elle coûte… 10 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : rien) |  |
-| 14 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 8 | +2★ |
-| 15 | notion | 16 € payés avec 20 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 16 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 400 | 4 | +1★ |
-| 16 | notion | 17 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 3 | +2★ |
-| 17 | notion | 18 € payés avec 20 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | 2 | +1★ |
-| 18 | notion | 15 € payés avec 20 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 15 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 500 | 5 | MONTÉE (niveau 1 → 8) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
-| 19 | notion | 11 € payés avec 20 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 11 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 900 | 9 | +1★ |
-| 20 | notion | 17 € payés avec 20 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 17 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 17 … 20 », « Ça fait… 3 euros. » |
-| 21 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 14 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 14 … 20 », « Ça fait… 6 euros. » |
-| 22 | notion | 18 € payés avec 20 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | 2 | +2★ |
-| 23 | notion | 17 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète le homard. Il coûte… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 3 | +3★ (erreur corrigée) |
-| 24 | notion | 19 € payés avec 20 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 1 | +1★ |
-| 25 | notion | 13 € payés avec 20 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | 7 | +2★ |
+| 13 | notion | EXEMPLE GUIDÉ : 13 € payés avec 20 € (niveau 7) · portefeuille  | Cette fois, c'est moi qui te rends la monnaie. Dis-moi combien : tape-le, puis touche la coche. Achète les crevettes. Elles coûtent… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : rien) |  |
+| 14 | notion | 19 € payés avec 20 € (niveau 7) · portefeuille  | Achète la seiche. Elle coûte… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 1 | +2★ |
+| 15 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 6 | +1★ |
+| 16 | notion | 18 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | 2 | +2★ |
+| 17 | notion | 16 € payés avec 20 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 16 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 400 | 4 | +1★ |
+| 18 | notion | 13 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | 7 | MONTÉE (niveau 1 → 8) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
+| 19 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 8 | +1★ |
+| 20 | notion | 17 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 3 | +2★ |
+| 21 | notion | 13 € payés avec 20 € (niveau 7) · portefeuille  | Achète le maquereau. Il coûte… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | 7 | +1★ |
+| 22 | notion | 15 € payés avec 20 € (niveau 7) · portefeuille  | Achète la seiche. Elle coûte… 15 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 500 | 5 | +2★ |
+| 23 | notion | 19 € payés avec 20 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 19 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 19 … 20 », « Ça fait… 1 euro. » |
+| 24 | notion | 11 € payés avec 20 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 11 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 900 | 9 | +1★ |
+| 25 | notion | 16 € payés avec 20 € (niveau 7) · portefeuille  | Achète la sole. Elle coûte… 16 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 400 | 4 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle)
 
 ### Étal du pêcheur, niveau 7 (rendre), cran « plus dur » · pressée
 
@@ -332,18 +333,18 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
 | 14 | notion | LEÇON L17 | (leçon animée L17, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L17) |
 | 15 | notion | EXEMPLE GUIDÉ : 16 € payés avec 20 € (niveau 7) · portefeuille  | Cette fois, c'est moi qui te rends la monnaie. Dis-moi combien : tape-le, puis touche la coche. Achète les moules. Elles coûtent… 16 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : rien) |  |
 | 16 | notion | 9 € payés avec 20 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 9 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1100 | 9 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 9 … 20 », « Ça fait… 11 euros. » |
-| 17 | notion | 6 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 6 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1400 | 6 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 6 … 20 », « Ça fait… 14 euros. » |
-| 18 | notion | 19 € payés avec 20 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 19 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 19 … 20 », « Ça fait… 1 euro. » |
-| 19 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 12 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 12 … 20 », « Ça fait… 8 euros. » |
+| 17 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 14 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 14 … 20 », « Ça fait… 6 euros. » |
+| 18 | notion | 15 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 15 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 500 | 15 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 15 … 20 », « Ça fait… 5 euros. » |
+| 19 | notion | 1 € payés avec 10 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 1 euro. Tu me donnes un billet de 10 euros. Combien je te rends ? | 900 | 1 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 1 … 10 », « Ça fait… 9 euros. » |
 | 20 | notion | 9 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète les huîtres. Elles coûtent… 9 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1100 | 9 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 9 … 20 », « Ça fait… 11 euros. » |
-| 21 | notion | 1 € payés avec 10 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 1 euro. Tu me donnes un billet de 10 euros. Combien je te rends ? | 900 | 1 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 1 … 10 », « Ça fait… 9 euros. » |
-| 22 | notion | 6 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète le tourteau. Il coûte… 6 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1400 | 6 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 6 … 20 », « Ça fait… 14 euros. » |
-| 23 | notion | 19 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète les huîtres. Elles coûtent… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 19 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 19 … 20 », « Ça fait… 1 euro. » |
-| 24 | notion | 12 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète le homard. Il coûte… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 12 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 12 … 20 », « Ça fait… 8 euros. » |
-| 25 | notion | 1 € payés avec 10 € (niveau 7, revient) · portefeuille  | Achète le bar. Il coûte… 1 euro. Tu me donnes un billet de 10 euros. Combien je te rends ? | 900 | 1 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 1 … 10 », « Ça fait… 9 euros. » |
-| 26 | notion | 9 € payés avec 10 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 9 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 100 | 9 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 9 … 10 », « Ça fait… 1 euro. » |
-| 27 | notion | 2 € payés avec 5 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 2 euros. Tu me donnes un billet de 5 euros. Combien je te rends ? | 300 | 2 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 2 … 5 », « Ça fait… 3 euros. » |
-| 28 | notion | 10 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 10 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1000 | 10 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 10 … 20 », « Ça fait… 10 euros. » |
+| 21 | notion | 1 € payés avec 20 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 1 euro. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1900 | 1 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 1 … 20 », « Ça fait… 19 euros. » |
+| 22 | notion | 14 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète les crevettes. Elles coûtent… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 14 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 14 … 20 », « Ça fait… 6 euros. » |
+| 23 | notion | 15 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète la dorade. Elle coûte… 15 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 500 | 15 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 15 … 20 », « Ça fait… 5 euros. » |
+| 24 | notion | 1 € payés avec 10 € (niveau 7, revient) · portefeuille  | Achète les crevettes. Elles coûtent… 1 euro. Tu me donnes un billet de 10 euros. Combien je te rends ? | 900 | 1 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 1 … 10 », « Ça fait… 9 euros. » |
+| 25 | notion | 1 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète les moules. Elles coûtent… 1 euro. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1900 | 1 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 1 … 20 », « Ça fait… 19 euros. » |
+| 26 | notion | 3 € payés avec 5 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 3 euros. Tu me donnes un billet de 5 euros. Combien je te rends ? | 200 | 3 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 3 … 5 », « Ça fait… 2 euros. » |
+| 27 | notion | 1 € payés avec 10 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 1 euro. Tu me donnes un billet de 10 euros. Combien je te rends ? | 900 | 1 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 1 … 10 », « Ça fait… 9 euros. » |
+| 28 | notion | 7 € payés avec 10 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 7 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 300 | 7 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 7 … 10 », « Ça fait… 3 euros. » |
 
 Récompense et fin : +10★ (fin)
 
@@ -352,9 +353,9 @@ Récompense et fin : +10★ (fin)
 ### Étal du pêcheur, niveau 7 (rendre), cran « très dur » · appliquée
 
 - comportement : tout juste, 4 s par réponse
-- notion du jour : 14 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
+- notion du jour : 14 questions ; **6 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : L17 × 1
-- étoiles de la séance : **59** (appliquée 59, réelle 55, pressée 16) ; cran à la fin : très dur ; réussite 100 % sur 24 réponses ; durée simulée 7.9 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **59** (appliquée 59, réelle 59, pressée 16) ; cran à la fin : très dur ; réussite 100 % sur 24 réponses ; durée simulée 7.9 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -369,29 +370,29 @@ Récompense et fin : +10★ (fin)
 | 9 | échauffement | 2 + 4 = ? (fait nouveau) | Combien font 2 plus 4 ? | 6 | 6 | +2★ |
 | 10 | notion | LEÇON L17 | (leçon animée L17, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L17) |
 | 11 | notion | EXEMPLE GUIDÉ : 17 € payés avec 20 € (niveau 7) · portefeuille  | Cette fois, c'est moi qui te rends la monnaie. Dis-moi combien : tape-le, puis touche la coche. Achète le maquereau. Il coûte… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : rien) |  |
-| 12 | notion | 15 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 15 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 500 | 5 | +2★ |
-| 13 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète les sardines. Elles coûtent… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 6 | +2★ |
-| 14 | notion | 10 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 10 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1000 | 10 | +2★ |
-| 15 | notion | 16 € payés avec 20 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 16 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 400 | 4 | +2★ |
-| 16 | notion | 11 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 11 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 900 | 9 | MONTÉE (niveau 1 → 8) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
-| 17 | notion | 18 € payés avec 20 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | 2 | +2★ |
-| 18 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 6 | +2★ |
-| 19 | notion | 10 € payés avec 20 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 10 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1000 | 10 | +2★ |
-| 20 | notion | 18 € payés avec 20 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | 2 | +2★ |
-| 21 | notion | 16 € payés avec 20 € (niveau 7) · portefeuille  | Achète le maquereau. Il coûte… 16 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 400 | 4 | +2★ |
-| 22 | notion | 19 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 1 | +2★ |
-| 23 | notion | 17 € payés avec 20 € (niveau 7) · portefeuille  | Achète la sole. Elle coûte… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 3 | +2★ |
-| 24 | notion | 13 € payés avec 20 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | 7 | +2★ |
-| 25 | notion | 19 € payés avec 20 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 1 | +2★ |
+| 12 | notion | 11 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 11 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 900 | 9 | +2★ |
+| 13 | notion | 18 € payés avec 20 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | 2 | +2★ |
+| 14 | notion | 15 € payés avec 20 € (niveau 7) · portefeuille  | Achète la sole. Elle coûte… 15 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 500 | 5 | +2★ |
+| 15 | notion | 16 € payés avec 20 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 16 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 400 | 4 | +2★ |
+| 16 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 6 | MONTÉE (niveau 1 → 8) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
+| 17 | notion | 16 € payés avec 20 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 16 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 400 | 4 | +2★ |
+| 18 | notion | 11 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 11 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 900 | 9 | +2★ |
+| 19 | notion | 15 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 15 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 500 | 5 | +2★ |
+| 20 | notion | 11 € payés avec 20 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 11 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 900 | 9 | +2★ |
+| 21 | notion | 16 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 16 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 400 | 4 | +2★ |
+| 22 | notion | 15 € payés avec 20 € (niveau 7) · portefeuille  | Achète la sole. Elle coûte… 15 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 500 | 5 | +2★ |
+| 23 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 6 | +2★ |
+| 24 | notion | 18 € payés avec 20 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | 2 | +2★ |
+| 25 | notion | 13 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | 7 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle) (brillante) ; carte anemone (nouvelle)
+Récompense et fin : +10★ (fin) ; carte hippocampe (nouvelle) ; carte anemone (nouvelle)
 
 ### Étal du pêcheur, niveau 7 (rendre), cran « très dur » · réelle
 
 - comportement : 25 % d'erreurs (dont 1 sur 5 en « je ne sais pas »), 5 s par réponse
 - notion du jour : 12 questions ; **7 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : L17 × 1
-- étoiles de la séance : **55** (appliquée 59, réelle 55, pressée 16) ; cran à la fin : très dur ; réussite 79 % sur 24 réponses ; durée simulée 9.1 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **59** (appliquée 59, réelle 59, pressée 16) ; cran à la fin : très dur ; réussite 92 % sur 24 réponses ; durée simulée 8.5 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -408,27 +409,27 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle) (brillante) ; carte a
 | 11 | échauffement | 7 + 2 = ? (fait nouveau) | Combien font 7 plus 2 ? | 9 | 9 | +2★ |
 | 12 | notion | LEÇON L17 | (leçon animée L17, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L17) |
 | 13 | notion | EXEMPLE GUIDÉ : 16 € payés avec 20 € (niveau 7) · portefeuille  | Cette fois, c'est moi qui te rends la monnaie. Dis-moi combien : tape-le, puis touche la coche. Achète la sole. Elle coûte… 16 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : rien) |  |
-| 14 | notion | 19 € payés avec 20 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 1 | +2★ |
-| 15 | notion | 18 € payés avec 20 € (niveau 7) · portefeuille  | Achète la sole. Elle coûte… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » « Regarde, on peut payer comme ça. » rien |
-| 16 | notion | 10 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 10 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1000 | 10 | +2★ |
-| 17 | notion | 17 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 3 | +2★ |
-| 18 | notion | 18 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète la sole. Elle coûte… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | 2 | +4★ (erreur corrigée) |
-| 19 | notion | 19 € payés avec 20 € (niveau 7) · portefeuille  | Achète la sole. Elle coûte… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 19 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 19 … 20 », « Ça fait… 1 euro. » |
-| 20 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 6 | +2★ |
-| 21 | notion | 15 € payés avec 20 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 15 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 500 | 5 | +2★ |
-| 22 | notion | 19 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète la sole. Elle coûte… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 1 | +4★ (erreur corrigée) |
-| 23 | notion | 18 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » « Regarde, on peut payer comme ça. » rien |
-| 24 | notion | 17 € payés avec 20 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 17 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 17 … 20 », « Ça fait… 3 euros. » |
-| 25 | notion | 6 € payés avec 20 € (niveau 7) · portefeuille  | Achète le maquereau. Il coûte… 6 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1400 | 14 | +2★ |
+| 14 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 6 | +2★ |
+| 15 | notion | 13 € payés avec 20 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » « Regarde, on peut payer comme ça. » rien |
+| 16 | notion | 19 € payés avec 20 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 1 | +2★ |
+| 17 | notion | 15 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 15 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 500 | 5 | +2★ |
+| 18 | notion | 13 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète les crevettes. Elles coûtent… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | 7 | +4★ (erreur corrigée) |
+| 19 | notion | 15 € payés avec 20 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 15 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 500 | 5 | +2★ |
+| 20 | notion | 11 € payés avec 20 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 11 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 900 | 9 | +2★ |
+| 21 | notion | 17 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 17 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 300 | 3 | +2★ |
+| 22 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 8 | +2★ |
+| 23 | notion | 15 € payés avec 20 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 15 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 500 | 5 | MONTÉE (niveau 1 → 8) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
+| 24 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 8 | +2★ |
+| 25 | notion | 19 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 100 | 1 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) (brillante) ; carte limace-de-mer (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte coquille-saint-jacques (nouvelle)
 
 ### Étal du pêcheur, niveau 7 (rendre), cran « très dur » · pressée
 
 - comportement : réponses au hasard, 1 s par réponse
-- notion du jour : 13 questions ; **8 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
+- notion du jour : 13 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : L17 × 1
-- étoiles de la séance : **16** (appliquée 59, réelle 55, pressée 16) ; cran à la fin : conseillé ; réussite 7 % sur 27 réponses ; durée simulée 10.9 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **16** (appliquée 59, réelle 59, pressée 16) ; cran à la fin : conseillé ; réussite 7 % sur 27 réponses ; durée simulée 10.9 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -447,18 +448,18 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) (brillante) ; cart
 | 13 | échauffement | 1 + 8 = ? (fait nouveau) | Combien font 1 plus 8 ? | 9 | 3 | correction : « 1 plus 8, ça fait 9. » |
 | 14 | notion | LEÇON L17 | (leçon animée L17, raison : entrée du niveau) |  | regardée jusqu'au bout | +3★ (leçon L17) |
 | 15 | notion | EXEMPLE GUIDÉ : 19 € payés avec 20 € (niveau 7) · portefeuille  | Cette fois, c'est moi qui te rends la monnaie. Dis-moi combien : tape-le, puis touche la coche. Achète les huîtres. Elles coûtent… 19 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : rien) |  |
-| 16 | notion | 1 € payés avec 10 € (niveau 7) · portefeuille  | Achète la seiche. Elle coûte… 1 euro. Tu me donnes un billet de 10 euros. Combien je te rends ? | 900 | 1 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 1 … 10 », « Ça fait… 9 euros. » |
-| 17 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète les huîtres. Elles coûtent… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 12 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 12 … 20 », « Ça fait… 8 euros. » |
-| 18 | notion | 18 € payés avec 20 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | 18 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 18 … 20 », « Ça fait… 2 euros. » |
-| 19 | notion | 13 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | 13 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 13 … 20 », « Ça fait… 7 euros. » |
-| 20 | notion | 7 € payés avec 10 € (niveau 7) · portefeuille  | Achète la dorade. Elle coûte… 7 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 300 | 7 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 7 … 10 », « Ça fait… 3 euros. » |
-| 21 | notion | 5 € payés avec 10 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 5 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 500 | 5 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 5 … 10 », « Ça fait… 5 euros. » |
-| 22 | notion | 1 € payés avec 10 € (niveau 7, revient) · portefeuille  | Achète la seiche. Elle coûte… 1 euro. Tu me donnes un billet de 10 euros. Combien je te rends ? | 900 | 1 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 1 … 10 », « Ça fait… 9 euros. » |
-| 23 | notion | 12 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète les huîtres. Elles coûtent… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 12 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 12 … 20 », « Ça fait… 8 euros. » |
-| 24 | notion | 18 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète le tourteau. Il coûte… 18 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 200 | 18 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 18 … 20 », « Ça fait… 2 euros. » |
-| 25 | notion | 7 € payés avec 10 € (niveau 7, revient) · portefeuille  | Achète la dorade. Elle coûte… 7 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 300 | 7 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 7 … 10 », « Ça fait… 3 euros. » |
-| 26 | notion | 3 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 3 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1700 | 3 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 3 … 20 », « Ça fait… 17 euros. » |
-| 27 | notion | 1 € payés avec 20 € (niveau 7) · portefeuille  | Achète les crevettes. Elles coûtent… 1 euro. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1900 | 1 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 1 … 20 », « Ça fait… 19 euros. » |
-| 28 | notion | 5 € payés avec 10 € (niveau 7) · portefeuille  | Achète la seiche. Elle coûte… 5 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 500 | 5 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 5 … 10 », « Ça fait… 5 euros. » |
+| 16 | notion | 8 € payés avec 20 € (niveau 7) · portefeuille  | Achète la seiche. Elle coûte… 8 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1200 | 8 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 8 … 20 », « Ça fait… 12 euros. » |
+| 17 | notion | 14 € payés avec 20 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 14 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 14 … 20 », « Ça fait… 6 euros. » |
+| 18 | notion | 13 € payés avec 20 € (niveau 7) · portefeuille  | Achète les moules. Elles coûtent… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | 13 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 13 … 20 », « Ça fait… 7 euros. » |
+| 19 | notion | 8 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète la seiche. Elle coûte… 8 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1200 | 8 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 8 … 20 », « Ça fait… 12 euros. » |
+| 20 | notion | 12 € payés avec 20 € (niveau 7) · portefeuille  | Achète le homard. Il coûte… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 12 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 12 … 20 », « Ça fait… 8 euros. » |
+| 21 | notion | 5 € payés avec 20 € (niveau 7) · portefeuille  | Achète les coquilles Saint-Jacques. Elles coûtent… 5 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1500 | 5 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 5 … 20 », « Ça fait… 15 euros. » |
+| 22 | notion | 14 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète le homard. Il coûte… 14 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 600 | 14 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 14 … 20 », « Ça fait… 6 euros. » |
+| 23 | notion | 13 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète les moules. Elles coûtent… 13 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 700 | 13 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 13 … 20 », « Ça fait… 7 euros. » |
+| 24 | notion | 12 € payés avec 20 € (niveau 7, revient) · portefeuille  | Achète le homard. Il coûte… 12 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 800 | 12 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 12 … 20 », « Ça fait… 8 euros. » |
+| 25 | notion | 8 € payés avec 10 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 8 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 200 | 8 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 8 … 10 », « Ça fait… 2 euros. » |
+| 26 | notion | 6 € payés avec 10 € (niveau 7) · portefeuille  | Achète le bar. Il coûte… 6 euros. Tu me donnes un billet de 10 euros. Combien je te rends ? | 400 | 6 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 6 … 10 », « Ça fait… 4 euros. » |
+| 27 | notion | 1 € payés avec 10 € (niveau 7) · portefeuille  | Achète le tourteau. Il coûte… 1 euro. Tu me donnes un billet de 10 euros. Combien je te rends ? | 900 | 1 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 1 … 10 », « Ça fait… 9 euros. » |
+| 28 | notion | 2 € payés avec 20 € (niveau 7) · portefeuille  | Achète la sole. Elle coûte… 2 euros. Tu me donnes un billet de 20 euros. Combien je te rends ? | 1800 | 2 | « Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet. » puis la ligne : « 2 … 20 », « Ça fait… 18 euros. » |
 
 Récompense et fin : +10★ (fin)

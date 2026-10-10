@@ -243,14 +243,21 @@ async function uneSeance({ base, choix, cran, comp }) {
             const forme = `${q.type === "poser" ? `poser ${montantEcrit(q.valeur)}` : q.type === "rendre" ? `${montantEcrit(q.prix)} payés avec ${montantEcrit(q.billet)}` : `${q.produits.join(" et ")} à ${montantEcrit(q.prix)}`} (niveau ${q.niveau}${q.revient ? ", revient" : ""}) · portefeuille ${q.portefeuille.map(montantEcrit).join(" ")}`;
             if (q.guide) { row({ cle: `exemple:${att}`, forme: `EXEMPLE GUIDÉ : ${forme}`, voix: `${cons}${phrase} ${T.etalExemple}`, attendue: "", donnee: `(le pêcheur paie : ${soucoupeTexte(sol)})` }); add(D.demo + 8000); return { q, ok: true, ms: 0, listens: 1 }; }
             const faux = C.hasard || R() < C.erreur, nsp = faux && R() < C.nsp;
-            let ok = !faux, corrigee = false, code = null, donnee;
+            let ok = !faux, corrigee = false, code = null, donnee, manque = 0;
             if (nsp) { code = "NSP"; donnee = "je ne sais pas"; }
             else if (q.type === "rendre") { const v = ok ? att / 100 : q.prix / 100; donnee = v; if (!ok) code = "M5"; }
-            else if (!ok) { const vs = q.type === "poser" ? [q.portefeuille.find((v) => v !== q.valeur)] : sol.length > 1 ? sol.slice(0, -1) : [Math.min(...q.portefeuille)]; const j = juger(cfg, q, vs); code = j.code ?? "M1"; donnee = soucoupeTexte(vs); corrigee = ["M1", "M2", "M3"].includes(code) && R() < 0.6; }
+            // (relecture du lot, R25 : une fois sur deux, elle donne trop, une pièce ou un billet de plus que la solution)
+            else if (!ok) {
+              const reste = [...q.portefeuille]; for (const v of sol) reste.splice(reste.indexOf(v), 1);
+              const vs = q.type === "poser" ? [q.portefeuille.find((v) => v !== q.valeur)] : reste.length && R() < 0.5 ? [...sol, reste[Math.floor(R() * reste.length)]] : sol.length > 1 ? sol.slice(0, -1) : [Math.min(...q.portefeuille)];
+              const j = juger(cfg, q, vs); code = j.code ?? "M1"; manque = j.manque; donnee = soucoupeTexte(vs); corrigee = ["M1", "M2", "M3"].includes(code) && R() < 0.6;
+            }
             else donnee = soucoupeTexte(sol);
             const x = row({ cle: runner.cand(q).cle, forme, voix: `${cons}${phrase}`, attendue: att, donnee });
             add(D.consigne + 4000 + C.ms * 2 + (ok ? D.bravo + 3000 : corrigee ? D.correction : D.correction + 6000));
-            if (code === "M1") x.suite.push(`« ${T.etalManque} ${M(Math.max(10, (q.prix ?? 0) - sol.slice(0, -1).reduce((a, b) => a + b, 0)))} ${T.etalComplete} »`);
+            if (code === "M1") x.suite.push(`« ${T.etalManque} ${M(manque)} ${T.etalComplete} »`);
+            if (code === "M2") x.suite.push(`« ${T.etalTrop} » (tout l'argent revient) « ${T.etalEssaieEncore} »`);
+            if (code === "M3") x.suite.push(`« ${T.etalGardeLa} » (tout l'argent revient) « ${T.etalSansElle.la} »`);
             if (code === "M5") x.suite.push(`« ${T.etalRendPrix} » puis la ligne : « ${q.prix / 100} … ${q.billet / 100} », « ${T.etalCaFait} ${M(att)} »`);
             if (code === "M7") x.suite.push(`« ${T.etalCestUn[q.portefeuille.find((v) => v !== q.valeur)]} » puis « ${T.etalCestCeluiLa[q.valeur]} »`);
             if (nsp) x.suite.push(`« ${T.erreur.NSP} » « ${T.etalCorrection} » ${soucoupeTexte(sol)}`);

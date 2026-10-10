@@ -30,7 +30,9 @@ test("les montants dits et écrits", () => {
 
 test("les prix des niveaux : la fourchette, le haut de la fourchette aux crans « plus dur » et « très dur »", () => {
   assert.deepEqual(prixPossibles(N(2)), [200, 300, 400, 500, 600, 700, 800, 900, 1000]);
-  assert.deepEqual(prixPossibles(N(2), M6.crans.dur), [600, 700, 800, 900, 1000]);
+  // (la moitié haute, au moins six prix : relecture du lot, la réponse qui varie)
+  assert.deepEqual(prixPossibles(N(2), M6.crans.dur), [500, 600, 700, 800, 900, 1000]);
+  assert.deepEqual(prixPossibles(N(3), M6.crans.dur), [1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000]);
   assert.equal(prixPossibles(N(9)).length, 18); assert.equal(prixPossibles(N(10)).at(0), 30); assert.equal(prixPossibles(N(10)).at(-1), 1000);
   assert.deepEqual(prixPossibles(N(1)), []);
 });
@@ -165,4 +167,24 @@ test("les étoiles, les retours, la montée, la leçon relancée par la même er
   // ce que le parent lit
   assert.equal(soucoupeTexte([1000, 500, 200]), "10 € + 5 € + 2 € (17 €)");
   assert.equal(etalQuestion({ type: "payer", produits: ["sardines"], prix: 350 }), "sardines à 3,50 €");
+});
+
+test("relecture du lot : niveau 6, « un seul billet » au plus un achat sur trois et jamais deux fois de suite ; niveau 7, jamais la moitié du billet ; niveau 9, trois prix sur quatre avec des centimes", async () => {
+  const M6c = read("app/content/module6.json");
+  for (const n of [6, 7, 9]) {
+    let tot = 0, seul = 0, suite = 0, moitie = 0, ronds = 0;
+    for (let k = 0; k < 12; k++) {
+      const r = await new Module6Runner({ store: null, content: M6c, rnd: rng(100 + k), choix: n }).load();
+      r.st.exemples = [n]; let avant = false;
+      for (let i = 0; i < 20; i++) {
+        const x = r.next(); if (!x) break; const q = x.q; tot++;
+        if (n === 6) { const s1 = solution(x.cfg, q.prix, q.portefeuille).length === 1; if (s1) seul++; if (s1 && avant) suite++; avant = s1; }
+        if (n === 7 && q.billet === 2 * q.prix) moitie++;
+        if (n === 9 && q.prix % 100 === 0) ronds++;
+      }
+    }
+    if (n === 6) { assert.ok(seul <= tot / 3, `niveau 6 : ${seul} sur ${tot}`); assert.equal(suite, 0); }
+    if (n === 7) assert.equal(moitie, 0);
+    if (n === 9) assert.ok(ronds <= tot / 4, `niveau 9 : ${ronds} prix ronds sur ${tot}`);
+  }
 });

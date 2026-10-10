@@ -42,6 +42,9 @@ export const GLACE = [300, 318, 1280, 505];
 const KEY = 104, PAD_X = [716, 822, 928, 1034, 1140], PAD_Y = [612, 722], PAD_SLATE = [930, 512];
 // la ligne graduée du niveau 7 (correction, aide), sur une plaque claire posée sur la glace
 export const LIGNE = { x0: 330, x1: 1170, y: 452 }, PLAQUE = [284, 352, 1216, 584];
+// (relecture du lot, R6) avec le pavé du niveau 7 à l'écran, la ligne et sa plaque montent au-dessus de lui (sans quoi l'ardoise
+// du nombre tapé et la première rangée de touches couvraient la fin de la ligne, là où l'enfant compte jusqu'au billet)
+export const LIGNE_HAUTE = { x0: 330, x1: 1170, y: 384 }, PLAQUE_HAUTE = [284, 290, 1216, 468];
 const SKIPPED = Symbol("correction passée");
 
 export class EtalScreen {
@@ -73,7 +76,7 @@ export class EtalScreen {
     stage.root.insertBefore(decor, stage.root.querySelector("#line"));
     // la plaque claire de la ligne graduée (niveau 7) : sous la ligne, sur le décor
     this.plaque = document.createElement("div"); this.plaque.className = "etal-plaque"; stage.root.insertBefore(this.plaque, stage.root.querySelector("#line"));
-    Object.assign(this.plaque.style, { left: `${PLAQUE[0] / 12.8}%`, top: `${PLAQUE[1] / 8}%`, width: `${(PLAQUE[2] - PLAQUE[0]) / 12.8}%`, height: `${(PLAQUE[3] - PLAQUE[1]) / 8}%` });
+    this.placerPlaque(PLAQUE);
     scene.classList.add("keep"); stage.ui.prepend(scene);
     app.lagon?.pause(true);
     // la mascotte dans la fenêtre de la cabane, abaissée et rognée au rebord (comme dans la maquette)
@@ -109,6 +112,7 @@ export class EtalScreen {
     onBrief(app, this.nsp, () => { if (!this.onNsp) return; pop(this.nsp); this.onNsp(); }, "nsp");
   }
   // le pavé du niveau 7 (et le clavier de l'ordinateur) ; l'ardoise du nombre tapé
+  placerPlaque(P) { this.plaqueR = P; Object.assign(this.plaque.style, { left: `${P[0] / 12.8}%`, top: `${P[1] / 8}%`, width: `${(P[2] - P[0]) / 12.8}%`, height: `${(P[3] - P[1]) / 8}%` }); }
   pave(v) {
     const { app } = this, { sprites } = app;
     if (v && !this.keys) {
@@ -148,7 +152,7 @@ export class EtalScreen {
     if (this.q?.type === "rendre") out.push(ZONES.pave); else out.push(e.pf === "ferme" ? ZONES.ferme : ZONES.ouvert);
     out.push(...this.api.boites()); // (l'argent sorti, au-dessus du portefeuille, et celui de la soucoupe)
     out.push(...this.api.allumes()); // (le produit allumé et son ardoise : la voix en parle)
-    if (this.ligneVue) out.push(PLAQUE);
+    if (this.ligneVue) out.push(this.plaqueR ?? PLAQUE);
     return out;
   }
   souples() { return this.api ? [GLACE] : []; }
@@ -258,10 +262,16 @@ export class EtalScreen {
       if (essai < (this.c.essais ?? 2) && ["M1", "M2", "M3"].includes(j.code)) {
         if (j.code === "M1") await voice.say(`${T.etalManque} ${montantDit(T, j.manque)} ${T.etalComplete}`).then(g);
         else {
-          const objs = api.objets().sort((a, b) => a.ordre - b.ordre), idx = enTrop(cfg, q.prix, objs.map((o) => o.v)), rend = idx.map((i) => objs[i]);
-          await voice.say(j.code === "M2" ? T.etalTrop : rend.length > 1 ? T.etalGardeLes : T.etalGardeLa).then(g);
-          rend.forEach((o) => api.halo(o)); await wait(500).then(g); await api.rendre(rend).then(g);
-          await voice.say(T.etalEssaieEncore).then(g);
+          // (relecture du lot, R1 : il rend TOUT l'argent ; s'il ne rendait que l'inutile, ce qui reste serait juste, et l'enfant
+          // n'aurait qu'à retoucher la coche. Au niveau 6, il montre d'abord les objets inutiles.)
+          if (j.code === "M2") await voice.say(T.etalTrop).then(g);
+          else {
+            const objs = api.objets().sort((a, b) => a.ordre - b.ordre), rend = enTrop(cfg, q.prix, objs.map((o) => o.v)).map((i) => objs[i]);
+            rend.forEach((o) => api.halo(o));
+            await voice.say(rend.length > 1 ? T.etalGardeLes : T.etalGardeLa).then(g); await wait(400).then(g);
+          }
+          api.sansHalo(); await api.rendre().then(g);
+          await voice.say(j.code === "M2" ? T.etalEssaieEncore : T.etalSansElle[enTrop(cfg, q.prix, vs).length > 1 ? "les" : "la"]).then(g);
         }
         if (!vivant()) return mort();
         api.sansHalo(); api.totalVu(facile || this.aide);
@@ -333,10 +343,15 @@ export class EtalScreen {
   // le pêcheur rend la monnaie en comptant à partir du prix (« 13… 15… 20 »), puis elle rejoint le portefeuille
   async rendreMonnaie(prix, montant, g) {
     const { app } = this, api = this.api, T = app.text.data, ps = rendu(montant), sous = comptes(ps, prix);
+    // (relecture du lot, R7 : le total écrit est caché pendant qu'il compte à partir du prix ; il reparaît avec « Je te rends… »,
+    // quand il vaut ce que dit la voix)
+    api.totalVu(false);
     await this.dire(T.etalJeRends).then(g);
     await this.dire(compteDit(T, prix)).then(g);
     for (let i = 0; i < ps.length; i++) { const it = await api.poserMonnaie(ps[i]).then(g); api.halo(it); await this.dire(compteDit(T, sous[i], i === ps.length - 1)).then(g); api.halo(it, false); }
+    api.totalVu(true);
     await this.dire(`${T.etalJeTeRends} ${montantDit(T, montant)}`).then(g);
+    api.totalVu(false);
     await api.rangerRendu().then(g);
   }
   // la correction : l'argent de l'enfant revient au portefeuille, puis une bonne façon de payer glisse dans la soucoupe
@@ -388,23 +403,29 @@ export class EtalScreen {
     const { app } = this, { line } = app, nl = app.lineScreen();
     if (!q) { if (this.ligneVue) { nl.turtle.hide(); nl.arcs = []; line.fxClear(); line.clear(); this.plaque?.classList.remove("vue"); this.ligneVue = false; this.api?.cacher(false); this.api?.rallumer(); } return; }
     const a = q.prix / 100, b = q.billet / 100, n = b - a + 1, T = app.text.data;
-    const spec = { x0: LIGNE.x0, x1: LIGNE.x1, y: LIGNE.y, n, labels: Array.from({ length: n }, (_, i) => (n <= 12 || i === 0 || i === n - 1 || (a + i) % 5 === 0 ? String(a + i) : "")), k: 0, lit: [0, n - 1] };
+    const haute = this.keys?.[0]?.style.visibility === "visible", L = haute ? LIGNE_HAUTE : LIGNE; this.placerPlaque(haute ? PLAQUE_HAUTE : PLAQUE);
+    const spec = { x0: L.x0, x1: L.x1, y: L.y, n, labels: Array.from({ length: n }, (_, i) => (n <= 12 || i === 0 || i === n - 1 || (a + i) % 5 === 0 ? String(a + i) : "")), k: 0, lit: [0, n - 1] };
     const [bmp] = await line.render([spec]); line.show(bmp);
     this.plaque.classList.add("vue"); this.ligneVue = true; this.api.eteindre(); this.api.cacher(true);
     nl.spec = spec; nl.q = { min: a, max: b, step: 1 }; nl.arcs = []; nl.overlay = []; line.fxClear();
     nl.turtle.speed = app.vitesse ?? 1; nl.turtle.sitOn(spec, 0);
     if (!saut) return;
     await this.dire(String(a)).then(g);
-    await this.sauter().then(g);
-    await this.dire(String(b)).then(g);
+    for (const x of this.etapes()) { await this.sauter(x).then(g); await this.dire(String(x)).then(g); }
     await this.dire(`${T.etalCaFait} ${montantDit(T, q.billet - q.prix)}`).then(g);
   }
-  // la tortue saute d'un coup du prix au billet, un grand arc marqué « + 7 » (la ligne est à l'écran)
-  async sauter() {
-    const nl = this.app.lineScreen(), spec = nl.spec, n = spec.n, a = nl.q.min, b = nl.q.max;
-    const p = nl.turtle.seat(0), r = nl.turtle.seat(n - 1), arc = { a: [p[0], p[1] + 4], b: [r[0], r[1] + 4], h: Math.min(70, 22 + Math.abs(r[0] - p[0]) * 0.45) - 4, label: `+${b - a}`, live: true, p: 0 };
+  // (relecture du lot, R5) les arrêts de la tortue, du prix au billet : la dizaine d'abord quand il y en a une entre les deux
+  // (4 → 10 → 20 : + 6, + 10), sinon d'un coup (13 → 20 : + 7)
+  etapes() {
+    const nl = this.app.lineScreen(), a = nl.q.min, b = nl.q.max, d = Math.ceil((a + 1) / 10) * 10;
+    return d > a && d < b ? [d, b] : [b];
+  }
+  // la tortue saute jusqu'à `x` (le billet par défaut), un arc marqué « + 7 » à l'encre (la plaque est claire)
+  async sauter(x) {
+    const nl = this.app.lineScreen(), a = nl.q.min, b = nl.q.max, i0 = Math.round(nl.turtle.at ?? 0), from = a + i0, to = x ?? b, i1 = to - a;
+    const p = nl.turtle.seat(i0), r = nl.turtle.seat(i1), arc = { a: [p[0], p[1] + 4], b: [r[0], r[1] + 4], h: Math.min(46, 18 + Math.abs(r[0] - p[0]) * 0.35), label: `+${to - from}`, labelColor: "#1b1612", live: true, p: 0 };
     nl.arcs.push(arc);
-    await nl.turtle.jump(n - 1);
+    await nl.turtle.jump(i1);
     arc.live = false; arc.p = 1; nl.paintFx(true);
   }
   // l'exemple guidé : le pêcheur paie à la place de l'enfant en comptant (niveau 7 : le saut sur la ligne) ; « passer » l'arrête

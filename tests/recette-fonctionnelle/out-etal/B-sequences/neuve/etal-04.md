@@ -11,7 +11,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 - comportement : tout juste, 4 s par réponse
 - notion du jour : 18 questions ; **15 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : aucune
-- étoiles de la séance : **22** (appliquée 22, réelle 24, pressée 17) ; cran à la fin : plus facile ; réussite 100 % sur 25 réponses ; durée simulée 7.5 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **22** (appliquée 22, réelle 25, pressée 17) ; cran à la fin : plus facile ; réussite 100 % sur 25 réponses ; durée simulée 7.5 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -46,9 +46,9 @@ Récompense et fin : +10★ (fin)
 ### Étal du pêcheur, niveau 4 (payer), cran « plus facile » · réelle
 
 - comportement : 25 % d'erreurs (dont 1 sur 5 en « je ne sais pas »), 5 s par réponse
-- notion du jour : 17 questions ; **15 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
-- leçons jouées : aucune
-- étoiles de la séance : **24** (appliquée 22, réelle 24, pressée 17) ; cran à la fin : plus facile ; réussite 84 % sur 32 réponses ; durée simulée 10 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- notion du jour : 12 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
+- leçons jouées : L16 × 1
+- étoiles de la séance : **25** (appliquée 22, réelle 25, pressée 17) ; cran à la fin : plus facile ; réussite 79 % sur 28 réponses ; durée simulée 9.9 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -68,31 +68,28 @@ Récompense et fin : +10★ (fin)
 | 14 | échauffement | 2 + 3 = ? (fait nouveau) | Combien font 2 plus 3 ? | 5 | 5 | +1★ |
 | 15 | notion | EXEMPLE GUIDÉ : dorade à 34 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Ouvre ton portefeuille, et paie juste le prix : pose l'argent dans la soucoupe, puis touche la coche. Achète la dorade. Elle coûte… 34 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 20 € + 10 € + 2 € + 2 € (34 €)) |  |
 | 16 | notion | moules à 22 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les moules. Elles coûtent… 22 euros. | 2200 | 20 € + 2 € (22 €) |  |
-| 17 | notion | sole à 29 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète la sole. Elle coûte… 29 euros. | 2900 | 20 € + 5 € + 2 € (27 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; +1★ |
-| 18 | notion | crevettes à 30 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les crevettes. Elles coûtent… 30 euros. | 3000 | 20 € + 10 € (30 €) |  |
-| 19 | notion | huitres à 24 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les huîtres. Elles coûtent… 24 euros. | 2400 | 20 € + 2 € + 2 € (24 €) | +1★ |
-| 20 | notion | maquereau à 43 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète le maquereau. Il coûte… 43 euros. | 4300 | 20 € + 20 € + 2 € + 1 € (43 €) |  |
-| 21 | notion | huitres à 21 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les huîtres. Elles coûtent… 21 euros. | 2100 | 20 € + 1 € (21 €) | +1★ |
-| 22 | notion | bar à 42 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le bar. Il coûte… 42 euros. | 4200 | 20 € + 20 € + 2 € (42 €) |  |
-| 23 | notion | tourteau à 38 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le tourteau. Il coûte… 38 euros. | 3800 | 20 € + 10 € + 5 € + 2 € + 1 € (38 €) | +1★ |
-| 24 | notion | maquereau à 29 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète le maquereau. Il coûte… 29 euros. | 2900 | 20 € + 5 € + 2 € + 2 € (29 €) |  |
-| 25 | notion | crevettes à 41 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les crevettes. Elles coûtent… 41 euros. | 4100 | 20 € + 10 € + 10 € + 1 € (41 €) | +1★ |
-| 26 | notion | huitres à 33 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les huîtres. Elles coûtent… 33 euros. | 3300 | 20 € + 10 € + 2 € + 1 € (33 €) |  |
-| 27 | notion | saint-jacques à 34 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les coquilles Saint-Jacques. Elles coûtent… 34 euros. | 3400 | 20 € + 10 € + 2 € + 2 € (34 €) | +1★ |
-| 28 | notion | maquereau à 28 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le maquereau. Il coûte… 28 euros. | 2800 | 20 € + 5 € + 2 € + 1 € (28 €) |  |
-| 29 | notion | tourteau à 19 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète le tourteau. Il coûte… 19 euros. | 1900 | 10 € + 5 € + 2 € + 2 € (19 €) | +1★ |
-| 30 | notion | dorade à 14 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète la dorade. Elle coûte… 14 euros. | 1400 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » « Regarde, on peut payer comme ça. » 10 € + 2 € + 2 € (14 €) |
-| 31 | notion | maquereau à 12 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le maquereau. Il coûte… 12 euros. | 1200 | 10 € (10 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; leçon L16 relancée |
-| 32 | notion | seiche à 28 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète la seiche. Elle coûte… 28 euros. | 2800 | 20 € + 5 € + 2 € + 1 € (28 €) |  |
+| 17 | notion | sole à 29 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète la sole. Elle coûte… 29 euros. | 2900 | 20 € + 5 € + 2 € + 2 € + 10 € (39 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; +1★ |
+| 18 | notion | huitres à 17 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les huîtres. Elles coûtent… 17 euros. | 1700 | 10 € + 5 € + 2 € (17 €) |  |
+| 19 | notion | maquereau à 27 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète le maquereau. Il coûte… 27 euros. | 2700 | 20 € + 5 € + 2 € (27 €) | +1★ |
+| 20 | notion | tourteau à 37 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète le tourteau. Il coûte… 37 euros. | 3700 | 20 € + 10 € + 5 € + 2 € + 1 € (38 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; leçon L16 relancée |
+| 21 | notion | LEÇON L16 | (leçon animée L16, raison : erreur M2 répétée) |  | regardée jusqu'au bout | +3★ (leçon L16) |
+| 22 | notion | EXEMPLE GUIDÉ : huitres à 44 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les huîtres. Elles coûtent… 44 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 20 € + 20 € + 2 € + 2 € (44 €)) |  |
+| 23 | notion | maquereau à 27 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète le maquereau. Il coûte… 27 euros. | 2700 | 20 € + 5 € + 2 € (27 €) |  |
+| 24 | notion | crevettes à 35 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les crevettes. Elles coûtent… 35 euros. | 3500 | 20 € + 10 € + 5 € (35 €) | +1★ |
+| 25 | notion | maquereau à 46 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète le maquereau. Il coûte… 46 euros. | 4600 | 20 € + 10 € + 10 € + 5 € + 1 € (46 €) |  |
+| 26 | notion | huitres à 24 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les huîtres. Elles coûtent… 24 euros. | 2400 | 20 € + 2 € + 2 € (24 €) | +1★ |
+| 27 | notion | tourteau à 37 € (niveau 4, revient) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète le tourteau. Il coûte… 37 euros. | 3700 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » « Regarde, on peut payer comme ça. » 20 € + 10 € + 5 € + 2 € (37 €) |
+| 28 | notion | dorade à 27 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète la dorade. Elle coûte… 27 euros. | 2700 | 20 € + 5 € + 2 € + 1 € (28 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » |
+| 29 | notion | tourteau à 11 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le tourteau. Il coûte… 11 euros. | 1100 | 10 € + 1 € (11 €) | +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; carte limace-de-mer (nouvelle)
 
 ### Étal du pêcheur, niveau 4 (payer), cran « plus facile » · pressée
 
 - comportement : réponses au hasard, 1 s par réponse
-- notion du jour : 14 questions ; **10 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
+- notion du jour : 14 questions ; **11 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : L16 × 1
-- étoiles de la séance : **17** (appliquée 22, réelle 24, pressée 17) ; cran à la fin : plus facile ; réussite 7 % sur 28 réponses ; durée simulée 10.6 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **17** (appliquée 22, réelle 25, pressée 17) ; cran à la fin : plus facile ; réussite 7 % sur 28 réponses ; durée simulée 10.6 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -109,22 +106,22 @@ Récompense et fin : +10★ (fin)
 | 11 | échauffement | 5 + 1 = ? (fait nouveau) | 5 plus 1 ? | 6 | 1 | correction : « 5 plus 1, ça fait 6. » |
 | 12 | échauffement | 1 + 1 = ? (fait nouveau) | 1 plus 1 ? | 2 | 9 | correction : « 1 plus 1, ça fait 2. » |
 | 13 | notion | EXEMPLE GUIDÉ : tourteau à 22 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Ouvre ton portefeuille, et paie juste le prix : pose l'argent dans la soucoupe, puis touche la coche. Achète le tourteau. Il coûte… 22 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 20 € + 2 € (22 €)) |  |
-| 14 | notion | moules à 28 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les moules. Elles coûtent… 28 euros. | 2800 | 20 € + 5 € + 2 € (27 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
-| 15 | notion | sole à 34 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète la sole. Elle coûte… 34 euros. | 3400 | 20 € + 10 € + 2 € (32 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; leçon L16 relancée |
-| 16 | notion | LEÇON L16 | (leçon animée L16, raison : erreur M1 répétée) |  | regardée jusqu'au bout | +3★ (leçon L16) |
-| 17 | notion | EXEMPLE GUIDÉ : crevettes à 15 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les crevettes. Elles coûtent… 15 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 10 € + 5 € (15 €)) |  |
-| 18 | notion | homard à 48 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète le homard. Il coûte… 48 euros. | 4800 | 20 € + 10 € + 10 € + 5 € + 2 € (47 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; +1★ |
-| 19 | notion | tourteau à 18 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le tourteau. Il coûte… 18 euros. | 1800 | 10 € + 5 € + 2 € (17 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
-| 20 | notion | sole à 34 € (niveau 4, revient) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète la sole. Elle coûte… 34 euros. | 3400 | 20 € + 10 € + 2 € (32 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; +1★ |
-| 21 | notion | moules à 43 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les moules. Elles coûtent… 43 euros. | 4300 | 20 € + 20 € + 2 € (42 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
-| 22 | notion | bar à 41 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le bar. Il coûte… 41 euros. | 4100 | 20 € + 20 € (40 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
-| 23 | notion | maquereau à 38 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le maquereau. Il coûte… 38 euros. | 3800 | 20 € + 10 € + 5 € + 2 € (37 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
-| 24 | notion | homard à 48 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le homard. Il coûte… 48 euros. | 4800 | 20 € + 20 € + 5 € + 2 € (47 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; +1★ |
-| 25 | notion | bar à 41 € (niveau 4, revient) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le bar. Il coûte… 41 euros. | 4100 | 20 € + 20 € (40 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
-| 26 | notion | saint-jacques à 36 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les coquilles Saint-Jacques. Elles coûtent… 36 euros. | 3600 | 20 € + 10 € + 5 € (35 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
-| 27 | notion | maquereau à 38 € (niveau 4, revient) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le maquereau. Il coûte… 38 euros. | 3800 | 20 € + 10 € + 5 € + 2 € (37 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; +1★ |
-| 28 | notion | bar à 20 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le bar. Il coûte… 20 euros. | 2000 | 1 € (1 €) | « Il manque… 20 euros. Complète, puis touche la coche. » |
-| 29 | notion | maquereau à 21 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le maquereau. Il coûte… 21 euros. | 2100 | 20 € (20 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
+| 14 | notion | moules à 28 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les moules. Elles coûtent… 28 euros. | 2800 | 20 € + 5 € + 2 € + 1 € + 10 € (38 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » |
+| 15 | notion | dorade à 47 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète la dorade. Elle coûte… 47 euros. | 4700 | 20 € + 20 € + 5 € (45 €) | « Il manque… 2 euros. Complète, puis touche la coche. » |
+| 16 | notion | sole à 29 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète la sole. Elle coûte… 29 euros. | 2900 | 20 € + 5 € + 2 € + 2 € + 10 € (39 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; leçon L16 relancée ; +1★ |
+| 17 | notion | LEÇON L16 | (leçon animée L16, raison : erreur M2 répétée) |  | regardée jusqu'au bout | +3★ (leçon L16) |
+| 18 | notion | EXEMPLE GUIDÉ : homard à 30 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète le homard. Il coûte… 30 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 20 € + 10 € (30 €)) |  |
+| 19 | notion | dorade à 19 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète la dorade. Elle coûte… 19 euros. | 1900 | 10 € + 5 € + 2 € + 2 € + 1 € (20 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » |
+| 20 | notion | moules à 28 € (niveau 4, revient) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les moules. Elles coûtent… 28 euros. | 2800 | 20 € + 5 € + 2 € (27 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; +1★ |
+| 21 | notion | homard à 37 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le homard. Il coûte… 37 euros. | 3700 | 20 € + 10 € + 5 € (35 €) | « Il manque… 2 euros. Complète, puis touche la coche. » |
+| 22 | notion | saint-jacques à 28 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète les coquilles Saint-Jacques. Elles coûtent… 28 euros. | 2800 | 20 € + 5 € + 2 € (27 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; +1★ |
+| 23 | notion | maquereau à 38 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le maquereau. Il coûte… 38 euros. | 3800 | 20 € + 10 € + 5 € + 2 € + 1 € + 2 € (40 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » |
+| 24 | notion | seiche à 21 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète la seiche. Elle coûte… 21 euros. | 2100 | 20 € + 1 € + 5 € (26 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » |
+| 25 | notion | crevettes à 44 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les crevettes. Elles coûtent… 44 euros. | 4400 | 20 € + 10 € + 10 € + 2 € (42 €) | « Il manque… 2 euros. Complète, puis touche la coche. » |
+| 26 | notion | maquereau à 38 € (niveau 4, revient) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le maquereau. Il coûte… 38 euros. | 3800 | 20 € + 10 € + 5 € + 2 € + 1 € + 1 € (39 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; +1★ |
+| 27 | notion | tourteau à 23 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le tourteau. Il coûte… 23 euros. | 2300 | 20 € + 2 € + 1 € + 20 € (43 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » |
+| 28 | notion | moules à 27 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les moules. Elles coûtent… 27 euros. | 2700 | 20 € + 5 € (25 €) | « Il manque… 2 euros. Complète, puis touche la coche. » |
+| 29 | notion | huitres à 12 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les huîtres. Elles coûtent… 12 euros. | 1200 | 10 € + 2 € + 2 € (14 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » |
 
 Récompense et fin : +10★ (fin)
 
@@ -135,7 +132,7 @@ Récompense et fin : +10★ (fin)
 - comportement : tout juste, 4 s par réponse
 - notion du jour : 18 questions ; **16 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : aucune
-- étoiles de la séance : **37** (appliquée 37, réelle 37, pressée 26) ; cran à la fin : conseillé ; réussite 100 % sur 28 réponses ; durée simulée 7.9 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **37** (appliquée 37, réelle 39, pressée 21) ; cran à la fin : conseillé ; réussite 100 % sur 28 réponses ; durée simulée 7.9 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -173,9 +170,9 @@ Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle)
 ### Étal du pêcheur, niveau 4 (payer), cran « conseillé » · réelle
 
 - comportement : 25 % d'erreurs (dont 1 sur 5 en « je ne sais pas »), 5 s par réponse
-- notion du jour : 15 questions ; **11 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
+- notion du jour : 16 questions ; **14 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : aucune
-- étoiles de la séance : **37** (appliquée 37, réelle 37, pressée 26) ; cran à la fin : conseillé ; réussite 86 % sur 29 réponses ; durée simulée 8.9 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **39** (appliquée 37, réelle 39, pressée 21) ; cran à la fin : conseillé ; réussite 80 % sur 30 réponses ; durée simulée 9.5 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -194,29 +191,30 @@ Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle)
 | 13 | échauffement | 2 + 2 = ? (fait nouveau) | Combien font 2 plus 2 ? | 4 | 4 | +1★ |
 | 14 | notion | EXEMPLE GUIDÉ : dorade à 14 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Ouvre ton portefeuille, et paie juste le prix : pose l'argent dans la soucoupe, puis touche la coche. Achète la dorade. Elle coûte… 14 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 10 € + 2 € + 2 € (14 €)) |  |
 | 15 | notion | maquereau à 12 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le maquereau. Il coûte… 12 euros. | 1200 | 10 € + 2 € (12 €) | +1★ |
-| 16 | notion | huitres à 36 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète les huîtres. Elles coûtent… 36 euros. | 3600 | 20 € + 10 € + 5 € (35 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; +1★ |
-| 17 | notion | sole à 24 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète la sole. Elle coûte… 24 euros. | 2400 | 20 € + 2 € + 2 € (24 €) | +1★ |
-| 18 | notion | moules à 44 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les moules. Elles coûtent… 44 euros. | 4400 | 20 € + 20 € + 2 € + 2 € (44 €) | +1★ |
-| 19 | notion | maquereau à 49 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète le maquereau. Il coûte… 49 euros. | 4900 | 20 € + 10 € + 10 € + 5 € + 2 € + 2 € (49 €) | +1★ |
-| 20 | notion | sardines à 31 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les sardines. Elles coûtent… 31 euros. | 3100 | 20 € + 10 € + 1 € (31 €) | +1★ |
-| 21 | notion | moules à 21 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les moules. Elles coûtent… 21 euros. | 2100 | 20 € + 1 € (21 €) | +1★ |
-| 22 | notion | homard à 36 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le homard. Il coûte… 36 euros. | 3600 | 20 € + 10 € + 5 € + 1 € (36 €) | +1★ |
-| 23 | notion | huitres à 40 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète les huîtres. Elles coûtent… 40 euros. | 4000 | 20 € + 10 € + 5 € + 2 € + 2 € + 1 € (40 €) | +1★ |
-| 24 | notion | seiche à 36 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète la seiche. Elle coûte… 36 euros. | 3600 | 20 € + 10 € + 5 € + 1 € (36 €) | MONTÉE (niveau 1 → 5) ; +1★ ; étoile arc-en-ciel (niveau franchi) |
-| 25 | notion | homard à 40 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète le homard. Il coûte… 40 euros. | 4000 | 20 € + 10 € + 10 € (40 €) | +1★ |
-| 26 | notion | moules à 20 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les moules. Elles coûtent… 20 euros. | 2000 | 20 € (20 €) | +1★ |
-| 27 | notion | bar à 22 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le bar. Il coûte… 22 euros. | 2200 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » « Regarde, on peut payer comme ça. » 20 € + 2 € (22 €) |
-| 28 | notion | sardines à 30 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les sardines. Elles coûtent… 30 euros. | 3000 | 20 € + 10 € (30 €) | +1★ |
-| 29 | notion | crevettes à 40 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les crevettes. Elles coûtent… 40 euros. | 4000 | 20 € + 10 € + 10 € (40 €) | +1★ |
+| 16 | notion | huitres à 36 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète les huîtres. Elles coûtent… 36 euros. | 3600 | 20 € + 10 € + 5 € + 1 € + 2 € (38 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; +1★ |
+| 17 | notion | tourteau à 47 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète le tourteau. Il coûte… 47 euros. | 4700 | 20 € + 10 € + 10 € + 5 € + 2 € (47 €) | +1★ |
+| 18 | notion | huitres à 16 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les huîtres. Elles coûtent… 16 euros. | 1600 | 10 € + 5 € + 1 € (16 €) | +1★ |
+| 19 | notion | homard à 37 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète le homard. Il coûte… 37 euros. | 3700 | 20 € + 10 € + 5 € + 2 € (37 €) | +1★ |
+| 20 | notion | maquereau à 50 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le maquereau. Il coûte… 50 euros. | 5000 | 20 € + 20 € + 10 € (50 €) | +1★ |
+| 21 | notion | saint-jacques à 48 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les coquilles Saint-Jacques. Elles coûtent… 48 euros. | 4800 | 20 € + 10 € + 10 € + 5 € + 2 € + 1 € (48 €) | +1★ |
+| 22 | notion | moules à 15 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les moules. Elles coûtent… 15 euros. | 1500 | 10 € + 5 € (15 €) | +1★ |
+| 23 | notion | saint-jacques à 27 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les coquilles Saint-Jacques. Elles coûtent… 27 euros. | 2700 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » « Regarde, on peut payer comme ça. » 20 € + 5 € + 2 € (27 €) |
+| 24 | notion | tourteau à 31 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète le tourteau. Il coûte… 31 euros. | 3100 | 20 € + 10 € (30 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; +1★ |
+| 25 | notion | moules à 32 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète les moules. Elles coûtent… 32 euros. | 3200 | 20 € + 10 € + 2 € (32 €) | +1★ |
+| 26 | notion | saint-jacques à 27 € (niveau 4, revient) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les coquilles Saint-Jacques. Elles coûtent… 27 euros. | 2700 | 20 € + 5 € + 2 € (27 €) | MONTÉE (niveau 1 → 5) ; +2★ (erreur corrigée) ; étoile arc-en-ciel (niveau franchi) |
+| 27 | notion | crevettes à 37 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les crevettes. Elles coûtent… 37 euros. | 3700 | 20 € + 10 € + 5 € + 2 € (37 €) | +1★ |
+| 28 | notion | sardines à 49 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les sardines. Elles coûtent… 49 euros. | 4900 | 20 € + 10 € + 10 € + 5 € + 2 € + 2 € (49 €) | +1★ |
+| 29 | notion | huitres à 28 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les huîtres. Elles coûtent… 28 euros. | 2800 | 20 € + 5 € + 2 € (27 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; leçon L16 relancée ; +1★ |
+| 30 | notion | crevettes à 24 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les crevettes. Elles coûtent… 24 euros. | 2400 | 20 € + 2 € + 2 € (24 €) | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle)
+Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) (brillante)
 
 ### Étal du pêcheur, niveau 4 (payer), cran « conseillé » · pressée
 
 - comportement : réponses au hasard, 1 s par réponse
-- notion du jour : 14 questions ; **11 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
+- notion du jour : 13 questions ; **10 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : L16 × 1
-- étoiles de la séance : **26** (appliquée 37, réelle 37, pressée 26) ; cran à la fin : conseillé ; réussite 10 % sur 29 réponses ; durée simulée 10.5 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **21** (appliquée 37, réelle 39, pressée 21) ; cran à la fin : conseillé ; réussite 11 % sur 28 réponses ; durée simulée 10.5 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -234,24 +232,23 @@ Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle)
 | 12 | échauffement | 9 + 1 = ? (fait nouveau) | 9 plus 1 ? | 10 | 5 | correction : « 9 plus 1, ça fait 10. » |
 | 13 | échauffement | 2 + 3 = ? (fait nouveau) | Combien font 2 plus 3 ? | 5 | 12 | correction : « 2 plus 3, ça fait 5. » |
 | 14 | notion | EXEMPLE GUIDÉ : bar à 21 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Ouvre ton portefeuille, et paie juste le prix : pose l'argent dans la soucoupe, puis touche la coche. Achète le bar. Il coûte… 21 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 20 € + 1 € (21 €)) |  |
-| 15 | notion | crevettes à 20 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les crevettes. Elles coûtent… 20 euros. | 2000 | 1 € (1 €) | « Il manque… 20 euros. Complète, puis touche la coche. » ; +1★ |
-| 16 | notion | saint-jacques à 22 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les coquilles Saint-Jacques. Elles coûtent… 22 euros. | 2200 | 20 € (20 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; leçon L16 relancée ; +1★ |
-| 17 | notion | LEÇON L16 | (leçon animée L16, raison : erreur M1 répétée) |  | regardée jusqu'au bout | +3★ (leçon L16) |
-| 18 | notion | EXEMPLE GUIDÉ : moules à 13 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les moules. Elles coûtent… 13 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 10 € + 2 € + 1 € (13 €)) |  |
-| 19 | notion | huitres à 38 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les huîtres. Elles coûtent… 38 euros. | 3800 | 20 € + 10 € + 5 € + 2 € (37 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; +1★ |
-| 20 | notion | maquereau à 39 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète le maquereau. Il coûte… 39 euros. | 3900 | 20 € + 10 € + 5 € + 2 € (37 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; +1★ |
-| 21 | notion | moules à 19 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les moules. Elles coûtent… 19 euros. | 1900 | 10 € + 5 € + 2 € (17 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; +1★ |
-| 22 | notion | saint-jacques à 30 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les coquilles Saint-Jacques. Elles coûtent… 30 euros. | 3000 | 20 € (20 €) | « Il manque… 10 euros. Complète, puis touche la coche. » ; +1★ |
-| 23 | notion | seiche à 19 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète la seiche. Elle coûte… 19 euros. | 1900 | 10 € + 5 € + 2 € (17 €) | « Il manque… 2 euros. Complète, puis touche la coche. » |
-| 24 | notion | maquereau à 13 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète le maquereau. Il coûte… 13 euros. | 1300 | 10 € + 2 € (12 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
-| 25 | notion | seiche à 34 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète la seiche. Elle coûte… 34 euros. | 3400 | 20 € + 10 € + 2 € (32 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; +1★ |
-| 26 | notion | seiche à 19 € (niveau 4, revient) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète la seiche. Elle coûte… 19 euros. | 1900 | 10 € + 5 € + 2 € (17 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; +1★ |
-| 27 | notion | bar à 12 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le bar. Il coûte… 12 euros. | 1200 | 10 € (10 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; +1★ |
-| 28 | notion | seiche à 22 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète la seiche. Elle coûte… 22 euros. | 2200 | 20 € (20 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; +1★ |
-| 29 | notion | homard à 16 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète le homard. Il coûte… 16 euros. | 1600 | 10 € + 5 € (15 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
-| 30 | notion | moules à 25 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les moules. Elles coûtent… 25 euros. | 2500 | 20 € (20 €) | « Il manque… 5 euros. Complète, puis touche la coche. » ; +1★ |
+| 15 | notion | crevettes à 20 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les crevettes. Elles coûtent… 20 euros. | 2000 | 20 € + 5 € (25 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » |
+| 16 | notion | tourteau à 45 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le tourteau. Il coûte… 45 euros. | 4500 | 20 € + 10 € + 10 € + 5 € + 2 € (47 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; leçon L16 relancée |
+| 17 | notion | LEÇON L16 | (leçon animée L16, raison : erreur M2 répétée) |  | regardée jusqu'au bout | +3★ (leçon L16) |
+| 18 | notion | EXEMPLE GUIDÉ : sardines à 44 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les sardines. Elles coûtent… 44 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 20 € + 10 € + 10 € + 2 € + 2 € (44 €)) |  |
+| 19 | notion | seiche à 17 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète la seiche. Elle coûte… 17 euros. | 1700 | 10 € + 5 € (15 €) | « Il manque… 2 euros. Complète, puis touche la coche. » |
+| 20 | notion | huitres à 47 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les huîtres. Elles coûtent… 47 euros. | 4700 | 20 € + 10 € + 10 € + 5 € + 2 € + 2 € (49 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; +1★ |
+| 21 | notion | crevettes à 46 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les crevettes. Elles coûtent… 46 euros. | 4600 | 20 € + 20 € + 5 € + 1 € + 2 € (48 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; +1★ |
+| 22 | notion | sardines à 26 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète les sardines. Elles coûtent… 26 euros. | 2600 | 20 € + 5 € (25 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
+| 23 | notion | crevettes à 20 € (niveau 4, revient) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les crevettes. Elles coûtent… 20 euros. | 2000 | 1 € (1 €) | « Il manque… 19 euros. Complète, puis touche la coche. » |
+| 24 | notion | tourteau à 45 € (niveau 4, revient) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le tourteau. Il coûte… 45 euros. | 4500 | 20 € + 10 € + 10 € (40 €) | « Il manque… 5 euros. Complète, puis touche la coche. » |
+| 25 | notion | seiche à 17 € (niveau 4, revient) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète la seiche. Elle coûte… 17 euros. | 1700 | 10 € + 5 € + 2 € + 1 € (18 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; +1★ |
+| 26 | notion | huitres à 21 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les huîtres. Elles coûtent… 21 euros. | 2100 | 20 € (20 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; +1★ |
+| 27 | notion | sardines à 28 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les sardines. Elles coûtent… 28 euros. | 2800 | 20 € + 5 € + 2 € (27 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; +1★ |
+| 28 | notion | bar à 25 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète le bar. Il coûte… 25 euros. | 2500 | 20 € + 5 € + 1 € (26 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » |
+| 29 | notion | moules à 14 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les moules. Elles coûtent… 14 euros. | 1400 | 10 € + 2 € + 2 € + 20 € (34 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte limace-de-mer (nouvelle)
+Récompense et fin : +10★ (fin)
 
 ## Cran « plus dur »
 
@@ -260,7 +257,7 @@ Récompense et fin : +10★ (fin) ; carte limace-de-mer (nouvelle)
 - comportement : tout juste, 4 s par réponse
 - notion du jour : 18 questions ; **13 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : aucune
-- étoiles de la séance : **50** (appliquée 50, réelle 39, pressée 20) ; cran à la fin : plus dur ; réussite 100 % sur 28 réponses ; durée simulée 7.9 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **50** (appliquée 50, réelle 43, pressée 18) ; cran à la fin : plus dur ; réussite 100 % sur 28 réponses ; durée simulée 7.9 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -298,9 +295,9 @@ Récompense et fin : +10★ (fin) ; carte hippocampe (nouvelle) (brillante) ; ca
 ### Étal du pêcheur, niveau 4 (payer), cran « plus dur » · réelle
 
 - comportement : 25 % d'erreurs (dont 1 sur 5 en « je ne sais pas »), 5 s par réponse
-- notion du jour : 11 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
+- notion du jour : 11 questions ; **10 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : L16 × 1
-- étoiles de la séance : **39** (appliquée 50, réelle 39, pressée 20) ; cran à la fin : conseillé ; réussite 78 % sur 23 réponses ; durée simulée 8.8 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **43** (appliquée 50, réelle 43, pressée 18) ; cran à la fin : plus dur ; réussite 79 % sur 24 réponses ; durée simulée 8.9 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -321,22 +318,23 @@ Récompense et fin : +10★ (fin) ; carte hippocampe (nouvelle) (brillante) ; ca
 | 15 | notion | sardines à 47 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les sardines. Elles coûtent… 47 euros. | 4700 | 20 € + 20 € + 5 € + 2 € (47 €) | +1★ |
 | 16 | notion | dorade à 50 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète la dorade. Elle coûte… 50 euros. | 5000 | 20 € + 10 € + 10 € + 5 € + 2 € + 2 € + 1 € (50 €) | +2★ |
 | 17 | notion | moules à 32 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les moules. Elles coûtent… 32 euros. | 3200 | 20 € + 10 € + 2 € (32 €) | +1★ |
-| 18 | notion | sole à 42 € (niveau 4, revient) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète la sole. Elle coûte… 42 euros. | 4200 | 20 € + 20 € (40 €) | « Il manque… 2 euros. Complète, puis touche la coche. » |
-| 19 | notion | tourteau à 39 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète le tourteau. Il coûte… 39 euros. | 3900 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » « Regarde, on peut payer comme ça. » 20 € + 10 € + 5 € + 2 € + 2 € (39 €) |
-| 20 | notion | sole à 42 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète la sole. Elle coûte… 42 euros. | 4200 | 20 € + 20 € + 2 € (42 €) | +2★ |
-| 21 | notion | bar à 31 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète le bar. Il coûte… 31 euros. | 3100 | 20 € + 10 € + 1 € (31 €) | +1★ |
-| 22 | notion | moules à 38 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète les moules. Elles coûtent… 38 euros. | 3800 | 20 € + 10 € + 5 € + 2 € (37 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; leçon L16 relancée ; le cran redescend : plus dur → conseillé (« On essaie un peu moins dur ? ») |
-| 23 | notion | LEÇON L16 | (leçon animée L16, raison : erreur M1 répétée) |  | regardée jusqu'au bout | +3★ (leçon L16) |
-| 24 | notion | saint-jacques à 26 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les coquilles Saint-Jacques. Elles coûtent… 26 euros. | 2600 | 20 € + 5 € + 1 € (26 €) | +1★ |
+| 18 | notion | sole à 42 € (niveau 4, revient) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète la sole. Elle coûte… 42 euros. | 4200 | 20 € + 20 € (40 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; +2★ |
+| 19 | notion | huitres à 38 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les huîtres. Elles coûtent… 38 euros. | 3800 | 20 € + 10 € + 5 € + 2 € + 1 € (38 €) | +1★ |
+| 20 | notion | maquereau à 46 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète le maquereau. Il coûte… 46 euros. | 4600 | 20 € + 10 € + 10 € + 5 € + 1 € (46 €) | +2★ |
+| 21 | notion | bar à 36 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le bar. Il coûte… 36 euros. | 3600 | 20 € + 10 € + 5 € (35 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; leçon L16 relancée |
+| 22 | notion | LEÇON L16 | (leçon animée L16, raison : erreur M1 répétée) |  | regardée jusqu'au bout | +3★ (leçon L16) |
+| 23 | notion | EXEMPLE GUIDÉ : sardines à 48 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les sardines. Elles coûtent… 48 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 20 € + 20 € + 5 € + 2 € + 1 € (48 €)) |  |
+| 24 | notion | sole à 31 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète la sole. Elle coûte… 31 euros. | 3100 | 20 € + 10 € (30 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; +1★ |
+| 25 | notion | tourteau à 19 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète le tourteau. Il coûte… 19 euros. | 1900 | 10 € + 5 € + 2 € + 2 € (19 €) | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; carte crabe (nouvelle)
 
 ### Étal du pêcheur, niveau 4 (payer), cran « plus dur » · pressée
 
 - comportement : réponses au hasard, 1 s par réponse
-- notion du jour : 14 questions ; **10 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
+- notion du jour : 13 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : L16 × 1
-- étoiles de la séance : **20** (appliquée 50, réelle 39, pressée 20) ; cran à la fin : conseillé ; réussite 7 % sur 28 réponses ; durée simulée 10.8 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **18** (appliquée 50, réelle 43, pressée 18) ; cran à la fin : conseillé ; réussite 7 % sur 27 réponses ; durée simulée 10.6 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -353,22 +351,21 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
 | 11 | échauffement | 7 + 2 = ? (fait nouveau) | 7 plus 2 ? | 9 | 18 | correction : « 7 plus 2, ça fait 9. » |
 | 12 | échauffement | 2 + 6 = ? (fait nouveau) | Combien font 2 plus 6 ? | 8 | 15 | correction : « 2 plus 6, ça fait 8. » |
 | 13 | notion | EXEMPLE GUIDÉ : tourteau à 19 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Ouvre ton portefeuille, et paie juste le prix : pose l'argent dans la soucoupe, puis touche la coche. Achète le tourteau. Il coûte… 19 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 10 € + 5 € + 2 € + 2 € (19 €)) |  |
-| 14 | notion | huitres à 20 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète les huîtres. Elles coûtent… 20 euros. | 2000 | 1 € (1 €) | « Il manque… 20 euros. Complète, puis touche la coche. » |
-| 15 | notion | dorade à 24 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète la dorade. Elle coûte… 24 euros. | 2400 | 20 € + 2 € (22 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; leçon L16 relancée ; +1★ |
-| 16 | notion | LEÇON L16 | (leçon animée L16, raison : erreur M1 répétée) |  | regardée jusqu'au bout | +3★ (leçon L16) |
-| 17 | notion | EXEMPLE GUIDÉ : crevettes à 17 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les crevettes. Elles coûtent… 17 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 10 € + 5 € + 2 € (17 €)) |  |
-| 18 | notion | sardines à 32 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète les sardines. Elles coûtent… 32 euros. | 3200 | 20 € + 10 € (30 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; +1★ |
-| 19 | notion | huitres à 33 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les huîtres. Elles coûtent… 33 euros. | 3300 | 20 € + 10 € + 2 € (32 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; +1★ |
-| 20 | notion | huitres à 20 € (niveau 4, revient) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète les huîtres. Elles coûtent… 20 euros. | 2000 | 1 € (1 €) | « Il manque… 20 euros. Complète, puis touche la coche. » ; +1★ |
-| 21 | notion | bar à 24 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète le bar. Il coûte… 24 euros. | 2400 | 20 € + 2 € (22 €) | « Il manque… 2 euros. Complète, puis touche la coche. » |
-| 22 | notion | dorade à 15 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète la dorade. Elle coûte… 15 euros. | 1500 | 10 € (10 €) | « Il manque… 5 euros. Complète, puis touche la coche. » ; +1★ |
-| 23 | notion | tourteau à 16 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le tourteau. Il coûte… 16 euros. | 1600 | 10 € + 5 € (15 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; +1★ |
-| 24 | notion | bar à 24 € (niveau 4, revient) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète le bar. Il coûte… 24 euros. | 2400 | 20 € + 2 € (22 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; +1★ |
-| 25 | notion | sardines à 12 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les sardines. Elles coûtent… 12 euros. | 1200 | 10 € (10 €) | « Il manque… 2 euros. Complète, puis touche la coche. » |
-| 26 | notion | sole à 23 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète la sole. Elle coûte… 23 euros. | 2300 | 20 € + 2 € (22 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
-| 27 | notion | tourteau à 39 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète le tourteau. Il coûte… 39 euros. | 3900 | 20 € + 10 € + 5 € + 2 € (37 €) | « Il manque… 2 euros. Complète, puis touche la coche. » |
-| 28 | notion | seiche à 12 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète la seiche. Elle coûte… 12 euros. | 1200 | 10 € (10 €) | « Il manque… 2 euros. Complète, puis touche la coche. » |
-| 29 | notion | crevettes à 13 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les crevettes. Elles coûtent… 13 euros. | 1300 | 10 € + 2 € (12 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
+| 14 | notion | huitres à 20 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète les huîtres. Elles coûtent… 20 euros. | 2000 | 1 € (1 €) | « Il manque… 19 euros. Complète, puis touche la coche. » |
+| 15 | notion | seiche à 49 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète la seiche. Elle coûte… 49 euros. | 4900 | 20 € + 20 € + 5 € + 2 € + 2 € + 1 € (50 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; +1★ |
+| 16 | notion | maquereau à 46 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le maquereau. Il coûte… 46 euros. | 4600 | 20 € + 20 € + 5 € (45 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; leçon L16 relancée |
+| 17 | notion | LEÇON L16 | (leçon animée L16, raison : erreur M1 répétée) |  | regardée jusqu'au bout | +3★ (leçon L16) |
+| 18 | notion | EXEMPLE GUIDÉ : moules à 38 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les moules. Elles coûtent… 38 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 20 € + 10 € + 5 € + 2 € + 1 € (38 €)) |  |
+| 19 | notion | huitres à 42 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les huîtres. Elles coûtent… 42 euros. | 4200 | 20 € + 20 € (40 €) | « Il manque… 2 euros. Complète, puis touche la coche. » |
+| 20 | notion | huitres à 20 € (niveau 4, revient) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète les huîtres. Elles coûtent… 20 euros. | 2000 | 20 € + 10 € (30 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » |
+| 21 | notion | maquereau à 21 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète le maquereau. Il coûte… 21 euros. | 2100 | 20 € (20 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
+| 22 | notion | maquereau à 46 € (niveau 4, revient) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le maquereau. Il coûte… 46 euros. | 4600 | 20 € + 20 € + 5 € (45 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
+| 23 | notion | huitres à 42 € (niveau 4, revient) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les huîtres. Elles coûtent… 42 euros. | 4200 | 20 € + 20 € + 2 € + 5 € (47 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; +1★ |
+| 24 | notion | bar à 31 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le bar. Il coûte… 31 euros. | 3100 | 20 € + 10 € (30 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; +1★ |
+| 25 | notion | moules à 17 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les moules. Elles coûtent… 17 euros. | 1700 | 10 € + 5 € (15 €) | « Il manque… 2 euros. Complète, puis touche la coche. » |
+| 26 | notion | sole à 21 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète la sole. Elle coûte… 21 euros. | 2100 | 20 € (20 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; +1★ |
+| 27 | notion | bar à 16 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le bar. Il coûte… 16 euros. | 1600 | 10 € + 5 € (15 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
+| 28 | notion | saint-jacques à 11 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les coquilles Saint-Jacques. Elles coûtent… 11 euros. | 1100 | 10 € + 1 € + 10 € (21 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; +1★ |
 
 Récompense et fin : +10★ (fin)
 
@@ -379,7 +376,7 @@ Récompense et fin : +10★ (fin)
 - comportement : tout juste, 4 s par réponse
 - notion du jour : 18 questions ; **13 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : aucune
-- étoiles de la séance : **64** (appliquée 64, réelle 46, pressée 20) ; cran à la fin : très dur ; réussite 100 % sur 28 réponses ; durée simulée 7.9 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **64** (appliquée 64, réelle 49, pressée 23) ; cran à la fin : très dur ; réussite 100 % sur 28 réponses ; durée simulée 7.9 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -417,9 +414,9 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte crabe (nou
 ### Étal du pêcheur, niveau 4 (payer), cran « très dur » · réelle
 
 - comportement : 25 % d'erreurs (dont 1 sur 5 en « je ne sais pas »), 5 s par réponse
-- notion du jour : 10 questions ; **7 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
+- notion du jour : 11 questions ; **8 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : L16 × 1
-- étoiles de la séance : **46** (appliquée 64, réelle 46, pressée 20) ; cran à la fin : plus dur ; réussite 65 % sur 26 réponses ; durée simulée 9.7 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **49** (appliquée 64, réelle 49, pressée 23) ; cran à la fin : plus dur ; réussite 74 % sur 27 réponses ; durée simulée 9.6 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -438,27 +435,28 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte crabe (nou
 | 13 | échauffement | 1 + 2 = ? (fait nouveau) | Combien font 1 plus 2 ? | 3 | 3 | +2★ |
 | 14 | échauffement | 2 + 1 = ? (fait nouveau) | 2 plus 1 ? | 3 | 3 | +3★ (erreur corrigée) |
 | 15 | notion | EXEMPLE GUIDÉ : dorade à 50 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Ouvre ton portefeuille, et paie juste le prix : pose l'argent dans la soucoupe, puis touche la coche. Achète la dorade. Elle coûte… 50 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 20 € + 20 € + 10 € (50 €)) |  |
-| 16 | notion | sardines à 32 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les sardines. Elles coûtent… 32 euros. | 3200 | 20 € + 10 € (30 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; +1★ |
-| 17 | notion | maquereau à 36 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète le maquereau. Il coûte… 36 euros. | 3600 | 20 € + 10 € + 5 € + 1 € (36 €) | +2★ |
-| 18 | notion | seiche à 47 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète la seiche. Elle coûte… 47 euros. | 4700 | 20 € + 20 € + 5 € + 2 € (47 €) | +1★ |
-| 19 | notion | bar à 41 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète le bar. Il coûte… 41 euros. | 4100 | 20 € + 20 € (40 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; leçon L16 relancée |
-| 20 | notion | LEÇON L16 | (leçon animée L16, raison : erreur M1 répétée) |  | regardée jusqu'au bout | +3★ (leçon L16) |
-| 21 | notion | EXEMPLE GUIDÉ : tourteau à 47 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète le tourteau. Il coûte… 47 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 20 € + 20 € + 5 € + 2 € (47 €)) |  |
-| 22 | notion | saint-jacques à 32 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète les coquilles Saint-Jacques. Elles coûtent… 32 euros. | 3200 | 20 € + 10 € + 2 € (32 €) | +2★ |
-| 23 | notion | crevettes à 43 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les crevettes. Elles coûtent… 43 euros. | 4300 | 20 € + 10 € + 10 € + 2 € (42 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
-| 24 | notion | bar à 41 € (niveau 4, revient) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète le bar. Il coûte… 41 euros. | 4100 | 20 € + 20 € + 1 € (41 €) | +3★ (erreur corrigée) |
-| 25 | notion | homard à 34 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète le homard. Il coûte… 34 euros. | 3400 | 20 € + 10 € + 2 € (32 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; +1★ |
-| 26 | notion | maquereau à 21 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le maquereau. Il coûte… 21 euros. | 2100 | 20 € + 1 € (21 €) | +2★ |
-| 27 | notion | crevettes à 41 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les crevettes. Elles coûtent… 41 euros. | 4100 | 20 € + 20 € + 1 € (41 €) | +1★ |
+| 16 | notion | sardines à 32 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les sardines. Elles coûtent… 32 euros. | 3200 | 20 € + 10 € + 2 € + 5 € (37 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; +1★ |
+| 17 | notion | saint-jacques à 49 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les coquilles Saint-Jacques. Elles coûtent… 49 euros. | 4900 | 20 € + 20 € + 5 € + 2 € + 2 € (49 €) | +2★ |
+| 18 | notion | seiche à 43 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète la seiche. Elle coûte… 43 euros. | 4300 | 20 € + 20 € + 2 € + 1 € + 10 € (53 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; leçon L16 relancée ; +1★ |
+| 19 | notion | LEÇON L16 | (leçon animée L16, raison : erreur M2 répétée) |  | regardée jusqu'au bout | +3★ (leçon L16) |
+| 20 | notion | EXEMPLE GUIDÉ : tourteau à 42 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le tourteau. Il coûte… 42 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 20 € + 20 € + 2 € (42 €)) |  |
+| 21 | notion | moules à 46 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les moules. Elles coûtent… 46 euros. | 4600 | 20 € + 20 € + 5 € + 1 € (46 €) | +2★ |
+| 22 | notion | bar à 41 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le bar. Il coûte… 41 euros. | 4100 | 20 € + 10 € + 10 € + 1 € (41 €) | +1★ |
+| 23 | notion | sardines à 47 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les sardines. Elles coûtent… 47 euros. | 4700 | 20 € + 20 € + 5 € + 2 € (47 €) | +2★ |
+| 24 | notion | sole à 37 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète la sole. Elle coûte… 37 euros. | 3700 | 20 € + 10 € + 5 € + 2 € (37 €) | +1★ |
+| 25 | notion | maquereau à 32 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète le maquereau. Il coûte… 32 euros. | 3200 | 20 € + 10 € + 2 € (32 €) | +2★ |
+| 26 | notion | moules à 47 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les moules. Elles coûtent… 47 euros. | 4700 | 20 € + 20 € + 5 € + 2 € (47 €) | +1★ |
+| 27 | notion | huitres à 36 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les huîtres. Elles coûtent… 36 euros. | 3600 | 20 € + 10 € + 5 € + 1 € (36 €) | MONTÉE (niveau 1 → 5) ; +2★ ; étoile arc-en-ciel (niveau franchi) |
+| 28 | notion | homard à 37 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète le homard. Il coûte… 37 euros. | 3700 | 20 € + 10 € + 5 € + 2 € (37 €) | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
 
 ### Étal du pêcheur, niveau 4 (payer), cran « très dur » · pressée
 
 - comportement : réponses au hasard, 1 s par réponse
-- notion du jour : 13 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
+- notion du jour : 14 questions ; **11 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **aucune**
 - leçons jouées : L16 × 1
-- étoiles de la séance : **20** (appliquée 64, réelle 46, pressée 20) ; cran à la fin : conseillé ; réussite 7 % sur 27 réponses ; durée simulée 10.4 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
+- étoiles de la séance : **23** (appliquée 64, réelle 49, pressée 23) ; cran à la fin : conseillé ; réussite 7 % sur 28 réponses ; durée simulée 10.6 min ; étapes : accueil, echauffement, notion, defi (sautée : pas encore), probleme (sautée : désactivée), recompense
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -475,20 +473,21 @@ Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle) (brillante)
 | 11 | échauffement | 6 + 1 = ? (fait nouveau) | 6 plus 1 ? | 7 | 15 | correction : « 6 plus 1, ça fait 7. » |
 | 12 | échauffement | 1 + 5 = ? (fait nouveau) | Combien font 1 plus 5 ? | 6 | 11 | correction : « 1 plus 5, ça fait 6. » |
 | 13 | notion | EXEMPLE GUIDÉ : sardines à 31 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Ouvre ton portefeuille, et paie juste le prix : pose l'argent dans la soucoupe, puis touche la coche. Achète les sardines. Elles coûtent… 31 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 20 € + 10 € + 1 € (31 €)) |  |
-| 14 | notion | seiche à 39 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète la seiche. Elle coûte… 39 euros. | 3900 | 20 € + 10 € + 5 € + 2 € (37 €) | « Il manque… 2 euros. Complète, puis touche la coche. » |
-| 15 | notion | saint-jacques à 13 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les coquilles Saint-Jacques. Elles coûtent… 13 euros. | 1300 | 10 € + 2 € (12 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; leçon L16 relancée |
+| 14 | notion | seiche à 39 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète la seiche. Elle coûte… 39 euros. | 3900 | 20 € + 10 € + 5 € + 2 € (37 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; +1★ |
+| 15 | notion | saint-jacques à 13 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les coquilles Saint-Jacques. Elles coûtent… 13 euros. | 1300 | 10 € + 2 € (12 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; leçon L16 relancée ; +1★ |
 | 16 | notion | LEÇON L16 | (leçon animée L16, raison : erreur M1 répétée) |  | regardée jusqu'au bout | +3★ (leçon L16) |
 | 17 | notion | EXEMPLE GUIDÉ : homard à 35 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le homard. Il coûte… 35 euros. Regarde bien : cette fois, je paie à ta place, en comptant. |  | (le pêcheur paie : 20 € + 10 € + 5 € (35 €)) |  |
-| 18 | notion | saint-jacques à 28 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les coquilles Saint-Jacques. Elles coûtent… 28 euros. | 2800 | 20 € + 5 € + 2 € (27 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
-| 19 | notion | seiche à 39 € (niveau 4, revient) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète la seiche. Elle coûte… 39 euros. | 3900 | 20 € + 10 € + 5 € + 2 € (37 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; +1★ |
-| 20 | notion | saint-jacques à 13 € (niveau 4, revient) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les coquilles Saint-Jacques. Elles coûtent… 13 euros. | 1300 | 10 € + 2 € (12 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
-| 21 | notion | homard à 20 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le homard. Il coûte… 20 euros. | 2000 | 1 € (1 €) | « Il manque… 20 euros. Complète, puis touche la coche. » ; +1★ |
-| 22 | notion | saint-jacques à 28 € (niveau 4, revient) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les coquilles Saint-Jacques. Elles coûtent… 28 euros. | 2800 | 20 € + 5 € + 2 € (27 €) | « Il manque… 1 euro. Complète, puis touche la coche. » |
-| 23 | notion | tourteau à 37 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète le tourteau. Il coûte… 37 euros. | 3700 | 20 € + 10 € + 5 € (35 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; +1★ |
-| 24 | notion | sole à 20 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète la sole. Elle coûte… 20 euros. | 2000 | 1 € (1 €) | « Il manque… 20 euros. Complète, puis touche la coche. » |
-| 25 | notion | sardines à 32 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les sardines. Elles coûtent… 32 euros. | 3200 | 20 € + 10 € (30 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; +1★ |
-| 26 | notion | huitres à 30 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les huîtres. Elles coûtent… 30 euros. | 3000 | 20 € (20 €) | « Il manque… 10 euros. Complète, puis touche la coche. » ; +1★ |
-| 27 | notion | tourteau à 18 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète le tourteau. Il coûte… 18 euros. | 1800 | 10 € + 5 € + 2 € (17 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; +1★ |
-| 28 | notion | moules à 25 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète les moules. Elles coûtent… 25 euros. | 2500 | 20 € (20 €) | « Il manque… 5 euros. Complète, puis touche la coche. » ; +1★ |
+| 18 | notion | saint-jacques à 28 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € 1 € | Achète les coquilles Saint-Jacques. Elles coûtent… 28 euros. | 2800 | 20 € + 5 € + 2 € (27 €) | « Il manque… 1 euro. Complète, puis touche la coche. » ; +1★ |
+| 19 | notion | dorade à 42 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète la dorade. Elle coûte… 42 euros. | 4200 | 20 € + 20 € + 2 € + 1 € (43 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; +1★ |
+| 20 | notion | crevettes à 25 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète les crevettes. Elles coûtent… 25 euros. | 2500 | 20 € + 5 € + 2 € (27 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; +1★ |
+| 21 | notion | sole à 24 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète la sole. Elle coûte… 24 euros. | 2400 | 20 € + 2 € + 2 € + 10 € (34 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; +1★ |
+| 22 | notion | maquereau à 49 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète le maquereau. Il coûte… 49 euros. | 4900 | 20 € + 20 € + 5 € + 2 € + 2 € + 10 € (59 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » |
+| 23 | notion | saint-jacques à 46 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les coquilles Saint-Jacques. Elles coûtent… 46 euros. | 4600 | 20 € + 20 € + 5 € + 1 € + 10 € (56 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » |
+| 24 | notion | dorade à 50 € (niveau 4) · portefeuille 20 € 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète la dorade. Elle coûte… 50 euros. | 5000 | 20 € + 20 € (40 €) | « Il manque… 10 euros. Complète, puis touche la coche. » ; +1★ |
+| 25 | notion | seiche à 19 € (niveau 4) · portefeuille 20 € 10 € 5 € 2 € 2 € 1 € | Achète la seiche. Elle coûte… 19 euros. | 1900 | 10 € + 5 € + 2 € + 2 € + 20 € (39 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; +1★ |
+| 26 | notion | sole à 16 € (niveau 4) · portefeuille 20 € 10 € 10 € 5 € 2 € 2 € 1 € | Achète la sole. Elle coûte… 16 euros. | 1600 | 10 € + 5 € + 1 € + 2 € (18 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » |
+| 27 | notion | maquereau à 49 € (niveau 4, revient) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète le maquereau. Il coûte… 49 euros. | 4900 | 20 € + 20 € + 5 € + 2 € (47 €) | « Il manque… 2 euros. Complète, puis touche la coche. » ; +1★ |
+| 28 | notion | seiche à 28 € (niveau 4) · portefeuille 50 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète la seiche. Elle coûte… 28 euros. | 2800 | 20 € + 5 € + 2 € + 1 € + 2 € (30 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » ; +1★ |
+| 29 | notion | moules à 25 € (niveau 4) · portefeuille 20 € 20 € 10 € 5 € 2 € 2 € 1 € | Achète les moules. Elles coûtent… 25 euros. | 2500 | 20 € + 5 € + 2 € (27 €) | « Tu peux faire le compte juste. Je te rends ton argent. » (tout l'argent revient) « Essaie encore, puis touche la coche. » |
 
 Récompense et fin : +10★ (fin)

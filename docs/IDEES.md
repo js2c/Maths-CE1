@@ -168,7 +168,8 @@ Le parent n'est pas encore convaincu par les remèdes proposés : la question es
 
 - **L'étal dans la rotation de « jouer »** : non pour l'instant (valeur par défaut de la fiche) ; à reconsidérer après quelques parties choisies.
 - **La durée d'un achat** : environ 14 achats en 6 minutes d'après la simulation ; si l'enfant s'y perd (ouvrir, sortir, poser, valider), alléger les premiers niveaux (portefeuille déjà ouvert ?).
-- **Le niveau 6** : le portefeuille tiré offre souvent la solution « un seul billet » (13 € avec un billet de 20 €) ; c'est juste, mais l'exercice « sans pièce de trop » y est alors facile. Le tirer pour que la solution demande plus souvent deux objets ?
+- **« Il manque… 2 euros. »** (règle de la fiche) fait la soustraction à la place de l'enfant ; ne dire le montant qu'au cran « plus facile » ou avec le coquillage ? (relecture du lot, R3)
+- **La correction du niveau 7** saute par la dizaine (4 → 10 → 20) ; la relecture proposait des ponts plus fins (4 → 5 → 10 → 20, puis « 1 + 5 + 10 ») ; et, dans L18, montrer du doigt les euros puis les centimes sur l'ardoise (R5, R23).
 - **La voix** pèsera environ 79,3 Mo, contre la limite de 80 Mo : le prochain lot qui ajoute des phrases demandera de relever la limite ou d'alléger les fichiers (débit plus bas ?).
 - **Le niveau 8** : « Achète les deux. » (une phrase pour toutes les paires, pour tenir dans la limite de la voix) ; si la limite est relevée, une phrase par paire (« Achète le bar et la sole. », 66 phrases) serait plus naturelle.
 - **Le total écrit** (30 px) et la valeur écrite sous l'argent au cran « plus facile » : lisibles sur la tablette ?

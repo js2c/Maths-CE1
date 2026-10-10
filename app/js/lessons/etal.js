@@ -15,7 +15,8 @@ import { onBrief, pop, skipKey, spriteBox } from "../engine/ui.js";
 import { EtalScreen } from "../modules/etal/screen.js";
 
 const ABORT = Symbol("leçon interrompue");
-const REPLAY_AT = [1205, 372];
+// (relecture du lot, R10 : dans le ciel, à gauche de « passer » ; plus bas, il cachait la colonne de droite de l'étal)
+const REPLAY_AT = [1050, 215];
 
 export class LessonEtalPlayer {
   constructor(app, content) { this.app = app; this.c = content; this.tok = 0; this.keys = null; }

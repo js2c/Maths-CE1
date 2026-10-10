@@ -237,7 +237,7 @@ export class NumberLineScreen {
       this.overlay.forEach((f) => f(ctx));
       this.arcs.forEach((a) => {
         if (a.live) return;
-        R.drawJumpArc(ctx, a.a, a.b, a.p, { h: a.h, label: a.p >= 1 ? a.label : undefined });
+        R.drawJumpArc(ctx, a.a, a.b, a.p, { h: a.h, label: a.p >= 1 ? a.label : undefined, labelColor: a.labelColor });
         // E2 : un paquet de dix bulles au-dessus de chaque saut qui vaut dix
         if (a.bubbles && a.p >= 1) { const cx = (a.a[0] + a.b[0]) / 2, cy = (a.a[1] + a.b[1]) / 2 - a.h - 64; R.drawNet(ctx, cx - 40, cy - 16, 80, 34, 40); for (let i = 0; i < 10; i++) this.bubbleAt(ctx, sp, cx - 32 + (i % 5) * 16, cy - 8 + Math.floor(i / 5) * 16, 6); }
       });

@@ -57,6 +57,7 @@ const RETOUCHES = [
   ["let captOui = true;\n$('bCapt').onclick = () => { captOui = !captOui; $('capt').classList.toggle('cache', !captOui); $('bCapt').textContent = `Capitaine : ${captOui ? 'oui' : 'non'}`; };\n", "", "(de même)"],
   ["let contenuPf = 'complet', totalVu = false;", "let contenuPf = 'complet', totalVu = false, CONTENU = null, VERROU = false, ETIQ = false;", "le contenu du portefeuille vient de l'exercice ; la caisse se verrouille pendant le compte et les corrections ; la valeur écrite sur l'argent (cran « plus facile », aide)"],
   ["  const C = CONTENUS[contenuPf];", "  const C = CONTENU ?? CONTENUS[contenuPf];", "(de même)"],
+  ["  if (it.b) { it.sx = 405 + nB * 14 + hasard(-4, 4); it.sy = 680 + nB * 6 + hasard(-3, 3); it.sr = -14 + nB * 6 + hasard(-3, 3); }\n  else { const a = nP * 2.4, r = 14 + nP * 5; it.sx = 548 + Math.cos(a) * Math.min(r, 52) + hasard(-4, 4); it.sy = 690 + Math.sin(a) * Math.min(r * 0.6, 38) + hasard(-3, 3); it.sr = hasard(-30, 30); }\n", "  const libre = b => { const pris = new Set(items.filter(i => i !== it && i.lieu === 'soucoupe' && !!i.b === b).map(i => i.place)); let k = 0; while (pris.has(k)) k++; return k; }; void nB; void nP;\n  if (it.b) { const k = it.place = libre(true); it.sx = 392 + (k % 2) * 20 + hasard(-3, 3); it.sy = 636 + k * 30 + hasard(-2, 2); it.sr = -6 + (k % 2) * 6 + hasard(-2, 2); }\n  else { const k = it.place = libre(false); it.sx = 514 + (k % 3) * 56 + hasard(-3, 3); it.sy = 630 + Math.floor(k / 3) * 66 + hasard(-3, 3); it.sr = hasard(-20, 20); }\n", "(relecture du lot, R14) l'argent de la soucoupe sans recouvrement : les billets à gauche, décalés de 30 px vers le bas (leur valeur écrite en haut), les pièces à droite en rangées de trois ; une place libérée (un objet repris) est reprise par le suivant"],
   ["el.src = `img/${IMG_V[v]}.webp`;", "el.src = OPTS.images + IMG_V[v] + '.webp';", "les images sont dans assets/etal/"],
   ["  it.el.style.zIndex = z; it.el.style.opacity = op; it.el.style.pointerEvents = op && touchable ? 'auto' : 'none';\n", "  it.el.style.zIndex = z; it.el.style.opacity = op; it.el.style.pointerEvents = op && touchable ? 'auto' : 'none';\n  etiquette(it);\n", "la valeur écrite suit l'argent (RACCORDS)"],
   ["  $('total').textContent = t ? fmtPrix(t) : ''; $('total').style.opacity = totalVu ? 1 : 0;\n", "  $('total').textContent = t ? fmtPrix(t) : ''; $('total').style.opacity = totalVu ? 1 : 0;\n  OPTS.change?.();\n", "l'exercice suit ce qui est posé dans la soucoupe"],
@@ -115,7 +116,9 @@ function etiquette(it) {
   const voir = ETIQ && it.lieu !== 'poche' && it.op > 0;
   if (!voir) { if (it.lab) it.lab.style.opacity = 0; return; }
   if (!it.lab) { it.lab = document.createElement('div'); it.lab.className = 'etal-valeur'; it.lab.textContent = ecrite(it.v); $('caisse').appendChild(it.lab); }
-  it.lab.style.transform = 'translate(' + it.x + 'px,' + (it.y + hauteur(it) * it.sc * 0.42) + 'px) translate(-50%,-50%)';
+  // (un billet dans la soucoupe : sa valeur en haut, que le billet posé ensuite, plus bas, ne cache pas)
+  const dy = hauteur(it) * it.sc * 0.42 * (it.b && it.lieu === 'soucoupe' ? -1 : 1);
+  it.lab.style.transform = 'translate(' + it.x + 'px,' + (it.y + dy) + 'px) translate(-50%,-50%)';
   it.lab.style.zIndex = it.z + 1; it.lab.style.opacity = 1;
 }
 const enSoucoupe = () => items.filter(i => i.lieu === 'soucoupe');

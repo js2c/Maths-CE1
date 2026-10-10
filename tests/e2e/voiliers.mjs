@@ -68,7 +68,7 @@ for (const T of TAILLES) {
     await page.tap(".choisir", { force: true });
     await page.waitForSelector(".choix-ex", { timeout: 20000 }); await page.waitForTimeout(600);
     const ex = await page.$$eval(".choix-ex", (b) => b.map((x) => { const r = x.getBoundingClientRect(); return { k: x.dataset.key, l: r.left, r: r.right }; }));
-    check(ex.map((e) => e.k).join() === "ligne,additions,calcul,voiliers,multiplication" && ex.every((e) => e.l >= 0 && e.r <= T[0]), `« choisir » : cinq exercices dans l'écran (lot « Multiplication ») (${ex.map((e) => e.k).join(", ")})`);
+    check(ex.map((e) => e.k).join() === "ligne,additions,calcul,voiliers,multiplication,etal" && ex.every((e) => e.l >= 0 && e.r <= T[0]), `« choisir » : six exercices dans l'écran (lots « Multiplication » et « L'étal du pêcheur ») (${ex.map((e) => e.k).join(", ")})`);
     await shot(page, "01-choisir", T);
     await page.tap('.choix-ex[data-key="voiliers"]', { force: true }); await page.waitForTimeout(450); await page.tap('.choix-ex[data-key="voiliers"]', { force: true }); await page.waitForTimeout(900);
     const tuiles = await page.$$eval(".choix-tuile", (b) => b.map((x) => x.dataset.key));

@@ -17,12 +17,13 @@
 //    sur 5) relance la leçon du niveau puis donne un prix plus simple ; la même erreur deux fois relance sa leçon.
 import { afterAnswer, afterSession, initialLevelState } from "../progress.js";
 import { MANQUE, Variete } from "../variete.js";
-import { deuxPrix, montantEcrit, paire, prixPossibles, PRODUITS, tirerPortefeuille } from "./etal.js";
+import { deuxPrix, montantEcrit, paire, prixPossibles, PRODUITS, solution, tirerPortefeuille } from "./etal.js";
 
 export const initialEtalState = (now = Date.now()) => ({ ...initialLevelState(6, now), exemples: [] });
 export const etalMastery = (c, st) => ((st?.niveau ?? 1) - 1) / c.niveaux.length;
 // la leçon d'un niveau : la sienne, sinon celle de son genre (les centimes : L18 ; rendre : L17 ; payer : L16)
-export const leconDuNiveau = (c, cfg) => cfg.lecon ?? (cfg.niveau >= 9 ? c.leconCentimes : cfg.type === "rendre" ? "L17" : "L16");
+// (relecture du lot, R9 : au niveau 6, où payer juste est impossible, L17 « Rendre la monnaie », pas L16 « Payer juste »)
+export const leconDuNiveau = (c, cfg) => cfg.lecon ?? (cfg.niveau >= 9 ? c.leconCentimes : cfg.type === "rendre" || cfg.type === "monnaie" ? "L17" : "L16");
 // la question telle que le parent la lira dans l'historique
 export function etalQuestion(q) {
   if (q.type === "poser") return `poser ${montantEcrit(q.valeur)}`;
@@ -59,13 +60,17 @@ export class Module6Runner {
   // un produit (jamais deux fois de suite le même)
   produit() { let p; do { p = PRODUITS[Math.floor(this.rnd() * PRODUITS.length)]; } while (p === this.dernierProduit); return p; }
   // une question tirée au niveau n
-  tirer(n, simple) {
+  // (relecture du lot : R8, aux centimes, trois prix sur quatre en ont, et toujours l'exemple guidé ; R4, au niveau 7, jamais
+  // un prix égal à la moitié du billet : la monnaie serait le prix, et l'erreur « rendre le prix » passerait pour juste)
+  tirer(n, simple, guide = false) {
     const cfg = this.cfg(n), e = this.effet, R = this.rnd, base = { module: 6, niveau: n, type: cfg.type };
     if (cfg.type === "poser") { const v = cfg.valeurs[Math.floor(R() * cfg.valeurs.length)]; return { ...base, valeur: v, portefeuille: tirerPortefeuille(cfg, 0, R) }; }
     let ps = prixPossibles(cfg, simple ? {} : e);
     if (simple) ps = ps.slice(0, Math.max(1, Math.ceil(ps.length / 2)));
+    const cts = ps.filter((v) => v % 100);
+    if (cts.length && cts.length < ps.length && (guide || R() < 0.75)) ps = cts;
     const prix = ps[Math.floor(R() * ps.length)];
-    if (cfg.type === "rendre") { const bs = cfg.billets.filter((b) => b > prix); return { ...base, prix, billet: bs[Math.floor(R() * bs.length)], produits: [this.produit()], portefeuille: [] }; }
+    if (cfg.type === "rendre") { const bs = cfg.billets.filter((b) => b > prix && b !== 2 * prix); if (!bs.length) return null; return { ...base, prix, billet: bs[Math.floor(R() * bs.length)], produits: [this.produit()], portefeuille: [] }; }
     const portefeuille = tirerPortefeuille(cfg, prix, R, simple ? {} : e);
     if (!portefeuille) return null;
     if (cfg.type === "deux") { let a = this.produit(), b; do { b = PRODUITS[Math.floor(R() * PRODUITS.length)]; } while (b === a); const [x, y] = paire(a, b); return { ...base, prix, produits: [x, y], prixProduits: deuxPrix(cfg, prix, R), portefeuille }; }
@@ -80,12 +85,19 @@ export class Module6Runner {
     if (due >= 0) { const r = this.replays.splice(due, 1)[0]; return this.ret({ q: { ...r.q, revient: true, guide: false, premier: false, cran: this.cran() }, cfg: r.cfg }); }
     const n = this.eff(), simple = this.simpler; this.simpler = false;
     const tries = [];
-    for (let i = 0; i < 24; i++) { const x = this.tirer(n, simple); if (x) tries.push(x); }
+    for (let i = 0; i < 24; i++) { const x = this.tirer(n, simple, guide); if (x) tries.push(x); }
     if (!tries.length) return null;
+    // (relecture du lot, R2) au niveau 6, la solution « un seul billet » (13 € : le billet de 20 €) au plus un achat sur trois, et
+    // jamais deux fois de suite : sinon elle revenait deux fois sur trois, et l'enfant apprenait « je donne le 20 »
+    if (this.cfg(n).type === "monnaie") {
+      const seul = (x) => solution(this.cfg(n), x.prix, x.portefeuille).length === 1, autres = tries.filter((x) => !seul(x));
+      if (autres.length && (this.dernierSeul || this.rnd() >= 0.3)) tries.splice(0, tries.length, ...autres);
+    }
     const best = this.var.pick(tries.map((x) => this.cand(x)), (c) => ({ attente: this.replays.filter((r) => this.cand(r.q).cle === c.cle).length }));
     if (best.cout >= MANQUE) return null;
     const q = { ...tries[best.i], cran: this.cran(), premier: this.premier, ...(guide ? { guide: true } : {}), ...(simple ? { simple: true } : {}) };
     this.premier = false; if (q.produits) this.dernierProduit = q.produits.at(-1);
+    if (q.type === "monnaie") this.dernierSeul = solution(this.cfg(n), q.prix, q.portefeuille).length === 1;
     return this.ret({ q, cfg: this.cfg(n) });
   }
   // la réponse qui varie : la « question » et la « réponse » (en centimes)
@@ -144,7 +156,7 @@ export class Module6Runner {
     // la même erreur deux fois dans la séance : sa leçon (aux centimes, celle des centimes)
     if (code && code !== "NSP" && this.c.erreurs?.[code]) {
       this.errors[code] = (this.errors[code] ?? 0) + 1;
-      if (this.errors[code] === (this.rules.memeErreurLecon ?? 2)) relaunch(q.niveau >= 9 ? this.c.leconCentimes : this.c.erreurs[code], code);
+      if (this.errors[code] === (this.rules.memeErreurLecon ?? 2)) relaunch(q.niveau >= 9 ? this.c.leconCentimes : this.cfg(q.niveau).type === "monnaie" && ["M1", "M2", "M3"].includes(code) ? "L17" : this.c.erreurs[code], code);
     }
     await this.save();
     return { etoiles, events, code };

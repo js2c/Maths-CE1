@@ -32,7 +32,9 @@ const range = (a, b, s) => { const o = []; for (let v = a; v <= b; v += s) o.pus
 export function prixPossibles(cfg, effet = {}) {
   if (!cfg.prix) return [];
   const [a, b, s] = cfg.prix, all = range(a, b, s);
-  return effet.hautDeFourchette ? all.slice(Math.floor(all.length / 2)) : all;
+  // (la moitié haute, mais au moins six prix : au niveau 2, de 2 à 10 €, la moitié haute n'en avait que cinq, trop peu pour la
+  // réponse qui varie, `variete.valeursMin`)
+  return effet.hautDeFourchette ? all.slice(Math.min(Math.floor(all.length / 2), Math.max(0, all.length - 6))) : all;
 }
 
 // ---------------------------------------------------------------- le portefeuille

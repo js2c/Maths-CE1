@@ -350,8 +350,10 @@ if (want("cosmetique")) {
     // les bulles de l'accueil ne sont plus posées sur le rocher de droite (x 1024 à 1203, y 600 à 665)
     // (lot « Les leçons » : cinq bulles ; le fond est le lagon depuis le lot « Lagon », ce rocher n'existe plus : les bulles,
     // de 60 px de rayon, restent entre le rocher de gauche, jusqu'à x 285, et le corail de droite, depuis x 1155)
-    const b = await boxes(page, ".play, .choisir, .leconskey, .reefkey, .albumkey");
-    check(b.length === 5 && b.every((r) => r.x + r.w / 2 - 60 >= 285 && r.x + r.w / 2 + 60 <= 1155), `accueil : les cinq bulles entre le rocher de gauche et le corail de droite (${b.map((r) => Math.round(r.x + r.w / 2)).join(", ")})`);
+    // (lot « Correctifs : passage de l'échauffement aux voiliers », point 10 : cinq galets, d'environ 105 px de demi-largeur, sur
+    // toute la largeur : dans l'écran, sans se toucher, sans toucher le bouton des parents en bas à gauche)
+    const b = await boxes(page, ".play, .choisir, .leconskey, .reefkey, .albumkey"), lg = (await boxes(page, ".logo"))[0], cx = b.map((r) => r.x + r.w / 2);
+    check(b.length === 5 && cx.every((x, i) => x - 105 >= 0 && x + 105 <= 1280 && (!i || x - cx[i - 1] >= 215)) && (!lg || cx[0] - 105 >= lg.x + lg.w), `accueil : les cinq galets dans l'écran, sans se toucher ni toucher le bouton des parents (${cx.map(Math.round).join(", ")})`);
     await spy(page); await page.tap(".mascotte-tap", { force: true }); await page.waitForTimeout(600);
     check(/Touche une bulle/.test(await said(page)), "accueil : « réécouter » dit ce qu'on peut faire");
     await tap(page, ".albumkey"); await page.waitForSelector(".album-tab"); await page.waitForTimeout(700); await shot(page, "B11-album");

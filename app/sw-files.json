@@ -1,5 +1,5 @@
 {
- "version": "b1f46a437a7c",
+ "version": "850f41c9a0a7",
  "files": [
   "./",
   "assets/art/aides@1x.webp",
@@ -244,6 +244,10 @@
   "assets/voiliers/ciel-clouds.png",
   "assets/voiliers/ciel-coast.png",
   "assets/voiliers/donnees.json",
+  "assets/voiliers/mer-atlas.webp",
+  "assets/voiliers/mer-ciel.webp",
+  "assets/voiliers/mer-fond.webp",
+  "assets/voiliers/mer-nuages.webp",
   "assets/voix/000cfea24a93.ogg",
   "assets/voix/00165471d895.ogg",
   "assets/voix/0029ca54e7b4.ogg",

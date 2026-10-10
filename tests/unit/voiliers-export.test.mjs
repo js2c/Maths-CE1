@@ -13,12 +13,12 @@ test("le module des voiliers et ses données sont ceux que fabrique l'export (ma
   assert.equal(read("app/js/voiliers/voiliers-scene.js"), r.module, "relancer : cd art && node tools/export-voiliers.mjs");
   assert.equal(read("app/assets/voiliers/donnees.json"), r.json);
   assert.match(r.module, new RegExp(`empreinte ${r.empreinte}`));
-  // les images : toutes là, environ 2,7 Mo
+  // les images : toutes là, environ 3,3 Mo (2,7 Mo, plus 0,55 Mo de mer illustrée le 10 octobre 2026)
   const d = JSON.parse(r.json), chemins = JSON.stringify(d).match(/assets\/voiliers\/[a-z0-9-]+\.(webp|png)/g);
   assert.equal(new Set(chemins).size, r.images);
   for (const c of chemins) assert.ok(existsSync(new URL(`../../app/${c}`, import.meta.url)), c);
   const poids = [...new Set(chemins)].reduce((s, c) => s + statSync(new URL(`../../app/${c}`, import.meta.url)).size, 0);
-  assert.ok(poids > 2e6 && poids < 3.2e6, `${poids} octets`);
+  assert.ok(poids > 2.5e6 && poids < 3.6e6, `${poids} octets`);
 });
 
 test("la scène : les raccords de l'application, rien de la page ni de la séance de la maquette", () => {

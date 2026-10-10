@@ -1,7 +1,8 @@
 // LE JEU DES VOILIERS DANS L'APPLICATION (docs/SPEC.md, section 7 bis ; décision du parent du 6 octobre 2026, lot « Les
 // voiliers »). Le jeu est la maquette art/voiliers/index.html, validée par le parent, intégrée telle quelle : on ne la
 // réécrit pas, on la transporte. Cet outil, sans jamais modifier la maquette :
-//   1. sort ses images (embarquées en base64 : bateaux, cartes des bateaux, bouées, ciel, nuages, côte) dans
+//   1. sort ses images (embarquées en base64 : bateaux, cartes des bateaux, bouées, ciel, nuages, côte, et la mer illustrée :
+//      fond, éléments, ciel et nuages de l'illustration, données MER) dans
 //      app/assets/voiliers/ (un fichier par image, au format d'origine) et leurs réglages dans app/assets/voiliers/donnees.json ;
 //   2. fabrique app/js/voiliers/voiliers-scene.js : le script de la maquette lui-même (la mer en WebGL, les bateaux, les
 //      bouées, la houle, le vent, les pirates, le recul de la caméra du double encadrement, le geste), enveloppé dans une
@@ -200,7 +201,7 @@ export function exportVoiliers({ log = console.log, ecrire = true } = {}) {
     if (v && typeof v === "object") return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, sortir(x, [...path, k])]));
     return v;
   };
-  for (const [k, prefixe] of [["ASSETS", []], ["SKY", ["ciel"]]]) {
+  for (const [k, prefixe] of [["ASSETS", []], ["SKY", ["ciel"]], ["MER", ["mer"]]]) {
     const re = new RegExp(`^const ${k}=(\\{.*\\});$`, "m"), d = js.match(re);
     if (!d) throw new Error(`export-voiliers : données ${k} introuvables`);
     donnees[k] = sortir(JSON.parse(d[1]), prefixe);

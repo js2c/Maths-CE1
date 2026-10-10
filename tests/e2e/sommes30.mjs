@@ -71,7 +71,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const r = await page.evaluate(() => [...document.querySelectorAll("[data-key]")].filter((e) => /^\d+$/.test(e.dataset.key)).map((e) => e.getBoundingClientRect()).map((b) => [b.left, b.top, b.right, b.bottom]));
     check(r.every((b) => b[0] >= 0 && b[2] <= W && b[1] >= 0 && b[3] <= H), `${T} · les 13 tuiles tiennent dans l'écran`);
     await shot(page, "01-choisir-familles");
-    if (big) { const h = await hold(page, '[data-key="12"]'); check(!!h.label, `${T} · appui long sur la tuile 12 : son étiquette (${h.label})`); await shot(page, "02-etiquette-famille-12"); await h.release(); }
+    if (big) { const h = await hold(page, '[data-key="12"]'); check(h.label === null, `${T} · appui long sur la tuile 12 : aucune étiquette (lot « Correctifs : passage de l'échauffement aux voiliers », point 7) (${h.label})`); await shot(page, "02-appui-long-famille-12"); await h.release(); }
     check(!errors.length, `${T} · 1 : aucune erreur (${errors.slice(0, 3).join(" | ")})`); await context.close();
   }
 

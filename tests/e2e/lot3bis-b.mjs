@@ -3,7 +3,7 @@
 // Parties :
 //   choisir   — B1 : les trois écrans de niveaux aux trois formats (numéros, lueur, rien de coupé ni sur la pieuvre)
 //   legende   — B2 : la légende ouverte puis fermée par la croix et par un toucher dehors, sans rien lancer
-//   appui     — B3 : appui long de 0,8 s sur chaque pictogramme : étiquette, rien de lancé ; toucher bref : lancé
+//   appui     — B3 : appui long de 0,8 s sur chaque pictogramme : rien de lancé (plus d'étiquette depuis le lot « Correctifs : passage de l'échauffement aux voiliers ») ; toucher bref : lancé
 //   calcul    — B4 : l'aide du coquillage (mur et poisson, premier pont dit), les corrections (mur : bonne réponse entourée ;
 //               chemin : rassurer, pont rejoué, C4 ou C5), les calculs guidés (l'ardoise garde le calcul), l'annonce du poisson
 //   additions — B5 : l'aide de la famille 1 (forme directe, formes à trou : sans dire la réponse), la maison aux poissons
@@ -110,17 +110,18 @@ if (want("appui")) {
   for (const [sel, key] of [[".play", "jouer"], [".choisir", "choisir"], [".reefkey", "recif"], [".albumkey", "album"]]) {
     await hold(page, sel, 800); await page.waitForTimeout(100);
     const st = await page.evaluate(() => ({ lab: !!document.querySelector(".etiquette"), home: !!document.querySelector(".choisir"), choix: !!document.querySelector(".choix-ex"), session: !!window.__app.session }));
-    check(st.lab && st.home && !st.choix && !st.session && (await inScreen(page, ".etiquette")), `accueil, appui long de 0,8 s sur « ${key} » : étiquette visible (dans l'écran), rien de lancé`);
+    // (lot « Correctifs : passage de l'échauffement aux voiliers », points 7 et 10 : l'accueil en galets est un écran de choix,
+    // sans étiquette ; seule la bulle de la mascotte décrit)
+    check(!st.lab && st.home && !st.choix && !st.session, `accueil, appui long de 0,8 s sur « ${key} » : aucune étiquette, rien de lancé`);
     await shot(page, `B3-appui-${key}`);
     await page.waitForTimeout(600);
-    check(!(await page.locator(".etiquette").count()), `« ${key} » : l'étiquette a disparu 0,5 s après le lever du doigt (lot 3 ter, T3)`);
   }
   await tap(page, ".choisir"); await page.waitForSelector(".choix-ex");
   check(true, "accueil, toucher bref sur « choisir » : l'écran des exercices s'ouvre");
   for (const ex of ["ligne", "additions", "calcul"]) { // (lot « Les leçons » : les leçons ont quitté « choisir », tests/e2e/lecons-menu.mjs)
     await hold(page, `.choix-ex[aria-label="${ex}"]`, 800); await page.waitForTimeout(100);
     const st = await page.evaluate(() => ({ lab: !!document.querySelector(".etiquette"), tiles: document.querySelectorAll(".choix-tuile").length }));
-    check(st.lab && !st.tiles && (await inScreen(page, ".etiquette")), `« choisir », appui long de 0,8 s sur « ${ex} » : étiquette, rien de lancé`);
+    check(!st.lab && !st.tiles, `« choisir », appui long de 0,8 s sur « ${ex} » : aucune étiquette (point 7), rien de lancé`);
     await shot(page, `B3-appui-${ex}`);
   }
   await tap(page, '.choix-ex[aria-label="calcul"]', 450); await tap(page, '.choix-ex[aria-label="calcul"]'); await page.waitForSelector(".choix-tuile");

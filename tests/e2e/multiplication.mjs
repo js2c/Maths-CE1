@@ -71,7 +71,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     check(r0.every((b) => b[0] >= 0 && b[2] <= W && b[3] <= H) && r0.every((b, i) => i === 0 || (b[0] + b[2]) / 2 - (r0[i - 1][0] + r0[i - 1][2]) / 2 >= (160 * W) / 1280), `${T} · les cinq bulles côte à côte, dans l'écran (${r0.map((b) => Math.round(b[0])).join(" ")})`);
     const b0 = await bulle(page); check(!b0.couvre, `${T} · la bulle ne couvre aucun exercice (${b0.place})`);
     await shot(page, "01-choisir-exercices");
-    if (big) { const h = await hold(page, '[data-key="multiplication"]'); check(/multiplication/.test(h.label ?? ""), `${T} · appui long : l'étiquette de la multiplication (${h.label})`); await shot(page, "02-etiquette-multiplication"); await h.release(); }
+    if (big) { const h = await hold(page, '[data-key="multiplication"]'); check(h.label === null, `${T} · appui long : aucune étiquette (lot « Correctifs : passage de l'échauffement aux voiliers », point 7) (${h.label})`); await shot(page, "02-appui-long-multiplication"); await h.release(); }
     await resetSaid(page); await tap(page, '[data-key="multiplication"]', 450); await tap(page, '[data-key="multiplication"]', 1200); // (lot « Correctifs de la tablette » : deux touchers)
     await page.waitForSelector('[data-key="9"]', { timeout: 15000 }); await page.waitForTimeout(600);
     check((await said(page)).includes("La multiplication."), `${T} · le toucher dit « La multiplication. » (${await said(page)})`);
@@ -83,7 +83,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
       await tap(page, ".legende", 600); const rows = await page.locator(".legende-ligne").count(); check(rows === 9, `${T} · la légende : 9 lignes (${rows})`);
       await shot(page, "04-legende"); await tap(page, ".legende-fermer", 600);
       const h = await hold(page, '[data-key="6"]');
-      check(h.label === "multiplication 6", `${T} · appui long sur la tuile 6 : son étiquette (${h.label})`); await shot(page, "04b-etiquette-tuile-6"); await h.release();
+      check(h.label === null, `${T} · appui long sur la tuile 6 : aucune étiquette (point 7) (${h.label})`); await shot(page, "04b-appui-long-tuile-6"); await h.release();
     }
     check(!errors.length, `${T} · 1 : aucune erreur (${errors.slice(0, 3).join(" | ")})`); await context.close();
   }

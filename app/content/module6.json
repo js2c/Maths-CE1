@@ -1,0 +1,33 @@
+{
+  "_doc": "Module 6, l'étal du pêcheur : la monnaie (docs/SPEC.md, section 7 quater ; lot « L'étal du pêcheur », fiche 7 de docs/LOTS.md ; maquette validée : art/etal/). Les montants sont en CENTIMES. niveaux : type « poser » (poser la pièce ou le billet demandé : valeurs), « payer » (payer juste ; le compte juste existe toujours), « restreint » (payer juste avec un portefeuille où le compte juste existe d'une ou deux façons seulement : facons), « monnaie » (le compte juste est impossible : payer sans pièce de trop, le pêcheur rend la monnaie), « rendre » (le paiement est déjà dans la soucoupe, un billet de `billets` ; « Combien je te rends ? » au pavé), « deux » (deux produits : payer juste le total ; prixProduit : la fourchette de chacun) ; prix : [min, max, pas] ; portefeuille : pour chaque valeur, [min, max] pièces ou billets tirés au hasard ; articles : le nom de chaque produit avec son article, pour « Achète les sardines et le maquereau. » (niveau 8, textes.json, etalPaire). totalMax : le portefeuille ne contient jamais plus (les montants comptés à voix haute ont tous leur phrase) ; petitesTresDur : au cran « très dur », autant de petites pièces en plus (le chemin le plus long n'est pas le bon). lecon : la leçon d'entrée du niveau (jouée la première fois) ; les autres niveaux ont un exemple guidé la première fois (le pêcheur paie à la place de l'enfant en comptant). crans : plus facile (le total affiché et dit à chaque objet posé, la valeur écrite sur l'argent, au niveau 7 la ligne d'emblée), conseillé (le total montré au moment du compte), plus dur (pas de total, prix dans le haut de la fourchette : hautDeFourchette, la moitié haute), très dur (de même, et plus de petites pièces). essais : un achat se paie en deux essais au plus (« pas assez » : compléter ; « trop », « une pièce de trop » : le pêcheur rend ce qui est en trop) ; au deuxième échec, la correction. retourErreur : un achat manqué revient 3 à 5 questions plus loin. erreurs : la leçon relancée quand la même erreur revient deux fois dans la séance (reglesAdaptation.memeErreurLecon). reglesAdaptation : comme les autres modules (docs/SPEC.md, section 9) ; la voie rapide demande 5 achats justes de suite en moins de tempsMaxS chacun (20 s : ouvrir, sortir, poser, valider prend plus que les 6 s d'une réponse au pavé ; choix de la session).",
+  "niveaux": [
+    { "niveau": 1, "type": "poser", "valeurs": [100, 200, 500, 1000, 2000, 5000], "lecon": "L15" },
+    { "niveau": 2, "type": "payer", "prix": [200, 1000, 100], "portefeuille": { "200": [4, 5], "100": [2, 3] }, "totalMax": 1600, "petitesTresDur": { "100": 3 }, "lecon": "L16" },
+    { "niveau": 3, "type": "payer", "prix": [600, 2000, 100], "portefeuille": { "1000": [1, 1], "500": [1, 2], "200": [2, 3], "100": [1, 2] }, "totalMax": 3000, "petitesTresDur": { "100": 2, "200": 2 } },
+    { "niveau": 4, "type": "payer", "prix": [1100, 5000, 100], "portefeuille": { "5000": [0, 1], "2000": [1, 2], "1000": [1, 2], "500": [1, 1], "200": [2, 2], "100": [1, 2] }, "totalMax": 9900, "petitesTresDur": { "100": 2, "200": 2 } },
+    { "niveau": 5, "type": "restreint", "prix": [300, 3000, 100], "portefeuille": { "2000": [0, 1], "1000": [0, 2], "500": [0, 2], "200": [0, 4], "100": [0, 1] }, "facons": [1, 2], "totalMax": 6000 },
+    { "niveau": 6, "type": "monnaie", "prix": [300, 2000, 100], "portefeuille": { "2000": [0, 1], "1000": [0, 1], "500": [0, 2], "200": [0, 4] }, "totalMax": 5000 },
+    { "niveau": 7, "type": "rendre", "prix": [100, 1900, 100], "billets": [500, 1000, 2000], "lecon": "L17" },
+    { "niveau": 8, "type": "deux", "prix": [500, 3000, 100], "prixProduit": [200, 2500, 100], "portefeuille": { "2000": [0, 1], "1000": [1, 2], "500": [1, 2], "200": [2, 3], "100": [1, 2] }, "totalMax": 6000, "petitesTresDur": { "100": 2, "200": 1 } },
+    { "niveau": 9, "type": "payer", "prix": [150, 1000, 50], "portefeuille": { "500": [0, 1], "200": [1, 3], "100": [1, 2], "50": [1, 2] }, "totalMax": 1200, "petitesTresDur": { "50": 2 }, "lecon": "L18" },
+    { "niveau": 10, "type": "payer", "prix": [30, 1000, 10], "portefeuille": { "500": [0, 1], "200": [1, 2], "100": [1, 2], "50": [1, 1], "20": [1, 2], "10": [1, 1] }, "totalMax": 1200, "petitesTresDur": { "10": 1, "20": 1 } }
+  ],
+  "crans": {
+    "facile": { "total": "toujours", "etiquettes": true, "ligneDEmblee": true },
+    "conseille": { "total": "compte" },
+    "dur": { "total": "non", "hautDeFourchette": true },
+    "tresdur": { "total": "non", "hautDeFourchette": true, "petites": true }
+  },
+  "articles": { "sardines": "les sardines", "maquereau": "le maquereau", "bar": "le bar", "dorade": "la dorade", "sole": "la sole", "seiche": "la seiche", "crevettes": "les crevettes", "moules": "les moules", "huitres": "les huîtres", "saint-jacques": "les coquilles Saint-Jacques", "homard": "le homard", "tourteau": "le tourteau" },
+  "essais": 2,
+  "erreurs": { "M1": "L16", "M2": "L16", "M3": "L16", "M4": "L15", "M7": "L15", "M5": "L17", "M6": "L17" },
+  "leconCentimes": "L18",
+  "reglesAdaptation": {
+    "montee": { "sur": 10, "justes": 8, "aidesMax": 1 },
+    "voieRapide": { "premieres": 5, "tempsMaxS": 20 },
+    "retourErreur": [3, 5],
+    "difficulte": { "sur": 5, "erreurs": 3 },
+    "redescente": { "seances": 2, "sousTaux": 0.5 },
+    "memeErreurLecon": 2
+  }
+}

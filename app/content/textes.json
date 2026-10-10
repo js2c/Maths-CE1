@@ -197,7 +197,8 @@
       "additions": "Les additions à savoir par cœur, famille par famille.",
       "calcul": "Des astuces pour calculer sans compter un par un.",
       "voiliers": "Tu ranges les bateaux entre les bouées.",
-      "multiplication": "Des rangées de poissons, et les tables."
+      "multiplication": "Des rangées de poissons, et les tables.",
+      "etal": "Tu fais les courses chez le pêcheur, avec des pièces et des billets."
     },
     "ligne": {
       "1": "Tu comptes les sauts de la tortue, de un en un.",
@@ -251,6 +252,18 @@
       "8": "Lis bien chaque nombre.",
       "9": "Tu ranges le bateau deux fois : d'abord de loin, puis tout près."
     },
+    "etal": {
+      "1": "Regarde bien le nombre écrit dessus.",
+      "2": "Commence par les pièces de deux euros.",
+      "3": "Commence par le plus gros billet qui ne dépasse pas le prix.",
+      "4": "Du plus gros au plus petit, en comptant.",
+      "5": "Il manque des pièces : cherche une autre façon.",
+      "6": "Donne un peu plus que le prix, mais pas une pièce de trop.",
+      "7": "On compte à partir du prix, jusqu'au billet.",
+      "8": "Additionne les deux prix, puis paie.",
+      "9": "Deux pièces de cinquante centimes font un euro.",
+      "10": "Compte d'abord les euros, puis les centimes."
+    },
     "multiplication": {
       "1": "Tu ajoutes les rangées de poissons.",
       "2": "Trois fois quatre, c'est trois rangées de quatre.",
@@ -292,7 +305,8 @@
     "calcul": "Le calcul rapide.",
     "lecons": "Les leçons.",
     "voiliers": "Les voiliers.",
-    "multiplication": "La multiplication."
+    "multiplication": "La multiplication.",
+    "etal": "L'étal du pêcheur."
   },
   "choixLigne": {
     "1": "La corde de zéro à dix, avec presque tous les nombres.",
@@ -450,5 +464,109 @@
     "7": "Regarde : 369 est tout près de 370, mais il est plus petit. Le bateau passe entre 360 et 370.",
     "8": "Regarde : 349 est tout près de 350, mais il est plus petit. Le bateau passe entre 250 et 350.",
     "9": "Regarde : 347 est entre 300 et 400. Puis, de plus près : 347 est entre 340 et 350."
+  },
+  "etalNotion": [
+    "Bienvenue à mon étal ! Aujourd'hui, c'est toi qui fais les courses.",
+    "Bonjour, bonjour ! Regarde ma pêche du jour."
+  ],
+  "etalConsigne": {
+    "poser": "Voici ton portefeuille : touche-le pour l'ouvrir. Pose dans la soucoupe ce que je te demande, puis touche la coche.",
+    "payer": "Ouvre ton portefeuille, et paie juste le prix : pose l'argent dans la soucoupe, puis touche la coche.",
+    "restreint": "Regarde bien ton portefeuille : on peut payer juste, mais il faut chercher. Pose l'argent dans la soucoupe, puis touche la coche.",
+    "monnaie": "Avec ton portefeuille, tu ne peux pas payer juste. Donne assez, sans pièce de trop : je te rendrai la monnaie.",
+    "rendre": "Cette fois, c'est moi qui te rends la monnaie. Dis-moi combien : tape-le, puis touche la coche.",
+    "deux": "Tu achètes deux choses. Paie juste les deux ensemble, puis touche la coche.",
+    "centimes": "Il y a des centimes ! Paie juste le prix, puis touche la coche."
+  },
+  "etalProduit": {
+    "sardines": { "achete": "Achète les sardines.", "coute": "Elles coûtent…", "nom": "Les sardines coûtent…" },
+    "maquereau": { "achete": "Achète le maquereau.", "coute": "Il coûte…", "nom": "Le maquereau coûte…" },
+    "bar": { "achete": "Achète le bar.", "coute": "Il coûte…", "nom": "Le bar coûte…" },
+    "dorade": { "achete": "Achète la dorade.", "coute": "Elle coûte…", "nom": "La dorade coûte…" },
+    "sole": { "achete": "Achète la sole.", "coute": "Elle coûte…", "nom": "La sole coûte…" },
+    "seiche": { "achete": "Achète la seiche.", "coute": "Elle coûte…", "nom": "La seiche coûte…" },
+    "crevettes": { "achete": "Achète les crevettes.", "coute": "Elles coûtent…", "nom": "Les crevettes coûtent…" },
+    "moules": { "achete": "Achète les moules.", "coute": "Elles coûtent…", "nom": "Les moules coûtent…" },
+    "huitres": { "achete": "Achète les huîtres.", "coute": "Elles coûtent…", "nom": "Les huîtres coûtent…" },
+    "saint-jacques": { "achete": "Achète les coquilles Saint-Jacques.", "coute": "Elles coûtent…", "nom": "Les coquilles Saint-Jacques coûtent…" },
+    "homard": { "achete": "Achète le homard.", "coute": "Il coûte…", "nom": "Le homard coûte…" },
+    "tourteau": { "achete": "Achète le tourteau.", "coute": "Il coûte…", "nom": "Le tourteau coûte…" }
+  },
+  "etalPaire": "Achète {a} et {b}.",
+  "etalPaieLesDeux": "Paie les deux ensemble.",
+  "etalPoser": {
+    "100": "Pose une pièce de 1 euro.",
+    "200": "Pose une pièce de 2 euros.",
+    "500": "Pose un billet de 5 euros.",
+    "1000": "Pose un billet de 10 euros.",
+    "2000": "Pose un billet de 20 euros.",
+    "5000": "Pose un billet de 50 euros."
+  },
+  "etalCestUn": {
+    "100": "Ça, c'est une pièce de 1 euro.",
+    "200": "Ça, c'est une pièce de 2 euros.",
+    "500": "Ça, c'est un billet de 5 euros.",
+    "1000": "Ça, c'est un billet de 10 euros.",
+    "2000": "Ça, c'est un billet de 20 euros.",
+    "5000": "Ça, c'est un billet de 50 euros."
+  },
+  "etalCestCeluiLa": {
+    "100": "La pièce de 1 euro, c'est celle-là.",
+    "200": "La pièce de 2 euros, c'est celle-là.",
+    "500": "Le billet de 5 euros, c'est celui-là.",
+    "1000": "Le billet de 10 euros, c'est celui-là.",
+    "2000": "Le billet de 20 euros, c'est celui-là.",
+    "5000": "Le billet de 50 euros, c'est celui-là."
+  },
+  "etalRendre": {
+    "500": "Tu me donnes un billet de 5 euros. Combien je te rends ?",
+    "1000": "Tu me donnes un billet de 10 euros. Combien je te rends ?",
+    "2000": "Tu me donnes un billet de 20 euros. Combien je te rends ?"
+  },
+  "etalMontant": {
+    "euros": "{e} euros.",
+    "euro": "1 euro.",
+    "eurosCentimes": "{e} euros {c}.",
+    "euroCentimes": "1 euro {c}.",
+    "centimes": "{c} centimes."
+  },
+  "etalMerci": [
+    "Merci !",
+    "Merci beaucoup !",
+    "C'est juste, merci !"
+  ],
+  "etalJeRends": "Je te rends la monnaie.",
+  "etalJeTeRends": "Je te rends…",
+  "etalManque": "Il manque…",
+  "etalComplete": "Complète, puis touche la coche.",
+  "etalTrop": "Tu peux faire le compte juste. Je te rends ce qui est en trop.",
+  "etalEssaieEncore": "Essaie encore, puis touche la coche.",
+  "etalGardeLa": "Celle-là, garde-la !",
+  "etalGardeLes": "Celles-là, garde-les !",
+  "etalValeur": "Attention : on compte ce que valent les pièces et les billets, pas combien il y en a.",
+  "etalCorrection": "Regarde, on peut payer comme ça.",
+  "etalExemple": "Regarde bien : cette fois, je paie à ta place, en comptant.",
+  "etalAide": "Je compte avec toi !",
+  "etalAideRendre": "Compte à partir de {a}, jusqu'à {b}.",
+  "etalRendPrix": "Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet.",
+  "etalCaFait": "Ça fait…",
+  "etalOuvre": "Touche ton portefeuille pour l'ouvrir.",
+  "etalOrage": [
+    "Oh là là, voilà la pluie ! Je me mets à l'abri !",
+    "Le vent se lève ! Vite, à l'abri !",
+    "Brr, l'orage arrive ! Je rentre dans ma cabane.",
+    "Tempête en vue ! J'allume ma lampe et je me mets à l'abri."
+  ],
+  "choixEtal": {
+    "1": "Les pièces et les billets : pose celui que je te demande.",
+    "2": "Paie juste, avec des pièces.",
+    "3": "Paie juste, avec des billets et des pièces.",
+    "4": "Paie juste, jusqu'à cinquante euros.",
+    "5": "Paie juste, avec un portefeuille où il faut chercher.",
+    "6": "Paie sans pièce de trop : je te rends la monnaie.",
+    "7": "C'est toi qui comptes la monnaie à rendre.",
+    "8": "Deux choses à acheter : paie les deux ensemble.",
+    "9": "Les centimes : des pièces de cinquante centimes.",
+    "10": "Les centimes : des pièces de dix, vingt et cinquante centimes."
   }
 }

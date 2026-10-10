@@ -1,0 +1,956 @@
+// FICHIER GÉNÉRÉ par art/tools/export-etal.mjs depuis art/etal/index.html (empreinte a7482b134b53) : ne pas modifier à
+// la main. Le script de la maquette de l'étal du pêcheur, tel quel, enveloppé dans startEtal ; ses raccords à l'application
+// sont décrits dans l'outil (RETOUCHES, SECTIONS, RACCORDS). Les images sont dans assets/etal/.
+//
+// OPTS : { images : le dossier des images (« assets/etal/ ») ; police : la police des ardoises ; reglages : etal.json ;
+// meteo : mauvais temps dès l'entrée (true) ; peche : [noms, prix] la première pêche ; derniereReplique ; fige() : la scène
+// est-elle en pause ; toucher(e) : ce toucher peut-il agir ; on(cible, type, f) : un écouteur à retirer en sortant ;
+// change() : la soucoupe a changé ; mesure(t) : appelé à chaque image }.
+// Renvoie { decor, scene, api } : le canvas du décor (à poser sous la mascotte), la scène de la caisse (1280 × 800, à poser
+// dans le calque des boutons, sous eux), et l'interface (API ; api.pret : les images chargées).
+/* eslint-disable */
+export const STYLE = "#etal-scene canvas{position:absolute;left:0;top:0}\n#etal-effets{width:1280px;height:800px}\n#etal-effets{pointer-events:none}\n#etal-captVoile{position:absolute;left:25.6px;top:136px;width:198px;height:270px;background:rgb(10,18,32);opacity:0;transition:opacity 2.5s ease;pointer-events:none}\n#etal-voile{position:absolute;inset:0;pointer-events:none;opacity:0}\n#etal-nuit{position:absolute;inset:0;pointer-events:none;opacity:0;background:rgb(6,12,24)}\n#etal-caisse{position:absolute;inset:0;pointer-events:none;z-index:1}\n#etal-effets,#etal-nuit,#etal-voile{z-index:2}\n#etal-caisse .m{position:absolute;left:0;top:0;pointer-events:auto;will-change:transform;\n  transition:transform .38s cubic-bezier(.25,.9,.35,1),opacity .3s;filter:drop-shadow(0 3px 2px rgba(20,12,4,.45))}\n#etal-caisse .m.glisse{transition:none}\n#etal-pf{position:absolute;left:0;top:0;width:640px;height:422px;transform-origin:0 0;pointer-events:auto;z-index:3;filter:drop-shadow(0 5px 4px rgba(20,12,4,.5))}\n#etal-pfFond,#etal-pfAvant{position:absolute;left:0;top:0;transform-origin:0 0;opacity:0;transition:opacity .15s}\n#etal-pfFond{z-index:3;pointer-events:none;filter:drop-shadow(0 5px 4px rgba(20,12,4,.5))}\n#etal-pfFond.vu{pointer-events:auto}\n#etal-pfAvant{z-index:5;pointer-events:none}\n#etal-soucoupe{position:absolute;left:283px;top:597px;width:370px;z-index:1;pointer-events:none;filter:drop-shadow(0 6px 5px rgba(20,12,4,.45))}\n#etal-total{position:absolute;left:298px;top:560px;width:340px;text-align:center;font:600 24px Ardoise,\"Comic Sans MS\",sans-serif;color:#fff8e8;\n  text-shadow:0 2px 0 #1d1712,0 0 6px #1d1712;z-index:1;pointer-events:none;transition:opacity .3s}";
+export function startEtal(OPTS) {
+let VIVANT = true, RAF = 0;
+const IMGS = OPTS.images;
+const DECOR = document.createElement('canvas'); DECOR.id = 'etal-decor'; DECOR.className = 'etal-decor'; DECOR.width = 1920; DECOR.height = 1200;
+const SCENE = document.createElement('div'); SCENE.id = 'etal-scene'; SCENE.className = 'etal-scene';
+SCENE.innerHTML = `  <div id="etal-captVoile"></div><div id="etal-caisse"><img id="etal-soucoupe" src="${IMGS}soucoupe.webp" alt=""><div id="etal-total"></div><canvas id="etal-pf" width="640" height="422" aria-label="portefeuille"></canvas><img id="etal-pfFond" src="${IMGS}pf-ouvert-fond.webp" alt="" draggable="false"><img id="etal-pfAvant" src="${IMGS}pf-ouvert-avant.webp" alt="" draggable="false"></div><canvas id="etal-effets" width="1280" height="800"></canvas><div id="etal-nuit"></div><div id="etal-voile"></div>`;
+const EL = id => id === 'decor' ? DECOR : id === 'scene' ? SCENE : SCENE.querySelector('#etal-' + id);
+const API0 = (() => {
+/* =====================================================================================
+   Maquette de l'étal du pêcheur — le décor animé (lot « La boutique », octobre 2026).
+   Scène de 1280 × 800 (comme l'application), dessinée en 1920 × 1200 (images préparées à 1,5×).
+   Calques, du fond vers l'avant : ciel qui défile, oiseaux, mer en trois bandes (parallaxe),
+   jetée et phare, faisceau du phare, sillages, bateaux, cabane et étal, lumière de la lampe,
+   lampe, puis (canvas « effets ») pluie, éclaboussures, halo de la lampe, assombrissement des bords.
+   Beau temps et mauvais temps ont chacun leurs images ; « meteo » passe de 0 à 1 en 3 s.
+   ===================================================================================== */
+const K = 1.5;                       // résolution des images par rapport à la scène
+const PX = 0.5563;                   // pixels de l'illustration d'origine (2576 × 1438) → scène
+const IMG = {};
+
+/* ---------- réglages de la maquette (à trouver sur la tablette, puis à figer dans l'application) ---------- */
+const REGLAGES = [
+  ['Mauvais temps : assombrissement'],
+  ['nuit', 'Voile sombre sur toute la scène', 0, 0.5, 0.01, 0.08],
+  ['vignette', 'Bords assombris : force', 0, 0.95, 0.01, 0.7],
+  ['vignetteRayon', 'Bords assombris : zone claire au centre (%)', 15, 75, 1, 36],
+  ['capt', 'Capitaine assombri', 0, 0.8, 0.01, 0.4],
+  ['monnaie', 'Portefeuille, monnaie, soucoupe : luminosité', 0.4, 1.3, 0.01, 0.95],
+  ['monnaieChaud', 'Portefeuille, monnaie, soucoupe : teinte de la lampe', 0, 0.6, 0.01, 0.25],
+  ['Lumière de la lampe sur l\'étal (recalculée au relâchement)'],
+  ['lumCouleur', 'Couleur chaude (recouvrement)', 0, 1, 0.01, 0.85],
+  ['lumEclat', 'Éclat (lumière ajoutée)', 0, 1.2, 0.01, 0.8],
+  ['lumPortee', 'Portée (px)', 250, 1200, 10, 820],
+  ['Lumière sur les produits (recalculée au relâchement)'],
+  ['prod', 'Force', 0, 1.2, 0.01, 1],
+  ['prodMin', 'Minimum (produits loin de la lampe)', 0, 0.9, 0.01, 0.45],
+  ['prodPortee', 'Portée (px)', 150, 900, 10, 460],
+  ['prodReflet', 'Côté tourné vers la lampe : reflet', 0, 1, 0.01, 0.5],
+  ['Halo, phare, pluie'],
+  ['halo', 'Halo de la flamme : force', 0, 2, 0.01, 1.1],
+  ['haloTaille', 'Halo de la flamme : taille (px)', 80, 320, 5, 190],
+  ['phare', 'Faisceau du phare', 0, 1, 0.01, 0.45],
+  ['pluie', 'Pluie : densité', 0.1, 1.5, 0.05, 1],
+  ['pluieOpac', 'Pluie : opacité', 0.3, 2, 0.05, 1],
+  ['Orage en cours de séance'],
+  ['orageDepart', 'Mauvais temps dès l\'ouverture (%)', 0, 100, 5, 50],
+  ['orageProba', 'Sinon, l\'orage arrive en cours de séance (%)', 0, 100, 5, 50],
+  ['orageMin', 'Au plus tôt (min)', 0.5, 10, 0.5, 2],
+  ['orageMax', 'Au plus tard (min)', 1, 15, 0.5, 6]
+];
+const R = {};
+REGLAGES.forEach(r => { if (r.length > 1) R[r[0]] = r[5]; });
+Object.assign(R, OPTS.reglages);
+const CUITS = new Set(['lumCouleur', 'lumEclat', 'lumPortee', 'prod', 'prodMin', 'prodPortee', 'prodReflet']);
+// Les prix ne sont pas écrits dans les images : chaque ardoise est dessinée par le code avec le prix que
+// l'exercice lui donne (peche[i].prix, en centimes). Ici, des prix d'exemple ; « Autres prix » les retire.
+const PRODUITS = {        // largeur affichée (scène), prix d'exemple en euros
+  'sardines': { l: 150, prix: 3 }, 'maquereau': { l: 170, prix: 4 }, 'bar': { l: 175, prix: 12 }, 'dorade': { l: 160, prix: 9 },
+  'sole': { l: 165, prix: 15, miroir: true }, 'seiche': { l: 150, prix: 7 }, 'crevettes': { l: 128, prix: 6 }, 'moules': { l: 118, prix: 5 },
+  'huitres': { l: 128, prix: 8 }, 'saint-jacques': { l: 125, prix: 10 }, 'homard': { l: 150, prix: 19 }, 'tourteau': { l: 145, prix: 11 }
+};
+const NOMS = ['avant-beau','avant-orage','ciel-beau','ciel-orage','mer-beau','mer-orage','jetee-beau','jetee-orage','lampe','lampe-eteinte',
+  'bateau-chalutier-bleu','bateau-chalutier-orange','bateau-barque-grise','bateau-canot-orange','bateau-canot-vert','bateau-canot-rose'];
+const charger = n => new Promise((ok, ko) => { const i = new Image(); i.onload = () => { IMG[n] = i; ok(); }; i.onerror = ko; i.src = OPTS.images + n + '.webp'; });
+
+/* ---------- géométrie de la scène (coordonnées 1280 × 800) ---------- */
+const HORIZON = 200.3;               // ligne d'horizon (haut de la tuile de mer)
+const CIEL_H = 368 * PX;             // hauteur de la tuile de ciel
+const MER_Y = 360 * PX;              // haut de la tuile de mer
+const JETEE = { x: 436 * PX, y: 196 * PX };
+const PHARE = { x: 506, y: 150 };    // la lanterne du phare
+const ACCROCHE = { x: 295, y: 63 };  // le crochet de la lampe, sous l'angle du toit
+const LAMPE = { s: 0.45, hx: 56, hy: 1, fx: 68, fy: 246, ex: 57, ey: 0 }; // échelle, crochet et flamme de la lampe allumée ; crochet de la lampe éteinte
+const BORD_CABANE = 262;             // à gauche, la cabane cache la mer : les bateaux y naissent et y disparaissent
+
+/* bandes de mer : plus proches = plus rapides (vitesses en px/s, vers la gauche) */
+const BANDES = [ { y0: 0, y1: 40, v: 2.2 }, { y0: 28, y1: 72, v: 5.5 }, { y0: 60, y1: 109, v: 11 } ];
+const FONDU_BANDE = 12;
+
+/* bateaux : dimensions de l'image détourée, ligne de flottaison, cap d'origine (-1 : vers la gauche), longueur relative, feux */
+const TYPES = {
+  'chalutier-bleu':   { w: 598, h: 412, wl: 404, cap: -1, l: 1.00, feux: [[380,238,'f'],[408,238,'f'],[407,314,'f'],[285,28,'m']] },
+  'chalutier-orange': { w: 699, h: 345, wl: 337, cap:  1, l: 1.10, feux: [[420,109,'f'],[497,108,'f'],[408,14,'m']] },
+  'barque-grise':     { w: 369, h: 241, wl: 233, cap: -1, l: 0.62, feux: [[300,140,'f'],[105,10,'m']] },
+  'canot-orange':     { w: 229, h: 140, wl: 132, cap: -1, l: 0.42, feux: [[80,63,'f'],[123,8,'m']] },
+  'canot-vert':       { w: 287, h: 124, wl: 116, cap: -1, l: 0.46, feux: [[89,47,'f'],[109,50,'f'],[118,7,'m']] },
+  'canot-rose':       { w: 266, h: 133, wl: 125, cap: -1, l: 0.44, feux: [[92,53,'f'],[119,57,'f'],[129,7,'m']] }
+};
+const MAX_BATEAUX = 3;
+
+/* ---------- canvases ---------- */
+const $ = id => EL(id);
+const cv = $('decor'), ctx = cv.getContext('2d', { alpha: false });   // opaque : composition plus légère
+const fxc = $('effets'), fx = fxc.getContext('2d');
+const hors = (w, h) => { const c = document.createElement('canvas'); c.width = Math.ceil(w); c.height = Math.ceil(h); return c; };
+const mips = {}, mipsS = {};
+/* un bateau lointain est très réduit : le navigateur, en réduisant d'un coup une grande image, la pixellise.
+   On prépare donc des versions à 1/2, 1/4, 1/8, réduites par étapes, et on pose la plus proche de la taille voulue. */
+function reductions(im) {
+  const L = [im]; let src = im;
+  while (src.width > 60) {
+    const c = hors(src.width / 2, src.height / 2), x = c.getContext('2d'); x.imageSmoothingQuality = 'high';
+    x.drawImage(src, 0, 0, c.width, c.height); L.push(c); src = c;
+  }
+  return L;
+}
+const niveau = (L, larg) => { let k = 0; while (k + 1 < L.length && L[k + 1].width >= larg) k++; return L[k]; };
+let merC, merX, tmpC, tmpX, chaudC, etalBeau, etalOrage, sombres = {};
+const police = () => { try { const f = new FontFace('Ardoise', 'url(' + OPTS.police + ')'); document.fonts.add(f); return f.load().catch(() => null); } catch (e) { return Promise.resolve(); } };
+const assombrir = (src, w, h) => {      // même assombrissement que les bateaux, pour le mauvais temps
+  const s = hors(w, h), x = s.getContext('2d');
+  x.drawImage(src, 0, 0); x.globalCompositeOperation = 'multiply'; x.fillStyle = 'rgb(92,104,124)'; x.fillRect(0, 0, w, h);
+  x.globalCompositeOperation = 'destination-in'; x.drawImage(src, 0, 0); return s;
+};
+
+/* ---------- la pêche du jour : 8 produits sur deux rangées, chacun avec son ardoise ---------- */
+/* lueurs et faisceaux : dessinés une fois, puis seulement posés (drawImage) */
+function lueur(rgb, stops, taille = 128) {
+  const c = hors(taille, taille), x = c.getContext('2d'), r = taille / 2, g = x.createRadialGradient(r, r, 0, r, r, r);
+  stops.forEach(([o, a]) => g.addColorStop(o, `rgba(${rgb},${a})`)); x.fillStyle = g; x.fillRect(0, 0, taille, taille); return c;
+}
+const SPR = {};
+function preparerSprites() {
+  SPR.fenetre = lueur('255,205,110', [[0, 0.95], [0.3, 0.45], [1, 0]]);
+  SPR.mat = lueur('255,250,235', [[0, 0.95], [0.3, 0.45], [1, 0]]);
+  SPR.phare = lueur('255,236,190', [[0, 0.9], [0.35, 0.45], [1, 0]]);
+  SPR.halo = lueur('255,175,85', [[0, 0.3], [0.4, 0.1], [1, 0]], 256);
+  SPR.flamme = lueur('255,230,170', [[0, 0.75], [1, 0]]);
+  // le reflet d'une fenêtre sur l'eau
+  let c = hors(16, 128), x = c.getContext('2d'), g = x.createLinearGradient(0, 0, 0, 128);
+  g.addColorStop(0, 'rgba(255,200,110,0.32)'); g.addColorStop(1, 'rgba(255,200,110,0)'); x.fillStyle = g; x.fillRect(0, 0, 16, 128); SPR.reflet = c;
+  // le pinceau du phare, pointe à gauche (x 0), long de 760, demi-largeur 32
+  c = hors(760, 64); x = c.getContext('2d'); g = x.createLinearGradient(0, 0, 760, 0);
+  g.addColorStop(0, 'rgba(255,236,190,1)'); g.addColorStop(0.5, 'rgba(255,236,190,0.35)'); g.addColorStop(1, 'rgba(255,236,190,0)');
+  x.fillStyle = g; x.beginPath(); x.moveTo(0, 30); x.lineTo(760, 0); x.lineTo(760, 64); x.lineTo(0, 34); x.closePath(); x.fill(); SPR.pinceau = c;
+}
+
+let peche = [];
+function tirerPeche(noms = Object.keys(PRODUITS).sort(() => Math.random() - 0.5).slice(0, 8), prix = {}) {
+  const x0 = 300, x1 = 1255, col = (x1 - x0) / 4;
+  peche = noms.map((n, i) => {
+    const rang = i < 4 ? 0 : 1, c = i % 4;
+    return { n, x: x0 + col * (c + 0.5) + (rang ? -col * 0.12 : col * 0.12) + hasard(-8, 8),
+             y: rang ? 452 : 378, rot: hasard(-4, 4) * Math.PI / 180, prix: prix[n] ?? PRODUITS[n].prix * 100 };
+  });
+}
+const fmtPrix = c => c % 100 ? `${Math.floor(c / 100)},${String(c % 100).padStart(2, '0')} €` : `${c / 100} €`;
+let modePrix = 0;
+function tirerPrix() {                  // démonstration : entiers, puis avec 50 c, puis avec 10 et 20 c
+  modePrix = (modePrix + 1) % 3;
+  for (const p of peche) {
+    const e = Math.floor(hasard(1, 20));
+    p.prix = e * 100 + (modePrix === 0 ? 0 : modePrix === 1 ? choisir([0, 50]) : choisir([10, 20, 30, 40, 50, 60, 70, 80, 90]));
+  }
+}
+const flammeMoy = () => ({ x: ACCROCHE.x + (LAMPE.fx - LAMPE.hx) * LAMPE.s, y: ACCROCHE.y + (LAMPE.fy - LAMPE.hy) * LAMPE.s });
+const lumProduit = p => {               // lumière de la lampe reçue par un produit (mauvais temps)
+  const f = flammeMoy(), d = Math.hypot(p.x - f.x, p.y - f.y);
+  return Math.min(1, Math.max(R.prodMin, R.prod / (1 + (d / R.prodPortee) ** 2)));
+};
+const SOMBRE = [92, 104, 124];          // l'assombrissement du mauvais temps (multiplication)
+function produitEclaire(p) {            // le produit teinté par la flamme, plus clair du côté de la lampe (calque pré-calculé)
+  const im = IMG['produit-' + p.n], P = PRODUITS[p.n], D = Math.ceil(Math.hypot(p.w, p.h) * K) + 4;
+  const o = hors(D, D), c = o.getContext('2d');
+  const dessiner = () => { c.save(); c.translate(D / 2, D / 2); c.rotate(p.rot); if (P.miroir) c.scale(-1, 1); c.drawImage(im, -p.w * K / 2, -p.h * K / 2, p.w * K, p.h * K); c.restore(); };
+  dessiner();
+  c.globalCompositeOperation = 'multiply'; c.fillStyle = 'rgb(255,206,140)'; c.fillRect(0, 0, D, D);
+  c.globalCompositeOperation = 'destination-in'; dessiner();
+  const f = flammeMoy(), ux = f.x - p.x, uy = f.y - p.y, n = Math.hypot(ux, uy) || 1, r = D / 2;
+  const g = c.createLinearGradient(D / 2 + ux / n * r, D / 2 + uy / n * r, D / 2 - ux / n * r, D / 2 - uy / n * r);
+  g.addColorStop(0, `rgba(255,226,170,${R.prodReflet})`); g.addColorStop(0.5, 'rgba(255,226,170,0)'); g.addColorStop(1, `rgba(10,8,20,${R.prodReflet * 0.5})`);
+  c.globalCompositeOperation = 'source-atop'; c.fillStyle = g; c.fillRect(0, 0, D, D);
+  return o;
+}
+function objetsEtal(orage) {            // ombres, produits et ardoises, sur un calque transparent de la scène
+  const o = hors(1920, 1200), c = o.getContext('2d'); c.setTransform(K, 0, 0, K, 0, 0);
+  const f = flammeMoy();
+  for (const p of peche) {              // rangée du fond d'abord
+    const im = IMG['produit-' + p.n], P = PRODUITS[p.n], w = P.l, h = w * im.height / im.width;
+    p.y = Math.max(318 + h / 2, Math.min(500 - h / 2, p.y));   // rien ne déborde du bac de glace (haut et bas)
+    p.w = w; p.h = h;
+    c.save(); c.translate(p.x, p.y);
+    if (orage) {                        // ombre portée à l'opposé de la lampe
+      const ux = p.x - f.x, uy = p.y - f.y, n = Math.hypot(ux, uy) || 1;
+      c.shadowColor = 'rgba(4,8,16,0.6)'; c.shadowBlur = 8 * K; c.shadowOffsetX = ux / n * 7 * K; c.shadowOffsetY = (uy / n * 7 + 3) * K;
+    } else { c.shadowColor = 'rgba(15,35,55,0.45)'; c.shadowBlur = 9 * K; c.shadowOffsetY = 5 * K; }
+    c.rotate(p.rot); if (P.miroir) c.scale(-1, 1);
+    if (!p.cache) c.drawImage(orage ? sombreProduit(p.n) : im, -w / 2, -h / 2, w, h);
+    c.restore();
+    if (orage && !p.cache) {            // la lumière de la lampe sur le produit
+      const l = produitEclaire(p);
+      c.globalAlpha = lumProduit(p); c.drawImage(l, p.x - l.width / K / 2, p.y - l.height / K / 2, l.width / K, l.height / K); c.globalAlpha = 1;
+    }
+  }
+  for (const p of peche) {              // les ardoises, devant
+    const lum = orage ? lumProduit(p) : 1;
+    const ax = Math.min(1235, p.x + p.w * 0.3), ay = Math.min(478, p.y + p.h * 0.28);
+    if (!p.cache) ardoise(c, ax, ay, fmtPrix(p.prix), lum);
+  }
+  return o;
+}
+const teinte = (hex, lum) => {          // une couleur assombrie comme le mauvais temps, puis éclairée par la flamme (lum de 0 à 1)
+  const v = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)), chaud = [255, 206, 140];
+  return `rgb(${v.map((x, i) => Math.round(x * SOMBRE[i] / 255 * (1 - lum) + x * chaud[i] / 255 * lum)).join(',')})`;
+};
+function ardoise(c, x, y, txt, lum = 1) {   // un pique-prix : petite ardoise cadrée de bois, plantée dans la glace
+  c.save(); c.font = '600 20px Ardoise, "Comic Sans MS", sans-serif';
+  const w = Math.max(54, Math.ceil(c.measureText(txt).width) + 16), h = 34;   // la largeur suit le prix (« 12,50 € »)
+  x = Math.min(x, 1262 - w / 2);
+  const col = h => lum >= 1 ? h : teinte(h, lum);
+  c.translate(x, y); c.rotate(-0.06);
+  c.strokeStyle = col('#3b2a1c'); c.lineWidth = 3; c.beginPath(); c.moveTo(0, h / 2); c.lineTo(0, h / 2 + 16); c.stroke();
+  c.shadowColor = 'rgba(15,35,55,0.4)'; c.shadowBlur = 6; c.shadowOffsetY = 3;
+  c.fillStyle = col('#9a6a3e'); c.beginPath(); c.roundRect(-w / 2 - 4, -h / 2 - 4, w + 8, h + 8, 4); c.fill();
+  c.shadowColor = 'transparent';
+  c.lineWidth = 2; c.strokeStyle = '#1d1712'; c.stroke();
+  c.fillStyle = col('#2a3034'); c.beginPath(); c.roundRect(-w / 2, -h / 2, w, h, 2); c.fill();
+  c.fillStyle = 'rgba(255,255,255,0.08)'; c.fillRect(-w / 2 + 3, -h / 2 + 3, w - 6, 5);
+  c.fillStyle = col('#f4f1e8'); c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.fillText(txt, 0, 1);
+  c.restore();
+}
+const sombresP = {};
+const sombreProduit = n => sombresP[n] || (sombresP[n] = assombrir(IMG['produit-' + n], IMG['produit-' + n].width, IMG['produit-' + n].height));
+function composerEtal() {
+  const o = objetsEtal(false), os = objetsEtal(true);
+  etalBeau = hors(1920, 1200); let c = etalBeau.getContext('2d'); c.drawImage(IMG['avant-beau'], 0, 0); c.drawImage(o, 0, 0);
+  etalOrage = hors(1920, 1200); c = etalOrage.getContext('2d'); c.drawImage(IMG['avant-orage'], 0, 0); c.drawImage(os, 0, 0);
+  // l'étal et la cabane « éclairés » par la flamme : les couleurs du beau temps, teintées de la flamme ;
+  // la face avant de l'étal, verticale et sous la lampe, en reçoit moins que la glace
+  chaudC = hors(1920, 1200); c = chaudC.getContext('2d');
+  c.drawImage(etalBeau, 0, 0);
+  c.globalCompositeOperation = 'multiply'; c.fillStyle = 'rgb(255,188,112)'; c.fillRect(0, 0, 1920, 1200);
+  c.globalCompositeOperation = 'source-atop';
+  const g = c.createLinearGradient(0, 495 * K, 0, 560 * K); g.addColorStop(0, 'rgba(20,10,0,0)'); g.addColorStop(1, 'rgba(20,10,0,.5)');
+  c.fillStyle = g; c.fillRect(0, 495 * K, 1920, 1200);
+  c.globalCompositeOperation = 'destination-in'; c.drawImage(etalBeau, 0, 0);
+  // la lumière, autour de la position moyenne de la flamme (la lampe ne s'écarte que de quelques pixels)
+  const { x: fxm, y: fym } = flammeMoy();
+  const lum = hors(1920, 1200), l = lum.getContext('2d'); l.setTransform(K, 0, 0, K, 0, 0);
+  const P = R.lumPortee, gr = l.createRadialGradient(fxm, fym, 0, fxm, fym, P);
+  [[0, 1], [0.08, 0.97], [0.22, 0.8], [0.4, 0.5], [0.6, 0.24], [0.8, 0.08], [1, 0]].forEach(([o, a]) => gr.addColorStop(o, `rgba(0,0,0,${a})`));
+  l.fillStyle = gr; l.fillRect(fxm - P, fym - P, 2 * P, 2 * P);
+  l.setTransform(1, 0, 0, 1, 0, 0); l.globalCompositeOperation = 'source-in'; l.drawImage(chaudC, 0, 0);
+  // la surface prend la couleur chaude (recouvrement) puis gagne de la lumière (addition)
+  c = etalOrage.getContext('2d');
+  c.globalAlpha = R.lumCouleur; c.drawImage(lum, 0, 0);
+  c.globalCompositeOperation = 'lighter'; c.globalAlpha = R.lumEclat; c.drawImage(lum, 0, 0);
+  c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
+  chaudC = null;                       // libéré : seule la version éclairée sert
+}
+
+function preparer() {
+  merC = hors(1280 * K, 112 * K); merX = merC.getContext('2d');
+  tmpC = hors(1280 * K, 112 * K); tmpX = tmpC.getContext('2d');
+  preparerSprites(); tirerPeche(...(OPTS.peche ?? [])); composerEtal();
+  // bateaux assombris pour le mauvais temps
+  for (const n in TYPES) {
+    const im = IMG['bateau-' + n];
+    sombres[n] = assombrir(im, im.width, im.height);
+    mips[n] = reductions(im); mipsS[n] = reductions(sombres[n]);
+  }
+}
+
+/* ---------- état ---------- */
+let meteo = 0, meteoCible = 0;       // 0 beau temps, 1 mauvais temps
+let t = 0, dernier = 0;
+const bateaux = [], sillage = [], vols = [], gouttes = [], ploufs = [];
+let prochainBateau = 2, prochainVol = 3;
+const hasard = (a, b) => a + Math.random() * (b - a);
+const choisir = a => a[Math.floor(Math.random() * a.length)];
+
+/* ---------- ciel ---------- */
+function ciel() {
+  const v = 3 + 9 * meteo;                       // les nuages filent plus vite par gros temps
+  decalCiel = (decalCiel + v * dt) % 1e6;
+  tuile(ctx, IMG['ciel-beau'], 0, CIEL_H, decalCiel, 1);
+  if (meteo > 0.004) tuile(ctx, IMG['ciel-orage'], 0, CIEL_H, decalCiel, meteo);
+}
+let decalCiel = 0, dt = 0;
+function tuile(c, im, y, h, decal, alpha) {   // tuile répétée, défilant vers la gauche
+  const w = im.width / K, d = ((decal % w) + w) % w;
+  c.globalAlpha = alpha;
+  for (let x = -d; x < 1280; x += w) c.drawImage(im, x, y, w, h);
+  c.globalAlpha = 1;
+}
+
+/* ---------- mer : trois bandes qui glissent à des vitesses différentes, raccordées par un fondu ---------- */
+const decalMer = [0, 0, 0];
+function mer() {
+  merX.setTransform(1, 0, 0, 1, 0, 0); merX.clearRect(0, 0, merC.width, merC.height);
+  const imB = IMG['mer-beau'], imO = IMG['mer-orage'], tw = imB.width / K, th = imB.height / K;
+  const acc = 1 + 1.6 * meteo;
+  BANDES.forEach((b, i) => {
+    decalMer[i] = (decalMer[i] + b.v * acc * dt) % 1e6;
+    const d = ((decalMer[i] % tw) + tw) % tw;
+    tmpX.setTransform(1, 0, 0, 1, 0, 0); tmpX.globalCompositeOperation = 'source-over'; tmpX.clearRect(0, 0, tmpC.width, tmpC.height);
+    tmpX.setTransform(K, 0, 0, K, 0, 0);
+    for (let x = -d; x < 1280; x += tw) {
+      tmpX.globalAlpha = 1; tmpX.drawImage(imB, 0, b.y0 * K, imB.width, (b.y1 - b.y0) * K, x, b.y0, tw, b.y1 - b.y0);
+      if (meteo > 0.004) { tmpX.globalAlpha = meteo; tmpX.drawImage(imO, 0, b.y0 * K, imO.width, (b.y1 - b.y0) * K, x, b.y0, tw, b.y1 - b.y0); }
+      if (i === BANDES.length - 1) {          // la dernière rangée de l'image prolongée jusque sous le bord de l'étal
+        tmpX.globalAlpha = 1; tmpX.drawImage(imB, 0, imB.height - 3, imB.width, 3, x, th - 2, tw, 112 - th + 2);
+        if (meteo > 0.004) { tmpX.globalAlpha = meteo; tmpX.drawImage(imO, 0, imO.height - 3, imO.width, 3, x, th - 2, tw, 112 - th + 2); }
+      }
+    }
+    tmpX.globalAlpha = 1;
+    if (i > 0) {                               // le haut de la bande se fond dans la précédente
+      tmpX.globalCompositeOperation = 'destination-in';
+      const g = tmpX.createLinearGradient(0, b.y0, 0, b.y0 + FONDU_BANDE);
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,1)');
+      tmpX.fillStyle = g; tmpX.fillRect(0, b.y0, 1280, b.y1 - b.y0);
+      tmpX.globalCompositeOperation = 'source-over';
+    }
+    merX.drawImage(tmpC, 0, 0);
+  });
+  ctx.drawImage(merC, 0, MER_Y, 1280, merC.height / K);
+}
+
+/* ---------- jetée, phare et son faisceau ---------- */
+function jetee() {
+  const a = IMG['jetee-beau'], b = IMG['jetee-orage'];
+  if (meteo < 0.996) ctx.drawImage(a, JETEE.x, JETEE.y, a.width / K, a.height / K);
+  if (meteo > 0.004) { ctx.globalAlpha = meteo; ctx.drawImage(b, JETEE.x, JETEE.y, b.width / K, b.height / K); ctx.globalAlpha = 1; }
+}
+function faisceau() {
+  if (meteo < 0.02) return;
+  const th = t * 2 * Math.PI / 7.5, c = Math.cos(th), s = Math.sin(th);
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  // le pinceau : sa longueur visible suit le cosinus (il tourne autour de la tour)
+  const ac = Math.abs(c), dir = Math.sign(c) || 1, demi = 6 + 26 * ac;
+  if (ac > 0.01) {
+    ctx.globalAlpha = R.phare * meteo * (0.55 + 0.45 * Math.max(0, s));
+    ctx.translate(PHARE.x, PHARE.y); ctx.scale(dir * ac, demi / 32);
+    ctx.drawImage(SPR.pinceau, 0, -32); ctx.setTransform(K, 0, 0, K, 0, 0);
+  }
+  // l'éclat quand le faisceau passe face à nous, et le halo permanent
+  const eclat = Math.pow(Math.max(0, s), 10), r = 9 + 70 * eclat;
+  ctx.globalAlpha = meteo * (0.75 + 0.25 * eclat);
+  ctx.drawImage(SPR.phare, PHARE.x - r, PHARE.y - r, 2 * r, 2 * r);
+  ctx.restore();
+}
+
+/* ---------- oiseaux : des « V » lointains, en formation ---------- */
+function nouveauVol() {
+  const dir = Math.random() < 0.5 ? 1 : -1, n = 3 + Math.floor(Math.random() * 5), s = hasard(4, 7.5);
+  const oiseaux = [];
+  for (let i = 0; i < n; i++) {
+    const rang = Math.ceil(i / 2), cote = i % 2 ? 1 : -1;
+    oiseaux.push({ dx: -dir * rang * s * 3.2 + hasard(-2, 2), dy: cote * rang * s * 1.7 + hasard(-1.5, 1.5), ph: hasard(0, 6.3), f: hasard(4.2, 5.4) });
+  }
+  vols.push({ x: dir > 0 ? 250 : 1320, y: hasard(28, 150), dir, v: hasard(26, 40), s, oiseaux, dyv: hasard(-2, 2) });
+}
+function oiseaux() {
+  if (meteoCible === 0 && (prochainVol -= dt) <= 0) { nouveauVol(); prochainVol = hasard(9, 22); }
+  const a = 1 - meteo;
+  ctx.save(); ctx.strokeStyle = '#26323b'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  for (let k = vols.length - 1; k >= 0; k--) {
+    const v = vols[k];
+    v.x += v.dir * v.v * dt; v.y += v.dyv * dt;
+    if (v.x < 150 || v.x > 1450) { vols.splice(k, 1); continue; }
+    if (a < 0.01) continue;
+    ctx.globalAlpha = 0.78 * a; ctx.lineWidth = 0.9 + v.s * 0.16;
+    for (const o of v.oiseaux) {
+      // battements par séries, puis vol plané
+      const plane = Math.sin(t * 0.7 + o.ph) > 0.35;
+      const b = plane ? 0.25 : Math.sin(t * o.f * 2 * Math.PI / 3 + o.ph);
+      const x = v.x + o.dx, y = v.y + o.dy + (plane ? 0 : b * 0.6), s = v.s;
+      ctx.beginPath();
+      ctx.moveTo(x - s, y - s * (0.35 + 0.45 * b));
+      ctx.quadraticCurveTo(x - s * 0.45, y - s * 0.2 * (1 + b), x, y);
+      ctx.quadraticCurveTo(x + s * 0.45, y - s * 0.2 * (1 + b), x + s, y - s * (0.35 + 0.45 * b));
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+/* ---------- bateaux ---------- */
+function nouveauBateau(x0, y0, n0) {
+  if (bateaux.length >= MAX_BATEAUX) return;
+  const libres = Object.keys(TYPES).filter(n => !bateaux.some(b => b.n === n));
+  const n = n0 || choisir(libres), T = TYPES[n];
+  // profondeur : la ligne de flottaison, de l'horizon jusqu'au bord de l'étal ; on évite deux bateaux trop proches en hauteur
+  let y, essais = 0;
+  do { y = y0 || hasard(212, 298); essais++; } while (!y0 && (essais < 20 && bateaux.some(b => Math.abs(b.y - y) < 14)));
+  const L = 2.35 * (y - HORIZON) * T.l;
+  const dir = Math.random() < 0.5 ? 1 : -1;
+  const x = x0 != null ? x0 : (dir > 0 ? BORD_CABANE - L * 0.6 : 1280 + L * 0.6);
+  bateaux.push({ n, T, y, L, dir, x, v: 0.12 * L + 5 + hasard(-1, 2), ph: hasard(0, 6.3), ph2: hasard(0, 6.3), emis: 0 });
+  bateaux.sort((a, b) => a.y - b.y);
+}
+function majBateaux() {
+  if ((prochainBateau -= dt) <= 0) { nouveauBateau(); prochainBateau = hasard(5, 13); }
+  for (let k = bateaux.length - 1; k >= 0; k--) {
+    const b = bateaux[k];
+    b.x += b.dir * b.v * dt;
+    if ((b.dir > 0 && b.x - b.L / 2 > 1290) || (b.dir < 0 && b.x + b.L / 2 < BORD_CABANE - 10)) { bateaux.splice(k, 1); continue; }
+    // écume du sillage : de petits traits blancs laissés à l'arrière, qui s'allongent et s'effacent
+    b.emis += dt;
+    const pas = 0.05;
+    while (b.emis > pas) {
+      b.emis -= pas;
+      const arr = b.x - b.dir * b.L * 0.47;
+      sillage.push({ x: arr + hasard(-1, 1) * b.L * 0.02, y: b.y + hasard(-0.5, 1) * b.L * 0.012, L: b.L, age: 0, vie: hasard(2.2, 3.6),
+                     cote: Math.random() < 0.5 ? -1 : 1, dir: b.dir });
+    }
+  }
+  for (let k = sillage.length - 1; k >= 0; k--) { const p = sillage[k]; p.age += dt; if (p.age > p.vie) sillage.splice(k, 1); }
+}
+function dessinerSillage() {
+  ctx.save(); ctx.lineCap = 'round';
+  const blanc = 255 - 55 * meteo;
+  for (const p of sillage) {
+    const u = p.age / p.vie, a = Math.pow(1 - u, 1.6) * 0.75;
+    const len = p.L * (0.025 + 0.07 * u), ep = Math.max(0.8, p.L * 0.012 * (1 - 0.5 * u));
+    const y = p.y + p.cote * p.L * 0.018 * u;           // le sillage s'ouvre un peu en s'éloignant
+    ctx.strokeStyle = `rgba(${blanc},${blanc + 0},${blanc},${a})`; ctx.lineWidth = ep;
+    ctx.beginPath(); ctx.moveTo(p.x - len / 2, y); ctx.lineTo(p.x + len / 2, y); ctx.stroke();
+  }
+  ctx.restore();
+}
+function dessinerBateau(b) {
+  const T = b.T, ech = b.L / T.w;
+  const houle = 0.4 + 1.8 * meteo, roulis = (0.5 + 2.6 * meteo) * Math.PI / 180;
+  const dy = Math.sin(t * 1.4 + b.ph) * houle * b.L / 120;
+  const rot = Math.sin(t * 0.95 + b.ph2) * roulis;
+  ctx.save();
+  ctx.translate(b.x, b.y + dy); ctx.rotate(rot);
+  const miroir = b.dir !== T.cap ? -1 : 1;
+  ctx.scale(miroir * ech, ech);
+  const larg = b.L * K;                  // largeur voulue, en pixels du canvas
+  if (meteo < 0.996) ctx.drawImage(niveau(mips[b.n], larg), -T.w / 2, -T.wl, T.w, T.h);
+  if (meteo > 0.004) { ctx.globalAlpha = meteo; ctx.drawImage(niveau(mipsS[b.n], larg), -T.w / 2, -T.wl, T.w, T.h); ctx.globalAlpha = 1; }
+  // feux allumés par mauvais temps (fenêtres chaudes, feu de mât blanc), et leur reflet sur l'eau
+  if (meteo > 0.02) {
+    ctx.globalCompositeOperation = 'lighter';
+    for (const [fxp, fyp, k] of T.feux) {
+      const x = fxp - T.w / 2, y = fyp - T.wl;
+      const scint = 0.85 + 0.15 * Math.sin(t * 9 + fxp);
+      const r = (k === 'm' ? 1.5 + 0.022 * b.L : 2.5 + 0.04 * b.L) / ech;   // rayon voulu dans la scène, ramené à l'image
+      ctx.globalAlpha = meteo * scint;
+      ctx.drawImage(k === 'm' ? SPR.mat : SPR.fenetre, x - r, y - r, 2 * r, 2 * r);
+      if (k === 'f') {                                   // reflet tremblant sous le bateau
+        const rh = T.h * 0.5, rw = r * 0.45, ox = Math.sin(t * 5 + fxp) * rw * 0.3;
+        ctx.globalAlpha = meteo; ctx.drawImage(SPR.reflet, x - rw / 2 + ox, 4, rw, rh);
+      }
+      ctx.globalAlpha = 1;
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  ctx.restore();
+  // écume le long de la coque et vague d'étrave (en coordonnées de la scène, sans le roulis) :
+  // une bande blanche au bord supérieur bosselé, cernée d'un trait bleuté, comme les vagues peintes
+  const yv = b.y + dy, L = b.L, blanc = 255 - 60 * meteo;
+  const x0 = b.x - b.dir * L * 0.46, x1 = b.x + b.dir * L * 0.47;      // de la poupe à l'étrave
+  const N = 18, haut = [];
+  for (let i = 0; i <= N; i++) {
+    const u = i / N, x = x0 + (x1 - x0) * u;
+    const h = L * (0.004 + 0.016 * Math.pow(Math.max(0, Math.sin(t * 4.5 + i * 2.3 + b.ph)), 2) + 0.032 * Math.pow(u, 5));  // plus haute à l'étrave
+    haut.push([x, yv - h]);
+  }
+  const bas = L * 0.005;
+  ctx.save();
+  ctx.beginPath(); ctx.moveTo(x0, yv + bas);
+  for (let i = 0; i < haut.length - 1; i++) {
+    const [ax, ay] = haut[i], [bx, by] = haut[i + 1];
+    ctx.quadraticCurveTo(ax, ay, (ax + bx) / 2, (ay + by) / 2);
+  }
+  const [ex, ey] = haut[haut.length - 1];
+  ctx.quadraticCurveTo(ex + b.dir * L * 0.03, ey, ex + b.dir * L * 0.05, yv + bas * 0.3);
+  ctx.quadraticCurveTo(b.x, yv + bas * 1.6, x0, yv + bas);
+  ctx.closePath();
+  ctx.fillStyle = `rgba(${blanc},${blanc + 2},${blanc + 4},0.9)`; ctx.fill();
+  // seul le bord bosselé est cerné, comme l'écume peinte
+  ctx.beginPath(); ctx.moveTo(haut[0][0], haut[0][1]);
+  for (let i = 0; i < haut.length - 1; i++) { const [ax, ay] = haut[i], [bx, by] = haut[i + 1]; ctx.quadraticCurveTo(ax, ay, (ax + bx) / 2, (ay + by) / 2); }
+  ctx.strokeStyle = `rgba(60,110,140,${0.5 - 0.2 * meteo})`; ctx.lineWidth = Math.max(0.6, L * 0.0035); ctx.stroke();
+  ctx.restore();
+}
+
+/* ---------- cabane, étal, lampe et sa lumière ---------- */
+function premierPlan() {
+  if (meteo < 0.996) ctx.drawImage(etalBeau, 0, 0, 1280, 800);   // opaque pendant le fondu ; retiré ensuite (pas de liseré clair)
+  if (meteo > 0.004) { ctx.globalAlpha = meteo >= 0.996 ? 1 : meteo; ctx.drawImage(etalOrage, 0, 0, 1280, 800); ctx.globalAlpha = 1; }
+}
+let flamme = { x: 0, y: 0 }, intensite = 1;
+function lampe() {
+  // balancement : un pendule poussé par la brise, ou par les rafales par mauvais temps
+  const rafale = 0.6 + 0.4 * Math.sin(t * 0.37) * Math.sin(t * 0.23 + 1);
+  const amp = 1.2 + 3.3 * meteo;
+  const ang = (amp * rafale * Math.sin(t * 2 * Math.PI / 1.9) + 0.2 * amp * Math.sin(t * 3.1)) * Math.PI / 180;
+  const s = LAMPE.s, dx = (LAMPE.fx - LAMPE.hx) * s, dy = (LAMPE.fy - LAMPE.hy) * s;
+  flamme.x = ACCROCHE.x + dx * Math.cos(ang) - dy * Math.sin(ang);
+  flamme.y = ACCROCHE.y + dx * Math.sin(ang) + dy * Math.cos(ang);
+  intensite = 0.9 + 0.05 * Math.sin(t * 13.7) + 0.04 * Math.sin(t * 23.1 + 1) + 0.03 * Math.sin(t * 5.3);
+  // la lampe : éteinte par beau temps, allumée par-dessus en fondu
+  ctx.save(); ctx.translate(ACCROCHE.x, ACCROCHE.y); ctx.rotate(ang);
+  const e = IMG['lampe-eteinte'], a = IMG.lampe;
+  if (meteo < 0.996) ctx.drawImage(e, -LAMPE.ex * s, -LAMPE.ey * s, e.width * s, e.height * s);
+  if (meteo > 0.004) { ctx.globalAlpha = meteo >= 0.996 ? 1 : meteo; ctx.drawImage(a, -LAMPE.hx * s, -LAMPE.hy * s, a.width * s, a.height * s); }
+  ctx.restore();
+}
+/* ---------- effets au premier plan : halo, pluie, éclaboussures, bords assombris ---------- */
+function initPluie() {
+  for (let i = 0; i < 630; i++) gouttes.push(nouvelleGoutte(true));   // jusqu'à 150 % (réglage)
+}
+function nouvelleGoutte(partout) {
+  const pres = Math.random() < 0.3;                 // un tiers de gouttes proches, plus grandes et plus rapides
+  return { x: hasard(-100, 1400), y: partout ? hasard(-40, 800) : hasard(-60, -10), pres,
+           v: pres ? hasard(1150, 1450) : hasard(700, 950), l: pres ? hasard(22, 34) : hasard(10, 18), a: pres ? hasard(0.3, 0.5) : hasard(0.16, 0.3) };
+}
+let fxVide = true, dernierVoile = '';
+const appliquerVignette = () => { $('voile').style.background = `radial-gradient(ellipse 68% 74% at 50% 48%,rgba(5,10,18,0) ${R.vignetteRayon}%,rgba(5,10,18,${R.vignette * 0.55}) ${(R.vignetteRayon + 100) / 2}%,rgba(5,10,18,${R.vignette}) 100%)`; dernierVoile = ''; };
+function effets() {
+  const m = meteo.toFixed(3);
+  if (m !== dernierVoile) {             // voiles CSS : seulement quand le temps change
+    dernierVoile = m;
+    $('voile').style.opacity = m; $('nuit').style.opacity = (meteo * R.nuit).toFixed(3);
+    $('captVoile').style.opacity = (meteo * R.capt).toFixed(3);
+    const b = 1 - (1 - R.monnaie) * meteo, w = R.monnaieChaud * meteo;
+    $('caisse').style.filter = Math.abs(b - 1) < 0.005 && w < 0.005 ? 'none' : `brightness(${b.toFixed(3)}) sepia(${w.toFixed(3)})`;
+  }
+  if (meteo < 0.004) { if (!fxVide) { fx.clearRect(0, 0, 1280, 800); fxVide = true; } return; }
+  fxVide = false;
+  fx.clearRect(0, 0, 1280, 800);
+  // halo de la flamme (s'ajoute à ce qui est derrière, y compris la pluie qu'il éclaire)
+  fx.globalCompositeOperation = 'lighter';
+  const H = R.haloTaille;
+  fx.globalAlpha = Math.min(1, meteo * intensite * R.halo);
+  fx.drawImage(SPR.halo, flamme.x - H, flamme.y - H, 2 * H, 2 * H);
+  if (R.halo > 1) { fx.globalAlpha = meteo * intensite * (R.halo - 1); fx.drawImage(SPR.halo, flamme.x - H, flamme.y - H, 2 * H, 2 * H); }
+  fx.globalAlpha = Math.min(1, meteo * intensite);
+  fx.drawImage(SPR.flamme, flamme.x - 36, flamme.y - 36, 72, 72);
+  fx.globalAlpha = 1; fx.globalCompositeOperation = 'source-over';
+  // pluie : poussée par le vent (vers la gauche) ; trois tracés (gouttes lointaines, proches, et celles qu'éclaire la lampe)
+  const vent = -0.2, n = Math.min(gouttes.length, Math.round(420 * R.pluie * qualite)), op = meteo * R.pluieOpac;
+  const loin = new Path2D(), pres = new Path2D(), chaudes = new Path2D();
+  for (let i = 0; i < n; i++) {
+    const d = gouttes[i];
+    d.y += d.v * dt; d.x += d.v * vent * dt;
+    if (d.y > 810 || d.x < -120) { Object.assign(d, nouvelleGoutte(false)); if (d.pres && Math.random() < 0.6) ploufs.push({ x: hasard(340, 1280), y: hasard(330, 505), age: 0 }); continue; }
+    const dx = d.x - flamme.x, dy = d.y - flamme.y;
+    const tr = dx * dx + dy * dy < 190 * 190 ? chaudes : d.pres ? pres : loin;
+    tr.moveTo(d.x, d.y); tr.lineTo(d.x - d.l * vent, d.y - d.l);
+  }
+  fx.lineCap = 'butt';
+  fx.strokeStyle = `rgba(200,214,228,${Math.min(1, 0.23 * op)})`; fx.lineWidth = 1; fx.stroke(loin);
+  fx.strokeStyle = `rgba(205,216,230,${Math.min(1, 0.4 * op)})`; fx.lineWidth = 1.6; fx.stroke(pres);
+  fx.strokeStyle = `rgba(255,214,150,${Math.min(1, 0.6 * op)})`; fx.lineWidth = 1.3; fx.stroke(chaudes);
+  // éclaboussures sur la glace de l'étal
+  if (ploufs.length) {
+    const pl = new Path2D();
+    for (let k = ploufs.length - 1; k >= 0; k--) {
+      const p = ploufs[k]; p.age += dt; const u = p.age / 0.3;
+      if (u >= 1) { ploufs.splice(k, 1); continue; }
+      pl.moveTo(p.x + 2 + 7 * u, p.y); pl.ellipse(p.x, p.y, 2 + 7 * u, 0.8 + 2.2 * u, 0, 0, 2 * Math.PI);
+    }
+    fx.strokeStyle = `rgba(235,242,250,${0.4 * meteo})`; fx.lineWidth = 1; fx.stroke(pl);
+  }
+}
+
+/* ---------- boucle ---------- */
+let fpsN = 0, fpsT = 0, qualite = 1, dtMoy = 1 / 60;
+function image(ms) {
+  if (!VIVANT) return; RAF = requestAnimationFrame(image);
+  if (OPTS.fige?.()) { dernier = 0; return; }
+  OPTS.mesure?.(ms);
+  const s = ms / 1000; dt = Math.min(0.05, dernier ? s - dernier : 0); dernier = s; t += dt;
+  // le temps change en 3 s
+  const pas = dt / 3; meteo += Math.max(-pas, Math.min(pas, meteoCible - meteo));
+  ctx.setTransform(K, 0, 0, K, 0, 0);
+  ciel(); oiseaux(); mer(); jetee(); faisceau();
+  majBateaux(); dessinerSillage(); bateaux.forEach(dessinerBateau);
+  premierPlan(); lampe(); effets(); majSouleves();
+  dtMoy += (dt - dtMoy) * 0.05;
+  if (meteo > 0.5 && dtMoy > 0.021 && qualite > 0.45) { qualite -= 0.15; dtMoy = 1 / 60; }   // moins de gouttes, pas à pas
+  fpsN++; fpsT += dt;
+  if (fpsT > 0.5) { fpsN = 0; fpsT = 0; }
+}
+
+/* ---------- commandes ---------- */
+function poserMeteo(v) {
+  meteoCible = v;
+}
+/* l'orage qui arrive en cours de séance : le pêcheur s'exclame et se met à l'abri (phrases à fabriquer : PHRASES.md) */
+const REPLIQUES_ORAGE = [
+  'Oh là là, voilà la pluie ! Je me mets à l\'abri !',
+  'Le vent se lève ! Vite, à l\'abri !',
+  'Brr, l\'orage arrive ! Je rentre dans ma cabane.',
+  'Tempête en vue ! J\'allume ma lampe et je me mets à l\'abri.'
+];
+let orageA = null, derniereReplique = OPTS.derniereReplique ?? -1;
+function programmerOrage() {            // tiré à l'ouverture : l'orage viendra-t-il, et quand ?
+  orageA = !meteoCible && Math.random() * 100 < R.orageProba ? t + 60 * hasard(R.orageMin, Math.max(R.orageMin, R.orageMax)) : null;
+}
+function orageArrive() {
+  orageA = null; poserMeteo(1);
+  let k; do { k = Math.floor(Math.random() * REPLIQUES_ORAGE.length); } while (k === derniereReplique && REPLIQUES_ORAGE.length > 1);
+  derniereReplique = k;
+  return k;                             // les premières gouttes, puis la réplique, dite par la voix de l'application
+}
+function direMaquette(texte) {                  // maquette : la bulle seule (les voix seront fabriquées plus tard avec Chatterbox, PHRASES.md)
+  void texte;
+}
+
+/* =====================================================================================
+   La caisse : le portefeuille (images de la vidéo du parent), sa poche à billets, sa poche à pièces,
+   et la soucoupe du comptoir. Billets et pièces sont des éléments HTML déplacés par transformations
+   CSS (composées par la carte graphique, sans redessiner la scène).
+   ===================================================================================== */
+let contenuPf = 'complet', totalVu = false, CONTENU = null, VERROU = false, ETIQ = false;
+const CONTENUS = {                       // en centimes
+  complet: { b: [5000, 2000, 1000, 500, 500], p: [200, 200, 100, 100, 100, 50, 50, 20, 20, 10, 10] },
+  sans1:   { b: [2000, 1000, 500],           p: [200, 200, 200, 50, 50, 20, 10] },
+  billets: { b: [5000, 2000, 2000, 1000, 500], p: [] },
+  peu:     { b: [2000],                      p: [200, 50] }
+};
+const IMG_V = { 10: 'piece-10c', 20: 'piece-20c', 50: 'piece-50c', 100: 'piece-1e', 200: 'piece-2e', 500: 'billet-5', 1000: 'billet-10', 2000: 'billet-20', 5000: 'billet-50' };
+// tailles réelles : billets 120 à 140 mm de large ; pièces 19,75 à 25,75 mm de diamètre (rapports respectés)
+const LARG = { 500: 190, 1000: 201, 2000: 211, 5000: 222, 10: 67, 20: 76, 50: 82, 100: 79, 200: 88 };
+const PF_FERME = { l: 964, t: 586, s: 0.42 }, PF_OUVERT = { l: 659, t: 458, s: 0.915 };
+/* le portefeuille ouvert : l'illustration du parent du portefeuille vide (outils/8-portefeuille-ouvert.py), en deux
+   calques — le portefeuille, et le cuir de devant ; billets et pièces rangés passent entre les deux. Coordonnées en
+   pixels de l'illustration (1 200 × 896), cadre découpé à partir de (110, 184). */
+const PF_IMG = { x0: 110, y0: 184, w: 982, h: 518 };
+const PF_NEUF = { l: 657, t: 460, s: 0.598 };
+const enScene = (x, y) => [PF_NEUF.l + PF_NEUF.s * (x - PF_IMG.x0), PF_NEUF.t + PF_NEUF.s * (y - PF_IMG.y0)];
+const BORD_AVANT = [[110, 290], [200, 294], [300, 308], [400, 317], [480, 327], [520, 329], [620, 318], [720, 317], [800, 308], [880, 304], [960, 297], [1040, 290], [1090, 285]];
+const interp = (P, x) => { for (let i = 1; i < P.length; i++) if (x <= P[i][0]) { const [a, b] = [P[i - 1], P[i]]; return a[1] + (b[1] - a[1]) * (x - a[0]) / (b[0] - a[0]); } return P[P.length - 1][1]; };
+const BORD_POCHE_P = [[676, 538], [690, 538], [720, 556], [750, 562], [780, 568], [810, 575], [840, 578], [870, 577], [900, 573], [930, 567], [960, 561], [990, 555], [1020, 545], [1042, 542]];
+const SOUC = { x: 468, y: 690, rx: 185, ry: 95 };
+let pfEtat = 'ferme', items = [], ordreS = 0;    // ferme · anim · ouvert (argent rangé) · sorti (argent dehors)
+const pfEl = $('pf'), pfCtx = pfEl.getContext('2d'), fondEl = $('pfFond'), avEl = $('pfAvant');
+const vers = (o, xf, yf) => [o.l + o.s * xf, o.t + o.s * yf];
+const dessinerPf = k => { pfCtx.clearRect(0, 0, 640, 422); pfCtx.drawImage(IMG['portefeuille/p' + String(k).padStart(2, '0')], 0, 0); };
+const transfoPf = o => `translate(${o.l}px,${o.t}px) scale(${o.s})`;
+function preparerPfNeuf() {
+  for (const el of [fondEl, avEl]) { el.style.width = PF_IMG.w + 'px'; el.style.transform = `translate(${PF_NEUF.l}px,${PF_NEUF.t}px) scale(${PF_NEUF.s})`; }
+}
+const neufVu = v => { fondEl.style.opacity = avEl.style.opacity = v ? 1 : 0; fondEl.classList.toggle('vu', v); pfEl.style.opacity = v ? 0 : 1; };
+
+function remplirPortefeuille() {
+  items.forEach(it => it.el.remove()); items = [];
+  const C = CONTENU ?? CONTENUS[contenuPf];
+  for (const v of [...C.b, ...C.p]) {
+    const el = document.createElement('img'); el.src = OPTS.images + IMG_V[v] + '.webp'; el.className = 'm'; el.draggable = false;
+    el.style.width = LARG[v] + 'px'; el.style.opacity = 0;
+    const it = { v, b: v >= 500, lieu: 'poche', el, x: 0, y: 0, r: 0, sc: 1, z: 4, op: 0, h: hasard(0, 1) };
+    el.addEventListener('pointerdown', e => attraper(e, it));
+    $('caisse').appendChild(el); items.push(it);
+  }
+  if (pfEtat === 'sorti') pfEtat = 'ouvert';
+  disposer(); majTotal();
+}
+function poser(it, x, y, r, sc, z, op = 1, touchable = true) {
+  Object.assign(it, { x, y, r, sc, z, op });
+  it.el.style.transform = `translate(${x}px,${y}px) translate(-50%,-50%) rotate(${r}deg) scale(${sc})`;
+  it.el.style.zIndex = z; it.el.style.opacity = op; it.el.style.pointerEvents = op && touchable ? 'auto' : 'none';
+  etiquette(it);
+}
+const hauteur = it => LARG[it.v] * (it.b ? 0.55 : 1);
+const tries = (lieu, b) => items.filter(i => i.lieu === lieu && i.b === b).sort((x, y) => y.v - x.v);
+// rangés : billets dans la grande poche, pièces dans la poche à pièces (entre le fond et le devant du cuir)
+function posRangee(it, k, n) {
+  if (it.b) {                            // dans la grande poche : le haut dépasse, comme dans l'illustration
+    const sc = 1, xi = 645 + (k - (n - 1) / 2) * Math.min(90, 250 / Math.max(1, n - 1 || 1)) + (it.h - 0.5) * 16;   // centres entre 520 et 770 : les billets restent dans la poche
+    const haut = 108 + (k % 3) * 20 + it.h * 16;                       // haut du billet (pixels de l'illustration) ; le bas reste caché, au-dessus du rabat de la poche à pièces
+    const [x, y] = enScene(xi, haut); return [x, y + hauteur(it) * sc / 2, -5 + (k % 3) * 4 + (it.h - 0.5) * 4, sc];
+  }
+  const rang = k % 2, i = Math.floor(k / 2), m = Math.ceil((n - rang) / 2), sc = 0.9;   // deux rangs : derrière plus haut, devant plus bas
+  const xi = 862 + (i - (m - 1) / 2) * Math.min(62, 200 / Math.max(1, m - 1 || 1)) + (rang ? 26 : -8);
+  const bas = interp(BORD_POCHE_P, xi);                                  // un peu plus de la moitié de la pièce dépasse du bord de la poche
+  const [x, y] = enScene(xi, bas - (rang ? 12 : 36) - it.h * 8);
+  return [x, y, (it.h - 0.5) * 40, sc];
+}
+// sortis : billets en éventail en haut, pièces en rang dessous
+function posSortie(it, k, n) {
+  if (it.b) { const d = k - (n - 1) / 2, pas = Math.min(112, 700 / Math.max(1, n)); return [820 + d * pas, 318 + Math.abs(d) * 6, d * 4, 1]; }
+  const pas = Math.min(94, 960 / Math.max(1, n)); return [772 + (k - (n - 1) / 2) * pas, 420 + (k % 2) * 6, (k * 37) % 30 - 15, 1];
+}
+function disposer() {
+  const ouvert = pfEtat === 'ouvert' || pfEtat === 'sorti';
+  for (const b of [true, false]) {
+    tries('poche', b).forEach((it, k, A) => { if (it.transit) return; const [x, y, r, sc] = posRangee(it, k, A.length); poser(it, x, y, r, sc, 4 + (b ? 0 : k % 2), ouvert ? 1 : 0, false); });
+    tries('sortie', b).forEach((it, k, A) => { if (it.transit) return; const [x, y, r, sc] = posSortie(it, k, A.length); poser(it, x, y, r, sc, 20 + k + (b ? 0 : 20)); });
+  }
+  items.filter(i => i.lieu === 'soucoupe').forEach(it => poser(it, it.sx, it.sy, it.sr, it.b ? 0.6 : 0.72, 60 + it.ordre));
+}
+function versSoucoupe(it) {
+  const nB = items.filter(i => i.lieu === 'soucoupe' && i.b).length, nP = items.filter(i => i.lieu === 'soucoupe' && !i.b).length;
+  it.lieu = 'soucoupe'; it.ordre = ++ordreS;
+  if (it.b) { it.sx = 405 + nB * 14 + hasard(-4, 4); it.sy = 680 + nB * 6 + hasard(-3, 3); it.sr = -14 + nB * 6 + hasard(-3, 3); }
+  else { const a = nP * 2.4, r = 14 + nP * 5; it.sx = 548 + Math.cos(a) * Math.min(r, 52) + hasard(-4, 4); it.sy = 690 + Math.sin(a) * Math.min(r * 0.6, 38) + hasard(-3, 3); it.sr = hasard(-30, 30); }
+  disposer(); majTotal();
+}
+function versPortefeuille(it) {         // retour : avec l'argent sorti s'il l'est, sinon dans sa poche
+  it.lieu = pfEtat === 'sorti' ? 'sortie' : 'poche';
+  if (it.lieu === 'poche' && (pfEtat === 'ouvert')) { glisserDedans([it]); return; }
+  disposer(); majTotal();
+}
+function majTotal() {
+  const t = items.filter(i => i.lieu === 'soucoupe').reduce((a, i) => a + i.v, 0);
+  $('total').textContent = t ? fmtPrix(t) : ''; $('total').style.opacity = totalVu ? 1 : 0;
+  OPTS.change?.();
+}
+// au-dessus de sa poche, encore entre le fond et le devant du cuir : l'étape du milieu pour sortir ou rentrer
+function audessus(it) {
+  if (it.b) { const [, y] = enScene(645, 108); return [it.x, y - hauteur(it) * 0.15]; }
+  const [, y] = enScene(860, 470); return [it.x, y - LARG[it.v] * 0.2];   // au-dessus de la poche, devant son rabat
+}
+function sortirTout() {                  // un toucher : billets et pièces sortent ensemble (billets en haut, pièces en bas)
+  pfEtat = 'sorti';
+  const A = items.filter(i => i.lieu === 'poche');
+  A.forEach((it, k) => {
+    it.transit = true; it.lieu = 'sortie';
+    const [x, y] = audessus(it); poser(it, x, y, it.r, it.b ? 1 : 0.8, it.b ? 4 : 30);   // les pièces montent devant le rabat (et le cuir au-dessus)
+    setTimeout(() => { it.transit = false; disposer(); }, 210 + (it.b ? 0 : 25 * k));
+  });
+  disposer();
+}
+function glisserDedans(A, fin) {          // l'argent revient au-dessus de sa poche, puis y redescend derrière le cuir
+  A.forEach(it => {
+    it.lieu = 'poche'; it.transit = true;
+    const [x, y] = audessus(it); poser(it, x, y, 0, it.b ? 1 : 0.8, 30, 1, false);
+    setTimeout(() => { it.el.style.zIndex = 4; it.transit = false; disposer(); }, 300);
+  });
+  disposer(); majTotal();
+  if (fin) setTimeout(fin, 680);
+}
+function rangerEtFermer() {
+  glisserDedans(items.filter(i => i.lieu === 'sortie'), () => { pfEtat = 'ouvert'; fermerPf(); });
+}
+/* ouvrir et fermer : les images de la vidéo, pendant que le portefeuille vient au centre du comptoir */
+function animerPf(ouvrir, fin) {
+  pfEtat = 'anim'; if (!ouvrir) neufVu(false); disposer(); const D = 620, t0 = performance.now();
+  pfEl.style.transition = `transform ${D}ms cubic-bezier(.3,.85,.35,1)`; pfEl.style.transform = transfoPf(ouvrir ? PF_OUVERT : PF_FERME);
+  const pas = now => {
+    const u = Math.max(0, Math.min(1, (now - t0) / D));   // l'horodatage de l'image peut précéder t0
+    dessinerPf(Math.round((ouvrir ? 1 - u : u) * (PF_N - 1)));
+    if (u < 1) requestAnimationFrame(pas); else { pfEtat = ouvrir ? 'ouvert' : 'ferme'; if (ouvrir) neufVu(true); disposer(); fin && fin(); }
+  };
+  requestAnimationFrame(pas);
+}
+const ouvrirPf = () => { if (pfEtat === 'ferme') animerPf(true); };
+const fermerPf = () => { if (pfEtat === 'ouvert') animerPf(false); };
+
+/* toucher et glisser */
+const versScene = e => { const r = $('scene').getBoundingClientRect(), k = r.width / 1280; return [(e.clientX - r.left) / k, (e.clientY - r.top) / k]; };
+let prise = null;
+function attraper(e, it) {
+  if (VERROU || !OPTS.toucher(e) || pfEtat === 'anim' || it.transit || it.lieu === 'poche') return;
+  e.preventDefault(); e.stopPropagation();
+  const [x, y] = versScene(e);
+  prise = { it, x0: x, y0: y, dx: it.x - x, dy: it.y - y, glisse: false, id: e.pointerId };
+  it.el.setPointerCapture(e.pointerId);
+}
+OPTS.on(window, 'pointermove', e => {
+  if (!prise || e.pointerId !== prise.id) return;
+  const [x, y] = versScene(e), it = prise.it;
+  if (!prise.glisse && Math.hypot(x - prise.x0, y - prise.y0) > 8) { prise.glisse = true; it.el.classList.add('glisse'); }
+  if (prise.glisse) poser(it, x + prise.dx, y + prise.dy, it.r, (it.lieu === 'soucoupe' ? (it.b ? 0.6 : 0.72) : 1) * 1.06, 90);
+});
+OPTS.on(window, 'pointerup', e => {
+  if (!prise || e.pointerId !== prise.id) return;
+  const { it, glisse } = prise; prise = null; it.el.classList.remove('glisse');
+  const [x, y] = versScene(e), dansSouc = ((x - SOUC.x) / SOUC.rx) ** 2 + ((y - SOUC.y) / SOUC.ry) ** 2 < 1;
+  if (glisse) {
+    if (dansSouc && it.lieu !== 'soucoupe') versSoucoupe(it);
+    else if (!dansSouc && it.lieu === 'soucoupe') versPortefeuille(it);
+    else disposer();
+  } else if (it.lieu === 'sortie') versSoucoupe(it);       // un toucher : dans la soucoupe
+  else if (it.lieu === 'soucoupe') versPortefeuille(it);   // ou en revient
+});
+// le portefeuille : fermé → un toucher l'ouvre ; ouvert, un toucher dessus sort tout ou range tout (il reste ouvert) ;
+// un toucher à côté (le décor) range ce qui est sorti et le referme, comme pour en sortir
+const toucherPf = e => {
+  if (prise || VERROU || !OPTS.toucher(e)) return;
+  if (pfEtat === 'ferme') ouvrirPf();
+  else if (pfEtat === 'ouvert') sortirTout();
+  else if (pfEtat === 'sorti') glisserDedans(items.filter(i => i.lieu === 'sortie'), () => { pfEtat = 'ouvert'; });
+};
+pfEl.addEventListener('pointerup', toucherPf);
+fondEl.addEventListener('pointerup', toucherPf);
+$('scene').addEventListener('pointerup', e => {
+  if (prise || VERROU || !OPTS.toucher(e) || e.target !== $('scene')) return;
+  if (pfEtat === 'ouvert') fermerPf();
+  else if (pfEtat === 'sorti') rangerEtFermer();
+});
+function caisse() {
+  pfEl.style.transform = transfoPf(PF_FERME); dessinerPf(PF_N - 1); preparerPfNeuf();
+  remplirPortefeuille();
+}
+
+const MONNAIE = ['soucoupe', 'pf-ouvert-fond', 'pf-ouvert-avant', 'piece-10c', 'piece-20c', 'piece-50c', 'piece-1e', 'piece-2e', 'billet-5', 'billet-10', 'billet-20', 'billet-50'];
+const PF_N = 35;                        // images du portefeuille : 0 ouvert … 34 fermé
+/* =====================================================================================
+   RACCORDS AVEC L'APPLICATION (art/tools/export-etal.mjs) : l'exercice conduit la scène
+   ===================================================================================== */
+const attendre = ms => new Promise(ok => setTimeout(ok, ms / (VIT.k || 1)));
+const VIT = { k: 1 };
+/* le produit allumé : posé à part (le calque de l'étal est recomposé sans lui), dans un petit canvas par temps (beau,
+   mauvais), avec son ombre et son ardoise, dessinés par objetsEtal comme les autres ; soulevé, avec un halo */
+let souleves = [];
+function cadre(p) {
+  const D = Math.hypot(p.w, p.h);
+  const x0 = Math.max(0, Math.floor(p.x - D / 2 - 26)), y0 = Math.max(0, Math.floor(p.y - D / 2 - 26));
+  const x1 = Math.min(1280, Math.ceil(Math.max(p.x + D / 2, p.x + p.w * 0.3 + 70) + 26)), y1 = Math.min(800, Math.ceil(Math.max(p.y + D / 2, p.y + p.h * 0.28 + 44) + 26));
+  return { x0, y0, w: x1 - x0, h: y1 - y0 };
+}
+function decoupe(p, orage, r) {
+  const sauve = peche; peche = [{ ...p, cache: false }];
+  const o = objetsEtal(orage); peche = sauve;
+  const c = document.createElement('canvas'); c.width = Math.round(r.w * K); c.height = Math.round(r.h * K);
+  c.getContext('2d').drawImage(o, r.x0 * K, r.y0 * K, c.width, c.height, 0, 0, c.width, c.height);
+  return c;
+}
+function soulever(i) {
+  const p = peche[i], r = cadre(p), d = document.createElement('div'); d.className = 'etal-souleve';
+  Object.assign(d.style, { left: r.x0 + 'px', top: r.y0 + 'px', width: r.w + 'px', height: r.h + 'px' });
+  d.style.setProperty('--dx', (FENETRE.x - (r.x0 + r.w / 2)) + 'px'); d.style.setProperty('--dy', (FENETRE.y - (r.y0 + r.h / 2)) + 'px');
+  const b = decoupe(p, false, r), o = decoupe(p, true, r); o.style.opacity = meteo;
+  d.append(b, o); d.dataset.produit = p.n;
+  $('scene').insertBefore(d, $('scene').firstChild);
+  souleves.push({ i, el: d, b, o, m: meteo });
+  requestAnimationFrame(() => requestAnimationFrame(() => d.classList.add('allume')));
+}
+function majSouleves() { for (const s of souleves) if (Math.abs(s.m - meteo) > 0.004) { s.m = meteo; s.o.style.opacity = meteo.toFixed(3); } }
+function retirerSouleves() { souleves.forEach(s => s.el.remove()); souleves = []; }
+/* l'argent : sa valeur écrite (cran « plus facile », aide), le halo de l'objet compté */
+const ecrite = v => v >= 100 ? (v / 100) + ' €' : v + ' c';
+function etiquette(it) {
+  const voir = ETIQ && it.lieu !== 'poche' && it.op > 0;
+  if (!voir) { if (it.lab) it.lab.style.opacity = 0; return; }
+  if (!it.lab) { it.lab = document.createElement('div'); it.lab.className = 'etal-valeur'; it.lab.textContent = ecrite(it.v); $('caisse').appendChild(it.lab); }
+  it.lab.style.transform = 'translate(' + it.x + 'px,' + (it.y + hauteur(it) * it.sc * 0.42) + 'px) translate(-50%,-50%)';
+  it.lab.style.zIndex = it.z + 1; it.lab.style.opacity = 1;
+}
+const enSoucoupe = () => items.filter(i => i.lieu === 'soucoupe');
+const nouvelObjet = v => {
+  const el = document.createElement('img'); el.src = OPTS.images + IMG_V[v] + '.webp'; el.className = 'm'; el.draggable = false;
+  el.style.width = LARG[v] + 'px'; el.style.opacity = 0;
+  const it = { v, b: v >= 500, lieu: 'poche', el, x: 0, y: 0, r: 0, sc: 1, z: 4, op: 0, h: hasard(0, 1) };
+  el.addEventListener('pointerdown', e => attraper(e, it));
+  $('caisse').appendChild(el); items.push(it); return it;
+};
+const oter = it => { it.el.remove(); it.lab?.remove(); items = items.filter(x => x !== it); };
+const FENETRE = { x: 150, y: 330 };                  // là où le pêcheur prend l'argent et d'où il pose la monnaie
+const API = {
+  // ---- la pêche du jour
+  produits: Object.keys(PRODUITS),
+  // les 8 produits de l'étal : nom, prix (centimes), place
+  peche: () => peche.map(p => ({ n: p.n, prix: p.prix, x: p.x, y: p.y, w: p.w, h: p.h })),
+  // une nouvelle question : des produits remplacés (achetés à la question d'avant), des prix changés, des produits allumés ;
+  // le calque de l'étal est recomposé une seule fois
+  question({ remplacer = [], prix = {}, allumes = [] } = {}) {
+    retirerSouleves();
+    for (const [i, n, c] of remplacer) { peche[i].n = n; peche[i].prix = c; }
+    for (const i in prix) peche[i].prix = prix[i];
+    peche.forEach((p, i) => { p.cache = allumes.includes(i); });
+    composerEtal();
+    allumes.forEach(soulever);
+  },
+  // les produits allumés reviennent à leur place, sans halo (ils restent posés à part jusqu'à la question suivante)
+  eteindre() { souleves.forEach(s => s.el.classList.remove('allume')); },
+  rallumer() { souleves.forEach(s => s.el.classList.add('allume')); },
+  // le produit acheté est emballé : il glisse hors de l'étal, vers la fenêtre du pêcheur
+  async emballer() { souleves.forEach(s => s.el.classList.add('emballe')); await attendre(900); souleves.forEach(s => { s.el.style.visibility = 'hidden'; }); },
+  // ---- le portefeuille
+  // regarni à chaque question (valeurs en centimes) ; ce qui est dans la soucoupe revient d'abord au portefeuille
+  remplir(valeurs) {
+    const v = valeurs.slice().sort((a, b) => b - a);
+    CONTENU = { b: v.filter(x => x >= 500), p: v.filter(x => x < 500) };
+    items.forEach(it => it.lab?.remove());
+    remplirPortefeuille();
+  },
+  // le portefeuille montré ou caché (au niveau 7, le paiement est déjà dans la soucoupe)
+  visible(v) { for (const e of [pfEl, fondEl, avEl]) e.style.visibility = v ? '' : 'hidden'; items.filter(i => i.lieu !== 'soucoupe').forEach(i => { i.el.style.visibility = v ? '' : 'hidden'; if (i.lab) i.lab.style.visibility = v ? '' : 'hidden'; }); },
+  async ouvrir() { if (pfEtat === 'ferme') ouvrirPf(); while (pfEtat === 'anim' || pfEtat === 'ferme') await attendre(40); },
+  sortir() { if (pfEtat === 'ouvert') sortirTout(); },
+  async fermer() { if (pfEtat === 'sorti') rangerEtFermer(); else if (pfEtat === 'ouvert') fermerPf(); await attendre(900); },
+  // ---- la soucoupe
+  soucoupe: () => enSoucoupe().sort((a, b) => a.ordre - b.ordre).map(i => i.v),
+  // les objets de la soucoupe, du plus gros au plus petit (l'ordre du compte du pêcheur)
+  objets: () => enSoucoupe().sort((a, b) => b.v - a.v || a.ordre - b.ordre),
+  total: () => enSoucoupe().reduce((a, i) => a + i.v, 0),
+  // le total écrit au-dessus de la soucoupe (cran « plus facile », aide, compte)
+  totalVu(v) { totalVu = !!v; majTotal(); },
+  // la valeur écrite sur l'argent sorti et posé
+  etiquettes(v) { ETIQ = !!v; items.forEach(etiquette); },
+  verrou(v) { VERROU = !!v; $('scene').classList.toggle('verrou', VERROU); },
+  // l'objet compté : un halo
+  halo(it, on = true) { it?.el.classList.toggle('compte', on); },
+  sansHalo() { items.forEach(i => i.el.classList.remove('compte')); },
+  // des objets de la soucoupe reviennent au portefeuille (rangés, ou avec l'argent sorti)
+  async rendre(objets = enSoucoupe()) { for (const it of objets.slice()) { it.el.classList.remove('compte'); versPortefeuille(it); } await attendre(700); },
+  // un objet du portefeuille va dans la soucoupe, comme le doigt (correction, parcours de test) ; null s'il n'y en a pas
+  async deposer(v) {
+    let it = items.find(i => i.v === v && i.lieu === 'sortie') ?? items.find(i => i.v === v && i.lieu === 'poche');
+    if (!it) return null;
+    if (it.lieu === 'poche') { await API.ouvrir(); if (pfEtat === 'ouvert') sortirTout(); await attendre(420); }
+    if (it.lieu === 'soucoupe') return null;
+    versSoucoupe(it); return it;
+  },
+  // le pêcheur prend l'argent : il glisse vers sa fenêtre et s'efface
+  async prendre() {
+    const A = enSoucoupe();
+    A.forEach((it, k) => setTimeout(() => { poser(it, FENETRE.x + k * 6, FENETRE.y, it.r, 0.35, 95, 0, false); }, k * 90 / (VIT.k || 1)));
+    await attendre(650 + A.length * 90); A.forEach(oter); majTotal();
+  },
+  // le pêcheur pose une pièce ou un billet de sa caisse dans la soucoupe (la monnaie qu'il rend, ou le billet du niveau 7)
+  async poserMonnaie(v, { aussitot = false } = {}) {
+    const it = nouvelObjet(v);
+    poser(it, FENETRE.x, FENETRE.y, 0, 0.4, 95, 0, false); it.lieu = 'caisse';
+    if (!aussitot) await attendre(30);
+    it.rendu = true; versSoucoupe(it); if (!aussitot) await attendre(420);
+    return it;
+  },
+  // la monnaie rendue rejoint le portefeuille de l'enfant
+  async rangerRendu() { const A = enSoucoupe(); A.forEach(it => { it.rendu = false; versPortefeuille(it); }); await attendre(700); },
+  // ---- le temps qu'il fait
+  get meteo() { return meteoCible; },
+  // l'orage arrive (une fois par partie au plus) : renvoie le numéro de la réplique (textes.json, etalOrage)
+  orage() { const k = orageArrive(); return { k, derniere: derniereReplique }; },
+  // ---- la vitesse des gestes (corrections, « passer »)
+  vitesse(k) { VIT.k = k; },
+  // ---- pour les parcours de test
+  etat: () => ({ pf: pfEtat, meteo, meteoCible, qualite, items: items.map(i => ({ v: i.v, lieu: i.lieu })), soucoupe: API.soucoupe(), allumes: souleves.map(s => peche[s.i]?.n), peche: API.peche(), verrou: VERROU }),
+  stop() { VIVANT = false; cancelAnimationFrame(RAF); retirerSouleves(); },
+};
+const PRET = Promise.all([...NOMS, ...Object.keys(PRODUITS).map(n => 'produit-' + n), ...MONNAIE,
+             ...Array.from({ length: PF_N }, (_, k) => 'portefeuille/p' + String(k).padStart(2, '0'))].map(charger).concat(police())).then(() => {
+  preparer(); initPluie();
+  poserMeteo(OPTS.meteo ? 1 : 0); meteo = meteoCible;
+  nouveauBateau(hasard(450, 700)); nouveauBateau(hasard(850, 1150));
+  appliquerVignette(); caisse();
+  RAF = requestAnimationFrame(image);
+});
+API.pret = PRET;
+return API;
+
+})();
+return { decor: DECOR, scene: SCENE, api: API0 };
+}

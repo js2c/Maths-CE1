@@ -160,17 +160,38 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .bulle.tuile .bulle-texte, .bulle.large .bulle-texte { font-size: 26px; }
 .bulle.pop { animation: bulle-pop 0.38s ease-out; }
 @keyframes bulle-pop { 0% { transform: scale(0.9); opacity: 0.4; } 70% { transform: scale(1); opacity: 1; } 85% { transform: scale(0.985); } 100% { transform: scale(1); } }
-/* (lot « Correctifs de la tablette ») l'écran de démarrage (session/demarrage.js) : par-dessus tout, l'eau profonde, plus
-   claire en haut à gauche (la lumière) ; le logo, la barre de chargement, les petites lignes d'information. Chargement fini :
-   le logo invite au toucher ; touché, l'écran s'efface en fondu */
-.demarrage { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; z-index: 100; cursor: pointer; touch-action: none;
-  background: radial-gradient(ellipse 900px 640px at 28% 18%, #17808c 0%, #0f6773 45%, #0b5563 75%, #08434e 100%); }
-.demarrage > canvas { position: absolute; display: block; pointer-events: none; }
+/* (lot « Correctifs de la tablette ») l'écran de démarrage (session/demarrage.js) : par-dessus tout ; touché, il s'efface en
+   fondu. (Lot « Correctifs : passage de l'échauffement aux voiliers », point 9) le logo et ses mouvements sont ceux de la
+   maquette art/logo/index.html, avec ses valeurs : le fond d'eau et sa lumière, le voile des bords, le va-et-vient du logo
+   (3,6 s), l'ombre à contre-temps, le tour de l'étoile (1,2 s, puis 2 s d'arrêt), la barre qui luit une fois pleine,
+   « Toucher pour continuer » qui apparaît (0,5 s) puis avance et recule (2,4 s). Des transformations seulement : rien
+   n'est redessiné. */
+.demarrage { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; z-index: 100; cursor: pointer; touch-action: none; overflow: hidden; background: #0a4a55; }
+.demarrage > canvas, .demarrage > .demarrage-couche { position: absolute; display: block; pointer-events: none; }
+.demarrage-couche { left: 0; top: 0; width: 1280px; height: 800px; }
+.demarrage-fond { background:
+  radial-gradient(ellipse 760px 520px at 50% -6%, rgba(120, 214, 214, 0.45) 0%, rgba(80, 180, 186, 0.18) 45%, rgba(0, 0, 0, 0) 75%),
+  radial-gradient(ellipse 1100px 720px at 50% 42%, #146f7a 0%, #11646f 55%, #0b4f5b 100%); }
+.demarrage-voile { background: radial-gradient(ellipse 900px 620px at 50% 46%, rgba(0,0,0,0) 55%, rgba(3, 30, 38, 0.35) 100%); }
+.demarrage-logo { position: absolute; transform-origin: 50% 55%; animation: demarrage-respire 3.6s ease-in-out infinite; will-change: transform; pointer-events: none; }
+.demarrage-logo img { position: absolute; display: block; pointer-events: none; user-select: none; -webkit-user-drag: none; }
+.demarrage-ombre { animation: demarrage-ombre 3.6s ease-in-out infinite; will-change: transform, opacity; }
+.demarrage-etoile { transform-origin: 50% 52%; animation: demarrage-tour 3.2s infinite; will-change: transform; }
+@keyframes demarrage-respire { 0%, 100% { transform: scale(0.975) translateY(3px); } 50% { transform: scale(1.03) translateY(-5px); } }
+@keyframes demarrage-ombre { 0%, 100% { transform: translate(4px, 10px) scale(0.99); opacity: 0.75; } 50% { transform: translate(8px, 24px) scale(1.02); opacity: 0.5; } }
+@keyframes demarrage-tour { 0% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.45, 0, 0.3, 1); } 37.5%, 100% { transform: rotate(360deg); } }
 .demarrage-barre.plein { transition: clip-path 0.25s linear; }
-.demarrage.pret .demarrage-logo { animation: invite 1.6s ease-in-out infinite; }
 .demarrage.pret .demarrage-barre { animation: barre-prete 1.6s ease-in-out infinite; }
 @keyframes barre-prete { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.12); } }
+.demarrage-continuer { position: absolute; left: 340px; top: 652px; width: 600px; height: 64px; display: flex; align-items: center; justify-content: center;
+  font: 600 38px/1 "Shantell Sans", system-ui, sans-serif; color: #fff; letter-spacing: 0.5px; pointer-events: none; user-select: none;
+  text-shadow: 0 0 1px #fff, 0 0 1px #fff, 2px 2px 0 #15122a, -2px 2px 0 #15122a, 2px -2px 0 #15122a, -2px -2px 0 #15122a, 0 3px 0 #15122a, 3px 0 0 #15122a, 0 -3px 0 #15122a, -3px 0 0 #15122a, 4px 6px 0 rgba(6, 26, 40, 0.45);
+  opacity: 0; transform: scale(0.9); }
+.demarrage.pret .demarrage-continuer { animation: demarrage-apparait 0.5s ease-out forwards, demarrage-va-et-vient 2.4s ease-in-out 0.5s infinite; }
+@keyframes demarrage-apparait { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+@keyframes demarrage-va-et-vient { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 1; transform: scale(1.07); } }
 .demarrage.partir { opacity: 0; transition: opacity 0.4s ease-out; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .demarrage-logo, .demarrage-ombre, .demarrage-etoile { animation-duration: 0s; } .demarrage.pret .demarrage-continuer { animation: demarrage-apparait 0.01s forwards; } }
 
 /* LOT « L'ÉTAL DU PÊCHEUR » (docs/SPEC.md, section 7 quater) : la scène de la maquette (js/etal/etal-scene.js, ses propres
    styles, préfixés « etal- »). Le décor est un canvas de la scène, sous la mascotte ; la caisse (portefeuille, argent,

@@ -38,9 +38,15 @@ const plural = (n, one, many = `${one}s`) => `${n} ${n > 1 ? many : one}`;
 
 // ---------------------------------------------------------------- le logo et son appui long
 // Un simple toucher ne fait rien (l'enfant n'y gagne rien) ; pendant l'appui, un anneau clair se remplit.
-export function parentLogo(app, { onOpen, holdMs = 2000, src = "icons/icon-192.png" }) {
+// (lot « Correctifs : passage de l'échauffement aux voiliers », point 13 ; image donnée par le parent le 10 octobre 2026) le bouton
+// est l'image découpée par art/boutons/decoupe.py (un carré aux coins arrondis, son cadre et son ombre compris), copiée dans
+// assets/boutons/ par art/tools/export-logo.mjs : 108 px de large au lieu de 92, à la même place. L'appui long ne change pas ;
+// l'anneau qui se remplit pendant l'appui suit la forme du bouton, un carré aux coins arrondis (`ANNEAU`), et non plus un cercle.
+export const BOUTON_PARENT = { w: 108, h: 108.8 }, ANNEAU = { marge: 8, rayon: 25 };
+export function parentLogo(app, { onOpen, holdMs = 2000, src = `assets/boutons/parents@${(app.stage?.px ?? 1) > 1.2 ? 2 : 1}x.webp` }) {
   const b = h("button", { class: "logo", "aria-label": "espace parent (appui long)" }, h("img", { src, alt: "", draggable: "false" }));
-  const svg = s("svg", { viewBox: "0 0 116 116" }, s("circle", { cx: 58, cy: 58, r: 52 }));
+  const { w, h: hh } = BOUTON_PARENT, m = ANNEAU.marge, e = 12; // (le calque de l'anneau déborde de 12 px de chaque côté)
+  const svg = s("svg", { viewBox: `0 0 ${w + 2 * e} ${hh + 2 * e}` }, s("rect", { x: e - m, y: e - m, width: w + 2 * m, height: hh + 2 * m, rx: ANNEAU.rayon + m, pathLength: 100 }));
   b.append(svg); b.style.setProperty("--hold", `${holdMs}ms`);
   let timer = null;
   const stop = () => { clearTimeout(timer); timer = null; b.classList.remove("holding"); };
@@ -165,7 +171,7 @@ export class ParentSpace {
     const tabs = [["calendrier", "Calendrier"], ["seances", "Séances"], ["progression", "Progression"], ["donnees", "Données et réglages"]];
     this.tabsEl = h("nav", { class: "pa-tabs", role: "tablist" }, tabs.map(([id, label]) => h("button", { role: "tab", "data-tab": id, "aria-selected": String(id === this.tab), onclick: () => this.show(id) }, label)));
     this.root.append(h("div", { class: "pa-sheet" },
-      h("header", { class: "pa-top" }, h("img", { src: "icons/icon-192.png", alt: "" }), h("div", { class: "pa-grow" }, h("h1", {}, "Espace parent"), h("p", {}, "L'océan des nombres")),
+      h("header", { class: "pa-top" }, h("img", { src: "icons/icone-192.png", alt: "" }), h("div", { class: "pa-grow" }, h("h1", {}, "Espace parent"), h("p", {}, "L'océan des nombres")),
         h("button", { class: "pa-close", onclick: () => this.close() }, "Fermer")),
       this.pauseBlock(), this.tabsEl, this.main));
     this.show(this.tab);

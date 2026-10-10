@@ -53,7 +53,7 @@ import { additionTable, exerciseOf, lessonEnd, lessonsMenu } from "./session/les
 import { clock } from "./engine/clock.js";
 import { onBrief, pop, skipKey } from "./engine/ui.js";
 import { ParentSpace, parentLogo } from "./parent/parent.js";
-import { Demarrage } from "./session/demarrage.js";
+import { chargerLogo, Demarrage } from "./session/demarrage.js";
 import { fermerTout, Portee } from "./engine/portee.js";
 
 // les vidéos de la mascotte (engine/mascotte.js, CLIPS) : autant de pas dans la barre de chargement
@@ -69,10 +69,12 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !loc
 // (lot « Correctifs de la tablette ») L'ÉCRAN DE DÉMARRAGE (session/demarrage.js) : l'atlas et la petite planche du logo
 // d'abord, puis tout le reste, chaque chargement faisant avancer la barre : les contenus et l'index de la voix, les planches
 // du premier écran, les vidéos de la mascotte (créée tout de suite : ses vidéos se chargent pendant le reste)
-const atlas = await loadAtlas();
+// (lot « Correctifs : passage… », point 9 : les images du logo, de la maquette art/logo/, chargées les toutes premières, en même
+// temps que l'atlas ; l'écran ne s'affiche qu'avec un logo décodé)
+const [atlas, logo] = await Promise.all([loadAtlas(), chargerLogo(stage.px).catch(() => null)]);
 const sprites = new Sprites(atlas, stage.px);
 await sprites.load("demarrage").catch(() => {});
-const demarrage = new Demarrage(stage, sprites);
+const demarrage = new Demarrage(stage, sprites, logo);
 performance.mark("demarrage-visible");
 json("version.json").then((v) => demarrage.infos(v?.version), () => demarrage.infos(null));
 // (lot « Mascotte ») le journal des raccords de la mascotte : gardé pour la recette (combien de fondus forcés)
@@ -90,6 +92,9 @@ await Promise.all(["lagon", "lagon-vie", "poissons", "petits", "tortue"].map((s)
 const lagon = new Lagon(stage, sprites, atlas);
 lagon.paintStatic();
 stage.ticks.add((t, dt) => { lagon.update(t, dt); lagon.render(); ocean.update(t, dt); ocean.render(); });
+// (lot « Correctifs : passage… », point 9 : tant que l'écran de démarrage, opaque, couvre tout, la scène ne dessine rien dessous ;
+// ce temps est laissé au chargement et aux mouvements du logo)
+stage.paused = true;
 stage.start();
 // un changement d'échelle (rotation, fenêtre) demanderait d'autres planches : on recharge simplement
 stage.onResize(() => { if (Math.abs(stage.px - sprites.px) > 0.01) location.reload(); });
@@ -748,6 +753,7 @@ async function freeTraining(start = null) {
 await ocean.mascotte.pret;
 const toucheDemarrage = await demarrage.attendreToucher();
 if (toucheDemarrage) { voice.unlock(); sound.unlock(); }
+stage.paused = false; // (la scène reprend sous le fondu de sortie)
 await demarrage.fermer();
 showHome({ done: await doneToday(store), bienvenue: toucheDemarrage });
 requestAnimationFrame(() => requestAnimationFrame(() => { performance.mark("app-ready"); window.__ready = performance.now() - T0; }));

@@ -31,7 +31,7 @@ fond = Image.open(os.path.join(APP, "assets/art/lagon@2x.webp")).convert("RGB").
 fond.save(os.path.join(IMG, "lagon.webp"), quality=80, method=6)
 
 # les pictogrammes de l'application (planches en densité 2, ramenés à 1,5)
-for nom in ["etoile", "maison", "recif", "album", "reecouter", "etoile.doree", "etoile.arc",
+for nom in ["etoile", "maison", "recif", "album", "reecouter", "etoile.arc",
             "album.zone.lagon", "album.zone.corail", "album.zone.large", "album.zone.abysses"]:
     sprite(nom, 0.75).save(os.path.join(IMG, nom.replace(".", "-") + ".webp"), quality=90, method=6)
 # le coquillage doré (première et dernière image de l'ouverture)
@@ -41,6 +41,24 @@ for nom in ["coquillage", "coquillage.or"]:
         _, x, y, w, h, _, _ = s["rects"]["2"][i]
         im = Image.open(os.path.join(APP, "assets/art", s["sheet"] + "@2x.webp")).convert("RGBA").crop((x, y, x + w, y + h))
         im.resize((round(w * .6), round(h * .6)), Image.LANCZOS).save(os.path.join(IMG, f"{nom.replace('.', '-')}-{i}.webp"), quality=90, method=6)
+
+# les légendaires : l'étoile et le coquillage « de platine » (proposition, demande du parent du 10 octobre 2026 : les étoiles de mer
+# sont déjà jaunes, « étoile dorée » prête à confusion) : l'étoile dorée et le coquillage doré de l'atelier, recoloriés (le trait
+# d'encre garde sa couleur, les aplats passent du jaune au platine : gris bleuté clair, reflets presque blancs)
+def platine(im):
+    out = im.copy(); px = out.load()
+    for y in range(out.height):
+        for x in range(out.width):
+            r, g, b, a = px[x, y]
+            if not a: continue
+            l = 0.3 * r + 0.59 * g + 0.11 * b
+            if l < 70: continue
+            t = min(1, (l - 70) / 170) ** 0.8
+            px[x, y] = (round(104 + t * 142), round(116 + t * 134), round(132 + t * 123), a)
+    return out
+platine(sprite("etoile.doree", 0.75)).save(os.path.join(IMG, "etoile-platine.webp"), quality=90, method=6)
+for i in (0, 11):
+    platine(Image.open(os.path.join(IMG, f"coquillage-or-{i}.webp")).convert("RGBA")).save(os.path.join(IMG, f"coquillage-platine-{i}.webp"), quality=90, method=6)
 
 # les créatures : 260 px de grand côté (une vignette fait 150 px de la scène, soit 300 pixels de la tablette au plus)
 CORR = {"benitier": "benitier-geant", "meduse": "meduse-criniere", "ver-tubicole": "ver-tubicole-geant", "requin-du-groenland": "requin-groenland"}

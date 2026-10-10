@@ -83,9 +83,8 @@ button { font: inherit; color: inherit; }
 .vt .prix b { font: 600 36px/1 "Shantell Sans", cursive; color: #18213b; }
 .vt .prix img.et { width: 34px; height: 35px; }
 .vt .prix svg.briller { width: 30px; height: 30px; margin-right: 1px; }
-.vt .prix img.doree { width: 54px; height: 55px; margin-top: -6px; }
+.vt .prix img.platine { width: 54px; height: 55px; margin-top: -6px; }
 .vt .badge { position: absolute; left: -14px; top: -14px; width: 50px; height: 50px; pointer-events: none; }
-.vt .coeur { position: absolute; right: -16px; top: -18px; width: 52px; height: 48px; pointer-events: none; }
 .vt .sablier { width: 36px; height: 40px; pointer-events: none; }
 .vt .sablier svg { width: 100%; height: 100%; display: block; }
 /* pas encore arrivée (arrivages) : une ombre de la créature ; zone fermée : pareil, plus sombre */
@@ -112,12 +111,13 @@ button { font: inherit; color: inherit; }
 .vt.choisie { box-shadow: 0 0 0 2px #18132a, 0 0 0 11px #ff6a3d, 0 0 0 13px #18132a, 7px 8px 0 13px rgba(10, 30, 40, 0.26); animation: invite 1.6s ease-in-out infinite; z-index: 3; }
 .vt.secoue { animation: shake 0.5s ease-out; }
 
-/* le bouton du vœu (le cœur), posé contre la tuile sélectionnée */
-.voeu { position: absolute; width: 78px; height: 78px; border-radius: 50%; padding: 0; border: 0; outline: none; cursor: pointer; z-index: 5;
-  background: radial-gradient(circle at 35% 30%, #fffdf6 0 55%, #f1e8d6 100%); box-shadow: 0 0 0 4px #18132a, 5px 6px 0 4px rgba(10, 30, 40, 0.28); display: none; }
-.voeu svg { position: absolute; left: 13px; top: 15px; width: 52px; height: 48px; pointer-events: none; }
-.voeu.on { background: radial-gradient(circle at 35% 30%, #fff1f3 0 55%, #ffd5dc 100%); }
-.voeu.appelle { animation: invite 0.9s ease-in-out infinite; }
+/* la confirmation d'un achat : une croix rouge (annuler) et une coche verte (acheter), contre la tuile sélectionnée */
+#confirmer { position: absolute; display: none; gap: 18px; z-index: 5; }
+#confirmer.on { display: flex; }
+.conf { position: relative; width: 88px; height: 88px; border-radius: 50%; padding: 0; border: 0; outline: none; cursor: pointer; touch-action: manipulation;
+  background: radial-gradient(circle at 35% 30%, #fffdf6 0 55%, #f1e8d6 100%); box-shadow: 0 0 0 4px #18132a, 6px 7px 0 4px rgba(10, 30, 40, 0.3); }
+.conf svg { position: absolute; left: 14px; top: 14px; width: 60px; height: 60px; pointer-events: none; }
+.conf.oui { animation: invite 1.6s ease-in-out infinite; }
 
 /* le vol des étoiles, la créature qui sort de la vitrine, les étincelles */
 #vol { position: absolute; inset: 0; pointer-events: none; z-index: 30; }
@@ -134,18 +134,7 @@ button { font: inherit; color: inherit; }
 .bulles-deco i { position: absolute; bottom: -20px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.55); background: rgba(255, 255, 255, 0.12); animation: monte linear infinite; }
 @keyframes monte { from { transform: translateY(0); opacity: 0; } 10% { opacity: 1; } to { transform: translateY(-860px); opacity: 0.2; } }
 
-/* la fin de séance (une version simplifiée de la récompense) : la jauge du vœu */
-.voeu-carte { position: absolute; left: 400px; top: 330px; width: 230px; height: 264px; border-radius: 26px; background: linear-gradient(#fdf9f0, #f6efe0); box-shadow: 0 0 0 5px #18132a, 9px 10px 0 5px rgba(10, 30, 40, 0.26); }
-.voeu-carte img.crea { position: absolute; left: 14px; top: 18px; width: 202px; height: 180px; object-fit: contain; }
-.voeu-carte .coeur { position: absolute; right: -22px; top: -24px; width: 66px; height: 61px; }
-.jauge { position: absolute; left: 690px; top: 420px; width: 470px; height: 76px; border-radius: 40px; background: #0e3f4a; box-shadow: 0 0 0 5px #18132a, 7px 8px 0 5px rgba(10, 30, 40, 0.3); overflow: hidden; }
-.jauge .plein { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 40px; background: linear-gradient(#ffe48a, #f7b928 60%, #e39a14); box-shadow: inset 0 6px 0 rgba(255, 255, 255, 0.45), inset -3px 0 0 #b67a0c; transition: width 1.6s cubic-bezier(.3, .8, .3, 1); }
-.jauge .plein.pleine { animation: luit 1.2s ease-in-out infinite; }
-@keyframes luit { 50% { filter: brightness(1.18); } }
-.jauge-txt { position: absolute; left: 690px; top: 512px; width: 470px; display: flex; justify-content: center; align-items: center; gap: 8px; font: 600 44px/1 "Shantell Sans", cursive; color: #fffef8; text-shadow: 0 3px 0 #18132a, 2px 0 0 #18132a, -2px 0 0 #18132a, 0 -2px 0 #18132a; pointer-events: none; }
-.jauge-txt img { width: 44px; height: 45px; }
-.jauge-txt .sur { opacity: 0.85; font-size: 36px; }
-.jauge-etoile { position: absolute; left: 1128px; top: 408px; width: 96px; height: 99px; filter: drop-shadow(4px 5px 0 rgba(10, 30, 40, 0.3)); }
+/* la fin de séance (une version simplifiée de la récompense) */
 .arrivage { position: absolute; left: 700px; top: 520px; display: flex; gap: 20px; }
 .arrivage .mini { position: relative; width: 150px; height: 150px; border-radius: 20px; background: linear-gradient(#fdf9f0, #f6efe0); box-shadow: 0 0 0 4px #18132a, 6px 7px 0 4px rgba(10, 30, 40, 0.26); }
 .arrivage .mini img { position: absolute; left: 12px; top: 12px; width: 126px; height: 126px; object-fit: contain; }
@@ -191,7 +180,7 @@ button { font: inherit; color: inherit; }
       <button class="rond" id="b-retour" style="left:22px;top:14px;width:112px;height:116px" aria-label="retour au récif"></button>
       <div id="onglets"></div>
       <div id="vitrine"></div>
-      <button class="voeu" id="voeu" aria-label="vœu"></button>
+      <div id="confirmer"><button class="conf non" id="annuler" aria-label="annuler"></button><button class="conf oui" id="acheter" aria-label="acheter"></button></div>
     </div>
     <!-- la fin de séance -->
     <div class="ecran" id="fin">
@@ -215,19 +204,16 @@ button { font: inherit; color: inherit; }
   <h3>Le rythme de la collection</h3>
   <label class="choix"><input type="radio" name="mode" value="A"><b>Arrivages</b> : 2 créatures nouvelles arrivent à la boutique chaque semaine d'école (le lundi). Plus de séances donnent plus d'étoiles, mais pas plus de créatures : les étoiles en trop font briller.</label>
   <label class="choix"><input type="radio" name="mode" value="B"><b>Libre</b> : toutes les créatures des zones ouvertes sont en vitrine. Plus de séances, plus vite. La zone suivante s'ouvre quand la zone est finie (et que son contenu est prêt).</label>
-  <h3>Les phrases de la voix</h3>
-  <label class="choix"><input type="radio" name="phrases" value="eco"><b>Économes</b> : « Il te manque… <b>12</b> » (le nombre dit seul, avec les fichiers qui existent déjà). Environ 0,2 Mo de voix en plus.</label>
-  <label class="choix"><input type="radio" name="phrases" value="nat"><b>Naturelles</b> : « Il te manque 12 étoiles. », « Plus que 12 étoiles pour ton vœu ! ». Une phrase par nombre : environ 5 Mo en plus.</label>
   <h3>Les prix</h3>
   <label class="choix"><input type="radio" name="prix" value="propose"><b>Proposés</b> : commune 40, rare 100 ; faire briller 150 et 300.</label>
   <label class="choix"><input type="radio" name="prix" value="cher"><b>Plus chers</b> : commune 50, rare 120 ; faire briller 150 et 300.</label>
   <h3>Simuler</h3>
   <button class="p" id="p-seance">Fin de séance (+ 60 étoiles)</button>
   <button class="p" id="p-lundi">Lundi suivant (arrivage)</button>
-  <p class="petit">« Fin de séance » montre la récompense (la jauge du vœu) ; « Lundi suivant » fait arriver 2 créatures (mode Arrivages).</p>
+  <p class="petit">« Fin de séance » montre la récompense (ouverture d'une zone, légendaire, arrivages) ; « Lundi suivant » fait arriver 2 créatures (mode Arrivages).</p>
   <h3>Étoiles</h3>
   <button class="p clair" data-et="-50">− 50</button><button class="p clair" data-et="10">+ 10</button><button class="p clair" data-et="50">+ 50</button><button class="p clair" data-et="200">+ 200</button><button class="p clair" data-et="0">mettre à 0</button>
-  <button class="p clair" id="p-doree">+ 1 étoile dorée</button>
+  <button class="p clair" id="p-doree">+ 1 étoile de platine</button>
   <h3>Partir de…</h3>
   <button class="p clair" data-pre="rentree">La rentrée (rien)</button><button class="p clair" data-pre="octobre">Octobre (4 créatures)</button><button class="p clair" data-pre="fevrier">Février (30 créatures)</button>
   <h3>Pendant une séance</h3>
@@ -277,7 +263,7 @@ const PRESETS = {
     return { owned, etoiles: 136, arrivees: 34, zones: ["lagon", "corail", "large"], dorees: 1 };
   },
 };
-const base = () => ({ mode: "A", phrases: "eco", prix: "propose", pause: false, voeu: null, nouveautes: [], vues: 0, arrivee: null, gainDernier: 0, ...PRESETS.octobre() });
+const base = () => ({ mode: "A", prix: "propose", pause: false, nouveautes: [], vues: 0, arrivee: null, gainDernier: 0, ...PRESETS.octobre() });
 let S;
 try { S = { ...base(), ...JSON.parse(localStorage.getItem(CLE) || "{}") }; } catch (e) { S = base(); }
 const garder = () => { try { localStorage.setItem(CLE, JSON.stringify(S)); } catch (e) { /* (navigation privée : rien n'est gardé) */ } };
@@ -301,7 +287,7 @@ const prochaineZone = () => { const i = ZONES.indexOf(S.zones.at(-1)); return zo
 const nomLu = (c) => c.nomLu;
 const P = {
   bienvenue: "Bienvenue à la boutique !",
-  consigne: "Touche une créature : je te dis son prix. Touche-la encore pour l'acheter.",
+  consigne: "Touche une créature : je te dis son prix. Pour l'acheter, touche la coche verte.",
   arrivees: "De nouvelles créatures sont arrivées à la boutique !",
   cEst: (c) => `C'est ${nomLu(c)} !`,
   prix: (n) => `Pour l'avoir, il faut ${n} étoiles.`,
@@ -309,20 +295,17 @@ const P = {
   briller: (n) => `Pour la faire briller, il faut ${n} étoiles.`,
   brilleDeja: "Cette créature brille déjà dans ton récif.",
   bientot: "Cette créature arrive bientôt à la boutique !",
-  manque: (n) => (S.phrases === "eco" ? `Il te manque… ${n}` : n === 1 ? "Il te manque une étoile." : `Il te manque ${n} étoiles.`),
-  coeurAide: "Touche le cœur : ce sera ton vœu !",
-  voeuOui: "C'est ton vœu ! Je te dirai combien d'étoiles il te manque.",
-  voeuNon: "Ce n'est plus ton vœu.",
+  coche: "Si tu es d'accord, touche la coche verte.",
+  manque: (n) => (n === 1 ? "Il te manque une étoile." : `Il te manque ${n} étoiles.`),
   achat: "Bravo ! Cette créature va vivre dans ton récif !",
   brillante: "Oh ! Elle est brillante !",
   zoneFinie: "Bravo ! Tu as toutes les créatures de cette zone ! Une nouvelle zone va bientôt s'ouvrir.",
-  legende: () => D.legendaireLu,
+  // (les légendaires : des étoiles de platine, pour ne pas confondre avec les étoiles de mer, jaunes : demande du parent du 10 octobre 2026)
+  legende: "C'est une créature légendaire ! Elle se gagne avec les étoiles de platine.",
   bilan: (n) => `Bravo ! Ce soir, tu as gagné ${n} étoiles de mer.`,
-  voeuJauge: (n) => (S.phrases === "eco" ? `Ton vœu se rapproche ! Il te manque… ${n}` : n === 1 ? "Plus qu'une étoile pour ton vœu !" : `Plus que ${n} étoiles pour ton vœu !`),
-  voeuAssez: "Tu as assez d'étoiles pour ton vœu ! Va vite à la boutique !",
-  sansVoeu: "Tu peux choisir une créature à la boutique !",
+  peutAcheter: "Tu peux choisir une créature à la boutique !",
   premierHabitant: "Et voici son premier habitant !",
-  coquillageDore: "Ton étoile dorée ouvre un coquillage doré !",
+  coquillagePlatine: "Ton étoile de platine ouvre un coquillage de platine !",
 };
 
 // ============================================================================ la scène
@@ -341,7 +324,8 @@ const popper = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.cla
 
 // les dessins de la maquette (style A : aplats, contour d'encre épais, une ombre nette ; à redessiner dans l'atelier à l'intégration)
 const ENCRE = "#18132a";
-const SVG_COEUR = (plein = true) => `<svg viewBox="0 0 52 48"><path d="M26 45 C 8 32 3 22 5 14 C 7 6 17 3 22 8 C 24 10 25 12 26 14 C 27 12 28 10 30 8 C 35 3 45 6 47 14 C 49 22 44 32 26 45 Z" transform="translate(3 3)" fill="rgba(10,30,40,0.3)"/><path d="M26 45 C 8 32 3 22 5 14 C 7 6 17 3 22 8 C 24 10 25 12 26 14 C 27 12 28 10 30 8 C 35 3 45 6 47 14 C 49 22 44 32 26 45 Z" fill="${plein ? "#ff5d73" : "#fff"}" stroke="${ENCRE}" stroke-width="4" stroke-linejoin="round"/>${plein ? '<path d="M12 15 C 13 11 17 10 19 12" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>' : ""}</svg>`;
+const SVG_COCHE = `<svg viewBox="0 0 60 60"><path d="M10 33 L24 46 L51 14" fill="none" stroke="rgba(10,30,40,0.3)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" transform="translate(3 3)"/><path d="M10 31 L24 44 L51 12" fill="none" stroke="${ENCRE}" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 31 L24 44 L51 12" fill="none" stroke="#3fb76a" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 30 L23 39" stroke="#a8ecbe" stroke-width="3" stroke-linecap="round"/></svg>`;
+const SVG_CROIX = `<svg viewBox="0 0 60 60"><g transform="translate(3 3)" stroke="rgba(10,30,40,0.3)" stroke-width="14" stroke-linecap="round"><path d="M15 15 L45 45"/><path d="M45 15 L15 45"/></g><g stroke="${ENCRE}" stroke-width="15" stroke-linecap="round"><path d="M15 15 L45 45"/><path d="M45 15 L15 45"/></g><g stroke="#e5484d" stroke-width="8" stroke-linecap="round"><path d="M15 15 L45 45"/><path d="M45 15 L15 45"/></g><path d="M17 16 L24 23" stroke="#ffb3b5" stroke-width="2.6" stroke-linecap="round"/></svg>`;
 const SVG_ETINCELLE = (c = "#fff6c4") => `<svg viewBox="-12 -12 24 24"><path d="M0 -11 C 1.6 -3 3 -1.6 11 0 C 3 1.6 1.6 3 0 11 C -1.6 3 -3 1.6 -11 0 C -3 -1.6 -1.6 -3 0 -11 Z" fill="${c}" stroke="${ENCRE}" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
 const SVG_BRILLER = `<svg viewBox="0 0 30 30" class="briller"><g transform="translate(13 15)"><path d="M0 -12 C 1.8 -3.5 3.5 -1.8 12 0 C 3.5 1.8 1.8 3.5 0 12 C -1.8 3.5 -3.5 1.8 -12 0 C -3.5 -1.8 -1.8 -3.5 0 -12 Z" fill="#ffe36b" stroke="${ENCRE}" stroke-width="2.2" stroke-linejoin="round"/></g><g transform="translate(24 6) scale(0.42)"><path d="M0 -12 C 1.8 -3.5 3.5 -1.8 12 0 C 3.5 1.8 1.8 3.5 0 12 C -1.8 3.5 -3.5 1.8 -12 0 C -3.5 -1.8 -1.8 -3.5 0 -12 Z" fill="#bfe9ff" stroke="${ENCRE}" stroke-width="4" stroke-linejoin="round"/></g></svg>`;
 const SVG_SABLIER = `<svg viewBox="0 0 40 44"><g transform="translate(2.5 3)" fill="rgba(10,30,40,0.25)"><path d="M8 3 H32 V8 C32 15 24 18 24 22 C24 26 32 29 32 36 V41 H8 V36 C8 29 16 26 16 22 C16 18 8 15 8 8 Z"/></g><path d="M8 3 H32 V8 C32 15 24 18 24 22 C24 26 32 29 32 36 V41 H8 V36 C8 29 16 26 16 22 C16 18 8 15 8 8 Z" fill="#dff3f6" stroke="${ENCRE}" stroke-width="3" stroke-linejoin="round"/><path d="M12 9 H28 C27 13 22 15 20 18 C18 15 13 13 12 9 Z" fill="#f2c25a"/><path d="M11 38 C12 33 17 31 20 30 C23 31 28 33 29 38 Z" fill="#f2c25a"/><path d="M20 19 V30" stroke="#e0a83a" stroke-width="2"/><rect x="5" y="1" width="30" height="5" rx="2.5" fill="#b77a45" stroke="${ENCRE}" stroke-width="3"/><rect x="5" y="38" width="30" height="5" rx="2.5" fill="#b77a45" stroke="${ENCRE}" stroke-width="3"/></svg>`;
@@ -392,11 +376,11 @@ function dire(texte, { tuile = null } = {}) {
 function obstaclesTuile(tuile) {
   const r = rect(tuile), autres = [...document.querySelectorAll("#vitrine .vt")].filter((t) => t !== tuile).map(rect);
   const durs = [r, rect($("#b-retour")), [MASCOTTE.x, MASCOTTE.y, MASCOTTE.x + MASCOTTE.w, MASCOTTE.y + MASCOTTE.h], ...[...document.querySelectorAll(".onglet")].map(rect)];
-  const v = $("#voeu"); if (v.style.display === "block") durs.push(rect(v));
+  if ($("#confirmer").classList.contains("on")) for (const b of document.querySelectorAll(".conf")) durs.push(rect(b));
   return { durs, souples: [rect($("#compteur")), ...autres] };
 }
 $("#tete").addEventListener("click", () => { popper(tete); tete.classList.remove("tape"); void tete.offsetWidth; tete.classList.add("tape"); if (verrou) return;
-  if (ecran === "boutique" && !dernier?.vt) dire(P.consigne); else if (dernier) dire(dernier.texte, { tuile: dernier.vt?.isConnected ? dernier.vt : null }); });
+  if (ecran === "boutique" && !dernier?.tuile) dire(P.consigne); else if (dernier) dire(dernier.texte, { tuile: dernier.tuile?.isConnected ? dernier.tuile : null }); });
 
 // ============================================================================ le compteur d'étoiles
 const compteur = $("#compteur"), cpt = compteur.querySelector("span");
@@ -492,13 +476,13 @@ function tuileHTML(c) {
   if (e === "vendre") prix = `<b>${prixDe(c)}</b>${et}`;
   else if (e === "terne") prix = `${SVG_BRILLER}<b>${prixBriller(c)}</b>${et}`;
   else if (e === "bientot") prix = `<div class="sablier">${SVG_SABLIER}</div>`;
-  else if (e === "legende") prix = `<img class="doree" src="${src("img/etoile-doree.webp")}" alt="">`;
+  else if (e === "legende") prix = `<img class="platine" src="${src("img/etoile-platine.webp")}" alt="">`;
   if (S.owned[c.id]) badge = `<img class="badge" src="${src("img/recif.webp")}" alt="">`;
   const eti = [[18, 22, 0], [128, 30, 0.8], [132, 112, 1.5], [26, 108, 2.1]].map(([x, y, d]) => `<div class="etincelle" style="left:${x}px;top:${y}px;animation-delay:${d}s">${SVG_ETINCELLE()}</div>`).join("");
-  return `<img class="crea" src="${src(`img/creatures/${c.id}.webp`)}" alt=""><div class="prix">${prix}</div>${badge}<div class="reflet"></div>${eti}` + (S.voeu === c.id ? `<div class="coeur">${SVG_COEUR()}</div>` : "");
+  return `<img class="crea" src="${src(`img/creatures/${c.id}.webp`)}" alt=""><div class="prix">${prix}</div>${badge}<div class="reflet"></div>${eti}`;
 }
 function dessinerVitrine() {
-  const v = $("#vitrine"); v.innerHTML = ""; $("#voeu").style.display = "none";
+  const v = $("#vitrine"); v.innerHTML = ""; $("#confirmer").classList.remove("on");
   parZone(zoneVue).forEach((c, i) => {
     const e = etat(c), b = document.createElement("button");
     b.className = `vt ${c.rarete} ${e}` + (e === "brillante" ? " brillante" : "") + (e === "legende" ? " cachee" : "") + (S.nouveautes.includes(c.id) ? " nouvelle" : "");
@@ -509,53 +493,40 @@ function dessinerVitrine() {
     v.append(b);
   });
 }
-function deselection() { if (choisie) choisie.classList.remove("choisie"); choisie = null; $("#voeu").style.display = "none"; bulle.ancrer(null); }
-$("#boutique").addEventListener("click", (e) => { if (e.target.closest(".vt, .voeu, .onglet, .rond")) return; if (!verrou) deselection(); });
-function placerCoeur(b) {
-  const v = $("#voeu"), [x0, y0, x1, y1] = rect(b), e = etat(FICHE[b.dataset.id]);
-  if (e !== "vendre" && e !== "terne") { v.style.display = "none"; return; }
-  v.style.display = "block"; v.classList.toggle("on", S.voeu === b.dataset.id); v.innerHTML = SVG_COEUR(S.voeu === b.dataset.id);
-  // sur le coin haut droit de la tuile, là où se posera le petit cœur du vœu (rien d'une tuile voisine n'est caché)
-  v.style.left = `${Math.min(x1 - 50, 1280 - 82)}px`; v.style.top = `${y0 - 32}px`; v.classList.remove("appelle");
+function deselection() { if (choisie) choisie.classList.remove("choisie"); choisie = null; $("#confirmer").classList.remove("on"); bulle.ancrer(null); }
+$("#boutique").addEventListener("click", (e) => { if (e.target.closest(".vt, .conf, .onglet, .rond")) return; if (!verrou) deselection(); });
+// la croix et la coche, seulement quand elle a assez d'étoiles : sous la tuile (au-dessus pour la dernière rangée)
+const coutDe = (c) => (etat(c) === "vendre" ? prixDe(c) : etat(c) === "terne" ? prixBriller(c) : null);
+function placerConfirmation(b) {
+  const k = $("#confirmer"), c = FICHE[b.dataset.id], cout = coutDe(c), [x0, y0, x1, y1] = rect(b);
+  if (cout === null || S.etoiles < cout) { k.classList.remove("on"); return; }
+  const l = 88 * 2 + 18; k.style.left = `${Math.min(1272 - l, (x0 + x1) / 2 - l / 2)}px`; k.style.top = `${y1 + 92 > 800 ? y0 - 66 : y1 + 2}px`; k.classList.add("on");
 }
 // premier toucher : la tuile est sélectionnée, la mascotte dit ce que c'est et son prix ; second toucher : elle achète
 async function toucherTuile(b, c) {
   if (verrou) return;
   const e = etat(c);
   if (S.nouveautes.includes(c.id)) { S.nouveautes = S.nouveautes.filter((x) => x !== c.id); b.classList.remove("nouvelle"); garder(); }
-  if (choisie !== b) {
-    deselection(); choisie = b; choisieT = Date.now(); b.classList.add("choisie"); placerCoeur(b);
-    dire(texteTuile(c, e), { tuile: b });
-    return;
-  }
-  if (Date.now() - choisieT < 300) return; // un doigt qui rebondit ne lance rien
-  if (e === "vendre") return S.etoiles >= prixDe(c) ? acheter(b, c) : manque(b, c, prixDe(c));
-  if (e === "terne") return S.etoiles >= prixBriller(c) ? fairebriller(b, c) : manque(b, c, prixBriller(c));
-  dire(texteTuile(c, e), { tuile: b });
+  if (choisie !== b) { deselection(); choisie = b; b.classList.add("choisie"); }
+  // (un second toucher redit la même chose : seule la coche verte achète, demande du parent du 10 octobre 2026)
+  placerConfirmation(b); dire(texteTuile(c, e), { tuile: b });
 }
 function texteTuile(c, e) {
-  if (e === "vendre") return `${P.cEst(c)} ${P.prix(prixDe(c))}`;
-  if (e === "terne") return `${P.cEst(c)} ${P.dejaLa} ${P.briller(prixBriller(c))}`;
+  const suite = (cout) => (S.etoiles >= cout ? P.coche : P.manque(cout - S.etoiles));
+  if (e === "vendre") return `${P.cEst(c)} ${P.prix(prixDe(c))} ${suite(prixDe(c))}`;
+  if (e === "terne") return `${P.cEst(c)} ${P.dejaLa} ${P.briller(prixBriller(c))} ${suite(prixBriller(c))}`;
   if (e === "brillante" || e === "legende-a-toi") return `${P.cEst(c)} ${P.brilleDeja}`;
   if (e === "bientot") return P.bientot;
-  if (e === "legende") return P.legende();
+  if (e === "legende") return P.legende;
   if (e === "fermee") return D.zones.find((z) => z.id === c.zone).fermeeLu;
   return P.cEst(c);
 }
-async function manque(b, c, prix) {
-  b.classList.remove("secoue"); void b.offsetWidth; b.classList.add("secoue"); b.addEventListener("animationend", () => { b.classList.remove("secoue"); }, { once: true });
-  const n = prix - S.etoiles, aide = S.voeu !== c.id;
-  await dire(P.manque(n), { tuile: b });
-  if (aide && choisie === b && !verrou) { dire(P.coeurAide, { tuile: b }); $("#voeu").classList.add("appelle"); }
-}
-$("#voeu").addEventListener("click", (ev) => {
+$("#acheter").addEventListener("click", (ev) => {
   ev.stopPropagation(); if (verrou || !choisie) return;
-  const id = choisie.dataset.id, v = $("#voeu"); popper(v);
-  S.voeu = S.voeu === id ? null : id; garder();
-  for (const t of document.querySelectorAll("#vitrine .vt")) t.innerHTML = tuileHTML(FICHE[t.dataset.id]);
-  placerCoeur(choisie);
-  dire(S.voeu ? P.voeuOui : P.voeuNon, { tuile: choisie });
+  const b = choisie, c = FICHE[b.dataset.id], e = etat(c); popper(ev.currentTarget);
+  if (e === "vendre" && S.etoiles >= prixDe(c)) acheter(b, c); else if (e === "terne" && S.etoiles >= prixBriller(c)) fairebriller(b, c);
 });
+$("#annuler").addEventListener("click", (ev) => { ev.stopPropagation(); if (verrou) return; popper(ev.currentTarget); clearTimeout(dire.t); bulle.silence(); mascotte("attente"); setTimeout(deselection, 150); });
 
 // ---------------------------------------------------------------------------- l'achat : les étoiles volent vers la créature
 async function volEtoiles(cible, prix) {
@@ -585,10 +556,10 @@ function gerbe([x, y], n = 14, r = 120) {
   }
 }
 async function acheter(b, c) {
-  verrou = true; $("#voeu").style.display = "none"; b.classList.remove("choisie"); bulle.ancrer(null); bulle.cacher();
+  verrou = true; $("#confirmer").classList.remove("on"); b.classList.remove("choisie"); bulle.ancrer(null); bulle.cacher();
   await volEtoiles(b, prixDe(c));
   const brillante = Math.random() < CHANCE_BRILLANTE;
-  S.owned[c.id] = { b: brillante }; if (S.voeu === c.id) S.voeu = null; S.arrivee = c.id; garder();
+  S.owned[c.id] = { b: brillante }; S.arrivee = c.id; garder();
   // la créature sort de la vitrine, grandit au milieu, puis part vers le récif
   const crea = b.querySelector(".crea"), [x0, y0, x1, y1] = rect(crea), vol = $("#vol"), im = new Image(); im.src = crea.src;
   im.style.width = `${x1 - x0}px`; im.style.height = `${y1 - y0}px`; im.style.objectFit = "contain"; vol.append(im);
@@ -607,9 +578,9 @@ async function acheter(b, c) {
   if (zoneFinie(c.zone) && S.zones.at(-1) === c.zone && ZONES.indexOf(c.zone) < ZONES.length - 1) dire(P.zoneFinie);
 }
 async function fairebriller(b, c) {
-  verrou = true; $("#voeu").style.display = "none"; b.classList.remove("choisie"); bulle.ancrer(null); bulle.cacher();
+  verrou = true; $("#confirmer").classList.remove("on"); b.classList.remove("choisie"); bulle.ancrer(null); bulle.cacher();
   await volEtoiles(b, prixBriller(c));
-  S.owned[c.id].b = true; if (S.voeu === c.id) S.voeu = null; garder();
+  S.owned[c.id].b = true; garder();
   gerbe(centre(b), 16, 130); mascotte("joie", 3000);
   b.className = `vt ${c.rarete} brillante`; b.innerHTML = tuileHTML(c); popper(b);
   await dire(`${P.cEst(c)} ${P.brillante}`, { tuile: b });
@@ -617,7 +588,7 @@ async function fairebriller(b, c) {
 }
 $("#b-retour").addEventListener("click", (e) => { if (verrou) return; popper(e.currentTarget); setTimeout(() => aller("recif"), 250); });
 
-// ---------------------------------------------------------------------------- la fin de séance (simplifiée) : bilan, occasions, vœu
+// ---------------------------------------------------------------------------- la fin de séance (simplifiée) : bilan, occasions, arrivages
 async function montrerFin() {
   const f = $("#fin-contenu"); f.innerHTML = ""; $("#f-recif").style.visibility = "hidden"; verrou = true;
   const gain = S.gainDernier || 60, avant = S.etoiles - gain;
@@ -630,7 +601,7 @@ async function montrerFin() {
       { duration: 1300, delay: 200 + i * 90, easing: "ease-in", fill: "forwards" }).finished.then(() => im.remove())); }
   animerCompteur(avant, S.etoiles, 1300 + 12 * 90);
   await dire(P.bilan(gain)); await Promise.all(vols);
-  // 2. les occasions du coquillage : une zone qui s'ouvre (son premier habitant offert), une légendaire (étoile dorée)
+  // 2. les occasions du coquillage : une zone qui s'ouvre (son premier habitant offert), une légendaire (étoile de platine)
   const z = prochaineZone();
   if (z) {
     S.zones.push(z); const zo = D.zones.find((x) => x.id === z), offert = gagnables(z).find((c) => c.rarete === "commune" && !S.owned[c.id]);
@@ -638,7 +609,7 @@ async function montrerFin() {
     S.owned[offert.id] = { b: false }; garder();
   }
   const leg = D.cartes.find((c) => c.rarete === "legendaire" && S.zones.includes(c.zone) && !S.owned[c.id] && zoneFinie(c.zone));
-  if (leg && S.dorees > 0) { S.dorees--; await coquillage("img/coquillage-or-0.webp", "img/coquillage-or-11.webp", leg, `${P.coquillageDore} ${P.cEst(leg)}`); S.owned[leg.id] = { b: false }; garder(); }
+  if (leg && S.dorees > 0) { S.dorees--; await coquillage("img/coquillage-platine-0.webp", "img/coquillage-platine-11.webp", leg, `${P.coquillagePlatine} ${P.cEst(leg)}`); S.owned[leg.id] = { b: false }; garder(); }
   // 3. les arrivages de la semaine (mode Arrivages)
   if (S.mode === "A" && S.nouveautes.length) {
     const a = document.createElement("div"); a.className = "arrivage"; a.style.left = "560px"; a.style.top = "360px";
@@ -646,19 +617,8 @@ async function montrerFin() {
     for (const m of a.children) popper(m);
     await dire(P.arrivees); await attendre(400); a.remove();
   }
-  // 4. le vœu : la jauge, et combien d'étoiles il manque
-  const c = S.voeu && FICHE[S.voeu];
-  if (c) {
-    const prix = S.owned[c.id] ? prixBriller(c) : prixDe(c), have = Math.min(prix, S.etoiles), n = prix - S.etoiles;
-    f.insertAdjacentHTML("beforeend", `<div class="voeu-carte ${c.rarete}"><img class="crea" src="${src(`img/creatures/${c.id}.webp`)}" alt=""><div class="coeur">${SVG_COEUR()}</div></div>
-      <div class="jauge"><div class="plein"></div></div><img class="jauge-etoile" src="${src("img/etoile.webp")}" alt="">
-      <div class="jauge-txt"><span>${have}</span><span class="sur">/ ${prix}</span><img src="${src("img/etoile.webp")}" alt=""></div>`);
-    const plein = f.querySelector(".plein"), avantV = Math.max(0, Math.min(prix, avant));
-    plein.style.transition = "none"; plein.style.width = `${(100 * avantV) / prix}%`; void plein.offsetWidth; plein.style.transition = "";
-    setTimeout(() => { plein.style.width = `${(100 * have) / prix}%`; if (n <= 0) plein.classList.add("pleine"); }, 150);
-    popper(f.querySelector(".voeu-carte"));
-    await dire(`${P.cEst(c)} ${n <= 0 ? P.voeuAssez : P.voeuJauge(n)}`); // (le nom : la phrase « C'est … ! », qui existe déjà)
-  } else if (peutAcheter()) await dire(P.sansVoeu);
+  // 4. de quoi acheter : une invitation à la boutique
+  if (peutAcheter()) await dire(P.peutAcheter);
   $("#f-recif").style.visibility = "visible"; verrou = false;
 }
 async function coquillage(ferme, ouvert, c, texte) {
@@ -677,23 +637,23 @@ for (const ev of ["pointerup", "pointerleave", "pointercancel"]) acces.addEventL
 addEventListener("keydown", (e) => { if (e.key === "p") ouvrirParent(); });
 function ouvrirParent() {
   acces.classList.remove("charge"); $("#parent").classList.add("ouvert");
-  for (const n of ["mode", "phrases", "prix"]) for (const i of document.querySelectorAll(`input[name=${n}]`)) i.checked = i.value === S[n];
+  for (const n of ["mode", "prix"]) for (const i of document.querySelectorAll(`input[name=${n}]`)) i.checked = i.value === S[n];
   $("#p-pause").checked = !!S.pause; etatParent();
 }
 function etatParent() {
   const g = D.cartes.filter((c) => c.rarete !== "legendaire"), nb = g.filter((c) => S.owned[c.id]).length, br = Object.values(S.owned).filter((o) => o.b).length;
   const vitrine = D.cartes.filter((c) => etat(c) === "vendre").length;
   $("#p-etat").innerHTML = `<b>${S.etoiles}</b> étoiles · <b>${nb}</b> créatures sur 55 (+ ${D.cartes.filter((c) => c.rarete === "legendaire" && S.owned[c.id]).length} légendaires sur 5) · <b>${br}</b> brillantes<br>
-    En vitrine : <b>${vitrine}</b> à acheter · zones ouvertes : ${S.zones.length} · vœu : ${S.voeu ? FICHE[S.voeu].nom : "aucun"} · étoiles dorées : ${S.dorees}` + (S.mode === "A" ? ` · arrivées : ${Math.min(S.arrivees, 55)}` : "");
+    En vitrine : <b>${vitrine}</b> à acheter · zones ouvertes : ${S.zones.length} · étoiles de platine : ${S.dorees}` + (S.mode === "A" ? ` · arrivées : ${Math.min(S.arrivees, 55)}` : "");
 }
 function fermerParent() { $("#parent").classList.remove("ouvert"); garder(); aller(ecran === "fin" ? "recif" : ecran); }
 $("#p-fermer").addEventListener("click", fermerParent);
 $("#parent").addEventListener("click", (e) => { if (e.target.id === "parent") fermerParent(); });
-for (const n of ["mode", "phrases", "prix"]) for (const i of document.querySelectorAll(`input[name=${n}]`)) i.addEventListener("change", () => { S[n] = i.value; S.nouveautes = []; garder(); etatParent(); });
+for (const n of ["mode", "prix"]) for (const i of document.querySelectorAll(`input[name=${n}]`)) i.addEventListener("change", () => { S[n] = i.value; S.nouveautes = []; garder(); etatParent(); });
 $("#p-pause").addEventListener("change", (e) => { S.pause = e.target.checked; garder(); });
 for (const b of document.querySelectorAll("[data-et]")) b.addEventListener("click", () => { const d = +b.dataset.et; S.etoiles = d ? Math.max(0, S.etoiles + d) : 0; garder(); etatParent(); });
 $("#p-doree").addEventListener("click", () => { S.dorees++; garder(); etatParent(); });
-for (const b of document.querySelectorAll("[data-pre]")) b.addEventListener("click", () => { Object.assign(S, PRESETS[b.dataset.pre](), { voeu: null, nouveautes: [], arrivee: null }); garder(); etatParent(); });
+for (const b of document.querySelectorAll("[data-pre]")) b.addEventListener("click", () => { Object.assign(S, PRESETS[b.dataset.pre](), { nouveautes: [], arrivee: null }); garder(); etatParent(); });
 $("#p-effacer").addEventListener("click", () => { try { localStorage.removeItem(CLE); } catch (e) {} S = base(); premiereVisite = true; garder(); ouvrirParent(); });
 // une semaine d'école passe : 2 créatures arrivent (mode Arrivages)
 function lundi() {
@@ -720,6 +680,7 @@ $("#p-seance").addEventListener("click", () => {
   $("#r-album").innerHTML = `<img src="${src("img/album.webp")}" alt="">`;
   $("#r-reecouter").innerHTML = `<img src="${src("img/reecouter.webp")}" alt="">`;
   $("#r-boutique").innerHTML = SVG_BOUTIQUE;
+  $("#acheter").innerHTML = SVG_COCHE; $("#annuler").innerHTML = SVG_CROIX;
   $("#b-retour").innerHTML = `<img src="${src("img/recif.webp")}" alt="">`;
   $("#f-recif").innerHTML = `<img src="${src("img/recif.webp")}" alt="">`;
   const deco = $("#deco"); for (let i = 0; i < 9; i++) { const b = document.createElement("i"), r = 6 + (i * 7) % 14; b.style.cssText = `left:${(i * 137) % 1240 + 20}px;width:${r}px;height:${r}px;animation-duration:${9 + (i * 5) % 9}s;animation-delay:${-i * 1.7}s`; deco.append(b); }

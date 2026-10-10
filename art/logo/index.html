@@ -7,6 +7,7 @@
 <!-- MAQUETTE DU LOGO DE DÉMARRAGE, validée par le parent le 10 octobre 2026 (README.md de ce dossier). Référence des mouvements
      pour l'application (app/js/session/demarrage.js) : ne pas la modifier pour l'intégration. -->
 <style>
+@font-face { font-family: "Shantell Sans"; font-style: normal; font-weight: 600; font-display: block; src: url(../../app/assets/polices/shantell-sans-600.woff2) format("woff2"); }
 :root { --eau-haut: #2a8f97; --eau: #146f7a; --eau-bas: #0b4f5b; --fond: #0a4a55; }
 /* l'écran est sous l'eau dans les deux thèmes : mêmes couleurs */
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --eau: #146f7a; --eau-bas: #0b4f5b; --fond: #0a4a55; } }
@@ -39,10 +40,18 @@ body { display: grid; place-items: center; }
 #plein { clip-path: inset(0 97.7% 0 0); transition: clip-path 0.25s linear; }
 #scene.pret .barre { animation: barre-prete 1.6s ease-in-out infinite; }
 @keyframes barre-prete { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.12); } }
-#info { position: absolute; left: 468px; top: 700px; width: 343px; height: 34px; }
+#info { position: absolute; left: 468px; top: 744px; width: 343px; height: 34px; }
+/* chargement fini : « Toucher pour continuer », en blanc et en gras, qui avance et recule doucement */
+#continuer { position: absolute; left: 340px; top: 652px; width: 600px; height: 64px; display: flex; align-items: center; justify-content: center;
+  font: 600 38px/1 "Shantell Sans", system-ui, sans-serif; color: #fff; letter-spacing: 0.5px; pointer-events: none; user-select: none;
+  text-shadow: 0 0 1px #fff, 0 0 1px #fff, 2px 2px 0 #15122a, -2px 2px 0 #15122a, 2px -2px 0 #15122a, -2px -2px 0 #15122a, 0 3px 0 #15122a, 3px 0 0 #15122a, 0 -3px 0 #15122a, -3px 0 0 #15122a, 4px 6px 0 rgba(6, 26, 40, 0.45);
+  opacity: 0; transform: scale(0.9); }
+#scene.pret #continuer { animation: apparait 0.5s ease-out forwards, va-et-vient 2.4s ease-in-out 0.5s infinite; }
+@keyframes apparait { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+@keyframes va-et-vient { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 1; transform: scale(1.07); } }
 #scene.partir { opacity: 0; transition: opacity 0.4s ease-out; }
 #fps { position: fixed; right: 8px; bottom: 6px; font: 12px/1.2 system-ui, sans-serif; color: rgba(200, 235, 235, 0.55); pointer-events: none; }
-@media (prefers-reduced-motion: reduce) { #logo, #ombre, #etoile { animation-duration: 0s; } }
+@media (prefers-reduced-motion: reduce) { #logo, #ombre, #etoile { animation-duration: 0s; } #scene.pret #continuer { animation: apparait 0.01s forwards; } }
 </style>
 </head>
 <body>
@@ -60,6 +69,7 @@ body { display: grid; place-items: center; }
     <canvas id="devant" class="couche"></canvas>
     <img id="vide" class="barre" alt="" src="images/barre-vide.webp">
     <img id="plein" class="barre" alt="" src="images/barre-pleine.webp">
+    <div id="continuer">Toucher pour continuer</div>
     <img id="info" alt="2026 · js2c · version" src="images/info.png">
   </div>
 </div>

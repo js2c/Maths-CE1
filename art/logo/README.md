@@ -16,6 +16,7 @@
 | `images/position.json` | La place et la taille de chaque calque dans la scène de 1280 × 800. |
 | `images/barre-*.webp`, `images/info.png` | Des copies de la barre de chargement et de la ligne « 2026 · js2c · version » de l'application, pour la maquette seulement. L'application garde les siennes. |
 | `index.html` | La maquette : la scène, les mouvements, un chargement simulé, et un compteur d'images par seconde en bas à droite. |
+| `icone.py`, `icone/` | L'icône de l'application, faite à partir des mêmes calques (décision du parent du 10 octobre 2026 ; fiche 8, point 14). `icone-512.png` et `icone-192.png` (« any »), `icone-maskable-512.png` (le logo tient dans le cercle central, qu'Android découpe), `icone-180.png` (iPhone, iPad). On les refait avec `python art/logo/icone.py`. |
 
 **Tester** : depuis la racine du dépôt, lancer `python -m http.server 8080`, puis ouvrir `http://localhost:8080/art/logo/`. Un toucher, une fois le chargement fini, fait disparaître l'écran ; la maquette recommence ensuite.
 
@@ -26,4 +27,5 @@
 - **Les faisceaux** : le code des faisceaux du lagon (`app/js/engine/lagon.js`, maquette du récif vivant), avec les mêmes textures, la même respiration et la même dérive. Ils sont posés de −380 à 1420 px, un peu plus vifs au centre, et redessinés 20 fois par seconde, dans un canvas à la résolution 1x.
 - **Les bulles** : six tailles, dessinées une fois en petites images puis seulement posées. Une colonne de 9 bulles monte à droite du « s », comme dans la référence ; 4 petites montent de l'étoile ; 22 montent dans toute l'eau. Elles oscillent, se déforment à peine, accélèrent selon leur taille et s'effacent en haut. Elles passent derrière le logo.
 - **Les étincelles** : 8 petites croix dorées qui scintillent près des lettres, là où la référence en avait de fixes.
-- **La barre et la ligne d'information** : celles de l'application, à la même place. Une fois le chargement fini, la barre luit doucement.
+- **La barre et la ligne d'information** : celles de l'application. La barre est à la même place ; la ligne d'information descend à 744 px. Une fois le chargement fini, la barre luit doucement.
+- **« Toucher pour continuer »** (ajouté par le parent le 10 octobre, midi) : une fois la barre pleine, ce texte apparaît sous elle, centré sur 652 à 716 px. Il est en blanc, en Shantell Sans 600 (la police de la bulle) à 38 px, cerné de bleu nuit (`#15122a`) avec une ombre portée. Il apparaît en 0,5 s, puis avance et recule doucement (de 1 à 1,07, sur un cycle de 2,4 s).

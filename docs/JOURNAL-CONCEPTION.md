@@ -84,6 +84,7 @@ Fait d'un seul tenant, sans arrêt pour validation (fiche 8 de `docs/LOTS.md`). 
 12. **Les phrases sans voix** sont rangées dans l'espace parent, onglet **Données et réglages**, sous les incidents techniques : une ligne par phrase, cause et version, avec le nombre de fois ; les 100 plus récentes.
 13. **Le titre de l'onglet** du navigateur devient « Maths CE1 », comme le nom de l'application installée.
 14. **Les étiquettes** des tuiles retirées (point 7) restent dans `legendes.json` (la légende du parent s'en sert) ; le nettoyage des textes qui ne servent plus est le travail du lot suivant (fiche 9).
+15. **Le logo, pendant le chargement, bouge à 15 images par seconde au plus** (puis à chaque image une fois tout chargé). La recette a mesuré le démarrage à 11 à 13 s (processeur ralenti 4 fois, sans processeur graphique) contre 8 à 9 s sur `main` ; sans la boucle d'animation, 5 à 6 s ; en dessinant moins, avec la même boucle, aucun gain : c'est la boucle redemandée à chaque rafraîchissement qui oblige la page à fabriquer chaque fois une image complète. Après le correctif : 8 à 10,7 s. La tablette a un processeur graphique, son chargement ne dure que quelques secondes : l'écart se verra peu ; à vérifier sur elle.
 
 ## Lot « L'étal du pêcheur » (10 octobre 2026) : les choix de la session, à revoir par le parent
 

@@ -42,7 +42,9 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Après les cinq lots : le lot « Correctifs de la tablette »** (premier essai du parent sur la tablette, 8 octobre 2026 ; fiche 6). **État : fait** (PR #46, fusionnée ; ses 282 phrases sont fabriquées).
 
-**Puis (essai du parent du 10 octobre 2026) : le lot « Correctifs : passage de l'échauffement aux voiliers »** (fiche 8 : les défauts vus sur la tablette, le nouveau démarrage, l'accueil en deux touchers, la voix de secours, les icônes), **puis le lot « Recette de l'enfant et nettoyage des couches »** (fiche 9). « L'étal du pêcheur » est fusionné (PR #49) : ces deux lots partent de `main` qui le contient, et couvrent aussi l'étal (sa tuile, ses niveaux et ses leçons sont des écrans en deux touchers ; l'enfant imprévisible y joue aussi). Ils ne peuvent pas tourner en même temps qu'un autre lot. **État** : « Correctifs : passage de l'échauffement aux voiliers » **fait** (10 octobre 2026, branche `claude/practical-franklin-gr2y0x`, PR #52, à fusionner ; 12 phrases nouvelles, à fabriquer avec celles de l'étal) ; « Recette de l'enfant et nettoyage des couches » à faire.
+**Puis (essai du parent du 10 octobre 2026) : le lot « Correctifs : passage de l'échauffement aux voiliers »** (fiche 8 : les défauts vus sur la tablette, le nouveau démarrage, l'accueil en deux touchers, la voix de secours, les icônes), **puis le lot « Recette de l'enfant et nettoyage des couches »** (fiche 9). « L'étal du pêcheur » est fusionné (PR #49) : ces deux lots partent de `main` qui le contient, et couvrent aussi l'étal (sa tuile, ses niveaux et ses leçons sont des écrans en deux touchers ; l'enfant imprévisible y joue aussi). Ils ne peuvent pas tourner en même temps qu'un autre lot. **État** : « Correctifs : passage de l'échauffement aux voiliers » **fait** (PR #52, fusionnée le 11 octobre 2026 ; 12 phrases nouvelles, à fabriquer avec celles de l'étal) ; « Recette de l'enfant et nettoyage des couches » à faire, **après la boutique**.
+
+**Ensuite (décision du parent du 11 octobre 2026) : le lot « La boutique du récif »** (fiche 10), **avant** « Recette de l'enfant et nettoyage des couches ». La maquette est arrêtée (`art/boutique/`, PR #51, à fusionner avant de lancer le lot). Le lot remplace le coquillage tiré tous les 25 étoiles par une boutique où l'enfant achète ses créatures. La fiche 9 couvrira donc aussi la boutique. Les voix de l'étal, du lot 8 et de la boutique seront fabriquées d'un coup par le parent, après ce lot (environ 730 phrases ; la limite de la voix passe à 85 Mo). **État : à faire.**
 
 **Pourquoi cet ordre.**
 
@@ -637,7 +639,7 @@ Chacune suivie de « À toi ! » vers son niveau (section 3). Relancées selon l
 
 **Origine** : le parent, le 10 octobre 2026 : « le jeu est devenu un oignon, c'est-à-dire un empilement de couches dont les anciennes sont encore présentes sous la surface, et peuvent créer des bugs ». Il demande une recette où l'on se met dans la peau de l'enfant et où l'on teste tout, y compris les actions inattendues : toucher à côté, passer l'entraînement, revenir au menu en pleine partie pour changer de jeu, etc.
 
-**Quand** : après la fusion du lot « Correctifs : passage de l'échauffement aux voiliers » (fiche 8), dont il prolonge le point 1, et donc après « L'étal du pêcheur » (PR #49), qu'il couvre aussi. Avant tout nouveau lot qui ajoute un écran, pour ne pas ajouter de couche sur une base qu'on n'a pas nettoyée.
+**Quand** : après la fusion du lot « Correctifs : passage de l'échauffement aux voiliers » (fiche 8), dont il prolonge le point 1, et donc après « L'étal du pêcheur » (PR #49), qu'il couvre aussi. **Après « La boutique du récif »** (fiche 10 ; décision du parent du 11 octobre 2026, qui fait passer la boutique en premier) : ce lot **couvre aussi la boutique**. Dans l'inventaire, il faut y ajouter l'écran de la boutique, le bouton du récif, la fin de séance qui y mène, et l'achat en cours d'animation comme façon de sortir. L'enfant imprévisible y joue aussi : tuiles touchées en rafale, coche et croix, maison pendant le vol des étoiles. Ce lot passe avant tout autre lot nouveau qui ajoute un écran.
 
 **Comme les lots 4 à 8 : d'un seul tenant, sans arrêt pour une validation.** Ce lot ne change pas ce que fait l'application ; il retire ce qui ne sert plus et corrige ce qui déraille. Tout changement de comportement visible va dans le journal (« choix de la session, à revoir par le parent ») et dans la demande de fusion.
 
@@ -704,3 +706,121 @@ Chacune suivie de « À toi ! » vers son niveau (section 3). Relancées selon l
 - pour l'enfant imprévisible : le nombre de graines et d'actions, les défauts trouvés, leurs tests de non-régression ;
 - le rapport de l'agent et le traitement de chaque constat ;
 - le temps d'image, avec et sans ralentissement.
+
+### 10. Lot « La boutique du récif »
+
+**Origine** : décisions du parent des 10 et 11 octobre 2026. L'enfant achète les créatures du récif avec ses étoiles de mer, au lieu du coquillage tiré tous les 25 étoiles. La maquette est arrêtée : `art/boutique/` (PR #51), version 3. Son `README.md` contient les décisions du parent (section « Les décisions du parent »), le calibrage par la simulation, les phrases et la liste de ce que l'intégration change. **Le lire en entier avant de commencer**, ainsi que `docs/SPEC.md`, section 10, et la fiche du lot « L'étal du pêcheur » pour la façon de travailler.
+
+**Quand** : après le lot « Correctifs : passage de l'échauffement aux voiliers » (PR #52, fusionnée) et **avant** « Recette de l'enfant et nettoyage des couches » (fiche 9). Décision du parent du 11 octobre 2026, au lieu de l'ordre que proposait la fiche 9. La fiche 9 couvrira donc aussi la boutique.
+
+**Prérequis** : la maquette (PR #51) est fusionnée sur `main`. Sinon, s'arrêter et le dire au parent.
+
+**Comme les lots 4 à 8 : d'un seul tenant, sans arrêt pour une validation.** Les règles sont celles du parent. Les choix laissés à la session vont dans `docs/JOURNAL-CONCEPTION.md`, marqués « choix de la session, à revoir par le parent », et dans une section « Choix faits sans le parent » en tête de la demande de fusion.
+
+**Ce qui fait foi**
+
+- **Les règles** : le tableau « Les décisions du parent » de `art/boutique/README.md`. Il prime sur `docs/SPEC.md`, section 10, que le lot réécrit.
+- **Le comportement à l'écran** : la maquette elle-même (`art/boutique/source.html`). Elle fixe ce que l'enfant voit, entend et touche, l'ordre des animations, les tailles des tuiles, de la coche et de la croix, et la vitesse des étoiles qui volent. Ce qui y est **simplifié** (la mascotte en trois boucles, le récif fixe, la fin de séance réduite à la boutique, les zones 3 et 4 montrées comme prêtes) est remplacé par ce qu'a déjà l'application.
+- **Ce qui change dans le code** : la section « Ce que l'intégration changerait » du README, comme point de départ. La session peut s'en écarter si le code le demande, en le disant.
+
+**Méthode d'intégration** — différente de l'étal : la maquette de la boutique n'est pas une scène à exporter, mais un écran de l'application. **Pas d'outil d'export** : l'écran est écrit dans l'application avec ses modules :
+- la sélection d'une tuile et la bulle qui part de la tuile : `session/selection.js`, comme l'écran « choisir » ;
+- la mascotte, sa bulle et ses réactions : comme partout ;
+- les boutons : ceux de l'application ;
+- le double toucher rapide (lot 8) : **il ne s'applique pas aux tuiles de la boutique**. Seule la coche achète, et c'est une cible à part (voir « Les situations à tenir »).
+
+**L'écran de la boutique** (`session/boutique.js`)
+
+- La vitrine de la zone (15 places, dans l'ordre de l'album), les onglets des 4 zones, le compteur d'étoiles, le retour au récif, la mascotte.
+- Chaque place selon son état : à vendre, pas encore arrivée, déjà dans le récif (faire briller), brillante, légendaire, zone fermée. Le tableau « Une place de la vitrine, selon son état » du README donne ce que dit la mascotte dans chaque cas.
+- La coche verte et la croix rouge (88 px), sous la tuile, ou au-dessus pour la dernière rangée. Elles n'apparaissent que si l'enfant a assez d'étoiles.
+- L'achat et « faire briller », animés comme dans la maquette. Les étoiles volent, le compteur descend avec elles, jamais d'un coup.
+- À la première visite : « Bienvenue à la boutique ! ». À l'entrée et quand on touche la mascotte : la consigne.
+
+**Le récif** (`session/reef.js`, et les raccords de `art/tools/export-recif.mjs`)
+
+- Un bouton de la boutique au-dessus de l'album. Il se balance quand un achat est possible. Il est **absent pendant une séance en pause**.
+- L'arrivée à la nage de la créature achetée, avec son halo.
+- **La maquette du récif vivant n'est pas modifiée.** Le module généré (`app/js/recif/recif-vivant.js`) non plus, à la main : on modifie l'outil d'export, puis on relance l'export (`CLAUDE.md`).
+
+**La récompense de fin de séance** (`session/screens.js`)
+
+- Plus de coquillages ordinaires.
+- **Ordre** : bilan des étoiles, 10 étoiles de la séance, série, coquillage de la série, étoile de diamant, étoiles arc-en-ciel, ouverture de zone et son premier habitant, coquillage de diamant, arrivages de la semaine, invitation à la boutique.
+- Le bouton de fin mène **à la boutique quand un achat est possible**, sinon au récif.
+- **Pas de bouton de la boutique à l'accueil.**
+
+**Les règles** (contenu dans `app/content/cartes.json`, bloc `boutique` et `serie`, jamais en dur dans le code)
+
+- Prix : commune 40 étoiles, rare 100. Faire briller : 150 et 300. Brillante par chance à l'achat : une fois sur cinq.
+- Rythme : **Arrivages par défaut**. Ce sont 2 créatures nouvelles par semaine d'école, le lundi, cumulées depuis la base du quota d'aujourd'hui, sans les légendaires. Le mode **Libre** se choisit dans l'espace parent.
+- Coquillage de la série : toutes les 10 séances de la série, il fait briller une créature possédée tirée au hasard. Si toutes brillent déjà : 20 étoiles. Les 5 étoiles toutes les 3 séances restent.
+- Ouverture d'une zone : règle d'aujourd'hui, plus un premier habitant **tiré au hasard parmi les communes** de la nouvelle zone.
+- Légendaires : la règle ne change pas. Seul le nom change : **étoile de diamant**, **coquillage de diamant**.
+- **On ne perd jamais rien.** Un achat est définitif. Les étoiles au compteur ne baissent que par un achat ou « faire briller ».
+
+**Le diamant dans toute l'application**
+
+- « Étoile dorée » devient **« étoile de diamant »** et « coquillage doré » devient **« coquillage de diamant »** partout : les phrases, l'album (le dos des légendaires et sa phrase), l'espace parent, le guide du parent et `docs/SPEC.md`.
+- Les noms internes des données (`dorees`, `doreesDepensees`) restent.
+- **Le dessin** : l'étoile et le coquillage des légendaires sont redessinés dans l'atelier, d'après la maquette (`svgDiamant` dans `source.html`), au niveau de la craft bar. Le rendu doit être le plus précieux de l'application : blanc irisé, facettes, reflet, étincelles. Le reflet qui passe et les étincelles peuvent être dessinés en direct, comme les brillantes (`CLAUDE.md`, « Animation », niveau 3).
+- **Les pictogrammes** de la maquette (la boutique, la coche, la croix, l'étincelle « briller », le sablier, le cadenas) sont des dessins rapides. Ils sont redessinés dans l'atelier (`art/src/canvas-core/sea/boutique.ts`), en style A.
+
+**Les sauvegardes déjà sur la tablette** : la section du README s'applique. Rien n'est perdu ni converti :
+- les créatures, les brillantes et la série restent ;
+- les étoiles au compteur deviennent dépensables ;
+- les étoiles dorées deviennent des étoiles de diamant ;
+- la base du quota devient celle des arrivages.
+
+Migration non destructive (méthode commune). **Test obligatoire** : une sauvegarde faite avec la version actuelle, avec des cartes, des brillantes, un coquillage qui attendait et des étoiles accumulées, se restaure, et la boutique s'ouvre dessus avec la bonne vitrine.
+
+**L'espace parent**
+- Le réglage du rythme (Arrivages ou Libre).
+- La liste des achats : date, créature, prix, « briller » ou non.
+- L'export, qui la contient.
+- « Étoiles de diamant ».
+
+**Les situations à tenir** (tests unitaires et parcours ; c'est ici que la boutique peut dérailler)
+
+- **Un achat ne se fait jamais à moitié, ni deux fois.** L'achat est enregistré avant l'animation. Les cas à tenir :
+  - toucher la coche deux ou trois fois très vite : un seul achat ;
+  - la maison, ou la page rechargée, pendant le vol des étoiles : au retour, la créature est achetée et les étoiles débitées une seule fois, ou rien du tout ;
+  - le compteur n'est jamais négatif.
+- **Toucher une tuile deux fois n'achète rien.** Toucher ailleurs, ou la croix, annule.
+- La coche n'apparaît jamais sans assez d'étoiles, ni sur une créature pas encore arrivée, légendaire ou d'une zone fermée.
+- **Arrivages** :
+  - une semaine sans séance n'en perd aucune ;
+  - les vacances (semaines sans école, `calendrier.json`) n'en apportent pas ;
+  - le passage du dimanche au lundi en pleine visite ne casse rien ;
+  - les arrivées déjà vues ne sont pas réannoncées.
+- **Zone** : une zone dont le contenu n'est pas prêt ne s'ouvre pas, même si la précédente est complète. La boutique le dit (« Une nouvelle zone va bientôt s'ouvrir. »).
+- **Coquillage de la série** : au bon rang (10, 20…), et 20 étoiles quand tout brille.
+- **« Il te manque N étoiles. »** : N est toujours entre 1 et 299 et a sa phrase.
+
+**Voix** — **aucune voix n'est fabriquée dans ce lot** (`CLAUDE.md`, « Voix ») :
+- Les phrases nouvelles sont celles du README, section « Les phrases » : 23 phrases, plus la série « Il te manque une étoile. » à « Il te manque 299 étoiles. ». Cela fait environ **322 phrases, environ 2,2 Mo**.
+- Elles entrent dans `textes.json` et dans l'inventaire (`tools/voix/inventaire.mjs`).
+- Les phrases qui ne servent plus sont retirées de l'inventaire et listées dans la demande de fusion.
+- **La limite de poids de la voix passe de 80 à 85 Mo** (`tests/unit/voix.test.mjs`), décision du parent du 10 octobre 2026. C'est la seule modification admise de ce test. Elle ne touche pas la règle « chaque phrase a son fichier ».
+- La demande de fusion donne la liste exacte, le nombre et le poids estimé. Elle donne aussi **le total des phrases en attente de voix sur `main` après la fusion** (l'étal, le lot 8 et la boutique), et le poids prévu de la voix.
+
+**La simulation** : `tests/sim-seances.mjs` remplace le bilan des coquillages par celui de la boutique, avec la règle d'achat de `art/boutique/outils/simulation.mjs`.
+- Le résultat avec le code réel de l'application doit retrouver, à quelques jours près, les dates du tableau du README pour le mode Arrivages à 2 séances par semaine : toute la collection en juin, même pour le profil « en difficulté ».
+- Un écart de plus de deux semaines est décrit dans la demande de fusion, avec sa cause.
+
+**Recette, en plus de la méthode commune** :
+- les tests unitaires des règles : prix, vitrine, arrivages, achat, faire briller, coquillage de la série, premier habitant, sauvegarde ancienne ;
+- un parcours `tests/e2e/boutique.mjs`, avec les captures (1280 × 800, 1920 × 1200, et 1138 × 711 densité 2,25) de chaque situation :
+  - la vitrine de chaque zone ;
+  - chaque état de place ;
+  - la coche et la croix, en haut et en bas de la vitrine ;
+  - « il te manque » ;
+  - l'achat, faire briller, une brillante par chance ;
+  - l'arrivée dans le récif ;
+  - la fin de séance qui mène à la boutique, et celle qui mène au récif ;
+  - le coquillage de la série, l'ouverture d'une zone et son premier habitant, l'étoile et le coquillage de diamant, l'album des légendaires ;
+  - l'espace parent ;
+  - la pause sans bouton de boutique ;
+- les situations à tenir, ci-dessus, en parcours ;
+- le temps d'image de la boutique et du récif, avec `perf.mjs` ;
+- la relecture indépendante (méthode commune).

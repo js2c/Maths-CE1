@@ -129,6 +129,21 @@ Le parent a validé la maquette (`art/lecons/`, captures et questions dans `docs
 - **La table d'addition** : de 0 + 0 à 10 + 10 ; cases de 64 px ; la phrase d'une case est « 7 plus 5, 12. » (121 phrases) ; l'appui montré est celui des aides des additions (cadre, reflet, double + 1, sauts, maison) et, au-delà de 10, deux cadres de 10 (le passage de la dizaine), sauf + 1 et + 2 (les sauts) ; rien pour + 0 ; teintes légères des seuls doubles et amis de 10 ; une case compte au premier contact, comme le pavé ; pas d'étoiles (compteur masqué) ; une ligne dans la légende du parent.
 - **L10** : chaque petit filet du chalut montre dix poissons, en deux rangées de cinq.
 
+## Décisions des 10 et 11 octobre 2026 : la boutique du récif
+
+- **La maquette de la boutique est arrêtée** (`art/boutique/`, version 3, PR #51). Le parent a suivi les recommandations de la conception sur les sept questions de la version 2 :
+  - **Arrivages** par défaut : à 2 séances par semaine, ce sont les étoiles qui freinent, pas le rythme ; au-delà, le mode Libre viderait les zones ouvertes, puis laisserait de longues attentes jusqu'au contenu des zones 3 et 4 ;
+  - **40 / 100** étoiles : avec 50 / 120, l'enfant en difficulté à 2 séances par semaine n'aurait pas toute la collection en juin ;
+  - faire briller à **150 / 300**, et la brillante par chance gardée ;
+  - **diamant** plutôt que platine : un mot qu'une enfant de 7 ans comprend, et un rendu plus précieux qu'un gris bleuté ;
+  - le **coquillage de la série** fait briller : il récompense la régularité sans avancer le calendrier de la collection ;
+  - le **premier habitant au hasard parmi les communes** : plus mémorable qu'une créature toujours la même, sans fausser les prix ;
+  - **en fin de séance, le bouton mène à la boutique** quand un achat est possible : l'achat juste après l'effort.
+
+  La règle facultative « faire briller seulement quand rien de nouveau n'est en vitrine » n'a pas été retenue.
+- **L'intégration passe avant le nettoyage des couches** (fiche 9), au lieu de l'ordre que proposait cette fiche (décision du parent du 11 octobre 2026). Conséquence acceptée : la boutique est construite sur la base pas encore nettoyée, et la fiche 9 la couvre en plus.
+- **Les voix de l'étal, du lot 8 et de la boutique sont fabriquées d'un coup, après l'intégration** (décision du parent). D'ici là, rien n'est publié : la tablette garde la version d'avant l'étal.
+
 ## Demandes du 10 octobre 2026, midi (après l'essai sur la tablette)
 
 - **Ajoutées au lot 8** (fiche 8, points 9 à 14) : « Toucher pour continuer » sous la barre ; l'accueil en deux touchers, avec des boutons plus grands en forme de galet ; le double toucher rapide qui lance aussitôt, sur tous les écrans en deux touchers ; la voix de secours entendue et la purge des anciennes voix ; le nouveau bouton de l'espace parent (image du parent) ; l'icône de l'application tirée du logo.

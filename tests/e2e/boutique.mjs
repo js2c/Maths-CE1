@@ -149,15 +149,14 @@ for (const vue of VUES) {
     await tap(page, ".boutique-conf.coche"); await page.waitForTimeout(500);
     const total1 = await page.evaluate(() => window.__app.rewards.total);
     await shot(page, vue, "08-achat-vol-des-etoiles");
-    if (vue[0] === "1280") {
-      await page.waitForTimeout(2100);
-      const cpt = await page.evaluate(() => window.__cpt), inter = [...new Set(cpt.filter((v) => v < 230 && v > total1))];
-      check(total1 === 230 - prix(aVendre[1]) && inter.length >= 2 && cpt.every((v, i) => !i || v <= cpt[i - 1]), `l'achat est enregistré avant l'animation (${total1}), le compteur descend avec les étoiles, jamais d'un coup (${[230, ...inter, total1].join(" → ")})`);
-    }
     await page.waitForSelector(".boutique-voile.on", { timeout: 10000 }); await page.waitForTimeout(900);
     await shot(page, vue, "09-achat-milieu");
     await fini(page); await page.waitForTimeout(400);
     await shot(page, vue, "10-achat-fin");
+    if (vue[0] === "1280") {
+      const cpt = await page.evaluate(() => window.__cpt), inter = [...new Set(cpt.filter((v) => v < 230 && v > total1))];
+      check(total1 === 230 - prix(aVendre[1]) && inter.length >= 2 && cpt.every((v, i) => !i || v <= cpt[i - 1]), `l'achat est enregistré avant l'animation (${total1}), le compteur descend avec les étoiles, jamais d'un coup (${[230, ...inter, total1].join(" → ")})`);
+    }
     if (vue[0] === "1280") check((await vitrine(page))[aVendre[1]] === "terne" && (await page.evaluate(() => window.__app.hud.shown)) === 230 - prix(aVendre[1]), `après l'achat : la créature est dans le récif, le compteur montre ${230 - prix(aVendre[1])}`);
     // une brillante par chance
     await page.evaluate(() => window.__app.rewards.add(200));

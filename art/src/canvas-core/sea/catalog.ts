@@ -7,7 +7,7 @@ import type { Gfx, P } from "../core";
 import { BUBBLE_R, drawAnswerBubble, drawBubble, drawCheck, drawFish, drawMoon, drawEraseKey, drawShellKey, drawSlate, drawReplayKey, drawTally, SLATE_H, SLATE_W, TALLY_H, TALLY_W, drawPlay, drawPlayIcon, drawSpeaker, drawStar, FISH_KINDS, FISH_N } from "./decor";
 import { drawFleche, FLECHE_H, FLECHE_O, FLECHE_W } from "./fleche";
 import { drawTurtle, TURTLE_CLIPS, TURTLE_FPS } from "./turtle";
-import { CARD_H, CARD_W, drawBigShell, drawShinySweep, SWEEP_H, SWEEP_W, drawCardBack, drawCardBanner, drawCardFrame, drawCardVerso, drawCardWater, drawGlint, drawGoldStar, drawHomeKey, drawRainbowStar, drawReefIcon, drawReefKey, SHELL_N } from "./treasure";
+import { CARD_H, CARD_W, drawBigShell, drawShinySweep, SWEEP_H, SWEEP_W, drawCardBack, drawCardBanner, drawCardFrame, drawCardVerso, drawCardWater, drawGlint, drawHomeKey, drawRainbowStar, drawReefIcon, drawReefKey, SHELL_N } from "./treasure";
 import { CRAN_W, drawCranGlow, drawCranKey, GLOW_CR } from "./selector";
 import { drawFishNet, drawTrawl, NET_H, NET_W, TRAWL } from "./hundreds";
 import { DEFI_N, drawRecordFlag, drawScorePearl, drawStepChallenge, drawTimerBubble, TIMER_W } from "./challenge";
@@ -21,6 +21,7 @@ import { GLOW_PAD, drawChooseIcon, drawChooseKey, drawExerciseLine, drawOpenBook
 import { ATOI_R, drawAToiKey, drawBigHomeKey, drawLessonMenuTile, drawLessonsKey, drawRowIcon, drawTableTile, HOME_BIG_S, LESSON_ATOI, LESSON_IDS } from "./lecons";
 import { drawBigFlag, drawCloseKey, drawHintKey, drawLegendKey, drawShrugKey, drawSmallFish, drawStarTrail, drawTagFish, drawTallNet, drawZoneTab, FLAG_N, HOUSE_FISH, LEGEND_R, NETV_H, NETV_W, TAG, TAG_FISH_N, TRAIL_H, TRAIL_W, ZONE_TAB_R } from "./lot3bis";
 import { drawWarmupSkipKey } from "./lot3ter";
+import { drawConfirmNo, drawConfirmYes, drawDiamondStar, drawHourglass, drawPadlock, drawShineIcon, drawShopKey, drawSparkle } from "./boutique";
 import { BAR_H, BAR_W, drawBar } from "./demarrage";
 import { drawGalet, GALET_H, GALET_W } from "./galets";
 import { drawAgainIcon, drawAgainKey, drawAlbumIcon, drawAlbumKey, drawFreeFacts, drawFreeLessons, drawFreeLine, drawMoonDecor, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepGlow, drawStepShell, GLOW_R, STEP_R } from "./ui";
@@ -69,7 +70,18 @@ export const SPECS: Spec[] = [
   { name: "aide", sheet: "petits", W: 150, H: 150, origin: [75, 75], frames: 1, draw: (g) => drawHintKey(g, 75, 75) },
   { name: "valider", sheet: "petits", W: 160, H: 160, origin: [80, 80], frames: 1, draw: (g) => drawCheck(g, 80, 80) },
   { name: "rejouer", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawReplayKey(g, 70, 70) },
-  { name: "etoile.doree", sheet: "petits", W: 120, H: 120, origin: [60, 60], frames: 1, draw: (g) => drawGoldStar(g, 60, 60, 44) },
+  // (lot « La boutique du récif » : l'étoile des légendaires devient l'étoile de diamant, sea/boutique.ts ; son reflet et ses
+  // étincelles sont dessinés en direct, runtime.ts, drawDiamantVif)
+  { name: "etoile.diamant", sheet: "petits", W: 130, H: 130, origin: [65, 65], frames: 1, draw: (g) => drawDiamondStar(g, 65, 65, 44) },
+  // (lot « La boutique du récif ») la boutique : son bouton (le récif, la fin de séance), la coche et la croix de la confirmation,
+  // l'étincelle « briller » des prix, le sablier, le cadenas des zones fermées, les étincelles des brillantes et des gerbes
+  { name: "boutique", sheet: "petits", W: 150, H: 150, origin: [72, 72], frames: 1, draw: (g) => drawShopKey(g, 72, 72) },
+  { name: "boutique.coche", sheet: "boutique", W: 100, H: 100, origin: [48, 48], frames: 1, draw: (g) => drawConfirmYes(g, 48, 48) },
+  { name: "boutique.croix", sheet: "boutique", W: 100, H: 100, origin: [48, 48], frames: 1, draw: (g) => drawConfirmNo(g, 48, 48) },
+  { name: "boutique.briller", sheet: "boutique", W: 36, H: 36, origin: [16, 18], frames: 1, draw: (g) => drawShineIcon(g, 16, 18) },
+  { name: "boutique.sablier", sheet: "boutique", W: 40, H: 48, origin: [19, 23], frames: 1, draw: (g) => drawHourglass(g, 19, 23) },
+  { name: "boutique.cadenas", sheet: "boutique", W: 48, H: 48, origin: [22, 24], frames: 1, draw: (g) => drawPadlock(g, 22, 24) },
+  { name: "etincelle", sheet: "petits", W: 30, H: 30, origin: [14, 14], frames: 2, draw: (g, f) => drawSparkle(g, 14, 14, 11, f ? "#bfe9ff" : "#fff6c4") },
   { name: "etoile.arc", sheet: "petits", W: 120, H: 120, origin: [60, 60], frames: 1, draw: (g) => drawRainbowStar(g, 60, 60, 44) },
   { name: "eclat", sheet: "petits", W: 80, H: 80, origin: [40, 40], frames: 1, draw: (g) => drawGlint(g, 40, 40, 30) },
   { name: "recif", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawReefKey(g, 90, 90) },
@@ -105,7 +117,7 @@ export const SPECS: Spec[] = [
   { name: "perle", sheet: "cartes", W: 30, H: 30, origin: [15, 15], frames: 2, draw: (g, f) => drawPearl(g, 15, 15, f === 1) },
   { name: "coquillage", sheet: "cartes", W: 300, H: 280, origin: [150, 150], frames: SHELL_N, fps: 12, draw: (g, f) => drawBigShell(g, 1 - Math.pow(1 - f / (SHELL_N - 1), 2.2), 150, 150) },
   // lot 2 : le coquillage doré (une étoile dorée, une légendaire) et le reflet irisé des cartes brillantes
-  { name: "coquillage.or", sheet: "cartes", W: 300, H: 280, origin: [150, 150], frames: SHELL_N, fps: 12, draw: (g, f) => drawBigShell(g, 1 - Math.pow(1 - f / (SHELL_N - 1), 2.2), 150, 150, true) },
+  { name: "coquillage.diamant", sheet: "cartes", W: 300, H: 280, origin: [150, 150], frames: SHELL_N, fps: 12, draw: (g, f) => drawBigShell(g, 1 - Math.pow(1 - f / (SHELL_N - 1), 2.2), 150, 150, true) },
   { name: "carte.reflet", sheet: "cartes", W: SWEEP_W, H: SWEEP_H, origin: [0, 0], frames: 1, draw: (g) => drawShinySweep(g, 0, 0) },
   // lot 2 : le sélecteur de difficulté (chargé au début de la séance, libéré ensuite) : un cran avec ses
   // étoiles, le même sans étoiles (entraînement libre), la lueur du cran conseillé

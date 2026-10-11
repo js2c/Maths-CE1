@@ -21,11 +21,13 @@ const H0 = -44, SIN_P = 0.8, COS_P = 0.6;
 // le contour d'une valve dans son plan : (x, d), charnière (d = 0) au fond, bord libre (d ≈ 92) devant
 const VALVE: P[] = (() => { const out: P[] = []; for (let i = 0; i <= 40; i++) { const a = Math.PI * (i / 40), r = 1 + 0.035 * Math.abs(Math.sin(a * 9)); out.push([-Math.cos(a) * 112 * r, 10 + Math.sin(a) * 82 * r]); } out.push([26, 4], [24, 0], [-24, 0], [-26, 4]); return out; })();
 const project = (pts: P[], k: number, cx: number, cy: number): P[] => pts.map(([x, d]) => [cx + x, cy + H0 + d * k]);
-// les deux coquillages : le rose (ordinaire) et le doré (celui des étoiles dorées, pour une légendaire)
+// les deux coquillages : le rose (les occasions : la série, une zone qui s'ouvre) et celui de diamant (une légendaire)
 const SHELL_PINK = { bowl: "#f5a08e", bowlS: "#c8645a", valve: "#ff9e8e", valveS: "#cf6a5e", valveL: "#ffc4b6", rib: "#ffd0c4", ear: "#ffb0a0", pearlSh: "#d89aa8", nacre: "#fff0f4", nacreS: "#f2c0cc", nacreS2: "#e8b4c4" };
-const SHELL_GOLD = { bowl: "#f0bc3a", bowlS: "#b87a10", valve: "#ffd84a", valveS: "#c88a14", valveL: "#fff0a0", rib: "#fff2b0", ear: "#ffe070", pearlSh: "#d8a850", nacre: "#fff8e4", nacreS: "#f2dca8", nacreS2: "#e8cc90" };
+// (lot « La boutique du récif », décision du parent du 10 octobre 2026 : le coquillage des légendaires devient le coquillage de
+// diamant, le doré irisé comme une nacre : blanc laiteux, ombres lilas, côtes roses et bleu glacier en alternance)
+const SHELL_DIAMOND = { bowl: "#ece6f6", bowlS: "#a596c8", valve: "#f6f2fc", valveS: "#b5a6d8", valveL: "#ffffff", rib: "#c8f0ff", rib2: "#ffd0ec", ear: "#f0e4ff", pearlSh: "#b8a8d8", nacre: "#fbf8ff", nacreS: "#e2d8f6", nacreS2: "#d8ccf0" };
 export const drawBigShell = (g: Gfx, o: number, cx: number, cy: number, gold = false) => g.group("plain", () => {
-  const P = gold ? SHELL_GOLD : SHELL_PINK, th = (o * 102 * Math.PI) / 180, k = Math.cos(th) * SIN_P - Math.sin(th) * COS_P, rim = project(VALVE, SIN_P, cx, cy);
+  const P = (gold ? SHELL_DIAMOND : SHELL_PINK) as typeof SHELL_DIAMOND, th = (o * 102 * Math.PI) / 180, k = Math.cos(th) * SIN_P - Math.sin(th) * COS_P, rim = project(VALVE, SIN_P, cx, cy);
   // la valve du dessous : son dos bombé sous le bord
   const bowl = smooth([...rim.slice(0, 41).map(([x, y], i) => { const a = Math.PI * (i / 40); return [x, y + 30 * Math.pow(Math.sin(a), 1.4)] as P; }), ...rim.slice(0, 41).reverse()], true, 2);
   fillShape(g, shift(bowl, 10, 12), SH, 0.3);
@@ -47,7 +49,9 @@ export const drawBigShell = (g: Gfx, o: number, cx: number, cy: number, gold = f
   fillShape(g, shift(up, 8, 10), SH, outside ? 0.25 : 0.12);
   if (outside) {
     cel(g, up, P.valve, P.valveS, 6, [smooth(project([[-80, 40], [-40, 70], [10, 78], [-10, 50], [-50, 30]], k, cx, cy), true, 4), P.valveL]);
-    clipped(g, up, () => { for (let i = 1; i < 14; i++) { const a = Math.PI * (i / 14), d = project([[-Math.cos(a) * 112, 10 + Math.sin(a) * 82]], k, cx, cy)[0], h = project([[0, 6]], k, cx, cy)[0]; ink(g, [h, d], i % 2 ? P.valveS : P.rib, { w: i % 2 ? 4 : 2.4, shadow: 0, taper: [0.5, 0.1], seed: 3040 + i }, 0.75); } });
+    clipped(g, up, () => { for (let i = 1; i < 14; i++) { const a = Math.PI * (i / 14), d = project([[-Math.cos(a) * 112, 10 + Math.sin(a) * 82]], k, cx, cy)[0], h = project([[0, 6]], k, cx, cy)[0]; ink(g, [h, d], i % 2 ? P.valveS : i % 4 === 0 && P.rib2 ? P.rib2 : P.rib, { w: i % 2 ? 4 : 2.4, shadow: 0, taper: [0.5, 0.1], seed: 3040 + i }, 0.75); } });
+    // la nacre irisée du coquillage de diamant : deux longs reflets rose et bleu glacier sur le dos
+    if (gold) clipped(g, up, () => { ink(g, smooth(project([[-96, 30], [-50, 62], [10, 76], [70, 60]], k, cx, cy), false, 8), "#ffd6f0", { w: 7, shadow: 0, taper: [0.3, 0.3], seed: 3061 }, 0.55); ink(g, smooth(project([[-70, 20], [-20, 44], [50, 48], [96, 28]], k, cx, cy), false, 8), "#bfeaff", { w: 6, shadow: 0, taper: [0.3, 0.3], seed: 3062 }, 0.55); });
   } else {
     cel(g, up, P.nacre, P.nacreS2, 5);
     clipped(g, up, () => ink(g, smooth(project([[-70, 30], [0, 60], [70, 30]], k, cx, cy), false, 8), "#b8e0f0", { w: 5, shadow: 0, taper: [0.3, 0.3], seed: 3060 }, 0.5));

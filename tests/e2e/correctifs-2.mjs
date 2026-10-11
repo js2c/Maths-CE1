@@ -87,7 +87,10 @@ if (part("accueil")) for (const taille of TAILLES) {
   const logo = await rect(page, ".logo");
   check(ids.every((k) => !coupe(R[k], MASCOTTE) && !coupe(R[k], logo)), `${nom(taille)} accueil : aucun galet sur la mascotte ni sur le bouton de l'espace parent`);
   check(ids.every((k, i) => !i || R[k][0] >= R[ids[i - 1]][2]), `${nom(taille)} accueil : les galets ne se chevauchent pas`);
-  check(ids.every((k) => R[k][2] - R[k][0] >= 200), `${nom(taille)} accueil : chaque galet fait au moins 200 px de large`);
+  // (lot « Recette de l'enfant », point 0.6 : la largeur du galet lui-même, sans la respiration de « jouer », animation `invite`
+  // de 0,93 à 1 : mesurée sur sa boîte transformée, elle variait d'une image à l'autre, de 197 à 210 px)
+  const L = await page.evaluate((ids) => ids.map((k) => parseFloat(document.querySelector(`.galet[data-key="${k}"]`).style.width)), ids);
+  check(L.every((l) => l >= 200), `${nom(taille)} accueil : chaque galet fait au moins 200 px de large (${L.join(", ")})`);
   for (const k of ids) {
     await page.locator(`.galet[data-key="${k}"]`).tap({ force: true }); await page.waitForTimeout(900);
     const b = await page.evaluate(() => window.__app.bulle.etat()), dit = await page.evaluate(() => window.__said.at(-1));
@@ -130,7 +133,11 @@ if (part("double")) {
   const { page, context, errors } = await open(taille, "&cran=conseille");
   await page.waitForSelector(".galet"); await page.waitForTimeout(400);
   let r = await rapide(page, '.galet[data-key="choisir"]', ".choix-ex", "le galet « choisir » de l'accueil");
-  check(r.parle !== textes.accueilDescription.choisir && r.bulle.texte !== textes.accueilDescription.choisir, "accueil : la mascotte ne dit pas la description (elle se tait aussitôt), sa bulle ne l'écrit pas");
+  // (lot « Recette de l'enfant », point 0.6 : la vérification variait. La bulle est cachée et la voix se tait, mais
+  // bulle.etat().texte garde le dernier texte reçu, même caché : il comptait comme écrit quand la description avait eu le temps
+  // de commencer avant le second toucher. Ce qui compte : une bulle VISIBLE qui l'écrit)
+  const ecrit = r.bulle.visible && r.bulle.texte === textes.accueilDescription.choisir;
+  check(r.parle !== textes.accueilDescription.choisir && !ecrit, `accueil : la mascotte ne dit pas la description (elle se tait aussitôt), sa bulle ne l'écrit pas${r.parle === textes.accueilDescription.choisir || ecrit ? ` (${JSON.stringify({ parle: r.parle, bulle: r.bulle.texte, visible: r.bulle.visible, said: r.said })})` : ""}`);
   await page.waitForTimeout(600); await shot(page, "double-1-exercices", taille);
   r = await rapide(page, '.choix-ex[data-key="voiliers"]', ".choix-tuile", "l'exercice « voiliers »");
   check(!r.bulle.visible || !r.bulle.texte.startsWith(textes.choixNom.voiliers), `exercices : pas de bulle de la tuile après le double toucher (bulle : « ${r.bulle.texte} »)`);
@@ -207,7 +214,7 @@ if (part("jeu")) {
     await E.page.tap('.key[data-key="valider"]', { force: true }); await E.page.waitForTimeout(400);
   }
   const vides = await E.page.evaluate(() => window.__vides);
-  check(!vides.length, `échauffement : aucune bulle vide (${vides.length} images)`);
+  check(!vides.length, `échauffement : aucune bulle vide (${vides.length} images${vides.length ? ` : ${JSON.stringify(vides.slice(0, 3))}` : ""})`);
   await E.context.close();
   // la ligne, l'étal
   for (const [q, n, attendre] of [["&choix=1:3", "jeu-ligne", ".answer, .touchband"], ["&choix=6:2", "jeu-etal", "canvas.etal-decor"]]) {

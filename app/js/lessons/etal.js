@@ -89,6 +89,7 @@ export class LessonEtalPlayer {
   // la scène rangée : l'argent rentre, la ligne s'en va ; une scène installée pour la leçon s'en va aussi
   async clear() {
     const s = this.s; if (!s?.actif) return;
+    s.enLecon = false;
     s.ligne(null); s.api.totalVu(false); s.api.etiquettes(false); s.api.sansHalo(); s.api.eteindre(); s.api.remplir([]);
     if (this.own) { s.leave(); if (this.app.etalLecon === s) this.app.etalLecon = null; }
     this.s = null;

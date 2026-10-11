@@ -13,7 +13,7 @@ export class Turtle {
     this.a = ocean.spriteActor(ocean.frontEl, "tortue.repos", ["tortue.saut", "tortue.nage"]);
     this.a.show(false); this.spec = null; this.pos = [0, 0]; this.clip = "tortue.repos"; this.t0 = 0; this.anim = null; this.jumpS = 0;
     this.speed = 1; // exemples guidés et corrections : content/seance.json, vitesseAnimations (les leçons gardent 1)
-    ocean.front.push((t) => this.tick(t));
+    this.tickFn = (t) => this.tick(t); ocean.front.push(this.tickFn);
     this.path = this.sp.atlas.sprites["tortue.saut"].meta.path;
   }
   // où poser l'ancrage (sous le ventre) sur la graduation i : sur le haut de la bouée, ou sur le trait
@@ -21,6 +21,8 @@ export class Turtle {
   seat(i) { const [x, y] = tickP(this.spec, i); return [x, this.spec.k > 0.3 ? this.spec.y - 29 : y - buoyR(this.spec) * 1.08 + 2]; }
   sitOn(spec, i) { this.spec = spec; this.at = i; this.pos = this.seat(i); this.clip = "tortue.repos"; this.anim = null; this.a.show(true); }
   hide() { this.a.show(false); this.anim = null; }
+  // (lot « Recette de l'enfant », point 2) la tortue retirée pour de bon, avec son écran
+  detruire() { this.hide(); this.o.oublier(this.tickFn); this.o.retirer(this.a); }
   // (le temps ne recule jamais : un horodatage d'image plus ancien que le précédent donnait un indice négatif, lot 3, étape 5)
   tick(t) {
     t = Math.max(t, this.now ?? t); this.now = t;

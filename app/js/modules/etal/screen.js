@@ -232,6 +232,7 @@ export class EtalScreen {
   consigne(q) { const T = this.app.text.data.etalConsigne; return q.niveau >= 9 ? T.centimes : T[q.type]; }
   // ---------------------------------------------------------------- une question
   async ask(q) {
+    if (!this.api) return new Promise(() => {}); // (lot « Recette de l'enfant », point 2 : la scène rangée ne pose plus rien)
     const { app } = this, { voice, ocean } = app, api = this.api, g = clock.hold(), tok = ++this.tok, vivant = () => tok === this.tok, mort = () => new Promise(() => {});
     this.q = q; this.attend = false; this.verrou = true; api.verrou(true); this.passable(false); this.skipped = false; this.skippedOnce = false; app.fleche?.cacher();
     this.boutonsVus(false); this.ligne(null); api.vitesse(1);

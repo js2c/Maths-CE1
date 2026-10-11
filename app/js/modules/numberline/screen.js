@@ -52,7 +52,7 @@ export class NumberLineScreen {
       const t = this.fishLabel, em = Math.min(34, (T.w - 16) / Math.max(1, R.wordWidth(t))), px = sp.px;
       ctx.setTransform(px, 0, 0, px, 0, 0); R.drawNumber(ctx, t, this.fish.ax + T.cx, this.fish.ay + T.cy - em / 2 + 2, em, { w: em * 0.16, seed: 1300 });
     });
-    o.front.push((t) => {
+    o.front.push(this.rappelEtoile = (t) => {
       // l'étoile s'élève quand la tortue vient se poser sous elle (exemple guidé, retour E1)
       this.starLift += ((this.turtle.a.vis && this.starAt && Math.abs(this.turtle.pos[0] - this.starAt[0]) < 40 ? 46 : 0) - this.starLift) * 0.15;
       this.star.show(!!this.starAt); if (this.starAt) this.star.moveTo(this.starAt[0], this.starAt[1] - this.starLift + 1.5 * Math.sin(t * 2.1));
@@ -64,7 +64,7 @@ export class NumberLineScreen {
     });
     this.turtle = new Turtle(o);
     // effets tracés en direct (arcs de saut, flèche, filets) : redessinés tant qu'un effet avance
-    o.front.push(() => this.paintFx());
+    o.front.push(this.rappelFx = () => this.paintFx());
     // la zone tactile de la ligne (placer, estimer) : toute la bande, pour des doigts de 7 ans
     this.band = document.createElement("div"); this.band.className = "touchband"; this.ui.append(this.band);
     const pos = (e) => { const r = this.band.getBoundingClientRect(), k = r.width / this.band.offsetWidth; return (e.clientX - r.left) / k + this.band.offsetLeft; };
@@ -383,6 +383,7 @@ export class NumberLineScreen {
   // pose la question et attend la réponse ; la promesse se résout après le retour, avec le résultat
   // (lot 2, étape 8 : la dictée, au niveau 12, a son propre écran : modules/numberline/dictation.js)
   ask(q, cfg, opts = {}) {
+    if (this.detruit) return new Promise(() => {}); // (lot « Recette de l'enfant », point 2 : un écran détruit ne pose plus rien)
     if (q.format === "ecrire") { this.leave(); return this.app.dictation.ask(q, cfg, opts); }
     return new Promise((resolve) => { this.resolve = resolve; this.show(q, cfg, opts); });
   }
@@ -395,6 +396,17 @@ export class NumberLineScreen {
   // la corde ondule (le calque de la ligne, animé par le compositeur : rien n'est redessiné)
   ripple() { const c = this.app.stage.root.querySelector("#line"); c?.animate([{ transform: "translateY(0)" }, { transform: "translateY(-7px)" }, { transform: "translateY(5px)" }, { transform: "translateY(-3px)" }, { transform: "translateY(0)" }], { duration: 900, easing: "ease-in-out" }); }
   leave() { this.app.fleche?.cacher(); this.fishHit.style.display = "none"; this.clearButtons(); this.nsp.style.visibility = "hidden"; this.starAt = null; this.fishAt = null; this.fishGoal = null; this.turtle.hide(); this.band.style.display = "none"; this.arcs = []; this.overlay = []; this.fxAnimating = false; this.liveArc?.show(false); this.app.line.clear(); this.app.line.fxClear(); }
+  // (lot « Recette de l'enfant », point 2 : la règle de sortie unique) l'écran détruit en quittant l'étape qui l'a créé : ses
+  // éléments, ses acteurs (étoile, poisson, tortue, arc), ses rappels d'image. Avant, il n'était que caché, et restait sous
+  // la surface jusqu'à la fin de la page ; l'étape suivante en crée un neuf (app.lineScreen).
+  detruire() {
+    if (this.detruit) return; this.detruit = true;
+    this.leave(); this.locked = true; this.resolve = null;
+    const o = this.app.ocean;
+    for (const e of [this.band, this.fishHit, this.nsp]) e?.remove();
+    for (const a of [this.star, this.fish, this.liveArc]) o.retirer(a);
+    o.oublier(this.rappelEtoile); o.oublier(this.rappelFx); this.turtle.detruire();
+  }
 }
 export { NumberLineScreen as ReadScreen };
 

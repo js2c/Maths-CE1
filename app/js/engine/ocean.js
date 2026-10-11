@@ -50,6 +50,10 @@ export class Ocean {
     a.draw = (f, n = name) => a.paint(`${n}:${f}`, (ctx) => sp.draw(ctx, n, f, a.ax, a.ay));
     this.actors.push(a); return a;
   }
+  // (lot « Recette de l'enfant », point 2) un acteur retiré pour de bon (son canvas et sa place dans `actors`) ; un rappel
+  // d'image oublié : ce qu'un écran détruit a posé ne reste pas sous la surface
+  retirer(a) { if (!a) return; a.remove(); const i = this.actors.indexOf(a); if (i >= 0) this.actors.splice(i, 1); }
+  oublier(f) { const i = this.front.indexOf(f); if (i >= 0) this.front.splice(i, 1); }
   update(t) { this.t = t; }
   render() {
     const t = this.t;

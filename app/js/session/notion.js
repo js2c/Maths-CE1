@@ -13,6 +13,10 @@ export async function runNotion({ session, step, end, runner, screen, lesson = a
   // (lot 3 bis, docs/SPEC-LOT3BIS.md, §0 : `next` renvoie null quand plus aucune question ne peut être posée sans reposer une
   // question déjà posée assez de fois ; la notion du jour s'arrête là)
   const one = async (guide = false, after = null) => {
+    // (lot « Recette de l'enfant », point 2) la séance interrompue (la pause, puis un autre exercice) : plus aucune question,
+    // le déroulement reste figé (comme une attente abandonnée, engine/clock.js) ; sans quoi une suite qui n'attendait pas
+    // l'horloge (l'enregistrement d'une réponse) posait encore la question suivante sur l'écran quitté
+    if (session.stopped) return new Promise(() => {});
     const nx = runner.next({ guide, format: after ? "lire" : null });
     if (!nx) { fini = true; return null; }
     const { q, cfg } = nx, r = await screen.ask(q, cfg, { guide, lesson: after }), { etoiles, events } = await runner.record(r, cfg);

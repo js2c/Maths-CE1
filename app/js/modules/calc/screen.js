@@ -212,5 +212,6 @@ export class CalcScreen {
     this.fishDone(); this.board.clear(); fs.showSlate();
   }
   fishDone() { if (this.fish) { this.fish.remove(); this.fish = null; } }
-  leave() { this.fishDone(); this.board?.clear(); this.facts().leave(); }
+  // (lot « Recette de l'enfant », point 2 : sans recréer l'écran des additions s'il a déjà été détruit)
+  leave() { this.fishDone(); this.board?.clear(); this.app.facts?.leave(); }
 }

@@ -152,6 +152,7 @@ export class MultScreen {
       voice.stop(); r.correctionPassee = true; answer(); await wait(1000);
     } finally { skip.remove(); fs.keys(true); }
   }
-  leave() { this.board?.clear(); this.facts().leave(); }
+  // (lot « Recette de l'enfant », point 2 : sans recréer l'écran des additions s'il a déjà été détruit)
+  leave() { this.app.aidBoard?.clear(); this.app.facts?.leave(); }
 }
 void put;

@@ -138,6 +138,7 @@ export class VoiliersScreen {
 
   // un bateau ; o.guide : l'exemple guidé
   async ask(q) {
+    if (!this.api) return new Promise(() => {}); // (lot « Recette de l'enfant », point 2 : la scène rangée ne pose plus rien)
     const { app } = this, { voice, text, ocean, sound } = app, T = text.data, api = this.api, g = clock.hold(), tok = ++this.tok, vivant = () => tok === this.tok;
     this.q = q; this.locked = true; this.attend = false; this.passable(false); this.skipped = false; app.fleche?.cacher();
     api.vitesse(1);

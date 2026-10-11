@@ -100,6 +100,7 @@ export class FactsScreen {
   }
   // pose la question et attend la réponse ; la promesse se résout après le retour
   ask(q) {
+    if (this.detruit) return new Promise(() => {}); // (lot « Recette de l'enfant », point 2 : un écran détruit ne pose plus rien)
     const { voice } = this.app;
     this.q = q; this.typed = ""; this.ring = false; this.aide = false; this.locked = false; this.app.starFrom = SLATE; this.gate.open();
     this.help.style.visibility = q.base || q.cheminMode === "non" || q.image === "non" || q.pont ? "hidden" : "visible"; // pas d'aide pour « 4 + 0 » (lot 3 : ni sans chemin)
@@ -355,6 +356,15 @@ export class FactsScreen {
   // ce qui la suivait ne touche plus à l'écran : `tok`)
   abandon() { this.tok = (this.tok ?? 0) + 1; this.locked = true; this.resolve = null; this.abortFix?.(); this.abortAid?.(); this.app.voice.stop(); this.reset(); }
   leave() { this.show(false); this.q = null; this.defi = null; this.dictee = null; this.reset(); }
+  // (lot « Recette de l'enfant », point 2 : la règle de sortie unique) l'écran détruit en quittant l'étape qui l'a créé :
+  // l'ardoise, le pavé, « je ne sais pas », le coquillage, et l'écouteur du clavier. Avant, il n'était que caché (et son
+  // écouteur restait posé) ; l'étape suivante en crée un neuf (app.facts).
+  detruire() {
+    if (this.detruit) return; this.detruit = true;
+    this.tok = (this.tok ?? 0) + 1; this.locked = true; this.resolve = null; this.abortFix?.(); this.abortAid?.(); this.leave();
+    for (const e of [this.slate, this.nsp, this.help, ...this.els]) e?.remove();
+    removeEventListener("keydown", this.onKey);
+  }
   // (correctif du 28 septembre 2026) rien de ce qu'un exercice quitté en cours a posé sur l'écran ne doit survivre : le
   // rappel de la saisie (le chemin d'un calcul guidé, le tableau de la dictée) redessinait l'ancien chemin au premier
   // chiffre tapé dans l'exercice suivant ; la saisie, l'anneau, l'aide et le « passer » de l'échauffement sont remis à zéro

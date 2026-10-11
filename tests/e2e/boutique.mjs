@@ -144,11 +144,15 @@ for (const vue of VUES) {
     // L'ACHAT : les étoiles volent, la créature sort au milieu, puis file vers le récif
     await tap(page, tuile(aVendre[1])); await page.waitForTimeout(500);
     await page.evaluate(() => { window.__app.rnd = () => 0.9; }); // (pas brillante)
-    await tap(page, ".boutique-conf.coche"); await page.waitForTimeout(450);
-    const r = await page.evaluate(() => [window.__app.rewards.total, window.__app.hud.shown]);
+    // (le compteur, relevé toutes les 40 ms pendant le vol : il doit passer par des valeurs intermédiaires)
+    await page.evaluate(() => { window.__cpt = []; const t0 = performance.now(), f = () => { window.__cpt.push(window.__app.hud.shown); if (performance.now() - t0 < 2500) setTimeout(f, 40); }; f(); });
+    await tap(page, ".boutique-conf.coche"); await page.waitForTimeout(500);
+    const total1 = await page.evaluate(() => window.__app.rewards.total);
     await shot(page, vue, "08-achat-vol-des-etoiles");
     if (vue[0] === "1280") {
-      check(r[0] === 230 - prix(aVendre[1]) && r[1] > r[0] && r[1] < 230, `l'achat est enregistré avant l'animation (${r[0]}), le compteur descend avec les étoiles (${r[1]})`);
+      await page.waitForTimeout(2100);
+      const cpt = await page.evaluate(() => window.__cpt), inter = [...new Set(cpt.filter((v) => v < 230 && v > total1))];
+      check(total1 === 230 - prix(aVendre[1]) && inter.length >= 2 && cpt.every((v, i) => !i || v <= cpt[i - 1]), `l'achat est enregistré avant l'animation (${total1}), le compteur descend avec les étoiles, jamais d'un coup (${[230, ...inter, total1].join(" → ")})`);
     }
     await page.waitForSelector(".boutique-voile.on", { timeout: 10000 }); await page.waitForTimeout(900);
     await shot(page, vue, "09-achat-milieu");
@@ -312,7 +316,9 @@ const vue0 = VUES[0];
 
 // ---------------------------------------------------------------- 6. l'espace parent ; la pause
 {
-  const { context, page } = await fresh([owned(lagon.slice(0, 9)), etoiles(57, { dorees: 2, doreesDepensees: 1 }), { id: "quota", date: Date.now() - 3 * SEMAINE, cartes: 6 }, { id: "achats", liste: [{ t: Date.now() - 86400000 * 3, carte: lagon[7], prix: 40, briller: false, brillante: false }, { t: Date.now() - 86400000, carte: lagon[8], prix: 40, briller: false, brillante: true }, { t: Date.now() - 3600000, carte: lagon[0], prix: 150, briller: true, brillante: true }] }]);
+  // (un état cohérent : les deux créatures brillantes sont celles du journal, une étoile de diamant gagnée et pas encore dépensée)
+  const o9 = owned(lagon.slice(0, 9)); o9.cartes[lagon[8]].brillante = true; o9.cartes[lagon[0]].brillante = true;
+  const { context, page } = await fresh([o9, etoiles(57, { dorees: 1, doreesDepensees: 0 }), { id: "quota", date: Date.now() - 3 * SEMAINE, cartes: 6 }, { id: "achats", liste: [{ t: Date.now() - 86400000 * 3, carte: lagon[7], prix: 40, briller: false, brillante: false }, { t: Date.now() - 86400000, carte: lagon[8], prix: 40, briller: false, brillante: true }, { t: Date.now() - 3600000, carte: lagon[0], prix: 150, briller: true, brillante: true }] }]);
   await page.evaluate(async () => { const p = window.__app.parent; p.tab = "progression"; p.open(); await p.dashboard(); });
   await page.waitForTimeout(500);
   const box = page.locator(".pa-card-box", { has: page.locator("h2", { hasText: /^Cartes et boutique$/ }) });

@@ -438,7 +438,7 @@ export class ParentSpace {
         stat(`${K.legendaires} / ${K.legendairesTotal}`, "légendaires (une étoile de diamant chacune)"),
         stat(String(K.dorees - K.doreesDepensees), `étoiles de diamant en réserve (${K.dorees} gagnées)`),
         stat(String(K.semaines), `semaines réussies (au moins ${pl(this.cartes.semaine.seances, "séance")}) ; prochaine étoile de diamant dans ${pl(K.prochaineDoree, "semaine réussie")}`),
-        stat(String(K.arc - K.arcDepensees), `étoiles arc-en-ciel en réserve (${K.arc} gagnées, ${K.arcDepensees} pour ouvrir des zones)${K.arcLibre ? ` ; ${K.arcLibre} gagnée(s) en entraînement libre, remise(s) à la prochaine séance` : ""}`)),
+        stat(String(K.arc - K.arcDepensees), `étoiles arc-en-ciel en réserve (${K.arc} gagnées, ${K.arcDepensees} déjà utilisées pour ouvrir des zones)${K.arcLibre ? ` ; ${K.arcLibre} gagnée(s) en entraînement libre, remise(s) à la prochaine séance` : ""}`)),
       h("h3", {}, "Les zones"),
       h("div", { class: "pa-chips" }, K.zones.map((z) => h("span", { class: "pa-chip" }, `${z.nom} : ${z.ouverte ? `${z.gagnees} / ${z.total}` : z.pret ? "fermée" : "fermée, contenu à venir"}`))),
       h("p", { class: "pa-note" }, K.suivante ? `Prochaine zone, « ${K.suivante.nom} » : elle attend ${K.suivante.attend}. En s'ouvrant, elle offre son premier habitant (une créature commune tirée au hasard).` : "Toutes les zones sont ouvertes."),

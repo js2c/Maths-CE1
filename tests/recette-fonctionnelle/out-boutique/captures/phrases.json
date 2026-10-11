@@ -1,0 +1,774 @@
+[
+ {
+  "capture": "01-recif-bouton-1280",
+  "dites": [
+   "Voici ton récif ! Touche une créature pour voir sa carte."
+  ],
+  "bulle": {
+   "visible": false,
+   "texte": "",
+   "place": null,
+   "rect": null,
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "02-vitrine-lagon-1280",
+  "dites": [
+   "Bienvenue à la boutique !",
+   "Touche une créature : je te dis son prix. Pour l'acheter, touche la coche verte."
+  ],
+  "bulle": {
+   "visible": true,
+   "texte": "Touche une créature : je te dis son prix. Pour l'acheter, touche la coche verte.",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    326.48820753113205,
+    732.1710913419086
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "03-coche-et-croix-haut-1280",
+  "dites": [
+   "C'est l'oursin ! Pour l'avoir, il faut 40 étoiles. Si tu es d'accord, touche la coche verte."
+  ],
+  "bulle": {
+   "visible": true,
+   "texte": "C'est l'oursin ! Pour l'avoir, il faut 40 étoiles. Si tu es d'accord, touche la coche verte.",
+   "place": "tuile-gb",
+   "rect": [
+    7.706680399492029,
+    528,
+    502,
+    696.4148423558418
+   ],
+   "couvre": 0,
+   "gene": 6
+  }
+ },
+ {
+  "capture": "04-coche-et-croix-bas-1280",
+  "dites": [
+   "C'est la raie pastenague ! Cette créature est déjà dans ton récif. Pour la faire briller, il faut 300 étoiles. Il te manque 70 étoiles."
+  ],
+  "bulle": {
+   "visible": true,
+   "texte": "C'est la raie pastenague ! Cette créature est déjà dans ton récif. Pour la faire briller, il faut 300 étoiles. Il te manque 70 étoiles.",
+   "place": "tuile-hg",
+   "rect": [
+    469.6576762155298,
+    165.58515764415824,
+    1132,
+    334
+   ],
+   "couvre": 0,
+   "gene": 5
+  }
+ },
+ {
+  "capture": "05-il-te-manque-1280",
+  "dites": [],
+  "bulle": {
+   "visible": true,
+   "texte": "C'est la raie pastenague ! Cette créature est déjà dans ton récif. Pour la faire briller, il faut 300 étoiles. Il te manque 70 étoiles.",
+   "place": "tuile-hg",
+   "rect": [
+    469.6576762155298,
+    165.58515764415824,
+    1132,
+    334
+   ],
+   "couvre": 0,
+   "gene": 5
+  }
+ },
+ {
+  "capture": "06-pas-encore-arrivee-1280",
+  "dites": [
+   "Cette créature arrive bientôt à la boutique !"
+  ],
+  "bulle": {
+   "visible": true,
+   "texte": "Cette créature arrive bientôt à la boutique !",
+   "place": "tuile-gh",
+   "rect": [
+    444.4628588352323,
+    315.54627177345793,
+    878,
+    405.10735062759437
+   ],
+   "couvre": 0,
+   "gene": 10
+  }
+ },
+ {
+  "capture": "07-brillante-1280",
+  "dites": [
+   "C'est l'étoile de mer ! Cette créature brille déjà dans ton récif."
+  ],
+  "bulle": {
+   "visible": true,
+   "texte": "C'est l'étoile de mer ! Cette créature brille déjà dans ton récif.",
+   "place": "tuile-bg",
+   "rect": [
+    7.779763373476044,
+    582,
+    568,
+    710.3416182812045
+   ],
+   "couvre": 0,
+   "gene": 2
+  }
+ },
+ {
+  "capture": "08-achat-vol-des-etoiles-1280",
+  "dites": [
+   "C'est l'anémone de mer ! Pour l'avoir, il faut 40 étoiles. Si tu es d'accord, touche la coche verte."
+  ],
+  "bulle": {
+   "visible": false,
+   "texte": "C'est l'anémone de mer ! Pour l'avoir, il faut 40 étoiles. Si tu es d'accord, touche la coche verte.",
+   "place": "tuile-gb",
+   "rect": [
+    27.65767621552982,
+    528,
+    690,
+    660.468464756894
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "09-achat-milieu-1280",
+  "dites": [
+   "Bravo ! Cette créature va vivre dans ton récif !"
+  ],
+  "bulle": {
+   "visible": true,
+   "texte": "Bravo ! Cette créature va vivre dans ton récif !",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    326.48820753113205,
+    641.6831660120827
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "10-achat-fin-1280",
+  "dites": [],
+  "bulle": {
+   "visible": false,
+   "texte": "Bravo ! Cette créature va vivre dans ton récif !",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    326.48820753113205,
+    641.6831660120827
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "11-brillante-par-chance-1280",
+  "dites": [
+   "C'est l'hippocampe ! Pour l'avoir, il faut 100 étoiles. Si tu es d'accord, touche la coche verte.",
+   "Bravo ! Cette créature va vivre dans ton récif ! Oh ! Elle est brillante !"
+  ],
+  "bulle": {
+   "visible": true,
+   "texte": "Bravo ! Cette créature va vivre dans ton récif ! Oh ! Elle est brillante !",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    326.48820753113205,
+    686.9271286769956
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "12-faire-briller-1280",
+  "dites": [
+   "C'est le poisson-clown ! Cette créature est déjà dans ton récif. Pour la faire briller, il faut 150 étoiles. Si tu es d'accord, touche la coche verte.",
+   "C'est le poisson-clown ! Oh ! Elle est brillante !"
+  ],
+  "bulle": {
+   "visible": true,
+   "texte": "C'est le poisson-clown ! Oh ! Elle est brillante !",
+   "place": "tuile-bg",
+   "rect": [
+    8.511721918541411,
+    582,
+    380,
+    710.3416182812045
+   ],
+   "couvre": 0,
+   "gene": 1
+  }
+ },
+ {
+  "capture": "13-arrivee-recif-a-1280",
+  "dites": [
+   "Voici ton récif ! Touche une créature pour voir sa carte."
+  ],
+  "bulle": {
+   "visible": false,
+   "texte": "C'est le poisson-clown ! Oh ! Elle est brillante !",
+   "place": "tuile-bg",
+   "rect": [
+    8.511721918541411,
+    582,
+    380,
+    710.3416182812045
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "14-arrivee-recif-b-1280",
+  "dites": [],
+  "bulle": {
+   "visible": false,
+   "texte": "C'est le poisson-clown ! Oh ! Elle est brillante !",
+   "place": "tuile-bg",
+   "rect": [
+    8.511721918541411,
+    582,
+    380,
+    710.3416182812045
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "15-vitrine-arrivees-1280",
+  "dites": [
+   "Voici ton récif ! Touche une créature pour voir sa carte.",
+   "Bienvenue à la boutique !",
+   "Touche une créature : je te dis son prix. Pour l'acheter, touche la coche verte."
+  ],
+  "bulle": {
+   "visible": true,
+   "texte": "Touche une créature : je te dis son prix. Pour l'acheter, touche la coche verte.",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    326.48820753113205,
+    732.1710913419086
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "16-vitrine-corail-1280",
+  "dites": [],
+  "bulle": {
+   "visible": false,
+   "texte": "Touche une créature : je te dis son prix. Pour l'acheter, touche la coche verte.",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    326.48820753113205,
+    732.1710913419086
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "17-vitrine-grand-large-1280",
+  "dites": [],
+  "bulle": {
+   "visible": false,
+   "texte": "Touche une créature : je te dis son prix. Pour l'acheter, touche la coche verte.",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    326.48820753113205,
+    732.1710913419086
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "18-legendaire-1280",
+  "dites": [
+   "C'est une créature légendaire ! Elle se gagne avec les étoiles de diamant."
+  ],
+  "bulle": {
+   "visible": false,
+   "texte": "C'est une créature légendaire ! Elle se gagne avec les étoiles de diamant.",
+   "place": "tuile-hg",
+   "rect": [
+    469.0969501130262,
+    165.58515764415824,
+    944,
+    334
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "19-zone-fermee-1280",
+  "dites": [
+   "Les abysses et les mers glacées s'ouvriront un jour, grâce à tes étoiles arc-en-ciel."
+  ],
+  "bulle": {
+   "visible": false,
+   "texte": "Les abysses et les mers glacées s'ouvriront un jour, grâce à tes étoiles arc-en-ciel.",
+   "place": "tuile-bg",
+   "rect": [
+    8.511721918541411,
+    582,
+    380,
+    789.1953817829101
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "20-zone-complete-1280",
+  "dites": [
+   "Bravo ! Cette créature va vivre dans ton récif !",
+   "Bravo ! Tu as toutes les créatures de cette zone ! Une nouvelle zone va bientôt s'ouvrir."
+  ],
+  "bulle": {
+   "visible": true,
+   "texte": "Bravo ! Tu as toutes les créatures de cette zone ! Une nouvelle zone va bientôt s'ouvrir.",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    326.48820753113205,
+    695.9759212099782
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "21-fin-arrivages-1280",
+  "dites": [
+   "Bienvenue à bord ! On s'entraîne ensemble ?",
+   "Choisis ton niveau. Plus c'est dur, plus tu gagnes d'étoiles !",
+   "Quel nombre se cache sous l'étoile de mer ?",
+   "Super !",
+   "La tortue part de 3. Elle fait un saut. Sur quel nombre arrive-t-elle ?",
+   "Oui, c'est ça !",
+   "1",
+   "Regarde tout ce que tu as gagné ce soir : 2 étoiles de mer !",
+   "Et en plus, dix étoiles parce que tu as fini ta séance !",
+   "De nouvelles créatures sont arrivées à la boutique !"
+  ],
+  "bulle": {
+   "visible": true,
+   "texte": "De nouvelles créatures sont arrivées à la boutique !",
+   "place": "droite",
+   "rect": [
+    241.03999999999996,
+    145.56079665283016,
+    811.6017138070754,
+    292
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "22-fin-vers-boutique-1280",
+  "dites": [
+   "Tu peux choisir une créature à la boutique !"
+  ],
+  "bulle": {
+   "visible": true,
+   "texte": "Tu peux choisir une créature à la boutique !",
+   "place": "droite",
+   "rect": [
+    241.04000000000002,
+    145.56079665283016,
+    726.2845270675255,
+    292
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "23-fin-boutique-ouverte-1280",
+  "dites": [
+   "Bienvenue à la boutique !",
+   "Touche une créature : je te dis son prix. Pour l'acheter, touche la coche verte."
+  ],
+  "bulle": {
+   "visible": true,
+   "texte": "Touche une créature : je te dis son prix. Pour l'acheter, touche la coche verte.",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    326.48820753113205,
+    732.1710913419086
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "24-a-demain-apres-la-boutique-1280",
+  "dites": [
+   "Voici ton récif ! Touche une créature pour voir sa carte.",
+   "Tu as bien travaillé. À demain !"
+  ],
+  "bulle": {
+   "visible": true,
+   "texte": "Tu as bien travaillé. À demain !",
+   "place": "droite",
+   "rect": [
+    241.04,
+    145.56079665283016,
+    602.1868009009071,
+    292
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "25-fin-vers-recif-1280",
+  "dites": [
+   "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+   "Choisis ton niveau. Plus c'est dur, plus tu gagnes d'étoiles !",
+   "L'étoile de mer est posée sur une bouée. Quel est ce nombre ?",
+   "Super !",
+   "La tortue est sur 0 et fait 3 sauts. Où arrive-t-elle ?",
+   "Bien joué !",
+   "1",
+   "2",
+   "3",
+   "Regarde tout ce que tu as gagné ce soir : 2 étoiles de mer !",
+   "Et en plus, dix étoiles parce que tu as fini ta séance !"
+  ],
+  "bulle": {
+   "visible": false,
+   "texte": "Et en plus, dix étoiles parce que tu as fini ta séance !",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    404.0492863852685,
+    641.6831660120827
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "26-fin-coquillage-1-1280",
+  "dites": [
+   "Bienvenue à bord ! On s'entraîne ensemble ?",
+   "Regarde, quelqu'un vient te dire bonjour !",
+   "Choisis ton niveau. Plus c'est dur, plus tu gagnes d'étoiles !",
+   "L'étoile de mer est posée sur une bouée. Quel est ce nombre ?",
+   "Bien joué !",
+   "La tortue part de 2. Elle fait 3 sauts. Sur quel nombre arrive-t-elle ?",
+   "Exactement !",
+   "1",
+   "2",
+   "3",
+   "Regarde tout ce que tu as gagné ce soir : 2 étoiles de mer !",
+   "Et en plus, dix étoiles parce que tu as fini ta séance !",
+   "Tu viens jouer souvent : voici un coquillage !"
+  ],
+  "bulle": {
+   "visible": true,
+   "texte": "Tu viens jouer souvent : voici un coquillage !",
+   "place": "dessous",
+   "rect": [
+    8,
+    449.99999999999994,
+    404.0492863852685,
+    596.4392033471697
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "26-fin-carte-1-1280",
+  "dites": [
+   "Qu'est-ce qu'il y a dedans ?",
+   "C'est la coquille Saint-Jacques ! Oh ! Elle est brillante !"
+  ],
+  "bulle": {
+   "visible": false,
+   "texte": "C'est la coquille Saint-Jacques ! Oh ! Elle est brillante !",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    404.0492863852685,
+    641.6831660120827
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "26-fin-special-1-1280",
+  "dites": [
+   "Et une étoile de diamant ! Tu as joué souvent, semaine après semaine."
+  ],
+  "bulle": {
+   "visible": true,
+   "texte": "Et une étoile de diamant ! Tu as joué souvent, semaine après semaine.",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    404.0492863852685,
+    686.9271286769956
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "26-fin-special-2-1280",
+  "dites": [],
+  "bulle": {
+   "visible": true,
+   "texte": "Et une étoile de diamant ! Tu as joué souvent, semaine après semaine.",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    404.0492863852685,
+    686.9271286769956
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "26-fin-special-3-1280",
+  "dites": [],
+  "bulle": {
+   "visible": true,
+   "texte": "Et une étoile de diamant ! Tu as joué souvent, semaine après semaine.",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    404.0492863852685,
+    686.9271286769956
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "26-fin-zone-1-1280",
+  "dites": [],
+  "bulle": {
+   "visible": true,
+   "texte": "Et une étoile de diamant ! Tu as joué souvent, semaine après semaine.",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    404.0492863852685,
+    686.9271286769956
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "26-fin-zone-2-1280",
+  "dites": [],
+  "bulle": {
+   "visible": false,
+   "texte": "Et une étoile de diamant ! Tu as joué souvent, semaine après semaine.",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    404.0492863852685,
+    686.9271286769956
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "26-fin-zone-3-1280",
+  "dites": [],
+  "bulle": {
+   "visible": false,
+   "texte": "Et une étoile de diamant ! Tu as joué souvent, semaine après semaine.",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    404.0492863852685,
+    686.9271286769956
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "26-fin-coquillage-2-1280",
+  "dites": [
+   "Le grand large est ouvert ! De nouvelles cartes t'attendent dans ton album.",
+   "Et voici son premier habitant !"
+  ],
+  "bulle": {
+   "visible": true,
+   "texte": "Et voici son premier habitant !",
+   "place": "droite",
+   "rect": [
+    241.03999999999996,
+    145.56079665283016,
+    595.7233776630624,
+    292
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "26-fin-carte-2-1280",
+  "dites": [
+   "Qu'est-ce qu'il y a dedans ?",
+   "C'est la méduse à crinière de lion ! Anecdote fictive pour la capture. Cette créature va vivre dans ton récif !"
+  ],
+  "bulle": {
+   "visible": false,
+   "texte": "C'est la méduse à crinière de lion ! Anecdote fictive pour la capture. Cette créature va vivre dans ton récif !",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    404.0492863852685,
+    777.4150540068215
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "27-coquillage-de-diamant-1-1280",
+  "dites": [
+   "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+   "Choisis ton niveau. Plus c'est dur, plus tu gagnes d'étoiles !",
+   "L'étoile de mer est posée sur une bouée. Quel est ce nombre ?",
+   "Bravo !",
+   "La tortue est sur 7 et fait 3 sauts. Où arrive-t-elle ?",
+   "Bravo !",
+   "1",
+   "2",
+   "3",
+   "Regarde tout ce que tu as gagné ce soir : 2 étoiles de mer !",
+   "Et en plus, dix étoiles parce que tu as fini ta séance !",
+   "Ton étoile de diamant ouvre un coquillage de diamant !"
+  ],
+  "bulle": {
+   "visible": true,
+   "texte": "Ton étoile de diamant ouvre un coquillage de diamant !",
+   "place": "droite",
+   "rect": [
+    241.04000000000002,
+    100.31683398791728,
+    662.9429793366473,
+    292
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "27-coquillage-de-diamant-2-1280",
+  "dites": [
+   "Qu'est-ce qu'il y a dedans ?",
+   "C'est une carte légendaire ! C'est le grand requin blanc ! Anecdote fictive pour la capture. Cette créature va vivre dans ton récif !"
+  ],
+  "bulle": {
+   "visible": false,
+   "texte": "C'est une carte légendaire ! C'est le grand requin blanc ! Anecdote fictive pour la capture. Cette créature va vivre dans ton récif !",
+   "place": "dessous",
+   "rect": [
+    8,
+    450.00000000000006,
+    404.0492863852685,
+    734.7564606370465
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "28-album-legendaires-1280",
+  "dites": [
+   "C'est une carte légendaire ! Elle se gagne avec les étoiles de diamant."
+  ],
+  "bulle": {
+   "visible": false,
+   "texte": "C'est une carte légendaire ! Elle se gagne avec les étoiles de diamant.",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    404.0492863852685,
+    618.4148423558418
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ },
+ {
+  "capture": "32-sauvegarde-ancienne-1280",
+  "dites": [
+   "Voici ton récif ! Touche une créature pour voir sa carte.",
+   "Bienvenue à la boutique !",
+   "Touche une créature : je te dis son prix. Pour l'acheter, touche la coche verte."
+  ],
+  "bulle": {
+   "visible": true,
+   "texte": "Touche une créature : je te dis son prix. Pour l'acheter, touche la coche verte.",
+   "place": "dessous",
+   "rect": [
+    8,
+    450,
+    326.48820753113205,
+    732.1710913419086
+   ],
+   "couvre": 0,
+   "gene": 0
+  }
+ }
+]

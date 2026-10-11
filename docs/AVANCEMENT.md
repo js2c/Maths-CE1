@@ -6,8 +6,8 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 - **En ligne** (https://js2c.github.io/Maths-CE1/) : lots 1, 1 bis, 2, 3, 3 bis, 3 ter et « Lagon en fond d'exercices », tous fusionnés (dernière demande de fusion : PR #30, le lagon).
 - **Ce que fait l'application** : `docs/SPEC.md` (spécification unique ; ce qui reste à construire y est marqué « à construire », section 13).
-- **Prochains lots** : « Correctifs : passage de l'échauffement aux voiliers » est fait (PR #52, à fusionner) ; ensuite « Recette de l'enfant et nettoyage des couches » (`docs/LOTS.md`, fiche 9).
-- **En attente du parent** : la fabrication des 394 phrases de l'étal (`docs/maquettes/etal/PHRASES.md`) et des 12 phrases du lot « Correctifs : passage de l'échauffement aux voiliers » (avec elles, la voix pèsera environ 79,4 Mo, tout près de la limite de 80 Mo), la fusion de ce lot, l'essai sur la tablette et la relecture de ses « Choix faits sans le parent » (`docs/JOURNAL-CONCEPTION.md`).
+- **Prochains lots** : « Correctifs : passage de l'échauffement aux voiliers » est fait et fusionné (PR #52) ; ensuite « La boutique du récif » (`docs/LOTS.md`, fiche 10 ; maquette `art/boutique/`, PR #51), puis « Recette de l'enfant et nettoyage des couches » (fiche 9), qui couvrira aussi la boutique (décision du parent du 11 octobre 2026).
+- **En attente du parent** : la fabrication des voix, d'un coup après le lot « La boutique du récif » (décision du parent du 11 octobre 2026). Il y en aura environ 730 : les 394 phrases de l'étal (`docs/maquettes/etal/PHRASES.md`), les 12 du lot « Correctifs : passage de l'échauffement aux voiliers » et environ 322 pour la boutique. La voix pèsera alors environ 81,5 Mo ; la limite passe à 85 Mo dans le lot de la boutique. D'ici là, rien n'est publié : la tablette garde la version d'avant l'étal. Ensuite : l'essai sur la tablette et la relecture des « Choix faits sans le parent » (`docs/JOURNAL-CONCEPTION.md`).
 - **Projet parallèle** : la refonte graphique (hors de ce fichier).
 
 ## Lots

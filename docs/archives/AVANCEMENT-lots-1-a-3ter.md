@@ -892,7 +892,7 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 
 ## Reprise du lot « Correctifs : passage de l'échauffement aux voiliers »
 
-- **Branche** : `claude/practical-franklin-gr2y0x`, partie de `main` (167eec50, étal fusionné) ; demande de fusion « Lot : Correctifs : passage de l'échauffement aux voiliers » (GitHub injoignable depuis la session pendant tout le lot : son texte est prêt dans la session).
+- **Branche** : `claude/practical-franklin-gr2y0x`, partie de `main` (167eec50, étal fusionné) ; demande de fusion https://github.com/js2c/Maths-CE1/pull/52 (GitHub injoignable depuis la session pendant le lot : ouverte à la fin, sortie du brouillon).
 - **Fiche** : `docs/LOTS.md`, fiche 8 ; d'un seul tenant (choix de la session dans `docs/JOURNAL-CONCEPTION.md`).
 - **Fait** : points 1 à 14, tests unitaires, parcours `tests/e2e/passages.mjs`, `tests/e2e/mise-a-jour.mjs`, `tests/e2e/correctifs-2.mjs` (captures), documentation, relecture indépendante (`tests/recette-fonctionnelle/out-correctifs-2/RELECTURE.md`) et ses correctifs.
 - **Fini le 10 octobre 2026** : recette complète (tous les parcours, comparés à `main` quand ils échouent ; mesures avant et après, dont un correctif du démarrage trouvé par la mesure ; simulation par profil ; séquences ; séance à vitesse réelle ; attentes avec et sans « passer »). 12 phrases à fabriquer par le parent.

@@ -11,7 +11,40 @@
 // et `__finSansBouton` (lot « La boutique du récif » : la récompense finit sans son bouton de fin, la boutique ou le récif ;
 // « à demain » vient aussitôt, comme avant la boutique).
 import { chromium as pw } from "../../art/node_modules/playwright-core/index.mjs";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { inventaire } from "../../tools/voix/inventaire.mjs";
+
+// (lot « Recette de l'enfant et nettoyage des couches », point 1) LA COUVERTURE, pour l'inventaire des couches (docs/COUCHES.md) :
+// avec COUVERTURE=dossier, chaque page relève le JavaScript exécuté et les règles CSS utilisées (Chromium, par fonction et
+// par bloc), les fichiers demandés au serveur et les images des planches réellement dessinées (sprites.frame) ; un fichier
+// JSON par page dans le dossier, à sa fermeture. tools/couverture.mjs les réunit.
+const COUV = process.env.COUVERTURE ? resolve(process.env.COUVERTURE) : null;
+let nCouv = 0;
+const demarrer = async (page) => {
+  if (!COUV || page.__couv) return page;
+  page.__couv = { fichiers: new Set(), sprites: new Set() };
+  const pc = page.close.bind(page); page.close = async (...a) => { await arreter(page); return pc(...a); };
+  page.on("request", (r) => page.__couv.fichiers.add(new URL(r.url()).pathname));
+  try { await page.exposeBinding("__spriteVu", (_s, n) => page.__couv.sprites.add(n)); } catch { /* déjà posé sur le contexte */ }
+  await page.addInitScript(() => {
+    const vus = new Set(), poser = () => { const s = window.__app?.sprites; if (!s || s.__couv) return setTimeout(poser, 200); s.__couv = true; const f = s.frame.bind(s); s.frame = (n, i = 0) => { if (!vus.has(n)) { vus.add(n); window.__spriteVu?.(n)?.catch?.(() => {}); } return f(n, i); }; };
+    poser();
+  });
+  await page.coverage.startJSCoverage({ resetOnNavigation: false, reportAnonymousScripts: false });
+  await page.coverage.startCSSCoverage({ resetOnNavigation: false });
+  return page;
+};
+const arreter = async (page) => {
+  const c = page.__couv; if (!c || c.fini) return; c.fini = true;
+  try {
+    const js = (await page.coverage.stopJSCoverage()).filter((e) => /\/js\//.test(e.url)).map((e) => ({ url: new URL(e.url).pathname, functions: e.functions }));
+    const css = (await page.coverage.stopCSSCoverage()).filter((e) => /\.css/.test(e.url)).map((e) => ({ url: new URL(e.url).pathname, ranges: e.ranges }));
+    mkdirSync(COUV, { recursive: true });
+    writeFileSync(resolve(COUV, `${process.pid}-${nCouv++}.json`), JSON.stringify({ parcours: process.argv[1], js, css, fichiers: [...c.fichiers], sprites: [...c.sprites] }));
+  } catch (e) { console.log(`note couverture : ${e.message.split("\n")[0]}`); }
+};
+const fermerPages = (ctx) => Promise.all(ctx.pages().map(arreter));
 
 const manquees = new Map(), permises = [];
 export const voixPermise = (...re) => { permises.push(...re); };
@@ -24,6 +57,13 @@ const noter = (_source, s) => { if (typeof s === "string") manquees.set(s, (manq
 const brancher = async (cible) => {
   try { await cible.exposeBinding("__voixManquee", noter); } catch { /* déjà posé */ }
   try { await cible.addInitScript(() => { window.__demarrageAuto ??= true; window.__accueilUnToucher ??= true; window.__finSansBouton ??= true; }); } catch { /* déjà posé */ }
+  if (COUV && cible.newPage && !cible.__couv) {
+    cible.__couv = true;
+    const np = cible.newPage.bind(cible), close = cible.close.bind(cible);
+    cible.newPage = async (...a) => demarrer(await np(...a));
+    cible.close = async (...a) => { await fermerPages(cible); return close(...a); };
+    for (const p of cible.pages()) await demarrer(p);
+  }
   return cible;
 };
 export const demarrageReel = (cible) => cible.addInitScript(() => { window.__demarrageAuto = false; });
@@ -35,9 +75,10 @@ export const accueilReel = (cible) => cible.addInitScript(() => { window.__accue
 export const finReelle = (cible) => cible.addInitScript(() => { window.__finSansBouton = false; });
 
 const envelopper = (browser) => {
-  const newContext = browser.newContext.bind(browser), newPage = browser.newPage.bind(browser);
+  const newContext = browser.newContext.bind(browser), newPage = browser.newPage.bind(browser), close = browser.close.bind(browser);
   browser.newContext = async (...a) => brancher(await newContext(...a));
-  browser.newPage = async (...a) => { const p = await newPage(...a); await brancher(p.context()); return p; };
+  browser.newPage = async (...a) => { const p = await newPage(...a); await brancher(p.context()); return demarrer(p); };
+  if (COUV) browser.close = async (...a) => { await Promise.all(browser.contexts().map(fermerPages)); return close(...a); };
   return browser;
 };
 export const chromium = {

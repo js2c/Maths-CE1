@@ -17,6 +17,7 @@ import { blob, clipped, fillShape, ink, mix, smooth } from "../gallery";
 import * as O from "../ocean";
 import { cel, contour, INK, shift } from "../oceanMarker";
 import { drawAnswerBubble } from "./decor";
+import { rrect } from "./treasure";
 
 const SH = "#0a3f49", TAU = Math.PI * 2;
 
@@ -164,3 +165,26 @@ export const drawShopKey = (g: Gfx, cx: number, cy: number) => {
   drawShopIcon(g, cx, cy);
 };
 void TAU;
+
+// ---------------------------------------------------------------- la tuile de la vitrine
+// une place de la vitrine : la tuile crème des écrans de choix, 170 × 196, coins de 22 px, cernée d'encre, une ombre nette ;
+// un filet sous la créature, au-dessus du prix. Sa matière dit la rareté (comme le cadre des cartes) : commune crème, rare
+// argent (un liseré gris perle), légendaire or ; une place pas encore arrivée est d'un crème éteint, une zone fermée grise.
+// (x, y) : le coin en haut à gauche de la tuile.
+export const TUILE_W = 170, TUILE_H = 196, TUILE_R = 22;
+const TUILES: Record<string, { lit: string; shade: string; liseré?: [string, string, string] }> = {
+  commune: { lit: "#fdf9f0", shade: "#efe5d2" },
+  rare: { lit: "#fbfcff", shade: "#dfe6ee", liseré: ["#b9c3cf", "#eef2f7", "#8c97a5"] },
+  legendaire: { lit: "#fff6d2", shade: "#f0d27a", liseré: ["#e7b93a", "#fff1b8", "#b98516"] },
+  bientot: { lit: "#ece5d6", shade: "#ddd3be" },
+  fermee: { lit: "#d9d3c6", shade: "#c8c0ae" },
+};
+export const drawShopTile = (g: Gfx, x: number, y: number, sorte: string) => g.group("plain", () => {
+  const T = TUILES[sorte] ?? TUILES.commune, s = rrect(x, y, TUILE_W, TUILE_H, TUILE_R);
+  fillShape(g, shift(s, 7, 8), SH, 0.26);
+  cel(g, s, T.lit, T.shade, 6);
+  if (T.liseré) { const [a, b, c] = T.liseré; ink(g, rrect(x + 6, y + 6, TUILE_W - 12, TUILE_H - 12, TUILE_R - 5), a, { w: 5, closed: true, shadow: 0, seed: 5240 }); ink(g, rrect(x + 6, y + 6, TUILE_W - 12, TUILE_H - 12, TUILE_R - 5), b, { w: 1.6, closed: true, shadow: 0, seed: 5241 }); ink(g, rrect(x + 9, y + 9, TUILE_W - 18, TUILE_H - 18, TUILE_R - 8), c, { w: 1.2, closed: true, shadow: 0, seed: 5242 }, 0.8); }
+  ink(g, [[x + 16, y + 149], [x + TUILE_W - 16, y + 149]], INK, { w: 2, shadow: 0, taper: [0.2, 0.2], seed: 5243 }, 0.14);
+  ink(g, smooth([[x + 16, y + 30], [x + 22, y + 16], [x + 36, y + 11]], false, 4), "#ffffff", { w: 4, shadow: 0, taper: [0.3, 0.4], seed: 5244 }, 0.8);
+  contour(g, s, 4.2, 5245);
+});

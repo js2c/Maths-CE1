@@ -603,6 +603,7 @@
     "zoneFinie": "Bravo ! Tu as toutes les créatures de cette zone !",
     "zoneBientot": "Une nouvelle zone va bientôt s'ouvrir.",
     "legendaire": "C'est une créature légendaire ! Elle se gagne avec les étoiles de diamant.",
-    "invitation": "Tu peux choisir une créature à la boutique !"
+    "invitation": "Tu peux choisir une créature à la boutique !",
+    "achat": "Bravo ! Cette créature va vivre dans ton récif !"
   }
 }

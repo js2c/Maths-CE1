@@ -45,6 +45,7 @@ import { challengeReady, doneToday, sameDay, Session } from "./session/session.j
 import { Reef } from "./session/reef.js";
 import { drawSurprise, playSurprise, previousSession } from "./session/surprise.js";
 import { Album } from "./session/album.js";
+import { Boutique } from "./session/boutique.js";
 import { Frieze } from "./session/frieze.js";
 import { FreeTraining } from "./session/free.js";
 import { allowedCrans, chooseCran } from "./session/selector.js";
@@ -445,6 +446,8 @@ const reef = new Reef(app);
 app.reef = reef;
 const album = new Album(app);
 app.album = album;
+// (lot « La boutique du récif ») la boutique : depuis le récif (hors séance), ou depuis la fin de la récompense
+app.boutique = new Boutique(app);
 // l'espace parent : appui long sur le logo, puis le code (parent/parent.js) ; après une restauration ou un
 // effacement, l'application repart de zéro
 const parent = new ParentSpace(app, { content: parentContent, seance, module2, cartes, calendrier, legendes });
@@ -575,6 +578,10 @@ async function runSession(choix = null) {
   if (session.stopped) return;
   mode = null; frieze.show(false); homeKey.style.visibility = "hidden";
   sound.stopMusic();
+  // (lot « La boutique du récif ») le bouton de fin de la récompense : la boutique (un achat est possible) ou le récif ; « à
+  // demain » vient au retour
+  const vers = app.finVers; app.finVers = null;
+  if (vers) await reef.visit({ boutique: vers === "boutique" });
   showHome({ done: true, first: true });
 }
 // une leçon choisie seule (lot 3) : ce n'est pas une séance ; regardée jusqu'au bout, elle rapporte ses étoiles une

@@ -40,6 +40,21 @@ export const voisines = (r, toutes, portee = 1.45) => {
   return toutes.filter((o) => o !== r && Math.abs((o[0] + o[2]) / 2 - cx) < w * portee && Math.abs((o[1] + o[3]) / 2 - cy) < h * portee);
 };
 
+// la place d'un bouton : celle de son style, en px de la scène (sa boîte à l'écran est réduite pendant son petit rebond)
+export const rectStyle = (b) => { const x = parseFloat(b.style.left), y = parseFloat(b.style.top); return [x, y, x + parseFloat(b.style.width), y + parseFloat(b.style.height)]; };
+// LA BULLE D'UNE TUILE : la prochaine phrase `t` s'écrit dans une bulle qui part d'un coin de la tuile `b` ; elle évite la tuile,
+// les boutons de commande (et `commandes`, un sélecteur de plus ; `durs()`, d'autres zones à ne jamais couvrir), la tête de la
+// mascotte, et si possible les tuiles voisines (comptées deux fois), puis les autres, et le compteur d'étoiles
+// (lot « La boutique du récif » : la même bulle pour la vitrine de la boutique, session/boutique.js)
+export function bulleTuile(app, b, tuiles, t, { commandes = "", durs = () => [] } = {}) {
+  const { bulle, stage } = app, rect = rectStyle;
+  const r0 = b.__cadre ?? rect(b), toutes = tuiles.filter((x) => x.checkVisibility?.({ visibilityProperty: true }) ?? true).map(rect);
+  const proches = voisines(r0, toutes.filter((o) => o.join() !== r0.join()));
+  const etoiles = [...stage.ui.querySelectorAll(".hud.stars")].map(rect);
+  const fixes = [...stage.ui.querySelectorAll(`.homekey, .session-home, .choix-retour, .legende, .mascotte-tap${commandes ? `, ${commandes}` : ""}`)].filter((e) => e.checkVisibility?.({ visibilityProperty: true }) ?? true).map(rect);
+  bulle.ancrer({ texte: t, places: placesTuile(r0), obstacles: () => ({ durs: [r0.map((v, i) => v + (i < 2 ? -4 : 4)), ...fixes, ...durs()], souples: [...proches, ...proches, ...etoiles, ...toutes.filter((o) => o.join() !== r0.join())] }) });
+}
+
 // l'écran : `tuiles` (boutons, chacun avec dataset.key), `texte(clé)` (ce que dit la mascotte),
 // `peindre(clé | null)` (la tuile sélectionnée est redessinée avec sa bordure). Renvoie une promesse : la clé lancée.
 // (point 10 : l'accueil aussi ; `b.__cadre`, s'il est donné, est le rectangle d'où part la bulle, au lieu de la boîte du bouton :
@@ -47,9 +62,7 @@ export const voisines = (r, toutes, portee = 1.45) => {
 // (`unToucher` : la tuile se lance au premier toucher ; seulement pour les parcours de test écrits avant l'accueil en deux
 // touchers, tests/e2e/navigateur.mjs, `__accueilUnToucher`)
 export function deuxTouchers(app, { tuiles, texte, peindre = () => {}, commandes = "", unToucher = false }) {
-  const { voice, bulle, stage } = app, sel = new Selection({ rebondMs: app.toucher?.rebondMs ?? 60, rapideMs: app.toucher?.doubleRapideMs ?? 600 });
-  // (la place d'un bouton : celle de son style, en px de la scène ; sa boîte à l'écran est réduite pendant son petit rebond)
-  const rect = (b) => { const x = parseFloat(b.style.left), y = parseFloat(b.style.top); return [x, y, x + parseFloat(b.style.width), y + parseFloat(b.style.height)]; };
+  const { voice, bulle } = app, sel = new Selection({ rebondMs: app.toucher?.rebondMs ?? 60, rapideMs: app.toucher?.doubleRapideMs ?? 600 });
   let cur = null, fini = false;
   const vider = () => { if (sel.dehors() !== "vide") return; const b = cur; cur = null; peindre(null); b?.classList.remove("choisie"); b?.repaint(); voice.stop(); bulle.ancrer(null); };
   return new Promise((res) => {
@@ -71,14 +84,8 @@ export function deuxTouchers(app, { tuiles, texte, peindre = () => {}, commandes
         avant?.classList.remove("choisie"); avant?.repaint(); b.repaint(); pop(b);
         // la tuile sélectionnée se balance doucement, comme la bulle « jouer » : elle invite au second toucher
         setTimeout(() => { if (cur === b && !fini) b.classList.add("choisie"); }, 450);
-        // la bulle part d'un coin de la tuile ; elle évite la tuile, les boutons de commande, la tête de la mascotte, et si
-        // possible les tuiles voisines (comptées deux fois), puis les autres
-        const t = texte(k), r0 = b.__cadre ?? rect(b), toutes = tuiles.filter((x) => x.checkVisibility?.({ visibilityProperty: true }) ?? true).map(rect);
-        const proches = voisines(r0, toutes.filter((o) => o.join() !== r0.join()));
-        // (le compteur d'étoiles : à éviter si possible, comme les tuiles voisines)
-        const etoiles = [...stage.ui.querySelectorAll(".hud.stars")].map(rect);
-        const fixes = [...stage.ui.querySelectorAll(`.homekey, .session-home, .choix-retour, .legende, .mascotte-tap${commandes ? `, ${commandes}` : ""}`)].filter((e) => e.checkVisibility?.({ visibilityProperty: true }) ?? true).map(rect);
-        bulle.ancrer({ texte: t, places: placesTuile(r0), obstacles: () => ({ durs: [r0.map((v, i) => v + (i < 2 ? -4 : 4)), ...fixes], souples: [...proches, ...proches, ...etoiles, ...toutes.filter((o) => o.join() !== r0.join())] }) });
+        const t = texte(k);
+        bulleTuile(app, b, tuiles, t, { commandes });
         voice.stop(); voice.say(t);
       }, null); // (point 7 : sans étiquette)
     }

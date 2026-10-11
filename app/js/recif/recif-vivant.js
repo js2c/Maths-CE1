@@ -5,7 +5,8 @@
 // OPTS : { cv, glc : les deux canvas ; donnees : assets/recif/donnees.json ; owned, brillantes : les créatures (noms de
 // la maquette) possédées et brillantes ; size() : { w, h } de la scène en px CSS ; rect() : sa place à l'écran ; dpr() :
 // la densité ; on(cible, type, f) : un écouteur à retirer en sortant ; onFiche(id) : une créature touchée ;
-// scintille(ctx, c, x0, y0, t, k) : le scintillement d'une brillante ; mesure(t) : appelé à chaque image }
+// scintille(ctx, c, x0, y0, t, k) : le scintillement d'une brillante ; mesure(t) : appelé à chaque image ;
+// arrivee(id, t, x, vue) : la créature qui vient d'être achetée, son décalage et son halo pendant son arrivée }
 /* eslint-disable */
 export function startRecif(OPTS) {
 let VIVANT = true, RAF = 0;
@@ -1516,7 +1517,7 @@ function drawLagon(t, sc, camX, viewW){
     }
     const kf = 1 - 0.4*far, Wd = (c.w - 2*c.m)*c.k*kf, Hd = (c.h - 2*c.m)*c.k*kf;
     if (far > 0.985 || c.x + Wd + 150 < camX || c.x - Wd - 150 > camX + viewW) continue;
-    const P = c.pose ? c.pose(t, c) : {}, dx = P.dx || 0, dy = P.dy || 0, rot = P.rot || 0, sx = (P.sx || 1)*kf, sy = (P.sy || 1)*kf;
+    const P = c.pose ? c.pose(t, c) : {}, AR = OPTS.arrivee?.(c.id, t, c.x - camX, viewW) ?? null, dx = (P.dx || 0) + (AR ? AR.dx : 0), dy = (P.dy || 0) + (AR ? AR.dy : 0), rot = P.rot || 0, sx = (P.sx || 1)*kf*(AR ? AR.s : 1), sy = (P.sy || 1)*kf*(AR ? AR.s : 1);
     c.cx = c.x + dx; c.cy = c.y + dy; c.kd = c.k*kf; c.vis = far < 0.6;
     // ombre au sol
     const ox = (c.x + dx - camX)*sc, oy = (c.ombre || c.y)*sc;
@@ -1533,7 +1534,7 @@ function drawLagon(t, sc, camX, viewW){
     ctx.translate((c.x + dx - camX)*sc, (c.y + dy)*sc); ctx.rotate(rot); ctx.scale(sc*c.k*sx*(c.flip ? -1 : 1), sc*c.k*sy);
     const X0 = -c.w/2, Y0 = c.sol ? -(c.h - c.m) : -c.h/2;
     // le halo d'abord (seulement si la créature est survolée ou tenue), puis l'image, avec la même déformation
-    c.halo += ((c === hoverC || c === holdC ? 1 : 0) - c.halo)*0.2;
+    c.halo += ((c === hoverC || c === holdC || AR?.halo ? 1 : 0) - c.halo)*0.2;
     if (c.halo > 0.02){
       const a0 = ctx.globalAlpha; ctx.globalAlpha = a0*c.halo; lagBlit(c, lagHalo(c), t, X0, Y0, 0); ctx.globalAlpha = a0;
     }

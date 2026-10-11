@@ -1,10 +1,12 @@
 {
- "version": "09ef02bac087",
+ "version": "2de4821946d2",
  "files": [
   "./",
   "assets/art/aides@1x.webp",
   "assets/art/aides@2x.webp",
   "assets/art/atlas.json",
+  "assets/art/boutique@1x.webp",
+  "assets/art/boutique@2x.webp",
   "assets/art/calcul@1x.webp",
   "assets/art/calcul@2x.webp",
   "assets/art/cartes@1x.webp",
@@ -11073,6 +11075,7 @@
   "js/parent/parent.js",
   "js/recif/recif-vivant.js",
   "js/session/album.js",
+  "js/session/boutique.js",
   "js/session/cards.js",
   "js/session/choice.js",
   "js/session/demarrage.js",

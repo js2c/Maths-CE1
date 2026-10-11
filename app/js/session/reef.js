@@ -13,7 +13,7 @@
 //    en densité 1 (`alleger`).
 // Remplace le récif en pages (lot 3, étape 5) depuis le 5 octobre 2026 (décision du parent).
 import { CardView, forgetPictures } from "./cards.js";
-import { spriteBox } from "./screens.js";
+import { spriteBox } from "../engine/ui.js";
 import { onBrief } from "../engine/ui.js";
 import { startRecif } from "../recif/recif-vivant.js";
 
@@ -55,10 +55,34 @@ function scintille(ctx, c, x0, y0, t, k) {
   ctx.restore();
 }
 
+// (lot « La boutique du récif ») l'arrivée de la créature qui vient d'être achetée : elle entre par la gauche de la vue, nage en
+// arc jusqu'à sa place en 3,6 s (deux fois plus grande au milieu de l'arc, comme la maquette de la boutique), avec son halo, qu'elle garde encore un peu une fois arrivée (rien ensuite : null). `A` : { id,
+// t0, dx0 } (t0 et dx0 posés au premier appel) ; t en secondes ; x : sa place à l'écran (px du panorama), depuis le bord gauche
+export const ARRIVEE_S = 3.6;
+export function arriveeNage(A, id, t, x) {
+  if (!A || id !== A.id) return null;
+  A.t0 ??= t; A.dx0 ??= -(Math.max(0, x) + 320);
+  const u = (t - A.t0) / ARRIVEE_S;
+  if (u >= 1.6) { A.fini = true; return null; }
+  if (u >= 1) return { dx: 0, dy: 0, s: 1, halo: true };
+  const e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+  return { dx: A.dx0 * (1 - e), dy: -140 * Math.sin(Math.PI * u), s: 1 + Math.sin(Math.PI * Math.min(1, u * 1.15)), halo: true };
+}
+
 export class Reef {
   constructor(app) { this.app = app; this.open = false; this.view = new CardView(app); this.donnees = null; }
-  // la visite ; la promesse se résout quand l'enfant touche la maison
-  async visit() {
+  // la visite ; la promesse se résout quand l'enfant touche la maison. (Lot « La boutique du récif » : le bouton de la boutique,
+  // au-dessus de l'album, hors séance ; il se balance quand un achat est possible ; touché, la boutique s'ouvre, et son bouton
+  // du récif ramène ici, où la créature achetée arrive à la nage. `boutique` : la visite commence par la boutique : la fin de
+  // la récompense, quand un achat est possible.)
+  async visit({ boutique = false } = {}) {
+    for (let vers = boutique ? "boutique" : "recif"; ;) {
+      if (vers === "boutique") { this.dansBoutique = true; try { await this.app.boutique.visit(); } finally { this.dansBoutique = false; } }
+      vers = await this.visite();
+      if (vers !== "boutique") return;
+    }
+  }
+  async visite() {
     const { app } = this, { sprites, ocean, voice, text, rewards, stage } = app;
     this.open = true; this.els = []; this.lent = false;
     this.donnees ??= await (await fetch("assets/recif/donnees.json")).json();
@@ -73,6 +97,9 @@ export class Reef {
     // (illisible sur le noir des abysses) par-dessus la mer
     this.cache = { mascotte: ocean.mascotteVisible, etoiles: stage.ui.querySelector(".hud.stars") };
     ocean.mascotteVisible = false; this.cache.etoiles?.classList.add("recif-masque");
+    // la créature qui vient d'être achetée (pas celle qu'on vient de faire briller) arrive à la nage
+    const arr = rewards.arrivee; rewards.arrivee = null;
+    this.arr = arr && !arr.briller && owned.has(versMaquette(arr.id)) ? { id: versMaquette(arr.id) } : null;
     const ecoute = []; this.ecoute = ecoute;
     const gaps = []; let last = 0, t0 = 0;
     this.api = startRecif({
@@ -80,7 +107,7 @@ export class Reef {
       size: () => ({ w: stage.root.clientWidth, h: stage.root.clientHeight }), rect: () => cv.getBoundingClientRect(),
       dpr: () => densite(this.lent),
       on: (cible, type, f, o) => { cible.addEventListener(type, f, o); ecoute.push([cible, type, f, o]); },
-      onFiche: (id) => this.fiche(id), scintille,
+      onFiche: (id) => this.fiche(id), scintille, arrivee: (id, t, x) => arriveeNage(this.arr, id, t, x),
       // l'allègement (`alleger`) : la densité passe à 1
       mesure: (t) => {
         t0 ||= t; if (last && garderIntervalle(t - last)) gaps.push(t - last); last = t; if (gaps.length > 60) gaps.shift();
@@ -92,10 +119,23 @@ export class Reef {
     const book = spriteBox(app, { x: 90 - 70, y: 560 - 70, w: 140, h: 140, cls: "bubble albumkey", label: "l'album", paint: (ctx) => { const q = sprites.frame("album", 0), k = 140 / 180, px = sprites.px; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 70 * px + q.dx * k, 70 * px + q.dy * k, q.w * k, q.h * k); } });
     onBrief(app, book, async () => { pop(book); await this.view.close(); if (app.album && !app.album.open) { await app.album.visit(); voice.say(text.data.recifBienvenue, { instruction: true }); } }, "album");
     this.els.push(home, book);
+    // (lot « La boutique du récif ») la boutique : hors séance seulement (pendant une séance en pause, pas de bouton)
+    let vers = null;
+    const fin = new Promise((r) => { vers = r; });
+    if (!app.enPause && app.boutique) {
+      const shop = spriteBox(app, { x: 90 - 70, y: 408 - 70, w: 140, h: 140, cls: `bubble boutique-cle${rewards.peutAcheter() ? " invite" : ""}`, label: "la boutique", paint: (ctx) => { const q = sprites.frame("boutique", 0), k = 140 / 150, px = sprites.px; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 70 * px + q.dx * k, 70 * px + q.dy * k, q.w * k, q.h * k); } });
+      onBrief(app, shop, () => { if (app.album?.open) return; pop(shop); setTimeout(() => vers("boutique"), 200); }, "boutique");
+      this.els.push(shop);
+    }
+    // (une créature achetée qui vit plus loin que le lagon : la mer s'ouvre à sa place pour qu'on la voie arriver)
+    if (this.arr && app.cartes.cartes.find((c) => c.id === versCarte(this.arr.id))?.zone !== "lagon") this.api.aller(this.arr.id);
     voice.stop(); voice.say(text.data[owned.size ? "recifBienvenue" : "recifVide"], { instruction: true });
-    await new Promise((r) => onBrief(app, home, () => { if (app.album?.open) return; pop(home); r(); }, "maison"));
+    if (!owned.size && !app.enPause && rewards.peutAcheter()) voice.say(text.data.boutique.invitation);
+    onBrief(app, home, () => { if (app.album?.open) return; pop(home); vers("maison"); }, "maison");
+    const r = await fin;
     await this.view.close();
     voice.stop(); this.leave();
+    return r;
   }
   // une créature touchée : sa carte en grand
   fiche(id) {

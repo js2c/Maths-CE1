@@ -7,7 +7,7 @@ import type { Gfx, P } from "../core";
 import { BUBBLE_R, drawAnswerBubble, drawBubble, drawCheck, drawFish, drawMoon, drawEraseKey, drawShellKey, drawSlate, drawReplayKey, drawTally, SLATE_H, SLATE_W, TALLY_H, TALLY_W, drawPlay, drawPlayIcon, drawSpeaker, drawStar, FISH_KINDS, FISH_N } from "./decor";
 import { drawFleche, FLECHE_H, FLECHE_O, FLECHE_W } from "./fleche";
 import { drawTurtle, TURTLE_CLIPS, TURTLE_FPS } from "./turtle";
-import { CARD_H, CARD_W, drawBigShell, drawShinySweep, SWEEP_H, SWEEP_W, drawCardBack, drawCardBanner, drawCardFrame, drawCardVerso, drawCardWater, drawGlint, drawHomeKey, drawRainbowStar, drawReefIcon, drawReefKey, SHELL_N } from "./treasure";
+import { CARD_H, CARD_W, drawBigShell, drawShinySweep, SWEEP_H, SWEEP_W, drawCardBack, drawCardBanner, drawCardFrame, drawCardVerso, drawCardWater, drawGlint, drawGoldStar, drawHomeKey, drawRainbowStar, drawReefIcon, drawReefKey, SHELL_N } from "./treasure";
 import { CRAN_W, drawCranGlow, drawCranKey, GLOW_CR } from "./selector";
 import { drawFishNet, drawTrawl, NET_H, NET_W, TRAWL } from "./hundreds";
 import { DEFI_N, drawRecordFlag, drawScorePearl, drawStepChallenge, drawTimerBubble, TIMER_W } from "./challenge";
@@ -21,7 +21,7 @@ import { GLOW_PAD, drawChooseIcon, drawChooseKey, drawExerciseLine, drawOpenBook
 import { ATOI_R, drawAToiKey, drawBigHomeKey, drawLessonMenuTile, drawLessonsKey, drawRowIcon, drawTableTile, HOME_BIG_S, LESSON_ATOI, LESSON_IDS } from "./lecons";
 import { drawBigFlag, drawCloseKey, drawHintKey, drawLegendKey, drawShrugKey, drawSmallFish, drawStarTrail, drawTagFish, drawTallNet, drawZoneTab, FLAG_N, HOUSE_FISH, LEGEND_R, NETV_H, NETV_W, TAG, TAG_FISH_N, TRAIL_H, TRAIL_W, ZONE_TAB_R } from "./lot3bis";
 import { drawWarmupSkipKey } from "./lot3ter";
-import { drawConfirmNo, drawConfirmYes, drawDiamondStar, drawHourglass, drawPadlock, drawShineIcon, drawShopKey, drawSparkle } from "./boutique";
+import { drawConfirmNo, drawConfirmYes, drawDiamondStar, drawHourglass, drawPadlock, drawShineIcon, drawShopKey, drawShopTile, drawSparkle, TUILE_H, TUILE_W } from "./boutique";
 import { BAR_H, BAR_W, drawBar } from "./demarrage";
 import { drawGalet, GALET_H, GALET_W } from "./galets";
 import { drawAgainIcon, drawAgainKey, drawAlbumIcon, drawAlbumKey, drawFreeFacts, drawFreeLessons, drawFreeLine, drawMoonDecor, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepGlow, drawStepShell, GLOW_R, STEP_R } from "./ui";
@@ -72,10 +72,13 @@ export const SPECS: Spec[] = [
   { name: "rejouer", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawReplayKey(g, 70, 70) },
   // (lot « La boutique du récif » : l'étoile des légendaires devient l'étoile de diamant, sea/boutique.ts ; son reflet et ses
   // étincelles sont dessinés en direct, runtime.ts, drawDiamantVif)
+  // (l'étoile dorée reste : elle marque les niveaux validés, écrans de choix et des leçons)
+  { name: "etoile.doree", sheet: "petits", W: 120, H: 120, origin: [60, 60], frames: 1, draw: (g) => drawGoldStar(g, 60, 60, 44) },
   { name: "etoile.diamant", sheet: "petits", W: 130, H: 130, origin: [65, 65], frames: 1, draw: (g) => drawDiamondStar(g, 65, 65, 44) },
   // (lot « La boutique du récif ») la boutique : son bouton (le récif, la fin de séance), la coche et la croix de la confirmation,
   // l'étincelle « briller » des prix, le sablier, le cadenas des zones fermées, les étincelles des brillantes et des gerbes
   { name: "boutique", sheet: "petits", W: 150, H: 150, origin: [72, 72], frames: 1, draw: (g) => drawShopKey(g, 72, 72) },
+  ...["commune", "rare", "legendaire", "bientot", "fermee"].map((k): Spec => ({ name: `boutique.tuile.${k}`, sheet: "boutique", W: TUILE_W + 14, H: TUILE_H + 16, origin: [2, 2], frames: 1, draw: (g) => drawShopTile(g, 2, 2, k) })),
   { name: "boutique.coche", sheet: "boutique", W: 100, H: 100, origin: [48, 48], frames: 1, draw: (g) => drawConfirmYes(g, 48, 48) },
   { name: "boutique.croix", sheet: "boutique", W: 100, H: 100, origin: [48, 48], frames: 1, draw: (g) => drawConfirmNo(g, 48, 48) },
   { name: "boutique.briller", sheet: "boutique", W: 36, H: 36, origin: [16, 18], frames: 1, draw: (g) => drawShineIcon(g, 16, 18) },

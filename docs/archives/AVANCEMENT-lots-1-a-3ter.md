@@ -896,3 +896,10 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 - **Fiche** : `docs/LOTS.md`, fiche 8 ; d'un seul tenant (choix de la session dans `docs/JOURNAL-CONCEPTION.md`).
 - **Fait** : points 1 à 14, tests unitaires, parcours `tests/e2e/passages.mjs`, `tests/e2e/mise-a-jour.mjs`, `tests/e2e/correctifs-2.mjs` (captures), documentation, relecture indépendante (`tests/recette-fonctionnelle/out-correctifs-2/RELECTURE.md`) et ses correctifs.
 - **Fini le 10 octobre 2026** : recette complète (tous les parcours, comparés à `main` quand ils échouent ; mesures avant et après, dont un correctif du démarrage trouvé par la mesure ; simulation par profil ; séquences ; séance à vitesse réelle ; attentes avec et sans « passer »). 12 phrases à fabriquer par le parent.
+
+## Reprise du lot « La boutique du récif »
+
+- **Branche** : `claude/busy-knuth-rt90r6`, partie de `main` (0d0206f0, maquette de la boutique fusionnée) ; demande de fusion https://github.com/js2c/Maths-CE1/pull/54.
+- **Fiche** : `docs/LOTS.md`, fiche 10 ; d'un seul tenant (choix de la session dans `docs/JOURNAL-CONCEPTION.md`).
+- **Fait le 11 octobre 2026** : règles et contenu (`cartes.json`, `textes.json`, inventaire), `rewards.js` (achat en une transaction), atelier (pictogrammes, étoile et coquillage de diamant, tuiles), écran de la boutique, récif (bouton, arrivée à la nage par l'export du récif), récompense (occasions, arrivages, bouton de fin), espace parent, simulation de l'année, parcours `tests/e2e/boutique.mjs`, anciens parcours adaptés, documents, relecture indépendante (`tests/recette-fonctionnelle/out-boutique/RELECTURE.md`) et son traitement. 321 phrases à fabriquer.
+

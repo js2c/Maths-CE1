@@ -34,4 +34,8 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
 
-(Aucune session en cours.)
+### Reprise du lot « La boutique du récif »
+
+- **Branche** : `claude/busy-knuth-rt90r6` ; demande de fusion : « Lot : La boutique du récif » (brouillon).
+- **Fait** : lecture de la fiche 10, du README de `art/boutique/`, de la maquette.
+- **Reste** : règles et contenu, atelier (pictogrammes, diamant), écran de la boutique, récif, fin de séance, espace parent, simulation, parcours, recette, documents.

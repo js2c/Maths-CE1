@@ -17,6 +17,9 @@ export class Stage {
   constructor(root) {
     this.root = root;
     this.bg = root.querySelector("#bg"); this.ui = root.querySelector("#ui");
+    // (lot « Recette de l'enfant », point 0.1) le fond, un canvas « bitmaprenderer », n'est affiché qu'une fois son image
+    // reçue (lagon.js, paintStatic) : sans image, il pourrait apparaître en noir sur Android, comme la bande de la ligne
+    this.bg.classList.add("vide");
     this.listeners = new Set(); this.ticks = new Set();
     this.perf = { frames: 0, work: [], gaps: [], level: 0 };
     this.resize();

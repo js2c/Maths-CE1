@@ -13,6 +13,9 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 #mascotte.pop { animation: touche-tete 0.35s ease-out; transform-origin: 50% 80%; }
 @keyframes touche-tete { 0% { transform: scale(0.96); } 60% { transform: scale(1); } 80% { transform: scale(0.985); } 100% { transform: scale(1); } }
 #stage > #line, #stage > #fx { inset: auto; left: 0; width: 100%; } /* bande de la ligne graduée : top et height posés par line.js */
+/* (lot « Recette de l'enfant », point 0.1) un calque de la bande sans image n'est pas affiché : vidé, un canvas
+   « bitmaprenderer » peut apparaître en noir opaque sur Android (la barre noire) */
+#stage > canvas.vide { display: none; }
 /* les acteurs : un petit canvas chacun, déplacé par le compositeur (actor.js) */
 .actors { position: absolute; inset: 0; pointer-events: none; }
 .actor { position: absolute; left: 0; top: 0; will-change: transform; pointer-events: none; }

@@ -5,7 +5,8 @@
 //     sorti (toucher), une pièce posée d'un toucher, le paiement juste, le compte du pêcheur, l'achat ; « pas assez » (compléter,
 //     erreur corrigée) ; « trop » (il rend ce qui est en trop) puis la correction ; « je ne sais pas » ; la pause et la reprise ;
 //  3. mauvais temps, niveau 6 : le paiement sans pièce de trop et la monnaie rendue par le pêcheur ; une pièce de trop ;
-//  4. l'orage qui arrive en cours de partie, et la réplique de la mascotte, entre deux questions ;
+//  4. l'orage qui arrive en cours de partie, et la réplique de la mascotte, entre deux questions ; la lampe touchée change le
+//     temps (lot « Recette de l'enfant », point 0.5) ;
 //  5. niveau 7 : « Combien je te rends ? » au pavé (et au clavier), juste ; le prix rendu (M5) et le saut sur la ligne ; cran
 //     « plus facile » : la ligne d'emblée ;
 //  6. niveau 8 (deux produits), niveaux 9 et 10 (les centimes) au cran « plus facile » (total dit et écrit, valeur sur l'argent) ;
@@ -197,6 +198,34 @@ for (const T of TAILLES) {
     await attend(page); await page.waitForTimeout(2500);
     await shot(page, "19-sous-la-pluie", T);
     await fin(page, context, errors, `${W} orage`);
+  }
+  // 4 bis. (lot « Recette de l'enfant », point 0.5) toucher la lampe change le temps : deux touchers, deux changements ; un
+  // toucher pendant la transition ne fait rien ; la question en cours ne change pas (ni argent posé, ni réponse)
+  {
+    const { page, context, errors } = await open("&choix=6:2&cran=conseille&meteo=beau&sansLecon", T, async () => { await window.__app.store.put("niveaux", { module: 6, niveau: 1, obtenus: [], redescentes: [], fenetre: [], vus: 0, taux: [], lecons: ["L16"], exemples: [2] }); });
+    await page.tap(".play", { force: true }); await attend(page);
+    const avant = await page.evaluate(() => ({ q: JSON.stringify(window.__app.etal.q), soucoupe: JSON.stringify(window.__app.etal.api.soucoupe()), n: (window.__said ?? []).length }));
+    const zone = await page.evaluate(() => { const b = document.querySelector(".etal-lampe").getBoundingClientRect(), k = window.__app.stage.k; return { x: b.x + b.width / 2, y: b.y + b.height / 2, w: b.width / k, h: b.height / k }; });
+    check(zone.w >= 64 && zone.h >= 64, `${W} : la lampe se touche sur au moins 64 px (${Math.round(zone.w)} × ${Math.round(zone.h)})`);
+    await page.touchscreen.tap(zone.x, zone.y); await page.waitForTimeout(400);
+    check((await etat(page)).meteoCible === 1, `${W} : la lampe touchée par beau temps, l'orage arrive`);
+    await page.touchscreen.tap(zone.x, zone.y); await page.waitForTimeout(200);
+    check((await etat(page)).meteoCible === 1, `${W} : un toucher pendant la transition ne fait rien`);
+    await page.waitForTimeout(1600);
+    const T0 = await page.evaluate(() => window.__app.text.data.etalOrage);
+    check((await said(page)).split(" | ").some((t) => T0.includes(t)), `${W} : la mascotte dit une réplique de l'orage`);
+    await page.waitForFunction(() => window.__app.etal.api.etat().meteo >= 1, null, { timeout: 10000 });
+    await shot(page, "18b-lampe-orage", T);
+    const n1 = await page.evaluate(() => window.__said.length);
+    await page.touchscreen.tap(zone.x, zone.y); await page.waitForTimeout(400);
+    check((await etat(page)).meteoCible === 0, `${W} : la lampe touchée par mauvais temps, l'orage s'en va`);
+    await page.waitForFunction(() => window.__app.etal.api.etat().meteo <= 0, null, { timeout: 10000 });
+    check(await page.evaluate((n) => window.__said.length === n, n1), `${W} : l'orage qui s'en va, la mascotte ne dit rien`);
+    const apres = await page.evaluate(() => ({ q: JSON.stringify(window.__app.etal.q), soucoupe: JSON.stringify(window.__app.etal.api.soucoupe()), attend: window.__app.etal.attend }));
+    check(apres.q === avant.q && apres.soucoupe === avant.soucoupe && apres.attend, `${W} : la question en cours n'a pas changé (ni argent posé, ni réponse)`);
+    check(await page.evaluate(() => (window.__etalLampe ?? []).length === 2), `${W} : deux touchers, deux changements de temps`);
+    await shot(page, "18c-lampe-beau", T);
+    await fin(page, context, errors, `${W} lampe`);
   }
   // 5. niveau 7 : le pavé, juste ; le prix rendu (M5) et la ligne ; « plus facile » : la ligne d'emblée
   {

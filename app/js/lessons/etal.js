@@ -28,6 +28,7 @@ export class LessonEtalPlayer {
     this.own = !(e?.actif && !e.x.scene.classList.contains("stash"));
     this.s = this.own ? new EtalScreen(app, app.module6, e.conf) : e;
     if (this.own) { await this.s.enter({ rnd: app.rnd }); app.etalLecon = this.s; }
+    this.s.enLecon = true; // (la lampe ne change pas le temps pendant une leçon : modules/etal/screen.js)
     this.p = 0; this.skipped = false; this.abort = null; this.goto = undefined;
     const jump = (to) => { this.goto = to; app.voice.stop(); if (this.abort) this.abort(); else this.p = to; };
     const again = spriteBox(app, { x: REPLAY_AT[0] - 70, y: REPLAY_AT[1] - 70, w: 140, h: 140, cls: "bubble lessonkey rejouer", label: "rejouer la leçon", paint: (ctx) => app.sprites.draw(ctx, "rejouer", 0, 70, 70) });
@@ -43,7 +44,7 @@ export class LessonEtalPlayer {
       try { await this.phrase(this.p, tok); this.p++; }
       catch (err) { if (err !== ABORT) throw err; this.p = this.goto ?? this.p; }
     }
-    this.abort = null; this.tok++;
+    this.abort = null; this.tok++; this.s.enLecon = false;
     this.keys.forEach((k) => k.remove()); this.keys = null;
     if (!this.skipped) { app.ocean.mascotte.play("rejouir"); await wait(600); }
     await this.clear();

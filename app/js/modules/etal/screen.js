@@ -83,7 +83,29 @@ export class EtalScreen {
     ocean.poste?.(E.mascotte);
     this.boutons();
     await this.x.api.pret;
+    this.lampe();
     return true;
+  }
+  // (lot « Recette de l'enfant », point 0.5 ; demande du parent du 11 octobre 2026) TOUCHER LA LAMPE CHANGE LE TEMPS : par beau
+  // temps, l'orage arrive et la mascotte dit une de ses répliques (jamais deux fois de suite la même) ; par mauvais temps, il
+  // s'en va, sans rien dire. Une zone transparente d'au moins 64 px sur la lampe ; un toucher pendant la transition (3 s), en
+  // pause ou pendant une leçon ne fait rien. Ce n'est jamais une action de l'exercice : ni argent posé, ni réponse. L'orage
+  // prévu pour plus tard dans la partie n'arrive plus (le temps est celui que l'enfant a choisi).
+  lampe() {
+    const { app } = this, [x0, y0, x1, y1] = this.api.zoneLampe();
+    const b = (this.lampeB = document.createElement("button"));
+    b.className = "etal-lampe"; b.setAttribute("aria-label", "la lampe");
+    Object.assign(b.style, { left: `${x0}px`, top: `${y0}px`, width: `${x1 - x0}px`, height: `${y1 - y0}px` });
+    app.stage.ui.append(b);
+    onBrief(app, b, () => {
+      if (!this.api || app.enPause || this.enLecon || this.api.transition) return;
+      const r = this.api.lampe(); if (!r) return;
+      this.orageA = null; (window.__etalLampe ??= []).push({ t: Math.round(clock.now() - this.t0), orage: r.orage, k: r.k ?? null });
+      if (!r.orage) return;
+      app.store?.setSetting("etalReplique", r.k);
+      const tok = this.tok;
+      wait(700).then(() => { if (tok !== this.tok || !this.api) return; app.ocean.mascotte.play("encourager"); app.voice.say(app.text.data.etalOrage[r.k]); });
+    }, null);
   }
   // la scène s'en va (fin de la notion du jour, maison de l'entraînement libre, séance terminée par le parent)
   leave() {
@@ -94,8 +116,8 @@ export class EtalScreen {
     this.ecoute = [];
     if (this.x) { this.x.decor.width = this.x.decor.height = 0; this.x.decor.remove(); this.x.scene.remove(); }
     this.x = null; this.plaque?.remove(); this.plaque = null;
-    for (const b of [this.coche, this.aideB, this.nsp, this.skip, this.slate, ...(this.keys ?? [])]) b?.remove();
-    this.coche = this.aideB = this.nsp = this.skip = this.slate = null; this.keys = null;
+    for (const b of [this.coche, this.aideB, this.nsp, this.skip, this.slate, this.lampeB, ...(this.keys ?? [])]) b?.remove();
+    this.coche = this.aideB = this.nsp = this.skip = this.slate = this.lampeB = null; this.keys = null;
     if (this.onKey) { removeEventListener("keydown", this.onKey); this.onKey = null; }
     if (etait) { app.ocean.poste?.(null); app.lagon?.pause(false); app.line.clear(); app.line.fxClear(); }
   }

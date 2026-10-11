@@ -1,5 +1,5 @@
-// Récompenses : tirage des cartes (jamais de doublon depuis le 5 octobre 2026, raretés, brillantes),
-// coquillages, série qui se met en pause, contenu des 15 cartes du lagon. Les règles du lot 2 (quota, brillantes,
+// Récompenses : les cartes (jamais de doublon depuis le 5 octobre 2026, brillantes), l'achat à la boutique (lot « La boutique
+// du récif » : tests/unit/boutique.test.mjs pour ses règles), série qui se met en pause, contenu des 15 cartes du lagon. Les règles du lot 2 (quota, brillantes,
 // zones, étoiles dorées, légendaires) : tests/unit/cartes.test.mjs.
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -7,7 +7,7 @@ import { readFileSync } from "node:fs";
 import { IDBFactory } from "fake-indexeddb";
 import { Store } from "../../app/js/engine/store.js";
 import { rng } from "../../app/js/engine/ocean.js";
-import { addCard, nextSeries, pickShell, Rewards } from "../../app/js/session/rewards.js";
+import { addCard, nextSeries, Rewards } from "../../app/js/session/rewards.js";
 
 const cartes = JSON.parse(readFileSync(new URL("../../app/content/cartes.json", import.meta.url)));
 const lagon = { zones: ["lagon"], poids: cartes.poids };
@@ -18,20 +18,6 @@ test("le lagon : 15 cartes, noms uniques, communes et rares, une anecdote et une
   assert.ok(L.every((c) => ["commune", "rare"].includes(c.rarete) && c.anecdote.length > 20 && c.nom));
   assert.ok(L.every((c) => /^[a-z-]+$/.test(c.id) && (c.illustration === null || c.illustration === `assets/cards/${c.id}.webp`)));
   assert.deepEqual(cartes.zones.filter((z) => z.ouverte).map((z) => z.id), ["lagon"]);
-});
-
-test("jamais de doublon : la zone se complète, puis les créatures deviennent brillantes ; les raretés pèsent", () => {
-  const r = rng(7); let owned = {}; const seen = [];
-  for (let i = 0; i < 15; i++) { const c = pickShell(cartes.cartes, owned, lagon, r).carte; seen.push(c.id); owned = addCard(owned, c).owned; }
-  assert.equal(new Set(seen).size, 15);
-  const again = pickShell(cartes.cartes, owned, lagon, r); assert.ok(owned[again.carte.id] && again.sorte === "brillante");
-  // sur beaucoup de premiers tirages, une commune sort plus souvent qu'une rare (poids 3 contre 1)
-  const first = { commune: 0, rare: 0 }; const r2 = rng(3);
-  for (let i = 0; i < 2000; i++) first[pickShell(cartes.cartes, {}, lagon, r2).carte.rarete]++;
-  const pc = first.commune / 11, pr = first.rare / 4; assert.ok(pc > 2.3 * pr && pc < 3.8 * pr, JSON.stringify(first));
-  assert.equal(pickShell(cartes.cartes, {}, { zones: ["inconnue"], poids: cartes.poids }, r), null);
-  // les légendaires ne sortent jamais d'un coquillage ordinaire (elles viennent des étoiles dorées)
-  for (let i = 0; i < 200; i++) assert.notEqual(pickShell(cartes.cartes, {}, { zones: ["large", "abysses"], poids: cartes.poids }, r)?.carte.rarete, "legendaire");
 });
 
 test("une carte ne devient plus brillante au troisième doublon (décision du parent du 27 septembre 2026)", () => {
@@ -45,15 +31,19 @@ test("la série : une séance par jour compte, un jour manqué ne la fait pas re
   let s = null, got = [];
   for (const t of [day(21), day(22), day(22, 20), day(23), day(26), day(27), day(28)]) { const r = nextSeries(s, t, R); s = r.serie; got.push(r.etoiles); }
   assert.deepEqual(got, [0, 0, 0, 5, 0, 0, 5]); assert.equal(s.seances, 6);
+  // (lot « La boutique du récif ») le coquillage de la série : à la 10e, la 20e… séance de la série
+  const coq = []; s = null; for (let d = 1; d <= 25; d++) { const r = nextSeries(s, new Date(2026, 9, d, 18).getTime(), R); s = r.serie; if (r.coquillage) coq.push(s.seances); }
+  assert.deepEqual(coq, [10, 20]); assert.deepEqual([R.coquillageChaque, R.coquillageEtoiles], [10, 20]);
 });
 
-test("un coquillage coûte son prix en étoiles (cartes.json), donne une carte rangée dans la collection ; tout est enregistré", async () => {
-  const store = await Store.open(new IDBFactory()), rw = await new Rewards(store, cartes).load(), P = cartes.coquillage.prix;
-  await rw.add(P - 1); assert.equal(rw.canOpen(), false); assert.equal(await rw.openShell(rng(1)), null);
-  await rw.add(45); const o = await rw.openShell(rng(1));
-  assert.ok(o.carte && o.nouvelle); assert.equal(rw.total, 44); assert.equal(rw.st.cumul, P + 44); assert.equal(rw.st.coquillages, 1);
+test("un achat coûte son prix en étoiles (cartes.json, boutique), range la créature dans la collection ; tout est enregistré", async () => {
+  const store = await Store.open(new IDBFactory()), rw = await new Rewards(store, cartes).load(), c = cartes.cartes[0], P = cartes.boutique.prix[c.rarete];
+  await rw.add(P - 1); assert.equal(rw.acheter(c.id, Date.now(), rng(1)), null);
+  await rw.add(45); const o = rw.acheter(c.id, Date.now(), () => 0.9); await o.ecrit;
+  assert.ok(o.carte && o.nouvelle && !o.brillante); assert.equal(rw.total, P + 44 - P); assert.equal(rw.st.cumul, P + 44);
   await rw.special("arcEnCiel"); await rw.special("dorees");
   const again = await new Rewards(store, cartes).load();
-  assert.equal(again.total, 44); assert.equal(again.collection().length, 1); assert.equal(again.collection()[0].id, o.carte.id); assert.equal(again.st.arcEnCiel, 1); assert.equal(again.st.dorees, 1);
+  assert.equal(again.total, 44); assert.equal(again.collection().length, 1); assert.equal(again.collection()[0].id, c.id); assert.equal(again.st.arcEnCiel, 1); assert.equal(again.st.dorees, 1);
+  assert.deepEqual(again.achats.liste.map((a) => [a.carte, a.prix, a.briller]), [[c.id, P, false]]);
   assert.equal(await again.endOfSession(new Date(2026, 8, 26).getTime()), 0); assert.equal((await store.get("recompenses", "serie")).seances, 1);
 });

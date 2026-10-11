@@ -70,7 +70,7 @@ test("inventaire : chaque texte du contenu est couvert, un gabarit sans règle e
   assert.throws(() => inventaire(C2), /pas de règle/);
 });
 
-test("chaque phrase de l'inventaire a son fichier son ; poids total sous 80 Mo (décision du parent du 28 septembre 2026 ; lot 3 : sous 60 Mo, pour garder 20 Mo au lot 4)", (t) => {
+test("chaque phrase de l'inventaire a son fichier son ; poids total sous 85 Mo (décision du parent du 28 septembre 2026 ; lot 3 : sous 60 Mo, pour garder 20 Mo au lot 4 ; 80 Mo, puis 85 Mo au lot « La boutique du récif », décision du parent du 10 octobre 2026)", (t) => {
   const { phrases, index, afaire } = bilan();
   // VOIX_A_FABRIQUER=tolere (tests de GitHub, décision du parent du 6 octobre 2026) : les voix d'un lot peuvent être
   // fabriquées après sa fusion, plusieurs lots d'un coup (tools/voix/publier.mjs). Les phrases pas encore fabriquées
@@ -88,7 +88,7 @@ test("chaque phrase de l'inventaire a son fichier son ; poids total sous 80 Mo (
   const utiles = new Set(Object.values(index.phrases).map(([f]) => f));
   assert.deepEqual(readdirSync(VOIX).filter((f) => f.endsWith(".ogg") && !utiles.has(f)), []);
   const poids = readdirSync(VOIX).reduce((s, f) => s + statSync(join(VOIX, f)).size, 0);
-  assert.ok(poids < 80e6, `${(poids / 1e6).toFixed(1)} Mo`);
+  assert.ok(poids < 85e6, `${(poids / 1e6).toFixed(1)} Mo`);
   // des durées plausibles (un nombre seul : au moins 0,3 s ; une anecdote : quelques secondes)
   for (const [k, [, ms]] of Object.entries(index.phrases)) assert.ok(ms > 300 && ms < 15000, `${k} : ${ms} ms`);
 });

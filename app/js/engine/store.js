@@ -42,6 +42,9 @@ export class Store {
   }
   get(store, key) { return req(this.db.transaction(store).objectStore(store).get(key)); }
   async put(store, value) { const t = this.db.transaction(store, "readwrite"), k = await req(t.objectStore(store).put(value)); await done(t); return k; }
+  // plusieurs fiches d'un même magasin en une seule transaction : toutes sont écrites, ou aucune (lot « La boutique du récif » :
+  // un achat débite les étoiles, range la créature et l'inscrit au journal d'un seul coup)
+  async putMany(store, values) { const t = this.db.transaction(store, "readwrite"), o = t.objectStore(store); for (const v of values) o.put(v); await done(t); }
   async add(store, value) { const t = this.db.transaction(store, "readwrite"), k = await req(t.objectStore(store).add(value)); await done(t); return k; }
   async all(store, index, range) { const s = this.db.transaction(store).objectStore(store); return req((index ? s.index(index) : s).getAll(range)); }
   async del(store, key) { const t = this.db.transaction(store, "readwrite"); t.objectStore(store).delete(key); await done(t); }

@@ -9,7 +9,7 @@
 //   niveaux      par module : niveau atteint, dates d'obtention, redescentes, fenêtre des dernières réponses
 //   bilans       un bilan : date, module, score brut, durée, palier officiel
 //   recompenses  côté enfant : étoiles, coquillages, cartes, zones ouvertes, série de jours
-//   reglages     clé -> valeur : code parent, nom de la pieuvre, durée de séance, module imposé…
+//   reglages     clé -> valeur : code parent, durée de séance, module imposé… (le nom de la pieuvre, choisi autrefois, y reste sans être lu)
 //
 // Pour faire évoluer le schéma : ajouter une migration à la fin de MIGRATIONS (jamais modifier une
 // migration déjà publiée) ; la version de la base est le nombre de migrations.

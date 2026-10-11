@@ -8,7 +8,7 @@
 //   #lagon  ce qui vit dans le lagon : miroitement, poissons, algues, faisceaux (lagon.js)
 //   #line   la ligne graduée de la question, dessinée par un Worker dans une bande (line.js)
 //   #back   les visiteurs de la surprise de l'accueil (des acteurs, voir actor.js)
-//   #octo   la pieuvre, recomposée 12 fois/s, inclinée et déplacée par le compositeur (transform CSS)
+//   #mascotte  la mascotte (ses vidéos détourées, engine/mascotte.js) ; #fx, les effets de la bande de la ligne (line.js)
 //   #front  le premier plan : étoile de mer, tortue, surbrillances (des acteurs)
 //   #ui     les boutons (réponses, réécouter), en éléments HTML
 export const W = 1280, H = 800;

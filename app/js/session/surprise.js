@@ -21,7 +21,7 @@ export const previousSession = (seances, id) => seances.filter((s) => !s.libre &
 export async function playSurprise(app, s) {
   const { voice, text, ocean } = app;
   if (s.type === "visite" && VISITORS.includes(s.id)) {
-    // dans le calque du décor, derrière la pieuvre, à mi-hauteur de l'eau
+    // dans le calque du décor, derrière la mascotte, à mi-hauteur de l'eau
     const actors = s.id === "tortue" ? [{ name: "tortue.nage", y: 470, dx: 0, s: 1 }] : [0, 1, 2, 1, 0].map((k, i) => ({ name: `poisson.${k}.d`, y: 420 + (i % 3) * 44 + (i > 2 ? 22 : 0), dx: -Math.abs(i - 2) * 70 - (i > 2 ? 40 : 0), s: 0.8 }));
     const list = actors.map((v) => ({ ...v, a: ocean.spriteActor(ocean.backEl, v.name) })), t0 = performance.now() / 1000, dur = 4.5;
     let crossed; const gone = new Promise((r) => { crossed = r; });

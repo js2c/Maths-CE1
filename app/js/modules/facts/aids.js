@@ -1,5 +1,5 @@
 // MODULE 2 · LES AIDES VISUELLES À L'ÉCRAN (docs/SPEC-LOT2.md, « Aides visuelles et personnage guide »).
-// Un calque plein écran (`AidBoard`, au-dessus de la pieuvre, sous la tortue et le bernard-l'ermite), dessiné
+// Un calque plein écran (`AidBoard`, au-dessus de la mascotte, sous la tortue et le bernard-l'ermite), dessiné
 // UNE fois par question ou par étape de leçon avec les pièces fabriquées par l'atelier (planche « aides » :
 // art/src/canvas-core/sea/aids.ts) et les chiffres de runtime.js, puis simplement affiché ; vidé ensuite.
 //  - cadre de 10 : `paintTenFrame` (n poissons dans les alvéoles, lueur sur des places) ;
@@ -11,7 +11,7 @@ export class AidBoard {
   constructor(app) {
     this.app = app; const st = app.stage;
     this.c = document.createElement("canvas"); this.c.id = "aides"; this.c.className = "aid-board";
-    // sous les acteurs du premier plan (tortue, bernard-l'ermite), au-dessus de la pieuvre et des effets
+    // sous les acteurs du premier plan (tortue, bernard-l'ermite), au-dessus de la mascotte et des effets
     st.root.insertBefore(this.c, st.root.querySelector("#front") ?? st.ui);
     this.used = false; this.c.__gen = 0; this.c.__used = false; this.place(); st.onResize(() => this.place());
   }

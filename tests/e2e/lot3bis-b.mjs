@@ -235,17 +235,19 @@ if (want("additions")) {
 
 // ---------------------------------------------------------------- B6 : les étoiles arc-en-ciel à la récompense
 if (want("fins")) {
-  const prep = async () => { const s = window.__app.store; await s.put("recompenses", { id: "etoiles", total: 40, cumul: 40, dorees: 0, doreesDepensees: 0, arcEnCiel: 0, arcDepensees: 0, arcLibre: 3, coquillages: 0, coquillagesDores: 0 }); };
+  // (lot « La boutique du récif » : plus de coquillage ordinaire après les étoiles arc-en-ciel ; ce qui vient ensuite, aussitôt,
+  // c'est l'ouverture du récif de corail : le lagon est complet)
+  const prep = async () => { const s = window.__app.store; await s.put("recompenses", { id: "etoiles", total: 40, cumul: 40, dorees: 0, doreesDepensees: 0, arcEnCiel: 0, arcDepensees: 0, arcLibre: 3, coquillages: 0, coquillagesDores: 0 }); await s.put("recompenses", { id: "cartes", cartes: Object.fromEntries(["poisson-clown", "etoile-de-mer", "crabe", "crevette", "bernard-l-ermite", "moule", "oursin", "anemone", "concombre-de-mer", "coquille-saint-jacques", "poisson-chirurgien", "hippocampe", "poisson-ballon", "limace-de-mer", "raie-pastenague"].map((id) => [id, { n: 1, premiere: 1, brillante: false }])) }); };
   const { page, context, errors } = await open("&cran=conseille&sans=echauffement,notion,defi", { prep });
   await page.evaluate(() => { const v = window.__app.voice, say = v.say.bind(v); window.__said = []; window.__saidAt = []; v.say = (t, o) => { window.__said.push(t); window.__saidAt.push(performance.now()); return say(t, o); }; });
   await page.tap(".play", { force: true });
   await page.waitForSelector(".etoile-vol", { timeout: 60000 }); await page.waitForTimeout(500); await shot(page, "B6-etoiles-arc-posees");
   await page.waitForTimeout(700); await shot(page, "B6-etoiles-arc-vol");
-  await page.waitForSelector(".shelltap", { timeout: 20000 });
+  await page.waitForSelector(".card.zone-closed", { timeout: 20000 });
   const r = await page.evaluate(() => { const i = window.__said.findIndex((t) => /arc-en-ciel/.test(t)); return { arc: window.__said.filter((t) => /arc-en-ciel/.test(t)), dt: performance.now() - window.__saidAt[i] }; });
-  await shot(page, "B6-coquillage-a-toucher");
+  await shot(page, "B6-zone-apres-les-etoiles");
   check(r.arc.length === 1 && /^3 étoiles arc-en-ciel ! Un jour, elles/.test(r.arc[0]), `une seule phrase, au pluriel (« ${r.arc.join(" | ")} »)`);
-  check(r.dt < 6000, `le coquillage est à toucher ${(r.dt / 1000).toFixed(1)} s après le début de la phrase (voix accélérée)`);
+  check(r.dt < 6000, `la suite (l'ouverture d'une zone) vient ${(r.dt / 1000).toFixed(1)} s après le début de la phrase (voix accélérée)`);
   check(!errors.length, `fins : aucune erreur (${errors.join(" | ")})`); await context.close();
 }
 

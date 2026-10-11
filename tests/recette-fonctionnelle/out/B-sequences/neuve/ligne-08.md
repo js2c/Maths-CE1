@@ -55,7 +55,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 38 | notion | corde 0–100 sans graduations, repère 50 ; poser 75 (±10) | Montre-moi où serait 75. | 75 | 75 | +1★ |
 | 39 | notion | corde 0–100 sans graduations, repère 50 ; poser 60 (±10) | Montre-moi où serait 60. | 60 | 60 |  |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Ligne graduée, niveau 8, cran « plus facile » · réelle
 
@@ -104,7 +104,7 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle)
 | 36 | notion | corde 0–100 sans graduations, repère 50 ; poser 50 (±10) | Où mettrais-tu 50 ? Pose le poisson sur la corde. | 50 | 50 |  |
 | 37 | notion | corde 0–100 sans graduations, repère 50 ; poser 30 (±10) | Montre-moi où serait 30. | 30 | 30 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Ligne graduée, niveau 8, cran « plus facile » · pressée
 
@@ -159,7 +159,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
 | 42 | notion | corde 0–100 sans graduations, repère 50 ; poser 80 (±10) | Où mettrais-tu 80 ? Pose le poisson sur la corde. | 80 | 57 | correction autre : « Hmm, regardons ensemble. … C'était 80. » |
 | 43 | notion | corde 0–100 sans graduations, repère 50 ; poser 60 (±10) | Montre-moi où serait 60. | 60 | 77 | correction autre : « Hmm, regardons ensemble. … C'était 60. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -215,7 +215,7 @@ Récompense et fin : +10★ (fin)
 | 41 | notion | corde 0–100 sans graduations ; poser 25 (±5) | Où mettrais-tu 25 ? Pose le poisson sur la corde. | 25 | 25 | +1★ |
 | 42 | notion | corde 0–100 sans graduations ; poser 40 (±5) | Où mettrais-tu 40 ? Pose le poisson sur la corde. | 40 | 40 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle) ; carte crevette (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 8, cran « conseillé » · réelle
 
@@ -274,7 +274,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle) ; carte creve
 | 46 | notion | corde 0–100 sans graduations ; poser 70 (±5) | Où mettrais-tu 70 ? Pose le poisson sur la corde. | 70 | 53 | correction autre : « Hmm, regardons ensemble. … C'était 70. » |
 | 47 | notion | corde 0–100 sans graduations ; poser 60 (±5) | Montre-moi où serait 60. | 60 | 60 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 8, cran « conseillé » · pressée
 
@@ -325,7 +325,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte be
 | 38 | notion | corde 0–100 sans graduations ; poser 10 (±8) (revient) | Où mettrais-tu 10 ? Pose le poisson sur la corde. | 10 | 44 | correction autre : « Hmm, regardons ensemble. … C'était 10. » |
 | 39 | notion | corde 0–100 sans graduations ; poser 80 (±8) | Montre-moi où serait 80. | 80 | 82 | +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -381,7 +381,7 @@ Récompense et fin : +10★ (fin)
 | 41 | notion | corde 0–100 sans graduations ; poser 40 (±5) | Montre-moi où serait 40. | 40 | 40 | +1★ |
 | 42 | notion | corde 0–100 sans graduations ; poser 50 (±5) | Où mettrais-tu 50 ? Pose le poisson sur la corde. | 50 | 50 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte concombre-de-mer (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 8, cran « plus dur » · réelle
 
@@ -436,7 +436,7 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte concombre-
 | 42 | notion | corde 0–100 sans graduations ; poser 10 (±5) | Montre-moi où serait 10. | 10 | 10 | +1★ |
 | 43 | notion | corde 0–100 sans graduations ; poser 60 (±5) | Où mettrais-tu 60 ? Pose le poisson sur la corde. | 60 | 60 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 8, cran « plus dur » · pressée
 
@@ -488,7 +488,7 @@ Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) ; carte oursi
 | 39 | notion | corde 0–100 sans graduations ; poser 50 (±8) | Où mettrais-tu 50 ? Pose le poisson sur la corde. | 50 | 86 | correction autre : « Hmm, regardons ensemble. … C'était 50. » |
 | 40 | notion | corde 0–100 sans graduations ; poser 75 (±8) | Où mettrais-tu 75 ? Pose le poisson sur la corde. | 75 | 72 | +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -544,7 +544,7 @@ Récompense et fin : +10★ (fin)
 | 41 | notion | corde 0–100 sans graduations ; poser 70 (±3) | Où mettrais-tu 70 ? Pose le poisson sur la corde. | 70 | 70 | +2★ |
 | 42 | notion | corde 0–100 sans graduations ; poser 60 (±3) | Montre-moi où serait 60. | 60 | 60 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) ; carte coquille-saint-jacques (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 8, cran « très dur » · réelle
 
@@ -601,7 +601,7 @@ Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) ; carte coqui
 | 44 | notion | corde 0–100 sans graduations ; poser 75 (±5) | Montre-moi où serait 75. | 75 | 75 | +2★ |
 | 45 | notion | corde 0–100 sans graduations ; poser 50 (±5) | Montre-moi où serait 50. | 50 | 50 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) ; carte poisson-ballon (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 8, cran « très dur » · pressée
 
@@ -654,4 +654,4 @@ Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) ; carte poiss
 | 40 | notion | corde 0–100 sans graduations ; poser 25 (±5) | Montre-moi où serait 25. | 25 | 8 | correction autre : « Hmm, regardons ensemble. … C'était 25. » |
 | 41 | notion | corde 0–100 sans graduations ; poser 30 (±5) | Où mettrais-tu 30 ? Pose le poisson sur la corde. | 30 | 3 | correction autre : « Hmm, regardons ensemble. … C'était 30. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

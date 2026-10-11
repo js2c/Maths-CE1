@@ -42,7 +42,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 25 | notion | 7 + 8 = ? (famille 10) | [aide d'emblée : 7 plus 7, c'est un double. Et une bulle de plus !] 7 plus 8 ? 7 plus 8, c'est 7 plus 7, et encore 1. | 15 | 15 | +1★ |
 | 26 | notion | 8 + 7 = ? (famille 10) | [aide d'emblée : 7 plus 7, c'est un double. Et une bulle de plus !] Combien font 8 plus 7 ? 8 plus 7, c'est 7 plus 7, et encore 1. | 15 | 15 |  |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 10 (presque-doubles jusqu'à 10), cran « plus facile » · réelle
 
@@ -76,7 +76,7 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle)
 | 21 | notion | 7 + 6 = ? (famille 10) | [aide d'emblée : 6 plus 6, c'est un double. Et une bulle de plus !] 7 plus 6 ? 7 plus 6, c'est 6 plus 6, et encore 1. | 13 | 13 | +1★ |
 | 22 | notion | 6 + 7 = ? (famille 10) | [aide d'emblée : 6 plus 6, c'est un double. Et une bulle de plus !] 6 plus 7 ? 6 plus 7, c'est 6 plus 6, et encore 1. | 13 | 13 |  |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 10 (presque-doubles jusqu'à 10), cran « plus facile » · pressée
 
@@ -117,7 +117,7 @@ Récompense et fin : +10★ (fin)
 | 28 | notion | 10 + 9 = ? (famille 8) | [aide d'emblée : 9 plus 9, c'est un double. Et une bulle de plus !] 10 plus 9 ? 10 plus 9, c'est 9 plus 9, et encore 1. | 19 | 11 | correction : « 9 plus 9, c'est un double. Et une bulle de plus ! 10 plus 9, ça fait 19. » |
 | 29 | notion | 5 + 6 = ? (famille 10) | [aide d'emblée : 5 plus 5, c'est un double. Et une bulle de plus !] 5 plus 6 ? 5 plus 6, c'est 5 plus 5, et encore 1. | 11 | 15 | correction : « 5 plus 5, c'est un double. Et une bulle de plus ! 5 plus 6, ça fait 11. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -174,7 +174,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | 8 + 9 = ? (famille 10) | 8 plus 9 ? 8 plus 9, c'est 8 plus 8, et encore 1. | 17 | 17 | +1★ |
 | 43 | notion | 9 + 8 = ? (famille 10) | Combien font 9 plus 8 ? 9 plus 8, c'est 8 plus 8, et encore 1. | 17 | 17 | +1★ |
 
-Récompense et fin : fin de la notion : trou famille 10 ; +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : fin de la notion : trou famille 10 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 10 (presque-doubles jusqu'à 10), cran « conseillé » · réelle
 
@@ -222,7 +222,7 @@ Récompense et fin : fin de la notion : trou famille 10 ; +10★ (fin) ; carte p
 | 35 | notion | 9 + 8 = ? (famille 10) | 9 plus 8 ? 9 plus 8, c'est 8 plus 8, et encore 1. | 17 | 18 | correction : « 8 plus 8, c'est un double. Et une bulle de plus ! 9 plus 8, ça fait 17. » |
 | 36 | notion | 7 + 1 = ? (famille 1) | 7 plus 1 ? | 8 | 8 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte limace-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 10 (presque-doubles jusqu'à 10), cran « conseillé » · pressée
 
@@ -270,7 +270,7 @@ Récompense et fin : +10★ (fin) ; carte limace-de-mer (nouvelle)
 | 35 | notion | 9 + 10 = ? (famille 8) | 9 plus 10 ? 9 plus 10, c'est 9 plus 9, et encore 1. | 19 | 7 | correction : « 9 plus 9, c'est un double. Et une bulle de plus ! 9 plus 10, ça fait 19. » |
 | 36 | notion | 1 + 3 = ? (famille 1) | Combien font 1 plus 3 ? | 4 | 9 | correction : « [aide ligne] La tortue est sur 3. Elle fait un saut. Compte avec elle ! 1 plus 3, ça fait 4. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -327,7 +327,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | 8 + 7 = ? (famille 10) | Combien font 8 plus 7 ? 8 plus 7, c'est 7 plus 7, et encore 1. | 15 | 15 | +1★ |
 | 43 | notion | 8 + ? = 17 (famille 10) | 8 plus combien, ça fait 17 ? | 9 | 9 | +2★ |
 
-Récompense et fin : fin de la notion : trou famille 10 ; +10★ (fin) ; carte coquille-saint-jacques (nouvelle) ; carte hippocampe (nouvelle)
+Récompense et fin : fin de la notion : trou famille 10 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 10 (presque-doubles jusqu'à 10), cran « plus dur » · réelle
 
@@ -375,7 +375,7 @@ Récompense et fin : fin de la notion : trou famille 10 ; +10★ (fin) ; carte c
 | 35 | notion | 6 + 5 = ? (famille 10) | Combien font 6 plus 5 ? 6 plus 5, c'est 5 plus 5, et encore 1. | 11 | 11 | +1★ |
 | 36 | notion | 7 + 6 = ? (famille 10) | 7 plus 6 ? 7 plus 6, c'est 6 plus 6, et encore 1. | 13 | 13 | +1★ |
 
-Récompense et fin : fin de la notion : trou famille 10 ; +10★ (fin) ; carte crabe (nouvelle) ; carte concombre-de-mer (nouvelle) (brillante)
+Récompense et fin : fin de la notion : trou famille 10 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 10 (presque-doubles jusqu'à 10), cran « plus dur » · pressée
 
@@ -422,7 +422,7 @@ Récompense et fin : fin de la notion : trou famille 10 ; +10★ (fin) ; carte c
 | 34 | notion | 8 + 9 = ? (famille 10) | Combien font 8 plus 9 ? 8 plus 9, c'est 8 plus 8, et encore 1. | 17 | 6 | correction : « 8 plus 8, c'est un double. Et une bulle de plus ! 8 plus 9, ça fait 17. » |
 | 35 | notion | 8 + 7 = ? (famille 10) | Combien font 8 plus 7 ? 8 plus 7, c'est 7 plus 7, et encore 1. | 15 | 5 | correction : « 7 plus 7, c'est un double. Et une bulle de plus ! 8 plus 7, ça fait 15. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -479,7 +479,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | 8 + ? = 15 (famille 10) | 8 plus combien, ça fait 15 ? | 7 | 7 | +2★ |
 | 43 | notion | 9 + ? = 19 (famille 8) | 9 plus combien, ça fait 19 ? | 10 | 10 | +2★ |
 
-Récompense et fin : fin de la notion : trou famille 10 ; +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte crabe (nouvelle)
+Récompense et fin : fin de la notion : trou famille 10 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 10 (presque-doubles jusqu'à 10), cran « très dur » · réelle
 
@@ -527,7 +527,7 @@ Récompense et fin : fin de la notion : trou famille 10 ; +10★ (fin) ; carte p
 | 35 | notion | 9 + ? = 17 (famille 10) | 9 plus combien, ça fait 17 ? | 8 | 17 | correction : « 8 plus 8, c'est un double. Et une bulle de plus ! 9 plus 8, ça fait 17. » |
 | 36 | notion | ? + 9 = 17 (famille 10, revient) | Combien plus 9, ça fait 17 ? | 8 | 8 | +3★ (erreur corrigée) |
 
-Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle) (brillante) ; carte crevette (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 10 (presque-doubles jusqu'à 10), cran « très dur » · pressée
 
@@ -575,4 +575,4 @@ Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle) (bri
 | 35 | notion | 8 + 9 = ? (famille 10) | Combien font 8 plus 9 ? 8 plus 9, c'est 8 plus 8, et encore 1. | 17 | 11 | correction : « 8 plus 8, c'est un double. Et une bulle de plus ! 8 plus 9, ça fait 17. » |
 | 36 | notion | 1 + 3 = ? (famille 1) | 1 plus 3 ? | 4 | 14 | correction : « [aide ligne] La tortue est sur 3. Elle fait un saut. Compte avec elle ! 1 plus 3, ça fait 4. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

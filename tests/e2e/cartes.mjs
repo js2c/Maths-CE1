@@ -1,13 +1,13 @@
 // LES CARTES DU LOT 2 dans Chromium (tablette 1280 × 800, tactile), voix accélérée (docs/SPEC-LOT2.md, section 5).
 //  1. Le lagon complet et une étoile arc-en-ciel en réserve : à la récompense, le récif de corail s'ouvre
-//     (cérémonie), puis les coquillages donnent des cartes du récif de corail, brillantes (tirage forcé) :
-//     reflet irisé, « Oh ! Elle est brillante ! », « Cette créature va vivre dans ton récif ! » (le récif vivant montre
-//     toutes les zones, décision du parent du 5 octobre 2026) ; l'album les montre, et le récif aussi.
-//  2. Le quota atteint : jamais de doublon ; un coquillage rend brillante une créature déjà possédée.
-//  3. Une étoile dorée et le grand large complet (contenu fictif pour la capture) : le coquillage doré donne
+//     (cérémonie), puis son coquillage offre son premier habitant, une commune tirée au hasard (lot « La boutique du récif ») :
+//     « Et voici son premier habitant ! », « Cette créature va vivre dans ton récif ! » (le récif vivant montre toutes les
+//     zones, décision du parent du 5 octobre 2026) ; l'album la montre, et le récif aussi.
+//  2. Le coquillage de la série (la 10e séance) : jamais de doublon ; il rend brillante une créature déjà possédée.
+//  3. Une étoile de diamant et le grand large complet (contenu fictif pour la capture) : le coquillage de diamant donne
 //     une légendaire, sans dépenser d'étoiles de mer.
 //  4. La surprise : la tortue qui traverse, le banc de poissons (plus de cadeau depuis le 5 octobre 2026).
-//  5. L'espace parent : le bloc « Cartes ».
+//  5. L'espace parent : le bloc « Cartes et boutique ».
 // Captures dans tests/e2e/out/cartes/ ; échoue si une vérification échoue ou si la page a une erreur.
 //   node tests/e2e/cartes.mjs [--out dossier]
 import { chromium, voixPermise } from "./navigateur.mjs";
@@ -69,11 +69,12 @@ async function playToReward(page, { onCeremony, atShell, atCard } = {}) {
   const won = r.rec.cartes ?? [];
   check(r.zones.includes("corail"), "le récif de corail est ouvert");
   check(r.arc === 0, "l'étoile arc-en-ciel de la réserve a été dépensée");
-  check(won.length >= 1 && won.every((id) => corail.includes(id)), `cartes gagnées dans le récif de corail : ${won.join(", ")}`);
-  check(won.every((id) => r.owned[id].brillante), "tirage forcé : les cartes sortent brillantes");
+  check(won.length === 1 && corail.includes(won[0]) && cartes.cartes.find((c) => c.id === won[0]).rarete === "commune", `le premier habitant, une commune du récif de corail : ${won.join(", ")}`);
   const s = await said(page);
   check(s.includes("Le récif de corail est ouvert !"), "la voix annonce l'ouverture de la zone");
-  check(s.includes("Oh ! Elle est brillante !"), "la voix dit « Oh ! Elle est brillante ! »");
+  check(s.includes("Et voici son premier habitant !"), "la voix dit « Et voici son premier habitant ! »");
+  // (pour la suite : le premier habitant rendu brillant, comme par le coquillage de la série)
+  await page.evaluate(async (id) => { const r = window.__app.rewards; r.owned = { ...r.owned, [id]: { ...r.owned[id], brillante: true } }; await window.__app.store.put("recompenses", { id: "cartes", cartes: r.owned }); }, won[0]);
   check(s.includes("Cette créature va vivre dans ton récif !") && !s.includes("Tu la retrouveras dans ton album !"), "une carte du récif de corail vit dans le récif");
   check(r.misses.length === 0, `chaque phrase dite a son fichier son${r.misses.length ? ` ; sans fichier : ${r.misses.join(" | ")}` : ""}`);
   // le récif vivant : les créatures du récif de corail y sont, avec celles du lagon
@@ -102,23 +103,20 @@ async function playToReward(page, { onCeremony, atShell, atCard } = {}) {
   await context.close();
 }
 
-// ---- 2. le quota atteint : jamais de doublon, une créature possédée devient brillante
+// ---- 2. le coquillage de la série (la 10e séance) : une créature possédée devient brillante, jamais de doublon
 {
-  const { context, page } = await fresh([owned(lagon.slice(0, 6)), { id: "quota", date: Date.now() - 3600000, cartes: 6 }, { id: "etoiles", total: 30, cumul: 30, arcEnCiel: 0, dorees: 0, coquillages: 6 }]);
-  // quota : 6 + 2 = 8 ; on remplit les deux places
-  await page.evaluate(async () => { const rw = window.__app.rewards; rw.owned = { ...rw.owned, [window.__app.cartes.cartes[6].id]: { n: 1, premiere: 1, brillante: false }, [window.__app.cartes.cartes[7].id]: { n: 1, premiere: 1, brillante: false } }; });
-  await playToReward(page);
-  const r = await page.evaluate(() => ({ n: Object.keys(window.__app.rewards.owned).length, quota: window.__app.rewards.quota(), rec: window.__app.session.rec, owned: window.__app.rewards.owned, misses: [...window.__app.voice.misses] }));
-  const got = r.rec.cartes ?? [];
-  check(r.n === 8 && r.n <= r.quota && got.length >= 1, `quota atteint (${r.n} / ${r.quota}) : ${got.length} coquillage(s), aucune carte nouvelle`);
-  check(got.every((id) => r.owned[id].brillante && r.owned[id].n === 1) && new Set(got).size === got.length, `les créatures rendues brillantes : ${got.join(", ")} (aucun doublon)`);
+  const { context, page } = await fresh([owned(lagon.slice(0, 6)), { id: "serie", seances: 9, derniere: Date.now() - 86400000 }, { id: "quota", date: Date.now() - 3600000, cartes: 6 }, { id: "etoiles", total: 30, cumul: 30, arcEnCiel: 0, dorees: 0, coquillages: 6 }]);
+  await playToReward(page, { atShell: async (n) => { if (n === 1) await page.screenshot({ path: join(OUT, "3-coquillage-de-la-serie.png") }); }, atCard: async (n) => { if (n === 1) await page.screenshot({ path: join(OUT, "4-carte-brillante.png") }); } });
+  const r = await page.evaluate(() => ({ n: Object.keys(window.__app.rewards.owned).length, rec: window.__app.session.rec, owned: window.__app.rewards.owned, misses: [...window.__app.voice.misses] }));
+  const got = r.rec.brillantes ?? [];
+  check(r.n === 6 && got.length === 1 && r.rec.coquillageSerie, `le coquillage de la série : aucune carte nouvelle, ${got.join(", ")} devient brillante`);
+  check(got.every((id) => r.owned[id].brillante && r.owned[id].n === 1), "pas de doublon : la créature n'est pas comptée deux fois");
   const s2 = await said(page);
-  check(/Oh ! Elle est brillante !/.test(s2) && !/Tu avais déjà/.test(s2), "la voix dit « C'est … ! Oh ! Elle est brillante ! »");
-  check(r.misses.length === 0, `chaque phrase dite a son fichier son${r.misses.length ? ` ; sans fichier : ${r.misses.join(" | ")}` : ""}`);
+  check(/Tu viens jouer souvent : voici un coquillage !/.test(s2) && /Oh ! Elle est brillante !/.test(s2), "la voix dit « Tu viens jouer souvent : voici un coquillage ! », puis « C'est … ! Oh ! Elle est brillante ! »");
   await context.close();
 }
 
-// ---- 3. le coquillage doré (contenu du grand large fictif, pour la capture)
+// ---- 3. le coquillage de diamant (contenu du grand large fictif, pour la capture)
 {
   const { context, page } = await fresh([owned([...lagon, ...corail, ...large]), { id: "zones", ouvertes: ["lagon", "corail", "large"], dates: {} }, { id: "quota", date: Date.now() - 3600000, cartes: lagon.length + corail.length + large.length }, { id: "etoiles", total: 0, cumul: 500, arcEnCiel: 3, arcDepensees: 2, dorees: 1, doreesDepensees: 0, coquillages: 43 }]);
   await page.route("**/fictive.webp", (r) => r.fulfill({ status: 200, contentType: "image/webp", body: "" })); // une image illisible : la carte montre son fond d'eau
@@ -126,10 +124,11 @@ async function playToReward(page, { onCeremony, atShell, atCard } = {}) {
   voixPermise(/^Anecdote fictive pour la capture\.$/, /^C.est le grand requin blanc !$/);
   await page.evaluate(() => { for (const c of window.__app.cartes.cartes) if (c.zone === "large") { c.anecdote ??= "Anecdote fictive pour la capture."; c.illustration ??= "assets/cards/fictive.webp"; } });
   let shot = false;
-  await playToReward(page, { atShell: async () => { if (!shot) { shot = true; await page.screenshot({ path: join(OUT, "7-coquillage-dore.png") }); } }, atCard: async (n) => { if (n === 1) await page.screenshot({ path: join(OUT, "8-legendaire.png") }); } });
+  await playToReward(page, { atShell: async () => { if (!shot) { shot = true; await page.screenshot({ path: join(OUT, "7-coquillage-de-diamant.png") }); } }, atCard: async (n) => { if (n === 1) await page.screenshot({ path: join(OUT, "8-legendaire.png") }); } });
   const r = await page.evaluate(() => ({ rec: window.__app.session.rec, dispo: window.__app.rewards.doreesDispo, st: window.__app.rewards.st }));
-  check(r.rec.coquillageDore === "grand-requin-blanc", "le coquillage doré donne le grand requin blanc");
-  check(r.dispo === 0 && r.st.coquillagesDores === 1, "l'étoile dorée est dépensée");
+  check(r.rec.coquillageDore === "grand-requin-blanc", "le coquillage de diamant donne le grand requin blanc");
+  check(r.dispo === 0 && r.st.coquillagesDores === 1, "l'étoile de diamant est dépensée");
+  check((await said(page)).includes("Ton étoile de diamant ouvre un coquillage de diamant !"), "la voix dit « Ton étoile de diamant ouvre un coquillage de diamant ! »");
   check((await said(page)).includes("C'est une carte légendaire !"), "la voix dit « C'est une carte légendaire ! »");
   await context.close();
 }
@@ -153,11 +152,11 @@ async function playToReward(page, { onCeremony, atShell, atCard } = {}) {
   const { context, page } = await fresh([owned(lagon.slice(0, 9)), { id: "quota", date: Date.now() - 3600000, cartes: 8 }, { id: "etoiles", total: 12, cumul: 300, arcEnCiel: 2, dorees: 0, coquillages: 9 }]);
   await page.evaluate(async () => { const p = window.__app.parent; p.tab = "progression"; p.open(); await p.dashboard(); });
   await page.waitForTimeout(500);
-  const box = page.locator(".pa-card-box", { has: page.locator("h2", { hasText: /^Cartes$/ }) });
-  check(await box.count() === 1, "espace parent : le bloc « Cartes » est dans l'onglet Progression");
+  const box = page.locator(".pa-card-box", { has: page.locator("h2", { hasText: /^Cartes et boutique$/ }) });
+  check(await box.count() === 1, "espace parent : le bloc « Cartes et boutique » est dans l'onglet Progression");
   await box.scrollIntoViewIfNeeded(); await box.screenshot({ path: join(OUT, "12-parent-cartes.png") });
   const t = await box.textContent();
-  check(/9 \/ 60/.test(t) && /cartes nouvelles encore gagnables/.test(t), "le bloc donne les cartes gagnées et le quota");
+  check(/9 \/ 60/.test(t) && /créatures en vitrine/.test(t), "le bloc donne les créatures du récif et celles en vitrine");
   await context.close();
 }
 

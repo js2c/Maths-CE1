@@ -295,7 +295,8 @@ if (part("appui")) {
   // 6. (le premier lancement n'a plus de choix du nom : lot « Mascotte »)
   // 7. la récompense : le coquillage, puis « c'est bon » ; « Encore ! » ensuite
   {
-    const { page, context, errors } = await open("&etoiles=75&cran=conseille&choix=1:1&sans=echauffement,defi&sansLecon&questions=1&guides=0");
+    // (lot « La boutique du récif » : plus de coquillage ordinaire ; celui de la récompense est le coquillage de la série, la 10e séance)
+    const { page, context, errors } = await open("&etoiles=75&cran=conseille&choix=1:1&sans=echauffement,defi&sansLecon&questions=1&guides=0", async () => { const s = window.__app.store; await s.put("recompenses", { id: "cartes", cartes: { crabe: { n: 1, premiere: 1, brillante: false } } }); await s.put("recompenses", { id: "serie", seances: 9, derniere: Date.now() - 86400000 }); });
     await press(page, ".play", 60).then((r) => r());
     // les questions de la notion du jour : répondues juste, directement (le moteur, sans toucher)
     for (let i = 0; i < 40 && !(await page.locator(".shelltap").count()); i++) { await page.evaluate(() => { const s = window.__app.screen; if (s?.resolve && !s.locked && s.q) { s.resolve({ q: s.q, value: s.q.answer, ok: true, code: null, ms: 3000, listens: 1 }); s.resolve = null; } }); await page.waitForTimeout(700); }

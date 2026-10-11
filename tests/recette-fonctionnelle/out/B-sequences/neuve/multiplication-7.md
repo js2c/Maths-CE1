@@ -46,7 +46,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 29 | notion | 4 × 3 = ? (niveau 7, rangées comptées d'emblée) | 4 fois 3 ? | 12 | 12 |  |
 | 30 | notion | 3 × 8 = ? (niveau 7, rangées comptées d'emblée) | 3 fois 8 ? | 24 | 24 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Multiplication, niveau 7 (table 3), cran « plus facile » · réelle
 
@@ -84,7 +84,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle)
 | 25 | notion | 2 × 3 = ? (niveau 7, rangées comptées d'emblée) | 2 fois 3 ? | 6 | 6 | +1★ |
 | 26 | notion | 4 × 3 = ? (niveau 7, rangées comptées d'emblée, revient) | 4 fois 3 ? | 12 | 12 | +1★ (erreur corrigée) |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Multiplication, niveau 7 (table 3), cran « plus facile » · pressée
 
@@ -128,7 +128,7 @@ Récompense et fin : +10★ (fin)
 | 31 | notion | 1 × 3 = ? (niveau 7, rangées comptées d'emblée) | 1 fois 3 ? | 3 | 8 | correction autre : « Hmm, regardons ensemble. Une rangée de 3 poissons. [les rangées comptées] 1 fois 3, ça fait 3. » |
 | 32 | notion | 3 × 4 = ? (niveau 7, rangées comptées d'emblée) | 3 fois 4 ? | 12 | 40 | correction autre : « Hmm, regardons ensemble. 3 rangées de 4 poissons. [les rangées comptées] 3 fois 4, ça fait 12. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -192,7 +192,7 @@ Récompense et fin : +10★ (fin)
 | 49 | notion | 3 × 9 = ? (niveau 7, rangées au coquillage) | 3 fois 9 ? | 27 | 27 | +1★ |
 | 50 | notion | 3 × 4 = ? (niveau 7, rangées au coquillage) | 3 fois 4 ? | 12 | 12 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) ; carte moule (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 7 (table 3), cran « conseillé » · réelle
 
@@ -245,7 +245,7 @@ Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) ; carte moule
 | 40 | notion | 4 × 3 = ? (niveau 7, rangées au coquillage) | 4 fois 3 ? | 12 | 12 | +1★ |
 | 41 | notion | 3 × 7 = ? (niveau 7, rangées au coquillage) | 3 fois 7 ? | 21 | 21 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) (brillante) ; carte etoile-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 7 (table 3), cran « conseillé » · pressée
 
@@ -295,7 +295,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) (brillante) ; carte
 | 37 | notion | 10 × 3 = ? (niveau 7, rangées au coquillage) | 10 fois 3 ? | 30 | 58 | correction autre : « Hmm, regardons ensemble. 10 rangées de 3 poissons. [les rangées comptées] 10 fois 3, ça fait 30. » |
 | 38 | notion | 3 × 10 = ? (niveau 7, rangées au coquillage) | 3 fois 10 ? | 30 | 52 | correction autre : « Hmm, regardons ensemble. 3 rangées de 10 poissons. [les rangées comptées] 3 fois 10, ça fait 30. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -359,7 +359,7 @@ Récompense et fin : +10★ (fin)
 | 49 | notion | 2 × 3 = ? (niveau 7, sans image) | 2 fois 3 ? | 6 | 6 | +1★ |
 | 50 | notion | 1 × 3 = ? (niveau 7, sans image) | 1 fois 3 ? | 3 | 3 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) (brillante) ; carte concombre-de-mer (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 7 (table 3), cran « plus dur » · réelle
 
@@ -410,7 +410,7 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) (brillante
 | 38 | notion | 3 × 3 = ? (niveau 7, rangées au coquillage, revient) | 3 fois 3 ? | 9 | 12 | correction M2 : « Hmm, regardons ensemble. 3 rangées de 3 poissons. [les rangées comptées] 3 fois 3, ça fait 9. » |
 | 39 | notion | 9 × 3 = ? (niveau 7, rangées au coquillage) | 9 fois 3 ? | 27 | 27 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 7 (table 3), cran « plus dur » · pressée
 
@@ -460,7 +460,7 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) (brillante
 | 37 | notion | 3 × 7 = ? (niveau 7, rangées au coquillage) | 3 fois 7 ? | 21 | 87 | correction autre : « Hmm, regardons ensemble. 3 rangées de 7 poissons. [les rangées comptées] 3 fois 7, ça fait 21. » |
 | 38 | notion | 10 × 3 = ? (niveau 7, rangées au coquillage) | 10 fois 3 ? | 30 | 88 | correction autre : « Hmm, regardons ensemble. 10 rangées de 3 poissons. [les rangées comptées] 10 fois 3, ça fait 30. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -524,7 +524,7 @@ Récompense et fin : +10★ (fin)
 | 49 | notion | 2 × ? = 6 (niveau 7, sans image) | 2 fois combien, ça fait 6 ? | 3 | 3 | +2★ |
 | 50 | notion | ? × 3 = 24 (niveau 7, sans image) | Combien de fois 3, ça fait 24 ? | 8 | 8 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle) (brillante) ; carte moule (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 7 (table 3), cran « très dur » · réelle
 
@@ -578,7 +578,7 @@ Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle) (bri
 | 41 | notion | 3 × ? = 6 (niveau 7, sans image) | 3 fois combien, ça fait 6 ? | 2 | 2 | +2★ |
 | 42 | notion | ? × 3 = 12 (niveau 7, sans image) | Combien de fois 3, ça fait 12 ? | 4 | 4 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle) (brillante) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 7 (table 3), cran « très dur » · pressée
 
@@ -629,4 +629,4 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle) (brillante) ; carte b
 | 38 | notion | 7 × 3 = ? (niveau 7, rangées au coquillage) | 7 fois 3 ? | 21 | 95 | correction autre : « Hmm, regardons ensemble. 7 rangées de 3 poissons. [les rangées comptées] 7 fois 3, ça fait 21. » |
 | 39 | notion | 3 × 7 = ? (niveau 7, rangées au coquillage) | 3 fois 7 ? | 21 | 28 | correction M2 : « Hmm, regardons ensemble. 3 rangées de 7 poissons. [les rangées comptées] 3 fois 7, ça fait 21. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

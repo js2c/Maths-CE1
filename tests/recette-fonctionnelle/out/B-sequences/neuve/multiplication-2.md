@@ -63,7 +63,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 46 | notion | 4 × 3 = ? (niveau 2, rangées affichées) | 4 fois 3 ? | 12 | 12 | +1★ |
 | 47 | notion | 2 × 5 = ? (niveau 2, rangées affichées) | 2 fois 5 ? | 10 | 10 |  |
 
-Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Multiplication, niveau 2 (groupes), cran « plus facile » · réelle
 
@@ -114,7 +114,7 @@ Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) (brillante)
 | 38 | notion | LEÇON L13 | (leçon animée L13, raison : erreur M1 répétée) |  | regardée jusqu'au bout | +3★ (leçon L13) |
 | 39 | notion | 3 × 3 = ? (niveau 2, rangées affichées) | 3 fois 3 ? | 9 | 9 |  |
 
-Récompense et fin : +10★ (fin) ; carte limace-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Multiplication, niveau 2 (groupes), cran « plus facile » · pressée
 
@@ -164,7 +164,7 @@ Récompense et fin : +10★ (fin) ; carte limace-de-mer (nouvelle)
 | 37 | notion | 2 × 4 = ? (niveau 2, rangées affichées) | 2 fois 4 ? | 8 | 86 | correction autre : « Hmm, regardons ensemble. 2 rangées de 4 poissons. [les rangées comptées] 2 fois 4, ça fait 8. » |
 | 38 | notion | 4 × 5 = ? (niveau 2, rangées affichées) | 4 fois 5 ? | 20 | 9 | correction M1 : « Attention : fois, ce n'est pas plus. On compte les rangées. 4 rangées de 5 poissons. [les rangées comptées] 4 fois 5, ça fait 20. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -228,7 +228,7 @@ Récompense et fin : +10★ (fin)
 | 49 | notion | 2 × 3 = ? (niveau 2, rangées affichées) | 2 fois 3 ? | 6 | 6 | +1★ |
 | 50 | notion | 4 × 4 = ? (niveau 2, rangées affichées) | 4 fois 4 ? | 16 | 16 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte poisson-clown (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 2 (groupes), cran « conseillé » · réelle
 
@@ -271,7 +271,7 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte poisson-cl
 | 30 | notion | 3 × 4 = ? (niveau 2, rangées affichées) | 3 fois 4 ? | 12 | 12 | +1★ |
 | 31 | notion | 4 × 4 = ? (niveau 2, rangées affichées, revient) | 4 fois 4 ? | 16 | 16 | +2★ (erreur corrigée) |
 
-Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Multiplication, niveau 2 (groupes), cran « conseillé » · pressée
 
@@ -322,7 +322,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle)
 | 38 | notion | 3 × 4 = ? (niveau 2, rangées affichées) | 3 fois 4 ? | 12 | 49 | correction autre : « Hmm, regardons ensemble. 3 rangées de 4 poissons. [les rangées comptées] 3 fois 4, ça fait 12. » |
 | 39 | notion | 3 × 5 = ? (niveau 2, rangées affichées) | 3 fois 5 ? | 15 | 97 | correction autre : « Hmm, regardons ensemble. 3 rangées de 5 poissons. [les rangées comptées] 3 fois 5, ça fait 15. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -386,7 +386,7 @@ Récompense et fin : +10★ (fin)
 | 49 | notion | 5 × 4 = ? (niveau 2, sans image) | 5 fois 4 ? | 20 | 20 | +1★ |
 | 50 | notion | 5 × 3 = ? (niveau 2, sans image) | 5 fois 3 ? | 15 | 15 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte moule (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 2 (groupes), cran « plus dur » · réelle
 
@@ -442,7 +442,7 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte mo
 | 43 | notion | 2 × 3 = ? (niveau 2, rangées affichées) | 2 fois 3 ? | 6 | 9 | correction M2 : « Hmm, regardons ensemble. 2 rangées de 3 poissons. [les rangées comptées] 2 fois 3, ça fait 6. » ; leçon L13 relancée |
 | 44 | notion | 5 × 5 = ? (niveau 2, rangées affichées) | 5 fois 5 ? | 25 | 25 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 2 (groupes), cran « plus dur » · pressée
 
@@ -493,7 +493,7 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte concombre-
 | 38 | notion | 3 × 3 = ? (niveau 2, rangées affichées) | 3 fois 3 ? | 9 | 33 | correction autre : « Hmm, regardons ensemble. 3 rangées de 3 poissons. [les rangées comptées] 3 fois 3, ça fait 9. » |
 | 39 | notion | 2 × 5 = ? (niveau 2, rangées affichées) | 2 fois 5 ? | 10 | 98 | correction autre : « Hmm, regardons ensemble. 2 rangées de 5 poissons. [les rangées comptées] 2 fois 5, ça fait 10. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -557,7 +557,7 @@ Récompense et fin : +10★ (fin)
 | 49 | notion | 2 × 4 = ? (niveau 2, sans image) | 2 fois 4 ? | 8 | 8 | +2★ |
 | 50 | notion | 4 × 2 = ? (niveau 2, sans image) | 4 fois 2 ? | 8 | 8 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte poisson-chirurgien (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 2 (groupes), cran « très dur » · réelle
 
@@ -603,7 +603,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte poisson-chiru
 | 33 | notion | 3 × 4 = ? (niveau 2, sans image) | 3 fois 4 ? | 12 | 12 | +2★ |
 | 34 | notion | 2 × 2 = ? (niveau 2, sans image) | 2 fois 2 ? | 4 | 4 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte raie-pastenague (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 2 (groupes), cran « très dur » · pressée
 
@@ -653,4 +653,4 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte raie-pastenag
 | 37 | notion | 4 × 5 = ? (niveau 2, rangées affichées) | 4 fois 5 ? | 20 | 66 | correction autre : « Hmm, regardons ensemble. 4 rangées de 5 poissons. [les rangées comptées] 4 fois 5, ça fait 20. » |
 | 38 | notion | 3 × 5 = ? (niveau 2, rangées affichées) | 3 fois 5 ? | 15 | 25 | correction autre : « Hmm, regardons ensemble. 3 rangées de 5 poissons. [les rangées comptées] 3 fois 5, ça fait 15. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

@@ -75,7 +75,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 58 | défi | ? + 7 = 9 | (aucune : le défi ne lit pas les calculs) | 2 | 2 | +1★ |
 | 59 | défi | 6 + 2 = ? | (aucune : le défi ne lit pas les calculs) | 8 | 8 | +5★ (nouveau record) |
 
-Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; carte etoile-de-mer (nouvelle) ; carte poisson-chirurgien (nouvelle)
+Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 8 (deuxNombres, mur), cran « plus facile » · réelle
 
@@ -134,7 +134,7 @@ Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoile
 | 46 | défi | ? + 4 = 5 | (aucune : le défi ne lit pas les calculs) | 1 | 1 |  |
 | 47 | défi | ? + 1 = 9 | (aucune : le défi ne lit pas les calculs) | 8 | 7 | la bonne réponse montrée un instant |
 
-Récompense et fin : défi : 8 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte concombre-de-mer (nouvelle) ; carte limace-de-mer (nouvelle)
+Récompense et fin : défi : 8 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 8 (deuxNombres, mur), cran « plus facile » · pressée
 
@@ -209,7 +209,7 @@ Récompense et fin : défi : 8 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 62 | défi | 4 + 2 = ? | (aucune : le défi ne lit pas les calculs) | 6 | 20 | la bonne réponse montrée un instant |
 | 63 | défi | 1 + ? = 10 | (aucune : le défi ne lit pas les calculs) | 9 | 15 | la bonne réponse montrée un instant |
 
-Récompense et fin : défi : 2 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte crabe (nouvelle) (brillante) ; carte bernard-l-ermite (nouvelle) (brillante)
+Récompense et fin : défi : 2 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ## Cran « conseillé »
 
@@ -293,7 +293,7 @@ Récompense et fin : défi : 2 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 69 | défi | 3 + ? = 6 | (aucune : le défi ne lit pas les calculs) | 3 | 3 | +1★ |
 | 70 | défi | 1 + 2 = ? | (aucune : le défi ne lit pas les calculs) | 3 | 3 | +1★ ; +5★ (nouveau record) |
 
-Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; carte crabe (nouvelle) (brillante) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 8 (deuxNombres, mur), cran « conseillé » · réelle
 
@@ -363,7 +363,7 @@ Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoile
 | 57 | défi | 3 + 4 = ? | (aucune : le défi ne lit pas les calculs) | 7 | 7 | +1★ |
 | 58 | défi | 1 + 6 = ? | (aucune : le défi ne lit pas les calculs) | 7 | 7 | +1★ |
 
-Récompense et fin : défi : 7 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte concombre-de-mer (nouvelle) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : défi : 7 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 8 (deuxNombres, mur), cran « conseillé » · pressée
 
@@ -441,7 +441,7 @@ Récompense et fin : défi : 7 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 65 | défi | 6 + 2 = ? | (aucune : le défi ne lit pas les calculs) | 8 | 7 | la bonne réponse montrée un instant |
 | 66 | défi | ? + 2 = 6 | (aucune : le défi ne lit pas les calculs) | 4 | 4 | +1★ |
 
-Récompense et fin : défi : 1 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte bernard-l-ermite (nouvelle) (brillante) ; carte raie-pastenague (nouvelle) (brillante)
+Récompense et fin : défi : 1 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ## Cran « plus dur »
 
@@ -525,7 +525,7 @@ Récompense et fin : défi : 1 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 69 | défi | ? + 3 = 4 | (aucune : le défi ne lit pas les calculs) | 1 | 1 | +1★ |
 | 70 | défi | ? + 1 = 10 | (aucune : le défi ne lit pas les calculs) | 9 | 9 | +2★ ; +5★ (nouveau record) |
 
-Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; carte bernard-l-ermite (nouvelle) (brillante) ; carte crabe (nouvelle) (brillante)
+Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 8 (deuxNombres, mur), cran « plus dur » · réelle
 
@@ -593,7 +593,7 @@ Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoile
 | 55 | défi | 6 + 2 = ? | (aucune : le défi ne lit pas les calculs) | 8 | 7 | la bonne réponse montrée un instant |
 | 56 | défi | ? + 1 = 5 | (aucune : le défi ne lit pas les calculs) | 4 | 3 | la bonne réponse montrée un instant |
 
-Récompense et fin : défi : 5 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte poisson-chirurgien (nouvelle) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : défi : 5 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 8 (deuxNombres, mur), cran « plus dur » · pressée
 
@@ -673,7 +673,7 @@ Récompense et fin : défi : 5 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 67 | défi | 3 + 3 = ? | (aucune : le défi ne lit pas les calculs) | 6 | 4 | la bonne réponse montrée un instant |
 | 68 | défi | ? + 3 = 5 | (aucune : le défi ne lit pas les calculs) | 2 | 16 | la bonne réponse montrée un instant |
 
-Récompense et fin : défi : 4 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte concombre-de-mer (nouvelle) (brillante) ; carte poisson-chirurgien (nouvelle)
+Récompense et fin : défi : 4 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ## Cran « très dur »
 
@@ -759,7 +759,7 @@ Récompense et fin : défi : 4 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 71 | défi | 2 + 4 = ? | (aucune : le défi ne lit pas les calculs) | 6 | 6 | +2★ |
 | 72 | défi | ? + 3 = 5 | (aucune : le défi ne lit pas les calculs) | 2 | 2 | +2★ ; +5★ (nouveau record) |
 
-Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; carte poisson-chirurgien (nouvelle) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 8 (deuxNombres, mur), cran « très dur » · réelle
 
@@ -827,7 +827,7 @@ Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoile
 | 55 | défi | 6 + 1 = ? | (aucune : le défi ne lit pas les calculs) | 7 | 8 | la bonne réponse montrée un instant |
 | 56 | défi | 1 + 4 = ? | (aucune : le défi ne lit pas les calculs) | 5 | 5 | +1★ |
 
-Récompense et fin : défi : 8 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte etoile-de-mer (nouvelle) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : défi : 8 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 8 (deuxNombres, mur), cran « très dur » · pressée
 
@@ -907,4 +907,4 @@ Récompense et fin : défi : 8 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 67 | défi | 5 + 1 = ? | (aucune : le défi ne lit pas les calculs) | 6 | 9 | la bonne réponse montrée un instant |
 | 68 | défi | 2 + 7 = ? | (aucune : le défi ne lit pas les calculs) | 9 | 7 | la bonne réponse montrée un instant |
 
-Récompense et fin : défi : 5 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte concombre-de-mer (nouvelle) (brillante) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : défi : 5 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)

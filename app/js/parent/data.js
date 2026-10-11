@@ -3,7 +3,7 @@
 // au DOM ni à la base ici (tests : tests/unit/parent.test.mjs).
 import { catalog, median, ruleFacts, threshold } from "../modules/facts/facts.js";
 import { cfgOf, currentFamily, initialFamilies } from "../modules/facts/families.js";
-import { goodWeeks, quotaAt, weekStart, zoneDone } from "../session/rewards.js";
+import { arrivees, goodWeeks, quotaAt, weekStart, zoneDone } from "../session/rewards.js";
 
 export const DAY = 86400000;
 const two = (n) => String(n).padStart(2, "0");
@@ -242,29 +242,37 @@ export function gateQuestion(rnd = Math.random) {
   return { texte: `${a} × ${b} + ${c}`, reponse: a * b + c };
 }
 
-// ---------------------------------------------------------------- les cartes (lot 2)
-// Pour le parent seulement (docs/SPEC-LOT2.md, section 7) : cartes et brillantes, cartes encore gagnables selon
-// le quota, zones, étoiles dorées et arc-en-ciel, semaines réussies (plus de cadeaux de la surprise depuis le
-// 5 octobre 2026, ni dans l'espace parent : lot « Correctifs », écart 10.1). R : les fiches du magasin
-// « recompenses » par clé ; cartes, calendrier : le contenu ; seances : les séances enregistrées.
-export function cardsSummary(R, cartes, calendrier, seances, now = Date.now()) {
+// ---------------------------------------------------------------- les cartes et la boutique (lot 2 ; lot « La boutique du récif »)
+// Pour le parent seulement : cartes et brillantes, la boutique (rythme, créatures en vitrine, à venir, achats), zones, étoiles de
+// diamant (nom interne : dorées) et arc-en-ciel, semaines réussies (plus de cadeaux de la surprise depuis le 5 octobre 2026,
+// lot « Correctifs », écart 10.1). R : les fiches du magasin « recompenses » par clé ; cartes, calendrier : le contenu ;
+// seances : les séances enregistrées ; mode : le rythme de la boutique (« arrivages » ou « libre », réglage du parent).
+export function cardsSummary(R, cartes, calendrier, seances, now = Date.now(), mode = cartes.boutique?.mode ?? "arrivages") {
   const owned = R.cartes?.cartes ?? {}, et = R.etoiles ?? {}, C = cartes.cartes, n = Object.keys(owned).length;
   const open = R.zones?.ouvertes ?? cartes.zones.filter((z) => z.ouverte).map((z) => z.id);
   const zones = cartes.zones.map((z) => { const all = C.filter((c) => c.zone === z.id); return { id: z.id, nom: z.nom, ouverte: open.includes(z.id), gagnees: all.filter((c) => owned[c.id]).length, total: all.length, pret: all.every((c) => c.illustration && c.anecdote) }; });
-  const quota = quotaAt(R.quota, calendrier, now, cartes.quota);
+  // la boutique : ce qui est en vitrine, ce qui arrivera (mode Arrivages : 2 par semaine d'école)
+  const B = cartes.boutique ?? { parSemaine: 2 }, nb = mode === "libre" ? Infinity : quotaAt(R.quota, calendrier, now, { parSemaine: B.parSemaine, max: Infinity });
+  const arr = arrivees(cartes, owned, open, nb), vitrine = [...arr].filter((id) => !owned[id]).length;
+  const aVenir = C.filter((c) => c.rarete !== "legendaire" && open.includes(c.zone) && !owned[c.id] && !arr.has(c.id)).length;
+  const achats = (R.achats?.liste ?? []).slice().sort((a, b) => b.t - a.t), depense = achats.reduce((s, a) => s + (a.prix ?? 0), 0);
   // la zone suivante : ce qu'elle attend
   const last = Math.max(...zones.map((z, i) => (z.ouverte ? i : -1))), next = zones[last + 1] ?? null;
   let attend = null;
   if (next) {
     const cur = zones[last], reste = C.filter((c) => c.zone === cur.id && c.rarete !== "legendaire" && !owned[c.id]).length;
-    attend = !zoneDone(C, owned, cur.id) ? (reste > 1 ? `que les ${reste} cartes (communes et rares) qui restent dans « ${cur.nom} » soient gagnées` : `que la dernière carte (commune ou rare) de « ${cur.nom} » soit gagnée`) : !next.pret ? "ses illustrations et ses anecdotes (contenu à livrer)" : "une étoile arc-en-ciel (le prochain niveau franchi)";
+    attend = !zoneDone(C, owned, cur.id) ? (reste > 1 ? `que les ${reste} créatures (communes et rares) qui restent dans « ${cur.nom} » soient achetées` : `que la dernière créature (commune ou rare) de « ${cur.nom} » soit achetée`) : !next.pret ? "ses illustrations et ses anecdotes (contenu à livrer)" : "une étoile arc-en-ciel (le prochain niveau franchi)";
   }
   const debuts = seances.filter((s) => s.terminee && !s.libre).map((s) => s.debut), semaines = goodWeeks(debuts, cartes.semaine), per = cartes.semaine.semainesParDoree;
   return {
     cartes: n, total: C.length, brillantes: Object.values(owned).filter((o) => o.brillante).length,
     legendaires: C.filter((c) => c.rarete === "legendaire" && owned[c.id]).length, legendairesTotal: C.filter((c) => c.rarete === "legendaire").length,
-    quota, gagnables: Math.max(0, quota - n), base: R.quota ?? null, zones, suivante: next ? { nom: next.nom, attend } : null,
+    mode, vitrine, aVenir, achats, depense, base: R.quota ?? null, zones, suivante: next ? { nom: next.nom, attend } : null,
     dorees: et.dorees ?? 0, doreesDepensees: et.doreesDepensees ?? 0, semaines, prochaineDoree: per - (semaines % per),
     arc: et.arcEnCiel ?? 0, arcDepensees: et.arcDepensees ?? 0, arcLibre: et.arcLibre ?? 0,
   };
 }
+// le journal des achats de la boutique (pour le tableur) : date, créature, prix, « faire briller » ou non, sortie brillante
+export const PURCHASE_COLUMNS = [
+  ["date", (a) => dateTime(a.t)], ["créature", (a) => a.nom ?? a.carte], ["prix (étoiles)", (a) => a.prix], ["faire briller", (a) => !!a.briller], ["brillante", (a) => !!a.brillante],
+];

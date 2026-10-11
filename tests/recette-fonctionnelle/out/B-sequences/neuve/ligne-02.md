@@ -58,7 +58,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 41 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·2·5·8·10 ; étoile sur 7 ; bulles 3 / 7 / 8 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 7 | 7 |  |
 | 42 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·2·5·8·10 ; poisson « 6 » à poser | Où est le nombre 6 ? Pose le poisson dessus. | 6 | 6 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-ballon (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Ligne graduée, niveau 2, cran « plus facile » · réelle
 
@@ -104,7 +104,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-ballon (nouvelle) (brillante)
 | 33 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·2·5·8·10 ; poisson « 7 » à poser | Où est le nombre 7 ? Pose le poisson dessus. | 7 | 3 | correction E4 : « Les nombres grandissent vers la droite. … C'était 7. » |
 | 34 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·2·5·8·10 ; étoile sur 1 ; bulles 1 / 2 / 9 | Quel nombre se cache sous l'étoile de mer ? | 1 | 1 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Ligne graduée, niveau 2, cran « plus facile » · pressée
 
@@ -151,7 +151,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle)
 | 34 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·2·5·8·10 ; poisson « 6 » à poser | Place le poisson sur le nombre 6. | 6 | 10 | correction autre : « Hmm, regardons ensemble. … C'était 6. » |
 | 35 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·2·5·8·10 ; étoile sur 1 ; bulles 1 / 2 / 9 | Quel nombre se cache sous l'étoile de mer ? | 1 | 1 |  |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -214,7 +214,7 @@ Récompense et fin : +10★ (fin)
 | 48 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·5·10 ; étoile sur 3 ; bulles 3 / 4 / 7 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 3 | 3 | +1★ |
 | 49 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·5·10 ; étoile sur 6 ; bulles 4 / 6 / 7 | Quel nombre se cache sous l'étoile de mer ? | 6 | 6 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 2, cran « conseillé » · réelle
 
@@ -264,7 +264,7 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte oursin (nouve
 | 37 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·5·10 ; poisson « 8 » à poser | Place le poisson sur le nombre 8. | 8 | 8 | +1★ |
 | 38 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·5·10 ; étoile sur 4 ; bulles 4 / 5 / 6 | Quel nombre se cache sous l'étoile de mer ? | 4 | 4 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 2, cran « conseillé » · pressée
 
@@ -310,7 +310,7 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
 | 33 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·5·10 ; poisson « 1 » à poser | Où est le nombre 1 ? Pose le poisson dessus. | 1 | 2 | correction E1 : « On compte les sauts, pas les traits. … C'était 1. » |
 | 34 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·5·10 ; étoile sur 2 ; bulles 2 / 3 / 8 | Quel nombre se cache sous l'étoile de mer ? | 2 | 2 | +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -373,7 +373,7 @@ Récompense et fin : +10★ (fin)
 | 48 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·10 ; étoile sur 7 ; bulles 3 / 7 / 8 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 7 | 7 | +2★ |
 | 49 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·10 ; poisson « 4 » à poser | Où est le nombre 4 ? Pose le poisson dessus. | 4 | 4 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte raie-pastenague (nouvelle) ; carte moule (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 2, cran « plus dur » · réelle
 
@@ -417,7 +417,7 @@ Récompense et fin : +10★ (fin) ; carte raie-pastenague (nouvelle) ; carte mou
 | 31 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·5·10 ; poisson « 4 » à poser | Place le poisson sur le nombre 4. | 4 | 3 | correction E1 : « On compte les sauts, pas les traits. … C'était 4. » |
 | 32 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·5·10 ; étoile sur 7 ; bulles 3 / 7 / 8 | Quel nombre se cache sous l'étoile de mer ? | 7 | 7 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 2, cran « plus dur » · pressée
 
@@ -469,7 +469,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) (brillante)
 | 39 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·5·10 ; étoile sur 4 ; bulles 4 / 5 / 6 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 4 | 6 | correction E4 : « Les nombres grandissent vers la droite. … C'était 4. » |
 | 40 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·5·10 ; poisson « 7 » à poser | Place le poisson sur le nombre 7. | 7 | 3 | correction E4 : « Les nombres grandissent vers la droite. … C'était 7. » |
 
-Récompense et fin : +10★ (fin) ; carte crevette (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -519,7 +519,7 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle)
 | 35 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·10 ; poisson « 9 » à poser | Où est le nombre 9 ? Pose le poisson dessus. | 9 | 9 | +2★ |
 | 36 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·10 ; poisson « 7 » à poser | Où est le nombre 7 ? Pose le poisson dessus. | 7 | 7 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 2, cran « très dur » · réelle
 
@@ -569,7 +569,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte bernard-l-e
 | 37 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·10 ; poisson « 4 » à poser | À toi ! Place le poisson sur le nombre 4. | 4 | 4 (guidé) | +2★ |
 | 38 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·10 ; poisson « 8 » à poser | Place le poisson sur le nombre 8. | 8 | 8 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 2, cran « très dur » · pressée
 
@@ -622,4 +622,4 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte oursin (nouve
 | 40 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·5·10 ; étoile sur 3 ; bulles 3 / 4 / 7 | Quel nombre se cache sous l'étoile de mer ? | 3 | 7 | correction E4 : « Les nombres grandissent vers la droite. … C'était 3. » |
 | 41 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·5·10 ; poisson « 1 » à poser | Place le poisson sur le nombre 1. | 1 | 10 | correction autre : « Hmm, regardons ensemble. … C'était 1. » |
 
-Récompense et fin : +10★ (fin) ; carte poisson-ballon (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

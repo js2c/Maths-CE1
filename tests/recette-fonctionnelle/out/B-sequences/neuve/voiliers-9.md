@@ -46,7 +46,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 29 | notion | 464 entre 200 · 300 · 400 · 500 puis 430 · 440 · 450 · 460 · 470 (niveau 9, mer calme) | 464 | 34 | entre 400 et 500, dizaines : entre 460 et 470 | « C'est entre 460 et 470 ! » ; +1★ |
 | 30 | notion | 348 entre 200 · 300 · 400 · 500 puis 340 · 350 · 360 · 370 · 380 (niveau 9, mer calme) | 348 | 21 | entre 300 et 400, dizaines : entre 340 et 350 | « C'est entre 340 et 350 ! » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Voiliers, niveau 9 (4 bouées, double, partout), cran « plus facile » · réelle
 
@@ -86,7 +86,7 @@ Récompense et fin : +10★ (fin)
 | 27 | notion | 813 entre 600 · 700 · 800 · 900 puis 800 · 810 · 820 · 830 · 840 (niveau 9, mer calme) | 813 | 32 | entre 800 et 900, dizaines : entre 800 et 810, puis entre 810 et 820 | erreur V3 : « Il est plus grand que 810 : il passe après. » ; « C'est entre 810 et 820 ! » |
 | 28 | notion | 743 entre 500 · 600 · 700 · 800 puis 710 · 720 · 730 · 740 · 750 (niveau 9, mer calme) | 743 | 34 | entre 700 et 800, dizaines : entre 740 et 750 | « C'est entre 740 et 750 ! » ; +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Voiliers, niveau 9 (4 bouées, double, partout), cran « plus facile » · pressée
 
@@ -130,7 +130,7 @@ Récompense et fin : +10★ (fin)
 | 31 | notion | 273 entre 200 · 300 · 400 · 500 puis 260 · 270 · 280 · 290 · 300 (niveau 9, mer calme) | 273 | 12 | entre 300 et 400, puis entre 200 et 300, dizaines : avant 260, puis après 300 | erreur V4 : « Il est plus petit que 300 : il passe avant. » ; erreur V4 : « Il est plus grand que 260 : il passe après. » ; erreur V4 : « Il est plus petit que 300 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 270 : il passe après. » |
 | 32 | notion | 202 entre 200 · 300 · 400 · 500 puis 200 · 210 · 220 · 230 · 240 (niveau 9, mer calme) | 202 | 11 | après 500, puis après 500, dizaines : entre 210 et 220, puis entre 230 et 240 | erreur V4 : « Il est plus petit que 500 : il passe avant. » ; erreur V4 : « Il est plus petit que 500 : il passe avant. » ; erreur V4 : « Il est plus petit que 210 : il passe avant. » ; erreur V4 : « Il est plus petit que 230 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 200 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 200 : il passe après. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -177,7 +177,7 @@ Récompense et fin : +10★ (fin)
 | 32 | notion | 391 entre 200 · 300 · 400 · 500 puis 360 · 370 · 380 · 390 · 400 (niveau 9, mer vent) | 391 | 24 | entre 300 et 400, dizaines : entre 390 et 400 | « C'est entre 390 et 400 ! » ; +1★ |
 | 33 | notion | 201 entre 200 · 300 · 400 · 500 puis 200 · 210 · 220 · 230 · 240 (niveau 9, mer vent) | 201 | 11 | entre 200 et 300, dizaines : entre 200 et 210 | « C'est entre 200 et 210 ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 9 (4 bouées, double, partout), cran « conseillé » · réelle
 
@@ -215,7 +215,7 @@ Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) (brillante)
 | 25 | notion | 239 entre 100 · 200 · 300 · 400 puis 220 · 230 · 240 · 250 · 260 (niveau 9, mer vent, revient) | 239 | 22 | entre 200 et 300, dizaines : entre 240 et 250, puis entre 230 et 240 | erreur V3 : « Il est plus petit que 240 : il passe avant. » « Le vent repousse le bateau. » ; « C'est entre 230 et 240 ! » ; +1★ |
 | 26 | notion | 658 entre 600 · 700 · 800 · 900 puis 650 · 660 · 670 · 680 · 690 (niveau 9, mer vent) | 658 | 11 | entre 600 et 700, dizaines : entre 650 et 660 | « C'est entre 650 et 660 ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Voiliers, niveau 9 (4 bouées, double, partout), cran « conseillé » · pressée
 
@@ -258,7 +258,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle)
 | 30 | notion | 302 entre 300 · 400 · 500 · 600 puis 300 · 310 · 320 · 330 · 340 (niveau 9, mer calme) | 302 | 11 | entre 300 et 400, dizaines : entre 330 et 340, puis entre 320 et 330 | erreur V3 : « Il est plus petit que 330 : il passe avant. » ; erreur V3 : « Il est plus petit que 320 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 300 : il passe après. » |
 | 31 | notion | 363 entre 300 · 400 · 500 · 600 puis 330 · 340 · 350 · 360 · 370 (niveau 9, mer calme) | 363 | 14 | entre 300 et 400, dizaines : entre 330 et 340, puis entre 330 et 340 | erreur V3 : « Il est plus grand que 340 : il passe après. » ; erreur V3 : « Il est plus grand que 340 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 360 : il passe après. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -305,7 +305,7 @@ Récompense et fin : +10★ (fin)
 | 32 | notion | 443 entre 200 · 300 · 400 · 500 puis 440 · 450 · 460 · 470 · 480 (niveau 9, mer pirates) | 443 | 31 | entre 400 et 500, dizaines : entre 440 et 450 | « Les pirates sont loin. C'est entre 440 et 450 ! » ; +1★ |
 | 33 | notion | 329 entre 200 · 300 · 400 · 500 puis 300 · 310 · 320 · 330 · 340 (niveau 9, mer pirates) | 329 | 23 | entre 300 et 400, dizaines : entre 320 et 330 | « Les pirates sont loin. C'est entre 320 et 330 ! » ; +2★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte poisson-ballon (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 9 (4 bouées, double, partout), cran « plus dur » · réelle
 
@@ -347,7 +347,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte poisson-ballo
 | 29 | notion | 573 entre 500 · 600 · 700 · 800 puis 540 · 550 · 560 · 570 · 580 (niveau 9, mer vent) | 573 | 14 | avant 500, puis avant 500, dizaines : entre 570 et 580 | erreur V4 : « Il est plus grand que 500 : il passe après. » « Le vent repousse le bateau. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 500 : il passe après. » |
 | 30 | notion | 656 entre 400 · 500 · 600 · 700 puis 630 · 640 · 650 · 660 · 670 (niveau 9, mer vent) | 656 | 33 | entre 600 et 700, dizaines : entre 650 et 660 | « C'est entre 650 et 660 ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Voiliers, niveau 9 (4 bouées, double, partout), cran « plus dur » · pressée
 
@@ -390,7 +390,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
 | 30 | notion | 437 entre 400 · 500 · 600 · 700 puis 420 · 430 · 440 · 450 · 460 (niveau 9, mer calme) | 437 | 12 | entre 600 et 700, puis entre 600 et 700, dizaines : entre 440 et 450, puis entre 450 et 460 | erreur V4 : « Il est plus petit que 600 : il passe avant. » ; erreur V4 : « Il est plus petit que 600 : il passe avant. » ; erreur V4 : « Il est plus petit que 440 : il passe avant. » ; erreur V4 : « Il est plus petit que 450 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 400 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 430 : il passe après. » |
 | 31 | notion | 612 entre 400 · 500 · 600 · 700 puis 610 · 620 · 630 · 640 · 650 (niveau 9, mer calme) | 612 | 31 | avant 400, puis avant 400, dizaines : entre 640 et 650, puis entre 610 et 620 | erreur V4 : « Il est plus grand que 400 : il passe après. » ; erreur V4 : « Il est plus grand que 400 : il passe après. » ; erreur V4 : « Il est plus petit que 640 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 600 : il passe après. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -437,7 +437,7 @@ Récompense et fin : +10★ (fin)
 | 32 | notion | 592 entre 300 · 400 · 500 · 600 puis 560 · 570 · 580 · 590 · 600 (niveau 9, mer pirates) | 592 | 34 | entre 500 et 600, dizaines : entre 590 et 600 | « Les pirates sont loin. C'est entre 590 et 600 ! » ; +2★ |
 | 33 | notion | 466 entre 300 · 400 · 500 · 600 puis 450 · 460 · 470 · 480 · 490 (niveau 9, mer pirates) | 466 | 22 | entre 400 et 500, dizaines : entre 460 et 470 | « Les pirates sont loin. C'est entre 460 et 470 ! » ; +2★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle) ; carte coquille-saint-jacques (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 9 (4 bouées, double, partout), cran « très dur » · réelle
 
@@ -474,7 +474,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle) ; carte coqui
 | 24 | notion | 349 entre 100 · 200 · 300 · 400 puis 320 · 330 · 340 · 350 · 360 (niveau 9, mer vent) | 349 | 33 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « Il est plus grand que 300 : il passe après. » ; puis les dizaines : « Il est plus grand que 340 : il passe après. » |
 | 25 | notion | 204 entre 100 · 200 · 300 · 400 puis 200 · 210 · 220 · 230 · 240 (niveau 9, mer calme) | La mer se calme. 204 | 21 | entre 200 et 300, dizaines : entre 200 et 210 | « C'est entre 200 et 210 ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crevette (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 9 (4 bouées, double, partout), cran « très dur » · pressée
 
@@ -518,4 +518,4 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle)
 | 31 | notion | 631 entre 500 · 600 · 700 · 800 puis 620 · 630 · 640 · 650 · 660 (niveau 9, mer calme) | 631 | 22 | entre 500 et 600, puis après 800, dizaines : entre 650 et 660, puis entre 640 et 650 | erreur V4 : « Il est plus grand que 600 : il passe après. » ; erreur V4 : « Il est plus petit que 800 : il passe avant. » ; erreur V4 : « Il est plus petit que 650 : il passe avant. » ; erreur V4 : « Il est plus petit que 640 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 600 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 630 : il passe après. » |
 | 32 | notion | 623 entre 500 · 600 · 700 · 800 puis 600 · 610 · 620 · 630 · 640 (niveau 9, mer calme) | 623 | 23 | entre 700 et 800, puis après 800, dizaines : entre 620 et 630 | erreur V4 : « Il est plus petit que 700 : il passe avant. » ; erreur V4 : « Il est plus petit que 800 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 600 : il passe après. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

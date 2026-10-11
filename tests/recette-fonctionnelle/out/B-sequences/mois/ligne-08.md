@@ -78,7 +78,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 61 | défi | 2 + 5 = ? | (aucune : le défi ne lit pas les calculs) | 7 | 7 |  |
 | 62 | défi | ? + 6 = 7 | (aucune : le défi ne lit pas les calculs) | 1 | 1 | +1★ ; +5★ (nouveau record) |
 
-Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; carte poisson-chirurgien (nouvelle) ; carte crabe (nouvelle)
+Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 8, cran « plus facile » · réelle
 
@@ -145,7 +145,7 @@ Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoile
 | 54 | défi | ? + 1 = 4 | (aucune : le défi ne lit pas les calculs) | 3 | 4 | la bonne réponse montrée un instant |
 | 55 | défi | 5 + 2 = ? | (aucune : le défi ne lit pas les calculs) | 7 | 8 | la bonne réponse montrée un instant |
 
-Récompense et fin : défi : 7 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte bernard-l-ermite (nouvelle) ; carte crabe (nouvelle)
+Récompense et fin : défi : 7 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 8, cran « plus facile » · pressée
 
@@ -231,7 +231,7 @@ Récompense et fin : défi : 7 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 73 | défi | 2 + ? = 6 | (aucune : le défi ne lit pas les calculs) | 4 | 6 | la bonne réponse montrée un instant |
 | 74 | défi | 1 + ? = 2 | (aucune : le défi ne lit pas les calculs) | 1 | 8 | la bonne réponse montrée un instant |
 
-Récompense et fin : défi : 2 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte poisson-chirurgien (nouvelle) ; carte etoile-de-mer (nouvelle)
+Récompense et fin : défi : 2 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ## Cran « conseillé »
 
@@ -309,7 +309,7 @@ Récompense et fin : défi : 2 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 63 | défi | 1 + ? = 2 | (aucune : le défi ne lit pas les calculs) | 1 | 1 | +1★ |
 | 64 | défi | 2 + ? = 6 | (aucune : le défi ne lit pas les calculs) | 4 | 4 | +1★ ; +5★ (nouveau record) |
 
-Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; carte etoile-de-mer (nouvelle) ; carte crabe (nouvelle)
+Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 8, cran « conseillé » · réelle
 
@@ -378,7 +378,7 @@ Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoile
 | 56 | défi | 1 + ? = 5 | (aucune : le défi ne lit pas les calculs) | 4 | 4 | +1★ |
 | 57 | défi | ? + 1 = 7 | (aucune : le défi ne lit pas les calculs) | 6 | 6 | +1★ ; +5★ (nouveau record) |
 
-Récompense et fin : défi : 11 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; carte etoile-de-mer (nouvelle) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : défi : 11 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 8, cran « conseillé » · pressée
 
@@ -462,7 +462,7 @@ Récompense et fin : défi : 11 bonne(s) réponse(s), nouveau record (+5 étoile
 | 71 | défi | 9 + ? = 10 | (aucune : le défi ne lit pas les calculs) | 1 | 17 | la bonne réponse montrée un instant |
 | 72 | défi | ? + 7 = 8 | (aucune : le défi ne lit pas les calculs) | 1 | 17 | la bonne réponse montrée un instant |
 
-Récompense et fin : défi : 1 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte concombre-de-mer (nouvelle) ; carte crabe (nouvelle)
+Récompense et fin : défi : 1 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ## Cran « plus dur »
 
@@ -538,7 +538,7 @@ Récompense et fin : défi : 1 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 61 | défi | 5 + 2 = ? | (aucune : le défi ne lit pas les calculs) | 7 | 7 | +1★ |
 | 62 | défi | 3 + 3 = ? | (aucune : le défi ne lit pas les calculs) | 6 | 6 | +2★ ; +5★ (nouveau record) |
 
-Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; carte limace-de-mer (nouvelle) (brillante) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 8, cran « plus dur » · réelle
 
@@ -605,7 +605,7 @@ Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoile
 | 54 | défi | 1 + 9 = ? | (aucune : le défi ne lit pas les calculs) | 10 | 10 | +1★ |
 | 55 | défi | ? + 2 = 4 | (aucune : le défi ne lit pas les calculs) | 2 | 2 | +2★ |
 
-Récompense et fin : défi : 8 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte crabe (nouvelle) ; carte limace-de-mer (nouvelle)
+Récompense et fin : défi : 8 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 8, cran « plus dur » · pressée
 
@@ -688,7 +688,7 @@ Récompense et fin : défi : 8 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 70 | défi | ? + 1 = 6 | (aucune : le défi ne lit pas les calculs) | 5 | 18 | la bonne réponse montrée un instant |
 | 71 | défi | 5 + ? = 10 | (aucune : le défi ne lit pas les calculs) | 5 | 13 | la bonne réponse montrée un instant |
 
-Récompense et fin : défi : 1 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte limace-de-mer (nouvelle) ; carte poisson-chirurgien (nouvelle)
+Récompense et fin : défi : 1 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ## Cran « très dur »
 
@@ -764,7 +764,7 @@ Récompense et fin : défi : 1 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 61 | défi | 9 + 1 = ? | (aucune : le défi ne lit pas les calculs) | 10 | 10 | +2★ |
 | 62 | défi | 3 + ? = 9 | (aucune : le défi ne lit pas les calculs) | 6 | 6 | +2★ ; +5★ (nouveau record) |
 
-Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; carte poisson-chirurgien (nouvelle) ; carte raie-pastenague (nouvelle)
+Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 8, cran « très dur » · réelle
 
@@ -829,7 +829,7 @@ Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoile
 | 52 | défi | 1 + ? = 5 | (aucune : le défi ne lit pas les calculs) | 4 | 4 | +2★ |
 | 53 | défi | 3 + ? = 4 | (aucune : le défi ne lit pas les calculs) | 1 | 1 | +1★ |
 
-Récompense et fin : défi : 8 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte poisson-chirurgien (nouvelle) (brillante) ; carte etoile-de-mer (nouvelle) (brillante)
+Récompense et fin : défi : 8 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 8, cran « très dur » · pressée
 
@@ -912,4 +912,4 @@ Récompense et fin : défi : 8 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 70 | défi | 3 + 3 = ? | (aucune : le défi ne lit pas les calculs) | 6 | 9 | la bonne réponse montrée un instant |
 | 71 | défi | 2 + ? = 9 | (aucune : le défi ne lit pas les calculs) | 7 | 11 | la bonne réponse montrée un instant |
 
-Récompense et fin : défi : 0 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte bernard-l-ermite (nouvelle) ; carte crabe (nouvelle)
+Récompense et fin : défi : 0 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)

@@ -46,7 +46,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 29 | notion | 1 + 6 = ? (famille 1) | [aide d'emblée : [aide ligne] La tortue est sur 6. Elle fait un saut. Compte avec elle !] 1 plus 6 ? | 7 | 7 |  |
 | 30 | notion | 6 + 1 = ? (famille 1) | [aide d'emblée : [aide ligne] La tortue est sur 6. Elle fait un saut. Compte avec elle !] 6 plus 1 ? | 7 | 7 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte hippocampe (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 13 (grand mélange), cran « plus facile » · réelle
 
@@ -90,7 +90,7 @@ Récompense et fin : +10★ (fin) ; carte hippocampe (nouvelle)
 | 31 | notion | 5 + 5 = ? (famille 2) | [aide d'emblée : 5 poissons, et dans le reflet, encore 5 poissons.] Combien font 5 plus 5 ? | 10 | 10 |  |
 | 32 | notion | 7 + 3 = ? (famille 3) | [aide d'emblée : Regarde la boîte à dix places : 7 poissons.] 7 plus 3 ? | 10 | 10 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crevette (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 13 (grand mélange), cran « plus facile » · pressée
 
@@ -134,7 +134,7 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle)
 | 31 | notion | 2 + 2 = ? (famille 1) | [aide d'emblée : [aide ligne] La tortue est sur 2. Elle fait 2 sauts. Compte avec elle !] Combien font 2 plus 2 ? | 4 | 1 | correction : « [aide ligne] La tortue est sur 2. Elle fait 2 sauts. Compte avec elle ! 2 plus 2, ça fait 4. » |
 | 32 | notion | 2 + 7 = ? (famille 1) | [aide d'emblée : [aide ligne] La tortue est sur 7. Elle fait 2 sauts. Compte avec elle !] 2 plus 7 ? | 9 | 14 | correction : « [aide ligne] La tortue est sur 7. Elle fait 2 sauts. Compte avec elle ! 2 plus 7, ça fait 9. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -197,7 +197,7 @@ Récompense et fin : +10★ (fin)
 | 48 | notion | 9 + 1 = ? (famille 1) | 9 plus 1 ? | 10 | 10 | +1★ |
 | 49 | notion | 1 + 9 = ? (famille 1) | 1 plus 9 ? | 10 | 10 | +1★ |
 
-Récompense et fin : fin de la notion : trou famille 1 ; +10★ (fin) ; carte hippocampe (nouvelle) ; carte coquille-saint-jacques (nouvelle)
+Récompense et fin : fin de la notion : trou famille 1 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 13 (grand mélange), cran « conseillé » · réelle
 
@@ -251,7 +251,7 @@ Récompense et fin : fin de la notion : trou famille 1 ; +10★ (fin) ; carte hi
 | 41 | notion | 1 + 5 = ? (famille 1) | 1 plus 5 ? | 6 | 6 | +1★ |
 | 42 | notion | 3 + 1 = ? (famille 1) | 3 plus 1 ? | 4 | 4 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-ballon (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 13 (grand mélange), cran « conseillé » · pressée
 
@@ -302,7 +302,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-ballon (nouvelle)
 | 38 | notion | 2 + 4 = ? (famille 1) | Combien font 2 plus 4 ? | 6 | 9 | correction : « [aide ligne] La tortue est sur 4. Elle fait 2 sauts. Compte avec elle ! 2 plus 4, ça fait 6. » |
 | 39 | notion | 8 + 1 = ? (famille 1) | Combien font 8 plus 1 ? | 9 | 16 | correction : « [aide ligne] La tortue est sur 8. Elle fait un saut. Compte avec elle ! 8 plus 1, ça fait 9. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -365,7 +365,7 @@ Récompense et fin : +10★ (fin)
 | 48 | notion | 6 + 4 = ? (famille 3) | Combien font 6 plus 4 ? | 10 | 10 | +2★ |
 | 49 | notion | ? + 6 = 10 (famille 3) | Combien plus 6, ça fait 10 ? | 4 | 4 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte crabe (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 13 (grand mélange), cran « plus dur » · réelle
 
@@ -422,7 +422,7 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte crabe (nou
 | 44 | notion | 3 + 1 = ? (famille 1) | Combien font 3 plus 1 ? | 4 | 3 | correction : « [aide ligne] La tortue est sur 3. Elle fait un saut. Compte avec elle ! 3 plus 1, ça fait 4. » |
 | 45 | notion | 2 + 3 = ? (famille 1) | Combien font 2 plus 3 ? | 5 | 5 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte crevette (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 13 (grand mélange), cran « plus dur » · pressée
 
@@ -473,7 +473,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte cr
 | 38 | notion | 6 + 2 = ? (famille 1) | 6 plus 2 ? | 8 | 0 | correction : « [aide ligne] La tortue est sur 6. Elle fait 2 sauts. Compte avec elle ! 6 plus 2, ça fait 8. » |
 | 39 | notion | 4 + 2 = ? (famille 1) | Combien font 4 plus 2 ? | 6 | 20 | correction : « [aide ligne] La tortue est sur 4. Elle fait 2 sauts. Compte avec elle ! 4 plus 2, ça fait 6. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -536,7 +536,7 @@ Récompense et fin : +10★ (fin)
 | 48 | notion | 7 + ? = 9 (famille 1) | 7 plus combien, ça fait 9 ? | 2 | 2 | +2★ |
 | 49 | notion | ? + 2 = 7 (famille 1) | Combien plus 2, ça fait 7 ? | 5 | 5 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 13 (grand mélange), cran « très dur » · réelle
 
@@ -588,7 +588,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte 
 | 39 | notion | 2 + 7 = ? (famille 1) | 2 plus 7 ? | 9 | 8 | correction : « [aide ligne] La tortue est sur 7. Elle fait 2 sauts. Compte avec elle ! 2 plus 7, ça fait 9. » |
 | 40 | notion | ? + 3 = 6 (famille 2) | Combien plus 3, ça fait 6 ? | 3 | 3 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte oursin (nouvelle) ; carte poisson-clown (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 13 (grand mélange), cran « très dur » · pressée
 
@@ -639,4 +639,4 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle) ; carte poisson-clow
 | 38 | notion | 6 + 4 = ? (famille 3, revient) | 6 plus 4 ? | 10 | 16 | correction : « Regarde la boîte à dix places : 6 poissons. 6 plus 4, ça fait 10. » |
 | 39 | notion | 5 + 5 = ? (famille 2) | 5 plus 5 ? | 10 | 7 | correction : « 5 poissons, et dans le reflet, encore 5 poissons. 5 plus 5, ça fait 10. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

@@ -75,19 +75,24 @@ const T = { achat: 24000, achatCorrige: 40000, achatManque: 46000, achatRendre: 
 export const EFFET_CRAN = { facile: 0.1, conseille: 0, dur: -0.08, tresdur: -0.15 };
 // `horloge` (lot 3, tools/sauvegarde-test.mjs) : pendant la simulation, Date.now() donne l'heure simulée (le moteur la
 // prend à plusieurs endroits : réponses, obtention d'un niveau…) ; le résultat garde la base (`out.store`)
-export async function simulate({ profil, jours, seed = 1, zonesPretes = true, choix = null, cran = null, horloge = false }) {
+export async function simulate({ profil, jours, seed = 1, zonesPretes = true, choix = null, cran = null, horloge = false, rythme = null }) {
   const realNow = Date.now;
-  try { return await simulate0({ profil, jours, seed, zonesPretes, choix, cran, horloge }); } finally { Date.now = realNow; }
+  try { return await simulate0({ profil, jours, seed, zonesPretes, choix, cran, horloge, rythme }); } finally { Date.now = realNow; }
 }
-async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horloge }) {
+async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horloge, rythme }) {
   JUSTES.clear();
-  const cartes = zonesPretes ? pretes(cartes0) : cartes0;
+  // (lot « La boutique du récif » : zonesPretes « dates » : le contenu du grand large arrive le 1er février 2027, celui des
+  // abysses le 26 avril 2027, comme le prévoit la SPEC, section 10 : le calibrage de la boutique, art/boutique/README.md)
+  const cartes = zonesPretes === "dates" ? structuredClone(cartes0) : zonesPretes ? pretes(cartes0) : cartes0;
+  const PRET = zonesPretes === "dates" ? { large: new Date(2027, 1, 1).getTime(), abysses: new Date(2027, 3, 26).getTime() } : {};
   const P = { ...PROFILS[profil], ...(cran ? { cran } : {}) }, R = rng(seed), store = await Store.open(new IDBFactory()), rewards = await new Rewards(store, cartes, calendrier).load(jours[0].getTime() + 18 * 3600000);
+  if (rythme) await rewards.setMode(rythme);
   let t = 0; const clock = () => t, add = (ms) => { t += ms; };
   if (horloge) Date.now = () => Math.round(t);
   const essais = {}; const out = [];
   for (const [i, day] of jours.entries()) {
     t = day.getTime() + 18 * 3600000;
+    for (const [z, d] of Object.entries(PRET)) if (t >= d) for (const c of cartes.cartes) if (c.zone === z) { c.illustration ??= `fictif/${c.id}.webp`; c.anecdote ??= "Anecdote fictive."; }
     const log = { n: i + 1, date: day.toLocaleDateString("fr-FR"), faits: [], ligne: [], lecons: [], nsp: 0, descentes: 0, nouveaux: 0 };
     const warmScreen = { show() {}, keys() {}, leave() {}, ask: async (q) => {
       const trou = q.forme && q.forme !== "directe", ok = q.base ? true : R() < pFait(P, q) * (trou ? P.trou : 1); const ms = q.base ? P.baseMs + R() * 1000 : ok ? msFait(P, q) * (0.7 + R() * 0.6) : 9000; if (!q.base) noteFait(q, ok);
@@ -222,19 +227,28 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
         const view = { show() {}, start() {}, stop() {}, pearl() {}, record() {} };
         const r = await runChallenge({ ...ctx, warmup: w, screen: defiScreen, view, store, rnd: R, stars: seance.etoiles, say: async () => add(T.phrase), now: clock, pause: async (ms) => add(ms), timer: () => new Promise(() => {}) });
         log.defi = r.score; log.record = r.nouveau; },
-      // la récompense, dans l'ordre de l'application (session/screens.js : bonuses, puis shells)
+      // la récompense, dans l'ordre de l'application (session/screens.js : bonuses, shells, finRecompense), puis la boutique
+      // (lot « La boutique du récif ») : l'enfant y achète comme dans la simulation de la maquette (art/boutique/outils/
+      // simulation.mjs) : une créature tirée au hasard dans la vitrine, achetée dès qu'elle a assez, sinon elle économise ;
+      // quand la vitrine n'a plus de créature nouvelle, elle fait briller la moins chère
       recompense: async ({ session }) => { await session.stars(seance.etoiles.seanceTerminee, "fin"); const b = await rewards.endOfSession(session.rec.debut); if (b) await session.stars(b, "série");
+        log.cartes = []; log.zones = []; log.achats = [];
+        if (rewards.coquillageSerie) { rewards.coquillageSerie = false; log.serie = true; const g = await rewards.serieShell(R, t); if (g.etoiles) await session.stars(g.etoiles, "coquillage de la série"); else log.cartes.push(`${g.carte.id}(série : brillante)`); }
         const others = (await store.all("seances")).filter((x) => x.terminee && !x.libre && x.id !== session.id).map((x) => x.debut);
         if (goldenStar([...others, session.rec.debut], session.rec.debut, cartes.semaine)) { await rewards.special("dorees"); log.doree = true; }
         await rewards.collectFree();
-        log.cartes = []; log.zones = []; log.quota = rewards.quota(t);
-        const zone = async () => { const z = await rewards.openZone(t); if (z) log.zones.push(z.id); };
-        const won = (g, dore = false) => { log.cartes.push(g.carte.id + (dore ? "(doré)" : "") + (g.rendueBrillante ? "(rendue brillante)" : g.brillante && g.parTirage ? "(brillante)" : "")); if (g.nouvelle) log.nouvelles = (log.nouvelles ?? 0) + 1; };
-        await zone();
-        if (rewards.goldenCard(t)) won(await rewards.openGolden(R, t), true);
-        for (let k = 0; k < cartes.coquillage.parSeance; k++) { if (k) await zone(); if (!rewards.canOpen(t)) { if (rewards.total >= cartes.coquillage.prix) log.attentes = (log.attentes ?? 0) + 1; break; } const g = await rewards.openShell(R, t); if (!g) break; won(g); }
-        await zone();
-        log.depasse = rewards.count > rewards.quota(t); log.reserve = rewards.total; },
+        const z = await rewards.openZone(t, R); if (z) { log.zones.push(z.id); if (z.habitant) log.cartes.push(`${z.habitant.carte.id}(premier habitant)`); }
+        if (rewards.goldenCard(t)) { const g = await rewards.openGolden(R, t); log.cartes.push(`${g.carte.id}(diamant)`); }
+        const vendre = () => [...rewards.vitrine(t)].filter(([, e]) => e === "vendre").map(([id]) => id);
+        log.vitrineVide = !vendre().length;
+        for (;;) {
+          const v = vendre();
+          if (v.length) { const w = v[Math.floor(R() * v.length)], k = rewards.cout(w, "vendre"); if (rewards.total >= k) { const g = rewards.acheter(w, t, R); await g.ecrit; log.achats.push(`${w}${g.brillante ? "(brillante)" : ""}`); continue; } break; }
+          const ternes = cartes.cartes.filter((c) => rewards.owned[c.id] && !rewards.owned[c.id].brillante && c.rarete !== "legendaire").sort((a, b) => rewards.cout(a.id, "terne") - rewards.cout(b.id, "terne"));
+          if (ternes.length && rewards.total >= rewards.cout(ternes[0].id, "terne")) { const g = rewards.acheter(ternes[0].id, t, R); await g.ecrit; log.achats.push(`${ternes[0].id}(briller)`); continue; }
+          break;
+        }
+        log.reserve = rewards.total; },
     } });
     const rec = await s.run();
     Object.assign(log, { cran: rec.cran, cranDepart: rec.cranDepart, reussite: rec.reussite, questions: rec.questions, etoiles: rec.etoiles, duree: Math.round(rec.dureeS / 60 * 10) / 10, arc: rec.arcEnCiel ?? 0, reste: rewards.total, nbCartes: rewards.count, brillantes: Object.values(rewards.owned).filter((o) => o.brillante).length, legendaires: cartes.cartes.filter((c) => c.rarete === "legendaire" && rewards.owned[c.id]).length, ouvertes: [...rewards.zones.ouvertes], doreesDispo: rewards.doreesDispo, arcDispo: rewards.arcDispo });

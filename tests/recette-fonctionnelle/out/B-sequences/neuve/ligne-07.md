@@ -62,7 +62,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 45 | notion | ligne 30–40 (pas 1, 11 graduations) écrits 31·32·33 ; étoile sur 36 ; bulles 6 / 36 / 37 / 63 | Quel nombre se cache sous l'étoile de mer ? | 36 | 36 |  |
 | 46 | notion | ligne 90–100 (pas 1, 11 graduations) écrits 91·92·93 ; étoile sur 99 ; bulles 9 / 91 / 99 / 100 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 99 | 99 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Ligne graduée, niveau 7, cran « plus facile » · réelle
 
@@ -109,7 +109,7 @@ Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) (brillante)
 | 34 | notion | ligne 0–100 (pas 10, 11 graduations) écrits 0·10·20 ; étoile sur 70 ; bulles 7 / 30 / 70 / 80 | À toi ! L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 70 | 70 (guidé) |  |
 | 35 | notion | ligne 90–100 (pas 1, 11 graduations) écrits 92·93·94 ; étoile sur 99 ; bulles 9 / 91 / 99 / 100 | Quel nombre se cache sous l'étoile de mer ? | 99 | 99 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte limace-de-mer (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Ligne graduée, niveau 7, cran « plus facile » · pressée
 
@@ -156,7 +156,7 @@ Récompense et fin : +10★ (fin) ; carte limace-de-mer (nouvelle) (brillante)
 | 34 | notion | ligne 10–20 (pas 1, 11 graduations) écrits 11·12·13 ; étoile sur 17 ; bulles 7 / 17 / 18 / 71 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 17 | 71 | correction E5 : « 1 dizaine et 7 unités. … C'était 17. » |
 | 35 | notion | ligne 0–100 (pas 10, 11 graduations) écrits 10·20·30 ; étoile sur 50 ; bulles 5 / 40 / 50 / 60 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 50 | 50 |  |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -219,7 +219,7 @@ Récompense et fin : +10★ (fin)
 | 48 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1 ; étoile sur 3 ; bulles 2 / 3 / 4 / 7 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 3 | 3 | +1★ |
 | 49 | notion | ligne 70–80 (pas 1, 11 graduations) écrits 73·74 ; étoile sur 77 ; bulles 7 / 73 / 77 / 78 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 77 | 77 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte coquille-saint-jacques (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 7, cran « conseillé » · réelle
 
@@ -270,7 +270,7 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte co
 | 38 | notion | ligne 0–100 (pas 10, 11 graduations) écrits 30·40 ; étoile sur 80 ; bulles 8 / 20 / 80 / 90 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 80 | 8 | correction E2 : « Ici, chaque saut vaut dix ! … C'était 80. » |
 | 39 | notion | ligne 80–90 (pas 1, 11 graduations) écrits 82·83 ; étoile sur 85 ; bulles 5 / 58 / 85 / 86 | Quel nombre se cache sous l'étoile de mer ? | 85 | 85 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crevette (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 7, cran « conseillé » · pressée
 
@@ -315,7 +315,7 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle)
 | 32 | notion | ligne 0–100 (pas 10, 11 graduations) écrits 30·40 ; étoile sur 90 ; bulles 9 / 10 / 90 / 100 (revient) | Quel nombre se cache sous l'étoile de mer ? | 90 | 10 | correction E4 : « Les nombres grandissent vers la droite. … C'était 90. » |
 | 33 | notion | ligne 70–80 (pas 1, 11 graduations) écrits 73·74 ; étoile sur 79 ; bulles 9 / 79 / 80 / 97 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 79 | 79 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -378,7 +378,7 @@ Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle)
 | 48 | notion | ligne 70–80 (pas 1, 11 graduations) écrits 73·74 ; étoile sur 79 ; bulles 9 / 79 / 80 / 97 | Quel nombre se cache sous l'étoile de mer ? | 79 | 79 | +2★ |
 | 49 | notion | ligne 50–60 (pas 1, 11 graduations) écrits 51·52 ; étoile sur 57 ; bulles 7 / 57 / 58 / 75 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 57 | 57 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) (brillante) ; carte poisson-ballon (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 7, cran « plus dur » · réelle
 
@@ -431,7 +431,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) (brillan
 | 40 | notion | LEÇON L2 | (leçon animée L2, raison : erreur E2 répétée) |  | regardée jusqu'au bout | +3★ (leçon L2) |
 | 41 | notion | ligne 50–60 (pas 1, 11 graduations) écrits 50·51 ; étoile sur 56 ; bulles 6 / 56 / 57 / 65 | Quel nombre se cache sous l'étoile de mer ? | 56 | 56 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 7, cran « plus dur » · pressée
 
@@ -476,7 +476,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte oursin (nou
 | 32 | notion | LEÇON L3 | (leçon animée L3, raison : erreur E3 répétée) |  | regardée jusqu'au bout | +3★ (leçon L3) |
 | 33 | notion | ligne 10–20 (pas 1, 11 graduations) écrits 11·12 ; étoile sur 18 ; bulles 8 / 18 / 19 / 81 | Quel nombre se cache sous l'étoile de mer ? | 18 | 18 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -539,7 +539,7 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) (brillante)
 | 48 | notion | ligne 30–40 (pas 1, 11 graduations) écrits 30·32 ; étoile sur 36 ; bulles 6 / 36 / 37 / 63 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 36 | 36 | +2★ |
 | 49 | notion | ligne 0–100 (pas 10, 11 graduations) écrits 10·30 ; étoile sur 50 ; bulles 5 / 40 / 50 / 60 | Quel nombre se cache sous l'étoile de mer ? | 50 | 50 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte poisson-chirurgien (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 7, cran « très dur » · réelle
 
@@ -590,7 +590,7 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte po
 | 38 | notion | ligne 0–100 (pas 10, 11 graduations) écrits 10·20 ; étoile sur 60 ; bulles 6 / 40 / 60 / 70 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 60 | je ne sais pas | correction NSP : « Ce n'est pas grave, regardons ensemble. … C'était 60. » |
 | 39 | notion | ligne 0–100 (pas 10, 11 graduations) écrits 0·10 ; étoile sur 50 ; bulles 5 / 40 / 50 / 60 | Quel nombre se cache sous l'étoile de mer ? | 50 | 50 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte limace-de-mer (nouvelle) ; carte poisson-clown (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 7, cran « très dur » · pressée
 
@@ -637,4 +637,4 @@ Récompense et fin : +10★ (fin) ; carte limace-de-mer (nouvelle) ; carte poiss
 | 34 | notion | ligne 0–100 (pas 10, 11 graduations) écrits 30·40 ; étoile sur 90 ; bulles 9 / 10 / 90 / 100 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 90 | 9 | correction E2 : « Ici, chaque saut vaut dix ! … C'était 90. » |
 | 35 | notion | ligne 60–70 (pas 1, 11 graduations) écrits 62·63 ; étoile sur 68 ; bulles 8 / 68 / 69 / 86 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 68 | 86 | correction E5 : « 6 dizaines et 8 unités. … C'était 68. » |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

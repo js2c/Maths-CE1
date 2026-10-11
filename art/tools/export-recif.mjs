@@ -48,6 +48,10 @@ const RETOUCHES = [
   ["const bR = document.getElementById('bRays'), bF = document.getElementById('bFish');", "const bR = {}, bF = {};", "pas de boutons d'essai"],
   ["const bC = document.getElementById('bCrea');", "const bC = {};", "pas de boutons d'essai"],
   ["const zoneEl = document.getElementById('zone');", "const zoneEl = { textContent: '' };", "pas de nom de zone écrit (l'enfant ne lit pas)"],
+  // (lot « La boutique du récif ») la créature qui vient d'être achetée arrive à la nage, avec son halo, jusqu'à sa place :
+  // OPTS.arrivee(id, t, x à l'écran, largeur vue) donne son décalage { dx, dy } et son halo, ou null
+  ["const P = c.pose ? c.pose(t, c) : {}, dx = P.dx || 0, dy = P.dy || 0, rot = P.rot || 0, sx = (P.sx || 1)*kf, sy = (P.sy || 1)*kf;", "const P = c.pose ? c.pose(t, c) : {}, AR = OPTS.arrivee?.(c.id, t, c.x - camX, viewW) ?? null, dx = (P.dx || 0) + (AR ? AR.dx : 0), dy = (P.dy || 0) + (AR ? AR.dy : 0), rot = P.rot || 0, sx = (P.sx || 1)*kf*(AR ? AR.s : 1), sy = (P.sy || 1)*kf*(AR ? AR.s : 1);", "la créature achetée arrive à la nage, plus grande au milieu de son arc"],
+  ["c.halo += ((c === hoverC || c === holdC ? 1 : 0) - c.halo)*0.2;", "c.halo += ((c === hoverC || c === holdC || AR?.halo ? 1 : 0) - c.halo)*0.2;", "et avec son halo"],
   ["function frame(now){\n  requestAnimationFrame(frame);", "function frame(now){\n  if (!VIVANT) return; RAF = requestAnimationFrame(frame); OPTS.mesure?.(now);", "l'animation s'arrête en sortant ; le temps d'image est mesuré"],
 ];
 // la fiche : remplacée par la carte de la collection (session/recif.js)
@@ -110,7 +114,8 @@ export function exportRecif({ log = console.log } = {}) {
 // OPTS : { cv, glc : les deux canvas ; donnees : assets/recif/donnees.json ; owned, brillantes : les créatures (noms de
 // la maquette) possédées et brillantes ; size() : { w, h } de la scène en px CSS ; rect() : sa place à l'écran ; dpr() :
 // la densité ; on(cible, type, f) : un écouteur à retirer en sortant ; onFiche(id) : une créature touchée ;
-// scintille(ctx, c, x0, y0, t, k) : le scintillement d'une brillante ; mesure(t) : appelé à chaque image }
+// scintille(ctx, c, x0, y0, t, k) : le scintillement d'une brillante ; mesure(t) : appelé à chaque image ;
+// arrivee(id, t, x, vue) : la créature qui vient d'être achetée, son décalage et son halo pendant son arrivée }
 /* eslint-disable */
 export function startRecif(OPTS) {
 let VIVANT = true, RAF = 0;

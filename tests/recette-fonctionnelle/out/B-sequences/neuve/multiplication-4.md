@@ -46,7 +46,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 29 | notion | 1 × 10 = ? (niveau 4, rangées comptées d'emblée) | 1 fois 10 ? | 10 | 10 |  |
 | 30 | notion | 9 × 10 = ? (niveau 4, rangées comptées d'emblée) | 9 fois 10 ? | 90 | 90 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Multiplication, niveau 4 (table 10), cran « plus facile » · réelle
 
@@ -85,7 +85,7 @@ Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle)
 | 26 | notion | LEÇON L13 | (leçon animée L13, raison : erreur M2 répétée) |  | regardée jusqu'au bout | +3★ (leçon L13) |
 | 27 | notion | 9 × 10 = ? (niveau 4, rangées comptées d'emblée) | 9 fois 10 ? | 90 | 90 |  |
 
-Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Multiplication, niveau 4 (table 10), cran « plus facile » · pressée
 
@@ -130,7 +130,7 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
 | 32 | notion | 10 × 7 = ? (niveau 4, rangées comptées d'emblée) | 10 fois 7 ? | 70 | 84 | correction autre : « Hmm, regardons ensemble. 10 rangées de 7 poissons. [les rangées comptées] 10 fois 7, ça fait 70. » |
 | 33 | notion | 5 × 10 = ? (niveau 4, rangées comptées d'emblée) | 5 fois 10 ? | 50 | 96 | correction autre : « Hmm, regardons ensemble. 5 rangées de 10 poissons. [les rangées comptées] 5 fois 10, ça fait 50. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -194,7 +194,7 @@ Récompense et fin : +10★ (fin)
 | 49 | notion | 2 × 10 = ? (niveau 4, rangées au coquillage) | 2 fois 10 ? | 20 | 20 | +1★ |
 | 50 | notion | 4 × 10 = ? (niveau 4, rangées au coquillage) | 4 fois 10 ? | 40 | 40 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte raie-pastenague (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 4 (table 10), cran « conseillé » · réelle
 
@@ -242,7 +242,7 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte raie-pastenag
 | 35 | notion | 10 × 9 = ? (niveau 4, rangées au coquillage) | 10 fois 9 ? | 90 | 81 | correction M2 : « Hmm, regardons ensemble. 10 rangées de 9 poissons. [les rangées comptées] 10 fois 9, ça fait 90. » |
 | 36 | notion | 10 × 1 = ? (niveau 4, rangées au coquillage) | 10 fois 1 ? | 10 | 10 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 4 (table 10), cran « conseillé » · pressée
 
@@ -293,7 +293,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) (brillante
 | 38 | notion | 5 × 10 = ? (niveau 4, rangées au coquillage) | 5 fois 10 ? | 50 | 78 | correction autre : « Hmm, regardons ensemble. 5 rangées de 10 poissons. [les rangées comptées] 5 fois 10, ça fait 50. » |
 | 39 | notion | 10 × 4 = ? (niveau 4, rangées au coquillage) | 10 fois 4 ? | 40 | 68 | correction autre : « Hmm, regardons ensemble. 10 rangées de 4 poissons. [les rangées comptées] 10 fois 4, ça fait 40. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -357,7 +357,7 @@ Récompense et fin : +10★ (fin)
 | 49 | notion | 3 × 10 = ? (niveau 4, sans image) | 3 fois 10 ? | 30 | 30 | +1★ |
 | 50 | notion | 7 × 10 = ? (niveau 4, sans image) | 7 fois 10 ? | 70 | 70 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle) (brillante) ; carte crabe (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 4 (table 10), cran « plus dur » · réelle
 
@@ -406,7 +406,7 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle) (brillante) ; carte c
 | 36 | notion | 7 × 10 = ? (niveau 4, rangées au coquillage, revient) | 7 fois 10 ? | 70 | 70 | +2★ (erreur corrigée) |
 | 37 | notion | 4 × 10 = ? (niveau 4, rangées au coquillage) | 4 fois 10 ? | 40 | 40 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-ballon (nouvelle) ; carte crevette (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 4 (table 10), cran « plus dur » · pressée
 
@@ -458,7 +458,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-ballon (nouvelle) ; carte crev
 | 39 | notion | 10 × 4 = ? (niveau 4, rangées au coquillage) | 10 fois 4 ? | 40 | 28 | correction autre : « Hmm, regardons ensemble. 10 rangées de 4 poissons. [les rangées comptées] 10 fois 4, ça fait 40. » |
 | 40 | notion | 10 × 9 = ? (niveau 4, rangées au coquillage) | 10 fois 9 ? | 90 | 50 | correction autre : « Hmm, regardons ensemble. 10 rangées de 9 poissons. [les rangées comptées] 10 fois 9, ça fait 90. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -522,7 +522,7 @@ Récompense et fin : +10★ (fin)
 | 49 | notion | 10 × ? = 10 (niveau 4, sans image) | 10 fois combien, ça fait 10 ? | 1 | 1 | +2★ |
 | 50 | notion | ? × 10 = 100 (niveau 4, sans image) | Combien de fois 10, ça fait 100 ? | 10 | 10 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte poisson-chirurgien (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 4 (table 10), cran « très dur » · réelle
 
@@ -573,7 +573,7 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte po
 | 38 | notion | 2 × 10 = ? (niveau 4, sans image) | 2 fois 10 ? | 20 | 20 | +1★ |
 | 39 | notion | 6 × 10 = ? (niveau 4, sans image) | 6 fois 10 ? | 60 | 60 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) (brillante) ; carte poisson-clown (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 4 (table 10), cran « très dur » · pressée
 
@@ -622,4 +622,4 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) (brillante) ; carte p
 | 36 | notion | 10 × 4 = ? (niveau 4, rangées au coquillage) | 10 fois 4 ? | 40 | 58 | correction autre : « Hmm, regardons ensemble. 10 rangées de 4 poissons. [les rangées comptées] 10 fois 4, ça fait 40. » |
 | 37 | notion | 10 × 7 = ? (niveau 4, rangées au coquillage) | 10 fois 7 ? | 70 | 65 | correction autre : « Hmm, regardons ensemble. 10 rangées de 7 poissons. [les rangées comptées] 10 fois 7, ça fait 70. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

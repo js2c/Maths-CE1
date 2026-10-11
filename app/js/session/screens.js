@@ -5,6 +5,7 @@ import * as R from "../art/runtime.js";
 import { fill } from "../modules/numberline/screen.js";
 import { CARD, cardElement } from "./cards.js";
 import { goldenStar } from "./rewards.js";
+import { imageCreature } from "./boutique.js";
 import { wait } from "../engine/clock.js";
 import { onBrief, onTap, spriteBox } from "../engine/ui.js";
 
@@ -40,14 +41,15 @@ export class StarHud {
       this.flights.push({ a, t0, dur: dur / 1000, from, to: HUD_STAR, dx, done: () => { if (i === 0) this.app.sound?.play("etoile"); this.set(this.shown + v); pop(this.box); this.pool.push(a); res(); } });
     })));
   }
-  // n étoiles dépensées (un coquillage) : elles quittent le compteur une à une et volent vers `to`
-  spend(n, to, { gap = 60, dur = 700 } = {}) {
-    const k = Math.min(n, 10), per = Array.from({ length: k }, (_, i) => Math.floor((n * (i + 1)) / k) - Math.floor((n * i) / k));
+  // n étoiles dépensées (un achat à la boutique) : elles quittent le compteur une à une et volent vers `to` ; le compteur
+  // descend avec elles, jamais d'un coup (au plus `max` étoiles en vol ; `arrivee()` à chaque étoile arrivée)
+  spend(n, to, { gap = 60, dur = 700, max = 10, arrivee = null } = {}) {
+    const k = Math.min(n, max), per = Array.from({ length: k }, (_, i) => Math.floor((n * (i + 1)) / k) - Math.floor((n * i) / k));
     return Promise.all(per.map((v, i) => new Promise((res) => {
       const a = this.pool.pop() ?? this.app.ocean.spriteActor(this.app.ocean.frontEl, "etoile");
       a.draw(0); a.show(false);
       setTimeout(() => { this.set(this.shown - v); pop(this.box); }, i * gap);
-      this.flights.push({ a, t0: performance.now() / 1000 + (i * gap) / 1000, dur: dur / 1000, from: HUD_STAR, to, dx: (i % 2 ? 1 : -1) * (20 + 8 * i), done: () => { this.pool.push(a); res(); } });
+      this.flights.push({ a, t0: performance.now() / 1000 + (i * gap) / 1000, dur: dur / 1000, from: HUD_STAR, to, dx: (i % 2 ? 1 : -1) * (20 + 8 * i), done: () => { this.pool.push(a); arrivee?.(); res(); } });
     })));
   }
   tick(t) {
@@ -66,7 +68,8 @@ export class StarHud {
 // ---------------------------------------------------------------- la récompense et « à demain »
 // Le bilan des étoiles de la séance : une grande étoile au milieu et le nombre gagné, qui monte pendant
 // que la voix le dit ; puis les dix étoiles de la séance terminée s'envolent vers le compteur ; puis les
-// bonus (série, étoile dorée, étoiles arc-en-ciel) et les coquillages. « À demain » vient ensuite (main.js).
+// bonus (série et son coquillage, étoile de diamant, étoiles arc-en-ciel), les coquillages des occasions (zone, légendaire),
+// les arrivages, l'invitation et le bouton de fin (la boutique ou le récif). « À demain » vient ensuite (main.js).
 export async function reward(app, { session, hud }) {
   const { voice, text, ocean } = app, E = session.c.etoiles, earned = session.rec.etoiles;
   const phrase = (n) => (n === 1 ? text.data.uneEtoile : fill(text.data.desEtoiles, { n }));
@@ -91,27 +94,40 @@ export async function reward(app, { session, hud }) {
   const flown = hud.fly(E.seanceTerminee, [635, 305]);
   await voice.say(text.pick("seanceFinie")); await flown;
   await wait(400);
-  await bonuses(app, { session });
+  await bonuses(app, { session, hud });
   tally.remove(); document.querySelectorAll(".special").forEach((e) => e.remove());
   await shells(app, { session, hud });
+  // (lot « La boutique du récif ») les arrivages de la semaine, l'invitation à la boutique et le bouton de fin
+  app.finVers = await finRecompense(app);
 }
 
-// la série (une séance sur trois : 5 étoiles), l'étoile dorée (4 semaines réussies), les étoiles arc-en-ciel
-// (un niveau franchi pendant la séance, et celles gagnées depuis en entraînement libre) ; les étoiles
-// spéciales s'alignent sous le bilan
-async function bonuses(app, { session }) {
-  const { rewards, store, voice, text, ocean } = app, specials = [];
+// la série (une séance sur trois : 5 étoiles) et son coquillage (toutes les 10 séances : il fait briller une créature, ou
+// rapporte 20 étoiles si toutes brillent déjà), l'étoile de diamant (4 semaines réussies ; nom interne : dorée), les étoiles
+// arc-en-ciel (un niveau franchi pendant la séance, et celles gagnées depuis en entraînement libre) ; les étoiles spéciales
+// s'alignent sous le bilan
+async function bonuses(app, { session, hud }) {
+  const { rewards, store, voice, text, ocean, stage } = app, specials = [];
   if (!rewards.c) return;
   app.starFrom = [635, 305];
   const b = await rewards.endOfSession(session.rec.debut);
   if (b) { const said = voice.say(fill(text.data.serieBonus, { n: b })); await session.stars(b, "série"); await said; await wait(600); }
+  // (lot « La boutique du récif ») le coquillage de la série
+  if (rewards.coquillageSerie) {
+    rewards.coquillageSerie = false; session.rec.coquillageSerie = true; await session.save();
+    const g = await rewards.serieShell(app.rnd, Date.now());
+    if (g.etoiles) { ocean.mascotte.play("rejouir"); const said = voice.say(fill(text.data.coquillageSerieEtoiles, { n: g.etoiles })); await session.stars(g.etoiles, "coquillage de la série"); await said; await wait(500); }
+    else { await app.sprites.load("cartes"); (session.rec.brillantes ??= []).push(g.carte.id); await session.save(); await openShell(app, { session, hud, say: text.data.coquillageSerie, got: g }); }
+  }
   const others = (await store.all("seances")).filter((x) => x.terminee && !x.libre && x.id !== session.id).map((x) => x.debut);
-  if (goldenStar([...others, session.rec.debut], session.rec.debut, rewards.c.semaine)) { await rewards.special("dorees"); session.rec.doree = true; await session.save(); specials.push(["etoile.doree", text.data.etoileDoree]); }
+  if (goldenStar([...others, session.rec.debut], session.rec.debut, rewards.c.semaine)) { await rewards.special("dorees"); session.rec.doree = true; await session.save(); specials.push(["etoile.diamant", text.data.etoileDoree]); }
   const libres = await rewards.collectFree();
   if (libres) { session.rec.arcLibre = libres; await session.save(); }
   for (const [i, [sprite, say]] of specials.entries()) {
-    spriteBox(app, { x: 640 - 60 + (i - (specials.length - 1) / 2) * 130, y: 440, w: 120, h: 120, cls: "hud special pop", still: true, paint: (ctx) => app.sprites.draw(ctx, sprite, 0, 60, 60) });
-    ocean.mascotte.play("rejouir"); await voice.say(say); await wait(500);
+    // l'étoile de diamant, en grand, avec son reflet et ses étincelles (dessinés en direct, runtime.js, drawDiamantVif)
+    const S = 170, el = spriteBox(app, { x: 640 - S / 2 + (i - (specials.length - 1) / 2) * 190, y: 410, w: S, h: S, cls: "hud special pop", still: true, paint: (ctx, px) => app.sprites.draw(ctx, sprite, 0, S / 2, S / 2) });
+    const vif = (t) => { if (!el.isConnected) { stage.ticks.delete(vif); return; } el.repaint((ctx, px) => { const q = app.sprites.frame(sprite, 0), k = 1.5; if (q) ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (S / 2) * px + q.dx * k, (S / 2) * px + q.dy * k, q.w * k, q.h * k); ctx.setTransform(px, 0, 0, px, 0, 0); R.drawDiamantVif(ctx, S / 2, S / 2, 66, t); }); };
+    stage.ticks.add(vif);
+    app.sound?.play("brillante"); ocean.mascotte.play("rejouir", { fort: true }); await voice.say(say); await wait(500);
   }
   // (lot 3 bis, B6 ; R13) les étoiles arc-en-ciel : une seule phrase, au pluriel s'il y en a plusieurs ; elles apparaissent
   // sous le bilan puis volent, avec leur traînée, jusqu'à l'album (en bas à droite), pendant que la voix parle ; le
@@ -120,7 +136,7 @@ async function bonuses(app, { session }) {
   if (arcs) {
     ocean.mascotte.play("rejouir");
     const said = voice.say(arcs === 1 ? text.data.etoileArc : fill(text.data.etoilesArc, { n: arcs }));
-    await flyRainbowStars(app, arcs, { from: [640, 500 + (specials.length ? 90 : 0)] });
+    await flyRainbowStars(app, arcs, { from: [640, 500 + (specials.length ? 120 : 0)] });
     await said;
   }
 }
@@ -153,28 +169,62 @@ export async function flyRainbowStars(app, n, { from = [640, 500], to = ALBUM_AT
   els.forEach((e) => e.remove());
 }
 
-// les coquillages : d'abord la zone suivante si elle peut s'ouvrir, puis au plus un coquillage doré (une
-// étoile dorée, une légendaire), puis les coquillages ordinaires tant qu'il y a assez d'étoiles (au plus
-// `parSeance`) ; une zone qui se complète pendant ce temps s'ouvre avant le coquillage suivant
-// les coquillages auront-ils lieu ? (une carte à ouvrir, un coquillage doré ou une zone à ouvrir)
-const wantsCards = (app) => { const r = app.rewards; return !!r.c && (r.canOpen() || r.goldenCard(Date.now()) || (r.nextZone() && r.arcDispo > 0)); };
+// LES COQUILLAGES DES OCCASIONS (lot « La boutique du récif » : plus de coquillages ordinaires, les créatures s'achètent à la
+// boutique) : d'abord la zone suivante si elle peut s'ouvrir (une étoile arc-en-ciel), et son premier habitant, une commune tirée
+// au hasard, qui sort d'un coquillage ; puis au plus un coquillage de diamant (une étoile de diamant, une légendaire)
+// les coquillages auront-ils lieu ? (un coquillage de diamant ou une zone à ouvrir)
+const wantsCards = (app) => { const r = app.rewards; return !!r.c && (!!r.goldenCard(Date.now()) || (!!r.nextZone() && r.arcDispo > 0) || (!!r.coquillageSerie && r.collection().some((c) => !c.brillante))); };
 export async function shells(app, { session, hud }) {
-  const { rewards, sprites } = app, now = () => Date.now();
+  const { rewards, sprites, text, rnd } = app, now = () => Date.now();
   if (!rewards.c) return;
   // la planche des cartes (grande) n'est chargée que si elle sert
-  if (!wantsCards(app)) return;
+  if (!(rewards.goldenCard(now()) || (rewards.nextZone() && rewards.arcDispo > 0))) { sprites.unload("cartes"); return; }
   await sprites.load("cartes");
-  const zone = async () => { const z = await rewards.openZone(now()); if (z) { (session.rec.zones ??= []).push(z.id); await session.save(); await zoneCeremony(app, { zone: z, hud }); } };
-  await zone();
-  let first = true;
-  if (rewards.goldenCard(now())) { await openShell(app, { session, hud, gold: true }); first = false; }
-  for (let k = 0; k < rewards.c.coquillage.parSeance && rewards.canOpen(); k++) {
-    if (k) await zone();
-    await openShell(app, { session, hud, first });
-    first = false;
+  const z = await rewards.openZone(now(), rnd);
+  if (z) {
+    (session.rec.zones ??= []).push(z.id); await session.save();
+    await zoneCeremony(app, { zone: z, hud });
+    if (z.habitant) { (session.rec.cartes ??= []).push(z.habitant.carte.id); await session.save(); await openShell(app, { session, hud, say: text.data.premierHabitant, got: z.habitant }); }
   }
-  await zone();
+  if (rewards.goldenCard(now())) {
+    const got = await rewards.openGolden(rnd, now());
+    if (got) { (session.rec.cartes ??= []).push(got.carte.id); if (got.parTirage) (session.rec.brillantes ??= []).push(got.carte.id); session.rec.coquillageDore = got.carte.id; await session.save(); await openShell(app, { session, hud, gold: true, say: text.data.coquillageDore, got }); }
+  }
   sprites.unload("cartes");
+}
+// LA FIN DE LA RÉCOMPENSE (lot « La boutique du récif », décisions du parent du 10 octobre 2026) : en mode Arrivages, les créatures
+// arrivées cette semaine (leurs petites images, « De nouvelles créatures sont arrivées à la boutique ! », une fois chacune) ; s'il
+// y a de quoi acheter, « Tu peux choisir une créature à la boutique ! » ; puis le bouton de fin, en bas à droite : la boutique
+// quand un achat est possible, sinon le récif. Renvoie « boutique » ou « recif » (touché), ou null : rien touché en
+// `boutique.finAttenteS` secondes (« à demain » vient alors, main.js). (`window.__finSansBouton` : les parcours écrits avant la
+// boutique passent le bouton, tests/e2e/navigateur.mjs)
+export async function finRecompense(app) {
+  const { rewards, voice, text, stage, sprites, ocean } = app;
+  if (!rewards.c?.boutique) return null;
+  const now = Date.now(), nouvelles = rewards.mode === "arrivages" ? rewards.nouvelles(now) : [];
+  if (nouvelles.length) {
+    // (leurs petites tuiles : celles de la vitrine, réduites, sans prix)
+    await sprites.load("boutique");
+    const ids = nouvelles.slice(0, 4), k = 0.8, W = 170 * k, H = 150 * k, G = 22, x0 = 640 - (ids.length * W + (ids.length - 1) * G) / 2, minis = [];
+    for (const [i, id] of ids.entries()) {
+      const c = rewards.carte(id), tuile = (ctx, px) => { const q = sprites.frame(`boutique.tuile.${c.rarete}`, 0); if (q) ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 2 * px + q.dx * k, 2 * px + q.dy * k, q.w * k, q.h * k); };
+      const el = spriteBox(app, { x: x0 + i * (W + G) - 2, y: 300, w: W + 14, h: 196 * k + 14, cls: "hud boutique-mini pop", still: true, paint: tuile });
+      minis.push(el);
+      imageCreature(app, c, 146 * k, 128 * k).then((img) => { if (img && el.isConnected) el.repaint((ctx, px) => { tuile(ctx, px); ctx.drawImage(img, (2 + 12 * k + (146 * k) / 2) * px - img.width / 2, (2 + 12 * k + (128 * k) / 2) * px - img.height / 2 + 12 * k * px); }); });
+    }
+    ocean.mascotte.play("rejouir");
+    await voice.say(text.data.boutique.arrivees); await rewards.annoncer(nouvelles);
+    await wait(400); minis.forEach((m) => m.remove()); if (!app.boutique?.open) sprites.unload("boutique");
+  }
+  const versBoutique = rewards.peutAcheter(now);
+  if (versBoutique) await voice.say(text.data.boutique.invitation);
+  if (window.__finSansBouton) return null;
+  const S = 150, b = spriteBox(app, { x: 1175 - S / 2, y: 688 - S / 2, w: S, h: S, cls: `bubble invite fin-recompense ${versBoutique ? "vers-boutique" : "vers-recif"}`, label: versBoutique ? "la boutique" : "le récif", paint: (ctx, px) => { const q = sprites.frame(versBoutique ? "boutique" : "recif", 0), k = versBoutique ? S / 150 : S / 180; if (q) ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (S / 2) * px + q.dx * k, (S / 2) * px + q.dy * k, q.w * k, q.h * k); } });
+  voice.instruction = versBoutique ? text.data.boutique.invitation : voice.instruction;
+  const r = await Promise.race([new Promise((res) => onBrief(app, b, () => { pop(b); res(versBoutique ? "boutique" : "recif"); }, versBoutique ? "boutique" : "recif")), wait((rewards.c.boutique.finAttenteS ?? 30) * 1000).then(() => null)]);
+  await wait(r ? 200 : 0); b.remove();
+  void stage;
+  return r;
 }
 // l'ouverture d'une zone (docs/SPEC-LOT2.md, « Zones ») : le dos de la zone, assombri, au milieu ; une étoile
 // arc-en-ciel vole jusqu'à lui et il s'éclaire ; la voix dit que la zone est ouverte ; puis la carte file
@@ -211,13 +261,15 @@ export function cardSpeech(text, got, inReef) {
   if (!got.nouvelle) return [fill(d.carteNouvelle, { nom }), shiny].filter(Boolean).join(" ");
   return [got.carte.rarete === "legendaire" ? d.carteLegendaire : null, fill(d.carteNouvelle, { nom }), shiny, got.carte.anecdote, inReef ? d.carteRecif : d.carteAlbum].filter(Boolean).join(" ");
 }
-// un coquillage : les étoiles de son prix s'y envolent (un coquillage doré ne coûte qu'une étoile dorée) ;
-// l'enfant le touche (ou il s'ouvre tout seul au bout de quelques secondes) ; il s'entrouvre, la perle brille,
-// la carte en sort et se retourne (une brillante s'irise dès le retournement) ; la voix dit le nom et
-// l'anecdote ; la coche verte (ou le temps) referme le tout
-export async function openShell(app, { session, hud, first = true, gold = false, C = [640, 640] }) {
-  const { voice, text, ocean, rewards, rnd, sprites } = app, prix = rewards.c.coquillage.prix, now = Date.now();
-  const shell = ocean.spriteActor(ocean.frontEl, gold ? "coquillage.or" : "coquillage"), glint = ocean.spriteActor(ocean.frontEl, "eclat");
+// un coquillage des occasions (la série, le premier habitant d'une zone, une légendaire dans le coquillage de diamant) : la voix
+// l'annonce (`say`) ; l'enfant le touche (ou il s'ouvre tout seul au bout de quelques secondes) ; il s'entrouvre, la perle
+// brille, la carte en sort et se retourne (une brillante s'irise dès le retournement) ; la voix dit le nom (et l'anecdote d'une
+// créature nouvelle) ; la coche verte (ou le temps) referme le tout. `got` : ce que le coquillage donne, déjà rangé dans la
+// collection (rewards.js : serieShell, openZone, openGolden)
+export async function openShell(app, { session, hud, gold = false, say, got, C = [640, 640] }) {
+  const { voice, text, ocean, rewards, sprites } = app;
+  void session; void hud;
+  const shell = ocean.spriteActor(ocean.frontEl, gold ? "coquillage.diamant" : "coquillage"), glint = ocean.spriteActor(ocean.frontEl, "eclat");
   let frame = 0, t0 = null, wob = true, gl = null;
   shell.draw(0); glint.show(false);
   const tick = (t) => {
@@ -226,12 +278,7 @@ export async function openShell(app, { session, hud, first = true, gold = false,
     if (gl !== null) { const u = (t - gl) / 1.4; glint.show(u < 1); if (u < 1) glint.moveTo(C[0], C[1] + 8, 0.35 + 0.65 * Math.sin(Math.PI * u), Math.round(Math.sin(Math.PI * u) * 20) / 20); }
   };
   ocean.front.push(tick);
-  voice.stop(); voice.say(gold ? text.data.coquillageDore : text.data[first ? "coquillage" : "coquillageEncore"], { instruction: true });
-  if (!gold) await hud.spend(prix, [C[0], C[1] - 20]);
-  const got = gold ? await rewards.openGolden(rnd, now) : await rewards.openShell(rnd, now);
-  hud.set(rewards.total);
-  (session.rec.cartes ??= []).push(got.carte.id); if (got.parTirage || got.devientBrillante) (session.rec.brillantes ??= []).push(got.carte.id); if (gold) session.rec.coquillageDore = got.carte.id;
-  await session.save();
+  voice.stop(); ocean.mascotte.play("rejouir"); voice.say(say, { instruction: true });
   // toucher le coquillage (ou attendre)
   const tap = document.createElement("button"); tap.className = "bubble shelltap invite"; tap.setAttribute("aria-label", "ouvrir le coquillage");
   Object.assign(tap.style, { left: `${C[0] - 130}px`, top: `${C[1] - 110}px`, width: "260px", height: "200px" }); app.stage.ui.append(tap);

@@ -77,6 +77,13 @@ function domaines(C) {
     guideMilieu: [...milieux, ...(N(13) ? [{ n: (N(13).min + N(13).max) / 2 }] : [])],
     recompense: range(1, C.seance?.etoiles?.bilanDitMax ?? ETOILES_MAX).map((n) => ({ etoiles: etoiles(n) })),
     serieBonus: [{ n: C.cartes.serie.bonus }],
+    // lot « La boutique du récif » (session/boutique.js) : les prix d'une créature et pour la faire briller (cartes.json,
+    // boutique.prix et boutique.briller), ce qui manque (de 2 à boutique.manqueDitMax ; une seule : boutique.manqueUn),
+    // les étoiles du coquillage de la série quand tout brille (serie.coquillageEtoiles)
+    "boutique.prix": [...new Set(Object.values(C.cartes.boutique?.prix ?? {}))].map((n) => ({ n })),
+    "boutique.briller": [...new Set(Object.values(C.cartes.boutique?.briller ?? {}))].map((n) => ({ n })),
+    "boutique.manque": range(2, C.cartes.boutique?.manqueDitMax ?? 299).map((n) => ({ n })),
+    coquillageSerieEtoiles: [{ n: C.cartes.serie.coquillageEtoiles }],
     // lot 3 bis (B6) : plusieurs étoiles arc-en-ciel à la récompense, une seule phrase (au plus un niveau par question)
     etoilesArc: range(2, 20).map((n) => ({ n })),
     fait: faits, faitTrouDroite: faits, faitTrouGauche: faits, faitCorrection: faits,

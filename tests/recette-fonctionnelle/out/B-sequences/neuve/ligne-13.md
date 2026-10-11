@@ -55,7 +55,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 38 | notion | corde 0–1000 sans graduations, repère 500 ; poser 400 (±80) | Montre-moi où serait 400. | 400 | 400 | +1★ |
 | 39 | notion | corde 0–1000 sans graduations, repère 500 ; poser 300 (±80) | Où mettrais-tu 300 ? Pose le poisson sur la corde. | 300 | 300 |  |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Ligne graduée, niveau 13, cran « plus facile » · réelle
 
@@ -111,7 +111,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
 | 43 | notion | corde 0–1000 sans graduations, repère 500 ; poser 900 (±80) | Où mettrais-tu 900 ? Pose le poisson sur la corde. | 900 | 900 |  |
 | 44 | notion | corde 0–1000 sans graduations, repère 500 ; poser 250 (±80) | Où mettrais-tu 250 ? Pose le poisson sur la corde. | 250 | 250 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-ballon (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Ligne graduée, niveau 13, cran « plus facile » · pressée
 
@@ -167,7 +167,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-ballon (nouvelle)
 | 43 | notion | corde 0–1000 sans graduations, repère 500 ; poser 750 (±80) | Montre-moi où serait 750. | 750 | 358 | correction autre : « Hmm, regardons ensemble. … C'était 750. » |
 | 44 | notion | corde 0–1000 sans graduations, repère 500 ; poser 250 (±80) | Où mettrais-tu 250 ? Pose le poisson sur la corde. | 250 | 205 |  |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -223,7 +223,7 @@ Récompense et fin : +10★ (fin)
 | 41 | notion | corde 0–1000 sans graduations ; poser 250 (±40) | Montre-moi où serait 250. | 250 | 250 | +1★ |
 | 42 | notion | corde 0–1000 sans graduations ; poser 400 (±40) | Où mettrais-tu 400 ? Pose le poisson sur la corde. | 400 | 400 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte raie-pastenague (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 13, cran « conseillé » · réelle
 
@@ -282,7 +282,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte 
 | 46 | notion | corde 0–1000 sans graduations ; poser 900 (±40) | Où mettrais-tu 900 ? Pose le poisson sur la corde. | 900 | 900 | +1★ |
 | 47 | notion | corde 0–1000 sans graduations ; poser 600 (±40) | Où mettrais-tu 600 ? Pose le poisson sur la corde. | 600 | 600 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte oursin (nouvelle) (brillante) ; carte poisson-chirurgien (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 13, cran « conseillé » · pressée
 
@@ -333,7 +333,7 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle) (brillante) ; carte 
 | 38 | notion | corde 0–1000 sans graduations ; poser 100 (±60) | Montre-moi où serait 100. | 100 | 451 | correction autre : « Hmm, regardons ensemble. … C'était 100. » |
 | 39 | notion | corde 0–1000 sans graduations ; poser 800 (±60) | Où mettrais-tu 800 ? Pose le poisson sur la corde. | 800 | 812 | +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -389,7 +389,7 @@ Récompense et fin : +10★ (fin)
 | 41 | notion | corde 0–1000 sans graduations ; poser 150 (±40) | Montre-moi où serait 150. | 150 | 150 | +1★ |
 | 42 | notion | corde 0–1000 sans graduations ; poser 400 (±40) | Montre-moi où serait 400. | 400 | 400 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) (brillante) ; carte raie-pastenague (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 13, cran « plus dur » · réelle
 
@@ -446,7 +446,7 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) (brillante
 | 44 | notion | corde 0–1000 sans graduations ; poser 900 (±40) | Où mettrais-tu 900 ? Pose le poisson sur la corde. | 900 | 900 | +1★ |
 | 45 | notion | corde 0–1000 sans graduations ; poser 100 (±40) | Où mettrais-tu 100 ? Pose le poisson sur la corde. | 100 | 100 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte anemone (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 13, cran « plus dur » · pressée
 
@@ -500,7 +500,7 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte anemone (nouv
 | 41 | notion | corde 0–1000 sans graduations ; poser 300 (±60) | Où mettrais-tu 300 ? Pose le poisson sur la corde. | 300 | 802 | correction autre : « Hmm, regardons ensemble. … C'était 300. » |
 | 42 | notion | corde 0–1000 sans graduations ; poser 700 (±60) | Où mettrais-tu 700 ? Pose le poisson sur la corde. | 700 | 346 | correction E4 : « Les nombres grandissent vers la droite. … C'était 700. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -556,7 +556,7 @@ Récompense et fin : +10★ (fin)
 | 41 | notion | corde 0–1000 sans graduations ; poser 300 (±25) | Où mettrais-tu 300 ? Pose le poisson sur la corde. | 300 | 300 | +2★ |
 | 42 | notion | corde 0–1000 sans graduations ; poser 600 (±25) | Où mettrais-tu 600 ? Pose le poisson sur la corde. | 600 | 600 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 13, cran « très dur » · réelle
 
@@ -613,7 +613,7 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte ou
 | 44 | notion | corde 0–1000 sans graduations ; poser 750 (±25) | Montre-moi où serait 750. | 750 | 250 | correction E4 : « Les nombres grandissent vers la droite. … C'était 750. » |
 | 45 | notion | corde 0–1000 sans graduations ; poser 150 (±25) | Montre-moi où serait 150. | 150 | 150 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 13, cran « très dur » · pressée
 
@@ -664,4 +664,4 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte concombre-
 | 38 | notion | corde 0–1000 sans graduations ; poser 200 (±60) | Où mettrais-tu 200 ? Pose le poisson sur la corde. | 200 | 431 | correction autre : « Hmm, regardons ensemble. … C'était 200. » |
 | 39 | notion | corde 0–1000 sans graduations ; poser 700 (±60) | Où mettrais-tu 700 ? Pose le poisson sur la corde. | 700 | 966 | correction autre : « Hmm, regardons ensemble. … C'était 700. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

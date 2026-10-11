@@ -159,7 +159,7 @@ export class ParentSpace {
   // ---------------------------------------------------------------- les tableaux de bord
   async load() {
     const st = this.store, [seances, reponses, niveaux, faits, recompenses] = await Promise.all(["seances", "reponses", "niveaux", "faits", "recompenses"].map((x) => st.all(x)));
-    this.d = { seances: seances.sort((a, b) => b.debut - a.debut), reponses, niveaux, faits, recompenses: Object.fromEntries(recompenses.map((r) => [r.id, r])) };
+    this.d = { seances: seances.sort((a, b) => b.debut - a.debut), reponses, niveaux, faits, recompenses: Object.fromEntries(recompenses.map((r) => [r.id, r])), rythme: await st.setting("boutiqueRythme", null) };
     this.d.dernierExport = await st.setting("dernierExport");
   }
   async dashboard() {
@@ -399,7 +399,7 @@ export class ParentSpace {
     // le trésor de l'enfant
     const R = this.d.recompenses, et = R.etoiles ?? {};
     const tr = h("div", { class: "pa-card-box" }, h("h2", {}, "Le trésor de l'enfant"), h("div", { class: "pa-stats" },
-      stat(String(et.cumul ?? 0), "étoiles de mer gagnées depuis le début"), stat(String(et.total ?? 0), "étoiles pas encore dépensées"), stat(String(et.coquillages ?? 0), "coquillages ouverts"),
+      stat(String(et.cumul ?? 0), "étoiles de mer gagnées depuis le début"), stat(String(et.total ?? 0), "étoiles à dépenser à la boutique"), stat(String(R.achats?.liste?.length ?? 0), `achats à la boutique${et.coquillages ? ` (et ${plural(et.coquillages, "coquillage ouvert", "coquillages ouverts")} avant la boutique)` : ""}`),
       stat(String(R.serie?.seances ?? 0), "séances dans la série (elle ne retombe jamais à zéro)")));
     page.append(m1, m2, m3, m4, m5, m6, df, jr, tr, this.cardsBox(), this.legendsBox());
   }
@@ -424,22 +424,29 @@ export class ParentSpace {
     const legend = h("div", { class: "pa-grid-legend" }, h("span", { class: "b0" }, "pas encore vue"), [1, 2, 3, 4, 5].map((b) => h("span", { class: `b${b}` }, `boîte ${b}`)), h("span", { class: "b3 vite" }, "anneau : rapide"), h("span", { class: "base" }, "+ 0 : temps de base (s)"));
     return h("div", {}, h("p", { class: "pa-note" }, "Chaque case est une addition (le nombre de la ligne plus celui de la colonne). Le chiffre est la boîte de révision (1 : revue à chaque séance, 5 : bien sue) ; un anneau vert : elle est donnée vite, sans compter."), legend, h("div", { class: "pa-table-wrap" }, table), info);
   }
-  // les cartes (lot 2) : ce que l'enfant a gagné et ce qui règle le rythme ; pour le parent seulement
+  // les cartes et la boutique (lot 2 ; lot « La boutique du récif ») : ce que l'enfant a, ce qui règle le rythme, ses achats ;
+  // pour le parent seulement
   cardsBox() {
-    const K = D.cardsSummary(this.d.recompenses, this.cartes, this.calendrier, this.d.seances), pl = (n, w) => plural(n, w, w.split(" ").map((x) => `${x}s`).join(" "));
-    const box = h("div", { class: "pa-card-box" }, h("h2", {}, "Cartes"),
-      h("p", { class: "pa-note" }, `Pour que toutes les cartes arrivent d'ici l'été, l'enfant peut gagner ${pl(this.cartes.quota.parSemaine, "carte nouvelle")} par semaine d'école (vacances non comptées). Au-delà, un coquillage rend brillante une carte déjà gagnée (jamais de doublon) ; quand elles le sont toutes, il attend la semaine suivante. Une carte nouvelle a une chance sur cinq d'être brillante. L'enfant ne voit aucun de ces nombres.`),
+    const K = D.cardsSummary(this.d.recompenses, this.cartes, this.calendrier, this.d.seances, Date.now(), this.d.rythme ?? this.cartes.boutique?.mode), pl = (n, w) => plural(n, w, w.split(" ").map((x) => `${x}s`).join(" ")), B = this.cartes.boutique;
+    const nom = (id) => this.cartes.cartes.find((c) => c.id === id)?.nom ?? id;
+    const box = h("div", { class: "pa-card-box" }, h("h2", {}, "Cartes et boutique"),
+      h("p", { class: "pa-note" }, `L'enfant achète les créatures de son récif à la boutique, avec ses étoiles de mer : ${B.prix.commune} étoiles une créature commune, ${B.prix.rare} une rare ; ${B.briller.commune} et ${B.briller.rare} pour faire briller une créature déjà dans son récif. Une créature achetée a une chance sur cinq d'être brillante. Un achat est définitif ; les étoiles ne se perdent jamais. Rythme : ${K.mode === "libre" ? "libre (toutes les créatures des zones ouvertes sont en vitrine)" : `arrivages (${pl(B.parSemaine, "créature nouvelle")} arrivent à la boutique chaque semaine d'école, le lundi ; les vacances n'en apportent pas ; rien n'est perdu si une semaine passe sans séance)`} ; il se règle dans l'onglet Réglages. Les légendaires ne s'achètent pas : chacune vient d'une étoile de diamant. L'enfant ne voit aucun de ces nombres, sauf les prix.`),
       h("div", { class: "pa-stats" },
-        stat(`${K.cartes} / ${K.total}`, "cartes gagnées"), stat(String(K.brillantes), "cartes brillantes"),
-        stat(String(K.gagnables), `cartes nouvelles encore gagnables d'ici dimanche${K.gagnables ? "" : " (quota atteint : de nouvelles lundi, sauf pendant les vacances)"}`),
-        stat(`${K.legendaires} / ${K.legendairesTotal}`, "légendaires (une étoile dorée chacune)"),
-        stat(String(K.dorees - K.doreesDepensees), `étoiles dorées en réserve (${K.dorees} gagnées)`),
-        stat(String(K.semaines), `semaines réussies (au moins ${pl(this.cartes.semaine.seances, "séance")}) ; prochaine étoile dorée dans ${pl(K.prochaineDoree, "semaine réussie")}`),
-        stat(String(K.arc - K.arcDepensees), `étoiles arc-en-ciel en réserve (${K.arc} gagnées, ${K.arcDepensees} pour ouvrir des zones)${K.arcLibre ? ` ; ${K.arcLibre} gagnée(s) en entraînement libre, remise(s) à la prochaine séance` : ""}`)),
+        stat(`${K.cartes} / ${K.total}`, "créatures dans le récif"), stat(String(K.brillantes), "créatures brillantes"),
+        stat(String(K.vitrine), "créatures en vitrine (à acheter)"),
+        stat(String(K.aVenir), K.mode === "libre" ? "créatures pas encore en vitrine" : "créatures des zones ouvertes qui arriveront aux prochains arrivages"),
+        stat(`${K.legendaires} / ${K.legendairesTotal}`, "légendaires (une étoile de diamant chacune)"),
+        stat(String(K.dorees - K.doreesDepensees), `étoiles de diamant en réserve (${K.dorees} gagnées)`),
+        stat(String(K.semaines), `semaines réussies (au moins ${pl(this.cartes.semaine.seances, "séance")}) ; prochaine étoile de diamant dans ${pl(K.prochaineDoree, "semaine réussie")}`),
+        stat(String(K.arc - K.arcDepensees), `étoiles arc-en-ciel en réserve (${K.arc} gagnées, ${K.arcDepensees} déjà utilisées pour ouvrir des zones)${K.arcLibre ? ` ; ${K.arcLibre} gagnée(s) en entraînement libre, remise(s) à la prochaine séance` : ""}`)),
       h("h3", {}, "Les zones"),
       h("div", { class: "pa-chips" }, K.zones.map((z) => h("span", { class: "pa-chip" }, `${z.nom} : ${z.ouverte ? `${z.gagnees} / ${z.total}` : z.pret ? "fermée" : "fermée, contenu à venir"}`))),
-      h("p", { class: "pa-note" }, K.suivante ? `Prochaine zone, « ${K.suivante.nom} » : elle attend ${K.suivante.attend}.` : "Toutes les zones sont ouvertes."));
-    if (K.base) box.append(h("p", { class: "pa-muted" }, `Quota compté depuis le ${D.fmtDay(K.base.date)} (${pl(K.base.cartes, "carte")} déjà gagnée${K.base.cartes > 1 ? "s" : ""} ce jour-là).`));
+      h("p", { class: "pa-note" }, K.suivante ? `Prochaine zone, « ${K.suivante.nom} » : elle attend ${K.suivante.attend}. En s'ouvrant, elle offre son premier habitant (une créature commune tirée au hasard).` : "Toutes les zones sont ouvertes."),
+      h("h3", {}, "Les achats"),
+      K.achats.length ? h("div", { class: "pa-table-wrap" }, h("table", { class: "pa-table pa-achats" }, h("thead", {}, h("tr", {}, ["Date", "Créature", "Prix", ""].map((t, i) => h("th", { class: i === 2 ? "num" : "" }, t)))),
+        h("tbody", {}, K.achats.map((a) => h("tr", {}, h("td", {}, `${D.fmtShortDay(a.t)} ${D.fmtTime(a.t)}`), h("td", {}, nom(a.carte)), h("td", { class: "num" }, `${a.prix} étoiles`), h("td", {}, a.briller ? "faire briller" : a.brillante ? "sortie brillante" : "")))))) : h("p", { class: "pa-muted" }, "Aucun achat pour l'instant."),
+      K.achats.length ? h("p", { class: "pa-muted" }, `${pl(K.achats.length, "achat")}, ${K.depense} étoiles dépensées en tout.`) : null);
+    if (K.base && K.mode !== "libre") box.append(h("p", { class: "pa-muted" }, `Arrivages comptés depuis le ${D.fmtDay(K.base.date)} (${pl(K.base.cartes, "créature")} déjà dans le récif ce jour-là).`));
     return box;
   }
   // les courbes semaine par semaine d'un module (réussite, puis temps médian : deux graphiques, jamais deux axes)
@@ -475,7 +482,8 @@ export class ParentSpace {
       h("div", { class: "pa-row" },
         h("button", { class: "pa-btn", "data-export": "reponses", onclick: () => csv("reponses", D.ANSWER_COLUMNS, [...this.d.reponses].sort((a, b) => a.t - b.t)) }, `Toutes les réponses (${this.d.reponses.length})`),
         h("button", { class: "pa-btn", "data-export": "seances", onclick: () => csv("seances", D.SESSION_COLUMNS, [...this.d.seances].reverse()) }, `Les séances (${this.d.seances.length})`),
-        h("button", { class: "pa-btn", "data-export": "faits", onclick: () => csv("faits", D.FACT_COLUMNS, [...this.d.faits].sort((a, b) => a.a - b.a || a.b - b.b)) }, `Les faits d'addition (${this.d.faits.length})`)), msg);
+        h("button", { class: "pa-btn", "data-export": "faits", onclick: () => csv("faits", D.FACT_COLUMNS, [...this.d.faits].sort((a, b) => a.a - b.a || a.b - b.b)) }, `Les faits d'addition (${this.d.faits.length})`),
+        h("button", { class: "pa-btn", "data-export": "achats", onclick: () => csv("achats", D.PURCHASE_COLUMNS, (this.d.recompenses.achats?.liste ?? []).map((a) => ({ ...a, nom: this.cartes.cartes.find((c) => c.id === a.carte)?.nom }))) }, `Les achats de la boutique (${this.d.recompenses.achats?.liste?.length ?? 0})`)), msg);
     // restaurer
     const rmsg = h("div");
     const input = h("input", { type: "file", accept: "application/json,.json", hidden: true, onchange: async () => {
@@ -526,6 +534,13 @@ export class ParentSpace {
     for (const [v, t] of [["oui", "activé"], ["non", "désactivé"]]) seg.append(h("button", { "data-v": v, onclick: async () => { await this.store.setSetting("defiActif", v === "oui"); paint(v === "oui"); } }, t));
     this.store.setting("defiActif").then((v) => paint(v !== false));
     return row("Défi record", "Une minute de faits d'addition déjà bien sus, comparés au record de l'enfant (jamais à une norme), après la notion du jour. Il n'a lieu qu'à partir de la 5e séance et quand au moins 8 faits sont bien sus (onglet Progression, « Défi record »).", seg);
+  }
+  // (lot « La boutique du récif ») le rythme de la boutique : Arrivages (par défaut) ou Libre
+  rythmeRow(row) {
+    const seg = h("div", { class: "pa-seg", role: "group", "aria-label": "rythme de la boutique" }), ok = h("span", { class: "pa-ok" }), paint = (v) => { for (const b of seg.children) b.setAttribute("aria-pressed", String(b.dataset.v === v)); };
+    for (const [v, t] of [["arrivages", "arrivages"], ["libre", "libre"]]) seg.append(h("button", { "data-v": v, onclick: async () => { await (this.app.rewards?.setMode ? this.app.rewards.setMode(v) : this.store.setSetting("boutiqueRythme", v)); this.d.rythme = v; paint(v); ok.textContent = "Enregistré."; } }, t));
+    this.store.setting("boutiqueRythme", this.cartes.boutique?.mode ?? "arrivages").then(paint);
+    return row("Rythme de la boutique", `Arrivages : ${this.cartes.boutique?.parSemaine ?? 2} créatures nouvelles arrivent à la boutique chaque semaine d'école (le lundi) ; plus de séances donnent plus d'étoiles, mais pas plus de créatures : les étoiles en plus servent à faire briller. Libre : toutes les créatures des zones ouvertes sont en vitrine ; plus de séances, plus vite. Avec les arrivages, toute la collection est complète en juin à deux séances par semaine.`, seg, ok);
   }
   // lot 3 (docs/SPEC-LOT3.md, section 4) : l'échauffement, oui ou non
   echauffementRow(row) {
@@ -600,7 +615,7 @@ export class ParentSpace {
     this.store.setting("dureeSeanceMin", this.seance.dureeMaxMin).then(paint);
     box.append(row("Durée maximale d'une séance", "Au bout de ce temps, l'application dit « à demain » (la dernière minute est gardée pour la récompense).", seg));
     // lot 2 : le sélecteur de difficulté (crans proposés à l'enfant), le défi record, le point de départ
-    box.append(this.moduleRow(row), this.sonRow(row), this.cransRow(row), this.echauffementRow(row), this.defiRow(row), this.departRow(row));
+    box.append(this.moduleRow(row), this.sonRow(row), this.cransRow(row), this.echauffementRow(row), this.defiRow(row), this.rythmeRow(row), this.departRow(row));
     // le code
     box.append(row("Code parent", "Le code à 4 chiffres qui ouvre cet espace.", h("button", { class: "pa-btn", onclick: () => { this.root.replaceChildren(h("div", { class: "pa-veil" })); this.app.stage.paused = false; this.gate("choisir"); } }, "Changer le code")));
     // le stockage persistant

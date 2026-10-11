@@ -1,12 +1,12 @@
 // LES RÉCOMPENSES ET LE RÉCIF dans Chromium (tablette 1280 × 800, tactile), voix accélérée.
-//  1. Une séance courte avec un trésor de départ de 75 étoiles : à la récompense, un coquillage (son prix,
-//     cartes.json) s'ouvre quand on le touche ; la carte sort, se retourne ; puis « à demain » et le récif.
+//  1. Une séance courte avec un trésor de départ de 75 étoiles : à la récompense, plus de coquillage ordinaire (lot « La
+//     boutique du récif » : une créature s'achète à la boutique, tests/e2e/boutique.mjs) ; puis « à demain » et le récif.
 //  2. Le récif : la créature obtenue y est ; la toucher montre sa carte, toucher la carte la retourne
 //     (anecdote), la coche la range, la maison ramène à la lune.
 //  3. Un récif complet (les 15 cartes, dont une brillante) pour les captures.
 //  4. L'album (lot 1 bis) : depuis l'accueil et depuis le récif ; cartes obtenues, dos des cartes à
 //     découvrir, zones fermées, perles.
-// Vérifie la base (étoiles dépensées, carte rangée, coquillage compté) et l'absence d'erreur.
+// Vérifie la base (étoiles, série, étoile arc-en-ciel) et l'absence d'erreur.
 //   node tests/e2e/recompenses.mjs [--out dossier]
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
@@ -17,7 +17,7 @@ import { recifOuvert, toucherCreature } from "./recif-commun.mjs";
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const OUT = resolve(opt("--out", "tests/e2e/out/recompenses"));
 mkdirSync(OUT, { recursive: true });
-const cartes = JSON.parse(readFileSync(new URL("../../app/content/cartes.json", import.meta.url))), PRIX = cartes.coquillage.prix;
+const cartes = JSON.parse(readFileSync(new URL("../../app/content/cartes.json", import.meta.url)));
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium" });
 const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true });
@@ -48,27 +48,20 @@ for (const until = Date.now() + 120000; Date.now() < until;) {
 }
 await page.waitForSelector(".special", { timeout: 60000 }); await page.waitForTimeout(700);
 await shot("0-etoile-arc-en-ciel");
-await page.waitForSelector(".shelltap", { timeout: 60000 }); await page.waitForTimeout(1500);
-await shot("1-coquillage");
-const spent = await page.evaluate(() => [window.__app.hud.shown, window.__app.rewards.total, window.__app.session.rec.etoiles]);
-check(spent[0] === spent[1] && spent[1] === 75 + spent[2] - PRIX, `les ${PRIX} étoiles du coquillage quittent le compteur (${spent[0]})`);
-await page.tap(".shelltap", { force: true });
-await page.waitForTimeout(1300); await shot("2-perle");
-await page.waitForSelector(".card", { timeout: 20000 }); await page.waitForTimeout(700); await shot("3-carte-dos");
-await page.waitForSelector(".card.flipped", { timeout: 20000 }); await page.waitForTimeout(1000); await shot("4-carte");
-await page.waitForSelector(".check", { timeout: 60000 }); await page.tap(".check", { force: true });
-// un deuxième coquillage si le trésor le permet encore
-if (await page.waitForSelector(".shelltap", { timeout: 4000 }).catch(() => null)) { await page.tap(".shelltap", { force: true }); await page.waitForSelector(".card.flipped", { timeout: 20000 }); await page.waitForSelector(".check", { timeout: 60000 }); await page.tap(".check", { force: true }); }
+// (lot « La boutique du récif » : plus de coquillage ordinaire à la récompense ; les créatures s'achètent à la boutique)
+check(!(await page.waitForSelector(".shelltap", { timeout: 3000 }).catch(() => null)), "plus de coquillage ordinaire à la récompense");
 await page.waitForSelector(".moon", { timeout: 60000 }); await page.waitForTimeout(800);
 await shot("5-a-demain");
 const db = await page.evaluate(async () => { const s = window.__app.store; return { etoiles: await s.get("recompenses", "etoiles"), cartes: await s.get("recompenses", "cartes"), serie: await s.get("recompenses", "serie"), seance: (await s.all("seances")).at(-1) }; });
-const owned = Object.keys(db.cartes?.cartes ?? {});
-check(owned.length >= 1 && owned.length === db.etoiles.coquillages, `${owned.length} carte(s) rangée(s) dans la collection (${owned.join(", ")})`);
-check(db.etoiles.total === 75 + db.seance.etoiles - PRIX * db.etoiles.coquillages && (db.etoiles.total < PRIX || db.etoiles.coquillages === cartes.coquillage.parSeance), `étoiles : 75 + ${db.seance.etoiles} gagnées − ${PRIX * db.etoiles.coquillages} dépensées = ${db.etoiles.total}`);
-check(db.seance.cartes?.length === db.etoiles.coquillages && db.serie?.seances === 3, "la séance note ses cartes ; la série compte trois séances");
+// (une créature, pour la suite du parcours : achetée comme à la boutique)
+await page.evaluate(async () => { const r = window.__app.rewards, id = [...r.vitrine()].find(([, e]) => e === "vendre")[0]; await r.acheter(id).ecrit; r.arrivee = null; }); // (sans son arrivée à la nage : on la touche aussitôt)
+const owned = Object.keys(await page.evaluate(async () => (await window.__app.store.get("recompenses", "cartes")).cartes));
+check(owned.length === 1 && db.etoiles.coquillages === 0, `aucune carte gagnée à la récompense ; une créature achetée (${owned.join(", ")})`);
+check(db.etoiles.total === 75 + db.seance.etoiles, `étoiles : 75 + ${db.seance.etoiles} gagnées = ${db.etoiles.total} (rien n'est dépensé à la récompense)`);
+check(db.serie?.seances === 3, "la série compte trois séances");
 check(db.seance.arcEnCiel >= 1 && db.etoiles.arcEnCiel === db.seance.arcEnCiel, `niveau franchi : ${db.etoiles.arcEnCiel} étoile(s) arc-en-ciel`);
 check(db.seance.etoiles >= 5 + 5 + 10, `la 3e séance de la série rapporte 5 étoiles de plus (${db.seance.etoiles} gagnées)`);
-check((await page.evaluate(() => window.__app.hud.shown)) === db.etoiles.total, "le compteur montre le trésor restant");
+check((await page.evaluate(() => window.__app.hud.shown)) === db.etoiles.total, "le compteur montre le trésor");
 check(!(await page.evaluate(() => window.__app.sprites.ready("cartes"))), "la planche des cartes est libérée après la récompense");
 
 // ---- 2. le récif

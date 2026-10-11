@@ -57,7 +57,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 40 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·200·500·800·1000 ; poisson « 700 » à poser | Place le poisson sur le nombre 700. | 700 | 700 |  |
 | 41 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·200·500·800·1000 ; étoile sur 400 ; bulles 40 / 400 / 500 / 600 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 400 | 400 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Ligne graduée, niveau 9, cran « plus facile » · réelle
 
@@ -103,7 +103,7 @@ Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle)
 | 33 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·200·500·800·1000 ; étoile sur 600 ; bulles 60 / 400 / 600 / 700 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 600 | je ne sais pas | correction NSP : « Ce n'est pas grave, regardons ensemble. … C'était 600. » |
 | 34 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·200·500·800·1000 ; poisson « 400 » à poser | Place le poisson sur le nombre 400. | 400 | 400 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte raie-pastenague (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Ligne graduée, niveau 9, cran « plus facile » · pressée
 
@@ -148,7 +148,7 @@ Récompense et fin : +10★ (fin) ; carte raie-pastenague (nouvelle)
 | 32 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·200·500·800·1000 ; étoile sur 400 ; bulles 40 / 400 / 500 / 600 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 400 | 40 | correction E6 : « 400 : 4 centaines, 0 dizaine, 0 unité. … C'était 400. » |
 | 33 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·200·500·800·1000 ; poisson « 300 » à poser | Où est le nombre 300 ? Pose le poisson dessus. | 300 | 200 | correction E1 : « On compte les sauts, pas les traits. … C'était 300. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -206,7 +206,7 @@ Récompense et fin : +10★ (fin)
 | 43 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·500·1000 ; poisson « 800 » à poser | Où est le nombre 800 ? Pose le poisson dessus. | 800 | 800 | +1★ |
 | 44 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·500·1000 ; étoile sur 300 ; bulles 30 / 300 / 400 / 700 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 300 | 300 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle) ; carte moule (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 9, cran « conseillé » · réelle
 
@@ -254,7 +254,7 @@ Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle) ; ca
 | 35 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·500·1000 ; poisson « 700 » à poser (revient) | Place le poisson sur le nombre 700. | 700 | 700 | MONTÉE (niveau 1 → 10) ; +2★ (erreur corrigée) ; étoile arc-en-ciel (niveau franchi) |
 | 36 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·500·1000 ; étoile sur 800 ; bulles 80 / 200 / 800 / 900 | Quel nombre se cache sous l'étoile de mer ? | 800 | 800 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 9, cran « conseillé » · pressée
 
@@ -297,7 +297,7 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
 | 30 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·500·1000 ; étoile sur 700 ; bulles 70 / 300 / 700 / 800 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 700 | 300 | correction E4 : « Les nombres grandissent vers la droite. … C'était 700. » |
 | 31 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·500·1000 ; poisson « 400 » à poser | Place le poisson sur le nombre 400. | 400 | 400 | +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -355,7 +355,7 @@ Récompense et fin : +10★ (fin)
 | 43 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·1000 ; poisson « 800 » à poser | Où est le nombre 800 ? Pose le poisson dessus. | 800 | 800 | +2★ |
 | 44 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·1000 ; étoile sur 700 ; bulles 70 / 300 / 700 / 800 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 700 | 700 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte anemone (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 9, cran « plus dur » · réelle
 
@@ -408,7 +408,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte an
 | 40 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·1000 ; étoile sur 300 ; bulles 30 / 300 / 400 / 700 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 300 | 30 | correction E6 : « 300 : 3 centaines, 0 dizaine, 0 unité. … C'était 300. » |
 | 41 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·1000 ; poisson « 900 » à poser | Où est le nombre 900 ? Pose le poisson dessus. | 900 | 900 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte moule (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 9, cran « plus dur » · pressée
 
@@ -453,7 +453,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte moule (nouvel
 | 32 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·500·1000 ; étoile sur 400 ; bulles 40 / 400 / 500 / 600 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 400 | 500 | correction E1 : « On compte les sauts, pas les traits. … C'était 400. » |
 | 33 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·500·1000 ; poisson « 700 » à poser | Place le poisson sur le nombre 700. | 700 | 600 | correction E1 : « On compte les sauts, pas les traits. … C'était 700. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -504,7 +504,7 @@ Récompense et fin : +10★ (fin)
 | 36 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·1000 ; poisson « 400 » à poser | Où est le nombre 400 ? Pose le poisson dessus. | 400 | 400 | +2★ |
 | 37 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·1000 ; poisson « 600 » à poser | Où est le nombre 600 ? Pose le poisson dessus. | 600 | 600 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) (brillante) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 9, cran « très dur » · réelle
 
@@ -550,7 +550,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) (brillante
 | 33 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·1000 ; poisson « 300 » à poser | Place le poisson sur le nombre 300. | 300 | 300 | +1★ |
 | 34 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·1000 ; étoile sur 200 ; bulles 20 / 200 / 300 / 800 | Quel nombre se cache sous l'étoile de mer ? | 200 | 200 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 9, cran « très dur » · pressée
 
@@ -595,4 +595,4 @@ Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle) ; carte conco
 | 32 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·500·1000 ; poisson « 900 » à poser | Où est le nombre 900 ? Pose le poisson dessus. | 900 | 700 | correction autre : « Hmm, regardons ensemble. … C'était 900. » |
 | 33 | notion | ligne 0–1000 (pas 100, 11 graduations) écrits 0·500·1000 ; étoile sur 200 ; bulles 20 / 200 / 300 / 800 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 200 | 200 | +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

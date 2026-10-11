@@ -10,6 +10,7 @@ import { numberStrokes, taper } from "../ocean";
 import { cel, contour, INK } from "../oceanMarker";
 import { wordStrokes, wordWidth } from "./letters";
 import { decale, ENTOURAGE, galetForme, GALETS, GALET_H, GALET_W } from "./galets";
+import { diamantPts } from "./boutique";
 
 export { INK };
 // les primitives du style n'ont besoin que du contexte courant : un Gfx minimal suffit
@@ -397,4 +398,28 @@ export const drawAddTable = (ctx: CanvasRenderingContext2D, T: AddTableSpec) => 
     const t = String(mul ? a * b : a + b), e2 = t.length > 2 ? em * 0.72 : t.length > 1 ? em * 0.9 : em;
     drawNumber(ctx, t, cx, cy - (mul ? e2 : em) / 2, e2, { color: INK, w: em * 0.15, seed: 9000 + a * 11 + b });
   }
+};
+
+// ---------------------------------------------------------------- l'étoile de diamant (lot « La boutique du récif »)
+// par-dessus l'image fabriquée de l'étoile (sea/boutique.ts, sprite « etoile.diamant »), ce qui vit : le reflet blanc qui la
+// traverse en diagonale toutes les 3,4 s (sur la fin du cycle, comme la maquette), et trois étincelles qui s'allument tour à
+// tour autour d'elle (cycle de 2,4 s). Centrée sur (cx, cy), branches de rayon R ; `t` en secondes.
+export { diamantPts };
+const sparkle = (ctx: CanvasRenderingContext2D, x: number, y: number, r: number, a: number) => {
+  if (a < 0.02) return;
+  ctx.save(); ctx.globalAlpha = a; ctx.beginPath();
+  for (let i = 0; i < 8; i++) { const ang = -Math.PI / 2 + (i * Math.PI) / 4, rr = i % 2 ? r * 0.22 : r; ctx.lineTo(x + Math.cos(ang) * rr, y + Math.sin(ang) * rr); }
+  ctx.closePath(); ctx.fillStyle = "#ffffff"; ctx.fill(); ctx.lineWidth = Math.max(1, r * 0.14); ctx.strokeStyle = INK; ctx.lineJoin = "round"; ctx.stroke(); ctx.restore();
+};
+export const drawDiamantVif = (ctx: CanvasRenderingContext2D, cx: number, cy: number, R: number, t: number) => {
+  const pts = diamantPts(cx, cy, R), u = (t % 3.4) / 3.4;
+  if (u > 0.55) {
+    const p = (u - 0.55) / 0.45, d = R * 2.6, x = cx - d + p * 2 * d;
+    ctx.save(); ctx.beginPath(); pts.forEach(([a, b], i) => (i ? ctx.lineTo(a, b) : ctx.moveTo(a, b))); ctx.closePath(); ctx.clip();
+    const gr = ctx.createLinearGradient(x - R * 0.5, cy - R * 0.5, x + R * 0.5, cy + R * 0.5);
+    gr.addColorStop(0.3, "rgba(255,255,255,0)"); gr.addColorStop(0.5, "rgba(255,255,255,0.9)"); gr.addColorStop(0.7, "rgba(255,255,255,0)");
+    ctx.fillStyle = gr; ctx.fillRect(cx - R * 1.2, cy - R * 1.2, R * 2.4, R * 2.4); ctx.restore();
+  }
+  const S: [number, number, number][] = [[0.76, -0.8, 0], [-0.8, 0.4, 1.1], [0.84, 0.58, 2.2]];
+  for (const [dx, dy, d] of S) { const v = (((t - d) % 2.4) + 2.4) % 2.4 / 2.4, a = v < 0.3 ? v / 0.3 : v < 0.6 ? 1 - (v - 0.3) / 0.3 : 0; sparkle(ctx, cx + dx * R, cy + dy * R, R * 0.2 * (0.6 + 0.4 * a), a); }
 };

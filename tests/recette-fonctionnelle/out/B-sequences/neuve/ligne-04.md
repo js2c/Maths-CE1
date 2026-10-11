@@ -57,7 +57,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 40 | notion | ligne 90–100 (pas 1, 11 graduations) écrits 90·95·100 ; poisson « 99 » à poser | Place le poisson sur le nombre 99. | 99 | 99 |  |
 | 41 | notion | ligne 80–90 (pas 1, 11 graduations) écrits 80·85·90 ; étoile sur 86 ; bulles 6 / 68 / 86 / 87 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 86 | 86 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte hippocampe (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Ligne graduée, niveau 4, cran « plus facile » · réelle
 
@@ -111,7 +111,7 @@ Récompense et fin : +10★ (fin) ; carte hippocampe (nouvelle)
 | 41 | notion | ligne 80–90 (pas 1, 11 graduations) écrits 80·85·90 ; étoile sur 89 ; bulles 9 / 89 / 90 / 98 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 89 | je ne sais pas | correction NSP : « Ce n'est pas grave, regardons ensemble. … C'était 89. » |
 | 42 | notion | ligne 80–90 (pas 1, 11 graduations) écrits 80·85·90 ; poisson « 88 » à poser | Place le poisson sur le nombre 88. | 88 | 88 |  |
 
-Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Ligne graduée, niveau 4, cran « plus facile » · pressée
 
@@ -157,7 +157,7 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
 | 33 | notion | ligne 20–30 (pas 1, 11 graduations) écrits 20·25·30 ; étoile sur 27 ; bulles 7 / 27 / 28 / 72 | Quel nombre se cache sous l'étoile de mer ? | 27 | 7 | correction E3 : « La ligne commence à 20, pas à zéro. … C'était 27. » ; niveau inférieur jusqu'à la fin (leçon déjà jouée) |
 | 34 | notion | ligne 70–80 (pas 1, 11 graduations) écrits 70·75·80 ; poisson « 78 » à poser | Place le poisson sur le nombre 78. | 78 | 78 |  |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -215,7 +215,7 @@ Récompense et fin : +10★ (fin)
 | 43 | notion | ligne 60–70 (pas 1, 11 graduations) écrits 60·70 ; poisson « 65 » à poser | Où est le nombre 65 ? Pose le poisson dessus. | 65 | 65 | +1★ |
 | 44 | notion | ligne 60–70 (pas 1, 11 graduations) écrits 60·70 ; étoile sur 68 ; bulles 8 / 68 / 69 / 86 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 68 | 68 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte coquille-saint-jacques (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 4, cran « conseillé » · réelle
 
@@ -262,7 +262,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte 
 | 34 | notion | ligne 40–50 (pas 1, 11 graduations) écrits 40·50 ; poisson « 44 » à poser | Place le poisson sur le nombre 44. | 44 | 45 | correction E1 : « On compte les sauts, pas les traits. … C'était 44. » ; leçon L1 relancée |
 | 35 | notion | ligne 50–60 (pas 1, 11 graduations) écrits 50·60 ; étoile sur 58 ; bulles 8 / 58 / 59 / 85 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 58 | 58 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 4, cran « conseillé » · pressée
 
@@ -309,7 +309,7 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle)
 | 34 | notion | ligne 80–90 (pas 1, 11 graduations) écrits 80·90 ; poisson « 83 » à poser | Où est le nombre 83 ? Pose le poisson dessus. | 83 | 89 | correction autre : « Hmm, regardons ensemble. … C'était 83. » |
 | 35 | notion | ligne 70–80 (pas 1, 11 graduations) écrits 70·80 ; étoile sur 77 ; bulles 7 / 73 / 77 / 78 | Quel nombre se cache sous l'étoile de mer ? | 77 | 7 | correction E3 : « La ligne commence à 70, pas à zéro. … C'était 77. » |
 
-Récompense et fin : +10★ (fin) ; carte raie-pastenague (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -367,7 +367,7 @@ Récompense et fin : +10★ (fin) ; carte raie-pastenague (nouvelle)
 | 43 | notion | ligne 80–90 (pas 1, 11 graduations) écrits 80·90 ; poisson « 86 » à poser | Place le poisson sur le nombre 86. | 86 | 86 | +2★ |
 | 44 | notion | ligne 70–80 (pas 1, 11 graduations) écrits 70·80 ; étoile sur 75 ; bulles 5 / 57 / 75 / 76 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 75 | 75 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte poisson-clown (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 4, cran « plus dur » · réelle
 
@@ -415,7 +415,7 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte poisson-cl
 | 35 | notion | ligne 50–60 (pas 1, 11 graduations) écrits 50·60 ; poisson « 54 » à poser (revient) | Où est le nombre 54 ? Pose le poisson dessus. | 54 | 54 | +3★ (erreur corrigée) |
 | 36 | notion | ligne 10–20 (pas 1, 11 graduations) écrits 10·20 ; étoile sur 16 ; bulles 6 / 16 / 17 / 61 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 16 | 16 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte oursin (nouvelle) ; carte coquille-saint-jacques (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 4, cran « plus dur » · pressée
 
@@ -459,7 +459,7 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle) ; carte coquille-sai
 | 31 | notion | ligne 50–60 (pas 1, 11 graduations) écrits 50·60 ; étoile sur 53 ; bulles 3 / 35 / 53 / 54 | Quel nombre se cache sous l'étoile de mer ? | 53 | 3 | correction E3 : « La ligne commence à 50, pas à zéro. … C'était 53. » |
 | 32 | notion | ligne 50–60 (pas 1, 11 graduations) écrits 50·60 ; poisson « 54 » à poser | Où est le nombre 54 ? Pose le poisson dessus. | 54 | 59 | correction autre : « Hmm, regardons ensemble. … C'était 54. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -517,7 +517,7 @@ Récompense et fin : +10★ (fin)
 | 43 | notion | ligne 10–30 (pas 1, 21 graduations) écrits 10·30 ; poisson « 16 » à poser | Place le poisson sur le nombre 16. | 16 | 16 | +2★ |
 | 44 | notion | ligne 50–70 (pas 1, 21 graduations) écrits 50·70 ; étoile sur 69 ; bulles 19 / 69 / 70 / 96 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 69 | 69 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle) ; carte moule (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 4, cran « très dur » · réelle
 
@@ -566,7 +566,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle) ; carte moule
 | 36 | notion | ligne 60–80 (pas 1, 21 graduations) écrits 60·80 ; poisson « 73 » à poser | Place le poisson sur le nombre 73. | 73 | 73 | +2★ |
 | 37 | notion | ligne 10–30 (pas 1, 21 graduations) écrits 10·30 ; étoile sur 14 ; bulles 4 / 14 / 15 / 41 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 14 | 14 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte poisson-clown (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 4, cran « très dur » · pressée
 
@@ -612,4 +612,4 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte poisson-clown
 | 33 | notion | ligne 40–50 (pas 1, 11 graduations) écrits 40·50 ; poisson « 46 » à poser | Place le poisson sur le nombre 46. | 46 | 45 | correction E1 : « On compte les sauts, pas les traits. … C'était 46. » |
 | 34 | notion | ligne 90–100 (pas 1, 11 graduations) écrits 90·100 ; étoile sur 91 ; bulles 1 / 19 / 91 / 92 | Quel nombre se cache sous l'étoile de mer ? | 91 | 91 | +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

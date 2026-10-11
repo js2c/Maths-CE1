@@ -75,8 +75,9 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const { page, context, errors } = await open();
     await page.evaluate(async () => { const p = window.__app.parent; p.tab = "progression"; p.open(); await p.dashboard(); });
     await page.waitForTimeout(600);
-    const box = page.locator(".pa-card-box", { has: page.locator("h2", { hasText: /^Cartes$/ }) });
-    check(await box.count() === 1, `${T} · 10.1 : le bloc « Cartes »`);
+    // (lot « La boutique du récif » : le bloc s'appelle « Cartes et boutique »)
+    const box = page.locator(".pa-card-box", { has: page.locator("h2", { hasText: /^Cartes et boutique$/ }) });
+    check(await box.count() === 1, `${T} · 10.1 : le bloc « Cartes et boutique »`);
     await box.scrollIntoViewIfNeeded(); await page.waitForTimeout(200); await box.screenshot({ path: join(OUT, `${T}-5-parent-cartes.png`) });
     const t = await box.textContent();
     check(!/cadeau|undefined/.test(t), `${T} · 10.1 : ni cadeaux de la surprise ni « undefined »`);

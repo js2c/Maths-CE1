@@ -42,7 +42,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 25 | notion | ? + 9 = 10 (famille 1) | [aide d'emblée : Regarde la boîte à dix places : 9 poissons.] Combien plus 9, ça fait 10 ? | 1 | 1 | +1★ |
 | 26 | notion | 6 + ? = 10 (famille 3) | [aide d'emblée : Regarde la boîte à dix places : 6 poissons.] 6 plus combien, ça fait 10 ? | 4 | 4 |  |
 
-Récompense et fin : +10★ (fin) ; carte hippocampe (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 3 (amis de 10), cran « plus facile » · réelle
 
@@ -83,7 +83,7 @@ Récompense et fin : +10★ (fin) ; carte hippocampe (nouvelle)
 | 28 | notion | ? + 5 = 10 (famille 2) | [aide d'emblée : Regarde la boîte à dix places : 5 poissons.] Combien plus 5, ça fait 10 ? | 5 | je ne sais pas | correction : « Ce n'est pas grave, regardons ensemble. Regarde la boîte à dix places : 5 poissons. 5 plus 5, ça fait 10. » |
 | 29 | notion | 9 + ? = 10 (famille 1) | [aide d'emblée : Regarde la boîte à dix places : 9 poissons.] 9 plus combien, ça fait 10 ? | 1 | 1 | +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 3 (amis de 10), cran « plus facile » · pressée
 
@@ -125,7 +125,7 @@ Récompense et fin : +10★ (fin)
 | 29 | notion | ? + 4 = 10 (famille 3) | [aide d'emblée : Regarde la boîte à dix places : 4 poissons.] Combien plus 4, ça fait 10 ? | 6 | 12 | correction : « Regarde la boîte à dix places : 4 poissons. 6 plus 4, ça fait 10. » |
 | 30 | notion | 1 + 6 = ? (famille 1) | [aide d'emblée : [aide ligne] La tortue est sur 6. Elle fait un saut. Compte avec elle !] Combien font 1 plus 6 ? | 7 | 2 | correction : « [aide ligne] La tortue est sur 6. Elle fait un saut. Compte avec elle ! 1 plus 6, ça fait 7. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -182,7 +182,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | ? + 2 = 10 (famille 1) | Combien plus 2, ça fait 10 ? | 8 | 8 | +1★ |
 | 43 | notion | 9 + ? = 10 (famille 1) | 9 plus combien, ça fait 10 ? | 1 | 1 | +1★ |
 
-Récompense et fin : fin de la notion : trou famille 3 ; +10★ (fin) ; carte coquille-saint-jacques (nouvelle) ; carte limace-de-mer (nouvelle)
+Récompense et fin : fin de la notion : trou famille 3 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 3 (amis de 10), cran « conseillé » · réelle
 
@@ -228,7 +228,7 @@ Récompense et fin : fin de la notion : trou famille 3 ; +10★ (fin) ; carte co
 | 33 | notion | ? + 8 = 10 (famille 1) | Combien plus 8, ça fait 10 ? | 2 | 10 | correction : « Regarde la boîte à dix places : 8 poissons. 2 plus 8, ça fait 10. » |
 | 34 | notion | 3 + ? = 10 (famille 3) | 3 plus combien, ça fait 10 ? | 7 | 7 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 3 (amis de 10), cran « conseillé » · pressée
 
@@ -275,7 +275,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
 | 34 | notion | 5 + 2 = ? (famille 1) | Combien font 5 plus 2 ? | 7 | 18 | correction : « [aide ligne] La tortue est sur 5. Elle fait 2 sauts. Compte avec elle ! 5 plus 2, ça fait 7. » |
 | 35 | notion | ? + 9 = 10 (famille 1) | Combien plus 9, ça fait 10 ? | 1 | 6 | correction : « Regarde la boîte à dix places : 9 poissons. 1 plus 9, ça fait 10. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -332,7 +332,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | ? + 2 = 10 (famille 1) | Combien plus 2, ça fait 10 ? | 8 | 8 | +1★ |
 | 43 | notion | 9 + ? = 10 (famille 1) | 9 plus combien, ça fait 10 ? | 1 | 1 | +2★ |
 
-Récompense et fin : fin de la notion : trou famille 3 ; +10★ (fin) ; carte moule (nouvelle) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : fin de la notion : trou famille 3 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 3 (amis de 10), cran « plus dur » · réelle
 
@@ -380,7 +380,7 @@ Récompense et fin : fin de la notion : trou famille 3 ; +10★ (fin) ; carte mo
 | 35 | notion | 1 + ? = 10 (famille 1) | 1 plus combien, ça fait 10 ? | 9 | 10 | correction : « Regarde la boîte à dix places : un poisson. 1 plus 9, ça fait 10. » |
 | 36 | notion | ? + 3 = 10 (famille 3) | Combien plus 3, ça fait 10 ? | 7 | 7 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) (brillante) ; carte crevette (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 3 (amis de 10), cran « plus dur » · pressée
 
@@ -427,7 +427,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) (brillante
 | 34 | notion | 7 + ? = 10 (famille 3) | 7 plus combien, ça fait 10 ? | 3 | 5 | correction : « Regarde la boîte à dix places : 7 poissons. 7 plus 3, ça fait 10. » |
 | 35 | notion | ? + 6 = 10 (famille 3) | Combien plus 6, ça fait 10 ? | 4 | 3 | correction : « Regarde la boîte à dix places : 6 poissons. 4 plus 6, ça fait 10. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -484,7 +484,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | ? + 2 = 10 (famille 1) | Combien plus 2, ça fait 10 ? | 8 | 8 | +2★ |
 | 43 | notion | 9 + ? = 10 (famille 1) | 9 plus combien, ça fait 10 ? | 1 | 1 | +2★ |
 
-Récompense et fin : fin de la notion : trou famille 3 ; +10★ (fin) ; carte coquille-saint-jacques (nouvelle) (brillante) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : fin de la notion : trou famille 3 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 3 (amis de 10), cran « très dur » · réelle
 
@@ -536,7 +536,7 @@ Récompense et fin : fin de la notion : trou famille 3 ; +10★ (fin) ; carte co
 | 39 | notion | ? + 6 = 10 (famille 3) | Combien plus 6, ça fait 10 ? | 4 | 4 | +1★ |
 | 40 | notion | 1 + ? = 10 (famille 1) | 1 plus combien, ça fait 10 ? | 9 | 9 | +1★ |
 
-Récompense et fin : fin de la notion : trou famille 3 ; +10★ (fin) ; carte coquille-saint-jacques (nouvelle) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : fin de la notion : trou famille 3 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 3 (amis de 10), cran « très dur » · pressée
 
@@ -583,4 +583,4 @@ Récompense et fin : fin de la notion : trou famille 3 ; +10★ (fin) ; carte co
 | 34 | notion | ? + 3 = 10 (famille 3) | Combien plus 3, ça fait 10 ? | 7 | 6 | correction : « Regarde la boîte à dix places : 3 poissons. 7 plus 3, ça fait 10. » |
 | 35 | notion | 8 + ? = 10 (famille 1) | 8 plus combien, ça fait 10 ? | 2 | 2 | +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

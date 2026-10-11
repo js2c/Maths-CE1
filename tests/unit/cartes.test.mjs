@@ -1,4 +1,4 @@
-// Cartes et rythme (docs/SPEC-LOT2.md, section 5 ; jamais de doublon depuis le 5 octobre 2026) : calendrier et quota, brillantes (tirage de 20 %),
+// Cartes et rythme (docs/SPEC.md, section 10 ; jamais de doublon depuis le 5 octobre 2026) : calendrier et arrivages (l'ancien quota), brillantes (tirage de 20 %),
 // ouverture des zones, semaines réussies et étoiles dorées, légendaires et coquillage doré, étoile arc-en-ciel
 // de l'entraînement libre, contenu de la zone 2.
 import { test } from "node:test";
@@ -7,7 +7,7 @@ import { readFileSync } from "node:fs";
 import { IDBFactory } from "fake-indexeddb";
 import { Store } from "../../app/js/engine/store.js";
 import { rng } from "../../app/js/engine/ocean.js";
-import { addCard, dateOf, goldenStar, goodWeeks, legendaryFor, nextZone, pickShell, quotaAt, Rewards, schoolWeek, schoolWeeks, shinyChance, shinyDraw } from "../../app/js/session/rewards.js";
+import { addCard, dateOf, goldenStar, goodWeeks, legendaryFor, nextZone, quotaAt, Rewards, schoolWeek, schoolWeeks, shinyChance, shinyDraw } from "../../app/js/session/rewards.js";
 
 const load = (f) => JSON.parse(readFileSync(new URL(`../../app/content/${f}`, import.meta.url)));
 const cartes = load("cartes.json"), cal = load("calendrier.json");
@@ -30,8 +30,8 @@ test("calendrier : 32 semaines d'école du 28 septembre 2026 au 2 juillet 2027, 
   assert.equal(schoolWeek(cal, dateOf("2027-07-05")), false); // été
 });
 
-test("quota : base + 2 par semaine d'école commencée, semaine de la base comprise, au plus 60", () => {
-  const Q = cartes.quota, base = { date: at("2026-09-28", 17), cartes: 0 };
+test("arrivages (l'ancien quota) : base + 2 par semaine d'école commencée, semaine de la base comprise, au plus max", () => {
+  const Q = { parSemaine: cartes.boutique.parSemaine, max: 60 }, base = { date: at("2026-09-28", 17), cartes: 0 };
   assert.equal(quotaAt(base, cal, at("2026-09-28"), Q), 2);
   assert.equal(quotaAt(base, cal, at("2026-10-04"), Q), 2); // dimanche : même semaine
   assert.equal(quotaAt(base, cal, at("2026-10-05", 0), Q), 4); // lundi, dès minuit
@@ -43,26 +43,14 @@ test("quota : base + 2 par semaine d'école commencée, semaine de la base compr
   assert.equal(quotaAt({ date: at("2026-09-27"), cartes: 7 }, null, at("2026-09-27"), Q), 60); // sans calendrier : pas de limite
 });
 
-test("la base du quota est enregistrée au premier lancement avec les cartes déjà gagnées, puis gardée", async () => {
+test("la base des arrivages (l'ancien quota) est enregistrée au premier lancement avec les cartes déjà gagnées, puis gardée", async () => {
   const store = await Store.open(new IDBFactory());
   await store.put("recompenses", { id: "cartes", cartes: own(byZone("lagon").slice(0, 5)) });
   const rw = await new Rewards(store, cartes, cal).load(at("2026-09-27"));
   assert.deepEqual({ date: rw.base.date, cartes: rw.base.cartes }, { date: at("2026-09-27"), cartes: 5 });
-  assert.equal(rw.quota(at("2026-09-28")), 9);
+  assert.equal(rw.nbArrivees(at("2026-09-28")), 9);
   const again = await new Rewards(store, cartes, cal).load(at("2026-11-02"));
   assert.equal(again.base.date, at("2026-09-27"));
-});
-
-test("jamais de doublon (décision du parent du 5 octobre 2026) : sous le quota une créature nouvelle ; au-dessus, une créature possédée devient brillante ; toutes brillantes, rien", () => {
-  const lagon = { zones: ["lagon"], poids: cartes.poids }, r = rng(5), L = byZone("lagon");
-  assert.equal(pickShell(cartes.cartes, {}, { ...lagon, nouvelle: false }, r).sorte, "nouvelle"); // aucune carte : une nouvelle
-  const owned = own(L.slice(0, 3)); owned[L[0].id].brillante = true; owned[L[1].id].brillante = true;
-  for (let i = 0; i < 100; i++) assert.deepEqual([pickShell(cartes.cartes, owned, { ...lagon, nouvelle: false }, r).carte.id, pickShell(cartes.cartes, owned, { ...lagon, nouvelle: false }, r).sorte], [L[2].id, "brillante"]);
-  for (let i = 0; i < 50; i++) { const g = pickShell(cartes.cartes, owned, { ...lagon, nouvelle: true }, r); assert.ok(!owned[g.carte.id] && g.sorte === "nouvelle"); }
-  // toutes brillantes, au-dessus du quota : rien (le coquillage attend)
-  owned[L[2].id].brillante = true; assert.equal(pickShell(cartes.cartes, owned, { ...lagon, nouvelle: false }, r), null);
-  // zone complète sous le quota : une brillante (rien d'autre à gagner), jamais un doublon
-  const full = own(L), g = pickShell(cartes.cartes, full, { ...lagon, nouvelle: true }, r); assert.equal(g.sorte, "brillante");
 });
 
 test("brillantes : 20 % pour une créature nouvelle (graine fixe, 1 000 tirages, écart de moins de 3 points) ; une brillante le reste", () => {
@@ -77,29 +65,12 @@ test("brillantes : 20 % pour une créature nouvelle (graine fixe, 1 000 tirages,
   const p = addCard({ [c.id]: { n: 4, premiere: 1, brillante: true } }, c, 9, false); assert.equal(p.owned[c.id].brillante, true);
 });
 
-test("le trésor : une créature nouvelle sort brillante à 20 % ; une créature possédée rendue brillante au-dessus du quota", async () => {
+test("le trésor : une légendaire sort brillante à 20 % ; une créature possédée rendue brillante (le coquillage de la série)", async () => {
   const { rw } = await fresh(cartes, cal, at("2026-09-28")), c = cartes.cartes[0];
   let g = await rw.win(c, () => 0.1, at("2026-09-28")); assert.equal(g.brillante, true);
   const d = cartes.cartes[1]; g = await rw.win(d, () => 0.9, at("2026-09-28")); assert.equal(g.brillante, false);
   g = await rw.shine(d, at("2026-09-29")); assert.deepEqual([g.nouvelle, g.brillante, g.devientBrillante, g.rendueBrillante], [false, true, true, true]);
   assert.equal(rw.owned[d.id].brillante, true); assert.equal(rw.owned[d.id].n, 1, "pas de doublon : la carte n'est pas comptée deux fois");
-});
-
-test("un coquillage ne donne jamais plus de créatures nouvelles que le quota ; ensuite il rend brillantes celles qu'on a ; toutes brillantes, il attend", async () => {
-  const { rw } = await fresh(cartes, cal, at("2026-09-28")), r = rng(3);
-  await rw.add(25 * 12);
-  const got = []; for (let i = 0; i < 6; i++) { const g = await rw.openShell(r, at("2026-09-29")); if (g) got.push(g); }
-  assert.equal(got.filter((g) => g.nouvelle).length, 2); assert.equal(rw.count, 2);
-  // au-dessus du quota : les deux créatures deviennent brillantes (si elles ne l'étaient pas déjà), puis le coquillage attend
-  assert.ok(got.filter((g) => !g.nouvelle).every((g) => g.rendueBrillante));
-  assert.ok(Object.values(rw.owned).every((o) => o.brillante), "toutes brillantes");
-  assert.equal(got.length, 2 + got.filter((g) => !g.nouvelle).length);
-  assert.equal(rw.canOpen(at("2026-09-29")), false, "rien à donner : le coquillage attend");
-  assert.equal(await rw.openShell(r, at("2026-09-29")), null);
-  assert.ok(rw.total >= 25 * (12 - got.length) && rw.total === 25 * 12 - 25 * got.length, "les étoiles restent au compteur");
-  // la semaine suivante : de nouveau deux créatures nouvelles
-  const later = []; for (let i = 0; i < 2; i++) later.push(await rw.openShell(r, at("2026-10-06")));
-  assert.equal(rw.count, 4); assert.equal(later.filter((g) => g.nouvelle).length, 2);
 });
 
 test("zones : la suivante s'ouvre avec une étoile arc-en-ciel quand communes et rares sont gagnées, si son contenu est prêt", async () => {
@@ -129,7 +100,7 @@ test("semaines réussies : une étoile dorée toutes les 4 semaines d'au moins 2
   assert.deepEqual(R, { seances: 2, semainesParDoree: 4 });
 });
 
-test("légendaires : un coquillage doré par étoile dorée, quand la zone a toutes ses communes et rares, et sous le quota", async () => {
+test("légendaires : un coquillage de diamant par étoile de diamant, quand la zone a toutes ses communes et rares", async () => {
   const L = byZone("lagon"), C = byZone("corail"), G = byZone("large"), open = ["lagon", "corail", "large"];
   assert.equal(legendaryFor(allReady, own([...L, ...C, ...G.slice(1)]), open), null);
   assert.equal(legendaryFor(allReady, own([...L, ...C, ...G]), open).id, "grand-requin-blanc");
@@ -138,13 +109,10 @@ test("légendaires : un coquillage doré par étoile dorée, quand la zone a tou
   rw.owned = own([...L, ...C, ...G]); rw.zones.ouvertes = open;
   assert.equal(rw.goldenCard(at("2027-04-26")), null); // pas d'étoile dorée
   await rw.special("dorees", 2);
-  assert.equal(rw.goldenCard(at("2026-10-01")), null); // pas de place sous le quota
   const before = rw.total, g = await rw.openGolden(rng(1), at("2027-04-26"));
   assert.equal(g.carte.id, "grand-requin-blanc"); assert.equal(g.nouvelle, true); assert.equal(rw.total, before); assert.equal(rw.doreesDispo, 1);
   assert.equal((await rw.openGolden(rng(1), at("2027-04-26"))).carte.id, "orque");
   assert.equal(await rw.openGolden(rng(1), at("2027-04-26")), null);
-  // un coquillage ordinaire ne donne jamais de légendaire
-  for (let i = 0; i < 100; i++) assert.notEqual(pickShell(allReady.cartes, {}, { zones: ["large", "abysses"], poids: cartes.poids }, rng(i)).carte.rarete, "legendaire");
 });
 
 test("étoile arc-en-ciel de l'entraînement libre : gardée, puis remise à la séance suivante", async () => {

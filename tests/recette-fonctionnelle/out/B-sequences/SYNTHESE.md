@@ -188,6 +188,46 @@ Limites : la voix est reconstituée à partir de `app/content/textes.json` avec 
 | Multiplication, niveau 9 (tables) | conseillé | 60 | 43 | 11 | 18 % |
 | Multiplication, niveau 9 (tables) | plus dur | 85 | 74 | 11 | 13 % |
 | Multiplication, niveau 9 (tables) | très dur | 110 | 72 | 11 | 10 % |
+| Étal du pêcheur, niveau 1 (poser) | plus facile | 23 | 22 | 13 | 57 % |
+| Étal du pêcheur, niveau 1 (poser) | conseillé | 36 | 33 | 13 | 36 % |
+| Étal du pêcheur, niveau 1 (poser) | plus dur | 47 | 50 | 16 | 34 % |
+| Étal du pêcheur, niveau 1 (poser) | très dur | 59 | 61 | 15 | 25 % |
+| Étal du pêcheur, niveau 2 (payer) | plus facile | 23 | 23 | 18 | 78 % |
+| Étal du pêcheur, niveau 2 (payer) | conseillé | 36 | 36 | 23 | 64 % |
+| Étal du pêcheur, niveau 2 (payer) | plus dur | 47 | 46 | 18 | 38 % |
+| Étal du pêcheur, niveau 2 (payer) | très dur | 59 | 57 | 26 | 44 % |
+| Étal du pêcheur, niveau 3 (payer) | plus facile | 22 | 21 | 17 | 77 % |
+| Étal du pêcheur, niveau 3 (payer) | conseillé | 37 | 35 | 26 | 70 % |
+| Étal du pêcheur, niveau 3 (payer) | plus dur | 50 | 42 | 22 | 44 % |
+| Étal du pêcheur, niveau 3 (payer) | très dur | 64 | 61 | 18 | 28 % |
+| Étal du pêcheur, niveau 4 (payer) | plus facile | 22 | 25 | 17 | 77 % |
+| Étal du pêcheur, niveau 4 (payer) | conseillé | 37 | 39 | 21 | 57 % |
+| Étal du pêcheur, niveau 4 (payer) | plus dur | 50 | 43 | 18 | 36 % |
+| Étal du pêcheur, niveau 4 (payer) | très dur | 64 | 49 | 23 | 36 % |
+| Étal du pêcheur, niveau 5 (restreint) | plus facile | 22 | 23 | 16 | 73 % |
+| Étal du pêcheur, niveau 5 (restreint) | conseillé | 37 | 35 | 22 | 59 % |
+| Étal du pêcheur, niveau 5 (restreint) | plus dur | 50 | 39 | 26 | 52 % |
+| Étal du pêcheur, niveau 5 (restreint) | très dur | 64 | 52 | 24 | 38 % |
+| Étal du pêcheur, niveau 6 (monnaie) | plus facile | 22 | 23 | 16 | 73 % |
+| Étal du pêcheur, niveau 6 (monnaie) | conseillé | 37 | 36 | 27 | 73 % |
+| Étal du pêcheur, niveau 6 (monnaie) | plus dur | 50 | 44 | 23 | 46 % |
+| Étal du pêcheur, niveau 6 (monnaie) | très dur | 64 | 63 | 21 | 33 % |
+| Étal du pêcheur, niveau 7 (rendre) | plus facile | 23 | 23 | 13 | 57 % |
+| Étal du pêcheur, niveau 7 (rendre) | conseillé | 36 | 34 | 14 | 39 % |
+| Étal du pêcheur, niveau 7 (rendre) | plus dur | 47 | 46 | 15 | 32 % |
+| Étal du pêcheur, niveau 7 (rendre) | très dur | 59 | 59 | 16 | 27 % |
+| Étal du pêcheur, niveau 8 (deux) | plus facile | 22 | 24 | 17 | 77 % |
+| Étal du pêcheur, niveau 8 (deux) | conseillé | 37 | 34 | 25 | 68 % |
+| Étal du pêcheur, niveau 8 (deux) | plus dur | 50 | 43 | 21 | 42 % |
+| Étal du pêcheur, niveau 8 (deux) | très dur | 64 | 50 | 20 | 31 % |
+| Étal du pêcheur, niveau 9 (payer) | plus facile | 23 | 24 | 18 | 78 % |
+| Étal du pêcheur, niveau 9 (payer) | conseillé | 36 | 32 | 23 | 64 % |
+| Étal du pêcheur, niveau 9 (payer) | plus dur | 47 | 36 | 21 | 45 % |
+| Étal du pêcheur, niveau 9 (payer) | très dur | 59 | 63 | 25 | 42 % |
+| Étal du pêcheur, niveau 10 (payer) | plus facile | 22 | 24 | 18 | 82 % |
+| Étal du pêcheur, niveau 10 (payer) | conseillé | 37 | 33 | 21 | 57 % |
+| Étal du pêcheur, niveau 10 (payer) | plus dur | 50 | 49 | 21 | 42 % |
+| Étal du pêcheur, niveau 10 (payer) | très dur | 64 | 70 | 26 | 41 % |
 | Voiliers, niveau 1 (3 bouées, dizaine, loin) | plus facile | 28 | 27 | 16 | 57 % |
 | Voiliers, niveau 1 (3 bouées, dizaine, loin) | conseillé | 49 | 46 | 19 | 39 % |
 | Voiliers, niveau 1 (3 bouées, dizaine, loin) | plus dur | 68 | 49 | 23 | 34 % |
@@ -405,6 +445,46 @@ Limites : la voix est reconstituée à partir de `app/content/textes.json` avec 
 | Multiplication, niveau 9 (tables) | conseillé | 92 | 57 | 22 | 24 % |
 | Multiplication, niveau 9 (tables) | plus dur | 125 | 56 | 18 | 14 % |
 | Multiplication, niveau 9 (tables) | très dur | 164 | 86 | 26 | 16 % |
+| Étal du pêcheur, niveau 1 (poser) | plus facile | 43 | 34 | 20 | 47 % |
+| Étal du pêcheur, niveau 1 (poser) | conseillé | 68 | 53 | 20 | 29 % |
+| Étal du pêcheur, niveau 1 (poser) | plus dur | 92 | 47 | 18 | 20 % |
+| Étal du pêcheur, niveau 1 (poser) | très dur | 113 | 88 | 18 | 16 % |
+| Étal du pêcheur, niveau 2 (payer) | plus facile | 43 | 35 | 25 | 58 % |
+| Étal du pêcheur, niveau 2 (payer) | conseillé | 70 | 50 | 28 | 40 % |
+| Étal du pêcheur, niveau 2 (payer) | plus dur | 87 | 68 | 28 | 32 % |
+| Étal du pêcheur, niveau 2 (payer) | très dur | 107 | 70 | 29 | 27 % |
+| Étal du pêcheur, niveau 3 (payer) | plus facile | 42 | 32 | 23 | 55 % |
+| Étal du pêcheur, niveau 3 (payer) | conseillé | 67 | 44 | 27 | 40 % |
+| Étal du pêcheur, niveau 3 (payer) | plus dur | 92 | 51 | 26 | 28 % |
+| Étal du pêcheur, niveau 3 (payer) | très dur | 120 | 91 | 31 | 26 % |
+| Étal du pêcheur, niveau 4 (payer) | plus facile | 43 | 32 | 23 | 53 % |
+| Étal du pêcheur, niveau 4 (payer) | conseillé | 67 | 52 | 30 | 45 % |
+| Étal du pêcheur, niveau 4 (payer) | plus dur | 95 | 46 | 26 | 27 % |
+| Étal du pêcheur, niveau 4 (payer) | très dur | 114 | 93 | 32 | 28 % |
+| Étal du pêcheur, niveau 5 (restreint) | plus facile | 42 | 34 | 22 | 52 % |
+| Étal du pêcheur, niveau 5 (restreint) | conseillé | 70 | 58 | 30 | 43 % |
+| Étal du pêcheur, niveau 5 (restreint) | plus dur | 90 | 58 | 24 | 27 % |
+| Étal du pêcheur, niveau 5 (restreint) | très dur | 120 | 67 | 28 | 23 % |
+| Étal du pêcheur, niveau 6 (monnaie) | plus facile | 43 | 34 | 25 | 58 % |
+| Étal du pêcheur, niveau 6 (monnaie) | conseillé | 67 | 55 | 25 | 37 % |
+| Étal du pêcheur, niveau 6 (monnaie) | plus dur | 89 | 45 | 25 | 28 % |
+| Étal du pêcheur, niveau 6 (monnaie) | très dur | 118 | 70 | 27 | 23 % |
+| Étal du pêcheur, niveau 7 (rendre) | plus facile | 45 | 34 | 19 | 42 % |
+| Étal du pêcheur, niveau 7 (rendre) | conseillé | 68 | 50 | 22 | 32 % |
+| Étal du pêcheur, niveau 7 (rendre) | plus dur | 89 | 63 | 22 | 25 % |
+| Étal du pêcheur, niveau 7 (rendre) | très dur | 113 | 62 | 20 | 18 % |
+| Étal du pêcheur, niveau 8 (deux) | plus facile | 42 | 31 | 26 | 62 % |
+| Étal du pêcheur, niveau 8 (deux) | conseillé | 70 | 52 | 33 | 47 % |
+| Étal du pêcheur, niveau 8 (deux) | plus dur | 90 | 60 | 30 | 33 % |
+| Étal du pêcheur, niveau 8 (deux) | très dur | 118 | 74 | 32 | 27 % |
+| Étal du pêcheur, niveau 9 (payer) | plus facile | 44 | 33 | 25 | 57 % |
+| Étal du pêcheur, niveau 9 (payer) | conseillé | 67 | 55 | 30 | 45 % |
+| Étal du pêcheur, niveau 9 (payer) | plus dur | 86 | 69 | 29 | 34 % |
+| Étal du pêcheur, niveau 9 (payer) | très dur | 107 | 68 | 26 | 24 % |
+| Étal du pêcheur, niveau 10 (payer) | plus facile | 43 | 35 | 23 | 53 % |
+| Étal du pêcheur, niveau 10 (payer) | conseillé | 71 | 52 | 31 | 44 % |
+| Étal du pêcheur, niveau 10 (payer) | plus dur | 92 | 55 | 27 | 29 % |
+| Étal du pêcheur, niveau 10 (payer) | très dur | 116 | 64 | 27 | 23 % |
 | Voiliers, niveau 1 (3 bouées, dizaine, loin) | plus facile | 48 | 39 | 20 | 42 % |
 | Voiliers, niveau 1 (3 bouées, dizaine, loin) | conseillé | 80 | 64 | 25 | 31 % |
 | Voiliers, niveau 1 (3 bouées, dizaine, loin) | plus dur | 110 | 84 | 31 | 28 % |
@@ -974,6 +1054,126 @@ Limites : la voix est reconstituée à partir de `app/content/textes.json` avec 
 | neuve | Multiplication, niveau 9 (tables) | très dur | appliquée | 41 | 10 | 18 % | 2 (4, 2 : pas de -2) | – | 110 | 100 % | très dur |
 | neuve | Multiplication, niveau 9 (tables) | très dur | réelle | 33 | 20 | 3 % | 2 (50, 40 : pas de -10) | – | 72 | 72 % | conseillé |
 | neuve | Multiplication, niveau 9 (tables) | très dur | pressée | 26 | 14 | 0 % | 2 (80, 70 : pas de -10) | – | 11 | 3 % | conseillé |
+| neuve | Étal du pêcheur, niveau 1 (poser) | plus facile | appliquée | 14 | 5 | 0 % | aucune | L15×1 | 23 | 100 % | plus facile |
+| neuve | Étal du pêcheur, niveau 1 (poser) | plus facile | réelle | 13 | 6 | 0 % | aucune | L15×1 | 22 | 100 % | plus facile |
+| neuve | Étal du pêcheur, niveau 1 (poser) | plus facile | pressée | 13 | 6 | 0 % | aucune | L15×1 | 13 | 4 % | plus facile |
+| neuve | Étal du pêcheur, niveau 1 (poser) | conseillé | appliquée | 14 | 5 | 0 % | aucune | L15×1 | 36 | 100 % | conseillé |
+| neuve | Étal du pêcheur, niveau 1 (poser) | conseillé | réelle | 14 | 6 | 0 % | aucune | L15×1 | 33 | 83 % | conseillé |
+| neuve | Étal du pêcheur, niveau 1 (poser) | conseillé | pressée | 13 | 6 | 0 % | aucune | L15×1 | 13 | 4 % | conseillé |
+| neuve | Étal du pêcheur, niveau 1 (poser) | plus dur | appliquée | 14 | 6 | 0 % | aucune | L15×1 | 47 | 100 % | plus dur |
+| neuve | Étal du pêcheur, niveau 1 (poser) | plus dur | réelle | 12 | 5 | 0 % | aucune | L15×1 | 50 | 89 % | plus dur |
+| neuve | Étal du pêcheur, niveau 1 (poser) | plus dur | pressée | 13 | 6 | 0 % | aucune | L15×1 | 16 | 11 % | conseillé |
+| neuve | Étal du pêcheur, niveau 1 (poser) | très dur | appliquée | 14 | 6 | 0 % | aucune | L15×1 | 59 | 100 % | très dur |
+| neuve | Étal du pêcheur, niveau 1 (poser) | très dur | réelle | 14 | 6 | 0 % | aucune | L15×1 | 61 | 92 % | très dur |
+| neuve | Étal du pêcheur, niveau 1 (poser) | très dur | pressée | 13 | 6 | 0 % | aucune | L15×1 | 15 | 7 % | conseillé |
+| neuve | Étal du pêcheur, niveau 2 (payer) | plus facile | appliquée | 14 | 8 | 0 % | aucune | L16×1 | 23 | 100 % | plus facile |
+| neuve | Étal du pêcheur, niveau 2 (payer) | plus facile | réelle | 12 | 6 | 0 % | aucune | L16×1 | 23 | 87 % | plus facile |
+| neuve | Étal du pêcheur, niveau 2 (payer) | plus facile | pressée | 15 | 9 | 0 % | aucune | L16×1 | 18 | 4 % | plus facile |
+| neuve | Étal du pêcheur, niveau 2 (payer) | conseillé | appliquée | 14 | 8 | 0 % | aucune | L16×1 | 36 | 100 % | conseillé |
+| neuve | Étal du pêcheur, niveau 2 (payer) | conseillé | réelle | 12 | 7 | 0 % | aucune | L16×1 | 36 | 88 % | conseillé |
+| neuve | Étal du pêcheur, niveau 2 (payer) | conseillé | pressée | 14 | 7 | 0 % | aucune | L16×1 | 23 | 14 % | conseillé |
+| neuve | Étal du pêcheur, niveau 2 (payer) | plus dur | appliquée | 14 | 6 | 0 % | aucune | L16×1 | 47 | 100 % | plus dur |
+| neuve | Étal du pêcheur, niveau 2 (payer) | plus dur | réelle | 12 | 7 | 0 % | aucune | L16×1 | 46 | 83 % | plus dur |
+| neuve | Étal du pêcheur, niveau 2 (payer) | plus dur | pressée | 11 | 6 | 0 % | aucune | L16×1 L15×1 | 18 | 4 % | conseillé |
+| neuve | Étal du pêcheur, niveau 2 (payer) | très dur | appliquée | 14 | 6 | 0 % | aucune | L16×1 | 59 | 100 % | très dur |
+| neuve | Étal du pêcheur, niveau 2 (payer) | très dur | réelle | 12 | 6 | 0 % | aucune | L16×1 | 57 | 88 % | très dur |
+| neuve | Étal du pêcheur, niveau 2 (payer) | très dur | pressée | 12 | 7 | 0 % | aucune | L16×1 L15×1 | 26 | 12 % | conseillé |
+| neuve | Étal du pêcheur, niveau 3 (payer) | plus facile | appliquée | 18 | 10 | 0 % | aucune | – | 22 | 100 % | plus facile |
+| neuve | Étal du pêcheur, niveau 3 (payer) | plus facile | réelle | 10 | 8 | 0 % | aucune | L16×1 | 21 | 78 % | plus facile |
+| neuve | Étal du pêcheur, niveau 3 (payer) | plus facile | pressée | 14 | 8 | 0 % | aucune | L16×1 | 17 | 7 % | plus facile |
+| neuve | Étal du pêcheur, niveau 3 (payer) | conseillé | appliquée | 18 | 11 | 0 % | aucune | – | 37 | 100 % | conseillé |
+| neuve | Étal du pêcheur, niveau 3 (payer) | conseillé | réelle | 11 | 9 | 0 % | aucune | L16×1 | 35 | 74 % | conseillé |
+| neuve | Étal du pêcheur, niveau 3 (payer) | conseillé | pressée | 14 | 8 | 0 % | aucune | L16×1 | 26 | 17 % | conseillé |
+| neuve | Étal du pêcheur, niveau 3 (payer) | plus dur | appliquée | 18 | 8 | 0 % | aucune | – | 50 | 100 % | plus dur |
+| neuve | Étal du pêcheur, niveau 3 (payer) | plus dur | réelle | 13 | 6 | 0 % | aucune | L16×1 | 42 | 87 % | conseillé |
+| neuve | Étal du pêcheur, niveau 3 (payer) | plus dur | pressée | 14 | 9 | 0 % | aucune | L16×1 | 22 | 7 % | conseillé |
+| neuve | Étal du pêcheur, niveau 3 (payer) | très dur | appliquée | 18 | 8 | 0 % | aucune | – | 64 | 100 % | très dur |
+| neuve | Étal du pêcheur, niveau 3 (payer) | très dur | réelle | 11 | 8 | 0 % | aucune | L16×1 | 61 | 85 % | très dur |
+| neuve | Étal du pêcheur, niveau 3 (payer) | très dur | pressée | 13 | 8 | 0 % | aucune | L16×1 | 18 | 7 % | conseillé |
+| neuve | Étal du pêcheur, niveau 4 (payer) | plus facile | appliquée | 18 | 15 | 0 % | aucune | – | 22 | 100 % | plus facile |
+| neuve | Étal du pêcheur, niveau 4 (payer) | plus facile | réelle | 12 | 9 | 0 % | aucune | L16×1 | 25 | 79 % | plus facile |
+| neuve | Étal du pêcheur, niveau 4 (payer) | plus facile | pressée | 14 | 11 | 0 % | aucune | L16×1 | 17 | 7 % | plus facile |
+| neuve | Étal du pêcheur, niveau 4 (payer) | conseillé | appliquée | 18 | 16 | 0 % | aucune | – | 37 | 100 % | conseillé |
+| neuve | Étal du pêcheur, niveau 4 (payer) | conseillé | réelle | 16 | 14 | 0 % | aucune | – | 39 | 80 % | conseillé |
+| neuve | Étal du pêcheur, niveau 4 (payer) | conseillé | pressée | 13 | 10 | 0 % | aucune | L16×1 | 21 | 11 % | conseillé |
+| neuve | Étal du pêcheur, niveau 4 (payer) | plus dur | appliquée | 18 | 13 | 0 % | aucune | – | 50 | 100 % | plus dur |
+| neuve | Étal du pêcheur, niveau 4 (payer) | plus dur | réelle | 11 | 10 | 0 % | aucune | L16×1 | 43 | 79 % | plus dur |
+| neuve | Étal du pêcheur, niveau 4 (payer) | plus dur | pressée | 13 | 9 | 0 % | aucune | L16×1 | 18 | 7 % | conseillé |
+| neuve | Étal du pêcheur, niveau 4 (payer) | très dur | appliquée | 18 | 13 | 0 % | aucune | – | 64 | 100 % | très dur |
+| neuve | Étal du pêcheur, niveau 4 (payer) | très dur | réelle | 11 | 8 | 0 % | aucune | L16×1 | 49 | 74 % | plus dur |
+| neuve | Étal du pêcheur, niveau 4 (payer) | très dur | pressée | 14 | 11 | 0 % | aucune | L16×1 | 23 | 7 % | conseillé |
+| neuve | Étal du pêcheur, niveau 5 (restreint) | plus facile | appliquée | 18 | 15 | 0 % | aucune | – | 22 | 100 % | plus facile |
+| neuve | Étal du pêcheur, niveau 5 (restreint) | plus facile | réelle | 16 | 15 | 0 % | aucune | L16×1 | 23 | 87 % | plus facile |
+| neuve | Étal du pêcheur, niveau 5 (restreint) | plus facile | pressée | 13 | 7 | 0 % | aucune | L16×1 | 16 | 7 % | plus facile |
+| neuve | Étal du pêcheur, niveau 5 (restreint) | conseillé | appliquée | 18 | 14 | 0 % | aucune | – | 37 | 100 % | conseillé |
+| neuve | Étal du pêcheur, niveau 5 (restreint) | conseillé | réelle | 10 | 9 | 0 % | aucune | L16×1 | 35 | 72 % | conseillé |
+| neuve | Étal du pêcheur, niveau 5 (restreint) | conseillé | pressée | 12 | 8 | 0 % | aucune | L16×1 | 22 | 18 % | conseillé |
+| neuve | Étal du pêcheur, niveau 5 (restreint) | plus dur | appliquée | 18 | 12 | 0 % | aucune | – | 50 | 100 % | plus dur |
+| neuve | Étal du pêcheur, niveau 5 (restreint) | plus dur | réelle | 12 | 9 | 0 % | aucune | L16×1 | 39 | 74 % | conseillé |
+| neuve | Étal du pêcheur, niveau 5 (restreint) | plus dur | pressée | 14 | 11 | 0 % | aucune | L16×1 | 26 | 14 % | conseillé |
+| neuve | Étal du pêcheur, niveau 5 (restreint) | très dur | appliquée | 18 | 11 | 0 % | aucune | – | 64 | 100 % | très dur |
+| neuve | Étal du pêcheur, niveau 5 (restreint) | très dur | réelle | 12 | 10 | 0 % | aucune | L16×1 | 52 | 73 % | plus dur |
+| neuve | Étal du pêcheur, niveau 5 (restreint) | très dur | pressée | 14 | 12 | 0 % | aucune | L16×1 | 24 | 7 % | conseillé |
+| neuve | Étal du pêcheur, niveau 6 (monnaie) | plus facile | appliquée | 18 | 12 | 0 % | aucune | – | 22 | 100 % | plus facile |
+| neuve | Étal du pêcheur, niveau 6 (monnaie) | plus facile | réelle | 16 | 11 | 0 % | aucune | – | 23 | 86 % | plus facile |
+| neuve | Étal du pêcheur, niveau 6 (monnaie) | plus facile | pressée | 13 | 10 | 0 % | aucune | L17×1 | 16 | 7 % | plus facile |
+| neuve | Étal du pêcheur, niveau 6 (monnaie) | conseillé | appliquée | 18 | 13 | 0 % | aucune | – | 37 | 100 % | conseillé |
+| neuve | Étal du pêcheur, niveau 6 (monnaie) | conseillé | réelle | 12 | 9 | 0 % | aucune | L17×1 | 36 | 81 % | conseillé |
+| neuve | Étal du pêcheur, niveau 6 (monnaie) | conseillé | pressée | 14 | 11 | 0 % | aucune | L17×1 | 27 | 17 % | conseillé |
+| neuve | Étal du pêcheur, niveau 6 (monnaie) | plus dur | appliquée | 18 | 8 | 0 % | aucune | – | 50 | 100 % | plus dur |
+| neuve | Étal du pêcheur, niveau 6 (monnaie) | plus dur | réelle | 11 | 8 | 0 % | aucune | L17×1 | 44 | 79 % | plus dur |
+| neuve | Étal du pêcheur, niveau 6 (monnaie) | plus dur | pressée | 13 | 9 | 0 % | aucune | L17×1 | 23 | 14 % | conseillé |
+| neuve | Étal du pêcheur, niveau 6 (monnaie) | très dur | appliquée | 18 | 8 | 0 % | aucune | – | 64 | 100 % | très dur |
+| neuve | Étal du pêcheur, niveau 6 (monnaie) | très dur | réelle | 16 | 11 | 0 % | aucune | L17×1 | 63 | 82 % | très dur |
+| neuve | Étal du pêcheur, niveau 6 (monnaie) | très dur | pressée | 14 | 8 | 0 % | aucune | L17×1 | 21 | 7 % | conseillé |
+| neuve | Étal du pêcheur, niveau 7 (rendre) | plus facile | appliquée | 14 | 9 | 0 % | aucune | L17×1 | 23 | 100 % | plus facile |
+| neuve | Étal du pêcheur, niveau 7 (rendre) | plus facile | réelle | 12 | 9 | 0 % | aucune | L17×1 | 23 | 83 % | plus facile |
+| neuve | Étal du pêcheur, niveau 7 (rendre) | plus facile | pressée | 13 | 7 | 0 % | aucune | L17×1 | 13 | 4 % | plus facile |
+| neuve | Étal du pêcheur, niveau 7 (rendre) | conseillé | appliquée | 14 | 11 | 0 % | aucune | L17×1 | 36 | 100 % | conseillé |
+| neuve | Étal du pêcheur, niveau 7 (rendre) | conseillé | réelle | 12 | 8 | 0 % | aucune | L17×1 | 34 | 83 % | conseillé |
+| neuve | Étal du pêcheur, niveau 7 (rendre) | conseillé | pressée | 13 | 6 | 0 % | aucune | L17×1 | 14 | 7 % | conseillé |
+| neuve | Étal du pêcheur, niveau 7 (rendre) | plus dur | appliquée | 14 | 8 | 0 % | aucune | L17×1 | 47 | 100 % | plus dur |
+| neuve | Étal du pêcheur, niveau 7 (rendre) | plus dur | réelle | 12 | 9 | 0 % | aucune | L17×1 | 46 | 92 % | plus dur |
+| neuve | Étal du pêcheur, niveau 7 (rendre) | plus dur | pressée | 13 | 7 | 0 % | aucune | L17×1 | 15 | 7 % | conseillé |
+| neuve | Étal du pêcheur, niveau 7 (rendre) | très dur | appliquée | 14 | 6 | 0 % | aucune | L17×1 | 59 | 100 % | très dur |
+| neuve | Étal du pêcheur, niveau 7 (rendre) | très dur | réelle | 12 | 7 | 0 % | aucune | L17×1 | 59 | 92 % | très dur |
+| neuve | Étal du pêcheur, niveau 7 (rendre) | très dur | pressée | 13 | 9 | 0 % | aucune | L17×1 | 16 | 7 % | conseillé |
+| neuve | Étal du pêcheur, niveau 8 (deux) | plus facile | appliquée | 18 | 15 | 0 % | aucune | – | 22 | 100 % | plus facile |
+| neuve | Étal du pêcheur, niveau 8 (deux) | plus facile | réelle | 16 | 10 | 0 % | aucune | – | 24 | 84 % | plus facile |
+| neuve | Étal du pêcheur, niveau 8 (deux) | plus facile | pressée | 14 | 10 | 0 % | aucune | L16×1 | 17 | 7 % | plus facile |
+| neuve | Étal du pêcheur, niveau 8 (deux) | conseillé | appliquée | 18 | 15 | 0 % | aucune | – | 37 | 100 % | conseillé |
+| neuve | Étal du pêcheur, niveau 8 (deux) | conseillé | réelle | 15 | 11 | 0 % | aucune | – | 34 | 92 % | conseillé |
+| neuve | Étal du pêcheur, niveau 8 (deux) | conseillé | pressée | 14 | 9 | 0 % | aucune | L16×1 | 25 | 7 % | conseillé |
+| neuve | Étal du pêcheur, niveau 8 (deux) | plus dur | appliquée | 18 | 10 | 0 % | aucune | – | 50 | 100 % | plus dur |
+| neuve | Étal du pêcheur, niveau 8 (deux) | plus dur | réelle | 10 | 9 | 0 % | aucune | L16×1 | 43 | 78 % | plus dur |
+| neuve | Étal du pêcheur, niveau 8 (deux) | plus dur | pressée | 13 | 9 | 0 % | aucune | L16×1 | 21 | 7 % | conseillé |
+| neuve | Étal du pêcheur, niveau 8 (deux) | très dur | appliquée | 18 | 10 | 0 % | aucune | – | 64 | 100 % | très dur |
+| neuve | Étal du pêcheur, niveau 8 (deux) | très dur | réelle | 11 | 6 | 10 % | 2 (2400, 2400 : même réponse) | L16×1 | 50 | 86 % | plus dur |
+| neuve | Étal du pêcheur, niveau 8 (deux) | très dur | pressée | 13 | 9 | 0 % | aucune | L16×1 | 20 | 7 % | conseillé |
+| neuve | Étal du pêcheur, niveau 9 (payer) | plus facile | appliquée | 14 | 9 | 0 % | aucune | L18×1 | 23 | 100 % | plus facile |
+| neuve | Étal du pêcheur, niveau 9 (payer) | plus facile | réelle | 13 | 10 | 0 % | aucune | L18×1 | 24 | 83 % | plus facile |
+| neuve | Étal du pêcheur, niveau 9 (payer) | plus facile | pressée | 15 | 7 | 0 % | aucune | L18×1 | 18 | 4 % | plus facile |
+| neuve | Étal du pêcheur, niveau 9 (payer) | conseillé | appliquée | 14 | 8 | 0 % | aucune | L18×1 | 36 | 100 % | conseillé |
+| neuve | Étal du pêcheur, niveau 9 (payer) | conseillé | réelle | 11 | 6 | 0 % | aucune | L18×1 | 32 | 74 % | conseillé |
+| neuve | Étal du pêcheur, niveau 9 (payer) | conseillé | pressée | 15 | 9 | 0 % | aucune | L18×1 | 23 | 7 % | conseillé |
+| neuve | Étal du pêcheur, niveau 9 (payer) | plus dur | appliquée | 14 | 7 | 0 % | aucune | L18×1 | 47 | 100 % | plus dur |
+| neuve | Étal du pêcheur, niveau 9 (payer) | plus dur | réelle | 11 | 8 | 0 % | aucune | L18×1 | 36 | 68 % | conseillé |
+| neuve | Étal du pêcheur, niveau 9 (payer) | plus dur | pressée | 14 | 8 | 0 % | aucune | L18×1 | 21 | 4 % | conseillé |
+| neuve | Étal du pêcheur, niveau 9 (payer) | très dur | appliquée | 14 | 8 | 0 % | aucune | L18×1 | 59 | 100 % | très dur |
+| neuve | Étal du pêcheur, niveau 9 (payer) | très dur | réelle | 13 | 6 | 0 % | aucune | L18×1 | 63 | 82 % | très dur |
+| neuve | Étal du pêcheur, niveau 9 (payer) | très dur | pressée | 14 | 7 | 0 % | aucune | L18×1 | 25 | 11 % | conseillé |
+| neuve | Étal du pêcheur, niveau 10 (payer) | plus facile | appliquée | 18 | 15 | 0 % | aucune | – | 22 | 100 % | plus facile |
+| neuve | Étal du pêcheur, niveau 10 (payer) | plus facile | réelle | 11 | 9 | 0 % | aucune | L18×1 | 24 | 75 % | plus facile |
+| neuve | Étal du pêcheur, niveau 10 (payer) | plus facile | pressée | 14 | 11 | 0 % | aucune | L18×1 | 18 | 10 % | plus facile |
+| neuve | Étal du pêcheur, niveau 10 (payer) | conseillé | appliquée | 18 | 18 | 0 % | aucune | – | 37 | 100 % | conseillé |
+| neuve | Étal du pêcheur, niveau 10 (payer) | conseillé | réelle | 12 | 10 | 0 % | aucune | L18×1 | 33 | 57 % | conseillé |
+| neuve | Étal du pêcheur, niveau 10 (payer) | conseillé | pressée | 14 | 11 | 0 % | aucune | L18×1 | 21 | 7 % | conseillé |
+| neuve | Étal du pêcheur, niveau 10 (payer) | plus dur | appliquée | 18 | 15 | 0 % | aucune | – | 50 | 100 % | plus dur |
+| neuve | Étal du pêcheur, niveau 10 (payer) | plus dur | réelle | 15 | 13 | 0 % | 2 (990, 980 : pas de -10) | L18×1 | 49 | 92 % | plus dur |
+| neuve | Étal du pêcheur, niveau 10 (payer) | plus dur | pressée | 13 | 8 | 0 % | aucune | L18×1 | 21 | 11 % | conseillé |
+| neuve | Étal du pêcheur, niveau 10 (payer) | très dur | appliquée | 18 | 15 | 0 % | 2 (580, 570 : pas de -10) | – | 64 | 100 % | très dur |
+| neuve | Étal du pêcheur, niveau 10 (payer) | très dur | réelle | 15 | 9 | 0 % | aucune | – | 70 | 81 % | très dur |
+| neuve | Étal du pêcheur, niveau 10 (payer) | très dur | pressée | 14 | 11 | 0 % | aucune | L18×1 | 26 | 10 % | conseillé |
 | neuve | Voiliers, niveau 1 (3 bouées, dizaine, loin) | plus facile | appliquée | 30 | 4 | 14 % | 3 (2, 1, 0 : pas de -1) | – | 28 | 100 % | plus facile |
 | neuve | Voiliers, niveau 1 (3 bouées, dizaine, loin) | plus facile | réelle | 23 | 4 | 18 % | 3 (0, 1, 2 : pas de +1) | – | 27 | 77 % | plus facile |
 | neuve | Voiliers, niveau 1 (3 bouées, dizaine, loin) | plus facile | pressée | 24 | 4 | 17 % | 3 (0, 1, 2 : pas de +1) | – | 16 | 27 % | plus facile |
@@ -1610,6 +1810,126 @@ Limites : la voix est reconstituée à partir de `app/content/textes.json` avec 
 | mois | Multiplication, niveau 9 (tables) | très dur | appliquée | 41 | 11 | 10 % | 3 (10, 8, 6 : pas de -2) | – | 164 | 100 % | très dur |
 | mois | Multiplication, niveau 9 (tables) | très dur | réelle | 24 | 16 | 0 % | 2 (45, 35 : pas de -10) | L13×1 | 86 | 78 % | plus dur |
 | mois | Multiplication, niveau 9 (tables) | très dur | pressée | 27 | 14 | 0 % | 2 (24, 21 : pas de -3) | – | 26 | 10 % | conseillé |
+| mois | Étal du pêcheur, niveau 1 (poser) | plus facile | appliquée | 14 | 6 | 0 % | aucune | L15×1 | 43 | 100 % | plus facile |
+| mois | Étal du pêcheur, niveau 1 (poser) | plus facile | réelle | 12 | 6 | 0 % | aucune | L15×1 | 34 | 74 % | plus facile |
+| mois | Étal du pêcheur, niveau 1 (poser) | plus facile | pressée | 13 | 5 | 0 % | aucune | L15×1 | 20 | 8 % | plus facile |
+| mois | Étal du pêcheur, niveau 1 (poser) | conseillé | appliquée | 14 | 6 | 0 % | aucune | L15×1 | 68 | 100 % | conseillé |
+| mois | Étal du pêcheur, niveau 1 (poser) | conseillé | réelle | 12 | 5 | 0 % | aucune | L15×1 | 53 | 85 % | conseillé |
+| mois | Étal du pêcheur, niveau 1 (poser) | conseillé | pressée | 13 | 6 | 0 % | aucune | L15×1 | 20 | 3 % | conseillé |
+| mois | Étal du pêcheur, niveau 1 (poser) | plus dur | appliquée | 14 | 6 | 0 % | aucune | L15×1 | 92 | 100 % | plus dur |
+| mois | Étal du pêcheur, niveau 1 (poser) | plus dur | réelle | 10 | 5 | 0 % | aucune | L15×1 | 47 | 64 % | conseillé |
+| mois | Étal du pêcheur, niveau 1 (poser) | plus dur | pressée | 13 | 6 | 0 % | aucune | L15×1 | 18 | 2 % | conseillé |
+| mois | Étal du pêcheur, niveau 1 (poser) | très dur | appliquée | 14 | 6 | 0 % | aucune | L15×1 | 113 | 100 % | très dur |
+| mois | Étal du pêcheur, niveau 1 (poser) | très dur | réelle | 12 | 6 | 0 % | aucune | L15×1 | 88 | 83 % | très dur |
+| mois | Étal du pêcheur, niveau 1 (poser) | très dur | pressée | 13 | 6 | 0 % | aucune | L15×1 | 18 | 2 % | conseillé |
+| mois | Étal du pêcheur, niveau 2 (payer) | plus facile | appliquée | 14 | 7 | 0 % | aucune | L16×1 | 43 | 100 % | plus facile |
+| mois | Étal du pêcheur, niveau 2 (payer) | plus facile | réelle | 12 | 7 | 0 % | aucune | L16×1 | 35 | 77 % | plus facile |
+| mois | Étal du pêcheur, niveau 2 (payer) | plus facile | pressée | 15 | 9 | 0 % | aucune | L16×1 | 25 | 7 % | plus facile |
+| mois | Étal du pêcheur, niveau 2 (payer) | conseillé | appliquée | 14 | 8 | 0 % | aucune | L16×1 | 70 | 100 % | conseillé |
+| mois | Étal du pêcheur, niveau 2 (payer) | conseillé | réelle | 12 | 8 | 0 % | aucune | L16×1 | 50 | 82 % | conseillé |
+| mois | Étal du pêcheur, niveau 2 (payer) | conseillé | pressée | 13 | 7 | 0 % | aucune | L16×1 | 28 | 8 % | conseillé |
+| mois | Étal du pêcheur, niveau 2 (payer) | plus dur | appliquée | 14 | 6 | 0 % | aucune | L16×1 | 87 | 100 % | plus dur |
+| mois | Étal du pêcheur, niveau 2 (payer) | plus dur | réelle | 14 | 8 | 0 % | aucune | L16×1 | 68 | 81 % | conseillé |
+| mois | Étal du pêcheur, niveau 2 (payer) | plus dur | pressée | 10 | 5 | 0 % | aucune | L16×1 L15×1 | 28 | 7 % | conseillé |
+| mois | Étal du pêcheur, niveau 2 (payer) | très dur | appliquée | 14 | 6 | 0 % | aucune | L16×1 | 107 | 100 % | très dur |
+| mois | Étal du pêcheur, niveau 2 (payer) | très dur | réelle | 11 | 5 | 0 % | aucune | L16×1 | 70 | 73 % | plus dur |
+| mois | Étal du pêcheur, niveau 2 (payer) | très dur | pressée | 14 | 8 | 0 % | aucune | L16×1 | 29 | 7 % | conseillé |
+| mois | Étal du pêcheur, niveau 3 (payer) | plus facile | appliquée | 18 | 10 | 0 % | aucune | – | 42 | 100 % | plus facile |
+| mois | Étal du pêcheur, niveau 3 (payer) | plus facile | réelle | 11 | 7 | 0 % | aucune | L16×1 | 32 | 74 % | plus facile |
+| mois | Étal du pêcheur, niveau 3 (payer) | plus facile | pressée | 13 | 7 | 0 % | aucune | L16×1 | 23 | 7 % | plus facile |
+| mois | Étal du pêcheur, niveau 3 (payer) | conseillé | appliquée | 18 | 12 | 0 % | aucune | – | 67 | 100 % | conseillé |
+| mois | Étal du pêcheur, niveau 3 (payer) | conseillé | réelle | 10 | 7 | 11 % | 2 (700, 700 : même réponse) | L16×1 | 44 | 62 % | conseillé |
+| mois | Étal du pêcheur, niveau 3 (payer) | conseillé | pressée | 13 | 8 | 0 % | aucune | L16×1 | 27 | 7 % | conseillé |
+| mois | Étal du pêcheur, niveau 3 (payer) | plus dur | appliquée | 18 | 8 | 0 % | aucune | – | 92 | 100 % | plus dur |
+| mois | Étal du pêcheur, niveau 3 (payer) | plus dur | réelle | 10 | 7 | 0 % | aucune | L16×1 | 51 | 71 % | conseillé |
+| mois | Étal du pêcheur, niveau 3 (payer) | plus dur | pressée | 13 | 8 | 0 % | aucune | L16×1 | 26 | 5 % | conseillé |
+| mois | Étal du pêcheur, niveau 3 (payer) | très dur | appliquée | 18 | 7 | 0 % | aucune | – | 120 | 100 % | très dur |
+| mois | Étal du pêcheur, niveau 3 (payer) | très dur | réelle | 15 | 7 | 0 % | aucune | – | 91 | 81 % | très dur |
+| mois | Étal du pêcheur, niveau 3 (payer) | très dur | pressée | 13 | 9 | 0 % | aucune | L16×1 | 31 | 10 % | conseillé |
+| mois | Étal du pêcheur, niveau 4 (payer) | plus facile | appliquée | 18 | 13 | 0 % | aucune | – | 43 | 100 % | plus facile |
+| mois | Étal du pêcheur, niveau 4 (payer) | plus facile | réelle | 12 | 11 | 0 % | aucune | L16×1 | 32 | 76 % | plus facile |
+| mois | Étal du pêcheur, niveau 4 (payer) | plus facile | pressée | 13 | 10 | 0 % | aucune | L16×1 | 23 | 8 % | plus facile |
+| mois | Étal du pêcheur, niveau 4 (payer) | conseillé | appliquée | 18 | 16 | 0 % | aucune | – | 67 | 100 % | conseillé |
+| mois | Étal du pêcheur, niveau 4 (payer) | conseillé | réelle | 13 | 11 | 0 % | aucune | L16×1 | 52 | 87 % | conseillé |
+| mois | Étal du pêcheur, niveau 4 (payer) | conseillé | pressée | 14 | 13 | 0 % | aucune | L16×1 | 30 | 3 % | conseillé |
+| mois | Étal du pêcheur, niveau 4 (payer) | plus dur | appliquée | 18 | 12 | 0 % | aucune | – | 95 | 100 % | plus dur |
+| mois | Étal du pêcheur, niveau 4 (payer) | plus dur | réelle | 10 | 8 | 0 % | aucune | L16×1 | 46 | 60 % | conseillé |
+| mois | Étal du pêcheur, niveau 4 (payer) | plus dur | pressée | 13 | 8 | 0 % | aucune | L16×1 | 26 | 5 % | conseillé |
+| mois | Étal du pêcheur, niveau 4 (payer) | très dur | appliquée | 18 | 14 | 0 % | aucune | – | 114 | 100 % | très dur |
+| mois | Étal du pêcheur, niveau 4 (payer) | très dur | réelle | 16 | 11 | 0 % | aucune | – | 93 | 79 % | très dur |
+| mois | Étal du pêcheur, niveau 4 (payer) | très dur | pressée | 14 | 10 | 0 % | aucune | L16×1 | 32 | 8 % | conseillé |
+| mois | Étal du pêcheur, niveau 5 (restreint) | plus facile | appliquée | 18 | 13 | 0 % | aucune | – | 42 | 100 % | plus facile |
+| mois | Étal du pêcheur, niveau 5 (restreint) | plus facile | réelle | 11 | 10 | 0 % | aucune | L16×1 | 34 | 78 % | plus facile |
+| mois | Étal du pêcheur, niveau 5 (restreint) | plus facile | pressée | 13 | 8 | 0 % | aucune | L16×1 | 22 | 7 % | plus facile |
+| mois | Étal du pêcheur, niveau 5 (restreint) | conseillé | appliquée | 18 | 15 | 0 % | aucune | – | 70 | 100 % | conseillé |
+| mois | Étal du pêcheur, niveau 5 (restreint) | conseillé | réelle | 15 | 12 | 0 % | aucune | L16×1 | 58 | 84 % | conseillé |
+| mois | Étal du pêcheur, niveau 5 (restreint) | conseillé | pressée | 14 | 9 | 0 % | aucune | L16×1 | 30 | 7 % | conseillé |
+| mois | Étal du pêcheur, niveau 5 (restreint) | plus dur | appliquée | 18 | 11 | 0 % | aucune | – | 90 | 100 % | plus dur |
+| mois | Étal du pêcheur, niveau 5 (restreint) | plus dur | réelle | 16 | 10 | 0 % | aucune | L16×1 | 58 | 75 % | plus dur |
+| mois | Étal du pêcheur, niveau 5 (restreint) | plus dur | pressée | 13 | 9 | 0 % | aucune | L16×1 | 24 | 7 % | conseillé |
+| mois | Étal du pêcheur, niveau 5 (restreint) | très dur | appliquée | 18 | 10 | 0 % | aucune | – | 120 | 100 % | très dur |
+| mois | Étal du pêcheur, niveau 5 (restreint) | très dur | réelle | 11 | 9 | 0 % | aucune | L16×1 | 67 | 79 % | plus dur |
+| mois | Étal du pêcheur, niveau 5 (restreint) | très dur | pressée | 14 | 9 | 0 % | aucune | L16×1 | 28 | 8 % | conseillé |
+| mois | Étal du pêcheur, niveau 6 (monnaie) | plus facile | appliquée | 18 | 11 | 0 % | aucune | – | 43 | 100 % | plus facile |
+| mois | Étal du pêcheur, niveau 6 (monnaie) | plus facile | réelle | 11 | 8 | 0 % | aucune | L17×1 | 34 | 81 % | plus facile |
+| mois | Étal du pêcheur, niveau 6 (monnaie) | plus facile | pressée | 10 | 6 | 0 % | aucune | L17×1 L15×1 | 25 | 5 % | plus facile |
+| mois | Étal du pêcheur, niveau 6 (monnaie) | conseillé | appliquée | 18 | 13 | 0 % | aucune | – | 67 | 100 % | conseillé |
+| mois | Étal du pêcheur, niveau 6 (monnaie) | conseillé | réelle | 11 | 9 | 0 % | aucune | L17×1 | 55 | 83 % | conseillé |
+| mois | Étal du pêcheur, niveau 6 (monnaie) | conseillé | pressée | 9 | 8 | 0 % | aucune | L17×1 L15×1 | 25 | 4 % | conseillé |
+| mois | Étal du pêcheur, niveau 6 (monnaie) | plus dur | appliquée | 18 | 8 | 0 % | aucune | – | 89 | 100 % | plus dur |
+| mois | Étal du pêcheur, niveau 6 (monnaie) | plus dur | réelle | 16 | 11 | 0 % | aucune | L17×1 | 45 | 74 % | conseillé |
+| mois | Étal du pêcheur, niveau 6 (monnaie) | plus dur | pressée | 12 | 6 | 0 % | aucune | L17×1 | 25 | 8 % | conseillé |
+| mois | Étal du pêcheur, niveau 6 (monnaie) | très dur | appliquée | 18 | 9 | 0 % | aucune | – | 118 | 100 % | très dur |
+| mois | Étal du pêcheur, niveau 6 (monnaie) | très dur | réelle | 16 | 8 | 0 % | aucune | – | 70 | 79 % | plus dur |
+| mois | Étal du pêcheur, niveau 6 (monnaie) | très dur | pressée | 13 | 7 | 0 % | aucune | L17×1 | 27 | 5 % | conseillé |
+| mois | Étal du pêcheur, niveau 7 (rendre) | plus facile | appliquée | 14 | 9 | 15 % | 2 (200, 200 : même réponse) | L17×1 | 45 | 100 % | plus facile |
+| mois | Étal du pêcheur, niveau 7 (rendre) | plus facile | réelle | 12 | 9 | 0 % | aucune | L17×1 | 34 | 77 % | plus facile |
+| mois | Étal du pêcheur, niveau 7 (rendre) | plus facile | pressée | 13 | 7 | 0 % | aucune | L17×1 | 19 | 5 % | plus facile |
+| mois | Étal du pêcheur, niveau 7 (rendre) | conseillé | appliquée | 14 | 7 | 0 % | aucune | L17×1 | 68 | 100 % | conseillé |
+| mois | Étal du pêcheur, niveau 7 (rendre) | conseillé | réelle | 12 | 8 | 0 % | aucune | L17×1 | 50 | 75 % | conseillé |
+| mois | Étal du pêcheur, niveau 7 (rendre) | conseillé | pressée | 13 | 7 | 0 % | aucune | L17×1 | 22 | 9 % | conseillé |
+| mois | Étal du pêcheur, niveau 7 (rendre) | plus dur | appliquée | 14 | 7 | 0 % | aucune | L17×1 | 89 | 100 % | plus dur |
+| mois | Étal du pêcheur, niveau 7 (rendre) | plus dur | réelle | 11 | 6 | 0 % | aucune | L17×1 | 63 | 71 % | plus dur |
+| mois | Étal du pêcheur, niveau 7 (rendre) | plus dur | pressée | 13 | 7 | 0 % | aucune | L17×1 | 22 | 8 % | conseillé |
+| mois | Étal du pêcheur, niveau 7 (rendre) | très dur | appliquée | 14 | 8 | 0 % | aucune | L17×1 | 113 | 100 % | très dur |
+| mois | Étal du pêcheur, niveau 7 (rendre) | très dur | réelle | 11 | 7 | 0 % | aucune | L17×1 | 62 | 76 % | plus dur |
+| mois | Étal du pêcheur, niveau 7 (rendre) | très dur | pressée | 13 | 7 | 8 % | 2 (100, 100 : même réponse) | L17×1 | 20 | 5 % | conseillé |
+| mois | Étal du pêcheur, niveau 8 (deux) | plus facile | appliquée | 18 | 13 | 0 % | aucune | – | 42 | 100 % | plus facile |
+| mois | Étal du pêcheur, niveau 8 (deux) | plus facile | réelle | 11 | 9 | 0 % | aucune | L16×1 | 31 | 66 % | plus facile |
+| mois | Étal du pêcheur, niveau 8 (deux) | plus facile | pressée | 14 | 11 | 0 % | aucune | L16×1 | 26 | 8 % | plus facile |
+| mois | Étal du pêcheur, niveau 8 (deux) | conseillé | appliquée | 18 | 13 | 0 % | aucune | – | 70 | 100 % | conseillé |
+| mois | Étal du pêcheur, niveau 8 (deux) | conseillé | réelle | 15 | 12 | 0 % | aucune | – | 52 | 82 % | conseillé |
+| mois | Étal du pêcheur, niveau 8 (deux) | conseillé | pressée | 14 | 10 | 0 % | aucune | L16×1 | 33 | 12 % | conseillé |
+| mois | Étal du pêcheur, niveau 8 (deux) | plus dur | appliquée | 18 | 9 | 0 % | aucune | – | 90 | 100 % | plus dur |
+| mois | Étal du pêcheur, niveau 8 (deux) | plus dur | réelle | 11 | 8 | 0 % | aucune | L16×1 | 60 | 69 % | conseillé |
+| mois | Étal du pêcheur, niveau 8 (deux) | plus dur | pressée | 13 | 8 | 0 % | aucune | L16×1 | 30 | 12 % | conseillé |
+| mois | Étal du pêcheur, niveau 8 (deux) | très dur | appliquée | 18 | 10 | 0 % | aucune | – | 118 | 100 % | très dur |
+| mois | Étal du pêcheur, niveau 8 (deux) | très dur | réelle | 16 | 10 | 0 % | aucune | – | 74 | 86 % | plus dur |
+| mois | Étal du pêcheur, niveau 8 (deux) | très dur | pressée | 14 | 10 | 0 % | aucune | L16×1 | 32 | 8 % | conseillé |
+| mois | Étal du pêcheur, niveau 9 (payer) | plus facile | appliquée | 14 | 10 | 0 % | aucune | L18×1 | 44 | 100 % | plus facile |
+| mois | Étal du pêcheur, niveau 9 (payer) | plus facile | réelle | 12 | 9 | 0 % | aucune | L18×1 | 33 | 66 % | plus facile |
+| mois | Étal du pêcheur, niveau 9 (payer) | plus facile | pressée | 15 | 7 | 0 % | aucune | L18×1 | 25 | 7 % | plus facile |
+| mois | Étal du pêcheur, niveau 9 (payer) | conseillé | appliquée | 14 | 8 | 0 % | aucune | L18×1 | 67 | 100 % | conseillé |
+| mois | Étal du pêcheur, niveau 9 (payer) | conseillé | réelle | 13 | 11 | 0 % | aucune | L18×1 | 55 | 91 % | conseillé |
+| mois | Étal du pêcheur, niveau 9 (payer) | conseillé | pressée | 14 | 8 | 0 % | aucune | L18×1 | 30 | 10 % | conseillé |
+| mois | Étal du pêcheur, niveau 9 (payer) | plus dur | appliquée | 14 | 7 | 0 % | aucune | L18×1 | 86 | 100 % | plus dur |
+| mois | Étal du pêcheur, niveau 9 (payer) | plus dur | réelle | 12 | 5 | 0 % | aucune | L18×1 | 69 | 87 % | plus dur |
+| mois | Étal du pêcheur, niveau 9 (payer) | plus dur | pressée | 15 | 9 | 0 % | aucune | L18×1 | 29 | 5 % | conseillé |
+| mois | Étal du pêcheur, niveau 9 (payer) | très dur | appliquée | 14 | 6 | 0 % | aucune | L18×1 | 107 | 100 % | très dur |
+| mois | Étal du pêcheur, niveau 9 (payer) | très dur | réelle | 13 | 7 | 0 % | aucune | L18×1 | 68 | 72 % | plus dur |
+| mois | Étal du pêcheur, niveau 9 (payer) | très dur | pressée | 14 | 8 | 0 % | aucune | L18×1 | 26 | 3 % | conseillé |
+| mois | Étal du pêcheur, niveau 10 (payer) | plus facile | appliquée | 18 | 17 | 0 % | aucune | – | 43 | 100 % | plus facile |
+| mois | Étal du pêcheur, niveau 10 (payer) | plus facile | réelle | 11 | 10 | 0 % | aucune | L18×1 | 35 | 77 % | plus facile |
+| mois | Étal du pêcheur, niveau 10 (payer) | plus facile | pressée | 13 | 9 | 0 % | aucune | L18×1 | 23 | 8 % | plus facile |
+| mois | Étal du pêcheur, niveau 10 (payer) | conseillé | appliquée | 18 | 17 | 0 % | aucune | – | 71 | 100 % | conseillé |
+| mois | Étal du pêcheur, niveau 10 (payer) | conseillé | réelle | 14 | 13 | 0 % | aucune | L18×1 | 52 | 75 % | conseillé |
+| mois | Étal du pêcheur, niveau 10 (payer) | conseillé | pressée | 14 | 12 | 0 % | aucune | L18×1 | 31 | 7 % | conseillé |
+| mois | Étal du pêcheur, niveau 10 (payer) | plus dur | appliquée | 18 | 14 | 0 % | 2 (790, 780 : pas de -10) | – | 92 | 100 % | plus dur |
+| mois | Étal du pêcheur, niveau 10 (payer) | plus dur | réelle | 11 | 10 | 0 % | aucune | L18×1 | 55 | 74 % | conseillé |
+| mois | Étal du pêcheur, niveau 10 (payer) | plus dur | pressée | 14 | 11 | 0 % | aucune | L18×1 | 27 | 3 % | conseillé |
+| mois | Étal du pêcheur, niveau 10 (payer) | très dur | appliquée | 18 | 15 | 0 % | 2 (770, 780 : pas de +10) | – | 116 | 100 % | très dur |
+| mois | Étal du pêcheur, niveau 10 (payer) | très dur | réelle | 11 | 10 | 0 % | aucune | L18×1 | 64 | 71 % | plus dur |
+| mois | Étal du pêcheur, niveau 10 (payer) | très dur | pressée | 14 | 10 | 0 % | aucune | L18×1 | 27 | 3 % | conseillé |
 | mois | Voiliers, niveau 1 (3 bouées, dizaine, loin) | plus facile | appliquée | 30 | 4 | 10 % | 3 (2, 1, 0 : pas de -1) | – | 48 | 100 % | plus facile |
 | mois | Voiliers, niveau 1 (3 bouées, dizaine, loin) | plus facile | réelle | 26 | 4 | 16 % | 3 (3, 2, 1 : pas de -1) | – | 39 | 87 % | plus facile |
 | mois | Voiliers, niveau 1 (3 bouées, dizaine, loin) | plus facile | pressée | 22 | 4 | 14 % | 3 (0, 1, 2 : pas de +1) | – | 20 | 14 % | plus facile |

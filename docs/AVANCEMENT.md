@@ -35,8 +35,8 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
 
-(Aucune session en cours.)
+### Reprise du lot « Recette de l'enfant et nettoyage des couches »
 
-- **Branche** : `claude/busy-knuth-rt90r6` ; demande de fusion : « Lot : La boutique du récif » (brouillon).
-- **Fait** : lecture de la fiche 10, du README de `art/boutique/`, de la maquette.
-- **Reste** : règles et contenu, atelier (pictogrammes, diamant), écran de la boutique, récif, fin de séance, espace parent, simulation, parcours, recette, documents.
+- **Branche** : `claude/magical-fermi-6tvdn7` ; demande de fusion : « Lot : Recette de l'enfant et nettoyage des couches » (brouillon).
+- **Fait** : lecture de la fiche 9 ; parcours de référence lancés sur `main`.
+- **Reste** : point 0 (barre noire, phrases « … », contrôle des durées des voix, qualité des voiliers, lampe de l'étal, parcours qui échouent sur `main`), inventaire des couches (`docs/COUCHES.md`) et retrait de ce qui ne sert plus, règle de sortie unique, enfant imprévisible (`tests/e2e/enfant.mjs`), enfant joué par un agent, essais pour le parent, recette.

@@ -5,6 +5,7 @@
 //   --webgl    : WebGL logiciel (SwiftShader) dans Chromium sans processeur graphique (le miroitement du lagon)
 //   --voiliers : la séance porte sur le jeu des voiliers (lot « Les voiliers » : la mer en WebGL et la mascotte réunies ;
 //                la qualité de la mer baisse d'elle-même si le temps d'image moyen dépasse 20 ms) ; avec --webgl
+//   --boutique : en plus, le récif hors séance et la boutique (lot « La boutique du récif »)
 //   --etal beau|orage : la séance porte sur l'étal du pêcheur (lot « L'étal du pêcheur »), par beau ou mauvais temps, le
 //                portefeuille ouvert et l'argent sorti pendant la mesure (la pluie s'allège d'elle-même au-delà de 21 ms)
 // Mesure :
@@ -90,5 +91,26 @@ console.log(JSON.stringify(result, null, 1));
 writeFileSync(join(OUT, `mesures-x${RATE}${VOIL ? "-voiliers" : ""}${ETAL ? `-etal-${ETAL}` : ""}.json`), JSON.stringify(result, null, 1));
 await context.close();
 if (VIDEO) { const v = readdirSync(OUT).filter((f) => f.endsWith(".webm")).map((f) => join(OUT, f)); if (v.length) renameSync(v[v.length - 1], join(OUT, "seance.webm")); }
+// (lot « La boutique du récif ») --boutique : le récif hors séance avec son bouton, puis la boutique (la vitrine du lagon : les
+// brillantes et leurs étincelles ; celle du grand large : les étoiles de diamant dessinées en direct), même processeur ralenti
+if (args.includes("--boutique")) {
+  const c2 = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 2, hasTouch: true }), p2 = await c2.newPage();
+  p2.on("pageerror", (e) => errors.push(e.message));
+  await (await c2.newCDPSession(p2)).send("Emulation.setCPUThrottlingRate", { rate: RATE });
+  await p2.goto(url + "?nosw"); await p2.waitForFunction(() => window.__ready !== undefined, null, { timeout: 60000 });
+  await p2.evaluate(async () => { const a = window.__app, L = a.cartes.cartes.filter((c) => c.zone === "lagon").map((c) => c.id); await a.store.put("recompenses", { id: "cartes", cartes: Object.fromEntries(L.slice(0, 10).map((id, i) => [id, { n: 1, premiere: 1, brillante: i % 3 === 0 }])) }); await a.store.put("recompenses", { id: "etoiles", total: 500, cumul: 500 }); await a.store.put("recompenses", { id: "zones", ouvertes: ["lagon", "corail", "large"], dates: {} }); });
+  await p2.reload(); await p2.waitForFunction(() => window.__ready !== undefined, null, { timeout: 60000 });
+  const gapsDe = async (ms) => { await p2.evaluate(() => { window.__g = []; let last = performance.now(); const f = (t) => { window.__g.push(t - last); last = t; if (window.__g) requestAnimationFrame(f); }; requestAnimationFrame(f); }); await p2.waitForTimeout(ms); return p2.evaluate(() => { const g = window.__g; window.__g = null; return g.slice(5); }); };
+  await p2.tap(".reefkey", { force: true }); await recifOuvert(p2);
+  const recif = stats(await gapsDe(5000));
+  await p2.tap(".boutique-cle", { force: true }); await p2.waitForFunction(() => document.querySelectorAll(".boutique-tuile").length === 15, null, { timeout: 60000 }); await p2.waitForTimeout(2500);
+  const lagonV = stats(await gapsDe(5000));
+  await p2.evaluate(() => { const b = window.__app.boutique; b.zone = "large"; b.dessinerOnglets(); b.dessinerVitrine(); }); await p2.waitForTimeout(2500);
+  const large = stats(await gapsDe(5000)), mem = await p2.evaluate(() => { const sp = window.__app.sprites; let px = 0; for (const { pages } of sp.pages.values()) for (const p of pages) px += p.width * p.height; return +(px * 4 / 1048576).toFixed(1); });
+  const r = { processeur: `ralenti ×${RATE}`, recif_hors_seance: recif, boutique_lagon: lagonV, boutique_grand_large: large, memoire_planches_mo: mem };
+  console.log("boutique :", JSON.stringify(r, null, 1));
+  writeFileSync(join(OUT, `mesures-x${RATE}-boutique.json`), JSON.stringify(r, null, 1));
+  await c2.close();
+}
 await browser.close(); srv.close();
 if (errors.length) process.exitCode = 1;

@@ -137,10 +137,10 @@ for (const vue of VUES) {
     // L'ACHAT : les étoiles volent, la créature sort au milieu, puis file vers le récif
     await tap(page, tuile(aVendre[1])); await page.waitForTimeout(500);
     await page.evaluate(() => { window.__app.rnd = () => 0.9; }); // (pas brillante)
-    await tap(page, ".boutique-conf.coche"); await page.waitForTimeout(650);
+    await tap(page, ".boutique-conf.coche"); await page.waitForTimeout(450);
+    const r = await page.evaluate(() => [window.__app.rewards.total, window.__app.hud.shown]);
     await shot(page, vue, "08-achat-vol-des-etoiles");
     if (vue[0] === "1280") {
-      const r = await page.evaluate(() => [window.__app.rewards.total, window.__app.hud.shown]);
       check(r[0] === 230 - prix(aVendre[1]) && r[1] > r[0] && r[1] < 230, `l'achat est enregistré avant l'animation (${r[0]}), le compteur descend avec les étoiles (${r[1]})`);
     }
     await page.waitForSelector(".boutique-voile.on", { timeout: 10000 }); await page.waitForTimeout(900);
@@ -337,7 +337,7 @@ const vue0 = VUES[0];
 // ---------------------------------------------------------------- 7. les situations à tenir
 {
   // la coche touchée trois fois très vite : un seul achat
-  const { context, page } = await fresh([owned(lagon.slice(0, 2)), etoiles(200), { id: "quota", date: Date.now() - 3600000, cartes: 2 }, { id: "boutique", annoncees: lagon, vues: lagon, visites: 1 }]);
+  const { context, page } = await fresh([owned(lagon.slice(0, 2)), etoiles(400), { id: "quota", date: Date.now() - 3600000, cartes: 6 }, { id: "boutique", annoncees: lagon, vues: lagon, visites: 1 }]);
   await boutique(page);
   const id = Object.entries(await vitrine(page)).find(([, e]) => e === "vendre")[0];
   await tap(page, tuile(id)); await page.waitForTimeout(300);
@@ -345,21 +345,22 @@ const vue0 = VUES[0];
   for (let i = 0; i < 3; i++) await page.touchscreen.tap(c.x + c.width / 2, c.y + c.height / 2);
   await fini(page);
   const r = await page.evaluate(async () => ({ total: window.__app.rewards.total, achats: (await window.__app.store.get("recompenses", "achats")).liste.length }));
-  check(r.total === 160 && r.achats === 1, `la coche touchée trois fois très vite : un seul achat (${r.achats}), 40 étoiles débitées (${r.total})`);
+  check(r.total === 400 - prix(id) && r.achats === 1, `la coche touchée trois fois très vite : un seul achat (${r.achats}), ${prix(id)} étoiles débitées (${r.total})`);
   // la page rechargée pendant le vol des étoiles : la créature est achetée, les étoiles débitées une seule fois
   const id2 = Object.entries(await vitrine(page)).find(([, e]) => e === "vendre")[0];
   await tap(page, tuile(id2)); await page.waitForTimeout(300); await tap(page, ".boutique-conf.coche"); await page.waitForTimeout(250);
   await page.reload(); await page.waitForFunction(() => window.__ready !== undefined);
   const r2 = await page.evaluate(async () => ({ total: (await window.__app.store.get("recompenses", "etoiles")).total, cartes: (await window.__app.store.get("recompenses", "cartes")).cartes, achats: (await window.__app.store.get("recompenses", "achats")).liste.length }));
-  check(r2.total === 160 - prix(id2) && !!r2.cartes[id2] && r2.achats === 2, `la page rechargée pendant le vol : achetée et débitée une fois (${r2.total} étoiles, ${r2.achats} achats)`);
+  check(r2.total === 400 - prix(id) - prix(id2) && !!r2.cartes[id2] && r2.achats === 2, `la page rechargée pendant le vol : achetée et débitée une fois (${r2.total} étoiles, ${r2.achats} achats)`);
   // la maison du récif pendant l'animation : rien n'est perdu, rien n'est refait
   await boutique(page);
   const id3 = Object.entries(await vitrine(page)).find(([, e]) => e === "vendre")?.[0];
+  check(!!id3, "une troisième créature à vendre (pour le retour au récif pendant le vol)");
   if (id3) {
     await tap(page, tuile(id3)); await page.waitForTimeout(300); await tap(page, ".boutique-conf.coche"); await page.waitForTimeout(300);
     await tap(page, ".boutique-retour"); await recifOuvert(page);
     const r3 = await page.evaluate(() => [window.__app.rewards.total, window.__app.hud.shown, document.querySelectorAll(".boutique-vol, .boutique-voile").length]);
-    check(r3[0] === 160 - prix(id2) - prix(id3) && r3[1] === r3[0] && r3[2] === 0, `le retour au récif pendant le vol : achetée une fois (${r3[0]}), compteur juste (${r3[1]}), rien ne reste à l'écran`);
+    check(r3[0] === 400 - prix(id) - prix(id2) - prix(id3) && r3[1] === r3[0] && r3[2] === 0, `le retour au récif pendant le vol : achetée une fois (${r3[0]}), compteur juste (${r3[1]}), rien ne reste à l'écran`);
   }
   check(await page.evaluate(() => window.__app.rewards.total >= 0), "le compteur n'est jamais négatif");
   await context.close();

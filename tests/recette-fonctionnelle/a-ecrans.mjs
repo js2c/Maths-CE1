@@ -239,13 +239,13 @@ async function defi() {
 // ---------------------------------------------------------------- 8. la récompense
 // une séance réduite à la récompense (?sans), avec un trésor de départ ; `prep` : ce qu'il faut forcer (quota atteint, brillante)
 async function recompense() {
-  const S = new Serie(DIR, "A08-recompense", "Partie A · la récompense (étoiles, coquillage, carte nouvelle, créature rendue brillante, brillante)");
+  const S = new Serie(DIR, "A08-recompense", "Partie A · la récompense (étoiles, boutique, coquillage de la série)");
   const cas = [
-    ["carte nouvelle", "neuve", 30, null],
-    // (au bout d'un mois, les créatures possédées sont souvent déjà toutes brillantes : on en ternit une pour la capture)
-    ["quota atteint : une créature rendue brillante", "mois", 30, () => { const R = window.__app.rewards, k = Object.keys(R.owned)[0]; R.quota = () => 0; R.owned = { ...R.owned, [k]: { ...R.owned[k], brillante: false } }; }],
-    ["quota atteint, toutes brillantes : le coquillage attend", "mois", 30, () => { const R = window.__app.rewards; R.quota = () => 0; R.owned = Object.fromEntries(Object.entries(R.owned).map(([k, o]) => [k, { ...o, brillante: true }])); }],
-    ["brillante", "neuve", 30, () => { const R = window.__app.rewards, o = R.openShell.bind(R); R.openShell = (r, t) => o(() => 0.01, t); }],
+    // (lot « La boutique du récif » : plus de coquillage ordinaire ; les créatures s'achètent à la boutique)
+    ["fin de séance, un achat possible", "neuve", 60, null],
+    ["fin de séance, rien à acheter", "neuve", 0, null],
+    // (le coquillage de la série : la 10e séance de la série fait briller une créature)
+    ["coquillage de la série", "mois", 30, () => { const R = window.__app.rewards, k = Object.keys(R.owned)[0]; R.serie = { seances: 9, derniere: Date.now() - 86400000 }; R.owned = { ...R.owned, [k]: { ...R.owned[k], brillante: false } }; }],
   ];
   for (const [nom, base, etoiles, prep] of cas) {
     const s = await ouvrir(nav, { base, nom: true, params: `cran=conseille&sans=echauffement,notion,defi&etoiles=${etoiles}` });

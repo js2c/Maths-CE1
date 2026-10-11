@@ -100,14 +100,16 @@ if (args.includes("--boutique")) {
   await p2.goto(url + "?nosw"); await p2.waitForFunction(() => window.__ready !== undefined, null, { timeout: 60000 });
   await p2.evaluate(async () => { const a = window.__app, L = a.cartes.cartes.filter((c) => c.zone === "lagon").map((c) => c.id); await a.store.put("recompenses", { id: "cartes", cartes: Object.fromEntries(L.slice(0, 10).map((id, i) => [id, { n: 1, premiere: 1, brillante: i % 3 === 0 }])) }); await a.store.put("recompenses", { id: "etoiles", total: 500, cumul: 500 }); await a.store.put("recompenses", { id: "zones", ouvertes: ["lagon", "corail", "large"], dates: {} }); });
   await p2.reload(); await p2.waitForFunction(() => window.__ready !== undefined, null, { timeout: 60000 });
-  const gapsDe = async (ms) => { await p2.evaluate(() => { window.__g = []; let last = performance.now(); const f = (t) => { window.__g.push(t - last); last = t; if (window.__g) requestAnimationFrame(f); }; requestAnimationFrame(f); }); await p2.waitForTimeout(ms); return p2.evaluate(() => { const g = window.__g; window.__g = null; return g.slice(5); }); };
+  const gapsDe = async (ms) => { await p2.evaluate(() => { const g = (window.__g = []); let last = performance.now(); const f = (t) => { if (window.__g !== g) return; g.push(t - last); last = t; requestAnimationFrame(f); }; requestAnimationFrame(f); }); await p2.waitForTimeout(ms); return p2.evaluate(() => { const g = window.__g; window.__g = null; return g.length > 3 ? g.slice(1) : g; }); };
+  // (la référence : l'accueil, dans les mêmes conditions)
+  await p2.waitForTimeout(1500); const accueil = stats(await gapsDe(5000));
   await p2.tap(".reefkey", { force: true }); await recifOuvert(p2);
-  const recif = stats(await gapsDe(5000));
+  const recif = stats(await gapsDe(8000));
   await p2.tap(".boutique-cle", { force: true }); await p2.waitForFunction(() => document.querySelectorAll(".boutique-tuile").length === 15, null, { timeout: 60000 }); await p2.waitForTimeout(2500);
   const lagonV = stats(await gapsDe(5000));
   await p2.evaluate(() => { const b = window.__app.boutique; b.zone = "large"; b.dessinerOnglets(); b.dessinerVitrine(); }); await p2.waitForTimeout(2500);
   const large = stats(await gapsDe(5000)), mem = await p2.evaluate(() => { const sp = window.__app.sprites; let px = 0; for (const { pages } of sp.pages.values()) for (const p of pages) px += p.width * p.height; return +(px * 4 / 1048576).toFixed(1); });
-  const r = { processeur: `ralenti ×${RATE}`, recif_hors_seance: recif, boutique_lagon: lagonV, boutique_grand_large: large, memoire_planches_mo: mem };
+  const r = { processeur: `ralenti ×${RATE}`, accueil_reference: accueil, recif_hors_seance: recif, boutique_lagon: lagonV, boutique_grand_large: large, memoire_planches_mo: mem };
   console.log("boutique :", JSON.stringify(r, null, 1));
   writeFileSync(join(OUT, `mesures-x${RATE}-boutique.json`), JSON.stringify(r, null, 1));
   await c2.close();

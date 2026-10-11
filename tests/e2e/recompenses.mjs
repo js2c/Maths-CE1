@@ -54,7 +54,7 @@ await page.waitForSelector(".moon", { timeout: 60000 }); await page.waitForTimeo
 await shot("5-a-demain");
 const db = await page.evaluate(async () => { const s = window.__app.store; return { etoiles: await s.get("recompenses", "etoiles"), cartes: await s.get("recompenses", "cartes"), serie: await s.get("recompenses", "serie"), seance: (await s.all("seances")).at(-1) }; });
 // (une créature, pour la suite du parcours : achetée comme à la boutique)
-await page.evaluate(async () => { const r = window.__app.rewards, id = [...r.vitrine()].find(([, e]) => e === "vendre")[0]; await r.acheter(id).ecrit; });
+await page.evaluate(async () => { const r = window.__app.rewards, id = [...r.vitrine()].find(([, e]) => e === "vendre")[0]; await r.acheter(id).ecrit; r.arrivee = null; }); // (sans son arrivée à la nage : on la touche aussitôt)
 const owned = Object.keys(await page.evaluate(async () => (await window.__app.store.get("recompenses", "cartes")).cartes));
 check(owned.length === 1 && db.etoiles.coquillages === 0, `aucune carte gagnée à la récompense ; une créature achetée (${owned.join(", ")})`);
 check(db.etoiles.total === 75 + db.seance.etoiles, `étoiles : 75 + ${db.seance.etoiles} gagnées = ${db.etoiles.total} (rien n'est dépensé à la récompense)`);

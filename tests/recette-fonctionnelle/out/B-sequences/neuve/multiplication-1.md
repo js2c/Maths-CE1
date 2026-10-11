@@ -56,7 +56,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 39 | notion | 3 + 3 + 3 + 3 (niveau 1, rangées affichées) | 4 rangées de 3 poissons. Combien de poissons en tout ? | 12 | 12 | +1★ |
 | 40 | notion | 3 + 3 + 3 + 3 + 3 (niveau 1, rangées affichées) | 5 rangées de 3 poissons. Combien de poissons en tout ? | 15 | 15 |  |
 
-Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Multiplication, niveau 1 (groupes), cran « plus facile » · réelle
 
@@ -107,7 +107,7 @@ Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle)
 | 38 | notion | 3 + 3 + 3 + 3 (niveau 1, rangées affichées) | 4 rangées de 3 poissons. Combien de poissons en tout ? | 12 | 12 |  |
 | 39 | notion | 5 + 5 + 5 (niveau 1, rangées affichées) | 3 rangées de 5 poissons. Combien de poissons en tout ? | 15 | 15 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Multiplication, niveau 1 (groupes), cran « plus facile » · pressée
 
@@ -153,7 +153,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
 | 33 | notion | 5 + 5 + 5 + 5 (niveau 1, rangées affichées) | 4 rangées de 5 poissons. Combien de poissons en tout ? | 20 | 36 | correction autre : « Hmm, regardons ensemble. 4 rangées de 5 poissons. [les rangées comptées] 4 fois 5, ça fait 20. » |
 | 34 | notion | 3 + 3 (niveau 1, rangées affichées) | 2 rangées de 3 poissons. Combien de poissons en tout ? | 6 | 45 | correction autre : « Hmm, regardons ensemble. 2 rangées de 3 poissons. [les rangées comptées] 2 fois 3, ça fait 6. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -210,7 +210,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | 5 + 5 + 5 (niveau 1, rangées affichées) | 3 rangées de 5 poissons. Combien de poissons en tout ? | 15 | 15 | +1★ |
 | 43 | notion | 3 + 3 + 3 + 3 (niveau 1, rangées affichées) | 4 rangées de 3 poissons. Combien de poissons en tout ? | 12 | 12 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle) ; carte crabe (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 1 (groupes), cran « conseillé » · réelle
 
@@ -257,7 +257,7 @@ Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle) ; ca
 | 34 | notion | 5 + 5 (niveau 1, rangées affichées) | 2 rangées de 5 poissons. Combien de poissons en tout ? | 10 | 15 | correction M2 : « Hmm, regardons ensemble. 2 rangées de 5 poissons. [les rangées comptées] 2 fois 5, ça fait 10. » |
 | 35 | notion | 3 + 3 + 3 (niveau 1, rangées affichées) | 3 rangées de 3 poissons. Combien de poissons en tout ? | 9 | 9 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 1 (groupes), cran « conseillé » · pressée
 
@@ -303,7 +303,7 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle) (brillante)
 | 33 | notion | 5 + 5 + 5 + 5 + 5 (niveau 1, rangées affichées) | 5 rangées de 5 poissons. Combien de poissons en tout ? | 25 | 20 | correction M2 : « Hmm, regardons ensemble. 5 rangées de 5 poissons. [les rangées comptées] 5 fois 5, ça fait 25. » |
 | 34 | notion | 2 + 2 + 2 + 2 (niveau 1, rangées affichées) | 4 rangées de 2 poissons. Combien de poissons en tout ? | 8 | 57 | correction autre : « Hmm, regardons ensemble. 4 rangées de 2 poissons. [les rangées comptées] 4 fois 2, ça fait 8. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -360,7 +360,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | 5 + 5 + 5 (niveau 1, sans image) | 3 rangées de 5 poissons. Combien de poissons en tout ? | 15 | 15 | +1★ |
 | 43 | notion | 5 + 5 (niveau 1, sans image) | 2 rangées de 5 poissons. Combien de poissons en tout ? | 10 | 10 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte poisson-chirurgien (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 1 (groupes), cran « plus dur » · réelle
 
@@ -408,7 +408,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte poisson-chi
 | 35 | notion | 2 + 2 + 2 + 2 (niveau 1, rangées affichées) | 4 rangées de 2 poissons. Combien de poissons en tout ? | 8 | 8 | +1★ |
 | 36 | notion | 5 + 5 (niveau 1, rangées affichées) | 2 rangées de 5 poissons. Combien de poissons en tout ? | 10 | 10 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte concombre-de-mer (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 1 (groupes), cran « plus dur » · pressée
 
@@ -454,7 +454,7 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte concombre-de-
 | 33 | notion | 4 + 4 (niveau 1, rangées affichées) | 2 rangées de 4 poissons. Combien de poissons en tout ? | 8 | 7 | correction autre : « Hmm, regardons ensemble. 2 rangées de 4 poissons. [les rangées comptées] 2 fois 4, ça fait 8. » |
 | 34 | notion | 4 + 4 + 4 (niveau 1, rangées affichées) | 3 rangées de 4 poissons. Combien de poissons en tout ? | 12 | 74 | correction autre : « Hmm, regardons ensemble. 3 rangées de 4 poissons. [les rangées comptées] 3 fois 4, ça fait 12. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -511,7 +511,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | 2 + 2 + 2 + 2 (niveau 1, sans image) | 4 rangées de 2 poissons. Combien de poissons en tout ? | 8 | 8 | +2★ |
 | 43 | notion | 4 + 4 + 4 (niveau 1, sans image) | 3 rangées de 4 poissons. Combien de poissons en tout ? | 12 | 12 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) (brillante) ; carte poisson-clown (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 1 (groupes), cran « très dur » · réelle
 
@@ -557,7 +557,7 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) (brillante
 | 33 | notion | 2 + 2 + 2 + 2 (niveau 1, sans image) | 4 rangées de 2 poissons. Combien de poissons en tout ? | 8 | je ne sais pas | correction NSP : « Ce n'est pas grave, regardons ensemble. 4 rangées de 2 poissons. [les rangées comptées] 4 fois 2, ça fait 8. » |
 | 34 | notion | 3 + 3 + 3 + 3 (niveau 1, sans image) | 4 rangées de 3 poissons. Combien de poissons en tout ? | 12 | 12 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) (brillante) ; carte coquille-saint-jacques (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 1 (groupes), cran « très dur » · pressée
 
@@ -603,4 +603,4 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) (brillante) ; carte c
 | 33 | notion | 3 + 3 + 3 (niveau 1, rangées affichées) | 3 rangées de 3 poissons. Combien de poissons en tout ? | 9 | 38 | correction autre : « Hmm, regardons ensemble. 3 rangées de 3 poissons. [les rangées comptées] 3 fois 3, ça fait 9. » |
 | 34 | notion | 5 + 5 (niveau 1, rangées affichées) | 2 rangées de 5 poissons. Combien de poissons en tout ? | 10 | 38 | correction autre : « Hmm, regardons ensemble. 2 rangées de 5 poissons. [les rangées comptées] 2 fois 5, ça fait 10. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

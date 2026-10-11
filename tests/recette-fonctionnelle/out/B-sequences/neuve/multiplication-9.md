@@ -46,7 +46,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 29 | notion | 7 × 4 = ? (niveau 9, rangées comptées d'emblée) | 7 fois 4 ? | 28 | 28 |  |
 | 30 | notion | 4 × 3 = ? (niveau 9, rangées comptées d'emblée) | 4 fois 3 ? | 12 | 12 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Multiplication, niveau 9 (tables), cran « plus facile » · réelle
 
@@ -86,7 +86,7 @@ Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle) (bri
 | 27 | notion | 4 × 5 = ? (niveau 9, rangées comptées d'emblée) | [exemple guidé : 4 rangées de 5 poissons. … 20 ; 4 fois 5, ça fait 20. À toi ! Tape la réponse.] 4 fois 5 ? | 20 | 20 (guidé) |  |
 | 28 | notion | 8 × 2 = ? (niveau 9, rangées comptées d'emblée) | 8 fois 2 ? | 16 | 16 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Multiplication, niveau 9 (tables), cran « plus facile » · pressée
 
@@ -130,7 +130,7 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
 | 31 | notion | 10 × 10 = ? (niveau 9, rangées comptées d'emblée) | 10 fois 10 ? | 100 | 32 | correction autre : « Hmm, regardons ensemble. 10 rangées de 10 poissons. [les rangées comptées] 10 fois 10, ça fait 100. » |
 | 32 | notion | 3 × 3 = ? (niveau 9, rangées comptées d'emblée) | 3 fois 3 ? | 9 | 54 | correction autre : « Hmm, regardons ensemble. 3 rangées de 3 poissons. [les rangées comptées] 3 fois 3, ça fait 9. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -194,7 +194,7 @@ Récompense et fin : +10★ (fin)
 | 49 | notion | 2 × 8 = ? (niveau 9, rangées au coquillage) | 2 fois 8 ? | 16 | 16 | +1★ |
 | 50 | notion | 2 × 1 = ? (niveau 9, rangées au coquillage) | 2 fois 1 ? | 2 | 2 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte crabe (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 9 (tables), cran « conseillé » · réelle
 
@@ -243,7 +243,7 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte crabe (nouvel
 | 36 | notion | 10 × 3 = ? (niveau 9, rangées au coquillage, revient) | 10 fois 3 ? | 30 | 30 | +2★ (erreur corrigée) |
 | 37 | notion | 4 × 4 = ? (niveau 9, rangées au coquillage) | 4 fois 4 ? | 16 | 16 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte anemone (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 9 (tables), cran « conseillé » · pressée
 
@@ -293,7 +293,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle)
 | 37 | notion | 4 × 10 = ? (niveau 9, rangées au coquillage) | 4 fois 10 ? | 40 | 53 | correction autre : « Hmm, regardons ensemble. 4 rangées de 10 poissons. [les rangées comptées] 4 fois 10, ça fait 40. » |
 | 38 | notion | 1 × 10 = ? (niveau 9, rangées au coquillage) | 1 fois 10 ? | 10 | 67 | correction autre : « Hmm, regardons ensemble. Une rangée de 10 poissons. [les rangées comptées] 1 fois 10, ça fait 10. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -357,7 +357,7 @@ Récompense et fin : +10★ (fin)
 | 49 | notion | 3 × 1 = ? (niveau 9, sans image) | 3 fois 1 ? | 3 | 3 | +1★ |
 | 50 | notion | 4 × 7 = ? (niveau 9, sans image) | 4 fois 7 ? | 28 | 28 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 9 (tables), cran « plus dur » · réelle
 
@@ -414,7 +414,7 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte oursin (nouve
 | 44 | notion | 10 × 1 = ? (niveau 9, sans image) | 10 fois 1 ? | 10 | 11 | correction M1 : « Attention : fois, ce n'est pas plus. On compte les rangées. 10 rangées d'un poisson. [les rangées comptées] 10 fois 1, ça fait 10. » |
 | 45 | notion | 5 × 2 = ? (niveau 9, sans image) | 5 fois 2 ? | 10 | 10 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) (brillante) ; carte anemone (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 9 (tables), cran « plus dur » · pressée
 
@@ -464,7 +464,7 @@ Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) (brillante) ;
 | 37 | notion | 2 × 5 = ? (niveau 9, rangées au coquillage) | 2 fois 5 ? | 10 | 69 | correction autre : « Hmm, regardons ensemble. 2 rangées de 5 poissons. [les rangées comptées] 2 fois 5, ça fait 10. » |
 | 38 | notion | 3 × 1 = ? (niveau 9, rangées au coquillage) | 3 fois 1 ? | 3 | 13 | correction autre : « Hmm, regardons ensemble. 3 rangées d'un poisson. [les rangées comptées] 3 fois 1, ça fait 3. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -528,7 +528,7 @@ Récompense et fin : +10★ (fin)
 | 49 | notion | 4 × ? = 36 (niveau 9, sans image) | 4 fois combien, ça fait 36 ? | 9 | 9 | +2★ |
 | 50 | notion | ? × 6 = 30 (niveau 9, sans image) | Combien de fois 6, ça fait 30 ? | 5 | 5 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle) (brillante) ; carte coquille-saint-jacques (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 9 (tables), cran « très dur » · réelle
 
@@ -587,7 +587,7 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle) (brillante) ; carte c
 | 46 | notion | 8 × 10 = ? (niveau 9, rangées au coquillage) | 8 fois 10 ? | 80 | 90 | correction M2 : « Hmm, regardons ensemble. 8 rangées de 10 poissons. [les rangées comptées] 8 fois 10, ça fait 80. » |
 | 47 | notion | 10 × 5 = ? (niveau 9, rangées au coquillage) | 10 fois 5 ? | 50 | 45 | correction M2 : « Hmm, regardons ensemble. 10 rangées de 5 poissons. [les rangées comptées] 10 fois 5, ça fait 50. » |
 
-Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle) ; carte crabe (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 9 (tables), cran « très dur » · pressée
 
@@ -637,4 +637,4 @@ Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle) ; ca
 | 37 | notion | 5 × 5 = ? (niveau 9, rangées au coquillage) | 5 fois 5 ? | 25 | 99 | correction autre : « Hmm, regardons ensemble. 5 rangées de 5 poissons. [les rangées comptées] 5 fois 5, ça fait 25. » |
 | 38 | notion | 9 × 3 = ? (niveau 9, rangées au coquillage) | 9 fois 3 ? | 27 | 28 | correction autre : « Hmm, regardons ensemble. 9 rangées de 3 poissons. [les rangées comptées] 9 fois 3, ça fait 27. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

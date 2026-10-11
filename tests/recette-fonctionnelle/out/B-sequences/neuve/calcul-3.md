@@ -48,7 +48,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 31 | notion | 34 + 40 = ? (niveau 3, mur, chemin affiché d'emblée) · chemin 34 +10→44 +10→54 +10→64 +10→74 | 34 plus 40 ? | 74 | 74 |  |
 | 32 | notion | 63 − 20 = ? (niveau 3, mur, chemin affiché d'emblée) · chemin 63 −10→53 −10→43 | 63 moins 20 ? | 43 | 43 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Calcul rapide, niveau 3 (dizaines, mur), cran « plus facile » · réelle
 
@@ -86,7 +86,7 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle)
 | 25 | notion | 85 − 20 = ? (niveau 3, mur, chemin affiché d'emblée) · chemin 85 −10→75 −10→65 | 85 moins 20 ? | 65 | 66 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 85 −10→75 −10→65 ; « C'était 65. » |
 | 26 | notion | 82 − 50 = ? (niveau 3, mur, chemin affiché d'emblée) · chemin 82 −10→72 −10→62 −10→52 −10→42 −10→32 | 82 moins 50 ? | 32 | 32 | +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Calcul rapide, niveau 3 (dizaines, mur), cran « plus facile » · pressée
 
@@ -129,7 +129,7 @@ Récompense et fin : +10★ (fin)
 | 30 | notion | 18 + 80 = ? (niveau 3, mur, chemin affiché d'emblée) · chemin 18 +10→28 +10→38 +10→48 +10→58 +10→68 +10→78 +10→88 +10→98 | 18 plus 80 ? | 98 | 18 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 18 +10→28 +10→38 +10→48 +10→58 +10→68 +10→78 +10→88 +10→98 ; « C'était 98. » |
 | 31 | notion | 76 + 20 = ? (niveau 3, mur, chemin affiché d'emblée) · chemin 76 +10→86 +10→96 | 76 plus 20 ? | 96 | 47 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 76 +10→86 +10→96 ; « C'était 96. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -188,7 +188,7 @@ Récompense et fin : +10★ (fin)
 | 44 | notion | 36 − 30 = ? (niveau 3, mur, chemin au coquillage) · chemin 36 −10→26 −10→16 −10→6 | 36 moins 30 ? | 6 | 6 | +1★ |
 | 45 | notion | 29 + 40 = ? (niveau 3, mur, chemin au coquillage) · chemin 29 +10→39 +10→49 +10→59 +10→69 | 29 plus 40 ? | 69 | 69 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte poisson-clown (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 3 (dizaines, mur), cran « conseillé » · réelle
 
@@ -230,7 +230,7 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte poisson-cl
 | 29 | notion | 41 − 30 = ? (niveau 3, mur, chemin au coquillage) · chemin 41 −10→31 −10→21 −10→11 | 41 moins 30 ? | 11 | je ne sais pas | correction NSP : « Ce n'est pas grave, regardons ensemble. » + la procédure sur le mur (le poisson) : 41 −10→31 −10→21 −10→11 ; « C'était 11. » |
 | 30 | notion | 32 + 50 = ? (niveau 3, mur, chemin au coquillage) · chemin 32 +10→42 +10→52 +10→62 +10→72 +10→82 | 32 plus 50 ? | 82 | 82 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Calcul rapide, niveau 3 (dizaines, mur), cran « conseillé » · pressée
 
@@ -276,7 +276,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
 | 33 | notion | 62 − 30 = ? (niveau 3, mur, chemin au coquillage) · chemin 62 −10→52 −10→42 −10→32 | 62 moins 30 ? | 32 | 31 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 62 −10→52 −10→42 −10→32 ; « C'était 32. » |
 | 34 | notion | 43 + 20 = ? (niveau 3, mur, chemin au coquillage) · chemin 43 +10→53 +10→63 | 43 plus 20 ? | 63 | 7 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 43 +10→53 +10→63 ; « C'était 63. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -336,7 +336,7 @@ Récompense et fin : +10★ (fin)
 | 45 | notion | 33 − 20 = ? (niveau 3, mur, sans chemin) · chemin 33 −10→23 −10→13 | 33 moins 20 ? | 13 | 13 | +1★ |
 | 46 | notion | 69 − 50 = ? (niveau 3, mur, sans chemin) · chemin 69 −10→59 −10→49 −10→39 −10→29 −10→19 | 69 moins 50 ? | 19 | 19 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte etoile-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 3 (dizaines, mur), cran « plus dur » · réelle
 
@@ -385,7 +385,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte et
 | 36 | notion | 93 − 20 = ? (niveau 3, mur, sans chemin) · chemin 93 −10→83 −10→73 | 93 moins 20 ? | 73 | 73 | +2★ |
 | 37 | notion | 29 + 40 = ? (niveau 3, mur, sans chemin) · chemin 29 +10→39 +10→49 +10→59 +10→69 | 29 plus 40 ? | 69 | 69 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte etoile-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 3 (dizaines, mur), cran « plus dur » · pressée
 
@@ -431,7 +431,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte etoile-de-mer
 | 33 | notion | 56 − 40 = ? (niveau 3, mur, chemin au coquillage) · chemin 56 −10→46 −10→36 −10→26 −10→16 | 56 moins 40 ? | 16 | 74 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 56 −10→46 −10→36 −10→26 −10→16 ; « C'était 16. » |
 | 34 | notion | 53 − 30 = ? (niveau 3, mur, chemin au coquillage) · chemin 53 −10→43 −10→33 −10→23 | 53 moins 30 ? | 23 | 35 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 53 −10→43 −10→33 −10→23 ; « C'était 23. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -495,7 +495,7 @@ Récompense et fin : +10★ (fin)
 | 49 | notion | ? + 30 = 69 (niveau 3, mur, sans chemin) · chemin 39 +10→49 +10→59 +10→69 | 39 plus 30 ? | 69 | 69 | +2★ |
 | 50 | notion | 19 + 30 = ? (niveau 3, mur, sans chemin) · chemin 19 +10→29 +10→39 +10→49 | 19 plus 30 ? | 49 | 49 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte moule (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 3 (dizaines, mur), cran « très dur » · réelle
 
@@ -549,7 +549,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte moule (nouv
 | 41 | notion | 90 − 70 = ? (niveau 3, mur, chemin au coquillage) · chemin 90 −10→80 −10→70 −10→60 −10→50 −10→40 −10→30 −10→20 | 90 moins 70 ? | 20 | 19 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 90 −10→80 −10→70 −10→60 −10→50 −10→40 −10→30 −10→20 ; « C'était 20. » |
 | 42 | notion | 42 + 50 = ? (niveau 3, mur, chemin au coquillage) · chemin 42 +10→52 +10→62 +10→72 +10→82 +10→92 | 42 plus 50 ? | 92 | 92 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte anemone (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 3 (dizaines, mur), cran « très dur » · pressée
 
@@ -595,4 +595,4 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte anemone (nouv
 | 33 | notion | 53 − 20 = ? (niveau 3, mur, chemin au coquillage) · chemin 53 −10→43 −10→33 | 53 moins 20 ? | 33 | 45 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 53 −10→43 −10→33 ; « C'était 33. » |
 | 34 | notion | 71 − 70 = ? (niveau 3, mur, chemin au coquillage) · chemin 71 −10→61 −10→51 −10→41 −10→31 −10→21 −10→11 −10→1 | 71 moins 70 ? | 1 | 98 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 71 −10→61 −10→51 −10→41 −10→31 −10→21 −10→11 −10→1 ; « C'était 1. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

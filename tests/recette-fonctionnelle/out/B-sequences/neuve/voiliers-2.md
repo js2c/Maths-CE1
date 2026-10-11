@@ -53,7 +53,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 36 | notion | 89 entre 45 · 54 · 58 (niveau 2, mer calme) | 89 | 3 | après 58 | « Bravo ! » |
 | 37 | notion | 22 entre 45 · 54 · 58 (niveau 2, mer calme) | 22 | 0 | avant 45 | « Bravo ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Voiliers, niveau 2 (3 bouées, impair, partout), cran « plus facile » · réelle
 
@@ -105,7 +105,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle)
 | 39 | notion | 51 entre 43 · 52 · 55 (niveau 2, mer calme) | 51 | 1 | entre 43 et 52 | « Bravo ! » ; +1★ |
 | 40 | notion | 87 entre 43 · 52 · 55 (niveau 2, mer calme) | 87 | 3 | après 55 | « Bravo ! » |
 
-Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Voiliers, niveau 2 (3 bouées, impair, partout), cran « plus facile » · pressée
 
@@ -154,7 +154,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) (brillante)
 | 36 | notion | 7 entre 21 · 25 · 29 (niveau 2, mer calme) | 7 | 0 | entre 25 et 29, puis après 29 | erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que cette bouée : il passe avant. » |
 | 37 | notion | 32 entre 21 · 25 · 29 (niveau 2, mer calme) | 32 | 3 | après 29 | « Bravo ! » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -208,7 +208,7 @@ Récompense et fin : +10★ (fin)
 | 39 | notion | 67 entre 59 · 65 · 74 (niveau 2, mer vent) | 67 | 2 | entre 65 et 74 | « Bravo ! » ; +1★ |
 | 40 | notion | 3 entre 59 · 65 · 74 (niveau 2, mer vent) | 3 | 0 | avant 59 | « Bravo ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-ballon (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 2 (3 bouées, impair, partout), cran « conseillé » · réelle
 
@@ -256,7 +256,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-ballon (nouvelle)
 | 35 | notion | 88 entre 55 · 63 · 71 (niveau 2, mer vent) | 88 | 3 | après 71 | « Bravo ! » ; +1★ |
 | 36 | notion | 79 entre 38 · 42 · 45 (niveau 2, mer vent) | 79 | 3 | après 45 | « Bravo ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 2 (3 bouées, impair, partout), cran « conseillé » · pressée
 
@@ -306,7 +306,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) (brillante)
 | 37 | notion | 38 entre 34 · 42 · 45 (niveau 2, mer calme) | 38 | 1 | avant 34, puis entre 42 et 45 | erreur V1 : « Il est plus grand que cette bouée : il passe après. » ; erreur V1 : « Il est plus petit que cette bouée : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que cette bouée : il passe après. » |
 | 38 | notion | 10 entre 31 · 36 · 45 (niveau 2, mer calme) | 10 | 0 | entre 31 et 36, puis avant 31 | erreur V1 : « Il est plus petit que cette bouée : il passe avant. » ; « Bravo ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -360,7 +360,7 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle)
 | 39 | notion | 77 entre 68 · 72 · 79 (niveau 2, mer pirates) | 77 | 2 | entre 72 et 79 | « Bravo, tu as semé les pirates ! » ; +2★ |
 | 40 | notion | 69 entre 68 · 72 · 79 (niveau 2, mer pirates) | 69 | 1 | entre 68 et 72 | « Bravo, tu as semé les pirates ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte moule (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 2 (3 bouées, impair, partout), cran « plus dur » · réelle
 
@@ -408,7 +408,7 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte mo
 | 35 | notion | 60 entre 48 · 54 · 61 (niveau 2, mer pirates, revient) | 60 | 2 | entre 48 et 54 | erreur V1 : « Il est plus grand que cette bouée : il passe après. » « Les pirates ont rattrapé le bateau ! » |
 | 36 | notion | 51 entre 48 · 54 · 61 (niveau 2, mer pirates) | 51 | 1 | entre 48 et 54 | « Bravo, tu as semé les pirates ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 2 (3 bouées, impair, partout), cran « plus dur » · pressée
 
@@ -454,7 +454,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte ou
 | 33 | notion | 15 entre 21 · 25 · 31 (niveau 2, mer calme) | 15 | 0 | entre 25 et 31, puis après 31 | erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que cette bouée : il passe avant. » |
 | 34 | notion | 21 entre 43 · 48 · 51 (niveau 2, mer calme) | 21 | 0 | avant 43 | « Bravo ! » ; +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -508,7 +508,7 @@ Récompense et fin : +10★ (fin)
 | 39 | notion | 59 entre 54 · 58 · 65 (niveau 2, mer pirates) | 59 | 2 | entre 58 et 65 | « Bravo, tu as semé les pirates ! » ; +2★ |
 | 40 | notion | 97 entre 54 · 58 · 65 (niveau 2, mer pirates) | 97 | 3 | après 65 | « Bravo, tu as semé les pirates ! » ; +2★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 2 (3 bouées, impair, partout), cran « très dur » · réelle
 
@@ -556,7 +556,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte 
 | 35 | notion | 59 entre 57 · 64 · 73 (niveau 2, mer pirates) | 59 | 1 | entre 57 et 64 | « Ouf ! Les pirates sont loin. » ; +2★ |
 | 36 | notion | 92 entre 57 · 64 · 73 (niveau 2, mer pirates) | 92 | 3 | après 73 | « Ouf ! Les pirates sont loin. » ; +2★ |
 
-Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 2 (3 bouées, impair, partout), cran « très dur » · pressée
 
@@ -604,4 +604,4 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte oursin (no
 | 35 | notion | 28 entre 54 · 58 · 67 (niveau 2, mer calme) | 28 | 0 | après 67, puis entre 54 et 58 | erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que cette bouée : il passe avant. » |
 | 36 | notion | 86 entre 54 · 58 · 67 (niveau 2, mer calme) | 86 | 3 | après 67 | « Bravo ! » ; +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

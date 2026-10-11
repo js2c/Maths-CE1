@@ -53,7 +53,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 36 | notion | 48 entre 50 · 60 · 70 · 80 · 90 (niveau 7, mer calme) | 48 | 0 | avant 50 | « Bravo ! » |
 | 37 | notion | 52 entre 50 · 60 · 70 · 80 · 90 (niveau 7, mer calme) | 52 | 1 | entre 50 et 60 | « C'est entre 50 et 60 ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Voiliers, niveau 7 (5 bouées, dizaine, pres), cran « plus facile » · réelle
 
@@ -102,7 +102,7 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
 | 36 | notion | 409 entre 390 · 400 · 410 · 420 · 430 (niveau 7, mer calme) | 409 | 2 | entre 400 et 410 | « C'est entre 400 et 410 ! » |
 | 37 | notion | 431 entre 390 · 400 · 410 · 420 · 430 (niveau 7, mer calme) | 431 | 5 | après 430 | « Bravo ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Voiliers, niveau 7 (5 bouées, dizaine, pres), cran « plus facile » · pressée
 
@@ -148,7 +148,7 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
 | 33 | notion | 144 entre 130 · 140 · 150 · 160 · 170 (niveau 7, mer calme) | 144 | 2 | entre 150 et 160, puis après 170 | erreur V1 : « Il est plus petit que 150 : il passe avant. » ; erreur V1 : « Il est plus petit que 170 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 140 : il passe après. » |
 | 34 | notion | 697 entre 690 · 700 · 710 · 720 · 730 (niveau 7, mer calme) | 697 | 1 | après 730, puis avant 690 | erreur V2 : « Il est plus petit que 730 : il passe avant. » ; erreur V2 : « Il est plus grand que 690 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 690 : il passe après. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -202,7 +202,7 @@ Récompense et fin : +10★ (fin)
 | 39 | notion | 191 entre 150 · 160 · 170 · 180 · 190 (niveau 7, mer vent) | 191 | 5 | après 190 | « Bravo ! » ; +1★ |
 | 40 | notion | 161 entre 150 · 160 · 170 · 180 · 190 (niveau 7, mer vent) | 161 | 2 | entre 160 et 170 | « C'est entre 160 et 170 ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 7 (5 bouées, dizaine, pres), cran « conseillé » · réelle
 
@@ -249,7 +249,7 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
 | 34 | notion | 248 entre 250 · 260 · 270 · 280 · 290 (niveau 7, mer vent) | 248 | 0 | avant 250 | « Bravo ! » ; +1★ |
 | 35 | notion | 308 entre 310 · 320 · 330 · 340 · 350 (niveau 7, mer vent) | 308 | 0 | avant 310 | « Bravo ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte anemone (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 7 (5 bouées, dizaine, pres), cran « conseillé » · pressée
 
@@ -296,7 +296,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle)
 | 34 | notion | 157 entre 140 · 150 · 160 · 170 · 180 (niveau 7, mer calme) | 157 | 2 | avant 140, puis avant 140 | erreur V2 : « Il est plus grand que 140 : il passe après. » ; erreur V2 : « Il est plus grand que 140 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 150 : il passe après. » |
 | 35 | notion | 39 entre 140 · 150 · 160 · 170 · 180 (niveau 7, mer calme) | 39 | 0 | entre 150 et 160, puis entre 150 et 160 | erreur V2 : « Il est plus petit que 150 : il passe avant. » ; erreur V2 : « Il est plus petit que 150 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 140 : il passe avant. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -350,7 +350,7 @@ Récompense et fin : +10★ (fin)
 | 39 | notion | 879 entre 880 · 890 · 900 · 910 · 920 (niveau 7, mer pirates) | 879 | 0 | avant 880 | « Bravo, tu as semé les pirates ! » ; +2★ |
 | 40 | notion | 901 entre 880 · 890 · 900 · 910 · 920 (niveau 7, mer pirates) | 901 | 3 | entre 900 et 910 | « Les pirates sont loin. C'est entre 900 et 910 ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte moule (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 7 (5 bouées, dizaine, pres), cran « plus dur » · réelle
 
@@ -399,7 +399,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte moule (nouvel
 | 36 | notion | 522 entre 520 · 530 · 540 · 550 · 560 (niveau 7, mer pirates) | 522 | 1 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « Il est plus grand que 520 : il passe après. » |
 | 37 | notion | 277 entre 630 · 640 · 650 · 660 · 670 (niveau 7, mer pirates) | 277 | 0 | avant 630 | « Ouf ! Les pirates sont loin. » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte anemone (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 7 (5 bouées, dizaine, pres), cran « plus dur » · pressée
 
@@ -446,7 +446,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte an
 | 34 | notion | 324 entre 320 · 330 · 340 · 350 · 360 (niveau 7, mer calme) | 324 | 1 | avant 320, puis entre 340 et 350 | erreur V1 : « Il est plus grand que 320 : il passe après. » ; erreur V1 : « Il est plus petit que 340 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 320 : il passe après. » |
 | 35 | notion | 885 entre 320 · 330 · 340 · 350 · 360 (niveau 7, mer calme) | 885 | 5 | entre 320 et 330, puis après 360 | erreur V2 : « Il est plus grand que 330 : il passe après. » ; « Bravo ! » ; +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -500,7 +500,7 @@ Récompense et fin : +10★ (fin)
 | 39 | notion | 598 entre 570 · 580 · 590 · 600 · 610 (niveau 7, mer pirates) | 598 | 3 | entre 590 et 600 | « Les pirates sont loin. C'est entre 590 et 600 ! » ; +2★ |
 | 40 | notion | 591 entre 570 · 580 · 590 · 600 · 610 (niveau 7, mer pirates) | 591 | 3 | entre 590 et 600 | « Les pirates sont loin. C'est entre 590 et 600 ! » ; +2★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) (brillante) ; carte poisson-ballon (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 7 (5 bouées, dizaine, pres), cran « très dur » · réelle
 
@@ -546,7 +546,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) (brillante
 | 33 | notion | 428 entre 430 · 440 · 450 · 460 · 470 (niveau 7, mer pirates) | 428 | 0 | entre 430 et 440 | erreur V1 : « Il est plus petit que 430 : il passe avant. » « Les pirates ont rattrapé le bateau ! » |
 | 34 | notion | 441 entre 430 · 440 · 450 · 460 · 470 (niveau 7, mer pirates, revient) | 441 | 2 | entre 440 et 450 | « Les pirates sont loin. C'est entre 440 et 450 ! » ; +3★ (erreur corrigée) |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 7 (5 bouées, dizaine, pres), cran « très dur » · pressée
 
@@ -592,4 +592,4 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte ou
 | 33 | notion | 693 entre 280 · 290 · 300 · 310 · 320 (niveau 7, mer calme) | 693 | 5 | avant 280, puis entre 290 et 300 | erreur V2 : « Il est plus grand que 280 : il passe après. » ; erreur V2 : « Il est plus grand que 300 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 320 : il passe après. » |
 | 34 | notion | 284 entre 280 · 290 · 300 · 310 · 320 (niveau 7, mer calme) | 284 | 1 | entre 280 et 290 | « C'est entre 280 et 290 ! » ; +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

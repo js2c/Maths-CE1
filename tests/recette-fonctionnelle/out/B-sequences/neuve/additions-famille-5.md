@@ -42,7 +42,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 25 | notion | ? + 6 = 8 (famille 1) | [aide d'emblée : Sous le toit, il y a 8 places. Compte les places vides !] Combien plus 6, ça fait 8 ? | 2 | 2 | +1★ |
 | 26 | notion | 4 + 5 = ? (famille 5) | [aide d'emblée : Les poissons des deux pièces montent sous le toit : compte-les tous !] Combien font 4 plus 5 ? | 9 | 9 |  |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 5 (maisons de 8 et 9), cran « plus facile » · réelle
 
@@ -75,7 +75,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) (brillante)
 | 20 | notion | 7 + 1 = ? (famille 1) | [aide d'emblée : Les poissons des deux pièces montent sous le toit : compte-les tous !] Combien font 7 plus 1 ? | 8 | 9 | correction : « Les poissons des deux pièces montent sous le toit : compte-les tous ! 7 plus 1, ça fait 8. » |
 | 21 | notion | 6 + ? = 8 (famille 1) | [aide d'emblée : Sous le toit, il y a 8 places. Compte les places vides !] 6 plus combien, ça fait 8 ? | 2 | 2 | +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 5 (maisons de 8 et 9), cran « plus facile » · pressée
 
@@ -116,7 +116,7 @@ Récompense et fin : +10★ (fin)
 | 28 | notion | 1 + 5 = ? (famille 1) | [aide d'emblée : [aide ligne] La tortue est sur 5. Elle fait un saut. Compte avec elle !] Combien font 1 plus 5 ? | 6 | 17 | correction : « [aide ligne] La tortue est sur 5. Elle fait un saut. Compte avec elle ! 1 plus 5, ça fait 6. » |
 | 29 | notion | 2 + 6 = ? (famille 1) | [aide d'emblée : Les poissons des deux pièces montent sous le toit : compte-les tous !] Combien font 2 plus 6 ? | 8 | 8 | +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -173,7 +173,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | 3 + ? = 8 (famille 5) | 3 plus combien, ça fait 8 ? | 5 | 5 | +1★ |
 | 43 | notion | ? + 8 = 9 (famille 1) | Combien plus 8, ça fait 9 ? | 1 | 1 | +1★ |
 
-Récompense et fin : fin de la notion : trou famille 5 ; +10★ (fin) ; carte limace-de-mer (nouvelle) ; carte raie-pastenague (nouvelle)
+Récompense et fin : fin de la notion : trou famille 5 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 5 (maisons de 8 et 9), cran « conseillé » · réelle
 
@@ -224,7 +224,7 @@ Récompense et fin : fin de la notion : trou famille 5 ; +10★ (fin) ; carte li
 | 38 | notion | ? + 6 = 8 (famille 1) | Combien plus 6, ça fait 8 ? | 2 | je ne sais pas | correction : « Ce n'est pas grave, regardons ensemble. Les poissons des deux pièces montent sous le toit : compte-les tous ! 2 plus 6, ça fait 8. » |
 | 39 | notion | 2 + 7 = ? (famille 1) | Combien font 2 plus 7 ? | 9 | 9 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 5 (maisons de 8 et 9), cran « conseillé » · pressée
 
@@ -272,7 +272,7 @@ Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle)
 | 35 | notion | 6 + 3 = ? (famille 5) | 6 plus 3 ? | 9 | 10 | correction : « Les poissons des deux pièces montent sous le toit : compte-les tous ! 6 plus 3, ça fait 9. » |
 | 36 | notion | 3 + ? = 8 (famille 5) | 3 plus combien, ça fait 8 ? | 5 | 11 | correction : « Les poissons des deux pièces montent sous le toit : compte-les tous ! 3 plus 5, ça fait 8. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -329,7 +329,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | ? + 8 = 9 (famille 1) | Combien plus 8, ça fait 9 ? | 1 | 1 | +1★ |
 | 43 | notion | 2 + ? = 8 (famille 1) | 2 plus combien, ça fait 8 ? | 6 | 6 | +2★ |
 
-Récompense et fin : fin de la notion : trou famille 5 ; +10★ (fin) ; carte oursin (nouvelle) ; carte coquille-saint-jacques (nouvelle)
+Récompense et fin : fin de la notion : trou famille 5 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 5 (maisons de 8 et 9), cran « plus dur » · réelle
 
@@ -377,7 +377,7 @@ Récompense et fin : fin de la notion : trou famille 5 ; +10★ (fin) ; carte ou
 | 35 | notion | ? + 6 = 8 (famille 1) | Combien plus 6, ça fait 8 ? | 2 | je ne sais pas | correction : « Ce n'est pas grave, regardons ensemble. Les poissons des deux pièces montent sous le toit : compte-les tous ! 2 plus 6, ça fait 8. » |
 | 36 | notion | 5 + 4 = ? (famille 5) | Combien font 5 plus 4 ? | 9 | 9 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 5 (maisons de 8 et 9), cran « plus dur » · pressée
 
@@ -422,7 +422,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle) ; carte oursi
 | 32 | notion | 2 + ? = 9 (famille 1) | 2 plus combien, ça fait 9 ? | 7 | 2 | correction : « Les poissons des deux pièces montent sous le toit : compte-les tous ! 2 plus 7, ça fait 9. » |
 | 33 | notion | ? + 4 = 8 (famille 2) | Combien plus 4, ça fait 8 ? | 4 | 4 | +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -479,7 +479,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | ? + 3 = 8 (famille 5) | Combien plus 3, ça fait 8 ? | 5 | 5 | +2★ |
 | 43 | notion | 1 + ? = 8 (famille 1) | 1 plus combien, ça fait 8 ? | 7 | 7 | +2★ |
 
-Récompense et fin : fin de la notion : trou famille 5 ; +10★ (fin) ; carte poisson-ballon (nouvelle) (brillante) ; carte crevette (nouvelle)
+Récompense et fin : fin de la notion : trou famille 5 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 5 (maisons de 8 et 9), cran « très dur » · réelle
 
@@ -529,7 +529,7 @@ Récompense et fin : fin de la notion : trou famille 5 ; +10★ (fin) ; carte po
 | 37 | notion | 2 + ? = 8 (famille 1, revient) | 2 plus combien, ça fait 8 ? | 6 | 5 | correction : « Les poissons des deux pièces montent sous le toit : compte-les tous ! 2 plus 6, ça fait 8. » ; le cran redescend : plus dur → conseillé (« On essaie un peu moins dur ? ») |
 | 38 | notion | 7 + ? = 9 (famille 1) | 7 plus combien, ça fait 9 ? | 2 | 2 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) (brillante) ; carte anemone (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 5 (maisons de 8 et 9), cran « très dur » · pressée
 
@@ -577,4 +577,4 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) (brillante
 | 35 | notion | 5 + 3 = ? (famille 5) | Combien font 5 plus 3 ? | 8 | 0 | correction : « Les poissons des deux pièces montent sous le toit : compte-les tous ! 5 plus 3, ça fait 8. » |
 | 36 | notion | 6 + ? = 9 (famille 5) | 6 plus combien, ça fait 9 ? | 3 | 17 | correction : « Les poissons des deux pièces montent sous le toit : compte-les tous ! 6 plus 3, ça fait 9. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

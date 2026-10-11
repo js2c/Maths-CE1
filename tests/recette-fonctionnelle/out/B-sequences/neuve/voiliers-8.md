@@ -53,7 +53,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 36 | notion | 434 entre 443 · 543 · 553 · 556 · 560 (niveau 8, mer calme) | 434 | 0 | avant 443 | « Bravo ! » |
 | 37 | notion | 545 entre 443 · 543 · 553 · 556 · 560 (niveau 8, mer calme) | 545 | 2 | entre 543 et 553 | « Bravo ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte hippocampe (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Voiliers, niveau 8 (5 bouées, melange, pres), cran « plus facile » · réelle
 
@@ -95,7 +95,7 @@ Récompense et fin : +10★ (fin) ; carte hippocampe (nouvelle)
 | 29 | notion | 291 entre 276 · 286 · 289 · 299 · 399 (niveau 8, mer calme, revient) | 291 | 3 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « Il est plus grand que cette bouée : il passe après. » |
 | 30 | notion | 241 entre 276 · 286 · 289 · 299 · 399 (niveau 8, mer calme) | 241 | 0 | avant 276 | « Bravo ! » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Voiliers, niveau 8 (5 bouées, melange, pres), cran « plus facile » · pressée
 
@@ -140,7 +140,7 @@ Récompense et fin : +10★ (fin)
 | 32 | notion | 111 entre 267 · 277 · 377 · 386 · 486 (niveau 8, mer calme) | 111 | 0 | entre 377 et 386, puis entre 386 et 486 | erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que cette bouée : il passe avant. » |
 | 33 | notion | 903 entre 267 · 277 · 377 · 386 · 486 (niveau 8, mer calme) | 903 | 5 | entre 377 et 386, puis avant 267 | erreur V2 : « Il est plus grand que cette bouée : il passe après. » ; erreur V2 : « Il est plus grand que cette bouée : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que cette bouée : il passe après. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -194,7 +194,7 @@ Récompense et fin : +10★ (fin)
 | 39 | notion | 86 entre 79 · 87 · 93 · 193 · 293 (niveau 8, mer vent) | 86 | 1 | entre 79 et 87 | « Bravo ! » ; +1★ |
 | 40 | notion | 302 entre 79 · 87 · 93 · 193 · 293 (niveau 8, mer vent) | 302 | 5 | après 293 | « Bravo ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 8 (5 bouées, melange, pres), cran « conseillé » · réelle
 
@@ -244,7 +244,7 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
 | 37 | notion | 509 entre 400 · 500 · 600 · 610 · 710 (niveau 8, mer vent) | 509 | 2 | entre 400 et 500, puis entre 500 et 600 | erreur V1 : « Il est plus grand que 500 : il passe après. » « Le vent repousse le bateau. » ; « C'est entre 500 et 600 ! » ; +1★ |
 | 38 | notion | 620 entre 434 · 440 · 450 · 550 · 559 (niveau 8, mer vent) | 620 | 5 | après 559 | « Bravo ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte anemone (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 8 (5 bouées, melange, pres), cran « conseillé » · pressée
 
@@ -291,7 +291,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle)
 | 34 | notion | 234 entre 408 · 508 · 518 · 618 · 628 (niveau 8, mer calme) | 234 | 0 | entre 518 et 618, puis entre 408 et 508 | erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; erreur V2 : « Il est plus petit que cette bouée : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que cette bouée : il passe avant. » |
 | 35 | notion | 92 entre 408 · 508 · 518 · 618 · 628 (niveau 8, mer calme) | 92 | 0 | avant 408 | « Bravo ! » ; +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -345,7 +345,7 @@ Récompense et fin : +10★ (fin)
 | 39 | notion | 578 entre 170 · 270 · 370 · 470 · 570 (niveau 8, mer pirates) | 578 | 5 | après 570 | « Ouf ! Les pirates sont loin. » ; +2★ |
 | 40 | notion | 364 entre 170 · 270 · 370 · 470 · 570 (niveau 8, mer pirates) | 364 | 2 | entre 270 et 370 | « Ouf ! Les pirates sont loin. » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte poisson-clown (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 8 (5 bouées, melange, pres), cran « plus dur » · réelle
 
@@ -395,7 +395,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte po
 | 37 | notion | 552 entre 444 · 544 · 554 · 654 · 754 (niveau 8, mer pirates) | 552 | 2 | entre 444 et 544 | erreur V1 : « Il est plus grand que cette bouée : il passe après. » « Les pirates ont rattrapé le bateau ! » |
 | 38 | notion | 501 entre 444 · 544 · 554 · 654 · 754 (niveau 8, mer pirates) | 501 | 1 | entre 444 et 544 | « Bravo, tu as semé les pirates ! » ; +2★ |
 
-Récompense et fin : +10★ (fin) ; carte oursin (nouvelle) ; carte poisson-clown (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 8 (5 bouées, melange, pres), cran « plus dur » · pressée
 
@@ -441,7 +441,7 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle) ; carte poisson-clow
 | 33 | notion | 105 entre 139 · 147 · 150 · 160 · 260 (niveau 8, mer calme) | 105 | 0 | après 260, puis avant 139 | erreur V2 : « Il est plus petit que 260 : il passe avant. » ; « Bravo ! » ; +1★ |
 | 34 | notion | 866 entre 139 · 147 · 150 · 160 · 260 (niveau 8, mer calme) | 866 | 5 | après 260 | « Bravo ! » ; +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -495,7 +495,7 @@ Récompense et fin : +10★ (fin)
 | 39 | notion | 382 entre 271 · 281 · 381 · 391 · 401 (niveau 8, mer pirates) | 382 | 3 | entre 381 et 391 | « Ouf ! Les pirates sont loin. » ; +2★ |
 | 40 | notion | 393 entre 271 · 281 · 381 · 391 · 401 (niveau 8, mer pirates) | 393 | 4 | entre 391 et 401 | « Ouf ! Les pirates sont loin. » ; +2★ |
 
-Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) ; carte poisson-chirurgien (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 8 (5 bouées, melange, pres), cran « très dur » · réelle
 
@@ -538,7 +538,7 @@ Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) ; carte poiss
 | 30 | notion | 448 entre 438 · 446 · 451 · 551 · 651 (niveau 8, mer vent) | 448 | 2 | entre 446 et 451 | « Bravo ! » ; MONTÉE (niveau 1 → 9) ; +1★ ; étoile arc-en-ciel (niveau franchi) |
 | 31 | notion | 450 entre 438 · 446 · 451 · 551 · 651 (niveau 8, mer vent) | 450 | 2 | entre 446 et 451 | « Bravo ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte oursin (nouvelle) ; carte crabe (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 8 (5 bouées, melange, pres), cran « très dur » · pressée
 
@@ -582,4 +582,4 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle) ; carte crabe (nouve
 | 31 | notion | 361 entre 359 · 363 · 463 · 470 · 480 (niveau 8, mer calme, revient) | 361 | 1 | entre 363 et 463, puis avant 359 | erreur V1 : « Il est plus petit que cette bouée : il passe avant. » ; erreur V1 : « Il est plus grand que cette bouée : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que cette bouée : il passe après. » |
 | 32 | notion | 189 entre 170 · 180 · 190 · 200 · 210 (niveau 8, mer calme) | 189 | 2 | entre 180 et 190 | « C'est entre 180 et 190 ! » ; +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

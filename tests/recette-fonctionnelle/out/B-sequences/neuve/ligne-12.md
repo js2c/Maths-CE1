@@ -61,7 +61,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 44 | notion | pavé numérique + tableau chalut/filet/poisson ; dictée | Tape le nombre 463 sur le pavé. | 463 | 463 | +1★ |
 | 45 | notion | pavé numérique + tableau chalut/filet/poisson ; dictée | Tape le nombre 275 sur le pavé. | 275 | 275 |  |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Ligne graduée, niveau 12, cran « plus facile » · réelle
 
@@ -112,7 +112,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
 | 38 | notion | pavé numérique + tableau chalut/filet/poisson ; dictée | Écris le nombre 754. | 754 | 70054 | correction E7 : « On n'écrit pas {cents} puis {reste} : le {reste} prend la place des {places}. … C'était 754. » |
 | 39 | notion | pavé numérique + tableau chalut/filet/poisson ; dictée | Écris le nombre 638. | 638 | 638 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte anemone (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Ligne graduée, niveau 12, cran « plus facile » · pressée
 
@@ -163,7 +163,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle)
 | 38 | notion | pavé numérique + tableau chalut/filet/poisson ; dictée | Écris le nombre 714. | 714 | 904 | correction autre : « Hmm, regardons ensemble. … C'était 714. » |
 | 39 | notion | pavé numérique + tableau chalut/filet/poisson ; dictée | Tape le nombre 119 sur le pavé. | 119 | 387 | correction autre : « Hmm, regardons ensemble. … C'était 119. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -224,7 +224,7 @@ Récompense et fin : +10★ (fin)
 | 46 | notion | pavé numérique ; dictée | Tape le nombre 837 sur le pavé. | 837 | 837 | +1★ |
 | 47 | notion | pavé numérique ; dictée | Tape le nombre 692 sur le pavé. | 692 | 692 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte etoile-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 12, cran « conseillé » · réelle
 
@@ -277,7 +277,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte etoile-de-mer
 | 40 | notion | pavé numérique ; dictée | Tape le nombre 698 sur le pavé. | 698 | 60098 | correction E7 : « On n'écrit pas {cents} puis {reste} : le {reste} prend la place des {places}. … C'était 698. » |
 | 41 | notion | pavé numérique ; dictée | Tape le nombre 512 sur le pavé. | 512 | 512 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 12, cran « conseillé » · pressée
 
@@ -328,7 +328,7 @@ Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle)
 | 38 | notion | pavé numérique ; dictée | Écris le nombre 605. | 605 | 591 | correction autre : « Hmm, regardons ensemble. … C'était 605. » |
 | 39 | notion | pavé numérique ; dictée | Tape le nombre 947 sur le pavé. | 947 | 894 | correction autre : « Hmm, regardons ensemble. … C'était 947. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -391,7 +391,7 @@ Récompense et fin : +10★ (fin)
 | 48 | notion | pavé numérique ; dictée | Tape le nombre 507 sur le pavé. | 507 | 507 | +2★ |
 | 49 | notion | pavé numérique ; dictée | Tape le nombre 599 sur le pavé. | 599 | 599 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) (brillante) ; carte crevette (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 12, cran « plus dur » · réelle
 
@@ -436,7 +436,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle) (brillante
 | 32 | notion | pavé numérique ; dictée | Tape le nombre 300 sur le pavé. | 300 | 300 | +1★ |
 | 33 | notion | pavé numérique ; dictée | Écris le nombre 181. | 181 | 181 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte limace-de-mer (nouvelle) ; carte poisson-ballon (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 12, cran « plus dur » · pressée
 
@@ -488,7 +488,7 @@ Récompense et fin : +10★ (fin) ; carte limace-de-mer (nouvelle) ; carte poiss
 | 39 | notion | pavé numérique ; dictée | Tape le nombre 145 sur le pavé. | 145 | 194 | correction autre : « Hmm, regardons ensemble. … C'était 145. » |
 | 40 | notion | pavé numérique ; dictée | Écris le nombre 907. | 907 | 265 | correction autre : « Hmm, regardons ensemble. … C'était 907. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -551,7 +551,7 @@ Récompense et fin : +10★ (fin)
 | 48 | notion | pavé numérique ; dictée | Tape le nombre 409 sur le pavé. | 409 | 409 | +2★ |
 | 49 | notion | pavé numérique ; dictée | Écris le nombre 305. | 305 | 305 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte crabe (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 12, cran « très dur » · réelle
 
@@ -607,7 +607,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte crabe (nouv
 | 43 | notion | pavé numérique ; dictée | Tape le nombre 640 sur le pavé. | 640 | je ne sais pas | correction NSP : « Ce n'est pas grave, regardons ensemble. … C'était 640. » ; le cran redescend : plus dur → conseillé (« On essaie un peu moins dur ? ») |
 | 44 | notion | pavé numérique ; dictée | Écris le nombre 949. | 949 | 949 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle) ; carte anemone (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 12, cran « très dur » · pressée
 
@@ -657,4 +657,4 @@ Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle) ; carte anemo
 | 37 | notion | pavé numérique ; dictée | Écris le nombre 409. | 409 | 471 | correction autre : « Hmm, regardons ensemble. … C'était 409. » |
 | 38 | notion | pavé numérique ; dictée | Écris le nombre 202. | 202 | 915 | correction autre : « Hmm, regardons ensemble. … C'était 202. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

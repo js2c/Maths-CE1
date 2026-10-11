@@ -15,7 +15,7 @@
 // Captures dans tests/e2e/out/boutique/ ; échoue si une vérification échoue ou si la page a une erreur.
 //   node tests/e2e/boutique.mjs [--out dossier] [--vite]   (--vite : seulement 1280 × 800)
 import { chromium, finReelle, voixPermise } from "./navigateur.mjs";
-import { mkdirSync, readFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
 import { recifOuvert } from "./recif-commun.mjs";
@@ -53,7 +53,7 @@ async function fresh(state, { q = Q, vue = VUES[0], reglages = {}, fin = false }
 const owned = (list, extra = {}) => ({ id: "cartes", cartes: Object.fromEntries(list.map((id) => [id, { n: 1, premiere: 1, brillante: false, ...extra }])) });
 const etoiles = (total, extra = {}) => ({ id: "etoiles", total, cumul: total + 100, dorees: 0, doreesDepensees: 0, arcEnCiel: 0, arcDepensees: 0, arcLibre: 0, coquillages: 0, coquillagesDores: 0, ...extra });
 const said = (page) => page.evaluate(() => window.__said.join(" | "));
-const saidReset = (page) => page.evaluate(() => { window.__said = []; });
+const saidReset = (page) => page.evaluate(() => { window.__said = []; window.__saidVu = 0; });
 // un toucher au centre d'un élément (les boutons qui se balancent ne sont jamais « stables » pour Playwright)
 const tap = async (page, sel) => { const b = await page.locator(sel).first().boundingBox(); if (!b) throw new Error(`introuvable : ${sel}`); await page.touchscreen.tap(b.x + b.width / 2, b.y + b.height / 2); };
 const tuile = (id) => `.boutique-tuile[data-id="${id}"]`;
@@ -68,7 +68,14 @@ async function boutique(page) {
   await page.waitForTimeout(1600);
 }
 const zone = async (page, z) => { await tap(page, `.boutique-onglet[data-zone="${z}"]`); await page.waitForFunction((z) => window.__app.boutique.zone === z && document.querySelectorAll(".boutique-tuile").length === 15, z); await page.waitForTimeout(900); };
-const shot = (page, vue, n) => page.screenshot({ path: join(OUT, `${n}-${vue[0]}.png`) });
+// chaque capture, avec ce que la voix a dit depuis la précédente et ce qu'écrit la bulle (pour la relecture : phrases.json)
+const PHRASES = [];
+const shot = async (page, vue, n) => {
+  await page.screenshot({ path: join(OUT, `${n}-${vue[0]}.png`) });
+  const r = await page.evaluate(() => { const s = window.__said ?? [], i = window.__saidVu ?? 0; window.__saidVu = s.length; return { dites: s.slice(i), bulle: window.__app.bulle.etat?.() ?? null }; }).catch(() => null);
+  if (r) PHRASES.push({ capture: `${n}-${vue[0]}`, ...r });
+};
+process.on("exit", () => { try { writeFileSync(join(OUT, "phrases.json"), JSON.stringify(PHRASES, null, 1)); } catch { /* rien */ } });
 const fini = (page) => page.waitForFunction(() => !window.__app.boutique.verrou, null, { timeout: 30000 });
 
 // une situation de février : le lagon et le récif de corail (une créature sur quatre brillante), le grand large ouvert (son

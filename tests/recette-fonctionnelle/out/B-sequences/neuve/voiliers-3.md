@@ -53,7 +53,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 36 | notion | 476 entre 300 · 400 · 500 (niveau 3, mer calme) | 476 | 2 | entre 400 et 500 | « C'est entre 400 et 500 ! » |
 | 37 | notion | 52 entre 300 · 400 · 500 (niveau 3, mer calme) | 52 | 0 | avant 300 | « Bravo ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte anemone (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Voiliers, niveau 3 (3 bouées, centaine, loin), cran « plus facile » · réelle
 
@@ -105,7 +105,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle)
 | 39 | notion | 18 entre 100 · 200 · 300 (niveau 3, mer calme) | 18 | 0 | je ne sais pas | « Ce n'est pas grave, regardons ensemble. » puis le bateau va seul : « Il est plus petit que 100 : il passe avant. » |
 | 40 | notion | 165 entre 100 · 200 · 300 (niveau 3, mer calme) | 165 | 1 | entre 100 et 200 | « C'est entre 100 et 200 ! » |
 
-Récompense et fin : +10★ (fin) ; carte crevette (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Voiliers, niveau 3 (3 bouées, centaine, loin), cran « plus facile » · pressée
 
@@ -152,7 +152,7 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle)
 | 34 | notion | 854 entre 700 · 800 · 900 (niveau 3, mer calme) | 854 | 2 | avant 700, puis entre 800 et 900 | erreur V2 : « Il est plus grand que 700 : il passe après. » ; « C'est entre 800 et 900 ! » ; +1★ |
 | 35 | notion | 843 entre 700 · 800 · 900 (niveau 3, mer calme) | 843 | 2 | avant 700, puis entre 700 et 800 | erreur V2 : « Il est plus grand que 700 : il passe après. » ; erreur V2 : « Il est plus grand que 800 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 800 : il passe après. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -206,7 +206,7 @@ Récompense et fin : +10★ (fin)
 | 39 | notion | 169 entre 100 · 200 · 300 (niveau 3, mer vent) | 169 | 1 | entre 100 et 200 | « C'est entre 100 et 200 ! » ; +1★ |
 | 40 | notion | 254 entre 100 · 200 · 300 (niveau 3, mer vent) | 254 | 2 | entre 200 et 300 | « C'est entre 200 et 300 ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 3 (3 bouées, centaine, loin), cran « conseillé » · réelle
 
@@ -256,7 +256,7 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle)
 | 37 | notion | 648 entre 600 · 700 · 800 (niveau 3, mer vent) | 648 | 1 | entre 700 et 800, puis entre 600 et 700 | erreur V1 : « Il est plus petit que 700 : il passe avant. » « Le vent repousse le bateau. » ; « C'est entre 600 et 700 ! » ; +1★ |
 | 38 | notion | 763 entre 400 · 500 · 600 (niveau 3, mer vent) | 763 | 3 | après 600 | « Bravo ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 3 (3 bouées, centaine, loin), cran « conseillé » · pressée
 
@@ -301,7 +301,7 @@ Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle) (bri
 | 32 | notion | 30 entre 300 · 400 · 500 (niveau 3, mer calme) | 30 | 0 | après 500, puis entre 300 et 400 | erreur V2 : « Il est plus petit que 500 : il passe avant. » ; erreur V2 : « Il est plus petit que 300 : il passe avant. » ; deuxième erreur : le bateau va seul : « Il est plus petit que 300 : il passe avant. » |
 | 33 | notion | 326 entre 300 · 400 · 500 (niveau 3, mer calme) | 326 | 1 | entre 300 et 400 | « C'est entre 300 et 400 ! » ; +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -355,7 +355,7 @@ Récompense et fin : +10★ (fin)
 | 39 | notion | 564 entre 500 · 600 · 700 (niveau 3, mer pirates) | 564 | 1 | entre 500 et 600 | « Les pirates sont loin. C'est entre 500 et 600 ! » ; +2★ |
 | 40 | notion | 637 entre 500 · 600 · 700 (niveau 3, mer pirates) | 637 | 2 | entre 600 et 700 | « Les pirates sont loin. C'est entre 600 et 700 ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte crevette (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 3 (3 bouées, centaine, loin), cran « plus dur » · réelle
 
@@ -405,7 +405,7 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte cr
 | 37 | notion | 727 entre 100 · 200 · 300 (niveau 3, mer pirates) | 727 | 3 | après 300 | « Ouf ! Les pirates sont loin. » ; +2★ |
 | 38 | notion | 150 entre 100 · 200 · 300 (niveau 3, mer pirates) | 150 | 1 | entre 100 et 200 | « Les pirates sont loin. C'est entre 100 et 200 ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte moule (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 3 (3 bouées, centaine, loin), cran « plus dur » · pressée
 
@@ -456,7 +456,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte 
 | 38 | notion | 270 entre 200 · 300 · 400 (niveau 3, mer vent) | 270 | 1 | après 400, puis entre 300 et 400 | erreur V2 : « Il est plus petit que 400 : il passe avant. » « Le vent repousse le bateau. » ; erreur V2 : « Il est plus petit que 300 : il passe avant. » « Le vent repousse le bateau. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 200 : il passe après. » |
 | 39 | notion | 722 entre 200 · 300 · 400 (niveau 3, mer calme) | La mer se calme. 722 | 3 | après 400 | « Bravo ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -510,7 +510,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
 | 39 | notion | 996 entre 300 · 400 · 500 (niveau 3, mer pirates) | 996 | 3 | après 500 | « Bravo, tu as semé les pirates ! » ; +2★ |
 | 40 | notion | 427 entre 300 · 400 · 500 (niveau 3, mer pirates) | 427 | 2 | entre 400 et 500 | « Les pirates sont loin. C'est entre 400 et 500 ! » ; +2★ |
 
-Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte poisson-clown (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 3 (3 bouées, centaine, loin), cran « très dur » · réelle
 
@@ -558,7 +558,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte poisson-clo
 | 35 | notion | 969 entre 500 · 600 · 700 (niveau 3, mer pirates) | 969 | 3 | après 700 | « Ouf ! Les pirates sont loin. » ; +2★ |
 | 36 | notion | 659 entre 500 · 600 · 700 (niveau 3, mer pirates) | 659 | 2 | entre 600 et 700 | « Les pirates sont loin. C'est entre 600 et 700 ! » ; +1★ |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte poisson-chirurgien (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Voiliers, niveau 3 (3 bouées, centaine, loin), cran « très dur » · pressée
 
@@ -607,4 +607,4 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte po
 | 36 | notion | 730 entre 300 · 400 · 500 (niveau 3, mer calme) | 730 | 3 | avant 300, puis avant 300 | erreur V2 : « Il est plus grand que 300 : il passe après. » ; erreur V2 : « Il est plus grand que 300 : il passe après. » ; deuxième erreur : le bateau va seul : « Il est plus grand que 500 : il passe après. » |
 | 37 | notion | 435 entre 300 · 400 · 500 (niveau 3, mer calme) | 435 | 2 | entre 400 et 500 | « C'est entre 400 et 500 ! » ; +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

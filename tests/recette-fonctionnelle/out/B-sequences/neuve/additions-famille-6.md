@@ -42,7 +42,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 25 | notion | 5 + 4 = ? (famille 5) | [aide d'emblée : 4 plus 4, c'est un double. Et une bulle de plus !] 5 plus 4 ? 5 plus 4, c'est 4 plus 4, et encore 1. | 9 | 9 | +1★ |
 | 26 | notion | ? + 2 = 3 (famille 1) | [aide d'emblée : 1 plus 1, c'est un double. Et une bulle de plus !] Combien plus 2, ça fait 3 ? | 1 | 1 |  |
 
-Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 6 (presque-doubles), cran « plus facile » · réelle
 
@@ -81,7 +81,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle)
 | 26 | notion | ? + 1 = 3 (famille 1) | [aide d'emblée : 1 plus 1, c'est un double. Et une bulle de plus !] Combien plus 1, ça fait 3 ? | 2 | je ne sais pas | correction : « Ce n'est pas grave, regardons ensemble. 1 plus 1, c'est un double. Et une bulle de plus ! 2 plus 1, ça fait 3. » |
 | 27 | notion | 3 + 4 = ? (famille 4) | [aide d'emblée : 3 plus 3, c'est un double. Et une bulle de plus !] 3 plus 4 ? 3 plus 4, c'est 3 plus 3, et encore 1. | 7 | 7 |  |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 6 (presque-doubles), cran « plus facile » · pressée
 
@@ -123,7 +123,7 @@ Récompense et fin : +10★ (fin)
 | 29 | notion | 4 + 5 = ? (famille 5) | [aide d'emblée : 4 plus 4, c'est un double. Et une bulle de plus !] 4 plus 5 ? 4 plus 5, c'est 4 plus 4, et encore 1. | 9 | 17 | correction : « 4 plus 4, c'est un double. Et une bulle de plus ! 4 plus 5, ça fait 9. » |
 | 30 | notion | 3 + ? = 5 (famille 1) | [aide d'emblée : 2 plus 2, c'est un double. Et une bulle de plus !] 3 plus combien, ça fait 5 ? | 2 | 15 | correction : « 2 plus 2, c'est un double. Et une bulle de plus ! 3 plus 2, ça fait 5. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -180,7 +180,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | 4 + 2 = ? (famille 1) | Combien font 4 plus 2 ? | 6 | 6 | +1★ |
 | 43 | notion | 1 + 1 = ? (famille 1) | Combien font 1 plus 1 ? | 2 | 2 | +1★ |
 
-Récompense et fin : fin de la notion : trou famille 6 ; +10★ (fin) ; carte concombre-de-mer (nouvelle) ; carte moule (nouvelle)
+Récompense et fin : fin de la notion : trou famille 6 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 6 (presque-doubles), cran « conseillé » · réelle
 
@@ -226,7 +226,7 @@ Récompense et fin : fin de la notion : trou famille 6 ; +10★ (fin) ; carte co
 | 33 | notion | 2 + 1 = ? (famille 1) | 2 plus 1 ? 2 plus 1, c'est 1 plus 1, et encore 1. | 3 | 4 | correction : « 1 plus 1, c'est un double. Et une bulle de plus ! 2 plus 1, ça fait 3. » |
 | 34 | notion | 3 + 4 = ? (famille 4) | Combien font 3 plus 4 ? 3 plus 4, c'est 3 plus 3, et encore 1. | 7 | 7 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 6 (presque-doubles), cran « conseillé » · pressée
 
@@ -274,7 +274,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle)
 | 35 | notion | 4 + 5 = ? (famille 5) | 4 plus 5 ? 4 plus 5, c'est 4 plus 4, et encore 1. | 9 | 15 | correction : « 4 plus 4, c'est un double. Et une bulle de plus ! 4 plus 5, ça fait 9. » |
 | 36 | notion | 1 + 3 = ? (famille 1) | Combien font 1 plus 3 ? | 4 | 8 | correction : « [aide ligne] La tortue est sur 3. Elle fait un saut. Compte avec elle ! 1 plus 3, ça fait 4. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -331,7 +331,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | 2 + 2 = ? (famille 1) | Combien font 2 plus 2 ? | 4 | 4 | +1★ |
 | 43 | notion | 2 + ? = 8 (famille 1) | 2 plus combien, ça fait 8 ? | 6 | 6 | +2★ |
 
-Récompense et fin : fin de la notion : trou famille 6 ; +10★ (fin) ; carte poisson-clown (nouvelle) ; carte coquille-saint-jacques (nouvelle)
+Récompense et fin : fin de la notion : trou famille 6 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 6 (presque-doubles), cran « plus dur » · réelle
 
@@ -376,7 +376,7 @@ Récompense et fin : fin de la notion : trou famille 6 ; +10★ (fin) ; carte po
 | 32 | notion | 2 + 1 = ? (famille 1, revient) | Combien font 2 plus 1 ? 2 plus 1, c'est 1 plus 1, et encore 1. | 3 | 2 | correction : « 1 plus 1, c'est un double. Et une bulle de plus ! 2 plus 1, ça fait 3. » |
 | 33 | notion | 3 + 4 = ? (famille 4) | 3 plus 4 ? 3 plus 4, c'est 3 plus 3, et encore 1. | 7 | 7 | +1★ |
 
-Récompense et fin : fin de la notion : trou famille 6 ; +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte poisson-ballon (nouvelle)
+Récompense et fin : fin de la notion : trou famille 6 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 6 (presque-doubles), cran « plus dur » · pressée
 
@@ -422,7 +422,7 @@ Récompense et fin : fin de la notion : trou famille 6 ; +10★ (fin) ; carte be
 | 33 | notion | 7 + 2 = ? (famille 1) | Combien font 7 plus 2 ? | 9 | 14 | correction : « [aide ligne] La tortue est sur 7. Elle fait 2 sauts. Compte avec elle ! 7 plus 2, ça fait 9. » |
 | 34 | notion | 2 + 3 = ? (famille 1) | Combien font 2 plus 3 ? 2 plus 3, c'est 2 plus 2, et encore 1. | 5 | 3 | correction : « 2 plus 2, c'est un double. Et une bulle de plus ! 2 plus 3, ça fait 5. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -479,7 +479,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | ? + 7 = 8 (famille 1) | Combien plus 7, ça fait 8 ? | 1 | 1 | +2★ |
 | 43 | notion | 1 + ? = 9 (famille 1) | 1 plus combien, ça fait 9 ? | 8 | 8 | +2★ |
 
-Récompense et fin : fin de la notion : trou famille 6 ; +10★ (fin) ; carte coquille-saint-jacques (nouvelle) (brillante) ; carte limace-de-mer (nouvelle)
+Récompense et fin : fin de la notion : trou famille 6 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 6 (presque-doubles), cran « très dur » · réelle
 
@@ -529,7 +529,7 @@ Récompense et fin : fin de la notion : trou famille 6 ; +10★ (fin) ; carte co
 | 37 | notion | 5 + 1 = ? (famille 1, revient) | Combien font 5 plus 1 ? | 6 | 6 | +2★ (erreur corrigée) |
 | 38 | notion | 3 + 2 = ? (famille 1, revient) | 3 plus 2 ? 3 plus 2, c'est 2 plus 2, et encore 1. | 5 | 5 | +2★ (erreur corrigée) |
 
-Récompense et fin : fin de la notion : trou famille 6 ; +10★ (fin) ; carte oursin (nouvelle) ; carte etoile-de-mer (nouvelle)
+Récompense et fin : fin de la notion : trou famille 6 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 6 (presque-doubles), cran « très dur » · pressée
 
@@ -575,4 +575,4 @@ Récompense et fin : fin de la notion : trou famille 6 ; +10★ (fin) ; carte ou
 | 33 | notion | 8 + 2 = ? (famille 1) | Combien font 8 plus 2 ? | 10 | 7 | correction : « [aide ligne] La tortue est sur 8. Elle fait 2 sauts. Compte avec elle ! 8 plus 2, ça fait 10. » |
 | 34 | notion | 4 + 3 = ? (famille 4) | Combien font 4 plus 3 ? 4 plus 3, c'est 3 plus 3, et encore 1. | 7 | 14 | correction : « 3 plus 3, c'est un double. Et une bulle de plus ! 4 plus 3, ça fait 7. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

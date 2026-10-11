@@ -62,7 +62,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 45 | notion | ligne 400–500 (pas 10, 11 graduations) écrits 400·450·500 ; étoile sur 460 ; bulles 46 / 60 / 460 / 470 | Quel nombre se cache sous l'étoile de mer ? | 460 | 460 |  |
 | 46 | notion | ligne 600–700 (pas 10, 11 graduations) écrits 600·650·700 ; poisson « 680 » à poser | Où est le nombre 680 ? Pose le poisson dessus. | 680 | 680 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-ballon (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Ligne graduée, niveau 10, cran « plus facile » · réelle
 
@@ -122,7 +122,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-ballon (nouvelle)
 | 47 | notion | LEÇON L1 | (leçon animée L1, raison : erreur E1 répétée) |  | regardée jusqu'au bout | +3★ (leçon L1) |
 | 48 | notion | ligne 600–700 (pas 10, 11 graduations) écrits 600·650·700 ; poisson « 620 » à poser | Où est le nombre 620 ? Pose le poisson dessus. | 620 | 620 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Ligne graduée, niveau 10, cran « plus facile » · pressée
 
@@ -166,7 +166,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle)
 | 31 | notion | ligne 300–400 (pas 10, 11 graduations) écrits 300·350·400 ; poisson « 320 » à poser | Place le poisson sur le nombre 320. | 320 | 340 | correction autre : « Hmm, regardons ensemble. … C'était 320. » |
 | 32 | notion | ligne 800–900 (pas 10, 11 graduations) écrits 800·850·900 ; étoile sur 890 ; bulles 89 / 90 / 890 / 900 | Quel nombre se cache sous l'étoile de mer ? | 890 | 89 | correction E6 : « 890 : 8 centaines, 9 dizaines, 0 unité. … C'était 890. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -228,7 +228,7 @@ Récompense et fin : +10★ (fin)
 | 47 | notion | ligne 700–800 (pas 10, 11 graduations) écrits 700·800 ; poisson « 760 » à poser | Où est le nombre 760 ? Pose le poisson dessus. | 760 | 760 | +1★ |
 | 48 | notion | ligne 500–600 (pas 10, 11 graduations) écrits 500·600 ; étoile sur 590 ; bulles 59 / 90 / 590 / 600 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 590 | 590 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte anemone (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 10, cran « conseillé » · réelle
 
@@ -278,7 +278,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte anemone (nouv
 | 37 | notion | ligne 700–800 (pas 10, 11 graduations) écrits 700·800 ; étoile sur 760 ; bulles 60 / 76 / 760 / 770 | Quel nombre se cache sous l'étoile de mer ? | 760 | 760 | +1★ |
 | 38 | notion | ligne 500–600 (pas 10, 11 graduations) écrits 500·600 ; poisson « 520 » à poser | Où est le nombre 520 ? Pose le poisson dessus. | 520 | 520 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 10, cran « conseillé » · pressée
 
@@ -327,7 +327,7 @@ Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle) (bri
 | 36 | notion | ligne 600–700 (pas 10, 11 graduations) écrits 600·700 ; poisson « 670 » à poser | Place le poisson sur le nombre 670. | 670 | 690 | correction autre : « Hmm, regardons ensemble. … C'était 670. » |
 | 37 | notion | ligne 600–700 (pas 10, 11 graduations) écrits 600·700 ; étoile sur 690 ; bulles 69 / 90 / 690 / 700 | Quel nombre se cache sous l'étoile de mer ? | 690 | 690 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte anemone (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -389,7 +389,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle)
 | 47 | notion | ligne 700–800 (pas 10, 11 graduations) écrits 700·800 ; poisson « 750 » à poser | Place le poisson sur le nombre 750. | 750 | 750 | +1★ |
 | 48 | notion | ligne 600–700 (pas 10, 11 graduations) écrits 600·700 ; étoile sur 640 ; bulles 40 / 64 / 640 / 650 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 640 | 640 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte crabe (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 10, cran « plus dur » · réelle
 
@@ -435,7 +435,7 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte crabe (nouvel
 | 33 | notion | LEÇON L10 | (leçon animée L10, raison : erreur E6 répétée) |  | regardée jusqu'au bout | +3★ (leçon L10) |
 | 34 | notion | ligne 600–700 (pas 10, 11 graduations) écrits 600·700 ; poisson « 650 » à poser | Où est le nombre 650 ? Pose le poisson dessus. | 650 | 650 | MONTÉE (niveau 1 → 11) ; +1★ ; étoile arc-en-ciel (niveau franchi) |
 
-Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle) (brillante) ; carte crabe (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 10, cran « plus dur » · pressée
 
@@ -486,7 +486,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-clown (nouvelle) (brillante) ;
 | 38 | notion | ligne 400–500 (pas 10, 11 graduations) écrits 400·500 ; étoile sur 470 ; bulles 47 / 70 / 470 / 480 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 470 | 70 | correction E3 : « La ligne commence à 400, pas à zéro. … C'était 470. » |
 | 39 | notion | ligne 200–300 (pas 10, 11 graduations) écrits 200·300 ; poisson « 240 » à poser | Place le poisson sur le nombre 240. | 240 | 300 | correction autre : « Hmm, regardons ensemble. … C'était 240. » |
 
-Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -549,7 +549,7 @@ Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle)
 | 48 | notion | ligne 800–1000 (pas 10, 21 graduations) écrits 800·1000 ; étoile sur 830 ; bulles 30 / 83 / 830 / 840 | Quel nombre se cache sous l'étoile de mer ? | 830 | 830 | +2★ |
 | 49 | notion | ligne 400–600 (pas 10, 21 graduations) écrits 400·600 ; poisson « 410 » à poser | Place le poisson sur le nombre 410. | 410 | 410 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte oursin (nouvelle) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 10, cran « très dur » · réelle
 
@@ -605,7 +605,7 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle) ; carte bernard-l-er
 | 43 | notion | ligne 600–700 (pas 10, 11 graduations) écrits 600·700 ; poisson « 660 » à poser | Place le poisson sur le nombre 660. | 660 | 640 | correction E4 : « Les nombres grandissent vers la droite. … C'était 660. » |
 | 44 | notion | ligne 700–800 (pas 10, 11 graduations) écrits 700·800 ; étoile sur 750 ; bulles 50 / 75 / 750 / 760 | Quel nombre se cache sous l'étoile de mer ? | 750 | 750 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 10, cran « très dur » · pressée
 
@@ -650,4 +650,4 @@ Récompense et fin : +10★ (fin) ; carte coquille-saint-jacques (nouvelle) ; ca
 | 32 | notion | ligne 700–800 (pas 10, 11 graduations) écrits 700·800 ; étoile sur 760 ; bulles 60 / 76 / 760 / 770 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 760 | 770 | correction E1 : « On compte les sauts, pas les traits. … C'était 760. » |
 | 33 | notion | ligne 800–900 (pas 10, 11 graduations) écrits 800·900 ; poisson « 830 » à poser | Où est le nombre 830 ? Pose le poisson dessus. | 830 | 890 | correction autre : « Hmm, regardons ensemble. … C'était 830. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

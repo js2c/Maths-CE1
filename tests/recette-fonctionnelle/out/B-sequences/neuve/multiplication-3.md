@@ -46,7 +46,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 29 | notion | 2 × 8 = ? (niveau 3, rangées comptées d'emblée) | 2 fois 8 ? | 16 | 16 |  |
 | 30 | notion | 3 × 2 = ? (niveau 3, rangées comptées d'emblée) | 3 fois 2 ? | 6 | 6 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crevette (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Multiplication, niveau 3 (table 2), cran « plus facile » · réelle
 
@@ -82,7 +82,7 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle)
 | 23 | notion | 2 × 5 = ? (niveau 3, rangées comptées d'emblée) | [exemple guidé : 2 rangées de 5 poissons. … 10 ; 2 fois 5, ça fait 10. À toi ! Tape la réponse.] 2 fois 5 ? | 10 | 10 (guidé) | +1★ |
 | 24 | notion | 2 × 7 = ? (niveau 3, rangées comptées d'emblée) | 2 fois 7 ? | 14 | 14 |  |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Multiplication, niveau 3 (table 2), cran « plus facile » · pressée
 
@@ -126,7 +126,7 @@ Récompense et fin : +10★ (fin)
 | 31 | notion | 9 × 2 = ? (niveau 3, rangées comptées d'emblée) | 9 fois 2 ? | 18 | 53 | correction autre : « Hmm, regardons ensemble. 9 rangées de 2 poissons. [les rangées comptées] 9 fois 2, ça fait 18. » |
 | 32 | notion | 8 × 2 = ? (niveau 3, rangées comptées d'emblée) | 8 fois 2 ? | 16 | 69 | correction autre : « Hmm, regardons ensemble. 8 rangées de 2 poissons. [les rangées comptées] 8 fois 2, ça fait 16. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -190,7 +190,7 @@ Récompense et fin : +10★ (fin)
 | 49 | notion | 2 × 1 = ? (niveau 3, rangées au coquillage) | 2 fois 1 ? | 2 | 2 | +1★ |
 | 50 | notion | 4 × 2 = ? (niveau 3, rangées au coquillage) | 4 fois 2 ? | 8 | 8 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte etoile-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 3 (table 2), cran « conseillé » · réelle
 
@@ -239,7 +239,7 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte et
 | 36 | notion | 1 × 2 = ? (niveau 3, rangées au coquillage) | 1 fois 2 ? | 2 | 0 | correction M2 : « Hmm, regardons ensemble. Une rangée de 2 poissons. [les rangées comptées] 1 fois 2, ça fait 2. » |
 | 37 | notion | 6 × 2 = ? (niveau 3, rangées au coquillage) | 6 fois 2 ? | 12 | 12 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 3 (table 2), cran « conseillé » · pressée
 
@@ -289,7 +289,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle)
 | 37 | notion | 6 × 2 = ? (niveau 3, rangées au coquillage) | 6 fois 2 ? | 12 | 25 | correction autre : « Hmm, regardons ensemble. 6 rangées de 2 poissons. [les rangées comptées] 6 fois 2, ça fait 12. » |
 | 38 | notion | 5 × 2 = ? (niveau 3, rangées au coquillage) | 5 fois 2 ? | 10 | 60 | correction autre : « Hmm, regardons ensemble. 5 rangées de 2 poissons. [les rangées comptées] 5 fois 2, ça fait 10. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -353,7 +353,7 @@ Récompense et fin : +10★ (fin)
 | 49 | notion | 5 × 2 = ? (niveau 3, sans image) | 5 fois 2 ? | 10 | 10 | +1★ |
 | 50 | notion | 2 × 5 = ? (niveau 3, sans image) | 2 fois 5 ? | 10 | 10 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte crevette (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 3 (table 2), cran « plus dur » · réelle
 
@@ -404,7 +404,7 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) ; carte cr
 | 38 | notion | 4 × 2 = ? (niveau 3, sans image, revient) | 4 fois 2 ? | 8 | 6 | correction M1 : « Attention : fois, ce n'est pas plus. On compte les rangées. 4 rangées de 2 poissons. [les rangées comptées] 4 fois 2, ça fait 8. » |
 | 39 | notion | 6 × 2 = ? (niveau 3, sans image) | 6 fois 2 ? | 12 | 12 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 3 (table 2), cran « plus dur » · pressée
 
@@ -455,7 +455,7 @@ Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) ; carte conco
 | 38 | notion | 1 × 2 = ? (niveau 3, rangées au coquillage) | 1 fois 2 ? | 2 | 66 | correction autre : « Hmm, regardons ensemble. Une rangée de 2 poissons. [les rangées comptées] 1 fois 2, ça fait 2. » |
 | 39 | notion | 8 × 2 = ? (niveau 3, rangées au coquillage) | 8 fois 2 ? | 16 | 60 | correction autre : « Hmm, regardons ensemble. 8 rangées de 2 poissons. [les rangées comptées] 8 fois 2, ça fait 16. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -519,7 +519,7 @@ Récompense et fin : +10★ (fin)
 | 49 | notion | 2 × ? = 2 (niveau 3, sans image) | 2 fois combien, ça fait 2 ? | 1 | 1 | +2★ |
 | 50 | notion | ? × 2 = 14 (niveau 3, sans image) | Combien de fois 2, ça fait 14 ? | 7 | 7 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) (brillante) ; carte coquille-saint-jacques (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 3 (table 2), cran « très dur » · réelle
 
@@ -573,7 +573,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) (brillante) ; carte c
 | 41 | notion | 2 × ? = 6 (niveau 3, sans image) | 2 fois combien, ça fait 6 ? | 3 | je ne sais pas | correction NSP : « Ce n'est pas grave, regardons ensemble. 2 rangées de 3 poissons. [les rangées comptées] 2 fois 3, ça fait 6. » |
 | 42 | notion | ? × 2 = 20 (niveau 3, sans image) | Combien de fois 2, ça fait 20 ? | 10 | 10 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-ballon (nouvelle) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Multiplication, niveau 3 (table 2), cran « très dur » · pressée
 
@@ -620,4 +620,4 @@ Récompense et fin : +10★ (fin) ; carte poisson-ballon (nouvelle) ; carte bern
 | 34 | notion | 2 × 3 = ? (niveau 3, rangées au coquillage) | 2 fois 3 ? | 6 | 57 | correction autre : « Hmm, regardons ensemble. 2 rangées de 3 poissons. [les rangées comptées] 2 fois 3, ça fait 6. » |
 | 35 | notion | 8 × 2 = ? (niveau 3, rangées au coquillage) | 8 fois 2 ? | 16 | 56 | correction autre : « Hmm, regardons ensemble. 8 rangées de 2 poissons. [les rangées comptées] 8 fois 2, ça fait 16. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

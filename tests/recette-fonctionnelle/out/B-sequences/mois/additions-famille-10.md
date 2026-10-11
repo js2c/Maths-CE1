@@ -65,7 +65,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 48 | défi | ? + 3 = 6 | (aucune : le défi ne lit pas les calculs) | 3 | 3 |  |
 | 49 | défi | ? + 4 = 8 | (aucune : le défi ne lit pas les calculs) | 4 | 4 | +1★ ; +5★ (nouveau record) |
 
-Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; carte limace-de-mer (nouvelle) ; carte poisson-chirurgien (nouvelle)
+Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 10 (presque-doubles jusqu'à 10), cran « plus facile » · réelle
 
@@ -119,7 +119,7 @@ Récompense et fin : défi : 14 bonne(s) réponse(s), nouveau record (+5 étoile
 | 41 | défi | 1 + ? = 8 | (aucune : le défi ne lit pas les calculs) | 7 | 6 | la bonne réponse montrée un instant |
 | 42 | défi | 9 + ? = 10 | (aucune : le défi ne lit pas les calculs) | 1 | 1 |  |
 
-Récompense et fin : défi : 7 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte concombre-de-mer (nouvelle) ; carte bernard-l-ermite (nouvelle) (brillante)
+Récompense et fin : défi : 7 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 10 (presque-doubles jusqu'à 10), cran « plus facile » · pressée
 
@@ -192,7 +192,7 @@ Récompense et fin : défi : 7 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 60 | défi | ? + 3 = 5 | (aucune : le défi ne lit pas les calculs) | 2 | 8 | la bonne réponse montrée un instant |
 | 61 | défi | ? + 4 = 10 | (aucune : le défi ne lit pas les calculs) | 6 | 9 | la bonne réponse montrée un instant |
 
-Récompense et fin : défi : 1 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte poisson-chirurgien (nouvelle) (brillante) ; carte etoile-de-mer (nouvelle)
+Récompense et fin : défi : 1 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ## Cran « conseillé »
 
@@ -270,7 +270,7 @@ Récompense et fin : défi : 1 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 63 | défi | ? + 5 = 6 | (aucune : le défi ne lit pas les calculs) | 1 | 1 | +1★ |
 | 64 | défi | 3 + 1 = ? | (aucune : le défi ne lit pas les calculs) | 4 | 4 | +1★ ; +5★ (nouveau record) |
 
-Récompense et fin : étoile arc-en-ciel (niveau franchi) ; fin de la notion : acquise famille 7 ; fin de la notion : trou famille 10 ; défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; carte bernard-l-ermite (nouvelle) ; carte crabe (nouvelle)
+Récompense et fin : étoile arc-en-ciel (niveau franchi) ; fin de la notion : acquise famille 7 ; fin de la notion : trou famille 10 ; défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 10 (presque-doubles jusqu'à 10), cran « conseillé » · réelle
 
@@ -335,7 +335,7 @@ Récompense et fin : étoile arc-en-ciel (niveau franchi) ; fin de la notion : a
 | 52 | défi | 2 + ? = 4 | (aucune : le défi ne lit pas les calculs) | 2 | 2 | +1★ |
 | 53 | défi | ? + 1 = 3 | (aucune : le défi ne lit pas les calculs) | 2 | 2 | +1★ |
 
-Récompense et fin : fin de la notion : trou famille 10 ; défi : 9 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte crabe (nouvelle) ; carte limace-de-mer (nouvelle)
+Récompense et fin : fin de la notion : trou famille 10 ; défi : 9 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 10 (presque-doubles jusqu'à 10), cran « conseillé » · pressée
 
@@ -415,7 +415,7 @@ Récompense et fin : fin de la notion : trou famille 10 ; défi : 9 bonne(s) ré
 | 67 | défi | ? + 9 = 10 | (aucune : le défi ne lit pas les calculs) | 1 | 17 | la bonne réponse montrée un instant |
 | 68 | défi | 6 + 1 = ? | (aucune : le défi ne lit pas les calculs) | 7 | 5 | la bonne réponse montrée un instant |
 
-Récompense et fin : défi : 2 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte raie-pastenague (nouvelle) ; carte etoile-de-mer (nouvelle)
+Récompense et fin : défi : 2 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ## Cran « plus dur »
 
@@ -493,7 +493,7 @@ Récompense et fin : défi : 2 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 63 | défi | 5 + ? = 11 | (aucune : le défi ne lit pas les calculs) | 6 | 6 | +2★ |
 | 64 | défi | 1 + 9 = ? | (aucune : le défi ne lit pas les calculs) | 10 | 10 | +1★ ; +5★ (nouveau record) |
 
-Récompense et fin : étoile arc-en-ciel (niveau franchi) ; fin de la notion : acquise famille 7 ; fin de la notion : trou famille 10 ; défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; carte bernard-l-ermite (nouvelle) ; carte raie-pastenague (nouvelle)
+Récompense et fin : étoile arc-en-ciel (niveau franchi) ; fin de la notion : acquise famille 7 ; fin de la notion : trou famille 10 ; défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 10 (presque-doubles jusqu'à 10), cran « plus dur » · réelle
 
@@ -551,7 +551,7 @@ Récompense et fin : étoile arc-en-ciel (niveau franchi) ; fin de la notion : a
 | 45 | défi | ? + 3 = 5 | (aucune : le défi ne lit pas les calculs) | 2 | je ne sais pas | la bonne réponse montrée un instant |
 | 46 | défi | 4 + ? = 6 | (aucune : le défi ne lit pas les calculs) | 2 | 2 | +1★ |
 
-Récompense et fin : défi : 7 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte raie-pastenague (nouvelle) ; carte crabe (nouvelle)
+Récompense et fin : défi : 7 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 10 (presque-doubles jusqu'à 10), cran « plus dur » · pressée
 
@@ -629,7 +629,7 @@ Récompense et fin : défi : 7 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 65 | défi | ? + 5 = 10 | (aucune : le défi ne lit pas les calculs) | 5 | 13 | la bonne réponse montrée un instant |
 | 66 | défi | 3 + 3 = ? | (aucune : le défi ne lit pas les calculs) | 6 | 19 | la bonne réponse montrée un instant |
 
-Récompense et fin : défi : 1 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte bernard-l-ermite (nouvelle) ; carte crabe (nouvelle) (brillante)
+Récompense et fin : défi : 1 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ## Cran « très dur »
 
@@ -708,7 +708,7 @@ Récompense et fin : défi : 1 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 64 | défi | 9 + 1 = ? | (aucune : le défi ne lit pas les calculs) | 10 | 10 | +2★ |
 | 65 | défi | ? + 4 = 5 | (aucune : le défi ne lit pas les calculs) | 1 | 1 | +2★ ; +5★ (nouveau record) |
 
-Récompense et fin : étoile arc-en-ciel (niveau franchi) ; fin de la notion : acquise famille 7 ; fin de la notion : trou famille 10 ; défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; carte etoile-de-mer (nouvelle) ; carte crabe (nouvelle)
+Récompense et fin : étoile arc-en-ciel (niveau franchi) ; fin de la notion : acquise famille 7 ; fin de la notion : trou famille 10 ; défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 10 (presque-doubles jusqu'à 10), cran « très dur » · réelle
 
@@ -773,7 +773,7 @@ Récompense et fin : étoile arc-en-ciel (niveau franchi) ; fin de la notion : a
 | 52 | défi | 3 + 4 = ? | (aucune : le défi ne lit pas les calculs) | 7 | 6 | la bonne réponse montrée un instant |
 | 53 | défi | 6 + ? = 8 | (aucune : le défi ne lit pas les calculs) | 2 | 2 | +2★ |
 
-Récompense et fin : fin de la notion : trou famille 5 ; défi : 9 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte etoile-de-mer (nouvelle) (brillante) ; carte poisson-chirurgien (nouvelle)
+Récompense et fin : fin de la notion : trou famille 5 ; défi : 9 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 10 (presque-doubles jusqu'à 10), cran « très dur » · pressée
 
@@ -854,4 +854,4 @@ Récompense et fin : fin de la notion : trou famille 5 ; défi : 9 bonne(s) rép
 | 68 | défi | ? + 4 = 6 | (aucune : le défi ne lit pas les calculs) | 2 | 12 | la bonne réponse montrée un instant |
 | 69 | défi | ? + 3 = 6 | (aucune : le défi ne lit pas les calculs) | 3 | 12 | la bonne réponse montrée un instant |
 
-Récompense et fin : défi : 0 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; carte concombre-de-mer (nouvelle) (brillante) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : défi : 0 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)

@@ -10,7 +10,6 @@ import { rng } from "../../app/js/engine/ocean.js";
 import { addCard, nextSeries, Rewards } from "../../app/js/session/rewards.js";
 
 const cartes = JSON.parse(readFileSync(new URL("../../app/content/cartes.json", import.meta.url)));
-const lagon = { zones: ["lagon"], poids: cartes.poids };
 
 test("le lagon : 15 cartes, noms uniques, communes et rares, une anecdote et une place dans le récif chacune", () => {
   const L = cartes.cartes.filter((c) => c.zone === "lagon");

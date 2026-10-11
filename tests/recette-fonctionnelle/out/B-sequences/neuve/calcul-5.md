@@ -52,7 +52,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 35 | notion | 89 − 6 = ? (niveau 5, ligne, chemin affiché d'emblée) · chemin 89 −6→83 | 89 moins 6 ? | 83 | 83 |  |
 | 36 | notion | 86 − 5 = ? (niveau 5, ligne, chemin affiché d'emblée) · chemin 86 −5→81 | 86 moins 5 ? | 81 | 81 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Calcul rapide, niveau 5 (unitesMoins, ligne), cran « plus facile » · réelle
 
@@ -101,7 +101,7 @@ Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle)
 | 36 | notion | 27 − 7 = ? (niveau 5, ligne, chemin affiché d'emblée) · chemin 27 −7→20 | 27 moins 7 ? | 20 | 19 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le chemin : 27 −7→20 ; « C'était 20. » |
 | 37 | notion | 78 − 5 = ? (niveau 5, ligne, chemin affiché d'emblée) · chemin 78 −5→73 | 78 moins 5 ? | 73 | 73 |  |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Calcul rapide, niveau 5 (unitesMoins, ligne), cran « plus facile » · pressée
 
@@ -144,7 +144,7 @@ Récompense et fin : +10★ (fin)
 | 30 | notion | 35 − 2 = ? (niveau 5, ligne, chemin affiché d'emblée) · chemin 35 −2→33 | 35 moins 2 ? | 33 | 35 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le chemin : 35 −2→33 ; « C'était 33. » |
 | 31 | notion | 28 − 6 = ? (niveau 5, ligne, chemin affiché d'emblée) · chemin 28 −6→22 | 28 moins 6 ? | 22 | 3 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le chemin : 28 −6→22 ; « C'était 22. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -210,7 +210,7 @@ Récompense et fin : +10★ (fin)
 | 51 | notion | 25 − 3 = ? (niveau 5, ligne, chemin au coquillage) · chemin 25 −3→22 | 25 moins 3 ? | 22 | 22 | +1★ |
 | 52 | notion | 58 − 7 = ? (niveau 5, ligne, chemin au coquillage) · chemin 58 −7→51 | 58 moins 7 ? | 51 | 51 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte poisson-clown (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 5 (unitesMoins, ligne), cran « conseillé » · réelle
 
@@ -263,7 +263,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte poisson-clo
 | 40 | notion | 77 − 2 = ? (niveau 5, ligne, chemin au coquillage) · chemin 77 −2→75 | 77 moins 2 ? | 75 | 75 | +1★ |
 | 41 | notion | 88 − 2 = ? (niveau 5, ligne, chemin au coquillage) · chemin 88 −2→86 | 88 moins 2 ? | 86 | 86 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte limace-de-mer (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 5 (unitesMoins, ligne), cran « conseillé » · pressée
 
@@ -310,7 +310,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte 
 | 34 | notion | 17 − 7 = ? (niveau 5, ligne, chemin au coquillage) · chemin 17 −7→10 | 17 moins 7 ? | 10 | 56 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le chemin : 17 −7→10 ; « C'était 10. » |
 | 35 | notion | 66 − 2 = ? (niveau 5, ligne, chemin au coquillage) · chemin 66 −2→64 | 66 moins 2 ? | 64 | 84 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le chemin : 66 −2→64 ; « C'était 64. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -373,7 +373,7 @@ Récompense et fin : +10★ (fin)
 | 48 | notion | 68 − 6 = ? (niveau 5, ligne, sans chemin) · chemin 68 −6→62 | 68 moins 6 ? | 62 | 62 | +2★ |
 | 49 | notion | 66 − 4 = ? (niveau 5, ligne, sans chemin) · chemin 66 −4→62 | 66 moins 4 ? | 62 | 62 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte crabe (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 5 (unitesMoins, ligne), cran « plus dur » · réelle
 
@@ -430,7 +430,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte crabe (nouv
 | 44 | notion | 57 − 7 = ? (niveau 5, ligne, sans chemin) · chemin 57 −7→50 | 57 moins 7 ? | 50 | 51 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le chemin : 57 −7→50 ; « C'était 50. » ; le cran redescend : plus dur → conseillé (« On essaie un peu moins dur ? ») |
 | 45 | notion | 68 − 2 = ? (niveau 5, ligne, chemin au coquillage) · chemin 68 −2→66 | 68 moins 2 ? | 66 | 66 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte hippocampe (nouvelle) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 5 (unitesMoins, ligne), cran « plus dur » · pressée
 
@@ -477,7 +477,7 @@ Récompense et fin : +10★ (fin) ; carte hippocampe (nouvelle) ; carte oursin (
 | 34 | notion | 78 − 6 = ? (niveau 5, ligne, chemin au coquillage) · chemin 78 −6→72 | 78 moins 6 ? | 72 | 89 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le chemin : 78 −6→72 ; « C'était 72. » |
 | 35 | notion | 88 − 2 = ? (niveau 5, ligne, chemin au coquillage) · chemin 88 −2→86 | 88 moins 2 ? | 86 | 45 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le chemin : 88 −2→86 ; « C'était 86. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -543,7 +543,7 @@ Récompense et fin : +10★ (fin)
 | 51 | notion | 49 − ? = 42 (niveau 5, ligne, sans chemin) · chemin 49 −7→42 | 49 moins combien ? Ça fait 42. | 7 | 7 | +2★ |
 | 52 | notion | 17 − ? = 15 (niveau 5, ligne, sans chemin) · chemin 17 −2→15 | 17 moins combien ? Ça fait 15. | 2 | 2 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte moule (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 5 (unitesMoins, ligne), cran « très dur » · réelle
 
@@ -598,7 +598,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte 
 | 42 | notion | 39 − ? = 36 (niveau 5, ligne, sans chemin, revient) · chemin 39 −3→36 | 39 moins combien ? Ça fait 36. | 3 | 3 | +3★ (erreur corrigée) |
 | 43 | notion | 68 − 3 = ? (niveau 5, ligne, sans chemin, revient) · chemin 68 −3→65 | 68 moins 3 ? | 65 | 65 | +3★ (erreur corrigée) |
 
-Récompense et fin : +10★ (fin) ; carte hippocampe (nouvelle) ; carte bernard-l-ermite (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 5 (unitesMoins, ligne), cran « très dur » · pressée
 
@@ -644,4 +644,4 @@ Récompense et fin : +10★ (fin) ; carte hippocampe (nouvelle) ; carte bernard-
 | 33 | notion | 57 − 4 = ? (niveau 5, ligne, chemin au coquillage) · chemin 57 −4→53 | 57 moins 4 ? | 53 | 64 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le chemin : 57 −4→53 ; « C'était 53. » |
 | 34 | notion | 84 − 3 = ? (niveau 5, ligne, chemin au coquillage) · chemin 84 −3→81 | 84 moins 3 ? | 81 | 53 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le chemin : 84 −3→81 ; « C'était 81. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

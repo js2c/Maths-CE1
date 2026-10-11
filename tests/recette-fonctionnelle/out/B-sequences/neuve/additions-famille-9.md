@@ -42,7 +42,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 25 | notion | 8 + 8 = ? (famille 9) | [aide d'emblée : 8 poissons, et dans le reflet, encore 8 poissons.] 8 plus 8 ? | 16 | 16 | +1★ |
 | 26 | notion | 10 + 10 = ? (famille 8) | [aide d'emblée : 10 poissons, et dans le reflet, encore 10 poissons.] 10 plus 10 ? | 20 | 20 |  |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 9 (doubles jusqu'à 15 + 15), cran « plus facile » · réelle
 
@@ -77,7 +77,7 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) (brillante
 | 22 | notion | 11 + 11 = ? (famille 9) | [aide d'emblée : 11, c'est dix et 1. Dix et dix, vingt. 1 et 1, 2.] Combien font 11 plus 11 ? | 22 | 22 | +1★ |
 | 23 | notion | 7 + 7 = ? (famille 9) | [aide d'emblée : 7 poissons, et dans le reflet, encore 7 poissons.] 7 plus 7 ? | 14 | 14 |  |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 9 (doubles jusqu'à 15 + 15), cran « plus facile » · pressée
 
@@ -119,7 +119,7 @@ Récompense et fin : +10★ (fin)
 | 29 | notion | 6 + 6 = ? (famille 9) | [aide d'emblée : 6 poissons, et dans le reflet, encore 6 poissons.] 6 plus 6 ? | 12 | 5 | correction : « 6 poissons, et dans le reflet, encore 6 poissons. 6 plus 6, ça fait 12. » |
 | 30 | notion | 9 + 9 = ? (famille 9) | [aide d'emblée : 9 poissons, et dans le reflet, encore 9 poissons.] 9 plus 9 ? | 18 | 5 | correction : « 9 poissons, et dans le reflet, encore 9 poissons. 9 plus 9, ça fait 18. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -176,7 +176,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | 13 + 13 = ? (famille 9) | 13 plus 13 ? | 26 | 26 | +1★ |
 | 43 | notion | 14 + 14 = ? (famille 9) | Combien font 14 plus 14 ? | 28 | 28 | +1★ |
 
-Récompense et fin : fin de la notion : trou famille 9 ; +10★ (fin) ; carte crevette (nouvelle) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : fin de la notion : trou famille 9 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 9 (doubles jusqu'à 15 + 15), cran « conseillé » · réelle
 
@@ -230,7 +230,7 @@ Récompense et fin : fin de la notion : trou famille 9 ; +10★ (fin) ; carte cr
 | 41 | notion | 1 + 5 = ? (famille 1) | Combien font 1 plus 5 ? | 6 | 6 | +1★ |
 | 42 | notion | 10 + 10 = ? (famille 8) | 10 plus 10 ? | 20 | 20 | +1★ |
 
-Récompense et fin : fin de la notion : trou famille 9 ; +10★ (fin) ; carte limace-de-mer (nouvelle) ; carte etoile-de-mer (nouvelle)
+Récompense et fin : fin de la notion : trou famille 9 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 9 (doubles jusqu'à 15 + 15), cran « conseillé » · pressée
 
@@ -277,7 +277,7 @@ Récompense et fin : fin de la notion : trou famille 9 ; +10★ (fin) ; carte li
 | 34 | notion | 9 + 9 = ? (famille 9) | Combien font 9 plus 9 ? | 18 | 12 | correction : « 9 poissons, et dans le reflet, encore 9 poissons. 9 plus 9, ça fait 18. » |
 | 35 | notion | 6 + 2 = ? (famille 1) | 6 plus 2 ? | 8 | 10 | correction : « [aide ligne] La tortue est sur 6. Elle fait 2 sauts. Compte avec elle ! 6 plus 2, ça fait 8. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -334,7 +334,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | 11 + 11 = ? (famille 9) | Combien font 11 plus 11 ? | 22 | 22 | +1★ |
 | 43 | notion | ? + 13 = 26 (famille 9) | Combien plus 13, ça fait 26 ? | 13 | 13 | +2★ |
 
-Récompense et fin : fin de la notion : trou famille 9 ; +10★ (fin) ; carte oursin (nouvelle) ; carte poisson-clown (nouvelle)
+Récompense et fin : fin de la notion : trou famille 9 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 9 (doubles jusqu'à 15 + 15), cran « plus dur » · réelle
 
@@ -382,7 +382,7 @@ Récompense et fin : fin de la notion : trou famille 9 ; +10★ (fin) ; carte ou
 | 35 | notion | 10 + 10 = ? (famille 8) | Combien font 10 plus 10 ? | 20 | je ne sais pas | correction : « Ce n'est pas grave, regardons ensemble. 10 poissons, et dans le reflet, encore 10 poissons. 10 plus 10, ça fait 20. » |
 | 36 | notion | 8 + 8 = ? (famille 9) | 8 plus 8 ? | 16 | 16 | +1★ |
 
-Récompense et fin : fin de la notion : trou famille 9 ; +10★ (fin) ; carte limace-de-mer (nouvelle) ; carte etoile-de-mer (nouvelle)
+Récompense et fin : fin de la notion : trou famille 9 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 9 (doubles jusqu'à 15 + 15), cran « plus dur » · pressée
 
@@ -428,7 +428,7 @@ Récompense et fin : fin de la notion : trou famille 9 ; +10★ (fin) ; carte li
 | 33 | notion | 6 + 1 = ? (famille 1) | 6 plus 1 ? | 7 | 13 | correction : « [aide ligne] La tortue est sur 6. Elle fait un saut. Compte avec elle ! 6 plus 1, ça fait 7. » |
 | 34 | notion | 11 + 11 = ? (famille 9) | 11 plus 11 ? | 22 | 11 | correction : « 11, c'est dix et 1. Dix et dix, vingt. 1 et 1, 2. 11 plus 11, ça fait 22. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -485,7 +485,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | ? + 14 = 28 (famille 9) | Combien plus 14, ça fait 28 ? | 14 | 14 | +2★ |
 | 43 | notion | 13 + ? = 26 (famille 9) | 13 plus combien, ça fait 26 ? | 13 | 13 | +2★ |
 
-Récompense et fin : fin de la notion : trou famille 9 ; +10★ (fin) ; carte oursin (nouvelle) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : fin de la notion : trou famille 9 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 9 (doubles jusqu'à 15 + 15), cran « très dur » · réelle
 
@@ -533,7 +533,7 @@ Récompense et fin : fin de la notion : trou famille 9 ; +10★ (fin) ; carte ou
 | 35 | notion | ? + 10 = 20 (famille 8) | Combien plus 10, ça fait 20 ? | 10 | 10 | +1★ |
 | 36 | notion | 12 + 12 = ? (famille 9) | 12 plus 12 ? | 24 | 24 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte crevette (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 9 (doubles jusqu'à 15 + 15), cran « très dur » · pressée
 
@@ -579,4 +579,4 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle) ; carte crevette (nou
 | 33 | notion | 2 + 5 = ? (famille 1) | 2 plus 5 ? | 7 | 17 | correction : « [aide ligne] La tortue est sur 5. Elle fait 2 sauts. Compte avec elle ! 2 plus 5, ça fait 7. » |
 | 34 | notion | 8 + 8 = ? (famille 9) | 8 plus 8 ? | 16 | 9 | correction : « 8 poissons, et dans le reflet, encore 8 poissons. 8 plus 8, ça fait 16. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

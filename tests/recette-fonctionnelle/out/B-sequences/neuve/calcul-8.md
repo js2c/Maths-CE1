@@ -51,7 +51,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 34 | notion | 38 + 61 = ? (niveau 8, mur, chemin affiché d'emblée) · chemin 38 +60→98 +1→99 | 38 plus 61 ? | 99 | 99 | +1★ |
 | 35 | notion | 42 + 17 = ? (niveau 8, mur, chemin affiché d'emblée) · chemin 42 +10→52 +7→59 | 42 plus 17 ? | 59 | 59 |  |
 
-Récompense et fin : +10★ (fin) ; carte crevette (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Calcul rapide, niveau 8 (deuxNombres, mur), cran « plus facile » · réelle
 
@@ -85,7 +85,7 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle)
 | 21 | notion | 75 + 12 = ? (niveau 8, mur, chemin affiché d'emblée) · chemin 75 +10→85 +2→87 | 75 plus 12 ? | 87 | 87 | +1★ |
 | 22 | notion | 84 + 13 = ? (niveau 8, mur, chemin affiché d'emblée, revient) · chemin 84 +10→94 +3→97 | 84 plus 13 ? | 97 | 97 | +1★ (erreur corrigée) |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Calcul rapide, niveau 8 (deuxNombres, mur), cran « plus facile » · pressée
 
@@ -129,7 +129,7 @@ Récompense et fin : +10★ (fin)
 | 31 | notion | 32 + 63 = ? (niveau 8, mur, chemin affiché d'emblée) · chemin 32 +60→92 +3→95 | 32 plus 63 ? | 95 | 22 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 32 +60→92 +3→95 ; « C'était 95. » |
 | 32 | notion | 21 + 77 = ? (niveau 8, mur, chemin affiché d'emblée) · chemin 21 +70→91 +7→98 | 21 plus 77 ? | 98 | 80 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 21 +70→91 +7→98 ; « C'était 98. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -193,7 +193,7 @@ Récompense et fin : +10★ (fin)
 | 49 | notion | 72 + 25 = ? (niveau 8, mur, chemin au coquillage) · chemin 72 +20→92 +5→97 | 72 plus 25 ? | 97 | 97 | +1★ |
 | 50 | notion | 81 + 18 = ? (niveau 8, mur, chemin au coquillage) · chemin 81 +10→91 +8→99 | 81 plus 18 ? | 99 | 99 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte coquille-saint-jacques (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 8 (deuxNombres, mur), cran « conseillé » · réelle
 
@@ -250,7 +250,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) ; carte coquille-sain
 | 44 | notion | 51 + 24 = ? (niveau 8, mur, chemin au coquillage, revient) · chemin 51 +20→71 +4→75 | 51 plus 24 ? | 75 | 76 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 51 +20→71 +4→75 ; « C'était 75. » |
 | 45 | notion | 46 + 12 = ? (niveau 8, mur, chemin au coquillage) · chemin 46 +10→56 +2→58 | 46 plus 12 ? | 58 | 58 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 8 (deuxNombres, mur), cran « conseillé » · pressée
 
@@ -296,7 +296,7 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) (brillante
 | 33 | notion | 26 + 12 = ? (niveau 8, mur, chemin au coquillage) · chemin 26 +10→36 +2→38 | 26 plus 12 ? | 38 | 66 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 26 +10→36 +2→38 ; « C'était 38. » |
 | 34 | notion | 57 + 31 = ? (niveau 8, mur, chemin au coquillage) · chemin 57 +30→87 +1→88 | 57 plus 31 ? | 88 | 16 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 57 +30→87 +1→88 ; « C'était 88. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -360,7 +360,7 @@ Récompense et fin : +10★ (fin)
 | 49 | notion | 75 + 23 = ? (niveau 8, mur, sans chemin) · chemin 75 +20→95 +3→98 | 75 plus 23 ? | 98 | 98 | +1★ |
 | 50 | notion | 24 + 15 = ? (niveau 8, mur, sans chemin) · chemin 24 +10→34 +5→39 | 24 plus 15 ? | 39 | 39 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) (brillante) ; carte anemone (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 8 (deuxNombres, mur), cran « plus dur » · réelle
 
@@ -407,7 +407,7 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle) (brillante
 | 34 | notion | 22 + 11 = ? (niveau 8, mur, chemin au coquillage) · chemin 22 +10→32 +1→33 | 22 plus 11 ? | 33 | 32 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 22 +10→32 +1→33 ; « C'était 33. » |
 | 35 | notion | 31 + 34 = ? (niveau 8, mur, chemin au coquillage) · chemin 31 +30→61 +4→65 | 31 plus 34 ? | 65 | 65 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 8 (deuxNombres, mur), cran « plus dur » · pressée
 
@@ -453,7 +453,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle)
 | 33 | notion | 12 + 32 = ? (niveau 8, mur, chemin au coquillage) · chemin 12 +30→42 +2→44 | 12 plus 32 ? | 44 | 53 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 12 +30→42 +2→44 ; « C'était 44. » |
 | 34 | notion | 23 + 54 = ? (niveau 8, mur, chemin au coquillage) · chemin 23 +50→73 +4→77 | 23 plus 54 ? | 77 | 64 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 23 +50→73 +4→77 ; « C'était 77. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -519,7 +519,7 @@ Récompense et fin : +10★ (fin)
 | 51 | notion | 22 + ? = 78 (niveau 8, mur, sans chemin) · chemin 22 +50→72 +6→78 | 22 plus combien ? Ça fait 78. | 56 | 56 | +2★ |
 | 52 | notion | 50 + ? = 93 (niveau 8, mur, sans chemin) · chemin 50 +40→90 +3→93 | 50 plus combien ? Ça fait 93. | 43 | 43 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte poisson-clown (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Calcul rapide, niveau 8 (deuxNombres, mur), cran « très dur » · réelle
 
@@ -566,7 +566,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle) ; carte 
 | 34 | notion | 41 + 47 = ? (niveau 8, mur, chemin au coquillage) · chemin 41 +40→81 +7→88 | 41 plus 47 ? | 88 | 87 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 41 +40→81 +7→88 ; « C'était 88. » ; MONTÉE (niveau 8 acquis) ; étoile arc-en-ciel (niveau franchi) |
 | 35 | notion | 30 + 42 = ? (niveau 8, mur, chemin au coquillage) · chemin 30 +40→70 +2→72 | 30 plus 42 ? | 72 | 72 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Calcul rapide, niveau 8 (deuxNombres, mur), cran « très dur » · pressée
 
@@ -613,4 +613,4 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle)
 | 34 | notion | 22 + 32 = ? (niveau 8, mur, chemin au coquillage) · chemin 22 +30→52 +2→54 | 22 plus 32 ? | 54 | 63 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 22 +30→52 +2→54 ; « C'était 54. » |
 | 35 | notion | 52 + 34 = ? (niveau 8, mur, chemin au coquillage) · chemin 52 +30→82 +4→86 | 52 plus 34 ? | 86 | 22 | correction autre : « Hmm, regardons ensemble. » + la procédure sur le mur (le poisson) : 52 +30→82 +4→86 ; « C'était 86. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

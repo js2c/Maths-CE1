@@ -42,7 +42,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 25 | notion | 7 + 10 = ? (famille 8) | [aide d'emblée : Une boîte pleine, c'est dix. Et encore 7.] 7 plus 10 ? | 17 | 17 | +1★ |
 | 26 | notion | 4 + 10 = ? (famille 8) | [aide d'emblée : Une boîte pleine, c'est dix. Et encore 4.] 4 plus 10 ? | 14 | 14 |  |
 
-Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 8 (dix et quelques), cran « plus facile » · réelle
 
@@ -82,7 +82,7 @@ Récompense et fin : +10★ (fin) ; carte bernard-l-ermite (nouvelle)
 | 27 | notion | 7 + 10 = ? (famille 8) | [aide d'emblée : Une boîte pleine, c'est dix. Et encore 7.] Combien font 7 plus 10 ? | 17 | 17 | +1★ |
 | 28 | notion | 1 + 10 = ? (famille 8) | [aide d'emblée : Une boîte pleine, c'est dix. Et encore 1.] 1 plus 10 ? | 11 | 11 |  |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 8 (dix et quelques), cran « plus facile » · pressée
 
@@ -123,7 +123,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) (brillante)
 | 28 | notion | 10 + 10 = ? (famille 8) | [aide d'emblée : Une boîte pleine, c'est dix. Et encore 10.] Combien font 10 plus 10 ? | 20 | 4 | correction : « Une boîte pleine, c'est dix. Et encore 10. 10 plus 10, ça fait 20. » |
 | 29 | notion | 8 + 10 = ? (famille 8) | [aide d'emblée : Une boîte pleine, c'est dix. Et encore 8.] 8 plus 10 ? | 18 | 12 | correction : « Une boîte pleine, c'est dix. Et encore 8. 8 plus 10, ça fait 18. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -180,7 +180,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | 3 + 10 = ? (famille 8) | Combien font 3 plus 10 ? | 13 | 13 | +1★ |
 | 43 | notion | 6 + 10 = ? (famille 8) | Combien font 6 plus 10 ? | 16 | 16 | +1★ |
 
-Récompense et fin : fin de la notion : trou famille 8 ; +10★ (fin) ; carte limace-de-mer (nouvelle) ; carte anemone (nouvelle)
+Récompense et fin : fin de la notion : trou famille 8 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 8 (dix et quelques), cran « conseillé » · réelle
 
@@ -230,7 +230,7 @@ Récompense et fin : fin de la notion : trou famille 8 ; +10★ (fin) ; carte li
 | 37 | notion | 10 + 2 = ? (famille 8) | 10 plus 2 ? | 12 | 12 | +1★ |
 | 38 | notion | 10 + 1 = ? (famille 8, revient) | 10 plus 1 ? | 11 | 11 | +2★ (erreur corrigée) |
 
-Récompense et fin : fin de la notion : trou famille 8 ; +10★ (fin) ; carte crabe (nouvelle)
+Récompense et fin : fin de la notion : trou famille 8 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 8 (dix et quelques), cran « conseillé » · pressée
 
@@ -277,7 +277,7 @@ Récompense et fin : fin de la notion : trou famille 8 ; +10★ (fin) ; carte cr
 | 34 | notion | 1 + 6 = ? (famille 1) | 1 plus 6 ? | 7 | 14 | correction : « [aide ligne] La tortue est sur 6. Elle fait un saut. Compte avec elle ! 1 plus 6, ça fait 7. » |
 | 35 | notion | 10 + 5 = ? (famille 8) | Combien font 10 plus 5 ? | 15 | 9 | correction : « Une boîte pleine, c'est dix. Et encore 5. 10 plus 5, ça fait 15. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -334,7 +334,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | 4 + 10 = ? (famille 8) | Combien font 4 plus 10 ? | 14 | 14 | +1★ |
 | 43 | notion | ? + 10 = 12 (famille 8) | Combien plus 10, ça fait 12 ? | 2 | 2 | +2★ |
 
-Récompense et fin : fin de la notion : trou famille 8 ; +10★ (fin) ; carte etoile-de-mer (nouvelle) (brillante) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : fin de la notion : trou famille 8 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 8 (dix et quelques), cran « plus dur » · réelle
 
@@ -384,7 +384,7 @@ Récompense et fin : fin de la notion : trou famille 8 ; +10★ (fin) ; carte et
 | 37 | notion | 10 + 3 = ? (famille 8, revient) | Combien font 10 plus 3 ? | 13 | 13 | +2★ (erreur corrigée) |
 | 38 | notion | 2 + 1 = ? (famille 1) | Combien font 2 plus 1 ? | 3 | 3 | +1★ |
 
-Récompense et fin : fin de la notion : trou famille 8 ; +10★ (fin) ; carte poisson-clown (nouvelle)
+Récompense et fin : fin de la notion : trou famille 8 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 8 (dix et quelques), cran « plus dur » · pressée
 
@@ -431,7 +431,7 @@ Récompense et fin : fin de la notion : trou famille 8 ; +10★ (fin) ; carte po
 | 34 | notion | 3 + 10 = ? (famille 8) | Combien font 3 plus 10 ? | 13 | 20 | correction : « Une boîte pleine, c'est dix. Et encore 3. 3 plus 10, ça fait 13. » |
 | 35 | notion | 2 + 5 = ? (famille 1) | 2 plus 5 ? | 7 | 10 | correction : « [aide ligne] La tortue est sur 5. Elle fait 2 sauts. Compte avec elle ! 2 plus 5, ça fait 7. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -488,7 +488,7 @@ Récompense et fin : +10★ (fin)
 | 42 | notion | ? + 10 = 13 (famille 8) | Combien plus 10, ça fait 13 ? | 3 | 3 | +2★ |
 | 43 | notion | 4 + ? = 14 (famille 8) | 4 plus combien, ça fait 14 ? | 10 | 10 | +2★ |
 
-Récompense et fin : fin de la notion : trou famille 8 ; +10★ (fin) ; carte etoile-de-mer (nouvelle) ; carte oursin (nouvelle)
+Récompense et fin : fin de la notion : trou famille 8 ; +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 8 (dix et quelques), cran « très dur » · réelle
 
@@ -540,7 +540,7 @@ Récompense et fin : fin de la notion : trou famille 8 ; +10★ (fin) ; carte et
 | 39 | notion | 10 + 2 = ? (famille 8) | 10 plus 2 ? | 12 | 13 | correction : « Une boîte pleine, c'est dix. Et encore 2. 10 plus 2, ça fait 12. » |
 | 40 | notion | 10 + 5 = ? (famille 8) | Combien font 10 plus 5 ? | 15 | 15 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) (brillante) ; carte poisson-clown (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 8 (dix et quelques), cran « très dur » · pressée
 
@@ -586,4 +586,4 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) (brillante) ; carte p
 | 33 | notion | 8 + 2 = ? (famille 1) | 8 plus 2 ? | 10 | 11 | correction : « [aide ligne] La tortue est sur 8. Elle fait 2 sauts. Compte avec elle ! 8 plus 2, ça fait 10. » |
 | 34 | notion | 10 + 2 = ? (famille 8) | 10 plus 2 ? | 12 | 20 | correction : « Une boîte pleine, c'est dix. Et encore 2. 10 plus 2, ça fait 12. » |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

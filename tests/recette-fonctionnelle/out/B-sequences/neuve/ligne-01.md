@@ -57,7 +57,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 40 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·2·3·4·5·6·7·8·10 ; tortue sur 8, 1 saut(s) ; bulles 8 / 9 | La tortue part de 8. Elle fait un saut. Sur quel nombre arrive-t-elle ? | 9 | 9 |  |
 | 41 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·2·3·4·5·6·10 ; étoile sur 8 ; bulles 8 / 9 | [la tortue montre le premier saut] Quel nombre se cache sous l'étoile de mer ? | 8 | 8 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Ligne graduée, niveau 1, cran « plus facile » · réelle
 
@@ -103,7 +103,7 @@ Récompense et fin : +10★ (fin) ; carte poisson-chirurgien (nouvelle)
 | 33 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·2·3·4·8·9·10 ; étoile sur 6 ; bulles 6 / 7 | [la tortue montre le premier saut] L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 6 | 7 | correction E1 : « On compte les sauts, pas les traits. … C'était 6. » |
 | 34 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·2·3·4·5·6·7·8·10 ; tortue sur 8, 1 saut(s) ; bulles 8 / 9 | La tortue part de 8. Elle fait un saut. Sur quel nombre arrive-t-elle ? | 9 | 9 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Ligne graduée, niveau 1, cran « plus facile » · pressée
 
@@ -156,7 +156,7 @@ Récompense et fin : +10★ (fin) ; carte concombre-de-mer (nouvelle)
 | 40 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·2·3·7·8·9·10 ; étoile sur 5 ; bulles 5 / 6 | [la tortue montre le premier saut] L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 5 | 6 | correction E1 : « On compte les sauts, pas les traits. … C'était 5. » |
 | 41 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·2·3·4·8·9·10 ; tortue sur 4, 3 saut(s) ; bulles 6 / 7 | La tortue part de 4. Elle fait 3 sauts. Sur quel nombre arrive-t-elle ? | 7 | 7 | +1★ |
 
-Récompense et fin : +10★ (fin)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -214,7 +214,7 @@ Récompense et fin : +10★ (fin)
 | 43 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·2·3·5·6·7·8·9·10 ; tortue sur 3, 1 saut(s) ; bulles 1 / 3 / 4 | La tortue est sur 3 et fait un saut. Où arrive-t-elle ? | 4 | 4 | +1★ |
 | 44 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·2·3·4·5·9·10 ; étoile sur 7 ; bulles 3 / 7 / 8 | Quel nombre se cache sous l'étoile de mer ? | 7 | 7 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle) (brillante) ; carte crevette (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 1, cran « conseillé » · réelle
 
@@ -264,7 +264,7 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle) (brillante) ; carte c
 | 37 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·6·7·8·9·10 ; tortue sur 1, 4 saut(s) ; bulles 4 / 5 / 6 | La tortue part de 1. Elle fait 4 sauts. Sur quel nombre arrive-t-elle ? | 5 | 4 | correction E1 : « On compte les sauts, pas les traits. … C'était 5. » |
 | 38 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·5·6·7·8·9·10 ; étoile sur 3 ; bulles 3 / 4 / 7 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 3 | 3 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 1, cran « conseillé » · pressée
 
@@ -317,7 +317,7 @@ Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle) (brillante)
 | 40 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·2·3·8·9·10 ; tortue sur 3, 4 saut(s) ; bulles 4 / 6 / 7 | La tortue est sur 3 et fait 4 sauts. Où arrive-t-elle ? | 7 | 4 | correction E3 : « La tortue part de 3, pas de zéro. On compte les sauts à partir d'elle. … C'était 7. » |
 | 41 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·5·6·7·8·9·10 ; étoile sur 3 ; bulles 3 / 4 / 7 | Quel nombre se cache sous l'étoile de mer ? | 3 | 7 | correction E4 : « Les nombres grandissent vers la droite. … C'était 3. » ; difficulté persistante |
 
-Récompense et fin : +10★ (fin) ; carte oursin (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -375,7 +375,7 @@ Récompense et fin : +10★ (fin) ; carte oursin (nouvelle) (brillante)
 | 43 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·5·10 ; tortue sur 0, 1 saut(s) ; bulles 0 / 1 / 2 | La tortue part de 0. Elle fait un saut. Sur quel nombre arrive-t-elle ? | 1 | 1 | +2★ |
 | 44 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·5·10 ; étoile sur 9 ; bulles 1 / 9 / 10 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 9 | 9 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte etoile-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 1, cran « plus dur » · réelle
 
@@ -426,7 +426,7 @@ Récompense et fin : +10★ (fin) ; carte crevette (nouvelle) ; carte etoile-de-
 | 38 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·2·3·4·8·9·10 ; étoile sur 6 ; bulles 4 / 6 / 7 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 6 | 6 | +1★ |
 | 39 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·2·3·4·5·10 ; tortue sur 5, 4 saut(s) ; bulles 4 / 8 / 9 | La tortue est sur 5 et fait 4 sauts. Où arrive-t-elle ? | 9 | 9 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte moule (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 1, cran « plus dur » · pressée
 
@@ -476,7 +476,7 @@ Récompense et fin : +10★ (fin) ; carte moule (nouvelle)
 | 37 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·2·3·4·5·6·7·8·9 ; tortue sur 9, 1 saut(s) ; bulles 1 / 9 / 10 (revient) | La tortue est sur 9 et fait un saut. Où arrive-t-elle ? | 10 | 1 | correction E3 : « La tortue part de 9, pas de zéro. On compte les sauts à partir d'elle. … C'était 10. » |
 | 38 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·5·6·7·8·9·10 ; étoile sur 3 ; bulles 3 / 4 / 7 (revient) | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 3 | 3 | +2★ (erreur corrigée) |
 
-Récompense et fin : +10★ (fin) ; carte anemone (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -534,7 +534,7 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle)
 | 43 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·10 ; tortue sur 3, 3 saut(s) ; bulles 3 / 5 / 6 | La tortue part de 3. Elle fait 3 sauts. Sur quel nombre arrive-t-elle ? | 6 | 6 | +2★ |
 | 44 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·10 ; étoile sur 2 ; bulles 2 / 3 / 8 | Quel nombre se cache sous l'étoile de mer ? | 2 | 2 | +2★ |
 
-Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) (brillante) ; carte crevette (nouvelle) (brillante)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 1, cran « très dur » · réelle
 
@@ -585,7 +585,7 @@ Récompense et fin : +10★ (fin) ; carte crabe (nouvelle) (brillante) ; carte c
 | 38 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·2·3·4·5·6·7 ; tortue sur 7, 3 saut(s) ; bulles 3 / 9 / 10 | La tortue part de 7. Elle fait 3 sauts. Sur quel nombre arrive-t-elle ? | 10 | 10 | +1★ |
 | 39 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·2·3·4·8·9·10 ; étoile sur 6 ; bulles 4 / 6 / 7 | Quel nombre se cache sous l'étoile de mer ? | 6 | 6 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte bernard-l-ermite (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Ligne graduée, niveau 1, cran « très dur » · pressée
 
@@ -641,4 +641,4 @@ Récompense et fin : +10★ (fin) ; carte anemone (nouvelle) ; carte bernard-l-e
 | 43 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·2·3·4·8·9·10 ; étoile sur 6 ; bulles 4 / 6 / 7 | L'étoile de mer est posée sur une bouée. Quel est ce nombre ? | 6 | 7 | correction E1 : « On compte les sauts, pas les traits. … C'était 6. » |
 | 44 | notion | ligne 0–10 (pas 1, 11 graduations) écrits 0·1·2·3·4·5·6 ; tortue sur 6, 4 saut(s) ; bulles 4 / 9 / 10 | La tortue est sur 6 et fait 4 sauts. Où arrive-t-elle ? | 10 | 10 | +1★ |
 
-Récompense et fin : +10★ (fin) ; carte etoile-de-mer (nouvelle)
+Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)

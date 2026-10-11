@@ -49,11 +49,15 @@ import { Frieze } from "./session/frieze.js";
 import { FreeTraining } from "./session/free.js";
 import { allowedCrans, chooseCran } from "./session/selector.js";
 import { choose } from "./session/choice.js";
+import { deuxTouchers } from "./session/selection.js";
+import * as R from "./art/runtime.js";
 import { additionTable, exerciseOf, lessonEnd, lessonsMenu } from "./session/lessons.js";
 import { clock } from "./engine/clock.js";
 import { onBrief, pop, skipKey } from "./engine/ui.js";
 import { ParentSpace, parentLogo } from "./parent/parent.js";
-import { Demarrage } from "./session/demarrage.js";
+import { chargerLogo, Demarrage } from "./session/demarrage.js";
+import { fermerTout, Portee } from "./engine/portee.js";
+import { suivreMiseAJour } from "./engine/miseajour.js";
 
 // les vidéos de la mascotte (engine/mascotte.js, CLIPS) : autant de pas dans la barre de chargement
 const MASCOTTE_VIDEOS = 17;
@@ -64,16 +68,23 @@ const json = async (p) => (await fetch(p)).json();
 const stage = new Stage(document.getElementById("stage"));
 // hors ligne : le service worker met toute l'application en cache (pas en file://, ni pendant les tests qui
 // le désactivent), avec une seule résolution des planches d'images : celle que cet écran utilise (sprites.js)
-if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !location.search.includes("nosw")) navigator.serviceWorker.register(`sw.js?r=${stage.px > 1.2 ? 2 : 1}`).catch(() => {});
+// (lot « Correctifs : passage… », point 12 : une nouvelle version attend ; elle ne prend la main qu'au lancement suivant, ou
+// pendant l'écran de démarrage, avant le toucher : la page se recharge alors aussitôt, engine/miseajour.js)
+let demarrageTouche = false;
+if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !location.search.includes("nosw")) navigator.serviceWorker.register(`sw.js?r=${stage.px > 1.2 ? 2 : 1}`).then((reg) => suivreMiseAJour(reg, { touche: () => demarrageTouche, journal: (e) => { try { journal(e); } catch { /* (pas encore prêt) */ } } })).catch(() => {});
 // (lot « Correctifs de la tablette ») L'ÉCRAN DE DÉMARRAGE (session/demarrage.js) : l'atlas et la petite planche du logo
 // d'abord, puis tout le reste, chaque chargement faisant avancer la barre : les contenus et l'index de la voix, les planches
 // du premier écran, les vidéos de la mascotte (créée tout de suite : ses vidéos se chargent pendant le reste)
-const atlas = await loadAtlas();
+// (lot « Correctifs : passage… », point 9 : les images du logo, de la maquette art/logo/, chargées les toutes premières, en même
+// temps que l'atlas ; l'écran ne s'affiche qu'avec un logo décodé)
+const [atlas, logo] = await Promise.all([loadAtlas(), chargerLogo(stage.px).catch(() => null)]);
 const sprites = new Sprites(atlas, stage.px);
 await sprites.load("demarrage").catch(() => {});
-const demarrage = new Demarrage(stage, sprites);
+const demarrage = new Demarrage(stage, sprites, logo);
 performance.mark("demarrage-visible");
-json("version.json").then((v) => demarrage.infos(v?.version), () => demarrage.infos(null));
+// (la version : écrite sur l'écran de démarrage, et notée avec chaque phrase sans voix, point 12)
+let versionApp = null;
+json("version.json").then((v) => { versionApp = v?.version ?? null; demarrage.infos(versionApp); }, () => demarrage.infos(null));
 // (lot « Mascotte ») le journal des raccords de la mascotte : gardé pour la recette (combien de fondus forcés)
 const journalMascotte = []; window.__journalMascotte = journalMascotte;
 const videoChargee = demarrage.annoncer(MASCOTTE_VIDEOS, 1);
@@ -89,6 +100,9 @@ await Promise.all(["lagon", "lagon-vie", "poissons", "petits", "tortue"].map((s)
 const lagon = new Lagon(stage, sprites, atlas);
 lagon.paintStatic();
 stage.ticks.add((t, dt) => { lagon.update(t, dt); lagon.render(); ocean.update(t, dt); ocean.render(); });
+// (lot « Correctifs : passage… », point 9 : tant que l'écran de démarrage, opaque, couvre tout, la scène ne dessine rien dessous ;
+// ce temps est laissé au chargement et aux mouvements du logo)
+stage.paused = true;
 stage.start();
 // un changement d'échelle (rotation, fenêtre) demanderait d'autres planches : on recharge simplement
 stage.onResize(() => { if (Math.abs(stage.px - sprites.px) > 0.01) location.reload(); });
@@ -97,8 +111,22 @@ const rnd = rng(Date.now() & 0xffffffff);
 // pour les tests et les captures : ?module=2 ?cran=dur ?surprise=visite:tortue ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape ?sansLecon ?lecon=L1 ?etoiles=N
 const P = new URLSearchParams(location.search);
 const text = { data: textes, pick: (k, v = {}) => { const e = textes[k]; return fill(Array.isArray(e) ? e[Math.floor(rnd() * e.length)] : e, v); } };
-// les phrases fabriquées à l'avance (assets/voix/) ; ?voix=synthese : seulement la synthèse du navigateur (comparaison)
-const voice = new Voice({ rate: 0.9, fast: P.get("voix") === "rapide" }).setIndex(P.get("voix") === "synthese" ? null : voix);
+// les phrases fabriquées à l'avance (assets/voix/)
+const voice = new Voice({ rate: 0.9, fast: P.get("voix") === "rapide" }).setIndex(voix);
+let notesSansVoix = Promise.resolve();
+// (lot « Correctifs : passage de l'échauffement aux voiliers », point 12) LES PHRASES SANS VOIX : plus de synthèse du navigateur ;
+// une phrase sans fichier lisible est notée pour l'espace parent (« Phrases sans voix ») : la phrase, la date, la version, la
+// cause (« absente de l'index » ou « fichier illisible ») ; une ligne par phrase, cause et version, avec le nombre de fois
+// (les 100 plus récentes)
+voice.onManque = (phrase, cause) => { notesSansVoix = notesSansVoix.then(async () => {
+  try {
+    const l = (await store.setting("phrasesSansVoix")) ?? [], t = Date.now(), v = versionApp ?? "?";
+    const e = l.find((x) => x.phrase === phrase && x.cause === cause && x.version === v);
+    if (e) { e.fois++; e.derniere = t; } else l.push({ phrase, cause, version: v, premiere: t, derniere: t, fois: 1 });
+    l.sort((a, b) => a.derniere - b.derniere); await store.setSetting("phrasesSansVoix", l.slice(-100));
+    console.warn("phrase sans voix, notée pour l'espace parent :", phrase, cause);
+  } catch { /* le journal ne doit jamais gêner l'enfant */ }
+}); };
 // (lot « Mascotte ») la mascotte parle quand la voix parle, et ce qu'elle dit s'écrit dans sa bulle (pas dans le récif
 // vivant, où elle n'est pas) ; la bulle s'efface 1,5 s après la phrase ; la flèche montre à la place du bras de la pieuvre
 // (la bande de la ligne graduée affichée est un obstacle de la bulle, sauf pendant la pause, où elle est cachée)
@@ -140,7 +168,7 @@ addEventListener("error", (ev) => journal({ type: "erreur de page", message: ev.
 addEventListener("unhandledrejection", (ev) => journal({ type: "erreur de page", message: String(ev.reason?.message ?? ev.reason), pile: ev.reason?.stack?.split("\n").slice(0, 4).join(" | ") ?? null }));
 const rewards = await new Rewards(store, cartes, calendrier).load();
 if (P.get("etoiles")) { rewards.st.total = Number(P.get("etoiles")); await rewards.save(); } // tests : un trésor de départ
-const app = { stage, sprites, ocean, lagon, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, legendes, line: new LineView(stage), bulle, fleche };
+const app = { stage, sprites, ocean, lagon, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, legendes, line: new LineView(stage), bulle, fleche, portees: new Set() };
 // la vitesse des animations des exemples guidés et des corrections (1 : la vitesse d'origine ; la voix garde son débit)
 app.vitesse = seance.vitesseAnimations ?? 1;
 app.toucher = seance.toucher ?? {}; // (lot 3 bis, A5 : le double toucher)
@@ -221,13 +249,26 @@ const handlers = {
     if (seance.selecteur?.actif) await session.setCran(P.get("cran") ?? await chooseCran(app, { allowed: allowedCrans(await store.setting("cransAutorises")), attenteS: seance.selecteur.attenteS }));
   },
   // échauffement : faits d'addition dus (familles 1 et 2 au lot 1), précédés des questions du temps de base
+  // (lot « Correctifs : passage de l'échauffement aux voiliers », point 1) l'échauffement a sa PORTÉE (engine/portee.js) : quelle
+  // que soit la façon dont il finit (fin normale, passé, ou abandonné : pause, puis un autre exercice choisi), son bouton
+  // « passer l'échauffement », sa coche et leur minuterie sont retirés, le pavé, le coquillage et « je ne sais pas » rangés.
+  // Avant, un échauffement abandonné laissait son bouton à l'écran : touché plus tard (pendant les voiliers), il faisait
+  // repartir la séance abandonnée, dont la notion du jour (les additions : pavé, coquillage, bernard-l'ermite) s'affichait
+  // par-dessus (capture 01 du parent).
   echauffement: async (ctx) => {
-    const screen = (app.facts ??= new FactsScreen(app, module2)), warmup = await new Warmup({ store, content: module2, rnd, seance: ctx.session.id, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load();
-    const step = { ...ctx.step, ...(P.get("faits") ? { questions: [Number(P.get("faits")), Number(P.get("faits"))] } : {}) };
-    app.warmup = warmup;
-    // lot 3 ter (T1) : le bouton « passer l'échauffement », présent pendant tout l'échauffement, confirmé par la coche
-    const skip = (onSkip) => warmupSkipKey(onSkip);
-    await runWarmup({ ...ctx, step, warmup, screen, rnd, skip, intro: async (skipped) => { await voice.say(text.pick("echauffement")); if (!warmup.base.mesures.length && !skipped()) await voice.say(text.data.pave); } });
+    const portee = new Portee("échauffement", app.portees);
+    let fini = false;
+    try {
+      const screen = (app.facts ??= new FactsScreen(app, module2)), warmup = await new Warmup({ store, content: module2, rnd, seance: ctx.session.id, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load();
+      portee.fin(() => { if (!fini) screen.abandon(); screen.leave(); if (app.warmup === warmup) app.warmup = null; });
+      const step = { ...ctx.step, ...(P.get("faits") ? { questions: [Number(P.get("faits")), Number(P.get("faits"))] } : {}) };
+      app.warmup = warmup;
+      // lot 3 ter (T1) : le bouton « passer l'échauffement », présent pendant tout l'échauffement, confirmé par la coche (et
+      // sans effet une fois l'échauffement fermé ou la séance interrompue)
+      const skip = (onSkip) => portee.el(warmupSkipKey(() => { if (!portee.fermee && !ctx.session.stopped) onSkip(); }));
+      await runWarmup({ ...ctx, step, warmup, screen, rnd, skip, intro: async (skipped) => { await voice.say(text.pick("echauffement")); if (!warmup.base.mesures.length && !skipped()) await voice.say(text.data.pave); } });
+      fini = true;
+    } finally { portee.fermer(); }
   },
   notion: async (ctx) => {
     frieze.notionIcon(ctx.session.rec.module);
@@ -388,7 +429,7 @@ function warmupSkipKey(onSkip) {
   onBrief(app, key, () => ws.tap(), "passerEchauffement");
   onBrief(app, check, () => { pop(check); ws.check(); }, "ouiPasserEchauffement");
   app.warmupSkip = ws;
-  return { remove() { ws.stop(); key.remove(); check.remove(); if (app.warmupSkip === ws) app.warmupSkip = null; } };
+  return { remove() { ws.stop(); key.remove(); check.remove(); stage.root.classList.remove("attente-passer"); app.warmupPending = false; if (app.warmupSkip === ws) app.warmupSkip = null; } };
 }
 // pour les mesures : ?sans=echauffement (ou une autre étape) la saute
 for (const id of (P.get("sans") ?? "").split(",").filter(Boolean)) delete handlers[id];
@@ -412,64 +453,84 @@ app.parent = parent;
 // (pendant une pause, le parent peut terminer la séance : endPausedSession)
 const openParent = async () => { voice.stop(); sound.suspend(); const r = await parent.open(); if (r?.terminer) await endPausedSession({ par: "parent", raison: "terminée par le parent pendant une pause" }); if (r?.reload) location.reload(); sound.setPrefs(await store.setting("son")); sound.resume(); };
 const big = (name, cx, cy, label, cls = "bubble") => spriteBox(app, { x: cx - 90, y: cy - 90, w: 180, h: 180, cls, label, paint: (ctx) => sprites.draw(ctx, name, 0, 90, 90) });
+// (lot « Correctifs : passage de l'échauffement aux voiliers », point 10 ; demande du parent du 10 octobre 2026) LES GALETS DE
+// L'ACCUEIL : plus grands (au moins 200 px de large) et chacun sa forme de galet (atelier : sea/galets.ts, sprites
+// « accueil.galet.* ») ; le bouton est la boîte du galet, son dessin (ombre comprise) déborde un peu. Sélectionné, l'entourage
+// corail suit exactement sa forme (runtime.js, drawSelectGalet) ; la bulle part du galet (`__cadre`, son ovale).
+let homeSel = null;
+const galet = (id, cx, label, cls) => {
+  const f = R.GALETS[id], w = Math.round(2 * f.rx), h = Math.round(2 * f.ry), W = R.GALET_W, H = R.GALET_H, px = stage.px;
+  const b = spriteBox(app, { x: cx - w / 2, y: GALET_Y - h / 2, w, h, cls: `bubble galet ${cls}`, label, paint: () => {} });
+  const c = b.querySelector("canvas"); c.width = Math.round(W * px); c.height = Math.round(H * px);
+  Object.assign(c.style, { position: "absolute", left: `${(w - W) / 2}px`, top: `${(h - H) / 2}px`, width: `${W}px`, height: `${H}px` });
+  b.repaint = () => {
+    const ctx = c.getContext("2d"); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height);
+    sprites.draw(ctx, `accueil.galet.${id}`, 0, W / 2, H / 2);
+    if (homeSel === id) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawSelectGalet(ctx, W / 2, H / 2, id); }
+  };
+  b.repaint(); b.dataset.key = id;
+  b.__cadre = [cx - f.rx * 0.8, GALET_Y - f.ry * 0.8, cx + f.rx * 0.8, GALET_Y + f.ry * 0.8];
+  return b;
+};
 let homeEls = [], bienvenueEnCours = false;
 // (une bulle touchée pendant la bienvenue du lancement la coupe : la suite parle aussitôt)
-const clearHome = () => { homeEls.forEach((e) => e.remove()); homeEls = []; if (bienvenueEnCours) { bienvenueEnCours = false; voice.stop(); } };
+const clearHome = () => { homeEls.forEach((e) => e.remove()); homeEls = []; homeSel = null; if (bienvenueEnCours) { bienvenueEnCours = false; voice.stop(); } };
 async function showHome({ done, first = false, bienvenue = false }) {
   clearHome(); ocean.mascotte.ambiance("pause"); fleche.cacher();
-  // (lot 3 bis, R22) ce que « réécouter » redit à l'accueil
+  // (lot 3 bis, R22) ce que « réécouter » redit à l'accueil (point 10 : « Touche une bulle : je te dis ce que c'est. Touche-la
+  // encore pour y aller. »)
   voice.instruction = done ? text.data.accueilConsigneFaite : text.data.accueilConsigne;
   // (lot « Correctifs de la tablette ») à l'arrivée sur l'accueil, après l'écran de démarrage : la mascotte salue et souhaite
   // la bienvenue (une fois par lancement ; distincte de la bienvenue qui suit « jouer », qui reste)
   // (relecture du lot : tant que l'enfant n'a jamais touché la mascotte, la bienvenue le lui apprend : « Pour réécouter, touche-moi ! »)
+  // (point 10 : elle s'arrête dès que l'enfant sélectionne un galet : la mascotte dit alors ce que c'est)
   if (bienvenue) {
     bienvenueEnCours = true; ocean.mascotte.play("saluer");
     const astuce = !(await store.setting("mascotteTouchee"));
     voice.say(astuce ? `${text.pick("bienvenueLancement")} ${text.data.astuceMascotte}` : text.pick("bienvenueLancement")).then(() => { bienvenueEnCours = false; });
   }
-  const reefKey = big("recif", HOME_X[3], 650, "le récif", "bubble reefkey"), albumKey = big("album", HOME_X[4], 650, "l'album", "bubble albumkey");
-  // (lot « Les leçons ») la bulle « les leçons », avant comme après la séance du jour
-  const lessonsKey = big("accueil.lecons", HOME_X[2], 650, "les leçons", "bubble leconskey");
-  homeEls.push(reefKey, albumKey, lessonsKey, parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }));
-  onBrief(app, lessonsKey, () => openLessons(), "lecons");
+  // les galets : jouer (ou, la séance du jour faite, « Encore ! », l'entraînement libre, le même écran « choisir » sans étoiles,
+  // et la lune en décor), choisir (lot 3 : l'exercice et le niveau), les leçons, le récif, l'album
+  const tuiles = done
+    ? [galet("encore", GALET_X[1], "encore", "play again"), galet("lecons", GALET_X[2], "les leçons", "leconskey"), galet("recif", GALET_X[3], "le récif", "reefkey"), galet("album", GALET_X[4], "l'album", "albumkey")]
+    : [galet("jouer", GALET_X[0], "jouer", "play"), galet("choisir", GALET_X[1], "choisir", "choisir"), galet("lecons", GALET_X[2], "les leçons", "leconskey"), galet("recif", GALET_X[3], "le récif", "reefkey"), galet("album", GALET_X[4], "l'album", "albumkey")];
+  homeEls.push(...tuiles, parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }));
+  if (done) homeEls.push(await goodNight(app, { first }));
   const visit = (place) => async () => { voice.unlock(); voice.stop(); clearHome(); await place.visit(); showHome({ done: await doneToday(store) }); };
-  // (lot 3 bis, B3) les bulles de l'accueil : un toucher bref les lance, un appui long montre leur étiquette
-  onBrief(app, reefKey, visit(reef), "recif"); onBrief(app, albumKey, visit(album), "album");
-  if (done) {
-    // la séance du jour est faite : la lune (un décor) et « Encore ! », l'entraînement libre (le même écran « choisir »,
-    // sans étoiles)
-    const again = big("encore", HOME_X[1], 650, "encore", "bubble play again");
-    homeEls.push(again);
-    onBrief(app, again, () => { voice.unlock(); clearHome(); freeTraining(); }, "encore");
-    homeEls.push(await goodNight(app, { first }));
-    return;
-  }
-  // la séance du jour : « jouer » (la séance proposée par l'application) ou « choisir » (lot 3 : l'exercice et le niveau)
-  const play = big("jouer", HOME_X[0], 650, "jouer", "bubble play"), pickKey = big("choisir", HOME_X[1], 650, "choisir", "bubble choisir");
-  homeEls.push(play, pickKey);
-  let played = false;
-  onBrief(app, play, async () => {
-    if (played) return; played = true; voice.unlock(); clearHome();
-    // pour les captures et les tests : ?lecon=L1 joue seulement cette leçon
-    if (P.get("lecon")) { window.__lecon = await lessons.play(P.get("lecon")); return; }
-    // ?module=2 (tests) : la notion du jour imposée pour cette séance
-    if (P.get("module")) await store.setSetting("moduleImpose", { module: Number(P.get("module")), t: Date.now() });
-    // ?choix=1:8 ou ?choix=2:5 (tests, captures) : l'exercice choisi sans passer par l'écran « choisir »
-    const ch = P.get("choix")?.split(":").map(Number);
-    await runSession(ch ? (ch[0] === 2 ? { module: 2, famille: ch[1] } : { module: ch[0], niveau: ch[1] }) : null);
-  }, "jouer");
-  onBrief(app, pickKey, async () => {
-    voice.unlock(); clearHome();
-    mode = "choix"; homeKey.style.visibility = "visible";
-    const c = await choose(app, { store, content: { module1, module2, module3, module4, module5, module6, seance } });
-    mode = null; homeKey.style.visibility = "hidden";
-    await runSession(c);
-  }, "choisir");
+  const actions = {
+    // la séance du jour, proposée par l'application
+    jouer: async () => {
+      voice.unlock(); clearHome();
+      // pour les captures et les tests : ?lecon=L1 joue seulement cette leçon
+      if (P.get("lecon")) { window.__lecon = await lessons.play(P.get("lecon")); return; }
+      // ?module=2 (tests) : la notion du jour imposée pour cette séance
+      if (P.get("module")) await store.setSetting("moduleImpose", { module: Number(P.get("module")), t: Date.now() });
+      // ?choix=1:8 ou ?choix=2:5 (tests, captures) : l'exercice choisi sans passer par l'écran « choisir »
+      const ch = P.get("choix")?.split(":").map(Number);
+      await runSession(ch ? (ch[0] === 2 ? { module: 2, famille: ch[1] } : { module: ch[0], niveau: ch[1] }) : null);
+    },
+    choisir: async () => {
+      voice.unlock(); clearHome();
+      mode = "choix"; homeKey.style.visibility = "visible";
+      const c = await choose(app, { store, content: { module1, module2, module3, module4, module5, module6, seance } });
+      mode = null; homeKey.style.visibility = "hidden";
+      await runSession(c);
+    },
+    encore: () => { voice.unlock(); clearHome(); freeTraining(); },
+    lecons: () => openLessons(),
+    recif: visit(reef), album: visit(album),
+  };
+  // (point 10) EN DEUX TOUCHERS, comme les écrans de choix (session/selection.js) : le premier sélectionne le galet, la mascotte
+  // dit ce que c'est (accueilDescription), la bulle part du galet ; le second y va ; un toucher ailleurs désélectionne ; deux
+  // touchers rapides y vont aussitôt (point 11)
+  deuxTouchers(app, { tuiles, texte: (k) => text.data.accueilDescription[k], peindre: (k) => { homeSel = k; }, commandes: ".logo", unToucher: !!window.__accueilUnToucher }).then((k) => actions[k]?.());
 }
 // les bulles de l'accueil : jouer, choisir (ou « Encore ! »), les leçons, le récif, l'album
 // (lot 3 bis, R20 : l'album était posé sur le rocher de droite ; les bulles se décalent vers la gauche, sous la mascotte)
 // (lot « Les leçons » : cinq bulles, 180 px de l'une à l'autre)
 const HOME_X = [370, 550, 730, 910, 1090];
+// (point 10) les galets de l'accueil : plus grands, environ 228 px de l'un à l'autre, entre le bouton de l'espace parent et le bord droit
+const GALET_X = [250, 478, 705, 933, 1160], GALET_Y = 652;
 // LES LEÇONS (lot « Les leçons », session/lessons.js) : le menu ; une leçon, puis l'écran « À toi ! » (l'exercice associé :
 // séance du jour s'il n'y en a pas encore eu, entraînement libre sinon) ; la table d'addition ; la maison ramène à l'accueil
 async function openLessons() {
@@ -510,6 +571,8 @@ async function runSession(choix = null) {
   const defi = seance.etapes.find((e) => e.id === "defi");
   frieze.only([...sans, ...(defi && handlers.defi && !(await challengeReady(store, defi)) ? ["defi"] : [])]);
   await session.run();
+  // (une séance interrompue dont l'étape abandonnée s'est réveillée : ce n'est plus elle qui mène l'écran)
+  if (session.stopped) return;
   mode = null; frieze.show(false); homeKey.style.visibility = "hidden";
   sound.stopMusic();
   showHome({ done: true, first: true });
@@ -678,9 +741,13 @@ function sandbox() {
 }
 // l'activité en cours est abandonnée pour de bon (engine/clock.js) et la scène rangée
 function abandonActivity() {
+  // (lot « Correctifs : passage de l'échauffement aux voiliers », point 1) les portées des étapes en cours sont fermées : tout ce
+  // qu'elles ont posé ou lancé est retiré (engine/portee.js)
+  fermerTout(app.portees);
   clock.abandon(); voice.abandon(); bulle.cacher(); fleche.cacher(); ocean.mascotte.release(); ocean.mascotte.ambiance("pause");
   app.choiceClear?.(); app.choiceClear = null; if (app.facts) app.facts.notion = false; app.calc?.fishDone(); // (lot 3 : l'écran « choisir », les additions libres, le poisson du mur)
   app.screen?.leave(); app.facts?.leave(); app.dictation?.hide?.(); lessons.abandon(); app.voiliers?.leave(); app.etal?.leave();
+  if (app.facts) { app.calc?.leave(); app.mult?.leave(); } // (lot « Correctifs : passage… » : leurs calques d'aide, comme à la fin de leur notion du jour)
   // (correctif du 28 septembre 2026) le défi record quitté en cours : sa bulle-sablier et ses perles restaient à l'écran
   if (app.challenge) { app.challenge.remove(); app.challenge = null; sprites.unload("defi"); }
   for (const s of [app.screen, app.facts]) if (s) { s.resolve = null; s.locked = true; }
@@ -727,7 +794,9 @@ async function freeTraining(start = null) {
 // toucher, qui autorise aussi la voix ; puis l'accueil, où la mascotte souhaite la bienvenue (une fois par lancement)
 await ocean.mascotte.pret;
 const toucheDemarrage = await demarrage.attendreToucher();
+demarrageTouche = true;
 if (toucheDemarrage) { voice.unlock(); sound.unlock(); }
+stage.paused = false; // (la scène reprend sous le fondu de sortie)
 await demarrage.fermer();
 showHome({ done: await doneToday(store), bienvenue: toucheDemarrage });
 requestAnimationFrame(() => requestAnimationFrame(() => { performance.mark("app-ready"); window.__ready = performance.now() - T0; }));

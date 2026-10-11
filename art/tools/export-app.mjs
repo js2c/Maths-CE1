@@ -22,6 +22,7 @@ import { exportLagon } from "./export-lagon.mjs";
 import { exportRecif } from "./export-recif.mjs";
 import { exportVoiliers } from "./export-voiliers.mjs";
 import { exportEtal } from "./export-etal.mjs";
+import { exportLogo } from "./export-logo.mjs";
 
 const args = process.argv.slice(2), opt = (k) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : undefined; };
 const only = opt("--only"), check = !args.includes("--no-check");
@@ -58,6 +59,8 @@ let bad = 0;
 const report = [];
 for (const sheet of sheets) {
   const scales = [...new Set(specs.filter((s) => s.sheet === sheet).flatMap((s) => s.scales))];
+  // (lot « Correctifs : passage… » : une image retirée de la planche disparaît aussi de l'atlas, même avec --only)
+  for (const [n, sp] of Object.entries(atlas.sprites)) if (sp.sheet === sheet && !specs.some((x) => x.name === n)) delete atlas.sprites[n];
   for (const scale of scales) {
     const r = await pg.evaluate(([s, k]) => window.EXPORT.sheet(s, k, true, 1), [sheet, scale]);
     // les anciennes pages de cette planche disparaissent (une planche peut avoir changé de nombre de pages)
@@ -95,6 +98,8 @@ if (!only || only.includes("recif")) exportRecif();
 if (!only || only.includes("voiliers")) exportVoiliers();
 // lot « L'étal du pêcheur » : la scène de l'étal, extraite de sa maquette (art/etal/)
 if (!only || only.includes("etal")) exportEtal();
+// (lot « Correctifs : passage… », points 9, 13 et 14) le logo de démarrage, le bouton de l'espace parent et les icônes
+if (!only || only.includes("logo")) exportLogo();
 atlas.hash = createHash("md5").update(JSON.stringify(atlas.sprites)).digest("hex").slice(0, 10);
 writeFileSync(atlasPath, JSON.stringify(atlas));
 console.log(`atlas    -> ${atlasPath} (${Object.keys(atlas.sprites).length} sprites, empreinte ${atlas.hash})`);

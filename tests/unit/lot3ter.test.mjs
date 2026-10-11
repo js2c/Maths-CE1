@@ -230,7 +230,6 @@ test("T3, exception : les touches du pavé et les bulles-réponses répondent au
 });
 
 test("T3 : chaque bouton recensé a son étiquette, écrite au feutre (caractères que l'atelier sait tracer)", async () => {
-  const { tileLabel } = await import("../../app/js/session/choice.js");
   const E = legendes.etiquettes, ok = /^[A-Za-z0-9éèêëàâùûîïôçÉÈœ +=\-'!.,?·×\u00a0]*$/;
   for (const k of ["jouer", "choisir", "recif", "album", "ligne", "additions", "calcul", "multiplication", "lecons", "tableMultiplication", "continuer", "encore", "aide", "nsp", "reecouter", "passer", "passerEchauffement", "ouiPasserEchauffement", "rejouer", "effacer", "valider", "maison", "pause", "legende", "fermer", "retourExercices", "validerChoix", "cestBon", "coquillage", "retourner", "carteADecouvrir", ...["facile", "conseille", "dur", "tresdur"].flatMap((c) => [`cran.${c}`, `cranLibre.${c}`])]) assert.ok(E[k]?.length > 3, k);
   // les textes de la spécification
@@ -239,14 +238,8 @@ test("T3 : chaque bouton recensé a son étiquette, écrite au feutre (caractèr
   assert.equal(E.maison, "Revenir à l'accueil"); assert.equal(E.pause, "Faire une pause"); assert.equal(E.legende, "La légende des niveaux"); assert.equal(E.carteADecouvrir, "Carte à découvrir");
   for (const c of ["facile", "conseille", "dur", "tresdur"]) assert.match(E[`cran.${c}`], { facile: /^Plus facile\. /, conseille: /^Conseillé\. /, dur: /^Plus dur\. /, tresdur: /^Très dur\. / }[c]);
   for (const t of Object.values(E)) assert.match(t, ok, t);
-  // les tuiles : la ligne de la légende
-  assert.equal(tileLabel(legendes, "calcul", "7"), `7 · ${legendes.calcul.find((r) => r.n === 7).travail.replace(/\.$/, "")}`);
-  const all = [...m1.niveaux.map((n) => ["ligne", n.niveau]), ...m2.familles.map((f) => ["additions", f.id]), ...m3.niveaux.map((n) => ["calcul", n.niveau]), ...m5.niveaux.map((n) => ["multiplication", n.niveau])];
-  for (const [ex, k] of all) { const t = tileLabel(legendes, ex, k); assert.ok(t, `${ex} ${k}`); assert.match(t, ok, t); }
-  // (lot « Les leçons » : les tuiles du menu des leçons, « 7 · … », et celle de la table d'addition, « + · … »)
-  const { tileLabel: lessonLabel } = await import("../../app/js/session/lessons.js");
-  for (const k of [...seance.menuLecons.rangees.flatMap((r) => r.lecons), "+", "×"]) { const t = lessonLabel(legendes, k); assert.ok(t, k); assert.match(t, ok, t); }
-  assert.equal(lessonLabel(legendes, "L10"), `10 · ${legendes.lecons.find((r) => r.n === "L10").travail.replace(/\.$/, "")}`);
+  // (lot « Correctifs : passage de l'échauffement aux voiliers », point 7 : les tuiles des écrans de choix n'ont plus d'étiquette :
+  // tests/unit/passages.test.mjs)
   // les onglets de zone et les cartes : leur nom
   for (const z of cartes.zones) assert.match(z.nom, ok, z.nom);
   for (const c of cartes.cartes) assert.match(c.nom, ok, c.nom);

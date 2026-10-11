@@ -146,6 +146,9 @@ export class Session {
   async run() {
     if (!this.rec) await this.start();
     for (const step of this.c.etapes) {
+      // (lot « Correctifs : passage de l'échauffement aux voiliers », point 1) une séance interrompue (« Terminer la séance »,
+      // un autre exercice choisi depuis la pause) ne passe jamais à l'étape suivante, même si l'étape abandonnée se réveille
+      if (this.stopped) return this.rec;
       const h = this.handlers[step.id], t0 = this.active();
       if (step.actif !== false && h && step.id === "defi" && !(await challengeReady(this.store, step))) { this.rec.etapes.push({ id: step.id, sautee: "pas encore" }); continue; }
       if (this.sans.includes(step.id)) { this.rec.etapes.push({ id: step.id, sautee: this.sansRaison[step.id] ?? "réglage du parent" }); continue; }
@@ -156,9 +159,11 @@ export class Session {
       if (step.id === "recompense") this.rec.terminee = true;
       this.progress = { etape: step.id, faites: 0, prevues: 0 }; this.onProgress?.(this.progress);
       await h({ session: this, step, end: step.minutes ? t0 + step.minutes * 60000 : Infinity });
+      if (this.stopped) return this.rec;
       this.rec.etapes.push({ id: step.id, dureeS: Math.round((this.active() - t0) / 1000) });
       await this.save();
     }
+    if (this.stopped) return this.rec;
     this.rec.terminee = true; this.progress = { etape: null, faites: 0, prevues: 0 }; this.onProgress?.(this.progress); await this.save();
     return this.rec;
   }

@@ -108,9 +108,11 @@ export const drawSpeaker = (g: Gfx, cx: number, cy: number) => {
   });
 };
 // le bouton « commencer » : la bulle, un triangle de lecture corail
+// (lot « Correctifs : passage… », point 10 : le pictogramme seul, repris agrandi sur le galet de l'accueil, sea/galets.ts)
+export const drawPlayIcon = (g: Gfx, cx: number, cy: number) => g.group("plain", () => { const t = smooth([[cx - 14, cy - 24], [cx - 14, cy - 24], [cx + 26, cy], [cx + 26, cy], [cx - 14, cy + 24], [cx - 14, cy + 24]], true, 3); cel(g, t, "#ff7a5c", "#c64d3c", 4); contour(g, t, 4, 350); });
 export const drawPlay = (g: Gfx, cx: number, cy: number) => {
   drawAnswerBubble(g, cx, cy, 8, 60);
-  g.group("plain", () => { const t = smooth([[cx - 14, cy - 24], [cx - 14, cy - 24], [cx + 26, cy], [cx + 26, cy], [cx - 14, cy + 24], [cx - 14, cy + 24]], true, 3); cel(g, t, "#ff7a5c", "#c64d3c", 4); contour(g, t, 4, 350); });
+  drawPlayIcon(g, cx, cy);
 };
 // l'étiquette d'un nom (choix du nom de la pieuvre) : la bulle-réponse étirée en galet, sans texte (le
 // nom est encré en direct)

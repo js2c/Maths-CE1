@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { END, exerciseOf, lessonNumber, MENU, menuLayout, TABLE, TABLE_PLACES, tableAid, tableHit, tileLabel } from "../../app/js/session/lessons.js";
+import { END, exerciseOf, lessonNumber, MENU, menuLayout, TABLE, TABLE_PLACES, tableAid, tableHit } from "../../app/js/session/lessons.js";
 import { aidFor } from "../../app/js/modules/facts/facts.js";
 import { LESSON_OF_LEVEL } from "../../app/js/modules/numberline/runner.js";
 import { BOUCHE, MASCOTTE } from "../../app/js/engine/bulle.js";
@@ -24,8 +24,8 @@ test("menu : les dix-huit leçons (lot « Sommes jusqu'à 30 » : L11 et L12 ; l
   // les deux tables : dans la rangée de la multiplication, à droite de ses deux leçons (tablesPlace : rangée 4, colonnes 4 et 5)
   const last = L.filter((x) => x.y === L.find((y) => y.id === "L13").y).map((x) => x.id ?? x.ex); assert.deepEqual(last, ["multiplication", "L13", "L14", "addition", "multiplication"]);
   // chaque leçon a son nom dit au toucher, sa ligne de légende et son numéro
-  for (const id of ids) { assert.ok(textes.choixLeconNom[id], id); assert.ok(tileLabel(legendes, id)?.startsWith(`${lessonNumber(id)} · `), id); }
-  assert.ok(tileLabel(legendes, "+").startsWith("+ · ")); assert.ok(tileLabel(legendes, "×").startsWith("× · ")); assert.equal(lessonNumber("L10"), 10);
+  for (const id of ids) { assert.ok(textes.choixLeconNom[id], id); assert.ok(legendes.lecons.some((r) => r.n === id), id); }
+  assert.ok(legendes.lecons.some((r) => r.n === "+") && legendes.lecons.some((r) => r.n === "×")); assert.equal(lessonNumber("L10"), 10);
 });
 
 test("menu : les tuiles tiennent dans la scène, ne se chevauchent pas, évitent la bulle sous la tête et le petit livre", () => {
@@ -90,8 +90,9 @@ test("table d'addition : l'appui montré est celui des aides des additions jusqu
 });
 
 test("les phrases du lot : accueil à cinq bulles, fin de leçon, table d'addition (« 7 plus 5, 12. »)", () => {
-  assert.equal(textes.accueilConsigne, "Touche une bulle : jouer, choisir, les leçons, le récif ou l'album.");
-  assert.match(textes.accueilConsigneFaite, /regarder les leçons/);
+  // (lot « Correctifs : passage… », point 10 : l'accueil en deux touchers, la consigne change : tests/unit/passages.test.mjs)
+  assert.equal(textes.accueilConsigne, "Touche une bulle : je te dis ce que c'est. Touche-la encore pour y aller.");
+  assert.match(textes.accueilDescription.lecons, /^Les leçons\./);
   assert.equal(textes.finLecon, "À toi ! Touche la grande bulle pour t'entraîner.");
   assert.equal(textes.choixTable, "La table d'addition."); assert.equal(textes.tableConsigne, "Touche une case : je te dis le calcul.");
   assert.equal(textes.tableCase.replace("{a}", 7).replace("{b}", 5).replace("{n}", 12), "7 plus 5, 12.");

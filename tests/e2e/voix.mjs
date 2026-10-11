@@ -1,7 +1,7 @@
 // LA VOIX FABRIQUÉE À L'AVANCE, jouée pour de vrai dans Chromium (sans voix accélérée) : les fichiers se
 // décodent, l'événement `ended` arrive (la phrase ne finit pas sur le délai de secours), la durée jouée
 // correspond à l'index, un texte de plusieurs phrases enchaîne ses fichiers, « réécouter » rejoue le
-// fichier, et un texte sans fichier passe par la synthèse. Échantillon : 40 phrases tirées de l'index.
+// fichier, et un texte sans fichier n'est dit par aucune autre voix (il est noté). Échantillon : 40 phrases tirées de l'index.
 //   node tests/e2e/voix.mjs
 import { chromium, voixPermise } from "./navigateur.mjs";
 import { readFileSync } from "node:fs";
@@ -34,10 +34,13 @@ for (const t of ["Place le poisson sur le nombre 37.", "0 plus 6 ?", "Bravo ! Ce
 // 3. « réécouter » rejoue le fichier de la dernière consigne
 const re = await page.evaluate(async () => { const v = window.__app.voice, n0 = v.files; await v.replay(); return { files: v.files - n0, listens: v.listens }; });
 check(re.files === 2 && re.listens === 2, `« réécouter » rejoue les fichiers de la consigne (${JSON.stringify(re)})`);
-// 4. un texte sans fichier (nom tapé par le parent) : synthèse du navigateur, phrase notée (volontairement absente : permise)
+// 4. un texte sans fichier (volontairement absent : permis) : dit par aucune autre voix (lot « Correctifs : passage de
+// l'échauffement aux voiliers », point 12 : plus de synthèse du navigateur), noté, et gardé pour l'espace parent
 voixPermise(/^C.est moi, Zoé\.$/);
+await page.evaluate(() => { window.__synthese = 0; if (window.speechSynthesis) window.speechSynthesis.speak = () => { window.__synthese++; }; });
 const miss = await run("C'est moi, Zoé.");
-check(miss.files === 0 && miss.misses.includes("C'est moi, Zoé."), "un texte sans fichier passe par la synthèse et est noté");
+const garde = await page.evaluate(async () => { await new Promise((r) => setTimeout(r, 300)); return ((await window.__app.store.setting("phrasesSansVoix")) ?? []).some((e) => e.phrase === "C'est moi, Zoé."); });
+check(miss.files === 0 && miss.misses.includes("C'est moi, Zoé.") && (await page.evaluate(() => window.__synthese)) === 0 && garde, "un texte sans fichier n'est dit par aucune autre voix ; il est noté (« Phrases sans voix » de l'espace parent)");
 // 5. « stop » coupe un fichier en cours et libère aussitôt
 const cut = await page.evaluate(async () => { const v = window.__app.voice, t0 = performance.now(), p = v.say("Chez l'hippocampe, c'est le papa qui porte les bébés, dans une poche sur son ventre."); await new Promise((r) => setTimeout(r, 300)); v.stop(); await p; return Math.round(performance.now() - t0); });
 check(cut < 600, `« stop » coupe la phrase en cours (${cut} ms)`);

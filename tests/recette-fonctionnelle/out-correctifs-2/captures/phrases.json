@@ -1,0 +1,389 @@
+[
+ {
+  "capture": "1280-choix-exercices.png",
+  "dit": [
+   "Choisir. C'est toi qui choisis l'exercice.",
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "L'étal du pêcheur. Tu fais les courses chez le pêcheur, avec des pièces et des billets."
+  ],
+  "bulle": "L'étal du pêcheur. Tu fais les courses chez le pêcheur, avec des pièces et des billets."
+ },
+ {
+  "capture": "1280-choix-exercices-zoom.png",
+  "dit": [],
+  "bulle": "L'étal du pêcheur. Tu fais les courses chez le pêcheur, avec des pièces et des billets."
+ },
+ {
+  "capture": "1280-choix-niveaux-ligne.png",
+  "dit": [
+   "La ligne des nombres. Tu lis, tu places et tu sautes sur la ligne.",
+   "Choisis ! Touche une image : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "La ligne de zéro à vingt. Tu lis et tu places les nombres, jusqu'à vingt."
+  ],
+  "bulle": "La ligne de zéro à vingt. Tu lis et tu places les nombres, jusqu'à vingt."
+ },
+ {
+  "capture": "1280-choix-niveaux-ligne-zoom.png",
+  "dit": [],
+  "bulle": "La ligne de zéro à vingt. Tu lis et tu places les nombres, jusqu'à vingt."
+ },
+ {
+  "capture": "1280-choix-niveaux-additions.png",
+  "dit": [
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Les additions. Les additions à savoir par cœur, famille par famille.",
+   "Choisis ! Touche une image : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Les amis de dix. Ce qui manque pour faire dix."
+  ],
+  "bulle": "Les amis de dix. Ce qui manque pour faire dix."
+ },
+ {
+  "capture": "1280-choix-niveaux-additions-zoom.png",
+  "dit": [],
+  "bulle": "Les amis de dix. Ce qui manque pour faire dix."
+ },
+ {
+  "capture": "1280-choix-niveaux-calcul.png",
+  "dit": [
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Le calcul rapide. Des astuces pour calculer sans compter un par un.",
+   "Choisis ! Touche une image : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Plus vingt, plus trente, moins vingt, moins trente. Seules les dizaines changent."
+  ],
+  "bulle": "Plus vingt, plus trente, moins vingt, moins trente. Seules les dizaines changent."
+ },
+ {
+  "capture": "1280-choix-niveaux-calcul-zoom.png",
+  "dit": [],
+  "bulle": "Plus vingt, plus trente, moins vingt, moins trente. Seules les dizaines changent."
+ },
+ {
+  "capture": "1280-choix-niveaux-voiliers.png",
+  "dit": [
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Les voiliers. Tu ranges les bateaux entre les bouées.",
+   "Choisis ! Touche une image : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Des bouées de cent en cent, jusqu'à mille. Range le bateau entre deux centaines."
+  ],
+  "bulle": "Des bouées de cent en cent, jusqu'à mille. Range le bateau entre deux centaines."
+ },
+ {
+  "capture": "1280-choix-niveaux-voiliers-zoom.png",
+  "dit": [],
+  "bulle": "Des bouées de cent en cent, jusqu'à mille. Range le bateau entre deux centaines."
+ },
+ {
+  "capture": "1280-choix-niveaux-multiplication.png",
+  "dit": [
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "La multiplication. Des rangées de poissons, et les tables.",
+   "Choisis ! Touche une image : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "La table de deux. Fois deux, c'est le double."
+  ],
+  "bulle": "La table de deux. Fois deux, c'est le double."
+ },
+ {
+  "capture": "1280-choix-niveaux-multiplication-zoom.png",
+  "dit": [],
+  "bulle": "La table de deux. Fois deux, c'est le double."
+ },
+ {
+  "capture": "1280-choix-niveaux-etal.png",
+  "dit": [
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "L'étal du pêcheur. Tu fais les courses chez le pêcheur, avec des pièces et des billets.",
+   "Choisis ! Touche une image : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Paie juste, avec des billets et des pièces. Commence par le plus gros billet qui ne dépasse pas le prix."
+  ],
+  "bulle": "Paie juste, avec des billets et des pièces. Commence par le plus gros billet qui ne dépasse pas le prix."
+ },
+ {
+  "capture": "1280-choix-niveaux-etal-zoom.png",
+  "dit": [],
+  "bulle": "Paie juste, avec des billets et des pièces. Commence par le plus gros billet qui ne dépasse pas le prix."
+ },
+ {
+  "capture": "1280-choix-lecons.png",
+  "dit": [
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Les leçons. Je t'explique avec des images.",
+   "Les leçons.",
+   "Quelle leçon veux-tu regarder ? Touche une image : je te dis ce que c'est. Touche-la encore pour la regarder.",
+   "Plus dix sur le mur de corail. Le petit poisson descend d'une rangée."
+  ],
+  "bulle": "Plus dix sur le mur de corail. Le petit poisson descend d'une rangée."
+ },
+ {
+  "capture": "1280-choix-lecons-zoom.png",
+  "dit": [],
+  "bulle": "Plus dix sur le mur de corail. Le petit poisson descend d'une rangée."
+ },
+ {
+  "capture": "1280-choix-tables.png",
+  "dit": [
+   "La table de multiplication. Toutes les multiplications jusqu'à dix fois dix, dans une grille."
+  ],
+  "bulle": "La table de multiplication. Toutes les multiplications jusqu'à dix fois dix, dans une grille."
+ },
+ {
+  "capture": "1280-choix-tables-zoom.png",
+  "dit": [],
+  "bulle": "La table de multiplication. Toutes les multiplications jusqu'à dix fois dix, dans une grille."
+ },
+ {
+  "capture": "1920-choix-exercices.png",
+  "dit": [
+   "Choisir. C'est toi qui choisis l'exercice.",
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "L'étal du pêcheur. Tu fais les courses chez le pêcheur, avec des pièces et des billets."
+  ],
+  "bulle": "L'étal du pêcheur. Tu fais les courses chez le pêcheur, avec des pièces et des billets."
+ },
+ {
+  "capture": "1920-choix-exercices-zoom.png",
+  "dit": [],
+  "bulle": null
+ },
+ {
+  "capture": "1920-choix-niveaux-ligne.png",
+  "dit": [
+   "La ligne des nombres. Tu lis, tu places et tu sautes sur la ligne.",
+   "Choisis ! Touche une image : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "La ligne de zéro à vingt. Tu lis et tu places les nombres, jusqu'à vingt."
+  ],
+  "bulle": "La ligne de zéro à vingt. Tu lis et tu places les nombres, jusqu'à vingt."
+ },
+ {
+  "capture": "1920-choix-niveaux-ligne-zoom.png",
+  "dit": [],
+  "bulle": null
+ },
+ {
+  "capture": "1920-choix-niveaux-calcul.png",
+  "dit": [
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Le calcul rapide. Des astuces pour calculer sans compter un par un.",
+   "Choisis ! Touche une image : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Plus vingt, plus trente, moins vingt, moins trente. Seules les dizaines changent."
+  ],
+  "bulle": "Plus vingt, plus trente, moins vingt, moins trente. Seules les dizaines changent."
+ },
+ {
+  "capture": "1920-choix-niveaux-calcul-zoom.png",
+  "dit": [],
+  "bulle": null
+ },
+ {
+  "capture": "1920-choix-lecons.png",
+  "dit": [
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Les leçons. Je t'explique avec des images.",
+   "Les leçons.",
+   "Quelle leçon veux-tu regarder ? Touche une image : je te dis ce que c'est. Touche-la encore pour la regarder.",
+   "Plus dix sur le mur de corail. Le petit poisson descend d'une rangée."
+  ],
+  "bulle": "Plus dix sur le mur de corail. Le petit poisson descend d'une rangée."
+ },
+ {
+  "capture": "1920-choix-lecons-zoom.png",
+  "dit": [],
+  "bulle": null
+ },
+ {
+  "capture": "1920-choix-tables.png",
+  "dit": [
+   "La table de multiplication. Toutes les multiplications jusqu'à dix fois dix, dans une grille."
+  ],
+  "bulle": "La table de multiplication. Toutes les multiplications jusqu'à dix fois dix, dans une grille."
+ },
+ {
+  "capture": "1920-choix-tables-zoom.png",
+  "dit": [],
+  "bulle": "La table de multiplication. Toutes les multiplications jusqu'à dix fois dix, dans une grille."
+ },
+ {
+  "capture": "1138d2.25-choix-exercices.png",
+  "dit": [
+   "Choisir. C'est toi qui choisis l'exercice.",
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "L'étal du pêcheur. Tu fais les courses chez le pêcheur, avec des pièces et des billets."
+  ],
+  "bulle": "L'étal du pêcheur. Tu fais les courses chez le pêcheur, avec des pièces et des billets."
+ },
+ {
+  "capture": "1138d2.25-choix-exercices-zoom.png",
+  "dit": [],
+  "bulle": null
+ },
+ {
+  "capture": "1138d2.25-choix-niveaux-ligne.png",
+  "dit": [
+   "La ligne des nombres. Tu lis, tu places et tu sautes sur la ligne.",
+   "Choisis ! Touche une image : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "La ligne de zéro à vingt. Tu lis et tu places les nombres, jusqu'à vingt."
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "1138d2.25-choix-niveaux-ligne-zoom.png",
+  "dit": [],
+  "bulle": null
+ },
+ {
+  "capture": "1138d2.25-choix-niveaux-additions.png",
+  "dit": [
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Les additions. Les additions à savoir par cœur, famille par famille.",
+   "Choisis ! Touche une image : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Les amis de dix. Ce qui manque pour faire dix."
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "1138d2.25-choix-niveaux-additions-zoom.png",
+  "dit": [],
+  "bulle": null
+ },
+ {
+  "capture": "1138d2.25-choix-niveaux-calcul.png",
+  "dit": [
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Le calcul rapide. Des astuces pour calculer sans compter un par un.",
+   "Choisis ! Touche une image : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Plus vingt, plus trente, moins vingt, moins trente. Seules les dizaines changent."
+  ],
+  "bulle": "Plus vingt, plus trente, moins vingt, moins trente. Seules les dizaines changent."
+ },
+ {
+  "capture": "1138d2.25-choix-niveaux-calcul-zoom.png",
+  "dit": [],
+  "bulle": "Plus vingt, plus trente, moins vingt, moins trente. Seules les dizaines changent."
+ },
+ {
+  "capture": "1138d2.25-choix-niveaux-voiliers.png",
+  "dit": [
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Les voiliers. Tu ranges les bateaux entre les bouées.",
+   "Choisis ! Touche une image : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Des bouées de cent en cent, jusqu'à mille. Range le bateau entre deux centaines."
+  ],
+  "bulle": "Des bouées de cent en cent, jusqu'à mille. Range le bateau entre deux centaines."
+ },
+ {
+  "capture": "1138d2.25-choix-niveaux-voiliers-zoom.png",
+  "dit": [],
+  "bulle": null
+ },
+ {
+  "capture": "1138d2.25-choix-niveaux-multiplication.png",
+  "dit": [
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "La multiplication. Des rangées de poissons, et les tables.",
+   "Choisis ! Touche une image : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "La table de deux. Fois deux, c'est le double."
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "1138d2.25-choix-niveaux-multiplication-zoom.png",
+  "dit": [],
+  "bulle": null
+ },
+ {
+  "capture": "1138d2.25-choix-niveaux-etal.png",
+  "dit": [
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "L'étal du pêcheur. Tu fais les courses chez le pêcheur, avec des pièces et des billets.",
+   "Choisis ! Touche une image : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Paie juste, avec des billets et des pièces. Commence par le plus gros billet qui ne dépasse pas le prix."
+  ],
+  "bulle": "Paie juste, avec des billets et des pièces. Commence par le plus gros billet qui ne dépasse pas le prix."
+ },
+ {
+  "capture": "1138d2.25-choix-niveaux-etal-zoom.png",
+  "dit": [],
+  "bulle": "Paie juste, avec des billets et des pièces. Commence par le plus gros billet qui ne dépasse pas le prix."
+ },
+ {
+  "capture": "1138d2.25-choix-lecons.png",
+  "dit": [
+   "Qu'est-ce que tu veux faire ? Touche une bulle : je te dis ce que c'est. Touche-la encore pour commencer.",
+   "Les leçons. Je t'explique avec des images.",
+   "Les leçons.",
+   "Quelle leçon veux-tu regarder ? Touche une image : je te dis ce que c'est. Touche-la encore pour la regarder.",
+   "Plus dix sur le mur de corail. Le petit poisson descend d'une rangée."
+  ],
+  "bulle": "Plus dix sur le mur de corail. Le petit poisson descend d'une rangée."
+ },
+ {
+  "capture": "1138d2.25-choix-lecons-zoom.png",
+  "dit": [],
+  "bulle": "Plus dix sur le mur de corail. Le petit poisson descend d'une rangée."
+ },
+ {
+  "capture": "1138d2.25-choix-tables.png",
+  "dit": [
+   "La table de multiplication. Toutes les multiplications jusqu'à dix fois dix, dans une grille."
+  ],
+  "bulle": "La table de multiplication. Toutes les multiplications jusqu'à dix fois dix, dans une grille."
+ },
+ {
+  "capture": "1138d2.25-choix-tables-zoom.png",
+  "dit": [],
+  "bulle": "La table de multiplication. Toutes les multiplications jusqu'à dix fois dix, dans une grille."
+ },
+ {
+  "capture": "1138d2.25-jeu-echauffement.png",
+  "dit": [
+   "Jouer. Je choisis les exercices du soir pour toi.",
+   "Bienvenue à bord ! On s'entraîne ensemble ?",
+   "On commence par s'échauffer avec des additions !",
+   "Tape la réponse, puis touche la coche verte.",
+   "Combien font 8 plus 0 ?"
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "1138d2.25-jeu-ligne.png",
+  "dit": [
+   "Jouer. Je choisis les exercices du soir pour toi.",
+   "Bienvenue à bord ! On s'entraîne ensemble ?",
+   "Regarde, quelqu'un vient te dire bonjour !",
+   "Regarde bien. On va compter les sauts ensemble.",
+   "On part de 10, et on compte les sauts.",
+   "11",
+   "12",
+   "13",
+   "14",
+   "À toi ! Quel nombre se cache sous l'étoile de mer ?"
+  ],
+  "bulle": null
+ },
+ {
+  "capture": "1138d2.25-jeu-etal.png",
+  "dit": [
+   "Jouer. Je choisis les exercices du soir pour toi.",
+   "Bienvenue à bord ! On s'entraîne ensemble ?",
+   "Regarde, quelqu'un vient te dire bonjour !",
+   "Bonjour, bonjour ! Regarde ma pêche du jour.",
+   "Les sardines coûtent 17 euros. Voici ton portefeuille.",
+   "Pour payer juste, on commence par le plus gros : 10…",
+   "… 15…",
+   "… 16, 17 !",
+   "17 euros : c'est juste ! Il n'y a rien en trop, et il ne manque rien.",
+   "Quand c'est juste, on touche la coche : le pêcheur compte, et il te donne les sardines."
+  ],
+  "bulle": "Quand c'est juste, on touche la coche : le pêcheur compte, et il te donne les sardines."
+ },
+ {
+  "capture": "1138d2.25-jeu-voiliers.png",
+  "dit": [
+   "Jouer. Je choisis les exercices du soir pour toi.",
+   "Bonsoir, et bienvenue ! On va jouer dans l'océan ?",
+   "Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 450",
+   "Regarde : 450 est plus grand que 400, et plus petit que 500. Le bateau passe entre 400 et 500.",
+   "646"
+  ],
+  "bulle": null
+ }
+]

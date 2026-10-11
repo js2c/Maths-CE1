@@ -1,7 +1,7 @@
 // LOT « LES LEÇONS » (docs/LOTS.md, fiche 3 ; docs/SPEC.md, section 3, « Les leçons ») : le parcours de chaque situation
 // nouvelle, en 1280 × 800 (densité 2) et 1920 × 1200 (densité 1), captures dans tests/e2e/out/lecons-menu :
-//  1. l'accueil à cinq bulles ; l'appui long sur « les leçons » (étiquette, rien ne se lance) ; le menu (dix leçons, la table,
-//     cinq pictogrammes de rangée depuis le lot « L'étal du pêcheur », le petit livre) ; l'appui long sur une tuile ; la légende du parent ;
+//  1. l'accueil à cinq bulles ; l'appui long sur « les leçons » (rien ne se lance ; plus d'étiquette) ; le menu (dix leçons, la table,
+//     cinq pictogrammes de rangée depuis le lot « L'étal du pêcheur », le petit livre) ; l'appui long sur une tuile (sans étiquette) ; la légende du parent ;
 //  2. une leçon regardée jusqu'au bout, puis « À toi ! » : 3 étoiles, l'écran « À toi ! » (une seule maison), le sélecteur,
 //     puis l'exercice associé comme séance du jour, sans échauffement (« après une leçon »), sans salut ni leçon d'entrée ;
 //     la pause pendant cet exercice : l'accueil en pause a la bulle « les leçons » ; une leçon depuis la pause revient à la
@@ -64,8 +64,10 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const xs = await page.evaluate(() => [".play", ".choisir", ".leconskey", ".reefkey", ".albumkey"].map((s) => document.querySelector(s).getBoundingClientRect()).map((r) => [Math.round(r.x), Math.round(r.right)]));
     check(xs.every((r, i) => !i || r[0] >= xs[i - 1][1] - 2) && xs.at(-1)[1] <= W, `${T} · cinq bulles côte à côte, dans l'écran (${xs.map((r) => r.join("-")).join(" ")})`);
     await shot(page, "01-accueil");
-    const h = await hold(page, ".leconskey"); check(h.label === "les leçons", `${T} · appui long sur « les leçons » : l'étiquette (${h.label})`);
-    if (big) await shot(page, "02-accueil-etiquette");
+    // (lot « Correctifs : passage de l'échauffement aux voiliers », points 7 et 10 : plus d'étiquette d'appui long sur les écrans
+    // de choix, l'accueil en galets compris ; seule la bulle de la mascotte décrit)
+    const h = await hold(page, ".leconskey"); check(h.label === null, `${T} · appui long sur « les leçons » : aucune étiquette (${h.label})`);
+    if (big) await shot(page, "02-accueil-appui-long");
     await h.release(); check((await page.locator(".lecons-tuile").count()) === 0, `${T} · l'appui long ne lance rien`);
     await tap(page, ".leconskey"); await page.waitForSelector(".lecons-tuile"); await page.waitForTimeout(700);
     check((await page.locator(".lecons-tuile").count()) === 20, `${T} · le menu : dix-huit leçons (L11 et L12 depuis le lot « Sommes jusqu'à 30 », L13 et L14 depuis le lot « Multiplication », L15 à L18 depuis le lot « L'étal du pêcheur ») et les tables d'addition et de multiplication`);
@@ -75,8 +77,8 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     check(keys === "L1,L2,L3,L10,L4,L5,L6,L11,L12,L7,L8,L9,L13,L14,L15,L16,L17,L18,table.addition,table.multiplication", `${T} · l'ordre des tuiles (${keys})`);
     const b = await bulle(page); check(b.visible && !b.couvre, `${T} · la bulle du menu ne couvre aucune tuile (${b.place})`);
     await shot(page, "03-menu"); await note(page, "accueil, puis la bulle « les leçons »");
-    const t7 = await hold(page, '.lecons-tuile[data-key="L7"]'); check(t7.label === "L7", `${T} · appui long sur la tuile 7 : son étiquette`);
-    if (big) await shot(page, "04-menu-etiquette");
+    const t7 = await hold(page, '.lecons-tuile[data-key="L7"]'); check(t7.label === null, `${T} · appui long sur la tuile 7 : aucune étiquette (${t7.label})`);
+    if (big) await shot(page, "04-menu-appui-long");
     await t7.release(); check(!(await page.evaluate(() => window.__app.lessons.p ?? window.__app.lessons.p2?.p ?? null)) && (await page.locator(".lecons-tuile").count()) === 20, `${T} · l'appui long ne lance pas la leçon`);
     await tap(page, ".legende", 600);
     const rows = await page.locator(".legende-ligne").count(); check(rows === 20, `${T} · la légende du parent : une ligne par leçon et une par table (${rows})`);
@@ -150,7 +152,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const { page, context, errors } = await open("", TODAY);
     await page.waitForSelector(".again"); await page.waitForTimeout(400);
     check((await visible(page, ".again, .leconskey, .reefkey, .albumkey")) === 4, `${T} · après la séance du jour : Encore !, les leçons, le récif, l'album`);
-    check(/regarder les leçons/.test(await page.evaluate(() => window.__app.voice.instruction)), `${T} · la consigne de l'accueil après la séance cite les leçons`);
+    check(/^La séance du jour est finie\. Touche une bulle/.test(await page.evaluate(() => window.__app.voice.instruction)), `${T} · la consigne de l'accueil après la séance (lot « Correctifs : passage de l'échauffement aux voiliers » : touche une bulle, je te dis ce que c'est)`);
     await shot(page, "13-accueil-seance-faite");
     const t0 = await page.evaluate(() => window.__app.rewards.total);
     await tap(page, ".leconskey"); await page.waitForSelector(".lecons-tuile"); await page.waitForTimeout(300);

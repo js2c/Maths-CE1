@@ -50,6 +50,10 @@ const scaled = (g: Gfx, x: number, y: number, s: number, fn: () => void) => { g.
 // ---------------------------------------------------------------- le bouton « choisir » de l'accueil
 export const drawChooseKey = (g: Gfx, cx: number, cy: number) => {
   drawAnswerBubble(g, cx, cy, 24, 60);
+  drawChooseIcon(g, cx, cy);
+};
+// (lot « Correctifs : passage… », point 10 : le pictogramme seul, repris agrandi sur le galet de l'accueil)
+export const drawChooseIcon = (g: Gfx, cx: number, cy: number) => {
   g.group("plain", () => {
     // quatre petites plaques colorées (les exercices), la dernière entourée d'or : on en choisit une
     const cols: [string, string][] = [[SEA, "#1d7f8f"], ["#ff8f70", "#d0573f"], ["#ffc93a", "#e08d1c"], ["#9fd36a", "#5f9a3a"]];

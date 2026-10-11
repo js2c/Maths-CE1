@@ -31,78 +31,7 @@ function wave(x,z,t){let h=0;for(const w of WAVES){const th=w.k*(w.dx*x+w.dz*z)-
 const toWorld=(sx,sy)=>{const v=Math.max(.02,(sy-HY)/F),z=HC/v;return{x:(sx-640)/F*z,z};};
 const toScreen=(x,y,z)=>[640+F*x/z,HY+F*(HC-y)/z];
 
-/* =====================================================================================
-   THE SEA: grey-blue water, drawn coast, drifting clouds; contact shadows; a highlight on
-   the channel the boat is over.
-   ===================================================================================== */
-const SEA_FS=`#extension GL_OES_standard_derivatives : enable
-precision highp float;
-uniform vec2 uRes;uniform float uTc,uAmp,uSumA;uniform vec4 uW[6];uniform vec2 uW2[6];
-uniform vec4 uSh[2];uniform float uShA[2];uniform vec3 uZone;uniform float uLineY;uniform float uZoff;
-const float F=${F}.0,HC=${HC}.0,HY=${HY}.0;
-const vec3 INK=vec3(.10,.14,.19);
-float hash(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
-float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+1.),f.x),f.y);}
-float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*noise(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return s;}
-mat2 ROT=mat2(.766,-.643,.643,.766);
-float chop(vec2 p){vec2 q=p*vec2(.85,1.35)+vec2(0.,uTc*.55);vec2 r=ROT*p*1.6-vec2(uTc*.25,uTc*.8);return fbm(q)*.6+fbm(r)*.4;}
-float line(float x,float px){return 1.-smoothstep(px*.5,px*.5+1.,abs(x)/(fwidth(x)+1e-5));}
-vec3 sky(vec3 d){float e=max(d.y,0.);return mix(vec3(.82,.86,.89),vec3(.46,.60,.73),pow(e,.5));}
-vec3 poster(vec3 c,float k){float l=dot(c,vec3(.3,.5,.2))+1e-4;float n=7.;float q=floor(l*n)/n,f=fract(l*n);q+=smoothstep(.3,.7,f)/n;return c*mix(1.,q/l,k);}
-// The coast is a painted strip (a relief rendered offline: cliffs, scree, valleys, an island, stacks),
-// its bottom edge on the horizon; the clouds are drawings cut from a reference sheet, drifting slowly.
-uniform sampler2D uCoast,uClouds;uniform float uCoastH;uniform vec4 uCA[6],uCB[6];uniform float uCHz[6];
-vec4 coastAt(float x,float hgt){if(hgt<0.||hgt>uCoastH)return vec4(0.);return texture2D(uCoast,vec2(x/1280.,1.-hgt/uCoastH));}
-vec3 clouds(vec2 L,vec3 c){
- for(int k=0;k<6;k++){
-  vec2 q=(L-uCA[k].xy)/uCA[k].zw;
-  // sampled everywhere (no branch) so the mip level stays right at the edges of each cloud's frame
-  float inside=step(0.,q.x)*step(q.x,1.)*step(0.,q.y)*step(q.y,1.);
-  vec4 t=texture2D(uClouds,uCB[k].xy+clamp(q,0.,1.)*uCB[k].zw)*inside;   // premultiplied
-  c=c*(1.-t.a)+mix(t.rgb,c*t.a,uCHz[k]);
- }
- return c;}
-void main(){
- vec2 L=vec2(gl_FragCoord.x/uRes.x*1280.,(1.-gl_FragCoord.y/uRes.y)*800.);
- float u=(L.x-640.)/F,v=(L.y-HY)/F;
- if(v<=.0006){
-  vec3 d=normalize(vec3(u,-v,1.));vec3 c=sky(d);
-  c=clouds(L,c);
-  float hgt=HY-L.y;vec4 t=coastAt(L.x,hgt);
-  c=c*(1.-t.a)+t.rgb;
-  c=mix(c,vec3(.62,.68,.72),smoothstep(4.,0.,hgt)*.45*t.a);   // mist lying on the water at the foot of the land
-  gl_FragColor=vec4(c,1.);return;}
- float z=HC/v,x=u*z;vec2 p=vec2(x,z-uZoff);   // uZoff: how far the camera has drawn back
- float h=0.,crest=0.;vec2 g=vec2(0.);
- for(int i=0;i<6;i++){vec4 w=uW[i];float th=w.z*dot(w.xy,p)-uW2[i].x*uTc+uW2[i].y;float e=exp(1.6*(sin(th)-1.));float A=w.w*uAmp;h+=A*(e-.35);g+=A*1.6*cos(th)*e*w.z*w.xy;crest+=e*w.w;}
- vec2 g0=g;
- float fd=exp(-z/45.);
- if(fd>.02){float e=.06;float c0=chop(p),cx=chop(p+vec2(e,0.)),cz=chop(p+vec2(0.,e));g+=vec2(cx-c0,cz-c0)/e*.13*(.55+.45*uAmp)*fd;}
- vec3 N=normalize(vec3(-g.x,1.,-g.y));
- vec3 P=vec3(x,h,z),V=normalize(vec3(0.,HC,0.)-P);
- float ndv=max(dot(N,V),0.),Fr=.02+.98*pow(1.-ndv,5.);
- vec3 R=reflect(-V,N);R.y=abs(R.y);
- float hn=clamp(h/(uAmp*.9+.001)+.45,0.,1.);
- vec3 deep=vec3(.075,.115,.155),scat=vec3(.20,.29,.33);
- vec3 refr=mix(deep,scat,.10+.50*hn*hn);
- float face=clamp(-N.z*3.,-1.,1.);refr*=1.+.25*face;
- vec3 col=mix(refr,sky(R),Fr*.9);
- col+=vec3(.55,.60,.65)*.05*max(dot(N,normalize(vec3(-.3,1.,.5))),0.);
- float cr=crest/uSumA,pat=fbm(p*.45+g0*1.5+vec2(0.,uTc*.15)),fine=fbm(p*1.3+vec2(uTc*.2,0.));
- float near=1.-smoothstep(150.,400.,z);
- float foam=smoothstep(.70,1.0,cr*(.7+.3*uAmp))*smoothstep(.55,.8,pat*.6+fine*.5)*.8;
- col=mix(col,vec3(.88,.91,.92),clamp(foam,0.,1.)*.9*near);
- for(int i=0;i<2;i++){vec4 s=uSh[i];vec2 q=L-s.xy;float a=uShA[i];vec2 r=vec2(cos(a)*q.x+sin(a)*q.y,-sin(a)*q.x+cos(a)*q.y)/max(s.zw,vec2(1.));col*=1.-.30*(1.-smoothstep(.5,1.,length(r)))*step(1.,s.z);}
- // the channel under the boat lights up a little (a band of brighter water between two buoys)
- if(uZone.z>0.){float w=uZone.y-uZone.x;float cx=(uZone.x+uZone.y)*.5;float inx=1.-smoothstep(w*.22,w*.5,abs(L.x-cx));float iny=exp(-pow((L.y-uLineY+10.)/(L.y<uLineY?95.:40.),2.));col=mix(col,col*1.30+vec3(.05,.07,.08),inx*iny*uZone.z);}
- col=mix(col,poster(col,.25),1.);
- col=mix(col,vec3(.70,.76,.80),smoothstep(40.,650.,z)*.82);
- float dy=L.y-HY;
- if(dy<60.){vec4 rt=coastAt(L.x+(noise(vec2(L.x/9.,dy*.8-uTc*.5))-.5)*3.,dy*1.5);
-  float br=smoothstep(.25,.65,noise(vec2(L.x/3.,dy*1.3-uTc*.6)));
-  col=mix(col,rt.rgb/max(rt.a,.001)*.82,rt.a*.5*br*(1.-smoothstep(0.,60.,dy)));}
- col=mix(col,INK,(1.-smoothstep(.15,.9,abs(L.y-HY-.5)))*.45);
- gl_FragColor=vec4(col,1.);}`;
+/* ---- LA MER CALCULÉE de la maquette (SEA_FS) : abandonnée par l'application (art/tools/export-voiliers.mjs, point 6) */
 
 /* =====================================================================================
    BOATS AND BUOYS. Every boat is a drawing (three states for sailing boats: sails full,
@@ -251,30 +180,7 @@ void main(){
   gl_FragColor=c;
  }}`;
 function mk(G,vs,fs){const Sh=(t,s)=>{const o=G.createShader(t);G.shaderSource(o,s);G.compileShader(o);if(!G.getShaderParameter(o,G.COMPILE_STATUS))throw new Error(G.getShaderInfoLog(o));return o;};const p=G.createProgram();G.attachShader(p,Sh(G.VERTEX_SHADER,vs));G.attachShader(p,Sh(G.FRAGMENT_SHADER,fs));G.linkProgram(p);if(!G.getProgramParameter(p,G.LINK_STATUS))throw new Error(G.getProgramInfoLog(p));return p;}
-// ---- sea program
-const PS=mk(gl,'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}',SEA_FS);gl.useProgram(PS);
-const PSB=gl.createBuffer(),PSA=gl.getAttribLocation(PS,'p');{const b=PSB;gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);const ap=PSA;gl.enableVertexAttribArray(ap);gl.vertexAttribPointer(ap,2,gl.FLOAT,false,0,0);}
-const US={};const us=n=>US[n]??(US[n]=gl.getUniformLocation(PS,n));
-// ---- sky textures on the sea context: the coast strip and the cloud sheet
-const SKY=OPTS.donnees.SKY;
-function seaTex(src,unit,mip){const t=gl.createTexture();gl.activeTexture(gl.TEXTURE0+unit);gl.bindTexture(gl.TEXTURE_2D,t);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array(4));pending++;const im=new Image();im.onload=()=>{gl.activeTexture(gl.TEXTURE0+unit);gl.bindTexture(gl.TEXTURE_2D,t);
- gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,im);
- if(mip){gl.generateMipmap(gl.TEXTURE_2D);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);}else gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
- gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);pending--;};im.src=src;return t;}
 let pending=0;
-seaTex(SKY.coast,0,false);seaTex(SKY.clouds,1,true);
-gl.uniform1i(us('uCoast'),0);gl.uniform1i(us('uClouds'),1);gl.uniform1f(us('uCoastH'),SKY.coastH);
-// six clouds from three drawings (two mirrored); higher ones larger and a little faster, lower ones smaller and hazier
-const CLOUDS=[{k:1,x:40,y:16,s:.50,v:5.0,f:0,hz:0},{k:0,x:640,y:34,s:.56,v:4.2,f:1,hz:.04},{k:2,x:470,y:118,s:.40,v:2.6,f:0,hz:.22},
- {k:2,x:1050,y:84,s:.50,v:3.4,f:1,hz:.12},{k:0,x:1350,y:104,s:.36,v:2.4,f:0,hz:.26},{k:1,x:1600,y:58,s:.36,v:3.0,f:1,hz:.16}];
-function cloudUniforms(){const A=[],Bv=[],Hz=[];
- for(const c of CLOUDS){const r=SKY.rects[c.k],w=r[4]*c.s,h=r[5]*c.s,span=1280+w+240;
-  const x=((c.x+T*c.v)%span+span)%span-w-120;A.push(x,c.y,w,h);
-  Bv.push(c.f?r[0]+r[2]:r[0],r[1],c.f?-r[2]:r[2],r[3]);Hz.push(c.hz);}
- gl.uniform4fv(us('uCA'),new Float32Array(A));gl.uniform4fv(us('uCB'),new Float32Array(Bv));gl.uniform1fv(us('uCHz'),new Float32Array(Hz));}
-gl.uniform4fv(us('uW'),new Float32Array(WAVES.flatMap(w=>[w.dx,w.dz,w.k,w.A])));
-gl.uniform2fv(us('uW2'),new Float32Array(WAVES.flatMap(w=>[w.om,w.ph])));
-gl.uniform1f(us('uSumA'),SUMA);
 const MER=OPTS.donnees.MER;
 
 /* ---- LA MER ILLUSTRÉE (essais de fluidité des 8 au 10 octobre 2026, réglage retenu par le parent le 10 octobre 2026).
@@ -362,21 +268,21 @@ const ILL=(()=>{try{
   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
   if(mip){gl.generateMipmap(gl.TEXTURE_2D);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);}else gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
   done(t,im);nRdy++;};im.src=src;}
- if(ok){load(MER.fond,2,false,t=>{tFond=t;});load(MER.atlas,3,true,(t,im)=>{tAtlas=t;AW=im.width;AH=im.height;});load(MER.ciel,4,false,t=>{tCiel=t;});load(MER.nuages,5,false,t=>{tNuages=t;},true);}
+ load(MER.fond,2,false,t=>{tFond=t;});load(MER.ciel,4,false,t=>{tCiel=t;});load(MER.nuages,5,false,t=>{tNuages=t;},true);if(ok)load(MER.atlas,3,true,(t,im)=>{tAtlas=t;AW=im.width;AH=im.height;});
  // ---- défilement : phase accumulée (la vitesse suit l'état de la mer), décalages en double précision
  let ph=0;const laneOff=new Float64Array(LANE.length);
  // vitesse de défilement : moitié en mode statique (mer .6), pleine vitesse dès que le vent souffle (mer ≥ 1)
  const vit=sea=>Math.min(1,.5+Math.max(0,sea-.6)/.4*.5);
  const houle=sea=>.5+.5*sea/.6;
  function step(dt,sea){ph+=dt*vit(sea);if(ph>1e6)ph-=1e6;}
- function draw(sh,sa,zone,t,sea){
-  // fond
+ function drawFond(sh,sa,zone){
   gl.disable(gl.BLEND);gl.useProgram(PF);
   gl.bindBuffer(gl.ARRAY_BUFFER,bF);gl.enableVertexAttribArray(aF);gl.vertexAttribPointer(aF,2,gl.FLOAT,false,0,0);
   gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,tFond);gl.uniform1i(UF.tex,2);
   gl.uniform4fv(UF.sh,new Float32Array(sh));gl.uniform2fv(UF.shr,new Float32Array([Math.cos(sa[0]),Math.sin(sa[0]),Math.cos(sa[1]),Math.sin(sa[1])]));
   gl.uniform3f(UF.zone,...zone);gl.uniform1f(UF.line,LINE_Y);
-  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);gl.disableVertexAttribArray(aF);
+  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);gl.disableVertexAttribArray(aF);}
+ function draw(sh,sa,zone,t,sea){drawFond(sh,sa,zone);
   // éléments
   for(let l=0;l<LANE.length;l++)laneOff[l]=(LANE[l]*ph)%IW;
   for(let i=0;i<N;i++){const o=laneOff[laneIdx[i]],j=i*8,o2=o-IW;offs[j]=offs[j+1]=offs[j+2]=offs[j+3]=o;offs[j+4]=offs[j+5]=offs[j+6]=offs[j+7]=o2;}
@@ -396,14 +302,17 @@ const ILL=(()=>{try{
     gl.uniform4f(uCR,x,y,w,h);const u0=d.u/NAW,du=d.w/NAW;gl.uniform4f(uCUV,mi?u0+du:u0,d.v/NAH,mi?-du:du,d.h/NAH);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);}
    gl.disableVertexAttribArray(aC);gl.disable(gl.BLEND);}
   gl.activeTexture(gl.TEXTURE0);}
- return{get ready(){return ok&&!!tFond&&!!tAtlas;},get skyReady(){return !!tCiel;},ok,step,draw,drawSky};
- }catch(e){console.warn('mer illustrée indisponible',e);return{ready:false,skyReady:false,ok:false,step(){},draw(){},drawSky(){}};}
+ // la mer fixe (point 6) : le ciel et le fond s'ils sont là, sinon leur couleur moyenne ; aucun calcul
+ function fixe(sh,sa,zone,t){gl.clearColor(136/255,159/255,175/255,1);gl.clear(gl.COLOR_BUFFER_BIT);
+  if(tFond)drawFond(sh,sa,zone);
+  if(tCiel)drawSky(t);else{gl.enable(gl.SCISSOR_TEST);gl.scissor(0,Math.round(gl.drawingBufferHeight*(1-HY/800)),gl.drawingBufferWidth,gl.drawingBufferHeight);gl.clearColor(199/255,225/255,241/255,1);gl.clear(gl.COLOR_BUFFER_BIT);gl.disable(gl.SCISSOR_TEST);}}
+ return{get ready(){return ok&&!!tFond&&!!tAtlas;},get skyReady(){return !!tCiel;},ok,step,draw,drawSky,fixe};
+ }catch(e){console.warn('mer illustrée indisponible',e);return{ready:false,skyReady:false,ok:false,step(){},draw(){},drawSky(){},fixe(){gl.clearColor(136/255,159/255,175/255,1);gl.clear(gl.COLOR_BUFFER_BIT);}};}
 })();
 // la qualité (QUAL : 0 économe, 1 normale, 2 fine) règle la mer illustrée et les bateaux. Essai du 10 octobre 2026 sur la
 // tablette : mer 1,5×, redessinée 30 fois par seconde, bateaux et bouées 1,5× → 57 images/s ; c'est la qualité 1.
 const QMER=[1,1.5,2],QCAD=[30,30,60],QBAT=[1,1.5,2];
 let MERFAITE=false;
-function bindPS(){gl.useProgram(PS);gl.bindBuffer(gl.ARRAY_BUFFER,PSB);gl.enableVertexAttribArray(PSA);gl.vertexAttribPointer(PSA,2,gl.FLOAT,false,0,0);}
 // ---- sprite program
 const PB=mk(gb,SPR_VS,SPR_FS);gb.useProgram(PB);
 // (allègement du 10 octobre 2026) le bruit qui dessine l'écume, le sillage et les vagues d'étrave est précalculé une fois
@@ -780,18 +689,16 @@ function update(dt){
  for(let i=BU.length-1;i>=0;i--) if(BU[i].fade===-1&&BU[i].alpha<=0) BU.splice(i,1);
 }
 function render(){
- // ---- sea : la mer illustrée (repli : la mer procédurale) ; aux qualités 0 et 1, redessinée une image sur deux
+ // ---- sea : la mer illustrée (en attendant qu'elle soit prête, ou sans textures de 4 096 px : la mer fixe) ; aux qualités 0
+ // et 1, redessinée une image sur deux
  // (le canevas garde l'image précédente ; bateaux, bouées et oiseaux restent à chaque image)
  const ILLON=ILL.ready&&ILL.skyReady;
  if(!(ILLON&&MERFAITE&&QCAD[QUAL]===30&&(NFR&1))){MERFAITE=true;
- gl.viewport(0,0,cs.width,cs.height);bindPS();
+ gl.viewport(0,0,cs.width,cs.height);
  const sh=[],sa=[];
  for(const o of [B,P]){if(o.vis&&o.broken<.5){const d=BOATDEF[o.type],an=d.meta.anchor,c=o.mat.ap(an[0],an[1]);sh.push(c[0],c[1]+4,280*o.k,52*o.k);sa.push(Math.atan2(d.axis[1],d.axis[0])+o.p*.9);}else{sh.push(0,0,0,0);sa.push(0);}}
- gl.uniform4fv(us('uSh'),new Float32Array(sh));gl.uniform1fv(us('uShA'),new Float32Array(sa));
- gl.uniform3f(us('uZone'),...(G.zone||[0,0]),G.zoneOn*.85);gl.uniform1f(us('uLineY'),LINE_Y);
- gl.uniform1f(us('uZoff'),ZC);cloudUniforms();gl.uniform1f(us('uTc'),T%1000);gl.uniform1f(us('uAmp'),SEA);gl.uniform2f(us('uRes'),cs.width,cs.height);
  if(ILLON){ILL.drawSky(T);ILL.draw(sh,sa,[...(G.zone||[0,0]),G.zoneOn*.85],T,SEA);}
- else gl.drawArrays(gl.TRIANGLES,0,3);}
+ else ILL.fixe(sh,sa,[...(G.zone||[0,0]),G.zoneOn*.85],T);}
  // ---- sprites, far to near
  gb.viewport(0,0,cb.width,cb.height);gb.clearColor(0,0,0,0);gb.clear(gb.COLOR_BUFFER_BIT);gb.useProgram(PB);
  const list=[];

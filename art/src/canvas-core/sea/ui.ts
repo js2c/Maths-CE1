@@ -42,6 +42,10 @@ export const drawSkipKey = (g: Gfx, cx: number, cy: number) => {
 // « Encore ! » : le triangle de « jouer », doré cette fois, et une petite étoile de mer qui le suit
 export const drawAgainKey = (g: Gfx, cx: number, cy: number) => {
   drawAnswerBubble(g, cx, cy, 19, 60);
+  drawAgainIcon(g, cx, cy);
+};
+// (lot « Correctifs : passage… », point 10 : le pictogramme seul, repris agrandi sur le galet de l'accueil)
+export const drawAgainIcon = (g: Gfx, cx: number, cy: number) => {
   g.group("plain", () => {
     const t = tri(cx - 20, cy, 42, 25);
     fillShape(g, shift(t, 3, 4), SH, 0.25); cel(g, inset(t), GOLD, GOLD_S, 4); ink(g, t, INK, { w: 4.2, closed: true, shadow: 0, seed: 3430 });
@@ -52,6 +56,10 @@ export const drawAgainKey = (g: Gfx, cx: number, cy: number) => {
 // « album » : un livre fermé, couverture turquoise et tranche crème, un coquillage doré sur la couverture
 export const drawAlbumKey = (g: Gfx, cx: number, cy: number) => {
   drawAnswerBubble(g, cx, cy, 20, 60);
+  drawAlbumIcon(g, cx, cy);
+};
+// (lot « Correctifs : passage… », point 10 : le pictogramme seul, repris agrandi sur le galet de l'accueil)
+export const drawAlbumIcon = (g: Gfx, cx: number, cy: number) => {
   g.group("plain", () => {
     const x0 = cx - 30, x1 = cx + 30, y0 = cy - 34, y1 = cy + 34;
     const pages = smooth([[x0 + 6, y0 + 4], [x1 + 6, y0 + 4], [x1 + 6, y1 + 6], [x0 + 6, y1 + 6]], true, 1);

@@ -166,6 +166,10 @@ export const drawCardVerso = (g: Gfx, x: number, y: number, rarete: string) => {
 // « récif » : une branche de corail rose et une petite anémone dans la bulle
 export const drawReefKey = (g: Gfx, cx: number, cy: number) => {
   drawAnswerBubble(g, cx, cy, 15, 60);
+  drawReefIcon(g, cx, cy);
+};
+// (lot « Correctifs : passage… », point 10 : le pictogramme seul, repris agrandi sur le galet de l'accueil)
+export const drawReefIcon = (g: Gfx, cx: number, cy: number) => {
   g.group("plain", () => {
     const base: P = [cx - 6, cy + 30], branch = (pts: P[], w: number, seed: number) => { const t = O.taper(smooth(pts, false, 5), (u) => w * (1 - 0.45 * u)).outline; cel(g, t, "#ff8aa8", "#d0506e", 2); contour(g, t, 2.6, seed); };
     branch([base, [cx - 8, cy + 8], [cx - 20, cy - 12], [cx - 24, cy - 28]], 7, 3300);

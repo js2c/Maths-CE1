@@ -24,7 +24,9 @@ Le dépôt est public : l'application et son code sont visibles par tous, mais *
 1. Sur la tablette, ouvrir **Chrome** et aller à l'adresse ci-dessus, avec le Wi-Fi.
 2. Attendre que l'océan s'affiche et s'anime (quelques secondes la première fois).
 3. Toucher le menu **⋮** en haut à droite de Chrome, puis **Installer l'application** (ou **Ajouter à l'écran d'accueil** puis **Installer**).
-4. Une icône « Océan » (la pieuvre) apparaît sur l'écran d'accueil. Ouvrir l'application par cette icône désormais : elle s'ouvre en plein écran, sans barre d'adresse.
+4. Une icône « Maths CE1 » (le logo de l'écran de démarrage) apparaît sur l'écran d'accueil. Ouvrir l'application par cette icône désormais : elle s'ouvre en plein écran, sans barre d'adresse.
+
+**Si l'icône est encore la pieuvre** (application installée avant le 10 octobre 2026) : Android ne change souvent l'icône et son nom qu'après avoir **désinstallé puis réinstallé** l'application. Désinstaller ne perd pas la progression tant qu'on ne vide pas les données du site dans Chrome ; mais **faites d'abord une sauvegarde complète** (espace parent, **Données et réglages**), par sécurité. Puis réinstaller comme ci-dessus (étapes 1 à 3).
 
 **Sans Internet.** Après la première ouverture avec le Wi-Fi, l'application a tout gardé sur la tablette : elle marche ensuite sans réseau.
 
@@ -66,7 +68,7 @@ Le dépôt est public : l'application et son code sont visibles par tous, mais *
 
 ## d) L'espace parent
 
-**Y entrer.** Sur l'écran d'accueil de l'application (celui avec la bulle « jouer » ou la lune), une petite icône de la pieuvre est posée en bas à gauche, sur le sable. **Appuyer dessus et garder le doigt 2 secondes** : un anneau clair se remplit, puis le clavier du code apparaît. Un toucher bref ne fait rien, pour que l'enfant ne tombe pas dessus par hasard.
+**Y entrer.** Sur l'écran d'accueil de l'application (celui avec la bulle « jouer » ou la lune), le bouton « Parents » (un cadenas) est posé en bas à gauche, sur le sable. **Appuyer dessus et garder le doigt 2 secondes** : un anneau clair se remplit, puis le clavier du code apparaît. Un toucher bref ne fait rien, pour que l'enfant ne tombe pas dessus par hasard.
 
 **Le code.** La première fois, choisir un code à 4 chiffres et le taper une seconde fois pour le confirmer. Les fois suivantes, taper ce code. En cas d'oubli : **Code oublié ?**, répondre à l'opération proposée (par exemple 7 × 8 + 15), puis choisir un nouveau code ; rien n'est effacé.
 
@@ -383,6 +385,24 @@ Fait d'un seul tenant, à partir de la maquette que vous avez validée (`art/eta
 - **À vérifier sur la tablette** : la fluidité (vous l'aviez mesurée à 60 images par seconde avec la maquette ; l'application ajoute peu) ; le geste du doigt sur les pièces ; que le capitaine dans la fenêtre et sa bulle ne gênent pas ; la durée d'une partie (environ 14 achats en 10 minutes, d'après la simulation).
 
 **Les phrases à fabriquer.** 394 phrases nouvelles, environ 2,7 Mo (surtout les montants : « 3 euros. », « 1 euro 50. », « 30 centimes. »…) : la liste est dans `docs/maquettes/etal/PHRASES.md` ; `node tools\voix\publier.mjs`, comme d'habitude. Avec elles, la voix pèsera environ **79,3 Mo, tout près de la limite de 80 Mo** que vous aviez fixée : le prochain lot qui ajoute des phrases demandera de relever cette limite ou d'alléger les fichiers (à vous de décider).
+
+## d terdecies) Lot « Correctifs : passage de l'échauffement aux voiliers » : vos remarques du 10 octobre
+
+Fait d'un seul tenant : ce que la session a décidé seule est listé en tête de la demande de fusion et dans `docs/JOURNAL-CONCEPTION.md` (« choix de la session, à revoir par le parent »).
+
+- **L'échauffement par-dessus les voiliers** (votre capture 01) : trouvé et corrigé. Il arrivait quand l'enfant faisait une pause pendant l'échauffement, puis choisissait un autre exercice : le bouton « passer l'échauffement » de la séance quittée restait à l'écran ; touché plus tard, il faisait repartir l'ancienne séance par-dessus la nouvelle. Désormais, une étape quittée retire tout ce qu'elle avait posé, et une séance interrompue ne repart jamais. Un contrôle automatique essaie chaque exercice, chaque chemin et chaque moment de l'échauffement.
+- **La bulle** ne laisse plus déborder un long nombre (« trois-cent-soixante-neuf ») et n'apparaît jamais vide.
+- **Les voiliers** ne montrent plus l'ancienne mer au démarrage du jeu (l'application ne la contient plus) ; le jeu démarre un peu plus vite.
+- **Les écrans de choix** : plus d'étiquette rectangulaire à l'appui long (seule la bulle du capitaine) ; l'entourage rouge suit exactement la forme de la tuile.
+- **L'écran de démarrage** est votre logo, avec ses mouvements, et « Toucher pour continuer » quand tout est chargé.
+- **L'accueil** : cinq gros galets, chacun sa forme. Comme dans « choisir » : un toucher, le capitaine dit ce que c'est ; un second toucher, on y va ; deux touchers rapides, on y va tout de suite. Partout où l'on choisit en deux touchers, deux touchers rapides lancent directement. (L'accueil pendant une pause garde ses bulles rondes, en un toucher.)
+- **La voix** : la voix de secours du navigateur (celle que vous avez entendue dire « les multiplications ») **n'existe plus**. Elle parlait quand une mise à jour de l'application arrivait en pleine partie : la nouvelle version prenait la main et retirait des sons que la page en cours attendait. Désormais, une mise à jour s'installe en arrière-plan et attend : elle ne prend la main qu'au lancement suivant, ou pendant l'écran de démarrage (l'écran se recharge alors tout seul, avant que l'enfant touche). Si une phrase n'a pas d'enregistrement, le capitaine ne la dit pas : sa bulle l'écrit, et vous la voyez dans l'espace parent, **Données et réglages**, sous **Phrases sans voix** (la phrase, la date, la version, et pourquoi). L'ancienne voix (Piper) est retirée de l'outil de fabrication.
+- **Le bouton de l'espace parent** est votre image (« Parents » et un cadenas), un peu plus grand ; l'appui long ne change pas (2 secondes, l'anneau suit le bord du bouton).
+- **L'icône** de l'application est le logo, nommée « Maths CE1 » (voir **c)** si la tablette garde la pieuvre).
+
+**Les phrases à fabriquer.** 12 phrases nouvelles (les descriptions des galets et la nouvelle consigne de l'accueil), moins de 0,1 Mo ; deux anciennes phrases de l'accueil ne servent plus (la fabrication les effacera) : la liste est dans la demande de fusion ; `node tools\voix\publier.mjs`, comme d'habitude. Avec celles de l'étal, la voix pèsera environ 79,4 Mo, toujours sous la limite de 80 Mo.
+
+**À essayer sur la tablette** : un double toucher rapide sur un galet et sur une tuile ; la pause pendant l'échauffement, puis « choisir » les voiliers, puis « passer l'échauffement » ; l'écran de démarrage (fluidité du logo) ; après la prochaine mise à jour, qu'aucune phrase ne soit dite par une autre voix.
 
 ## e) Ce qui reste approximatif ou à ajuster
 

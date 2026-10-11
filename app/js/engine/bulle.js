@@ -174,6 +174,9 @@ export class Bulle {
   // la voix commence un texte de `ms` millisecondes
   dire(texte, ms) {
     this.clear();
+    // (lot « Correctifs : passage de l'échauffement aux voiliers », point 4 : une bulle sans texte ne s'affiche jamais)
+    if (!String(texte ?? "").trim()) { this.cacher(true); return; }
+    clearTimeout(this.vider);
     this.mode = this.ancre && this.ancre.texte === texte ? this.ancre : null; this.el.classList.toggle("tuile", !!this.mode);
     this.texte = texte; this.txt.textContent = "";
     this.words = mots(texte).map((parts, i) => {
@@ -183,7 +186,9 @@ export class Bulle {
       this.txt.append(s); return s;
     });
     this.layout();
-    if (this.place.touche) { this.shown = false; this.el.classList.add("cachee"); return; } // nulle part sans couvrir une cible
+    // nulle part sans couvrir une cible : cachée aussitôt, sans fondu (sinon l'ovale de la nouvelle phrase, encore sans ses mots,
+    // restait un instant à l'écran, vide et pâle, le temps du fondu : point 4)
+    if (this.place.touche) { this.cacher(true); return; }
     this.el.classList.remove("cachee", "pop"); void this.el.offsetWidth; this.el.classList.add("pop");
     this.shown = true;
     // les mots apparaissent au rythme de la phrase (poids : la longueur de chaque mot)
@@ -202,11 +207,24 @@ export class Bulle {
     clearInterval(this.reveal); this.words.forEach((w) => w.classList.add("on"));
     this.timers.push(setTimeout(() => this.cacher(), 1500));
   }
-  cacher() { this.clear(); this.shown = false; this.el.classList.add("cachee"); }
+  // (point 4 : `instant`, sans fondu ; une fois le fondu fini, l'ovale et le texte sont effacés : rien de vide ne peut rester)
+  cacher(instant = false) {
+    this.clear(); this.shown = false; this.el.classList.add("cachee");
+    if (instant) { this.el.classList.add("instant"); void this.el.offsetWidth; this.el.classList.remove("instant"); }
+    clearTimeout(this.vider);
+    this.vider = setTimeout(() => { if (this.shown) return; this.paths.forEach((e) => e.removeAttribute("d")); this.txt.textContent = ""; this.words = []; }, instant ? 0 : 400);
+  }
   // la mise en page : mesurer le texte à une largeur donnée, choisir la place, tracer l'ovale
+  // (lot « Correctifs : passage de l'échauffement aux voiliers », point 3 : « 369 « trois-cent-soixante-neuf » », un seul mot
+  // qu'on ne coupe pas, est plus large qu'une place étroite ; il sortait de l'ovale. La largeur rendue est celle du mot le plus
+  // long si elle dépasse : l'ovale grandit, ou une autre place est prise. Un mot composé trop long pour la place se coupe
+  // alors à ses traits d'union (classe « coupe »), seulement dans ce cas.)
   mesure(maxW) {
     Object.assign(this.txt.style, { maxWidth: `${Math.round(maxW)}px`, left: "0px", top: "0px" });
-    return [this.txt.offsetWidth, this.txt.offsetHeight];
+    this.txt.classList.remove("coupe");
+    // (scrollWidth : la largeur du texte, ce qui dépasse compris)
+    if (this.txt.scrollWidth > this.txt.offsetWidth + 0.5 && this.words.some((w) => w.textContent.includes("-"))) this.txt.classList.add("coupe");
+    return [Math.max(this.txt.offsetWidth, this.txt.scrollWidth), this.txt.offsetHeight];
   }
   // ce que dessinent les aides et les leçons (le calque des aides) : les cases occupées d'une grille de 40 px, relevées sur
   // une copie réduite du calque (32 × 20 pixels), seulement quand le calque a été redessiné
@@ -227,7 +245,10 @@ export class Bulle {
     return { durs: [...obstacles(this.st.ui, this.st.k), ...this.dures()], souples: [...obstacles(this.st.ui, this.st.k, CARTE), ...this.dessins(), ...this.souplesEnPlus()] };
   }
   layout() {
-    const cible = largeurEquilibree(this.mesure(4000)[0]), m = (w, place) => { this.el.classList.toggle("large", !!place?.large); return this.mesure(Math.min(w, place?.large ? LIGNE_LARGE : cible)); };
+    // (point 3 : les lignes équilibrées ne descendent pas sous le mot le plus long : on ne coupe un mot composé que si la
+    // place manque)
+    Object.assign(this.txt.style, { maxWidth: "1px" }); this.txt.classList.remove("coupe");
+    const motLong = this.txt.scrollWidth, cible = Math.max(largeurEquilibree(this.mesure(4000)[0]), motLong + 4), m = (w, place) => { this.el.classList.toggle("large", !!place?.large); return this.mesure(Math.min(w, place?.large ? LIGNE_LARGE : cible)); };
     // (lot « Les leçons » : `places`, les places propres à un écran, la table d'addition : sous la tête, à gauche de la grille)
     const { durs, souples } = this.obstacles(), p = choisirPlace(durs, m, avecLarges(this.mode?.places ?? this.places ?? PLACES), souples);
     m(largeurMax(p.place.boite), p.place);

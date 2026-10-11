@@ -8,12 +8,14 @@
   --pa-good: #2f8f4e; --pa-good-bg: #d9efdc; --pa-mid: #b77a00; --pa-mid-bg: #fbe9bd; --pa-low: #c2502f; --pa-low-bg: #f8d8cc;
 }
 
-/* le logo : l'icône de l'application, posée sur le sable ; un appui long (2 s) ouvre le code */
-.logo { position: absolute; left: 34px; top: 684px; width: 92px; height: 92px; padding: 0; border: 0; background: none; outline: none; touch-action: none; -webkit-touch-callout: none; }
-.logo img { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 22px; box-shadow: 5px 6px 0 rgba(21, 18, 42, 0.28); outline: 3px solid #15122a; outline-offset: -1px; pointer-events: none; -webkit-user-drag: none; }
-.logo svg { position: absolute; inset: -12px; width: 116px; height: 116px; pointer-events: none; overflow: visible; }
-.logo circle { fill: none; stroke: #fff6c9; stroke-width: 7; stroke-linecap: round; stroke-dasharray: 327; stroke-dashoffset: 327; transform: rotate(-90deg); transform-origin: 58px 58px; opacity: 0; }
-.logo.holding circle { opacity: 1; stroke-dashoffset: 0; transition: stroke-dashoffset var(--hold, 2s) linear, opacity 0.2s; }
+/* le bouton de l'espace parent, posé sur le sable ; un appui long (2 s) ouvre le code */
+/* (lot « Correctifs : passage… », point 13) le bouton de l'image du parent : 108 px, au même centre qu'avant (80, 730) ; l'image a
+   son cadre et son ombre ; l'anneau de l'appui long suit son carré aux coins arrondis (parent.js, ANNEAU) */
+.logo { position: absolute; left: 26px; top: 675.6px; width: 108px; height: 108.8px; padding: 0; border: 0; background: none; outline: none; touch-action: none; -webkit-touch-callout: none; }
+.logo img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; -webkit-user-drag: none; }
+.logo svg { position: absolute; left: -12px; top: -12px; width: 132px; height: 132.8px; pointer-events: none; overflow: visible; }
+.logo rect { fill: none; stroke: #fff6c9; stroke-width: 7; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; opacity: 0; }
+.logo.holding rect { opacity: 1; stroke-dashoffset: 0; transition: stroke-dashoffset var(--hold, 2s) linear, opacity 0.2s; }
 
 /* le calque de l'espace parent, hors de la scène : il couvre tout l'écran, en pixels CSS */
 .pa { position: fixed; inset: 0; z-index: 10; font: 18px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--pa-ink); -webkit-user-select: text; user-select: text; touch-action: pan-x pan-y; }

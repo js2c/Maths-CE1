@@ -53,6 +53,38 @@ const RETOUCHES = [
     "function frame(now){\n if(!VIVANT)return;RAF=requestAnimationFrame(frame);\n if(OPTS.fige?.()){if(REDESSINE){REDESSINE=false;render();}return;}REDESSINE=false;OPTS.mesure?.(now);\n const tNow=OPTS.temps(now);const dt=clamp(tNow-T,0,.1);T=tNow;\n update(dt||.016);render();NFR++;\n fpsN++;if(now-fpsT>1000){FPS=Math.round(fpsN*1000/(now-fpsT));fpsN=0;fpsT=now;}\n}",
     "le temps est celui de l'application : il s'arrête pendant la pause (tout s'arrête : la houle, le vent, les pirates) ; l'animation s'arrête en sortant ; le temps d'image est mesuré"],
 ];
+// (lot « Correctifs : passage de l'échauffement aux voiliers », point 6) L'APPLICATION ABANDONNE LA MER CALCULÉE. Depuis la mer
+// illustrée (10 octobre 2026), la maquette garde sa mer procédurale « en secours » : dans l'application, elle était dessinée tant
+// que l'illustration n'était pas prête, et c'est l'ancienne mer que le parent voyait un instant au début du jeu. L'application
+// n'en garde rien : son programme (SEA_FS, six houles et une trentaine de bruits par pixel), son contexte de dessin, ses
+// réglages (côte et nuages dessinés, SKY, leurs images). En attendant que l'illustration soit prête, la mer est son fond
+// (MER.fond, le dégradé fixe) et son ciel (MER.ciel), sans aucun calcul ; avant même ces deux images, la couleur moyenne de
+// chacune (mesurée sur mer-fond.webp et mer-ciel.webp). Sans textures de 4 096 px (les éléments de la mer ne peuvent pas être
+// chargés), ce fond et ce ciel restent : une image fixe de la mer. La maquette art/voiliers/ garde sa mer à elle.
+// Chaque coupe doit trouver ses bornes exactement une fois : [début, fin (incluse), remplacement, pourquoi].
+const SANS_MER_CALCULEE = [
+  ["/* =====================================================================================\n   THE SEA:", "gl_FragColor=vec4(col,1.);}`;\n", "/* ---- LA MER CALCULÉE de la maquette (SEA_FS) : abandonnée par l'application (art/tools/export-voiliers.mjs, point 6) */\n", "le programme de la mer procédurale"],
+  ["// ---- sea program\n", "gl.uniform1f(us('uSumA'),SUMA);\n", "let pending=0;\n", "son contexte de dessin, la côte et les nuages dessinés (SKY), ses réglages"],
+  ["function bindPS(){", "gl.vertexAttribPointer(PSA,2,gl.FLOAT,false,0,0);}\n", "", "son programme n'existe plus"],
+];
+// et les retouches qui vont avec (dans la mer illustrée, et dans `render`)
+const SANS_MER_CALCULEE_RETOUCHES = [
+  ["if(ok){load(MER.fond,2,false,t=>{tFond=t;});load(MER.atlas,3,true,(t,im)=>{tAtlas=t;AW=im.width;AH=im.height;});load(MER.ciel,4,false,t=>{tCiel=t;});load(MER.nuages,5,false,t=>{tNuages=t;},true);}",
+    "load(MER.fond,2,false,t=>{tFond=t;});load(MER.ciel,4,false,t=>{tCiel=t;});load(MER.nuages,5,false,t=>{tNuages=t;},true);if(ok)load(MER.atlas,3,true,(t,im)=>{tAtlas=t;AW=im.width;AH=im.height;});",
+    "le fond, le ciel et les nuages ne demandent pas de texture de 4 096 px : ils sont toujours chargés (la mer fixe)"],
+  ["function draw(sh,sa,zone,t,sea){\n  // fond\n", "function drawFond(sh,sa,zone){\n", "le fond de la mer seul : la mer fixe"],
+  ["gl.drawArrays(gl.TRIANGLE_STRIP,0,4);gl.disableVertexAttribArray(aF);\n", "gl.drawArrays(gl.TRIANGLE_STRIP,0,4);gl.disableVertexAttribArray(aF);}\n function draw(sh,sa,zone,t,sea){drawFond(sh,sa,zone);\n", "le fond de la mer seul : la mer fixe"],
+  ["return{get ready(){return ok&&!!tFond&&!!tAtlas;},get skyReady(){return !!tCiel;},ok,step,draw,drawSky};",
+    "// la mer fixe (point 6) : le ciel et le fond s'ils sont là, sinon leur couleur moyenne ; aucun calcul\n function fixe(sh,sa,zone,t){gl.clearColor(136/255,159/255,175/255,1);gl.clear(gl.COLOR_BUFFER_BIT);\n  if(tFond)drawFond(sh,sa,zone);\n  if(tCiel)drawSky(t);else{gl.enable(gl.SCISSOR_TEST);gl.scissor(0,Math.round(gl.drawingBufferHeight*(1-HY/800)),gl.drawingBufferWidth,gl.drawingBufferHeight);gl.clearColor(199/255,225/255,241/255,1);gl.clear(gl.COLOR_BUFFER_BIT);gl.disable(gl.SCISSOR_TEST);}}\n return{get ready(){return ok&&!!tFond&&!!tAtlas;},get skyReady(){return !!tCiel;},ok,step,draw,drawSky,fixe};",
+    "la mer fixe"],
+  ["}catch(e){console.warn('mer illustrée indisponible',e);return{ready:false,skyReady:false,ok:false,step(){},draw(){},drawSky(){}};}",
+    "}catch(e){console.warn('mer illustrée indisponible',e);return{ready:false,skyReady:false,ok:false,step(){},draw(){},drawSky(){},fixe(){gl.clearColor(136/255,159/255,175/255,1);gl.clear(gl.COLOR_BUFFER_BIT);}};}",
+    "sans mer illustrée du tout : sa couleur"],
+  [" // ---- sea : la mer illustrée (repli : la mer procédurale) ; aux qualités 0 et 1, redessinée une image sur deux\n", " // ---- sea : la mer illustrée (en attendant qu'elle soit prête, ou sans textures de 4 096 px : la mer fixe) ; aux qualités 0\n // et 1, redessinée une image sur deux\n", "la mer calculée n'est plus le repli"],
+  [" if(!(ILLON&&MERFAITE&&QCAD[QUAL]===30&&(NFR&1))){MERFAITE=true;\n gl.viewport(0,0,cs.width,cs.height);bindPS();\n", " if(!(ILLON&&MERFAITE&&QCAD[QUAL]===30&&(NFR&1))){MERFAITE=true;\n gl.viewport(0,0,cs.width,cs.height);\n", "son programme n'existe plus"],
+  [" gl.uniform4fv(us('uSh'),new Float32Array(sh));gl.uniform1fv(us('uShA'),new Float32Array(sa));\n gl.uniform3f(us('uZone'),...(G.zone||[0,0]),G.zoneOn*.85);gl.uniform1f(us('uLineY'),LINE_Y);\n gl.uniform1f(us('uZoff'),ZC);cloudUniforms();gl.uniform1f(us('uTc'),T%1000);gl.uniform1f(us('uAmp'),SEA);gl.uniform2f(us('uRes'),cs.width,cs.height);\n", "", "ses réglages"],
+  [" else gl.drawArrays(gl.TRIANGLES,0,3);}", " else ILL.fixe(sh,sa,[...(G.zone||[0,0]),G.zoneOn*.85],T);}", "la mer fixe à la place de la mer calculée"],
+];
 // les sections remplacées en entier (entre deux bannières de la maquette) : [titre de la section, texte de l'application, pourquoi]
 const SECTIONS = [
   ["HUD", "/* ---- HUD : la bulle et la mascotte de la maquette sont celles de l'application (engine/bulle.js, engine/mascotte.js) */\n", "la bulle et la mascotte sont celles de l'application"],
@@ -201,14 +233,22 @@ export function exportVoiliers({ log = console.log, ecrire = true } = {}) {
     if (v && typeof v === "object") return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, sortir(x, [...path, k])]));
     return v;
   };
-  for (const [k, prefixe] of [["ASSETS", []], ["SKY", ["ciel"]], ["MER", ["mer"]]]) {
+  for (const [k, prefixe] of [["ASSETS", []], ["SKY", null], ["MER", ["mer"]]]) {
     const re = new RegExp(`^const ${k}=(\\{.*\\});$`, "m"), d = js.match(re);
     if (!d) throw new Error(`export-voiliers : données ${k} introuvables`);
+    // (point 6 : la côte et les nuages dessinés, SKY, ne servaient qu'à la mer calculée : ni données ni images)
+    if (!prefixe) { js = js.replace(re, () => ""); continue; }
     donnees[k] = sortir(JSON.parse(d[1]), prefixe);
     js = js.replace(re, () => `const ${k}=OPTS.donnees.${k};`);
   }
+  // (point 6) la mer calculée n'entre pas dans l'application
+  for (const [a, b, par, pourquoi] of SANS_MER_CALCULEE) {
+    const i = js.indexOf(a), j = i < 0 ? -1 : js.indexOf(b, i);
+    if (i < 0 || js.indexOf(a, i + 1) >= 0 || j < 0) throw new Error(`export-voiliers : mer calculée, « ${pourquoi} » : bornes introuvables ou en double ; la maquette a changé`);
+    js = js.slice(0, i) + par + js.slice(j + b.length);
+  }
   // 2. les raccords
-  for (const [a, b, pourquoi] of RETOUCHES) {
+  for (const [a, b, pourquoi] of [...RETOUCHES, ...SANS_MER_CALCULEE_RETOUCHES]) {
     const n = js.split(a).length - 1; if (n !== 1) throw new Error(`export-voiliers : retouche « ${pourquoi} » : ${n} occurrence(s) au lieu d'une ; la maquette a changé`);
     js = js.replace(a, () => b);
   }

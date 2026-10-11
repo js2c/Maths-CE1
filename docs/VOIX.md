@@ -10,6 +10,7 @@ et comment corriger une phrase mal dite. Le détail technique est dans `docs/ARC
 - Chaque son est contrôlé : il est retranscrit automatiquement (Whisper) et comparé à son texte. S'il est
   faux, il est refait, quatre fois au plus.
 - L'outil ne refabrique que les phrases nouvelles ou modifiées. Ajouter dix phrases prend quelques minutes.
+- **Il n'y a plus de voix de secours** (10 octobre 2026) : une phrase sans enregistrement n'est dite par aucune autre voix. Le capitaine ne la dit pas, sa bulle l'écrit ; elle apparaît dans l'espace parent, **Données et réglages**, sous **Phrases sans voix** (« absente de l'index » : à fabriquer ; « fichier illisible » : à signaler si cela revient). L'ancienne voix, Piper, est retirée de l'outil : aucune fabrication ne peut mêler deux voix.
 
 ## En une commande (conseillé)
 

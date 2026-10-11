@@ -627,6 +627,7 @@ async function lessonAlone(id, { pause = false, fin = false } = {}) {
 const frieze = new Frieze(app, seance.etapes.filter((e) => e.actif !== false && handlers[e.id]).map((e) => e.id)); // les étapes qui existent
 app.frieze = frieze;
 let mode = null; // "seance", "libre" ou null (écran d'accueil)
+app.modeEcran = () => mode; // (lot « Recette de l'enfant » : pour les parcours, tests/e2e/enfant.mjs)
 const homeKey = spriteBox(app, { x: 14, y: 10, w: 120, h: 120, cls: "bubble homekey session-home keep", label: "maison", paint: (ctx, px) => { const q = sprites.frame("maison", 0), k = 120 / 140; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 60 * px + q.dx * k, 60 * px + q.dy * k, q.w * k, q.h * k); } });
 homeKey.style.visibility = "hidden";
 const progress = (p) => {

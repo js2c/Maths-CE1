@@ -643,6 +643,47 @@ Chacune suivie de « À toi ! » vers son niveau (section 3). Relancées selon l
 
 **Comme les lots 4 à 8 : d'un seul tenant, sans arrêt pour une validation.** Ce lot ne change pas ce que fait l'application ; il retire ce qui ne sert plus et corrige ce qui déraille. Tout changement de comportement visible va dans le journal (« choix de la session, à revoir par le parent ») et dans la demande de fusion.
 
+**0. D'abord : les défauts vus par le parent sur la tablette, le 11 octobre 2026 au soir**
+
+C'est le premier essai depuis l'étal, avec le lot 8, la boutique et toutes les voix fabriquées. Ces défauts sont **bloquants** : les corriger avant le reste du lot, chacun avec un test de non-régression. Captures : `docs/maquettes/fiche9/`.
+
+- **0.1 Une barre noire au milieu de l'écran, dans tous les exercices** (captures : la multiplication, le sélecteur de difficulté, les voiliers). C'est une bande sur toute la largeur, d'environ y = 300 à y = 610 dans la scène, posée au-dessus du décor de l'exercice mais sous la mascotte, sa bulle et le pavé. Elle apparaît vite en cours de séance. **Elle disparaît dès qu'on touche la maison**, quand la séance se met en pause.
+  - **La piste, à vérifier** : à la pause, `app.css` cache exactement quatre calques, `#line`, `#fx`, `#aides` et `#front` (`#stage.paused … { visibility: hidden }`). Ce sont des canvas plein écran : 1280 × 800 multiplié par la densité, soit environ 2 880 × 1 800 px et 20 Mo chacun sur la tablette. Hypothèse : sous la pression de la mémoire graphique, le navigateur perd tout ou partie de l'un d'eux, ou en rend une partie en noir. L'étal, les voiliers et la boutique ont augmenté cette pression.
+  - **Le reproduire** : à la taille de la tablette (1138 × 711, densité 2,25), avec la mémoire graphique limitée et le processeur ralenti, en enchaînant les exercices comme une enfant. Écouter les événements `contextlost` / `contextrestored` des canvas, et relever la mémoire des canvas à chaque étape.
+  - **Corriger la cause** :
+    - ne garder un calque plein écran que s'il sert, le vider et le réduire à 1 × 1 quand il ne sert plus ;
+    - le limiter à la zone utile ;
+    - le redessiner sur `contextrestored`.
+  - **À noter** : le parent utilise **Brave** sur la tablette (moteur Chromium, comme Chrome). Dire si le défaut dépend du navigateur.
+- **0.2 La voix de l'étal : des mots incompréhensibles autour des nombres dits « entre trois petits points »** (leçons de la monnaie, par exemple « … 15… », « … 16, 17 ! »).
+  - **La cause est trouvée** :
+    - plusieurs répliques des leçons L15 à L17 commencent par « … » (`app/content/lecons.json` : « … vaut autant que deux pièces de 1 euro. », « … 15… », « … 16, 17 ! », « … jusqu'au billet que tu as donné : 20. ») ;
+    - `engine/phrases.js` (`sentences`) coupe après « … », si bien que « … » devient **une phrase à lui seul** ;
+    - cette phrase a été fabriquée : son fichier (`5d214c023b85.ogg`) dure **5 s**, en quatre morceaux de « paroles ». C'est ce qu'entend le parent.
+  - **Corriger** :
+    - une phrase sans lettre ni chiffre n'est jamais dite, et n'entre pas dans l'inventaire de la voix (`tools/voix/inventaire.mjs`) ;
+    - les répliques qui commencent par « … » sont réécrites sans eux ;
+    - un test unitaire vérifie qu'aucune phrase de l'inventaire n'est faite seulement de ponctuation.
+- **0.3 Le compte des pièces : « 2, 4, 2, 6 »**, avec un « 2 » en trop (trois pièces de 2 € à l'étal).
+  - **La cause probable est trouvée** : le code dit bien « 2 », « 4 », « 6 euros » (`modules/etal/screen.js`, `compter`), mais **le fichier de la phrase « 4 » est défectueux**.
+    - Il dure 1,6 s, en deux morceaux de paroles séparés par 0,7 s de silence, alors que « 2 », « 3 », « 6 » et « 8 » durent de 0,5 à 0,8 s, en un seul morceau.
+    - **« 0 » (1,9 s) et « 9 » (1,9 s) ont le même défaut.**
+    - Ces fichiers datent du 4 octobre : le défaut existe donc dans **toute l'application**, partout où un nombre est dit seul. Le contrôle par retranscription ne l'a pas vu.
+  - **Corriger l'outil, pas les sons** (les sons, seul le parent les refait) :
+    - ajouter à `tools/voix/` un contrôle des **durées anormales**. Une phrase courte faite de plusieurs morceaux de paroles, ou bien plus longue que les phrases du même genre, est refusée et listée pour la réécoute (`a-reecouter.html`), comme les refus de la retranscription ;
+    - passer ce contrôle sur **toutes les phrases existantes** ;
+    - donner dans la demande de fusion la liste des phrases à refaire, à mettre dans `tools/voix/a-refaire.txt` (« 0 », « 4 », « 9 », et toutes celles que le contrôle trouve). Le parent les refait avec `node tools\voix\fabriquer.mjs --ref ..\ref-posee.wav --refaire` (`docs/VOIX.md`, « De nouveaux tirages »).
+- **0.4 Les parcours qui échouent déjà sur `main`** (relevés par le lot de la boutique, PR #54). Chacun est remis au vert ou, s'il ne sert plus, retiré en disant pourquoi :
+  - `aide-passer` : délais du pavé après « passer » ;
+  - `calcul` : erreurs C1 et C4 reconnues. **À examiner en premier** : c'est peut-être un vrai défaut de l'exercice, pas du parcours ;
+  - `correctifs-2` : une vérification qui varie, bulle vide, largeur des galets en 1920 ;
+  - `lot3ter` : étiquettes d'appui long ;
+  - `mascotte` : plante sur la position de la flèche ;
+  - `pwa` et `video` : attente dépassée ;
+  - `multiplication` et `selecteur`, qui ne passent qu'au second passage.
+
+  **But** : à la fin du lot, tous les parcours passent sur `main`, et chaque lot suivant n'a plus à les relancer sur `main` pour trier les échecs.
+
 **1. L'inventaire des couches** (avant de modifier le code), dans `docs/COUCHES.md` :
 - Pour chaque écran et chaque étape, lister ce qu'il pose et ce qu'il lance, puis chaque façon d'en sortir.
   - Les écrans et étapes : démarrage, accueil, choisir, niveaux, leçons, tables, chaque étape de la séance (échauffement, notion du jour, défi, récompense, fin), pause, entraînement libre, récif, album, espace parent, et l'écran de chaque exercice, l'étal compris.
@@ -698,14 +739,15 @@ Chacune suivie de « À toi ! » vers son niveau (section 3). Relancées selon l
 
 **5. Pour le parent** : une courte liste d'essais à faire sur la tablette (10 minutes), dans `docs/GUIDE-PARENT.md`, pour ce que l'automatique ne voit pas : le toucher réel, la fluidité, le son.
 
-**Voix** : aucune phrase nouvelle attendue. Les phrases qui ne servent plus seront effacées à la prochaine fabrication du parent ; les lister.
+**Voix** : seulement les quelques phrases des répliques réécrites des leçons L15 à L17 (point 0.2), et les phrases à refaire trouvées par le nouveau contrôle des durées (point 0.3). Les lister toutes dans la demande de fusion. Les phrases qui ne servent plus, dont « … », seront effacées à la prochaine fabrication du parent ; les lister aussi.
 
 **Recette** : la méthode commune, avec, dans la demande de fusion :
 - `docs/COUCHES.md` ;
 - ce qui a été retiré, et le poids de l'application avant et après (code, fichiers, images) ;
 - pour l'enfant imprévisible : le nombre de graines et d'actions, les défauts trouvés, leurs tests de non-régression ;
 - le rapport de l'agent et le traitement de chaque constat ;
-- le temps d'image, avec et sans ralentissement.
+- le temps d'image, avec et sans ralentissement ;
+- pour les défauts du point 0 : la cause trouvée de la barre noire (ou, si elle n'est pas reproduite, ce qui a été essayé et ce qui a été changé par précaution), la liste exacte des phrases à refaire par le parent, et l'état de chaque parcours qui échouait sur `main`.
 
 ### 10. Lot « La boutique du récif »
 

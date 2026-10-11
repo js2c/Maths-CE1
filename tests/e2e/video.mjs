@@ -16,11 +16,13 @@ const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 }, d
 const page = await ctx.newPage(), cdp = await ctx.newCDPSession(page);
 const frames = [];
 cdp.on("Page.screencastFrame", async (f) => { frames.push({ t: f.metadata.timestamp, data: f.data }); await cdp.send("Page.screencastFrameAck", { sessionId: f.sessionId }).catch(() => {}); });
-await page.goto(url + "?sans=echauffement"); await page.waitForFunction(() => window.__ready !== undefined); await page.waitForTimeout(800);
+// (lot « Recette de l'enfant », point 0.6 : depuis la rotation des exercices (lot 3), « jouer » ne propose plus forcément la
+// ligne graduée, dont ce film montre les bulles-réponses : elle est imposée, sans sa leçon d'entrée)
+await page.goto(url + "?sans=echauffement&module=1&sansLecon&cran=conseille"); await page.waitForFunction(() => window.__ready !== undefined); await page.waitForTimeout(800);
 await cdp.send("Page.startScreencast", { format: "jpeg", quality: 92, maxWidth: 1280, maxHeight: 800, everyNthFrame: 1 });
 await page.waitForTimeout(2500);
 await page.tap(".play", { force: true });
-const next = () => page.waitForFunction(() => document.querySelectorAll(".answer").length && !window.__app.screen?.locked, null, { timeout: 30000 });
+const next = () => page.waitForFunction(() => document.querySelectorAll(".answer").length && !window.__app.screen?.locked, null, { timeout: 60000 });
 const answer = async (right) => { const v = await page.evaluate((r) => { const q = window.__app.screen.q; return r ? q.answer : q.choices.find((c) => c.value !== q.answer).value; }, right); await page.tap(`.answer[data-value="${v}"]`, { force: true }); };
 for (const right of [true, false, true]) { await next(); await page.waitForTimeout(3200); await answer(right); await page.waitForTimeout(right ? 2600 : 4200); }
 await next(); await page.waitForTimeout(2500);

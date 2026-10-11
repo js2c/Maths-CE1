@@ -37,7 +37,12 @@ check(errs.length === 0, `installable selon Chromium${errs.length ? " — " + er
 await ctx.setOffline(true);
 await page.reload(); await page.waitForFunction(() => window.__ready !== undefined, null, { timeout: 60000 });
 await page.tap(".play", { force: true });
-await page.waitForSelector(".key", { timeout: 30000 }); // la première question : l'échauffement, au pavé
+// (lot « Recette de l'enfant », point 0.6 : la voix n'est pas accélérée ici ; la bienvenue, la phrase de l'échauffement et
+// celle du pavé, dites en entier avant que le pavé s'ouvre, dépassaient les 30 s d'attente)
+await page.waitForSelector(".key", { timeout: 120000 }).catch(async (e) => { // la première question : l'échauffement, au pavé
+  console.log("     état :", JSON.stringify(await page.evaluate(() => ({ etape: window.__app.session?.progress?.etape, module: window.__app.session?.rec?.module, parle: window.__app.voice.talking?.text, lecon: !!document.querySelector(".lessonkey") }))));
+  await page.screenshot({ path: "tests/e2e/out/pwa-echec.png" }); throw e;
+});
 check(true, "hors ligne : démarrage et première question");
 check(errors.length === 0, `aucune erreur de page${errors.length ? " — " + errors.join(" | ") : ""}`);
 await browser.close(); srv.close();

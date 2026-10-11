@@ -18,7 +18,8 @@
 // revient à celui du départ.
 //   node tests/e2e/enfant.mjs [--graines 4] [--depart 1] [--actions 80] [--lent 1] [--tablette] [--parallele 1]
 //                             [--fuite] [--veille-longue] [--out dossier] [--rejouer fichier.json [--reduire]]
-//   --lent N : processeur ralenti N fois ; --tablette : 1138 × 711, densité 2,25 (la tablette du parent)
+//   --lent N : processeur ralenti N fois ; --tablette : 1138 × 711, densité 2,25 (la tablette du parent) ; --panne : le
+//   contrôle du contrôle (une touche orpheline et une erreur injectées : le parcours doit échouer)
 //   --rejouer : rejoue les actions enregistrées d'un défaut (out/…/defaut-*.json) ; --reduire : cherche la plus courte suite
 //   d'actions qui le montre encore (delta-debugging), et l'écrit à côté (…-reduit.json)
 // Version courte (tests de GitHub, .github/workflows/tests.yml) : node tests/e2e/enfant.mjs --graines 3 --actions 60
@@ -32,7 +33,7 @@ const args = process.argv.slice(2), arg = (k, d = null) => (args.includes(k) ? a
 const GRAINES = Number(arg("--graines", 4)), DEPART = Number(arg("--depart", 1)), ACTIONS = Number(arg("--actions", 80)), LENT = Number(arg("--lent", 1));
 const TABLETTE = args.includes("--tablette"), PARALLELE = Number(arg("--parallele", 1)), FUITE = args.includes("--fuite"), VEILLE_LONGUE = args.includes("--veille-longue");
 const OUT = resolve(arg("--out", "tests/e2e/out/enfant")); mkdirSync(OUT, { recursive: true });
-const REJOUER = arg("--rejouer"), REDUIRE = args.includes("--reduire");
+const REJOUER = arg("--rejouer"), REDUIRE = args.includes("--reduire"), PANNE = args.includes("--panne");
 const IMPASSE_MS = 20000;
 const VUE = TABLETTE ? { width: 1138, height: 711, deviceScaleFactor: 2.25 } : { width: 1280, height: 800, deviceScaleFactor: 1 };
 // une base d'un mois (des cartes dans l'album et le récif, des étoiles pour la boutique), fabriquée une fois
@@ -231,6 +232,9 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
       const act = liste ? liste[i] : await concretiser(page, rnd, tirer(rnd, graine % 4 < 2));
       faits.push(act);
       await jouer(page, cdp, act).catch((x) => noter(`action impossible : ${act.type}`, x.message.split("\n")[0]));
+      // (--panne : le contrôle du contrôle ; à la 5e action, une touche du pavé orpheline et une erreur de page, qui doivent
+      // être vues)
+      if (PANNE && i === 4) await page.evaluate(() => { const b = document.createElement("button"); b.className = "bubble key"; b.dataset.key = "5"; Object.assign(b.style, { position: "absolute", left: "600px", top: "600px", width: "80px", height: "80px" }); document.querySelector("#ui").append(b); setTimeout(() => { throw new Error("panne volontaire"); }, 10); });
       await verifier(`après ${act.type}${act.quoi ? ` (${act.quoi})` : ""}`);
       if (Date.now() - dernierEtat > 1000) await verifier("chaque seconde");
       if (cherche && defauts.some((d) => d.quoi === cherche)) break;

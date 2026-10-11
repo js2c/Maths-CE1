@@ -273,7 +273,9 @@ const handlers = {
     const { portee } = ctx;
     let fini = false;
     {
-      const screen = (app.facts ??= new FactsScreen(app, module2)), warmup = await new Warmup({ store, content: module2, rnd, seance: ctx.session.id, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load();
+      const warmup = await new Warmup({ store, content: module2, rnd, seance: ctx.session.id, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load();
+      if (portee.fermee) return fige();
+      const screen = (app.facts ??= new FactsScreen(app, module2));
       portee.fin(() => { if (!fini) screen.abandon(); if (app.warmup === warmup) app.warmup = null; });
       const step = { ...ctx.step, ...(P.get("faits") ? { questions: [Number(P.get("faits")), Number(P.get("faits"))] } : {}) };
       app.warmup = warmup;
@@ -305,7 +307,7 @@ const handlers = {
   defi: async (ctx) => {
     const screen = (app.facts ??= new FactsScreen(app, module2)), warmup = await new Warmup({ store, content: module2, rnd, seance: ctx.session.id, cran: () => "conseille" }).load();
     warmup.defi = true;
-    await sprites.load("defi"); ctx.portee.fin(() => sprites.unload("defi"));
+    await sprites.load("defi"); ctx.portee.fin(() => sprites.unload("defi")); if (ctx.portee.fermee) return fige();
     const view = new ChallengeView(app); app.challenge = view; ctx.portee.fin(() => { view.remove(); app.challenge = null; });
     await runChallenge({ ...ctx, warmup, screen, view, store, rnd, mascotte: ocean.mascotte, stars: seance.etoiles, say: (k, v = {}) => voice.say(text.pick(k, v)) });
   },
@@ -313,6 +315,9 @@ const handlers = {
 };
 // lot « Les leçons » : après « À toi ! », la leçon qui vient d'être vue depuis le menu ne peut pas être relancée dans la séance
 // (au plus une fois par séance, section 8) ; elle est déjà notée vue ou passée, ce n'est donc pas la leçon d'entrée
+// (lot « Recette de l'enfant », point 2) une étape quittée pendant une attente (une planche, une scène qui s'installe) ne crée
+// plus rien ensuite : elle reste figée, comme une attente abandonnée (engine/clock.js)
+const fige = () => new Promise(() => {});
 const afterLesson = (session, runner) => { if (session.choix?.apresLecon) runner.lessonPlayed?.(session.choix.apresLecon); };
 // lot 2, étape 6 : la notion du jour sur les additions (docs/SPEC-LOT2.md, section 3) : l'écran des additions, le
 // bernard-l'ermite (planche « ermite », chargée le temps de l'étape), la leçon de la famille la première fois
@@ -322,10 +327,11 @@ async function notion2(ctx) {
   const runner = await new Module2Runner({ store, content: module2, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, dejaNouveaux: session.nouveaux, choix: session.choix?.famille ?? null }).load();
   const conf = ctx.step.module2 ?? ctx.step, step = { ...ctx.step, ...conf, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}), ...(P.get("guides") ? { guides: Number(P.get("guides")) } : {}) };
   app.runner = runner; afterLesson(session, runner); session.rec.famille = runner.famille; await session.save();
-  await Promise.all([sprites.load("ermite"), sprites.load("aides")]);
+  await Promise.all([sprites.load("ermite"), sprites.load("aides")]); ctx.portee.fin(() => sprites.unload("ermite"));
+  if (ctx.portee.fermee) return fige();
   const hermit = new Hermit(ocean, { x: 150, y: 776, scale: 0.85 }); // (lot 3 bis, R20 : un peu plus haut, il était coupé par le bas de l'écran)
   screen.hermit = hermit; screen.notion = true; app.hermit = hermit;
-  ctx.portee.fin(() => { screen.notion = false; screen.hermit = null; if (app.hermit === hermit) app.hermit = null; hermit.remove(); sprites.unload("ermite"); });
+  ctx.portee.fin(() => { screen.notion = false; screen.hermit = null; if (app.hermit === hermit) app.hermit = null; hermit.remove(); });
   hermit.show(true); hermit.play("sortir");
   screen.show(true); screen.keys(false);
   await voice.say(text.pick("notionFaits"));
@@ -347,6 +353,7 @@ async function notion3(ctx) {
   const runner = await new Module3Runner({ store, content: module3, content2: module2, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, choix: session.choix?.module === 3 ? session.choix.niveau : null, baseMs: base }).load();
   app.runner = runner; afterLesson(session, runner); session.rec.niveauCalcul = runner.niveau; await session.save();
   await sprites.load("calcul"); ctx.portee.fin(() => { app.calc.leave(); sprites.unload("calcul"); });
+  if (ctx.portee.fermee) return fige();
   const fs = (app.facts ??= new FactsScreen(app, module2)); fs.show(true); fs.keys(false);
   // (lot 3 bis, B4) « Le petit poisson va t'aider » n'est dit que s'il est à l'écran : aux niveaux du mur, le mur et le poisson
   // sont montrés le temps de la phrase ; sinon, une phrase sans le poisson
@@ -364,6 +371,7 @@ async function notion5(ctx) {
   const runner = await new Module5Runner({ store, content: module5, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, choix: session.choix?.module === 5 ? session.choix.niveau : null, baseMs: base }).load();
   app.runner = runner; afterLesson(session, runner); session.rec.niveauMult = runner.niveau; await session.save();
   await sprites.load("aides"); ctx.portee.fin(() => app.mult.leave());
+  if (ctx.portee.fermee) return fige();
   const fs = (app.facts ??= new FactsScreen(app, module2)); fs.show(true); fs.keys(false);
   await voice.say(text.pick("notionMult"));
   await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.mult.askNotion(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
@@ -377,11 +385,12 @@ async function notion4(ctx) {
   const runner = await new Module4Runner({ store, content: module4, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, choix: session.choix?.module === 4 ? session.choix.niveau : null }).load();
   app.runner = runner; session.rec.niveauVoiliers = runner.niveau; await session.save();
   const scr = app.voiliers;
-  ctx.portee.fin(() => scr.leave());
   if (!(await scr.enter())) {
     journal({ type: "voiliers sans WebGL" }); session.rec.module = 1; session.rec.voiliersSansWebGL = true; await session.save(); frieze.notionIcon(1);
     return handlers.notion(ctx);
   }
+  // (inscrit après l'installation : une étape quittée pendant qu'elle s'installait la range aussitôt)
+  ctx.portee.fin(() => scr.leave()); if (ctx.portee.fermee) return fige();
   await runNotion({ ...ctx, step, runner, screen: { ask: (q) => scr.ask(q) }, lesson: async () => false, rnd });
 }
 // LOT « L'ÉTAL DU PÊCHEUR » (docs/SPEC.md, section 7 quater) : la notion du jour à l'étal, choisie par l'enfant ou imposée par
@@ -393,8 +402,9 @@ async function notion6(ctx) {
   const runner = await new Module6Runner({ store, content: module6, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, choix: session.choix?.module === 6 ? session.choix.niveau : null }).load();
   app.runner = runner; afterLesson(session, runner); session.rec.niveauEtal = runner.niveau; await session.save();
   const scr = app.etal;
-  ctx.portee.fin(() => scr.leave());
   await scr.enter({ rnd });
+  // (inscrit après l'installation : une étape quittée pendant qu'elle s'installait la range aussitôt)
+  ctx.portee.fin(() => scr.leave()); if (ctx.portee.fermee) return fige();
   session.rec.etalMeteo = scr.meteoDepart ? "mauvais temps" : scr.orageA != null ? "orage en cours de partie" : "beau temps"; await session.save();
   await voice.say(text.pick("etalNotion"));
   await runNotion({ ...ctx, step, runner, screen: { ask: (q) => scr.ask(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });

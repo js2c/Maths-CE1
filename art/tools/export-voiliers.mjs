@@ -34,6 +34,7 @@ const RETOUCHES = [
   ["let SEA=.6,SEA_T=.6,QUAL=1,T=0;", "let SEA=.6,SEA_T=.6,QUAL=OPTS.qualite??1,T=0;const VIT={k:1};let OLD=null,ATTENTE=null,REDESSINE=true;", "la qualité de la mer de départ (allègement) ; la vitesse des corrections ; le bateau qui s'en va ; le geste attendu"],
   ["function fit(){const W=innerWidth,H=innerHeight;scale=Math.min(W/1280,H/800);\n stage.style.transform=`translate(${(W-1280*scale)/2}px,${(H-800*scale)/2}px) scale(${scale})`;\n", "function fit(){scale=OPTS.echelle();REDESSINE=true;\n", "la taille de la scène est celle de l'application (elle la met à l'échelle de l'écran)"],
   ["addEventListener('resize',fit);fit();", "OPTS.on(window,'resize',fit);fit();", "écouteurs de la fenêtre retirés en sortant"],
+  [" R2=Math.min(full,QBAT[QUAL]*scale);", " R2=Math.min(full,QBAT[OPTS.qualiteBateaux??QUAL]*scale);", "(lot « Recette de l'enfant », point 0.4) les bateaux et les bouées gardent la qualité choisie par le parent (1,5×) : seule la mer s'allège"],
   ["const LINE_Y=690,WAIT={x:430,y:410},AUTO_Y0=405;", "const LINE_Y=690,WAIT={x:OPTS.attente?.x??430,y:OPTS.attente?.y??410},AUTO_Y0=405;", "le bateau attend à droite du centre (décision du parent du 6 octobre 2026 : la mascotte et sa bulle sont en haut à gauche)"],
   ["function tween(o,to,dur,ease,done){o.tw={from:{x:o.x,y:o.y},to,t0:T,dur:dur/1000,", "function tween(o,to,dur,ease,done){o.tw={from:{x:o.x,y:o.y},to,t0:T,dur:dur/1000/VIT.k,", "les corrections et les exemples vont à la vitesse de l'application (vitesseAnimations) ; « passer » les termine vite"],
   ["function startPirates(){P=newShip('pirate');P.vis=true;P.x=1420;P.y=AUTO_Y0-95;P.mode='chase';P.deadline=T+G.windDur/1.3/1000;}", "function startPirates(){P=newShip('pirate');P.vis=true;P.x=1420;P.y=AUTO_Y0-95;P.mode='chase';P.deadline=T+G.windDur/(OPTS.piratesK??1.3)/1000;}", "les pirates : leur avance sur le vent vient de module4.json"],
@@ -188,6 +189,9 @@ const API={
   // la qualité de la mer (0 économe, 1 normale, 2 fine : la maquette)
   qualite(q){if(q!==QUAL){QUAL=q;fit();}},
   get qual(){return QUAL;},
+  // (lot « Recette de l'enfant », point 0.4) une transition en cours : des images qui se chargent, un bateau qui arrive ou qui
+  // s'en va, la caméra qui recule, la mer qui change ; ses images ne comptent pas dans la mesure du temps d'image
+  occupe(){return pending>0||B.mode==='enter'||B.mode==='travel'||!!(OLD&&OLD.vis)||!!G.travel||Math.abs(SEA_T-SEA)>.02;},
   // où est le bateau de l'enfant (pour la bulle, qui ne le couvre jamais) : là où il va s'il arrive
   zoneBateau(){if(!B.vis)return null;const t=B.tw&&B.mode==='enter'?B.tw.to:B,s=boatK(t.y)/.44;return[t.x-190*s,t.y-330*s,t.x+200*s,t.y+55*s];},
   // là où il est et là où il va

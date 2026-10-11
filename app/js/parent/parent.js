@@ -509,6 +509,16 @@ export class ParentSpace {
         h("table", { class: "pa-table" }, h("thead", {}, h("tr", {}, ["Phrase", "Date", "Version", "Cause", "Fois"].map((t) => h("th", {}, t)))),
           h("tbody", {}, [...l].reverse().map((e) => h("tr", {}, h("td", {}, `« ${e.phrase} »`), h("td", {}, `${D.fmtDay(e.derniere)} à ${D.fmtTime(e.derniere)}`), h("td", {}, String(e.version ?? "?").slice(0, 7)), h("td", {}, e.cause), h("td", {}, String(e.fois))))))));
     });
+    // (lot « Recette de l'enfant », point 0.4) la qualité de la mer des voiliers : chaque changement, avec le temps d'image
+    // moyen qui l'a causé ; les bateaux et les bouées gardent toujours la qualité choisie
+    this.store.setting("voiliersQualite").then((l) => {
+      if (!l?.length) return;
+      const nom = ["économe", "normale", "fine"];
+      page.append(h("div", { class: "pa-card-box pa-incidents pa-qualite" }, h("h2", {}, "Qualité des voiliers"),
+        h("p", { class: "pa-note" }, "Quand la tablette peine (plus de 20 ms par image, moins de 50 images par seconde), la mer des voiliers s'allège d'un cran ; elle revient à la qualité normale quand tout redevient fluide (moins de 18 ms). Les bateaux et les bouées restent toujours nets. Si la mer s'allège à chaque partie, la tablette est trop chargée (fermer les autres onglets)."),
+        h("table", { class: "pa-table" }, h("thead", {}, h("tr", {}, ["Date", "Version", "Mer", "Temps par image"].map((t) => h("th", {}, t)))),
+          h("tbody", {}, [...l].reverse().map((e) => h("tr", {}, h("td", {}, `${D.fmtDay(e.t)} à ${D.fmtTime(e.t)}`), h("td", {}, String(e.version ?? "?").slice(0, 7)), h("td", {}, `${nom[e.de] ?? e.de} → ${nom[e.a] ?? e.a}`), h("td", {}, `${String(e.ms).replace(".", ",")} ms`)))))));
+    });
     this.store.setting("journalErreurs").then((l) => {
       if (!l?.length) return;
       page.append(h("div", { class: "pa-card-box pa-incidents" }, h("h2", {}, "Incidents techniques"),

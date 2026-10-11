@@ -170,6 +170,16 @@ addEventListener("unhandledrejection", (ev) => journal({ type: "erreur de page",
 const rewards = await new Rewards(store, cartes, calendrier).load();
 if (P.get("etoiles")) { rewards.st.total = Number(P.get("etoiles")); await rewards.save(); } // tests : un trésor de départ
 const app = { stage, sprites, ocean, lagon, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, legendes, line: new LineView(stage), bulle, fleche, portees: new Set() };
+// (lot « Recette de l'enfant », point 0.4) chaque changement de qualité de la mer des voiliers est noté pour l'espace parent
+// (« Qualité des voiliers » : la date, la version, de quelle qualité à quelle autre, le temps d'image moyen ; les 50 derniers)
+let notesQualite = Promise.resolve();
+app.noterQualite = ({ de, a, ms }) => { notesQualite = notesQualite.then(async () => {
+  try {
+    const l = (await store.setting("voiliersQualite")) ?? [];
+    l.push({ t: Date.now(), version: versionApp ?? "?", de, a, ms, etape: app.session?.progress?.etape ?? null });
+    await store.setSetting("voiliersQualite", l.slice(-50));
+  } catch { /* le journal ne doit jamais gêner l'enfant */ }
+}); };
 // la vitesse des animations des exemples guidés et des corrections (1 : la vitesse d'origine ; la voix garde son débit)
 app.vitesse = seance.vitesseAnimations ?? 1;
 app.toucher = seance.toucher ?? {}; // (lot 3 bis, A5 : le double toucher)

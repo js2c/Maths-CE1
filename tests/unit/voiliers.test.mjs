@@ -182,7 +182,11 @@ test("la qualité de la mer suit le temps d'image ; la bulle écrit le nombre du
   assert.equal(qualiteSuivante(1, n(10, 12), 5000), 1); // fluide, mais pas encore assez d'images pour remonter
   assert.equal(qualiteSuivante(1, n(10, 40), 5000), 2); // fluide : un cran de plus
   assert.equal(qualiteSuivante(2, n(10, 40), 5000), 2);
-  assert.equal(qualiteSuivante(1, n(17, 40), 5000), 1); // entre les deux : rien ne change
+  assert.equal(qualiteSuivante(1, n(19, 40), 5000), 1); // entre les deux : rien ne change
+  // (lot « Recette de l'enfant », point 0.4) à 57 images/s (17,5 ms), la qualité remonte (avant : jamais, sous 14 ms) ;
+  // jamais au-dessus de la qualité choisie
+  assert.equal(qualiteSuivante(0, n(17.5, 40), 5000), 1);
+  assert.equal(qualiteSuivante(1, n(10, 40), 5000, { max: 1 }), 1);
   assert.equal(bulleNombre("Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 347"), "Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage. 347 « trois-cent-quarante-sept »");
   assert.equal(bulleNombre("71"), "71 « soixante-et-onze »");
   assert.equal(bulleNombre("Il est plus grand que 40 : il passe après."), "Il est plus grand que 40 : il passe après.");

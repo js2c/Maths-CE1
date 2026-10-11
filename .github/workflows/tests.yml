@@ -32,3 +32,26 @@ jobs:
         run: npm test
         env:
           VOIX_A_FABRIQUER: tolere
+
+  # (lot « Recette de l'enfant et nettoyage des couches », point 3) L'ENFANT IMPRÉVISIBLE, version courte : quelques graines
+  # d'actions d'enfant tirées au hasard (reproductibles), dans Chromium (tests/e2e/enfant.mjs). La version longue (au moins
+  # 200 graines de 300 actions, processeur ralenti ou non) tourne pendant les lots, pas ici.
+  enfant:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Dépendances des tests
+        run: npm ci
+      - name: Chromium (playwright-core de l'atelier)
+        run: |
+          cd art && npm ci --omit=optional --ignore-scripts
+          npx playwright-core install --with-deps chromium
+          echo "CHROMIUM=$(node -e 'import("playwright-core").then((p) => console.log(p.chromium.executablePath()))')" >> "$GITHUB_ENV"
+      - name: L'enfant imprévisible (3 graines de 60 actions)
+        run: node tests/e2e/enfant.mjs --graines 3 --actions 60
+        env:
+          VOIX_A_FABRIQUER: tolere

@@ -49,11 +49,14 @@ const cur = (page) => page.evaluate(() => { const q = window.__app.facts.q; retu
   check(!q.pont && q.niveau === 2 && q.cheminMode === "coquillage", `après les calculs guidés : le chemin au coquillage (${q.a} ${q.op} ${q.b})`);
   await page.waitForTimeout(300); await shot(page, "5-question");
   await page.tap(".bubble.help", { force: true }); await page.waitForTimeout(700); await shot(page, "6-coquillage-chemin");
+  // (lot « Recette de l'enfant », point 0.6 : l'aide montre le chemin à la place du pavé ; taper pendant ce temps perdait un
+  // chiffre, et la réponse devenait « autre » au lieu de C1 : on attend le pavé revenu et la voix tue)
+  await page.waitForFunction(() => { const k = document.querySelector('.key[data-key="5"]'), f = window.__app.facts; return k && getComputedStyle(k).visibility === "visible" && f.resolve && !f.locked && !window.__app.voice.speaking; }, null, { timeout: 30000, polling: 50 });
   const wrong = q.op === "+" ? q.a + 1 : q.a - 1; await type(page, wrong);
   await page.waitForFunction(() => window.__app.calc?.fish?.a.vis && window.__app.calc.fish.y > 400, null, { polling: 50, timeout: 20000 }).catch(() => {});
   await page.waitForTimeout(250); await shot(page, "7-correction-mur");
   const s = await page.evaluate(() => window.__said.join(" | "));
-  check(/seules les dizaines changent/.test(s), "C1 reconnue : « seules les dizaines changent »");
+  check(/seules les dizaines changent/.test(s), `C1 reconnue : « seules les dizaines changent »${/seules les dizaines/.test(s) ? "" : ` (question ${JSON.stringify(q)}, tapé ${wrong} ; dit : ${s})`}`);
   await waitQ(page);
   const rep = await page.evaluate(async () => (await window.__app.store.all("reponses")).filter((r) => r.module === 3 && !r.guide));
   check(rep.some((r) => r.erreur === "C1" && !r.juste), `réponse enregistrée avec l'erreur C1 (${rep.map((r) => `${r.question}:${r.erreur}`).join(", ")})`);
@@ -69,9 +72,13 @@ for (const cran of ["conseille", "facile", "tresdur"]) {
   if (cran === "conseille") {
     await type(page, Math.floor(q.a / 10) * 10 + ((q.a % 10) + q.b) % 10);
     await page.waitForSelector(".skip", { timeout: 10000 }); await page.waitForTimeout(900); await shot(page, "8-correction-chemin-C4");
-    const s = await page.evaluate(() => window.__said.join(" | "));
-    check(/dépasse dix/.test(s), `C4 reconnue : « … dépasse dix : on passe à la dizaine suivante »`);
+    // (lot « Recette de l'enfant », point 0.6 : sur le chemin, la phrase de C4 vient APRÈS les ponts rejoués (lot 3 bis, R7) ;
+    // le parcours la cherchait 0,9 s après « passer », avant qu'elle soit dite : elle est vérifiée à la fin de la correction)
     await waitQ(page);
+    const s = await page.evaluate(() => window.__said.join(" | "));
+    check(/dépasse dix/.test(s), `C4 reconnue : « … dépasse dix : on passe à la dizaine suivante »${/dépasse dix/.test(s) ? "" : ` (question ${JSON.stringify(q)} ; dit : ${s})`}`);
+    const rep = await page.evaluate(async () => (await window.__app.store.all("reponses")).filter((r) => r.module === 3 && !r.guide));
+    check(rep.some((r) => r.erreur === "C4" && !r.juste), `réponse enregistrée avec l'erreur C4 (${rep.map((r) => `${r.question}:${r.erreur}`).join(", ")})`);
   }
   check(!errors.length, `${cran} : aucune erreur (${errors.join(" | ")})`); await context.close();
 }

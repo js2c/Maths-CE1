@@ -179,6 +179,18 @@ L'enfant achète les créatures avec ses étoiles de mer (décisions du parent d
 - *Simulation* : `tests/sim-recette.mjs` rejoue la boutique (règle d'achat de la maquette) ; `node tests/sim-seances.mjs reel 2 annee --court` (le contenu des zones 3 et 4 à ses dates ; `--pretes`, `--libre`).
 - Tests : `tests/unit/boutique.test.mjs`, `tests/unit/boutique-ecran.test.mjs` ; parcours `node tests/e2e/boutique.mjs` (`--vite` : 1280 × 800 seul).
 
+## La recette de l'enfant et le nettoyage des couches (lot « Recette de l'enfant et nettoyage des couches »)
+
+`docs/LOTS.md`, fiche 9 ; l'inventaire : `docs/COUCHES.md`.
+
+- *La règle de sortie unique* (`engine/portee.js`) : chaque étape de la séance est enveloppée (`main.js`, après `handlers`) dans une portée (`ctx.portee`), ouverte avant l'étape et fermée quelle que soit sa sortie ; ce que l'étape crée y est inscrit au moment où elle le crée (`portee.fin`, `portee.el`) ; l'enveloppe y ajoute ce que toute étape peut laisser (la leçon en cours, les écrans de la ligne et des additions, la ligne, le calque des aides, la flèche, la mascotte). L'entraînement libre, l'écran « choisir » (`session/choice.js`) et la leçon seule ont la leur. `abandonActivity` ferme les portées ouvertes (`fermerTout`) et ne range plus rien au cas par cas. Une portée fermée range aussitôt ce qu'on lui confie en retard ; une étape quittée pendant une attente reste figée (`fige`).
+- *Les écrans détruits* : `ReadScreen.detruire()` (bulles, bande, poisson, « je ne sais pas », acteurs, rappels d'image, tortue) et `FactsScreen.detruire()` (ardoise, pavé, coquillage, « je ne sais pas », écouteur du clavier) ; `app.fermerEcrans()` ; ils sont recréés à la demande (`app.lineScreen()`, `app.facts ??=`). Un écran détruit ne pose plus de question (`ask` ne rend jamais la main). `Ocean.retirer(acteur)`, `Ocean.oublier(rappel)`, `Turtle.detruire()`.
+- *Les calques de la bande sans image* (point 0.1) : `#line` et `#fx` portent la classe `vide` (`display: none`) tant qu'ils n'ont rien à montrer ; `#bg` jusqu'à sa première image (`engine/line.js`, `stage.js`, `lagon.js`).
+- *La lampe de l'étal* (point 0.5) : `api.lampe()`, `api.zoneLampe()`, `api.transition` (raccords de `art/tools/export-etal.mjs`) ; le bouton transparent `.etal-lampe` (`modules/etal/screen.js`, `lampe`).
+- *La qualité des voiliers* (point 0.4) : `OPTS.qualiteBateaux` (retouche de `art/tools/export-voiliers.mjs`), `api.occupe()` ; `qualiteSuivante` (remontée sous 18 ms, jamais au-dessus de la qualité de départ) ; `app.noterQualite` (réglage `voiliersQualite`, espace parent).
+- *La voix* : `engine/phrases.js`, `dicible` (une phrase sans lettre ni chiffre n'est ni dite ni fabriquée) ; le contrôle des durées, `tools/voix/durees.mjs` et sa reprise dans `chatterbox_lot.py` (`docs/VOIX.md`).
+- *Les outils de recette* : `tests/e2e/enfant.mjs` (l'enfant imprévisible : graines, vérifications, `--fuite`, `--rejouer`, `--reduire`, `--panne` ; version courte dans `.github/workflows/tests.yml`) ; `tests/recette-fonctionnelle/pilote.mjs` (le pilote de l'application par commandes HTTP, pour un agent qui joue l'enfant) ; `tests/e2e/barre-noire.mjs`, `tests/e2e/voiliers-qualite.mjs` ; la couverture : `COUVERTURE=dossier` pour tout parcours (`tests/e2e/navigateur.mjs`), bilan par `tools/couverture.mjs` (avec `NODE_V8_COVERAGE` pour les tests unitaires et les simulations) ; `app.modeEcran()` (l'écran en cours, pour les parcours).
+
 ## Fabriquer les images
 
 ```bash

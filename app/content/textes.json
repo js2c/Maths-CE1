@@ -84,10 +84,6 @@
   "uneEtoile": "une étoile de mer",
   "desEtoiles": "{n} étoiles de mer",
   "seanceFinie": "Et en plus, dix étoiles parce que tu as fini ta séance !",
-  "dejaJoue": [
-    "Tu as déjà bien travaillé aujourd'hui. On se retrouve demain !",
-    "C'est l'heure de se reposer. À demain !"
-  ],
   "echauffement": [
     "On commence par s'échauffer avec des additions !",
     "D'abord, un petit échauffement : des additions !"
@@ -176,9 +172,6 @@
   "relanceAide": "Prends ton temps. Touche-moi pour réécouter la consigne.",
   "encore": "Tu veux encore jouer ? Choisis !",
   "libre": "Ici, on s'entraîne pour le plaisir.",
-  "libreLigne": "La ligne des nombres !",
-  "libreFaits": "Les additions !",
-  "libreLecons": "Quelle leçon veux-tu revoir ?",
   "libreLongtemps": "Tu t'entraînes depuis longtemps ! Tu peux t'arrêter quand tu veux : touche la maison.",
   "album": "Voici ton album ! Touche une carte pour la regarder.",
   "selecteur": "Choisis ton niveau. Plus c'est dur, plus tu gagnes d'étoiles !",
@@ -569,7 +562,6 @@
   "etalAideRendre": "Compte à partir de {a}, jusqu'à {b}.",
   "etalRendPrix": "Attention : je ne te rends pas le prix ! On compte à partir du prix, jusqu'au billet.",
   "etalCaFait": "Ça fait…",
-  "etalOuvre": "Touche ton portefeuille pour l'ouvrir.",
   "etalOrage": [
     "Oh là là, voilà la pluie ! Je me mets à l'abri !",
     "Le vent se lève ! Vite, à l'abri !",

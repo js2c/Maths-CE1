@@ -310,14 +310,14 @@ async function uneSeance({ base, choix, cran, comp }) {
         etape = "récompense"; cur = null;
         await session.stars(seance.etoiles.seanceTerminee, "fin"); const b = await rewards.endOfSession(session.rec.debut); if (b) await session.stars(b, "série");
         const others = (await store.all("seances")).filter((x) => x.terminee && !x.libre && x.id !== session.id).map((x) => x.debut);
-        if (goldenStar([...others, session.rec.debut], session.rec.debut, cartes.semaine)) { await rewards.special("dorees"); suite("étoile dorée"); }
+        // (lot « La boutique du récif » : le coquillage de la série, l'étoile de diamant, la zone et son premier habitant, le
+        // coquillage de diamant ; plus de coquillages ordinaires : les créatures s'achètent à la boutique, hors séance)
+        if (rewards.coquillageSerie) { rewards.coquillageSerie = false; const g = await rewards.serieShell(R, t); suite(g.etoiles ? `coquillage de la série : +${g.etoiles} étoiles (tout brille)` : `coquillage de la série : ${g.carte.id} brille`); if (g.etoiles) await session.stars(g.etoiles, "coquillage de la série"); }
+        if (goldenStar([...others, session.rec.debut], session.rec.debut, cartes.semaine)) { await rewards.special("dorees"); suite("étoile de diamant"); }
         await rewards.collectFree();
-        const zone = async () => { const z = await rewards.openZone(t); if (z) suite(`zone ouverte : ${z.id}`); };
-        const won = (g, dore = false) => suite(`carte ${g.carte.id}${dore ? " (coquillage doré)" : ""}${g.nouvelle ? " (nouvelle)" : " (rendue brillante)"}${g.brillante && (g.parTirage || g.devientBrillante) ? " (brillante)" : ""}`);
-        await zone();
-        if (rewards.goldenCard(t)) won(await rewards.openGolden(R, t), true);
-        for (let k = 0; k < cartes.coquillage.parSeance && rewards.canOpen(); k++) { if (k) await zone(); const g = await rewards.openShell(R, t); if (!g) break; won(g); }
-        await zone();
+        const z = await rewards.openZone(t, R); if (z) suite(`zone ouverte : ${z.id}${z.habitant ? `, premier habitant : ${z.habitant.carte.id}` : ""}`);
+        if (rewards.goldenCard(t)) { const g = await rewards.openGolden(R, t); suite(`coquillage de diamant : ${g.carte.id}${g.brillante ? " (brillante)" : ""}`); }
+        suite(`boutique : ${rewards.peutAcheter(t) ? "un achat est possible (le bouton de fin mène à la boutique)" : "rien à acheter (le bouton de fin mène au récif)"}`);
       },
     } });
     // chaque gain d'étoiles, attaché à la question qui le donne

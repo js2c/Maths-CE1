@@ -53,7 +53,7 @@ export function texteTuile(T, cartes, c, etat, cout, total) {
   if (etat === "brillante") return j(nom, B.brilleDeja);
   if (etat === "legendeAToi") return j(nom, B.dejaLa);
   if (etat === "bientot") return B.bientot;
-  if (etat === "legende") return B.legende;
+  if (etat === "legende") return B.legendaire;
   if (etat === "fermee") return cartes.zones.find((z) => z.id === c.zone)?.fermeeLu ?? B.bientot;
   return nom;
 }
@@ -219,7 +219,7 @@ export class Boutique {
       const host = document.createElement("div"); host.className = "boutique-reflet"; b.append(host);
       [[18, 22, 0], [128, 30, 0.8], [132, 112, 1.5], [26, 108, 2.1]].forEach(([x, y, d], i) => {
         const s = document.createElement("canvas"), px = stage.px; s.width = s.height = Math.round(24 * px); s.className = "boutique-etincelle";
-        Object.assign(s.style, { left: `${x}px`, top: `${y}px`, animationDelay: `${d}s` }); poser(sprites, s.getContext("2d"), px, "etincelle", i % 2, 12, 12, 0.8); b.append(s);
+        Object.assign(s.style, { left: `${x}px`, top: `${y}px`, width: "24px", height: "24px", animationDelay: `${d}s` }); poser(sprites, s.getContext("2d"), px, "etincelle", i % 2, 12, 12, 0.8); b.append(s);
       });
     }
     if (e === "legende") {
@@ -323,7 +323,8 @@ export class Boutique {
       stage.ui.append(el); this.els.push(el);
       const mx = (sx + cx) / 2 + (i % 2 ? 60 : -60), my = Math.min(sy, cy) - 90 - (i % 3) * 30, kf = [];
       for (let j = 0; j <= 12; j++) { const t = j / 12, x = (1 - t) ** 2 * sx + 2 * (1 - t) * t * mx + t * t * cx, y = (1 - t) ** 2 * sy + 2 * (1 - t) * t * my + t * t * cy; kf.push({ transform: `translate(${x - S / 2}px, ${y - S / 2}px) rotate(${t * 220}deg) scale(${1 - 0.45 * t})`, opacity: t < 0.08 ? t / 0.08 : t > 0.92 ? (1 - t) / 0.08 : 1 }); }
-      setTimeout(() => { if (!this.fini) hud?.set(Math.round(de - (prix * (i + 1)) / n)); }, i * ecart);
+      // (le compteur perd une part du prix quand chaque étoile arrive à mi-chemin : il descend pendant tout le vol)
+      setTimeout(() => { if (!this.fini) hud?.set(Math.round(de - (prix * (i + 1)) / n)); }, i * ecart + dur / 2);
       vols.push(this.animer(el, kf, { duration: dur, delay: i * ecart, easing: "cubic-bezier(.45,.05,.55,.95)", fill: "forwards" }).then(() => { el.remove(); if (i % 2 === 0) pop(cible); }));
     }
     await Promise.all(vols);

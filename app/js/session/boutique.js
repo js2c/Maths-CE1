@@ -192,7 +192,7 @@ export class Boutique {
     if (b.carte !== c || !b.isConnected && this.fini) return;
     ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, b.cv.width, b.cv.height);
     const sorte = c.rarete === "legendaire" ? "legendaire" : e === "bientot" ? "bientot" : e === "fermee" ? "fermee" : c.rarete;
-    poser(sprites, ctx, px, `boutique.tuile.${sorte}`, 0, M - 2, M - 2);
+    poser(sprites, ctx, px, `boutique.tuile.${sorte}`, 0, M, M);
     if (img && !b.sansImage) {
       const w = img.width / px, h = img.height / px, x = M + 12 + (146 - w) / 2, y = M + 12 + (128 - h) / 2;
       ctx.filter = e === "bientot" ? "brightness(0) opacity(0.28)" : e === "fermee" ? "brightness(0) opacity(0.22)" : e === "legende" ? "brightness(0) sepia(1) saturate(4) hue-rotate(5deg) brightness(0.75) opacity(0.6)" : "drop-shadow(3px 4px 0 rgba(10,30,40,0.18))";

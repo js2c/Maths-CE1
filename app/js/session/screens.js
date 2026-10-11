@@ -68,7 +68,8 @@ export class StarHud {
 // ---------------------------------------------------------------- la récompense et « à demain »
 // Le bilan des étoiles de la séance : une grande étoile au milieu et le nombre gagné, qui monte pendant
 // que la voix le dit ; puis les dix étoiles de la séance terminée s'envolent vers le compteur ; puis les
-// bonus (série, étoile dorée, étoiles arc-en-ciel) et les coquillages. « À demain » vient ensuite (main.js).
+// bonus (série et son coquillage, étoile de diamant, étoiles arc-en-ciel), les coquillages des occasions (zone, légendaire),
+// les arrivages, l'invitation et le bouton de fin (la boutique ou le récif). « À demain » vient ensuite (main.js).
 export async function reward(app, { session, hud }) {
   const { voice, text, ocean } = app, E = session.c.etoiles, earned = session.rec.etoiles;
   const phrase = (n) => (n === 1 ? text.data.uneEtoile : fill(text.data.desEtoiles, { n }));

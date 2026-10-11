@@ -3,7 +3,7 @@
 //  - une page par zone (quatre onglets à droite : les dos de chaque zone, assombris et fermés d'un
 //    coquillage tant que la zone n'est pas ouverte) ; chaque zone a ses 15 emplacements (5 × 3) ;
 //  - une carte obtenue est visible (son illustration dans son cadre) ; une carte pas encore découverte
-//    montre son dos (doré pour une légendaire) ; une zone fermée montre ses dos assombris ;
+//    montre son dos (doré pour une légendaire, avec l'étoile de diamant : lot « La boutique du récif ») ; une zone fermée montre ses dos assombris ;
 //  - sous la zone, 15 perles se remplissent au fil des cartes gagnées (pas de chiffre) ;
 //  - toucher une carte obtenue la montre en grand (cards.js, CardView) ; toucher un dos fait dire où elle
 //    attend (cartes.json, zones[].dosLu, legendaireLu) ; une zone fermée, quand elle s'ouvrira (fermeeLu).
@@ -59,6 +59,8 @@ export class Album {
       const t = this.thumb(got ? { ...c, ...owned[c.id] } : c, got ? "recto" : "dos", x, y, K, { cls: `${got ? "got" : "back"}${open ? "" : " closed"}${got && owned[c.id].brillante ? " shiny" : ""}`, label: got ? c.nom : "carte à découvrir" });
       t.dataset.id = c.id; ready.push(t.ready);
       if (got && owned[c.id].brillante) t.ready.then(() => shine(app, t, { k: K }));
+      // (lot « La boutique du récif ») le dos d'une légendaire porte l'étoile de diamant : elle se gagne avec elles
+      if (!got && c.rarete === "legendaire") t.ready.then(() => { const cv = t.querySelector("canvas"), px = app.stage.px, q = sprites.frame("etoile.diamant", 0), k = 0.5; if (cv && q) cv.getContext("2d").drawImage(q.img, q.sx, q.sy, q.w, q.h, (TW / 2) * px + q.dx * k, (TH - 30) * px + q.dy * k, q.w * k, q.h * k); });
       onBrief(app, t, () => {
         pop(t);
         if (got) return this.view.show({ ...c, ...owned[c.id] });

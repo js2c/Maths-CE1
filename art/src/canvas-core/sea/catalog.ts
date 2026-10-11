@@ -78,11 +78,11 @@ export const SPECS: Spec[] = [
   // (lot « La boutique du récif ») la boutique : son bouton (le récif, la fin de séance), la coche et la croix de la confirmation,
   // l'étincelle « briller » des prix, le sablier, le cadenas des zones fermées, les étincelles des brillantes et des gerbes
   { name: "boutique", sheet: "petits", W: 150, H: 150, origin: [72, 72], frames: 1, draw: (g) => drawShopKey(g, 72, 72) },
-  ...["commune", "rare", "legendaire", "bientot", "fermee"].map((k): Spec => ({ name: `boutique.tuile.${k}`, sheet: "boutique", W: TUILE_W + 14, H: TUILE_H + 16, origin: [2, 2], frames: 1, draw: (g) => drawShopTile(g, 2, 2, k) })),
+  ...["commune", "rare", "legendaire", "bientot", "fermee"].map((k): Spec => ({ name: `boutique.tuile.${k}`, sheet: "boutique", W: TUILE_W + 26, H: TUILE_H + 28, origin: [8, 8], frames: 1, draw: (g) => drawShopTile(g, 8, 8, k) })),
   { name: "boutique.coche", sheet: "boutique", W: 100, H: 100, origin: [48, 48], frames: 1, draw: (g) => drawConfirmYes(g, 48, 48) },
   { name: "boutique.croix", sheet: "boutique", W: 100, H: 100, origin: [48, 48], frames: 1, draw: (g) => drawConfirmNo(g, 48, 48) },
   { name: "boutique.briller", sheet: "boutique", W: 36, H: 36, origin: [16, 18], frames: 1, draw: (g) => drawShineIcon(g, 16, 18) },
-  { name: "boutique.sablier", sheet: "boutique", W: 40, H: 48, origin: [19, 23], frames: 1, draw: (g) => drawHourglass(g, 19, 23) },
+  { name: "boutique.sablier", sheet: "boutique", W: 50, H: 60, origin: [24, 29], frames: 1, draw: (g) => drawHourglass(g, 24, 29) },
   { name: "boutique.cadenas", sheet: "boutique", W: 48, H: 48, origin: [22, 24], frames: 1, draw: (g) => drawPadlock(g, 22, 24) },
   { name: "etincelle", sheet: "petits", W: 30, H: 30, origin: [14, 14], frames: 2, draw: (g, f) => drawSparkle(g, 14, 14, 11, f ? "#bfe9ff" : "#fff6c4") },
   { name: "etoile.arc", sheet: "petits", W: 120, H: 120, origin: [60, 60], frames: 1, draw: (g) => drawRainbowStar(g, 60, 60, 44) },

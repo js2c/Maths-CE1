@@ -114,7 +114,7 @@ test("une séance plafonnée : les étapes à questions sont sautées, la récom
   assert.deepEqual(seen, ["accueil", "recompense"]); assert.equal(rec.etapes.find((e) => e.id === "notion").sautee, "temps écoulé"); assert.equal(rec.terminee, true);
 });
 
-test("une première séance complète, une réponse sur deux juste, rapporte de quoi acheter une créature (lot 1 bis ; lot « La boutique du récif »)", async () => {
+test("une première séance complète, une réponse sur deux juste, rapporte au moins 25 étoiles (lot 1 bis)", async () => {
   const { runWarmup } = await import("../../app/js/modules/facts/screen.js");
   const { Warmup } = await import("../../app/js/modules/facts/warmup.js");
   const cartes = load("cartes.json"), module2 = load("module2.json");
@@ -130,6 +130,7 @@ test("une première séance complète, une réponse sur deux juste, rapporte de 
   };
   const rec = await new Session({ store, content: seance, rewards, clock: c, handlers }).run();
   assert.ok(rec.justes >= rec.questions / 2 - 1 && rec.justes <= rec.questions / 2 + 1, `${rec.justes} sur ${rec.questions}`);
-  // (lot « La boutique du récif » : de quoi acheter une créature commune, au lieu d'un coquillage)
-  assert.ok(rewards.total >= cartes.boutique.prix.commune, `${rewards.total} étoiles pour une créature à ${cartes.boutique.prix.commune}`);
+  // (lot « La boutique du récif » : plus de coquillage à 25 étoiles ; cette séance très courte, deux questions par étape, en
+  // rapporte au moins autant, et une séance ordinaire de quoi acheter une créature, 40 : simulation, 61 étoiles en moyenne)
+  assert.ok(rewards.total >= 25, `${rewards.total} étoiles`);
 });

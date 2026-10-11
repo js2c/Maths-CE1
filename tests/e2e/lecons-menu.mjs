@@ -198,7 +198,9 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
       // (le second contact doit vraiment arriver moins de 150 ms après le premier : sous la charge, un délai de 40 ms en prend
       // parfois plus ; on recommence alors, au plus trois fois, et on rend l'écart mesuré)
       let out = null;
-      for (let i = 0; i < 3 && !out; i++) { await new Promise((res) => setTimeout(res, 400)); window.__said = []; const t0 = performance.now(); down(); await new Promise((res) => setTimeout(res, 40)); const gap = performance.now() - t0; down(); await new Promise((res) => setTimeout(res, 300)); if (gap < 140) out = { n: window.__said.length, gap: Math.round(gap) }; }
+      // (lot « Recette de l'enfant », point 0.6 : les 40 ms sont attendues par une boucle, sans rendre la main ; un setTimeout
+      // de 40 ms en prenait plus de 140, trois fois de suite, quand la machine était chargée)
+      for (let i = 0; i < 3 && !out; i++) { await new Promise((res) => setTimeout(res, 400)); window.__said = []; const t0 = performance.now(); down(); while (performance.now() - t0 < 40) { /* 40 ms */ } const gap = performance.now() - t0; down(); await new Promise((res) => setTimeout(res, 300)); if (gap < 140) out = { n: window.__said.length, gap: Math.round(gap) }; }
       return out ?? { n: -1, gap: null }; });
     check(n2.n === 1, `${T} · la même case touchée deux fois en 40 ms : une seule phrase (${n2.n} ; écart réel ${n2.gap} ms)`);
     await resetSaid(page); await tapCell(page, 3, 3); await page.waitForTimeout(60); await tapCell(page, 9, 8); await page.waitForTimeout(900);

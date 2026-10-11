@@ -508,7 +508,7 @@ async function showHome({ done, first = false, bienvenue = false }) {
     ? [galet("encore", GALET_X[1], "encore", "play again"), galet("lecons", GALET_X[2], "les leçons", "leconskey"), galet("recif", GALET_X[3], "le récif", "reefkey"), galet("album", GALET_X[4], "l'album", "albumkey")]
     : [galet("jouer", GALET_X[0], "jouer", "play"), galet("choisir", GALET_X[1], "choisir", "choisir"), galet("lecons", GALET_X[2], "les leçons", "leconskey"), galet("recif", GALET_X[3], "le récif", "reefkey"), galet("album", GALET_X[4], "l'album", "albumkey")];
   homeEls.push(...tuiles, parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }));
-  if (done) homeEls.push(await goodNight(app, { first }));
+  if (done) homeEls.push(goodNight(app, { first }));
   const visit = (place) => async () => { voice.unlock(); voice.stop(); clearHome(); await place.visit(); showHome({ done: await doneToday(store) }); };
   const actions = {
     // la séance du jour, proposée par l'application

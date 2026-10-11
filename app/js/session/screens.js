@@ -307,9 +307,12 @@ export async function openShell(app, { session, hud, gold = false, say, got, C =
 // « à demain » : la mascotte salue, la lune se lève. La lune est un décor, pas un bouton (lot 1 bis) :
 // sans bulle, elle flotte doucement au-dessus des bulles de l'écran d'accueil, et rien ne se passe si
 // on la touche. La voix dit « À demain ! » quand la séance vient de finir.
-export async function goodNight(app, { first = true } = {}) {
+// (lot « Recette de l'enfant », point 0.6 : la phrase n'est plus attendue. L'accueil attendait la fin de « À demain ! »
+// avant d'accepter les touchers : pendant ce temps, les galets étaient là, et les toucher ne faisait rien. Un galet touché
+// coupe la phrase, comme partout.)
+export function goodNight(app, { first = true } = {}) {
   const { voice, text, ocean } = app;
   const moon = spriteBox(app, { x: 640 - 120, y: 250 - 110, w: 240, h: 220, cls: "hud moon", still: true, paint: (ctx) => app.sprites.draw(ctx, "lune.decor", 0, 120, 110) });
-  if (first) { ocean.mascotte.play("saluer"); await voice.say(text.pick("aDemain"), { instruction: true }); }
+  if (first) { ocean.mascotte.play("saluer"); voice.say(text.pick("aDemain"), { instruction: true }); }
   return moon;
 }

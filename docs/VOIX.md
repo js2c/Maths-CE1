@@ -122,6 +122,33 @@ l'étape 2 : sinon ses commits et les vôtres se croiseraient.
 Le contrôle repère : un mot en trop (« Presque beau »), un mot qui manque, un nombre faux (66 pour 76), une
 coupure dans un nombre (« vingt… et un »), un son anormalement long.
 
+Depuis le lot « Recette de l'enfant et nettoyage des couches » (11 octobre 2026), il écoute aussi **la forme du
+son** (`tools\voix\durees.mjs`, réglages et références dans `tools\voix\durees.json`) : un mot seul coupé en deux
+morceaux de paroles (« 4 » dit « qua… tre », avec 0,6 s de silence au milieu), ou une phrase bien plus lente que
+les phrases de sa famille (« Ça fait 11. » en 2,4 s quand les autres « Ça fait … » durent 0,7 s). Le tirage est
+alors refait, comme une retranscription fausse ; s'il échoue encore, la phrase est dans `a-reecouter.html`, avec
+la mesure sous ce que le contrôle a entendu.
+
+Le même contrôle se passe sur toutes les phrases déjà fabriquées, sans rien fabriquer (environ 6 minutes) :
+
+```
+node tools\voix\durees.mjs
+```
+
+Il écrit la liste des phrases refusées, et la page `tools\voix\durees-a-reecouter.html` pour les écouter.
+
+**Les phrases à refaire du 11 octobre 2026** (« 0 », « 4 », « 9 », « 30 », et 46 autres, dans
+`tools\voix\a-refaire-durees.txt`) : les refaire une fois, en même temps que les phrases nouvelles du lot :
+
+```
+copy tools\voix\a-refaire-durees.txt tools\voix\a-refaire.txt
+node tools\voix\fabriquer.mjs --ref ..\ref-posee.wav --refaire
+del tools\voix\a-refaire.txt
+```
+
+Puis écouter les phrases refaites dans `a-reecouter.html` s'il en reste, et relancer `node tools\voix\durees.mjs` :
+il ne doit plus trouver que des phrases bonnes à l'oreille.
+
 Il ne repère pas : une prononciation voisine du bon mot. Que la voix dise « plu » ou « plusse », « vingt-si »
 ou « vingt-sisse », il écrit « plus » et « 26 ». Ces défauts ne se trouvent qu'à l'oreille.
 

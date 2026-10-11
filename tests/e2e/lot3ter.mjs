@@ -47,7 +47,9 @@ if (part("passer")) {
   const { page, context, errors } = await open("&cran=conseille&module=1&sansLecon&faits=10");
   await page.tap(".play", { force: true });
   await page.waitForFunction(() => window.__app.session?.progress.etape === "echauffement", null, { timeout: 30000 });
-  await page.waitForTimeout(150);
+  // (lot « Recette de l'enfant », point 0.6 : l'étape change avant que l'échauffement ait chargé son état ; le parcours
+  // vérifiait 150 ms plus tard. Le bouton est posé avant la phrase d'introduction : on attend qu'elle commence)
+  await page.waitForFunction((t) => t.includes(window.__app.voice.talking?.text), textes.echauffement, { timeout: 10000 }).catch(() => {});
   check(await visible(page, ".skip-warmup"), "le bouton est là dès la phrase d'introduction");
   // chaque question : le bouton est là, à côté du pavé ; on répond juste
   let n = 0, seen = 0;
@@ -163,15 +165,21 @@ const press = async (page, sel, ms) => { const [x, y] = await touchAt(page, sel)
 async function probe(page, where, sel, name, { brief = null, first = false, label = true, shot = false, freeze = false, sig = null } = {}) {
   const S = sig ? () => page.evaluate(sig, sel) : () => page.evaluate(SIG);
   if (freeze) await page.evaluate(() => { window.__app.clock.pause(); window.__app.voice.pause(); });
+  // (lot « Recette de l'enfant », point 0.6 : les fondus CSS de l'étiquette prennent du retard dans le Chromium des parcours sous
+  // charge ; mesurée à heure fixe, 0,8 s après le contact, elle était parfois encore transparente. L'appui dure 0,8 s, puis,
+  // le doigt toujours posé, on attend jusqu'à 0,7 s de plus qu'elle soit pleinement visible ; après le lever, jusqu'à 1 s
+  // qu'elle ait disparu.)
   const s0 = await S(), release = await press(page, sel, 800);
-  const during = await page.evaluate(() => { const l = document.querySelector(".etiquette:not([data-sortie])"); if (!l) return null; const r = l.getBoundingClientRect(); return { pour: l.dataset.pour, op: getComputedStyle(l).opacity, inside: r.x >= 0 && r.y >= 0 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1 }; });
+  const etiquette = () => { const l = document.querySelector(".etiquette:not([data-sortie])"); if (!l) return null; const r = l.getBoundingClientRect(); return { pour: l.dataset.pour, op: getComputedStyle(l).opacity, inside: r.x >= 0 && r.y >= 0 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1 }; };
+  if (label) await page.waitForFunction(() => Number(getComputedStyle(document.querySelector(".etiquette:not([data-sortie])") ?? document.body).opacity) > 0.9 && !!document.querySelector(".etiquette:not([data-sortie])"), null, { timeout: 700 }).catch(() => {});
+  const during = await page.evaluate(etiquette);
   const s1 = await S();
   if (shot) await page.screenshot({ path: join(OUT, `t3-${where}-${name}.png`.replace(/[^\w.\-àéèêç]+/g, "-")) });
   await release(); await page.waitForTimeout(80);
   const s2 = await S(), fading = await page.evaluate(() => document.querySelectorAll(".etiquette").length);
   await page.waitForTimeout(410);
   // 0,5 s après le lever du doigt : plus rien de visible (étiquette retirée, ou en fin de fondu à moins de 5 % d'opacité)
-  const gone = await page.evaluate(() => [...document.querySelectorAll(".etiquette")].every((l) => Number(getComputedStyle(l).opacity) < 0.05)), s3 = await S();
+  const gone = await page.waitForFunction(() => [...document.querySelectorAll(".etiquette")].every((l) => Number(getComputedStyle(l).opacity) < 0.05), null, { timeout: 1000 }).then(() => true, () => false), s3 = await S();
   await page.waitForTimeout(150);
   if (freeze) await page.evaluate(() => { window.__app.clock.resume(); window.__app.voice.resume(); });
   const labOk = label ? !!during && during.inside && Number(during.op) > 0.9 : !during, still = first ? true : s1 === s0 && s2 === s0 && s3 === s0;

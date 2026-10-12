@@ -211,13 +211,14 @@ export class NumberLineScreen {
   // d'où la tortue part pour montrer la méthode : 0 si la cible est proche sur une ligne qui commence à 0,
   // sinon le nombre écrit le plus proche à gauche de la cible
   startOf(q) { const tgt = Math.round((q.answer - q.min) / q.step), near = q.min === 0 && q.step === 1 && tgt <= 12; return near ? 0 : Math.max(0, ...q.labelled.filter((i) => i < tgt)); }
-  // une bulle-réponse : le sprite de l'atelier + le nombre encré en direct ; `still` : simple affichage
-  bubble(cx, cy, label, ring = null, still = false) {
-    const px = this.app.sprites.px, b = document.createElement(still ? "div" : "button"), cv = document.createElement("canvas");
-    b.className = `bubble answer${still ? " still" : ""}`; b.style.left = `${cx - BUB / 2}px`; b.style.top = `${cy - BUB / 2}px`; b.dataset.value = label;
+  // une bulle-réponse : le sprite de l'atelier + le nombre encré en direct (l'anneau doré de la bonne réponse est peint à la
+  // correction, `paintBubble`)
+  bubble(cx, cy, label) {
+    const px = this.app.sprites.px, b = document.createElement("button"), cv = document.createElement("canvas");
+    b.className = "bubble answer"; b.style.left = `${cx - BUB / 2}px`; b.style.top = `${cy - BUB / 2}px`; b.dataset.value = label;
     b.setAttribute("aria-label", label);
     cv.width = Math.round(BUB * px); cv.height = Math.round(BUB * px); b.append(cv); this.ui.append(b);
-    this.paintBubble(cv, label, ring);
+    this.paintBubble(cv, label);
     return b;
   }
   paintBubble(cv, label, ring) {

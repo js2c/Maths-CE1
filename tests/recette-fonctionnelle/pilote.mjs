@@ -47,7 +47,7 @@ const toucher = async (pts) => cdp.send("Input.dispatchTouchEvent", { type: "tou
 const lever = () => cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
 let nCapture = 0;
 const COMMANDES = {
-  async capture(q) { const f = join(OUT, `${String(++nCapture).padStart(3, "0")}-${(q.get("nom") ?? "capture").replace(/[^\w-]+/g, "-")}.png`); await page.screenshot({ path: f }); return { fichier: f }; },
+  async capture(q) { const f = join(OUT, `${String(++nCapture).padStart(3, "0")}-${(q.get("nom") ?? "capture").replace(/[^\w-]+/g, "-")}.jpg`); await page.screenshot({ path: f, type: "jpeg", quality: 80, scale: "css" }); return { fichier: f }; },
   // (un toucher bref : le contact et le lever envoyés d'un coup ; séparés par une attente côté Node, sur une machine chargée,
   // ils arrivaient à plus de 0,5 s l'un de l'autre et l'application voyait un appui long : premier passage de l'agent)
   async toucher(q) { const [x, y] = await ecran(+q.get("x"), +q.get("y")), n = +(q.get("n") ?? 1), e = +(q.get("ecart") ?? 120); for (let i = 0; i < n; i++) { await page.touchscreen.tap(x, y); if (i < n - 1) await page.waitForTimeout(e); } return { ok: true }; },

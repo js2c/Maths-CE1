@@ -77,6 +77,11 @@ if (part("passer")) {
   check(await visible(page, ".slate"), "la question reste affichée");
   check((await said(page)).slice(before).includes(textes.passerEchauffementQuestion), "la voix demande « Tu veux passer l'échauffement ? Touche la coche pour dire oui. »");
   await page.screenshot({ path: join(OUT, "t1-3-attente-coche.png") });
+  // (lot « Recette de l'enfant et nettoyage des couches », constat 8 de l'agent) la question dite, la relance de la mascotte
+  // (25 s sans toucher) ne parle pas pendant l'attente de la coche
+  await page.waitForFunction(() => !window.__app.voice.speaking, null, { timeout: 10000 }).catch(() => {});
+  const avantRelance = (await said(page)).length; await page.evaluate(() => window.__app.ocean.mascotte.onRelance?.()); await page.waitForTimeout(200);
+  check(!(await said(page)).slice(avantRelance).includes(textes.relanceAide), "pendant l'attente de la coche, la relance de la mascotte ne dit rien");
   // pendant l'attente, le temps de la séance ne compte pas : la question n'avance pas
   await page.waitForFunction(() => !document.querySelector(".check-warmup") || getComputedStyle(document.querySelector(".check-warmup")).visibility === "hidden", null, { timeout: 15000 });
   const dt = Date.now() - t0;

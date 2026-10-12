@@ -68,10 +68,19 @@ export class NumberLineScreen {
     // la zone tactile de la ligne (placer, estimer) : toute la bande, pour des doigts de 7 ans
     this.band = document.createElement("div"); this.band.className = "touchband"; this.ui.append(this.band);
     const pos = (e) => { const r = this.band.getBoundingClientRect(), k = r.width / this.band.offsetWidth; return (e.clientX - r.left) / k + this.band.offsetLeft; };
-    this.band.addEventListener("pointerdown", (e) => { if (this.locked || !this.input) return; e.preventDefault(); this.band.setPointerCapture(e.pointerId); this.dragging = true; this.aim(pos(e)); });
-    this.band.addEventListener("pointermove", (e) => { if (this.dragging) this.aim(pos(e)); });
-    const up = (e) => { if (!this.dragging) return; this.dragging = false; this.aim(pos(e)); this.answer(this.aimed, null); };
-    this.band.addEventListener("pointerup", up); this.band.addEventListener("pointercancel", () => { this.dragging = false; });
+    // (lot « Recette de l'enfant et nettoyage des couches », constat 5 de l'agent) deux doigts posés ensemble sur la bande (une
+    // main qui s'appuie) ne répondent pas : le geste est annulé jusqu'à ce que tous les doigts soient levés (chaque doigt est
+    // capturé : son lever revient à la bande même hors d'elle)
+    const doigts = new Set(); let annule = false;
+    const leve = (e) => { doigts.delete(e.pointerId); if (!doigts.size) annule = false; };
+    this.band.addEventListener("pointerdown", (e) => {
+      if (this.locked || !this.input) return; e.preventDefault(); doigts.add(e.pointerId); this.band.setPointerCapture(e.pointerId);
+      if (doigts.size > 1) { annule = true; this.dragging = false; this.aimed = null; this.fishGoal = [...FISH_WAIT]; return; }
+      this.dragging = true; this.aim(pos(e));
+    });
+    this.band.addEventListener("pointermove", (e) => { if (this.dragging && !annule) this.aim(pos(e)); });
+    const up = (e) => { const deux = annule; leve(e); if (!this.dragging || deux) { this.dragging = false; return; } this.dragging = false; this.aim(pos(e)); this.answer(this.aimed, null); };
+    this.band.addEventListener("pointerup", up); this.band.addEventListener("pointercancel", (e) => { leve(e); this.dragging = false; }); this.band.addEventListener("lostpointercapture", leve);
     // (lot 3 bis, B7) le poisson lui-même se touche et se fait glisser jusqu'à la corde : on le lâche, il se pose à la
     // graduation la plus proche (comme en touchant la corde) ; un toucher sans glisser fait onduler la corde
     this.fishHit = document.createElement("div"); this.fishHit.className = "fishhit"; this.ui.append(this.fishHit);

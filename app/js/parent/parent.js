@@ -264,7 +264,7 @@ export class ParentSpace {
       (x.etapes ?? []).some((e) => e.sautee === "réglage du parent") && h("span", {}, "Échauffement : ", h("b", {}, "retiré (réglage « Échauffement : non »)")),
       (x.etapes ?? []).some((e) => e.sautee === "déjà fait aujourd'hui") && h("span", {}, "Échauffement : ", h("b", {}, "pas refait (déjà fait ou passé plus tôt ce jour-là)")),
       !x.terminee && !x.libre && (x.interruption || x.arreteeParParent) && h("span", {}, "Interrompue : ", h("b", {}, x.interruption?.raison ?? (x.interruption?.par === "enfant" ? "par l'enfant" : "terminée par le parent pendant une pause"))),
-      x.defi && h("span", {}, "Défi record : ", h("b", {}, `${plural(x.defi.score, "bonne réponse")} sur ${x.defi.questions}${x.defi.nouveauRecord ? " (nouveau record !)" : x.defi.record ? ` (record : ${x.defi.record})` : ""}`)),
+      x.defi && h("span", {}, "Défi record (une minute de faits d'addition) : ", h("b", {}, `${plural(x.defi.score, "bonne réponse")} sur ${x.defi.questions}${x.defi.nouveauRecord ? " (nouveau record !)" : x.defi.record ? ` (record : ${x.defi.record})` : ""}`)),
       h("span", {}, "Réponses justes : ", h("b", {}, `${x.justes ?? 0} sur ${x.questions ?? 0}`)),
       steps.length > 0 && h("span", {}, "Étapes : ", h("b", {}, steps.join(", "))),
       (x.lecons ?? []).length > 0 && h("span", {}, "Leçons : ", h("b", {}, x.lecons.map((l) => `${l.id}${D.lessonNote(l)}`).join(", "))),

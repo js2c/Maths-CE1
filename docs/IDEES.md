@@ -155,6 +155,7 @@ Le parent n'est pas encore convaincu par les remèdes proposés : la question es
 - **Deux indicateurs de séance** pour le parent : la durée réelle et le nombre de questions « utiles ».
 - **Récompenses liées à l'effort adapté** plutôt qu'à la difficulté brute : aujourd'hui « très dur » double les étoiles. À observer.
 - **Espace parent regroupé en trois ensembles** : séance et difficulté ; son et interface ; données et maintenance.
+- **La coche touchée sans réponse tapée** (lot « Recette de l'enfant et nettoyage des couches », constat 9 de l'agent qui joue l'enfant, 12 octobre 2026) : aujourd'hui elle ne fait rien, sans un mot. Une petite phrase (« Tape d'abord ta réponse. ») aiderait l'enfant qui ne comprend pas pourquoi rien ne se passe. Non fait : c'est une phrase nouvelle, donc une voix à fabriquer, et un choix pour le parent.
 
 **Récompenses**
 

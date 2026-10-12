@@ -38,5 +38,5 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 ### Reprise du lot « Recette de l'enfant et nettoyage des couches »
 
 - **Branche** : `claude/magical-fermi-6tvdn7` ; demande de fusion : « Lot : Recette de l'enfant et nettoyage des couches » (brouillon).
-- **Fait** : lecture de la fiche 9 ; parcours de référence lancés sur `main`.
-- **Reste** : point 0 (barre noire, phrases « … », contrôle des durées des voix, qualité des voiliers, lampe de l'étal, parcours qui échouent sur `main`), inventaire des couches (`docs/COUCHES.md`) et retrait de ce qui ne sert plus, règle de sortie unique, enfant imprévisible (`tests/e2e/enfant.mjs`), enfant joué par un agent, essais pour le parent, recette.
+- **Fait** : point 0 en entier (barre noire, phrases « … », contrôle des durées des voix, qualité des voiliers, lampe de l'étal, parcours qui échouaient sur `main`) ; règle de sortie unique ; enfant imprévisible (`tests/e2e/enfant.mjs`, version courte dans les tests de GitHub) ; premier passage de l'agent et son traitement (`tests/recette-fonctionnelle/out-enfant/`) ; inventaire des couches (sections 1 et 2) et premiers retraits ; journal de conception et guide du parent.
+- **Reste** : bilan de couverture complet et section 3 de `docs/COUCHES.md` ; second passage de l'agent ; longues séries de l'enfant imprévisible (200 graines × 300 actions, ralenti et non) ; recette complète et demande de fusion.

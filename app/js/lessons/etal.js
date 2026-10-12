@@ -70,6 +70,7 @@ export class LessonEtalPlayer {
     const { voice, ocean } = this.app;
     ocean.mascotte.hold("montrer");
     for (const beat of this.lesson.phrases[p]) {
+      if (this.quitte) return new Promise(() => {}); // (la leçon quittée : la phrase en cours ne continue pas)
       const said = beat.dire ? voice.say(beat.dire, { instruction: true }) : Promise.resolve();
       const done = (async () => { for (const a of beat.faire ?? []) await this.g(this.act(a)); })();
       await this.g(Promise.all([said, done]));

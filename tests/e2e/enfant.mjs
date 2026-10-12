@@ -209,6 +209,16 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
   page.on("pageerror", (e) => erreurs.push({ t: Date.now(), m: e.message }));
   page.on("console", (m) => { if (m.type() === "error" && !/Failed to load resource|net::ERR/.test(m.text())) erreurs.push({ t: Date.now(), m: m.text() }); });
   const defauts = [], faits = [], noter = (quoi, detail) => { if (!defauts.some((d) => d.quoi === quoi)) defauts.push({ quoi, detail, apres: faits.length }); };
+  // la garde : une partie qui n'avance plus pendant 3 minutes (une action ou une vérification qui ne rend jamais la main) est
+  // arrêtée, avec l'endroit où elle s'est arrêtée et une capture (premières longues séries : deux parties restées une heure)
+  let pas = Date.now(), ou = "chargement", bloque = null;
+  const garde = setInterval(async () => {
+    if (bloque || Date.now() - pas < lent(180000)) return;
+    bloque = { ou, apres: faits.length };
+    await page.screenshot({ path: join(OUT, `bloque-${graine}.png`), timeout: 10000 }).catch(() => {});
+    bloque.etat = await Promise.race([page.evaluate(() => window.__enfantContexte?.()).catch((x) => x.message), new Promise((r) => setTimeout(() => r("(la page ne répond plus)"), 10000))]);
+    context.close().catch(() => {});
+  }, 5000);
   try {
     await page.goto(url + "?nosw&voix=rapide&son=non"); await page.waitForFunction(() => window.__ready !== undefined, null, { timeout: 60000 });
     // une graine sur deux : la base d'un mois (des créatures, des étoiles) ; sinon une base neuve
@@ -232,12 +242,14 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
     };
     const n = liste ? liste.length : ACTIONS;
     for (let i = 0; i < n; i++) {
+      pas = Date.now(); ou = `choix de l'action ${i + 1}`;
       const act = liste ? liste[i] : await concretiser(page, rnd, tirer(rnd, graine % 4 < 2));
-      faits.push(act);
+      faits.push(act); pas = Date.now(); ou = `action ${i + 1} : ${act.type}${act.quoi ? ` (${act.quoi})` : ""}`;
       await jouer(page, cdp, act).catch((x) => noter(`action impossible : ${act.type}`, x.message.split("\n")[0]));
       // (--panne : le contrôle du contrôle ; à la 5e action, une touche du pavé orpheline et une erreur de page, qui doivent
       // être vues)
       if (PANNE && i === 4) await page.evaluate(() => { const b = document.createElement("button"); b.className = "bubble key"; b.dataset.key = "5"; Object.assign(b.style, { position: "absolute", left: "600px", top: "600px", width: "80px", height: "80px" }); document.querySelector("#ui").append(b); setTimeout(() => { throw new Error("panne volontaire"); }, 10); });
+      pas = Date.now(); ou = `vérification après l'action ${i + 1} : ${act.type}`;
       await verifier(`après ${act.type}${act.quoi ? ` (${act.quoi})` : ""}`);
       if (Date.now() - dernierEtat > 1000) await verifier("chaque seconde");
       if (cherche && defauts.some((d) => d.quoi === cherche)) break;
@@ -245,7 +257,11 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
     await page.waitForTimeout(1500); await verifier("à la fin");
     const temps = await page.evaluate(() => { const g = window.__enfant.gaps.filter((x) => x < 2000).sort((a, b) => a - b); return g.length ? { moyenne: +(g.reduce((s, x) => s + x, 0) / g.length).toFixed(1), p95: +g[Math.floor(0.95 * (g.length - 1))].toFixed(1), images: g.length } : null; }).catch(() => null);
     return { graine, actions: faits.length, defauts, temps, faits, vus: [...vus], phrases: nPhrases };
-  } finally { await context.close(); await browser.close(); }
+  } catch (x) {
+    if (!bloque) throw x;
+    noter(`partie bloquée : ${bloque.ou.replace(/\d+/g, "#")}`, `${bloque.ou} ; ${typeof bloque.etat === "string" ? bloque.etat : JSON.stringify(bloque.etat)}`);
+    return { graine, actions: faits.length, defauts, temps: null, faits, vus: [], phrases: 0 };
+  } finally { clearInterval(garde); await context.close().catch(() => {}); await browser.close().catch(() => {}); }
 }
 // un exercice parle alors qu'il n'est plus à l'écran : la phrase est rattachée au fichier qui l'a demandée
 const PROPRIETAIRES = [[/^modules\/voiliers\//, "voiliers"], [/^modules\/etal\/|^lessons\/etal\.js/, "etal"], [/^modules\/calc\//, "calc"], [/^modules\/mult\//, "mult"]];

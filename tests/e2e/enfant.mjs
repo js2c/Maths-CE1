@@ -42,7 +42,9 @@ if (!existsSync(SAVE)) execFileSync("node", ["tools/sauvegarde-test.mjs", "reel"
 const BASE = JSON.parse(readFileSync(SAVE, "utf8"));
 
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
+// un Chromium par partie : partagé, son processeur graphique (logiciel, ici) servait toutes les parties en parallèle, et le temps
+// d'image d'une partie montait avec le nombre de parties déjà jouées (de 190 à 550 ms au fil d'une longue série)
+const lancer = () => chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
 
 // le hasard reproductible (mulberry32)
 const hasard = (graine) => { let a = graine >>> 0; return () => { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
@@ -200,6 +202,7 @@ async function jouer(page, cdp, act) {
 // `liste` : les actions concrètes à rejouer (au lieu du hasard)
 async function partie(graine, { liste = null, cherche = null } = {}) {
   const rnd = hasard(graine * 7919 + 13);
+  const browser = await lancer();
   const context = await browser.newContext({ viewport: { width: VUE.width, height: VUE.height }, deviceScaleFactor: VUE.deviceScaleFactor, hasTouch: true });
   await accueilReel(context); await context.addInitScript(INSTRUMENTS);
   const page = await context.newPage(), cdp = await context.newCDPSession(page), erreurs = [];
@@ -242,7 +245,7 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
     await page.waitForTimeout(1500); await verifier("à la fin");
     const temps = await page.evaluate(() => { const g = window.__enfant.gaps.filter((x) => x < 2000).sort((a, b) => a - b); return g.length ? { moyenne: +(g.reduce((s, x) => s + x, 0) / g.length).toFixed(1), p95: +g[Math.floor(0.95 * (g.length - 1))].toFixed(1), images: g.length } : null; }).catch(() => null);
     return { graine, actions: faits.length, defauts, temps, faits, vus: [...vus], phrases: nPhrases };
-  } finally { await context.close(); }
+  } finally { await context.close(); await browser.close(); }
 }
 // un exercice parle alors qu'il n'est plus à l'écran : la phrase est rattachée au fichier qui l'a demandée
 const PROPRIETAIRES = [[/^modules\/voiliers\//, "voiliers"], [/^modules\/etal\/|^lessons\/etal\.js/, "etal"], [/^modules\/calc\//, "calc"], [/^modules\/mult\//, "mult"]];
@@ -261,6 +264,7 @@ function phraseHorsEcran(p) {
 
 // ---------------------------------------------------------------- la fuite : 20 tours accueil, jeu, accueil
 async function fuite() {
+  const browser = await lancer();
   const context = await browser.newContext({ viewport: { width: VUE.width, height: VUE.height }, deviceScaleFactor: VUE.deviceScaleFactor, hasTouch: true });
   await context.addInitScript(INSTRUMENTS);
   const page = await context.newPage(), erreurs = [];
@@ -284,7 +288,7 @@ async function fuite() {
     await page.locator(".session-home").first().tap({ force: true });
     releves.push(await accueil());
   }
-  await context.close();
+  await context.close(); await browser.close();
   return { releves, erreurs };
 }
 
@@ -338,4 +342,4 @@ if (REJOUER) {
   process.exitCode = tous.length ? 1 : 0;
 }
 writeFileSync(join(OUT, `resume-${TABLETTE ? "tablette" : "1280"}-lent${LENT}${FUITE ? "-fuite" : ""}-${DEPART}.json`), JSON.stringify(resume, null, 1));
-await browser.close(); srv.close();
+srv.close();

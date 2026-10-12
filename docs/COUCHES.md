@@ -123,4 +123,83 @@ libre charge la planche « calcul » sans la libérer.
 
 ## 3. Ce qui ne sert plus
 
-(Rempli avec le bilan de couverture : section suivante.)
+**La mesure.** Chaque parcours de `tests/e2e/` (40 parcours, 398 pages), l'enfant imprévisible (8 graines de 150 actions, dont une interrompue), les
+tests unitaires et les simulations (`tests/sim-seances.mjs`, `b-sequences.mjs --test`) ont tourné avec le relevé de
+couverture (`COUVERTURE=dossier`, `NODE_V8_COVERAGE`), sur une copie figée de la branche ; `tools/couverture.mjs` réunit les
+relevés et écrit le bilan : pour chaque fichier de `app/js/`, la part exécutée et chaque morceau jamais exécuté de plus de 80
+caractères ; les fichiers de `app/` jamais demandés ; les images des planches jamais dessinées ; les règles CSS sans cible.
+Pour le relancer :
+
+```
+COUVERTURE=couv/e2e node tests/e2e/<parcours>.mjs      (pour chaque parcours)
+NODE_V8_COVERAGE=couv/node node --test tests/unit/*.test.mjs
+node tools/couverture.mjs couv/e2e couv/node --sortie bilan.md
+```
+
+Résultat : presque tout le code de l'application est exécuté (la plupart des fichiers à plus de 95 % ; le moins couvert,
+`session/free.js`, à 74 %, parce que le relevé ne suit pas tous les exercices en entraînement libre). Un morceau jamais
+exécuté n'est pas forcément mort : chacun a été jugé, ci-dessous.
+
+### 3.1 Retiré
+
+| Quoi | Où | Pourquoi |
+| --- | --- | --- |
+| Les clés de contenu jamais lues : `dejaJoue`, `libreLigne`, `libreFaits`, `libreLecons`, `etalOuvre` (7 phrases) ; `etoiles.bonneReponse`, `etoiles.erreurCorrigee` ; `procheExtremite` ; les légendes `tableAddition`, `tableMultiplication` | `app/content/textes.json`, `seance.json`, `module1.json`, `legendes.json` | l'ancien accueil de fin de séance, l'ancien entraînement libre, l'ancien message de l'étal ; les étoiles par réponse sont écrites dans chaque déroulement ; plus d'étiquette sur les écrans en deux touchers depuis le lot « Correctifs : passage de l'échauffement aux voiliers » |
+| La phrase « … » seule, et les répliques des leçons L15 à L17 qui en commençaient | `app/content/lecons.json` | point 0.2 : une phrase sans lettre ni chiffre n'est ni dite ni fabriquée |
+| L'ancien petit filet dessiné sous la corde | `lessons/player.js` (`net`) | seule L2 joue des filets, sur la corde aux bouées géantes (le grand filet de l'atelier) ; L10 a sa propre scène |
+| Cinq images : `encore`, `libre.ligne`, `libre.lecons`, `poisson.1.g`, `poisson.2.g` | planches « petits » et « poissons » (`art/src/canvas-core/sea/catalog.ts`, exportées de nouveau) | l'ancien accueil et l'ancien entraînement libre ; les poissons tournés à gauche ne servaient qu'au petit filet. Les planches perdent 316 Ko |
+| `StarHud.spend` | `session/screens.js` | l'ancien vol des étoiles dépensées ; la boutique a le sien (`boutique.js`, `volEtoiles`) |
+| `houseHeight` | `modules/facts/aids.js` | jamais appelée |
+| `clock.gate()` | `engine/clock.js` | jamais appelée (`clock.hold()` la remplace) |
+| `sprites.sheetOf()` | `engine/sprites.js` | jamais appelée |
+| Les paramètres `ring` et `still` de la bulle-réponse, et la règle `.answer.still` | `modules/numberline/screen.js`, `css/app.css` | jamais passés ; l'anneau doré est peint à la correction |
+| Les règles CSS `.gift`, `.gift.away` (les cadeaux de la surprise), `.creature` (les créatures dessinées du récif d'avant le récif vivant) | `css/app.css` | aucun élément ne porte ces classes |
+| Les restes de la pieuvre dans les commentaires (le calque `#octo`, ses planches, « à droite de la pieuvre ») | `engine/stage.js`, `store.js`, `sprites.js`, `facts/aids.js`, `session/surprise.js`, `session/selector.js` | la pieuvre n'existe plus depuis le lot « Mascotte » |
+
+Poids de `app/` : 141,86 Mo sur `main`, 141,56 Mo ici (sans la voix : 60,52 → 60,23 Mo). Les planches perdent 316 Ko ; le code
+gagne 18 Ko (la règle de sortie unique, les écrans détruits, les crochets de l'enfant imprévisible).
+
+### 3.2 Gardé, avec sa raison
+
+- **Les cas rares** (jamais vus par les parcours, mais atteignables) : les erreurs E5 et suivantes de la ligne graduée, le
+  rappel du double, la correction passée de la dictée et des additions, le niveau 9 de l'étal (les centimes), les reprises
+  du lecteur des leçons, les réglages et les cas d'erreur de l'espace parent (code faux, trop d'essais, restauration
+  impossible, partage de fichier, incidents, phrases sans voix, points de départ du calcul rapide et de l'étal), le journal
+  des erreurs de la page.
+- **`js/art/line-worker.js`** : « jamais chargé » d'après le relevé des pages, parce qu'il tourne dans un Worker ; c'est lui
+  qui dessine la ligne graduée.
+- **`engine/mascotte.js`, `make2D`** : la mascotte sans WebGL (une tablette qui le refuse) ; `statut` : l'affichage de mise au
+  point de la maquette.
+- **Les images jamais dessinées pendant les parcours** : `bulle.4` à `bulle.12` (les bulles des sauts, tirées par taille),
+  `reecouter` (le bouton du récif), `carte.dos`, `carte.verso.legendaire` (une carte sans illustration, une légendaire),
+  `lecons.atoi.*` (l'écran « À toi ! » de chaque leçon : les parcours n'en jouent que quelques-unes), `demarrage.barre.*`
+  (dessinées sans passer par le relevé).
+- **Les fichiers jamais demandés** : 11 180 phrases (seules les phrases dites sont demandées), 15 illustrations de cartes,
+  les icônes de l'application (lues par le système, pas par la page), `index.html` (servi sous `/`),
+  `assets/boutons/parents-forme.json` (la taille du bouton, que `tests/unit/logo.test.mjs` compare à la CSS).
+- **Les règles CSS sans cible pendant les parcours** : des états (`.pa-day.faible`, `.pa-grid td.sel`, `.pa-btn:disabled`,
+  `.pa-confirm`…), l'animation à mouvement réduit, la police de la bulle (`@font-face`, que le relevé ne sait pas compter).
+
+### 3.3 Les anciens modes
+
+La validation simple en un toucher (remplacée le 8 octobre par le choix en deux touchers), le mode « double » avec une coche,
+la pieuvre et ses planches, les anciens fonds (rayons, reflets, algues et poissons dessinés), les créatures dessinées en code
+du récif : plus rien dans le code de l'application. Seuls des commentaires historiques les citent, pour dire ce qui les a
+remplacés.
+
+### 3.4 Les petites pieuvres encore visibles (listées, pas retirées)
+
+Leur remplacement attend une décision du parent (`docs/LOTS.md`, fiche 9) :
+
+- **« Je ne sais pas »** (image `nsp`, planche « petits ») : la pieuvre orange qui hausse les bras, sur le bouton de toutes les
+  questions (ligne graduée, additions, calcul rapide, multiplication, étal).
+- **La frise, l'étape « accueil »** (image `frise.accueil`) : la petite tête de pieuvre qui dit bonjour.
+
+### 3.5 Ce que le second passage de l'agent a trouvé dans les couches
+
+La correction de la multiplication restait à l'écran sur l'accueil après la maison, sous les galets (constat 3). Ce
+n'était pas un oubli de rangement : chaque effacement avait lieu, dans l'ordre, mais la toile accélérée du calque des aides
+gardait à l'écran une image périmée (rejeux du parcours de l'agent : au moins 7 sur 22 avec l'accélération du dessin 2D,
+0 sur 6 sans). Le calque est désormais dessiné par le processeur (`willReadFrequently`), et les attentes de la multiplication sont
+rompues à la sortie ; 0 sur 8 ensuite. C'est la même famille que la barre noire (point 0.1) : une toile qui montre autre chose
+que ce qu'elle contient.

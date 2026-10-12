@@ -15,7 +15,7 @@ export class AidBoard {
     st.root.insertBefore(this.c, st.root.querySelector("#front") ?? st.ui);
     // (lot « Recette de l'enfant et nettoyage des couches », second passage de l'agent, constat 3) une toile en rendu logiciel :
     // accélérée, elle gardait parfois à l'écran les rangées d'une correction de la multiplication après la maison, alors que
-    // chaque effacement avait bien eu lieu (7 rejeux sur 17 avec l'accélération, 0 sur 6 sans) ; la lecture de ses pixels
+    // chaque effacement avait bien eu lieu (au moins 7 rejeux sur 22 avec l'accélération, 0 sur 6 sans) ; la lecture de ses pixels
     // (`willReadFrequently`) la fait dessiner par le processeur
     this.c.getContext("2d", { willReadFrequently: true });
     this.used = false; this.c.__gen = 0; this.c.__used = false; this.place(); st.onResize(() => this.place());

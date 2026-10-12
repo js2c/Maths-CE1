@@ -48,7 +48,9 @@ const lever = () => cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", tou
 let nCapture = 0;
 const COMMANDES = {
   async capture(q) { const f = join(OUT, `${String(++nCapture).padStart(3, "0")}-${(q.get("nom") ?? "capture").replace(/[^\w-]+/g, "-")}.png`); await page.screenshot({ path: f }); return { fichier: f }; },
-  async toucher(q) { const [x, y] = await ecran(+q.get("x"), +q.get("y")), n = +(q.get("n") ?? 1), e = +(q.get("ecart") ?? 120); for (let i = 0; i < n; i++) { await toucher([[x, y]]); await page.waitForTimeout(50); await lever(); if (i < n - 1) await page.waitForTimeout(e); } return { ok: true }; },
+  // (un toucher bref : le contact et le lever envoyés d'un coup ; séparés par une attente côté Node, sur une machine chargée,
+  // ils arrivaient à plus de 0,5 s l'un de l'autre et l'application voyait un appui long : premier passage de l'agent)
+  async toucher(q) { const [x, y] = await ecran(+q.get("x"), +q.get("y")), n = +(q.get("n") ?? 1), e = +(q.get("ecart") ?? 120); for (let i = 0; i < n; i++) { await page.touchscreen.tap(x, y); if (i < n - 1) await page.waitForTimeout(e); } return { ok: true }; },
   async appui(q) { const [x, y] = await ecran(+q.get("x"), +q.get("y")); await toucher([[x, y]]); await page.waitForTimeout(+(q.get("ms") ?? 1200)); await lever(); return { ok: true }; },
   async glisser(q) {
     const [x1, y1] = await ecran(+q.get("x1"), +q.get("y1")), [x2, y2] = await ecran(+q.get("x2"), +q.get("y2")), ms = +(q.get("ms") ?? 500), n = 12;

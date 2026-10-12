@@ -203,3 +203,16 @@ gardait à l'écran une image périmée (rejeux du parcours de l'agent : au moin
 0 sur 6 sans). Le calque est désormais dessiné par le processeur (`willReadFrequently`), et les attentes de la multiplication sont
 rompues à la sortie ; 0 sur 8 ensuite. C'est la même famille que la barre noire (point 0.1) : une toile qui montre autre chose
 que ce qu'elle contient.
+
+### 3.6 Ce que l'enfant imprévisible a trouvé dans les couches
+
+Six défauts, chacun réduit à un parcours de non-régression qui échoue sur le code d'avant la correction :
+
+| Graine | Le défaut | La cause | Le parcours |
+| --- | --- | --- | --- |
+| 1 | Une leçon de l'étal quittée par la maison pendant que sa scène s'installe : la scène restait sur l'accueil, et la leçon parlait | La scène n'appartenait à la leçon qu'une fois installée (`lessons/etal.js`) | `tests/e2e/lecon-etal-quittee.mjs` |
+| 1001 | Une partie bloquée à l'étal | `api.ouvrir` ne rouvrait pas un portefeuille qui finissait de se fermer : une pièce posée à ce moment (la correction, une leçon) attendait pour toujours (`art/tools/export-etal.mjs`) | `tests/e2e/etal-portefeuille.mjs` |
+| 1009 | « 7 plus 6 ? » dit sur l'accueil | L'écran détruit pendant une aide d'emblée l'interrompait, et la suite de l'aide redisait la consigne (`modules/facts/screen.js`) | `tests/e2e/aide-quittee.mjs` |
+| 1023 | L'écran « choisir » construit par-dessus l'accueil | Quitté pendant le chargement de sa planche, il se construisait ensuite quand même : sa portée naissait après le chargement (`session/choice.js`) | `tests/e2e/choisir-quitte.mjs` |
+| 1062 | Une erreur de la page en passant la correction de la ligne (existait sur `main`) | La même image de la ligne était redonnée au calque, déjà « détachée » (`engine/line.js`) | `tests/e2e/passer-correction.mjs` |
+| 1063 | La seconde phrase de l'échauffement dite sur l'exercice suivant | À l'abandon, les portées étaient fermées avant la voix : le `voice.stop()` d'un rangement terminait la phrase en cours comme dite, et la suite de l'étape quittée parlait (`main.js`, `abandonActivity`) | `tests/e2e/echauffement-quitte.mjs` |

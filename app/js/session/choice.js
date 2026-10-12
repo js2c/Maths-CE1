@@ -80,17 +80,23 @@ export function tilePos(i, n, T = TILE, ex = null, stops = null) {
 // l'écran : o = { stars (false : entraînement libre), content: { module1, module2, seance }, store }
 export async function choose(app, o) {
   const { sprites, voice, text } = app, store = o.store;
-  await sprites.load("choix");
-  const [st1, st2, st3, st4, st5, st6, faits] = await Promise.all([store.get("niveaux", 1), store.get("niveaux", 2), store.get("niveaux", 3), store.get("niveaux", 4), store.get("niveaux", 5), store.get("niveaux", 6), store.all("faits")]);
-  const familyShare = (id, boite) => ruleShare(o.content.module2, faits, id, boite);
   const els = [], clear = () => { closeLegend(app); els.forEach((e) => e.remove()); els.length = 0; app.bulle?.ancrer(null); };
   // (lot « Recette de l'enfant », point 2) la portée de l'écran : quitté de quelque façon que ce soit (une tuile lancée, la
   // maison, l'abandon de l'activité, main.js), ses tuiles, sa légende et sa planche sont retirées
   const portee = new Portee("choisir", app.portees);
   portee.fin(() => { clear(); sprites.unload("choix"); app.choiceCancel = null; });
+  // (lot « Recette de l'enfant et nettoyage des couches », l'enfant imprévisible, graine 1023 : la maison touchée pendant le
+  // chargement de l'écran laissait celui-ci se construire ensuite sur l'accueil ; la portée naît avant le chargement, et
+  // l'écran quitté entre-temps ne pose plus rien)
   // (lot 3, étape 5) quitter sans rien valider (la maison, depuis l'accueil en pause) : `app.choiceCancel()`, choose renvoie null
-  const CANCEL = Symbol("annulé"), cancelled = new Promise((res) => { app.choiceCancel = () => res(CANCEL); });
+  let annule = false;
+  const CANCEL = Symbol("annulé"), cancelled = new Promise((res) => { app.choiceCancel = () => { annule = true; res(CANCEL); }; });
   const done = () => { portee.fermer(); voice.stop(); return null; };
+  await sprites.load("choix");
+  const [st1, st2, st3, st4, st5, st6, faits] = await Promise.all([store.get("niveaux", 1), store.get("niveaux", 2), store.get("niveaux", 3), store.get("niveaux", 4), store.get("niveaux", 5), store.get("niveaux", 6), store.all("faits")]);
+  if (portee.fermee) return new Promise(() => {});
+  if (annule) return done();
+  const familyShare = (id, boite) => ruleShare(o.content.module2, faits, id, boite);
   // (lot « Correctifs de la tablette ») CHOISIR EN DEUX TOUCHERS (session/selection.js) : le premier toucher sélectionne
   // l'image (bordure corail) et la mascotte dit son nom et une courte description, écrits dans une bulle qui part d'un coin
   // de l'image ; le second toucher sur la même image la lance. (Avant : un toucher disait le nom et lançait, décision du

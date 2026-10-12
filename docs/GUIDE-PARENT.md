@@ -442,7 +442,7 @@ Fait d'un seul tenant : ce que la session a décidé seule est listé en tête d
 3. **Le pavé** : taper deux fois vite le même chiffre (« 77 ») : les deux doivent compter si l'enfant les tape vraiment ; un doigt qui rebondit ne doit en compter qu'un.
 4. **Les voiliers** : les bateaux restent nets toute la partie ; si la mer devient plus simple, regardez « Qualité des voiliers » dans l'espace parent.
 5. **L'étal** : toucher la lampe (l'orage vient, puis repart au second toucher) ; la voix des leçons L15 à L18.
-6. **Sortir de partout** : la maison en pleine question, puis « continuer » ; l'écran éteint puis rallumé ; quitter une leçon en route : rien ne doit rester à l'écran, aucune voix ne doit continuer.
+6. **Sortir de partout** : la maison en pleine question, puis « continuer » ; en « Encore ! », la maison pendant la correction d'une multiplication (les rangées de poissons ne doivent pas rester sur l'accueil) ; l'écran éteint puis rallumé ; quitter une leçon en route : rien ne doit rester à l'écran, aucune voix ne doit continuer.
 7. **Le son** : après la prochaine fabrication des voix, écoutez quelques phrases de `tools/voix/a-refaire-durees.txt` (par exemple « 16, 17 ! » et « Ça fait 20. ») : plus de mot coupé ni de lenteur.
 
 ## e) Ce qui reste approximatif ou à ajuster

@@ -24,7 +24,7 @@ import { drawWarmupSkipKey } from "./lot3ter";
 import { drawConfirmNo, drawConfirmYes, drawDiamondStar, drawHourglass, drawPadlock, drawShineIcon, drawShopKey, drawShopTile, drawSparkle, TUILE_H, TUILE_W } from "./boutique";
 import { BAR_H, BAR_W, drawBar } from "./demarrage";
 import { drawGalet, GALET_H, GALET_W } from "./galets";
-import { drawAgainIcon, drawAgainKey, drawAlbumIcon, drawAlbumKey, drawFreeFacts, drawFreeLessons, drawFreeLine, drawMoonDecor, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepGlow, drawStepShell, GLOW_R, STEP_R } from "./ui";
+import { drawAgainIcon, drawAlbumIcon, drawAlbumKey, drawFreeFacts, drawMoonDecor, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepGlow, drawStepShell, GLOW_R, STEP_R } from "./ui";
 
 // la tortue dans l'application : longueur ~110 px logiques, assez petite pour tenir sur une bouée
 export const TURTLE_S = 1;
@@ -49,7 +49,9 @@ export const SPECS: Spec[] = [
   // l'application est le lagon du récif vivant, extrait par tools/export-lagon.mjs. Récif vivant, 5 octobre 2026 : plus de
   // créatures dessinées en code (planche « recif »), de décors des doublons (« decors »), de cadeaux ni de perles de page ;
   // les créatures sont les images de la maquette, extraites par tools/export-recif.mjs)
-  ...FISH_KINDS.flatMap((_, k) => ([-1, 1] as const).map((dir): Spec => ({
+  // (lot « Recette de l'enfant et nettoyage des couches » : seul le poisson 0 nage encore vers la gauche, dans la leçon L4 ; les
+  // poissons 1 et 2 tournés à gauche ne servaient qu'à l'ancien petit filet des leçons, retiré)
+  ...FISH_KINDS.flatMap((_, k) => ([-1, 1] as const).filter((dir) => dir > 0 || k === 0).map((dir): Spec => ({
     name: `poisson.${k}.${dir < 0 ? "g" : "d"}`, sheet: "poissons", W: 200, H: 120, origin: [100, 60], frames: FISH_N, fps: 12,
     draw: (g, f) => drawFish(g, k, dir, f, 100, 60), loop: [0, FISH_N],
   }))),
@@ -95,13 +97,14 @@ export const SPECS: Spec[] = [
   { name: "passer", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawSkipKey(g, 70, 70) },
   // lot 3 ter (T1) : « passer l'échauffement », son propre pictogramme (une vague franchie par une flèche dorée)
   { name: "passer.echauffement", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawWarmupSkipKey(g, 70, 70) },
-  { name: "encore", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawAgainKey(g, 90, 90) },
   { name: "album", sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => drawAlbumKey(g, 90, 90) },
   ...([["accueil", drawStepHello], ["echauffement", drawStepPlus], ["notion", drawStepLine], ["defi", drawStepChallenge], ["recompense", drawStepShell]] as const).map(([id, f]): Spec => ({ name: `frise.${id}`, sheet: "petits", W: 2 * STEP_R + 24, H: 2 * STEP_R + 24, origin: [STEP_R + 10, STEP_R + 10], frames: 1, draw: (g) => f(g, STEP_R + 10, STEP_R + 10) })),
   { name: "frise.lueur", sheet: "petits", W: 2 * GLOW_R + 8, H: 2 * GLOW_R + 8, origin: [GLOW_R + 4, GLOW_R + 4], frames: 1, draw: (g) => drawStepGlow(g, GLOW_R + 4, GLOW_R + 4) },
   { name: "frise.point", sheet: "petits", W: 30, H: 30, origin: [15, 15], frames: 2, draw: (g, f) => drawProgressDot(g, 15, 15, f === 1) },
   { name: "lune.decor", sheet: "petits", W: 240, H: 220, origin: [120, 110], frames: 1, draw: (g) => drawMoonDecor(g, 120, 110) },
-  ...([["ligne", drawFreeLine], ["faits", drawFreeFacts], ["lecons", drawFreeLessons]] as const).map(([id, f]): Spec => ({ name: `libre.${id}`, sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => f(g, 90, 90) })),
+  // (lot « Recette de l'enfant et nettoyage des couches » : « encore », « libre.ligne » et « libre.lecons », l'ancien accueil et
+  // l'ancien entraînement libre, n'étaient plus dessinés par l'application : retirés de la planche ; leurs dessins restent ici)
+  ...([["faits", drawFreeFacts]] as const).map(([id, f]): Spec => ({ name: `libre.${id}`, sheet: "petits", W: 180, H: 180, origin: [90, 90], frames: 1, draw: (g) => f(g, 90, 90) })),
   { name: "reecouter", sheet: "petits", W: 140, H: 140, origin: [70, 70], frames: 1, draw: (g) => drawSpeaker(g, 70, 70) },
   // lot « Mascotte » : la flèche qui montre, à la place du bras de la pieuvre (ancrage : la pointe)
   { name: "fleche", sheet: "petits", W: FLECHE_W, H: FLECHE_H, origin: FLECHE_O, frames: 1, draw: (g) => drawFleche(g, FLECHE_O[0], FLECHE_O[1]) },

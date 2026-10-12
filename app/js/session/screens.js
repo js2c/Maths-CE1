@@ -41,17 +41,6 @@ export class StarHud {
       this.flights.push({ a, t0, dur: dur / 1000, from, to: HUD_STAR, dx, done: () => { if (i === 0) this.app.sound?.play("etoile"); this.set(this.shown + v); pop(this.box); this.pool.push(a); res(); } });
     })));
   }
-  // n étoiles dépensées (un achat à la boutique) : elles quittent le compteur une à une et volent vers `to` ; le compteur
-  // descend avec elles, jamais d'un coup (au plus `max` étoiles en vol ; `arrivee()` à chaque étoile arrivée)
-  spend(n, to, { gap = 60, dur = 700, max = 10, arrivee = null } = {}) {
-    const k = Math.min(n, max), per = Array.from({ length: k }, (_, i) => Math.floor((n * (i + 1)) / k) - Math.floor((n * i) / k));
-    return Promise.all(per.map((v, i) => new Promise((res) => {
-      const a = this.pool.pop() ?? this.app.ocean.spriteActor(this.app.ocean.frontEl, "etoile");
-      a.draw(0); a.show(false);
-      setTimeout(() => { this.set(this.shown - v); pop(this.box); }, i * gap);
-      this.flights.push({ a, t0: performance.now() / 1000 + (i * gap) / 1000, dur: dur / 1000, from: HUD_STAR, to, dx: (i % 2 ? 1 : -1) * (20 + 8 * i), done: () => { this.pool.push(a); arrivee?.(); res(); } });
-    })));
-  }
   tick(t) {
     this.flights = this.flights.filter((f) => {
       const u = (t - f.t0) / f.dur;

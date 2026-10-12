@@ -114,9 +114,13 @@ for (const vue of VUES) {
     const total0 = await page.evaluate(() => window.__app.rewards.total);
     await tap(page, tuile(aVendre[0])); await page.waitForTimeout(700);
     if (vue[0] === "1280") check((await page.evaluate(() => [window.__app.rewards.total, window.__app.rewards.achats.liste.length])).join() === `${total0},0`, "toucher deux fois une tuile n'achète rien");
+    // (lot « Recette de l'enfant et nettoyage des couches », second passage de l'agent, constat 8) la tuile choisie, la mascotte
+    // touchée redit le prix de la créature, pas la consigne générale
+    if (vue[0] === "1280") { const [ins, der] = await page.evaluate(() => [window.__app.voice.instruction, window.__said.at(-1)]); check(ins === der && /il faut/.test(ins ?? ""), `tuile choisie : réécouter redit le prix (${ins})`); }
     // la croix annule
     await tap(page, ".boutique-conf.croix"); await page.waitForTimeout(500);
     if (vue[0] === "1280") check((await confVisible(page)).every((x) => !x) && !(await page.evaluate(() => window.__app.boutique.sel)), "la croix annule (plus de sélection, ni coche ni croix)");
+    if (vue[0] === "1280") check(await page.evaluate(() => window.__app.voice.instruction) === T.boutique.consigne, "la tuile quittée, réécouter redit la consigne générale");
     // la coche et la croix en bas : une créature du récif sur la dernière rangée (faire briller)
     const bas = lagon.slice(10).find((id) => v[id] === "terne") ?? terne;
     await tap(page, tuile(terne)); await page.waitForTimeout(400);

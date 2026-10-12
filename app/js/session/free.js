@@ -54,8 +54,7 @@ export class FreeTraining {
   async menu() {
     const { app } = this;
     this.t0 ??= app.clock.now();
-    app.voice.stop(); await app.voice.say(`${app.text.data.encore} ${app.text.data.libre}`);
-    const c = await choose(app, { stars: false, store: this.store, content: { module1: this.m1, module2: this.m2, module3: this.m3, module4: this.m4, module5: this.m5, module6: this.m6, seance: this.seance ?? {} } });
+    const c = await choose(app, { intro: `${app.text.data.encore} ${app.text.data.libre}`, stars: false, store: this.store, content: { module1: this.m1, module2: this.m2, module3: this.m3, module4: this.m4, module5: this.m5, module6: this.m6, seance: this.seance ?? {} } });
     return this.start(c);
   }
   // l'exercice choisi ({ module, niveau } ou { module: 2, famille }), sans fin ; (lot « Les leçons » : `apresLecon`, la leçon

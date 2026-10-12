@@ -16,6 +16,9 @@ import { num, put, putScaled } from "../facts/aids.js";
 import { astuceOf, classifyMult, multAnswer } from "./mult.js";
 
 const SKIPPED = Symbol("passé");
+// (lot « Recette de l'enfant et nettoyage des couches », second passage de l'agent, constat 3) l'exercice quitté (la maison
+// pendant une correction) : chaque attente gardée est rompue, et plus rien n'est dit ni dessiné ensuite
+const QUITTE = Symbol("quitté"), fige = () => new Promise(() => {});
 // la place des rangées : en petit, la bande entre l'ardoise et le pavé ; en grand, à la place du pavé (entre le coquillage et
 // « je ne sais pas ») ; kMax : l'agrandissement le plus fort des poissons (les rangées courtes sont montrées plus grandes)
 export const ROWS_SMALL = { cx: 790, top: 322, h: 168, w: 700, kMax: 1 }, ROWS_BIG = { cx: 700, top: 346, h: 430, w: 740, kMax: 1.45 };
@@ -46,8 +49,14 @@ export function paintRows(ctx, sprites, a, b, Z, { lit = 0, totals = false, ghos
 
 export class MultScreen {
   // facts : () => l'écran des additions (FactsScreen), qui prête l'ardoise et le pavé
-  constructor(app, facts) { this.app = app; this.facts = facts; }
+  constructor(app, facts) { this.app = app; this.facts = facts; this.gardes = new Set(); }
   get fs() { const fs = this.facts(); fs.mult = this; return fs; }
+  // une garde : `g` attend une promesse, rompue par « passer » (`abort`, SKIPPED) ou par la sortie de l'exercice (QUITTE)
+  garde() {
+    let abort = null; const p = new Promise((_, rej) => { abort = (e = SKIPPED) => rej(e); }); p.catch(() => {});
+    const quitter = () => abort(QUITTE); this.gardes.add(quitter);
+    return { g: (x) => Promise.race([x, p]), abort: () => abort(), fin: () => this.gardes.delete(quitter) };
+  }
   get board() { return this.fs.board; }
   get T() { return this.app.text.data; }
   rangees(a, b) { const T = this.T; return a === 1 ? fill(T.multRangee1, { b }) : b === 1 ? fill(T.multRangeesUn, { a }) : fill(T.multRangees, { a, b }); }
@@ -102,7 +111,7 @@ export class MultScreen {
       fs.locked = true; voice.stop();
       await fs.skippable("passer l'aide", async (g) => { await this.count({ ...q }, g, { reponse: false }); await g(wait(900)); });
     }
-    if (fs.q !== q) return;
+    if (fs.detruit || fs.q !== q) return;
     this.paintBand(q); fs.keys(true); fs.locked = false;
     voice.say(this.consigne(q));
   }
@@ -111,19 +120,19 @@ export class MultScreen {
     const fs = this.fs, { voice } = this.app;
     voice.stop(); voice.say(this.consigne(q));
     await fs.skippable("passer l'aide", async (g) => { await g(wait(400)); await this.count(q, g, { reponse: false }); await g(wait(1200)); });
+    if (fs.detruit) return fige();
     this.paintBand(q);
   }
   // un exemple guidé : les rangées comptées, la réponse dite, puis « À toi ! »
   async demo(q) {
     const fs = this.fs, { voice } = this.app, T = this.T, k = this.app.vitesse ?? 1;
     fs.keys(false); voice.stop();
-    let abort = null; const abortP = new Promise((_, rej) => { abort = () => rej(SKIPPED); }); abortP.catch(() => {});
-    const g = (p) => Promise.race([p, abortP]), skip = skipKey(this.app, () => abort(), "passer l'exemple");
+    const { g, abort, fin } = this.garde(), skip = skipKey(this.app, () => abort(), "passer l'exemple");
     try {
       await this.count(q, g);
       fs.write(multAnswer(q)); await g(voice.say(fill(T.multCorrection, { a: q.a, b: q.b, n: q.n })));
       await g(wait(500 / k)); await g(voice.say(T.aToiFait));
-    } catch (e) { if (e !== SKIPPED) throw e; voice.stop(); q.passe = true; }
+    } catch (e) { if (e === QUITTE) { skip.remove(); return fige(); } if (e !== SKIPPED) throw e; voice.stop(); q.passe = true; } finally { fin(); }
     // (mesure des attentes du bloc : la réponse écrite par l'exemple restait sur l'ardoise, et l'enfant qui la tapait à son
     // tour écrivait « 22 » au lieu de « 2 » : l'exemple guidé était compté faux)
     fs.typed = ""; fs.ring = false; fs.slate.repaint();
@@ -136,8 +145,8 @@ export class MultScreen {
     if (ok) sound?.play("bonne"); else if (!r.nsp) sound?.play("erreur");
     const answer = () => { fs.typed = String(multAnswer(q)); fs.ring = true; fs.slate.repaint(); };
     if (ok) { fs.slate.classList.add("pop"); await voice.say(text.pick("bravo")); await wait(250); return; }
-    let abort = null; const abortP = new Promise((_, rej) => { abort = () => rej(SKIPPED); }); abortP.catch(() => {});
-    const g = (p) => Promise.race([p, abortP]), skip = skipKey(this.app, () => abort(), "passer la correction");
+    const { g, abort, fin } = this.garde(), skip = skipKey(this.app, () => abort(), "passer la correction");
+    let quitte = false;
     try {
       const code = r.nsp ? "NSP" : classifyMult(q, r.value);
       if (!r.nsp) fs.slate.classList.add("shake");
@@ -148,11 +157,12 @@ export class MultScreen {
       await g(voice.say(fill(T.multCorrection, { a: q.a, b: q.b, n: q.n })));
       await g(wait(600 / k));
     } catch (e) {
-      if (e !== SKIPPED) throw e;
-      voice.stop(); r.correctionPassee = true; answer(); await wait(1000);
-    } finally { skip.remove(); fs.keys(true); }
+      if (e === QUITTE) quitte = true;
+      else { if (e !== SKIPPED) throw e; voice.stop(); r.correctionPassee = true; answer(); await wait(1000); }
+    } finally { fin(); skip.remove(); if (!quitte) fs.keys(true); }
+    if (quitte) return fige();
   }
   // (lot « Recette de l'enfant », point 2 : sans recréer l'écran des additions s'il a déjà été détruit)
-  leave() { this.app.aidBoard?.clear(); this.app.facts?.leave(); }
+  leave() { for (const q of [...this.gardes]) q(); this.gardes.clear(); this.app.aidBoard?.clear(); this.app.facts?.leave(); }
 }
 void put;

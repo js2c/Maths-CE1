@@ -13,6 +13,11 @@ export class AidBoard {
     this.c = document.createElement("canvas"); this.c.id = "aides"; this.c.className = "aid-board";
     // sous les acteurs du premier plan (tortue, bernard-l'ermite), au-dessus de la mascotte et des effets
     st.root.insertBefore(this.c, st.root.querySelector("#front") ?? st.ui);
+    // (lot « Recette de l'enfant et nettoyage des couches », second passage de l'agent, constat 3) une toile en rendu logiciel :
+    // accélérée, elle gardait parfois à l'écran les rangées d'une correction de la multiplication après la maison, alors que
+    // chaque effacement avait bien eu lieu (7 rejeux sur 17 avec l'accélération, 0 sur 6 sans) ; la lecture de ses pixels
+    // (`willReadFrequently`) la fait dessiner par le processeur
+    this.c.getContext("2d", { willReadFrequently: true });
     this.used = false; this.c.__gen = 0; this.c.__used = false; this.place(); st.onResize(() => this.place());
   }
   place() { const { px, k } = this.app.stage; this.c.width = Math.round(1280 * px); this.c.height = Math.round(800 * px); Object.assign(this.c.style, { width: `${1280 * k}px`, height: `${800 * k}px` }); this.used = false; this.c.__used = false; }
@@ -117,7 +122,6 @@ export function paintFishHouse(ctx, sprites, cx, top, { a, b, total, forme = "di
   if (forme === "trouGauche") num(ctx, "?", cx - q, floorY + roomH / 2, 44, R.RED);
   return { w: H.w * s, h: (H.roof + H.floor + H.base) * s };
 }
-export const houseHeight = (sprites, floors) => { const H = sprites.atlas.sprites["aide.maison.toit"].meta; return H.roof + floors * H.floor + H.base; };
 
 // ---------------------------------------------------------------- double + 1
 // a poissons en haut, les mêmes renversés sous une ligne d'eau (le miroir), puis la bulle dorée

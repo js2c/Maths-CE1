@@ -662,8 +662,9 @@ const awaiting = () => [app.screen, app.facts].some((s) => s && s.resolve && !s.
 // fait seule) ; seulement si une question attend sa réponse, hors pause et sans autre phrase en cours
 // (lot « Les voiliers » : pas avec le vent ni les pirates, où le bateau avance seul : relecture du lot)
 // (lot « Recette de l'enfant et nettoyage des couches », constat 8 de l'agent : pas pendant la confirmation de « passer
-// l'échauffement », où la question attend encore sa réponse mais la séance est en attente de la coche)
-ocean.mascotte.onRelance = () => { if (awaiting() && !app.enPause && !app.warmupPending && !visiting && !voice.speaking && !voice.paused && !(app.voiliers?.attend && app.voiliers.q?.mer !== "calme")) voice.say(text.pick("relanceAide")); };
+// l'échauffement », où la question attend encore sa réponse mais la séance est en attente de la coche ; second passage, constat
+// 12 : ni pendant le défi record, une course contre la montre, où « Prends ton temps » contredit la consigne)
+ocean.mascotte.onRelance = () => { if (awaiting() && !app.enPause && !app.warmupPending && !app.facts?.defi && !visiting && !voice.speaking && !voice.paused && !(app.voiliers?.attend && app.voiliers.q?.mer !== "calme")) voice.say(text.pick("relanceAide")); };
 let ambianceAvantPause = null;
 // L'ACCUEIL COMPLET PENDANT UNE PAUSE (lot 3, étape 5 ; décision du parent du 28 septembre ; docs/SPEC.md, « Navigation
 // pendant la séance ») : « continuer » (reprise exacte), « choisir » (l'écran de choix : revenir sans valider ramène ici ;

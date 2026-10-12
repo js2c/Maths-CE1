@@ -71,6 +71,19 @@ Au cran « plus facile », l'écriture 600 + 30 + 5 s'affiche sous la cale. Un f
   - leçons : en L9, l'étoile de mer du sable est juste sous « 40 41 » ; en L10, le « 0 » et le « 7 » de 307 décomposé sont écrits sur le rocher de droite ; en L3 et au niveau 11, le « ? » rouge est traversé par les feuilles d'une algue (derrière lui) ;
   - écran « choisir » : les tuiles 10, 11 et 13 de la ligne sont posées devant les algues et les rochers (la règle de la section 3 dit « ni posée sur la pieuvre ou les algues ») : garder ainsi, ou déplacer les tuiles ?
 
+### Après le second passage de l'agent qui joue l'enfant (lot « Recette de l'enfant et nettoyage des couches », 12 octobre 2026)
+
+Constats du rapport `tests/recette-fonctionnelle/out-enfant/RAPPORT-PASSAGE-2.md` qui demandent une décision du parent (le traitement de tous les constats : `TRAITEMENT.md`, même dossier).
+
+- **La page rechargée en pleine séance** (constat 1, jugé bloquant par l'agent) : aujourd'hui, la séance en cours est perdue (« continuer » disparaît, la séance est notée interrompue, les étoiles gagnées restent). C'est ce qui arrive si Android ferme Chrome pendant que la tablette est posée. Reprendre une séance après un rechargement est une fonction nouvelle, avec des choix : reprendre à l'étape, à la question, avec la même leçon déjà vue ? Le cran choisi ? Le bilan de fin compte-t-il les étoiles d'avant ? Combien de temps une séance reste-t-elle reprenable ? À essayer d'abord sur la tablette : arrive-t-il qu'Android ferme Chrome pendant une séance ?
+- **La fin de séance qui mène à la boutique** (constat 2) : seul le bouton de la boutique est à l'écran ; sans toucher, « à demain » vient au bout de 30 s (choix de la session du lot « La boutique du récif »), soit près d'une minute avec les phrases. Ajouter la maison, ou raccourcir l'attente ?
+- **« Continuer » en un toucher, « jouer » en deux** (constat 11) : l'accueil pendant une pause garde ses bulles rondes en un toucher (décision du 10 octobre). L'enfant habituée aux deux touchers tape son second toucher dans le pavé (un « 5 »). Passer « continuer » en deux touchers, ou garder ?
+- **La bulle de la mascotte sur ce dont parle la voix** (constat 6) : elle ne couvre jamais ce que l'enfant touche, mais peut couvrir l'égalité de l'aide, le chemin du calcul rapide, la bouée dont parlent les voiliers ; dans l'étal, le portefeuille ouvert cache l'article. Lui interdire aussi ces zones ?
+- **La répétition des additions** (constat 13) : « 4 plus 2 » cinq fois en deux minutes dans le bloc de la séance (révision espacée des faits pas encore sus) ; à observer avec l'enfant.
+- **Les voiliers** (constat 7) : toucher un passage ne fait rien, il faut faire glisser le bateau (le geste de la maquette) ; au niveau 2, « partout » met des bateaux bien avant la première bouée (43 devant 63, 67, 73). Garder ?
+- **Le prix pour faire briller une créature qu'on vient d'acheter** (constat 9) : la tuile affiche aussitôt « ✦150★ », que l'enfant peut prendre pour un prix à repayer. Le cacher juste après l'achat ?
+- **Cosmétique** : le compteur d'étoiles peu lisible dans l'étal par temps d'orage, la bulle courte coupée par le cadre de la cabane (constat 14) ; l'étoile arc-en-ciel annoncée à la récompense mais montrée nulle part (constat 15) ; les couleurs des cartes du crabe et de l'anémone, différentes des créatures du récif (constat 16 : les illustrations des cartes).
+
 ### La fluidité des voiliers sur la tablette (8 octobre 2026, mis de côté par le parent)
 
 Le parent n'est pas encore convaincu par les remèdes proposés : la question est reportée hors du lot « Correctifs de la tablette ». Ce qui a été mesuré et envisagé :

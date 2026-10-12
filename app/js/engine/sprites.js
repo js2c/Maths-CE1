@@ -15,7 +15,6 @@ export class Sprites {
     this.pages = new Map(); // "planche@échelle" -> ImageBitmap[]
     this.loading = new Map();
   }
-  sheetOf(name) { const s = this.atlas.sprites[name]; if (!s) throw new Error(`sprite inconnu : ${name}`); return s.sheet; }
   // charge une planche (toutes ses pages) ; les appels répétés partagent la même promesse
   load(sheet) {
     const scale = this.atlas.sheets[`${sheet}@${this.src}`] ? this.src : 1, key = `${sheet}@${scale}`;

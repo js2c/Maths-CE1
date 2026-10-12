@@ -55,3 +55,11 @@ test("la bande et le fond : la feuille de style cache un canvas sans image ; le 
     assert.ok(s.every((l) => /clear\(\) \{ this\.c\.classList\.add\("vide"\)/.test(l)), `${f} : transferFromImageBitmap(null) seulement dans clear(), après avoir caché le calque`);
   }
 });
+
+// (second passage de l'agent qui joue l'enfant, constat 3) le calque des aides, accéléré, gardait parfois à l'écran les rangées
+// d'une correction de la multiplication après la maison, alors que chaque effacement avait eu lieu (rejeux du parcours de
+// l'agent : 7 sur 17 avec l'accélération du dessin 2D, 0 sur 6 sans, 0 sur 8 avec la correction) ; il est dessiné en logiciel
+test("le calque des aides est une toile dessinée par le processeur (willReadFrequently), demandée avant tout autre dessin", () => {
+  const aids = read("app/js/modules/facts/aids.js"), ctor = aids.slice(aids.indexOf("export class AidBoard"), aids.indexOf("  place()"));
+  assert.match(ctor, /this\.c\.getContext\("2d", \{ willReadFrequently: true \}\);[\s\S]*this\.place\(\)/);
+});

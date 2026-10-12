@@ -242,7 +242,10 @@ export class Boutique {
     else this.conf.forEach((k) => { k.style.visibility = "hidden"; });
     const t = texteTuile(text.data, cartes, c, e, cout, rewards.total);
     bulleTuile(app, b, this.tuiles, t, { commandes: ".boutique-retour, .boutique-onglet, .boutique-conf" });
-    voice.stop(); voice.say(t);
+    // (lot « Recette de l'enfant et nettoyage des couches », second passage de l'agent, constat 8) tant que la tuile est
+    // choisie, toucher la mascotte redit ce qu'elle a dit de la créature (son prix, « touche la coche verte »), pas la
+    // consigne générale ; la tuile quittée, la consigne générale revient
+    voice.stop(); voice.say(t, { instruction: true });
   }
   entourer(b, oui) { entourage(this.app, b, oui, (ctx, x, y) => R.drawSelectTile(ctx, x + VITRINE.w / 2, y + VITRINE.h / 2, VITRINE.w, VITRINE.h, 22, -7)); }
   deselection() {
@@ -250,6 +253,7 @@ export class Boutique {
     if (b) { b.classList.remove("choisie"); this.entourer(b, false); }
     this.conf?.forEach((k) => { k.style.visibility = "hidden"; });
     this.app.bulle.ancrer(null);
+    if (b) this.app.voice.instruction = this.app.text.data.boutique.consigne;
   }
   // ---------------------------------------------------------------- la coche : acheter, ou faire briller
   async acheter() {

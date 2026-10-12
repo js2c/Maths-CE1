@@ -107,7 +107,10 @@ export async function choose(app, o) {
       const b = spriteBox(app, { x: EX_CX + (i - (xs.length - 1) / 2) * EX_PITCH - 90, y: EX_Y - 90, w: 180, h: 180, cls: "bubble choix-ex", label: e.id, paint: (ctx, px) => { sprites.draw(ctx, e.sprite, 0, 90, 90); if (sel.key === e.id) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawSelectRound(ctx, 90, 90, EX_ENTOURAGE_R, e.graine); } } });
       b.dataset.key = e.id; els.push(b); return b;
     });
-    voice.stop(); voice.say(text.data.choixExercice, { instruction: true });
+    // (lot « Recette de l'enfant et nettoyage des couches », second passage de l'agent, constat 5) `intro` : la phrase d'entrée
+    // de l'entraînement libre, dite une fois, les images déjà là (avant, elle était dite devant un écran vide, et les
+    // touchers de ce temps-là étaient perdus)
+    voice.stop(); if (o.intro) { voice.say(o.intro); o.intro = null; } voice.say(text.data.choixExercice, { instruction: true });
     const ex = await Promise.race([pick(exBtn, (k) => dire(text.data.choixNom[k], D.exercices?.[k])), cancelled]);
     if (ex === CANCEL) return done();
     clear();

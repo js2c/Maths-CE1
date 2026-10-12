@@ -241,11 +241,15 @@ export class ParentSpace {
     if (S.length > shown) box.append(h("button", { class: "pa-btn pa-more", onclick: () => this.show("seances", { shown: shown + 15 }) }, `Afficher plus (${S.length - shown} autres)`));
     page.append(box);
   }
+  // (lot « Recette de l'enfant et nettoyage des couches », second passage de l'agent, constat 10) les exercices d'un
+  // entraînement libre, d'après ses réponses, dans l'ordre où ils ont été joués : la séance libre n'a pas de notion du jour
+  // (son `module` n'est qu'une valeur par défaut)
+  exercicesLibres(x) { return [...new Set(this.d.reponses.filter((r) => r.seance === x.id).sort((a, b) => a.t - b.t).map((r) => r.module))].map((m) => this.c.modules[m]?.nom ?? `module ${m}`); }
   sessionCard(x, open = false) {
     const lv = D.level(x.reussite, this.c.reussite), det = h("div", { class: "pa-detail" });
     const el = h("div", { class: "pa-session" });
     const head = h("button", { "aria-expanded": "false", onclick: () => { const o = el.classList.toggle("open"); head.setAttribute("aria-expanded", String(o)); det.hidden = !o; if (o && !det.childElementCount) this.sessionDetail(x, det); } },
-      h("span", { class: "t" }, `${D.fmtDay(x.debut)}, ${D.fmtTime(x.debut)}${x.leconChoisie ? " · leçon choisie" : x.libre ? " · entraînement libre" : x.choix ? " · exercice choisi" : ""}`),
+      h("span", { class: "t" }, `${D.fmtDay(x.debut)}, ${D.fmtTime(x.debut)}${x.leconChoisie ? " · leçon choisie" : x.libre ? ` · entraînement libre${this.exercicesLibres(x).length ? ` (${this.exercicesLibres(x).join(", ").toLowerCase()})` : ""}` : x.choix ? " · exercice choisi" : ""}`),
       h("span", { class: "s" }, `${D.fmtDuration(x.dureeS)} · ${plural(x.questions ?? 0, "question")} · ${plural(x.etoiles ?? 0, "étoile")} de mer`),
       h("span", { class: "r" }, h("span", { class: `pa-badge ${x.terminee || x.libre ? lv ?? "neutre" : "neutre"}` }, x.libre ? (x.questions ? `${D.fmtPct(x.reussite)} de réussite` : "libre") : x.terminee ? (x.questions ? `${D.fmtPct(x.reussite)} de réussite` : "terminée") : "interrompue"), h("span", { class: "chev", "aria-hidden": "true" }, "›")));
     el.append(head, det); det.hidden = true;
@@ -258,7 +262,7 @@ export class ParentSpace {
     const cartes = (x.cartes ?? []).map((id) => this.cartes.cartes.find((c) => c.id === id)?.nom ?? id);
     det.append(h("div", { class: "pa-facts" },
       h("span", {}, "De ", h("b", {}, D.fmtTime(x.debut)), " à ", h("b", {}, x.fin ? D.fmtTime(x.fin) : "—")),
-      h("span", {}, "Notion du jour : ", h("b", {}, `${this.c.modules[x.module]?.nom ?? `module ${x.module}`}${x.module === 2 && x.famille ? ` (famille « ${this.module2.familles.find((f) => f.id === x.famille)?.nom ?? x.famille} »)` : ""}${x.module === 3 && x.niveauCalcul ? ` (niveau ${x.niveauCalcul})` : ""}${x.module === 4 && x.niveauVoiliers ? ` (niveau ${x.niveauVoiliers})` : ""}${x.module === 6 && x.niveauEtal ? ` (niveau ${x.niveauEtal}${x.etalMeteo ? `, ${x.etalMeteo}` : ""})` : ""}${x.moduleImpose ? " · imposé par vous" : ""}`)),
+      x.libre ? h("span", {}, "Entraînement libre : ", h("b", {}, this.exercicesLibres(x).join(", ") || "aucun exercice joué")) : h("span", {}, "Notion du jour : ", h("b", {}, `${this.c.modules[x.module]?.nom ?? `module ${x.module}`}${x.module === 2 && x.famille ? ` (famille « ${this.module2.familles.find((f) => f.id === x.famille)?.nom ?? x.famille} »)` : ""}${x.module === 3 && x.niveauCalcul ? ` (niveau ${x.niveauCalcul})` : ""}${x.module === 4 && x.niveauVoiliers ? ` (niveau ${x.niveauVoiliers})` : ""}${x.module === 6 && x.niveauEtal ? ` (niveau ${x.niveauEtal}${x.etalMeteo ? `, ${x.etalMeteo}` : ""})` : ""}${x.moduleImpose ? " · imposé par vous" : ""}`)),
       x.choix && h("span", {}, "Exercice choisi par l'enfant : ", h("b", {}, x.choix.module === 1 ? `ligne graduée, niveau ${x.choix.niveau}` : x.choix.module === 3 ? `calcul rapide, niveau ${x.choix.niveau}` : x.choix.module === 4 ? `les voiliers, niveau ${x.choix.niveau}` : x.choix.module === 5 ? `la multiplication, niveau ${x.choix.niveau}` : x.choix.module === 6 ? `l'étal du pêcheur, niveau ${x.choix.niveau}` : `additions, famille « ${this.module2.familles.find((f) => f.id === x.choix.famille)?.nom ?? x.choix.famille} »`)),
       x.echauffementPasse && h("span", {}, "Échauffement : ", h("b", {}, `passé par l'enfant après ${plural(x.echauffementPasse.apres, "question")}`)),
       (x.etapes ?? []).some((e) => e.sautee === "réglage du parent") && h("span", {}, "Échauffement : ", h("b", {}, "retiré (réglage « Échauffement : non »)")),
@@ -276,7 +280,7 @@ export class ParentSpace {
       cartes.length > 0 && h("span", {}, "Cartes gagnées : ", h("b", {}, cartes.join(", ")))));
     const groups = D.answersOf(this.d.reponses, x.id);
     if (!groups.length) det.append(h("p", { class: "pa-muted" }, "Aucune réponse enregistrée pour cette séance."));
-    for (const g of groups) det.append(h("h3", {}, g.defi ? "Défi record : faits d'addition en une minute" : g.module === 2 && !g.notion ? "Échauffement : faits d'addition" : `Notion du jour : ${this.c.modules[g.module]?.nom ?? g.module}`), this.answerTable(g.reponses));
+    for (const g of groups) det.append(h("h3", {}, g.defi ? "Défi record : faits d'addition en une minute" : g.module === 2 && !g.notion && !x.libre ? "Échauffement : faits d'addition" : `${x.libre ? "Entraînement libre" : "Notion du jour"} : ${this.c.modules[g.module]?.nom ?? g.module}`), this.answerTable(g.reponses));
   }
   answerTable(rs) {
     const E = this.c.erreurs, F = this.c.formes;

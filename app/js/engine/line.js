@@ -37,15 +37,23 @@ export class LineView {
   // (lot 3, étape 5) une leçon jouée pendant une pause dessine dans des calques neufs, posés sur ceux de la séance (qui
   // gardent leur ligne, qu'on ne peut pas relire d'un canvas « bitmaprenderer ») ; `restore()` rend ceux de la séance
   swap() {
-    const old = { c: this.c, ctx: this.ctx, fx: this.fx, fxCtx: this.fxCtx, fxUsed: this.fxUsed, affichee: this.affichee };
+    const old = { c: this.c, ctx: this.ctx, fx: this.fx, fxCtx: this.fxCtx, fxUsed: this.fxUsed, affichee: this.affichee, montree: this.montree };
     const c = old.c.cloneNode(false), fx = old.fx.cloneNode(false);
     for (const e of [c, fx]) { e.classList.remove("stash"); e.classList.add("vide"); e.style.opacity = ""; e.style.transition = ""; }
     old.c.after(c); old.fx.after(fx);
-    Object.assign(this, { c, ctx: c.getContext("bitmaprenderer"), fx, fxCtx: fx.getContext("2d"), fxUsed: false, affichee: false }); this.place();
+    Object.assign(this, { c, ctx: c.getContext("bitmaprenderer"), fx, fxCtx: fx.getContext("2d"), fxUsed: false, affichee: false, montree: null }); this.place();
     return () => { this.c.remove(); this.fx.remove(); Object.assign(this, old); };
   }
   // (lot « Mascotte ») `affichee` : une ligne est à l'écran (la bulle de la mascotte ne couvre jamais sa bande)
-  show(bitmap) { if (!bitmap) return this.clear(); this.ctx.transferFromImageBitmap(bitmap); this.affichee = true; this.c.classList.remove("vide"); }
+  // (lot « Recette de l'enfant et nettoyage des couches », l'enfant imprévisible, graine 1062 : « passer la correction » montrait
+  // une seconde fois l'image de la correction, déjà donnée au calque ; une image donnée est « détachée », et l'appel échouait,
+  // en erreur de la page) : la même image déjà à l'écran n'est pas redonnée ; une image détachée (largeur nulle) est ignorée
+  show(bitmap) {
+    if (!bitmap) return this.clear();
+    if (bitmap === this.montree && this.affichee) return;
+    if (bitmap.width === 0) return;
+    this.ctx.transferFromImageBitmap(bitmap); this.montree = bitmap; this.affichee = true; this.c.classList.remove("vide");
+  }
   clear() { this.c.classList.add("vide"); if (this.affichee) this.ctx.transferFromImageBitmap(null); this.affichee = false; }
   get bande() { const c = this.c; return this.affichee && c.style.opacity !== "0" && !c.classList.contains("stash") ? [0, BAND[0], 1280, BAND[0] + BAND[1]] : null; }
 }

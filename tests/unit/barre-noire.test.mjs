@@ -63,3 +63,13 @@ test("le calque des aides est une toile dessinée par le processeur (willReadFre
   const aids = read("app/js/modules/facts/aids.js"), ctor = aids.slice(aids.indexOf("export class AidBoard"), aids.indexOf("  place()"));
   assert.match(ctor, /this\.c\.getContext\("2d", \{ willReadFrequently: true \}\);[\s\S]*this\.place\(\)/);
 });
+
+// (l'enfant imprévisible, graine 1062) « passer la correction » redonnait au calque l'image déjà montrée, détachée : erreur
+test("la même image montrée deux fois n'est donnée qu'une fois ; une image détachée est ignorée sans erreur", () => {
+  const v = new LineView(stage), img = { width: 1280 };
+  v.show(img); const n = journal.length;
+  v.show(img); assert.equal(journal.length, n, "la même image, déjà à l'écran : pas redonnée");
+  v.clear(); img.width = 0; const m = journal.length;
+  assert.doesNotThrow(() => v.show(img)); assert.equal(journal.length, m, "une image détachée n'est pas donnée");
+  assert.ok(!v.affichee && v.c.classList.contains("vide"), "le calque reste caché");
+});

@@ -124,7 +124,7 @@ const stars1 = await page.evaluate(() => [window.__app.rewards.st.total, window.
 check(stars1[0] === stars0[0] && stars1[1] === stars0[1] && stars1[2] === stars0[0], `entraînement libre : ni étoile ni coquillage (${stars1[0]} étoiles avant et après)`);
 await waitQ();
 await page.tap(".session-home", { force: true }); await page.waitForTimeout(800);
-check((await page.locator(".again").count()) === 1 && (await page.locator(".answer").count()) === 0 && (await page.locator(".nsp").evaluate((e) => getComputedStyle(e).visibility)) === "hidden", "la maison quitte l'entraînement libre : retour à la lune et à « Encore ! »");
+check((await page.locator(".again").count()) === 1 && (await page.locator(".answer").count()) === 0 && (await page.evaluate(() => [...document.querySelectorAll(".nsp")].every((e) => getComputedStyle(e).visibility === "hidden"))) /* (lot « Recette de l'enfant » : l'écran quitté est détruit, son « je ne sais pas » n'existe plus) */, "la maison quitte l'entraînement libre : retour à la lune et à « Encore ! »");
 await page.waitForTimeout(1500);
 check(await page.evaluate(() => !window.__app.screen.resolve && (window.__app.screen.q === null || window.__app.screen.locked)), "l'activité abandonnée ne revient pas à l'écran");
 await shot("9-retour-apres-libre");

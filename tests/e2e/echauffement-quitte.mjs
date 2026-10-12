@@ -28,7 +28,10 @@ await tap('.choix-tuile[data-key="2"]'); await tap('.choix-tuile[data-key="2"]',
 await page.waitForTimeout(8000);
 const apres = await page.evaluate((t0) => window.__dit.filter(([t]) => t > t0).map(([, x]) => x), t0);
 check(await page.evaluate(() => window.__app.session?.rec?.module === 3), "le calcul rapide, choisi depuis la pause, commence");
-check(!apres.includes(textes.pave), `la seconde phrase de l'échauffement quitté n'est plus dite (${apres.join(" | ")})`);
+// (le calcul rapide a son propre échauffement, qui dit à son tour ses deux phrases : seule compte une seconde phrase dite avant
+// la première phrase de ce nouvel échauffement)
+const i = apres.indexOf(textes.pave);
+check(i < 0 || apres.slice(0, i).some((t) => textes.echauffement.includes(t)), `la seconde phrase de l'échauffement quitté n'est plus dite (${apres.join(" | ")})`);
 check(!errors.length, `aucune erreur (${errors.join(" | ")})`);
 await browser.close(); srv.close();
 process.exitCode = fail.length ? 1 : 0;

@@ -789,8 +789,12 @@ function abandonActivity() {
   // ouvertes (les étapes de la séance, l'entraînement libre, l'écran « choisir », une leçon seule) sont fermées : chacune
   // retire tout ce qu'elle a posé ou lancé (engine/portee.js). Ne reste ici que le commun : l'horloge et la voix de l'activité,
   // la bulle, la flèche, la mascotte, la musique.
+  // (l'enfant imprévisible, graine 1063 : la voix et l'horloge abandonnées d'abord ; fermées avant elles, les portées coupaient
+  // la phrase en cours par `voice.stop()`, qui la terminait comme dite : la suite de l'étape quittée parlait ensuite, sur
+  // l'écran suivant)
+  clock.abandon(); voice.abandon();
   fermerTout(app.portees);
-  clock.abandon(); voice.abandon(); bulle.cacher(); fleche.cacher(); ocean.mascotte.release(); ocean.mascotte.ambiance("pause");
+  bulle.cacher(); fleche.cacher(); ocean.mascotte.release(); ocean.mascotte.ambiance("pause");
   // (le filet : un bouton « passer » ou du sélecteur libre posé hors de toute portée)
   document.querySelectorAll("#ui .free, #ui .skip").forEach((e) => e.remove());
   mode = null; homeKey.style.visibility = "hidden"; sound.stopMusic();

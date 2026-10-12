@@ -893,7 +893,9 @@ const API = {
   },
   // le portefeuille montré ou caché (au niveau 7, le paiement est déjà dans la soucoupe)
   visible(v) { for (const e of [pfEl, fondEl, avEl]) e.style.visibility = v ? '' : 'hidden'; items.filter(i => i.lieu !== 'soucoupe').forEach(i => { i.el.style.visibility = v ? '' : 'hidden'; if (i.lab) i.lab.style.visibility = v ? '' : 'hidden'; }); },
-  async ouvrir() { if (pfEtat === 'ferme') ouvrirPf(); while (pfEtat === 'anim' || pfEtat === 'ferme') await attendre(40); },
+  // (lot « Recette de l'enfant et nettoyage des couches », l'enfant imprévisible, graine 1001 : appelé pendant que le portefeuille
+  // se refermait, il attendait pour toujours un portefeuille fermé qu'il ne rouvrait pas ; il le rouvre dès qu'il est fermé)
+  async ouvrir() { while (pfEtat === 'anim' || pfEtat === 'ferme') { if (pfEtat === 'ferme') ouvrirPf(); await attendre(40); } },
   sortir() { if (pfEtat === 'ouvert') sortirTout(); },
   async fermer() { if (pfEtat === 'sorti') rangerEtFermer(); else if (pfEtat === 'ouvert') fermerPf(); await attendre(900); },
   // ---- la soucoupe

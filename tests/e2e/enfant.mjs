@@ -216,7 +216,7 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
     if (bloque || Date.now() - pas < lent(180000)) return;
     bloque = { ou, apres: faits.length };
     await page.screenshot({ path: join(OUT, `bloque-${graine}.png`), timeout: 10000 }).catch(() => {});
-    bloque.etat = await Promise.race([page.evaluate(() => window.__enfantContexte?.()).catch((x) => x.message), new Promise((r) => setTimeout(() => r("(la page ne répond plus)"), 10000))]);
+    bloque.etat = await Promise.race([page.evaluate(() => ({ ...window.__enfantContexte?.(), scene: window.__app?.etal?.api?.etat?.() ?? window.__app?.voiliers?.api?.etat?.() ?? null })).catch((x) => x.message), new Promise((r) => setTimeout(() => r("(la page ne répond plus)"), 10000))]);
     context.close().catch(() => {});
   }, 5000);
   try {

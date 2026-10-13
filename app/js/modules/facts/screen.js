@@ -229,8 +229,11 @@ export class FactsScreen {
     let abort = null, dead = false; const abortP = new Promise((_, rej) => { abort = () => { dead = true; rej(SKIPPED); }; }); abortP.catch(() => {});
     const g = (p) => Promise.race([p, abortP]), skip = skipKey(this.app, () => abort(), label);
     this.abortAid = () => abort(); // (lot 3 ter : l'échauffement passé pendant l'aide l'arrête, abandon)
+    // (lot « Décisions sur les constats de l'agent », décision 4 ; constat 6 : « Compte les sauts avec la tortue » couvrait
+    // « 2 + ») pendant l'aide, la bulle ne couvre jamais l'égalité de l'ardoise, dont parle la voix
+    const aide = label === "passer l'aide"; if (aide) this.app.bulle?.eviter("egalite", this.slate);
     try { await body(g, () => dead); } catch (e) { if (e !== SKIPPED) throw e; this.app.voice.stop(); }
-    finally { this.abortAid = null; skip.remove(); this.board.clear(); }
+    finally { this.abortAid = null; skip.remove(); this.board.clear(); if (aide) this.app.bulle?.eviter("egalite", null); }
   }
   // cran « plus facile » : l'appui est montré d'emblée (sans la réponse), puis le pavé revient ; un fait réussi
   // ainsi ne change pas de boîte (runner.js, `aideDEmblee`) ; « passer » rend le pavé aussitôt

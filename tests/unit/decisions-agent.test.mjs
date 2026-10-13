@@ -96,3 +96,15 @@ test("décision 6 : aux niveaux « partout », hors des bouées, le nombre reste
 test("décision 6 : la phrase du toucher sur un passage", () => {
   assert.equal(T.voiliersGlisser, "Fais glisser le bateau jusqu'au passage !");
 });
+
+// ---------------------------------------------------------------- décision 4 : la bulle plus courte
+import { COLONNE, largeurMax, poser, premierePhrase } from "../../app/js/engine/bulle.js";
+test("décision 4 : sans place, la bulle n'écrit que la première phrase ; une phrase seule n'a pas de version courte", () => {
+  assert.equal(premierePhrase("42 plus 6 ? Suis le chemin : tape le nombre de chaque caillou."), "42 plus 6 ?");
+  assert.equal(premierePhrase("La tortue est sur 7. Elle fait un saut. Compte avec elle !"), "La tortue est sur 7.");
+  assert.equal(premierePhrase("Il est plus petit que cette bouée : il passe avant."), null);
+  assert.equal(premierePhrase("Fais glisser le bateau jusqu'au passage !"), null);
+  // la dernière place, la colonne entre la tête et l'ardoise des additions (x 495), au-dessus de la bande de la ligne (y 300)
+  const r = poser(COLONNE, largeurMax(COLONNE.boite), 70).rect;
+  assert.ok(r[2] <= 495 && r[3] <= 300 && r[0] >= 232, JSON.stringify(r));
+});

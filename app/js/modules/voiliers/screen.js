@@ -124,6 +124,9 @@ export class VoiliersScreen {
     onBrief(app, this.nsp, () => { if (!this.attend) return; pop(this.nsp); this.onNsp?.(); }, "nsp");
     // la bulle écrit le nombre du bateau en lettres
     app.bulleTexte = bulleNombre;
+    // (lot « Décisions sur les constats de l'agent », décision 4 ; constat 6 : « Il est plus petit que cette bouée » et la bulle
+    // couvrait la bouée 63) la bouée allumée, celle que nomme la voix, n'est jamais couverte par la bulle
+    app.bulle?.eviter("bouee", () => this.boueesNommees());
     await this.api.pret();
     return true;
   }
@@ -138,6 +141,7 @@ export class VoiliersScreen {
     this.cv = null;
     this.nsp?.remove(); this.nsp = null; this.skip?.remove(); this.skip = null;
     if (app.bulleTexte === bulleNombre) app.bulleTexte = null;
+    app.bulle?.eviter("bouee", null);
     if (etait) app.lagon?.pause(false);
   }
   // (décision 6) le geste montré : la flèche part du bateau et descend jusqu'au passage touché (deux fois), pendant que la voix
@@ -154,6 +158,12 @@ export class VoiliersScreen {
       const u = ease(Math.min(1, Math.max(0, ((t % D.tourMs) - D.attenteMs) / D.trajetMs)));
       return [de[0] + (a[0] - de[0]) * u, de[1] + (a[1] - de[1]) * u];
     });
+  }
+  // (décision 4) les bouées allumées, de leur sommet à la mer (au double encadrement, la rangée qui recule est plus haute)
+  boueesNommees() {
+    if (!this.api || this.app.enPause) return null;
+    const e = this.api.etat(), haut = this.q?.double ? 330 : 430;
+    return e.xs.map((x, i) => (e.allumees[i] > 0.05 ? [x - 78, haut, x + 78, 800] : null)).filter(Boolean);
   }
   // pour la bulle : la bande des bouées et le bateau qui arrive ou attend le geste (jamais couverts) ; le bateau qui se
   // déplace seul (correction, exemple), là où il est et là où il va (évité si possible)

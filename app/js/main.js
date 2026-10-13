@@ -140,6 +140,9 @@ const bulle = new Bulle(stage, {
   // évitée si possible)
   souples: () => (stage.root.classList.contains("paused") ? [] : [...(app.voiliers?.actif ? app.voiliers.souples() : []), ...[app.etal, app.etalLecon].filter((e) => e?.actif).flatMap((e) => e.souples()), ...(app.facts?.q?.module === 5 && app.facts.slate?.style.visibility !== "hidden" ? [[495, 120, 1085, 300]] : [])]),
 }), fleche = new Fleche(ocean);
+// (lot « Décisions sur les constats de l'agent », décision 4) ce que montre le calque des aides et dont parle la voix (le chemin du
+// calcul rapide) : la bulle ne le couvre jamais (les exercices déclarent les autres zones eux-mêmes : bulle.eviter)
+bulle.eviter("aides", () => (stage.root.classList.contains("paused") || !app.aidBoard?.used ? null : app.aidBoard.zones));
 // (relecture du lot : pendant une question de dictée, la bulle n'écrit rien : elle écrirait en chiffres le nombre à écrire)
 const dicteeEnCours = () => !!(app.facts?.q?.dictee && !app.facts.locked);
 // (lot « Les voiliers » : `app.bulleTexte` récrit ce que la bulle écrit : le nombre du bateau, en chiffres et en lettres)

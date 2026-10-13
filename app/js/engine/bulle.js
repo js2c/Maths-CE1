@@ -34,6 +34,10 @@ export const PLACES = [
   { nom: "dessous", boite: [8, MASCOTTE.y + MASCOTTE.h + 34, 404, 792], pointe: MENTON, haut: true }, // (à gauche des tuiles de « choisir », x 421)
   { nom: "droite-haute", boite: [BOUCHE[0] + 34, 92, 1128, 420], pointe: BOUCHE },
 ];
+// (lot « Décisions sur les constats de l'agent », décision 4 : l'ardoise des additions est devenue intouchable pendant l'aide ; avec
+// la ligne de la tortue, il ne restait aucune place) LA COLONNE entre la tête et l'ardoise, x 241 à 494, au-dessus de la bande de la
+// ligne (qui commence à y 300) : essayée en tout dernier, après les places en lignes larges
+export const COLONNE = { nom: "colonne", boite: [BOUCHE[0] + 34, 92, 494, 296], pointe: BOUCHE };
 
 // le contour de la bulle (repris de art/voiliers/index.html, `balloonPath`) : centre, demi-axes, graine du tremblé, pointe
 export function balloonPath(cx, cy, a, b, seed, tip) {
@@ -129,6 +133,8 @@ export function placesTuile([x0, y0, x1, y1]) {
   })).filter(({ boite: [a, b, c, d] }) => d - b >= 100);
   return [...base, ...loin];
 }
+// (décision 4) la première phrase d'un texte de plusieurs phrases (la bulle plus courte), sinon null
+export const premierePhrase = (texte) => { const m = String(texte).trim().match(/^.+?[.!?…](?=\s+\S)/); return m ? m[0] : null; };
 // le texte découpé en mots, les nombres à part (en rouge) ; les espaces insécables de la typographie française gardées
 // (un mot d'une lettre, « À », « à », « a », n'est jamais seul en fin de ligne : relecture du lot)
 export const mots = (texte) => texte.trim().replace(/ ([:;!?»])/g, " $1").replace(/« /g, "« ").replace(/(^| )([A-Za-zÀ-ÖØ-öø-ÿ]) /g, "$1$2\u00a0").split(/[ \t\n]+/).map((w) => w.split(/(\d+)/).filter(Boolean).map((t) => ({ t, nombre: /^\d+$/.test(t) })));
@@ -162,7 +168,7 @@ export class Bulle {
     this.txt = document.createElement("div"); this.txt.className = "bulle-texte";
     el.append(svg, this.txt);
     stage.ui.prepend(el); // (au-dessus des autres éléments par son z-index : app.css)
-    this.words = []; this.timers = []; this.shown = false; this.texte = ""; this.place = null;
+    this.words = []; this.timers = []; this.shown = false; this.texte = ""; this.place = null; this.zones = new Map();
     this.watch = setInterval(() => this.verifier(), 250);
     // la police d'abord (sinon la première mise en page se ferait avec une autre police)
     document.fonts?.load?.(`600 ${POLICE.taille}px "Shantell Sans"`).catch(() => {});
@@ -171,13 +177,26 @@ export class Bulle {
   // (lot « Correctifs de la tablette ») la prochaine fois que la voix dit `texte`, la bulle part de la tuile : `places`
   // (placesTuile) et `obstacles()` ({ durs, souples }) à elle ; `ancrer(null)` revient à la bulle de la mascotte
   ancrer(a) { this.ancre = a; if (!a && this.mode) { this.mode = null; this.cacher(); } }
-  // la voix commence un texte de `ms` millisecondes
-  dire(texte, ms) {
-    this.clear();
-    // (lot « Correctifs : passage de l'échauffement aux voiliers », point 4 : une bulle sans texte ne s'affiche jamais)
-    if (!String(texte ?? "").trim()) { this.cacher(true); return; }
-    clearTimeout(this.vider);
-    this.mode = this.ancre && this.ancre.texte === texte ? this.ancre : null; this.el.classList.toggle("tuile", !!this.mode);
+  // (lot « Décisions sur les constats de l'agent », décision 4 ; constat 6 de l'agent : la bulle cachait justement ce dont parlait
+  // la voix) CE DONT PARLE LA VOIX : un exercice déclare ici une zone que la bulle ne couvre jamais, comme ce que l'enfant touche
+  // (l'égalité de l'aide, le chemin du calcul rapide, la bouée nommée aux voiliers, l'article allumé de l'étal et son ardoise) ;
+  // `zone` : un rectangle [gauche, haut, droite, bas] en px logiques, une liste de rectangles, un élément de la page (sa boîte,
+  // s'il est visible), ou une fonction qui rend l'un d'eux (relue à chaque mise en page) ; null retire la zone
+  eviter(cle, zone) { if (zone == null) this.zones.delete(cle); else this.zones.set(cle, zone); }
+  zonesParlees() {
+    const r0 = this.st.ui.getBoundingClientRect(), k = this.st.k, out = [];
+    const ajouter = (z) => {
+      if (!z) return;
+      if (typeof z === "function") return ajouter(z());
+      if (z instanceof Element) { if (!z.isConnected || z.closest(".stash") || (z.checkVisibility && !z.checkVisibility({ visibilityProperty: true }))) return; const r = z.getBoundingClientRect(); if (r.width > 1) out.push([(r.left - r0.left) / k, (r.top - r0.top) / k, (r.right - r0.left) / k, (r.bottom - r0.top) / k]); return; }
+      if (Array.isArray(z) && typeof z[0] === "number") { out.push(z); return; }
+      if (Array.isArray(z)) z.forEach(ajouter);
+    };
+    for (const z of this.zones.values()) ajouter(z);
+    return out;
+  }
+  // le texte écrit dans la bulle : ses mots, les nombres à part (en rouge)
+  ecrire(texte) {
     this.texte = texte; this.txt.textContent = "";
     this.words = mots(texte).map((parts, i) => {
       if (i) this.txt.append(" ");
@@ -185,7 +204,21 @@ export class Bulle {
       for (const p of parts) { if (p.nombre) { const n = document.createElement("span"); n.className = "nb"; n.textContent = p.t; s.append(n); } else s.append(p.t); }
       this.txt.append(s); return s;
     });
+  }
+  // la voix commence un texte de `ms` millisecondes
+  dire(texte, ms) {
+    this.clear();
+    // (lot « Correctifs : passage de l'échauffement aux voiliers », point 4 : une bulle sans texte ne s'affiche jamais)
+    if (!String(texte ?? "").trim()) { this.cacher(true); return; }
+    clearTimeout(this.vider);
+    this.mode = this.ancre && this.ancre.texte === texte ? this.ancre : null; this.el.classList.toggle("tuile", !!this.mode);
+    this.ecrire(texte); this.court = false;
     this.layout();
+    // (décision 4) sans place qui laisse libre ce que l'enfant touche et ce dont parle la voix : une bulle plus courte, la
+    // première phrase seule (« 42 plus 6 ? » de « 42 plus 6 ? Suis le chemin… »), puis pas de bulle : un objet caché est pire
+    // qu'une phrase non écrite
+    const court = premierePhrase(texte);
+    if (this.place.touche && court && court !== texte.trim()) { this.ecrire(court); this.court = true; this.layout(); }
     // nulle part sans couvrir une cible : cachée aussitôt, sans fondu (sinon l'ovale de la nouvelle phrase, encore sans ses mots,
     // restait un instant à l'écran, vide et pâle, le temps du fondu : point 4)
     if (this.place.touche) { this.cacher(true); return; }
@@ -249,7 +282,7 @@ export class Bulle {
   }
   obstacles() {
     if (this.mode?.obstacles) return this.mode.obstacles();
-    return { durs: [...obstacles(this.st.ui, this.st.k), ...this.dures()], souples: [...obstacles(this.st.ui, this.st.k, CARTE), ...this.dessins(), ...this.souplesEnPlus()] };
+    return { durs: [...obstacles(this.st.ui, this.st.k), ...this.dures(), ...this.zonesParlees()], souples: [...obstacles(this.st.ui, this.st.k, CARTE), ...this.dessins(), ...this.souplesEnPlus()] };
   }
   layout() {
     // (point 3 : les lignes équilibrées ne descendent pas sous le mot le plus long : on ne coupe un mot composé que si la
@@ -257,7 +290,7 @@ export class Bulle {
     Object.assign(this.txt.style, { maxWidth: "1px" }); this.txt.classList.remove("coupe");
     const motLong = this.txt.scrollWidth, cible = Math.max(largeurEquilibree(this.mesure(4000)[0]), motLong + 4), m = (w, place) => { this.el.classList.toggle("large", !!place?.large); return this.mesure(Math.min(w, place?.large ? LIGNE_LARGE : cible)); };
     // (lot « Les leçons » : `places`, les places propres à un écran, la table d'addition : sous la tête, à gauche de la grille)
-    const { durs, souples } = this.obstacles(), p = choisirPlace(durs, m, avecLarges(this.mode?.places ?? this.places ?? PLACES), souples);
+    const places = this.mode?.places ?? this.places ?? PLACES, { durs, souples } = this.obstacles(), p = choisirPlace(durs, m, [...avecLarges(places), ...(places === PLACES ? [COLONNE] : [])], souples);
     m(largeurMax(p.place.boite), p.place);
     Object.assign(this.txt.style, { left: `${(p.cx - p.w / 2).toFixed(1)}px`, top: `${(p.cy - p.h / 2).toFixed(1)}px` });
     const d = balloonPath(p.cx, p.cy, p.a, p.b, (Math.round(p.w) * 7 + Math.round(p.h)) % 13, p.place.pointe);
@@ -277,6 +310,6 @@ export class Bulle {
   // pour les tests : où elle est, ce qu'elle dit, ce qu'elle couvre
   etat() {
     const o = this.shown && this.place ? this.obstacles() : { durs: [], souples: [] }, sur = (l) => l.filter((r) => aire(this.place.rect, r, 0) > 0).length;
-    return { visible: this.shown, texte: this.texte, place: this.place?.place.nom ?? null, rect: this.place?.rect ?? null, couvre: sur(o.durs), gene: sur(o.souples) };
+    return { visible: this.shown, texte: this.texte, court: !!this.court, place: this.place?.place.nom ?? null, rect: this.place?.rect ?? null, couvre: sur(o.durs), gene: sur(o.souples), zones: this.zonesParlees() };
   }
 }

@@ -24,8 +24,10 @@ export class AidBoard {
   // dessine en coordonnées de la scène (px logiques) ; efface d'abord. Renvoie le numéro du dessin (`gen`) : une animation
   // s'arrête dès qu'un autre dessin ou un effacement l'a remplacé
   // (lot « Mascotte » : `c.__gen`, `c.__used` : la bulle de la mascotte relève ce qui est dessiné pour l'éviter, engine/bulle.js)
-  draw(fn) { const x = this.c.getContext("2d"), px = this.app.stage.px; x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, this.c.width, this.c.height); x.setTransform(px, 0, 0, px, 0, 0); fn(x); this.used = true; this.gen = (this.gen ?? 0) + 1; this.c.__gen = this.gen; this.c.__used = true; return this.gen; }
-  clear() { this.gen = (this.gen ?? 0) + 1; this.c.__gen = this.gen; if (!this.used) return; const x = this.c.getContext("2d"); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, this.c.width, this.c.height); this.used = false; this.c.__used = false; }
+  // (lot « Décisions sur les constats de l'agent », décision 4) `zones` : ce que le dessin en cours montre et dont parle la voix (le
+  // chemin du calcul rapide) ; la bulle de la mascotte ne le couvre jamais (main.js, bulle.eviter(« aides »)) ; vidé à chaque dessin
+  draw(fn) { const x = this.c.getContext("2d"), px = this.app.stage.px; x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, this.c.width, this.c.height); x.setTransform(px, 0, 0, px, 0, 0); this.zones = []; fn(x); this.used = true; this.gen = (this.gen ?? 0) + 1; this.c.__gen = this.gen; this.c.__used = true; return this.gen; }
+  clear() { this.gen = (this.gen ?? 0) + 1; this.c.__gen = this.gen; this.zones = []; if (!this.used) return; const x = this.c.getContext("2d"); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, this.c.width, this.c.height); this.used = false; this.c.__used = false; }
 }
 
 // pose un sprite dans un contexte déjà en px logiques (sprites.draw travaille en pixels d'écran)

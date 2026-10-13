@@ -10,6 +10,8 @@
 //     l'enfant touche la tuile ; juste après un achat, la tuile n'affiche aucun prix ;
 //  6. les voiliers : un toucher sur un passage fait dire « Fais glisser le bateau jusqu'au passage ! » et la flèche montre le
 //     geste du bateau au passage touché, au plus une fois par bateau ; le glisser reste le geste qui répond ;
+//  4. la bulle de la mascotte évite aussi ce dont parle la voix : l'égalité de l'aide de la tortue, le chemin du calcul rapide,
+//     la bouée nommée aux voiliers, l'article allumé de l'étal et son ardoise ; sans place, une bulle plus courte, ou pas de bulle ;
 // (les décisions suivantes s'ajoutent à leur étape)
 // Captures dans tests/e2e/out/decisions-agent/ ; échoue si une vérification échoue ou si la page a une erreur.
 //   node tests/e2e/decisions-agent.mjs [--out dossier] [--vite] [--seul 2,3]   (--vite : seulement 1280 × 800)
@@ -47,7 +49,12 @@ async function fresh({ q = Q, vue = VUES[0], prep = null, arg = null, reel = tru
   return { context, page };
 }
 // les phrases dites (window.__said), relevées depuis le dernier `saidReset`
-const espion = (page) => page.evaluate(() => { const v = window.__app.voice, say = v.say.bind(v); window.__said = []; v.say = (t, o) => { window.__said.push(t); return say(t, o); }; });
+// (et chaque bulle posée : son texte, visible ou non, en bulle courte ou non, ce qu'elle couvre des zones déclarées : window.__bulles)
+const espion = (page) => page.evaluate(() => {
+  const v = window.__app.voice, say = v.say.bind(v); window.__said = []; v.say = (t, o) => { window.__said.push(t); return say(t, o); };
+  const b = window.__app.bulle, dire = b.dire.bind(b), inter = (a, o) => Math.min(a[2], o[2]) - Math.max(a[0], o[0]) > 1 && Math.min(a[3], o[3]) - Math.max(a[1], o[1]) > 1; window.__bulles = [];
+  b.dire = (t, ms) => { dire(t, ms); const e = b.etat(); window.__bulles.push({ t, texte: e.texte, visible: e.visible, court: e.court, zones: e.zones.length, couvre: e.visible && e.rect ? e.zones.some((z) => inter(e.rect, z)) : false, ...(e.visible ? {} : { durs: b.obstacles().durs.map((r) => r.map(Math.round)) }) }); };
+});
 const said = (page) => page.evaluate(() => window.__said.join(" | "));
 const saidReset = (page) => page.evaluate(() => { window.__said = []; });
 const shot = (page, vue, nom) => page.screenshot({ path: join(OUT, `${nom}-${vue[0]}.png`) });
@@ -270,6 +277,73 @@ if (faire(6)) {
       await page.mouse.up();
     }
     await context.close();
+  }
+}
+
+// ---------------------------------------------------------------- 4. la bulle évite ce dont parle la voix
+// la bulle, relevée `n` fois toutes les 150 ms : chaque fois qu'elle est visible, elle ne couvre aucune des zones (celles que
+// les exercices ont déclarées, bulle.etat().zones, et `extra()` : celles que le parcours connaît par ailleurs) ; renvoie le
+// nombre de relevés où elle était visible, ceux où elle couvrait une zone, ceux en bulle courte, et les zones vues
+async function releverBulle(page, n = 24, extra = "() => []") {
+  const out = { vue: 0, couvre: 0, court: 0, zones: 0, textes: new Set() };
+  for (let i = 0; i < n; i++) {
+    const r = await page.evaluate((ex) => { const b = window.__app.bulle.etat(), zs = [...b.zones, ...(0, eval)(ex)()], inter = (a, o) => Math.min(a[2], o[2]) - Math.max(a[0], o[0]) > 1 && Math.min(a[3], o[3]) - Math.max(a[1], o[1]) > 1; return { v: b.visible && !!b.rect, c: b.visible && b.rect ? zs.some((z) => inter(b.rect, z)) : false, court: b.court, z: zs.length, t: b.texte }; }, extra);
+    if (r.v) { out.vue++; out.textes.add(r.t); } if (r.c) out.couvre++; if (r.v && r.court) out.court++; out.zones = Math.max(out.zones, r.z);
+    await page.waitForTimeout(150);
+  }
+  out.textes = [...out.textes]; return out;
+}
+if (faire(4)) {
+  for (const vue of VUES) {
+    const un = vue === VUES[0];
+    // a. l'aide de la tortue à l'échauffement (famille 1) : la bulle n'est jamais sur l'égalité de l'ardoise
+    {
+      const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=notion,defi&cran=conseille`, vue, reel: false });
+      await tap(page, ".play"); await questionPrete(page);
+      // (une question de la famille 1, dont l'aide est la tortue : on passe les autres)
+      for (let i = 0; i < 14 && !(await page.evaluate(() => !window.__app.facts.q.base && window.__app.facts.aidKind(window.__app.facts.q) === "ligne")); i++) { await repondreJuste(page); await questionPrete(page); }
+      await page.evaluate(() => { window.__bulles = []; });
+      await tap(page, ".help");
+      await attendre(page, () => window.__bulles.some((x) => x.zones && x.t.length > 12), null, 8000); await page.waitForTimeout(200);
+      await shot(page, vue, "4a-aide-tortue-egalite");
+      const r = await releverBulle(page, 20), poses = await page.evaluate(() => window.__bulles.filter((x) => x.zones));
+      if (process.env.DEBUG_BULLE) console.log(JSON.stringify(poses));
+      if (un) check(poses.length && poses.every((x) => !x.couvre), `4. aide de la tortue, chaque phrase : ${poses.map((x) => `« ${x.t} » ${x.visible ? (x.court ? `en bulle courte (« ${x.texte} »)` : "bulle entière") : "sans bulle"}`).join(" ; ")}`);
+      if (un) check(r.zones >= 1 && r.couvre === 0, `4. aide de la tortue : la bulle ne couvre jamais l'égalité (${r.vue} relevés où elle est visible, ${r.couvre} sur la zone, ${r.court} en bulle courte ; « ${r.textes.join(" / ")} »)`);
+      await context.close();
+    }
+    // b. le calcul rapide guidé (niveau 4) : le chemin n'est jamais couvert
+    {
+      const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=echauffement&choix=3:4&cran=conseille`, vue, reel: false });
+      await tap(page, ".play");
+      await attendre(page, () => (window.__app.aidBoard?.zones ?? []).length > 0, null, 60000);
+      const r = await releverBulle(page, 30);
+      await shot(page, vue, "4b-calcul-chemin");
+      if (un) check(r.zones >= 1 && r.couvre === 0, `4. calcul rapide : la bulle ne couvre jamais le chemin (${r.vue} relevés visibles, ${r.couvre} sur le chemin, ${r.court} en bulle courte ; « ${r.textes.join(" / ")} »)`);
+      await context.close();
+    }
+    // c. les voiliers (niveau 2, bouées impaires) : l'erreur « plus petit que cette bouée » ; la bouée allumée n'est pas couverte
+    {
+      const { context, page } = await fresh({ q: `${Q}&sansLecon&choix=4:2&cran=conseille`, vue, prep: prepVoiliers, reel: false });
+      await tap(page, ".play"); await bateauAttend(page);
+      const q = await page.evaluate(() => { const q = window.__app.voiliers.q; return { k: q.k, n: q.bouees.length }; });
+      await page.evaluate((c) => window.__app.voiliers.api.deposer(c), q.k < q.n ? q.k + 1 : q.k - 1);
+      await attendre(page, () => window.__app.voiliers.api.etat().allumees.some((x) => x > 0.05), null, 20000);
+      const r = await releverBulle(page, 16);
+      await shot(page, vue, "4c-voiliers-bouee-nommee");
+      if (un) check(r.zones >= 1 && r.couvre === 0, `4. voiliers : la bulle ne couvre jamais la bouée nommée (${r.vue} relevés visibles, ${r.couvre} sur la bouée ; « ${r.textes.join(" / ")} »)`);
+      await context.close();
+    }
+    // d. l'étal (niveau 3) : l'article allumé et son ardoise ne sont jamais couverts
+    {
+      const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=echauffement&choix=6:3&cran=conseille`, vue, reel: false });
+      await tap(page, ".play");
+      await attendre(page, () => !!window.__app.etal?.api && (window.__app.etal.api.allumes?.() ?? []).length > 0, null, 90000);
+      const r = await releverBulle(page, 24, "() => window.__app.etal?.api?.allumes?.() ?? []");
+      await shot(page, vue, "4d-etal-article-allume");
+      if (un) check(r.zones >= 1 && r.couvre === 0, `4. étal : la bulle ne couvre jamais l'article allumé ni son ardoise (${r.vue} relevés visibles, ${r.couvre} dessus ; « ${r.textes.join(" / ")} »)`);
+      await context.close();
+    }
   }
 }
 

@@ -28,6 +28,8 @@ export class CalcScreen {
   paintPath(ctx, q, L, { shown = Infinity, typed = null, lit = -1, grow = 1 } = {}) {
     const steps = q.chemin, m = steps.length + 1, gap = Math.min(L.r * 5.2, L.span / Math.max(1, m - 1)), cx = Math.min(790, 1250 - L.r - ((m - 1) * gap) / 2), x0 = cx - ((m - 1) * gap) / 2; // (un long chemin, jusqu'à 9 ponts, se décale à gauche pour tenir à l'écran)
     const at = (i) => [x0 + i * gap, L.y], vals = [q.a, ...steps.map((s) => s.a)];
+    // (décision 4 : le chemin, dont parle la voix, « Suis le chemin… » : la bulle ne le couvre jamais ; les ponts montent au-dessus des cailloux)
+    this.board?.zones?.push([x0 - L.r - 6, L.y - L.r - 46, x0 + (m - 1) * gap + L.r + 6, L.y + L.r + 8]);
     steps.forEach((s, i) => R.drawBridge(ctx, at(i), at(i + 1), `${s.op === "-" ? "−" : "+"}${s.k}`, { r: L.r, em: L.em, lit: i + 1 === lit, p: i + 1 < shown || i + 1 === lit ? 1 : i + 1 === shown ? grow : 1, seed: 7500 + i * 50 }));
     vals.forEach((v, i) => R.drawStone(ctx, ...at(i), i < shown ? String(v) : i === lit && typed ? typed : "?", { r: L.r, ask: i >= shown, lit: i === lit, seed: 7400 + i * 10 }));
   }

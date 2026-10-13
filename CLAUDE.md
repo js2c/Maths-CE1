@@ -69,7 +69,7 @@ Chromium est préinstallé dans l'environnement de Claude Code (ne pas lancer `p
 ## Méthode de travail
 
 - Avancer par étapes courtes et vérifiables. Après chaque étape : lancer les tests, faire des captures d'écran avec Playwright, les regarder, corriger ce qui est laid ou illisible avant de continuer.
-- **Recette à chaque étape** (depuis le lot 2) : simulation de séances par profil d'enfant et séance jouée à vitesse réelle (`tests/sim-seances.mjs`, `tests/e2e/recette.mjs`, `tests/e2e/recette-durees.mjs`), `tests/recette-fonctionnelle/b-sequences.mjs --test`, critères et mesures dans la demande de fusion ; voir `docs/SPEC.md`, section 14.
+- **Recette à chaque étape** (depuis le lot 2) : simulation de séances par profil d'enfant et séance jouée à vitesse réelle (`tests/sim-seances.mjs`, `tests/e2e/recette.mjs`, `tests/e2e/recette-durees.mjs`), `tests/recette-fonctionnelle/b-sequences.mjs --test`, critères et mesures dans la demande de fusion ; voir `docs/SPEC.md`, section 14. Depuis le lot « Recette de l'enfant et nettoyage des couches » : l'enfant imprévisible (`tests/e2e/enfant.mjs`, quelques graines ; chaque défaut trouvé devient un parcours de non-régression) et la règle de sortie unique (tout ce qu'une étape pose ou lance est inscrit dans sa portée, `engine/portee.js` ; `docs/COUCHES.md`).
 - Un commit par étape, message en français.
 - La qualité graphique est un critère de réussite : un écran fonctionnel mais pauvre n'est pas terminé.
 - Ne pas simplifier silencieusement le contenu de `docs/SPEC.md` ; signaler tout écart et sa raison. Un lot met `docs/SPEC.md` à jour dans sa propre demande de fusion ; il ne crée pas de nouvelle spécification.

@@ -16,7 +16,7 @@
 //  - le temps d'image (moyenne, 95e centile) ;
 // et, avec --fuite : après 20 tours accueil, jeu, accueil, le nombre d'éléments, de canvas, de minuteries et d'écouteurs
 // revient à celui du départ.
-//   node tests/e2e/enfant.mjs [--graines 4] [--depart 1] [--actions 80] [--lent 1] [--tablette] [--parallele 1]
+//   node tests/e2e/enfant.mjs [--graines 4] [--depart 1] [--actions 80] [--lent 1] [--tablette] [--parallele 1] [--recharges N]
 //                             [--fuite] [--veille-longue] [--out dossier] [--rejouer fichier.json [--reduire]]
 //   --lent N : processeur ralenti N fois ; --tablette : 1138 × 711, densité 2,25 (la tablette du parent) ; --panne : le
 //   contrôle du contrôle (une touche orpheline et une erreur injectées : le parcours doit échouer)
@@ -138,7 +138,10 @@ const POIDS = [["cible", 26], ["cibleAcote", 8], ["eau", 6], ["rafale", 6], ["ap
 // (une graine sur deux, une enfant « sage » : elle joue surtout, et va donc jusqu'au bout des exercices ; l'autre, « dissipée »,
 // touche à tout)
 const SAGE = new Map([["repondreJuste", 45], ["repondreFaux", 10], ["cible", 12], ["maison", 2], ["menus", 1], ["choisirAutre", 2], ["attendre", 8]]);
-const poids = (sage) => POIDS.map(([k, p]) => [k, sage ? SAGE.get(k) ?? Math.max(1, Math.round(p / 3)) : p]);
+// (lot « Décisions sur les constats de l'agent », décision 1 : la reprise après un rechargement) `--recharges N` : la page
+// rechargée devient fréquente (le poids N, chez l'enfant sage comme chez la dissipée)
+const RECHARGES = arg("--recharges") != null ? Number(arg("--recharges")) : null;
+const poids = (sage) => POIDS.map(([k, p]) => [k, k === "recharger" && RECHARGES != null ? RECHARGES : sage ? SAGE.get(k) ?? Math.max(1, Math.round(p / 3)) : p]);
 const tirer = (rnd, sage) => { const P = poids(sage), T = P.reduce((s, [, p]) => s + p, 0); let x = rnd() * T; for (const [k, p] of P) if ((x -= p) < 0) return k; return "cible"; };
 async function concretiser(page, rnd, type) {
   const cibles = await page.evaluate(CIBLES), W = VUE.width, H = VUE.height, pick = (l) => l[Math.floor(rnd() * l.length)];

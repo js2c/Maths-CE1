@@ -35,6 +35,8 @@ for (const n of niveaux) for (const cran of CRANS) {
 }
 // les additions de la famille 4 choisie, aux quatre crans
 for (const cran of CRANS) {
+  // (lot « Décisions sur les constats de l'agent », décision 1 : la séance laissée en cours serait reprise au rechargement) une base neuve
+  await page.evaluate(async () => { for (const s of ["seances", "reponses", "niveaux"]) for (const x of await window.__app.store.all(s)) await window.__app.store.del?.(s, x.id ?? x.module); });
   await page.goto(url + `?nosw&voix=rapide&son=non&sansLecon&guides=0&cran=${cran}&choix=2:4&sans=defi`); await page.waitForFunction(() => window.__ready !== undefined);
   await page.tap(".play", { force: true });
   await page.waitForFunction(() => { const f = window.__app.facts; return f?.q && f.resolve && !f.locked; }, null, { timeout: 40000 });

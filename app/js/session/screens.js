@@ -24,7 +24,10 @@ export class StarHud {
     app.ocean.front.push((t) => this.tick(t));
   }
   paint(ctx, px) {
-    const q = this.app.sprites.frame("etoile", 0), k = 0.62; // l'étoile, réduite (jamais agrandie)
+    const q = this.app.sprites.frame("etoile", 0), k = 0.62, s0 = String(this.shown); // l'étoile, réduite (jamais agrandie)
+    // (lot « Décisions sur les constats de l'agent », décision 8 ; constat 14 : par temps d'orage, dans l'étal, le nombre bleu nuit
+    // se fondait dans le ciel sombre) sur un fond sombre (`app.hudSombre()`), le nombre est posé sur une petite plaque claire
+    if (this.sombre) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawPanel(ctx, s0.length > 2 ? 80 : 82, 18, s0.length > 2 ? 84 : 72, 64); ctx.setTransform(1, 0, 0, 1, 0, 0); }
     ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 50 * px + q.dx * k, 50 * px + q.dy * k, q.w * k, q.h * k);
     ctx.setTransform(px, 0, 0, px, 0, 0);
     const s = String(this.shown); R.drawNumber(ctx, s, 118 + (s.length > 2 ? 6 : 0), 32, s.length > 2 ? 34 : 40, { w: 5.6 });
@@ -42,6 +45,8 @@ export class StarHud {
     })));
   }
   tick(t) {
+    // (décision 8) le fond derrière le compteur est-il sombre ? relu deux fois par seconde
+    if (!(t - (this.vuSombre ?? -1) < 0.5)) { this.vuSombre = t; const s = !!this.app.hudSombre?.(); if (s !== !!this.sombre) { this.sombre = s; this.box.repaint(); } }
     this.flights = this.flights.filter((f) => {
       const u = (t - f.t0) / f.dur;
       if (u < 0) return true;
@@ -132,9 +137,13 @@ async function bonuses(app, { session, hud }) {
 // les étoiles arc-en-ciel qui volent vers l'album : chacune avec sa traînée (sprite « etoile.trainee », ancrée à la tête),
 // tournée dans le sens du vol ; composé par le navigateur (animations CSS), rien n'est redessiné pendant le vol
 export const ALBUM_AT = [1165, 650];
-export async function flyRainbowStars(app, n, { from = [640, 500], to = ALBUM_AT, gap = 110, k = app.vitesse ?? 1 } = {}) {
+// (lot « Décisions sur les constats de l'agent », décision 8 ; constat 15 : « Et une étoile arc-en-ciel ! » et l'écran ne la montrait
+// nulle part : elle filait vers un coin vide) l'album est posé à l'arrivée (`album`), comme à l'ouverture d'une zone ; il sautille à
+// chaque étoile qui y entre, puis s'en va
+export async function flyRainbowStars(app, n, { from = [640, 500], to = ALBUM_AT, gap = 110, k = app.vitesse ?? 1, album = true } = {}) {
   const { sprites } = app, W = 240, H = 130, hx = 180, hy = 65, els = [];
   const shown = Math.min(n, 9);
+  const livre = album ? spriteBox(app, { x: to[0] - 90, y: to[1] - 90, w: 180, h: 180, cls: "hud special arc-album pop", still: true, paint: (ctx) => sprites.draw(ctx, "album", 0, 90, 90) }) : null;
   for (let i = 0; i < shown; i++) {
     const x = from[0] + (i - (shown - 1) / 2) * Math.min(gap, 900 / shown), y = from[1], a = Math.atan2(to[1] - y, to[0] - x);
     // d'abord l'étoile seule ; la traînée est ajoutée au départ du vol
@@ -153,9 +162,10 @@ export async function flyRainbowStars(app, n, { from = [640, 500], to = ALBUM_AT
   const flights = els.map((el, i) => el.animate([
     { transform: `translate(0px, 0px) rotate(${el.fly.a}rad) scale(1)`, opacity: 1 },
     { transform: `translate(${el.fly.dx}px, ${el.fly.dy}px) rotate(${el.fly.a}rad) scale(0.45)`, opacity: 0.15 },
-  ], { duration: 900 / k, delay: (i * 120) / k, easing: "cubic-bezier(.5,0,.8,.6)", fill: "forwards" }).finished.catch(() => {}));
+  ], { duration: 900 / k, delay: (i * 120) / k, easing: "cubic-bezier(.5,0,.8,.6)", fill: "forwards" }).finished.catch(() => {}).then(() => { if (livre) pop(livre); }));
   await Promise.all(flights);
   els.forEach((e) => e.remove());
+  if (livre) { await wait(700 / k); livre.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300 / k, fill: "forwards" }); await wait(300 / k); livre.remove(); }
 }
 
 // LES COQUILLAGES DES OCCASIONS (lot « La boutique du récif » : plus de coquillages ordinaires, les créatures s'achètent à la

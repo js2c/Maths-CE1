@@ -101,6 +101,12 @@ Fait d'un seul tenant, sans arrêt pour validation (fiche 11 de `docs/LOTS.md`).
   - la flèche : elle part du bateau et descend jusqu'au milieu du passage touché, deux fois (2,2 s par tour), puis s'efface ; elle s'efface aussi dès que l'enfant prend le bateau ;
   - « à moins d'un intervalle » : strictement moins que l'écart de la bouée voisine (au niveau 2, bouées 63, 67, 73 : avant 63, seulement 60 à 62) ; réglé par niveau (`module4.json`, `horsBouees` : 1 au niveau 2, le seul niveau « partout » qui ne soit pas le double encadrement). Les tirages restent ceux de la maquette quand le réglage est absent (test de parité inchangé).
 - **Décision 7 (boutique)** : le prix est écrit sur la tuile touchée même quand l'enfant n'a pas assez d'étoiles (la coche n'apparaît pas alors) : la voix le dit, la tuile le montre.
+- **Décision 4 (la bulle)** :
+  - « une bulle plus courte » : la première phrase du texte, s'il en a plusieurs (« La tortue est sur 7. » de « La tortue est sur 7. Elle fait un saut. Compte avec elle ! ») ; sinon pas de bulle ;
+  - l'égalité de l'aide : l'ardoise, le temps de l'aide (le coquillage, et l'aide d'emblée du cran « plus facile »), pour toutes les aides des additions, pas seulement la tortue ; le chemin : celui que dessine le calque des aides (calcul guidé, coquillage, correction) ; la bouée nommée : chaque bouée allumée, de son sommet à la mer ;
+  - pendant l'aide de la tortue, l'ardoise et la ligne ne laissaient plus aucune place : une place de plus, en tout dernier recours, la colonne entre la tête et l'ardoise, au-dessus de la ligne ; elle reçoit la bulle courte ;
+  - l'étal : l'article allumé et son ardoise étaient déjà des obstacles durs (lot « L'étal du pêcheur ») ; rien à changer. Le portefeuille ouvert qui cache l'article (une partie du constat 6) est un dessin de la maquette, hors de la décision.
+- **Décision 8 (finition)** : la plaque du compteur est celle des ardoises (le panneau crème de l'atelier), posée dès que le ciel de l'étal est assez sombre (orage arrivé à plus de la moitié) ; la bulle de l'étal pointe vers la bouche de la mascotte dans la fenêtre (avant, vers celle de sa place habituelle) et n'a plus la place sous la tête, qui tombait sous le rebord ; l'album de la récompense est celui de l'ouverture d'une zone, posé à l'endroit où l'étoile allait déjà.
 
 ## Lot « Recette de l'enfant et nettoyage des couches » (12 octobre 2026) : les choix de la session, à revoir par le parent
 

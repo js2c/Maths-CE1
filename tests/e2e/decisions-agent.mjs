@@ -12,6 +12,8 @@
 //     geste du bateau au passage touché, au plus une fois par bateau ; le glisser reste le geste qui répond ;
 //  4. la bulle de la mascotte évite aussi ce dont parle la voix : l'égalité de l'aide de la tortue, le chemin du calcul rapide,
 //     la bouée nommée aux voiliers, l'article allumé de l'étal et son ardoise ; sans place, une bulle plus courte, ou pas de bulle ;
+//  8. la finition : le compteur d'étoiles lisible dans l'étal par temps d'orage (une plaque claire) ; dans l'étal, la bulle pointe
+//     vers la bouche de la mascotte dans la fenêtre et ne se pose plus sous le rebord ; l'étoile arc-en-ciel vole vers l'album ;
 // (les décisions suivantes s'ajoutent à leur étape)
 // Captures dans tests/e2e/out/decisions-agent/ ; échoue si une vérification échoue ou si la page a une erreur.
 //   node tests/e2e/decisions-agent.mjs [--out dossier] [--vite] [--seul 2,3]   (--vite : seulement 1280 × 800)
@@ -342,6 +344,54 @@ if (faire(4)) {
       const r = await releverBulle(page, 24, "() => window.__app.etal?.api?.allumes?.() ?? []");
       await shot(page, vue, "4d-etal-article-allume");
       if (un) check(r.zones >= 1 && r.couvre === 0, `4. étal : la bulle ne couvre jamais l'article allumé ni son ardoise (${r.vue} relevés visibles, ${r.couvre} dessus ; « ${r.textes.join(" / ")} »)`);
+      await context.close();
+    }
+  }
+}
+
+// ---------------------------------------------------------------- 8. la finition
+if (faire(8)) {
+  for (const vue of VUES) {
+    const un = vue === VUES[0];
+    // a. l'étal par temps d'orage : le compteur sur une plaque claire ; la bulle à droite de la fenêtre, jamais sous le rebord
+    {
+      const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=echauffement&choix=6:3&cran=conseille&meteo=orage`, vue, reel: false });
+      await page.evaluate(() => window.__app.store.put("recompenses", { id: "etoiles", total: 234, cumul: 334, dorees: 0, doreesDepensees: 0, arcEnCiel: 0, arcDepensees: 0, arcLibre: 0, coquillages: 0, coquillagesDores: 0 }));
+      await page.reload(); await page.waitForFunction(() => window.__ready !== undefined); await espion(page);
+      await tap(page, ".play");
+      await attendre(page, () => !!window.__app.etal?.attend, null, 90000); await page.waitForTimeout(1200);
+      if (un) check(await page.evaluate(() => window.__app.hud.sombre === true), "8. étal, orage : le compteur d'étoiles est posé sur une plaque claire");
+      // une bulle courte quand la droite est prise (le cas du constat 14 : « 7 euros. ») : pas sous le rebord de la fenêtre
+      const r = await page.evaluate(() => { const b = window.__app.bulle; b.eviter("essai", [235, 80, 1280, 300]); b.dire("7 euros.", 3000); const e = b.etat(); b.eviter("essai", null); return e; });
+      await page.waitForTimeout(700); await shot(page, vue, "8a-etal-orage-compteur-bulle");
+      if (un) {
+        check(r.place !== "dessous", `8. étal : la bulle courte ne se pose plus sous le rebord de la fenêtre (place : ${r.place ?? "aucune"})`);
+        const b = await page.evaluate(() => window.__bulles.filter((x) => x.visible).map((x) => x.t));
+        check(b.length > 0, `8. étal : des bulles écrites pendant la partie (${b.slice(0, 3).join(" / ")})`);
+      }
+      await context.close();
+    }
+    // b. par beau temps : pas de plaque
+    if (un) {
+      const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=echauffement&choix=6:3&cran=conseille&meteo=beau`, vue, reel: false });
+      await tap(page, ".play"); await attendre(page, () => !!window.__app.etal?.attend, null, 90000); await page.waitForTimeout(1200);
+      check(await page.evaluate(() => !window.__app.hud.sombre), "8. étal, beau temps : le compteur sans plaque");
+      await context.close();
+    }
+    // c. l'étoile arc-en-ciel à la récompense : un niveau franchi pendant la séance (la ligne, voie rapide) ; l'album à l'arrivée
+    {
+      const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=echauffement,defi&questions=8&guides=0&module=1`, vue, reel: false });
+      await page.evaluate(() => { window.__arcAlbum = 0; new MutationObserver(() => { if (document.querySelector(".arc-album")) window.__arcAlbum++; }).observe(document.querySelector("#ui"), { childList: true, subtree: true }); });
+      await tap(page, ".play");
+      const vu = attendre(page, () => !!document.querySelector(".arc-album") && !!document.querySelector(".etoile-vol"), null, 240000);
+      const fin = jusquaLaFin(page);
+      if (await vu) { await page.waitForTimeout(500); await shot(page, vue, "8c-etoile-arc-en-ciel-vers-l-album"); }
+      await fin.catch(() => {});
+      if (un) {
+        const s1 = await said(page);
+        check(s1.includes(T.etoileArc) && await page.evaluate(() => window.__arcAlbum > 0), "8. « Et une étoile arc-en-ciel ! » : l'album apparaît, l'étoile y vole");
+        check(!(await visible(page, ".arc-album")), "8. puis l'album s'en va");
+      }
       await context.close();
     }
   }

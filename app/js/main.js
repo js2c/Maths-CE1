@@ -140,6 +140,9 @@ const bulle = new Bulle(stage, {
   // évitée si possible)
   souples: () => (stage.root.classList.contains("paused") ? [] : [...(app.voiliers?.actif ? app.voiliers.souples() : []), ...[app.etal, app.etalLecon].filter((e) => e?.actif).flatMap((e) => e.souples()), ...(app.facts?.q?.module === 5 && app.facts.slate?.style.visibility !== "hidden" ? [[495, 120, 1085, 300]] : [])]),
 }), fleche = new Fleche(ocean);
+// (décision 8 du lot « Décisions sur les constats de l'agent ») la mascotte posée ailleurs (la fenêtre de la cabane de l'étal) : la
+// bulle pointe vers sa bouche et ne se pose plus sous la tête
+bulle.poste = () => ocean.ailleurs ?? null;
 // (lot « Décisions sur les constats de l'agent », décision 4) ce que montre le calque des aides et dont parle la voix (le chemin du
 // calcul rapide) : la bulle ne le couvre jamais (les exercices déclarent les autres zones eux-mêmes : bulle.eviter)
 bulle.eviter("aides", () => (stage.root.classList.contains("paused") || !app.aidBoard?.used ? null : app.aidBoard.zones));

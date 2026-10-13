@@ -81,6 +81,8 @@ export class EtalScreen {
     app.lagon?.pause(true);
     // la mascotte dans la fenêtre de la cabane, abaissée et rognée au rebord (comme dans la maquette)
     ocean.poste?.(E.mascotte);
+    // (décision 8) par temps d'orage, le compteur d'étoiles est posé sur une plaque claire (session/screens.js, StarHud)
+    app.hudSombre = () => !app.enPause && (this.api?.etat().meteo ?? 0) > 0.5;
     this.boutons();
     await this.x.api.pret;
     this.lampe();
@@ -110,6 +112,7 @@ export class EtalScreen {
   // la scène s'en va (fin de la notion du jour, maison de l'entraînement libre, séance terminée par le parent)
   leave() {
     const { app } = this, etait = !!this.x;
+    app.hudSombre = null;
     this.tok++; this.attend = false; this.verrou = true; this.resolve = null; this.onChange = null;
     this.x?.api.stop();
     for (const [cible, type, f, o] of this.ecoute) cible.removeEventListener(type, f, o);

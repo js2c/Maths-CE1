@@ -38,6 +38,13 @@ export const PLACES = [
 // la ligne de la tortue, il ne restait aucune place) LA COLONNE entre la tête et l'ardoise, x 241 à 494, au-dessus de la bande de la
 // ligne (qui commence à y 300) : essayée en tout dernier, après les places en lignes larges
 export const COLONNE = { nom: "colonne", boite: [BOUCHE[0] + 34, 92, 494, 296], pointe: BOUCHE };
+// (décision 8 ; constat 14 de l'agent : dans l'étal, la mascotte est dans la fenêtre de la cabane, plus bas ; la bulle sous le menton
+// passait sous le rebord de la fenêtre) les places d'une mascotte posée ailleurs (`m` : sa boîte, ocean.poste) : les mêmes
+// boîtes, la pointe vers sa bouche, et pas de place sous la tête
+export function placesPoste(m) {
+  const bouche = [m.x + m.w * 0.824 + 12, m.y + m.h * 0.715];
+  return PLACES.filter((p) => p.nom !== "dessous").map((p) => ({ ...p, pointe: bouche }));
+}
 
 // le contour de la bulle (repris de art/voiliers/index.html, `balloonPath`) : centre, demi-axes, graine du tremblé, pointe
 export function balloonPath(cx, cy, a, b, seed, tip) {
@@ -290,7 +297,7 @@ export class Bulle {
     Object.assign(this.txt.style, { maxWidth: "1px" }); this.txt.classList.remove("coupe");
     const motLong = this.txt.scrollWidth, cible = Math.max(largeurEquilibree(this.mesure(4000)[0]), motLong + 4), m = (w, place) => { this.el.classList.toggle("large", !!place?.large); return this.mesure(Math.min(w, place?.large ? LIGNE_LARGE : cible)); };
     // (lot « Les leçons » : `places`, les places propres à un écran, la table d'addition : sous la tête, à gauche de la grille)
-    const places = this.mode?.places ?? this.places ?? PLACES, { durs, souples } = this.obstacles(), p = choisirPlace(durs, m, [...avecLarges(places), ...(places === PLACES ? [COLONNE] : [])], souples);
+    const poste = this.poste?.(), places = this.mode?.places ?? this.places ?? (poste ? placesPoste(poste) : PLACES), { durs, souples } = this.obstacles(), p = choisirPlace(durs, m, [...avecLarges(places), ...(places === PLACES ? [COLONNE] : [])], souples);
     m(largeurMax(p.place.boite), p.place);
     Object.assign(this.txt.style, { left: `${(p.cx - p.w / 2).toFixed(1)}px`, top: `${(p.cy - p.h / 2).toFixed(1)}px` });
     const d = balloonPath(p.cx, p.cy, p.a, p.b, (Math.round(p.w) * 7 + Math.round(p.h)) % 13, p.place.pointe);

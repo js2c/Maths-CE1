@@ -46,6 +46,8 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Ensuite (décision du parent du 11 octobre 2026) : le lot « La boutique du récif »** (fiche 10), **avant** « Recette de l'enfant et nettoyage des couches ». La maquette est arrêtée (`art/boutique/`, PR #51, à fusionner avant de lancer le lot). Le lot remplace le coquillage tiré tous les 25 étoiles par une boutique où l'enfant achète ses créatures. La fiche 9 couvrira donc aussi la boutique. Les voix de l'étal, du lot 8 et de la boutique seront fabriquées d'un coup par le parent, après ce lot (727 phrases ; la limite de la voix passe à 85 Mo). **État : fait** (PR #54 ; 321 phrases nouvelles, environ 2,2 Mo, à fabriquer avec celles de l'étal et du lot 8).
 
+**Puis (décision du parent du 13 octobre 2026) : le lot « Décisions sur les constats de l'agent »** (fiche 11). Ce sont les réponses du parent aux questions laissées par le second passage de l'agent qui joue l'enfant (`docs/IDEES.md`, section 3), dont la reprise d'une séance après un rechargement. La boutique et la recette de l'enfant sont faites et fusionnées (PR #54 et #56). **État : à faire.**
+
 **Pourquoi cet ordre.**
 
 - Les correctifs de la confrontation avant les leçons et les sommes : ces lots s'appuient sur les règles du module 2 telles qu'elles seront écrites.
@@ -888,3 +890,58 @@ Migration non destructive (méthode commune). **Test obligatoire** : une sauvega
 - les situations à tenir, ci-dessus, en parcours ;
 - le temps d'image de la boutique et du récif, avec `perf.mjs` ;
 - la relecture indépendante (méthode commune).
+
+### 11. Lot « Décisions sur les constats de l'agent »
+
+**Origine** : le second passage de l'agent qui joue l'enfant (lot « Recette de l'enfant et nettoyage des couches », `tests/recette-fonctionnelle/out-enfant/RAPPORT-PASSAGE-2.md`) a laissé huit questions au parent (`docs/IDEES.md`, section 3, « Après le second passage de l'agent »). Ses décisions, le 13 octobre 2026, suivent les recommandations de la conception. Les reporter dans `docs/JOURNAL-CONCEPTION.md`, retirer les questions tranchées de `docs/IDEES.md`, et mettre à jour `docs/SPEC.md`.
+
+**Comme les lots 4 à 10 : d'un seul tenant, sans arrêt pour une validation.** Les détails laissés à la session vont dans le journal, marqués « choix de la session, à revoir par le parent », et dans une section « Choix faits sans le parent » de la demande de fusion.
+
+**Prérequis** : les PR #54 (boutique) et #56 (recette de l'enfant) sont fusionnées. Les voix des 2 phrases nouvelles du lot précédent, et les 50 phrases à refaire (`tools/voix/a-refaire-durees.txt`), peuvent manquer : le parent les fabrique après ce lot, avec les siennes.
+
+**Les décisions**
+
+1. **Reprendre une séance après un rechargement de la page** (constat 1). C'est ce qui arrive quand Android ferme le navigateur pendant que la tablette est posée, ou quand une nouvelle version prend la main au lancement suivant.
+   - **Le jour même seulement.** Le lendemain, la séance de la veille reste « interrompue », comme aujourd'hui.
+   - **Au début de l'étape en cours** (échauffement, notion du jour, défi), pas à la question près.
+   - **Gardés** : les réponses déjà données, les étoiles déjà gagnées, le cran choisi, l'ordre des étapes.
+   - **Une leçon déjà vue n'est pas rejouée.**
+   - **Le bilan de fin compte toute la séance**, avant et après le rechargement.
+   - À l'accueil, « continuer » reparaît comme pour une pause. La mascotte peut dire une phrase courte de reprise : en réutiliser une qui existe si possible.
+   - L'état nécessaire à la reprise est enregistré dans IndexedDB à chaque changement d'étape, avec une migration non destructive (méthode commune). L'espace parent note la reprise dans l'historique de la séance.
+   - Les cas suivants sont tenus, chacun en parcours :
+     - rechargement pendant chaque étape, y compris pendant une leçon, une correction ou le vol des étoiles ;
+     - rechargement pendant une pause ;
+     - deux rechargements de suite ;
+     - rechargement après minuit ;
+     - rechargement avec une nouvelle version de l'application.
+2. **La fin de séance qui mène à la boutique** (constat 2) : la maison s'ajoute au bouton de la boutique, et l'attente avant « à demain » passe de 30 à **15 s** (`cartes.json`, `boutique.finAttenteS`).
+3. **« Continuer » en deux touchers** (constat 11), comme les galets de l'accueil. Le double toucher rapide le lance aussitôt. Toutes les bulles de l'accueil en pause passent en deux touchers. Parcours : le second toucher de l'enfant ne tombe plus jamais dans le pavé, aucune réponse n'est enregistrée par mégarde.
+4. **La bulle de la mascotte évite aussi ce dont parle la voix** (constat 6) :
+   - les zones à éviter : l'égalité de l'aide, le chemin du calcul rapide, la bouée nommée aux voiliers, l'article allumé de l'étal et son ardoise ;
+   - l'exercice déclare ces zones auprès de la bulle (`engine/bulle.js`), comme la bande de la ligne ;
+   - sans place, une bulle plus courte, ou pas de bulle : un objet caché est pire qu'une phrase non écrite ;
+   - captures de chaque cas.
+5. **La répétition des additions** (constat 13) : dans un bloc, **au plus deux fois le même fait**, et **au moins quatre autres questions** entre deux passages du même fait.
+   - Réglages dans le contenu (`module2.json`), jamais en dur.
+   - Simulation par profil et séquences lues (`b-sequences.mjs`), avant et après : nombre de répétitions par bloc, et effet sur le calendrier des familles. S'il est sensible (une famille acquise plus de deux semaines plus tard pour le profil « en difficulté »), le dire, chiffres à l'appui.
+6. **Les voiliers** (constat 7) :
+   - on garde le glisser. Un toucher sur un passage fait dire « Fais glisser le bateau jusqu'au passage ! », avec la flèche qui montre le geste du bateau au passage touché. Au plus une fois par bateau ;
+   - aux niveaux où le bateau peut aller hors des bouées (« partout »), son nombre reste **à moins d'un intervalle** de la première ou de la dernière bouée. Contrôle automatique sur les tirages.
+7. **La boutique : le prix pour faire briller n'est jamais écrit sur la tuile** (constat 9). Le petit récif dans le coin suffit. Le prix est dit, et montré avec la coche, seulement quand l'enfant touche la tuile.
+8. **La finition** :
+   - le compteur d'étoiles reste lisible dans l'étal par temps d'orage ;
+   - la bulle n'est plus coupée par le cadre de la cabane (constat 14) ;
+   - l'étoile arc-en-ciel annoncée à la récompense **vole vers l'album**, comme le prévoit `docs/SPEC.md`, section 10 (constat 15).
+   - Les cartes du crabe et de l'anémone (constat 16) : rien dans ce lot, le parent regénère lui-même leurs illustrations.
+
+**Voix** — **aucune voix n'est fabriquée dans ce lot** :
+- phrases nouvelles attendues : « Fais glisser le bateau jusqu'au passage ! », peut-être une phrase de reprise ;
+- les lister dans la demande de fusion, avec le total des phrases en attente sur `main` après la fusion : les 2 du lot précédent, les 50 à refaire de `a-refaire-durees.txt` et celles de ce lot.
+
+**Recette, en plus de la méthode commune** :
+- tests unitaires de chaque règle : reprise, limite de répétition, tirages des voiliers ;
+- un parcours `tests/e2e/decisions-agent.mjs` qui passe par chaque décision, avec les captures (1280 × 800, 1920 × 1200, et 1138 × 711 densité 2,25) ;
+- l'enfant imprévisible, version courte, plus une série d'une vingtaine de graines où l'action « page rechargée » est fréquente ;
+- la relecture indépendante (méthode commune).
+

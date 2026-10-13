@@ -211,9 +211,9 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
   const defauts = [], faits = [], noter = (quoi, detail) => { if (!defauts.some((d) => d.quoi === quoi)) defauts.push({ quoi, detail, apres: faits.length }); };
   // la garde : une partie qui n'avance plus pendant 3 minutes (une action ou une vérification qui ne rend jamais la main) est
   // arrêtée, avec l'endroit où elle s'est arrêtée et une capture (premières longues séries : deux parties restées une heure)
-  let pas = Date.now(), ou = "chargement", bloque = null;
+  let pas = Date.now(), ou = "chargement", bloque = null, delai = 0; // (`delai` : une action longue voulue, la veille de 5 minutes)
   const garde = setInterval(async () => {
-    if (bloque || Date.now() - pas < lent(180000)) return;
+    if (bloque || Date.now() - pas < lent(180000) + delai) return;
     bloque = { ou, apres: faits.length };
     await page.screenshot({ path: join(OUT, `bloque-${graine}.png`), timeout: 10000 }).catch(() => {});
     bloque.etat = await Promise.race([page.evaluate(() => ({ ...window.__enfantContexte?.(), scene: window.__app?.etal?.api?.etat?.() ?? window.__app?.voiliers?.api?.etat?.() ?? null })).catch((x) => x.message), new Promise((r) => setTimeout(() => r("(la page ne répond plus)"), 10000))]);
@@ -244,12 +244,12 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
     for (let i = 0; i < n; i++) {
       pas = Date.now(); ou = `choix de l'action ${i + 1}`;
       const act = liste ? liste[i] : await concretiser(page, rnd, tirer(rnd, graine % 4 < 2));
-      faits.push(act); pas = Date.now(); ou = `action ${i + 1} : ${act.type}${act.quoi ? ` (${act.quoi})` : ""}`;
+      faits.push(act); pas = Date.now(); delai = act.ms ?? 0; ou = `action ${i + 1} : ${act.type}${act.quoi ? ` (${act.quoi})` : ""}`;
       await jouer(page, cdp, act).catch((x) => noter(`action impossible : ${act.type}`, x.message.split("\n")[0]));
       // (--panne : le contrôle du contrôle ; à la 5e action, une touche du pavé orpheline et une erreur de page, qui doivent
       // être vues)
       if (PANNE && i === 4) await page.evaluate(() => { const b = document.createElement("button"); b.className = "bubble key"; b.dataset.key = "5"; Object.assign(b.style, { position: "absolute", left: "600px", top: "600px", width: "80px", height: "80px" }); document.querySelector("#ui").append(b); setTimeout(() => { throw new Error("panne volontaire"); }, 10); });
-      pas = Date.now(); ou = `vérification après l'action ${i + 1} : ${act.type}`;
+      pas = Date.now(); delai = 0; ou = `vérification après l'action ${i + 1} : ${act.type}`;
       await verifier(`après ${act.type}${act.quoi ? ` (${act.quoi})` : ""}`);
       if (Date.now() - dernierEtat > 1000) await verifier("chaque seconde");
       if (cherche && defauts.some((d) => d.quoi === cherche)) break;

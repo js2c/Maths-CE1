@@ -48,6 +48,17 @@ console.log(`leçons jouées sur l'année : ${res.flatMap((r) => r.lecons.map((l
 console.log(`45 faits vus à la séance ${res.find((r) => r.faitsVus >= 45)?.n ?? "jamais"} ; leçons du module 2 : ${res.flatMap((r) => r.lecons.filter((l) => ["L4", "L5", "L6"].includes(l)).map((l) => `${l} (séance ${r.n})`)).join(", ") || "aucune"}`);
 const m2 = res.filter((r) => r.module === 2);
 console.log(`séances d'additions : ${moy(m2.map((r) => r.add.filter((x) => !x.includes("g")).length)).toFixed(1)} questions en moyenne, durée estimée ${moy(m2.map((r) => r.duree)).toFixed(1)} min ; formes à trou ${m2.reduce((a, r) => a + r.add.filter((x) => x.includes("?")).length, 0)} sur ${m2.reduce((a, r) => a + r.add.length, 0)}`);
+// (lot « Décisions sur les constats de l'agent », décision 5 : constat 13 de l'agent, « 4 plus 2 » cinq fois en deux minutes) LA
+// RÉPÉTITION DES ADDITIONS dans un bloc (la notion du jour des additions ; l'échauffement) : le plus grand nombre de passages d'un
+// même fait, et le plus petit nombre d'autres questions entre deux passages d'un même fait
+{
+  const rep = (xs = []) => { const n = new Map(), last = new Map(); let max = 0, ecart = Infinity; xs.forEach((f, i) => { n.set(f, (n.get(f) ?? 0) + 1); max = Math.max(max, n.get(f)); if (last.has(f)) ecart = Math.min(ecart, i - last.get(f) - 1); last.set(f, i); }); return { max, ecart }; };
+  const bilan = (blocs) => { const r = blocs.map(rep), h = (k, v) => r.filter((x) => x[k] === v).length; const maxs = [...new Set(r.map((x) => x.max))].sort((a, b) => a - b); const ecarts = r.filter((x) => x.ecart < Infinity).map((x) => x.ecart);
+    return `${blocs.length} blocs ; passages d'un même fait au plus : ${maxs.map((m) => `${m} fois (${h("max", m)} blocs)`).join(", ")} ; écart le plus court entre deux passages : ${ecarts.length ? Math.min(...ecarts) : "-"} (blocs sous 4 : ${ecarts.filter((e) => e < 4).length})`; };
+  console.log(`\n## répétition des additions (${PROFILS[profil].nom})`);
+  console.log(`notion du jour : ${bilan(res.filter((r) => r.module === 2 && r.addFaits?.length).map((r) => r.addFaits))}`);
+  console.log(`échauffement : ${bilan(res.filter((r) => r.chauffeFaits?.length).map((r) => r.chauffeFaits))}`);
+}
 // lot « Sommes jusqu'à 30 » (docs/maquettes/sommes30/PROPOSITION.md) : les familles 8 à 14, les faits au-delà de 10
 {
   const big = M2.familles.filter((f) => f.id >= 8).map((f) => f.id), q = (r) => r.add.filter((x) => !x.includes("g")), gt10 = (x) => { const m = /^(\?|\d+)\+(\?|\d+)/.exec(x); return m && m[1] !== "?" && m[2] !== "?" ? +m[1] + +m[2] > 10 : null; };

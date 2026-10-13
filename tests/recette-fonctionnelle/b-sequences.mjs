@@ -160,7 +160,7 @@ async function uneSeance({ base, choix, cran, comp }) {
     const warmScreen = { show() {}, keys() {}, leave() {}, abandon() {}, ask: async (q) => {
       const good = expected(q), r = q.base && !C.hasard ? { value: good } : reponseNombre(R, C, good, { max: 20, pieges: [q.a + q.b === good ? null : q.a + q.b] });
       const ok = r.value === good;
-      const x = row({ forme: fait(q) + (q.base ? " (temps de base)" : "") + (q.nouveau ? " (fait nouveau)" : ""), voix: voixFait(RV, q), attendue: good, donnee: r.nsp ? "je ne sais pas" : r.value });
+      const x = row({ forme: fait(q) + (q.base ? " (temps de base)" : "") + (q.nouveau ? " (fait nouveau)" : ""), voix: voixFait(RV, q), attendue: good, donnee: r.nsp ? "je ne sais pas" : r.value, ...(q.base || etape !== "échauffement" ? {} : { cle: `fait:${q.fait}` }) });
       add(D.consigne + C.ms + (ok ? D.bravo : D.correction));
       if (!ok) x.suite.push(`correction : « ${r.nsp ? T.faitNSP + " " : ""}${fill(T.faitCorrection, { a: q.a, b: q.b, n: q.a + q.b })} »`);
       return { value: r.value, ms: q.base ? C.ms : C.ms, listens: 1, aide: false, nsp: !!r.nsp };
@@ -366,6 +366,9 @@ const EXOS = [
   ...module6.niveaux.map((c) => ({ id: `etal-${String(c.niveau).padStart(2, "0")}`, choix: { module: 6, niveau: c.niveau }, nom: `Étal du pêcheur, niveau ${c.niveau} (${c.type})`, passages: c.type === "poser" ? c.valeurs.length : undefined })),
   ...module4.niveaux.map((c) => ({ id: `voiliers-${c.niveau}`, choix: { module: 4, niveau: c.niveau }, nom: `Voiliers, niveau ${c.niveau} (${c.bouees} bouées, ${c.ecart}, ${c.place})`, passages: c.ecart === "double" ? 12 : c.bouees + 1 })),
 ].filter((e) => !only || (e.choix.module === only[0] && (only[1] == null || (e.choix.niveau ?? e.choix.famille) === only[1]))); // (--seulement 4 : tout le module 4)
+// le plus grand nombre de passages d'un même fait, et le plus petit nombre d'autres questions entre deux passages
+const repetitions = (cles) => { const n = new Map(), last = new Map(); let max = 0, ecart = Infinity; cles.forEach((k, i) => { n.set(k, (n.get(k) ?? 0) + 1); max = Math.max(max, n.get(k)); if (last.has(k)) ecart = Math.min(ecart, i - last.get(k) - 1); last.set(k, i); }); return { max, ecart }; };
+const REP = {};
 if (TEST) {
   const fails = [], combos = new Set(), courtes = []; let n = 0;
   for (const base of ["neuve", "mois"]) for (const ex of EXOS) for (const cran of CRANS) for (const comp of ["appliquee", "reelle"]) {
@@ -373,7 +376,19 @@ if (TEST) {
     // (lot « Les voiliers » : avec 3 bouées, il n'y a que 4 passages : la réponse prend au moins autant de valeurs qu'il y en a)
     const bad = checkSequence(seq, { ...seance.variete, valeursMin: Math.min(seance.variete.valeursMin, ex.passages ?? Infinity) }); n++; combos.add(`${ex.id}:${cran}`); courtes.push([seq.length, `${base} · ${ex.nom} · ${CRAN_NOM[cran]} · ${COMPORTEMENTS[comp].nom} (${Math.round(res.rec.dureeS / 6) / 10} min simulées)`]);
     if (bad.length) fails.push(`${base} · ${ex.nom} · ${CRAN_NOM[cran]} · ${COMPORTEMENTS[comp].nom} (${seq.length} questions) : ${bad.join(" ; ")}`);
+    // (lot « Décisions sur les constats de l'agent », décision 5) les additions : dans un bloc (la notion du jour, l'échauffement),
+    // un même fait au plus `parBlocMax` fois, et au moins `ecartMin` autres questions entre deux passages (module2.json, repetition)
+    if (ex.choix.module === 2 || res.rows.some((r) => r.etape === "échauffement")) {
+      const RP = module2.repetition ?? { parBlocMax: 2, ecartMin: 4 };
+      for (const etape of ex.choix.module === 2 ? ["notion", "échauffement"] : ["échauffement"]) {
+        const cles = res.rows.filter((r) => r.etape === etape && r.cle).map((r) => r.cle), m = repetitions(cles);
+        (REP[etape] ??= []).push(m);
+        const fautes = [...(m.max > RP.parBlocMax ? [`un même fait ${m.max} fois`] : []), ...(m.ecart < RP.ecartMin ? [`un fait revenu après ${m.ecart} autre(s) question(s)`] : [])];
+        if (fautes.length) fails.push(`${base} · ${ex.nom} · ${CRAN_NOM[cran]} · ${COMPORTEMENTS[comp].nom} · ${etape} (${cles.length} questions) : ${fautes.join(" ; ")}`);
+      }
+    }
   }
+  for (const [etape, ms] of Object.entries(REP)) { const h = (f) => ms.filter(f).length; console.log(`répétition des additions, ${etape} : ${ms.length} blocs ; un fait 3 fois ou plus : ${h((m) => m.max >= 3)} ; deux passages à moins de 4 questions d'écart : ${h((m) => m.ecart < 4)} ; à 2 questions ou moins : ${h((m) => m.ecart <= 2)}`); }
   console.log(`${combos.size} combinaisons exercice × niveau × cran, ${n} séances simulées ; ${fails.length} en défaut`);
   // les mesures du tableau « Recette du lot 3 bis » (docs/SPEC-LOT3BIS.md) qui se lisent sur les séquences
   const M = [];

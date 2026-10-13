@@ -10,7 +10,7 @@ import { fill } from "../numberline/screen.js";
 import { clock, wait } from "../../engine/clock.js";
 import { onBrief, skipKey } from "../../engine/ui.js";
 import { aidFor, expected } from "./facts.js";
-import { vary, varyIndex } from "./warmup.js";
+import { repetition, vary, warmupIndex } from "./warmup.js";
 import { AidBoard, paintBigDouble, paintDoublePlus, paintFishHouse, paintTenFrame, paintTwoFrames } from "./aids.js";
 
 const SKIPPED = Symbol("correction passée");
@@ -390,13 +390,17 @@ export async function runWarmup({ session, step, end, warmup, screen, intro, rnd
   await g(intro?.(() => skipped));
   if (!skipped) screen.keys(true);
   const answers = []; // (lot 3 ter : jamais 3 fois de suite la même réponse, warmup.js, varyIndex)
+  // (lot « Décisions sur les constats de l'agent », décision 5 : un même fait au plus 2 fois, 4 questions d'écart, warmupIndex)
+  const faits = [], rp = repetition(warmup.c0);
   while (!skipped && rest.length && !session.over(end)) {
-    const q = warmup.prepare(rest.splice(varyIndex(rest, answers), 1)[0]);
+    const i = warmupIndex(rest, answers, faits, rp);
+    if (i < 0) { session.expect?.(session.progress.faites); break; }
+    const q = warmup.prepare(rest.splice(i, 1)[0]);
     if (q) vary(q, answers);
     if (!q) { session.expect?.(session.progress.faites + rest.length); continue; }
     const r = await g(screen.ask(q));
     if (skipped) break;
-    if (!q.base) answers.push(expected(q));
+    if (!q.base) { answers.push(expected(q)); faits.push(q.fait); }
     const res = await warmup.record(q, r, rest);
     session.expect?.(session.progress.faites + 1 + rest.length); // un fait raté revient, la voie rapide en ajoute : des bulles de plus
     session.cranDown = false;

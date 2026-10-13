@@ -99,6 +99,8 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
       const nsp = !ok && R() < P.nsp; if (nsp) log.nsp++;
       add(ok ? T.chauffe : T.chauffeFaux); if (!q.base) log.faits.push(`${trou ? (q.forme === "trouDroite" ? `${q.a}+?` : `?+${q.b}`) : `${q.a}+${q.b}`}${ok ? "" : nsp ? "?" : "✗"}${q.nouveau && !q.anticipe && !q.revient ? "*" : ""}`);
       if (q.nouveau && !q.anticipe && !q.revient) log.nouveaux++;
+      // (lot « Décisions sur les constats de l'agent », décision 5 : les faits du bloc, dans l'ordre, pour compter les répétitions)
+      if (!q.base) (log.chauffeFaits ??= []).push(q.fait);
       return { value: ok ? expected(q) : nsp ? null : expected(q) + 1, ms, listens: 1, aide: false, nsp }; } };
     const lineScreen = { generate: gen, ask: async (q, cfg, o) => {
       const niv = cfg.niveau ?? cfg.id ?? 0; essais[niv] = (essais[niv] ?? 0) + 1;
@@ -110,6 +112,7 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
       const trou = q.forme && q.forme !== "directe", ok = o?.guide || q.guide ? true : R() < pFait(P, q) * (trou ? P.trou : 1), nsp = !ok && R() < P.nsp; if (nsp) log.nsp++;
       add(q.guide ? T.addGuide : ok ? T.add : T.addFaux); if (!q.guide) (log.notionOk ??= []).push(ok); log.add.push(`${trou ? (q.forme === "trouDroite" ? `${q.a}+?` : `?+${q.b}`) : `${q.a}+${q.b}`}${ok ? "" : nsp ? "?" : "✗"}${q.guide ? "g" : ""}${q.nouveau && !q.revient ? "*" : ""}`);
       if (q.nouveau && !q.revient && !q.guide) log.nouveaux++;
+      (log.addFaits ??= []).push(q.fait); // (les exemples guidés aussi : ce sont des questions)
       const value = ok ? expected(q) : nsp ? null : expected(q) + 1; if (!q.guide) noteFait(q, ok);
       return { q, value, ok, code: ok ? null : nsp ? "NSP" : "autre", ms: ok ? msFait(P, q) * (0.7 + R() * 0.6) : 9000, listens: 1, aide: false, nsp }; } };
     log.add = [];

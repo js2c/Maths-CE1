@@ -82,16 +82,17 @@ test("ligne graduée, niveau choisi au-dessus du conseillé : le réussir le val
   await B.finish(); assert.equal(B.st.niveau, 5);
 });
 
-test("additions, « jouer » : au moins 80 % des questions sur la famille en cours ; une petite famille (les doubles) s'arrête à 3 passages par fait (lot 3 bis, §0)", async () => {
+test("additions, « jouer » : au moins 80 % des questions sur la famille en cours ; une petite famille (les doubles) s'arrête à 2 passages par fait (lot 3 bis, §0 ; décision 5 du 13 octobre 2026 : 3 avant)", async () => {
   const store = await open();
   for (const k of ["1+1", "2+1", "1+2", "3+1", "1+3", "4+1", "1+4", "5+1", "1+5"]) await store.put("faits", fact(k, 3));
   await store.put("niveaux", { ...initialFamilies(m2, NOW), ouvertes: [1, 2], acquises: [1] });
   const { m, qs } = await notion(store, { n: 40 });
   assert.equal(m.famille, 2);
   const rule = new Set(ruleFacts(m2, 2).map((f) => f.fait)), inFam = qs.filter((q) => rule.has(q.fait)).length;
-  const first = qs.slice(0, 15).filter((q) => rule.has(q.fait)).length; assert.ok(first >= 0.8 * 15, `${first} sur 15 dans les doubles`);
-  assert.equal(inFam, 15, "5 doubles, 3 passages chacun au plus");
-  const count = {}; qs.forEach((q) => { count[q.fait] = (count[q.fait] ?? 0) + 1; }); assert.ok(Object.values(count).every((x) => x <= 3), JSON.stringify(count));
+  // (lot « Décisions sur les constats de l'agent », décision 5 : 2 passages par fait et par bloc, 4 questions d'écart ; avant, 3)
+  const first = qs.slice(0, 10).filter((q) => rule.has(q.fait)).length; assert.ok(first >= 0.8 * 10, `${first} sur 10 dans les doubles`);
+  assert.equal(inFam, 10, `5 doubles, 2 passages chacun au plus (${qs.map((q) => q.fait).join(" ")})`);
+  const count = {}; qs.forEach((q) => { count[q.fait] = (count[q.fait] ?? 0) + 1; }); assert.ok(Object.values(count).every((x) => x <= 2), JSON.stringify(count));
   assert.ok(qs.every((q, i) => i < 1 || q.fait !== qs[i - 1].fait || q.revient), "jamais deux fois de suite le même fait");
   assert.equal(m2.notion.partFamille, 0.8, "le réglage est dans module2.json");
 });
@@ -106,7 +107,10 @@ test("additions, famille choisie pas encore ouverte : elle s'ouvre sans étoile,
   const st = await store.get("niveaux", 2);
   assert.ok(st.ouvertes.includes(5)); assert.ok(st.ouvertures.some((o) => o.famille === 5 && o.choix));
   const rule = new Set(ruleFacts(m2, 5).map((f) => f.fait)), inFam = qs.filter((q) => rule.has(q.fait)).length;
-  assert.ok(inFam >= 0.8 * qs.length, `${inFam} sur ${qs.length} dans les maisons de 8 et 9`);
+  // (décision 5 du 13 octobre 2026 : 2 passages par fait ; les 15 faits de la famille donnent au plus 30 questions, les 80 % se
+  // mesurent sur une notion du jour de cette longueur)
+  const in30 = qs.slice(0, 30).filter((q) => rule.has(q.fait)).length;
+  assert.ok(in30 >= 0.8 * Math.min(30, qs.length), `${in30} sur ${Math.min(30, qs.length)} dans les maisons de 8 et 9 (${inFam} sur ${qs.length})`);
   const nouveaux = qs.filter((q) => q.nouveau && !q.revient).length;
   assert.ok(nouveaux > m2.nouveauxMaxSeance, `${nouveaux} faits nouveaux (au-delà de ${m2.nouveauxMaxSeance})`);
   // (réponses fausses : les faits nouveaux restent en boîte 1)

@@ -113,7 +113,8 @@
     "choisir": "Choisir. C'est toi qui choisis l'exercice.",
     "lecons": "Les leçons. Je t'explique avec des images.",
     "recif": "Le récif. Viens voir tes créatures.",
-    "album": "L'album. Toutes tes cartes sont rangées ici."
+    "album": "L'album. Toutes tes cartes sont rangées ici.",
+    "continuer": "Continuer. On reprend la séance."
   },
   "pauseConsigne": "C'est la pause. Touche la grande bulle pour continuer.",
   "recompenseZero": "Tu as bien travaillé !",

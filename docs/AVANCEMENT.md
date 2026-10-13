@@ -40,5 +40,5 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 - **Branche** : `ccr-98d11c55-0bfws4` ; demande de fusion en brouillon « Lot : Décisions sur les constats de l'agent ».
 - **Ordre suivi** (du plus court au plus lourd, chaque décision un commit) : 2 (fin de séance), 3 (« continuer » en deux touchers), 7 (boutique), 5 (répétition des additions, simulée avant), 6 (voiliers), 4 (bulle), 8 (finition), 1 (reprise après rechargement), puis la recette.
-- **Fait** : (rien encore)
-- **Où reprendre** : décision 2.
+- **Fait** : décision 2 (maison en fin de séance, 15 s) ; décision 3 (accueil en pause en deux touchers).
+- **Où reprendre** : décision 7 (boutique).

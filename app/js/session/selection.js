@@ -61,10 +61,14 @@ export function bulleTuile(app, b, tuiles, t, { commandes = "", durs = () => [] 
 // les galets de l'accueil ; `commandes` : d'autres boutons de commande de l'écran, que la bulle ne cache jamais)
 // (`unToucher` : la tuile se lance au premier toucher ; seulement pour les parcours de test écrits avant l'accueil en deux
 // touchers, tests/e2e/navigateur.mjs, `__accueilUnToucher`)
-export function deuxTouchers(app, { tuiles, texte, peindre = () => {}, commandes = "", unToucher = false }) {
-  const { voice, bulle } = app, sel = new Selection({ rebondMs: app.toucher?.rebondMs ?? 60, rapideMs: app.toucher?.doubleRapideMs ?? 600 });
+// (lot « Décisions sur les constats de l'agent », décision 3 : l'accueil en pause aussi ; `dire(t)` et `taire()` : la voix de la
+// mascotte, une file à part pendant la pause, main.js)
+export function deuxTouchers(app, { tuiles, texte, peindre = () => {}, commandes = "", unToucher = false, dire = null, taire = null }) {
+  const { voice, bulle } = app;
+  dire ??= (t) => voice.say(t); taire ??= () => voice.stop();
+  const sel = new Selection({ rebondMs: app.toucher?.rebondMs ?? 60, rapideMs: app.toucher?.doubleRapideMs ?? 600 });
   let cur = null, fini = false;
-  const vider = () => { if (sel.dehors() !== "vide") return; const b = cur; cur = null; peindre(null); b?.classList.remove("choisie"); b?.repaint(); voice.stop(); bulle.ancrer(null); };
+  const vider = () => { if (sel.dehors() !== "vide") return; const b = cur; cur = null; peindre(null); b?.classList.remove("choisie"); b?.repaint(); taire(); bulle.ancrer(null); };
   return new Promise((res) => {
     // un toucher hors des tuiles (pas sur un bouton de commande) désélectionne
     // (l'écran quitté sans rien lancer, par la maison ou le retour : ses tuiles ne sont plus là, l'écouteur s'en va)
@@ -72,7 +76,7 @@ export function deuxTouchers(app, { tuiles, texte, peindre = () => {}, commandes
     document.addEventListener("pointerdown", dehors, true);
     // (point 11 : lancée, la tuile fait taire la mascotte ; après un double toucher rapide, la bulle ne s'ouvre pas, ou se referme
     // aussitôt, sans fondu)
-    const finir = (k) => { fini = true; document.removeEventListener("pointerdown", dehors, true); voice.stop(); bulle.ancrer(null); if (sel.rapide) bulle.cacher(true); res(k); };
+    const finir = (k) => { fini = true; document.removeEventListener("pointerdown", dehors, true); taire(); bulle.ancrer(null); if (sel.rapide) bulle.cacher(true); res(k); };
     for (const b of tuiles) {
       onBrief(app, b, () => {
         if (fini) return;
@@ -86,7 +90,7 @@ export function deuxTouchers(app, { tuiles, texte, peindre = () => {}, commandes
         setTimeout(() => { if (cur === b && !fini) b.classList.add("choisie"); }, 450);
         const t = texte(k);
         bulleTuile(app, b, tuiles, t, { commandes });
-        voice.stop(); voice.say(t);
+        taire(); dire(t);
       }, null); // (point 7 : sans étiquette)
     }
   });

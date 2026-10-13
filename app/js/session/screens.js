@@ -184,8 +184,8 @@ export async function shells(app, { session, hud }) {
 // LA FIN DE LA RÉCOMPENSE (lot « La boutique du récif », décisions du parent du 10 octobre 2026) : en mode Arrivages, les créatures
 // arrivées cette semaine (leurs petites images, « De nouvelles créatures sont arrivées à la boutique ! », une fois chacune) ; s'il
 // y a de quoi acheter, « Tu peux choisir une créature à la boutique ! » ; puis le bouton de fin, en bas à droite : la boutique
-// quand un achat est possible, sinon le récif. Renvoie « boutique » ou « recif » (touché), ou null : rien touché en
-// `boutique.finAttenteS` secondes (« à demain » vient alors, main.js). (`window.__finSansBouton` : les parcours écrits avant la
+// quand un achat est possible, sinon le récif, et la maison. Renvoie « boutique » ou « recif » (touché), ou null : la maison
+// touchée, ou rien touché en `boutique.finAttenteS` secondes (« à demain » vient alors, main.js). (`window.__finSansBouton` : les parcours écrits avant la
 // boutique passent le bouton, tests/e2e/navigateur.mjs)
 export async function finRecompense(app) {
   const { rewards, voice, text, stage, sprites, ocean } = app;
@@ -210,10 +210,16 @@ export async function finRecompense(app) {
   if (window.__finSansBouton) return null;
   const S = 150, b = spriteBox(app, { x: 1175 - S / 2, y: 688 - S / 2, w: S, h: S, cls: `bubble invite fin-recompense ${versBoutique ? "vers-boutique" : "vers-recif"}`, label: versBoutique ? "la boutique" : "le récif", paint: (ctx, px) => { const q = sprites.frame(versBoutique ? "boutique" : "recif", 0), k = versBoutique ? S / 150 : S / 180; if (q) ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (S / 2) * px + q.dx * k, (S / 2) * px + q.dy * k, q.w * k, q.h * k); } });
   voice.instruction = versBoutique ? text.data.boutique.invitation : voice.instruction;
-  const r = await Promise.race([new Promise((res) => onBrief(app, b, () => { pop(b); res(versBoutique ? "boutique" : "recif"); }, versBoutique ? "boutique" : "recif")), wait((rewards.c.boutique.finAttenteS ?? 30) * 1000).then(() => null)]);
-  await wait(r ? 200 : 0); b.remove();
+  // (lot « Décisions sur les constats de l'agent », décision 2 : constat 2 de l'agent, environ 50 s sans moyen de revenir) la maison
+  // s'ajoute au bouton de fin (main.js, `maisonFin`) : elle ramène tout de suite à « à demain » ; sans toucher, « à demain » vient
+  // au bout de `finAttenteS` (15 s)
+  const maison = new Promise((res) => { app.finMaison = () => res("maison"); });
+  app.maisonFin?.(true);
+  const r = await Promise.race([new Promise((res) => onBrief(app, b, () => { pop(b); res(versBoutique ? "boutique" : "recif"); }, versBoutique ? "boutique" : "recif")), maison, wait((rewards.c.boutique.finAttenteS ?? 15) * 1000).then(() => null)]);
+  app.finMaison = null; app.maisonFin?.(false);
+  await wait(r && r !== "maison" ? 200 : 0); b.remove();
   void stage;
-  return r;
+  return r === "maison" ? null : r;
 }
 // l'ouverture d'une zone (docs/SPEC-LOT2.md, « Zones ») : le dos de la zone, assombri, au milieu ; une étoile
 // arc-en-ciel vole jusqu'à lui et il s'éclaire ; la voix dit que la zone est ouverte ; puis la carte file

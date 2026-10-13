@@ -27,10 +27,12 @@ export class StarHud {
     const q = this.app.sprites.frame("etoile", 0), k = 0.62, s0 = String(this.shown); // l'étoile, réduite (jamais agrandie)
     // (lot « Décisions sur les constats de l'agent », décision 8 ; constat 14 : par temps d'orage, dans l'étal, le nombre bleu nuit
     // se fondait dans le ciel sombre) sur un fond sombre (`app.hudSombre()`), le nombre est posé sur une petite plaque claire
-    if (this.sombre) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawPanel(ctx, s0.length > 2 ? 80 : 82, 18, s0.length > 2 ? 84 : 72, 64); ctx.setTransform(1, 0, 0, 1, 0, 0); }
+    // (recette du lot : sur la plaque, le nombre est plus petit quand il est long ; à la taille habituelle, 234 en touchait les bords)
+    const plaque = this.sombre ? (s0.length > 2 ? 84 : 72) : 0, taille = plaque ? [40, 40, 36, 28, 22][Math.min(4, s0.length)] : s0.length > 2 ? 34 : 40;
+    if (plaque) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawPanel(ctx, 82, 18, plaque, 64); ctx.setTransform(1, 0, 0, 1, 0, 0); }
     ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 50 * px + q.dx * k, 50 * px + q.dy * k, q.w * k, q.h * k);
     ctx.setTransform(px, 0, 0, px, 0, 0);
-    const s = String(this.shown); R.drawNumber(ctx, s, 118 + (s.length > 2 ? 6 : 0), 32, s.length > 2 ? 34 : 40, { w: 5.6 });
+    const s = String(this.shown); R.drawNumber(ctx, s, plaque ? 82 + plaque / 2 : 118 + (s.length > 2 ? 6 : 0), plaque ? 32 + (40 - taille) / 2 : 32, taille, { w: 5.6 });
   }
   set(v) { if (v !== this.shown) { this.shown = v; this.box.repaint(); } }
   // n étoiles gagnées, qui partent de `from` (px logiques) ; la promesse se résout à la dernière arrivée

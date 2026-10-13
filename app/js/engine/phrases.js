@@ -13,7 +13,10 @@ export const fill = (s, v) => s.replace(/\{(\w+)\}/g, (m, k) => (v[k] == null ? 
 export const normalize = (s) => s.replace(/[  \s]+/g, " ").replace(/[’ʼ]/g, "'").trim();
 
 // « Bravo ! Ce soir, tu as gagné 3 étoiles de mer. » -> ["Bravo !", "Ce soir, tu as gagné 3 étoiles de mer."]
-export const sentences = (text) => normalize(text).split(/(?<=[.!?…])\s+(?=\S)/).filter(Boolean);
+// (lot « Recette de l'enfant », point 0.2) une phrase sans lettre ni chiffre (« … », au début de « … 15… ») n'est jamais
+// dite : fabriquée seule, elle donnait 5 s de mots incompréhensibles dans les leçons de l'étal
+export const dicible = (s) => /[\p{L}\p{N}]/u.test(s);
+export const sentences = (text) => normalize(text).split(/(?<=[.!?…])\s+(?=\S)/).filter((s) => s && dicible(s));
 
 // l'erreur E5 : « 3 dizaines et 7 unités. », accordée au singulier (« 1 dizaine et 1 unité. », décision du
 // parent) ; T : content/textes.json ; renvoie les variables { dizaines, unites } du gabarit erreur.E5

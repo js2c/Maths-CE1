@@ -75,6 +75,7 @@ export class Lagon {
     if (q) c.drawImage(q.img, q.sx, q.sy, q.w, q.h, 0, 0, W2, H2);
     if (this.level === 2) { c.setTransform(W2 / W, 0, 0, H2 / H, 0, 0); this.drawRays(c, this.t, 1); c.setTransform(1, 0, 0, 1, 0, 0); }
     (this.bgCtx ??= this.st.bg.getContext("bitmaprenderer")).transferFromImageBitmap(off.transferToImageBitmap());
+    this.st.bg.classList.remove("vide");
   }
 
   // ------------------------------------------------------------------ le miroitement (WebGL, la bande du haut)

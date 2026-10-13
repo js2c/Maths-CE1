@@ -23,11 +23,21 @@ export class LessonEtalPlayer {
   async play(id) {
     const { app } = this, lesson = this.c[id], t0 = Date.now(), stats = { rejouees: 0 };
     if (!lesson) return { vue: false };
+    this.quitte = false;
     // la scène : celle de la notion du jour (sauf pendant une visite en pause, où elle est mise de côté), sinon la sienne
     const e = app.etal;
     this.own = !(e?.actif && !e.x.scene.classList.contains("stash"));
     this.s = this.own ? new EtalScreen(app, app.module6, e.conf) : e;
-    if (this.own) { await this.s.enter({ rnd: app.rnd }); app.etalLecon = this.s; }
+    // (lot « Recette de l'enfant et nettoyage des couches » : la leçon quittée pendant que sa scène s'installe — l'enfant
+    // imprévisible, graine 1 — laissait la scène de l'étal à l'écran ; elle est désormais à la leçon dès le début, et retirée si
+    // la leçon a été quittée entre-temps)
+    if (this.own) {
+      app.etalLecon = this.s; this.installe = true;
+      await this.s.enter({ rnd: app.rnd });
+      this.installe = false;
+      if (this.quitte) { this.s.leave(); if (app.etalLecon === this.s) app.etalLecon = null; this.s = null; return new Promise(() => {}); }
+    }
+    this.s.enLecon = true; // (la lampe ne change pas le temps pendant une leçon : modules/etal/screen.js)
     this.p = 0; this.skipped = false; this.abort = null; this.goto = undefined;
     const jump = (to) => { this.goto = to; app.voice.stop(); if (this.abort) this.abort(); else this.p = to; };
     const again = spriteBox(app, { x: REPLAY_AT[0] - 70, y: REPLAY_AT[1] - 70, w: 140, h: 140, cls: "bubble lessonkey rejouer", label: "rejouer la leçon", paint: (ctx) => app.sprites.draw(ctx, "rejouer", 0, 70, 70) });
@@ -37,13 +47,14 @@ export class LessonEtalPlayer {
     this.keys = [again, skip];
     this.lesson = lesson;
     while (this.p < lesson.phrases.length) {
+      if (this.quitte) return new Promise(() => {}); // (la leçon quittée : plus rien n'est dit ni posé)
       const tok = ++this.tok;
       this.abortP = new Promise((_, rej) => { this.abort = () => rej(ABORT); }); this.abortP.catch(() => {});
-      if (this.p === 0) await this.debut();
+      if (this.p === 0) { await this.debut(); if (this.quitte) return new Promise(() => {}); }
       try { await this.phrase(this.p, tok); this.p++; }
       catch (err) { if (err !== ABORT) throw err; this.p = this.goto ?? this.p; }
     }
-    this.abort = null; this.tok++;
+    this.abort = null; this.tok++; this.s.enLecon = false;
     this.keys.forEach((k) => k.remove()); this.keys = null;
     if (!this.skipped) { app.ocean.mascotte.play("rejouir"); await wait(600); }
     await this.clear();
@@ -59,6 +70,7 @@ export class LessonEtalPlayer {
     const { voice, ocean } = this.app;
     ocean.mascotte.hold("montrer");
     for (const beat of this.lesson.phrases[p]) {
+      if (this.quitte) return new Promise(() => {}); // (la leçon quittée : la phrase en cours ne continue pas)
       const said = beat.dire ? voice.say(beat.dire, { instruction: true }) : Promise.resolve();
       const done = (async () => { for (const a of beat.faire ?? []) await this.g(this.act(a)); })();
       await this.g(Promise.all([said, done]));
@@ -88,9 +100,10 @@ export class LessonEtalPlayer {
   // la scène rangée : l'argent rentre, la ligne s'en va ; une scène installée pour la leçon s'en va aussi
   async clear() {
     const s = this.s; if (!s?.actif) return;
+    s.enLecon = false;
     s.ligne(null); s.api.totalVu(false); s.api.etiquettes(false); s.api.sansHalo(); s.api.eteindre(); s.api.remplir([]);
     if (this.own) { s.leave(); if (this.app.etalLecon === s) this.app.etalLecon = null; }
     this.s = null;
   }
-  abandon() { if (!this.keys) return; this.tok++; this.abort = null; this.keys.forEach((k) => k.remove()); this.keys = null; this.clear(); }
+  abandon() { this.quitte = true; if (this.installe) return; if (!this.keys) return; this.tok++; this.abort = null; this.keys.forEach((k) => k.remove()); this.keys = null; this.clear(); }
 }

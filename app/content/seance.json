@@ -31,7 +31,7 @@
   "passerEchauffement": { "_doc": "Lot 3 ter (docs/SPEC-LOT3TER.md, T1, décision du parent) : le bouton « passer l'échauffement », présent pendant tout l'échauffement, à la place `place` (centre, px de la scène 1280 × 800 ; hors du pavé et des bulles-réponses). Un toucher met l'échauffement en attente et la voix demande de toucher la coche (textes.json, passerEchauffementQuestion) ; sans toucher `attenteMs` après la fin de cette question, la coche disparaît et l'échauffement reprend (la consigne est redite).", "attenteMs": 5000, "place": [1205, 400], "taille": 130 },
   "finirSurReussite": { "essaisMax": 2 },
   "vitesseAnimations": 1.5,
-  "etoiles": { "bonneReponse": 1, "erreurCorrigee": 1, "lecon": 3, "seanceTerminee": 10, "nouveauRecord": 5, "bilanDitMax": 160 },
+  "etoiles": { "lecon": 3, "seanceTerminee": 10, "nouveauRecord": 5, "bilanDitMax": 160 },
   "selecteur": {
     "actif": true,
     "crans": ["facile", "conseille", "dur", "tresdur"],

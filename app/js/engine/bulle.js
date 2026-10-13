@@ -212,7 +212,14 @@ export class Bulle {
     this.clear(); this.shown = false; this.el.classList.add("cachee");
     if (instant) { this.el.classList.add("instant"); void this.el.offsetWidth; this.el.classList.remove("instant"); }
     clearTimeout(this.vider);
-    this.vider = setTimeout(() => { if (this.shown) return; this.paths.forEach((e) => e.removeAttribute("d")); this.txt.textContent = ""; this.words = []; }, instant ? 0 : 400);
+    // (lot « Recette de l'enfant », point 0.6 : sur une tablette chargée, le fondu de 0,35 s démarre en retard ; vidée à 400 ms,
+    // la bulle était encore à moitié visible, sans texte. Elle n'est vidée qu'une fois transparente.)
+    const vider = () => {
+      if (this.shown) return;
+      if (!instant && parseFloat(getComputedStyle(this.el).opacity) > 0.01) { this.vider = setTimeout(vider, 50); return; }
+      this.paths.forEach((e) => e.removeAttribute("d")); this.txt.textContent = ""; this.words = [];
+    };
+    this.vider = setTimeout(vider, instant ? 0 : 400);
   }
   // la mise en page : mesurer le texte à une largeur donnée, choisir la place, tracer l'ovale
   // (lot « Correctifs : passage de l'échauffement aux voiliers », point 3 : « 369 « trois-cent-soixante-neuf » », un seul mot

@@ -52,7 +52,7 @@ export class NumberLineScreen {
       const t = this.fishLabel, em = Math.min(34, (T.w - 16) / Math.max(1, R.wordWidth(t))), px = sp.px;
       ctx.setTransform(px, 0, 0, px, 0, 0); R.drawNumber(ctx, t, this.fish.ax + T.cx, this.fish.ay + T.cy - em / 2 + 2, em, { w: em * 0.16, seed: 1300 });
     });
-    o.front.push((t) => {
+    o.front.push(this.rappelEtoile = (t) => {
       // l'étoile s'élève quand la tortue vient se poser sous elle (exemple guidé, retour E1)
       this.starLift += ((this.turtle.a.vis && this.starAt && Math.abs(this.turtle.pos[0] - this.starAt[0]) < 40 ? 46 : 0) - this.starLift) * 0.15;
       this.star.show(!!this.starAt); if (this.starAt) this.star.moveTo(this.starAt[0], this.starAt[1] - this.starLift + 1.5 * Math.sin(t * 2.1));
@@ -64,14 +64,23 @@ export class NumberLineScreen {
     });
     this.turtle = new Turtle(o);
     // effets tracés en direct (arcs de saut, flèche, filets) : redessinés tant qu'un effet avance
-    o.front.push(() => this.paintFx());
+    o.front.push(this.rappelFx = () => this.paintFx());
     // la zone tactile de la ligne (placer, estimer) : toute la bande, pour des doigts de 7 ans
     this.band = document.createElement("div"); this.band.className = "touchband"; this.ui.append(this.band);
     const pos = (e) => { const r = this.band.getBoundingClientRect(), k = r.width / this.band.offsetWidth; return (e.clientX - r.left) / k + this.band.offsetLeft; };
-    this.band.addEventListener("pointerdown", (e) => { if (this.locked || !this.input) return; e.preventDefault(); this.band.setPointerCapture(e.pointerId); this.dragging = true; this.aim(pos(e)); });
-    this.band.addEventListener("pointermove", (e) => { if (this.dragging) this.aim(pos(e)); });
-    const up = (e) => { if (!this.dragging) return; this.dragging = false; this.aim(pos(e)); this.answer(this.aimed, null); };
-    this.band.addEventListener("pointerup", up); this.band.addEventListener("pointercancel", () => { this.dragging = false; });
+    // (lot « Recette de l'enfant et nettoyage des couches », constat 5 de l'agent) deux doigts posés ensemble sur la bande (une
+    // main qui s'appuie) ne répondent pas : le geste est annulé jusqu'à ce que tous les doigts soient levés (chaque doigt est
+    // capturé : son lever revient à la bande même hors d'elle)
+    const doigts = new Set(); let annule = false;
+    const leve = (e) => { doigts.delete(e.pointerId); if (!doigts.size) annule = false; };
+    this.band.addEventListener("pointerdown", (e) => {
+      if (this.locked || !this.input) return; e.preventDefault(); doigts.add(e.pointerId); this.band.setPointerCapture(e.pointerId);
+      if (doigts.size > 1) { annule = true; this.dragging = false; this.aimed = null; this.fishGoal = [...FISH_WAIT]; return; }
+      this.dragging = true; this.aim(pos(e));
+    });
+    this.band.addEventListener("pointermove", (e) => { if (this.dragging && !annule) this.aim(pos(e)); });
+    const up = (e) => { const deux = annule; leve(e); if (!this.dragging || deux) { this.dragging = false; return; } this.dragging = false; this.aim(pos(e)); this.answer(this.aimed, null); };
+    this.band.addEventListener("pointerup", up); this.band.addEventListener("pointercancel", (e) => { leve(e); this.dragging = false; }); this.band.addEventListener("lostpointercapture", leve);
     // (lot 3 bis, B7) le poisson lui-même se touche et se fait glisser jusqu'à la corde : on le lâche, il se pose à la
     // graduation la plus proche (comme en touchant la corde) ; un toucher sans glisser fait onduler la corde
     this.fishHit = document.createElement("div"); this.fishHit.className = "fishhit"; this.ui.append(this.fishHit);
@@ -202,13 +211,14 @@ export class NumberLineScreen {
   // d'où la tortue part pour montrer la méthode : 0 si la cible est proche sur une ligne qui commence à 0,
   // sinon le nombre écrit le plus proche à gauche de la cible
   startOf(q) { const tgt = Math.round((q.answer - q.min) / q.step), near = q.min === 0 && q.step === 1 && tgt <= 12; return near ? 0 : Math.max(0, ...q.labelled.filter((i) => i < tgt)); }
-  // une bulle-réponse : le sprite de l'atelier + le nombre encré en direct ; `still` : simple affichage
-  bubble(cx, cy, label, ring = null, still = false) {
-    const px = this.app.sprites.px, b = document.createElement(still ? "div" : "button"), cv = document.createElement("canvas");
-    b.className = `bubble answer${still ? " still" : ""}`; b.style.left = `${cx - BUB / 2}px`; b.style.top = `${cy - BUB / 2}px`; b.dataset.value = label;
+  // une bulle-réponse : le sprite de l'atelier + le nombre encré en direct (l'anneau doré de la bonne réponse est peint à la
+  // correction, `paintBubble`)
+  bubble(cx, cy, label) {
+    const px = this.app.sprites.px, b = document.createElement("button"), cv = document.createElement("canvas");
+    b.className = "bubble answer"; b.style.left = `${cx - BUB / 2}px`; b.style.top = `${cy - BUB / 2}px`; b.dataset.value = label;
     b.setAttribute("aria-label", label);
     cv.width = Math.round(BUB * px); cv.height = Math.round(BUB * px); b.append(cv); this.ui.append(b);
-    this.paintBubble(cv, label, ring);
+    this.paintBubble(cv, label);
     return b;
   }
   paintBubble(cv, label, ring) {
@@ -383,6 +393,7 @@ export class NumberLineScreen {
   // pose la question et attend la réponse ; la promesse se résout après le retour, avec le résultat
   // (lot 2, étape 8 : la dictée, au niveau 12, a son propre écran : modules/numberline/dictation.js)
   ask(q, cfg, opts = {}) {
+    if (this.detruit) return new Promise(() => {}); // (lot « Recette de l'enfant », point 2 : un écran détruit ne pose plus rien)
     if (q.format === "ecrire") { this.leave(); return this.app.dictation.ask(q, cfg, opts); }
     return new Promise((resolve) => { this.resolve = resolve; this.show(q, cfg, opts); });
   }
@@ -395,6 +406,17 @@ export class NumberLineScreen {
   // la corde ondule (le calque de la ligne, animé par le compositeur : rien n'est redessiné)
   ripple() { const c = this.app.stage.root.querySelector("#line"); c?.animate([{ transform: "translateY(0)" }, { transform: "translateY(-7px)" }, { transform: "translateY(5px)" }, { transform: "translateY(-3px)" }, { transform: "translateY(0)" }], { duration: 900, easing: "ease-in-out" }); }
   leave() { this.app.fleche?.cacher(); this.fishHit.style.display = "none"; this.clearButtons(); this.nsp.style.visibility = "hidden"; this.starAt = null; this.fishAt = null; this.fishGoal = null; this.turtle.hide(); this.band.style.display = "none"; this.arcs = []; this.overlay = []; this.fxAnimating = false; this.liveArc?.show(false); this.app.line.clear(); this.app.line.fxClear(); }
+  // (lot « Recette de l'enfant », point 2 : la règle de sortie unique) l'écran détruit en quittant l'étape qui l'a créé : ses
+  // éléments, ses acteurs (étoile, poisson, tortue, arc), ses rappels d'image. Avant, il n'était que caché, et restait sous
+  // la surface jusqu'à la fin de la page ; l'étape suivante en crée un neuf (app.lineScreen).
+  detruire() {
+    if (this.detruit) return; this.detruit = true;
+    this.leave(); this.locked = true; this.resolve = null;
+    const o = this.app.ocean;
+    for (const e of [this.band, this.fishHit, this.nsp]) e?.remove();
+    for (const a of [this.star, this.fish, this.liveArc]) o.retirer(a);
+    o.oublier(this.rappelEtoile); o.oublier(this.rappelFx); this.turtle.detruire();
+  }
 }
 export { NumberLineScreen as ReadScreen };
 

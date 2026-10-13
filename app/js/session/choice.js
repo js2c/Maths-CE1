@@ -9,6 +9,7 @@
 // l'exercice ; la maison (main.js) ramène à l'accueil.
 // Renvoie { module: 1, niveau } | { module: 2, famille } | { module: 3 ou 4, niveau } (| null : quitté sans valider, `app.choiceCancel`). Fonctions pures (`levelItems`) testées par
 // tests/unit/choix.test.mjs.
+import { Portee } from "../engine/portee.js";
 import * as R from "../art/runtime.js";
 import { entourage, onBrief, pop, spriteBox } from "../engine/ui.js";
 import { closeLegend, legendKey } from "./legend.js";
@@ -79,14 +80,23 @@ export function tilePos(i, n, T = TILE, ex = null, stops = null) {
 // l'écran : o = { stars (false : entraînement libre), content: { module1, module2, seance }, store }
 export async function choose(app, o) {
   const { sprites, voice, text } = app, store = o.store;
+  const els = [], clear = () => { closeLegend(app); els.forEach((e) => e.remove()); els.length = 0; app.bulle?.ancrer(null); };
+  // (lot « Recette de l'enfant », point 2) la portée de l'écran : quitté de quelque façon que ce soit (une tuile lancée, la
+  // maison, l'abandon de l'activité, main.js), ses tuiles, sa légende et sa planche sont retirées
+  const portee = new Portee("choisir", app.portees);
+  portee.fin(() => { clear(); sprites.unload("choix"); app.choiceCancel = null; });
+  // (lot « Recette de l'enfant et nettoyage des couches », l'enfant imprévisible, graine 1023 : la maison touchée pendant le
+  // chargement de l'écran laissait celui-ci se construire ensuite sur l'accueil ; la portée naît avant le chargement, et
+  // l'écran quitté entre-temps ne pose plus rien)
+  // (lot 3, étape 5) quitter sans rien valider (la maison, depuis l'accueil en pause) : `app.choiceCancel()`, choose renvoie null
+  let annule = false;
+  const CANCEL = Symbol("annulé"), cancelled = new Promise((res) => { app.choiceCancel = () => { annule = true; res(CANCEL); }; });
+  const done = () => { portee.fermer(); voice.stop(); return null; };
   await sprites.load("choix");
   const [st1, st2, st3, st4, st5, st6, faits] = await Promise.all([store.get("niveaux", 1), store.get("niveaux", 2), store.get("niveaux", 3), store.get("niveaux", 4), store.get("niveaux", 5), store.get("niveaux", 6), store.all("faits")]);
+  if (portee.fermee) return new Promise(() => {});
+  if (annule) return done();
   const familyShare = (id, boite) => ruleShare(o.content.module2, faits, id, boite);
-  const els = [], clear = () => { closeLegend(app); els.forEach((e) => e.remove()); els.length = 0; app.bulle?.ancrer(null); };
-  app.choiceClear = () => { clear(); sprites.unload("choix"); };
-  // (lot 3, étape 5) quitter sans rien valider (la maison, depuis l'accueil en pause) : `app.choiceCancel()`, choose renvoie null
-  const CANCEL = Symbol("annulé"), cancelled = new Promise((res) => { app.choiceCancel = () => res(CANCEL); });
-  const done = () => { clear(); sprites.unload("choix"); app.choiceClear = null; app.choiceCancel = null; voice.stop(); return null; };
   // (lot « Correctifs de la tablette ») CHOISIR EN DEUX TOUCHERS (session/selection.js) : le premier toucher sélectionne
   // l'image (bordure corail) et la mascotte dit son nom et une courte description, écrits dans une bulle qui part d'un coin
   // de l'image ; le second toucher sur la même image la lance. (Avant : un toucher disait le nom et lançait, décision du
@@ -103,7 +113,10 @@ export async function choose(app, o) {
       const b = spriteBox(app, { x: EX_CX + (i - (xs.length - 1) / 2) * EX_PITCH - 90, y: EX_Y - 90, w: 180, h: 180, cls: "bubble choix-ex", label: e.id, paint: (ctx, px) => { sprites.draw(ctx, e.sprite, 0, 90, 90); if (sel.key === e.id) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawSelectRound(ctx, 90, 90, EX_ENTOURAGE_R, e.graine); } } });
       b.dataset.key = e.id; els.push(b); return b;
     });
-    voice.stop(); voice.say(text.data.choixExercice, { instruction: true });
+    // (lot « Recette de l'enfant et nettoyage des couches », second passage de l'agent, constat 5) `intro` : la phrase d'entrée
+    // de l'entraînement libre, dite une fois, les images déjà là (avant, elle était dite devant un écran vide, et les
+    // touchers de ce temps-là étaient perdus)
+    voice.stop(); if (o.intro) { voice.say(o.intro); o.intro = null; } voice.say(text.data.choixExercice, { instruction: true });
     const ex = await Promise.race([pick(exBtn, (k) => dire(text.data.choixNom[k], D.exercices?.[k])), cancelled]);
     if (ex === CANCEL) return done();
     clear();
@@ -137,7 +150,7 @@ export async function choose(app, o) {
     clear();
     if (key === null) continue;
     voice.stop();
-    sprites.unload("choix"); app.choiceClear = null; app.choiceCancel = null;
+    portee.fermer();
     if (ex === "ligne") return { module: 1, niveau: Number(key) };
     if (ex === "additions") return { module: 2, famille: Number(key) };
     if (ex === "calcul") return { module: 3, niveau: Number(key) };

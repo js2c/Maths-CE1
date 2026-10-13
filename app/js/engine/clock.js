@@ -24,7 +24,6 @@ export class Clock {
     this.pausedMs += this.perf() - this.since; this.paused = false;
     const h = this.held; this.held = []; h.forEach((f) => f());
   }
-  // se résout quand l'activité n'est pas (ou plus) en pause ; jamais si elle a été abandonnée entre-temps
   // une attente d'une activité mise de côté (suspend) qui se réveille pendant la visite : rangée avec cette activité, elle
   // repartira à sa reprise ; celle d'une activité abandonnée ne se réveille jamais
   park(ep, f) { const s = this.stack.find((x) => x.epoch === ep); if (s) s.held.push(f); }
@@ -33,7 +32,6 @@ export class Clock {
   // requestAnimationFrame, un geste, un chargement) : sans elle, une séance en pause pouvait reprendre pendant une visite
   // (et prendre alors l'horloge de la visite).
   hold() { const ep = this.epoch; return (v) => new Promise((res) => { const go = () => { if (ep !== this.epoch) return this.park(ep, go); if (this.paused) return void this.held.push(go); res(v); }; go(); }); }
-  gate() { const ep = this.epoch; return new Promise((res) => { const go = () => { if (ep !== this.epoch) return this.park(ep, go); res(); }; if (this.paused) this.held.push(go); else go(); }); }
   wait(ms) {
     const ep = this.epoch, end = this.now() + ms;
     return new Promise((res) => {

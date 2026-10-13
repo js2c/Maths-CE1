@@ -27,7 +27,6 @@ const tween = (ms, f) => { const g = clock.hold(); return new Promise((res) => {
 const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };
 // (lot 3 bis, R23 : « rejouer » monte sous « passer », en haut à droite : en bas, il prenait la place de « je ne sais pas »)
 const REPLAY_AT = [1205, 372], COUNTER = [700, 172]; // « rejouer » sous « passer » (engine/ui.js), en haut à droite
-const NET_W = 62, NET_H = 34;
 
 export class LessonPlayer {
   // `screen` : l'écran de la ligne à utiliser (lot 3, étape 5 : une leçon jouée depuis l'accueil en pause a le sien, pour ne
@@ -198,25 +197,17 @@ export class LessonPlayer {
     else if (this.counter.value !== v) this.counter.repaint(paint);
     this.counter.value = v;
   }
-  // un filet de dix poissons, suspendu sous la corde entre la graduation i et la suivante (dessiné une fois)
-  // (lot 3 bis, B9 ; R18) sur la corde aux bouées géantes (L2), le grand filet de l'atelier (« aide.filet.haut » : dix poissons
-  // en deux colonnes, lisibles sur la tablette), suspendu AU-DESSUS de la corde par son nœud (dessous, il cachait les nombres)
+  // un filet de dix poissons entre la graduation i et la suivante (dessiné une fois) ; seule L2, sur la corde aux bouées
+  // géantes, en a (lot 3 bis, B9 ; R18) : le grand filet de l'atelier (« aide.filet.haut » : dix poissons en deux colonnes,
+  // lisibles sur la tablette), suspendu AU-DESSUS de la corde par son nœud (dessous, il cachait les nombres)
+  // (lot « Recette de l'enfant et nettoyage des couches » : l'ancien petit filet dessiné sous la corde, pour une ligne
+  // ordinaire, n'était plus joué par aucune leçon : retiré)
   net(i) {
     if (this.nets.has(i)) return this.nets.get(i);
-    const { stage, ocean, sprites } = this.app, spec = this.spec, mx = (R.tickX(spec, i) + R.tickX(spec, i + 1)) / 2;
-    if (spec.geant) {
-      const M = this.app.atlas.sprites["aide.filet.haut"].meta, s = Math.min(0.8, (R.tickX(spec, i + 1) - R.tickX(spec, i) - 8) / M.w), a = ocean.spriteActor(ocean.frontEl, "aide.filet.haut");
-      ocean.frontEl.prepend(a.c); a.draw(0);
-      const n = { a, x: mx, y: R.lineY(spec, mx) - R.buoyR(spec) - 14 - M.h * s, s };
-      a.show(false); this.nets.set(i, n); return n;
-    }
-    const a = new Actor(stage, ocean.frontEl, NET_W + 8, NET_H + 8, (NET_W + 8) / 2, 0); ocean.frontEl.prepend(a.c); ocean.actors.push(a);
-    a.paint("filet", (ctx) => {
-      const px = stage.px; ctx.setTransform(px, 0, 0, px, 0, 0); R.drawNet(ctx, 4, 3, NET_W, NET_H, 30 + i);
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      for (let k = 0; k < 10; k++) { const q = sprites.frame(`poisson.${k % 3}.${k % 2 ? "g" : "d"}`, (k * 5) % 12), s = 0.2, cx = (4 + 7 + (k % 5) * 12) * px, cy = (3 + 10 + Math.floor(k / 5) * 15) * px; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, Math.round(cx + q.dx * s), Math.round(cy + q.dy * s), Math.round(q.w * s), Math.round(q.h * s)); }
-    });
-    const n = { a, x: mx, y: R.lineY(spec, mx) + 17, s: 1 };
+    const { ocean } = this.app, spec = this.spec, mx = (R.tickX(spec, i) + R.tickX(spec, i + 1)) / 2;
+    const M = this.app.atlas.sprites["aide.filet.haut"].meta, s = Math.min(0.8, (R.tickX(spec, i + 1) - R.tickX(spec, i) - 8) / M.w), a = ocean.spriteActor(ocean.frontEl, "aide.filet.haut");
+    ocean.frontEl.prepend(a.c); a.draw(0);
+    const n = { a, x: mx, y: R.lineY(spec, mx) - R.buoyR(spec) - 14 - M.h * s, s };
     a.show(false); this.nets.set(i, n); return n;
   }
   // la loupe de L3 : le nombre de la graduation i, en grand, sous la ligne à droite de ce nombre

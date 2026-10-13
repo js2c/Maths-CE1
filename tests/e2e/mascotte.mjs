@@ -71,10 +71,12 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   // ---- 2. la ligne graduée, « lire » : la flèche sur l'étoile, puis joie, déception, grande joie
   await go(`&choix=1:1&format=lire${ROW}&questions=8`); await page.tap(".play", { force: true });
   check(await until(() => window.__app.fleche.visible, null, 60000), `${W} lire : la flèche apparaît pendant la consigne`);
+  // (lot « Recette de l'enfant », point 0.6 : la position est lue dès que la flèche est là ; lue après 0,7 s et une capture, sous
+  // charge, la consigne de la voix accélérée était finie, la flèche partie, et `cible` à null faisait planter le parcours)
+  const pos = await page.evaluate(() => { const s = window.__app.screen, f = window.__app.fleche; return { cible: f.cible, star: s.starAt }; });
   await page.waitForTimeout(700);
   e = await shot("10-fleche-lire");
-  const pos = await page.evaluate(() => { const s = window.__app.screen, f = window.__app.fleche; return { cible: f.cible, star: s.starAt }; });
-  check(pos.star && Math.abs(pos.cible[0] - pos.star[0]) < 1 && pos.cible[1] < pos.star[1], `${W} lire : la flèche au-dessus de l'étoile (${pos.cible.map(Math.round)} / ${pos.star?.map(Math.round)})`);
+  check(pos.star && pos.cible && Math.abs(pos.cible[0] - pos.star[0]) < 1 && pos.cible[1] < pos.star[1], `${W} lire : la flèche au-dessus de l'étoile (${pos.cible?.map(Math.round)} / ${pos.star?.map(Math.round)})`);
   await ligne(); await until(() => !window.__app.voice.speaking, null, 20000); await page.waitForTimeout(300);
   check(!(await page.evaluate(() => window.__app.fleche.visible)), `${W} lire : la flèche s'en va avec la fin de la consigne`);
   await repondre(true);

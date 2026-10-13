@@ -54,8 +54,7 @@ export class FreeTraining {
   async menu() {
     const { app } = this;
     this.t0 ??= app.clock.now();
-    app.voice.stop(); await app.voice.say(`${app.text.data.encore} ${app.text.data.libre}`);
-    const c = await choose(app, { stars: false, store: this.store, content: { module1: this.m1, module2: this.m2, module3: this.m3, module4: this.m4, module5: this.m5, module6: this.m6, seance: this.seance ?? {} } });
+    const c = await choose(app, { intro: `${app.text.data.encore} ${app.text.data.libre}`, stars: false, store: this.store, content: { module1: this.m1, module2: this.m2, module3: this.m3, module4: this.m4, module5: this.m5, module6: this.m6, seance: this.seance ?? {} } });
     return this.start(c);
   }
   // l'exercice choisi ({ module, niveau } ou { module: 2, famille }), sans fin ; (lot « Les leçons » : `apresLecon`, la leçon
@@ -73,10 +72,11 @@ export class FreeTraining {
   // la ligne graduée au niveau choisi, sans fin
   async line(niveau = null) {
     const { app } = this, screen = app.lineScreen();
-    await this.pickCran();
+    await this.pickCran(); if (this.fini) return;
     const runner = await new Module1Runner({ screen, store: this.store, content: this.m1, rnd: this.rnd, seance: await this.seanceId(), variete: this.seance?.variete, offset: () => this.offset, cran: () => this.cran, choix: niveau }).load();
     runner.libre = true; this.runner = runner;
     for (;;) {
+      if (this.fini) return; // (lot « Recette de l'enfant », point 2 : la maison a fermé la portée de l'entraînement libre)
       const { q, cfg } = runner.next(), r = await screen.ask(q, cfg);
       // les étoiles de mer qu'elle rendrait sont ignorées ; un niveau franchi compte, et son étoile arc-en-ciel
       // est gardée pour la récompense de la séance suivante (docs/SPEC-LOT2.md, « Autres règles »)
@@ -88,11 +88,12 @@ export class FreeTraining {
   // les additions de la famille choisie, sans fin (le déroulement de la notion du jour, réponses marquées « libre »)
   async facts(famille = null) {
     const { app } = this, screen = (app.facts ??= new FactsScreen(app, this.m2));
-    await this.pickCran();
+    await this.pickCran(); if (this.fini) return;
     const runner = await new Module2Runner({ store: this.store, content: this.m2, rnd: this.rnd, seance: await this.seanceId(), variete: this.seance?.variete, cran: () => this.cran, choix: famille }).load();
     runner.w.libre = true; this.runner = runner;
     screen.show(true); screen.notion = true;
     for (;;) {
+      if (this.fini) return;
       const { q, cfg } = runner.next(), r = await screen.askNotion(q, cfg);
       const { events } = await runner.record(r, cfg);
       for (const e of events) if (e.type === "montee") await app.rewards.arcFromFree();
@@ -101,12 +102,13 @@ export class FreeTraining {
   }
   // lot 3 : le calcul rapide au niveau choisi, sans fin (réponses marquées « libre »)
   async calc(niveau) {
-    const { app } = this; await this.pickCran(); await app.sprites.load("calcul");
+    const { app } = this; await this.pickCran(); if (this.fini) return; await app.sprites.load("calcul");
     const base = median((await this.store.setting("tempsDeBase"))?.mesures ?? []) ?? this.m2.base.defautS * 1000;
     const runner = await new Module3Runner({ store: this.store, content: this.m3, content2: this.m2, rnd: this.rnd, seance: await this.seanceId(), variete: this.seance?.variete, cran: () => this.cran, choix: niveau, baseMs: base }).load();
     runner.libre = true; this.runner = runner;
     const fs = (app.facts ??= new FactsScreen(app, this.m2)); fs.show(true);
     for (;;) {
+      if (this.fini) return;
       const { q, cfg } = runner.next(), r = await app.calc.askNotion(q);
       const { events } = await runner.record(r, cfg);
       for (const e of events) if (e.type === "montee") await app.rewards.arcFromFree();
@@ -115,12 +117,13 @@ export class FreeTraining {
   }
   // lot « Multiplication » : la multiplication au niveau choisi, sans fin (réponses marquées « libre »)
   async mult(niveau) {
-    const { app } = this; await this.pickCran(); await app.sprites.load("aides");
+    const { app } = this; await this.pickCran(); if (this.fini) return; await app.sprites.load("aides");
     const base = median((await this.store.setting("tempsDeBase"))?.mesures ?? []) ?? this.m2.base.defautS * 1000;
     const runner = await new Module5Runner({ store: this.store, content: this.m5, rnd: this.rnd, seance: await this.seanceId(), variete: this.seance?.variete, cran: () => this.cran, choix: niveau, baseMs: base }).load();
     runner.libre = true; this.runner = runner;
     const fs = (app.facts ??= new FactsScreen(app, this.m2)); fs.show(true);
     for (;;) {
+      if (this.fini) return;
       const x = runner.next(); if (!x) { runner.var = new runner.var.constructor(runner.var.c); continue; }
       const r = await app.mult.askNotion(x.q);
       const { events } = await runner.record(r, x.cfg);
@@ -131,11 +134,12 @@ export class FreeTraining {
   // lot « Les voiliers » : les voiliers au niveau choisi, sans fin (réponses marquées « libre ») ; la maison les quitte
   // (main.js, abandonActivity : la scène s'en va)
   async voiliers(niveau) {
-    const { app } = this; await this.pickCran();
+    const { app } = this; await this.pickCran(); if (this.fini) return;
     const runner = await new Module4Runner({ store: this.store, content: this.m4, rnd: this.rnd, seance: await this.seanceId(), variete: this.seance?.variete, cran: () => this.cran, choix: niveau }).load();
     runner.libre = true; this.runner = runner;
-    if (!(await app.voiliers.enter())) return this.menu();
+    if (!(await app.voiliers.enter())) return this.menu(); if (this.fini) return app.voiliers.leave();
     for (;;) {
+      if (this.fini) return;
       const x = runner.next(); if (!x) { runner.var = new runner.var.constructor(runner.var.c); continue; }
       const r = await app.voiliers.ask(x.q);
       const { events } = await runner.record(r, x.cfg);
@@ -146,11 +150,12 @@ export class FreeTraining {
   // lot « L'étal du pêcheur » : l'étal au niveau choisi, sans fin (réponses marquées « libre ») ; la maison le quitte (main.js,
   // abandonActivity : la scène s'en va) ; pas de leçon ici (le menu des leçons les propose), l'exemple guidé la première fois
   async etal(niveau) {
-    const { app } = this; await this.pickCran();
+    const { app } = this; await this.pickCran(); if (this.fini) return;
     const runner = await new Module6Runner({ store: this.store, content: this.m6, rnd: this.rnd, seance: await this.seanceId(), variete: this.seance?.variete, cran: () => this.cran, choix: niveau }).load();
     runner.libre = true; this.runner = runner;
-    await app.etal.enter({ rnd: this.rnd });
+    await app.etal.enter({ rnd: this.rnd }); if (this.fini) return app.etal.leave();
     for (;;) {
+      if (this.fini) return;
       const x = runner.next(); if (!x) { runner.var = new runner.var.constructor(runner.var.c); continue; }
       const r = await app.etal.ask(x.q);
       const { events } = await runner.record(r, x.cfg);

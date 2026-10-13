@@ -893,7 +893,9 @@ const API = {
   },
   // le portefeuille montré ou caché (au niveau 7, le paiement est déjà dans la soucoupe)
   visible(v) { for (const e of [pfEl, fondEl, avEl]) e.style.visibility = v ? '' : 'hidden'; items.filter(i => i.lieu !== 'soucoupe').forEach(i => { i.el.style.visibility = v ? '' : 'hidden'; if (i.lab) i.lab.style.visibility = v ? '' : 'hidden'; }); },
-  async ouvrir() { if (pfEtat === 'ferme') ouvrirPf(); while (pfEtat === 'anim' || pfEtat === 'ferme') await attendre(40); },
+  // (lot « Recette de l'enfant et nettoyage des couches », l'enfant imprévisible, graine 1001 : appelé pendant que le portefeuille
+  // se refermait, il attendait pour toujours un portefeuille fermé qu'il ne rouvrait pas ; il le rouvre dès qu'il est fermé)
+  async ouvrir() { while (pfEtat === 'anim' || pfEtat === 'ferme') { if (pfEtat === 'ferme') ouvrirPf(); await attendre(40); } },
   sortir() { if (pfEtat === 'ouvert') sortirTout(); },
   async fermer() { if (pfEtat === 'sorti') rangerEtFermer(); else if (pfEtat === 'ouvert') fermerPf(); await attendre(900); },
   // ---- la soucoupe
@@ -939,6 +941,21 @@ const API = {
   get meteo() { return meteoCible; },
   // l'orage arrive (une fois par partie au plus) : renvoie le numéro de la réplique (textes.json, etalOrage)
   orage() { const k = orageArrive(); return { k, derniere: derniereReplique }; },
+  // (lot « Recette de l'enfant », point 0.5 ; demande du parent du 11 octobre 2026) toucher la lampe change le temps : par
+  // beau temps, l'orage arrive (renvoie le numéro de sa réplique) ; par mauvais temps, il s'en va (la transition inverse,
+  // 3 s). Pendant une transition, rien (null).
+  lampe() {
+    if (Math.abs(meteo - meteoCible) > 0.001) return null;
+    if (meteoCible === 0) { const k = orageArrive(); return { orage: true, k }; }
+    poserMeteo(0); return { orage: false };
+  },
+  get transition() { return Math.abs(meteo - meteoCible) > 0.001; },
+  // la zone de la lampe (px de la scène), allumée ou non, avec son balancement : au moins 64 px de côté
+  zoneLampe() {
+    const s = LAMPE.s, a = IMG.lampe, w = Math.max(64, a.width * s + 24), h = Math.max(64, (a.height - LAMPE.hy) * s + 16);
+    const cx = ACCROCHE.x + (a.width / 2 - LAMPE.hx) * s;
+    return [Math.round(cx - w / 2), ACCROCHE.y - 8, Math.round(cx + w / 2), Math.round(ACCROCHE.y - 8 + h)];
+  },
   // ---- la vitesse des gestes (corrections, « passer »)
   vitesse(k) { VIT.k = k; },
   // ---- pour les parcours de test

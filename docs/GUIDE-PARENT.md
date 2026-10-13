@@ -418,6 +418,33 @@ Fait d'un seul tenant, d'après votre maquette arrêtée (`art/boutique/`) : ce 
 
 **À essayer sur la tablette** : acheter une créature (la coche, la croix, toucher deux fois une tuile), faire briller, le retour au récif (la créature qui arrive à la nage), une fin de séance qui mène à la boutique, la fluidité de la vitrine.
 
+## d quindecies) Lot « Recette de l'enfant et nettoyage des couches » : l'oignon épluché
+
+Fait d'un seul tenant : ce que la session a décidé seule est listé en tête de la demande de fusion et dans `docs/JOURNAL-CONCEPTION.md` (« choix de la session, à revoir par le parent »).
+
+- **Une seule règle de sortie** : chaque étape (l'échauffement, la notion du jour, le défi, la récompense, l'entraînement libre, une leçon, l'écran « choisir ») range tout ce qu'elle a posé quand on la quitte, quelle que soit la façon d'en sortir (la fin, la maison, l'espace parent, « passer », un autre exercice). Les écrans des exercices sont détruits au lieu d'être cachés. L'inventaire de ce que chaque écran pose et lance, et de ce qui ne servait plus (retiré), est dans `docs/COUCHES.md`.
+- **Un enfant imprévisible automatique** joue des centaines de parties au hasard (touchers rapides, à côté, deux doigts, la maison, la veille, le rechargement…) et vérifie qu'il ne reste jamais rien de travers à l'écran ; une version courte tourne à chaque envoi sur GitHub.
+- **Un agent a joué l'enfant**, deux fois une demi-heure, à vitesse réelle : ses rapports et ce qui en a été fait sont dans `tests/recette-fonctionnelle/out-enfant/`. Le défaut principal trouvé : sur une tablette occupée, un toucher bref pouvait être pris pour un appui long, et ne rien faire (l'étal, le récif, l'album, la boutique semblaient ne plus répondre). C'est corrigé.
+- **Deux doigts posés ensemble sur la ligne graduée** ne font plus de réponse.
+- **La correction de la multiplication** ne reste plus sur l'accueil après la maison ; **« Encore ! »** montre les exercices dès sa phrase ; dans **la boutique**, toucher le capitaine redit le prix de la créature choisie ; plus de « Prends ton temps » pendant **le défi** ; dans l'espace parent, **l'historique** dit quel exercice a été joué en entraînement libre.
+- **Des questions pour vous** (`docs/IDEES.md`, section 3, « Après le second passage de l'agent ») : surtout, une séance n'est pas reprise si la page se recharge (si Android ferme Chrome pendant que la tablette est posée, la séance est perdue ; les étoiles restent).
+- **La barre noire** au-dessus de la ligne (votre capture) : elle n'a pas pu être reproduite ici ; la correction est de précaution (aucun calque vide n'est plus affiché). À vérifier sur la tablette.
+- **Les voiliers restent nets** : seule la mer s'allège quand la tablette peine ; chaque changement est noté dans l'espace parent (« Qualité des voiliers »).
+- **La lampe de l'étal** : la toucher fait venir l'orage, ou le chasse.
+- **Dans l'espace parent**, le détail d'une séance dit « Défi record (une minute de faits d'addition) ».
+
+**Les phrases à fabriquer.** 2 phrases nouvelles (les répliques des leçons L15 et L17 qui commençaient par « … »), et 50 phrases à refaire, dont la durée est anormale (un mot coupé en morceaux, ou bien plus lente que ses semblables) : la liste est dans `tools/voix/a-refaire-durees.txt`. Pour les refaire, une fois, en même temps que les phrases nouvelles : les trois commandes de `docs/VOIX.md`, section « Ce que le contrôle entend, et ce qu'il n'entend pas » ; la fabrication refuse désormais d'elle-même un tirage de durée anormale. 10 anciennes phrases ne servent plus (la fabrication les effacera).
+
+**À essayer sur la tablette (10 minutes)**, pour ce que les essais automatiques ne voient pas : le toucher réel, la fluidité, le son.
+
+1. **Toucher vite** : dans l'étal, le récif, l'album et la boutique, des touchers brefs et rapides, du bout du doigt : chacun doit faire quelque chose (rien ne doit « ignorer » un toucher).
+2. **La ligne graduée** : la barre noire au-dessus de la ligne ne doit plus apparaître, ni pendant la question, ni pendant la correction ; poser la paume sur la ligne ne doit pas répondre.
+3. **Le pavé** : taper deux fois vite le même chiffre (« 77 ») : les deux doivent compter si l'enfant les tape vraiment ; un doigt qui rebondit ne doit en compter qu'un.
+4. **Les voiliers** : les bateaux restent nets toute la partie ; si la mer devient plus simple, regardez « Qualité des voiliers » dans l'espace parent.
+5. **L'étal** : toucher la lampe (l'orage vient, puis repart au second toucher) ; la voix des leçons L15 à L18.
+6. **Sortir de partout** : la maison en pleine question, puis « continuer » ; en « Encore ! », la maison pendant la correction d'une multiplication (les rangées de poissons ne doivent pas rester sur l'accueil) ; l'écran éteint puis rallumé ; quitter une leçon en route : rien ne doit rester à l'écran, aucune voix ne doit continuer.
+7. **Le son** : après la prochaine fabrication des voix, écoutez quelques phrases de `tools/voix/a-refaire-durees.txt` (par exemple « 16, 17 ! » et « Ça fait 20. ») : plus de mot coupé ni de lenteur.
+
 ## e) Ce qui reste approximatif ou à ajuster
 
 **À vérifier sur la vraie tablette.** Écouter la voix (aucune phrase n'a été écoutée par une personne, la vérification a été automatique) et regarder les illustrations des cartes en grand. Toutes les mesures ont été faites sur un ordinateur, en ralentissant le processeur 4 fois pour imiter une tablette : démarrage en moins de 1,5 s, animation à 50 à 60 images par seconde la plupart du temps, avec des baisses vers 30 pendant certaines animations (l'application allège alors d'elle-même le décor). Il faut confirmer que tout reste fluide sur la tablette.

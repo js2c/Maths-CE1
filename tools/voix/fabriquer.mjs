@@ -29,6 +29,7 @@ import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, 
 import { cpus, tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { reference as dureesReference } from "./durees.mjs";
 import { inventaire } from "./inventaire.mjs";
 import { pourLaVoix } from "./lettres.mjs";
 
@@ -81,7 +82,8 @@ const chatterbox = ({ ref, dossier }, phrases) => new Promise((ok, ko) => {
   const p = spawn(PYTHON, [join(ICI, "chatterbox_lot.py")], { stdio: ["pipe", "inherit", "inherit"] });
   p.on("exit", (c) => (c === 0 ? ok() : ko(new Error(`chatterbox_lot.py : code ${c}`))));
   const { exaggeration, cfg_weight, temperature, essais, whisper } = REGLAGES;
-  p.stdin.end(JSON.stringify({ ref, dossier, essais, whisper, refaire: process.argv.includes("--refaire") && !existsSync(join(ICI, "a-refaire.txt")), cpu: process.argv.includes("--cpu"), reglages: { exaggeration, cfg_weight, temperature }, phrases }));
+  // (lot « Recette de l'enfant », point 0.3) le contrôle des durées : ses seuils et les références des familles (durees.json)
+  p.stdin.end(JSON.stringify({ ref, dossier, essais, whisper, durees: dureesReference(), refaire: process.argv.includes("--refaire") && !existsSync(join(ICI, "a-refaire.txt")), cpu: process.argv.includes("--cpu"), reglages: { exaggeration, cfg_weight, temperature }, phrases }));
 });
 const encoder = (ff, wav, ogg) => new Promise((ok, ko) => {
   const p = spawn(ff, ["-y", "-loglevel", "error", "-i", wav, "-af", `apad=pad_dur=${REGLAGES.finMs / 1000}`, "-ac", "1", "-ar", "48000", "-c:a", "libopus", "-b:a", REGLAGES.opus, "-map_metadata", "-1", "-fflags", "+bitexact", ogg]);

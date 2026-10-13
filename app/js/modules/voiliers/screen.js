@@ -41,9 +41,12 @@ export const BANDE_DOUBLE = [0, 400, 1280, 800];
 export const bulleNombre = (t) => t.replace(/(^|\s)(\d{1,3})$/, (m, sp, n) => `${sp}${n} « ${ecritEnLettres(Number(n))} »`);
 // la qualité de la mer : un cran de moins si l'intervalle moyen des dernières images dépasse 20 ms (au moins 10 images, et
 // 3 s à ce cran), un de plus s'il passe sous `remonteSousMs` (au moins 30 images et 4 s à ce cran) ; `gaps` : les
-// intervalles retenus (ms ; une image très lente compte : sur une tablette lente, c'est elle qu'il faut alléger), `depuis` :
-// ms à ce cran
-export function qualiteSuivante(q, gaps, depuis, { remonteSousMs = 14, max = 2 } = {}) {
+// intervalles retenus (ms), `depuis` : ms à ce cran
+// (lot « Recette de l'enfant », point 0.4 : les voiliers devenaient flous sur la tablette. Une seule image lente, à l'entrée
+// dans la scène ou à l'arrivée d'un bateau, faisait descendre la qualité, et elle ne remontait que sous 14 ms, plus de 71
+// images/s : à 57 images/s, jamais. Désormais, seule la mer s'allège, les bateaux et les bouées gardent la qualité choisie
+// (`qualiteBateaux`) ; les images d'une transition ne comptent pas (`occupe`, et 400 ms après) ; elle remonte sous 18 ms.)
+export function qualiteSuivante(q, gaps, depuis, { remonteSousMs = 18, max = 2 } = {}) {
   if (gaps.length < 10 || depuis < 3000) return q;
   const m = gaps.reduce((a, b) => a + b, 0) / gaps.length;
   if (m > 20 && q > 0) return q - 1;
@@ -64,22 +67,30 @@ export class VoiliersScreen {
     for (const c of Object.values(this.cv)) stage.root.insertBefore(c, line);
     app.lagon?.pause(true);
     this.ecoute = [];
-    const gaps = []; let last = 0, t0 = 0, depuis = 0;
-    const Q = this.c.qualite ?? {};
+    const gaps = []; let last = 0, t0 = 0, depuis = 0, calme = 0;
+    const Q = this.c.qualite ?? {}, depart = Q.depart ?? 1;
     this.api = startVoiliers({
       racine: stage.root, ...this.cv, donnees: this.donnees,
       echelle: () => stage.k, temps: () => clock.now() / 1000, fige: () => !!app.enPause || clock.paused,
       toucher: (e) => this.attend && !app.enPause && !e.target?.closest?.("button"),
       on: (cible, type, f, o) => { cible.addEventListener(type, f, o); this.ecoute.push([cible, type, f, o]); },
       attente: ATTENTE, attenteXMin: ATTENTE_X_MIN, ventMs: (this.c.mer?.ventS ?? 7) * 1000, piratesK: this.c.mer?.piratesPlusRapides ?? 1.3,
-      qualite: this.qual ?? Q.depart ?? 1,
-      // l'allègement : la qualité de la mer suit le temps d'image (les 3 premières secondes, et un intervalle de plus de 3 s,
-      // onglet caché, ne comptent pas ; pendant la pause, la scène ne mesure rien)
+      qualite: this.qual ?? depart, qualiteBateaux: depart,
+      // l'allègement : la qualité de la mer suit le temps d'image (les 3 premières secondes, un intervalle de plus de 3 s,
+      // onglet caché, et les images d'une transition, jusqu'à 400 ms après, ne comptent pas ; pendant la pause, la scène ne
+      // mesure rien)
       mesure: (t) => {
-        t0 ||= t; depuis ||= t; if (last && t - last > 0 && t - last < 3000) gaps.push(t - last); last = t; if (gaps.length > 60) gaps.shift();
-        if (t - t0 < 3000 || !this.api) return;
-        const q = this.api.qual, n = qualiteSuivante(q, gaps, t - depuis, { remonteSousMs: Q.remonteSousMs ?? 14 });
-        if (n !== q) { this.api.qualite(n); this.qual = n; depuis = t; gaps.length = 0; (window.__voiliersQualite ??= []).push({ t: Math.round(t), de: q, a: n }); }
+        t0 ||= t; depuis ||= t;
+        if (!this.api || t - t0 < 3000 || this.api.occupe()) { if (this.api?.occupe()) calme = t + 400; last = t; return; }
+        if (t < calme) { last = t; return; }
+        if (last && t - last > 0 && t - last < 3000) gaps.push(t - last); last = t; if (gaps.length > 60) gaps.shift();
+        // (elle ne remonte jamais au-dessus de la qualité choisie : à 2×, la mer ferait retomber la tablette sous 20 ms)
+        const q = this.api.qual, n = qualiteSuivante(q, gaps, t - depuis, { remonteSousMs: Q.remonteSousMs ?? 18, max: depart });
+        if (n !== q) {
+          const ms = Math.round((gaps.reduce((a, b) => a + b, 0) / gaps.length) * 10) / 10;
+          this.api.qualite(n); this.qual = n; depuis = t; gaps.length = 0; (window.__voiliersQualite ??= []).push({ t: Math.round(t), de: q, a: n, ms });
+          this.app.noterQualite?.({ de: q, a: n, ms });
+        }
       },
       sansWebGL: () => { this.sansWebGL = true; },
     });
@@ -127,6 +138,7 @@ export class VoiliersScreen {
 
   // un bateau ; o.guide : l'exemple guidé
   async ask(q) {
+    if (!this.api) return new Promise(() => {}); // (lot « Recette de l'enfant », point 2 : la scène rangée ne pose plus rien)
     const { app } = this, { voice, text, ocean, sound } = app, T = text.data, api = this.api, g = clock.hold(), tok = ++this.tok, vivant = () => tok === this.tok;
     this.q = q; this.locked = true; this.attend = false; this.passable(false); this.skipped = false; app.fleche?.cacher();
     api.vitesse(1);

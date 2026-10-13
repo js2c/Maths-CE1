@@ -1,0 +1,333 @@
+{
+ "regles": {
+  "seuilDb": 32,
+  "plancherDb": -50,
+  "pauseMinMs": 180,
+  "morceauMinMs": 50,
+  "pauseMotMs": 300,
+  "familleMin": 8,
+  "ecarts": 5,
+  "fois": 1.5,
+  "margeS": 0.5
+ },
+ "familles": {
+  "#": [
+   0.0648,
+   0.01445
+  ],
+  "# : # centaine, # dizaines, # unité.": [
+   0.1017,
+   0.01766
+  ],
+  "# : # centaine, # dizaines, # unités.": [
+   0.08911,
+   0.01736
+  ],
+  "# : # centaines, # dizaine, # unité.": [
+   0.11786,
+   0.01231
+  ],
+  "# : # centaines, # dizaine, # unités.": [
+   0.10239,
+   0.01301
+  ],
+  "# : # centaines, # dizaines, # unité.": [
+   0.09491,
+   0.009
+  ],
+  "# : # centaines, # dizaines, # unités.": [
+   0.08541,
+   0.00829
+  ],
+  "# centimes.": [
+   0.05368,
+   0.00951
+  ],
+  "# dizaine et # unités.": [
+   0.08667,
+   0.0164
+  ],
+  "# dizaines et # unité.": [
+   0.08864,
+   0.01011
+  ],
+  "# dizaines et # unités.": [
+   0.08654,
+   0.00846
+  ],
+  "# étoiles arc-en-ciel !": [
+   0.08409,
+   0.0157
+  ],
+  "# euro #.": [
+   0.07917,
+   0.01853
+  ],
+  "# euros #.": [
+   0.07913,
+   0.01982
+  ],
+  "# euros.": [
+   0.06063,
+   0.0139
+  ],
+  "# fois # ?": [
+   0.07214,
+   0.0143
+  ],
+  "# fois #, #.": [
+   0.10158,
+   0.02606
+  ],
+  "# fois #, ça fait #.": [
+   0.0792,
+   0.0124
+  ],
+  "# fois combien, ça fait # ?": [
+   0.08414,
+   0.01291
+  ],
+  "# moins # ?": [
+   0.06885,
+   0.01435
+  ],
+  "# moins combien ?": [
+   0.07857,
+   0.01389
+  ],
+  "# perles !": [
+   0.06316,
+   0.00962
+  ],
+  "# plus # ?": [
+   0.0744,
+   0.01786
+  ],
+  "# plus # dépasse dix : on passe à la dizaine suivante.": [
+   0.08388,
+   0.0067
+  ],
+  "# plus #, #.": [
+   0.11444,
+   0.02605
+  ],
+  "# plus #, c'est # plus #, et encore #.": [
+   0.09093,
+   0.0131
+  ],
+  "# plus #, c'est un double.": [
+   0.08857,
+   0.0167
+  ],
+  "# plus #, ça fait #.": [
+   0.09091,
+   0.01488
+  ],
+  "# plus combien ?": [
+   0.07885,
+   0.01476
+  ],
+  "# plus combien, ça fait # ?": [
+   0.08933,
+   0.01211
+  ],
+  "# poissons, et dans le reflet, encore # poissons.": [
+   0.08432,
+   0.00438
+  ],
+  "# rangées de # poissons.": [
+   0.0632,
+   0.01444
+  ],
+  "C'est entre # et # !": [
+   0.0812,
+   0.01157
+  ],
+  "C'était #.": [
+   0.06167,
+   0.0173
+  ],
+  "Ça fait #.": [
+   0.06944,
+   0.02216
+  ],
+  "Ce soir, tu as gagné # étoiles de mer.": [
+   0.07853,
+   0.00757
+  ],
+  "Combien de fois #, ça fait # ?": [
+   0.07424,
+   0.00905
+  ],
+  "Combien font # plus # ?": [
+   0.07357,
+   0.01675
+  ],
+  "Combien moins # ?": [
+   0.06133,
+   0.01087
+  ],
+  "Combien plus # ?": [
+   0.06421,
+   0.00799
+  ],
+  "Combien plus #, ça fait # ?": [
+   0.07828,
+   0.00716
+  ],
+  "Compte à partir de #, jusqu'à #.": [
+   0.0925,
+   0.00766
+  ],
+  "Compte les sauts avec la tortue jusqu'à #.": [
+   0.08889,
+   0.01859
+  ],
+  "D'abord, on va jusqu'à #.": [
+   0.09704,
+   0.00973
+  ],
+  "Écris le nombre #.": [
+   0.07368,
+   0.01214
+  ],
+  "Et # fois # ?": [
+   0.06067,
+   0.00854
+  ],
+  "Et encore #.": [
+   0.06417,
+   0.01465
+  ],
+  "Il est plus grand que # : il passe après.": [
+   0.06421,
+   0.00658
+  ],
+  "Il est plus petit que # : il passe avant.": [
+   0.06721,
+   0.00645
+  ],
+  "Il faut # poissons en tout.": [
+   0.06828,
+   0.01831
+  ],
+  "Il te manque # étoiles.": [
+   0.077,
+   0.00708
+  ],
+  "La ligne commence à #, pas à zéro.": [
+   0.07306,
+   0.00637
+  ],
+  "La tortue est sur # et fait # sauts.": [
+   0.07676,
+   0.01265
+  ],
+  "La tortue est sur # et fait un saut.": [
+   0.08267,
+   0.01631
+  ],
+  "La tortue est sur #.": [
+   0.10333,
+   0.02142
+  ],
+  "La tortue part de #, pas de zéro.": [
+   0.08852,
+   0.00701
+  ],
+  "La tortue part de #.": [
+   0.08722,
+   0.02368
+  ],
+  "Moins #.": [
+   0.125,
+   0.04365
+  ],
+  "Montre-moi où serait #.": [
+   0.09333,
+   0.00988
+  ],
+  "On complète la boîte avec #, il en reste #.": [
+   0.07475,
+   0.00698
+  ],
+  "On n'écrit pas # puis # : le # prend la place des dizaines et des unités.": [
+   0.074,
+   0.0056
+  ],
+  "On n'écrit pas # puis # : le # prend la place des unités.": [
+   0.07982,
+   0.00961
+  ],
+  "On ne peut pas retirer # de # : on casse une dizaine.": [
+   0.07163,
+   0.0124
+  ],
+  "On part de #, et on compte les sauts.": [
+   0.07902,
+   0.00972
+  ],
+  "On part de #.": [
+   0.08278,
+   0.0196
+  ],
+  "Où est le nombre # ?": [
+   0.07,
+   0.00953
+  ],
+  "Où mettrais-tu # ?": [
+   0.06292,
+   0.0135
+  ],
+  "Place le poisson sur le nombre #.": [
+   0.07395,
+   0.00545
+  ],
+  "Plus #.": [
+   0.073,
+   0.02026
+  ],
+  "Regarde la boîte à dix places : # poissons.": [
+   0.07632,
+   0.00496
+  ],
+  "Regarde tout ce que tu as gagné ce soir : # étoiles de mer !": [
+   0.08118,
+   0.00606
+  ],
+  "Sous le toit, il y a # places.": [
+   0.11115,
+   0.01497
+  ],
+  "Tape le nombre # sur le pavé.": [
+   0.07439,
+   0.01085
+  ],
+  "Tu as fait # perles.": [
+   0.05,
+   0.00618
+  ]
+ },
+ "genres": {
+  "1 mot": [
+   0.07,
+   0.02471
+  ],
+  "2 mots": [
+   0.06235,
+   0.0142
+  ],
+  "3-4 mots": [
+   0.072,
+   0.01847
+  ],
+  "5-8 mots": [
+   0.0764,
+   0.01353
+  ],
+  "9 mots et plus": [
+   0.07838,
+   0.01049
+  ]
+ }
+}

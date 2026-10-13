@@ -15,7 +15,6 @@ export class Sprites {
     this.pages = new Map(); // "planche@échelle" -> ImageBitmap[]
     this.loading = new Map();
   }
-  sheetOf(name) { const s = this.atlas.sprites[name]; if (!s) throw new Error(`sprite inconnu : ${name}`); return s.sheet; }
   // charge une planche (toutes ses pages) ; les appels répétés partagent la même promesse
   load(sheet) {
     const scale = this.atlas.sheets[`${sheet}@${this.src}`] ? this.src : 1, key = `${sheet}@${scale}`;
@@ -33,7 +32,7 @@ export class Sprites {
   held() { return new Set([...this.pages.keys(), ...[...this.loading.keys()].map((k) => k.split("@")[0])]); }
   // libère une grande planche dont on n'a plus besoin (récif, cartes) : la mémoire décodée est rendue
   // (lot 3, étape 5 : pendant une visite en pause, les planches de la séance sont épinglées, `pinned` : jamais libérées)
-  // (correctif du 5 octobre 2026) les planches permanentes (`keep`, celles des boutons, de la pieuvre, du décor : main.js,
+  // (correctif du 5 octobre 2026) les planches permanentes (`keep`, celles des boutons, du lagon, de la tortue : main.js,
   // ALWAYS) ne sont jamais libérées : le récif libérait « petits » quand un cadeau de la surprise y était posé, et les
   // boutons de l'accueil se redessinaient à vide (présents, cliquables, invisibles)
   unload(sheet) {

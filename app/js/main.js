@@ -170,10 +170,23 @@ addEventListener("unhandledrejection", (ev) => journal({ type: "erreur de page",
 const rewards = await new Rewards(store, cartes, calendrier).load();
 if (P.get("etoiles")) { rewards.st.total = Number(P.get("etoiles")); await rewards.save(); } // tests : un trésor de départ
 const app = { stage, sprites, ocean, lagon, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, legendes, line: new LineView(stage), bulle, fleche, portees: new Set() };
+// (lot « Recette de l'enfant », point 0.4) chaque changement de qualité de la mer des voiliers est noté pour l'espace parent
+// (« Qualité des voiliers » : la date, la version, de quelle qualité à quelle autre, le temps d'image moyen ; les 50 derniers)
+let notesQualite = Promise.resolve();
+app.noterQualite = ({ de, a, ms }) => { notesQualite = notesQualite.then(async () => {
+  try {
+    const l = (await store.setting("voiliersQualite")) ?? [];
+    l.push({ t: Date.now(), version: versionApp ?? "?", de, a, ms, etape: app.session?.progress?.etape ?? null });
+    await store.setSetting("voiliersQualite", l.slice(-50));
+  } catch { /* le journal ne doit jamais gêner l'enfant */ }
+}); };
 // la vitesse des animations des exemples guidés et des corrections (1 : la vitesse d'origine ; la voix garde son débit)
 app.vitesse = seance.vitesseAnimations ?? 1;
 app.toucher = seance.toucher ?? {}; // (lot 3 bis, A5 : le double toucher)
 app.lineScreen = () => (app.screen ??= new ReadScreen(app));
+// (lot « Recette de l'enfant », point 2) les écrans de la ligne et des additions (que prennent aussi le calcul rapide, la
+// multiplication et la dictée) sont détruits en quittant l'étape qui s'en est servie, et recréés à la demande par la suivante
+app.fermerEcrans = () => { app.facts?.detruire(); app.facts = null; app.screen?.detruire(); app.screen = null; };
 // lot 2, étape 8 : la dictée de nombres (niveau 12) prend le pavé de l'écran des additions ; les chaluts des centaines vont sur le calque des aides
 app.dictation = new Dictation(app, () => (app.facts ??= new FactsScreen(app, module2)));
 app.aidBoard ??= new AidBoard(app); // l'écran de la ligne (aussi pour l'aide des faits + 1, + 2)
@@ -257,11 +270,13 @@ const handlers = {
   // repartir la séance abandonnée, dont la notion du jour (les additions : pavé, coquillage, bernard-l'ermite) s'affichait
   // par-dessus (capture 01 du parent).
   echauffement: async (ctx) => {
-    const portee = new Portee("échauffement", app.portees);
+    const { portee } = ctx;
     let fini = false;
-    try {
-      const screen = (app.facts ??= new FactsScreen(app, module2)), warmup = await new Warmup({ store, content: module2, rnd, seance: ctx.session.id, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load();
-      portee.fin(() => { if (!fini) screen.abandon(); screen.leave(); if (app.warmup === warmup) app.warmup = null; });
+    {
+      const warmup = await new Warmup({ store, content: module2, rnd, seance: ctx.session.id, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load();
+      if (portee.fermee) return fige();
+      const screen = (app.facts ??= new FactsScreen(app, module2));
+      portee.fin(() => { if (!fini) screen.abandon(); if (app.warmup === warmup) app.warmup = null; });
       const step = { ...ctx.step, ...(P.get("faits") ? { questions: [Number(P.get("faits")), Number(P.get("faits"))] } : {}) };
       app.warmup = warmup;
       // lot 3 ter (T1) : le bouton « passer l'échauffement », présent pendant tout l'échauffement, confirmé par la coche (et
@@ -269,7 +284,7 @@ const handlers = {
       const skip = (onSkip) => portee.el(warmupSkipKey(() => { if (!portee.fermee && !ctx.session.stopped) onSkip(); }));
       await runWarmup({ ...ctx, step, warmup, screen, rnd, skip, intro: async (skipped) => { await voice.say(text.pick("echauffement")); if (!warmup.base.mesures.length && !skipped()) await voice.say(text.data.pave); } });
       fini = true;
-    } finally { portee.fermer(); }
+    }
   },
   notion: async (ctx) => {
     frieze.notionIcon(ctx.session.rec.module);
@@ -287,22 +302,22 @@ const handlers = {
     const step = { ...ctx.step, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}), ...(P.get("guides") ? { guides: Number(P.get("guides")) } : {}) };
     app.runner = runner;
     await runNotion({ ...ctx, step, runner, screen, lesson: P.has("sansLecon") ? async () => false : lessonIn(ctx.session), rnd });
-    screen.leave();
   },
   // lot 2, étape 7 : le défi record (une minute, faits en boîte 3 ou plus, la bulle qui se vide, le record)
   defi: async (ctx) => {
     const screen = (app.facts ??= new FactsScreen(app, module2)), warmup = await new Warmup({ store, content: module2, rnd, seance: ctx.session.id, cran: () => "conseille" }).load();
     warmup.defi = true;
-    await sprites.load("defi");
-    const view = new ChallengeView(app); app.challenge = view;
-    try {
-      await runChallenge({ ...ctx, warmup, screen, view, store, rnd, mascotte: ocean.mascotte, stars: seance.etoiles, say: (k, v = {}) => voice.say(text.pick(k, v)) });
-    } finally { view.remove(); app.challenge = null; sprites.unload("defi"); }
+    await sprites.load("defi"); ctx.portee.fin(() => sprites.unload("defi")); if (ctx.portee.fermee) return fige();
+    const view = new ChallengeView(app); app.challenge = view; ctx.portee.fin(() => { view.remove(); app.challenge = null; });
+    await runChallenge({ ...ctx, warmup, screen, view, store, rnd, mascotte: ocean.mascotte, stars: seance.etoiles, say: (k, v = {}) => voice.say(text.pick(k, v)) });
   },
   recompense: (ctx) => reward(app, { ...ctx, hud }),
 };
 // lot « Les leçons » : après « À toi ! », la leçon qui vient d'être vue depuis le menu ne peut pas être relancée dans la séance
 // (au plus une fois par séance, section 8) ; elle est déjà notée vue ou passée, ce n'est donc pas la leçon d'entrée
+// (lot « Recette de l'enfant », point 2) une étape quittée pendant une attente (une planche, une scène qui s'installe) ne crée
+// plus rien ensuite : elle reste figée, comme une attente abandonnée (engine/clock.js)
+const fige = () => new Promise(() => {});
 const afterLesson = (session, runner) => { if (session.choix?.apresLecon) runner.lessonPlayed?.(session.choix.apresLecon); };
 // lot 2, étape 6 : la notion du jour sur les additions (docs/SPEC-LOT2.md, section 3) : l'écran des additions, le
 // bernard-l'ermite (planche « ermite », chargée le temps de l'étape), la leçon de la famille la première fois
@@ -312,9 +327,11 @@ async function notion2(ctx) {
   const runner = await new Module2Runner({ store, content: module2, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, dejaNouveaux: session.nouveaux, choix: session.choix?.famille ?? null }).load();
   const conf = ctx.step.module2 ?? ctx.step, step = { ...ctx.step, ...conf, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}), ...(P.get("guides") ? { guides: Number(P.get("guides")) } : {}) };
   app.runner = runner; afterLesson(session, runner); session.rec.famille = runner.famille; await session.save();
-  await Promise.all([sprites.load("ermite"), sprites.load("aides")]);
+  await Promise.all([sprites.load("ermite"), sprites.load("aides")]); ctx.portee.fin(() => sprites.unload("ermite"));
+  if (ctx.portee.fermee) return fige();
   const hermit = new Hermit(ocean, { x: 150, y: 776, scale: 0.85 }); // (lot 3 bis, R20 : un peu plus haut, il était coupé par le bas de l'écran)
   screen.hermit = hermit; screen.notion = true; app.hermit = hermit;
+  ctx.portee.fin(() => { screen.notion = false; screen.hermit = null; if (app.hermit === hermit) app.hermit = null; hermit.remove(); });
   hermit.show(true); hermit.play("sortir");
   screen.show(true); screen.keys(false);
   await voice.say(text.pick("notionFaits"));
@@ -324,7 +341,6 @@ async function notion2(ctx) {
     for (const e of res?.events ?? []) { if (e.type === "acquise" && !e.parent && !(runner.events ?? []).some((x) => x.famille === e.famille)) await session.levelUp(); (session.rec.familles ??= []).push(e); }
   } finally {
     session.nouveaux = runner.nouveaux; session.rec.faitsNouveaux = runner.nouveaux; await session.save();
-    screen.notion = false; screen.hermit = null; app.hermit = null; screen.leave(); hermit.remove(); sprites.unload("ermite");
   }
 }
 // lot 3, étape 4 : la notion du jour sur le calcul rapide (docs/SPEC-LOT3.md, section 6) : l'écran des additions (ardoise,
@@ -336,15 +352,14 @@ async function notion3(ctx) {
   const base = median((await store.setting("tempsDeBase"))?.mesures ?? []) ?? module2.base.defautS * 1000;
   const runner = await new Module3Runner({ store, content: module3, content2: module2, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, choix: session.choix?.module === 3 ? session.choix.niveau : null, baseMs: base }).load();
   app.runner = runner; afterLesson(session, runner); session.rec.niveauCalcul = runner.niveau; await session.save();
-  await sprites.load("calcul");
+  await sprites.load("calcul"); ctx.portee.fin(() => { app.calc.leave(); sprites.unload("calcul"); });
+  if (ctx.portee.fermee) return fige();
   const fs = (app.facts ??= new FactsScreen(app, module2)); fs.show(true); fs.keys(false);
   // (lot 3 bis, B4) « Le petit poisson va t'aider » n'est dit que s'il est à l'écran : aux niveaux du mur, le mur et le poisson
   // sont montrés le temps de la phrase ; sinon, une phrase sans le poisson
   if (module3.niveaux.find((c) => c.niveau === runner.niveau)?.support === "mur") await app.calc.introWall(text.pick("notionCalculMur"));
   else await voice.say(text.pick("notionCalcul"));
-  try {
-    await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.calc.askNotion(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
-  } finally { app.calc.leave(); sprites.unload("calcul"); }
+  await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.calc.askNotion(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
 }
 // LOT « MULTIPLICATION » (docs/SPEC.md, section 7 ter) : la notion du jour sur la multiplication : l'écran des additions
 // (ardoise, pavé) et les rangées de poissons (modules/mult/screen.js) ; la leçon d'entrée du niveau (L13, L14), sinon un
@@ -355,12 +370,11 @@ async function notion5(ctx) {
   const base = median((await store.setting("tempsDeBase"))?.mesures ?? []) ?? module2.base.defautS * 1000;
   const runner = await new Module5Runner({ store, content: module5, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, choix: session.choix?.module === 5 ? session.choix.niveau : null, baseMs: base }).load();
   app.runner = runner; afterLesson(session, runner); session.rec.niveauMult = runner.niveau; await session.save();
-  await sprites.load("aides");
+  await sprites.load("aides"); ctx.portee.fin(() => app.mult.leave());
+  if (ctx.portee.fermee) return fige();
   const fs = (app.facts ??= new FactsScreen(app, module2)); fs.show(true); fs.keys(false);
   await voice.say(text.pick("notionMult"));
-  try {
-    await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.mult.askNotion(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
-  } finally { app.mult.leave(); }
+  await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.mult.askNotion(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
 }
 // LOT « LES VOILIERS » (docs/SPEC.md, section 7 bis) : la notion du jour sur le jeu des voiliers, choisi par l'enfant ou
 // imposé par le parent : la scène de la maquette (modules/voiliers/screen.js), un bateau par question, l'exemple guidé la
@@ -375,9 +389,9 @@ async function notion4(ctx) {
     journal({ type: "voiliers sans WebGL" }); session.rec.module = 1; session.rec.voiliersSansWebGL = true; await session.save(); frieze.notionIcon(1);
     return handlers.notion(ctx);
   }
-  try {
-    await runNotion({ ...ctx, step, runner, screen: { ask: (q) => scr.ask(q) }, lesson: async () => false, rnd });
-  } finally { scr.leave(); }
+  // (inscrit après l'installation : une étape quittée pendant qu'elle s'installait la range aussitôt)
+  ctx.portee.fin(() => scr.leave()); if (ctx.portee.fermee) return fige();
+  await runNotion({ ...ctx, step, runner, screen: { ask: (q) => scr.ask(q) }, lesson: async () => false, rnd });
 }
 // LOT « L'ÉTAL DU PÊCHEUR » (docs/SPEC.md, section 7 quater) : la notion du jour à l'étal, choisie par l'enfant ou imposée par
 // le parent : la scène de la maquette (modules/etal/screen.js), un achat par question, la leçon d'entrée du niveau (L15 à L18)
@@ -389,11 +403,11 @@ async function notion6(ctx) {
   app.runner = runner; afterLesson(session, runner); session.rec.niveauEtal = runner.niveau; await session.save();
   const scr = app.etal;
   await scr.enter({ rnd });
+  // (inscrit après l'installation : une étape quittée pendant qu'elle s'installait la range aussitôt)
+  ctx.portee.fin(() => scr.leave()); if (ctx.portee.fermee) return fige();
   session.rec.etalMeteo = scr.meteoDepart ? "mauvais temps" : scr.orageA != null ? "orage en cours de partie" : "beau temps"; await session.save();
-  try {
-    await voice.say(text.pick("etalNotion"));
-    await runNotion({ ...ctx, step, runner, screen: { ask: (q) => scr.ask(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
-  } finally { scr.leave(); }
+  await voice.say(text.pick("etalNotion"));
+  await runNotion({ ...ctx, step, runner, screen: { ask: (q) => scr.ask(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
 }
 // LOT 3 TER (docs/SPEC-LOT3TER.md, T1 ; décision du parent) : « PASSER L'ÉCHAUFFEMENT ». Un bouton dédié (son propre
 // pictogramme, `passer.echauffement`), présent pendant tout l'échauffement, hors du pavé (content/seance.json,
@@ -434,6 +448,18 @@ function warmupSkipKey(onSkip) {
 }
 // pour les mesures : ?sans=echauffement (ou une autre étape) la saute
 for (const id of (P.get("sans") ?? "").split(",").filter(Boolean)) delete handlers[id];
+// (lot « Recette de l'enfant et nettoyage des couches », point 2) UNE SEULE RÈGLE DE SORTIE : chaque étape de la séance a sa
+// portée (engine/portee.js, `ctx.portee`), où elle inscrit ce qu'elle crée au moment où elle le crée (le bernard-l'ermite, une
+// planche, la scène des voiliers ou de l'étal, la vue du défi…). Quitter l'étape, de quelque façon que ce soit (fin normale,
+// « passer », abandon : la pause puis un autre exercice, « Terminer la séance » du parent), ferme la portée, qui retire tout,
+// une seule fois. S'y ajoute ce que toute étape peut avoir laissé : la leçon en cours, les écrans de la ligne et des
+// additions (détruits, pas seulement cachés : docs/COUCHES.md), la ligne, le calque des aides, la flèche, la mascotte.
+for (const [id, h] of Object.entries(handlers)) handlers[id] = async (ctx) => {
+  const portee = new Portee(id, app.portees);
+  portee.fin(() => { app.fermerEcrans(); app.line.clear(); app.line.fxClear(); app.aidBoard?.clear(); fleche.cacher(); ocean.mascotte.release(); });
+  portee.fin(() => lessons.abandon()); // (rangée la première : la leçon utilise encore l'écran de la ligne)
+  try { return await h({ ...ctx, portee }); } finally { portee.fermer(); }
+};
 // chaque gain d'étoiles pendant les questions : les étoiles s'envolent des bulles-réponses vers le compteur
 // (le bilan de fin de séance fait voler les siennes lui-même)
 rewards.onChange((n, raison) => { if (raison !== "séance terminée") hud.fly(n, app.starFrom ?? [640, 690], { gap: 140 }); });
@@ -498,7 +524,7 @@ async function showHome({ done, first = false, bienvenue = false }) {
     ? [galet("encore", GALET_X[1], "encore", "play again"), galet("lecons", GALET_X[2], "les leçons", "leconskey"), galet("recif", GALET_X[3], "le récif", "reefkey"), galet("album", GALET_X[4], "l'album", "albumkey")]
     : [galet("jouer", GALET_X[0], "jouer", "play"), galet("choisir", GALET_X[1], "choisir", "choisir"), galet("lecons", GALET_X[2], "les leçons", "leconskey"), galet("recif", GALET_X[3], "le récif", "reefkey"), galet("album", GALET_X[4], "l'album", "albumkey")];
   homeEls.push(...tuiles, parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }));
-  if (done) homeEls.push(await goodNight(app, { first }));
+  if (done) homeEls.push(goodNight(app, { first }));
   const visit = (place) => async () => { voice.unlock(); voice.stop(); clearHome(); await place.visit(); showHome({ done: await doneToday(store) }); };
   const actions = {
     // la séance du jour, proposée par l'application
@@ -594,8 +620,12 @@ async function runSession(choix = null) {
 async function lessonAlone(id, { pause = false, fin = false } = {}) {
   const player = pause ? new LessonPlayer(app, lecons, { screen: new ReadScreen(app) }) : lessons;
   mode = pause ? "pause-lecon" : "lecon"; homeKey.style.visibility = "visible";
-  const t0 = Date.now(), r = await Promise.race([player.play(id), new Promise((res) => { app.lessonCancel = () => { player.abandon(); clock.abandon(); voice.abandon(); res(null); }; })]);
-  app.lessonCancel = null; mode = pause ? "seance" : null; homeKey.style.visibility = "hidden";
+  // (lot « Recette de l'enfant », point 2) la portée de la leçon : quittée par la maison, ou abandonnée avec l'activité, le
+  // lecteur range sa scène
+  const portee = new Portee("leçon", app.portees);
+  portee.fin(() => { player.abandon(); app.lessonCancel = null; if (pause) player.screen?.detruire(); else { app.fermerEcrans(); app.line.clear(); app.line.fxClear(); app.aidBoard?.clear(); } });
+  const t0 = Date.now(), r = await Promise.race([player.play(id), new Promise((res) => { app.lessonCancel = () => { portee.fermer(); clock.abandon(); voice.abandon(); res(null); }; })]);
+  portee.fermer(); mode = pause ? "seance" : null; homeKey.style.visibility = "hidden";
   if (!r) return null;
   // (relecture de l'étape 0 du bloc « Sommes jusqu'à 30 » et « Multiplication » : en base neuve, l'état de l'exercice n'existait
   // pas encore et la leçon vue n'était pas notée, sa tuile restait sans étoile ; lot « Multiplication » : L13 et L14, module 5)
@@ -617,6 +647,7 @@ async function lessonAlone(id, { pause = false, fin = false } = {}) {
 const frieze = new Frieze(app, seance.etapes.filter((e) => e.actif !== false && handlers[e.id]).map((e) => e.id)); // les étapes qui existent
 app.frieze = frieze;
 let mode = null; // "seance", "libre" ou null (écran d'accueil)
+app.modeEcran = () => mode; // (lot « Recette de l'enfant » : pour les parcours, tests/e2e/enfant.mjs)
 const homeKey = spriteBox(app, { x: 14, y: 10, w: 120, h: 120, cls: "bubble homekey session-home keep", label: "maison", paint: (ctx, px) => { const q = sprites.frame("maison", 0), k = 120 / 140; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 60 * px + q.dx * k, 60 * px + q.dy * k, q.w * k, q.h * k); } });
 homeKey.style.visibility = "hidden";
 const progress = (p) => {
@@ -630,7 +661,10 @@ const awaiting = () => [app.screen, app.facts].some((s) => s && s.resolve && !s.
 // (lot « Mascotte ») la relance : 25 s sans toucher pendant une question, une phrase d'aide (12 s : un geste, la mascotte le
 // fait seule) ; seulement si une question attend sa réponse, hors pause et sans autre phrase en cours
 // (lot « Les voiliers » : pas avec le vent ni les pirates, où le bateau avance seul : relecture du lot)
-ocean.mascotte.onRelance = () => { if (awaiting() && !app.enPause && !visiting && !voice.speaking && !voice.paused && !(app.voiliers?.attend && app.voiliers.q?.mer !== "calme")) voice.say(text.pick("relanceAide")); };
+// (lot « Recette de l'enfant et nettoyage des couches », constat 8 de l'agent : pas pendant la confirmation de « passer
+// l'échauffement », où la question attend encore sa réponse mais la séance est en attente de la coche ; second passage, constat
+// 12 : ni pendant le défi record, une course contre la montre, où « Prends ton temps » contredit la consigne)
+ocean.mascotte.onRelance = () => { if (awaiting() && !app.enPause && !app.warmupPending && !app.facts?.defi && !visiting && !voice.speaking && !voice.paused && !(app.voiliers?.attend && app.voiliers.q?.mer !== "calme")) voice.say(text.pick("relanceAide")); };
 let ambianceAvantPause = null;
 // L'ACCUEIL COMPLET PENDANT UNE PAUSE (lot 3, étape 5 ; décision du parent du 28 septembre ; docs/SPEC.md, « Navigation
 // pendant la séance ») : « continuer » (reprise exacte), « choisir » (l'écran de choix : revenir sans valider ramène ici ;
@@ -730,6 +764,9 @@ function sandbox() {
   st.root.classList.remove("paused");
   return () => {
     voice.restore(vs); clock.restore(cs);
+    // (lot « Recette de l'enfant », point 2) les écrans créés pendant la visite (une leçon des additions) sont détruits, avec
+    // l'écouteur du clavier de l'écran des additions, qui restait posé
+    if (app.facts && app.facts !== saved.facts) app.facts.detruire();
     lineBack();
     for (const [el, before] of [[st.ui, ui], [o.frontEl, front], [st.root, root]]) [...el.children].forEach((e) => { if (!before.has(e)) e.remove(); });
     o.actors.splice(0, o.actors.length, ...actors); o.front.splice(0, o.front.length, ...oFront);
@@ -748,18 +785,17 @@ function sandbox() {
 }
 // l'activité en cours est abandonnée pour de bon (engine/clock.js) et la scène rangée
 function abandonActivity() {
-  // (lot « Correctifs : passage de l'échauffement aux voiliers », point 1) les portées des étapes en cours sont fermées : tout ce
-  // qu'elles ont posé ou lancé est retiré (engine/portee.js)
+  // (lot « Correctifs : passage de l'échauffement aux voiliers », point 1 ; lot « Recette de l'enfant », point 2) les portées
+  // ouvertes (les étapes de la séance, l'entraînement libre, l'écran « choisir », une leçon seule) sont fermées : chacune
+  // retire tout ce qu'elle a posé ou lancé (engine/portee.js). Ne reste ici que le commun : l'horloge et la voix de l'activité,
+  // la bulle, la flèche, la mascotte, la musique.
+  // (l'enfant imprévisible, graine 1063 : la voix et l'horloge abandonnées d'abord ; fermées avant elles, les portées coupaient
+  // la phrase en cours par `voice.stop()`, qui la terminait comme dite : la suite de l'étape quittée parlait ensuite, sur
+  // l'écran suivant)
+  clock.abandon(); voice.abandon();
   fermerTout(app.portees);
-  clock.abandon(); voice.abandon(); bulle.cacher(); fleche.cacher(); ocean.mascotte.release(); ocean.mascotte.ambiance("pause");
-  app.choiceClear?.(); app.choiceClear = null; if (app.facts) app.facts.notion = false; app.calc?.fishDone(); // (lot 3 : l'écran « choisir », les additions libres, le poisson du mur)
-  app.screen?.leave(); app.facts?.leave(); app.dictation?.hide?.(); lessons.abandon(); app.voiliers?.leave(); app.etal?.leave();
-  if (app.facts) { app.calc?.leave(); app.mult?.leave(); } // (lot « Correctifs : passage… » : leurs calques d'aide, comme à la fin de leur notion du jour)
-  // (correctif du 28 septembre 2026) le défi record quitté en cours : sa bulle-sablier et ses perles restaient à l'écran
-  if (app.challenge) { app.challenge.remove(); app.challenge = null; sprites.unload("defi"); }
-  for (const s of [app.screen, app.facts]) if (s) { s.resolve = null; s.locked = true; }
-  // le bernard-l'ermite de la notion du jour sur les additions (notion2)
-  if (app.hermit) { app.hermit.remove(); app.hermit = null; if (app.facts) { app.facts.notion = false; app.facts.hermit = null; } sprites.unload("ermite"); }
+  bulle.cacher(); fleche.cacher(); ocean.mascotte.release(); ocean.mascotte.ambiance("pause");
+  // (le filet : un bouton « passer » ou du sélecteur libre posé hors de toute portée)
   document.querySelectorAll("#ui .free, #ui .skip").forEach((e) => e.remove());
   mode = null; homeKey.style.visibility = "hidden"; sound.stopMusic();
 }
@@ -793,6 +829,11 @@ onBrief(app, homeKey, () => {
 // (lot « Les leçons » : `start`, l'exercice lancé par « À toi ! » après une leçon, quand la séance du jour est faite)
 async function freeTraining(start = null) {
   mode = "libre"; homeKey.style.visibility = "visible"; sound.startMusic(pickMusic(sonIndex, rnd));
+  // (lot « Recette de l'enfant », point 2) la portée de l'entraînement libre : la maison (abandon) retire l'exercice en cours,
+  // quel qu'il soit, et ce que ses écrans ont laissé
+  const portee = new Portee("entraînement libre", app.portees);
+  portee.fin(() => { if (app.free) app.free.fini = true; app.fermerEcrans(); app.line.clear(); app.line.fxClear(); app.aidBoard?.clear(); fleche.cacher(); ocean.mascotte.release(); sprites.unload("calcul"); });
+  portee.fin(() => { app.voiliers.leave(); app.etal.leave(); app.calc.leave(); app.mult.leave(); lessons.abandon(); });
   const free = new FreeTraining(app, { store, module1, module2, module3, module4, module5, module6, rnd, seance });
   app.free = free;
   await (start ? free.start(start) : free.menu());

@@ -35,7 +35,9 @@ async function run({ nom, familles = 0, cran = "conseille", appui }) {
   // la question du jour, avec son appui (cran « plus facile » : l'aide est déjà là, le pavé caché)
   if (cran === "facile") {
     await page.waitForFunction(() => window.__app.facts?.q?.aideDEmblee && document.querySelector(".skip"), null, { timeout: 60000 });
-    await page.waitForTimeout(600);
+    // (lot « Recette de l'enfant », point 0.6 : l'aide « cadre » dure 1,5 s à la voix accélérée ; attendre 0,6 s puis faire la
+    // capture laissait parfois l'aide finir, sous charge, avant le toucher de « passer »)
+    await page.waitForTimeout(150);
     const sk = await skipState(), q = await page.evaluate(() => window.__app.facts.q.appui);
     await shot("1-aide-d-emblee");
     check(!!sk && sk.x === SKIP_BOX.x && sk.y === SKIP_BOX.y && sk.w === SKIP_BOX.w, `${nom} : « passer » dès le début de l'aide affichée d'emblée (${q}), même place (${JSON.stringify(sk)})`);
@@ -50,10 +52,12 @@ async function run({ nom, familles = 0, cran = "conseille", appui }) {
     await shot("1-aide-coquillage");
   }
   const busy = await page.evaluate(() => ({ board: !!window.__app.aidBoard?.used, tortue: !!window.__app.lineScreen?.().turtle?.a?.vis, voix: window.__app.voice.speaking }));
-  const t0 = Date.now();
+  // (lot « Recette de l'enfant », point 0.6 : le délai est mesuré dans la page, du toucher de « passer » au pavé revenu,
+  // relevé à chaque image ; mesuré depuis Node, il comptait aussi les allers-retours de Playwright, de 0,6 à 1 s sous charge)
+  await page.evaluate(() => { window.__padAt = null; const f = () => { const s = window.__app.facts; if (s?.q && s.resolve && !s.locked && [...document.querySelectorAll(".key")].every((k) => getComputedStyle(k).visibility === "visible") && window.__tapAt > (window.__avantTap ?? 0)) window.__padAt = performance.now(); else requestAnimationFrame(f); }; window.__avantTap = performance.now(); requestAnimationFrame(f); });
   await page.tap(".skip", { force: true });
-  await page.waitForFunction(() => { const s = window.__app.facts; return s?.q && s.resolve && !s.locked && [...document.querySelectorAll(".key")].every((k) => getComputedStyle(k).visibility === "visible"); }, null, { timeout: 5000 });
-  const dt = Date.now() - t0;
+  await page.waitForFunction(() => window.__padAt !== null, null, { timeout: 5000 });
+  const dt = await page.evaluate(() => Math.round(window.__padAt - window.__tapAt));
   await page.waitForTimeout(250);
   const after = await page.evaluate(() => ({ board: !!window.__app.aidBoard?.used, tortue: !!window.__app.lineScreen?.().turtle?.a?.vis, skip: [...document.querySelectorAll(".skip")].some((e) => getComputedStyle(e).visibility !== "hidden"), arcs: window.__app.lineScreen?.().arcs?.length ?? 0 }));
   await shot("2-aide-passee");

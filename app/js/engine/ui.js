@@ -26,7 +26,7 @@ export function entourage(app, b, visible, dessin, m = 18) {
 // un toucher franc : pointerdown (pas de délai de clic)
 export const onTap = (el, f) => el.addEventListener("pointerdown", (e) => { e.preventDefault(); f(e); });
 // (lot 3 bis, B3 ; lot 3 ter, T3 : partout) L'APPUI LONG sur un bouton de choix ou de commande : un toucher bref (lever le
-// doigt avant `appuiLong.ms`, 500 ms) valide AU LEVER DU DOIGT ; un appui plus long montre une étiquette au-dessus du bouton
+// doigt avant `appuiLong.ms`, 500 ms, mesurées entre le contact et le lever) valide AU LEVER DU DOIGT ; un appui plus long montre une étiquette au-dessus du bouton
 // (le texte de legendes.json, `etiquettes[clé]`, ou `key()` si c'est une fonction), qui apparaît en fondu
 // (`fonduEntreeMs`), reste tant que le doigt est posé, puis s'efface en fondu et a disparu `sortieMs` après le lever ; il ne
 // lance jamais rien, même au lever du doigt. Sans étiquette, l'appui long ne lance rien non plus. La voix ne la lit pas.
@@ -34,15 +34,20 @@ export const onTap = (el, f) => el.addEventListener("pointerdown", (e) => { e.pr
 export const appuiLong = (app) => ({ ms: 500, fonduEntreeMs: 200, sortieMs: 500, ...(app.legendes?.appuiLong ?? {}) });
 export function onBrief(app, el, f, key, { show = showLabel, hide = hideLabel, first = false } = {}) {
   const A = appuiLong(app), txt = () => (typeof key === "function" ? key() : key ? app.legendes?.etiquettes?.[key] : null) ?? null;
-  let timer = null, long = false, down = false;
+  let timer = null, long = false, down = false, t0 = 0;
   el.addEventListener("pointerdown", (e) => {
-    e.preventDefault(); down = true; long = false; clearTimeout(timer);
+    e.preventDefault(); down = true; long = false; clearTimeout(timer); t0 = e.timeStamp;
     try { el.setPointerCapture?.(e.pointerId); } catch { /* (un événement de test n'a pas de pointeur) */ }
     timer = setTimeout(() => { if (!down) return; long = true; const t = txt(); if (t) el.__label = show(app, el, t, A.fonduEntreeMs); }, A.ms);
     if (first) f(e);
   });
   const up = (e, ok) => {
     if (!down) return; down = false; clearTimeout(timer);
+    // (lot « Recette de l'enfant ») l'appui est jugé sur sa durée réelle, du contact au lever du doigt (horodatage des
+    // événements), pas sur la minuterie : sur une tablette occupée, la minuterie de 0,5 s pouvait passer avant le traitement
+    // du lever, et un toucher bref devenait un appui long, qui ne lance rien
+    // (seulement pour un vrai doigt : un événement fabriqué n'a pas d'horodatage du contact)
+    if (long && e.isTrusted && e.timeStamp - t0 < A.ms) { long = false; if (el.__label) hide(el); }
     if (long) { if (el.__label) hide(el, A.sortieMs); return; }
     if (ok && !first) f(e);
   };

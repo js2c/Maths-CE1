@@ -5,7 +5,8 @@ Lit sur l'entrée standard un JSON { "ref", "reglages", "essais", "whisper", "do
 "phrases": [{ "id", "cle", "texte" }] } et écrit, dans <dossier>, <id>.wav et <id>.json pour chaque phrase.
 
 Chaque phrase n'est fabriquée qu'une fois. Elle est ensuite retranscrite (Whisper) et comparée au texte :
-si un mot manque, est en trop ou est faux, ou si le son est anormalement long, elle est refaite avec un
+si un mot manque, est en trop ou est faux, si le son est anormalement long, ou s'il est coupé en morceaux ou bien
+plus lent que les phrases de sa famille (le contrôle des durées, « durees » : tools/voix/durees.json), elle est refaite avec un
 autre tirage, jusqu'à `essais` fois. Celles qui échouent encore gardent leur meilleur essai et sont listées
 dans <dossier>/a-reecouter.html. Le dossier sert de mémoire : relancer reprend là où le lot s'est arrêté.
 """
@@ -142,13 +143,70 @@ def soigner(wav, sr, np):
     return (wav * gain).astype("float32")
 
 
+# --- le contrôle des durées (tools/voix/durees.mjs, dont c'est la reprise ; seuils et familles : durees.json) ------
+# Un son coupé en morceaux (« quatre » … silence … « tre »), ou bien plus lent que les phrases de sa famille, est refusé
+# comme une retranscription fausse : la phrase est refaite avec un autre tirage (lot « Recette de l'enfant », point 0.3).
+
+def morceaux(wav, sr, np, R):
+    """(nombre de morceaux de paroles, pauses entre eux en ms, durée parlée en s), comme morceaux() de durees.mjs."""
+    pas = round(sr * 0.01)
+    n = len(wav) // pas
+    if n < 1:
+        return 0, [], 0.0
+    db = 10 * np.log10((wav[: n * pas].astype("float64").reshape(n, pas) ** 2).mean(axis=1) + 1e-12)
+    parle = db > max(db.max() - R["seuilDb"], R["plancherDb"])
+    bruts, a = [], -1
+    for i in range(n + 1):
+        p = i < n and bool(parle[i])
+        if p and a < 0:
+            a = i
+        elif not p and a >= 0:
+            bruts.append([a, i])
+            a = -1
+    fusion = []
+    for m in bruts:
+        if fusion and (m[0] - fusion[-1][1]) * 10 < R["pauseMinMs"]:
+            fusion[-1][1] = m[1]
+        else:
+            fusion.append(list(m))
+    mx = [m for m in fusion if (m[1] - m[0]) * 10 >= R["morceauMinMs"]]
+    pauses = [(mx[i + 1][0] - mx[i][1]) * 10 for i in range(len(mx) - 1)]
+    return len(mx), pauses, round((mx[-1][1] - mx[0][0]) * 10) / 1000 if mx else 0.0
+
+
+def _mots(lu):
+    return len([m for m in lu.split() if any(c.isalnum() for c in m)])
+
+
+def _genre(lu):
+    n = _mots(lu)
+    return "1 mot" if n <= 1 else "2 mots" if n == 2 else "3-4 mots" if n <= 4 else "5-8 mots" if n <= 8 else "9 mots et plus"
+
+
+def juger_duree(cle, lu, mesure, ref):
+    """La cause du refus, ou None, comme juger() de durees.mjs."""
+    R = ref["regles"]
+    nb, pauses, parole = mesure
+    if not nb:
+        return "aucune parole"
+    causes, pause = [], max(pauses, default=0)
+    if _mots(lu) <= 1 and pause >= R["pauseMotMs"]:
+        causes.append(f"un seul mot, en {nb} morceaux (pause de {pause / 1000:.1f} s)")
+    md, ec = ref["familles"].get(re.sub(r"\d+", "#", cle)) or ref["genres"].get(_genre(lu)) or ref["genres"]["5-8 mots"]
+    n = max(1, sum(c.isalnum() for c in lu))
+    attendu = md * n
+    if parole / n - md > R["ecarts"] * ec and parole > attendu * R["fois"] and parole - attendu >= R["margeS"]:
+        causes.append(f"{parole:.1f} s de paroles, pour environ {attendu:.1f} s dans sa famille")
+    return " ; ".join(causes) or None
+
+
 def main():
     if hasattr(sys.stderr, "reconfigure"):
         sys.stderr.reconfigure(encoding="utf-8", errors="replace")
     job = json.loads(sys.stdin.buffer.read().decode("utf-8"))
     dossier = Path(job["dossier"])
     dossier.mkdir(parents=True, exist_ok=True)
-    essais_max, reglages = int(job.get("essais", 4)), job["reglages"]
+    essais_max, reglages, durees = int(job.get("essais", 4)), job["reglages"], job.get("durees")
     dire = lambda *a: print(*a, file=sys.stderr, flush=True)
 
     # ce qui reste à faire : une phrase déjà fabriquée avec le même texte est gardée (sauf échec, si `refaire`)
@@ -211,9 +269,14 @@ def main():
                 juste, score = comparer(p.get("attendu", p["texte"]), entendu)  # « attendu » : le texte normal, si l'écriture est particulière
                 if duree > 1.5 + 0.13 * len(p["texte"]) or duree < 0.25:  # son anormalement long (mots inventés) ou vide
                     juste = False
-                if meilleur is None or juste or score > meilleur[1]["score"]:
+                # le contrôle des durées (lot « Recette de l'enfant », point 0.3) : un son coupé en morceaux, ou trop lent
+                cause = juger_duree(p["cle"], p["texte"], morceaux(wav, voix.sr, np, durees["regles"]), durees) if durees else None
+                if cause:
+                    juste = False
+                rang = (juste, cause is None, score)
+                if meilleur is None or rang > meilleur[2]:
                     meilleur = (wav, dict(texte=p["texte"], juste=juste, score=round(score, 3), entendu=entendu,
-                                          essais=e + 1, duree=round(duree, 2)))
+                                          essais=e + 1, duree=round(duree, 2), **({"duree_refus": cause} if cause else {})), rang)
                 if juste:
                     break
             meilleur[1]["essais"] = e + 1
@@ -234,13 +297,15 @@ def main():
                  duree_totale_min=round(sum(f["duree"] for _, f in toutes) / 60, 1))
     (dossier / "rapport.json").write_text(json.dumps(bilan, ensure_ascii=False, indent=1), encoding="utf-8")
     e = html.escape
-    rangs = "".join(f"<tr><td>{e(p['cle'])}<br><small>{e(p['texte'])}</small></td><td>{e(f['entendu'])}</td>"
+    rangs = "".join(f"<tr><td>{e(p['cle'])}<br><small>{e(p['texte'])}</small></td><td>{e(f['entendu'])}"
+                    f"{'<br><small>' + e(f['duree_refus']) + '</small>' if f.get('duree_refus') else ''}</td>"
                     f"<td><audio controls preload='none' src='{e(p['id'])}.wav'></audio></td></tr>" for p, f in ratees)
     (dossier / "a-reecouter.html").write_text(f"""<!doctype html><html lang="fr"><meta charset="utf-8"><title>Phrases à réécouter</title>
 <style>body{{font:15px system-ui,sans-serif;margin:24px}}td,th{{border:1px solid #c9d6dc;padding:6px 10px;text-align:left}}
 table{{border-collapse:collapse}}small{{color:#5b7079}}</style>
 <h1>{len(ratees)} phrase(s) à réécouter sur {len(toutes)}</h1>
-<p>Le contrôle automatique n'a pas reconnu le texte attendu. Si le son est bon à l'oreille, il n'y a rien à faire
+<p>Le contrôle automatique n'a pas reconnu le texte attendu, ou le son est coupé en morceaux, ou bien plus lent que
+les phrases du même genre (la mesure est écrite sous ce qu'il a entendu). Si le son est bon à l'oreille, il n'y a rien à faire
 (le contrôle se trompe parfois sur les mots très courts et les noms propres). S'il est mauvais : relancer avec
 <code>--refaire</code> pour de nouveaux tirages, ou allonger le texte dans <code>app/content/</code>.</p>
 <table><tr><th>Phrase</th><th>Ce que le contrôle a entendu</th><th>Son gardé</th></tr>{rangs}</table></html>""", encoding="utf-8")

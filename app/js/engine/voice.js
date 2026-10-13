@@ -48,6 +48,8 @@ export class Voice {
     return parts.length && parts.every(Boolean) ? parts : null;
   }
   speakNow(text, { instruction = false } = {}) {
+    // (lot « Recette de l'enfant », point 0.2) un texte sans rien à dire (« … ») : ni voix, ni bulle
+    if (!sentences(text).length) return Promise.resolve();
     const parts = this.plan(text), talk = { text, instruction };
     if (parts) return this.playFiles(parts, talk);
     for (const s of sentences(text)) if (!this.index?.[s]) this.miss(s, "absente de l'index");

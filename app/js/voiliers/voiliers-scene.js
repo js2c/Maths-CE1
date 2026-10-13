@@ -430,7 +430,7 @@ let scale=1,R2=1;
 function fit(){scale=OPTS.echelle();REDESSINE=true;
  const dpr=devicePixelRatio||1,full=Math.min(2,scale*dpr),k=ILL.ok?Math.min(full,QMER[QUAL]):[Math.min(1,full)*.6,Math.min(1,full),full][QUAL];
  cs.width=Math.round(1280*k);cs.height=Math.round(800*k);
- R2=Math.min(full,QBAT[QUAL]*scale);cb.width=fx.width=Math.round(1280*R2);cb.height=fx.height=Math.round(800*R2);MERFAITE=false;}
+ R2=Math.min(full,QBAT[OPTS.qualiteBateaux??QUAL]*scale);cb.width=fx.width=Math.round(1280*R2);cb.height=fx.height=Math.round(800*R2);MERFAITE=false;}
 OPTS.on(window,'resize',fit);fit();
 function pt(e){const r=stage.getBoundingClientRect();return{x:(e.clientX-r.left)/scale,y:(e.clientY-r.top)/scale};}
 
@@ -616,6 +616,9 @@ const API={
   // la qualité de la mer (0 économe, 1 normale, 2 fine : la maquette)
   qualite(q){if(q!==QUAL){QUAL=q;fit();}},
   get qual(){return QUAL;},
+  // (lot « Recette de l'enfant », point 0.4) une transition en cours : des images qui se chargent, un bateau qui arrive ou qui
+  // s'en va, la caméra qui recule, la mer qui change ; ses images ne comptent pas dans la mesure du temps d'image
+  occupe(){return pending>0||B.mode==='enter'||B.mode==='travel'||!!(OLD&&OLD.vis)||!!G.travel||Math.abs(SEA_T-SEA)>.02;},
   // où est le bateau de l'enfant (pour la bulle, qui ne le couvre jamais) : là où il va s'il arrive
   zoneBateau(){if(!B.vis)return null;const t=B.tw&&B.mode==='enter'?B.tw.to:B,s=boatK(t.y)/.44;return[t.x-190*s,t.y-330*s,t.x+200*s,t.y+55*s];},
   // là où il est et là où il va

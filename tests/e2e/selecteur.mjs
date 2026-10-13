@@ -41,11 +41,15 @@ const tap = (page, sel) => page.tap(sel, { force: true });
 {
   const { page, context } = await open("&sans=echauffement,notion");
   await page.evaluate(async () => { await window.__app.store.setSetting("cransAutorises", { min: "conseille", max: "dur" }); });
+  // (lot « Recette de l'enfant », point 0.6 : la durée est mesurée dans la page, de l'apparition du sélecteur à sa fermeture ;
+  // mesurée depuis Node après la capture, elle perdait le temps de la capture, plus de 2 s sous charge : 12,8 s au lieu de 15)
+  await page.evaluate(() => { window.__cran = {}; new MutationObserver(() => { const c = !!document.querySelector(".cran"); if (c && !window.__cran.vu) window.__cran.vu = performance.now(); if (!c && window.__cran.vu && !window.__cran.parti) window.__cran.parti = performance.now(); }).observe(document.body, { childList: true, subtree: true }); });
   await tap(page, ".play"); await page.waitForSelector(".cran", { timeout: 20000 });
   check((await page.locator(".cran").count()) === 2, "le parent limite les crans (conseillé et plus dur)");
   await page.screenshot({ path: join(OUT, "3-deux-crans.png") });
-  const t0 = Date.now(); await page.waitForFunction(() => !document.querySelector(".cran"), null, { timeout: 20000 });
-  check(Date.now() - t0 > 13000, `sans toucher, le sélecteur se ferme au bout de 15 s (${((Date.now() - t0) / 1000).toFixed(1)} s)`);
+  await page.waitForFunction(() => !document.querySelector(".cran"), null, { timeout: 25000 });
+  const ouvert = await page.evaluate(() => (window.__cran.parti - window.__cran.vu) / 1000);
+  check(ouvert > 13, `sans toucher, le sélecteur se ferme au bout de 15 s (${ouvert.toFixed(1)} s)`);
   check((await page.evaluate(() => window.__app.session.rec.cran)) === "conseille", "le cran affiché est gardé");
   await context.close();
 }

@@ -41,17 +41,6 @@ export class StarHud {
       this.flights.push({ a, t0, dur: dur / 1000, from, to: HUD_STAR, dx, done: () => { if (i === 0) this.app.sound?.play("etoile"); this.set(this.shown + v); pop(this.box); this.pool.push(a); res(); } });
     })));
   }
-  // n étoiles dépensées (un achat à la boutique) : elles quittent le compteur une à une et volent vers `to` ; le compteur
-  // descend avec elles, jamais d'un coup (au plus `max` étoiles en vol ; `arrivee()` à chaque étoile arrivée)
-  spend(n, to, { gap = 60, dur = 700, max = 10, arrivee = null } = {}) {
-    const k = Math.min(n, max), per = Array.from({ length: k }, (_, i) => Math.floor((n * (i + 1)) / k) - Math.floor((n * i) / k));
-    return Promise.all(per.map((v, i) => new Promise((res) => {
-      const a = this.pool.pop() ?? this.app.ocean.spriteActor(this.app.ocean.frontEl, "etoile");
-      a.draw(0); a.show(false);
-      setTimeout(() => { this.set(this.shown - v); pop(this.box); }, i * gap);
-      this.flights.push({ a, t0: performance.now() / 1000 + (i * gap) / 1000, dur: dur / 1000, from: HUD_STAR, to, dx: (i % 2 ? 1 : -1) * (20 + 8 * i), done: () => { this.pool.push(a); arrivee?.(); res(); } });
-    })));
-  }
   tick(t) {
     this.flights = this.flights.filter((f) => {
       const u = (t - f.t0) / f.dur;
@@ -307,9 +296,12 @@ export async function openShell(app, { session, hud, gold = false, say, got, C =
 // « à demain » : la mascotte salue, la lune se lève. La lune est un décor, pas un bouton (lot 1 bis) :
 // sans bulle, elle flotte doucement au-dessus des bulles de l'écran d'accueil, et rien ne se passe si
 // on la touche. La voix dit « À demain ! » quand la séance vient de finir.
-export async function goodNight(app, { first = true } = {}) {
+// (lot « Recette de l'enfant », point 0.6 : la phrase n'est plus attendue. L'accueil attendait la fin de « À demain ! »
+// avant d'accepter les touchers : pendant ce temps, les galets étaient là, et les toucher ne faisait rien. Un galet touché
+// coupe la phrase, comme partout.)
+export function goodNight(app, { first = true } = {}) {
   const { voice, text, ocean } = app;
   const moon = spriteBox(app, { x: 640 - 120, y: 250 - 110, w: 240, h: 220, cls: "hud moon", still: true, paint: (ctx) => app.sprites.draw(ctx, "lune.decor", 0, 120, 110) });
-  if (first) { ocean.mascotte.play("saluer"); await voice.say(text.pick("aDemain"), { instruction: true }); }
+  if (first) { ocean.mascotte.play("saluer"); voice.say(text.pick("aDemain"), { instruction: true }); }
   return moon;
 }

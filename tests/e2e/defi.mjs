@@ -5,7 +5,7 @@
 // drapeau). Vérifie la base (réponses `defi`, record, séance) et que chaque phrase dite a son fichier.
 // Captures dans tests/e2e/out/defi.
 import { chromium } from "./navigateur.mjs";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
 
@@ -14,7 +14,7 @@ mkdirSync(OUT, { recursive: true });
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium" });
 const check = (ok, msg) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${msg}`); if (!ok) process.exitCode = 1; };
-const DAY = 86400000;
+const DAY = 86400000, textes = JSON.parse(readFileSync("app/content/textes.json", "utf8"));
 
 async function run(n, { record = null, answers = 12, wrongAt = 3 } = {}) {
   const page = await (await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true })).newPage();
@@ -33,6 +33,10 @@ async function run(n, { record = null, answers = 12, wrongAt = 3 } = {}) {
   await page.tap(".play", { force: true });
   await page.waitForFunction(() => window.__app.challenge && window.__app.facts?.resolve && !window.__app.facts.locked, null, { timeout: 60000 });
   const t0 = Date.now();
+  // (lot « Recette de l'enfant et nettoyage des couches », second passage de l'agent, constat 12) la relance de la mascotte
+  // (« Prends ton temps… », 25 s sans toucher) ne parle pas pendant le défi, une course contre la montre
+  { const n0 = await page.evaluate(() => window.__said.length); await page.evaluate(() => window.__app.ocean.mascotte.onRelance?.()); await page.waitForTimeout(150);
+    check(!(await page.evaluate((n0) => window.__said.slice(n0), n0)).includes(textes.relanceAide), "pendant le défi, la relance de la mascotte ne dit rien"); }
   await shot("1-debut");
   let k = 0, sawWrong = false;
   while (k < answers) {

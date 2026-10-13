@@ -100,6 +100,7 @@ export class FactsScreen {
   }
   // pose la question et attend la réponse ; la promesse se résout après le retour
   ask(q) {
+    if (this.detruit) return new Promise(() => {}); // (lot « Recette de l'enfant », point 2 : un écran détruit ne pose plus rien)
     const { voice } = this.app;
     this.q = q; this.typed = ""; this.ring = false; this.aide = false; this.locked = false; this.app.starFrom = SLATE; this.gate.open();
     this.help.style.visibility = q.base || q.cheminMode === "non" || q.image === "non" || q.pont ? "hidden" : "visible"; // pas d'aide pour « 4 + 0 » (lot 3 : ni sans chemin)
@@ -108,10 +109,13 @@ export class FactsScreen {
     // affichée d'emblée (cran « plus facile » en notion du jour)
     const p = new Promise((res) => { this.resolve = res; });
     // (l'appui est rangé quand le pavé revient : il occupe la même place ; la multiplication remet ses petites rangées)
-    const then = () => { this.app.aidBoard?.clear(); if (q.module === 5) this.mult?.paintBand(q); this.locked = false; this.keys(true); this.t0 = clock.now(); voice.say(this.consigne(q), { instruction: true }); };
+    // (lot « Recette de l'enfant et nettoyage des couches », l'enfant imprévisible, graine 1009 : l'écran détruit pendant une
+    // aide d'emblée l'interrompt, et sa suite redisait la consigne sur l'accueil ; elle ne fait plus rien)
+    const fini = () => this.detruit || this.q !== q;
+    const then = () => { if (fini()) return; this.app.aidBoard?.clear(); if (q.module === 5) this.mult?.paintBand(q); this.locked = false; this.keys(true); this.t0 = clock.now(); voice.say(this.consigne(q), { instruction: true }); };
     // (lot « Multiplication » : l'exemple guidé et l'aide d'emblée de la multiplication sont les siens, modules/mult/screen.js)
     if (q.guide) { this.locked = true; (q.module === 5 && this.mult ? this.mult.demo(q) : this.demo(q)).then(then); return p; }
-    if (q.aideDEmblee && q.module === 5 && this.mult) { this.locked = true; this.keys(false); this.mult.autoAid(q).then(() => { this.locked = false; this.keys(true); this.t0 = clock.now(); voice.say(this.consigne(q), { instruction: true }); }); return p; }
+    if (q.aideDEmblee && q.module === 5 && this.mult) { this.locked = true; this.keys(false); this.mult.autoAid(q).then(() => { if (fini()) return; this.locked = false; this.keys(true); this.t0 = clock.now(); voice.say(this.consigne(q), { instruction: true }); }); return p; }
     if (q.aideDEmblee && q.module !== 3) { this.locked = true; this.keys(false); this.autoAid(q).then(then); return p; }
     this.t0 = clock.now();
     voice.stop(); voice.say(this.consigne(q), { instruction: true });
@@ -355,6 +359,15 @@ export class FactsScreen {
   // ce qui la suivait ne touche plus à l'écran : `tok`)
   abandon() { this.tok = (this.tok ?? 0) + 1; this.locked = true; this.resolve = null; this.abortFix?.(); this.abortAid?.(); this.app.voice.stop(); this.reset(); }
   leave() { this.show(false); this.q = null; this.defi = null; this.dictee = null; this.reset(); }
+  // (lot « Recette de l'enfant », point 2 : la règle de sortie unique) l'écran détruit en quittant l'étape qui l'a créé :
+  // l'ardoise, le pavé, « je ne sais pas », le coquillage, et l'écouteur du clavier. Avant, il n'était que caché (et son
+  // écouteur restait posé) ; l'étape suivante en crée un neuf (app.facts).
+  detruire() {
+    if (this.detruit) return; this.detruit = true;
+    this.tok = (this.tok ?? 0) + 1; this.locked = true; this.resolve = null; this.abortFix?.(); this.abortAid?.(); this.leave();
+    for (const e of [this.slate, this.nsp, this.help, ...this.els]) e?.remove();
+    removeEventListener("keydown", this.onKey);
+  }
   // (correctif du 28 septembre 2026) rien de ce qu'un exercice quitté en cours a posé sur l'écran ne doit survivre : le
   // rappel de la saisie (le chemin d'un calcul guidé, le tableau de la dictée) redessinait l'ancien chemin au premier
   // chiffre tapé dans l'exercice suivant ; la saisie, l'anneau, l'aide et le « passer » de l'échauffement sont remis à zéro

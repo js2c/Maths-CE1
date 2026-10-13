@@ -291,13 +291,17 @@ if (faire(6)) {
 // la bulle, relevée `n` fois toutes les 150 ms : chaque fois qu'elle est visible, elle ne couvre aucune des zones (celles que
 // les exercices ont déclarées, bulle.etat().zones, et `extra()` : celles que le parcours connaît par ailleurs) ; renvoie le
 // nombre de relevés où elle était visible, ceux où elle couvrait une zone, ceux en bulle courte, et les zones vues
-async function releverBulle(page, n = 24, extra = "() => []") {
+// (`capture` : faite au premier relevé où la bulle est écrite pendant que la zone est montrée, sinon à la fin ; relecture du lot, R5 :
+// prise après les relevés, elle montrait la bouée déjà éteinte et la bulle partie)
+async function releverBulle(page, n = 24, extra = "() => []", capture = null) {
   const out = { vue: 0, couvre: 0, court: 0, zones: 0, textes: new Set() };
   for (let i = 0; i < n; i++) {
     const r = await page.evaluate((ex) => { const b = window.__app.bulle.etat(), zs = [...b.zones, ...(0, eval)(ex)()], inter = (a, o) => Math.min(a[2], o[2]) - Math.max(a[0], o[0]) > 1 && Math.min(a[3], o[3]) - Math.max(a[1], o[1]) > 1; return { v: b.visible && !!b.rect, c: b.visible && b.rect ? zs.some((z) => inter(b.rect, z)) : false, court: b.court, z: zs.length, t: b.texte }; }, extra);
     if (r.v) { out.vue++; out.textes.add(r.t); } if (r.c) out.couvre++; if (r.v && r.court) out.court++; out.zones = Math.max(out.zones, r.z);
+    if (capture && r.v && r.z > 0 && String(r.t ?? "").split(" ").length > 1) { await page.waitForTimeout(400); await capture(); capture = null; }
     await page.waitForTimeout(150);
   }
+  if (capture) await capture();
   out.textes = [...out.textes]; return out;
 }
 if (faire(4)) {
@@ -324,8 +328,7 @@ if (faire(4)) {
       const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=echauffement&choix=3:4&cran=conseille`, vue, reel: false });
       await tap(page, ".play");
       await attendre(page, () => (window.__app.aidBoard?.zones ?? []).length > 0, null, 60000);
-      const r = await releverBulle(page, 30);
-      await shot(page, vue, "4b-calcul-chemin");
+      const r = await releverBulle(page, 30, "() => []", () => shot(page, vue, "4b-calcul-chemin"));
       if (un) check(r.zones >= 1 && r.couvre === 0, `4. calcul rapide : la bulle ne couvre jamais le chemin (${r.vue} relevés visibles, ${r.couvre} sur le chemin, ${r.court} en bulle courte ; « ${r.textes.join(" / ")} »)`);
       await context.close();
     }
@@ -336,8 +339,7 @@ if (faire(4)) {
       const q = await page.evaluate(() => { const q = window.__app.voiliers.q; return { k: q.k, n: q.bouees.length }; });
       await page.evaluate((c) => window.__app.voiliers.api.deposer(c), q.k < q.n ? q.k + 1 : q.k - 1);
       await attendre(page, () => window.__app.voiliers.api.etat().allumees.some((x) => x > 0.05), null, 20000);
-      const r = await releverBulle(page, 16);
-      await shot(page, vue, "4c-voiliers-bouee-nommee");
+      const r = await releverBulle(page, 16, "() => []", () => shot(page, vue, "4c-voiliers-bouee-nommee"));
       if (un) check(r.zones >= 1 && r.couvre === 0, `4. voiliers : la bulle ne couvre jamais la bouée nommée (${r.vue} relevés visibles, ${r.couvre} sur la bouée ; « ${r.textes.join(" / ")} »)`);
       await context.close();
     }
@@ -346,8 +348,7 @@ if (faire(4)) {
       const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=echauffement&choix=6:3&cran=conseille`, vue, reel: false });
       await tap(page, ".play");
       await attendre(page, () => !!window.__app.etal?.api && (window.__app.etal.api.allumes?.() ?? []).length > 0, null, 90000);
-      const r = await releverBulle(page, 24, "() => window.__app.etal?.api?.allumes?.() ?? []");
-      await shot(page, vue, "4d-etal-article-allume");
+      const r = await releverBulle(page, 24, "() => window.__app.etal?.api?.allumes?.() ?? []", () => shot(page, vue, "4d-etal-article-allume"));
       if (un) check(r.zones >= 1 && r.couvre === 0, `4. étal : la bulle ne couvre jamais l'article allumé ni son ardoise (${r.vue} relevés visibles, ${r.couvre} dessus ; « ${r.textes.join(" / ")} »)`);
       await context.close();
     }
@@ -436,7 +437,7 @@ if (faire(1)) {
     const rec = await page.evaluate((id) => window.__app.store.get("seances", id), avant.id), dit = await said(page), tally = await page.evaluate(() => window.__tally);
     check(rec.terminee && rec.reprises?.length === 1 && rec.reprises[0].etape === "echauffement", "1. la séance reprise se termine ; la reprise est notée dans sa fiche");
     check(tally !== null && tally > avant.etoiles && (dit.includes(` ${tally} étoiles`) || tally > 160), `1. le bilan compte toute la séance : ${tally} étoiles (${avant.etoiles} avant le rechargement)`);
-    // l'espace parent : « Reprise après un rechargement de la page »
+    // l'espace parent : « Page rechargée en pleine séance », et la ligne qui marque le rechargement dans le tableau des réponses
     await page.waitForSelector(".moon", { timeout: 30000 }).catch(() => {});
     await page.evaluate(() => { window.__app.parent.open(); }); await page.waitForSelector(".pa-gate, .pa-sheet", { timeout: 10000 });
     if (await page.locator(".pa-gate").count()) { for (const d of "1234") { await page.tap(`.pa-keys [data-key="${d}"]`); await page.waitForTimeout(150); } }
@@ -444,7 +445,8 @@ if (faire(1)) {
     await page.locator('[data-tab="seances"]').first().click().catch(() => {}); await page.waitForTimeout(500);
     await page.locator(".pa-session > button").first().click().catch(() => {}); await page.waitForTimeout(500);
     await shot(page, VUES[0], "1b-parent-reprise");
-    check(/Reprise après un rechargement de la page/.test(await page.evaluate(() => document.body.innerText)), "1. l'espace parent note la reprise dans l'historique de la séance");
+    check(/Page rechargée en pleine séance : à .*, (après \d+ questions?|avant la première question) ; l'étape « échauffement » a repris à son début/.test(await page.evaluate(() => document.body.innerText)), "1. l'espace parent note la reprise dans l'historique de la séance");
+    check(await page.locator(".pa-reprise").count() === 1, "1. le tableau des réponses marque l'endroit du rechargement");
     await context.close();
   }
   // b. pendant la leçon d'entrée : la leçon n'a pas été vue, elle est rejouée

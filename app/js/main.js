@@ -240,9 +240,15 @@ const direEnPause = async (t) => {
   if (pauseTalk) voice.stop(); else pauseTalk = voice.suspend();
   try { await voice.say(t); } finally { if (n === pauseTalkN) finirParolePause(); }
 };
+// (relecture du lot, R1 : « Touche la grande bulle », alors que les cinq galets ont la même taille) la consigne de la pause montre
+// le galet « continuer » : « Touche cette bulle pour continuer. », la flèche posée au-dessus de lui le temps de la phrase
+const consigneEnPause = async (t) => {
+  if (pausedEls?.length) fleche.montrer([GALET_X[0], GALET_Y - 92]);
+  try { await direEnPause(t); } finally { fleche.cacher(); }
+};
 const replay = async (from) => {
   if (from === headTap) { pop(ocean.mascotteEl); store.setSetting("mascotteTouchee", true); } else pop(speaker);
-  if (app.enPause && !visiting) return direEnPause(text.data.pauseConsigne);
+  if (app.enPause && !visiting) return consigneEnPause(text.data.pauseConsigne);
   voice.replay();
 };
 onBrief(app, speaker, () => replay(speaker), "reecouter");
@@ -706,7 +712,7 @@ async function pauseSession() {
   await app.session?.notePause();
   showPauseHome();
 }
-function clearPauseHome() { pausedEls?.forEach((e) => e.remove()); pausedEls = null; }
+function clearPauseHome() { pausedEls?.forEach((e) => e.remove()); pausedEls = null; fleche.cacher(); }
 // (lot « Décisions sur les constats de l'agent », décision 3 ; constat 11 de l'agent : « continuer » partait au premier toucher, et
 // le second toucher de l'enfant, habituée aux deux touchers, tapait un chiffre dans le pavé) L'ACCUEIL EN PAUSE EN DEUX TOUCHERS,
 // comme l'accueil : les mêmes galets (« continuer » a celui de « jouer ») ; le premier toucher sélectionne le galet et la mascotte
@@ -830,7 +836,7 @@ function preparerReprise(rec) {
   ocean.mascotte.suspendre(true); ocean.mascotte.ambiance("pause"); bulle.cacher(); fleche.cacher();
   app.enPause = true; ambianceAvantPause = null;
   showPauseHome();
-  ocean.mascotte.play("saluer"); direEnPause(text.data.repriseRechargement);
+  ocean.mascotte.play("saluer"); consigneEnPause(text.data.repriseRechargement);
 }
 // l'activité en cours est abandonnée pour de bon (engine/clock.js) et la scène rangée
 function abandonActivity() {

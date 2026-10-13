@@ -34,7 +34,9 @@ export class Warmup {
     const k = first ? B.premiere : depuis + 1 >= (B.uneSeanceSur ?? 1) ? B.ensuite : 0, triv = [];
     // le compteur des séances sans mesure (les triviales reviennent une séance sur `uneSeanceSur`)
     if (!first && !this.libre) { this.base = { ...this.base, depuis: k ? 0 : depuis + 1 }; this.store.setSetting("tempsDeBase", this.base); }
-    for (let i = 0; i < k; i++) { const a = 2 + Math.floor(this.rnd() * 7); triv.push(this.rnd() < 0.5 ? { a, b: 0 } : { a: 0, b: a }); }
+    // (relecture du lot « Décisions sur les constats de l'agent », R11 : « 0 + 2 » deux fois de suite) des nombres tous différents
+    const libres = [2, 3, 4, 5, 6, 7, 8];
+    for (let i = 0; i < k; i++) { const a = libres.length ? libres.splice(Math.floor(this.rnd() * libres.length), 1)[0] : 2 + Math.floor(this.rnd() * 7); triv.push(this.rnd() < 0.5 ? { a, b: 0 } : { a: 0, b: a }); }
     const e = this.effet, facts = plan(this.c, this.facts, this.clock(), n, min, { nouveaux: e.nouveaux, complementMax: e.complementMax, enPlus: e.nouveauxEnPlus ?? 0, dejaNouveaux: this.nouveaux, familleSuivante: !!e.familleSuivante, rnd: this.rnd });
     // les faits nouveaux au-delà des places réservées sans bonus (cran au-dessus) : retirés si le cran redescend
     let base = this.c.placesReservees ?? 3; this.bonus = new Set();

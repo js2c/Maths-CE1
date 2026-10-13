@@ -278,21 +278,24 @@ export class ParentSpace {
       corr > 0 && h("span", {}, "Corrections passées : ", h("b", {}, String(corr))),
       x.pauses > 0 && h("span", {}, "Pauses : ", h("b", {}, `${x.pauses}${x.pauseS ? `, ${D.fmtDuration(x.pauseS)} en tout (non comptées dans la durée)` : ""}`)),
       // (lot « Décisions sur les constats de l'agent », décision 1) la séance reprise après un rechargement de la page
-      (x.reprises ?? []).length > 0 && h("span", {}, x.reprises.length > 1 ? "Reprises après un rechargement de la page : " : "Reprise après un rechargement de la page : ", h("b", {}, x.reprises.map((r) => `à ${D.fmtTime(r.t)}, au début de l'étape « ${(D.STEP_NAMES[r.etape] ?? r.etape).toLowerCase()} »${r.questions ? ` (après ${plural(r.questions, "question")})` : ""}`).join(" ; "))),
+      // (relecture du lot, R12 : « au début de l'étape… (après 2 questions) » semblait se contredire) l'heure, ce qui avait été fait,
+      // puis ce qui a repris ; la place du rechargement est aussi marquée dans le tableau des réponses
+      (x.reprises ?? []).length > 0 && h("span", {}, x.reprises.length > 1 ? "Pages rechargées en pleine séance : " : "Page rechargée en pleine séance : ", h("b", {}, x.reprises.map((r) => `à ${D.fmtTime(r.t)}, ${r.questions ? `après ${plural(r.questions, "question")}` : "avant la première question"} ; l'étape « ${(D.STEP_NAMES[r.etape] ?? r.etape).toLowerCase()} » a repris à son début`).join(" ; "))),
       cartes.length > 0 && h("span", {}, "Cartes gagnées : ", h("b", {}, cartes.join(", ")))));
     const groups = D.answersOf(this.d.reponses, x.id);
     if (!groups.length) det.append(h("p", { class: "pa-muted" }, "Aucune réponse enregistrée pour cette séance."));
-    for (const g of groups) det.append(h("h3", {}, g.defi ? "Défi record : faits d'addition en une minute" : g.module === 2 && !g.notion && !x.libre ? "Échauffement : faits d'addition" : `${x.libre ? "Entraînement libre" : "Notion du jour"} : ${this.c.modules[g.module]?.nom ?? g.module}`), this.answerTable(g.reponses));
+    for (const g of groups) det.append(h("h3", {}, g.defi ? "Défi record : faits d'addition en une minute" : g.module === 2 && !g.notion && !x.libre ? "Échauffement : faits d'addition" : `${x.libre ? "Entraînement libre" : "Notion du jour"} : ${this.c.modules[g.module]?.nom ?? g.module}`), this.answerTable(g.reponses, x.reprises ?? []));
   }
-  answerTable(rs) {
+  // (`reprises` : décision 1 du lot « Décisions sur les constats de l'agent » ; une ligne marque l'endroit où la page a été rechargée)
+  answerTable(rs, reprises = []) {
     const E = this.c.erreurs, F = this.c.formes;
     const note = (r) => [r.guide && (r.passe ? "exemple guidé passé" : "exemple guidé"), r.correctionPassee && "correction passée", r.revient && "question qui revient", r.aide && !r.guide && "aide utilisée", r.libre && "entraînement libre"].filter(Boolean).join(", ");
     return h("div", { class: "pa-table-wrap" }, h("table", { class: "pa-table" },
       h("thead", {}, h("tr", {}, ["Heure", "Niveau", "Forme", "Question", "Réponse", "Attendue", "Résultat", "Temps", "Écoutes", "Erreur", "Remarque"].map((t, i) => h("th", { class: [4, 5, 7, 8].includes(i) ? "num" : "" }, t)))),
-      h("tbody", {}, rs.map((r) => h("tr", { class: r.juste ? "" : "faux" },
+      h("tbody", {}, rs.flatMap((r, i) => [...reprises.filter((p) => p.t <= r.t && (i === 0 ? false : rs[i - 1].t < p.t)).map((p) => h("tr", { class: "pa-reprise" }, h("td", { colspan: "11" }, `${D.fmtTime(p.t)} : page rechargée ; l'étape a repris à son début`))), h("tr", { class: r.juste ? "" : "faux" },
         h("td", {}, D.dateTime(r.t).slice(11)), h("td", { class: "num" }, r.niveau), h("td", {}, F[r.forme] ?? r.forme ?? ""), h("td", { class: "q" }, r.question),
         h("td", { class: "num" }, r.donnee ?? "—"), h("td", { class: "num" }, r.attendue ?? ""), h("td", {}, r.juste ? h("span", { class: "pa-yes" }, "✓ juste") : h("span", { class: "pa-no" }, "✗ faux")),
-        h("td", { class: "num" }, D.fmtSeconds(r.tempsMs)), h("td", { class: "num" }, r.ecoutes ?? ""), h("td", { title: E[r.erreur] ?? "" }, r.juste ? "" : r.erreur === "NSP" ? "je ne sais pas" : r.erreur && r.erreur !== "autre" ? E[r.erreur] ?? "autre" : "autre"), h("td", {}, note(r)))))));
+        h("td", { class: "num" }, D.fmtSeconds(r.tempsMs)), h("td", { class: "num" }, r.ecoutes ?? ""), h("td", { title: E[r.erreur] ?? "" }, r.juste ? "" : r.erreur === "NSP" ? "je ne sais pas" : r.erreur && r.erreur !== "autre" ? E[r.erreur] ?? "autre" : "autre"), h("td", {}, note(r)))]))));
   }
 
   // ---------------------------------------------------------------- progression

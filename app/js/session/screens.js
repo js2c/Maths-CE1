@@ -320,6 +320,9 @@ export async function openShell(app, { session, hud, gold = false, say, got, C =
 export function goodNight(app, { first = true } = {}) {
   const { voice, text, ocean } = app;
   const moon = spriteBox(app, { x: 640 - 120, y: 250 - 110, w: 240, h: 220, cls: "hud moon", still: true, paint: (ctx) => app.sprites.draw(ctx, "lune.decor", 0, 120, 110) });
+  // (relecture du lot « Décisions sur les constats de l'agent », R7 : la bulle « à demain » cachait la lune) la bulle l'évite, comme ce
+  // dont parle la voix (engine/bulle.js ; retirée de l'écran, la lune n'est plus une zone)
+  app.bulle?.eviter("lune", moon);
   if (first) { ocean.mascotte.play("saluer"); voice.say(text.pick("aDemain"), { instruction: true }); }
   return moon;
 }

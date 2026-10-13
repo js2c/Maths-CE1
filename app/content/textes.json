@@ -116,7 +116,7 @@
     "album": "L'album. Toutes tes cartes sont rangées ici.",
     "continuer": "Continuer. On reprend la séance."
   },
-  "pauseConsigne": "C'est la pause. Touche la grande bulle pour continuer.",
+  "pauseConsigne": "C'est la pause. Touche cette bulle pour continuer.",
   "recompenseZero": "Tu as bien travaillé !",
   "recompenseBeaucoup": "Bravo ! Ce soir, tu as gagné plein d'étoiles de mer !",
   "etoilesArc": "{n} étoiles arc-en-ciel ! Un jour, elles t'ouvriront un nouveau coin du récif.",
@@ -163,7 +163,7 @@
   "aideGrandDouble": "{a}, c'est dix et {u}. Dix et dix, vingt. {u} et {u}, {d}.",
   "aToiFait": "À toi ! Tape la réponse.",
   "reprise": "On continue !",
-  "repriseRechargement": "Te revoilà ! Touche la grande bulle pour continuer.",
+  "repriseRechargement": "Te revoilà ! Touche cette bulle pour continuer.",
   "bienvenueLancement": [
     "Coucou ! Je suis content de te voir.",
     "Te revoilà ! On va bien s'amuser.",

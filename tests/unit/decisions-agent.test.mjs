@@ -9,7 +9,7 @@ import { Store } from "../../app/js/engine/store.js";
 import { rng } from "../../app/js/engine/ocean.js";
 import { expected, key } from "../../app/js/modules/facts/facts.js";
 import { Module2Runner } from "../../app/js/modules/facts/runner.js";
-import { repetition, warmupIndex } from "../../app/js/modules/facts/warmup.js";
+import { repetition, Warmup, warmupIndex } from "../../app/js/modules/facts/warmup.js";
 
 const load = (f) => JSON.parse(readFileSync(new URL(`../../app/content/${f}`, import.meta.url)));
 const m2 = load("module2.json");
@@ -156,4 +156,13 @@ test("décision 1 : la séance reprise continue la même fiche, au début de l'�
   assert.ok(fin.dureeS < 600, `durée active ${fin.dureeS} s`);
   assert.equal(fin.reprises.length, 1); assert.equal(fin.reprises[0].etape, "notion");
   assert.equal(await repriseDuJour(store, c()), null, "terminée : plus rien à reprendre");
+});
+
+test("relecture du lot, R11 : les questions du temps de base (a + 0) d'un échauffement sont toutes différentes", async () => {
+  for (let g = 1; g <= 40; g++) {
+    const W = await new Warmup({ store: await open(), content: m2, rnd: rng(g), seance: 1, clock: () => NOW }).load();
+    const base = W.questions(10, 10).filter((q) => q.base).map((q) => q.a + q.b);
+    assert.equal(base.length, m2.base.premiere);
+    assert.equal(new Set(base).size, base.length, `graine ${g} : ${base.join(", ")}`);
+  }
 });

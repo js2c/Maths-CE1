@@ -6,8 +6,8 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 - **En ligne** (https://js2c.github.io/Maths-CE1/) : lots 1, 1 bis, 2, 3, 3 bis, 3 ter et « Lagon en fond d'exercices », tous fusionnés (dernière demande de fusion : PR #30, le lagon).
 - **Ce que fait l'application** : `docs/SPEC.md` (spécification unique ; ce qui reste à construire y est marqué « à construire », section 13).
-- **Prochains lots** : « La boutique du récif » est fait (PR #54, à fusionner) ; ensuite « Recette de l'enfant et nettoyage des couches » (fiche 9), qui couvrira aussi la boutique (décision du parent du 11 octobre 2026).
-- **En attente du parent** : la fabrication des voix, d'un coup après le lot « La boutique du récif » (décision du parent du 11 octobre 2026). Il y en aura environ 730 : les 394 phrases de l'étal (`docs/maquettes/etal/PHRASES.md`), les 12 du lot « Correctifs : passage de l'échauffement aux voiliers » et 321 pour la boutique (727 en tout). La voix pèsera alors environ 81,5 Mo ; la limite est passée à 85 Mo (lot de la boutique). D'ici là, rien n'est publié : la tablette garde la version d'avant l'étal. Ensuite : l'essai sur la tablette et la relecture des « Choix faits sans le parent » (`docs/JOURNAL-CONCEPTION.md`).
+- **Prochains lots** : « La boutique du récif » est fait (PR #54) ; « Recette de l'enfant et nettoyage des couches » (fiche 9) est fait (PR #56, à fusionner ; ses questions pour le parent : `docs/IDEES.md`, section 3).
+- **En attente du parent** : les 727 phrases de l'étal, des correctifs et de la boutique sont fabriquées (`main`, « Voix : 727 phrases nouvelles, 9 retirées »). Pour le lot « Recette de l'enfant et nettoyage des couches » : 2 phrases nouvelles et 50 phrases à refaire, de durée anormale (`tools/voix/a-refaire-durees.txt`, `docs/VOIX.md`). Ensuite : l'essai de 10 minutes sur la tablette (`docs/GUIDE-PARENT.md`) et les questions de `docs/IDEES.md`, section 3.
 - **Projet parallèle** : la refonte graphique (hors de ce fichier).
 
 ## Lots
@@ -30,13 +30,8 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 | L'étal du pêcheur | Sixième exercice, la monnaie (module 6) : la maquette de l'étal intégrée, 10 niveaux (pièces et billets, payer juste, sans pièce de trop, rendre la monnaie, deux produits, centimes), l'orage, leçons L15 à L18, espace parent ; d'un seul tenant | fait (PR #49) ; 394 phrases à fabriquer |
 | Correctifs : passage de l'échauffement aux voiliers | L'essai du parent du 10 octobre : un échauffement quitté ne repart plus par-dessus l'exercice suivant, la bulle toujours pleine, la mer des voiliers sans l'ancienne mer, plus d'étiquette d'appui long sur les écrans de choix, l'entourage qui suit la tuile, le logo et le bouton « Parents » du parent, l'accueil en cinq galets et deux touchers, plus de voix de secours (phrases sans voix notées pour le parent), mises à jour sans mélange de versions, l'icône ; d'un seul tenant | fait (PR #52, à fusionner) ; 12 phrases à fabriquer |
 | La boutique du récif | L'enfant achète ses créatures avec ses étoiles (vitrine par zone, coche verte, faire briller, arrivages de 2 créatures par semaine ou rythme libre), plus de coquillage ordinaire ; coquillage de la série, premier habitant d'une zone, étoile et coquillage de diamant ; la créature achetée arrive à la nage dans le récif ; espace parent (rythme, achats, export) ; d'un seul tenant | fait (PR #54) ; 321 phrases à fabriquer |
+| Recette de l'enfant et nettoyage des couches | Une seule règle de sortie (portées), inventaire des couches et retrait de ce qui ne sert plus (`docs/COUCHES.md`), l'enfant imprévisible (`tests/e2e/enfant.mjs`, 200 graines de 300 actions), deux passages d'un agent qui joue l'enfant, la barre noire, la voix (durées anormales), les voiliers nets, la lampe de l'étal, les parcours qui échouaient sur `main` | fait (PR #56) ; 2 phrases nouvelles, 50 à refaire |
 
 ## Reprise
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
-
-### Reprise du lot « Recette de l'enfant et nettoyage des couches »
-
-- **Branche** : `claude/magical-fermi-6tvdn7` ; demande de fusion : « Lot : Recette de l'enfant et nettoyage des couches » (brouillon).
-- **Fait** : point 0 en entier (barre noire, phrases « … », contrôle des durées des voix, qualité des voiliers, lampe de l'étal, parcours qui échouaient sur `main`) ; règle de sortie unique ; enfant imprévisible (`tests/e2e/enfant.mjs`, version courte dans les tests de GitHub) ; premier passage de l'agent et son traitement (`tests/recette-fonctionnelle/out-enfant/`) ; inventaire des couches (sections 1 et 2) et premiers retraits ; journal de conception et guide du parent.
-- **Reste** : bilan de couverture complet et section 3 de `docs/COUCHES.md` ; second passage de l'agent ; longues séries de l'enfant imprévisible (200 graines × 300 actions, ralenti et non) ; recette complète et demande de fusion.

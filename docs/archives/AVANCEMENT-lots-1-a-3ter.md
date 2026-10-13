@@ -903,3 +903,8 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 - **Fiche** : `docs/LOTS.md`, fiche 10 ; d'un seul tenant (choix de la session dans `docs/JOURNAL-CONCEPTION.md`).
 - **Fait le 11 octobre 2026** : règles et contenu (`cartes.json`, `textes.json`, inventaire), `rewards.js` (achat en une transaction), atelier (pictogrammes, étoile et coquillage de diamant, tuiles), écran de la boutique, récif (bouton, arrivée à la nage par l'export du récif), récompense (occasions, arrivages, bouton de fin), espace parent, simulation de l'année, parcours `tests/e2e/boutique.mjs`, anciens parcours adaptés, documents, relecture indépendante (`tests/recette-fonctionnelle/out-boutique/RELECTURE.md`) et son traitement. 321 phrases à fabriquer.
 
+## Reprise du lot « Recette de l'enfant et nettoyage des couches »
+
+- **Branche** : `claude/magical-fermi-6tvdn7`, partie de `main` (dfcd34fb) ; demande de fusion https://github.com/js2c/Maths-CE1/pull/56.
+- **Fait** : point 0 en entier (barre noire, phrases « … », contrôle des durées des voix, qualité des voiliers, lampe de l'étal, parcours qui échouaient sur `main`) ; règle de sortie unique ; enfant imprévisible (`tests/e2e/enfant.mjs`, version courte dans les tests de GitHub) ; premier passage de l'agent et son traitement (`tests/recette-fonctionnelle/out-enfant/`) ; inventaire des couches (sections 1 et 2) et premiers retraits ; journal de conception et guide du parent.
+- **Fini le 13 octobre 2026** : bilan de couverture et section 3 de `docs/COUCHES.md`, second passage de l'agent et son traitement, longues séries de l'enfant imprévisible (6 défauts trouvés, corrigés, chacun avec son parcours), recette complète ; demande de fusion sortie du brouillon.

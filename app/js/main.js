@@ -899,6 +899,10 @@ async function freeTraining(start = null) {
 }
 // (lot « Correctifs de la tablette ») tout est chargé, les vidéos de la mascotte comprises : l'écran de démarrage attend un
 // toucher, qui autorise aussi la voix ; puis l'accueil, où la mascotte souhaite la bienvenue (une fois par lancement)
+// (lot « Décisions sur les constats de l'agent », recette) les séances, pour la reprise et « à demain », sont lues pendant l'écran de
+// démarrage : lues après le toucher, la lecture attendait son tour derrière le fondu de sortie (0,3 à 1 s de plus avant l'accueil,
+// processeur ralenti 4 fois, tests/e2e/perf.mjs) ; rien ne les change avant le toucher
+const seancesLues = store.all("seances"), dejaLues = { all: () => seancesLues };
 await ocean.mascotte.pret;
 const toucheDemarrage = await demarrage.attendreToucher();
 demarrageTouche = true;
@@ -906,7 +910,7 @@ if (toucheDemarrage) { voice.unlock(); sound.unlock(); }
 stage.paused = false; // (la scène reprend sous le fondu de sortie)
 await demarrage.fermer();
 // (décision 1) une séance du jour à reprendre après un rechargement : l'accueil en pause, avec « continuer »
-const aReprendre = P.has("sansReprise") ? null : await repriseDuJour(store, Date.now());
+const aReprendre = P.has("sansReprise") ? null : await repriseDuJour(dejaLues, Date.now());
 if (aReprendre) preparerReprise(aReprendre);
-else showHome({ done: await doneToday(store), bienvenue: toucheDemarrage });
+else showHome({ done: await doneToday(dejaLues), bienvenue: toucheDemarrage });
 requestAnimationFrame(() => requestAnimationFrame(() => { performance.mark("app-ready"); window.__ready = performance.now() - T0; }));

@@ -156,13 +156,18 @@ check(!pendant.length, `B publiée, la page A joue pendant que B s'installe puis
 check((await versionPage(page)) === "aaaaaaaaaaaa", "la page ouverte reste toute entière en version A (pas de mélange)");
 check(e.attente?.includes("activated") === false && !!e.attente && e.caches.includes("ocean-aaaaaaaaaaaa"), "B a fini de s'installer malgré les échecs réseau, et attend ; l'ancien cache est gardé");
 // (lot « Décisions sur les constats de l'agent », décision 1 : le rechargement avec une nouvelle version) une séance commencée
-// avec la version A : l'échauffement en cours quand la tablette se ferme ; elle sera reprise avec la version B (étape 4)
+// avec la version A : l'échauffement en cours quand la tablette se ferme ; elle sera reprise avec la version B (étape 4).
+// (B attend : rouverte, la page la ferait prendre la main pendant l'écran de démarrage (engine/miseajour.js) et la séance serait
+// commencée avec B ; l'onglet est marqué « déjà rechargé pour une mise à jour », comme le fait miseajour.js, pour rester en A)
+await page.evaluate(() => sessionStorage.setItem("miseAJour", "1"));
 await page.goto(url + "?son=non&voix=rapide&cran=conseille&module=2&sansLecon&guides=0"); await page.waitForFunction(() => window.__ready !== undefined || !!document.querySelector(".demarrage.pret"), null, { timeout: 120000 });
-if (await page.evaluate(() => window.__ready === undefined)) await page.locator(".demarrage").tap({ force: true });
+// (l'écran de démarrage des parcours s'efface seul, chargement fini : il peut partir entre les deux lignes ; le toucher est alors inutile)
+if (await page.evaluate(() => window.__ready === undefined)) await page.locator(".demarrage").tap({ force: true, timeout: 5000 }).catch(() => {});
 await page.waitForFunction(() => window.__ready !== undefined, null, { timeout: 60000 }); await brancher(page);
 for (let i = 0; i < 2; i++) { await page.locator(".galet.play").tap({ force: true }); await page.waitForTimeout(300); }
 const seanceA = await page.waitForFunction(() => { const s = window.__app.session, f = window.__app.facts; return s?.rec?.id && s.progress.etape === "echauffement" && f?.q && f.resolve ? s.rec.id : null; }, null, { timeout: 90000 }).then((h) => h.jsonValue(), () => null);
-check(!!seanceA, "A : une séance commencée (l'échauffement en cours) avant la relance");
+const versionSeanceA = await versionPage(page);
+check(!!seanceA && versionSeanceA === "aaaaaaaaaaaa", `A : une séance commencée (l'échauffement en cours) avant la relance, avec la version A (${versionSeanceA})`);
 await page.close();
 
 // 4. on relance : l'écran de démarrage (réel), avant le toucher la version B prend la main, la page se recharge

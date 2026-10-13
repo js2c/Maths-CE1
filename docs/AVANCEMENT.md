@@ -38,7 +38,41 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 ### Reprise du lot « Décisions sur les constats de l'agent » (fiche 11)
 
-- **Branche** : `ccr-98d11c55-0bfws4` ; demande de fusion en brouillon « Lot : Décisions sur les constats de l'agent ».
-- **Ordre suivi** (du plus court au plus lourd, chaque décision un commit) : 2 (fin de séance), 3 (« continuer » en deux touchers), 7 (boutique), 5 (répétition des additions, simulée avant), 6 (voiliers), 4 (bulle), 8 (finition), 1 (reprise après rechargement), puis la recette.
-- **Fait** : décisions 2 (maison en fin de séance, 15 s), 3 (accueil en pause en deux touchers), 7 (prix pour briller), 5 (répétition des additions, simulée : journal), 6 (voiliers), 4 (la bulle évite ce dont parle la voix), 8 (finition), 1 (reprise après un rechargement ; le parcours de la mise à jour en cours de vérification).
-- **Où reprendre** : la recette (méthode commune et fiche 11 : parcours complets, enfant imprévisible, relecture indépendante), puis la demande de fusion.
+- **Branche** : `ccr-98d11c55-0bfws4` ; demande de fusion en brouillon : PR #58 (« Lot : Décisions sur les constats de l'agent »).
+- **Fait (code, tests unitaires, parcours, SPEC, journal)** : les 8 décisions, un commit chacune :
+  - 2 (maison en fin de séance, 15 s), 3 (accueil en pause en deux touchers), 7 (prix pour briller seulement sur la tuile touchée),
+    5 (répétition des additions : 2 passages, 4 questions d'écart ; simulée avant/après, chiffres dans `docs/JOURNAL-CONCEPTION.md`),
+    6 (voiliers : toucher un passage, « partout » à moins d'un intervalle), 4 (la bulle évite ce dont parle la voix ; bulle courte),
+    8 (compteur dans l'orage, bulle de l'étal, étoile arc-en-ciel vers l'album), 1 (reprise après un rechargement).
+  - `docs/SPEC.md`, `docs/ARCHITECTURE.md`, `docs/COUCHES.md` (2.9), `docs/GUIDE-PARENT.md` (section « d sexdecies »), journal (décisions
+    du 13 octobre et « choix de la session ») : à jour.
+  - Liste du mode hors ligne refaite (`node tools/precache.mjs`) ; `node tools/precache.mjs --check` passe.
+- **Recette faite** :
+  - `npm test` : 393 réussis, 1 échec attendu (les phrases sans fichier : 2 du lot précédent + 3 de ce lot : « Continuer. »,
+    « On reprend la séance. », « Fais glisser le bateau jusqu'au passage ! » ; plus les 50 à refaire de `tools/voix/a-refaire-durees.txt`).
+  - Simulation par profil avant/après (décision 5) et `b-sequences.mjs --test` : 252 combinaisons, 1 008 séances, **0 en défaut**
+    (avant la règle : 655 en défaut sur la nouvelle vérification). Séquences avant/après de la famille 3 : `tests/recette-fonctionnelle/out-decisions-agent/sequences/`.
+  - `tests/e2e/decisions-agent.mjs --vite` : toutes les parties passent (1 à 8), une à une (`--seul N`, `--cas a,b,c,e,f,h` pour la 1).
+  - Enfant imprévisible, version courte (3 graines × 60 actions) : aucun défaut. Série « rechargements fréquents » (`--recharges 15`,
+    graines 2001 à 2020) : les 4 premières sans défaut au moment de l'arrêt ; **à relancer en entier**.
+- **Reste à faire** (dans cet ordre) :
+  1. Relancer `node tests/e2e/mise-a-jour.mjs --court` sur une machine calme : il a échoué une fois sur un délai de 30 s au chargement de
+     l'étape 4 (machine saturée ; le cas ajouté, « la séance de A reprise par B », n'a pas pu être vérifié). Si l'échec se répète, regarder
+     si la séance en cours (ajoutée à la fin de l'étape 3) gêne le rechargement de la mise à jour.
+  2. Tous les parcours `tests/e2e/*.mjs` sur la branche (l'outil : une boucle séquentielle, un journal par parcours) ; relancer sur `main`
+     ceux qui échouent. Déjà vu : `aide-passer` a échoué une fois (« passer » non visible au moment du toucher, sans doute la charge) :
+     à relancer seul, puis sur `main` s'il échoue encore. Sur `main`, `etal` a échoué (rc 1) et `etat-quitte` a dépassé 25 min lors d'une
+     passe partielle sous charge : à revérifier.
+  3. `tests/e2e/decisions-agent.mjs` complet (les trois vues : 1280 × 800, 1920 × 1200, tablette) pour les captures du lot.
+  4. La série de l'enfant imprévisible : `node tests/e2e/enfant.mjs --graines 20 --depart 2001 --actions 60 --recharges 15 --parallele 2`.
+  5. `tests/e2e/recette.mjs --delai 4.5`, `tests/e2e/recette-durees.mjs` (avec et sans `--passer`), `tests/e2e/perf.mjs` (avant sur `main`, après).
+  6. La relecture indépendante (méthode commune, point 4) : un agent qui n'a pas vu le travail ; lui donner la section « Les deux personnes
+     à incarner » de `docs/archives/PROMPT-RECETTE-LOT3.md`, les captures `tests/e2e/out/decisions-agent/` et les séquences
+     `tests/recette-fonctionnelle/out-decisions-agent/sequences/`, puis les sections de `docs/SPEC.md` citées par la fiche ; rapport dans
+     `tests/recette-fonctionnelle/out-decisions-agent/RELECTURE.md`.
+  7. La demande de fusion complète (méthode commune, point 5 ; fiche : « Choix faits sans le parent », phrases à fabriquer et total en
+     attente, chiffres de la décision 5, la limite de la reprise : une réponse fausse dont la correction était à l'écran au rechargement
+     n'est pas enregistrée), le tableau de `docs/LOTS.md` (« fait »), cette rubrique déplacée dans l'archive, sortir du brouillon.
+- **Points d'attention pour la demande de fusion** : décision 5, effet sensible sur le calendrier (profil « en difficulté » : aucune
+  famille acquise plus tard, mais familles 3 à 5 ouvertes nettement plus tard, environ 9 semaines pour la famille 3 ; profil « réel » :
+  familles 8 et 9 acquises 2,5 à 3,5 semaines plus tard) ; décision 1, pas de migration de schéma (choix expliqué dans le journal).

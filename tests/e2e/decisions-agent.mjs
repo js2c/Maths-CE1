@@ -6,6 +6,8 @@
 //  3. l'accueil en pause en deux touchers : le premier toucher sur « continuer » le sélectionne et la mascotte dit ce que c'est,
 //     le second reprend ; le double toucher rapide reprend aussitôt ; le second toucher de l'enfant ne tombe jamais dans le pavé
 //     (aucune réponse enregistrée par mégarde) ; les autres galets de la pause aussi ;
+//  7. la boutique : le prix pour faire briller n'est jamais écrit sur la tuile ; il est dit, et montré avec la coche, quand
+//     l'enfant touche la tuile ; juste après un achat, la tuile n'affiche aucun prix ;
 // (les décisions suivantes s'ajoutent à leur étape)
 // Captures dans tests/e2e/out/decisions-agent/ ; échoue si une vérification échoue ou si la page a une erreur.
 //   node tests/e2e/decisions-agent.mjs [--out dossier] [--vite] [--seul 2,3]   (--vite : seulement 1280 × 800)
@@ -13,6 +15,7 @@ import { accueilReel, chromium, finReelle } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
+import { recifOuvert } from "./recif-commun.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const OUT = resolve(opt("--out", "tests/e2e/out/decisions-agent")); mkdirSync(OUT, { recursive: true });
@@ -179,6 +182,48 @@ if (faire(3)) {
     check((await said(page)).includes(T.pauseConsigne), "3. toucher la mascotte en pause redit la consigne de la pause");
     await tap(page, ".keep.play"); await page.waitForTimeout(250); await tap(page, ".keep.play"); await page.waitForTimeout(800);
     check(!(await etatSeance(page)).enPause && await questionPrete(page), "3. puis « continuer » reprend la séance, la question attend sa réponse");
+    await context.close();
+  }
+}
+
+// ---------------------------------------------------------------- 7. la boutique : pas de prix pour briller sur la tuile
+// l'encre du bas de la tuile (là où s'écrit le prix) : la somme des pixels sombres de la bande du prix
+const encrePrix = (page, id) => page.evaluate((id) => {
+  const b = document.querySelector(`.boutique-tuile[data-id="${id}"]`), c = b.cv, px = window.__app.stage.px, M = (c.width / px - 170) / 2;
+  const d = c.getContext("2d").getImageData(Math.round((M + 20) * px), Math.round((M + 150) * px), Math.round(130 * px), Math.round(40 * px)).data;
+  let n = 0; for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 200 && d[i] + d[i + 1] + d[i + 2] < 200) n++;
+  return n / (px * px);
+}, id);
+async function boutique(page) {
+  await tap(page, ".reefkey"); await page.waitForTimeout(250); await tap(page, ".reefkey"); await recifOuvert(page);
+  await page.waitForSelector(".boutique-cle", { timeout: 20000 }); await tap(page, ".boutique-cle");
+  await page.waitForFunction(() => document.querySelectorAll(".boutique-tuile").length === 15 && window.__app.boutique.open, null, { timeout: 30000 });
+  await page.waitForTimeout(1800);
+}
+if (faire(7)) {
+  const prep = async (s, { lagon }) => { await s.put("recompenses", { id: "cartes", cartes: Object.fromEntries(lagon.slice(0, 3).map((id) => [id, { n: 1, premiere: 1, brillante: false }])) }); await s.put("recompenses", { id: "etoiles", total: 230, cumul: 330, dorees: 0, doreesDepensees: 0, arcEnCiel: 0, arcDepensees: 0, arcLibre: 0, coquillages: 0, coquillagesDores: 0 }); await s.put("recompenses", { id: "quota", date: Date.now() - 7 * 86400000, cartes: 3 }); };
+  for (const vue of VUES) {
+    const { context, page } = await fresh({ vue, prep, arg: { lagon } });
+    await boutique(page);
+    await shot(page, vue, "7a-vitrine-sans-prix-pour-briller");
+    const v = await page.evaluate(() => Object.fromEntries(window.__app.boutique.vit)), terne = Object.keys(v).find((k) => v[k] === "terne"), vendre = Object.keys(v).find((k) => v[k] === "vendre");
+    const e0 = await encrePrix(page, terne), eV = await encrePrix(page, vendre);
+    await saidReset(page); await tap(page, `.boutique-tuile[data-id="${terne}"]`); await page.waitForTimeout(1500);
+    const e1 = await encrePrix(page, terne);
+    await shot(page, vue, "7b-tuile-touchee-prix-et-coche");
+    if (vue === VUES[0]) {
+      check(e0 < 15 && eV > 60, `7. une créature déjà dans le récif : pas de prix écrit sur sa tuile (encre ${e0.toFixed(0)}, à côté d'une tuile à vendre : ${eV.toFixed(0)})`);
+      check(e1 > 60 && /Pour la faire briller, il faut 150 étoiles/.test(await said(page)) && await visible(page, ".boutique-conf.coche"), `7. la tuile touchée : le prix est dit et écrit (encre ${e1.toFixed(0)}), avec la coche`);
+      await page.touchscreen.tap(250, 760); await page.waitForTimeout(500);
+      check((await encrePrix(page, terne)) < 15, "7. un toucher ailleurs : le prix disparaît de nouveau");
+      // l'achat : juste après, la tuile n'affiche aucun prix
+      await tap(page, `.boutique-tuile[data-id="${vendre}"]`); await page.waitForTimeout(600); await tap(page, ".boutique-conf.coche");
+      await page.waitForFunction(() => !window.__app.boutique.verrou, null, { timeout: 30000 }); await page.waitForTimeout(800);
+      const st = await page.evaluate((id) => window.__app.boutique.vit.get(id), vendre);
+      check(st === "terne" || st === "brillante", `7. l'achat est fait (${st})`);
+      await shot(page, vue, "7c-apres-achat");
+      check((await encrePrix(page, vendre)) < 15, "7. juste après l'achat, la tuile de la créature achetée n'affiche aucun prix");
+    }
     await context.close();
   }
 }

@@ -8,6 +8,8 @@
 //     (aucune réponse enregistrée par mégarde) ; les autres galets de la pause aussi ;
 //  7. la boutique : le prix pour faire briller n'est jamais écrit sur la tuile ; il est dit, et montré avec la coche, quand
 //     l'enfant touche la tuile ; juste après un achat, la tuile n'affiche aucun prix ;
+//  6. les voiliers : un toucher sur un passage fait dire « Fais glisser le bateau jusqu'au passage ! » et la flèche montre le
+//     geste du bateau au passage touché, au plus une fois par bateau ; le glisser reste le geste qui répond ;
 // (les décisions suivantes s'ajoutent à leur étape)
 // Captures dans tests/e2e/out/decisions-agent/ ; échoue si une vérification échoue ou si la page a une erreur.
 //   node tests/e2e/decisions-agent.mjs [--out dossier] [--vite] [--seul 2,3]   (--vite : seulement 1280 × 800)
@@ -23,7 +25,8 @@ const SEUL = opt("--seul", null)?.split(","), faire = (n) => !SEUL || SEUL.inclu
 const T = JSON.parse(readFileSync(new URL("../../app/content/textes.json", import.meta.url)));
 const cartes = JSON.parse(readFileSync(new URL("../../app/content/cartes.json", import.meta.url)));
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium" });
+// (le WebGL logiciel, pour la mer des voiliers, comme tests/e2e/voiliers.mjs)
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
 const errors = [];
 const check = (ok, msg) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${msg}`); if (!ok) process.exitCode = 1; };
 const VUES = args.includes("--vite") ? [["1280", { width: 1280, height: 800 }, 1]] : [["1280", { width: 1280, height: 800 }, 1], ["1920", { width: 1920, height: 1200 }, 1], ["tablette", { width: 1138, height: 711 }, 2.25]];
@@ -223,6 +226,48 @@ if (faire(7)) {
       check(st === "terne" || st === "brillante", `7. l'achat est fait (${st})`);
       await shot(page, vue, "7c-apres-achat");
       check((await encrePrix(page, vendre)) < 15, "7. juste après l'achat, la tuile de la créature achetée n'affiche aucun prix");
+    }
+    await context.close();
+  }
+}
+
+// ---------------------------------------------------------------- 6. les voiliers : toucher un passage
+const prepVoiliers = async (s) => { await s.setSetting("echauffement", false); };
+const bateauAttend = (page, ms = 90000) => attendre(page, () => !!window.__app.voiliers?.attend && window.__app.voiliers.api?.etat().mode === "wait", null, ms);
+const toucherPassage = async (page, c, vue) => { const x = await page.evaluate((c) => window.__app.voiliers.api.centre(c), c), k = vue[1].width / 1280; await page.touchscreen.tap(x * k, 640 * k); };
+const nGlisser = (page) => page.evaluate((t) => window.__said.filter((x) => x === t).length, T.voiliersGlisser);
+if (faire(6)) {
+  for (const vue of VUES) {
+    const { context, page } = await fresh({ q: `${Q}&sansLecon&choix=4:2&cran=conseille`, vue, prep: prepVoiliers, reel: false });
+    await tap(page, ".play");
+    check(await bateauAttend(page), "6. un bateau attend le geste (niveau 2, mer calme)");
+    const q = await page.evaluate(() => { const q = window.__app.voiliers.q; return { k: q.k, n: q.bouees.length, num: q.num, bouees: q.bouees }; });
+    const faux = q.k === 0 ? 1 : 0;
+    await saidReset(page);
+    await toucherPassage(page, faux, vue); await page.waitForTimeout(250);
+    // (la pointe de la flèche, calculée maintenant : dans le conteneur, la mer en WebGL logiciel ne donne qu'une image ou deux par seconde)
+    const pointe = () => page.evaluate(() => { const f = window.__app.fleche; return f.visible && typeof f.source === "function" ? f.source() : null; });
+    const p0 = await pointe(); await page.waitForTimeout(1000); const p1 = await pointe();
+    const cx = await page.evaluate((c) => window.__app.voiliers.api.centre(c), faux);
+    await shot(page, vue, "6a-voiliers-toucher-un-passage");
+    if (vue === VUES[0]) {
+      check((await nGlisser(page)) === 1, `6. toucher un passage : « ${T.voiliersGlisser} »`);
+      check(p0 && p1 && p1[1] > p0[1] + 60 && Math.abs(p1[0] - cx) < Math.abs(p0[0] - cx), `6. la flèche montre le geste, du bateau vers le passage touché (${p0?.map(Math.round)} -> ${p1?.map(Math.round)}, passage en x ${Math.round(cx)})`);
+      check(await page.evaluate(() => window.__app.voiliers.attend && window.__app.voiliers.api.etat().mode === "wait"), "6. le toucher ne répond pas : le bateau attend toujours");
+      await page.waitForTimeout(1500);
+      await toucherPassage(page, faux, vue); await page.waitForTimeout(600);
+      check((await nGlisser(page)) === 1, "6. au plus une fois par bateau : un second toucher ne redit rien");
+      // le glisser répond toujours : le bon passage, puis le bateau suivant, où un toucher redit la phrase une fois
+      await page.evaluate((c) => window.__app.voiliers.api.deposer(c), q.k);
+      await attendre(page, (n) => window.__app.voiliers?.q?.num !== n && window.__app.voiliers.attend && window.__app.voiliers.api.etat().mode === "wait", q.num, 60000);
+      const q2 = await page.evaluate(() => window.__app.voiliers.q.k);
+      await toucherPassage(page, q2 === 0 ? 1 : 0, vue); await page.waitForTimeout(500);
+      check((await nGlisser(page)) === 2, "6. le bateau suivant : un toucher sur un passage redit la phrase");
+      // le doigt prend le bateau : la flèche s'efface
+      const st = await page.evaluate(() => window.__app.voiliers.api.etat()), k = vue[1].width / 1280;
+      await page.mouse.move(st.x * k, (st.y - 60) * k); await page.mouse.down(); await page.mouse.move(st.x * k - 40, (st.y + 40) * k); await page.waitForTimeout(300);
+      check(!(await page.evaluate(() => window.__app.fleche.visible)), "6. le bateau pris par le doigt : la flèche s'efface");
+      await page.mouse.up();
     }
     await context.close();
   }

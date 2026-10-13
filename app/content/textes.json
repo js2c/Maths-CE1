@@ -443,6 +443,7 @@
     "8": "Des bouées mélangées, et le bateau tout près d'une bouée.",
     "9": "Entre deux centaines, puis entre deux dizaines."
   },
+  "voiliersGlisser": "Fais glisser le bateau jusqu'au passage !",
   "voiliersConsigne": "Les bouées sont rangées du plus petit au plus grand. Fais passer chaque bateau par le bon passage.",
   "voiliersMer": {
     "vent": "Le vent se lève ! Il pousse les bateaux vers les bouées.",

@@ -88,7 +88,7 @@ export class Module4Runner {
     const mode = simple ? { ...L, mode: "far", farD: L.max === 100 || R.kind === "ten" || R.kind === "odd" ? 3 : 20 } : L;
     const tries = [];
     for (let i = 0; i < (this.tries ?? 24); i++) {
-      const v = pickNumber(R.vals, R.kind, mode, this.rnd, { lastV: this.lastV, row1: R.vals }), dbl = R.kind === "double";
+      const v = pickNumber(R.vals, R.kind, mode, this.rnd, { lastV: this.lastV, row1: R.vals, horsBouees: cfg.horsBouees ?? null }), dbl = R.kind === "double";
       const r2 = dbl ? tensWindow(v, this.rnd) : null;
       tries.push({ module: 4, niveau: n, num: v, bouees: R.vals.slice(), ecart: R.kind, k: passage(R.vals, v), double: dbl, ...(dbl ? { rangee2: r2, k2: passage(r2, v) } : {}) });
     }

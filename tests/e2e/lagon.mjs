@@ -91,7 +91,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
 
   // ---- les leçons (au milieu de la leçon)
   for (const L of ["L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8", "L9", "L10"]) {
-    await page.goto(url + `?nosw&voix=rapide&son=non&lecon=${L}`); await page.waitForFunction(() => window.__ready !== undefined);
+    await page.goto(url + `?nosw&voix=rapide&son=non&sansReprise&lecon=${L}`); await page.waitForFunction(() => window.__ready !== undefined);
     await page.tap(".play", { force: true });
     // au milieu de la leçon (les leçons des additions, du calcul et L10 sont jouées par lessons/player2.js : `p2`)
     const mid = Math.floor(lecons[L].phrases.length / 2);

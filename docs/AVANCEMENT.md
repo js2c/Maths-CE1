@@ -38,7 +38,13 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 ### Reprise du lot « Décisions sur les constats de l'agent » (fiche 11)
 
-- **Branche** : `ccr-98d11c55-0bfws4` ; demande de fusion en brouillon : PR #58 (« Lot : Décisions sur les constats de l'agent »).
+- **Branche** : `claude/elegant-cannon-a4egyg` depuis la reprise du 13 octobre après-midi (la première session travaillait sur
+  `ccr-98d11c55-0bfws4`, brouillon PR #58 ; ses commits sont repris tels quels). La demande de fusion finale part de la nouvelle branche.
+- **Fait à la reprise** : `docs/IDEES.md` (questions tranchées retirées) ; `mise-a-jour.mjs --court` passe (la séance de A reprise par B) ;
+  tous les parcours `tests/e2e/*.mjs` lancés : 5 échecs, tous propres aux parcours (ils ne connaissaient pas la reprise, les galets de
+  la pause, l'écart de 4 questions), corrigés et repassés (`crans`, `lagon`, `lot3ter`, `mascotte`, `notion2`) ; réglage d'essai
+  `?sansReprise` ; `perf.mjs` a montré un démarrage plus lent de 0,3 à 1 s (la lecture de la séance à reprendre, après le toucher) :
+  les séances sont lues pendant l'écran de démarrage, le démarrage est revenu à celui de `main`.
 - **Fait (code, tests unitaires, parcours, SPEC, journal)** : les 8 décisions, un commit chacune :
   - 2 (maison en fin de séance, 15 s), 3 (accueil en pause en deux touchers), 7 (prix pour briller seulement sur la tuile touchée),
     5 (répétition des additions : 2 passages, 4 questions d'écart ; simulée avant/après, chiffres dans `docs/JOURNAL-CONCEPTION.md`),

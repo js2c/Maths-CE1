@@ -14,7 +14,11 @@
 //     la bouée nommée aux voiliers, l'article allumé de l'étal et son ardoise ; sans place, une bulle plus courte, ou pas de bulle ;
 //  8. la finition : le compteur d'étoiles lisible dans l'étal par temps d'orage (une plaque claire) ; dans l'étal, la bulle pointe
 //     vers la bouche de la mascotte dans la fenêtre et ne se pose plus sous le rebord ; l'étoile arc-en-ciel vole vers l'album ;
-// (les décisions suivantes s'ajoutent à leur étape)
+//  1. la reprise d'une séance après un rechargement de la page, le jour même, au début de l'étape en cours : pendant l'échauffement,
+//     la notion du jour (une leçon en cours, une leçon déjà passée, une correction, le vol des étoiles), le défi ; pendant une
+//     pause ; deux rechargements de suite ; après minuit (pas de reprise) ; « continuer » à l'accueil, les réponses, les étoiles,
+//     le cran gardés, le bilan qui compte toute la séance, la reprise notée pour le parent. (Le rechargement avec une nouvelle
+//     version de l'application : tests/e2e/mise-a-jour.mjs, étapes 3 et 4.)
 // Captures dans tests/e2e/out/decisions-agent/ ; échoue si une vérification échoue ou si la page a une erreur.
 //   node tests/e2e/decisions-agent.mjs [--out dossier] [--vite] [--seul 2,3]   (--vite : seulement 1280 × 800)
 import { accueilReel, chromium, finReelle } from "./navigateur.mjs";
@@ -39,6 +43,7 @@ const DAY = 86400000;
 
 // une page neuve ; `prep(store)` (dans la page) pose un état, puis la page est rechargée avec `q`
 async function fresh({ q = Q, vue = VUES[0], prep = null, arg = null, reel = true, fin = false } = {}) {
+  if (process.env.JALONS) console.log(`  … page neuve ${q}`);
   const context = await browser.newContext({ viewport: vue[1], deviceScaleFactor: vue[2], hasTouch: true });
   if (reel) await accueilReel(context);
   if (fin) await finReelle(context);
@@ -394,6 +399,129 @@ if (faire(8)) {
       }
       await context.close();
     }
+  }
+}
+
+// ---------------------------------------------------------------- 1. la reprise après un rechargement
+const jalon = (t) => { if (process.env.JALONS) console.log(`  … ${t}`); };
+const CAS1 = opt("--cas", null)?.split(","), cas = (c) => !CAS1 || CAS1.includes(c);
+const recharger = async (page) => { jalon("rechargement"); await page.reload(); await page.waitForFunction(() => window.__ready !== undefined, null, { timeout: 60000 }); await espion(page); await page.waitForTimeout(300); };
+const offerte = (page) => page.evaluate(() => ({ attente: !!window.__app.repriseEnAttente, id: window.__app.repriseEnAttente?.id ?? null, continuer: !!document.querySelector(".keep.play"), dit: window.__app.bulle.texte }));
+const etatSeance1 = (page) => page.evaluate(() => { const s = window.__app.session; return s?.rec ? { id: s.rec.id, etape: s.progress.etape, questions: s.rec.questions, etoiles: s.rec.etoiles, cran: s.cran, enPause: !!window.__app.enPause, total: window.__app.rewards.total } : null; });
+const continuer = async (page) => { await tap(page, ".keep.play"); await page.waitForTimeout(300); if (await page.evaluate(() => !!window.__app.repriseEnAttente)) await tap(page, ".keep.play").catch(() => {}); };
+const repris = (page, id, etape) => attendre(page, ([id, etape]) => { const s = window.__app.session; return !window.__app.enPause && !window.__app.repriseEnAttente && s?.rec?.id === id && s.progress.etape === etape; }, [id, etape], 30000);
+// une reprise complète : recharger, vérifier « continuer » et la phrase, reprendre ; renvoie l'état d'avant et d'après
+async function reprendre(page, nom, { capture = null, vue = VUES[0] } = {}) {
+  const avant = await etatSeance1(page);
+  await recharger(page);
+  const o = await offerte(page);
+  if (capture) await shot(page, vue, capture);
+  check(o.attente && o.id === avant.id && o.continuer && o.dit === T.repriseRechargement, `1. ${nom} : rechargée, l'accueil en pause avec « continuer » ; la mascotte : « ${o.dit} »`);
+  await continuer(page);
+  const ok = await repris(page, avant.id, avant.etape);
+  const apres = await etatSeance1(page);
+  check(ok && apres.questions >= avant.questions && apres.total >= avant.total && apres.cran === avant.cran, `1. ${nom} : « continuer » reprend la même séance au début de l'étape « ${avant.etape} » (questions ${avant.questions} -> ${apres?.questions}, étoiles ${avant.total} -> ${apres?.total}, cran ${apres?.cran})`);
+  return { avant, apres };
+}
+// la séance de test : base neuve, additions ou ligne, sans le sélecteur (cran donné)
+if (faire(1)) {
+  // a. pendant l'échauffement ; puis la séance jusqu'au bout : le bilan compte toute la séance, la reprise est notée
+  if (cas("a")) {
+    const { context, page } = await fresh({ q: `${Q}&sansLecon&guides=0&module=2&questions=6&cran=dur&sans=defi`, reel: false });
+    await tap(page, ".play"); await questionPrete(page); await repondreJuste(page); await questionPrete(page); await repondreJuste(page); await questionPrete(page);
+    const { avant } = await reprendre(page, "pendant l'échauffement", { capture: "1a-reprise-accueil-continuer" });
+    check(avant.etape === "echauffement", "1. l'étape reprise est l'échauffement");
+    await page.evaluate(() => { window.__tally = null; const o = new MutationObserver(() => { if (document.querySelector(".tally") && window.__tally === null) window.__tally = window.__app.session.rec.etoiles; }); o.observe(document.querySelector("#ui"), { childList: true, subtree: true }); });
+    await jusquaLaFin(page).catch(() => {});
+    const rec = await page.evaluate((id) => window.__app.store.get("seances", id), avant.id), dit = await said(page), tally = await page.evaluate(() => window.__tally);
+    check(rec.terminee && rec.reprises?.length === 1 && rec.reprises[0].etape === "echauffement", "1. la séance reprise se termine ; la reprise est notée dans sa fiche");
+    check(tally !== null && tally > avant.etoiles && (dit.includes(` ${tally} étoiles`) || tally > 160), `1. le bilan compte toute la séance : ${tally} étoiles (${avant.etoiles} avant le rechargement)`);
+    // l'espace parent : « Reprise après un rechargement de la page »
+    await page.waitForSelector(".moon", { timeout: 30000 }).catch(() => {});
+    await page.evaluate(() => { window.__app.parent.open(); }); await page.waitForSelector(".pa-gate, .pa-sheet", { timeout: 10000 });
+    if (await page.locator(".pa-gate").count()) { for (const d of "1234") { await page.tap(`.pa-keys [data-key="${d}"]`); await page.waitForTimeout(150); } }
+    await page.waitForSelector(".pa-sheet", { timeout: 10000 });
+    await page.locator('[data-tab="seances"]').first().click().catch(() => {}); await page.waitForTimeout(500);
+    await page.locator(".pa-session > button").first().click().catch(() => {}); await page.waitForTimeout(500);
+    await shot(page, VUES[0], "1b-parent-reprise");
+    check(/Reprise après un rechargement de la page/.test(await page.evaluate(() => document.body.innerText)), "1. l'espace parent note la reprise dans l'historique de la séance");
+    await context.close();
+  }
+  // b. pendant la leçon d'entrée : la leçon n'a pas été vue, elle est rejouée
+  if (cas("b")) {
+    const { context, page } = await fresh({ q: `${Q}&guides=0&module=1&cran=conseille&sans=echauffement,defi`, reel: false });
+    await tap(page, ".play");
+    await attendre(page, () => !!window.__app.lessons.keys && window.__app.lessons.p >= 1, null, 60000);
+    await reprendre(page, "pendant une leçon");
+    check(await attendre(page, () => !!window.__app.lessons.keys, null, 20000), "1. la leçon interrompue (pas vue jusqu'au bout) est rejouée");
+    // passée : notée, et la page rechargée ensuite ne la rejoue pas
+    await tap(page, ".skip"); await attendre(page, () => !window.__app.lessons.keys, null, 20000);
+    await attendre(page, () => !!window.__app.screen?.q && !!window.__app.screen.resolve, null, 30000);
+    await reprendre(page, "après une leçon passée");
+    await page.waitForTimeout(4000);
+    check(!(await page.evaluate(() => !!window.__app.lessons.keys)) && await attendre(page, () => !!window.__app.screen?.q, null, 20000), "1. une leçon déjà vue ou passée dans la séance n'est pas rejouée");
+    await context.close();
+  }
+  // c. pendant une correction (additions) ; d. pendant le vol des étoiles
+  if (cas("c")) {
+    const { context, page } = await fresh({ q: `${Q}&sansLecon&guides=0&module=2&cran=conseille&sans=echauffement,defi`, reel: false });
+    await tap(page, ".play"); await questionPrete(page);
+    await page.evaluate(() => { const f = window.__app.facts; f.type("9", document.querySelector('.key[data-key="9"]')); f.type("9", document.querySelector('.key[data-key="9"]')); f.submit(); });
+    await page.waitForTimeout(500);
+    await reprendre(page, "pendant une correction");
+    await questionPrete(page);
+    const t0 = await page.evaluate(() => window.__app.rewards.total);
+    await repondreJuste(page);
+    // (les étoiles de la bonne réponse sont en vol vers le compteur)
+    const enVol = await attendre(page, () => window.__app.hud.flights.length > 0, null, 10000);
+    const pendant = await page.evaluate(() => ({ total: window.__app.rewards.total, rec: window.__app.session.rec.etoiles }));
+    await recharger(page);
+    const stocke = await page.evaluate(async () => (await window.__app.store.get("recompenses", "etoiles"))?.total ?? 0);
+    check(enVol && pendant.total > t0, `1. rechargée pendant le vol des étoiles (${pendant.total - t0} en vol)`);
+    check(stocke === pendant.total && stocke >= t0, `1. pendant le vol des étoiles : rien n'est perdu ni compté deux fois (${t0} -> ${stocke})`);
+    await continuer(page); await page.waitForTimeout(1500);
+    check((await page.evaluate(() => window.__app.rewards.total)) === stocke, "1. après la reprise, le trésor est le même");
+    await context.close();
+  }
+  // e. pendant le défi
+  if (cas("e")) {
+    const prepDefi = async (s) => { const now = Date.now(), DAY = 86400000; for (let i = 0; i < 5; i++) await s.add("seances", { debut: now - (10 - i) * DAY, fin: now - (10 - i) * DAY + 600000, terminee: true, module: 1 + (i % 2), questions: 30, justes: 25, etapes: [] }); for (const [i, k] of ["1+1", "2+1", "3+1", "2+2", "4+1", "5+1", "3+3", "6+1", "1+2", "4+4"].entries()) { const [a, b] = k.split("+").map(Number); await s.put("faits", { fait: k, a, b, boite: 3 + (i % 3), prochain: now + 9 * DAY, historique: [{ t: now - DAY, juste: true, ms: 2000 }], introduit: now - 20 * DAY }); } };
+    const { context, page } = await fresh({ q: `${Q}&cran=conseille&sans=echauffement,notion`, prep: prepDefi, reel: false });
+    await tap(page, ".play");
+    await attendre(page, () => !!window.__app.challenge && !!window.__app.facts?.resolve, null, 60000); await repondreJuste(page);
+    await reprendre(page, "pendant le défi");
+    check(await attendre(page, () => !!window.__app.challenge, null, 20000), "1. le défi repart à son début");
+    await context.close();
+  }
+  // f. pendant une pause ; g. deux rechargements de suite ; puis un rechargement après la reprise
+  if (cas("f")) {
+    const { context, page } = await fresh({ q: `${Q}&sansLecon&guides=0&module=2&cran=conseille&sans=echauffement,defi`, reel: false });
+    await tap(page, ".play"); await questionPrete(page); await repondreJuste(page); await questionPrete(page);
+    await tap(page, ".session-home"); await page.waitForSelector(".keep.play", { timeout: 10000 });
+    const id = (await etatSeance1(page)).id;
+    await recharger(page);
+    check((await offerte(page)).attente, "1. rechargée pendant une pause : « continuer »");
+    await recharger(page);
+    const o = await offerte(page);
+    check(o.attente && o.id === id, "1. deux rechargements de suite : toujours « continuer », la même séance");
+    await continuer(page);
+    check(await repris(page, id, "notion"), "1. puis la séance reprend");
+    await questionPrete(page);
+    await reprendre(page, "un rechargement après une reprise");
+    check((await page.evaluate((id) => window.__app.store.get("seances", id), id)).reprises?.length === 2, "1. deux reprises notées");
+    await context.close();
+  }
+  // h. après minuit : la séance d'hier soir reste interrompue
+  if (cas("h")) {
+    const { context, page } = await fresh({ q: `${Q}&sansLecon&guides=0&module=2&cran=conseille&sans=echauffement,defi`, reel: false });
+    await tap(page, ".play"); await questionPrete(page); await repondreJuste(page);
+    const id = (await etatSeance1(page)).id;
+    await page.evaluate(async (id) => { const s = window.__app.store, r = await s.get("seances", id), h = new Date(); h.setHours(0, 0, 0, 0); r.debut = h.getTime() - 10 * 60000; await s.put("seances", r); }, id);
+    await recharger(page);
+    const o = await offerte(page);
+    check(!o.attente && !o.continuer && await visible(page, ".galet.play"), "1. après minuit : pas de reprise, l'accueil propose « jouer »");
+    check(!(await page.evaluate((id) => window.__app.store.get("seances", id), id)).terminee, "1. la séance d'hier reste « interrompue » (terminée : non)");
+    await context.close();
   }
 }
 

@@ -163,6 +163,7 @@
   "aideGrandDouble": "{a}, c'est dix et {u}. Dix et dix, vingt. {u} et {u}, {d}.",
   "aToiFait": "À toi ! Tape la réponse.",
   "reprise": "On continue !",
+  "repriseRechargement": "Te revoilà ! Touche la grande bulle pour continuer.",
   "bienvenueLancement": [
     "Coucou ! Je suis content de te voir.",
     "Te revoilà ! On va bien s'amuser.",

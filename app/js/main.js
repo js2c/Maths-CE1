@@ -41,7 +41,7 @@ import { AidBoard } from "./modules/facts/aids.js";
 import { ChallengeView } from "./modules/facts/challengeView.js";
 import { Rewards } from "./session/rewards.js";
 import { goodNight, reward, spriteBox, StarHud } from "./session/screens.js";
-import { challengeReady, doneToday, sameDay, Session } from "./session/session.js";
+import { challengeReady, doneToday, repriseDuJour, sameDay, Session } from "./session/session.js";
 import { Reef } from "./session/reef.js";
 import { drawSurprise, playSurprise, previousSession } from "./session/surprise.js";
 import { Album } from "./session/album.js";
@@ -328,7 +328,12 @@ const handlers = {
 // (lot « Recette de l'enfant », point 2) une étape quittée pendant une attente (une planche, une scène qui s'installe) ne crée
 // plus rien ensuite : elle reste figée, comme une attente abandonnée (engine/clock.js)
 const fige = () => new Promise(() => {});
-const afterLesson = (session, runner) => { if (session.choix?.apresLecon) runner.lessonPlayed?.(session.choix.apresLecon); };
+const afterLesson = (session, runner) => {
+  if (session.choix?.apresLecon) runner.lessonPlayed?.(session.choix.apresLecon);
+  // (lot « Décisions sur les constats de l'agent », décision 1) une séance reprise après un rechargement : une leçon déjà vue (ou
+  // passée) dans la séance n'est pas rejouée
+  if (session.reprise) for (const l of session.rec?.lecons ?? []) if (l.vue || l.passee) runner.lessonPlayed?.(l.id);
+};
 // lot 2, étape 6 : la notion du jour sur les additions (docs/SPEC-LOT2.md, section 3) : l'écran des additions, le
 // bernard-l'ermite (planche « ermite », chargée le temps de l'étape), la leçon de la famille la première fois
 // (L4 à L6), sinon deux exemples guidés ; une famille acquise rapporte une étoile arc-en-ciel
@@ -587,23 +592,36 @@ async function openLessons() {
   await runSession(go);
 }
 // une séance du jour : proposée par l'application (« jouer »), ou l'exercice choisi (`choix`, lot 3)
-async function runSession(choix = null) {
+// (lot « Décisions sur les constats de l'agent », décision 1) `reprise` : la fiche d'une séance à reprendre après un rechargement
+// (session.js, repriseDuJour) : la même séance, au début de son étape en cours, avec ses étapes, son cran, sa musique
+async function runSession(choix = null, reprise = null) {
   // la durée maximale d'une séance est un réglage du parent (seance.json donne la valeur par défaut) ; « Échauffement :
   // non » (réglage du parent, lot 3) le retire de la séance et de la frise
-  const sans = (await store.setting("echauffement")) === false ? ["echauffement"] : [], sansRaison = {};
+  const sans = reprise ? [...(reprise.plan?.sans ?? [])] : (await store.setting("echauffement")) === false ? ["echauffement"] : [], sansRaison = reprise ? { ...(reprise.plan?.sansRaison ?? {}) } : {};
+  if (reprise) choix = reprise.choix ?? null;
   // lot 3, étape 5 : l'échauffement déjà fait ou passé ce jour-là (séance interrompue pour un autre exercice) n'est pas refait
-  if (!sans.length && (await store.all("seances")).some((s) => !s.libre && sameDay(s.debut, Date.now()) && (s.etapes ?? []).some((e) => e.id === "echauffement" && e.dureeS !== undefined))) { sans.push("echauffement"); sansRaison.echauffement = "déjà fait aujourd'hui"; }
+  if (!reprise && !sans.length && (await store.all("seances")).some((s) => !s.libre && sameDay(s.debut, Date.now()) && (s.etapes ?? []).some((e) => e.id === "echauffement" && e.dureeS !== undefined))) { sans.push("echauffement"); sansRaison.echauffement = "déjà fait aujourd'hui"; }
   // lot « Les leçons » : « À toi ! » après une leçon du menu : sans échauffement
   if (choix?.apresLecon && !sans.includes("echauffement")) { sans.push("echauffement"); sansRaison.echauffement = "après une leçon"; }
   // lot 3 : la rotation de « jouer » entre les trois modules, le moins maîtrisé d'abord (session.js, chooseModule)
   const [n1, n2, n3, n5] = await Promise.all([1, 2, 3, 5].map((k) => store.get("niveaux", k))), mastery = { 1: ((n1?.niveau ?? 1) - 1) / module1.niveaux.length, 2: (n2?.acquises?.length ?? 0) / module2.familles.length, 3: calcMastery(module3, n3), 5: multMastery(module5, n5) };
-  const session = new Session({ store, content: { ...seance, dureeMaxMin: await store.setting("dureeSeanceMin", seance.dureeMaxMin) }, handlers, rewards, paused: () => clock.pausedTotal(), onProgress: (p) => progress(p), choix, sans, sansRaison, mastery: (m) => mastery[m] ?? 0,
+  const session = new Session({ store, content: { ...seance, dureeMaxMin: await store.setting("dureeSeanceMin", seance.dureeMaxMin) }, handlers, rewards, paused: () => clock.pausedTotal(), onProgress: (p) => progress(p), choix, sans, sansRaison, mastery: (m) => mastery[m] ?? 0, reprise,
     // la protection du sélecteur redescend d'un cran : la mascotte encourage, la voix le dit doucement
     onCranDown: async () => { voice.stop(); ocean.mascotte.play("encourager"); await voice.say(text.data.cranDescente); } });
   app.session = session; mode = "seance";
   // la frise ne montre le défi record que s'il aura lieu (à partir de la 5e séance, assez de faits bien sus)
   const defi = seance.etapes.find((e) => e.id === "defi");
-  frieze.only([...sans, ...(defi && handlers.defi && !(await challengeReady(store, defi)) ? ["defi"] : [])]);
+  const frise = reprise?.plan?.frise ?? [...sans, ...(defi && handlers.defi && !(await challengeReady(store, defi)) ? ["defi"] : [])];
+  frieze.only(frise);
+  // (décision 1) ce qu'il faut pour reprendre la séance : ses étapes retirées, la frise ; écrit dès le début, avec la séance
+  if (reprise) {
+    // la limite de faits nouveaux de la séance compte ceux déjà introduits avant le rechargement ; la musique de la séance
+    session.nouveaux = (await store.all("faits")).filter((f) => (f.introduit ?? 0) >= reprise.debut).length;
+    sound.startMusic(reprise.musique ?? pickMusic(sonIndex, rnd));
+    ocean.mascotte.play("saluer"); voice.say(text.data.reprise);
+  } else {
+    await session.start(); session.rec.plan = { sans: [...sans], sansRaison: { ...sansRaison }, frise }; await session.save();
+  }
   await session.run();
   // (une séance interrompue dont l'étape abandonnée s'est réveillée : ce n'est plus elle qui mène l'écran)
   if (session.stopped) return;
@@ -703,6 +721,14 @@ function showPauseHome() {
 function resumeSession() {
   if (visiting) return;
   finirParolePause(); bulle.cacher();
+  // (décision 1) la séance à reprendre après un rechargement : elle repart au début de son étape
+  if (app.repriseEnAttente) {
+    const r = app.repriseEnAttente; app.repriseEnAttente = null;
+    clearPauseHome(); app.enPause = false; app.session = null;
+    voice.unlock(); stage.root.classList.remove("paused"); ocean.mascotte.suspendre(false);
+    clock.resume(); voice.resume(); sound.pauseLevel(false);
+    return runSession(null, r);
+  }
   clearPauseHome(); app.enPause = false;
   voice.unlock(); stage.root.classList.remove("paused"); homeKey.style.visibility = "visible";
   ocean.mascotte.suspendre(false); if (ambianceAvantPause) ocean.mascotte.setAmb(ambianceAvantPause);
@@ -790,6 +816,20 @@ function sandbox() {
     st.root.classList.add("paused");
   };
 }
+// (lot « Décisions sur les constats de l'agent », décision 1 du parent du 13 octobre 2026 ; constat 1 de l'agent) LA REPRISE APRÈS UN
+// RECHARGEMENT : la séance du jour, ni terminée ni interrompue, attend dans l'accueil en pause, comme après la maison : « continuer »
+// la reprend au début de son étape en cours (resumeSession) ; « choisir » l'interrompt et lance l'exercice choisi ; les leçons, le
+// récif, l'album se visitent ; le parent peut la terminer. La mascotte le dit : « Te revoilà ! Touche la grande bulle pour
+// continuer. » (deux phrases qui existent déjà : la bienvenue, la consigne de la pause)
+function preparerReprise(rec) {
+  const session = new Session({ store, content: seance, handlers, rewards, reprise: rec });
+  session.rec = rec; app.session = session; app.repriseEnAttente = rec; mode = "seance";
+  clock.pause(); voice.pause(); sound.pauseLevel(true); stage.root.classList.add("paused"); homeKey.style.visibility = "hidden";
+  ocean.mascotte.suspendre(true); ocean.mascotte.ambiance("pause"); bulle.cacher(); fleche.cacher();
+  app.enPause = true; ambianceAvantPause = null;
+  showPauseHome();
+  ocean.mascotte.play("saluer"); direEnPause(text.data.repriseRechargement);
+}
 // l'activité en cours est abandonnée pour de bon (engine/clock.js) et la scène rangée
 function abandonActivity() {
   // (lot « Correctifs : passage de l'échauffement aux voiliers », point 1 ; lot « Recette de l'enfant », point 2) les portées
@@ -814,7 +854,7 @@ function quitFree() { abandonActivity(); showHome({ done: true }); }
 // notée pour l'historique du parent, et pas de retour à l'accueil : l'exercice choisi commence)
 async function endPausedSession({ par = "parent", raison = null, home = true } = {}) {
   if (!app.enPause || !app.session) return;
-  finirParolePause();
+  finirParolePause(); app.repriseEnAttente = null;
   clearPauseHome(); app.enPause = false;
   await app.session.interrupt({ par, raison });
   abandonActivity(); frieze.show(false); stage.root.classList.remove("paused"); sound.pauseLevel(false);
@@ -863,5 +903,8 @@ demarrageTouche = true;
 if (toucheDemarrage) { voice.unlock(); sound.unlock(); }
 stage.paused = false; // (la scène reprend sous le fondu de sortie)
 await demarrage.fermer();
-showHome({ done: await doneToday(store), bienvenue: toucheDemarrage });
+// (décision 1) une séance du jour à reprendre après un rechargement : l'accueil en pause, avec « continuer »
+const aReprendre = await repriseDuJour(store, Date.now());
+if (aReprendre) preparerReprise(aReprendre);
+else showHome({ done: await doneToday(store), bienvenue: toucheDemarrage });
 requestAnimationFrame(() => requestAnimationFrame(() => { performance.mark("app-ready"); window.__ready = performance.now() - T0; }));

@@ -59,12 +59,27 @@ export async function challengeReady(store, step) {
   return done >= (step.aPartirDeSeance ?? 0) && solid >= (step.faitsBoite3Min ?? 0);
 }
 
+// (lot « Décisions sur les constats de l'agent », décision 1 du parent du 13 octobre 2026 ; constat 1 de l'agent : après un
+// rechargement de la page, la séance du soir était perdue) LA SÉANCE À REPRENDRE après un rechargement (Android a fermé le
+// navigateur, ou une nouvelle version a pris la main au lancement) : la dernière séance (hors entraînement libre et leçons seules),
+// commencée le jour même, ni terminée ni interrompue (par le parent, ou un autre exercice choisi), notée par cette version
+// (`etapeEnCours`, écrit à chaque changement d'étape ; une fiche d'une version d'avant n'en a pas et n'est pas reprise), et aucune
+// séance terminée ce jour-là. Le lendemain, elle reste « interrompue », comme avant.
+export async function repriseDuJour(store, now = Date.now()) {
+  const S = (await store.all("seances")).filter((s) => !s.libre);
+  if (S.some((s) => s.terminee && sameDay(s.debut, now))) return null;
+  const s = S.sort((a, b) => a.debut - b.debut).at(-1);
+  if (!s || s.terminee || s.interruption || s.arreteeParParent || !s.etapeEnCours || !sameDay(s.debut, now)) return null;
+  return s;
+}
+
 export class Session {
   // content : seance.json ; handlers : { accueil, echauffement, notion, defi, probleme, recompense } ;
   // rewards : les étoiles (rewards.js) ; clock : l'heure en ms
   // onCranDown(de, a) : la protection vient de redescendre d'un cran (la voix le dit)
-  constructor({ store, content, handlers, rewards = null, clock = () => Date.now(), paused = () => 0, onProgress = null, onCranDown = null, choix = null, sans = [], sansRaison = {}, mastery = () => 0 }) {
-    this.choix = choix; this.sans = sans; this.sansRaison = sansRaison; this.mastery = mastery;
+  // (décision 1) `reprise` : la fiche d'une séance à reprendre (repriseDuJour) ; elle continue, au début de l'étape en cours
+  constructor({ store, content, handlers, rewards = null, clock = () => Date.now(), paused = () => 0, onProgress = null, onCranDown = null, choix = null, sans = [], sansRaison = {}, mastery = () => 0, reprise = null }) {
+    this.choix = reprise?.choix ?? choix; this.sans = sans; this.sansRaison = sansRaison; this.mastery = mastery; this.reprise = reprise;
     this.store = store; this.c = content; this.handlers = handlers; this.rewards = rewards; this.clock = clock; this.paused = paused; this.onProgress = onProgress; this.onCranDown = onCranDown;
     this.rec = null; this.lastOk = null; this.progress = { etape: null, faites: 0, prevues: 0 };
     this.cranIdx = 1; this.frac = 0; this.win = []; this.nouveaux = 0;
@@ -81,13 +96,24 @@ export class Session {
   }
   get id() { return this.rec?.id ?? null; }
   // l'heure « active » : l'heure moins le temps passé en pause depuis le début de la séance
-  active() { return this.clock() - (this.paused() - this.p0); }
+  // (décision 1 : une séance reprise ne compte pas le temps passé entre la dernière écriture et la reprise, `decalage`)
+  active() { return this.clock() - (this.paused() - this.p0) - (this.decalage ?? 0); }
   // l'heure après laquelle on ne pose plus de nouvelle question
   get deadline() { return this.rec.debut + this.c.dureeMaxMin * 60000 - this.c.reserveRecompenseS * 1000; }
   // faut-il arrêter de poser des questions (plafond de la séance, ou fin de l'étape en cours) ?
   over(stageEnd = Infinity) { const t = this.active(); return t >= this.deadline || t >= stageEnd; }
   async start() {
     this.p0 = this.paused();
+    // (décision 1) la séance reprise : la même fiche, qui continue (ses réponses, ses étoiles, son cran, l'ordre de ses étapes) ;
+    // son temps actif repart d'où il en était ; la reprise est notée pour l'historique du parent
+    if (this.reprise) {
+      const r = (this.rec = this.reprise);
+      this.decalage = this.clock() - (r.debut + (r.dureeS ?? 0) * 1000); this.pause0 = r.pauseS ?? 0;
+      this.cranIdx = Math.max(0, CRANS.indexOf(r.cran ?? "conseille"));
+      (r.reprises ??= []).push({ t: this.clock(), etape: r.etapeEnCours, questions: r.questions ?? 0 });
+      await this.save();
+      return this;
+    }
     // le module du jour ; un module imposé par le parent ne vaut qu'une séance
     // (exercice choisi par l'enfant : c'est lui ; le module imposé attend la prochaine séance « jouer »)
     const impose = this.choix ? null : (await this.store.setting("moduleImpose"))?.module ?? null, pick = this.choix ? { module: this.choix.module } : chooseModule(this.c, await this.store.all("seances"), impose, this.has ?? (() => true), this.mastery, this.clock());
@@ -99,7 +125,7 @@ export class Session {
   save() {
     if (this.stopped) return Promise.resolve();
     this.rec.fin = this.clock(); this.rec.dureeS = Math.round((this.active() - this.rec.debut) / 1000);
-    const p = Math.round((this.paused() - this.p0) / 1000); if (p > 0) this.rec.pauseS = p;
+    const p = (this.pause0 ?? 0) + Math.round((this.paused() - this.p0) / 1000); if (p > 0) this.rec.pauseS = p;
     return this.store.put("seances", this.rec);
   }
   // la frise : combien de questions l'étape en cours prévoit au moins (le nombre ne fait que grandir : une
@@ -149,6 +175,8 @@ export class Session {
       // (lot « Correctifs : passage de l'échauffement aux voiliers », point 1) une séance interrompue (« Terminer la séance »,
       // un autre exercice choisi depuis la pause) ne passe jamais à l'étape suivante, même si l'étape abandonnée se réveille
       if (this.stopped) return this.rec;
+      // (décision 1) une séance reprise : les étapes déjà faites ou sautées ne sont pas refaites ; elle repart au début de la sienne
+      if (this.reprise && this.rec.etapes.some((e) => e.id === step.id)) continue;
       const h = this.handlers[step.id], t0 = this.active();
       if (step.actif !== false && h && step.id === "defi" && !(await challengeReady(this.store, step))) { this.rec.etapes.push({ id: step.id, sautee: "pas encore" }); continue; }
       if (this.sans.includes(step.id)) { this.rec.etapes.push({ id: step.id, sautee: this.sansRaison[step.id] ?? "réglage du parent" }); continue; }
@@ -158,6 +186,8 @@ export class Session {
       // la séance est terminée quand vient la récompense : si l'enfant ferme pendant, elle compte quand même
       if (step.id === "recompense") this.rec.terminee = true;
       this.progress = { etape: step.id, faites: 0, prevues: 0 }; this.onProgress?.(this.progress);
+      // (décision 1) l'étape en cours, écrite à chaque changement d'étape : c'est d'elle que repartirait une reprise
+      this.rec.etapeEnCours = step.id; await this.save();
       await h({ session: this, step, end: step.minutes ? t0 + step.minutes * 60000 : Infinity });
       if (this.stopped) return this.rec;
       this.rec.etapes.push({ id: step.id, dureeS: Math.round((this.active() - t0) / 1000) });

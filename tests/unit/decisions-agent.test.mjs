@@ -108,3 +108,52 @@ test("décision 4 : sans place, la bulle n'écrit que la première phrase ; une 
   const r = poser(COLONNE, largeurMax(COLONNE.boite), 70).rect;
   assert.ok(r[2] <= 495 && r[3] <= 300 && r[0] >= 232, JSON.stringify(r));
 });
+
+// ---------------------------------------------------------------- décision 1 : la reprise après un rechargement
+import { repriseDuJour, Session } from "../../app/js/session/session.js";
+import { Rewards } from "../../app/js/session/rewards.js";
+const seance1 = load("seance.json");
+const horloge = (t0) => { let t = t0; const c = () => t; c.add = (ms) => { t += ms; }; return c; };
+
+test("décision 1 : la séance à reprendre : le jour même, ni terminée ni interrompue, notée par cette version", async () => {
+  const soir = new Date(2026, 9, 13, 18, 30).getTime(), H = 3600000;
+  const cas = async (fiches, now = soir + H / 2) => { const s = await open(); for (const f of fiches) await s.add("seances", f); return (await repriseDuJour(s, now))?.debut ?? null; };
+  const en = { debut: soir, terminee: false, etapeEnCours: "notion", etapes: [{ id: "accueil" }], questions: 12 };
+  assert.equal(await cas([en]), soir, "la séance de ce soir, en cours");
+  assert.equal(await cas([en], soir + 6 * H), null, "après minuit : elle reste interrompue");
+  assert.equal(await cas([{ ...en, etapeEnCours: undefined }]), null, "une fiche d'une version d'avant : pas reprise");
+  assert.equal(await cas([{ ...en, interruption: { par: "enfant", raison: "autre exercice choisi par l'enfant" } }]), null, "interrompue pour un autre exercice");
+  assert.equal(await cas([{ ...en, arreteeParParent: true }]), null, "terminée par le parent");
+  assert.equal(await cas([{ ...en, terminee: true }]), null, "terminée");
+  assert.equal(await cas([{ debut: soir - H, terminee: true }, en]), null, "une séance déjà terminée ce jour-là");
+  assert.equal(await cas([en, { debut: soir + 600000, libre: true, terminee: false }]), soir, "l'entraînement libre ou une leçon seule ne comptent pas");
+  assert.equal(await cas([en, { ...en, debut: soir + 600000, interruption: { par: "parent" } }]), null, "seule la dernière séance peut être reprise");
+});
+
+test("décision 1 : la séance reprise continue la même fiche, au début de l'étape en cours : étapes faites sautées, cran, étoiles, temps", async () => {
+  const store = await open(), rewards = await new Rewards(store).load(), c = horloge(new Date(2026, 9, 13, 18, 0).getTime());
+  const vus = [], h = (id) => async ({ session }) => { vus.push(id); if (id === "notion") { await session.answered(true); await session.stars(1, "bonne réponse"); } if (id === "recompense") await session.stars(10, "séance terminée"); };
+  const handlers = { accueil: h("accueil"), echauffement: h("echauffement"), notion: h("notion"), recompense: h("recompense") };
+  // la séance de départ : l'accueil (cran « plus dur »), l'échauffement fait, la page rechargée pendant la notion du jour
+  const s1 = new Session({ store, content: seance1, rewards, clock: c, handlers: { ...handlers, notion: async ({ session }) => { await session.answered(true); await session.stars(3, "bonne réponse"); c.add(120000); throw new Error("rechargement"); } } });
+  await s1.start(); await s1.setCran("dur"); s1.rec.plan = { sans: [], sansRaison: {}, frise: ["defi"] }; await s1.save();
+  await s1.run().catch(() => {});
+  const avant = await store.get("seances", s1.rec.id);
+  assert.equal(avant.etapeEnCours, "notion"); assert.deepEqual(avant.etapes.map((e) => e.id), ["accueil", "echauffement"]);
+  // une heure plus tard, le même soir : la reprise
+  c.add(3600000);
+  const rec = await repriseDuJour(store, c());
+  assert.equal(rec.id, s1.rec.id);
+  vus.length = 0;
+  const s2 = new Session({ store, content: seance1, rewards, clock: c, handlers, reprise: rec });
+  const fin = await s2.run();
+  assert.deepEqual(vus, ["notion", "recompense"], "l'accueil et l'échauffement ne sont pas refaits ; la notion du jour repart à son début");
+  assert.equal(fin.id, s1.rec.id, "la même séance"); assert.equal(fin.terminee, true);
+  assert.equal(s2.cran, "dur", "le cran choisi est gardé");
+  // le bilan compte toute la séance : 3 étoiles avant le rechargement, 1 après (× 1,5 au cran « plus dur »), 10 de la séance terminée
+  assert.equal(fin.etoiles, avant.etoiles + 1 + 10, `${fin.etoiles} étoiles`); assert.equal(fin.questions, 2);
+  // l'heure passée entre le rechargement et la reprise ne compte pas dans la durée active
+  assert.ok(fin.dureeS < 600, `durée active ${fin.dureeS} s`);
+  assert.equal(fin.reprises.length, 1); assert.equal(fin.reprises[0].etape, "notion");
+  assert.equal(await repriseDuJour(store, c()), null, "terminée : plus rien à reprendre");
+});

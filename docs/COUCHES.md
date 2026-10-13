@@ -117,7 +117,7 @@ libre charge la planche « calcul » sans la libérer.
 
 - **L'écran mis en veille** : la page est gelée (minuteries, images), puis reprend. Rien n'est rangé ni relancé ; les durées
   mesurées (temps de réponse, inactivité de la mascotte) comptent le temps de veille. L'enfant imprévisible en essaie (point 3).
-- **Le rechargement** : tout repart de zéro, à l'accueil ; une séance en cours reste dans l'historique « terminée : non »
+- **Le rechargement** : tout repart de zéro, à l'accueil ; un achat en vol n'est jamais fait à moitié (lot de la boutique). Depuis le lot « Décisions sur les constats de l'agent » (décision 1), une séance du jour en cours est **reprise** : l'accueil en pause avec « continuer », puis la séance au début de son étape (`session/session.js`, `repriseDuJour` ; `main.js`, `preparerReprise`). Rien de l'écran d'avant n'est restauré : l'étape repart de sa portée neuve. Une séance d'hier, ou d'une version d'avant, reste « terminée : non ».
   (elle n'est pas reprise ; « jouer » en commence une nouvelle, sans l'échauffement s'il a déjà été fait ce jour-là) ; un achat
   en vol n'est jamais fait à moitié (lot de la boutique).
 

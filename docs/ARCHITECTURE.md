@@ -194,6 +194,20 @@ L'enfant achète les créatures avec ses étoiles de mer (décisions du parent d
 - *La voix* : `engine/phrases.js`, `dicible` (une phrase sans lettre ni chiffre n'est ni dite ni fabriquée) ; le contrôle des durées, `tools/voix/durees.mjs` et sa reprise dans `chatterbox_lot.py` (`docs/VOIX.md`).
 - *Les outils de recette* : `tests/e2e/enfant.mjs` (l'enfant imprévisible : graines, vérifications, `--fuite`, `--rejouer`, `--reduire`, `--panne` ; version courte dans `.github/workflows/tests.yml`) ; `tests/recette-fonctionnelle/pilote.mjs` (le pilote de l'application par commandes HTTP, pour un agent qui joue l'enfant) ; `tests/e2e/barre-noire.mjs`, `tests/e2e/voiliers-qualite.mjs` ; la couverture : `COUVERTURE=dossier` pour tout parcours (`tests/e2e/navigateur.mjs`), bilan par `tools/couverture.mjs` (avec `NODE_V8_COVERAGE` pour les tests unitaires et les simulations) ; `app.modeEcran()` (l'écran en cours, pour les parcours).
 
+## Les décisions sur les constats de l'agent (lot « Décisions sur les constats de l'agent »)
+
+`docs/LOTS.md`, fiche 11 ; les décisions du parent du 13 octobre 2026 : `docs/JOURNAL-CONCEPTION.md`.
+
+- *La reprise après un rechargement* (décision 1) : `session/session.js`, `repriseDuJour(store, now)` (la séance du jour à reprendre) et `Session({ reprise })` (la même fiche qui continue : étapes déjà faites sautées, `decalage` pour le temps passé hors de l'application, `pause0`, cran, `reprises`) ; `rec.etapeEnCours` est écrit à chaque changement d'étape (`run`), `rec.plan` (étapes retirées, frise) au début de la séance (`main.js`, `runSession`). Au lancement, `preparerReprise` pose l'accueil en pause (`app.repriseEnAttente`) ; `resumeSession` lance `runSession(null, rec)` ; `afterLesson` marque jouées les leçons déjà vues ou passées. Espace parent : `sessionDetail` (« Reprise après un rechargement de la page »), le badge « en pause ».
+- *La fin de séance* (décision 2) : `finRecompense` (`session/screens.js`) pose aussi la maison (`app.maisonFin`, le mode « fin » de la maison dans `main.js`) ; `cartes.json`, `boutique.finAttenteS` : 15.
+- *L'accueil en pause en deux touchers* (décision 3) : `showPauseHome` prend les galets de l'accueil et `deuxTouchers` (`session/selection.js`, options `dire` et `taire`) ; la voix de la pause parle dans une file à part (`direEnPause`, `finirParolePause`).
+- *La bulle* (décision 4) : `engine/bulle.js`, `eviter(clé, zone)` (des zones dures déclarées par les exercices : rectangle, liste, élément, fonction), `premierePhrase` (la bulle plus courte), `COLONNE` (dernière place), `placesPoste` (la mascotte posée ailleurs : `bulle.poste`) ; les zones : l'ardoise pendant une aide (`FactsScreen.skippable`), `AidBoard.zones` (le chemin du calcul rapide, `CalcScreen.paintPath`), la bouée allumée (`VoiliersScreen.boueesNommees`).
+- *La répétition des additions* (décision 5) : `module2.json`, `repetition` ; `Module2Runner` (`RP`, `recent`, retour à `ecartMin + 1`) ; l'échauffement, `warmupIndex` (`modules/facts/warmup.js`), appelé par `runWarmup`. Mesures : `tests/sim-seances.mjs` (« répétition des additions »), `b-sequences.mjs --test`.
+- *Les voiliers* (décision 6) : `VoiliersScreen.montrerGlisser` (un toucher bref sous `PASSAGES_Y`, la flèche le long du geste, `GLISSER`) ; `candidates`/`pickNumber` (`horsBouees`, `module4.json`).
+- *La boutique* (décision 7) : `Boutique.peindre` n'écrit le prix pour faire briller que sur la tuile choisie (`this.sel`).
+- *La finition* (décision 8) : `StarHud` (`sombre`, `app.hudSombre` posé par l'étal) ; `flyRainbowStars` (l'album à l'arrivée).
+- Tests : `tests/unit/decisions-agent.test.mjs` ; parcours `node tests/e2e/decisions-agent.mjs [--vite] [--seul 1,2,…] [--cas a,b,…]` (captures dans `tests/e2e/out/decisions-agent/`) ; la reprise avec une nouvelle version : `tests/e2e/mise-a-jour.mjs`.
+
 ## Fabriquer les images
 
 ```bash

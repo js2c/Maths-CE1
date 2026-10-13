@@ -251,7 +251,7 @@ export class ParentSpace {
     const head = h("button", { "aria-expanded": "false", onclick: () => { const o = el.classList.toggle("open"); head.setAttribute("aria-expanded", String(o)); det.hidden = !o; if (o && !det.childElementCount) this.sessionDetail(x, det); } },
       h("span", { class: "t" }, `${D.fmtDay(x.debut)}, ${D.fmtTime(x.debut)}${x.leconChoisie ? " · leçon choisie" : x.libre ? ` · entraînement libre${this.exercicesLibres(x).length ? ` (${this.exercicesLibres(x).join(", ").toLowerCase()})` : ""}` : x.choix ? " · exercice choisi" : ""}`),
       h("span", { class: "s" }, `${D.fmtDuration(x.dureeS)} · ${plural(x.questions ?? 0, "question")} · ${plural(x.etoiles ?? 0, "étoile")} de mer`),
-      h("span", { class: "r" }, h("span", { class: `pa-badge ${x.terminee || x.libre ? lv ?? "neutre" : "neutre"}` }, x.libre ? (x.questions ? `${D.fmtPct(x.reussite)} de réussite` : "libre") : x.terminee ? (x.questions ? `${D.fmtPct(x.reussite)} de réussite` : "terminée") : "interrompue"), h("span", { class: "chev", "aria-hidden": "true" }, "›")));
+      h("span", { class: "r" }, h("span", { class: `pa-badge ${x.terminee || x.libre ? lv ?? "neutre" : "neutre"}` }, x.libre ? (x.questions ? `${D.fmtPct(x.reussite)} de réussite` : "libre") : x.terminee ? (x.questions ? `${D.fmtPct(x.reussite)} de réussite` : "terminée") : this.app.enPause && this.app.session?.rec?.id === x.id ? "en pause" : "interrompue"), h("span", { class: "chev", "aria-hidden": "true" }, "›")));
     el.append(head, det); det.hidden = true;
     if (open) head.click();
     return el;
@@ -277,6 +277,8 @@ export class ParentSpace {
       passes > 0 && h("span", {}, "Exemples guidés passés : ", h("b", {}, String(passes))),
       corr > 0 && h("span", {}, "Corrections passées : ", h("b", {}, String(corr))),
       x.pauses > 0 && h("span", {}, "Pauses : ", h("b", {}, `${x.pauses}${x.pauseS ? `, ${D.fmtDuration(x.pauseS)} en tout (non comptées dans la durée)` : ""}`)),
+      // (lot « Décisions sur les constats de l'agent », décision 1) la séance reprise après un rechargement de la page
+      (x.reprises ?? []).length > 0 && h("span", {}, x.reprises.length > 1 ? "Reprises après un rechargement de la page : " : "Reprise après un rechargement de la page : ", h("b", {}, x.reprises.map((r) => `à ${D.fmtTime(r.t)}, au début de l'étape « ${(D.STEP_NAMES[r.etape] ?? r.etape).toLowerCase()} »${r.questions ? ` (après ${plural(r.questions, "question")})` : ""}`).join(" ; "))),
       cartes.length > 0 && h("span", {}, "Cartes gagnées : ", h("b", {}, cartes.join(", ")))));
     const groups = D.answersOf(this.d.reponses, x.id);
     if (!groups.length) det.append(h("p", { class: "pa-muted" }, "Aucune réponse enregistrée pour cette séance."));

@@ -35,3 +35,10 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 ## Reprise
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
+
+### Reprise du lot « Décisions sur les constats de l'agent » (fiche 11)
+
+- **Branche** : `ccr-98d11c55-0bfws4` ; demande de fusion en brouillon « Lot : Décisions sur les constats de l'agent ».
+- **Ordre suivi** (du plus court au plus lourd, chaque décision un commit) : 2 (fin de séance), 3 (« continuer » en deux touchers), 7 (boutique), 5 (répétition des additions, simulée avant), 6 (voiliers), 4 (bulle), 8 (finition), 1 (reprise après rechargement), puis la recette.
+- **Fait** : (rien encore)
+- **Où reprendre** : décision 2.

@@ -110,6 +110,8 @@ stage.onResize(() => { if (Math.abs(stage.px - sprites.px) > 0.01) location.relo
 
 const rnd = rng(Date.now() & 0xffffffff);
 // pour les tests et les captures : ?module=2 ?cran=dur ?surprise=visite:tortue ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape ?sansLecon ?lecon=L1 ?etoiles=N
+// ?sansReprise : une séance laissée en cours n'est pas reprise au rechargement (décision 1 du lot « Décisions sur les constats de
+// l'agent ») ; pour les parcours qui enchaînent des séances en rechargeant la page avec d'autres réglages
 const P = new URLSearchParams(location.search);
 const text = { data: textes, pick: (k, v = {}) => { const e = textes[k]; return fill(Array.isArray(e) ? e[Math.floor(rnd() * e.length)] : e, v); } };
 // les phrases fabriquées à l'avance (assets/voix/)
@@ -904,7 +906,7 @@ if (toucheDemarrage) { voice.unlock(); sound.unlock(); }
 stage.paused = false; // (la scène reprend sous le fondu de sortie)
 await demarrage.fermer();
 // (décision 1) une séance du jour à reprendre après un rechargement : l'accueil en pause, avec « continuer »
-const aReprendre = await repriseDuJour(store, Date.now());
+const aReprendre = P.has("sansReprise") ? null : await repriseDuJour(store, Date.now());
 if (aReprendre) preparerReprise(aReprendre);
 else showHome({ done: await doneToday(store), bienvenue: toucheDemarrage });
 requestAnimationFrame(() => requestAnimationFrame(() => { performance.mark("app-ready"); window.__ready = performance.now() - T0; }));

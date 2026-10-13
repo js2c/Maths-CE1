@@ -16,7 +16,7 @@ const OUT = resolve(opt("--out", "tests/e2e/out/lagon")), SEUL = opt("--seul", n
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
 const fail = [], check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
-const BASE = "?nosw&voix=rapide&son=non&sansLecon&guides=0";
+const BASE = "?nosw&voix=rapide&son=non&sansLecon&guides=0&sansReprise"; // (sansReprise : main.js)
 const DAY = 86400000;
 const lecons = JSON.parse(readFileSync(new URL("../../app/content/lecons.json", import.meta.url)));
 

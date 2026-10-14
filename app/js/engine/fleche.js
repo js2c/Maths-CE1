@@ -23,11 +23,13 @@ export class Fleche {
     if (!this.a && this.o.sp.atlas.sprites.fleche) { this.a = this.o.spriteActor(this.o.frontEl, "fleche"); this.a.draw(0); this.a.show(false); }
     return this.a;
   }
-  montrer(cible, { angle = 0 } = {}) {
+  // (`enPause` : la flèche reste visible sur l'accueil en pause, où le premier plan est caché : la consigne de la pause montre
+  // le galet « continuer », relecture du lot « Décisions sur les constats de l'agent », R1)
+  montrer(cible, { angle = 0, enPause = false } = {}) {
     if (!this.acteur) return;
-    this.source = cible; this.angle = angle; this.t0 = performance.now(); this.a.show(true); this.tick();
+    this.source = cible; this.angle = angle; this.t0 = performance.now(); this.a.c.classList.toggle("en-pause", enPause); this.a.show(true); this.tick();
   }
-  cacher() { this.source = null; this.cible = null; this.a?.show(false); }
+  cacher() { this.source = null; this.cible = null; this.a?.show(false); this.a?.c.classList.remove("en-pause"); }
   get visible() { return !!this.source; }
   tick() {
     if (!this.source || !this.a) return;

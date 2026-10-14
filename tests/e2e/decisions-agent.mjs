@@ -269,7 +269,7 @@ if (faire(6)) {
       // (relecture du lot, R2 ; décision du parent du 14 octobre 2026) elle descend droit sous le bateau, s'arrête au-dessus des bouées
       // (plus haut que leur sommet), sans aller vers le passage touché
       const ligne = await page.evaluate(() => window.__app.voiliers.api.etat().LINE_Y);
-      check(p0 && p1 && p1[1] > p0[1] + 60 && Math.abs(p1[0] - p0[0]) < 2 && p1[1] <= ligne - 170, `6. la flèche montre le geste, droit sous le bateau, au-dessus des bouées, sans désigner le passage touché (${p0?.map(Math.round)} -> ${p1?.map(Math.round)}, passage touché en x ${Math.round(cx)})`);
+      check(p0 && p1 && p1[1] > p0[1] + 60 && Math.abs(p1[0] - p0[0]) < 2 && p1[1] <= ligne - 230, `6. la flèche montre le geste, droit sous le bateau, au-dessus des bouées, sans désigner le passage touché (${p0?.map(Math.round)} -> ${p1?.map(Math.round)}, passage touché en x ${Math.round(cx)})`);
       check(await page.evaluate(() => window.__app.voiliers.attend && window.__app.voiliers.api.etat().mode === "wait"), "6. le toucher ne répond pas : le bateau attend toujours");
       await page.waitForTimeout(1500);
       await toucherPassage(page, faux, vue); await page.waitForTimeout(600);
@@ -419,8 +419,11 @@ async function reprendre(page, nom, { capture = null, vue = VUES[0] } = {}) {
   const avant = await etatSeance1(page);
   await recharger(page);
   const o = await offerte(page);
+  // (relecture du lot, R1) pendant la phrase, la flèche est posée au-dessus du galet « continuer », visible malgré la pause
+  const fl = await page.evaluate(() => { const f = window.__app.fleche, c = f.a?.c, g = document.querySelector(".keep.play")?.getBoundingClientRect(), r = c?.getBoundingClientRect(); return { vu: f.visible && !!c && getComputedStyle(c).visibility === "visible", dessus: !!(g && r && r.left < g.right && r.right > g.left && r.bottom <= g.top + 30) }; });
   if (capture) await shot(page, vue, capture);
   check(o.attente && o.id === avant.id && o.continuer && o.dit === T.repriseRechargement, `1. ${nom} : rechargée, l'accueil en pause avec « continuer » ; la mascotte : « ${o.dit} »`);
+  if (capture) check(fl.vu && fl.dessus, `1. ${nom} : la flèche montre le galet « continuer » (${JSON.stringify(fl)})`);
   await continuer(page);
   const ok = await repris(page, avant.id, avant.etape);
   const apres = await etatSeance1(page);

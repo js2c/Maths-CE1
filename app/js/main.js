@@ -243,7 +243,7 @@ const direEnPause = async (t) => {
 // (relecture du lot, R1 : « Touche la grande bulle », alors que les cinq galets ont la même taille) la consigne de la pause montre
 // le galet « continuer » : « Touche cette bulle pour continuer. », la flèche posée au-dessus de lui le temps de la phrase
 const consigneEnPause = async (t) => {
-  if (pausedEls?.length) fleche.montrer([GALET_X[0], GALET_Y - 92]);
+  if (pausedEls?.length) fleche.montrer([GALET_X[0], GALET_Y - 92], { enPause: true });
   try { await direEnPause(t); } finally { fleche.cacher(); }
 };
 const replay = async (from) => {

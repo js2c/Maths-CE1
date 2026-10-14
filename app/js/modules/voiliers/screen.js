@@ -40,7 +40,7 @@ export const BANDE_DOUBLE = [0, 400, 1280, 800];
 // (décision 6) un toucher sous cette ligne est un toucher sur un passage ; le geste que montre la flèche : `tours` fois, chacun
 // `attenteMs` sur le bateau, `trajetMs` jusqu'au passage, puis la fin du tour au passage
 // (`auDessusDesBouees` : la pointe s'arrête autant au-dessus de la ligne de flottaison, plus haut que le sommet des bouées)
-export const PASSAGES_Y = 560, GLISSER = { tours: 2, tourMs: 2200, attenteMs: 450, trajetMs: 1100, auDessusDesBouees: 180 };
+export const PASSAGES_Y = 560, GLISSER = { tours: 2, tourMs: 2200, attenteMs: 450, trajetMs: 1100, auDessusDesBouees: 240 };
 // le nombre du bateau, dans la bulle : en chiffres et en lettres (« 347 « trois-cent-quarante-sept » »)
 export const bulleNombre = (t) => t.replace(/(^|\s)(\d{1,3})$/, (m, sp, n) => `${sp}${n} « ${ecritEnLettres(Number(n))} »`);
 // la qualité de la mer : un cran de moins si l'intervalle moyen des dernières images dépasse 20 ms (au moins 10 images, et

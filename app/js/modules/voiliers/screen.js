@@ -39,7 +39,8 @@ export const BANDE_BOUEES = [0, 600, 1280, 800];
 export const BANDE_DOUBLE = [0, 400, 1280, 800];
 // (décision 6) un toucher sous cette ligne est un toucher sur un passage ; le geste que montre la flèche : `tours` fois, chacun
 // `attenteMs` sur le bateau, `trajetMs` jusqu'au passage, puis la fin du tour au passage
-export const PASSAGES_Y = 560, GLISSER = { tours: 2, tourMs: 2200, attenteMs: 450, trajetMs: 1100 };
+// (`auDessusDesBouees` : la pointe s'arrête autant au-dessus de la ligne de flottaison, plus haut que le sommet des bouées)
+export const PASSAGES_Y = 560, GLISSER = { tours: 2, tourMs: 2200, attenteMs: 450, trajetMs: 1100, auDessusDesBouees: 180 };
 // le nombre du bateau, dans la bulle : en chiffres et en lettres (« 347 « trois-cent-quarante-sept » »)
 export const bulleNombre = (t) => t.replace(/(^|\s)(\d{1,3})$/, (m, sp, n) => `${sp}${n} « ${ecritEnLettres(Number(n))} »`);
 // la qualité de la mer : un cran de moins si l'intervalle moyen des dernières images dépasse 20 ms (au moins 10 images, et
@@ -115,7 +116,7 @@ export class VoiliersScreen {
       if (!t || e.pointerId !== t.id || !this.attend || app.enPause || this.glisserDit) return;
       const p = point(e);
       if (Math.hypot(p.x - t.x, p.y - t.y) > 24 || performance.now() - t.t > 600 || p.y < PASSAGES_Y) return;
-      this.montrerGlisser(this.api.chenal(p.x));
+      this.montrerGlisser();
     };
     for (const [type, f] of [["pointerdown", down], ["pointerup", up]]) { stage.root.addEventListener(type, f); this.ecoute.push([stage.root, type, f, undefined]); }
     // « je ne sais pas », à sa place habituelle ; visible tant qu'un bateau attend le geste
@@ -144,13 +145,15 @@ export class VoiliersScreen {
     app.bulle?.eviter("bouee", null);
     if (etait) app.lagon?.pause(false);
   }
-  // (décision 6) le geste montré : la flèche part du bateau et descend jusqu'au passage touché (deux fois), pendant que la voix
+  // (décision 6) le geste montré : la flèche part du bateau et descend vers la rangée de bouées (deux fois), pendant que la voix
   // dit « Fais glisser le bateau jusqu'au passage ! » ; elle s'efface dès que le bateau bouge (l'enfant le prend)
-  montrerGlisser(k) {
+  // (relecture du lot, R2 ; décision du parent du 14 octobre 2026 : posée sur le passage touché, souvent faux, elle se lisait
+  // « mets-le ici ») elle ne désigne aucun passage : elle descend droit sous le bateau et s'arrête au-dessus des bouées
+  montrerGlisser() {
     const { app } = this, api = this.api; if (!api) return;
     this.glisserDit = true;
     app.voice.say(app.text.data.voiliersGlisser);
-    const st = api.etat(), s = st.k / 0.44, de = [st.x, st.y - 120 * s], a = [api.centre(k), st.LINE_Y - 30], t0 = performance.now(), tok = this.tok;
+    const st = api.etat(), s = st.k / 0.44, de = [st.x, st.y - 120 * s], a = [st.x, Math.max(de[1] + 80, st.LINE_Y - GLISSER.auDessusDesBouees)], t0 = performance.now(), tok = this.tok;
     const ease = (u) => (u < 0.5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2), D = GLISSER;
     app.fleche?.montrer(() => {
       const e = this.api?.etat(), t = performance.now() - t0;

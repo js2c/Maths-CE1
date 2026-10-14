@@ -7,7 +7,7 @@ import { readFileSync } from "node:fs";
 import { IDBFactory } from "fake-indexeddb";
 import { Store } from "../../app/js/engine/store.js";
 import { rng } from "../../app/js/engine/ocean.js";
-import { expected, key } from "../../app/js/modules/facts/facts.js";
+import { catalog, expected, key } from "../../app/js/modules/facts/facts.js";
 import { Module2Runner } from "../../app/js/modules/facts/runner.js";
 import { repetition, Warmup, warmupIndex } from "../../app/js/modules/facts/warmup.js";
 
@@ -165,4 +165,41 @@ test("relecture du lot, R11 : les questions du temps de base (a + 0) d'un échau
     assert.equal(base.length, m2.base.premiere);
     assert.equal(new Set(base).size, base.length, `graine ${g} : ${base.join(", ")}`);
   }
+});
+
+// (relecture du lot, R3 et R4 ; décisions du parent du 14 octobre 2026) une base où les familles 1 et 2 sont sues
+const sues = async () => { const st = await open(); for (const f of catalog(m2).filter((x) => x.famille <= 2)) await st.put("faits", { ...f, boite: 3, prochain: NOW + 9e8, historique: [{ t: NOW - 9e7, juste: true, ms: 2000 }], introduit: NOW - 9e8 }); return st; };
+const pairs = (qs) => { let ecart = Infinity; const last = new Map(); qs.forEach((q, i) => { const p = [q.a, q.b].sort((x, y) => x - y).join("+"); if (last.has(p)) ecart = Math.min(ecart, i - last.get(p) - 1); last.set(p, i); }); return ecart; };
+test("relecture, R3 : dans la notion du jour, « 3 + 7 » ne suit pas « 7 + 3 » de moins de 4 questions (réglage dans le contenu)", async () => {
+  assert.equal(m2.repetition.retourneNotion, true);
+  for (const famille of [3, 4, 6, 9]) for (const cran of ["facile", "conseille", "tresdur"]) for (const seed of [3, 11]) {
+    const store = await sues(), r = rng(seed), qs = [];
+    const m = await new Module2Runner({ store, content: m2, rnd: rng(seed + 1), seance: 1, clock: () => NOW, cran: () => cran, choix: famille }).load();
+    for (let i = 0; i < 60; i++) { const x = m.next(); if (!x) break; qs.push(x.q); const ok = r() < 0.7; await m.record({ q: x.q, value: ok ? expected(x.q) : 99, ok, ms: 2500, listens: 1 }, x.cfg); }
+    const e = pairs(qs);
+    assert.ok(e >= 4, `famille ${famille}, ${cran}, graine ${seed} : un fait et son retourné à ${e} question(s) d'écart (${qs.map((q) => q.fait).join(" ")})`);
+  }
+});
+
+test("relecture, R4 : la famille du jour n'a plus de question possible : la notion du jour s'arrête, sans se finir sur d'autres familles", async () => {
+  assert.equal(m2.notion.arretFamilleEpuisee, true);
+  // la famille 3 (amis de 10) choisie, les familles 1 et 2 déjà sues, tout juste : chaque fait de la famille 2 fois, puis plus rien
+  const store = await sues(), m = await new Module2Runner({ store, content: m2, rnd: rng(5), seance: 1, clock: () => NOW, cran: () => "conseille", choix: 3 }).load(), qs = [];
+  for (let i = 0; i < 80; i++) { const x = m.next(); if (!x) break; qs.push(x.q); await m.record({ q: x.q, value: expected(x.q), ok: true, ms: 2000, listens: 1 }, x.cfg); }
+  assert.ok(qs.length < 80, `la notion du jour s'arrête (${qs.length} questions)`);
+  assert.ok(m.familleEpuisee(), "elle s'arrête parce que la famille est épuisée");
+  const dans = qs.filter((q) => m.inFamily(q.fait)).length;
+  assert.ok(dans >= 0.8 * qs.length, `au moins 80 % des questions dans la famille (${dans} sur ${qs.length} : ${qs.map((q) => q.fait).join(" ")})`);
+  // le même essai sans le réglage : la notion continue avec d'autres faits
+  const c2 = { ...m2, notion: { ...m2.notion, arretFamilleEpuisee: false } };
+  const m3 = await new Module2Runner({ store: await sues(), content: c2, rnd: rng(5), seance: 1, clock: () => NOW, cran: () => "conseille", choix: 3 }).load(); let n3 = 0;
+  for (let i = 0; i < 80; i++) { const x = m3.next(); if (!x) break; n3++; await m3.record({ q: x.q, value: expected(x.q), ok: true, ms: 2000, listens: 1 }, x.cfg); }
+  assert.ok(n3 > qs.length, `sans le réglage : ${n3} questions, avec : ${qs.length}`);
+});
+
+test("relecture, R3 : sans aucun autre fait pour espacer, le retourné est posé plutôt que d'arrêter la notion du jour", async () => {
+  const m = await new Module2Runner({ store: await open(), content: m2, rnd: rng(5), seance: 1, clock: () => NOW, cran: () => "conseille", choix: 3 }).load(), qs = [];
+  for (let i = 0; i < 40; i++) { const x = m.next(); if (!x) break; qs.push(x.q); await m.record({ q: x.q, value: expected(x.q), ok: true, ms: 2500, listens: 1 }, x.cfg); }
+  assert.equal(qs.length, 18, `les 9 amis de 10, deux fois chacun (${qs.map((q) => q.fait).join(" ")})`);
+  assert.ok(reps(qs.map((q) => q.fait)).ecart >= 4, "le même fait reste à 4 questions d'écart");
 });

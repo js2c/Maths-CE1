@@ -159,7 +159,9 @@ test("sélecteur en notion du jour : facile = la famille seule, aide d'emblée (
   const f = await notion(await mk(), { n: 12, cran: "facile" });
   const rule3 = new Set(ruleFacts(c, 3).map((x) => x.fait));
   assert.ok(f.qs.every((q) => q.aideDEmblee && (q.forme !== "directe" || !rule3.has(q.fait))));
-    assert.ok(f.qs.every((q) => rule3.has(q.fait) || q.revient), "facile : la famille en cours seulement");
+  // (relecture du lot « Décisions sur les constats de l'agent », R3, décision du parent du 14 octobre 2026 : un fait et son retourné
+  // séparés par 4 questions ; une famille encore peu introduite n'a pas toujours de quoi : une question d'une famille sue, au plus)
+  assert.ok(f.qs.filter((q) => !rule3.has(q.fait) && !q.revient).length <= 1, `facile : la famille en cours seulement (${f.qs.map((q) => q.fait).join(" ")})`);
   const d = await notion(await mk(), { n: 18, cran: "dur" });
   assert.ok(d.qs.filter((q) => q.forme !== "directe").length >= 6, "dur : des formes à trou");
   const rule4 = new Set(ruleFacts(c, 4).map((x) => x.fait));

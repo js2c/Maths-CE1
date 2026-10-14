@@ -9,7 +9,7 @@
 //  7. la boutique : le prix pour faire briller n'est jamais écrit sur la tuile ; il est dit, et montré avec la coche, quand
 //     l'enfant touche la tuile ; juste après un achat, la tuile n'affiche aucun prix ;
 //  6. les voiliers : un toucher sur un passage fait dire « Fais glisser le bateau jusqu'au passage ! » et la flèche montre le
-//     geste du bateau au passage touché, au plus une fois par bateau ; le glisser reste le geste qui répond ;
+//     geste, droit sous le bateau, sans désigner de passage (décision du 14 octobre), au plus une fois par bateau ; le glisser reste le geste qui répond ;
 //  4. la bulle de la mascotte évite aussi ce dont parle la voix : l'égalité de l'aide de la tortue, le chemin du calcul rapide,
 //     la bouée nommée aux voiliers, l'article allumé de l'étal et son ardoise ; sans place, une bulle plus courte, ou pas de bulle ;
 //  8. la finition : le compteur d'étoiles lisible dans l'étal par temps d'orage (une plaque claire) ; dans l'étal, la bulle pointe
@@ -266,7 +266,10 @@ if (faire(6)) {
     await shot(page, vue, "6a-voiliers-toucher-un-passage");
     if (vue === VUES[0]) {
       check((await nGlisser(page)) === 1, `6. toucher un passage : « ${T.voiliersGlisser} »`);
-      check(p0 && p1 && p1[1] > p0[1] + 60 && Math.abs(p1[0] - cx) < Math.abs(p0[0] - cx), `6. la flèche montre le geste, du bateau vers le passage touché (${p0?.map(Math.round)} -> ${p1?.map(Math.round)}, passage en x ${Math.round(cx)})`);
+      // (relecture du lot, R2 ; décision du parent du 14 octobre 2026) elle descend droit sous le bateau, s'arrête au-dessus des bouées
+      // (plus haut que leur sommet), sans aller vers le passage touché
+      const ligne = await page.evaluate(() => window.__app.voiliers.api.etat().LINE_Y);
+      check(p0 && p1 && p1[1] > p0[1] + 60 && Math.abs(p1[0] - p0[0]) < 2 && p1[1] <= ligne - 170, `6. la flèche montre le geste, droit sous le bateau, au-dessus des bouées, sans désigner le passage touché (${p0?.map(Math.round)} -> ${p1?.map(Math.round)}, passage touché en x ${Math.round(cx)})`);
       check(await page.evaluate(() => window.__app.voiliers.attend && window.__app.voiliers.api.etat().mode === "wait"), "6. le toucher ne répond pas : le bateau attend toujours");
       await page.waitForTimeout(1500);
       await toucherPassage(page, faux, vue); await page.waitForTimeout(600);

@@ -75,6 +75,17 @@ Au cran « plus facile », l'écriture 600 + 30 + 5 s'affiche sous la cale. Un f
 
 Les huit questions de ce passage sont tranchées (décisions du parent du 13 octobre 2026, `docs/JOURNAL-CONCEPTION.md`) et faites au lot « Décisions sur les constats de l'agent ». Reste au parent : regénérer les illustrations des cartes du crabe et de l'anémone (constat 16), et revoir les choix faits par la session (même journal, « les choix de la session, à revoir par le parent »).
 
+### Après la relecture du lot « Décisions sur les constats de l'agent » (14 octobre 2026)
+
+Rapport : `tests/recette-fonctionnelle/out-decisions-agent/RELECTURE.md` (constats et traitement). Restent pour le parent :
+
+- **L'étal sous l'orage** (R6) : l'article allumé se voit mal (son halo doré disparaît presque dans la nuit), et la pluie passe sur les ardoises des prix. C'est la scène de la maquette de l'étal, que l'application reprend sans la modifier : à regarder sur la tablette ; si c'est gênant, renforcer le halo ou passer la pluie sous l'article allumé (dans la maquette, puis l'export).
+- **Le triangle du galet « jouer » / « continuer »** (R9) : de petites encoches claires aux trois pointes, visibles sur la tablette ; à reprendre dans l'atelier (`sea/galets.ts`).
+- **L'étoile arc-en-ciel** : la voix dit « Un jour, elle t'ouvrira un nouveau coin du récif. » pendant que l'étoile entre dans l'album. L'enfant fera-t-elle le lien ? Par défaut : garder la phrase.
+- **Une phrase en arrivant à la pause** : aujourd'hui la mascotte ne dit rien quand on touche la maison (elle le dit si on la touche). Par défaut : rien.
+- **L'outil des séquences** (`b-sequences.mjs`), à vérifier : dans certaines séances « un mois », l'en-tête ne cite que les étapes « accueil, echauffement », et la fin annonce une famille acquise qui n'est pas celle de la séance ; au cran « très dur », une séance toute juste finit sur « trou famille 3 ». Antérieur au lot.
+- **Le parcours `mise-a-jour.mjs`** échoue environ une fois sur trois, sur `main` comme sur la branche, à des étapes différentes (délais du service worker dans Chromium) : à rendre plus robuste.
+
 ### La fluidité des voiliers sur la tablette (8 octobre 2026, mis de côté par le parent)
 
 Le parent n'est pas encore convaincu par les remèdes proposés : la question est reportée hors du lot « Correctifs de la tablette ». Ce qui a été mesuré et envisagé :

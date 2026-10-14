@@ -149,3 +149,26 @@
 3. **Séances « un mois », cran « conseillé », appliquée** : l'en-tête n'indique que les étapes « accueil, echauffement », alors que la séance a une notion du jour et un défi ; et la fin dit « acquise famille 7 » pendant une séance sur la famille 3. Erreur de l'outil de séquences, ou comportement à expliquer au parent ?
 4. **Cran « très dur », appliquée, 100 % de réussite** (`apres-neuve` et `avant-neuve`) : la séance finit sur « trou famille 3 ». Que signifie ce « trou » pour une enfant qui a tout juste ? (Constat antérieur à ce lot.)
 5. **La pause (3a)** : en arrivant à l'accueil en pause, la mascotte ne dit rien (conforme à la section 11). Le parent souhaite-t-il une phrase d'arrivée, comme « Te revoilà ! » après un rechargement ?
+
+---
+
+## Traitement des constats (session du lot, 13 et 14 octobre 2026)
+
+Écrit par la session qui a fait le lot, après la relecture. Les décisions du parent du 14 octobre 2026 sont reportées dans `docs/SPEC.md` et `docs/JOURNAL-CONCEPTION.md`.
+
+| Constat | Traitement |
+| --- | --- |
+| R1 · « Touche la grande bulle » | **Corrigé.** « C'est la pause. Touche cette bulle pour continuer. » et « Te revoilà ! Touche cette bulle pour continuer. », la flèche posée au-dessus du galet « continuer » le temps de la phrase. Une phrase nouvelle à fabriquer : « Touche cette bulle pour continuer. ». (Le défaut existait déjà avant le lot : `docs/IDEES.md`, relecture du lot « Mascotte ».) |
+| R2 · La flèche des voiliers sur le passage touché | **Corrigé, décision du parent du 14 octobre.** La flèche part du bateau et descend droit sous lui jusqu'au-dessus des bouées, sans désigner de passage. |
+| R3 · Le fait retourné juste après | **Corrigé, décision du parent du 14 octobre.** Dans la notion du jour, « 3 + 7 » ne vient pas moins de 4 questions après « 7 + 3 » (`module2.json`, `repetition.retourneNotion`) ; le nombre de passages reste compté par fait ; en dernier recours (aucune autre question possible), le retourné est posé plutôt que d'arrêter la notion du jour. À l'échauffement, inchangé. |
+| R4 · La fin du bloc perd la notion du jour | **Corrigé, décision du parent du 14 octobre.** Quand la famille n'a plus aucune question possible, la notion du jour s'arrête (`notion.arretFamilleEpuisee`). Séquences « après » regénérées : notion du jour de 16 à 22 questions (avant la décision 5 : 14 à 33), séances simulées de 6,3 à 10,2 min (avant : 7,4 à 10,3). Effet sur le calendrier : dans la demande de fusion. |
+| R5 · « cette bouée » sans bouée allumée | **Matériel corrigé.** La capture était prise après la phrase (la bouée déjà éteinte). Les captures 4b, 4c et 4d sont maintenant prises pendant la phrase ; le parcours vérifie toujours que la bulle ne couvre jamais la bouée allumée. |
+| R6 · L'étal sous l'orage | **Laissé, signalé.** La bulle « 7 euros. » de la capture 8a est posée par le parcours (pour vérifier la place de la bulle sous la fenêtre) : elle ne correspond à aucun article. Le halo de l'article allumé, peu visible sous l'orage, et la pluie sur les ardoises sont ceux de la scène de la maquette de l'étal, que ce lot ne touche pas : à voir sur la tablette, puis dans un lot de l'étal (`docs/IDEES.md`). |
+| R7 · La bulle « à demain » cache la lune | **Corrigé.** La lune est une zone que la bulle évite. |
+| R8 · La bulle de la boutique cache la rangée du bas | **Laissé** (conforme ; la bulle laisse passer le doigt). |
+| R9 · Les coins du triangle de « jouer » | **Laissé, signalé.** Le dessin du galet date du lot « Correctifs : passage de l'échauffement aux voiliers » ; à reprendre dans l'atelier (`docs/IDEES.md`). |
+| R10 · Le compteur serré sur sa plaque | **Corrigé avant la relecture** (le nombre long est plus petit sur la plaque). |
+| R11 · Le temps de base répète « 0 + 2 » | **Corrigé.** Les questions du temps de base d'un échauffement ont des nombres tous différents (test unitaire). |
+| R12 · La reprise dans l'espace parent | **Corrigé.** « Page rechargée en pleine séance : à 12 h 48, après 2 questions ; l'étape « échauffement » a repris à son début », et une ligne du tableau des réponses marque l'endroit. |
+
+**Les questions** : 1 (4b, pas de bulle pendant « Plus 5. ») : la capture était prise après la phrase, comme en R5 ; refaite pendant la phrase. 2, 3, 4 et 5 : reportées dans `docs/IDEES.md` (section 3) pour le parent ; la 3 et la 4 portent sur l'outil des séquences et existaient avant le lot.

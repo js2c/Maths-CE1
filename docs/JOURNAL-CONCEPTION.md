@@ -116,6 +116,23 @@ Fait d'un seul tenant, sans arrêt pour validation (fiche 11 de `docs/LOTS.md`).
   - l'étal : l'article allumé et son ardoise étaient déjà des obstacles durs (lot « L'étal du pêcheur ») ; rien à changer. Le portefeuille ouvert qui cache l'article (une partie du constat 6) est un dessin de la maquette, hors de la décision.
 - **Décision 8 (finition)** : la plaque du compteur est celle des ardoises (le panneau crème de l'atelier), posée dès que le ciel de l'étal est assez sombre (orage arrivé à plus de la moitié) ; la bulle de l'étal pointe vers la bouche de la mascotte dans la fenêtre (avant, vers celle de sa place habituelle) et n'a plus la place sous la tête, qui tombait sous le rebord ; l'album de la récompense est celui de l'ouverture d'une zone, posé à l'endroit où l'étoile allait déjà.
 
+### La relecture du lot : décisions du parent du 14 octobre 2026 et choix de la session
+
+Relecture indépendante : `tests/recette-fonctionnelle/out-decisions-agent/RELECTURE.md` (12 constats, aucun bloquant ; traitement à la fin du rapport). Le parent a tranché trois points, en suivant la recommandation proposée :
+
+| Constat | Décision du parent | Raison |
+| --- | --- | --- |
+| R4. La fin de la notion du jour sort de la famille | Quand la famille n'a plus aucune question possible, la notion du jour s'arrête (`module2.json`, `notion.arretFamilleEpuisee`) | Avec 2 passages par fait, les 10 dernières questions devenaient des « + 1 » et « + 2 » faciles, même au cran « très dur » |
+| R3. « 7 + ? = 10 » puis « ? + 7 = 10 » | Dans la notion du jour seulement, un fait et son retourné à au moins 4 questions d'écart (`repetition.retourneNotion`) ; le plafond de 2 passages reste compté par fait | La seconde question se répondait en répétant la première ; à l'échauffement, montrer que l'ordre ne change rien peut être voulu |
+| R2. La flèche des voiliers sur le passage touché | La flèche montre le geste, droit sous le bateau jusqu'au-dessus des bouées, sans désigner de passage | Posée sur un passage faux, elle se lisait « mets-le ici » |
+
+**Choix de la session, à revoir par le parent** :
+- R3 : en dernier recours, quand aucune autre question n'est possible (une famille dont aucun autre fait n'est connu), le retourné est posé plutôt que d'arrêter la notion du jour ; au cran « plus facile » (la famille seule), une question d'une famille déjà sue peut venir espacer un fait de son retourné.
+- Effet des deux règles sur le calendrier (`sim-seances`, une année à 2 séances par semaine, graines 1 à 6, numéro de séance médian [extrêmes]), comparé à la décision 5 seule : profil « en difficulté », aucune famille acquise plus tard, familles ouvertes un peu plus tôt (amis de 10 : 20 [5-24] au lieu de 24 [9-24]) ; profil « réel », familles 1 à 7 acquises 0 à 4 séances plus tard (famille 7 : 16 au lieu de 12), familles 10 à 13 atteintes par moins de graines dans l'année. Séances d'additions plus courtes : 45 questions en moyenne au lieu de 51 (« en difficulté »), 57 au lieu de 62 (« réel ») ; séances simulées de 6,3 à 10,2 min (avant : 7,4 à 10,3).
+- R1 : « Touche cette bulle pour continuer. » (une phrase nouvelle), avec la flèche sur le galet « continuer » : l'application appelle déjà les galets des « bulles » (« Touche une bulle : je te dis ce que c'est. ») ; « la grande bulle » ne désignait rien, les galets ont tous la même taille.
+- R7 : la lune « à demain » est une zone que la bulle évite. R11 : les questions du temps de base d'un même échauffement ont des nombres tous différents. R12 : « Page rechargée en pleine séance : à 18 h 42, après 12 questions ; l'étape « notion du jour » a repris à son début », et une ligne du tableau des réponses.
+- Recette : le démarrage était plus lent de 0,3 à 1 s (la lecture de la séance à reprendre, après le toucher) ; les séances sont lues pendant l'écran de démarrage. Le compteur d'étoiles sous l'orage : sur la plaque, un nombre de 3 chiffres ou plus est écrit plus petit. Pour les parcours, un réglage d'essai `?sansReprise` (une séance laissée en cours n'est pas reprise au rechargement).
+
 ## Lot « Recette de l'enfant et nettoyage des couches » (12 octobre 2026) : les choix de la session, à revoir par le parent
 
 Fait d'un seul tenant (fiche 9 de `docs/LOTS.md`). Chaque point ci-dessous est **un choix de la session, à revoir par le parent** ; ils sont repris en tête de la demande de fusion. L'inventaire des couches et ce qui a été retiré sont dans `docs/COUCHES.md` ; les constats de l'agent qui a joué l'enfant et leur traitement, dans `tests/recette-fonctionnelle/out-enfant/`.

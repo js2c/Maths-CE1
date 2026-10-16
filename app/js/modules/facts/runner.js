@@ -27,13 +27,13 @@
 import { aidFor, catalog, expected, familyOf, famMax, formFor, key, newFact, roomForNew, ruleFacts, trouPartOf, trouTurn } from "./facts.js";
 import { MANQUE, Variete } from "../variete.js";
 import { currentFamily, isAcquired, noteNotion, openChosen, openPending, trouOpenFor, updateFamilies, withOpen } from "./families.js";
-import { Warmup } from "./warmup.js";
+import { repetition, Warmup } from "./warmup.js";
 
 export class Module2Runner {
   // choix : la famille choisie par l'enfant (écran « choisir », lot 3), sinon null (« jouer »)
   // variete : les règles de la réponse qui varie (lot 3 bis, content/seance.json, `variete`)
   constructor({ store, content, rnd, seance = null, clock = () => Date.now(), cran = () => "conseille", dejaNouveaux = 0, choix = null, variete = {} }) {
-    this.var = new Variete({ ...variete, memeQuestionMax: content.notion?.memeFaitMax ?? variete.memeQuestionMax }); this.store = store; this.c0 = content; this.rnd = rnd; this.seance = seance; this.clock = clock; this.cran = cran; this.choix = choix;
+    this.var = new Variete({ ...variete, memeQuestionMax: repetition(content).parBlocMax }); this.store = store; this.c0 = content; this.rnd = rnd; this.seance = seance; this.clock = clock; this.cran = cran; this.choix = choix;
     this.w = new Warmup({ store, content, rnd, seance, clock, cran, dejaNouveaux }); this.w.notion = true;
     this.replays = []; this.asked = new Map(); this.last = []; this.k = 0; this.win = []; this.count = 0; this.ok = 0;
     this.played = new Set(); this.simpler = false; this.events = [];
@@ -53,7 +53,25 @@ export class Module2Runner {
     return this;
   }
   get c() { return this.w.c; }
-  get N() { return this.c0.notion ?? { partFamille: 0.8, memeFaitMax: 3, difficulte: { sur: 5, erreurs: 3 }, crans: {} }; }
+  get N() { return this.c0.notion ?? { partFamille: 0.8, difficulte: { sur: 5, erreurs: 3 }, crans: {} }; }
+  // (lot « Décisions sur les constats de l'agent », décision 5) un même fait au plus `parBlocMax` fois dans le bloc, au moins
+  // `ecartMin` autres questions entre deux passages (module2.json, repetition)
+  get RP() { return repetition(this.c0); }
+  // (relecture du lot, R3 ; décision du parent du 14 octobre 2026) dans la notion du jour, le fait retourné compte pour l'écart :
+  // « 3 + 7 » ne suit pas « 7 + 3 » de moins de `ecartMin` questions (module2.json, repetition.retourneNotion)
+  // (en dernier recours, `souple` : plus aucune question sinon, la notion du jour s'arrêterait ; le retourné est alors permis)
+  recent(f) { const r = this.last.slice(-this.RP.ecartMin), inv = this.RP.retourneNotion && !this.souple && f.a != null ? key(f.b, f.a) : null; return r.includes(f.fait) || (inv != null && r.includes(inv)); }
+  // (relecture du lot, R4 ; décision du parent du 14 octobre 2026) la famille du jour n'a plus aucune question possible : ses faits
+  // connus ont tous été posés `parBlocMax` fois (retours prévus compris) et aucun fait nouveau ne peut plus entrer (ni la place de la
+  // séance, ni celle de la boîte 1) ; la notion du jour s'arrête alors, au lieu de se finir sur des faits faciles d'autres familles
+  // (module2.json, notion.arretFamilleEpuisee)
+  familleEpuisee() {
+    const pool = this.corePool();
+    if (pool.some((f) => this.stored(f.fait) && this.under(f))) return false;
+    if (!pool.some((f) => !this.stored(f.fait) && !this.asked.has(f.fait))) return true;
+    if ((this.choix != null ? Infinity : roomForNew(this.c, this.w.facts, this.w.nouveaux)) > 0) return false;
+    return this.w.facts.filter((f) => f.boite === 1 && (f.historique ?? []).some((h) => h.juste === false)).length >= this.c.boite1Max;
+  }
   // (lot 3 : famille choisie, les crans à l'intérieur de la famille, notion.cransChoix)
   get effet() { return (this.choix != null ? this.N.cransChoix : this.N.crans)?.[this.cran()] ?? {}; }
   get nouveaux() { return this.w.nouveaux; }
@@ -87,15 +105,15 @@ export class Module2Runner {
     const score = (f) => { const s = this.stored(f.fait); return [s?.boite ?? 0, -(s?.tempsMedian ?? 0)]; };
     return [...list].sort((x, y) => { const [a1, a2] = score(x), [b1, b2] = score(y); return a1 - b1 || a2 - b2; });
   }
-  // (lot 3 bis : les retours prévus comptent, un fait au plus `memeFaitMax` fois dans la séance, retours compris ; `tried` :
-  // les faits déjà essayés pour la question en cours)
+  // (lot 3 bis : les retours prévus comptent, un fait au plus `parBlocMax` fois dans la séance, retours compris ; `tried` :
+  // les faits déjà essayés pour la question en cours ; décision 5 : jamais un fait posé dans les `ecartMin` dernières questions)
   pending(fait) { return this.replays.filter((r) => r.q.fait === fait).length; }
-  under(f) { return (this.asked.get(f.fait) ?? 0) + this.pending(f.fait) < this.N.memeFaitMax; }
-  usable(f) { return this.under(f) && !this.last.slice(-2).includes(f.fait) && !this.tried?.has(f.fait); }
+  under(f) { return (this.asked.get(f.fait) ?? 0) + this.pending(f.fait) < this.RP.parBlocMax; }
+  usable(f) { return this.under(f) && !this.recent(f) && !this.tried?.has(f.fait); }
   // lot 3 : quand tous les faits de la famille ont été posés... (lot 3 bis : seulement ceux qui n'ont pas atteint la limite)
   leastAsked(list) {
-    const n = (f) => this.asked.get(f.fait) ?? 0, ok = list.filter((f) => this.under(f) && !this.tried?.has(f.fait)), fresh = ok.filter((f) => !this.last.slice(-2).includes(f.fait)), l = fresh.length ? fresh : ok;
-    return this.weakest(l).sort((x, y) => n(x) - n(y))[0] ?? null;
+    const n = (f) => this.asked.get(f.fait) ?? 0, ok = list.filter((f) => this.under(f) && !this.recent(f) && !this.tried?.has(f.fait));
+    return this.weakest(ok).sort((x, y) => n(x) - n(y))[0] ?? null;
   }
   // un fait de la famille : un fait nouveau une fois sur deux s'il y en a et si la place le permet, sinon le plus faible déjà rencontré
   // lot 3 : la famille en cours seule (la règle de sa famille ; le mélange : tous les faits introduits) : c'est elle qui
@@ -117,7 +135,7 @@ export class Module2Runner {
   // dernier fait nouveau d'abord (7 + 3, puis 3 + 7)
   rank(f) { (this.ranks ??= new Map()).has(f.fait) || this.ranks.set(f.fait, this.rnd()); return this.ranks.get(f.fait) - (this.lastNew && f.a === this.lastNew.b && f.b === this.lastNew.a ? 1 : 0); }
   pickFamily(allowNew = true, pool = this.corePool()) {
-    const fresh0 = pool.filter((f) => !this.stored(f.fait) && !this.asked.has(f.fait) && !this.tried?.has(f.fait)).sort((x, y) => this.rank(x) - this.rank(y));
+    const fresh0 = pool.filter((f) => !this.stored(f.fait) && !this.asked.has(f.fait) && !this.tried?.has(f.fait) && !this.recent(f)).sort((x, y) => this.rank(x) - this.rank(y));
     // plusieurs familles (crans « plus dur », « très dur ») : les faits nouveaux alternent d'une famille à l'autre
     const srcs = [...new Set(fresh0.map((f) => f.src))], nth = srcs.map((id) => fresh0.filter((f) => f.src === id)), fresh = [];
     for (let i = 0; fresh.length < fresh0.length; i++) for (const l of nth) if (l[i]) fresh.push(l[i]);
@@ -142,7 +160,7 @@ export class Module2Runner {
   // (dans la limite de la séance), sinon rien (la notion du jour s'arrête : un fait ne revient pas plus de 3 fois)
   pickNewOther() {
     if (roomForNew(this.c, this.w.facts, this.w.nouveaux) <= 0) return null;
-    const f = catalog(this.c0).filter((x) => this.fam.ouvertes.includes(x.famille) && !this.stored(x.fait) && !this.asked.has(x.fait) && !this.tried?.has(x.fait)).sort((x, y) => this.rank(x) - this.rank(y))[0];
+    const f = catalog(this.c0).filter((x) => this.fam.ouvertes.includes(x.famille) && !this.stored(x.fait) && !this.asked.has(x.fait) && !this.tried?.has(x.fait) && !this.recent(x)).sort((x, y) => this.rank(x) - this.rank(y))[0];
     return f ? newFact(f, this.clock()) : null;
   }
   // un fait déjà bien su (question plus simple, pour finir sur une réussite ou après une difficulté)
@@ -206,17 +224,18 @@ export class Module2Runner {
   pickOverflow() {
     const ratés = this.w.facts.filter((f) => f.boite === 1 && (f.historique ?? []).some((h) => h.juste === false)).length;
     if (ratés >= this.c.boite1Max) return null;
-    const f0 = this.corePool().filter((f) => !this.stored(f.fait) && !this.asked.has(f.fait) && !this.tried?.has(f.fait)).sort((x, y) => this.rank(x) - this.rank(y))[0];
+    const f0 = this.corePool().filter((f) => !this.stored(f.fait) && !this.asked.has(f.fait) && !this.tried?.has(f.fait) && !this.recent(f)).sort((x, y) => this.rank(x) - this.rank(y))[0];
     if (!f0) return null;
     const { src, ...f } = f0; void src; return newFact(f, this.clock());
   }
   cand(q) { return { cle: `fait:${q.fait}`, reponse: expected(q) }; }
-  next({ guide = false } = {}) {
-    if (!guide) this.replays.forEach((r) => r.in--);
+  next({ guide = false, sansDecompte = false } = {}) {
+    if (!guide && !sansDecompte) this.replays.forEach((r) => r.in--);
     // (une question qui revient d'une autre famille attend si elle ferait passer la famille sous 80 % ; lot 3 bis : ou si elle
     // ferait une troisième fois de suite la même réponse, ou une suite prévisible)
-    const due = guide || this.simpler ? -1 : this.replays.findIndex((r) => r.in <= 0 && (this.inFamily(r.q.fait) || this.otherAllowed()) && this.var.cost(this.cand(r.q), { retour: true }) < 50);
+    const due = guide || this.simpler ? -1 : this.replays.findIndex((r) => r.in <= 0 && !this.recent(r.q) && (this.inFamily(r.q.fait) || this.otherAllowed()) && this.var.cost(this.cand(r.q), { retour: true }) < 50);
     if (due >= 0) { const r = this.replays.splice(due, 1)[0]; return this.ret({ ...r.q, revient: true }); }
+    if (!guide && this.N.arretFamilleEpuisee && this.familleEpuisee() && !this.replays.some((r) => this.inFamily(r.q.fait))) return null;
     // lot 3 bis (docs/SPEC-LOT3BIS.md, §0) : plusieurs candidats, le premier qui respecte les règles de la réponse qui varie ;
     // aucun sous la limite de passages : la notion du jour s'arrête (null)
     this.tried = new Set(); let best = null;
@@ -228,6 +247,10 @@ export class Module2Runner {
       this.tried.add(f.fait);
     }
     this.tried = null;
+    // (relecture, R3) rien sans le retourné d'une question récente : plutôt que d'arrêter la notion du jour, il est posé
+    if ((!best || best.cout >= MANQUE) && this.RP.retourneNotion && !this.souple && !(this.N.arretFamilleEpuisee && this.familleEpuisee())) {
+      this.souple = true; try { return this.next({ guide, sansDecompte: true }); } finally { this.souple = false; }
+    }
     if (!best || best.cout >= MANQUE) return null;
     this.simpler = false;
     if (!guide) this.k++;
@@ -253,8 +276,8 @@ export class Module2Runner {
     const res = await this.w.record(q, { value: r.value, ms: r.ms, listens: r.listens, aide: !!r.aide || !!q.guide, aideDEmblee: !!q.aideDEmblee, nsp: r.nsp, correctionPassee: r.correctionPassee }, scratch);
     if (q.guide) return { etoiles: res.juste ? 1 : 0, events };
     this.count++; if (res.juste) this.ok++;
-    // l'erreur : le fait revient 3 questions plus loin (une seule fois)
-    if (!res.juste && !q.revient && (this.asked.get(q.fait) ?? 0) < this.N.memeFaitMax) this.replays.push({ q: { ...q, revient: undefined }, in: 3 });
+    // l'erreur : le fait revient plus loin (une seule fois ; décision 5 : après au moins `ecartMin` autres questions, 4)
+    if (!res.juste && !q.revient && (this.asked.get(q.fait) ?? 0) < this.RP.parBlocMax) this.replays.push({ q: { ...q, revient: undefined }, in: this.RP.ecartMin + 1 });
     // difficulté persistante : la leçon de la famille (une fois par séance), puis un fait déjà bien su ; lot « Correctifs »
     // (écart 6.9, décision du parent du 6 octobre 2026) : une famille sans leçon propre relance celle de sa représentation
     // (maisons de 8 et 9 : L6 ; presque-doubles : L4 ; module2.json, leconSiJamaisVue), vue ou non ; le mélange, aucune

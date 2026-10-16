@@ -5,7 +5,7 @@
 //  - la vitrine d'une zone : ses 15 places, dans l'ordre de l'album ; les 4 zones en onglets (les pictogrammes de l'album, un
 //    cadenas sur les zones fermées, 15 perles : les créatures de la zone déjà dans le récif) ; le compteur d'étoiles ; la mascotte ;
 //  - une place selon son état (rewards.js, etatPlace) : à vendre (la créature, son prix), pas encore arrivée (son ombre, un
-//    sablier), déjà dans le récif (le petit récif dans le coin, le prix pour la faire briller), brillante (reflet irisé,
+//    sablier), déjà dans le récif (le petit récif dans le coin ; le prix pour la faire briller, seulement la tuile touchée), brillante (reflet irisé,
 //    étincelles), légendaire (son ombre dorée, l'étoile de diamant), zone fermée (son ombre, plus sombre) ; une arrivée pas
 //    encore touchée a un halo doré qui respire ;
 //  - toucher une tuile la SÉLECTIONNE comme sur les écrans de choix (bordure corail, elle se balance) ; la mascotte dit ce que
@@ -199,8 +199,11 @@ export class Boutique {
       ctx.drawImage(img, x * px, y * px, img.width, img.height); ctx.filter = "none";
     }
     // le prix : le nombre encré et une étoile de mer ; pour briller, l'étincelle devant
+    // (lot « Décisions sur les constats de l'agent », décision 7 ; constat 9 de l'agent : « ✦150★ » sur la tuile d'une créature qu'on
+    // vient d'acheter se lisait comme un prix à repayer) le prix pour faire briller n'est écrit que sur la tuile touchée ; sinon, le
+    // petit récif dans le coin suffit
     const cy = M + 171;
-    if (cout !== null) {
+    if (cout !== null && (e !== "terne" || this.sel === b)) {
       const s = String(cout), em = e === "terne" ? 30 : 33, wn = s.length * em * 0.62, wi = e === "terne" ? 30 : 0, ws = 34, l = wi + wn + ws + 6, x0 = M + 85 - l / 2;
       if (wi) poser(sprites, ctx, px, "boutique.briller", 0, x0 + 14, cy);
       ctx.setTransform(px, 0, 0, px, 0, 0); R.drawNumber(ctx, s, x0 + wi + wn / 2, cy - em * 0.5, em, { w: em * 0.16, seed: 870 + cout });
@@ -234,7 +237,7 @@ export class Boutique {
     if (this.verrou) return;
     const { app } = this, { voice, rewards, text, cartes } = app, c = b.carte, e = this.etat(c), cout = rewards.cout(c.id, e);
     if (this.aVoir.has(c.id)) { this.aVoir.delete(c.id); rewards.voir(c.id); b.classList.remove("nouvelle"); }
-    if (this.sel !== b) { this.deselection(); this.sel = b; this.entourer(b, true); setTimeout(() => { if (this.sel === b && !this.verrou) b.classList.add("choisie"); }, 450); }
+    if (this.sel !== b) { this.deselection(); this.sel = b; this.entourer(b, true); if (e === "terne") b.repaint(); setTimeout(() => { if (this.sel === b && !this.verrou) b.classList.add("choisie"); }, 450); }
     pop(b);
     // la coche et la croix, seulement s'il y a de quoi acheter
     const r = rectStyle(b), assez = cout !== null && rewards.total >= cout;
@@ -250,7 +253,7 @@ export class Boutique {
   entourer(b, oui) { entourage(this.app, b, oui, (ctx, x, y) => R.drawSelectTile(ctx, x + VITRINE.w / 2, y + VITRINE.h / 2, VITRINE.w, VITRINE.h, 22, -7)); }
   deselection() {
     const b = this.sel; this.sel = null;
-    if (b) { b.classList.remove("choisie"); this.entourer(b, false); }
+    if (b) { b.classList.remove("choisie"); this.entourer(b, false); if (this.etat(b.carte) === "terne") b.repaint(); }
     this.conf?.forEach((k) => { k.style.visibility = "hidden"; });
     this.app.bulle.ancrer(null);
     if (b) this.app.voice.instruction = this.app.text.data.boutique.consigne;

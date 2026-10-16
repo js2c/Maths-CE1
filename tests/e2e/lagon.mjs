@@ -16,7 +16,7 @@ const OUT = resolve(opt("--out", "tests/e2e/out/lagon")), SEUL = opt("--seul", n
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
 const fail = [], check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
-const BASE = "?nosw&voix=rapide&son=non&sansLecon&guides=0";
+const BASE = "?nosw&voix=rapide&son=non&sansLecon&guides=0&sansReprise"; // (sansReprise : main.js)
 const DAY = 86400000;
 const lecons = JSON.parse(readFileSync(new URL("../../app/content/lecons.json", import.meta.url)));
 
@@ -91,7 +91,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
 
   // ---- les leçons (au milieu de la leçon)
   for (const L of ["L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8", "L9", "L10"]) {
-    await page.goto(url + `?nosw&voix=rapide&son=non&lecon=${L}`); await page.waitForFunction(() => window.__ready !== undefined);
+    await page.goto(url + `?nosw&voix=rapide&son=non&sansReprise&lecon=${L}`); await page.waitForFunction(() => window.__ready !== undefined);
     await page.tap(".play", { force: true });
     // au milieu de la leçon (les leçons des additions, du calcul et L10 sont jouées par lessons/player2.js : `p2`)
     const mid = Math.floor(lecons[L].phrases.length / 2);

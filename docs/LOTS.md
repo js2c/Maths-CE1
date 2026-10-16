@@ -46,7 +46,7 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Ensuite (décision du parent du 11 octobre 2026) : le lot « La boutique du récif »** (fiche 10), **avant** « Recette de l'enfant et nettoyage des couches ». La maquette est arrêtée (`art/boutique/`, PR #51, à fusionner avant de lancer le lot). Le lot remplace le coquillage tiré tous les 25 étoiles par une boutique où l'enfant achète ses créatures. La fiche 9 couvrira donc aussi la boutique. Les voix de l'étal, du lot 8 et de la boutique seront fabriquées d'un coup par le parent, après ce lot (727 phrases ; la limite de la voix passe à 85 Mo). **État : fait** (PR #54 ; 321 phrases nouvelles, environ 2,2 Mo, à fabriquer avec celles de l'étal et du lot 8).
 
-**Puis (décision du parent du 13 octobre 2026) : le lot « Décisions sur les constats de l'agent »** (fiche 11). Ce sont les réponses du parent aux questions laissées par le second passage de l'agent qui joue l'enfant (`docs/IDEES.md`, section 3), dont la reprise d'une séance après un rechargement. La boutique et la recette de l'enfant sont faites et fusionnées (PR #54 et #56). **État : à faire.**
+**Puis (décision du parent du 13 octobre 2026) : le lot « Décisions sur les constats de l'agent »** (fiche 11). Ce sont les réponses du parent aux questions laissées par le second passage de l'agent qui joue l'enfant (`docs/IDEES.md`, section 3), dont la reprise d'une séance après un rechargement. La boutique et la recette de l'enfant sont faites et fusionnées (PR #54 et #56). **État : fait** (PR #59, à fusionner ; elle remplace la PR #58 ; 4 phrases nouvelles, à fabriquer avec les 2 nouvelles et les 50 à refaire du lot précédent).
 
 **Pourquoi cet ordre.**
 

@@ -24,10 +24,15 @@ export class StarHud {
     app.ocean.front.push((t) => this.tick(t));
   }
   paint(ctx, px) {
-    const q = this.app.sprites.frame("etoile", 0), k = 0.62; // l'étoile, réduite (jamais agrandie)
+    const q = this.app.sprites.frame("etoile", 0), k = 0.62, s0 = String(this.shown); // l'étoile, réduite (jamais agrandie)
+    // (lot « Décisions sur les constats de l'agent », décision 8 ; constat 14 : par temps d'orage, dans l'étal, le nombre bleu nuit
+    // se fondait dans le ciel sombre) sur un fond sombre (`app.hudSombre()`), le nombre est posé sur une petite plaque claire
+    // (recette du lot : sur la plaque, le nombre est plus petit quand il est long ; à la taille habituelle, 234 en touchait les bords)
+    const plaque = this.sombre ? (s0.length > 2 ? 84 : 72) : 0, taille = plaque ? [40, 40, 36, 28, 22][Math.min(4, s0.length)] : s0.length > 2 ? 34 : 40;
+    if (plaque) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawPanel(ctx, 82, 18, plaque, 64); ctx.setTransform(1, 0, 0, 1, 0, 0); }
     ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 50 * px + q.dx * k, 50 * px + q.dy * k, q.w * k, q.h * k);
     ctx.setTransform(px, 0, 0, px, 0, 0);
-    const s = String(this.shown); R.drawNumber(ctx, s, 118 + (s.length > 2 ? 6 : 0), 32, s.length > 2 ? 34 : 40, { w: 5.6 });
+    const s = String(this.shown); R.drawNumber(ctx, s, plaque ? 82 + plaque / 2 : 118 + (s.length > 2 ? 6 : 0), plaque ? 32 + (40 - taille) / 2 : 32, taille, { w: 5.6 });
   }
   set(v) { if (v !== this.shown) { this.shown = v; this.box.repaint(); } }
   // n étoiles gagnées, qui partent de `from` (px logiques) ; la promesse se résout à la dernière arrivée
@@ -42,6 +47,8 @@ export class StarHud {
     })));
   }
   tick(t) {
+    // (décision 8) le fond derrière le compteur est-il sombre ? relu deux fois par seconde
+    if (!(t - (this.vuSombre ?? -1) < 0.5)) { this.vuSombre = t; const s = !!this.app.hudSombre?.(); if (s !== !!this.sombre) { this.sombre = s; this.box.repaint(); } }
     this.flights = this.flights.filter((f) => {
       const u = (t - f.t0) / f.dur;
       if (u < 0) return true;
@@ -132,9 +139,13 @@ async function bonuses(app, { session, hud }) {
 // les étoiles arc-en-ciel qui volent vers l'album : chacune avec sa traînée (sprite « etoile.trainee », ancrée à la tête),
 // tournée dans le sens du vol ; composé par le navigateur (animations CSS), rien n'est redessiné pendant le vol
 export const ALBUM_AT = [1165, 650];
-export async function flyRainbowStars(app, n, { from = [640, 500], to = ALBUM_AT, gap = 110, k = app.vitesse ?? 1 } = {}) {
+// (lot « Décisions sur les constats de l'agent », décision 8 ; constat 15 : « Et une étoile arc-en-ciel ! » et l'écran ne la montrait
+// nulle part : elle filait vers un coin vide) l'album est posé à l'arrivée (`album`), comme à l'ouverture d'une zone ; il sautille à
+// chaque étoile qui y entre, puis s'en va
+export async function flyRainbowStars(app, n, { from = [640, 500], to = ALBUM_AT, gap = 110, k = app.vitesse ?? 1, album = true } = {}) {
   const { sprites } = app, W = 240, H = 130, hx = 180, hy = 65, els = [];
   const shown = Math.min(n, 9);
+  const livre = album ? spriteBox(app, { x: to[0] - 90, y: to[1] - 90, w: 180, h: 180, cls: "hud special arc-album pop", still: true, paint: (ctx) => sprites.draw(ctx, "album", 0, 90, 90) }) : null;
   for (let i = 0; i < shown; i++) {
     const x = from[0] + (i - (shown - 1) / 2) * Math.min(gap, 900 / shown), y = from[1], a = Math.atan2(to[1] - y, to[0] - x);
     // d'abord l'étoile seule ; la traînée est ajoutée au départ du vol
@@ -153,9 +164,10 @@ export async function flyRainbowStars(app, n, { from = [640, 500], to = ALBUM_AT
   const flights = els.map((el, i) => el.animate([
     { transform: `translate(0px, 0px) rotate(${el.fly.a}rad) scale(1)`, opacity: 1 },
     { transform: `translate(${el.fly.dx}px, ${el.fly.dy}px) rotate(${el.fly.a}rad) scale(0.45)`, opacity: 0.15 },
-  ], { duration: 900 / k, delay: (i * 120) / k, easing: "cubic-bezier(.5,0,.8,.6)", fill: "forwards" }).finished.catch(() => {}));
+  ], { duration: 900 / k, delay: (i * 120) / k, easing: "cubic-bezier(.5,0,.8,.6)", fill: "forwards" }).finished.catch(() => {}).then(() => { if (livre) pop(livre); }));
   await Promise.all(flights);
   els.forEach((e) => e.remove());
+  if (livre) { await wait(700 / k); livre.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300 / k, fill: "forwards" }); await wait(300 / k); livre.remove(); }
 }
 
 // LES COQUILLAGES DES OCCASIONS (lot « La boutique du récif » : plus de coquillages ordinaires, les créatures s'achètent à la
@@ -184,8 +196,8 @@ export async function shells(app, { session, hud }) {
 // LA FIN DE LA RÉCOMPENSE (lot « La boutique du récif », décisions du parent du 10 octobre 2026) : en mode Arrivages, les créatures
 // arrivées cette semaine (leurs petites images, « De nouvelles créatures sont arrivées à la boutique ! », une fois chacune) ; s'il
 // y a de quoi acheter, « Tu peux choisir une créature à la boutique ! » ; puis le bouton de fin, en bas à droite : la boutique
-// quand un achat est possible, sinon le récif. Renvoie « boutique » ou « recif » (touché), ou null : rien touché en
-// `boutique.finAttenteS` secondes (« à demain » vient alors, main.js). (`window.__finSansBouton` : les parcours écrits avant la
+// quand un achat est possible, sinon le récif, et la maison. Renvoie « boutique » ou « recif » (touché), ou null : la maison
+// touchée, ou rien touché en `boutique.finAttenteS` secondes (« à demain » vient alors, main.js). (`window.__finSansBouton` : les parcours écrits avant la
 // boutique passent le bouton, tests/e2e/navigateur.mjs)
 export async function finRecompense(app) {
   const { rewards, voice, text, stage, sprites, ocean } = app;
@@ -210,10 +222,16 @@ export async function finRecompense(app) {
   if (window.__finSansBouton) return null;
   const S = 150, b = spriteBox(app, { x: 1175 - S / 2, y: 688 - S / 2, w: S, h: S, cls: `bubble invite fin-recompense ${versBoutique ? "vers-boutique" : "vers-recif"}`, label: versBoutique ? "la boutique" : "le récif", paint: (ctx, px) => { const q = sprites.frame(versBoutique ? "boutique" : "recif", 0), k = versBoutique ? S / 150 : S / 180; if (q) ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (S / 2) * px + q.dx * k, (S / 2) * px + q.dy * k, q.w * k, q.h * k); } });
   voice.instruction = versBoutique ? text.data.boutique.invitation : voice.instruction;
-  const r = await Promise.race([new Promise((res) => onBrief(app, b, () => { pop(b); res(versBoutique ? "boutique" : "recif"); }, versBoutique ? "boutique" : "recif")), wait((rewards.c.boutique.finAttenteS ?? 30) * 1000).then(() => null)]);
-  await wait(r ? 200 : 0); b.remove();
+  // (lot « Décisions sur les constats de l'agent », décision 2 : constat 2 de l'agent, environ 50 s sans moyen de revenir) la maison
+  // s'ajoute au bouton de fin (main.js, `maisonFin`) : elle ramène tout de suite à « à demain » ; sans toucher, « à demain » vient
+  // au bout de `finAttenteS` (15 s)
+  const maison = new Promise((res) => { app.finMaison = () => res("maison"); });
+  app.maisonFin?.(true);
+  const r = await Promise.race([new Promise((res) => onBrief(app, b, () => { pop(b); res(versBoutique ? "boutique" : "recif"); }, versBoutique ? "boutique" : "recif")), maison, wait((rewards.c.boutique.finAttenteS ?? 15) * 1000).then(() => null)]);
+  app.finMaison = null; app.maisonFin?.(false);
+  await wait(r && r !== "maison" ? 200 : 0); b.remove();
   void stage;
-  return r;
+  return r === "maison" ? null : r;
 }
 // l'ouverture d'une zone (docs/SPEC-LOT2.md, « Zones ») : le dos de la zone, assombri, au milieu ; une étoile
 // arc-en-ciel vole jusqu'à lui et il s'éclaire ; la voix dit que la zone est ouverte ; puis la carte file
@@ -302,6 +320,9 @@ export async function openShell(app, { session, hud, gold = false, say, got, C =
 export function goodNight(app, { first = true } = {}) {
   const { voice, text, ocean } = app;
   const moon = spriteBox(app, { x: 640 - 120, y: 250 - 110, w: 240, h: 220, cls: "hud moon", still: true, paint: (ctx) => app.sprites.draw(ctx, "lune.decor", 0, 120, 110) });
+  // (relecture du lot « Décisions sur les constats de l'agent », R7 : la bulle « à demain » cachait la lune) la bulle l'évite, comme ce
+  // dont parle la voix (engine/bulle.js ; retirée de l'écran, la lune n'est plus une zone)
+  app.bulle?.eviter("lune", moon);
   if (first) { ocean.mascotte.play("saluer"); voice.say(text.pick("aDemain"), { instruction: true }); }
   return moon;
 }

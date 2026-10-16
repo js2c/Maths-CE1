@@ -261,7 +261,9 @@ if (part("appui")) {
     await page.waitForFunction(() => getComputedStyle(document.querySelector(".check-warmup")).visibility === "hidden", null, { timeout: 10000 }); await page.waitForTimeout(500);
     await probe(page, "échauffement", ".session-home", "maison (toucher bref)", { brief: async (p) => { await p.waitForTimeout(400); return !!(await p.evaluate(() => window.__app.enPause)); } });
     await page.waitForTimeout(600);
-    for (const [sel, n] of [[".keep.choisir", "choisir"], [".keep.reefkey", "le récif"], [".keep.albumkey", "l'album"], [".keep.play", "continuer"]]) await probe(page, "accueil en pause", sel, n, { shot: n === "continuer", brief: n === "continuer" ? async (p) => { await p.waitForTimeout(300); return !(await p.evaluate(() => window.__app.enPause)); } : null });
+    // (lot « Décisions sur les constats de l'agent », décision 3 : l'accueil en pause prend les galets de l'accueil, en deux touchers,
+    // sans étiquette ; « continuer » reprend au second toucher)
+    for (const [sel, n] of [[".keep.choisir", "choisir"], [".keep.reefkey", "le récif"], [".keep.albumkey", "l'album"], [".keep.play", "continuer"]]) await probe(page, "accueil en pause", sel, n, { label: false, shot: n === "continuer", brief: n === "continuer" ? async (p) => { await p.waitForTimeout(300); if (await p.evaluate(() => window.__app.enPause)) { await (await press(p, sel, 80))(); await p.waitForTimeout(400); } return !(await p.evaluate(() => window.__app.enPause)); } : null });
     check(!errors.length, `séance : aucune erreur (${errors.join(" | ")})`); await context.close();
   }
   // 3. la ligne graduée : « je ne sais pas » ; les bulles-réponses répondent au premier contact

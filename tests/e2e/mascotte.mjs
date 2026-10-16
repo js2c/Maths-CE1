@@ -21,7 +21,7 @@ const OUT = resolve(opt("--out", "tests/e2e/out/mascotte")), SEUL = opt("--seul"
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
 const fail = [], check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
-const BASE = "?nosw&son=non";
+const BASE = "?nosw&son=non&sansReprise"; // (sansReprise : main.js)
 const PETITES = ["idle-approbation", "idle-sourire", "idle-amuse"], RELANCE = ["idle-sourcils", "idle-curiosite"];
 const resultat = { date: new Date().toISOString(), ecrans: [], journal: {} };
 

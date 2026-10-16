@@ -445,6 +445,29 @@ Fait d'un seul tenant : ce que la session a décidé seule est listé en tête d
 6. **Sortir de partout** : la maison en pleine question, puis « continuer » ; en « Encore ! », la maison pendant la correction d'une multiplication (les rangées de poissons ne doivent pas rester sur l'accueil) ; l'écran éteint puis rallumé ; quitter une leçon en route : rien ne doit rester à l'écran, aucune voix ne doit continuer.
 7. **Le son** : après la prochaine fabrication des voix, écoutez quelques phrases de `tools/voix/a-refaire-durees.txt` (par exemple « 16, 17 ! » et « Ça fait 20. ») : plus de mot coupé ni de lenteur.
 
+## d sexdecies) Lot « Décisions sur les constats de l'agent » : vos réponses du 13 octobre
+
+Fait d'un seul tenant : ce que la session a décidé seule est listé dans la demande de fusion (« Choix faits sans le parent ») et dans `docs/JOURNAL-CONCEPTION.md`.
+
+- **Une séance reprise après un rechargement de la page.** Si Android ferme Chrome pendant que la tablette est posée (ou si une nouvelle version de l'application prend la main au lancement suivant), la séance du jour n'est plus perdue : à l'accueil, le capitaine dit « Te revoilà ! Touche cette bulle pour continuer. », une flèche montre « continuer », comme après la maison. La séance reprend **au début de l'étape** où elle en était (l'échauffement, l'exercice du jour ou le défi), pas à la question près ; les réponses, les étoiles, la difficulté choisie sont gardées ; une leçon déjà vue n'est pas rejouée ; le bilan de fin compte toute la séance. **Le jour même seulement** : le lendemain, la séance de la veille reste « interrompue ». Dans l'espace parent, le détail de la séance dit « Page rechargée en pleine séance : à 18 h 42, après 12 questions ; l'étape « notion du jour » a repris à son début », et une ligne bleutée marque l'endroit dans le tableau des réponses. Une limite : une réponse fausse dont la correction était à l'écran au moment du rechargement n'est pas enregistrée.
+- **La fin de séance** : la maison s'ajoute au bouton de la boutique (ou du récif) ; touchée, « à demain » vient aussitôt. Sans toucher, « à demain » vient au bout de 15 secondes (au lieu de 30).
+- **« Continuer » en deux touchers**, comme les galets de l'accueil : l'accueil en pause a maintenant les mêmes galets ; le premier toucher dit « Continuer. On reprend la séance. », le second reprend. Le second toucher de l'enfant ne tombe plus dans le pavé.
+- **La bulle du capitaine ne cache plus ce dont parle la voix** : l'égalité pendant l'aide de la tortue, le chemin du calcul rapide, la bouée nommée aux voiliers, l'article de l'étal. Quand il n'y a pas la place, elle n'écrit que la première phrase (« La tortue est sur 7. »), ou rien du tout.
+- **Les additions se répètent moins** : dans un même bloc, un même calcul revient au plus deux fois, avec au moins quatre autres questions entre les deux. Dans l'exercice du jour, « 3 + 7 » ne suit plus « 7 + 3 » de près, et quand la famille du jour n'a plus de question possible, l'exercice s'arrête au lieu de se finir sur des « + 1 » faciles (vos réponses du 14 octobre). La simulation montre un effet sur le calendrier, chiffres dans la demande de fusion : pour une enfant en difficulté, aucune famille n'est acquise plus tard, mais les familles suivantes s'ouvrent plus tard (les amis de 10 environ 9 semaines plus tard à 2 séances par semaine).
+- **Les voiliers** : toucher un passage fait dire « Fais glisser le bateau jusqu'au passage ! » et une flèche montre le geste, droit sous le bateau, sans désigner de passage (votre réponse du 14 octobre) ; au niveau 2, un bateau hors des bouées reste tout près d'elles.
+- **La boutique** : le prix pour faire briller une créature n'est plus écrit sur sa tuile ; il apparaît quand l'enfant la touche.
+- **Finitions** : le compteur d'étoiles reste lisible dans l'étal par temps d'orage (une petite plaque claire) ; la bulle de l'étal n'est plus coupée par la fenêtre de la cabane ; l'étoile arc-en-ciel de la fin de séance vole maintenant vers l'album, qui apparaît en bas à droite.
+
+**Les phrases à fabriquer.** 4 phrases nouvelles : « Continuer. », « On reprend la séance. », « Touche cette bulle pour continuer. » et « Fais glisser le bateau jusqu'au passage ! ». Avec celles du lot précédent (2 nouvelles et 50 à refaire), elles se fabriquent d'un coup (`docs/VOIX.md`).
+
+**À essayer sur la tablette (10 minutes)** :
+
+1. **La reprise** : en pleine séance (pendant l'exercice du jour), fermer Chrome depuis la liste des applications récentes, puis rouvrir l'application : « continuer » doit être là ; la séance doit reprendre au début de l'exercice du jour, avec les mêmes étoiles. Essayer aussi pendant une pause.
+2. **« Continuer » en deux touchers** : la maison, puis toucher « continuer » une fois (le capitaine dit ce que c'est), puis une seconde fois.
+3. **La fin de séance** : la maison à côté de la boutique ; « à demain » au bout de 15 secondes sans toucher.
+4. **Les voiliers** : toucher l'eau entre deux bouées au lieu de faire glisser le bateau.
+5. **L'étal par temps d'orage** (la lampe) : le compteur d'étoiles lisible.
+
 ## e) Ce qui reste approximatif ou à ajuster
 
 **À vérifier sur la vraie tablette.** Écouter la voix (aucune phrase n'a été écoutée par une personne, la vérification a été automatique) et regarder les illustrations des cartes en grand. Toutes les mesures ont été faites sur un ordinateur, en ralentissant le processeur 4 fois pour imiter une tablette : démarrage en moins de 1,5 s, animation à 50 à 60 images par seconde la plupart du temps, avec des baisses vers 30 pendant certaines animations (l'application allège alors d'elle-même le décor). Il faut confirmer que tout reste fluide sur la tablette.

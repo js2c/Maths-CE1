@@ -149,6 +149,7 @@
 .pa-table td.q { white-space: normal; min-width: 150px; }
 .pa-table td.num, .pa-table th.num { text-align: right; }
 .pa-table tr.faux td { background: #fdf1ec; }
+.pa-table tr.pa-reprise td { background: #eef4f6; font-style: italic; color: #36535c; }
 .pa-yes { color: var(--pa-good); font-weight: 700; } .pa-no { color: var(--pa-low); font-weight: 700; }
 .pa-more { display: block; margin: 14px auto 0; }
 

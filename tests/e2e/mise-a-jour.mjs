@@ -7,7 +7,8 @@
 //      phrase est nouvelle ;
 //   3. on rouvre l'application et on joue (la page A, servie par le cache, pendant que B s'installe en arrière-plan) : la
 //      phrase au son changé est dite ;
-//   4. on relance : l'écran de démarrage, puis la version B ; la phrase au son changé et la phrase nouvelle sont dites.
+//   4. on relance : l'écran de démarrage, puis la version B ; la phrase au son changé et la phrase nouvelle sont dites ; la séance
+//      commencée avec A (lot « Décisions sur les constats de l'agent », décision 1) est reprise par B.
 // Il note chaque phrase qui n'a pas été lue depuis son fichier, et pourquoi, et échoue s'il y en a une. Il vérifie aussi
 // qu'une page ne mélange jamais deux versions, et que l'installation résiste au réseau : des requêtes qui échouent une
 // fois (reprises), puis une version C dont un fichier manque (l'installation échoue, la tablette reste sur B), suivie d'une
@@ -100,7 +101,9 @@ const brancher = async (page) => {
 const etatSW = (page) => page.evaluate(async () => { const r = await navigator.serviceWorker.getRegistration(); const n = (w) => w ? new URL(w.scriptURL).pathname + " " + w.state : null; return { controle: !!navigator.serviceWorker.controller, actif: n(r?.active), attente: n(r?.waiting), installe: n(r?.installing), caches: await caches.keys() }; });
 const attendreSW = async (page, quoi, ms = 300000) => { const t0 = Date.now(); for (;;) { const e = await etatSW(page); if (quoi(e)) return e; if (Date.now() - t0 > ms) return e; await page.waitForTimeout(500); } };
 const versionPage = (page) => page.evaluate(async () => (await (await fetch("version.json")).json()).version);
-const dire = (page, t) => page.evaluate(async (t) => { const n = window.__manques.length; await window.__app.voice.say(t); return window.__manques.slice(n); }, t);
+// (lot « Décisions sur les constats de l'agent » : dans une file à part, comme la voix de l'accueil en pause, où la voix de la
+// séance attend)
+const dire = (page, t) => page.evaluate(async (t) => { const n = window.__manques.length, v = window.__app.voice, s = v.suspend(); try { await v.say(t); } finally { v.restore(s); } return window.__manques.slice(n); }, t);
 
 // 1. la version A, mise en cache
 let page = await ouvrir();
@@ -152,6 +155,19 @@ console.log(`     après l'installation de B : ${JSON.stringify(e)}`);
 check(!pendant.length, `B publiée, la page A joue pendant que B s'installe puis attend : « ${X} » toujours lue depuis son fichier${pendant.length ? ` (${pendant.map(([s, c]) => `« ${s} » : ${c}`).join(" ; ")})` : ""}`);
 check((await versionPage(page)) === "aaaaaaaaaaaa", "la page ouverte reste toute entière en version A (pas de mélange)");
 check(e.attente?.includes("activated") === false && !!e.attente && e.caches.includes("ocean-aaaaaaaaaaaa"), "B a fini de s'installer malgré les échecs réseau, et attend ; l'ancien cache est gardé");
+// (lot « Décisions sur les constats de l'agent », décision 1 : le rechargement avec une nouvelle version) une séance commencée
+// avec la version A : l'échauffement en cours quand la tablette se ferme ; elle sera reprise avec la version B (étape 4).
+// (B attend : rouverte, la page la ferait prendre la main pendant l'écran de démarrage (engine/miseajour.js) et la séance serait
+// commencée avec B ; l'onglet est marqué « déjà rechargé pour une mise à jour », comme le fait miseajour.js, pour rester en A)
+await page.evaluate(() => sessionStorage.setItem("miseAJour", "1"));
+await page.goto(url + "?son=non&voix=rapide&cran=conseille&module=2&sansLecon&guides=0"); await page.waitForFunction(() => window.__ready !== undefined || !!document.querySelector(".demarrage.pret"), null, { timeout: 120000 });
+// (l'écran de démarrage des parcours s'efface seul, chargement fini : il peut partir entre les deux lignes ; le toucher est alors inutile)
+if (await page.evaluate(() => window.__ready === undefined)) await page.locator(".demarrage").tap({ force: true, timeout: 5000 }).catch(() => {});
+await page.waitForFunction(() => window.__ready !== undefined, null, { timeout: 60000 }); await brancher(page);
+for (let i = 0; i < 2; i++) { await page.locator(".galet.play").tap({ force: true }); await page.waitForTimeout(300); }
+const seanceA = await page.waitForFunction(() => { const s = window.__app.session, f = window.__app.facts; return s?.rec?.id && s.progress.etape === "echauffement" && f?.q && f.resolve ? s.rec.id : null; }, null, { timeout: 90000 }).then((h) => h.jsonValue(), () => null);
+const versionSeanceA = await versionPage(page);
+check(!!seanceA && versionSeanceA === "aaaaaaaaaaaa", `A : une séance commencée (l'échauffement en cours) avant la relance, avec la version A (${versionSeanceA})`);
 await page.close();
 
 // 4. on relance : l'écran de démarrage (réel), avant le toucher la version B prend la main, la page se recharge
@@ -171,6 +187,12 @@ const apres = [...(await dire(page, X)), ...(await dire(page, Z))];
 check(!apres.length, `B : « ${X} » (son changé) et « ${Z} » (nouvelle) lues depuis leurs fichiers${apres.length ? ` (${apres.map(([s, c]) => `« ${s} » : ${c}`).join(" ; ")})` : ""}`);
 e = await etatSW(page);
 check(e.caches.length === 1 && e.caches[0] === "ocean-bbbbbbbbbbbb", `l'ancien cache supprimé une fois B active (${e.caches.join(", ")})`);
+// (décision 1) la séance commencée avec A est reprise par B : « continuer », puis l'échauffement à son début, la même séance
+const offre = await page.evaluate(() => ({ id: window.__app.repriseEnAttente?.id ?? null, continuer: !!document.querySelector(".keep.play") }));
+check(seanceA && offre.id === seanceA && offre.continuer, `B : la séance commencée avec A est proposée (« continuer » ; séance ${offre.id})`);
+for (let i = 0; i < 2 && (await page.evaluate(() => !!window.__app.repriseEnAttente)); i++) { await page.locator(".keep.play").tap({ force: true }); await page.waitForTimeout(300); }
+const reprise = await page.waitForFunction((id) => { const s = window.__app.session; return s?.rec?.id === id && s.progress.etape === "echauffement" && !window.__app.enPause; }, seanceA, { timeout: 30000 }).then(() => true, () => false);
+check(reprise, "B : « continuer » reprend la séance de A au début de l'échauffement");
 await page.close();
 
 // 5. une version C dont un fichier manque : l'installation échoue, la tablette reste sur B ; puis D, réparée

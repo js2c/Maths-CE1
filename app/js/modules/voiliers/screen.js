@@ -37,6 +37,10 @@ export const BANDE_BOUEES = [0, 600, 1280, 800];
 // dizaines arrive ; la bande interdite à la bulle commence plus haut (relecture du lot, N3 : la bulle, passée sous la tête
 // en dernier recours, mordait sur la rangée qui recule)
 export const BANDE_DOUBLE = [0, 400, 1280, 800];
+// (décision 6) un toucher sous cette ligne est un toucher sur un passage ; le geste que montre la flèche : `tours` fois, chacun
+// `attenteMs` sur le bateau, `trajetMs` jusqu'au passage, puis la fin du tour au passage
+// (`auDessusDesBouees` : la pointe s'arrête autant au-dessus de la ligne de flottaison, plus haut que le sommet des bouées)
+export const PASSAGES_Y = 560, GLISSER = { tours: 2, tourMs: 2200, attenteMs: 450, trajetMs: 1100, auDessusDesBouees: 240 };
 // le nombre du bateau, dans la bulle : en chiffres et en lettres (« 347 « trois-cent-quarante-sept » »)
 export const bulleNombre = (t) => t.replace(/(^|\s)(\d{1,3})$/, (m, sp, n) => `${sp}${n} « ${ecritEnLettres(Number(n))} »`);
 // la qualité de la mer : un cran de moins si l'intervalle moyen des dernières images dépasse 20 ms (au moins 10 images, et
@@ -95,12 +99,35 @@ export class VoiliersScreen {
       sansWebGL: () => { this.sansWebGL = true; },
     });
     if (!this.api) { this.leave(); return false; }
+    // (lot « Décisions sur les constats de l'agent », décision 6 ; constat 7 de l'agent : toucher un passage ne faisait rien) on
+    // garde le glisser ; un toucher bref sur un passage, pendant qu'un bateau attend le geste, fait dire « Fais glisser le bateau
+    // jusqu'au passage ! » et la flèche montre le geste, du bateau au passage touché ; au plus une fois par bateau
+    let tap = null;
+    const point = (e) => { const r = stage.root.getBoundingClientRect(); return { x: (e.clientX - r.left) / stage.k, y: (e.clientY - r.top) / stage.k }; };
+    const down = (e) => {
+      tap = null;
+      if (!this.attend || app.enPause || this.glisserDit || e.target?.closest?.("button")) return;
+      const p = point(e), b = this.api?.zoneBateau();
+      if (this.api?.etat().mode !== "wait" || !b || (p.x > b[0] && p.x < b[2] && p.y > b[1] && p.y < b[3])) return;
+      tap = { id: e.pointerId, ...p, t: performance.now() };
+    };
+    const up = (e) => {
+      const t = tap; tap = null;
+      if (!t || e.pointerId !== t.id || !this.attend || app.enPause || this.glisserDit) return;
+      const p = point(e);
+      if (Math.hypot(p.x - t.x, p.y - t.y) > 24 || performance.now() - t.t > 600 || p.y < PASSAGES_Y) return;
+      this.montrerGlisser();
+    };
+    for (const [type, f] of [["pointerdown", down], ["pointerup", up]]) { stage.root.addEventListener(type, f); this.ecoute.push([stage.root, type, f, undefined]); }
     // « je ne sais pas », à sa place habituelle ; visible tant qu'un bateau attend le geste
     this.nsp = spriteBox(app, { x: NSP_AT[0] - 75, y: NSP_AT[1] - 75, w: 150, h: 150, cls: "bubble nsp voiliers-nsp", label: "je ne sais pas", paint: (ctx) => app.sprites.draw(ctx, "nsp", 0, 75, 75) });
     this.nsp.style.visibility = "hidden";
     onBrief(app, this.nsp, () => { if (!this.attend) return; pop(this.nsp); this.onNsp?.(); }, "nsp");
     // la bulle écrit le nombre du bateau en lettres
     app.bulleTexte = bulleNombre;
+    // (lot « Décisions sur les constats de l'agent », décision 4 ; constat 6 : « Il est plus petit que cette bouée » et la bulle
+    // couvrait la bouée 63) la bouée allumée, celle que nomme la voix, n'est jamais couverte par la bulle
+    app.bulle?.eviter("bouee", () => this.boueesNommees());
     await this.api.pret();
     return true;
   }
@@ -115,7 +142,31 @@ export class VoiliersScreen {
     this.cv = null;
     this.nsp?.remove(); this.nsp = null; this.skip?.remove(); this.skip = null;
     if (app.bulleTexte === bulleNombre) app.bulleTexte = null;
+    app.bulle?.eviter("bouee", null);
     if (etait) app.lagon?.pause(false);
+  }
+  // (décision 6) le geste montré : la flèche part du bateau et descend vers la rangée de bouées (deux fois), pendant que la voix
+  // dit « Fais glisser le bateau jusqu'au passage ! » ; elle s'efface dès que le bateau bouge (l'enfant le prend)
+  // (relecture du lot, R2 ; décision du parent du 14 octobre 2026 : posée sur le passage touché, souvent faux, elle se lisait
+  // « mets-le ici ») elle ne désigne aucun passage : elle descend droit sous le bateau et s'arrête au-dessus des bouées
+  montrerGlisser() {
+    const { app } = this, api = this.api; if (!api) return;
+    this.glisserDit = true;
+    app.voice.say(app.text.data.voiliersGlisser);
+    const st = api.etat(), s = st.k / 0.44, de = [st.x, st.y - 120 * s], a = [st.x, Math.max(de[1] + 80, st.LINE_Y - GLISSER.auDessusDesBouees)], t0 = performance.now(), tok = this.tok;
+    const ease = (u) => (u < 0.5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2), D = GLISSER;
+    app.fleche?.montrer(() => {
+      const e = this.api?.etat(), t = performance.now() - t0;
+      if (tok !== this.tok || !this.attend || e?.mode !== "wait" || t > D.tours * D.tourMs) return null;
+      const u = ease(Math.min(1, Math.max(0, ((t % D.tourMs) - D.attenteMs) / D.trajetMs)));
+      return [de[0] + (a[0] - de[0]) * u, de[1] + (a[1] - de[1]) * u];
+    });
+  }
+  // (décision 4) les bouées allumées, de leur sommet à la mer (au double encadrement, la rangée qui recule est plus haute)
+  boueesNommees() {
+    if (!this.api || this.app.enPause) return null;
+    const e = this.api.etat(), haut = this.q?.double ? 330 : 430;
+    return e.xs.map((x, i) => (e.allumees[i] > 0.05 ? [x - 78, haut, x + 78, 800] : null)).filter(Boolean);
   }
   // pour la bulle : la bande des bouées et le bateau qui arrive ou attend le geste (jamais couverts) ; le bateau qui se
   // déplace seul (correction, exemple), là où il est et là où il va (évité si possible)
@@ -140,7 +191,7 @@ export class VoiliersScreen {
   async ask(q) {
     if (!this.api) return new Promise(() => {}); // (lot « Recette de l'enfant », point 2 : la scène rangée ne pose plus rien)
     const { app } = this, { voice, text, ocean, sound } = app, T = text.data, api = this.api, g = clock.hold(), tok = ++this.tok, vivant = () => tok === this.tok;
-    this.q = q; this.locked = true; this.attend = false; this.passable(false); this.skipped = false; app.fleche?.cacher();
+    this.q = q; this.locked = true; this.attend = false; this.passable(false); this.skipped = false; this.glisserDit = false; app.fleche?.cacher();
     api.vitesse(1);
     await api.bouees(q.bouees).then(g);
     if (!vivant()) return new Promise(() => {});

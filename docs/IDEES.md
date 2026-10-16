@@ -73,16 +73,18 @@ Au cran « plus facile », l'écriture 600 + 30 + 5 s'affiche sous la cale. Un f
 
 ### Après le second passage de l'agent qui joue l'enfant (lot « Recette de l'enfant et nettoyage des couches », 12 octobre 2026)
 
-Constats du rapport `tests/recette-fonctionnelle/out-enfant/RAPPORT-PASSAGE-2.md` qui demandent une décision du parent (le traitement de tous les constats : `TRAITEMENT.md`, même dossier).
+Les huit questions de ce passage sont tranchées (décisions du parent du 13 octobre 2026, `docs/JOURNAL-CONCEPTION.md`) et faites au lot « Décisions sur les constats de l'agent ». Reste au parent : regénérer les illustrations des cartes du crabe et de l'anémone (constat 16), et revoir les choix faits par la session (même journal, « les choix de la session, à revoir par le parent »).
 
-- **La page rechargée en pleine séance** (constat 1, jugé bloquant par l'agent) : aujourd'hui, la séance en cours est perdue (« continuer » disparaît, la séance est notée interrompue, les étoiles gagnées restent). C'est ce qui arrive si Android ferme Chrome pendant que la tablette est posée. Reprendre une séance après un rechargement est une fonction nouvelle, avec des choix : reprendre à l'étape, à la question, avec la même leçon déjà vue ? Le cran choisi ? Le bilan de fin compte-t-il les étoiles d'avant ? Combien de temps une séance reste-t-elle reprenable ? À essayer d'abord sur la tablette : arrive-t-il qu'Android ferme Chrome pendant une séance ?
-- **La fin de séance qui mène à la boutique** (constat 2) : seul le bouton de la boutique est à l'écran ; sans toucher, « à demain » vient au bout de 30 s (choix de la session du lot « La boutique du récif »), soit près d'une minute avec les phrases. Ajouter la maison, ou raccourcir l'attente ?
-- **« Continuer » en un toucher, « jouer » en deux** (constat 11) : l'accueil pendant une pause garde ses bulles rondes en un toucher (décision du 10 octobre). L'enfant habituée aux deux touchers tape son second toucher dans le pavé (un « 5 »). Passer « continuer » en deux touchers, ou garder ?
-- **La bulle de la mascotte sur ce dont parle la voix** (constat 6) : elle ne couvre jamais ce que l'enfant touche, mais peut couvrir l'égalité de l'aide, le chemin du calcul rapide, la bouée dont parlent les voiliers ; dans l'étal, le portefeuille ouvert cache l'article. Lui interdire aussi ces zones ?
-- **La répétition des additions** (constat 13) : « 4 plus 2 » cinq fois en deux minutes dans le bloc de la séance (révision espacée des faits pas encore sus) ; à observer avec l'enfant.
-- **Les voiliers** (constat 7) : toucher un passage ne fait rien, il faut faire glisser le bateau (le geste de la maquette) ; au niveau 2, « partout » met des bateaux bien avant la première bouée (43 devant 63, 67, 73). Garder ?
-- **Le prix pour faire briller une créature qu'on vient d'acheter** (constat 9) : la tuile affiche aussitôt « ✦150★ », que l'enfant peut prendre pour un prix à repayer. Le cacher juste après l'achat ?
-- **Cosmétique** : le compteur d'étoiles peu lisible dans l'étal par temps d'orage, la bulle courte coupée par le cadre de la cabane (constat 14) ; l'étoile arc-en-ciel annoncée à la récompense mais montrée nulle part (constat 15) ; les couleurs des cartes du crabe et de l'anémone, différentes des créatures du récif (constat 16 : les illustrations des cartes).
+### Après la relecture du lot « Décisions sur les constats de l'agent » (14 octobre 2026)
+
+Rapport : `tests/recette-fonctionnelle/out-decisions-agent/RELECTURE.md` (constats et traitement). Restent pour le parent :
+
+- **L'étal sous l'orage** (R6) : l'article allumé se voit mal (son halo doré disparaît presque dans la nuit), et la pluie passe sur les ardoises des prix. C'est la scène de la maquette de l'étal, que l'application reprend sans la modifier : à regarder sur la tablette ; si c'est gênant, renforcer le halo ou passer la pluie sous l'article allumé (dans la maquette, puis l'export).
+- **Le triangle du galet « jouer » / « continuer »** (R9) : de petites encoches claires aux trois pointes, visibles sur la tablette ; à reprendre dans l'atelier (`sea/galets.ts`).
+- **L'étoile arc-en-ciel** : la voix dit « Un jour, elle t'ouvrira un nouveau coin du récif. » pendant que l'étoile entre dans l'album. L'enfant fera-t-elle le lien ? Par défaut : garder la phrase.
+- **Une phrase en arrivant à la pause** : aujourd'hui la mascotte ne dit rien quand on touche la maison (elle le dit si on la touche). Par défaut : rien.
+- **L'outil des séquences** (`b-sequences.mjs`), à vérifier : dans certaines séances « un mois », l'en-tête ne cite que les étapes « accueil, echauffement », et la fin annonce une famille acquise qui n'est pas celle de la séance ; au cran « très dur », une séance toute juste finit sur « trou famille 3 ». Antérieur au lot.
+- **Le parcours `mise-a-jour.mjs`** échoue environ une fois sur trois, sur `main` comme sur la branche, à des étapes différentes (délais du service worker dans Chromium) : à rendre plus robuste.
 
 ### La fluidité des voiliers sur la tablette (8 octobre 2026, mis de côté par le parent)
 
@@ -133,7 +135,7 @@ Le parent n'est pas encore convaincu par les remèdes proposés : la question es
 - **L'encouragement** (lot « Mascotte ») : la règle de la maquette (déception à la première erreur d'une question, encouragement aux suivantes) compte les erreurs depuis la dernière consigne. Dans l'application, chaque erreur est suivie de sa correction puis d'une autre question, avec sa consigne : l'encouragement ne vient donc que quand deux erreurs se suivent sans consigne entre elles (la protection du sélecteur qui redescend d'un cran juste après une erreur, le défi record). Par défaut : la règle de la maquette telle quelle. Autre possibilité : compter les erreurs de la séance (déception à la première, encouragement ensuite, remis à zéro par une réussite).
 - **Questions de la relecture du lot « Mascotte »** (`tests/recette-fonctionnelle/out-mascotte/RELECTURE.md`) :
   - la flèche pourrait montrer « réécouter » quand la relance dit « Tu peux réécouter la consigne » (aujourd'hui rien ne le désigne) ;
-  - en pause, « Touche la grande bulle pour continuer » : les quatre bulles ont la même taille (déjà avant le lot) ;
+  - en pause, « Touche la grande bulle pour continuer » : les bulles ont la même taille (fait au lot « Décisions sur les constats de l'agent » : « Touche cette bulle pour continuer. », la flèche posée sur le galet « continuer ») ;
   - les leçons écrivent leurs nombres en lettres (« trente-quatre ») : la bulle ne les met pas en rouge ; les écrire en chiffres demanderait de refabriquer les voix des leçons ;
   - dans l'album, le capitaine reste visible, assombri, derrière le voile (la pieuvre aussi l'était) : le cacher comme dans le récif ?
 - **La flèche dans les leçons L4 à L6 et L10** (lot « Mascotte ») : la pieuvre y faisait le geste « montrer » sans viser rien de précis ; la flèche ne s'y pose pas (le bernard-l'ermite et les aides montrent déjà). Par défaut : pas de flèche ; à revoir avec le lot « Les leçons ».

@@ -10,7 +10,9 @@ import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
-const N = Number(opt("--questions", 6)), FAM = Number(opt("--famille", 0)), OUT = resolve(`tests/e2e/out/notion2${FAM ? `-f${FAM}` : ""}`);
+// (8 questions : l'erreur faite à la 2e revient au plus tôt à la 7e, après 4 autres questions ; module2.json, repetition.ecartMin, lot
+// « Décisions sur les constats de l'agent », décision 5)
+const N = Number(opt("--questions", 8)), FAM = Number(opt("--famille", 0)), OUT = resolve(`tests/e2e/out/notion2${FAM ? `-f${FAM}` : ""}`);
 mkdirSync(OUT, { recursive: true });
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium" });

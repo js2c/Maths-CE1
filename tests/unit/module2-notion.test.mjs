@@ -1,6 +1,6 @@
 // Lot 2, étape 6 (docs/SPEC-LOT2.md, sections 2, 3 et 7) : familles 3 à 7 (règles, ouverture, famille acquise,
 // formes à trou définitives), le module 2 comme notion du jour (famille en cours, leçon d'entrée, part de la
-// famille, même fait au plus 3 fois, cran du sélecteur, erreur qui revient, famille acquise = étoile
+// famille, même fait au plus 3 fois (2 depuis la décision 5 du 13 octobre 2026), cran du sélecteur, erreur qui revient, famille acquise = étoile
 // arc-en-ciel), alternance séance après séance et module imposé, point de départ étendu aux familles 3 à 7.
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -33,7 +33,7 @@ test("familles 3 à 7 : règles, ordre d'introduction, 45 faits (a, b de 1 à 9,
   assert.deepEqual(by, { 1: 30, 2: 3, 3: 4, 4: 2, 5: 6 });
   assert.equal(aidFor(7, 3), "cadre"); assert.equal(aidFor(4, 4), "reflet"); assert.equal(aidFor(3, 4), "doublePlus"); assert.equal(aidFor(6, 2), "ligne"); assert.equal(aidFor(5, 3), "maison");
   // réglages dans le contenu, jamais en dur
-  { const { derniere, ...o } = c.familles2.ouverture; assert.deepEqual(o, { part: 0.8, boite: 2, parJour: 1 }); assert.deepEqual([derniere.part, derniere.boite, derniere.aPartirDe], [0.8, 2, 9]); } assert.deepEqual(c.familles2.trou, { part: 0.5, boite: 3 }); assert.equal(c.notion.memeFaitMax, 3);
+  { const { derniere, ...o } = c.familles2.ouverture; assert.deepEqual(o, { part: 0.8, boite: 2, parJour: 1 }); assert.deepEqual([derniere.part, derniere.boite, derniere.aPartirDe], [0.8, 2, 9]); } assert.deepEqual(c.familles2.trou, { part: 0.5, boite: 3 }); assert.equal(c.repetition.parBlocMax, 2); // (décision 5 du lot « Décisions sur les constats de l'agent » : 3 avant)
   assert.deepEqual(seance.alternance.modules, [1, 2, 3, 5]); // (lot 3 : le calcul rapide rejoint la rotation ; lot « Multiplication » : la multiplication, à partir du 4 janvier 2027)
 });
 
@@ -112,7 +112,7 @@ async function notion(store, { n = 20, answer = () => true, cran = "conseille", 
   return { m, qs, events, fin: await m.finish() };
 }
 
-test("notion du jour : famille en cours, moitié au moins sur sa règle, faits nouveaux dans la limite de la séance, même fait au plus 3 fois", async () => {
+test("notion du jour : famille en cours, moitié au moins sur sa règle, faits nouveaux dans la limite de la séance, même fait au plus 2 fois (décision 5 du 13 octobre 2026 ; 3 avant)", async () => {
   const store = await open();
   for (const k of ["1+1", "2+1", "1+2", "3+1", "1+3", "2+2", "4+1", "1+4"]) await store.put("faits", fact(k, 2));
   await store.put("niveaux", { ...initialFamilies(c, NOW), ouvertes: [1, 2, 3], acquises: [1, 2] });
@@ -120,9 +120,12 @@ test("notion du jour : famille en cours, moitié au moins sur sa règle, faits n
   assert.equal(m.famille, 3);
   const rule = new Set(ruleFacts(c, 3).map((f) => f.fait));
   assert.ok(qs.filter((q) => rule.has(q.fait)).length >= 10, `${qs.filter((q) => rule.has(q.fait)).length} sur 20 dans la règle des amis de 10`);
-  assert.ok(qs.filter((q) => q.nouveau && !q.revient).length <= 6, "au plus 6 faits nouveaux dans la séance");
+  // (au-delà de 6, seulement des faits de la famille quand elle n'a plus d'autre question : l'exception 6.1, docs/SPEC.md, section 6 ;
+  // avec 2 passages par fait, décision 5 du 13 octobre 2026, elle joue plus souvent)
+  const nv = qs.filter((q) => q.nouveau && !q.revient);
+  assert.ok(nv.slice(6).every((q) => rule.has(q.fait)), `au plus 6 faits nouveaux, sauf ceux de la famille (${nv.map((q) => q.fait).join(" ")})`);
   const count = {}; qs.forEach((q) => { count[q.fait] = (count[q.fait] ?? 0) + 1; });
-  assert.ok(Object.values(count).every((x) => x <= 3), JSON.stringify(count));
+  assert.ok(Object.values(count).every((x) => x <= 2), JSON.stringify(count));
   assert.ok(qs.every((q) => q.appui), "chaque question a son appui visuel");
   assert.ok(qs.filter((q) => rule.has(q.fait)).every((q) => q.appui === "cadre"), "les amis de 10 : le cadre de 10");
   // la leçon d'entrée : L5 la première fois que la famille 3 est la notion du jour, plus ensuite
@@ -131,11 +134,12 @@ test("notion du jour : famille en cours, moitié au moins sur sa règle, faits n
   assert.equal((await new Module2Runner({ store: store2, content: c, rnd: rng(1), cran: () => "conseille" }).load()).entryLesson(), "L5");
 });
 
-test("notion du jour : une erreur revient 3 questions plus loin ; 3 erreurs sur 5 : la leçon de la famille, une fois", async () => {
+test("notion du jour : une erreur revient après 4 autres questions (décision 5 du 13 octobre 2026 ; 3 avant) ; 3 erreurs sur 5 : la leçon de la famille, une fois", async () => {
   const store = await open();
   await store.put("niveaux", { ...initialFamilies(c, NOW), ouvertes: [1, 2, 3], acquises: [1, 2] });
   let k = 0; const { qs, events } = await notion(store, { n: 14, answer: () => ++k > 6 });
-  const firstWrong = qs[0]; assert.equal(qs[4]?.fait === firstWrong.fait || qs.slice(3, 6).some((q) => q.fait === firstWrong.fait && q.revient), true);
+  const firstWrong = qs[0], back = qs.findIndex((q, i) => i > 0 && q.fait === firstWrong.fait);
+  assert.ok(back >= 5 && qs[back].revient, `le fait raté revient à la question ${back + 1}`);
   assert.equal(events.filter((e) => e.type === "lecon" && e.id === "L5").length, 1);
 });
 
@@ -155,7 +159,9 @@ test("sélecteur en notion du jour : facile = la famille seule, aide d'emblée (
   const f = await notion(await mk(), { n: 12, cran: "facile" });
   const rule3 = new Set(ruleFacts(c, 3).map((x) => x.fait));
   assert.ok(f.qs.every((q) => q.aideDEmblee && (q.forme !== "directe" || !rule3.has(q.fait))));
-    assert.ok(f.qs.every((q) => rule3.has(q.fait) || q.revient), "facile : la famille en cours seulement");
+  // (relecture du lot « Décisions sur les constats de l'agent », R3, décision du parent du 14 octobre 2026 : un fait et son retourné
+  // séparés par 4 questions ; une famille encore peu introduite n'a pas toujours de quoi : une question d'une famille sue, au plus)
+  assert.ok(f.qs.filter((q) => !rule3.has(q.fait) && !q.revient).length <= 1, `facile : la famille en cours seulement (${f.qs.map((q) => q.fait).join(" ")})`);
   const d = await notion(await mk(), { n: 18, cran: "dur" });
   assert.ok(d.qs.filter((q) => q.forme !== "directe").length >= 6, "dur : des formes à trou");
   const rule4 = new Set(ruleFacts(c, 4).map((x) => x.fait));

@@ -34,7 +34,9 @@ export class Warmup {
     const k = first ? B.premiere : depuis + 1 >= (B.uneSeanceSur ?? 1) ? B.ensuite : 0, triv = [];
     // le compteur des séances sans mesure (les triviales reviennent une séance sur `uneSeanceSur`)
     if (!first && !this.libre) { this.base = { ...this.base, depuis: k ? 0 : depuis + 1 }; this.store.setSetting("tempsDeBase", this.base); }
-    for (let i = 0; i < k; i++) { const a = 2 + Math.floor(this.rnd() * 7); triv.push(this.rnd() < 0.5 ? { a, b: 0 } : { a: 0, b: a }); }
+    // (relecture du lot « Décisions sur les constats de l'agent », R11 : « 0 + 2 » deux fois de suite) des nombres tous différents
+    const libres = [2, 3, 4, 5, 6, 7, 8];
+    for (let i = 0; i < k; i++) { const a = libres.length ? libres.splice(Math.floor(this.rnd() * libres.length), 1)[0] : 2 + Math.floor(this.rnd() * 7); triv.push(this.rnd() < 0.5 ? { a, b: 0 } : { a: 0, b: a }); }
     const e = this.effet, facts = plan(this.c, this.facts, this.clock(), n, min, { nouveaux: e.nouveaux, complementMax: e.complementMax, enPlus: e.nouveauxEnPlus ?? 0, dejaNouveaux: this.nouveaux, familleSuivante: !!e.familleSuivante, rnd: this.rnd });
     // les faits nouveaux au-delà des places réservées sans bonus (cran au-dessus) : retirés si le cran redescend
     let base = this.c.placesReservees ?? 3; this.bonus = new Set();
@@ -100,7 +102,8 @@ export class Warmup {
     const f = afterFact(this.c, clean, { juste, ms: r.ms, aide: r.aide || r.aideDEmblee, anticipe: q.anticipe || q.revient, seance: this.seance, forme }, limit, now);
     this.facts = [...this.facts.filter((x) => x.fait !== f.fait), f];
     await this.store.put("faits", f);
-    if (!juste && !q.revient) rest.splice(Math.min(rest.length, 3), 0, { ...q, revient: true });
+    // (décision 5 : le fait revient après au moins `ecartMin` autres questions, 4 ; avant, 3 questions plus loin)
+    if (!juste && !q.revient) rest.splice(Math.min(rest.length, repetition(this.c0).ecartMin), 0, { ...q, revient: true });
     // voie rapide : les faits nouveaux réservés sont tous entrés en boîte 3 -> jusqu'à 3 autres à la fin
     let ajoutes = 0;
     if (q.nouveau && !q.anticipe && !q.revient && f.historique.at(-1).voieRapide && ++this.fast === this.reserved && !this.extras && this.c.voieRapide) {
@@ -118,6 +121,19 @@ export class Warmup {
 // sinon la file dans l'ordre ; `answers` : les réponses attendues des questions déjà posées (hors temps de base).
 // `vary(q, answers)` : une question à trou qui donnerait encore v prend l'autre forme à trou (« 1 + ? = 9 » au lieu de
 // « ? + 8 = 9 »). Il reste des cas sans issue (la file ne contient plus que ce fait) : la simulation les compte.
+// (lot « Décisions sur les constats de l'agent », décision 5 du parent du 13 octobre 2026) LA RÉPÉTITION DANS UN BLOC D'ADDITIONS
+// (module2.json, repetition) : un même fait au plus `parBlocMax` fois (2), au moins `ecartMin` autres questions (4) entre deux passages
+export const repetition = (c) => ({ parBlocMax: 2, ecartMin: 4, ...(c?.repetition ?? {}) });
+// la question suivante de l'échauffement : la première de la file dont le fait n'a pas été posé dans les `ecartMin` dernières
+// questions (et la règle des réponses égales, `varyIndex`) ; les passages qui ne pourront plus être posés sont retirés de la file
+// (le fait déjà posé `parBlocMax` fois ; ou, plus rien d'autre à poser, trop proche de son dernier passage) ; -1 : plus rien
+export function warmupIndex(rest, answers, faits, rp) {
+  const n = (f) => faits.filter((x) => x === f).length, recent = (q) => faits.slice(-rp.ecartMin).includes(q.fait);
+  for (let i = rest.length - 1; i >= 0; i--) if (!rest[i].base && n(rest[i].fait) >= rp.parBlocMax) rest.splice(i, 1);
+  const ok = rest.filter((q) => q.base || !recent(q));
+  if (!ok.length) { rest.splice(0, rest.length); return -1; }
+  return rest.indexOf(ok[varyIndex(ok, answers)]);
+}
 export function varyIndex(rest, answers) {
   const n = answers.length, v = answers[n - 1];
   if (n < 2 || v !== answers[n - 2]) return 0;

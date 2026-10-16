@@ -39,8 +39,12 @@ export function gapOfChenal(b, kindUsed, c) { const n = b.length; if (n === 1) r
 // la distance d'un nombre à la plus proche des bouées de son passage
 export function distIn(b, v, c) { let d = Infinity; if (c > 0) d = Math.min(d, v - b[c - 1]); if (c < b.length) d = Math.min(d, b[c] - v); return d; }
 // les nombres possibles dans le passage c (maquette, `candidates`) ; `lastV` : le nombre du bateau d'avant (jamais deux fois)
-export function candidates(b, kindUsed, c, cfg, lastV = null) {
-  const n = b.length, maxB = cfg.max === 100 ? 99 : 999, lo = c === 0 ? 1 : b[c - 1] + 1, hi = c === n ? maxB : b[c] - 1, out = [];
+// (lot « Décisions sur les constats de l'agent », décision 6 ; constat 7 de l'agent : au niveau 2, « partout » donnait 43 devant les
+// bouées 63, 67, 73) `horsBouees` : hors des bouées (avant la première, après la dernière), le nombre reste à moins de tant
+// d'intervalles (l'écart de la bouée voisine) de la première ou de la dernière bouée (module4.json, niveaux à la place « partout »)
+export function candidates(b, kindUsed, c, cfg, lastV = null, horsBouees = null) {
+  const n = b.length, maxB = cfg.max === 100 ? 99 : 999, out = [], g = horsBouees != null && n > 1 && (c === 0 || c === n) ? horsBouees * gapOfChenal(b, kindUsed, c) : null;
+  const lo = c === 0 ? (g ? Math.max(1, b[0] - g + 1) : 1) : b[c - 1] + 1, hi = c === n ? (g ? Math.min(maxB, b[n - 1] + g - 1) : maxB) : b[c] - 1;
   for (let v = lo; v <= hi; v++) {
     if (v === lastV) continue;
     const d = distIn(b, v, c);
@@ -52,14 +56,14 @@ export function candidates(b, kindUsed, c, cfg, lastV = null) {
 }
 // le nombre d'un bateau (maquette, `pickNumber`) : le passage d'abord, puis un nombre de ce passage ; au double
 // encadrement, un nombre entre la première et la dernière centaine, jamais une dizaine ronde
-export function pickNumber(b, kindUsed, cfg, R, { lastV = null, row1 = null } = {}) {
+export function pickNumber(b, kindUsed, cfg, R, { lastV = null, row1 = null, horsBouees = null } = {}) {
   const { rnd, pick } = tirages(R), n = b.length;
   if (cfg.kind === "double") { const r = row1 ?? b; let v; do { v = rnd(r[0] + 1, r[3] - 1); } while (v % 10 === 0 || v === lastV); return v; }
   const w = n === 2 ? [0.25, 0.5, 0.25] : Array(n + 1).fill(1 / (n + 1));
   let r = R(), c = 0; for (; c < n; c++) { if (r < w[c]) break; r -= w[c]; }
-  let cand = candidates(b, kindUsed, c, cfg, lastV);
-  for (let k = 0; k <= n && !cand.length; k++) cand = candidates(b, kindUsed, k, cfg, lastV);
-  for (let k = 0; k <= n && !cand.length; k++) cand = candidates(b, kindUsed, k, { max: cfg.max, mode: "any" }, lastV);
+  let cand = candidates(b, kindUsed, c, cfg, lastV, horsBouees);
+  for (let k = 0; k <= n && !cand.length; k++) cand = candidates(b, kindUsed, k, cfg, lastV, horsBouees);
+  for (let k = 0; k <= n && !cand.length; k++) cand = candidates(b, kindUsed, k, { max: cfg.max, mode: "any" }, lastV, horsBouees);
   return pick(cand);
 }
 // la seconde rangée du double encadrement (maquette, `tensWindow`) : 5 bouées de 10 en 10, dans la centaine du nombre

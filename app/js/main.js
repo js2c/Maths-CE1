@@ -41,7 +41,7 @@ import { AidBoard } from "./modules/facts/aids.js";
 import { ChallengeView } from "./modules/facts/challengeView.js";
 import { Rewards } from "./session/rewards.js";
 import { goodNight, reward, spriteBox, StarHud } from "./session/screens.js";
-import { challengeReady, doneToday, sameDay, Session } from "./session/session.js";
+import { challengeReady, doneToday, repriseDuJour, sameDay, Session } from "./session/session.js";
 import { Reef } from "./session/reef.js";
 import { drawSurprise, playSurprise, previousSession } from "./session/surprise.js";
 import { Album } from "./session/album.js";
@@ -110,6 +110,8 @@ stage.onResize(() => { if (Math.abs(stage.px - sprites.px) > 0.01) location.relo
 
 const rnd = rng(Date.now() & 0xffffffff);
 // pour les tests et les captures : ?module=2 ?cran=dur ?surprise=visite:tortue ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape ?sansLecon ?lecon=L1 ?etoiles=N
+// ?sansReprise : une séance laissée en cours n'est pas reprise au rechargement (décision 1 du lot « Décisions sur les constats de
+// l'agent ») ; pour les parcours qui enchaînent des séances en rechargeant la page avec d'autres réglages
 const P = new URLSearchParams(location.search);
 const text = { data: textes, pick: (k, v = {}) => { const e = textes[k]; return fill(Array.isArray(e) ? e[Math.floor(rnd() * e.length)] : e, v); } };
 // les phrases fabriquées à l'avance (assets/voix/)
@@ -140,6 +142,12 @@ const bulle = new Bulle(stage, {
   // évitée si possible)
   souples: () => (stage.root.classList.contains("paused") ? [] : [...(app.voiliers?.actif ? app.voiliers.souples() : []), ...[app.etal, app.etalLecon].filter((e) => e?.actif).flatMap((e) => e.souples()), ...(app.facts?.q?.module === 5 && app.facts.slate?.style.visibility !== "hidden" ? [[495, 120, 1085, 300]] : [])]),
 }), fleche = new Fleche(ocean);
+// (décision 8 du lot « Décisions sur les constats de l'agent ») la mascotte posée ailleurs (la fenêtre de la cabane de l'étal) : la
+// bulle pointe vers sa bouche et ne se pose plus sous la tête
+bulle.poste = () => ocean.ailleurs ?? null;
+// (lot « Décisions sur les constats de l'agent », décision 4) ce que montre le calque des aides et dont parle la voix (le chemin du
+// calcul rapide) : la bulle ne le couvre jamais (les exercices déclarent les autres zones eux-mêmes : bulle.eviter)
+bulle.eviter("aides", () => (stage.root.classList.contains("paused") || !app.aidBoard?.used ? null : app.aidBoard.zones));
 // (relecture du lot : pendant une question de dictée, la bulle n'écrit rien : elle écrirait en chiffres le nombre à écrire)
 const dicteeEnCours = () => !!(app.facts?.q?.dictee && !app.facts.locked);
 // (lot « Les voiliers » : `app.bulleTexte` récrit ce que la bulle écrit : le nombre du bateau, en chiffres et en lettres)
@@ -222,15 +230,25 @@ Object.assign(headTap.style, { left: `${MASCOTTE.x}px`, top: `${MASCOTTE.y}px`, 
 stage.ui.append(headTap);
 let headShown = null;
 stage.ticks.add(() => { const v = ocean.mascotteVisible; if (v === headShown) return; headShown = v; headTap.style.visibility = v ? "visible" : "hidden"; speaker.style.visibility = v ? "hidden" : "visible"; });
-let pauseTalk = null;
+// (lot « Décisions sur les constats de l'agent », décision 3) LA VOIX DE L'ACCUEIL EN PAUSE : la consigne de la pause et ce que
+// sont les galets touchés sont dits dans une file à part (`voice.suspend`) ; la voix de la séance, en pause, est rendue intacte
+// dès que la mascotte se tait, ou aussitôt qu'on quitte l'accueil en pause (`finirParolePause` : continuer, une visite, la fin)
+let pauseTalk = null, pauseTalkN = 0;
+const finirParolePause = () => { pauseTalkN++; if (pauseTalk) { const s = pauseTalk; pauseTalk = null; voice.restore(s); } };
+const direEnPause = async (t) => {
+  const n = ++pauseTalkN;
+  if (pauseTalk) voice.stop(); else pauseTalk = voice.suspend();
+  try { await voice.say(t); } finally { if (n === pauseTalkN) finirParolePause(); }
+};
+// (relecture du lot, R1 : « Touche la grande bulle », alors que les cinq galets ont la même taille) la consigne de la pause montre
+// le galet « continuer » : « Touche cette bulle pour continuer. », la flèche posée au-dessus de lui le temps de la phrase
+const consigneEnPause = async (t) => {
+  if (pausedEls?.length) fleche.montrer([GALET_X[0], GALET_Y - 92], { enPause: true });
+  try { await direEnPause(t); } finally { fleche.cacher(); }
+};
 const replay = async (from) => {
   if (from === headTap) { pop(ocean.mascotteEl); store.setSetting("mascotteTouchee", true); } else pop(speaker);
-  if (app.enPause && !visiting) {
-    if (pauseTalk) return;
-    pauseTalk = voice.suspend();
-    try { await voice.say(text.data.pauseConsigne); } finally { voice.restore(pauseTalk); pauseTalk = null; }
-    return;
-  }
+  if (app.enPause && !visiting) return consigneEnPause(text.data.pauseConsigne);
   voice.replay();
 };
 onBrief(app, speaker, () => replay(speaker), "reecouter");
@@ -318,7 +336,12 @@ const handlers = {
 // (lot « Recette de l'enfant », point 2) une étape quittée pendant une attente (une planche, une scène qui s'installe) ne crée
 // plus rien ensuite : elle reste figée, comme une attente abandonnée (engine/clock.js)
 const fige = () => new Promise(() => {});
-const afterLesson = (session, runner) => { if (session.choix?.apresLecon) runner.lessonPlayed?.(session.choix.apresLecon); };
+const afterLesson = (session, runner) => {
+  if (session.choix?.apresLecon) runner.lessonPlayed?.(session.choix.apresLecon);
+  // (lot « Décisions sur les constats de l'agent », décision 1) une séance reprise après un rechargement : une leçon déjà vue (ou
+  // passée) dans la séance n'est pas rejouée
+  if (session.reprise) for (const l of session.rec?.lecons ?? []) if (l.vue || l.passee) runner.lessonPlayed?.(l.id);
+};
 // lot 2, étape 6 : la notion du jour sur les additions (docs/SPEC-LOT2.md, section 3) : l'écran des additions, le
 // bernard-l'ermite (planche « ermite », chargée le temps de l'étape), la leçon de la famille la première fois
 // (L4 à L6), sinon deux exemples guidés ; une famille acquise rapporte une étoile arc-en-ciel
@@ -481,7 +504,6 @@ app.parent = parent;
 // l'espace parent coupe le son ; à la sortie, ses réglages (musique, volume, bruitages) sont relus
 // (pendant une pause, le parent peut terminer la séance : endPausedSession)
 const openParent = async () => { voice.stop(); sound.suspend(); const r = await parent.open(); if (r?.terminer) await endPausedSession({ par: "parent", raison: "terminée par le parent pendant une pause" }); if (r?.reload) location.reload(); sound.setPrefs(await store.setting("son")); sound.resume(); };
-const big = (name, cx, cy, label, cls = "bubble") => spriteBox(app, { x: cx - 90, y: cy - 90, w: 180, h: 180, cls, label, paint: (ctx) => sprites.draw(ctx, name, 0, 90, 90) });
 // (lot « Correctifs : passage de l'échauffement aux voiliers », point 10 ; demande du parent du 10 octobre 2026) LES GALETS DE
 // L'ACCUEIL : plus grands (au moins 200 px de large) et chacun sa forme de galet (atelier : sea/galets.ts, sprites
 // « accueil.galet.* ») ; le bouton est la boîte du galet, son dessin (ombre comprise) déborde un peu. Sélectionné, l'entourage
@@ -554,10 +576,6 @@ async function showHome({ done, first = false, bienvenue = false }) {
   // touchers rapides y vont aussitôt (point 11)
   deuxTouchers(app, { tuiles, texte: (k) => text.data.accueilDescription[k], peindre: (k) => { homeSel = k; }, commandes: ".logo", unToucher: !!window.__accueilUnToucher }).then((k) => actions[k]?.());
 }
-// les bulles de l'accueil : jouer, choisir (ou « Encore ! »), les leçons, le récif, l'album
-// (lot 3 bis, R20 : l'album était posé sur le rocher de droite ; les bulles se décalent vers la gauche, sous la mascotte)
-// (lot « Les leçons » : cinq bulles, 180 px de l'une à l'autre)
-const HOME_X = [370, 550, 730, 910, 1090];
 // (point 10) les galets de l'accueil : plus grands, environ 228 px de l'un à l'autre, entre le bouton de l'espace parent et le bord droit
 const GALET_X = [250, 478, 705, 933, 1160], GALET_Y = 652;
 // LES LEÇONS (lot « Les leçons », session/lessons.js) : le menu ; une leçon, puis l'écran « À toi ! » (l'exercice associé :
@@ -582,23 +600,36 @@ async function openLessons() {
   await runSession(go);
 }
 // une séance du jour : proposée par l'application (« jouer »), ou l'exercice choisi (`choix`, lot 3)
-async function runSession(choix = null) {
+// (lot « Décisions sur les constats de l'agent », décision 1) `reprise` : la fiche d'une séance à reprendre après un rechargement
+// (session.js, repriseDuJour) : la même séance, au début de son étape en cours, avec ses étapes, son cran, sa musique
+async function runSession(choix = null, reprise = null) {
   // la durée maximale d'une séance est un réglage du parent (seance.json donne la valeur par défaut) ; « Échauffement :
   // non » (réglage du parent, lot 3) le retire de la séance et de la frise
-  const sans = (await store.setting("echauffement")) === false ? ["echauffement"] : [], sansRaison = {};
+  const sans = reprise ? [...(reprise.plan?.sans ?? [])] : (await store.setting("echauffement")) === false ? ["echauffement"] : [], sansRaison = reprise ? { ...(reprise.plan?.sansRaison ?? {}) } : {};
+  if (reprise) choix = reprise.choix ?? null;
   // lot 3, étape 5 : l'échauffement déjà fait ou passé ce jour-là (séance interrompue pour un autre exercice) n'est pas refait
-  if (!sans.length && (await store.all("seances")).some((s) => !s.libre && sameDay(s.debut, Date.now()) && (s.etapes ?? []).some((e) => e.id === "echauffement" && e.dureeS !== undefined))) { sans.push("echauffement"); sansRaison.echauffement = "déjà fait aujourd'hui"; }
+  if (!reprise && !sans.length && (await store.all("seances")).some((s) => !s.libre && sameDay(s.debut, Date.now()) && (s.etapes ?? []).some((e) => e.id === "echauffement" && e.dureeS !== undefined))) { sans.push("echauffement"); sansRaison.echauffement = "déjà fait aujourd'hui"; }
   // lot « Les leçons » : « À toi ! » après une leçon du menu : sans échauffement
   if (choix?.apresLecon && !sans.includes("echauffement")) { sans.push("echauffement"); sansRaison.echauffement = "après une leçon"; }
   // lot 3 : la rotation de « jouer » entre les trois modules, le moins maîtrisé d'abord (session.js, chooseModule)
   const [n1, n2, n3, n5] = await Promise.all([1, 2, 3, 5].map((k) => store.get("niveaux", k))), mastery = { 1: ((n1?.niveau ?? 1) - 1) / module1.niveaux.length, 2: (n2?.acquises?.length ?? 0) / module2.familles.length, 3: calcMastery(module3, n3), 5: multMastery(module5, n5) };
-  const session = new Session({ store, content: { ...seance, dureeMaxMin: await store.setting("dureeSeanceMin", seance.dureeMaxMin) }, handlers, rewards, paused: () => clock.pausedTotal(), onProgress: (p) => progress(p), choix, sans, sansRaison, mastery: (m) => mastery[m] ?? 0,
+  const session = new Session({ store, content: { ...seance, dureeMaxMin: await store.setting("dureeSeanceMin", seance.dureeMaxMin) }, handlers, rewards, paused: () => clock.pausedTotal(), onProgress: (p) => progress(p), choix, sans, sansRaison, mastery: (m) => mastery[m] ?? 0, reprise,
     // la protection du sélecteur redescend d'un cran : la mascotte encourage, la voix le dit doucement
     onCranDown: async () => { voice.stop(); ocean.mascotte.play("encourager"); await voice.say(text.data.cranDescente); } });
   app.session = session; mode = "seance";
   // la frise ne montre le défi record que s'il aura lieu (à partir de la 5e séance, assez de faits bien sus)
   const defi = seance.etapes.find((e) => e.id === "defi");
-  frieze.only([...sans, ...(defi && handlers.defi && !(await challengeReady(store, defi)) ? ["defi"] : [])]);
+  const frise = reprise?.plan?.frise ?? [...sans, ...(defi && handlers.defi && !(await challengeReady(store, defi)) ? ["defi"] : [])];
+  frieze.only(frise);
+  // (décision 1) ce qu'il faut pour reprendre la séance : ses étapes retirées, la frise ; écrit dès le début, avec la séance
+  if (reprise) {
+    // la limite de faits nouveaux de la séance compte ceux déjà introduits avant le rechargement ; la musique de la séance
+    session.nouveaux = (await store.all("faits")).filter((f) => (f.introduit ?? 0) >= reprise.debut).length;
+    sound.startMusic(reprise.musique ?? pickMusic(sonIndex, rnd));
+    ocean.mascotte.play("saluer"); voice.say(text.data.reprise);
+  } else {
+    await session.start(); session.rec.plan = { sans: [...sans], sansRaison: { ...sansRaison }, frise }; await session.save();
+  }
   await session.run();
   // (une séance interrompue dont l'étape abandonnée s'est réveillée : ce n'est plus elle qui mène l'écran)
   if (session.stopped) return;
@@ -681,22 +712,31 @@ async function pauseSession() {
   await app.session?.notePause();
   showPauseHome();
 }
-function clearPauseHome() { pausedEls?.forEach((e) => e.remove()); pausedEls = null; }
+function clearPauseHome() { pausedEls?.forEach((e) => e.remove()); pausedEls = null; fleche.cacher(); }
+// (lot « Décisions sur les constats de l'agent », décision 3 ; constat 11 de l'agent : « continuer » partait au premier toucher, et
+// le second toucher de l'enfant, habituée aux deux touchers, tapait un chiffre dans le pavé) L'ACCUEIL EN PAUSE EN DEUX TOUCHERS,
+// comme l'accueil : les mêmes galets (« continuer » a celui de « jouer ») ; le premier toucher sélectionne le galet et la mascotte
+// dit ce que c'est (« Continuer. On reprend la séance. »), le second y va ; deux touchers rapides y vont aussitôt
 function showPauseHome() {
-  clearPauseHome();
-  const resume = big("jouer", HOME_X[0], 650, "continuer", "bubble play keep"), pickKey = big("choisir", HOME_X[1], 650, "choisir", "bubble choisir keep");
-  const reefKey = big("recif", HOME_X[3], 650, "le récif", "bubble reefkey keep"), albumKey = big("album", HOME_X[4], 650, "l'album", "bubble albumkey keep");
-  const lessonsKey = big("accueil.lecons", HOME_X[2], 650, "les leçons", "bubble leconskey keep");
+  clearPauseHome(); homeSel = null;
+  const tuiles = [galet("jouer", GALET_X[0], "continuer", "play keep"), galet("choisir", GALET_X[1], "choisir", "choisir keep"), galet("lecons", GALET_X[2], "les leçons", "leconskey keep"), galet("recif", GALET_X[3], "le récif", "reefkey keep"), galet("album", GALET_X[4], "l'album", "albumkey keep")];
   const logo = parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }); logo.classList.add("keep");
-  pausedEls = [resume, pickKey, lessonsKey, reefKey, albumKey, logo];
-  onBrief(app, lessonsKey, () => visitInPause(lessonsInPause), "lecons");
-  onBrief(app, resume, resumeSession, "continuer");
-  onBrief(app, reefKey, () => visitInPause(() => reef.visit()), "recif");
-  onBrief(app, albumKey, () => visitInPause(() => album.visit()), "album");
-  onBrief(app, pickKey, () => visitInPause(pickInPause), "choisir");
+  pausedEls = [...tuiles, logo];
+  const actions = { jouer: resumeSession, choisir: () => visitInPause(pickInPause), lecons: () => visitInPause(lessonsInPause), recif: () => visitInPause(() => reef.visit()), album: () => visitInPause(() => album.visit()) };
+  const descr = { ...text.data.accueilDescription, jouer: text.data.accueilDescription.continuer };
+  deuxTouchers(app, { tuiles, texte: (k) => descr[k], peindre: (k) => { homeSel = k; }, commandes: ".logo", unToucher: !!window.__accueilUnToucher, dire: direEnPause, taire: () => { if (pauseTalk) voice.stop(); } }).then((k) => { if (app.enPause && pausedEls?.includes(tuiles[0])) actions[k]?.(); });
 }
 function resumeSession() {
   if (visiting) return;
+  finirParolePause(); bulle.cacher();
+  // (décision 1) la séance à reprendre après un rechargement : elle repart au début de son étape
+  if (app.repriseEnAttente) {
+    const r = app.repriseEnAttente; app.repriseEnAttente = null;
+    clearPauseHome(); app.enPause = false; app.session = null;
+    voice.unlock(); stage.root.classList.remove("paused"); ocean.mascotte.suspendre(false);
+    clock.resume(); voice.resume(); sound.pauseLevel(false);
+    return runSession(null, r);
+  }
   clearPauseHome(); app.enPause = false;
   voice.unlock(); stage.root.classList.remove("paused"); homeKey.style.visibility = "visible";
   ocean.mascotte.suspendre(false); if (ambianceAvantPause) ocean.mascotte.setAmb(ambianceAvantPause);
@@ -710,6 +750,7 @@ function resumeSession() {
 // l'enfant a validé un autre exercice, la séance en pause est terminée et l'exercice choisi commence)
 async function visitInPause(fn) {
   if (visiting || !app.enPause) return;
+  finirParolePause(); bulle.cacher();
   visiting = true; voice.unlock(); clearPauseHome();
   const back = sandbox(); let after = null;
   try { after = await fn(); } finally { back(); visiting = false; }
@@ -783,6 +824,20 @@ function sandbox() {
     st.root.classList.add("paused");
   };
 }
+// (lot « Décisions sur les constats de l'agent », décision 1 du parent du 13 octobre 2026 ; constat 1 de l'agent) LA REPRISE APRÈS UN
+// RECHARGEMENT : la séance du jour, ni terminée ni interrompue, attend dans l'accueil en pause, comme après la maison : « continuer »
+// la reprend au début de son étape en cours (resumeSession) ; « choisir » l'interrompt et lance l'exercice choisi ; les leçons, le
+// récif, l'album se visitent ; le parent peut la terminer. La mascotte le dit : « Te revoilà ! Touche la grande bulle pour
+// continuer. » (deux phrases qui existent déjà : la bienvenue, la consigne de la pause)
+function preparerReprise(rec) {
+  const session = new Session({ store, content: seance, handlers, rewards, reprise: rec });
+  session.rec = rec; app.session = session; app.repriseEnAttente = rec; mode = "seance";
+  clock.pause(); voice.pause(); sound.pauseLevel(true); stage.root.classList.add("paused"); homeKey.style.visibility = "hidden";
+  ocean.mascotte.suspendre(true); ocean.mascotte.ambiance("pause"); bulle.cacher(); fleche.cacher();
+  app.enPause = true; ambianceAvantPause = null;
+  showPauseHome();
+  ocean.mascotte.play("saluer"); consigneEnPause(text.data.repriseRechargement);
+}
 // l'activité en cours est abandonnée pour de bon (engine/clock.js) et la scène rangée
 function abandonActivity() {
   // (lot « Correctifs : passage de l'échauffement aux voiliers », point 1 ; lot « Recette de l'enfant », point 2) les portées
@@ -807,6 +862,7 @@ function quitFree() { abandonActivity(); showHome({ done: true }); }
 // notée pour l'historique du parent, et pas de retour à l'accueil : l'exercice choisi commence)
 async function endPausedSession({ par = "parent", raison = null, home = true } = {}) {
   if (!app.enPause || !app.session) return;
+  finirParolePause(); app.repriseEnAttente = null;
   clearPauseHome(); app.enPause = false;
   await app.session.interrupt({ par, raison });
   abandonActivity(); frieze.show(false); stage.root.classList.remove("paused"); sound.pauseLevel(false);
@@ -825,7 +881,16 @@ onBrief(app, homeKey, () => {
   // (lot 3, étape 5) depuis l'accueil en pause : l'écran « choisir » ou la leçon seule, quittés sans rien toucher à la séance
   else if (mode === "pause-choix") app.choiceCancel?.();
   else if (mode === "pause-lecon") app.lessonCancel?.();
+  // (décision 2 du lot « Décisions sur les constats de l'agent ») la fin de la récompense : « à demain » tout de suite
+  else if (mode === "fin") app.finMaison?.();
 }, () => app.legendes.etiquettes[mode === "seance" && !app.enPause ? "pause" : "maison"]);
+// (lot « Décisions sur les constats de l'agent », décision 2) la maison à côté du bouton de fin de la récompense (finRecompense,
+// session/screens.js) : touchée, « à demain » vient aussitôt
+let modeAvantFin = null;
+app.maisonFin = (v) => {
+  if (v) { modeAvantFin = mode; mode = "fin"; homeKey.style.visibility = "visible"; }
+  else if (mode === "fin") { mode = modeAvantFin; homeKey.style.visibility = "hidden"; }
+};
 // (lot « Les leçons » : `start`, l'exercice lancé par « À toi ! » après une leçon, quand la séance du jour est faite)
 async function freeTraining(start = null) {
   mode = "libre"; homeKey.style.visibility = "visible"; sound.startMusic(pickMusic(sonIndex, rnd));
@@ -840,11 +905,18 @@ async function freeTraining(start = null) {
 }
 // (lot « Correctifs de la tablette ») tout est chargé, les vidéos de la mascotte comprises : l'écran de démarrage attend un
 // toucher, qui autorise aussi la voix ; puis l'accueil, où la mascotte souhaite la bienvenue (une fois par lancement)
+// (lot « Décisions sur les constats de l'agent », recette) les séances, pour la reprise et « à demain », sont lues pendant l'écran de
+// démarrage : lues après le toucher, la lecture attendait son tour derrière le fondu de sortie (0,3 à 1 s de plus avant l'accueil,
+// processeur ralenti 4 fois, tests/e2e/perf.mjs) ; rien ne les change avant le toucher
+const seancesLues = store.all("seances"), dejaLues = { all: () => seancesLues };
 await ocean.mascotte.pret;
 const toucheDemarrage = await demarrage.attendreToucher();
 demarrageTouche = true;
 if (toucheDemarrage) { voice.unlock(); sound.unlock(); }
 stage.paused = false; // (la scène reprend sous le fondu de sortie)
 await demarrage.fermer();
-showHome({ done: await doneToday(store), bienvenue: toucheDemarrage });
+// (décision 1) une séance du jour à reprendre après un rechargement : l'accueil en pause, avec « continuer »
+const aReprendre = P.has("sansReprise") ? null : await repriseDuJour(dejaLues, Date.now());
+if (aReprendre) preparerReprise(aReprendre);
+else showHome({ done: await doneToday(dejaLues), bienvenue: toucheDemarrage });
 requestAnimationFrame(() => requestAnimationFrame(() => { performance.mark("app-ready"); window.__ready = performance.now() - T0; }));

@@ -107,7 +107,7 @@ json("version.json").then((v) => { versionApp = v?.version ?? null; demarrage.in
 // (lot « Mascotte ») le journal des raccords de la mascotte : gardé pour la recette (combien de fondus forcés)
 const journalMascotte = []; window.__journalMascotte = journalMascotte;
 const videoChargee = demarrage.annoncer(MASCOTTE_VIDEOS, 1);
-const ocean = new Ocean(stage, sprites, atlas, { rapide: location.search.includes("voix=rapide"), progres: videoChargee, journal: (texte, genre, info) => { journalMascotte.push({ t: Math.round(performance.now()), texte, genre, ...info }); if (journalMascotte.length > 2000) journalMascotte.shift(); } });
+const ocean = new Ocean(stage, sprites, atlas, { rapide: location.search.includes("voix=rapide"), progres: videoChargee, signaler: (m, d) => noterTech("mascotte", m, d), journal: (texte, genre, info) => { journalMascotte.push({ t: Math.round(performance.now()), texte, genre, ...info }); if (journalMascotte.length > 2000) journalMascotte.shift(); } });
 const T = (p, poids = 1) => demarrage.tache(p, poids);
 const [module1, module2, textes, seance, lecons, cartes, calendrier, parentContent, voix] = await Promise.all([T(json("content/module1.json")), T(json("content/module2.json")), T(json("content/textes.json")), T(json("content/seance.json")), T(json("content/lecons.json")), T(json("content/cartes.json")), T(json("content/calendrier.json")), T(json("content/parent.json")), T(json("assets/voix/index.json").catch(() => null), 3)]);
 const [sonContent, sonIndex, module3, legendes, module4, module5, module6, etalConf] = await Promise.all([T(json("content/son.json")), T(json("assets/son/index.json").catch(() => null)), T(json("content/module3.json")), T(json("content/legendes.json")), T(json("content/module4.json")), T(json("content/module5.json")), T(json("content/module6.json")), T(json("content/etal.json"))]);
@@ -148,6 +148,9 @@ voice.onManque = (phrase, cause) => { notesSansVoix = notesSansVoix.then(async (
     console.warn("phrase sans voix, notée pour l'espace parent :", phrase, cause);
   } catch { /* le journal ne doit jamais gêner l'enfant */ }
 }); };
+// (lot « Correctifs de l'installation et de la veille », point 2) une lecture refusée par le navigateur : notée dans le journal
+// technique ; le texte est redit au toucher suivant (ci-dessous, l'écouteur de chaque toucher)
+voice.onRefus = (phrase, e) => noterTech("voix", "lecture refusée", { phrase, erreur: String(e?.message ?? e?.name ?? e) });
 // (lot « Mascotte ») la mascotte parle quand la voix parle, et ce qu'elle dit s'écrit dans sa bulle (pas dans le récif
 // vivant, où elle n'est pas) ; la bulle s'efface 1,5 s après la phrase ; la flèche montre à la place du bras de la pieuvre
 // (la bande de la ligne graduée affichée est un obstacle de la bulle, sauf pendant la pause, où elle est cachée)
@@ -174,10 +177,18 @@ voice.onSilence = () => { ocean.mascotte.silence(); bulle.silence(); };
 // les bruitages et la musique (lot 2) ; ?son=non : silence (mesures)
 const sound = new Sound({ content: sonContent, index: sonIndex, off: P.get("son") === "non" });
 sound.setPrefs(await store.setting("son"));
+sound.onEtat = (etat) => noterTech("son", `son : ${({ running: "en marche", suspended: "suspendu", interrupted: "coupé par le système", closed: "fermé" })[etat] ?? etat}`);
+// (lot « Correctifs de l'installation et de la veille », point 2) LE PREMIER PLAN ET L'ARRIÈRE-PLAN (veille, verrouillage, autre
+// application) : notés dans le journal technique ; au retour, le son est repris (la vidéo de la mascotte est surveillée par
+// engine/mascotte.js, relancée si elle ne joue plus)
+const auRetour = () => { if (sound.ctx) sound.unlock(); };
+document.addEventListener("visibilitychange", () => { noterTech("page", document.hidden ? "en arrière-plan" : "au premier plan", { son: sound.ctx?.state ?? null }); if (!document.hidden) auRetour(); });
+addEventListener("pagehide", (e) => noterTech("page", "page quittée", { gardee: e.persisted }));
+addEventListener("pageshow", (e) => { if (e.persisted) { noterTech("page", "page retrouvée"); auRetour(); } });
 // chaque toucher débloque (ou réveille) le son ; un bouton fait son petit bruit (pas les bulles-réponses, qui ont
 // les leurs, ni le coquillage)
 document.addEventListener("pointerdown", (e) => {
-  sound.unlock();
+  sound.unlock(); voice.redireSiRefus();
   const b = e.target.closest?.("#ui button");
   if (b && !b.matches(".answer, .shelltap, .touchband") && !b.disabled) sound.play("bouton");
 }, { capture: true });
@@ -191,8 +202,8 @@ const journal = async (e) => {
   } catch { /* le journal ne doit jamais gêner l'enfant */ }
 };
 sprites.onMissing = (c) => journal({ type: "image introuvable", ...c });
-addEventListener("error", (ev) => { const e = { message: ev.message, source: `${(ev.filename ?? "").split("/").pop()}:${ev.lineno}`, pile: ev.error?.stack?.split("\n").slice(0, 4).join(" | ") ?? null }; journal({ type: "erreur de page", ...e }); noterTech("erreur", "erreur non traitée", e); });
-addEventListener("unhandledrejection", (ev) => { const e = { message: String(ev.reason?.message ?? ev.reason), pile: ev.reason?.stack?.split("\n").slice(0, 4).join(" | ") ?? null }; journal({ type: "erreur de page", ...e }); noterTech("erreur", "promesse rejetée", e); });
+addEventListener("error", (ev) => { const e = { message: ev.message, source: `${(ev.filename ?? "").split("/").pop()}:${ev.lineno}`, pile: ev.error?.stack?.split("\n").slice(0, 4).join(" | ") ?? null }; journal({ type: "erreur de page", ...e }); noterTech("erreur", "erreur non traitée", { erreur: e.message, fichier: e.source, pile: e.pile }); });
+addEventListener("unhandledrejection", (ev) => { const e = { message: String(ev.reason?.message ?? ev.reason), pile: ev.reason?.stack?.split("\n").slice(0, 4).join(" | ") ?? null }; journal({ type: "erreur de page", ...e }); noterTech("erreur", "promesse rejetée", { erreur: e.message, pile: e.pile }); });
 const rewards = await new Rewards(store, cartes, calendrier).load();
 if (P.get("etoiles")) { rewards.st.total = Number(P.get("etoiles")); await rewards.save(); } // tests : un trésor de départ
 const app = { stage, sprites, ocean, lagon, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, legendes, line: new LineView(stage), bulle, fleche, portees: new Set() };
@@ -945,3 +956,11 @@ requestAnimationFrame(() => requestAnimationFrame(() => { performance.mark("app-
 // changement (l'écran, l'étape de la séance, la pause)
 let ecranNote = null;
 setInterval(() => { const e = [mode ?? "accueil", mode === "seance" ? app.session?.progress?.etape : null, app.enPause ? "en pause" : null].filter(Boolean).join(" · "); if (e !== ecranNote) { ecranNote = e; noterTech("écran", e); } }, 1000);
+// (points 2 et 3) L'ÉTAT DE LA PAGE, toutes les 10 minutes et à chaque changement du niveau d'allègement : la mémoire (si Chrome la
+// donne), les lecteurs de médias qui ont une source (la voix, la mascotte ; leur épuisement est la piste du point 2), les calques
+// animés (acteurs) et le niveau d'allègement (la piste du point 3 : la mémoire graphique de la tablette)
+const etatPage = () => ({ allegement: stage.perf.level, memoireMo: performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1e6) : null,
+  medias: [...document.querySelectorAll("audio, video")].filter((m) => m.getAttribute("src")).length + (voice.lecteursActifs?.() ?? 0), calques: document.querySelectorAll("canvas").length, lectureRefusees: voice.refus });
+let allegementNote = 0;
+setInterval(() => noterTech("état", "état de la page", etatPage()), 600000);
+setInterval(() => { if (stage.perf.level !== allegementNote) { allegementNote = stage.perf.level; noterTech("état", `allègement de l'affichage : niveau ${allegementNote}`, etatPage()); } }, 2000);

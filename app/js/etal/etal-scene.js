@@ -11,7 +11,7 @@
 /* eslint-disable */
 export const STYLE = "#etal-scene canvas{position:absolute;left:0;top:0}\n#etal-effets{width:1280px;height:800px}\n#etal-effets{pointer-events:none}\n#etal-captVoile{position:absolute;left:25.6px;top:136px;width:198px;height:270px;background:rgb(10,18,32);opacity:0;transition:opacity 2.5s ease;pointer-events:none}\n#etal-voile{position:absolute;inset:0;pointer-events:none;opacity:0}\n#etal-nuit{position:absolute;inset:0;pointer-events:none;opacity:0;background:rgb(6,12,24)}\n#etal-caisse{position:absolute;inset:0;pointer-events:none;z-index:1}\n#etal-effets,#etal-nuit,#etal-voile{z-index:2}\n#etal-caisse .m{position:absolute;left:0;top:0;pointer-events:auto;will-change:transform;\n  transition:transform .38s cubic-bezier(.25,.9,.35,1),opacity .3s;filter:drop-shadow(0 3px 2px rgba(20,12,4,.45))}\n#etal-caisse .m.glisse{transition:none}\n#etal-pf{position:absolute;left:0;top:0;width:640px;height:422px;transform-origin:0 0;pointer-events:auto;z-index:3;filter:drop-shadow(0 5px 4px rgba(20,12,4,.5))}\n#etal-pfFond,#etal-pfAvant{position:absolute;left:0;top:0;transform-origin:0 0;opacity:0;transition:opacity .15s}\n#etal-pfFond{z-index:3;pointer-events:none;filter:drop-shadow(0 5px 4px rgba(20,12,4,.5))}\n#etal-pfFond.vu{pointer-events:auto}\n#etal-pfAvant{z-index:5;pointer-events:none}\n#etal-soucoupe{position:absolute;left:283px;top:597px;width:370px;z-index:1;pointer-events:none;filter:drop-shadow(0 6px 5px rgba(20,12,4,.45))}\n#etal-total{position:absolute;left:298px;top:560px;width:340px;text-align:center;font:600 24px Ardoise,\"Comic Sans MS\",sans-serif;color:#fff8e8;\n  text-shadow:0 2px 0 #1d1712,0 0 6px #1d1712;z-index:1;pointer-events:none;transition:opacity .3s}";
 export function startEtal(OPTS) {
-let VIVANT = true, RAF = 0;
+let VIVANT = true, RAF = 0, PEINT = false;
 const IMGS = OPTS.images;
 const DECOR = document.createElement('canvas'); DECOR.id = 'etal-decor'; DECOR.className = 'etal-decor'; DECOR.width = 1920; DECOR.height = 1200;
 const SCENE = document.createElement('div'); SCENE.id = 'etal-scene'; SCENE.className = 'etal-scene';
@@ -576,7 +576,8 @@ function effets() {
 let fpsN = 0, fpsT = 0, qualite = 1, dtMoy = 1 / 60;
 function image(ms) {
   if (!VIVANT) return; RAF = requestAnimationFrame(image);
-  if (OPTS.fige?.()) { dernier = 0; return; }
+  if (OPTS.fige?.() && PEINT) { dernier = 0; return; }
+  PEINT = true;
   OPTS.mesure?.(ms);
   const s = ms / 1000; dt = Math.min(0.05, dernier ? s - dernier : 0); dernier = s; t += dt;
   // le temps change en 3 s

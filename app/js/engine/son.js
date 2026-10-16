@@ -34,11 +34,15 @@ export class Sound {
     if (this.off) return;
     if (!this.ctx) {
       try { this.ctx = new AudioContext({ sampleRate: this.c.frequenceEchantillonnage ?? 48000 }); } catch { this.ctx = new AudioContext(); }
+      // (lot « Correctifs de l'installation et de la veille », point 2 : chaque changement d'état du contexte, pour le journal
+      // technique : `onEtat(état)`)
+      this.ctx.onstatechange = () => { try { this.onEtat?.(this.ctx.state); } catch { /* rien */ } };
       this.sfx = this.ctx.createGain(); this.sfx.connect(this.ctx.destination);
       this.bus = this.ctx.createGain(); this.bus.gain.value = 0; this.bus.connect(this.ctx.destination); // musique
       this.loading = Promise.all(Object.entries(this.index.bruitages).map(async ([k, e]) => { this.buffers[k] = await this.decode(e.fichier); }));
     }
-    if (this.ctx.state === "suspended" && !this.held) this.ctx.resume().catch(() => {});
+    // (point 2 : « interrupted », l'état d'un contexte coupé par le système, se reprend aussi)
+    if ((this.ctx.state === "suspended" || this.ctx.state === "interrupted") && !this.held) this.ctx.resume().catch(() => {});
   }
   async decode(f) {
     try { return await this.ctx.decodeAudioData(await (await fetch(this.base + f)).arrayBuffer()); } catch { return null; }

@@ -59,12 +59,19 @@ import { ParentSpace, parentLogo } from "./parent/parent.js";
 import { chargerLogo, Demarrage } from "./session/demarrage.js";
 import { fermerTout, Portee } from "./engine/portee.js";
 import { suivreMiseAJour } from "./engine/miseajour.js";
+import { noter as noterTech, recents as journalTechnique } from "./engine/journal.js";
 
 // les vidéos de la mascotte (engine/mascotte.js, CLIPS) : autant de pas dans la barre de chargement
 const MASCOTTE_VIDEOS = 17;
 
 const T0 = performance.now();
 const json = async (p) => (await fetch(p)).json();
+// (lot « Correctifs de l'installation et de la veille », point 5) LE JOURNAL TECHNIQUE (engine/journal.js) : les 300 derniers
+// événements, pour le parent et la conception ; pour les parcours, ceux de cette page dans window.__journalTechnique
+window.__journalTechnique = journalTechnique;
+const controleeAuLancement = !!navigator.serviceWorker?.controller;
+// (point 1) un lancement précédent resté bloqué (le secours de index.html a proposé « Toucher pour réessayer ») : noté maintenant
+try { const b = JSON.parse(localStorage.getItem("lancementBloque") ?? "null"); if (b) { localStorage.removeItem("lancementBloque"); noterTech("lancement", "un lancement précédent n'avait rien affiché au bout de 15 secondes", { quand: b.t, controle: b.controle }); } } catch { /* rien */ }
 
 const stage = new Stage(document.getElementById("stage"));
 // hors ligne : le service worker met toute l'application en cache (pas en file://, ni pendant les tests qui
@@ -72,7 +79,15 @@ const stage = new Stage(document.getElementById("stage"));
 // (lot « Correctifs : passage… », point 12 : une nouvelle version attend ; elle ne prend la main qu'au lancement suivant, ou
 // pendant l'écran de démarrage, avant le toucher : la page se recharge alors aussitôt, engine/miseajour.js)
 let demarrageTouche = false;
-if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !location.search.includes("nosw")) navigator.serviceWorker.register(`sw.js?r=${stage.px > 1.2 ? 2 : 1}`).then((reg) => suivreMiseAJour(reg, { touche: () => demarrageTouche, journal: (e) => { try { journal(e); } catch { /* (pas encore prêt) */ } } })).catch(() => {});
+// (point 5 : l'enregistrement, une version qui arrive et celle qui prend la main sont notées dans le journal technique)
+if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !location.search.includes("nosw")) {
+  navigator.serviceWorker.addEventListener("controllerchange", () => noterTech("service worker", "une nouvelle version sert la page"));
+  navigator.serviceWorker.register(`sw.js?r=${stage.px > 1.2 ? 2 : 1}`).then((reg) => {
+    if (reg.waiting) noterTech("service worker", "une nouvelle version attend le lancement suivant");
+    reg.addEventListener("updatefound", () => noterTech("service worker", "une nouvelle version s'installe"));
+    suivreMiseAJour(reg, { touche: () => demarrageTouche, journal: (e) => { noterTech("service worker", e.message); try { journal(e); } catch { /* (pas encore prêt) */ } } });
+  }).catch((e) => noterTech("service worker", "enregistrement impossible", { erreur: String(e?.message ?? e) }));
+}
 // (lot « Correctifs de la tablette ») L'ÉCRAN DE DÉMARRAGE (session/demarrage.js) : l'atlas et la petite planche du logo
 // d'abord, puis tout le reste, chaque chargement faisant avancer la barre : les contenus et l'index de la voix, les planches
 // du premier écran, les vidéos de la mascotte (créée tout de suite : ses vidéos se chargent pendant le reste)
@@ -83,6 +98,9 @@ const sprites = new Sprites(atlas, stage.px);
 await sprites.load("demarrage").catch(() => {});
 const demarrage = new Demarrage(stage, sprites, logo);
 performance.mark("demarrage-visible");
+// (point 1) l'écran de démarrage est là : le secours de index.html s'en va ; le temps depuis le lancement (l'ouverture de la page)
+const premiereImageMs = Math.round(performance.now());
+document.getElementById("chargement")?.remove();
 // (la version : écrite sur l'écran de démarrage, et notée avec chaque phrase sans voix, point 12)
 let versionApp = null;
 json("version.json").then((v) => { versionApp = v?.version ?? null; demarrage.infos(versionApp); }, () => demarrage.infos(null));
@@ -173,8 +191,8 @@ const journal = async (e) => {
   } catch { /* le journal ne doit jamais gêner l'enfant */ }
 };
 sprites.onMissing = (c) => journal({ type: "image introuvable", ...c });
-addEventListener("error", (ev) => journal({ type: "erreur de page", message: ev.message, source: `${(ev.filename ?? "").split("/").pop()}:${ev.lineno}`, pile: ev.error?.stack?.split("\n").slice(0, 4).join(" | ") ?? null }));
-addEventListener("unhandledrejection", (ev) => journal({ type: "erreur de page", message: String(ev.reason?.message ?? ev.reason), pile: ev.reason?.stack?.split("\n").slice(0, 4).join(" | ") ?? null }));
+addEventListener("error", (ev) => { const e = { message: ev.message, source: `${(ev.filename ?? "").split("/").pop()}:${ev.lineno}`, pile: ev.error?.stack?.split("\n").slice(0, 4).join(" | ") ?? null }; journal({ type: "erreur de page", ...e }); noterTech("erreur", "erreur non traitée", e); });
+addEventListener("unhandledrejection", (ev) => { const e = { message: String(ev.reason?.message ?? ev.reason), pile: ev.reason?.stack?.split("\n").slice(0, 4).join(" | ") ?? null }; journal({ type: "erreur de page", ...e }); noterTech("erreur", "promesse rejetée", e); });
 const rewards = await new Rewards(store, cartes, calendrier).load();
 if (P.get("etoiles")) { rewards.st.total = Number(P.get("etoiles")); await rewards.save(); } // tests : un trésor de départ
 const app = { stage, sprites, ocean, lagon, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, legendes, line: new LineView(stage), bulle, fleche, portees: new Set() };
@@ -910,6 +928,9 @@ async function freeTraining(start = null) {
 // processeur ralenti 4 fois, tests/e2e/perf.mjs) ; rien ne les change avant le toucher
 const seancesLues = store.all("seances"), dejaLues = { all: () => seancesLues };
 await ocean.mascotte.pret;
+// (point 5) le lancement : le temps jusqu'à la première image (l'écran de démarrage) et jusqu'à « tout chargé »
+noterTech("lancement", "application lancée", { premiereImageMs, pretMs: Math.round(performance.now()), version: versionApp, controlee: controleeAuLancement,
+  affichage: ["fullscreen", "standalone", "minimal-ui"].find((m) => matchMedia(`(display-mode: ${m})`).matches) ?? "navigateur", ecran: `${innerWidth}×${innerHeight}`, densite: devicePixelRatio, navigateur: navigator.userAgent });
 const toucheDemarrage = await demarrage.attendreToucher();
 demarrageTouche = true;
 if (toucheDemarrage) { voice.unlock(); sound.unlock(); }
@@ -920,3 +941,7 @@ const aReprendre = P.has("sansReprise") ? null : await repriseDuJour(dejaLues, D
 if (aReprendre) preparerReprise(aReprendre);
 else showHome({ done: await doneToday(dejaLues), bienvenue: toucheDemarrage });
 requestAnimationFrame(() => requestAnimationFrame(() => { performance.mark("app-ready"); window.__ready = performance.now() - T0; }));
+// (lot « Correctifs de l'installation et de la veille », point 5) les écrans ouverts : notés dans le journal technique à chaque
+// changement (l'écran, l'étape de la séance, la pause)
+let ecranNote = null;
+setInterval(() => { const e = [mode ?? "accueil", mode === "seance" ? app.session?.progress?.etape : null, app.enPause ? "en pause" : null].filter(Boolean).join(" · "); if (e !== ecranNote) { ecranNote = e; noterTech("écran", e); } }, 1000);

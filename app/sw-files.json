@@ -1,5 +1,5 @@
 {
- "version": "66762805eeab",
+ "version": "4452ac0e8be3",
  "files": [
   "./",
   "assets/art/aides@1x.webp",
@@ -11731,6 +11731,7 @@
   "js/engine/clock.js",
   "js/engine/fleche.js",
   "js/engine/hermit.js",
+  "js/engine/journal.js",
   "js/engine/lagon.js",
   "js/engine/line.js",
   "js/engine/mascotte.js",

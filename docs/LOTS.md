@@ -48,6 +48,8 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (décision du parent du 13 octobre 2026) : le lot « Décisions sur les constats de l'agent »** (fiche 11). Ce sont les réponses du parent aux questions laissées par le second passage de l'agent qui joue l'enfant (`docs/IDEES.md`, section 3), dont la reprise d'une séance après un rechargement. La boutique et la recette de l'enfant sont faites et fusionnées (PR #54 et #56). **État : fait** (PR #59, à fusionner ; elle remplace la PR #58 ; 4 phrases nouvelles, à fabriquer avec les 2 nouvelles et les 50 à refaire du lot précédent).
 
+**Puis (essai du parent du 16 octobre 2026, premier essai de l'application installée) : le lot « Correctifs de l'installation et de la veille »** (fiche 12). Le lot « Décisions sur les constats de l'agent » est fait et fusionné (PR #59), et toutes les voix sont fabriquées. **État : à faire.**
+
 **Pourquoi cet ordre.**
 
 - Les correctifs de la confrontation avant les leçons et les sommes : ces lots s'appuient sur les règles du module 2 telles qu'elles seront écrites.
@@ -945,3 +947,69 @@ Migration non destructive (méthode commune). **Test obligatoire** : une sauvega
 - l'enfant imprévisible, version courte, plus une série d'une vingtaine de graines où l'action « page rechargée » est fréquente ;
 - la relecture indépendante (méthode commune).
 
+### 12. Lot « Correctifs de l'installation et de la veille »
+
+**Origine** : le premier essai du parent avec l'application **installée** sur la tablette (icône sur l'écran d'accueil d'Android, lancement en plein écran), le 16 octobre 2026. Captures : `docs/maquettes/fiche12/`.
+
+**Comme les lots précédents : d'un seul tenant, sans arrêt pour une validation.** Ces défauts ne se voient que sur un vrai Android. La session ne pourra probablement pas tous les reproduire. Pour chacun :
+- chercher la cause dans le code, la corriger là où elle est plausible, et le dire ;
+- ajouter ce qui permettra au parent de voir la cause au prochain essai (point 5).
+
+Les choix vont dans le journal et dans « Choix faits sans le parent ».
+
+**1. Bloquant : l'application installée ne se relance plus.** Le premier lancement a marché. Après une fermeture, chaque relance reste sur l'écran de lancement d'Android (fond bleu, icône au milieu, nom en bas), sans fin. Le parent n'a jamais pu la relancer.
+- Cet écran est celui d'Android : il reste tant que la page n'a rien affiché. La page ne se charge donc pas, ou se bloque avant sa première image.
+- **Pistes, à vérifier dans l'ordre** :
+  - **`app/sw.js`, la réponse aux requêtes** : `cache.match(e.request, { ignoreSearch: true })`, pour chaque fichier, sur un cache de plus de 11 800 fichiers (environ 140 Mo). Avec `ignoreSearch`, le navigateur peut avoir à parcourir tout le cache à chaque requête. Le démarrage demande des centaines de fichiers : sur la tablette, cela peut durer des minutes. Mesurer le temps d'une requête servie par le cache, avec et sans `ignoreSearch`, puis ne l'utiliser que pour une adresse qui a des paramètres, ou enlever les paramètres avant de chercher.
+  - **L'installation de la nouvelle version en arrière-plan.** L'installation par paquets de 140 Mo, son activation au lancement suivant (`engine/miseajour.js` : « activer », puis `controllerchange` et rechargement), et l'effacement de l'ancien cache par `activate`. Un lancement qui tombe pendant l'activation, une activation qui n'aboutit pas, ou une page servie par un cache en cours d'effacement, ne doivent jamais bloquer.
+    - Le parcours `tests/e2e/mise-a-jour.mjs` échoue déjà environ une fois sur trois (`docs/IDEES.md`). Le traiter comme un symptôme possible de ce défaut, pas comme une instabilité du banc d'essai.
+  - **L'adresse de lancement** (`manifest.webmanifest`, `start_url: "./"`) : elle doit être servie par le cache, hors ligne compris. Vérifier qu'elle y est sous la même clé que `index.html`.
+  - **Un secours** : si la page n'a rien affiché au bout de quelques secondes, elle doit l'écrire. Par exemple un texte simple, servi sans le service worker, qui dit « Chargement… » puis « Toucher pour réessayer ». Jamais un écran figé.
+- **Le contrôler** : un parcours qui installe l'application, la ferme, la relance dix fois de suite, avec et sans réseau, et pendant qu'une nouvelle version s'installe. Mesurer le temps jusqu'à la première image à chaque relance.
+
+**2. Bloquant : après quelques minutes d'inactivité, l'application ne répond plus** (application ouverte, l'enfant ne touche rien ; **l'écran ne s'est pas mis en veille**, précision du parent).
+- Plus de musique, plus de voix ; les boutons font encore leur bruit (le son de `engine/son.js`, en Web Audio).
+- Un double toucher sur un galet n'ouvre plus rien. La capture 02 montre sans doute cet état : un écran sans contenu, avec la maison, le capitaine et le compteur.
+- **Piste principale, à vérifier : l'épuisement des lecteurs de médias d'Android.** Ce qui s'arrête, ce sont les éléments `<audio>` et `<video>` ; le Web Audio continue.
+  - La voix (`engine/voice.js`) crée un **nouvel élément `Audio` pour chaque phrase** (`new Audio(p.src)`, `preload = "auto"`). Elle ne libère jamais sa source : pas de `removeAttribute("src")` suivi de `load()`.
+  - Pendant l'inactivité, les relances (25 s sans toucher) continuent d'en créer.
+  - La mascotte garde en même temps une vingtaine de `<video>` WebM chargées (`engine/mascotte.js`, `loadVideo`).
+  - Sur Android, les lecteurs et les décodeurs sont des ressources limitées. Une fois épuisés, `play()` échoue, et le refus est ignoré (`.catch(() => {})`). Un écran qui attend un chargement de média (`loadeddata`) ou la fin d'une phrase peut rester bloqué.
+  - **À corriger quelle que soit la cause** :
+    - un petit nombre d'éléments `Audio` réutilisés, dont la source est libérée après chaque phrase ;
+    - le nombre de vidéos de la mascotte chargées en même temps, limité au nécessaire ;
+    - aucune attente sur un média sans délai de secours ;
+    - un `play()` refusé noté dans le journal (point 5), et la phrase redite au toucher suivant.
+- **Pistes secondaires** :
+  - l'application n'écoute ni `visibilitychange`, ni `pagehide`/`pageshow`, ni l'état de l'`AudioContext` (`suspended`, `interrupted`). Les traiter aussi, pour la veille et le verrouillage ;
+  - une horloge en pause (`engine/clock.js`) que rien ne relance.
+- **Le contrôler** :
+  - compter les éléments `<audio>` et `<video>` vivants, et leurs sources, au départ puis après 30 minutes d'inactivité sur l'accueil et sur chaque écran. Le nombre doit rester borné et faible ;
+  - l'enfant imprévisible avec de longues inactivités, des `play()` refusés et des pages cachées puis montrées. Après chaque retour : une phrase est dite, et un galet touché deux fois ouvre son écran.
+
+**3. Les poissons du fond coupés** (capture 02 : un poisson coupé net, à l'horizontale).
+- Pistes : le canvas de l'acteur (`engine/actor.js`) trop petit pour le poisson incliné (l'inclinaison est dessinée dans son canvas, `engine/lagon.js`) ; ou une image mal découpée par l'export (`art/tools/export-lagon.mjs`).
+- Comparer chaque image de chaque poisson, à chaque inclinaison, avec sa boîte. Contrôle automatique : aucun pixel opaque sur le bord d'un canvas d'acteur.
+
+**4. Les leçons de la monnaie (L15 à L18) ont un fond complètement noir.**
+- Piste : le décor de l'étal est un canvas opaque (`etal-scene.js`, `getContext('2d', { alpha: false })`). Il reste noir tant que rien n'y est dessiné. Quand la leçon installe sa propre scène (`lessons/etal.js`, `this.own`), le décor n'est peut-être jamais peint : images pas encore chargées, ou boucle de dessin pas lancée.
+- Vérifier les quatre leçons depuis chaque entrée : menu des leçons, entraînement libre, accueil en pause, et leçon relancée pendant l'exercice. Aussi avec le processeur ralenti, et sur la taille de la tablette.
+- Parcours : aucune image de leçon n'a plus de 20 % de pixels noirs.
+
+**5. Le journal technique, pour le prochain essai** : dans l'espace parent, « Données et réglages », un journal des 300 derniers événements, gardé sur la tablette et compris dans l'export. Il contient :
+- les lancements, avec le temps jusqu'à la première image ;
+- le service worker : version, installation, activation, erreurs ;
+- les passages au premier plan et en arrière-plan ;
+- l'état de l'`AudioContext` ;
+- les `play()` refusés ;
+- les erreurs non traitées et les promesses rejetées ;
+- les écrans ouverts.
+
+Le parent pourra l'exporter et le donner à la conception.
+
+**Voix** : en principe aucune phrase nouvelle. Si le secours du point 1 parle, le texte reste écrit, sans voix.
+
+**Recette** : la méthode commune, plus :
+- les parcours des points 1 à 4 ;
+- le temps jusqu'à la première image, au premier lancement et aux suivants, avant et après le lot ;
+- dans la demande de fusion, pour chaque point : la cause trouvée, ou ce qui a été essayé, et ce que le parent doit regarder dans le journal au prochain essai.

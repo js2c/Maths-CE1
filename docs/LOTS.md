@@ -967,15 +967,25 @@ Les choix vont dans le journal et dans « Choix faits sans le parent ».
   - **Un secours** : si la page n'a rien affiché au bout de quelques secondes, elle doit l'écrire. Par exemple un texte simple, servi sans le service worker, qui dit « Chargement… » puis « Toucher pour réessayer ». Jamais un écran figé.
 - **Le contrôler** : un parcours qui installe l'application, la ferme, la relance dix fois de suite, avec et sans réseau, et pendant qu'une nouvelle version s'installe. Mesurer le temps jusqu'à la première image à chaque relance.
 
-**2. Bloquant : après quelques minutes d'inactivité, l'application ne répond plus** (application ouverte, l'enfant ne touche rien).
-- Plus de musique, plus de voix ; les boutons font encore leur bruit (le son de `engine/son.js`).
+**2. Bloquant : après quelques minutes d'inactivité, l'application ne répond plus** (application ouverte, l'enfant ne touche rien ; **l'écran ne s'est pas mis en veille**, précision du parent).
+- Plus de musique, plus de voix ; les boutons font encore leur bruit (le son de `engine/son.js`, en Web Audio).
 - Un double toucher sur un galet n'ouvre plus rien. La capture 02 montre sans doute cet état : un écran sans contenu, avec la maison, le capitaine et le compteur.
-- **Pistes** :
-  - l'application n'écoute ni `visibilitychange`, ni `pagehide`/`pageshow`, ni l'état de l'`AudioContext` (Android peut le passer à `suspended` ou `interrupted`) ;
-  - la voix (`engine/voice.js`) joue des éléments `Audio` ; après une veille de l'écran, Android peut refuser `play()` jusqu'au toucher suivant. Le refus est ignoré (`.catch(() => {})`), et un écran qui attend la fin d'une phrase, d'un chargement ou d'une horloge en pause (`engine/clock.js`) peut rester bloqué ;
-  - au retour au premier plan, ou au premier toucher qui suit une inactivité : réveiller la musique et la voix, et relancer ce qui attendait. Une phrase refusée ne bloque jamais l'écran ; si besoin, la redire au toucher suivant.
-  - Vérifier aussi ce que fait l'écran de veille d'Android (écran assombri, puis éteint) et le verrouillage.
-- **Le contrôler** : l'enfant imprévisible avec des pages cachées, puis montrées (`visibilitychange`), un `AudioContext` suspendu, et `play()` refusé pendant quelques minutes. Après chaque retour : une phrase est dite, et un galet touché deux fois ouvre son écran.
+- **Piste principale, à vérifier : l'épuisement des lecteurs de médias d'Android.** Ce qui s'arrête, ce sont les éléments `<audio>` et `<video>` ; le Web Audio continue.
+  - La voix (`engine/voice.js`) crée un **nouvel élément `Audio` pour chaque phrase** (`new Audio(p.src)`, `preload = "auto"`). Elle ne libère jamais sa source : pas de `removeAttribute("src")` suivi de `load()`.
+  - Pendant l'inactivité, les relances (25 s sans toucher) continuent d'en créer.
+  - La mascotte garde en même temps une vingtaine de `<video>` WebM chargées (`engine/mascotte.js`, `loadVideo`).
+  - Sur Android, les lecteurs et les décodeurs sont des ressources limitées. Une fois épuisés, `play()` échoue, et le refus est ignoré (`.catch(() => {})`). Un écran qui attend un chargement de média (`loadeddata`) ou la fin d'une phrase peut rester bloqué.
+  - **À corriger quelle que soit la cause** :
+    - un petit nombre d'éléments `Audio` réutilisés, dont la source est libérée après chaque phrase ;
+    - le nombre de vidéos de la mascotte chargées en même temps, limité au nécessaire ;
+    - aucune attente sur un média sans délai de secours ;
+    - un `play()` refusé noté dans le journal (point 5), et la phrase redite au toucher suivant.
+- **Pistes secondaires** :
+  - l'application n'écoute ni `visibilitychange`, ni `pagehide`/`pageshow`, ni l'état de l'`AudioContext` (`suspended`, `interrupted`). Les traiter aussi, pour la veille et le verrouillage ;
+  - une horloge en pause (`engine/clock.js`) que rien ne relance.
+- **Le contrôler** :
+  - compter les éléments `<audio>` et `<video>` vivants, et leurs sources, au départ puis après 30 minutes d'inactivité sur l'accueil et sur chaque écran. Le nombre doit rester borné et faible ;
+  - l'enfant imprévisible avec de longues inactivités, des `play()` refusés et des pages cachées puis montrées. Après chaque retour : une phrase est dite, et un galet touché deux fois ouvre son écran.
 
 **3. Les poissons du fond coupés** (capture 02 : un poisson coupé net, à l'horizontale).
 - Pistes : le canvas de l'acteur (`engine/actor.js`) trop petit pour le poisson incliné (l'inclinaison est dessinée dans son canvas, `engine/lagon.js`) ; ou une image mal découpée par l'export (`art/tools/export-lagon.mjs`).

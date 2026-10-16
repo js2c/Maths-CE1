@@ -36,3 +36,9 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 ## Reprise
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
+
+### Reprise du lot « Correctifs de l'installation et de la veille » (fiche 12)
+
+- Branche `claude/dreamy-heisenberg-9qb80z`, partie de `main` (7779eed2). Demande de fusion en brouillon : « Lot : Correctifs de l'installation et de la veille ».
+- Fait : —
+- Reste : points 1 (relance bloquée), 2 (application figée après inactivité), 3 (poissons coupés), 4 (fond noir des leçons de la monnaie), 5 (journal technique), recette.

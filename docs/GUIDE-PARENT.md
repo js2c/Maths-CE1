@@ -468,6 +468,25 @@ Fait d'un seul tenant : ce que la session a décidé seule est listé dans la de
 4. **Les voiliers** : toucher l'eau entre deux bouées au lieu de faire glisser le bateau.
 5. **L'étal par temps d'orage** (la lampe) : le compteur d'étoiles lisible.
 
+## d septdecies) Lot « Correctifs de l'installation et de la veille » : votre essai du 16 octobre
+
+Fait d'un seul tenant : ce que la session a trouvé et décidé seule est dans `docs/JOURNAL-CONCEPTION.md` et dans la demande de fusion.
+
+- **L'application installée se relance.** La cause de l'écran bleu sans fin est trouvée : à chaque relance, l'application cherchait chacun de ses fichiers en parcourant toute sa réserve hors ligne (près de 12 000 fichiers), des centaines de fois de suite. Sur un ordinateur, une relance prenait 22 à 38 secondes ; elle en prend 2. Si quelque chose bloque encore, l'application ne reste plus sur un écran figé : « Chargement… », puis « Toucher pour réessayer ».
+- **Après une longue inactivité, l'application répond.** La tablette n'a qu'un nombre limité de « lecteurs » de sons et de vidéos ; l'application en usait un nouveau à chaque phrase et en gardait 17 pour le capitaine. Elle n'en garde plus que quelques-uns, toujours les mêmes. Si la tablette refuse quand même de lire une phrase, la bulle l'écrit, et la phrase est redite au toucher suivant.
+- **Les leçons de la monnaie (L15 à L18)** ne sont plus noires quand elles sont choisies depuis l'accueil en pause.
+- **Les poissons coupés** : la session ne les a pas reproduits ; le dessin des poissons est juste. C'est sans doute la mémoire de la tablette, au même moment que le problème précédent. Le journal technique permettra de le voir.
+- **Le journal technique** : dans l'espace parent, onglet « Données et réglages », en bas. Il note chaque lancement (et le temps avant le premier écran), les mises à jour, les passages en arrière-plan, le son, les lectures refusées, les erreurs, les écrans ouverts. Rien sur l'enfant. Le bouton « Exporter le journal technique » enregistre un fichier à donner à la conception ; la sauvegarde complète le contient aussi.
+
+**Aucune phrase à fabriquer.**
+
+**À essayer sur la tablette** (après la publication de la nouvelle version : elle s'installe au premier lancement et prend la main au suivant) :
+
+1. **La relance** : lancer l'application installée, la fermer (liste des applications récentes), la relancer, cinq ou six fois ; avec le Wi-Fi coupé aussi. Le logo doit apparaître en une ou deux secondes. Dans le journal technique, chaque ligne « lancement · application lancée » donne « première image en … s » : le noter.
+2. **L'inactivité** : ouvrir l'application, ne rien toucher pendant 15 à 30 minutes sur l'accueil, puis toucher un galet deux fois, et toucher le capitaine : il doit parler. Recommencer sur une question d'un exercice. Si quelque chose ne répond pas, exporter le journal technique tout de suite et le donner à la conception (regarder s'il y a des lignes « lecture refusée », « vidéo de la mascotte arrêtée », « contexte WebGL perdu », et le nombre de « lecteurs de sons et vidéos » dans les lignes « état »).
+3. **Les leçons de la monnaie** : pendant une séance, la maison, puis « les leçons », puis L15 (ou L16, L17, L18) : le décor de l'étal doit être là.
+4. **Les poissons** : si un poisson coupé réapparaît, faire une capture et exporter le journal technique.
+
 ## e) Ce qui reste approximatif ou à ajuster
 
 **À vérifier sur la vraie tablette.** Écouter la voix (aucune phrase n'a été écoutée par une personne, la vérification a été automatique) et regarder les illustrations des cartes en grand. Toutes les mesures ont été faites sur un ordinateur, en ralentissant le processeur 4 fois pour imiter une tablette : démarrage en moins de 1,5 s, animation à 50 à 60 images par seconde la plupart du temps, avec des baisses vers 30 pendant certaines animations (l'application allège alors d'elle-même le décor). Il faut confirmer que tout reste fluide sur la tablette.

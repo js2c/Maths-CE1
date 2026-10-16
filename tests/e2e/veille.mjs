@@ -11,7 +11,8 @@
 //      sa phrase (lue depuis son fichier), et sur l'accueil un galet touché deux fois ouvre son écran ;
 //   3. la page cachée puis montrée (gelée une minute) ; des lectures refusées (play() rejeté) : notées dans le journal
 //      technique, la phrase redite au toucher suivant.
-//   node tests/e2e/veille.mjs [--minutes 3] [--limite 8] [--court]
+//   node tests/e2e/veille.mjs [--minutes 3] [--limite 8] [--court] [--partie 1|2]   (--partie : 1, la séance et l'accueil ; 2, les
+//   autres exercices ; pour faire tourner les deux en même temps avec --minutes 30)
 // (RACINE_APP=dossier : la même chose sur une autre copie de app/, par exemple celle de main, pour voir le défaut d'avant)
 import { accueilReel, chromium } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -19,7 +20,7 @@ import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
 
 const args = process.argv.slice(2), arg = (k, d = null) => (args.includes(k) ? args[args.indexOf(k) + 1] : d);
-const MIN = Number(arg("--minutes", 3)), LIMITE = Number(arg("--limite", 8)), COURT = args.includes("--court");
+const MIN = Number(arg("--minutes", 3)), LIMITE = Number(arg("--limite", 8)), COURT = args.includes("--court"), PARTIE = arg("--partie", null);
 const OUT = resolve("tests/e2e/out/veille"); mkdirSync(OUT, { recursive: true });
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", `--max-web-media-player-count=${LIMITE}`] });
@@ -79,7 +80,7 @@ const fin = async (o, nom) => {
 };
 
 // 1. une séance d'additions de 30 questions, la voix à sa vitesse réelle
-{
+if (PARTIE !== "2") {
   const o = await ouvrir("&module=2"), { page } = o;
   for (let i = 0; i < 2; i++) { await page.tap(".galet.play", { force: true }); await page.waitForTimeout(400); }
   let n = 0, maxM = 0;
@@ -110,7 +111,7 @@ const fin = async (o, nom) => {
 }
 
 // 3. l'accueil : longue inactivité, page cachée puis montrée, lectures refusées
-{
+if (PARTIE !== "2") {
   const o = await ouvrir(), { page, cdp } = o;
   const r = await inactivite(page, "accueil");
   const t = await toucherMascotte(page);
@@ -145,7 +146,7 @@ const fin = async (o, nom) => {
 }
 
 // 4. une longue inactivité sur une question de chaque autre exercice (ligne, voiliers, étal)
-if (!COURT) for (const [nom, q, prete] of [
+if (!COURT && PARTIE !== "1") for (const [nom, q, prete] of [
   ["ligne graduée", "&choix=1:3", () => !!window.__app.screen?.q || !!document.querySelector(".answer, .key")],
   ["voiliers", "&choix=4:2", () => !!window.__app.voiliers?.actif && !!window.__app.voiliers?.attend],
   ["étal", "&choix=6:2", () => !!window.__app.etal?.attend],
@@ -161,7 +162,7 @@ if (!COURT) for (const [nom, q, prete] of [
   await fin(o, nom);
 }
 
-writeFileSync(join(OUT, "mesures.json"), JSON.stringify({ limite: LIMITE, minutes: MIN, mesures }, null, 1));
+writeFileSync(join(OUT, `mesures${PARTIE ? `-${PARTIE}` : ""}.json`), JSON.stringify({ limite: LIMITE, minutes: MIN, mesures }, null, 1));
 await browser.close(); srv.close();
 console.log(fail.length ? `\n${fail.length} échec(s)` : "\nveille : l'application répond toujours, les lecteurs de médias restent peu nombreux");
 process.exitCode = fail.length ? 1 : 0;

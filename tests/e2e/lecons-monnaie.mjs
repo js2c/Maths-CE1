@@ -11,7 +11,7 @@
 // 2 secondes pendant la leçon : aucune n'a plus de 20 % de pixels noirs.
 //   node tests/e2e/lecons-monnaie.mjs [--petit] [--sans-ralenti]
 import { chromium } from "./navigateur.mjs";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
 
@@ -46,10 +46,12 @@ const noir = async (page, buf) => page.evaluate(async (b64) => {
 const surveiller = async (page, nom, enCours, n = 6) => {
   let pire = 0, vues = 0;
   for (let i = 0; i < n; i++) {
-    await page.waitForTimeout(i === 0 ? 1200 : 2000);
+    await page.waitForTimeout(i === 0 ? 700 : 2000);
     if (!(await page.evaluate(enCours))) break;
     const buf = await page.screenshot(); vues++;
-    const p = await noir(page, buf); if (p >= pire) { pire = p; if (i <= 1 || p > 0.2) await page.screenshot({ path: join(OUT, `${nom}.png`) }); }
+    const p = await noir(page, buf); pire = Math.max(pire, p);
+    if (i === 0) writeFileSync(join(OUT, `${nom}.png`), buf); // (la leçon à l'écran)
+    if (p > 0.2) writeFileSync(join(OUT, `${nom}-noir.png`), buf);
   }
   return { pire, vues };
 };

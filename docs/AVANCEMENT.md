@@ -40,5 +40,5 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 ### Reprise du lot « Correctifs de l'installation et de la veille » (fiche 12)
 
 - Branche `claude/dreamy-heisenberg-9qb80z`, partie de `main` (7779eed2). Demande de fusion en brouillon : « Lot : Correctifs de l'installation et de la veille ».
-- Fait : —
-- Reste : points 1 (relance bloquée), 2 (application figée après inactivité), 3 (poissons coupés), 4 (fond noir des leçons de la monnaie), 5 (journal technique), recette.
+- Fait : point 1 (service worker sans `ignoreSearch`, secours, parcours `installation.mjs`) ; point 2 (lecteurs de médias bornés, parcours `veille.mjs`) ; point 3 (contrôle `poissons.mjs` : aucun poisson coupé dans Chromium, journal pour la tablette) ; point 4 (étal figé avant sa première image, parcours `lecons-monnaie.mjs`) ; point 5 (journal technique dans l'espace parent).
+- Reste : parcours de captures du lot (`correctifs-installation.mjs`), recette complète (méthode commune), relecture indépendante, documentation (SPEC, ARCHITECTURE, GUIDE-PARENT, JOURNAL-CONCEPTION, LOTS, IDEES), demande de fusion.

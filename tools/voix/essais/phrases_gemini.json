@@ -1,0 +1,161 @@
+{
+ "_doc": "Essai Gemini TTS. phrase : la phrase du jeu (sert à retrouver le son Chatterbox actuel pour comparer). texte : ce qui est envoyé à Gemini, balises d'expression en anglais entre < >, mots en MAJUSCULES pour l'accent d'insistance. style : la façon de dire (champ speech_metadata.style), courte, en anglais. On peut tout modifier ici puis relancer avec --refaire.",
+ "phrases": [
+  {
+   "n": 1,
+   "phrase": "Coucou !",
+   "texte": "Coucou !",
+   "style": "bright and delighted"
+  },
+  {
+   "n": 2,
+   "phrase": "Je suis content de te voir.",
+   "texte": "Je suis content de te voir.",
+   "style": "warm and smiling"
+  },
+  {
+   "n": 3,
+   "phrase": "Bonsoir, et bienvenue !",
+   "texte": "Bonsoir, et bienvenue !",
+   "style": "warm and welcoming"
+  },
+  {
+   "n": 4,
+   "phrase": "Touche une bulle : je te dis ce que c'est.",
+   "texte": "Touche une bulle : <short pause> je te dis ce que c'est.",
+   "style": "calm and clear, explaining to a young child"
+  },
+  {
+   "n": 5,
+   "phrase": "Quel nombre se cache sous l'étoile de mer ?",
+   "texte": "Quel nombre se cache sous l'étoile de mer ?",
+   "style": "curious and playful"
+  },
+  {
+   "n": 6,
+   "phrase": "La tortue est sur 3 et fait un saut.",
+   "texte": "La tortue est sur 3 et fait un saut.",
+   "style": "calm and clear"
+  },
+  {
+   "n": 7,
+   "phrase": "Bravo !",
+   "texte": "Bravo !",
+   "style": "proud and enthusiastic"
+  },
+  {
+   "n": 8,
+   "phrase": "Oui, c'est ça !",
+   "texte": "Oui, c'est ça !",
+   "style": "happy and encouraging"
+  },
+  {
+   "n": 9,
+   "phrase": "Ce n'est pas grave, regardons ensemble.",
+   "texte": "<breath> Ce n'est pas grave, <short pause> regardons ensemble.",
+   "style": "gentle and reassuring"
+  },
+  {
+   "n": 10,
+   "phrase": "Ici, chaque saut vaut dix !",
+   "texte": "Ici, chaque saut vaut DIX !",
+   "style": "friendly, sharing a tip"
+  },
+  {
+   "n": 11,
+   "phrase": "On compte les sauts, pas les traits.",
+   "texte": "On compte les SAUTS, pas les traits.",
+   "style": "friendly, sharing a tip"
+  },
+  {
+   "n": 12,
+   "phrase": "3 plus 4 ?",
+   "texte": "3 plus 4 ?",
+   "style": "clear, inviting question"
+  },
+  {
+   "n": 13,
+   "phrase": "3 plus 4 ?",
+   "texte": "trois plusse quatre ?",
+   "style": "clear, inviting question"
+  },
+  {
+   "n": 14,
+   "phrase": "3 plus 4, ça fait 7.",
+   "texte": "3 plus 4, <short pause> ça fait 7.",
+   "style": "calm and clear"
+  },
+  {
+   "n": 15,
+   "phrase": "La petite tortue est sur zéro.",
+   "texte": "La petite tortue est sur zéro.",
+   "style": "gentle storyteller"
+  },
+  {
+   "n": 16,
+   "phrase": "Le poisson-clown vit dans une anémone de mer.",
+   "texte": "Le poisson-clown vit dans une anémone de mer.",
+   "style": "storyteller sharing a fun fact"
+  },
+  {
+   "n": 17,
+   "phrase": "Elle pique les autres poissons, mais pas lui !",
+   "texte": "Elle pique les autres poissons, <short pause> mais pas lui ! <chuckle>",
+   "style": "amused storyteller"
+  },
+  {
+   "n": 18,
+   "phrase": "Oh !",
+   "texte": "<gasp> Oh !",
+   "style": "surprised and amazed"
+  },
+  {
+   "n": 19,
+   "phrase": "Elle est brillante !",
+   "texte": "Elle est brillante !",
+   "style": "amazed and delighted"
+  },
+  {
+   "n": 20,
+   "phrase": "Attention…",
+   "texte": "Attention… <short pause>",
+   "style": "hushed suspense"
+  },
+  {
+   "n": 21,
+   "phrase": "Partez !",
+   "texte": "Partez !",
+   "style": "energetic, starting a race"
+  },
+  {
+   "n": 22,
+   "phrase": "Attention, des pirates !",
+   "texte": "<gasp> Attention, des pirates !",
+   "style": "playfully alarmed"
+  },
+  {
+   "n": 23,
+   "phrase": "Mets vite le bateau à l'abri.",
+   "texte": "Mets vite le bateau à l'abri !",
+   "style": "urgent but playful"
+  },
+  {
+   "n": 24,
+   "phrase": "Prends ton temps.",
+   "texte": "Prends ton temps.",
+   "style": "soft and patient"
+  },
+  {
+   "n": 25,
+   "phrase": "C'est l'heure de se reposer.",
+   "texte": "<yawn> C'est l'heure de se reposer.",
+   "style": "soft and a little sleepy"
+  },
+  {
+   "n": 26,
+   "phrase": "Tape le nombre 603 sur le pavé.",
+   "texte": "Tape le nombre 603 sur le pavé.",
+   "style": "calm and clear"
+  }
+ ]
+}

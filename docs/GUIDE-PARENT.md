@@ -487,6 +487,23 @@ Fait d'un seul tenant : ce que la session a trouvé et décidé seule est dans `
 3. **Les leçons de la monnaie** : pendant une séance, la maison, puis « les leçons », puis L15 (ou L16, L17, L18) : le décor de l'étal doit être là.
 4. **Les poissons** : si un poisson coupé réapparaît, faire une capture et exporter le journal technique.
 
+## d octodecies) Lot « Banc Android et recette en conditions réelles » : un banc d'essai qui imite la tablette
+
+Votre demande du 17 octobre : « Il ne devrait plus y avoir ce genre de bugs au stade où nous en sommes. » Les défauts du 16 octobre étaient passés à travers toutes les vérifications parce qu'elles se faisaient dans des conditions trop faciles (sans mode hors ligne, sans voix, sur un ordinateur). Désormais, chaque vérification imite une vraie tablette Android : l'application installée, fermée, relancée, arrêtée net comme le fait Android, laissée sans toucher, mise en veille, sans Wi-Fi, avec la vraie voix ; la tablette de référence est la vôtre, la Galaxy Tab S5e. Les tests de GitHub ont une vérification de plus, « android », d'une quinzaine de minutes : une demande de fusion qui la fait échouer ne se fusionne pas.
+
+Ce qui change pour l'enfant et pour vous :
+
+- **Sur un téléphone tenu droit**, dans Chrome (avant l'installation), l'application ne montre plus une scène minuscule : un dessin d'un téléphone qui tourne demande de le mettre en paysage. Si l'écran ne tourne pas quand on tourne le téléphone, c'est que la **rotation automatique** d'Android est coupée : l'activer (tirer le haut de l'écran vers le bas, icône « Rotation auto »), ou installer l'application, qui s'ouvre alors d'elle-même en paysage.
+- **Si la tablette manque de place** pour garder l'application hors ligne, l'espace parent le dit en haut de chaque onglet, avec ce qu'il faut libérer ; l'application marche alors tant que le Wi-Fi est là, et les progrès de l'enfant sont bien enregistrés.
+- **Le code de l'espace parent** tient maintenant sur l'écran d'un téléphone.
+- **Le journal technique** note aussi, toutes les 10 minutes, la mémoire et ce que l'application garde en mémoire graphique (« zones de dessin », « images en mémoire ») : ce sont les mêmes chiffres que ceux que vérifie le banc d'essai.
+
+**Aucune phrase à fabriquer.**
+
+**Une décision vous attend** : l'application sur un téléphone (voir la demande de fusion). Sur la tablette, tout ce qui se touche mesure au moins 14 mm. Sur un téléphone, la scène se réduit : sur un petit téléphone, une douzaine de cibles passent sous les 9 mm conseillés pour un doigt d'enfant (les touches du pavé, les pièces de l'étal, les tuiles de la boutique).
+
+**À essayer sur la tablette** (comme d'habitude, la nouvelle version s'installe au premier lancement et prend la main au suivant) : une soirée normale. Si quelque chose ne va pas, exporter le journal technique et le donner à la conception.
+
 ## e) Ce qui reste approximatif ou à ajuster
 
 **À vérifier sur la vraie tablette.** Écouter la voix (aucune phrase n'a été écoutée par une personne, la vérification a été automatique) et regarder les illustrations des cartes en grand. Toutes les mesures ont été faites sur un ordinateur, en ralentissant le processeur 4 fois pour imiter une tablette : démarrage en moins de 1,5 s, animation à 50 à 60 images par seconde la plupart du temps, avec des baisses vers 30 pendant certaines animations (l'application allège alors d'elle-même le décor). Il faut confirmer que tout reste fluide sur la tablette.

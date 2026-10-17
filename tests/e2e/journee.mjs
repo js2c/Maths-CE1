@@ -84,8 +84,10 @@ async function controle(nom, debut) {
   r.etat = await a.budgets();
   // (le retour au niveau de départ ne se compare que sur l'accueil hors pause : l'accueil en pause garde l'exercice en cours)
   r.pause = await a.page.evaluate(() => !!window.__app.enPause).catch(() => false);
-  if (!r.pause) depart ??= r.etat;
-  const d = depasse(r.etat, r.pause ? null : depart);
+  // (le niveau de départ : l'accueil hors pause après le premier passage par tous les écrans, l'étape 6 ; avant, les réserves
+  // voulues se remplissent, l'étal et l'album : seuls les plafonds comptent)
+  if (!r.pause && etapes.length >= 5) depart ??= r.etat;
+  const d = depasse(r.etat, r.pause || etapes.length < 5 ? null : depart);
   check(!d.length, `${nom} : budgets tenus (${resumeEtat(r.etat)})${d.length ? ` ; dépassés : ${d.join(" ; ")}` : ""}`);
   // un galet touché deux fois ouvre son écran (« choisir », ou « Encore ! » si la séance du jour est faite) ; la maison ramène
   const g = (await visible(".galet.choisir")) ? ".galet.choisir" : ".galet.again";

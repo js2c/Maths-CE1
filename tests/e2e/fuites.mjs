@@ -43,13 +43,14 @@ const tour = async () => {
     await a.toucher(".session-home"); await versAccueil();
   }
   await a.toucher(".logo", { ms: 2400 }); await vis(".pa-keys");
-  for (const c of ["2468", "2468"]) { for (const d of c) { await a.toucher(`.pa-keys [data-key="${d}"]`); await a.page.waitForTimeout(150); } await a.page.waitForTimeout(400); }
+  // (le code : choisi et confirmé la première fois, tapé une fois ensuite)
+  for (let k = 0; k < 2 && (await a.page.evaluate(() => !!document.querySelector(".pa-keys") && !document.querySelector(".pa-sheet"))); k++) { for (const d of "2468") { await a.toucher(`.pa-keys [data-key="${d}"]`); await a.page.waitForTimeout(150); } await a.page.waitForTimeout(600); }
   if (await a.page.evaluate(() => !!document.querySelector(".pa-sheet")).catch(() => false)) { await a.toucher('[data-tab="donnees"]'); await a.page.waitForTimeout(800); }
   await a.page.evaluate(() => [...document.querySelectorAll(".pa-link, .pa-btn, button")].find((b) => /Fermer|Retour/.test(b.textContent))?.click()); await versAccueil();
 };
 const releves = [await mesure()];
 console.log(`     départ : ${resumeEtat(releves[0].e)}`);
-for (let t = 1; t <= TOURS; t++) { await tour(); releves.push(await mesure()); console.log(`     tour ${t} : ${resumeEtat(releves.at(-1).e)}`); }
+for (let t = 1; t <= TOURS; t++) { await tour(); releves.push(await mesure()); console.log(`     tour ${t} : ${resumeEtat(releves.at(-1).e)}\n       détachés : ${releves.at(-1).d.slice(0, 5).map((x) => `${x.n} × ${x.mpx} Mpx ${x.origine}`).join(" ; ")}`); }
 writeFileSync(join(OUT, `fuites-${PROFIL}.json`), JSON.stringify(releves, null, 1));
 // d'un tour à l'autre, après le premier : rien ne croît (une marge pour les poissons du lagon qui vont et viennent)
 const [, un, ...suite] = releves.map((r) => r.e), dernier = releves.at(-1).e;

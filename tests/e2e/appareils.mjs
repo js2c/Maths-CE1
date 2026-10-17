@@ -253,14 +253,16 @@ export class Appareil {
 // banc (docs/ARCHITECTURE.md, « Le banc Android » : la mesure la plus haute vue sur la journée d'usage et l'enfant imprévisible,
 // et la marge) ; `croissance` : ce qui doit revenir à son niveau de départ (mesuré sur l'accueil, au début et à la fin).
 export const BUDGETS = {
-  medias: 6,          // lecteurs de médias avec une source : 2 vidéos de la mascotte, 2 à 4 sons de la voix
+  medias: 6,          // lecteurs de médias avec une source : 2 vidéos de la mascotte, 2 à 4 sons de la voix (mesuré : 2 au repos, 4 au plus)
   mediasVideo: 2,     // dont vidéos : les deux lecteurs de la mascotte
   webgl: 4,           // contextes WebGL : la mascotte et le miroitement du lagon (2), la mer des voiliers (2 de plus, aussi en pause)
-  canvasMpx: 40,      // surface totale des canvas, en mégapixels
-  imagesMpx: 120,     // images chargées en mémoire (<img> et ImageBitmap), en mégapixels
-  memoireMo: 260,     // mémoire JavaScript de la page
-  // (mesurée au repos : 20 s sans toucher ni phrase, les minuteries courtes du lancement ou d'une phrase éteintes)
-  croissance: { memoireMo: 40, intervalles: 2, minuteries: 6, ecouteurs: 10, canvas: 2, elements: 60 },
+  canvasMpx: 60,      // surface totale des canvas, en mégapixels (mesuré : 18,6 à l'accueil ; 31 avec la réserve de l'étal ; le récif ajoute
+                      //   ses deux grands calques et son premier plan, environ 20)
+  imagesMpx: 90,      // images en mémoire (<img> chargées et ImageBitmap), en mégapixels (mesuré : 16,8 à l'accueil ; 38 avec l'étal ; 51 au récif)
+  memoireMo: 60,      // mémoire JavaScript de la page (mesuré : 7 à 13 Mo)
+  // ce qui doit revenir à son niveau, une fois les réserves voulues remplies (l'étal garde ses pièces et billets dessinés, l'album
+  // ses pages) ; mesuré au repos : 20 s sans toucher ni phrase, les minuteries courtes éteintes (tests/e2e/fuites.mjs, journee.mjs)
+  croissance: { memoireMo: 15, intervalles: 1, minuteries: 6, ecouteurs: 8, canvas: 12, canvasMpx: 6, images: 4, imagesMpx: 6, elements: 60 },
 };
 // les budgets dépassés par une mesure (et, avec `depart`, ce qui n'est pas revenu à son niveau)
 export function depasse(m, depart = null, b = BUDGETS) {

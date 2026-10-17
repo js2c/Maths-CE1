@@ -24,7 +24,7 @@ export function installerTourner(atlas) {
     const rect = (q) => { const [, , , w, h, dx, dy] = q.rects["1"][0]; return { w, h, dx, dy }; }, rF = rect(qF), rT = rect(qT);
     const rayon = Math.hypot(Math.max(-rT.dx, rT.w + rT.dx), Math.max(-rT.dy, rT.h + rT.dy));
     const haut = Math.max(-rF.dy, rayon), bas = rayon, large = 2 * Math.max(rayon, -rF.dx, rF.w + rF.dx);
-    const s = Math.min((innerWidth * 0.86) / large, (innerHeight * 0.8) / (haut + bas)), dpr = devicePixelRatio || 1, cle = `${innerWidth}×${innerHeight}×${dpr}`;
+    const s = Math.min((innerWidth * 0.94) / large, (innerHeight * 0.86) / (haut + bas)), dpr = devicePixelRatio || 1, cle = `${innerWidth}×${innerHeight}×${dpr}`;
     if (fait === cle) return; fait = cle;
     el.style.setProperty("--tourner-y", `${((haut - bas) / 2) * s}px`);
     const sp = new Sprites(atlas, s * dpr);

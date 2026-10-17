@@ -73,5 +73,7 @@ test("le stockage plein : dit au parent tant qu'aucune installation n'a réussi 
   assert.equal(stockagePlein([sw("stockage plein"), sw("installation finie"), sw("version activée")]), null, "une installation réussie ensuite : plus d'avis");
   assert.match(texteStockage(d), /il faut 135 Mo, il reste 60 Mo/);
   assert.match(texteStockage(d), /tant que le Wi-Fi est là/);
+  assert.match(texteStockage(d), /libérez au moins 90 Mo/);
+  assert.match(texteStockage(d), /disparaîtra de lui-même/);
   assert.match(texteStockage(d, { controlee: true }), /version déjà installée continue de marcher/);
 });

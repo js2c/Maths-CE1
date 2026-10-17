@@ -15,10 +15,11 @@ const mo = (n) => (n == null ? null : `${Math.max(0, Math.round(n))} Mo`);
 // le texte pour le parent (ou null si tout va bien)
 export function texteStockage(d, { controlee = false } = {}) {
   if (!d) return null;
-  const besoin = mo(d.besoinMo) ?? "environ 135 Mo", libre = mo(d.libreMo);
+  // (la relecture du lot : dire combien libérer, et que l'avis s'en ira de lui-même)
+  const besoin = mo(d.besoinMo) ?? "environ 135 Mo", libre = mo(d.libreMo), aLiberer = d.besoinMo != null && d.libreMo != null ? mo(Math.ceil((d.besoinMo * 1.05 - d.libreMo) / 10) * 10) : null;
   return `La tablette n'a plus assez de place pour garder l'application hors ligne (il faut ${besoin}${libre ? `, il reste ${libre}` : ""}). `
     + (controlee ? "La version déjà installée continue de marcher, mais la nouvelle ne peut pas s'installer. " : "L'application marche tant que le Wi-Fi est là ; sans Wi-Fi, elle ne s'ouvrira pas. ")
-    + "Les progrès de l'enfant sont bien enregistrés. Pour régler cela : libérez de la place sur la tablette (photos, vidéos, applications inutilisées), puis relancez l'application avec le Wi-Fi.";
+    + `Les progrès de l'enfant sont bien enregistrés. Pour régler cela : libérez ${aLiberer ? `au moins ${aLiberer}` : "de la place"} sur la tablette (photos, vidéos, applications inutilisées), puis relancez l'application avec le Wi-Fi. Cet avis disparaîtra de lui-même une fois l'application installée.`;
 }
 export async function avisStockage() {
   try {

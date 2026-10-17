@@ -5,8 +5,9 @@
 //      là (un seul rechargement si elle a été ouverte en portrait ; aucun si elle a été tournée puis remise en paysage) ;
 //   2. l'encoche d'un smartphone (zones sûres émulées) : la scène entière et centrée, rien sous l'encoche ;
 //   3. le stockage plein : l'avis en haut de chaque onglet de l'espace parent (1 280 × 800 et 1 920 × 1 200) ;
-//   4. le journal technique : la ligne « état de la page » écrite avec les mesures des budgets (le même code que le banc).
-//   node tests/e2e/banc-android.mjs [--seul 1,2,3,4]
+//   4. le journal technique : la ligne « état de la page » écrite avec les mesures des budgets (le même code que le banc) ;
+//   5. le code de l'espace parent sur un téléphone en paysage : le pavé tient dans l'écran.
+//   node tests/e2e/banc-android.mjs [--seul 1,2,3,4,5]
 import { Appareil, PROFILS, serveurBanc } from "./appareils.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -31,17 +32,21 @@ if (faire(1)) for (const nom of ["smartphone", "petit-smartphone", "s5e"]) {
   await a.page.screenshot({ path: join(OUT, `1-tourner-${nom}-portrait.png`) });
   check(e.visible && e.couvre && !e.texte && f > 0.03 && t > 0.2, `${nom} en portrait (${e.w} × ${e.h}) : « tourne ton téléphone » couvre tout l'écran, sans texte, ses deux dessins peints (flèche ${(f * 100).toFixed(0)} %, téléphone ${(t * 100).toFixed(0)} % de pixels)`);
   // le téléphone pivote (une capture un peu plus tard : un autre angle)
-  await a.page.waitForTimeout(1300); await a.page.screenshot({ path: join(OUT, `1-tourner-${nom}-portrait-pivote.png`) });
-  const angle = await a.page.evaluate(() => getComputedStyle(document.querySelector(".tourner-pivot")).transform);
-  check(angle !== "none", `${nom} : le téléphone pivote (${angle})`);
+  // (la capture au moment où le téléphone est couché : le quart de tour, matrix(0, 1, -1, 0, …))
+  const couche = await a.attendre(() => { const m = getComputedStyle(document.querySelector(".tourner-pivot")).transform.match(/matrix\(([^,]+), ([^,]+)/); return m && Math.abs(+m[1]) < 0.02 && +m[2] > 0.99; }, 10000).then(() => true, () => false);
+  await a.page.screenshot({ path: join(OUT, `1-tourner-${nom}-portrait-pivote.png`) });
+  check(couche, `${nom} : le téléphone pivote d'un quart de tour (capture couchée)`);
   // remis en paysage : l'application (rechargée une fois, à la bonne échelle)
   const p = PROFILS[nom];
   await a.page.setViewportSize({ width: p.largeur, height: p.hauteur });
-  await a.page.waitForFunction(() => document.querySelector(".demarrage.pret, .galet") && getComputedStyle(document.getElementById("tourner")).display === "none", null, { timeout: 60000 }).catch(() => {});
+  // (ouverte en portrait, la page se recharge une fois, à l'échelle du paysage : on attend la page rechargée et son écran de
+  // démarrage prêt ; la relecture du lot avait vu une capture prise avant le rechargement, un écran vide)
+  await a.attendre(() => performance.getEntriesByType("navigation")[0]?.type === "reload" && !!document.querySelector(".demarrage.pret") && getComputedStyle(document.getElementById("tourner")).display === "none", 60000).catch(() => {});
   await a.page.waitForTimeout(800);
   const e2 = await etatTourner(a.page);
   await a.page.screenshot({ path: join(OUT, `1-tourner-${nom}-paysage.png`) });
-  check(!e2.visible, `${nom} remis en paysage : l'écran « tourner » s'efface, l'application est là`);
+  const app2 = await a.page.evaluate(() => !!document.querySelector(".demarrage.pret") && performance.getEntriesByType("navigation")[0]?.type === "reload");
+  check(!e2.visible && app2 && (await a.noir()) < 0.2, `${nom} remis en paysage : l'écran « tourner » s'efface, la page rechargée à la bonne échelle montre l'écran de démarrage`);
   // tournée de nouveau en portrait puis remise en paysage : plus aucun rechargement
   if (await a.page.evaluate(() => !!document.querySelector(".demarrage.pret"))) { await a.toucher(".demarrage.pret"); await a.attendre(() => window.__ready !== undefined, 60000); }
   await a.page.evaluate(() => { window.__marque = 1; });
@@ -81,6 +86,10 @@ if (faire(3) || faire(4)) for (const [w, h] of [[1280, 800], [1920, 1200]]) {
     const avis = await a.page.evaluate(() => document.querySelector(".pa-stockage")?.innerText ?? null);
     await a.page.screenshot({ path: join(OUT, `3-stockage-plein-${w}.png`) });
     check(!!avis && /Plus assez de place/.test(avis) && /Wi-Fi/.test(avis), `${w} × ${h} : l'espace parent dit que la tablette manque de place (« ${avis?.slice(0, 90)}… »)`);
+    // (en haut de chaque onglet)
+    const onglets = [];
+    for (const t of ["seances", "progression", "donnees", "calendrier"]) { await a.toucher(`[data-tab="${t}"]`); await a.page.waitForTimeout(500); onglets.push(await a.page.evaluate(() => { const e = document.querySelector(".pa-page > .pa-stockage"); return !!e && e === document.querySelector(".pa-page").firstElementChild; })); }
+    check(onglets.every(Boolean), `${w} × ${h} : l'avis est en haut de chaque onglet (${onglets.join(", ")})`);
   }
   if (faire(4) && w === 1280) {
     await a.toucher('[data-tab="donnees"]'); await a.page.waitForTimeout(800);
@@ -90,6 +99,18 @@ if (faire(3) || faire(4)) for (const [w, h] of [[1280, 800], [1920, 1200]]) {
     await a.page.screenshot({ path: join(OUT, "4-journal-etat-de-la-page.png") });
     check(!!ligne && /zones de dessin/.test(ligne) && /images en mémoire/.test(ligne), `journal technique : la ligne « état de la page » donne les mesures des budgets (${ligne?.replace(/\s+/g, " ").slice(0, 200)})`);
   }
+  erreurs.push(...a.erreurs); await a.detruire();
+}
+
+if (faire(5)) for (const nom of ["smartphone", "petit-smartphone"]) {
+  // le code de l'espace parent sur un téléphone en paysage (la relecture du lot : le pavé sortait de l'écran) : tout est visible
+  const a = new Appareil(nom, { serveur, ralenti: false });
+  await a.ouvrir(); await a.page.waitForTimeout(1500);
+  await a.toucher(".logo", { ms: 2400 }); await a.attendre(() => document.querySelector(".pa-keys"), 10000);
+  await a.page.waitForTimeout(600);
+  const r = await a.page.evaluate(() => [...document.querySelectorAll(".pa-keys button, .pa-links button")].filter((b) => b.checkVisibility({ visibilityProperty: true }) && b.getBoundingClientRect().height > 0).map((b) => { const q = b.getBoundingClientRect(); return { t: b.textContent.trim(), dedans: q.top >= 0 && q.bottom <= innerHeight && q.left >= 0 && q.right <= innerWidth, h: Math.round(q.height) }; }));
+  await a.page.screenshot({ path: join(OUT, `5-code-parent-${nom}.png`) });
+  check(r.length >= 11 && r.every((x) => x.dedans), `${nom} : le pavé du code parent tient dans l'écran (${r.filter((x) => !x.dedans).map((x) => x.t).join(", ") || "toutes les touches visibles"} ; touches de ${Math.min(...r.map((x) => x.h))} px)`);
   erreurs.push(...a.erreurs); await a.detruire();
 }
 

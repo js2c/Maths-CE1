@@ -736,10 +736,10 @@ Lot « La boutique du récif » (octobre 2026). Les règles sont dans `app/conte
 
 - **Les appareils** (lot « Banc Android et recette en conditions réelles », 17 octobre 2026 ; décision du parent : robuste sur la tablette de référence, une **Samsung Galaxy Tab S5e**, ancienne, et sur tous les supports Android, smartphones compris) :
   - **Installée**, l'application s'ouvre en plein écran et en paysage.
-  - **Ouverte en portrait dans un onglet** (un téléphone tenu droit, avant l'installation) : un écran clair couvre tout, **sans texte ni voix** ; un dessin de l'atelier, un téléphone qui pivote d'un quart de tour et une flèche dorée courbe, montre qu'il faut tourner l'appareil ; jamais une scène écrasée. Remis en paysage, l'application est là ; une page déjà ouverte en paysage, tournée puis remise, ne recharge rien.
+  - **Ouverte en portrait dans un onglet** (un téléphone tenu droit, avant l'installation) : un écran simple, du bleu de l'écran de lancement, couvre tout, **sans texte ni voix** ; un dessin de l'atelier, un téléphone qui pivote d'un quart de tour et une flèche dorée courbe, montre qu'il faut tourner l'appareil ; jamais une scène écrasée. Remis en paysage, l'application est là ; une page déjà ouverte en paysage, tournée puis remise, ne recharge rien.
   - **Encoches et barres d'Android** : la scène est entière et centrée dans la partie sûre de l'écran (`env(safe-area-inset-*)`).
   - **Le stockage** : s'il n'y a pas assez de place pour garder l'application hors ligne (environ 135 Mo), rien n'est téléchargé ; l'application marche tant que le Wi-Fi est là, les progrès de l'enfant s'enregistrent, et l'espace parent le dit (section 12).
-  - **Les smartphones** : la scène de 1 280 × 800 se réduit ; sur un petit smartphone, quelques cibles passent sous les 9 mm conseillés pour un doigt d'enfant (mesures : `tests/e2e/out/cibles/cibles.md`). **Question au parent** (fiche 13, point 6) : une mise en page « téléphone », ou le téléphone non pris en charge pour l'enfant ; rien n'est changé aux écrans en attendant.
+  - **Les smartphones** : la scène de 1 280 × 800 se réduit ; sur un petit smartphone, quelques cibles passent sous les 9 mm conseillés pour un doigt d'enfant (mesures : `tests/recette-fonctionnelle/out-banc-android/cibles.md`, refaites par `tests/e2e/cibles.mjs`). **Question au parent** (fiche 13, point 6) : une mise en page « téléphone », ou le téléphone non pris en charge pour l'enfant ; rien n'est changé aux écrans en attendant.
 
 ### Le lagon, fond de toute l'application
 

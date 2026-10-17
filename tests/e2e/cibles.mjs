@@ -68,8 +68,11 @@ for (const nom of NOMS) {
 const md = ["# La taille réelle des cibles, par profil et par écran", "", `Mesurée par tests/e2e/cibles.mjs le ${new Date().toISOString().slice(0, 10)} ; conseillé pour un doigt d'enfant : au moins ${MIN_MM} mm.`, "",
   `| Écran | ${NOMS.join(" | ")} |`, `| --- | ${NOMS.map(() => "---").join(" | ")} |`,
   ...[...new Set(resultats.map((r) => r.ecran))].map((e) => `| ${e} | ${NOMS.map((n) => { const r = resultats.find((x) => x.profil === n && x.ecran === e); return r ? `${r.minMm} mm${r.sous9 ? ` (${r.sous9} sous ${MIN_MM} mm)` : ""}` : "-"; }).join(" | ")} |`),
-  "", "Chaque case : la plus petite cible de l'écran, en millimètres sur l'appareil, et le nombre de cibles sous le seuil."];
-writeFileSync(join(OUT, "cibles.md"), md.join("\n") + "\n"); writeFileSync(join(OUT, "cibles.json"), JSON.stringify(resultats, null, 1));
+  "", "Chaque case : la plus petite cible de l'écran, en millimètres sur l'appareil, et le nombre de cibles sous le seuil.", "",
+  "## Les cibles sous le seuil", "", ...resultats.filter((r) => r.sous9).map((r) => `- ${r.profil}, ${r.ecran} : ${r.plusPetites.join(", ")}${r.sous9 > r.plusPetites.length ? `, et ${r.sous9 - r.plusPetites.length} autre(s)` : ""}`)];
+writeFileSync(join(OUT, "cibles.md"), md.join("\n") + "\n");
+// (une copie gardée dans le dépôt, avec la relecture du lot)
+if (NOMS.length === 4) { mkdirSync("tests/recette-fonctionnelle/out-banc-android", { recursive: true }); writeFileSync("tests/recette-fonctionnelle/out-banc-android/cibles.md", md.join("\n") + "\n"); } writeFileSync(join(OUT, "cibles.json"), JSON.stringify(resultats, null, 1));
 await serveur.fermer();
 console.log(fail.length ? `\n${fail.length} échec(s)` : "\ncibles : mesurées sur chaque profil");
 process.exitCode = fail.length ? 1 : 0;

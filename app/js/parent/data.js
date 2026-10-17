@@ -276,3 +276,37 @@ export function cardsSummary(R, cartes, calendrier, seances, now = Date.now(), m
 export const PURCHASE_COLUMNS = [
   ["date", (a) => dateTime(a.t)], ["créature", (a) => a.nom ?? a.carte], ["prix (étoiles)", (a) => a.prix], ["faire briller", (a) => !!a.briller], ["brillante", (a) => !!a.brillante],
 ];
+
+// (lot « Correctifs de l'installation et de la veille », point 5) UNE LIGNE DU JOURNAL TECHNIQUE (engine/journal.js), en français
+// simple : « 16/10 19:42:05 · lancement · application lancée (première image en 0,3 s, prête en 2,1 s, version 4452ac0, installée) »
+// (la date courte, à la seconde : « 16/10 19:42:05 »)
+export const heureJournal = (t) => { const d = new Date(t), p = (n) => String(n).padStart(2, "0"); return `${p(d.getDate())}/${p(d.getMonth() + 1)} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`; };
+const secondes = (ms) => `${(ms / 1000).toFixed(1).replace(".", ",")} s`;
+// (relecture du lot, R4 : des mots plus simples pour les types ; le détail technique reste entre parenthèses, pour la conception)
+const TYPES_JOURNAL = { "service worker": "hors ligne", état: "état", page: "tablette" };
+const AFFICHAGE = { fullscreen: "installée", standalone: "installée", "minimal-ui": "installée", navigateur: "dans le navigateur" };
+export function ligneJournal(e) {
+  const d = [];
+  if (e.premiereImageMs != null) d.push(`première image en ${secondes(e.premiereImageMs)}`);
+  if (e.pretMs != null) d.push(`prête en ${secondes(e.pretMs)}`);
+  if (e.version) d.push(`version ${String(e.version).slice(0, 7)}`);
+  if (e.affichage) d.push(AFFICHAGE[e.affichage] ?? e.affichage);
+  if (e.controlee === false) d.push("sans le mode hors ligne");
+  if (e.fichiers != null) d.push(`${e.fichiers} fichiers, dont ${e.nouveaux ?? 0} téléchargés`);
+  if (e.dureeMs != null) d.push(`en ${secondes(e.dureeMs)}`);
+  if (e.delaiMs != null) d.push(`plus de ${secondes(e.delaiMs)}`);
+  if (e.adresse) d.push(e.adresse.split("/").filter(Boolean).slice(1).join("/") || "la page d'accueil");
+  if (e.anciens) d.push(`ancienne : ${e.anciens}`);
+  if (e.phrase) d.push(`« ${e.phrase} »`);
+  if (e.clip) d.push(`clip ${e.clip}`);
+  if (e.erreur) d.push(e.erreur);
+  if (e.fichier) d.push(e.fichier);
+  if (e.son) d.push(`son ${({ running: "en marche", suspended: "suspendu", interrupted: "coupé" })[e.son] ?? e.son}`);
+  if (e.memoireMo != null) d.push(`mémoire ${e.memoireMo} Mo`);
+  if (e.medias != null) d.push(`${e.medias} lecteurs de sons et vidéos`);
+  if (e.calques != null) d.push(`${e.calques} images animées`);
+  if (e.lectureRefusees) d.push(`${e.lectureRefusees} lectures refusées`);
+  if (e.allegement && !/affichage/.test(e.message)) d.push(`affichage allégé ${e.allegement}`);
+  if (e.quand) d.push(`le ${heureJournal(e.quand)}`);
+  return `${heureJournal(e.t)} · ${TYPES_JOURNAL[e.type] ?? e.type} · ${e.message}${d.length ? ` (${d.join(", ")})` : ""}`;
+}

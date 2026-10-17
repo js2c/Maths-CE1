@@ -48,7 +48,7 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (décision du parent du 13 octobre 2026) : le lot « Décisions sur les constats de l'agent »** (fiche 11). Ce sont les réponses du parent aux questions laissées par le second passage de l'agent qui joue l'enfant (`docs/IDEES.md`, section 3), dont la reprise d'une séance après un rechargement. La boutique et la recette de l'enfant sont faites et fusionnées (PR #54 et #56). **État : fait** (PR #59, à fusionner ; elle remplace la PR #58 ; 4 phrases nouvelles, à fabriquer avec les 2 nouvelles et les 50 à refaire du lot précédent).
 
-**Puis (essai du parent du 16 octobre 2026, premier essai de l'application installée) : le lot « Correctifs de l'installation et de la veille »** (fiche 12). Le lot « Décisions sur les constats de l'agent » est fait et fusionné (PR #59), et toutes les voix sont fabriquées. **État : à faire.**
+**Puis (essai du parent du 16 octobre 2026, premier essai de l'application installée) : le lot « Correctifs de l'installation et de la veille »** (fiche 12). Le lot « Décisions sur les constats de l'agent » est fait et fusionné (PR #59), et toutes les voix sont fabriquées. **État : fait** (PR #61, le 17 octobre 2026 ; aucune phrase nouvelle ; causes trouvées et choix : `docs/JOURNAL-CONCEPTION.md`).
 
 **Pourquoi cet ordre.**
 

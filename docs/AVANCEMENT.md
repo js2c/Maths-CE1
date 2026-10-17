@@ -2,12 +2,12 @@
 
 Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 à 3 ter (ce qui a été fait, décisions prises en cours de route, recettes) est dans `docs/archives/AVANCEMENT-lots-1-a-3ter.md`.
 
-## Où en est-on (14 octobre 2026)
+## Où en est-on (17 octobre 2026)
 
 - **En ligne** (https://js2c.github.io/Maths-CE1/) : lots 1, 1 bis, 2, 3, 3 bis, 3 ter et « Lagon en fond d'exercices », tous fusionnés (dernière demande de fusion : PR #30, le lagon).
 - **Ce que fait l'application** : `docs/SPEC.md` (spécification unique ; ce qui reste à construire y est marqué « à construire », section 13).
-- **Prochains lots** : « Décisions sur les constats de l'agent » (fiche 11) est fait (PR #59, à fusionner ; elle remplace la PR #58). Le lot suivant reste à décider par le parent (`docs/LOTS.md`, `docs/IDEES.md`).
-- **En attente du parent** : 56 phrases à fabriquer d'un coup (`docs/VOIX.md`) : les 2 nouvelles du lot « Recette de l'enfant et nettoyage des couches », ses 50 phrases à refaire (`tools/voix/a-refaire-durees.txt`), et les 4 nouvelles du lot « Décisions sur les constats de l'agent » (« Continuer. », « On reprend la séance. », « Touche cette bulle pour continuer. », « Fais glisser le bateau jusqu'au passage ! »). Ensuite : l'essai de 10 minutes sur la tablette (`docs/GUIDE-PARENT.md`, section « d sexdecies ») et les questions de `docs/IDEES.md`, section 3.
+- **Prochains lots** : « Correctifs de l'installation et de la veille » (fiche 12) est fait (PR #61, à fusionner, puis à essayer sur la tablette : `docs/GUIDE-PARENT.md`, section « d septdecies »). Le lot suivant reste à décider par le parent (`docs/LOTS.md`, `docs/IDEES.md`).
+- **En attente du parent** : aucune phrase à fabriquer pour ce lot. L'essai sur la tablette (relances, longue inactivité, leçons de la monnaie depuis la pause) et l'export du journal technique ; les questions de `docs/IDEES.md`, section 3 (dont les constats de la relecture restés hors du lot).
 - **Projet parallèle** : la refonte graphique (hors de ce fichier).
 
 ## Lots
@@ -32,6 +32,7 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 | La boutique du récif | L'enfant achète ses créatures avec ses étoiles (vitrine par zone, coche verte, faire briller, arrivages de 2 créatures par semaine ou rythme libre), plus de coquillage ordinaire ; coquillage de la série, premier habitant d'une zone, étoile et coquillage de diamant ; la créature achetée arrive à la nage dans le récif ; espace parent (rythme, achats, export) ; d'un seul tenant | fait (PR #54) ; 321 phrases à fabriquer |
 | Recette de l'enfant et nettoyage des couches | Une seule règle de sortie (portées), inventaire des couches et retrait de ce qui ne sert plus (`docs/COUCHES.md`), l'enfant imprévisible (`tests/e2e/enfant.mjs`, 200 graines de 300 actions), deux passages d'un agent qui joue l'enfant, la barre noire, la voix (durées anormales), les voiliers nets, la lampe de l'étal, les parcours qui échouaient sur `main` | fait (PR #56) ; 2 phrases nouvelles, 50 à refaire |
 | Décisions sur les constats de l'agent | La séance reprise après un rechargement de la page (le jour même, au début de l'étape), la maison en fin de séance (15 s), l'accueil en pause en deux touchers, la bulle qui évite ce dont parle la voix, la répétition des additions (2 passages, 4 questions d'écart ; après la relecture : le fait retourné espacé, la notion du jour qui s'arrête quand sa famille est épuisée), les voiliers (toucher un passage), le prix pour briller, les finitions ; recette et relecture indépendante | fait (PR #59) ; 4 phrases nouvelles |
+| Correctifs de l'installation et de la veille | L'essai de l'application installée (16 octobre) : la relance qui restait sur l'écran bleu (le service worker parcourait tout le cache pour chaque fichier), l'application figée après une longue inactivité (lecteurs de médias peu nombreux et réutilisés), le fond noir des leçons de la monnaie depuis l'accueil en pause, le contrôle des poissons coupés, le journal technique de l'espace parent ; d'un seul tenant | fait (PR #61) ; aucune phrase à fabriquer |
 
 ## Reprise
 

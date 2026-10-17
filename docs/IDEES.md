@@ -84,7 +84,17 @@ Rapport : `tests/recette-fonctionnelle/out-decisions-agent/RELECTURE.md` (consta
 - **L'étoile arc-en-ciel** : la voix dit « Un jour, elle t'ouvrira un nouveau coin du récif. » pendant que l'étoile entre dans l'album. L'enfant fera-t-elle le lien ? Par défaut : garder la phrase.
 - **Une phrase en arrivant à la pause** : aujourd'hui la mascotte ne dit rien quand on touche la maison (elle le dit si on la touche). Par défaut : rien.
 - **L'outil des séquences** (`b-sequences.mjs`), à vérifier : dans certaines séances « un mois », l'en-tête ne cite que les étapes « accueil, echauffement », et la fin annonce une famille acquise qui n'est pas celle de la séance ; au cran « très dur », une séance toute juste finit sur « trou famille 3 ». Antérieur au lot.
-- **Le parcours `mise-a-jour.mjs`** échoue environ une fois sur trois, sur `main` comme sur la branche, à des étapes différentes (délais du service worker dans Chromium) : à rendre plus robuste.
+- **Le parcours `mise-a-jour.mjs`** échoue environ une fois sur trois, sur `main` comme sur la branche, à des étapes différentes (délais du service worker dans Chromium) : à rendre plus robuste. (Lot « Correctifs de l'installation et de la veille » : la cause probable était le service worker lui-même, qui servait chaque fichier en 800 ms environ ; voir le bilan de ce lot.)
+
+### La relecture du lot « Correctifs de l'installation et de la veille » (17 octobre 2026) : restent pour le parent
+
+Rapport : `tests/recette-fonctionnelle/out-installation-veille/RELECTURE.md`. Ces constats portent sur les leçons de l'étal telles que le lot « L'étal du pêcheur » les a faites (le lot n'a changé que leur décor, qui était noir) :
+
+- **R7, l'argent posé sur les ardoises** : dans L15 à L18, les pièces et les billets sortis du portefeuille se posent sur l'étal, au milieu des ardoises de prix (dans L18, « 1 € » touche « 13 € », « 10 c » est à côté de « 10 € »). Proposition du relecteur : vider ou estomper l'étal pendant ces leçons, sauf l'article de la leçon. Par défaut : à décider par le parent.
+- **R8, la bulle sur les pièces** : dans L18, la bulle recouvre un instant le haut des pièces dont parle la voix (elles arrivent après que la bulle a choisi sa place). Par défaut : faire déclarer l'argent qui arrive à la bulle (`bulle.eviter`), dans un prochain lot de correctifs.
+- **R9, la bulle sur les articles** : à l'étal, la bulle cache plusieurs articles et leurs prix le temps d'une phrase (permis par la spécification : elle peut couvrir le décor).
+- **R10, l'image et la phrase** : à 1920 × 1200, dans L15, le portefeuille et l'argent s'effacent pendant « Voici des pièces et des billets » ; dans L15 relancée pendant l'exercice, un « 1 € » reste seul sur le comptoir. À regarder sur une vidéo de la leçon.
+
 
 ### La fluidité des voiliers sur la tablette (8 octobre 2026, mis de côté par le parent)
 

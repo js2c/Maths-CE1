@@ -126,7 +126,11 @@ async function cas(nom, ex, chemin, m) {
       await entrer(page, `.choix-ex[data-key="${ex.id}"]`); await page.waitForSelector(".choix-tuile", { timeout: T(15000) });
       await entrer(page, '.choix-tuile[data-key="1"]');
       await etape(page, "echauffement", ex.module);
-      check(await page.evaluate(() => document.querySelectorAll(".skip-warmup").length) === 1, `${nom} : un seul bouton « passer l'échauffement »`);
+      // (lot « Correctifs de l'installation et de la veille » : le nombre est écrit, à l'instant où l'échauffement commence et 0,5 s après :
+      // 0 au premier relevé est un bouton pas encore posé ; 2, un reste de l'échauffement quitté, le défaut que ce contrôle surveille)
+      const nb0 = await page.evaluate(() => document.querySelectorAll(".skip-warmup").length); await page.waitForTimeout(T(500));
+      const nb1 = await page.evaluate(() => document.querySelectorAll(".skip-warmup").length);
+      check(nb0 <= 1 && nb1 === 1, `${nom} : un seul bouton « passer l'échauffement » (${nb0} au début de l'échauffement, ${nb1} 0,5 s après)`);
       await auMoment(page, m);
     }
     await etape(page, "notion", ex.module);

@@ -33,7 +33,7 @@ export class LessonEtalPlayer {
     // la leçon a été quittée entre-temps)
     if (this.own) {
       app.etalLecon = this.s; this.installe = true;
-      await this.s.enter({ rnd: app.rnd });
+      await this.s.enter({ rnd: app.rnd, lecon: true });
       this.installe = false;
       if (this.quitte) { this.s.leave(); if (app.etalLecon === this.s) app.etalLecon = null; this.s = null; return new Promise(() => {}); }
     }

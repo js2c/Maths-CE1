@@ -14,7 +14,17 @@
 //    croissante) ; un échec n'est pas perdu : ce qui est déjà dans le cache de la nouvelle version y reste, et la tentative
 //    suivante (le navigateur la refait à la prochaine ouverture) reprend là où elle s'est arrêtée ;
 //  - l'ancien cache n'est supprimé qu'une fois la nouvelle version complète et active.
-const VERSION = "66762805eeab";
+// (Lot « Correctifs de l'installation et de la veille », point 1 : l'application installée ne se relançait plus, l'écran de
+// lancement d'Android restait sans fin. La cause : chaque requête cherchait son fichier dans le cache avec `ignoreSearch`, et
+// avec cette option Chrome lit TOUTES les entrées du cache (plus de 11 800) à chaque recherche : 818 ms par fichier sur un
+// ordinateur de bureau, contre moins de 3 ms sans elle, des centaines de fichiers au démarrage. Le premier lancement, que le
+// service worker ne sert pas encore, y échappait. Désormais :)
+//  - un fichier est cherché par son adresse exacte, sans ses paramètres (les fichiers sont rangés sans) ;
+//  - la page de lancement ne peut plus rester sans réponse : si le cache ne répond pas en DELAI_CACHE ms, le réseau est
+//    essayé en même temps, et sans l'un ni l'autre une page de secours, écrite ici, dit « Toucher pour réessayer » ;
+//  - ce qui arrive au service worker (version, installation, activation, erreurs) est noté dans le journal technique de
+//    l'espace parent (point 5 ; la même base que engine/journal.js).
+const VERSION = "bf57320cd294";
 const CACHE = `ocean-${VERSION}`;
 const PAQUET = 32, ESSAIS = 4;
 // la résolution des planches d'images de cet écran (main.js : sw.js?r=1 ou ?r=2) : on ne met en cache que
@@ -26,6 +36,29 @@ const useful = (f, all) => { const m = /^(assets\/art\/.+)@([12])x(-\d+)?\.webp$
 // tels quels (une mise à jour ne retélécharge pas toute la voix)
 const immuable = (f) => /^assets\/voix\/[0-9a-f]{12}\.ogg$/.test(f) || /^assets\/son\/[a-z-]+-[0-9a-f]{8}\.ogg$/.test(f);
 const attendre = (ms) => new Promise((r) => setTimeout(r, ms));
+const DELAI_CACHE = 3000;
+
+// LE JOURNAL TECHNIQUE (point 5) : les 300 derniers événements, dans une base à part (la même que engine/journal.js, qui le
+// lit pour l'espace parent) ; ne doit jamais rien empêcher
+const JOURNAL = { base: "maths-ce1-journal", table: "evenements", max: 300 };
+let journalDb = null;
+const ouvrirJournal = () => (journalDb ??= new Promise((res, rej) => {
+  const r = indexedDB.open(JOURNAL.base, 1);
+  r.onupgradeneeded = () => r.result.createObjectStore(JOURNAL.table, { autoIncrement: true });
+  r.onsuccess = () => res(r.result); r.onerror = () => { journalDb = null; rej(r.error); };
+}));
+async function noter(type, message, details = {}) {
+  try {
+    const db = await ouvrirJournal();
+    await new Promise((res) => {
+      const tx = db.transaction(JOURNAL.table, "readwrite"), st = tx.objectStore(JOURNAL.table);
+      st.add({ t: Date.now(), source: "service worker", version: VERSION, type, message, ...details });
+      const c = st.count();
+      c.onsuccess = () => { let n = c.result - JOURNAL.max; if (n > 0) st.openCursor().onsuccess = (ev) => { const k = ev.target.result; if (k && n-- > 0) { k.delete(); k.continue(); } }; };
+      tx.oncomplete = tx.onerror = tx.onabort = () => res();
+    });
+  } catch { /* le journal ne doit jamais rien empêcher */ }
+}
 // un fichier du réseau, avec des reprises (0,4 s, 0,8 s, 1,6 s) ; échoue après ESSAIS tentatives
 async function chercher(f, opts = { cache: "reload" }) {
   let err = null;
@@ -38,6 +71,9 @@ async function chercher(f, opts = { cache: "reload" }) {
 
 self.addEventListener("install", (e) => {
   e.waitUntil((async () => {
+    const t0 = Date.now();
+    await noter("service worker", "installation commencée");
+    try {
     const list = await (await chercher("sw-files.json", { cache: "no-store" })).json(), all = new Set(list.files);
     const files = list.files.filter((f) => useful(f, all));
     // (le cache de cette version peut déjà contenir une partie des fichiers : une tentative précédente interrompue)
@@ -49,25 +85,59 @@ self.addEventListener("install", (e) => {
         await cache.put(f, old || (await chercher(f)));
       }));
     }
+    await noter("service worker", "installation finie", { fichiers: files.length, nouveaux: reste.length, dureeMs: Date.now() - t0 });
+    } catch (err) { await noter("service worker", "installation interrompue", { erreur: String(err?.message ?? err), dureeMs: Date.now() - t0 }); throw err; }
   })());
 });
 // la version prend la main : au lancement suivant (plus aucune page de l'ancienne), ou quand la page le demande, pendant
 // l'écran de démarrage, avant le toucher (« activer » : main.js, engine/miseajour.js) ; elle seule reste en cache
+// (point 1 : effacer un cache entier est immédiat dans Chrome, 1 ms mesurée pour 11 000 fichiers : l'activation ne retient pas
+// la page qui l'attend)
 self.addEventListener("message", (e) => { if (e.data === "activer") self.skipWaiting(); });
 self.addEventListener("activate", (e) => {
   e.waitUntil((async () => {
-    for (const k of await caches.keys()) if (k.startsWith("ocean-") && k !== CACHE) await caches.delete(k);
+    const effaces = [];
+    for (const k of await caches.keys()) if (k.startsWith("ocean-") && k !== CACHE) { await caches.delete(k); effaces.push(k); }
     await self.clients.claim();
+    await noter("service worker", "version activée", { anciens: effaces.join(", ") || null });
   })());
 });
-// d'abord le cache ; à défaut le réseau (et ce qui arrive est gardé pour la prochaine fois)
+// d'abord le cache, cherché par l'adresse exacte sans ses paramètres (point 1 : plus d'`ignoreSearch`) ; à défaut le réseau (et ce
+// qui arrive est gardé pour la prochaine fois). La page de lancement : si le cache tarde, le réseau en même temps ; sans l'un ni
+// l'autre, la page de secours.
+const OPTIONS = { ignoreVary: true };
 self.addEventListener("fetch", (e) => {
-  if (e.request.method !== "GET" || new URL(e.request.url).origin !== location.origin) return;
-  e.respondWith((async () => {
-    const cache = await caches.open(CACHE), hit = await cache.match(e.request, { ignoreSearch: true });
-    if (hit) return hit;
-    const r = await fetch(e.request);
-    if (r.ok) cache.put(e.request, r.clone());
-    return r;
-  })());
+  if (e.request.method !== "GET") return;
+  const u = new URL(e.request.url);
+  if (u.origin !== location.origin) return;
+  e.respondWith(repondre(e, u));
 });
+async function repondre(e, u) {
+  const nav = e.request.mode === "navigate", cle = u.origin + u.pathname, base = new URL("./", location.href).href;
+  const enCache = (async () => {
+    const cache = await caches.open(CACHE);
+    // (une page inconnue de l'application : la page d'accueil)
+    return (await cache.match(cle, OPTIONS)) ?? (nav ? await cache.match(base, OPTIONS) : undefined) ?? null;
+  })().catch((err) => { e.waitUntil(noter("service worker", "cache illisible", { adresse: u.pathname, erreur: String(err?.message ?? err) })); return null; });
+  const lent = attendre(DELAI_CACHE).then(() => "lent");
+  const hit = await Promise.race([enCache, lent]);
+  if (hit && hit !== "lent") return hit;
+  if (hit === "lent") e.waitUntil(noter("service worker", "cache lent", { adresse: u.pathname, delaiMs: DELAI_CACHE }));
+  const reseau = fetch(e.request).then((r) => {
+    if (r.ok && !u.search) e.waitUntil(caches.open(CACHE).then((c) => c.put(cle, r.clone())).catch(() => {}));
+    return r;
+  });
+  try {
+    // (le cache lent finit parfois par répondre : le premier des deux gagne)
+    return await (hit === "lent" ? Promise.any([enCache.then((h) => h ?? Promise.reject(new Error("absent du cache"))), reseau]) : reseau);
+  } catch (err) {
+    if (nav) { e.waitUntil(noter("service worker", "page de secours", { adresse: u.pathname, erreur: String(err?.message ?? err) })); return secours(); }
+    return Response.error();
+  }
+}
+// LA PAGE DE SECOURS (point 1 : jamais un écran figé) : ni le cache ni le réseau n'ont donné la page de l'application. Un texte
+// simple, sans rien d'autre à charger ; un toucher, ou 15 secondes, et la page est redemandée.
+const secours = () => new Response(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Maths CE1</title>
+<style>html,body{margin:0;height:100%;background:#0b5563;color:#fff;font:600 34px/1.4 system-ui,sans-serif}body{display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer}</style></head>
+<body><div><div>Maths CE1</div><div style="font-size:26px;opacity:.85;margin-top:24px">L'application n'a pas pu s'ouvrir.<br>Vérifiez le Wi-Fi, puis touchez l'écran pour réessayer.</div><div style="font-size:20px;opacity:.6;margin-top:18px">(nouvel essai toutes les 15 secondes)</div></div>
+<script>addEventListener("pointerdown",function(){location.reload()});setTimeout(function(){location.reload()},15000)</script></body></html>`, { status: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });

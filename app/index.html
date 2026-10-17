@@ -16,6 +16,24 @@
 <link rel="modulepreload" href="js/main.js">
 </head>
 <body>
+<!-- (lot « Correctifs de l'installation et de la veille », point 1) LE SECOURS DU LANCEMENT : jamais un écran figé. La page
+s'affiche aussitôt (le fond de l'écran de lancement d'Android) ; si l'écran de démarrage tarde, « Chargement… », puis
+« Toucher pour réessayer ». main.js le retire dès que l'écran de démarrage est là ; un lancement resté bloqué est noté pour
+le journal technique de l'espace parent (engine/journal.js). -->
+<div id="chargement" style="position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0b5563;color:#fff;font:600 34px/1.4 system-ui,sans-serif;text-align:center"><div id="chargement-titre" style="visibility:hidden">Maths CE1</div><div id="chargement-etat" style="visibility:hidden;font-size:26px;opacity:.85;margin-top:24px;animation:chargement-respire 1.6s ease-in-out infinite">Chargement…</div></div>
+<style>@keyframes chargement-respire { 50% { opacity: .35; } }</style>
+<script>
+(function () {
+  var el = document.getElementById("chargement"), etat = document.getElementById("chargement-etat"), titre = document.getElementById("chargement-titre");
+  setTimeout(function () { if (el.isConnected) { titre.style.visibility = etat.style.visibility = "visible"; } }, 2500);
+  setTimeout(function () {
+    if (!el.isConnected) return;
+    etat.textContent = "Toucher pour réessayer"; el.style.cursor = "pointer";
+    el.addEventListener("pointerdown", function () { location.reload(); });
+    try { localStorage.setItem("lancementBloque", JSON.stringify({ t: Date.now(), ms: Math.round(performance.now()), controle: !!(navigator.serviceWorker && navigator.serviceWorker.controller) })); } catch (e) { /* rien */ }
+  }, 15000);
+})();
+</script>
 <div id="stage">
   <canvas id="bg"></canvas>
   <canvas id="line"></canvas>

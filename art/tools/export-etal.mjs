@@ -45,7 +45,7 @@ const RETOUCHES = [
   ["    if (orage) {                        // la lumière de la lampe sur le produit", "    if (orage && !p.cache) {            // la lumière de la lampe sur le produit", "(de même)"],
   ["    ardoise(c, ax, ay, fmtPrix(p.prix), lum);", "    if (!p.cache) ardoise(c, ax, ay, fmtPrix(p.prix), lum);", "(de même : son ardoise est soulevée avec lui)"],
   ["  preparerSprites(); tirerPeche(); composerEtal();", "  preparerSprites(); tirerPeche(...(OPTS.peche ?? [])); composerEtal();", "la première pêche est celle de l'exercice"],
-  ["function image(ms) {\n", "function image(ms) {\n  if (!VIVANT) return; RAF = requestAnimationFrame(image);\n  if (OPTS.fige?.()) { dernier = 0; return; }\n  OPTS.mesure?.(ms);\n", "l'animation s'arrête en sortant, et pendant la pause (tout s'arrête : le ciel, la mer, les bateaux, la pluie) ; le temps d'image est mesuré"],
+  ["function image(ms) {\n", "function image(ms) {\n  if (!VIVANT) return; RAF = requestAnimationFrame(image);\n  if (OPTS.fige?.() && PEINT) { dernier = 0; return; }\n  PEINT = true;\n  OPTS.mesure?.(ms);\n", "l'animation s'arrête en sortant, et pendant la pause (tout s'arrête : le ciel, la mer, les bateaux, la pluie) ; le temps d'image est mesuré ; (lot « Correctifs de l'installation et de la veille », point 4 : la première image est toujours peinte, même en pause : le décor est un canvas opaque, noir tant que rien n'y est dessiné)"],
   ["  premierPlan(); lampe(); effets();\n  if (orageA !== null && t >= orageA) orageArrive();\n", "  premierPlan(); lampe(); effets(); majSouleves();\n", "l'orage arrive quand l'application le dit (entre deux questions) ; les produits soulevés suivent le temps qu'il fait"],
   ["  requestAnimationFrame(image);\n}\n", "}\n", "(l'image suivante est demandée au début de l'image)"],
   ["$('bMeteo').onclick = () => { if (meteoCible) poserMeteo(0); else orageArrive(); };\n$('bPrix').onclick = () => { tirerPrix(); composerEtal(); };\n$('bBateau').onclick = () => nouveauBateau();\n$('bPeche').onclick = () => { tirerPeche(); composerEtal(); };\n", "", "les boutons de la maquette disparaissent"],
@@ -319,7 +319,7 @@ return API;
 /* eslint-disable */
 export const STYLE = ${JSON.stringify(feuille)};
 export function startEtal(OPTS) {
-let VIVANT = true, RAF = 0;
+let VIVANT = true, RAF = 0, PEINT = false;
 const IMGS = OPTS.images;
 const DECOR = document.createElement('canvas'); DECOR.id = 'etal-decor'; DECOR.className = 'etal-decor'; DECOR.width = 1920; DECOR.height = 1200;
 const SCENE = document.createElement('div'); SCENE.id = 'etal-scene'; SCENE.className = 'etal-scene';

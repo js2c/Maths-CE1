@@ -264,9 +264,12 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
       pas = Date.now(); ou = `choix de l'action ${i + 1}`;
       const act = liste ? liste[i] : await concretiser(page, rnd, tirer(rnd, graine % 4 < 2));
       faits.push(act); pas = Date.now(); delai = act.ms ?? 0; ou = `action ${i + 1} : ${act.type}${act.quoi ? ` (${act.quoi})` : ""}`;
-      if (ANDROID && ["longue", "geler", "cacher", "relancer", "tuer", "reseau"].includes(act.type)) {
+      // (--android, le rechargement : comme sur la tablette, l'écran de démarrage attend un toucher, que l'enfant donne,
+      // Appareil.recharger ; sans lui, le banc attendait une application qui ne pouvait pas démarrer)
+      if (ANDROID && ["longue", "geler", "cacher", "relancer", "tuer", "reseau", "recharger"].includes(act.type)) {
         try {
           if (act.type === "longue") await page.waitForTimeout(act.ms);
+          else if (act.type === "recharger") await a.recharger({ attente: lent(120000) });
           else if (act.type === "geler") await a.geler(act.ms);
           else if (act.type === "cacher") await a.cacher(act.ms);
           else if (act.type === "reseau") { SERVEUR.reseau("coupe"); if (act.relance) { const r = await relancer(false); if (r.echec) noter("relance sans réseau impossible", r.echec); } else await page.waitForTimeout(act.ms); SERVEUR.reseau("ok"); }

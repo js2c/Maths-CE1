@@ -62,3 +62,16 @@ test("la déclaration se lit (exemple)", () => {
   assert.match(d.raison, /exemple/);
   assert.deepEqual(pris(`const Q = "?nosw&voix=rapide&son=non";\n// voix=rapide en commentaire`), ["voix rapide", "sans service worker", "son coupé"]);
 });
+
+test("le stockage plein : dit au parent tant qu'aucune installation n'a réussi depuis (engine/stockage.js)", async () => {
+  const { stockagePlein, texteStockage } = await import("../../app/js/engine/stockage.js");
+  const sw = (message, extra = {}) => ({ source: "service worker", type: "service worker", message, ...extra });
+  assert.equal(stockagePlein([]), null);
+  assert.equal(stockagePlein([sw("installation finie")]), null);
+  const d = stockagePlein([sw("installation finie"), { source: "page", message: "application lancée" }, sw("stockage plein", { besoinMo: 135, libreMo: 60 })]);
+  assert.equal(d.message, "stockage plein");
+  assert.equal(stockagePlein([sw("stockage plein"), sw("installation finie"), sw("version activée")]), null, "une installation réussie ensuite : plus d'avis");
+  assert.match(texteStockage(d), /il faut 135 Mo, il reste 60 Mo/);
+  assert.match(texteStockage(d), /tant que le Wi-Fi est là/);
+  assert.match(texteStockage(d, { controlee: true }), /version déjà installée continue de marcher/);
+});

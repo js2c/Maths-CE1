@@ -25,7 +25,10 @@ test("le service worker : pas de prise de main à l'installation, par paquets av
   assert.match(sw, /self\.addEventListener\("message", \(e\) => \{ if \(e\.data === "activer"\) self\.skipWaiting\(\); \}\);/);
   const activate = sw.slice(sw.indexOf('addEventListener("activate"'), sw.indexOf('addEventListener("fetch"'));
   assert.match(activate, /caches\.delete/);
-  assert.ok(!install.includes("caches.delete"), "l'installation ne supprime rien");
+  // (lot « Banc Android » : l'installation ne supprime aucun autre cache ; seulement, si le stockage est plein, son propre cache
+  // inachevé, pour rendre la place aux données de l'enfant)
+  assert.deepEqual(install.match(/caches\.delete\([^)]*\)/g) ?? [], ["caches.delete(CACHE)"], "l'installation ne supprime que son propre cache inachevé");
+  assert.match(install, /QuotaExceededError[\s\S]*caches\.delete\(CACHE\)[\s\S]*stockage plein/, "et seulement quand le stockage est plein");
   assert.match(install, /cache\.keys\(\)/, "une installation interrompue reprend là où elle s'est arrêtée");
 });
 

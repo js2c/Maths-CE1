@@ -168,12 +168,14 @@ export class Appareil {
   }
   // l'état du service worker de la page
   etatSW() { return this.page.evaluate(async () => { const r = await navigator.serviceWorker.getRegistration(); const n = (w) => (w ? w.state : null); const k = await caches.keys(); return { controle: !!navigator.serviceWorker.controller, actif: n(r?.active), attente: n(r?.waiting), installe: n(r?.installing), caches: k }; }); }
-  // l'installation : attendre que le service worker ait tout mis en cache et soit actif (une version qui attend compte aussi)
-  async installer(maxMs = 900000) {
-    const t0 = Date.now();
+  // l'installation : attendre que le service worker de la version publiée par le serveur ait tout mis en cache, et soit actif ou
+  // attende le lancement suivant (`v` : une autre version attendue)
+  async installer(maxMs = 900000, v = this.serveur.etat.pub.v) {
+    const t0 = Date.now(), cache = `ocean-${v}`;
     for (;;) {
       const e = await this.etatSW().catch(() => null);
-      if (e && ((e.actif === "activated" && !e.installe) || e.attente === "installed")) return { ...e, dureeS: Math.round((Date.now() - t0) / 1000) };
+      const fini = e && !e.installe && e.caches.includes(cache) && (e.attente === "installed" || (e.actif === "activated" && !e.attente && e.caches.length === 1));
+      if (fini) return { ...e, dureeS: Math.round((Date.now() - t0) / 1000) };
       if (Date.now() - t0 > maxMs) throw new Error(`installation pas finie en ${maxMs / 1000} s (${JSON.stringify(e)})`);
       await this.page.waitForTimeout(1000);
     }

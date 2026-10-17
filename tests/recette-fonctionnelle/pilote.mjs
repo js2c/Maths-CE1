@@ -14,6 +14,10 @@
 //   curl "localhost:8790/veille?ms=10000"    l'écran éteint puis rallumé
 //   curl "localhost:8790/recharger"
 //   curl "localhost:8790/fin"         ferme tout
+// BANC ANDROID, raccourcis : sans service worker
+// (raison : chaque cas part d'une base neuve, dans un navigateur neuf : la voix y est la vraie, mais installer l'application
+// (140 Mo, environ une minute) pour chaque cas n'apporterait rien à ce qu'il vérifie. L'application installée, relancée,
+// gelée, hors ligne, est éprouvée sur le banc Android (installation.mjs, journee.mjs).)
 import { accueilReel, chromium, demarrageReel, finReelle } from "../e2e/navigateur.mjs";
 import { createServer } from "node:http";
 import { appendFileSync, mkdirSync, readFileSync, existsSync } from "node:fs";
@@ -27,7 +31,7 @@ const VUE = args.includes("--tablette") ? { width: 1138, height: 711, deviceScal
 const JOURNAL = join(OUT, "journal.txt"), note = (t) => appendFileSync(JOURNAL, `${new Date().toISOString().slice(11, 19)} ${t}\n`);
 
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
 const context = await browser.newContext({ viewport: { width: VUE.width, height: VUE.height }, deviceScaleFactor: VUE.deviceScaleFactor, hasTouch: true });
 await demarrageReel(context); await accueilReel(context); await finReelle(context);
 await context.addInitScript(() => { window.__phrases = []; const poser = () => { const v = window.__app?.voice; if (!v) return setTimeout(poser, 100); const say = v.say.bind(v); v.say = (t, o) => { window.__phrases.push(t); return say(t, o); }; }; poser(); });

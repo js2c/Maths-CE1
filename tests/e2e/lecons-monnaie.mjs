@@ -10,6 +10,12 @@
 // processeur ralenti 4 fois, à la taille de la tablette (1280 × 800, densité 2), et à 1920 × 1200. Une capture toutes les
 // 2 secondes pendant la leçon : aucune n'a plus de 20 % de pixels noirs.
 //   node tests/e2e/lecons-monnaie.mjs [--petit] [--sans-ralenti]
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -17,7 +23,7 @@ import { serve } from "../serve.mjs";
 
 const args = process.argv.slice(2), OUT = resolve("tests/e2e/out/lecons-monnaie"); mkdirSync(OUT, { recursive: true });
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: [] });
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 const TAILLES = args.includes("--petit") ? [[1280, 800, 2]] : [[1280, 800, 2], [1920, 1200, 1]];
 const RALENTI = args.includes("--sans-ralenti") ? 1 : 4;

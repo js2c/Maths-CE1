@@ -3,6 +3,9 @@
 // légendées (écran, état, voix, tout ce qui est touchable). L'application n'est pas modifiée : elle est pilotée par ses
 // paramètres de test (main.js : ?choix, ?cran, ?sans, ?lecon, ?etoiles…) et par window.__app.
 //   node tests/recette-fonctionnelle/a-ecrans.mjs [--seulement theme[,theme]] (themes : voir THEMES en bas)
+// BANC ANDROID, raccourcis : voix rapide
+// (raison : des planches de captures d'écrans, prises sur des dizaines d'écrans : la voix à sa vitesse réelle ne ferait
+// qu'allonger l'attente entre deux captures.)
 import { join } from "node:path";
 import { readFileSync } from "node:fs";
 import { OUT, Serie, attendre, ecrireIndex, indexPartie, navigateur, opt, ouvrir, silence, toucher } from "./commun.mjs";

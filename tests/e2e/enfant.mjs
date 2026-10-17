@@ -23,6 +23,11 @@
 //   --rejouer : rejoue les actions enregistrées d'un défaut (out/…/defaut-*.json) ; --reduire : cherche la plus courte suite
 //   d'actions qui le montre encore (delta-debugging), et l'écrit à côté (…-reduit.json)
 // Version courte (tests de GitHub, .github/workflows/tests.yml) : node tests/e2e/enfant.mjs --graines 3 --actions 60
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : la version courte et la série de centaines de graines (tests de GitHub, recette de chaque lot) jouent des milliers
+// d'actions : à la vitesse réelle de la voix, sur l'application installée, elles dureraient des jours. La version Android
+// (`--android`) joue au contraire dans les conditions du banc : application installée, vraie voix, relances, gels, réseau
+// coupé.)
 import { accueilReel, chromium } from "./navigateur.mjs";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
@@ -44,7 +49,7 @@ const BASE = JSON.parse(readFileSync(SAVE, "utf8"));
 const { srv, url } = await serve(0);
 // un Chromium par partie : partagé, son processeur graphique (logiciel, ici) servait toutes les parties en parallèle, et le temps
 // d'image d'une partie montait avec le nombre de parties déjà jouées (de 190 à 550 ms au fil d'une longue série)
-const lancer = () => chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
+const lancer = () => chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
 
 // le hasard reproductible (mulberry32)
 const hasard = (graine) => { let a = graine >>> 0; return () => { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };

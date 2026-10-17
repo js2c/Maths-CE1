@@ -10,7 +10,12 @@
 //   - le journal des raccords de la mascotte : combien de fondus forcés ;
 //   - aucune erreur dans la page.
 //   node tests/e2e/mascotte.mjs [--out dossier] [--seul 1280|1920]
-import { chromium, voixPermise } from "./navigateur.mjs";
+// BANC ANDROID, raccourcis : sans service worker, son coupé
+// (raison : chaque cas part d'une base neuve, dans un navigateur neuf : la voix y est la vraie, mais installer l'application
+// (140 Mo, environ une minute) pour chaque cas n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. L'application installée, relancée, gelée, hors ligne, est éprouvée sur le banc Android
+// (installation.mjs, journee.mjs).)
+import { chromium, voixPermise, demarrageTouche } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
@@ -19,7 +24,7 @@ import { recifOuvert } from "./recif-commun.mjs";
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const OUT = resolve(opt("--out", "tests/e2e/out/mascotte")), SEUL = opt("--seul", null);
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
 const fail = [], check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 const BASE = "?nosw&son=non&sansReprise"; // (sansReprise : main.js)
 const PETITES = ["idle-approbation", "idle-sourire", "idle-amuse"], RELANCE = ["idle-sourcils", "idle-curiosite"];
@@ -28,7 +33,7 @@ const resultat = { date: new Date().toISOString(), ecrans: [], journal: {} };
 for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   if (SEUL && SEUL !== String(W)) continue;
   const out = join(OUT, String(W)); mkdirSync(out, { recursive: true });
-  const context = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: dpr, hasTouch: true });
+  const context = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: dpr, hasTouch: true }); await demarrageTouche(context);
   const page = await context.newPage(), errors = [];
   page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
   const etat = () => page.evaluate(() => ({ m: window.__app.ocean.mascotte.etat(), b: window.__app.bulle.etat(), f: window.__app.fleche.visible, fa: window.__app.fleche.a?.css ?? null }));
@@ -181,7 +186,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
 
 // ---- une séance simulée suivie de bout en bout : le journal des raccords (combien de fondus forcés)
 {
-  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true });
+  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true }); await demarrageTouche(context);
   const page = await context.newPage();
   await page.goto(url + BASE + "&cran=conseille&sans=defi&sansLecon&questions=10&faits=8");
   await page.waitForFunction(() => window.__ready !== undefined && window.__app.ocean.mascotte.etat().pret, null, { timeout: 60000 });

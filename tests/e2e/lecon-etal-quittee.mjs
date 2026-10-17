@@ -6,6 +6,12 @@
 // Les autres leçons, dont les planches se chargent aussi à l'ouverture (L2 la corde aux bouées géantes, L4 le bernard-l'ermite,
 // L10 les centaines, L13 les rangées), passent par la même épreuve : rien de la leçon ne reste sur l'accueil.
 //   node tests/e2e/lecon-etal-quittee.mjs
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { serve } from "../serve.mjs";
 

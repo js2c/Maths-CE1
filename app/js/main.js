@@ -4,6 +4,8 @@
 // la lune en décor et la bulle « Encore ! » de l'entraînement libre), le récif et l'album ; le premier
 // toucher débloque la voix et lance la séance (session/session.js). Pendant la séance, la maison (en haut
 // à gauche) la met en pause ; la frise d'avancement montre où l'on en est.
+// (lot « Banc Android », point 3) en premier : l'état de la page compte ce qui est créé dès les modules suivants
+import { mesurer as mesurerPage } from "./engine/etat-page.js";
 import { repriseText } from "./engine/toucher.js";
 import { Ocean, rng } from "./engine/ocean.js";
 import { Bulle, MASCOTTE } from "./engine/bulle.js";
@@ -959,8 +961,10 @@ setInterval(() => { const e = [mode ?? "accueil", mode === "seance" ? app.sessio
 // (points 2 et 3) L'ÉTAT DE LA PAGE, toutes les 10 minutes et à chaque changement du niveau d'allègement : la mémoire (si Chrome la
 // donne), les lecteurs de médias qui ont une source (la voix, la mascotte ; leur épuisement est la piste du point 2), les calques
 // animés (acteurs) et le niveau d'allègement (la piste du point 3 : la mémoire graphique de la tablette)
-const etatPage = () => ({ allegement: stage.perf.level, memoireMo: performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1e6) : null,
-  medias: [...document.querySelectorAll("audio, video")].filter((m) => m.getAttribute("src")).length + (voice.lecteursActifs?.() ?? 0), calques: document.querySelectorAll("canvas").length, lectureRefusees: voice.refus });
+// (lot « Banc Android et recette en conditions réelles », point 3 : la mesure est celle de engine/etat-page.js, la même que celle
+// des budgets du banc d'essai, tests/e2e/appareils.mjs ; `window.__etatPage` pour le banc)
+const etatPage = () => ({ allegement: stage.perf.level, ...mesurerPage(), lecteursVoix: voice.lecteursActifs?.() ?? 0, lectureRefusees: voice.refus });
+window.__etatPage = etatPage;
 let allegementNote = 0;
 setInterval(() => noterTech("état", "état de la page", etatPage()), 600000);
 setInterval(() => { if (stage.perf.level !== allegementNote) { allegementNote = stage.perf.level; noterTech("état", allegementNote ? `affichage allégé (niveau ${allegementNote} sur 2 : la tablette peine)` : "affichage complet de nouveau", etatPage()); } }, 2000);

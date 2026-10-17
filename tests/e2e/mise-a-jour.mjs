@@ -16,6 +16,10 @@
 //   node tests/e2e/mise-a-jour.mjs [--racine dossier] [--reseau-parfait] [--court] [--forcer]   (--racine : servir une autre copie de app/,
 //   par exemple celle de main, pour voir le défaut d'avant le correctif ; --reseau-parfait : aucune requête n'échoue ; --court :
 //   sans les versions C et D)
+// BANC ANDROID, raccourcis : voix rapide, son coupé
+// (raison : il éprouve deux versions publiées l'une après l'autre, le service worker et le cache : les questions qui font
+// avancer la séance n'ont pas besoin de la voix à sa vitesse réelle, et le son ne change rien à ce qu'il vérifie (la voix
+// réelle avec mise à jour : installation.mjs et journee.mjs).)
 import { accueilReel, chromium, demarrageReel, voixPermise } from "./navigateur.mjs";
 import { createServer } from "node:http";
 import { existsSync, readFileSync, statSync } from "node:fs";
@@ -69,7 +73,7 @@ const url = `http://127.0.0.1:${srv.address().port}${PREFIX}`;
 console.log(`racine servie : ${ROOT} ; phrase au son changé : « ${X} » (${xf} -> ${YF})`);
 
 // ---------------------------------------------------------------- la tablette
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: [] });
 const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true });
 await accueilReel(context);
 const errors = [], manques = [];

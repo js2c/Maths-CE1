@@ -3,6 +3,12 @@
 // les maisons de 8 et 9 (deux questions sur trois à trou), le calcul rapide « très dur » au niveau 2 (la forme directe,
 // puis le trou sur le nombre de départ, « Combien plus 10 ? Ça fait 57. »). Captures en densité 2 (tests/e2e/out/lot3bis).
 //   node tests/e2e/lot3bis.mjs [--out dossier] [--seulement additions,calcul]
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -11,7 +17,7 @@ import { serve } from "../serve.mjs";
 const args = process.argv.slice(2), OUT = resolve(args.includes("--out") ? args[args.indexOf("--out") + 1] : "tests/e2e/out/lot3bis"); mkdirSync(OUT, { recursive: true });
 const only = args.includes("--seulement") ? args[args.indexOf("--seulement") + 1].split(",") : null, run = (k) => !only || only.includes(k);
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: [] });
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 const open = async (q = "", prep = null) => {
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 2, hasTouch: true }), page = await context.newPage(), errors = [];

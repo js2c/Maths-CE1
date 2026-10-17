@@ -9,6 +9,12 @@
 // la maison (la pause), puis prend l'exercice suivant par « choisir » : à chaque relevé (toutes les 400 ms), après chaque
 // changement d'exercice et après la pause.
 //   node tests/e2e/barre-noire.mjs [--out dossier]
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { accueilReel, chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -18,7 +24,7 @@ const args = process.argv.slice(2), arg = (k, d = null) => (args.includes(k) ? a
 const OUT = resolve(arg("--out", "tests/e2e/out/barre-noire")); mkdirSync(OUT, { recursive: true });
 const { srv, url } = await serve(0);
 // avec le rendu de la carte graphique simulé (SwiftShader), au plus près de la tablette
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist", "--enable-gpu-rasterization"] });
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist", "--enable-gpu-rasterization"] });
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 const EXOS = [{ id: "ligne", module: 1 }, { id: "additions", module: 2 }, { id: "calcul", module: 3 }, { id: "voiliers", module: 4 }, { id: "multiplication", module: 5 }, { id: "etal", module: 6 }];
 

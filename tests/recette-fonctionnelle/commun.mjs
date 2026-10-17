@@ -4,7 +4,11 @@
 //  - ce que dit la voix, relevé à chaque phrase (window.__dit) ;
 //  - la capture (JPEG, qualité 80) avec sa légende : écran, état, voix, tout ce qui est touchable ;
 //  - les planches contact de 4 captures (2 × 2, légendées) ; l'index de chaque partie.
-import { chromium } from "../e2e/navigateur.mjs";
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : les outils de la recette fonctionnelle (planches, séquences) ouvrent des dizaines d'écrans sur une base neuve,
+// dans un navigateur neuf ; `voix: null` y donne la vraie voix (l'écran de démarrage est alors touché pour de vrai).
+// L'application installée et le son sont éprouvés sur le banc Android (journee.mjs, installation.mjs).)
+import { chromium, demarrageTouche } from "../e2e/navigateur.mjs";
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -27,7 +31,7 @@ export function dumpMois() {
 // ---------------------------------------------------------------- le navigateur
 export async function navigateur() {
   const { srv, url } = await serve(0);
-  const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
+  const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: [] });
   return { url, browser, close: async () => { await browser.close(); srv.close(); } };
 }
 // le relevé de la voix : chaque phrase dite (say) ou redite (réécouter), avec l'heure
@@ -41,6 +45,8 @@ export const ecouteVoix = (page) => page.evaluate(() => {
 // préparer la base avant le rechargement (séances, cartes…)
 export async function ouvrir(nav, { base = "neuve", params = "", nom = false, voix = "rapide", avant = null } = {}) {
   const context = await nav.browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true });
+  // (lot « Banc Android » : la vraie voix ne joue qu'après un toucher, comme sur Android ; l'écran de démarrage est touché)
+  if (!voix) await demarrageTouche(context);
   const page = await context.newPage(), errors = [];
   page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
   const q = `?nosw&son=non${voix ? `&voix=${voix}` : ""}${params ? `&${params}` : ""}`;

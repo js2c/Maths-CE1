@@ -305,6 +305,9 @@ export function ligneJournal(e) {
   if (e.memoireMo != null) d.push(`mémoire ${e.memoireMo} Mo`);
   if (e.medias != null) d.push(`${e.medias} lecteurs de sons et vidéos`);
   if (e.calques != null) d.push(`${e.calques} images animées`);
+  // (lot « Banc Android », point 3 : l'état de la page mesuré par engine/etat-page.js, comme par le banc d'essai)
+  if (e.canvas != null) d.push(`${e.canvas} zones de dessin (${String(e.canvasMpx).replace(".", ",")} mégapixels${e.webgl ? `, dont ${e.webgl} en 3D` : ""})`);
+  if (e.imagesMpx != null) d.push(`images en mémoire ${String(e.imagesMpx).replace(".", ",")} mégapixels`);
   if (e.lectureRefusees) d.push(`${e.lectureRefusees} lectures refusées`);
   if (e.allegement && !/affichage/.test(e.message)) d.push(`affichage allégé ${e.allegement}`);
   if (e.quand) d.push(`le ${heureJournal(e.quand)}`);

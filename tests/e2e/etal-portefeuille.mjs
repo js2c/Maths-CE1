@@ -3,6 +3,12 @@
 // l'étal, les leçons, les parcours) pendant que le portefeuille se refermait attendait pour toujours : `api.ouvrir` ne rouvrait
 // pas un portefeuille qui finissait de se fermer. La correction (le pêcheur paie à la place de l'enfant) pouvait rester figée.
 //   node tests/e2e/etal-portefeuille.mjs
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { serve } from "../serve.mjs";
 

@@ -21,6 +21,11 @@
 //     version de l'application : tests/e2e/mise-a-jour.mjs, étapes 3 et 4.)
 // Captures dans tests/e2e/out/decisions-agent/ ; échoue si une vérification échoue ou si la page a une erreur.
 //   node tests/e2e/decisions-agent.mjs [--out dossier] [--vite] [--seul 2,3]   (--vite : seulement 1280 × 800)
+// BANC ANDROID, raccourcis : voix rapide, sans service worker
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie. La vraie voix, le son et l'application
+// installée sont éprouvés sur le banc Android (journee.mjs, enfant.mjs --android, installation.mjs, veille.mjs).)
 import { accueilReel, chromium, finReelle } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -34,7 +39,7 @@ const T = JSON.parse(readFileSync(new URL("../../app/content/textes.json", impor
 const cartes = JSON.parse(readFileSync(new URL("../../app/content/cartes.json", import.meta.url)));
 const { srv, url } = await serve(0);
 // (le WebGL logiciel, pour la mer des voiliers, comme tests/e2e/voiliers.mjs)
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
 const errors = [];
 const check = (ok, msg) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${msg}`); if (!ok) process.exitCode = 1; };
 const VUES = args.includes("--vite") ? [["1280", { width: 1280, height: 800 }, 1]] : [["1280", { width: 1280, height: 800 }, 1], ["1920", { width: 1920, height: 1200 }, 1], ["tablette", { width: 1138, height: 711 }, 2.25]];
@@ -409,7 +414,9 @@ if (faire(8)) {
 // ---------------------------------------------------------------- 1. la reprise après un rechargement
 const jalon = (t) => { if (process.env.JALONS) console.log(`  … ${t}`); };
 const CAS1 = opt("--cas", null)?.split(","), cas = (c) => !CAS1 || CAS1.includes(c);
-const recharger = async (page) => { jalon("rechargement"); await page.reload(); await page.waitForFunction(() => window.__ready !== undefined, null, { timeout: 60000 }); await espion(page); await page.waitForTimeout(300); };
+// (`pendant` : ce qui se regarde dès la page prête, pendant la phrase de la reprise ; lot « Banc Android » : en voix accélérée, la
+// phrase « Te revoilà… » ne dure que 0,4 s environ, et la flèche, posée le temps de la phrase, était déjà repartie 300 ms après)
+const recharger = async (page, pendant = null) => { jalon("rechargement"); await page.reload(); await page.waitForFunction(() => window.__ready !== undefined, null, { timeout: 60000 }); const r = pendant ? await pendant() : null; await espion(page); await page.waitForTimeout(300); return r; };
 const offerte = (page) => page.evaluate(() => ({ attente: !!window.__app.repriseEnAttente, id: window.__app.repriseEnAttente?.id ?? null, continuer: !!document.querySelector(".keep.play"), dit: window.__app.bulle.texte }));
 const etatSeance1 = (page) => page.evaluate(() => { const s = window.__app.session; return s?.rec ? { id: s.rec.id, etape: s.progress.etape, questions: s.rec.questions, etoiles: s.rec.etoiles, cran: s.cran, enPause: !!window.__app.enPause, total: window.__app.rewards.total } : null; });
 const continuer = async (page) => { await tap(page, ".keep.play"); await page.waitForTimeout(300); if (await page.evaluate(() => !!window.__app.repriseEnAttente)) await tap(page, ".keep.play").catch(() => {}); };
@@ -417,10 +424,14 @@ const repris = (page, id, etape) => attendre(page, ([id, etape]) => { const s = 
 // une reprise complète : recharger, vérifier « continuer » et la phrase, reprendre ; renvoie l'état d'avant et d'après
 async function reprendre(page, nom, { capture = null, vue = VUES[0] } = {}) {
   const avant = await etatSeance1(page);
-  await recharger(page);
+  // (relecture du lot, R1) pendant la phrase, la flèche est posée au-dessus du galet « continuer », visible malgré la pause : regardée
+  // à chaque image tant que la phrase est dite
+  const fl = await recharger(page, () => page.waitForFunction(() => {
+    const f = window.__app.fleche, c = f.a?.c, g = document.querySelector(".keep.play")?.getBoundingClientRect(), r = c?.getBoundingClientRect();
+    const e = { vu: f.visible && !!c && getComputedStyle(c).visibility === "visible", dessus: !!(g && r && r.left < g.right && r.right > g.left && r.bottom <= g.top + 30) };
+    return (e.vu && e.dessus) || !window.__app.voice.speaking ? e : false;
+  }, null, { polling: "raf", timeout: 15000 }).then((h) => h.jsonValue(), () => ({ vu: false, dessus: false, delai: true })));
   const o = await offerte(page);
-  // (relecture du lot, R1) pendant la phrase, la flèche est posée au-dessus du galet « continuer », visible malgré la pause
-  const fl = await page.evaluate(() => { const f = window.__app.fleche, c = f.a?.c, g = document.querySelector(".keep.play")?.getBoundingClientRect(), r = c?.getBoundingClientRect(); return { vu: f.visible && !!c && getComputedStyle(c).visibility === "visible", dessus: !!(g && r && r.left < g.right && r.right > g.left && r.bottom <= g.top + 30) }; });
   if (capture) await shot(page, vue, capture);
   check(o.attente && o.id === avant.id && o.continuer && o.dit === T.repriseRechargement, `1. ${nom} : rechargée, l'accueil en pause avec « continuer » ; la mascotte : « ${o.dit} »`);
   if (capture) check(fl.vu && fl.dessus, `1. ${nom} : la flèche montre le galet « continuer » (${JSON.stringify(fl)})`);

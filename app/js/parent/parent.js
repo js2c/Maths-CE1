@@ -14,6 +14,7 @@ import { recommended } from "../modules/calc/runner.js";
 import { ruleShare } from "../modules/facts/families.js";
 import { DB_NAME, MIGRATIONS, persist, STORES } from "../engine/store.js";
 import { lire as lireJournal, vider as viderJournal } from "../engine/journal.js";
+import { avisStockage } from "../engine/stockage.js";
 import { familyKnown, markFamilyKnown, setCalcLevel, setEtalLevel, setLineLevel, setMultLevel, setVoiliersLevel } from "./depart.js";
 import { recommendedMult } from "../modules/mult/runner.js";
 
@@ -162,6 +163,8 @@ export class ParentSpace {
     const st = this.store, [seances, reponses, niveaux, faits, recompenses] = await Promise.all(["seances", "reponses", "niveaux", "faits", "recompenses"].map((x) => st.all(x)));
     this.d = { seances: seances.sort((a, b) => b.debut - a.debut), reponses, niveaux, faits, recompenses: Object.fromEntries(recompenses.map((r) => [r.id, r])), rythme: await st.setting("boutiqueRythme", null) };
     this.d.dernierExport = await st.setting("dernierExport");
+    // (lot « Banc Android », point 2) la tablette manque de place pour l'application hors ligne
+    this.d.stockage = await avisStockage();
   }
   async dashboard() {
     removeEventListener("keydown", this.onKey);
@@ -193,6 +196,7 @@ export class ParentSpace {
     for (const b of this.tabsEl.children) b.setAttribute("aria-selected", String(b.dataset.tab === id));
     const page = h("div", { class: "pa-page" });
     const due = D.exportDue({ dernierExport: this.d.dernierExport, premiereSeance: this.d.seances.at(-1)?.debut ?? null, jours: this.c.rappelExportJours });
+    if (this.d.stockage) page.append(h("div", { class: "pa-reminder pa-stockage" }, h("p", {}, h("b", {}, "Plus assez de place sur la tablette. "), this.d.stockage.texte)));
     if (due && id !== "donnees") page.append(h("div", { class: "pa-reminder" }, h("p", {}, h("b", {}, "Pensez à la sauvegarde de la semaine. "), this.d.dernierExport ? `La dernière date du ${D.fmtDay(this.d.dernierExport)}.` : "Aucune sauvegarde n'a encore été faite."), h("button", { class: "pa-btn primary", onclick: () => this.show("donnees") }, "Sauvegarder")));
     ({ calendrier: () => this.calendar(page, opts), seances: () => this.sessions(page, opts), progression: () => this.progress(page), donnees: () => this.dataPage(page) })[id]();
     this.main.replaceChildren(page); this.main.scrollTop = 0;

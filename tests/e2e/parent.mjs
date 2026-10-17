@@ -5,6 +5,11 @@
 //   les exports CSV et JSON (contenu vérifié, code parent absent) ; fermer puis rouvrir avec un mauvais code,
 //   puis le bon ; « code oublié » ; la durée de séance ; restaurer la sauvegarde après un effacement.
 // Captures dans tests/e2e/out/parent.   node tests/e2e/parent.mjs [--out dossier]
+// BANC ANDROID, raccourcis : voix rapide, sans service worker
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie. La vraie voix, le son et l'application
+// installée sont éprouvés sur le banc Android (journee.mjs, enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";

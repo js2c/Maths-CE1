@@ -4,6 +4,12 @@
 // quatre crans (formes directes, à trou). Vérifie : le niveau joué est le niveau choisi, les nombres écrits et les
 // formats suivent module1.json (crans), aucune erreur de page.
 //   node tests/e2e/crans.mjs [--out dossier] [--niveaux 1,5,12]
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -14,7 +20,7 @@ const OUT = resolve(opt("--out") ?? "tests/e2e/out/crans"); mkdirSync(OUT, { rec
 const m1 = JSON.parse(readFileSync(new URL("../../app/content/module1.json", import.meta.url)));
 const niveaux = (opt("--niveaux") ?? "1,2,3,4,5,6,7,8,9,10,11,12,13").split(",").map(Number), CRANS = ["facile", "conseille", "dur", "tresdur"];
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: [] });
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true }), page = await context.newPage(), errors = [];
 page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });

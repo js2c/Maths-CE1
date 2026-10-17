@@ -63,10 +63,10 @@ async function sansReponse(nom) {
   return apres;
 }
 // la réponse fausse, la correction à l'écran : enregistrée ; la question suivante
-async function reponseFausse(nom) {
+async function reponseFausse(nom, repondreFaux = null) {
   await attendreQuestion();
   const avant = await etat(), reps0 = await reponses(avant.id);
-  await a.page.evaluate(REPONDRE, false);
+  if (repondreFaux) await a.page.evaluate(repondreFaux); else await a.page.evaluate(REPONDRE, false);
   // (dès que la réponse est écrite dans la base : la correction commence à peine)
   for (let i = 0; i < 150 && !(await a.page.evaluate(async (id) => !!(await window.__app.store.get("seances", id))?.pointReprise?.encours?.reponse, avant.id).catch(() => false)); i++) await a.page.waitForTimeout(100);
   const enCorrection = await a.page.evaluate(() => (window.__app.session?.rec?.questions ?? 0));
@@ -136,7 +136,9 @@ if (!SEUL || SEUL === "seance") {
 // ---------------------------------------------------------------- au milieu de chaque exercice
 if (!SEUL || SEUL === "exercices") {
   console.log("\nau milieu de chaque exercice");
-  for (const [choix, nom] of [["1:3", "ligne graduée"], ["2:1", "additions"], ["3:1", "calcul rapide"], ["4:1", "voiliers"], ["5:1", "multiplication"], ["6:2", "étal"]]) {
+  // (une séance finie aujourd'hui : l'accueil proposerait « Encore ! », l'entraînement libre ; on repart d'une base neuve)
+  if (!SEUL) { await a.effacerDonnees(); await a.relancer({ q: Q }); }
+  for (const [choix, nom] of [["1:3", "ligne graduée"], ["1:12", "dictée des nombres"], ["2:1", "additions"], ["3:1", "calcul rapide"], ["4:1", "voiliers"], ["5:1", "multiplication"], ["6:2", "étal"]]) {
     // (la séance précédente, arrêtée par le parent : rien à reprendre)
     await a.page.evaluate(async () => { const s = await window.__app.store.all("seances"); for (const r of s) if (!r.terminee && !r.interruption) { r.interruption = { par: "parent", t: Date.now() }; await window.__app.store.put("seances", r); } });
     await a.relancer({ q: `${Q}&sans=echauffement&sansLecon&guides=0&choix=${choix}` });
@@ -144,6 +146,8 @@ if (!SEUL || SEUL === "exercices") {
     await attendreQuestion(); await repondre(true);
     await reponseFausse(nom);
     await sansReponse(nom);
+    // (relecture des demandes, constat 2) aux voiliers, « je ne sais pas » est noté avant que le bateau ne soit montré
+    if (choix === "4:1") await reponseFausse(`${nom}, « je ne sais pas »`, () => window.__app.voiliers.onNsp?.());
     await repondre(true);
     const e = await etat();
     check(e.questions >= 3, `${nom} : la partie continue après les reprises (${e.questions} questions comptées)`);

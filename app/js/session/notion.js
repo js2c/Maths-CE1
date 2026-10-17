@@ -36,7 +36,12 @@ export async function runNotion({ session, step, end, runner, screen, lesson = a
     // l'horloge (l'enregistrement d'une réponse) posait encore la question suivante sur l'écran quitté
     if (session.stopped) return new Promise(() => {});
     let nx, brute = null;
-    if (reprise?.q && (reprise.phase ?? null) === phase) { nx = { q: donnees(reprise.q), cfg: donnees(reprise.cfg) }; brute = reprise.reponse ? donnees(reprise.reponse) : null; reprise = null; }
+    if (reprise?.q && (reprise.phase ?? null) === phase) {
+      nx = { q: donnees(reprise.q), cfg: donnees(reprise.cfg) }; brute = reprise.reponse ? donnees(reprise.reponse) : null; reprise = null;
+      // (la question reprise : l'écran redit sa consigne entière, comme à la première question ; non énumérable, pour ne pas être
+      // enregistré avec la réponse)
+      Object.defineProperty(nx.q, "repris", { value: true });
+    }
     else {
       nx = runner.next({ guide, format: after ? "lire" : null });
       if (!nx) { S.fini = true; return null; }
@@ -78,7 +83,9 @@ export async function runNotion({ session, step, end, runner, screen, lesson = a
   };
   // la reprise d'une leçon en cours au rechargement : elle est rejouée ; l'exercice guidé qui suivait une leçon : reposé
   if (reprise?.lecon) { const l = reprise; reprise = null; await watch(l.lecon, l.raison); }
-  else if (reprise?.q && !reprise.phase) await one(true, reprise.after ?? null, null);
+  // (et, relecture des demandes, constat 5 : une réponse donnée avant le rechargement est enregistrée même si le temps de l'étape est
+  // écoulé ; les boucles, qui s'arrêtent sur le temps, ne la verraient pas)
+  else if (reprise?.q && (!reprise.phase || (reprise.reponse && session.over(end)))) await one(reprise.phase ? reprise.phase === "guide" : true, reprise.after ?? null, reprise.phase ?? null);
   // la leçon du niveau la première fois, sinon deux exemples guidés
   const entry = P ? null : runner.entryLesson(), guides = step.guides ?? 0;
   if (!P) session.expect?.((entry ? 1 : guides) + S.n);

@@ -406,7 +406,8 @@ export async function runWarmup({ session, step, end, warmup, screen, intro, rnd
   const faits = P ? donnees(P.faits) : [], rp = repetition(warmup.c0);
   let reprise = P?.encours ?? null;
   const point = (encours, o) => session.notePoint?.({ etape: step.id, rest: enDonnees(rest), answers: [...answers], faits: [...faits], warmup: instantane(warmup), encours }, o);
-  while (!skipped && (rest.length || reprise?.q) && !session.over(end)) {
+  // (une réponse donnée avant le rechargement est enregistrée même si le temps est écoulé)
+  while (!skipped && (rest.length || reprise?.q) && (reprise?.reponse || !session.over(end))) {
     let q, r = null;
     if (reprise?.q) { q = donnees(reprise.q); r = reprise.reponse ? donnees(reprise.reponse) : null; reprise = null; }
     else {

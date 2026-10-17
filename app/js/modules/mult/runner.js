@@ -72,7 +72,7 @@ export class Module5Runner {
   async record(r, cfg) {
     const q = r.q, events = [], code = r.nsp ? "NSP" : r.ok ? null : classifyMult(q, r.value);
     await this.store?.add("reponses", {
-      t: Date.now(), seance: this.seance, module: 5, niveau: q.niveau, question: multQuestion(q), forme: q.forme, donnee: r.value, attendue: multAnswer(q),
+      t: r.t ?? Date.now(), seance: this.seance, module: 5, niveau: q.niveau, question: multQuestion(q), forme: q.forme, donnee: r.value, attendue: multAnswer(q),
       juste: !!r.ok, tempsMs: r.ms, ecoutes: r.listens, aide: !!r.aide, ...(q.aideDEmblee ? { aideDEmblee: true } : {}), erreur: code, revient: !!q.revient, guide: !!q.guide, notion: true,
       ...(r.correctionPassee ? { correctionPassee: true } : {}), ...(this.libre ? { libre: true } : {}), ...(q.cran && q.cran !== "conseille" ? { cran: q.cran } : {}),
     });

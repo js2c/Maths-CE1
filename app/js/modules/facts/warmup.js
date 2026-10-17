@@ -84,7 +84,7 @@ export class Warmup {
   async record(q, r, rest) {
     const now = this.clock(), forme = q.base ? "base" : q.forme ?? "directe", juste = r.value === expected({ ...q, forme });
     await this.store.add("reponses", {
-      t: now, seance: this.seance, module: 2, niveau: q.famille ?? 0, question: describeFact(q, forme), forme, ...(q.base ? {} : { fait: q.fait ?? key(q.a, q.b) }), donnee: r.value, attendue: expected({ ...q, forme }),
+      t: r.t ?? now, seance: this.seance, module: 2, niveau: q.famille ?? 0, question: describeFact(q, forme), forme, ...(q.base ? {} : { fait: q.fait ?? key(q.a, q.b) }), donnee: r.value, attendue: expected({ ...q, forme }),
       juste, tempsMs: r.ms, ecoutes: r.listens, aide: !!r.aide, ...(r.aideDEmblee ? { aideDEmblee: true } : {}), erreur: juste ? null : r.nsp ? "NSP" : classifyFact({ ...q, forme }, r.value), revient: !!q.revient, anticipe: !!q.anticipe,
       ...(r.correctionPassee ? { correctionPassee: true } : {}), ...(this.libre ? { libre: true } : {}), ...(q.guide ? { guide: true } : {}), ...(q.passe ? { passe: true } : {}), ...(this.notion ? { notion: true } : {}), ...(this.defi ? { defi: true } : {}), ...(this.cran() !== "conseille" ? { cran: this.cran() } : {}),
     });

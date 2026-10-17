@@ -5,7 +5,9 @@
 // simples, gardée dans la fiche de la séance après chaque question ; `restaurer(runner, copie)` la remet dans un runner neuf,
 // après le rechargement. Ce qui vient d'ailleurs n'est pas copié : le contenu (les niveaux, les réglages), la base, l'écran, les
 // fonctions, le hasard ; l'état enregistré dans la base (`st`, le niveau) l'est, pour rester cohérent avec la copie.
-const EXCLUS = new Set(["store", "c", "c0", "c2", "content", "content2", "rnd", "seance", "cran", "choix", "clock", "baseMs", "screen", "offset", "levels", "rules", "dejaNouveaux"]);
+// (`facts` : les faits d'addition de l'échauffement, avec tout leur historique, relus de la base au chargement et tenus à jour
+// dans la base à chaque réponse ; copiés, ils faisaient du point de reprise 300 Ko : relecture des demandes, constat 8)
+const EXCLUS = new Set(["facts", "store", "c", "c0", "c2", "content", "content2", "rnd", "seance", "cran", "choix", "clock", "baseMs", "screen", "offset", "levels", "rules", "dejaNouveaux"]);
 const simple = (v) => v === null || ["string", "number", "boolean"].includes(typeof v);
 const proto = (v) => Object.getPrototypeOf(v);
 function copie(v, prof = 0) {

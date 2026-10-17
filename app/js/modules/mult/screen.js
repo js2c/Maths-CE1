@@ -72,8 +72,10 @@ export class MultScreen {
   paintBand(q) {
     const { sprites } = this.app;
     this.board.draw((ctx) => {
-      if (q.tour) { const t = `${q.tour.a} × ${q.tour.b} = ${q.n}`, em = 44, w = R.wordWidth(t) * em + 60; R.drawPanel(ctx, ROWS_SMALL.cx - w / 2, 372, w, em + 40); R.drawWord(ctx, t, ROWS_SMALL.cx, 392, em, { w: 6.5, seed: 9600 }); }
-      else if (q.image === "toujours" && (q.forme ?? "directe") === "directe") paintRows(ctx, sprites, q.a, q.b, ROWS_SMALL);
+      // (relecture des demandes du 17 octobre, constat 9 : la bulle de la mascotte ne couvre plus les rangées ni la plaque, dont parle
+      // la question : leur cadre est déclaré au calque des aides, comme le chemin du calcul rapide)
+      if (q.tour) { const t = `${q.tour.a} × ${q.tour.b} = ${q.n}`, em = 44, w = R.wordWidth(t) * em + 60; R.drawPanel(ctx, ROWS_SMALL.cx - w / 2, 372, w, em + 40); R.drawWord(ctx, t, ROWS_SMALL.cx, 392, em, { w: 6.5, seed: 9600 }); this.board?.zones?.push([ROWS_SMALL.cx - w / 2, 372, ROWS_SMALL.cx + w / 2, 372 + em + 40]); }
+      else if (q.image === "toujours" && (q.forme ?? "directe") === "directe") { const L = paintRows(ctx, sprites, q.a, q.b, ROWS_SMALL), [x, y, w, h] = L.box; this.board?.zones?.push([x, y, x + w, y + h]); }
     });
   }
   async askNotion(q) {

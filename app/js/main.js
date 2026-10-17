@@ -398,7 +398,7 @@ async function notion2(ctx) {
   ctx.portee.fin(() => { screen.notion = false; screen.hermit = null; if (app.hermit === hermit) app.hermit = null; hermit.remove(); });
   hermit.show(true); hermit.play("sortir");
   screen.show(true); screen.keys(false);
-  await voice.say(text.pick("notionFaits"));
+  if (!session.reprendAuPoint("notion")) await voice.say(text.pick("notionFaits")); // (repris à la question près : la phrase d'entrée n'est pas redite)
   const ask = { ask: async (q, cfg, o) => screen.askNotion(q, cfg, o), finaliser: (q, r) => screen.finaliserNotion(q, r) };
   try {
     const res = await runNotion({ ...ctx, step, runner, screen: ask, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
@@ -421,7 +421,8 @@ async function notion3(ctx) {
   const fs = (app.facts ??= new FactsScreen(app, module2)); fs.show(true); fs.keys(false);
   // (lot 3 bis, B4) « Le petit poisson va t'aider » n'est dit que s'il est à l'écran : aux niveaux du mur, le mur et le poisson
   // sont montrés le temps de la phrase ; sinon, une phrase sans le poisson
-  if (module3.niveaux.find((c) => c.niveau === runner.niveau)?.support === "mur") await app.calc.introWall(text.pick("notionCalculMur"));
+  if (session.reprendAuPoint("notion")) { /* (repris à la question près : la phrase d'entrée n'est pas redite) */ }
+  else if (module3.niveaux.find((c) => c.niveau === runner.niveau)?.support === "mur") await app.calc.introWall(text.pick("notionCalculMur"));
   else await voice.say(text.pick("notionCalcul"));
   await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.calc.askNotion(q), finaliser: (q, r) => app.calc.finaliser(q, r) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
 }
@@ -437,7 +438,7 @@ async function notion5(ctx) {
   await sprites.load("aides"); ctx.portee.fin(() => app.mult.leave());
   if (ctx.portee.fermee) return fige();
   const fs = (app.facts ??= new FactsScreen(app, module2)); fs.show(true); fs.keys(false);
-  await voice.say(text.pick("notionMult"));
+  if (!session.reprendAuPoint("notion")) await voice.say(text.pick("notionMult")); // (repris à la question près : la phrase d'entrée n'est pas redite)
   await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.mult.askNotion(q), finaliser: (q, r) => app.mult.finaliser(q, r) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
 }
 // LOT « LES VOILIERS » (docs/SPEC.md, section 7 bis) : la notion du jour sur le jeu des voiliers, choisi par l'enfant ou
@@ -470,7 +471,7 @@ async function notion6(ctx) {
   // (inscrit après l'installation : une étape quittée pendant qu'elle s'installait la range aussitôt)
   ctx.portee.fin(() => scr.leave()); if (ctx.portee.fermee) return fige();
   session.rec.etalMeteo = scr.meteoDepart ? "mauvais temps" : scr.orageA != null ? "orage en cours de partie" : "beau temps"; await session.save();
-  await voice.say(text.pick("etalNotion"));
+  if (!session.reprendAuPoint("notion")) await voice.say(text.pick("etalNotion")); // (repris à la question près : la phrase d'entrée n'est pas redite)
   await runNotion({ ...ctx, step, runner, screen: { ask: (q) => scr.ask(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
 }
 // LOT 3 TER (docs/SPEC-LOT3TER.md, T1 ; décision du parent) : « PASSER L'ÉCHAUFFEMENT ». Un bouton dédié (son propre

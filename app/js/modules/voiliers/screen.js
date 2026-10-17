@@ -198,9 +198,11 @@ export class VoiliersScreen {
     api.mer(q.mer);
     const arrive = api.arrivee({ num: q.num }).then(g);
     // l'annonce de la mer, puis le nombre (la consigne d'abord au premier bateau) ; « réécouter » redit la consigne et le nombre
-    if (q.annonce) voice.say(T.voiliersMer[q.annonce]);
+    // (un bateau repris après un rechargement, session/notion.js : la mer agitée annoncée et la consigne entière, comme au premier)
+    const annonce = q.annonce ?? (q.repris ? { vent: "vent", pirates: "pirates" }[q.mer] ?? null : null);
+    if (annonce) voice.say(T.voiliersMer[annonce]);
     const consigne = `${T.voiliersConsigne} ${q.num}`;
-    const dit = voice.say(q.premier ? consigne : String(q.num), { instruction: true }); voice.instruction = consigne;
+    const dit = voice.say(q.premier || q.repris ? consigne : String(q.num), { instruction: true }); voice.instruction = consigne;
     if (q.guide) return this.exemple(q, arrive, dit, vivant);
     this.locked = false;
     await arrive; if (!vivant()) return new Promise(() => {});
@@ -217,9 +219,10 @@ export class VoiliersScreen {
         this.attend = false; this.onNsp = null; this.nsp.style.visibility = "hidden";
         if (!vivant()) return new Promise(() => {});
         temps(); voice.stop();
-        if (r.nsp) { res.nsp = true; await this.montrer(b, k, q, { nsp: true, derniere }); return { premier: false, fin: false, nsp: true }; }
+        // (la reprise à la question près, relecture : « je ne sais pas » et le bateau rattrapé notés aussi avant ce qui suit)
+        if (r.nsp) { res.nsp = true; app.surReponse?.({ ...res, ok: false, code: "NSP", listens: voice.listens }); await this.montrer(b, k, q, { nsp: true, derniere }); return { premier: false, fin: false, nsp: true }; }
         if (r.rattrape) {
-          res.rattrape = true; ocean.mascotte.play("encourager");
+          res.rattrape = true; app.surReponse?.({ ...res, ok: false, code: res.code ?? "rattrape", listens: voice.listens }); ocean.mascotte.play("encourager");
           await Promise.all([this.dire(T.voiliersMer.rattrape), api.couler()]).then(g);
           return { premier: false, fin: false, rattrape: true };
         }

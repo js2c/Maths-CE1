@@ -135,3 +135,62 @@ test("une nouvelle version de l'application ne reprend pas le point d'une autre 
   assert.equal(s2.rec.reprises.at(-1).ou, "debut");
   Session.version = null;
 });
+
+// ---------------------------------------------------------------- relecture des demandes (RELECTURE-DEMANDES.md)
+test("relecture, constat 4 : l'étape reprise garde l'heure de son début (sa limite ne repart pas de zéro)", async () => {
+  const store = await Store.open(new IDBFactory()), rewards = await new Rewards(store).load();
+  let t = new Date(2026, 9, 17, 18).getTime(); const clock = () => t;
+  const ends = [];
+  const h = (id) => async ({ session, end }) => { if (id === "notion") { ends.push(end); t += 120000; await session.save(); throw new Error("rechargement"); } };
+  const content = { ...seance, etapes: seance.etapes.filter((e) => ["accueil", "notion", "recompense"].includes(e.id)) };
+  const s1 = new Session({ store, content, rewards, clock, handlers: { accueil: h("accueil"), notion: h("notion"), recompense: h("recompense") } });
+  await s1.start(); await s1.run().catch(() => {});
+  const rec = await store.get("seances", s1.rec.id);
+  assert.ok(rec.etapeDebut != null, "le début de l'étape est dans la fiche");
+  t += 3600000;
+  const s2 = new Session({ store, content, rewards, clock, handlers: { accueil: h("accueil"), notion: async ({ end }) => { ends.push(end); }, recompense: h("recompense") }, reprise: rec });
+  await s2.run();
+  assert.equal(ends[1], ends[0], "la même limite : les 2 minutes déjà passées dans l'étape comptent");
+  const fin = await store.get("seances", s1.rec.id);
+  assert.ok(fin.etapes.find((e) => e.id === "notion").dureeS >= 120, "la durée de l'étape compte le temps d'avant le rechargement");
+});
+
+test("relecture, constat 5 : une réponse donnée juste avant le rechargement est enregistrée, même le temps écoulé", async () => {
+  const { store, rewards, s } = await depart();
+  const r1 = await new Module1Runner({ screen: ecranLigne, store, content: module1, rnd: rng(11), seance: s.id }).load();
+  let n = 0;
+  runNotion({ session: s, step: NOTION, end: Infinity, runner: r1, screen: { ...ecranLigne, ask: async (q) => { if (++n === 3) { await s.surReponse({ q, value: q.answer + 1, ok: false, code: "E1", ms: 2000, listens: 1 }); await tick(); s.rec.pointReprise.encours.coupe = true; return jamais(); } return { q, value: q.answer, ok: true, code: null, ms: 2000, listens: 1 }; } }, rnd: rng(5), lesson: async () => false });
+  for (let i = 0; i < 50 && !s.rec.pointReprise?.encours?.coupe; i++) await tick();
+  await tick();
+  const s2 = await reprendre(store, rewards, s.id); s2.over = () => true; // (le temps de la séance est écoulé)
+  const r2 = await new Module1Runner({ screen: ecranLigne, store, content: module1, rnd: rng(9), seance: s.id }).load();
+  let posees = 0;
+  await runNotion({ session: s2, step: NOTION, end: 0, runner: r2, screen: { ...ecranLigne, ask: async (q) => { posees++; return { q, value: q.answer, ok: true, code: null, ms: 2000, listens: 1 }; } }, rnd: rng(5), lesson: async () => false });
+  const fin = await store.get("seances", s.id);
+  // (le temps écoulé : plus de question, sauf celle qui fait finir sur une réussite après une erreur, comme sans rechargement)
+  assert.equal(posees, 1, "une seule question de plus : finir sur une réussite");
+  assert.equal(fin.questions, 4); assert.equal(fin.justes, 3, "la réponse fausse est comptée");
+  const reps = (await store.all("reponses")).filter((r) => r.seance === s.id);
+  assert.equal(reps.length, 4); assert.equal(reps[2].juste, false, "à sa place dans l'historique"); assert.ok(reps[2].t <= reps[3].t);
+});
+
+test("relecture, constats 7 et 8 : la réponse comptée avant la phrase du cran ; le point de reprise léger, effacé quand rien n'est à reprendre", async () => {
+  const store = await Store.open(new IDBFactory()), rewards = await new Rewards(store).load();
+  // un échauffement sur une base chargée : 120 faits de 40 lignes d'historique
+  for (let a = 0; a < 11; a++) for (let b = 0; b < 11; b++) await store.put("faits", { fait: `${a}+${b}`, a, b, boite: 3, famille: 1, historique: Array.from({ length: 40 }, (_, i) => ({ t: 1e12 + i, juste: true, ms: 2000 })) });
+  const w = await new Warmup({ store, content: module2, rnd: rng(3), seance: 1 }).load(); w.questions(10, 10);
+  assert.ok(JSON.stringify(instantane(w)).length < 20000, `l'instantané de l'échauffement : ${JSON.stringify(instantane(w)).length} octets`);
+  // la descente du cran : sa phrase vient après que la fiche est enregistrée avec la réponse comptée
+  const s = await new Session({ store, content: seance, rewards, handlers: {} }).start();
+  s.cranIdx = 3; let vu = null;
+  s.onCranDown = async () => { vu = (await store.get("seances", s.id)).questions; };
+  for (let i = 0; i < 5; i++) await s.answered(false);
+  assert.ok(vu != null, "le cran est descendu"); assert.equal(vu, (await store.get("seances", s.id)).questions, "la réponse qui fait descendre le cran est déjà comptée dans la fiche");
+  assert.equal(s.rec.descentes[0].apres, vu);
+  // interrompue : plus de point de reprise ; une séance suivante efface ceux qui restent
+  s.rec.pointReprise = { etape: "notion" }; await s.save(); await s.interrupt({ par: "parent" });
+  assert.equal((await store.get("seances", s.id)).pointReprise, null);
+  await store.put("seances", { ...(await store.get("seances", s.id)), pointReprise: { etape: "notion" } });
+  await new Session({ store, content: seance, rewards, handlers: {} }).start();
+  assert.equal((await store.get("seances", s.id)).pointReprise, undefined, "la séance suivante l'efface");
+});

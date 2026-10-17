@@ -5,6 +5,12 @@
 //  - 7.6 : au mur (niveau 2), une erreur non reconnue fait dire « Hmm, regardons ensemble. » (plus de « chemin ») ;
 //  - 10.1 : l'espace parent, bloc « Cartes », sans les cadeaux de la surprise (ni « undefined »).
 //   node tests/e2e/correctifs.mjs [--out dossier] [--seul 1280|1920]
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -14,7 +20,7 @@ const args = process.argv.slice(2), opt = (k, d) => (args.includes(k) ? args[arg
 const OUT = resolve(opt("--out", "tests/e2e/out/correctifs")); mkdirSync(OUT, { recursive: true });
 const SEUL = opt("--seul", null);
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: [] });
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 
 for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEUL || String(w) === SEUL)) {

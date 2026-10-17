@@ -1,5 +1,9 @@
 {
- "version": "bf57320cd294",
+ "version": "f697ec822daa",
+ "octets": {
+  "1": 120158660,
+  "2": 135192068
+ },
  "files": [
   "./",
   "assets/art/aides@1x.webp",
@@ -11729,6 +11733,7 @@
   "js/engine/actor.js",
   "js/engine/bulle.js",
   "js/engine/clock.js",
+  "js/engine/etat-page.js",
   "js/engine/fleche.js",
   "js/engine/hermit.js",
   "js/engine/journal.js",
@@ -11742,8 +11747,10 @@
   "js/engine/son.js",
   "js/engine/sprites.js",
   "js/engine/stage.js",
+  "js/engine/stockage.js",
   "js/engine/store.js",
   "js/engine/toucher.js",
+  "js/engine/tourner.js",
   "js/engine/turtle.js",
   "js/engine/ui.js",
   "js/engine/voice.js",
@@ -11792,6 +11799,7 @@
   "js/session/demarrage.js",
   "js/session/free.js",
   "js/session/frieze.js",
+  "js/session/instantane.js",
   "js/session/legend.js",
   "js/session/lessons.js",
   "js/session/notion.js",

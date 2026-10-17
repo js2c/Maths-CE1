@@ -253,3 +253,5 @@ Le parent n'est pas encore convaincu par les remèdes proposés : la question es
 - **Cartes** : illustrations et anecdotes du grand large **avant début février 2027**, des abysses **avant fin avril 2027**.
 - **Calendrier scolaire 2027-2028** dans `app/content/calendrier.json`, avant la rentrée 2027.
 - **Vérifier le programme** : la synthèse du programme 2024 transmise par le parent est une reformulation (incohérence sur 1/10) ; vérifier les indicateurs de fluence dans l'annexe 4 officielle avant d'en faire des objectifs chiffrés.
+
+- **L'étal : deux étiquettes de prix se chevauchent** (relecture du lot « Banc Android », constat 4) : à certains tirages, l'étiquette des huîtres (15 €) recouvre en partie celle de la sole (10 €) ; c'est la mise en page de la maquette de l'étal (`art/etal/`), identique sur toutes les tailles d'écran. Décaler les étiquettes dans la maquette ?

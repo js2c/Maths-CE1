@@ -116,7 +116,7 @@ export class Module1Runner {
   async record(r, cfg) {
     const q = r.q, events = [];
     await this.store?.add("reponses", {
-      t: Date.now(), seance: this.seance, module: 1, niveau: q.niveau, question: describe(q), forme: q.format, donnee: r.value, attendue: q.answer,
+      t: r.t ?? Date.now(), seance: this.seance, module: 1, niveau: q.niveau, question: describe(q), forme: q.format, donnee: r.value, attendue: q.answer,
       juste: r.ok, tempsMs: r.ms, ecoutes: r.listens, aide: !!q.guide, erreur: r.code, revient: !!q.revient, guide: !!q.guide,
       ...(q.passe ? { passe: true } : {}), ...(r.correctionPassee ? { correctionPassee: true } : {}), ...(this.libre ? { libre: true } : {}), ...(this.cran() && this.cran() !== "conseille" ? { cran: this.cran() } : {}),
     });

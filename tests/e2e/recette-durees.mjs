@@ -4,13 +4,17 @@
 // (lot 3 ter, T3 : « passer » et « je ne sais pas » valident au lever du doigt : chaque toucher simulé pose puis lève le doigt)
 // facile ») ; pour chaque parcours, la plus longue attente SANS AUCUNE COMMANDE (ni « passer », ni question
 // ouverte, ni bouton de leçon) : en tout, et hors voix (la voix parle : consigne, bravo, correction dite).
-import { chromium } from "./navigateur.mjs";
+// BANC ANDROID, raccourcis : sans service worker
+// (raison : chaque cas part d'une base neuve, dans un navigateur neuf : la voix y est la vraie, mais installer l'application
+// (140 Mo, environ une minute) pour chaque cas n'apporterait rien à ce qu'il vérifie. L'application installée, relancée,
+// gelée, hors ligne, est éprouvée sur le banc Android (installation.mjs, journee.mjs).)
+import { chromium, demarrageTouche } from "./navigateur.mjs";
 import { serve } from "../serve.mjs";
 const PASSER = process.argv.includes("--passer"); // l'enfant touche « passer » dès qu'il apparaît
 // (bloc « Sommes jusqu'à 30 » et « Multiplication ») --bloc : seulement les familles 8 à 12, leurs appuis et la multiplication
 const BLOC = process.argv.includes("--bloc");
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: [] });
 const out = [];
 // la plus longue attente sans commande : échantillonnée toutes les 100 ms dans la page (`window.__gap`)
 const MONITOR = () => {
@@ -27,7 +31,7 @@ const MONITOR = () => {
 };
 const gapOf = async (page) => { const g = await page.evaluate(() => window.__gap); return `sans commande : ${(g.max / 1000).toFixed(1)} s au plus (${g.at}), hors voix ${(g.maxHors / 1000).toFixed(1)} s (${g.atHors})`; };
 for (const niveau of BLOC ? [] : [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]) {
-  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); const page = await context.newPage();
+  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); await demarrageTouche(context); const page = await context.newPage();
   await page.goto(url + "?nosw"); await page.waitForFunction(() => window.__ready !== undefined);
   await page.evaluate(async () => { await window.__app.store.setSetting("mascotte", "Pili"); });
   await page.goto(url + `?nosw&cran=conseille&sans=echauffement&niveau=${niveau}&questions=4`); // (lot 2 : le sélecteur de difficulté est mesuré à part, tests/e2e/selecteur.mjs) await page.waitForFunction(() => window.__ready !== undefined);
@@ -61,7 +65,7 @@ for (const niveau of BLOC ? [] : [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]) {
 // lot 2, étape 6 : la notion du jour sur les additions, famille par famille (le parent a marqué connues les
 // familles d'avant) : leçon d'entrée ou exemples guidés, correction après « je ne sais pas », après une erreur
 for (const famille of BLOC ? [8, 9, 11, 12] : [1, 3, 4, 5, 6, 8, 9, 11, 12]) { // (8 à 12 : lot « Sommes jusqu'à 30 »)
-  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); const page = await context.newPage();
+  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); await demarrageTouche(context); const page = await context.newPage();
   await page.goto(url + "?nosw"); await page.waitForFunction(() => window.__ready !== undefined);
   await page.evaluate(async (fam) => { const s = window.__app.store; await s.setSetting("mascotte", "Pili"); const { markFamilyKnown } = await import("./js/parent/depart.js"), m2 = await (await fetch("content/module2.json")).json(); for (let f = 1; f < fam; f++) await markFamilyKnown(s, m2, f); }, famille);
   await page.goto(url + "?nosw&cran=conseille&sans=echauffement&module=2&questions=4"); await page.waitForFunction(() => window.__ready !== undefined);
@@ -86,7 +90,7 @@ for (const famille of BLOC ? [8, 9, 11, 12] : [1, 3, 4, 5, 6, 8, 9, 11, 12]) { /
 // lot 3, étape 4 : le calcul rapide, sur une base neuve, niveau choisi (leçon d'entrée L7 au niveau 2, L8 au 6, L9 au 7 ;
 // puis les calculs guidés, pont par pont) : « je ne sais pas », une erreur (correction sur le mur ou le chemin)
 for (const niveau of BLOC ? [] : [1, 2, 6, 7, 9]) {
-  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); const page = await context.newPage();
+  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); await demarrageTouche(context); const page = await context.newPage();
   await page.goto(url + "?nosw"); await page.waitForFunction(() => window.__ready !== undefined);
   await page.evaluate(async () => { await window.__app.store.setSetting("mascotte", "Pili"); });
   await page.goto(url + `?nosw&cran=conseille&sans=echauffement&choix=3:${niveau}&questions=5`); await page.waitForFunction(() => window.__ready !== undefined);
@@ -114,7 +118,7 @@ for (const niveau of BLOC ? [] : [1, 2, 6, 7, 9]) {
 // l'exemple guidé (les rangées comptées), « je ne sais pas », une erreur (la correction et les rangées comptées) ; puis
 // l'aide du coquillage au niveau 3 (les rangées comptées, sans le dernier total)
 for (const niveau of [1, 3, 6, 9]) {
-  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); const page = await context.newPage();
+  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); await demarrageTouche(context); const page = await context.newPage();
   await page.goto(url + "?nosw"); await page.waitForFunction(() => window.__ready !== undefined);
   await page.evaluate(async () => { await window.__app.store.setSetting("mascotte", "Pili"); });
   await page.goto(url + `?nosw&cran=conseille&sans=echauffement&choix=5:${niveau}&questions=4`); await page.waitForFunction(() => window.__ready !== undefined);
@@ -140,7 +144,7 @@ for (const niveau of [1, 3, 6, 9]) {
 // décision du parent du 27 septembre : l'aide des additions (coquillage au cran conseillé, aide affichée d'emblée
 // au cran « plus facile »), appui par appui : durée jusqu'au retour du pavé, apparition de « passer »
 for (const [famille, appui] of BLOC ? [[8, "deuxCadres"], [9, "reflet"]] : [[1, "ligne"], [2, "reflet"], [3, "cadre"], [4, "maison"], [6, "doublePlus"], [8, "deuxCadres"], [9, "reflet"]]) for (const cran of ["conseille", "facile"]) {
-  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); const page = await context.newPage();
+  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); await demarrageTouche(context); const page = await context.newPage();
   await page.goto(url + "?nosw"); await page.waitForFunction(() => window.__ready !== undefined);
   await page.evaluate(async (fam) => { const s = window.__app.store; await s.setSetting("mascotte", "Pili"); const { markFamilyKnown } = await import("./js/parent/depart.js"), m2 = await (await fetch("content/module2.json")).json(); for (let f = 1; f < fam; f++) await markFamilyKnown(s, m2, f); }, famille);
   await page.goto(url + `?nosw&cran=${cran}&sans=echauffement&module=2&sansLecon&guides=0&questions=3`); await page.waitForFunction(() => window.__ready !== undefined);
@@ -163,9 +167,9 @@ for (const [famille, appui] of BLOC ? [[8, "deuxCadres"], [9, "reflet"]] : [[1, 
 // lot « Les voiliers » : niveaux 1, 5 et 9 (double encadrement), au calme (cran « plus facile ») : l'exemple guidé, un bon
 // passage, « je ne sais pas » (le bateau va seul), une erreur puis une deuxième (le bateau va seul) ; la mer en WebGL
 // logiciel (sans processeur graphique, la scène est lente : les gestes suivent l'horloge, pas les images)
-const bgl = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
+const bgl = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
 for (const niveau of BLOC ? [] : [1, 5, 9]) {
-  const context = await bgl.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); const page = await context.newPage();
+  const context = await bgl.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await context.addInitScript(MONITOR); await demarrageTouche(context); const page = await context.newPage();
   await page.goto(url + "?nosw"); await page.waitForFunction(() => window.__ready !== undefined);
   await page.goto(url + `?nosw&cran=facile&sans=echauffement&choix=4:${niveau}&questions=8`); await page.waitForFunction(() => window.__ready !== undefined);
   await page.tap(".play", { force: true });

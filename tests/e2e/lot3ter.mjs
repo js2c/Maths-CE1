@@ -6,6 +6,12 @@
 //   appui    : T3, l'appui long de 0,8 s sur chaque bouton recensé : étiquette, rien de lancé, étiquette disparue 0,5 s après
 //              le lever ; toucher bref : lancé ; pavé et bulles-réponses : au premier contact (tableau : out/…/appui.json)
 //   node tests/e2e/lot3ter.mjs [--seul passer,parent,appui] [--out dossier]
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -19,7 +25,7 @@ const textes = JSON.parse(readFileSync("app/content/textes.json", "utf8")), sean
 const SAVE = join(OUT, "base-un-mois.json");
 if (part("appui") && !existsSync(SAVE)) execFileSync("node", ["tools/sauvegarde-test.mjs", "reel", "2", "4", "--sortie", SAVE], { stdio: "ignore" });
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: [] });
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 export const open = async (q = "", prep = null, { width = 1280, height = 800 } = {}, prepArg = null) => {
   const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 2, hasTouch: true }), page = await context.newPage(), errors = [];

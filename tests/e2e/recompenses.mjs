@@ -8,6 +8,11 @@
 //     découvrir, zones fermées, perles.
 // Vérifie la base (étoiles, série, étoile arc-en-ciel) et l'absence d'erreur.
 //   node tests/e2e/recompenses.mjs [--out dossier]
+// BANC ANDROID, raccourcis : voix rapide, sans service worker
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie. La vraie voix, le son et l'application
+// installée sont éprouvés sur le banc Android (journee.mjs, enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";

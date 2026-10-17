@@ -27,7 +27,8 @@ export class LineView {
   place() {
     const k = this.st.k, px = this.st.px;
     for (const c of [this.c, this.fx]) Object.assign(c.style, { top: `${BAND[0] * k}px`, height: `${BAND[1] * k}px` });
-    this.fx.width = Math.round(1280 * px); this.fx.height = Math.round(BAND[1] * px);
+    // (la résolution ne change plus après le lancement : ne pas effacer les effets en cours)
+    const fw = Math.round(1280 * px), fh = Math.round(BAND[1] * px); if (this.fx.width !== fw || this.fx.height !== fh) { this.fx.width = fw; this.fx.height = fh; }
   }
   // dessine sur le calque d'effets en coordonnées de la scène (px logiques)
   fxDraw(fn) { const x = this.fxCtx, px = this.st.px; x.setTransform(px, 0, 0, px, 0, -BAND[0] * px); fn(x); this.fxUsed = true; this.fx.classList.remove("vide"); }

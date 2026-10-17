@@ -7,30 +7,39 @@
 //   - l'accueil en pause (une séance de l'étal en cours, la maison, puis les leçons) ;
 //   - la leçon relancée pendant l'exercice (trois erreurs de suite à l'étal, dans la séance), chacune à son niveau ;
 //   - la séance du jour faite, depuis le menu des leçons (« À toi ! » mène à l'entraînement libre, qui ne relance pas les leçons) ;
-// processeur ralenti 4 fois, à la taille de la tablette (1280 × 800, densité 2), et à 1920 × 1200. Une capture toutes les
+// sur les quatre profils du banc Android (tests/e2e/appareils.mjs), chacun avec son processeur ralenti, et à 1920 × 1200. Une capture toutes les
 // 2 secondes pendant la leçon : aucune n'a plus de 20 % de pixels noirs.
 //   node tests/e2e/lecons-monnaie.mjs [--petit] [--sans-ralenti]
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
+import { PROFILS, optionsProfil } from "./appareils.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
 
 const args = process.argv.slice(2), OUT = resolve("tests/e2e/out/lecons-monnaie"); mkdirSync(OUT, { recursive: true });
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: [] });
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
-const TAILLES = args.includes("--petit") ? [[1280, 800, 2]] : [[1280, 800, 2], [1920, 1200, 1]];
-const RALENTI = args.includes("--sans-ralenti") ? 1 : 4;
+// (lot « Banc Android », fiche 13 : sur les profils du banc, chacun avec son processeur ralenti ; plus 1 920 × 1 200)
+const TAILLES = args.includes("--petit") ? [["s5e"]] : [["s5e"], ["tablette-entree"], ["smartphone"], ["petit-smartphone"], [1920, 1200, 1]];
 const LECONS = ["L15", "L16", "L17", "L18"];
 const ETAT = (lecons = []) => ({ module: 6, niveau: 1, obtenus: [], redescentes: [], fenetre: [], vus: 0, taux: [], lecons, exemples: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] });
 
 const ouvrir = async ([w, h, dpr], q, prep = null) => {
-  const context = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: dpr, hasTouch: true }), page = await context.newPage(), errors = [];
+  const profil = typeof w === "string" ? w : null;
+  const context = await browser.newContext(profil ? optionsProfil(profil) : { viewport: { width: w, height: h }, deviceScaleFactor: dpr, hasTouch: true }), page = await context.newPage(), errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto(url + "?nosw&voix=rapide&son=non&sansReprise"); await page.waitForFunction(() => window.__ready !== undefined);
   await page.evaluate(async () => { await window.__app.store.setSetting("echauffement", false); });
   if (prep) await page.evaluate(prep.f, prep.a);
   await page.goto(url + "?nosw&voix=rapide&son=non&sansReprise&meteo=beau" + q); await page.waitForFunction(() => window.__ready !== undefined);
+  const RALENTI = args.includes("--sans-ralenti") ? 1 : profil ? PROFILS[profil].ralenti : 4;
   if (RALENTI > 1) { const cdp = await context.newCDPSession(page); await cdp.send("Emulation.setCPUThrottlingRate", { rate: RALENTI }); }
   return { page, context, errors };
 };
@@ -69,7 +78,7 @@ const troisErreurs = async (page) => {
 };
 
 for (const T of TAILLES) {
-  const W = `${T[0]}×${T[1]}`;
+  const W = typeof T[0] === "string" ? T[0] : `${T[0]}×${T[1]}`;
   // 1. le menu des leçons, depuis l'accueil
   for (const id of LECONS) {
     const { page, context, errors } = await ouvrir(T, "");

@@ -13,9 +13,10 @@ export class Actor {
   }
   resize() {
     const { px, k } = this.st;
-    this.c.width = Math.ceil(this.w * px); this.c.height = Math.ceil(this.h * px);
+    // (la résolution ne change plus après le lancement : le dessin n'est effacé que si elle change)
+    const w = Math.ceil(this.w * px), h = Math.ceil(this.h * px); if (this.c.width !== w || this.c.height !== h) { this.c.width = w; this.c.height = h; this.key = null; }
     Object.assign(this.c.style, { width: `${this.w * k}px`, height: `${this.h * k}px`, transformOrigin: `${this.ax * k}px ${this.ay * k}px` });
-    this.key = null; this.css = "";
+    this.css = "";
   }
   // redessine seulement si `key` a changé ; `paint(ctx)` dessine en pixels d'écran, l'ancrage en (ax·px, ay·px)
   paint(key, paint) {

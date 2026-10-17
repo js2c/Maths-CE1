@@ -19,7 +19,11 @@ export const compute = () => {
   const files = walk(APP).map((p) => relative(APP, p).split(sep).join("/")).filter((f) => !SKIP.has(f) && !f.startsWith(".")).sort();
   const h = createHash("sha256"); for (const f of files) h.update(f).update(contenu(f, readFileSync(join(APP, f))));
   const version = h.digest("hex").slice(0, 12);
-  return { version, files: ["./", ...files, "version.json"] };
+  // (lot « Banc Android », point 2 : le stockage) la place que prend l'application installée, pour chaque résolution des planches
+  // (le service worker ne garde que celle de l'écran : app/sw.js, `useful`) ; il vérifie qu'elle tient avant de télécharger
+  const all = new Set(files), useful = (f, r) => { const m = /^(assets\/art\/.+)@([12])x(-\d+)?\.webp$/.exec(f); return !m || m[2] === r || ![...all].some((g) => g.startsWith(`${m[1]}@${r}x`) && g.endsWith(".webp")); };
+  const taille = (r) => files.filter((f) => useful(f, r)).reduce((n, f) => n + statSync(join(APP, f)).size, 0);
+  return { version, octets: { 1: taille("1"), 2: taille("2") }, files: ["./", ...files, "version.json"] };
 };
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) { // (comparaison valable aussi sous Windows)
   const c = compute(), jsonPath = join(APP, "sw-files.json"), swPath = join(APP, "sw.js"), versionPath = join(APP, "version.json"), version = JSON.stringify({ version: c.version }) + "\n";

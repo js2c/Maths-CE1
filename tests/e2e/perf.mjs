@@ -14,7 +14,11 @@
 //   - temps d'image pendant une séance : intervalles entre images (requestAnimationFrame) et temps de
 //     travail de chaque image dans l'application (stage.perf), moyenne, 95e centile, images > 33 ms.
 // Captures : premier écran, question posée, retour juste, retour faux.
-import { chromium } from "./navigateur.mjs";
+// BANC ANDROID, raccourcis : sans service worker
+// (raison : chaque cas part d'une base neuve, dans un navigateur neuf : la voix y est la vraie, mais installer l'application
+// (140 Mo, environ une minute) pour chaque cas n'apporterait rien à ce qu'il vérifie. L'application installée, relancée,
+// gelée, hors ligne, est éprouvée sur le banc Android (installation.mjs, journee.mjs).)
+import { chromium, demarrageTouche } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync, renameSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
@@ -24,10 +28,11 @@ const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k);
 const OUT = resolve(opt("--out", "tests/e2e/out")), RATE = Number(opt("--throttle", 4)), SECONDS = Number(opt("--seconds", 12)), VIDEO = args.includes("--video"), NIVEAU = opt("--niveau", null), WEBGL = args.includes("--webgl"), VOIL = args.includes("--voiliers"), ETAL = opt("--etal", null);
 mkdirSync(OUT, { recursive: true });
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", ...(WEBGL ? ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] : [])] });
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: [...(WEBGL ? ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] : [])] });
 const stats = (a) => { const s = [...a].sort((x, y) => x - y), q = (p) => s[Math.min(s.length - 1, Math.floor(p * s.length))]; return { n: a.length, moyenne: +(a.reduce((x, y) => x + y, 0) / a.length).toFixed(1), p50: +q(0.5).toFixed(1), p95: +q(0.95).toFixed(1), max: +s[s.length - 1].toFixed(1), plusDe33ms: a.filter((x) => x > 33.4).length }; };
 
 const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 2, hasTouch: true, isMobile: false, ...(VIDEO ? { recordVideo: { dir: OUT, size: { width: 1280, height: 800 } } } : {}) });
+await demarrageTouche(context);
 const page = await context.newPage();
 const errors = []; page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
 const cdp = await context.newCDPSession(page);
@@ -94,7 +99,7 @@ if (VIDEO) { const v = readdirSync(OUT).filter((f) => f.endsWith(".webm")).map((
 // (lot « La boutique du récif ») --boutique : le récif hors séance avec son bouton, puis la boutique (la vitrine du lagon : les
 // brillantes et leurs étincelles ; celle du grand large : les étoiles de diamant dessinées en direct), même processeur ralenti
 if (args.includes("--boutique")) {
-  const c2 = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 2, hasTouch: true }), p2 = await c2.newPage();
+  const c2 = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 2, hasTouch: true }), p2 = await (await demarrageTouche(c2), c2).newPage();
   p2.on("pageerror", (e) => errors.push(e.message));
   await (await c2.newCDPSession(p2)).send("Emulation.setCPUThrottlingRate", { rate: RATE });
   await p2.goto(url + "?nosw"); await p2.waitForFunction(() => window.__ready !== undefined, null, { timeout: 60000 });

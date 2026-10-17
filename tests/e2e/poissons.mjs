@@ -6,7 +6,14 @@
 // à 1,5 ou 2) et vérifie qu'aucun pixel opaque ne touche le bord du canvas (le dessin y serait coupé). Il vérifie aussi, sur le
 // lagon vivant, les canvas des poissons à l'écran pendant 20 secondes.
 //   node tests/e2e/poissons.mjs
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
+import { PROFILS } from "./appareils.mjs";
 import { mkdirSync } from "node:fs";
 import { serve } from "../serve.mjs";
 
@@ -15,7 +22,8 @@ const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium" });
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 
-for (const [w, h, dpr] of [[1280, 800, 1], [1280, 800, 1.5], [1280, 800, 2], [1138, 711, 2.25], [1920, 1200, 1]]) {
+// (lot « Banc Android » : les quatre profils du banc, tests/e2e/appareils.mjs, plus 1 280 × 800 aux densités 1 et 2 et 1 920 × 1 200)
+for (const [w, h, dpr] of [...Object.values(PROFILS).map((p) => [p.largeur, p.hauteur, p.densite]), [1280, 800, 1], [1280, 800, 2], [1920, 1200, 1]]) {
   const context = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: dpr }), page = await context.newPage(), errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto(url + "?nosw&voix=rapide&son=non&sansReprise"); await page.waitForFunction(() => window.__ready !== undefined);

@@ -109,7 +109,7 @@ export class Module6Runner {
   async record(r, cfg) {
     const q = r.q, events = [], code = r.ok ? null : r.code ?? null;
     await this.store?.add("reponses", {
-      t: Date.now(), seance: this.seance, module: 6, niveau: q.niveau, question: etalQuestion(q), forme: q.guide ? "exemple" : q.type,
+      t: r.t ?? Date.now(), seance: this.seance, module: 6, niveau: q.niveau, question: etalQuestion(q), forme: q.guide ? "exemple" : q.type,
       donnee: q.type === "rendre" ? (r.tape ?? null) : r.soucoupe ? soucoupeTexte(r.soucoupe) : null,
       attendue: q.type === "poser" ? montantEcrit(q.valeur) : q.type === "rendre" ? (q.billet - q.prix) / 100 : montantEcrit(q.prix),
       juste: !!r.ok, tempsMs: r.ms, ecoutes: r.listens, aide: !!r.aide, ...(r.aideDEmblee ? { aideDEmblee: true } : {}), erreur: code, revient: !!q.revient, guide: !!q.guide, notion: true,

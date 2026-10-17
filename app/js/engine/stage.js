@@ -25,12 +25,32 @@ export class Stage {
     this.resize();
     addEventListener("resize", () => { this.resize(); this.listeners.forEach((f) => f()); });
   }
+  // (lot « Banc Android et recette en conditions réelles », point 5) les zones sûres de l'écran (encoche d'un téléphone, barres
+  // d'Android : env(safe-area-inset-*), lues sur une sonde invisible) : la scène est entière et centrée dans ce qui reste
+  insets() {
+    if (!this.sonde) { const d = (this.sonde = document.createElement("div")); d.style.cssText = "position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)"; document.body.append(d); }
+    const c = getComputedStyle(this.sonde), n = (v) => parseFloat(v) || 0;
+    return { t: n(c.paddingTop), r: n(c.paddingRight), b: n(c.paddingBottom), l: n(c.paddingLeft) };
+  }
+  // (lot « Banc Android et recette en conditions réelles », demande du parent du 17 octobre 2026 : faire apparaître les boutons
+  // d'Android rechargeait toute l'application, qui rechargeait la page dès que l'échelle changeait) DEUX ÉCHELLES :
+  //  - `k`, l'échelle d'affichage (pixels CSS par pixel logique) : elle suit la fenêtre, à chaque changement de taille (barres
+  //    d'Android, clavier, rotation, multi-fenêtre) ; la scène se remet à l'échelle, rien n'est perdu ;
+  //  - `px`, la densité des images (pixels d'écran par pixel logique : la résolution des canvas et des planches) : fixée une fois,
+  //    au lancement, d'après l'écran de l'appareil en paysage (pas la fenêtre du moment) ; une fenêtre plus petite affiche les
+  //    mêmes images réduites. Rien n'a donc à être rechargé.
+  densite() {
+    const dpr = devicePixelRatio || 1, sw = screen?.width || innerWidth, sh = screen?.height || innerHeight;
+    const L = Math.max(sw, sh, innerWidth, innerHeight), C = Math.max(Math.min(sw, sh), Math.min(innerWidth, innerHeight));
+    return Math.min(L / W, C / H) * dpr;
+  }
   resize() {
-    const vw = innerWidth, vh = innerHeight, k = Math.min(vw / W, vh / H), dpr = devicePixelRatio || 1;
-    this.k = k; this.px = k * dpr;
-    Object.assign(this.root.style, { width: `${W * k}px`, height: `${H * k}px`, left: `${(vw - W * k) / 2}px`, top: `${(vh - H * k) / 2}px` });
+    const z = this.insets(), vw = innerWidth - z.l - z.r, vh = innerHeight - z.t - z.b, k = Math.min(vw / W, vh / H);
+    this.k = k; this.px ??= this.densite();
+    Object.assign(this.root.style, { width: `${W * k}px`, height: `${H * k}px`, left: `${z.l + (vw - W * k) / 2}px`, top: `${z.t + (vh - H * k) / 2}px` });
     this.ui.style.transform = `scale(${k})`;
-    for (const c of [this.bg]) { c.width = Math.round(W * this.px); c.height = Math.round(H * this.px); }
+    // (le fond garde sa résolution : le redimensionner l'effacerait)
+    for (const c of [this.bg]) { const w = Math.round(W * this.px), h = Math.round(H * this.px); if (c.width !== w || c.height !== h) { c.width = w; c.height = h; } }
   }
   onResize(f) { this.listeners.add(f); }
   // la boucle d'animation : chaque rappel reçoit (t en s, dt en s). On mesure le temps de travail de

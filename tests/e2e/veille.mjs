@@ -13,39 +13,41 @@
 //      technique, la phrase redite au toucher suivant.
 //   node tests/e2e/veille.mjs [--minutes 3] [--limite 8] [--court] [--partie 1|2]   (--partie : 1, la séance et l'accueil ; 2, les
 //   autres exercices ; pour faire tourner les deux en même temps avec --minutes 30)
-// (RACINE_APP=dossier : la même chose sur une autre copie de app/, par exemple celle de main, pour voir le défaut d'avant)
-import { accueilReel, chromium } from "./navigateur.mjs";
+//   --profil : un profil du banc Android (tests/e2e/appareils.mjs ; s5e par défaut)
+// (lot « Banc Android et recette en conditions réelles », fiche 13 : passé sur le banc Android. L'application est installée une
+// fois (service worker, cache plein) ; chaque cas efface les données (« Tout effacer ») et relance l'application ; la vraie voix,
+// le vrai son, la lecture automatique refusée, l'écran de démarrage touché pour de vrai, le processeur du profil ralenti ; les
+// lecteurs comptés par le code du journal technique, app/js/engine/etat-page.js)
+import { Appareil, serveurBanc, REFERENCE, resumeEtat } from "./appareils.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { serve } from "../serve.mjs";
 
 const args = process.argv.slice(2), arg = (k, d = null) => (args.includes(k) ? args[args.indexOf(k) + 1] : d);
-const MIN = Number(arg("--minutes", 3)), LIMITE = Number(arg("--limite", 8)), COURT = args.includes("--court"), PARTIE = arg("--partie", null);
-const OUT = resolve("tests/e2e/out/veille"); mkdirSync(OUT, { recursive: true });
-const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", `--max-web-media-player-count=${LIMITE}`] });
+const MIN = Number(arg("--minutes", 3)), LIMITE = Number(arg("--limite", 8)), COURT = args.includes("--court"), PARTIE = arg("--partie", null), PROFIL = arg("--profil", REFERENCE);
+const OUT = resolve(`tests/e2e/out/veille/${PROFIL}`); mkdirSync(OUT, { recursive: true });
+const serveur = await serveurBanc({ racine: process.env.RACINE_APP ?? "app" });
+const a = new Appareil(PROFIL, { serveur, limite: LIMITE, journal: console.log });
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 const mesures = [];
+await a.ouvrir(); await a.installer();
 
 const ouvrir = async (q = "", prep = null) => {
-  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true });
-  await accueilReel(context);
-  const page = await context.newPage(), errors = [], bloques = [];
-  page.on("pageerror", (e) => errors.push(e.message));
-  page.on("console", (m) => { if (/too many WebMediaPlayers/.test(m.text())) bloques.push(m.text()); });
-  await page.goto(url + "?nosw&son=non&sansReprise"); await page.waitForFunction(() => window.__ready !== undefined);
+  await a.effacerDonnees(); await a.relancer({ q: "?sansReprise" });
+  const errors = [], bloques = [], e0 = a.erreurs.length, b0 = a.refusLecteurs, page = a.page;
   await page.evaluate(async () => { await window.__app.store.setSetting("echauffement", false); await window.__app.store.setSetting("mascotteTouchee", true); });
   if (prep) await page.evaluate(prep.f, prep.a);
-  await page.goto(url + "?nosw&son=non&sansReprise&sansLecon&guides=0&cran=conseille&meteo=beau" + q); await page.waitForFunction(() => window.__ready !== undefined);
-  // ce que la voix dit (le texte, et s'il a été lu depuis ses fichiers)
-  await page.evaluate(() => {
+  await a.relancer({ q: "?sansReprise&sansLecon&guides=0&cran=conseille&meteo=beau" + q });
+  // ce que la voix dit (le texte, et s'il a été lu depuis ses fichiers) ; la bienvenue du lancement d'abord finie
+  await a.page.waitForTimeout(500); await a.attendre(() => !window.__app.voice.speaking, 30000).catch(() => {});
+  await a.page.evaluate(() => {
     const v = window.__app.voice, t0 = v.onTalk; window.__dits = [];
     v.onTalk = (t, ms, o) => { window.__dits.push({ t, quand: performance.now(), fichiers: v.files }); return t0?.(t, ms, o); };
   });
-  return { context, page, errors, bloques, cdp: await context.newCDPSession(page) };
+  return { page: a.page, cdp: a.cdp, get errors() { return a.erreurs.slice(e0); }, get bloques() { return Array(a.refusLecteurs - b0).fill("refus"); }, errors0: errors, bloques0: bloques };
 };
-// les lecteurs de médias qui ont une source : les <audio> et <video> de la page, et les Audio de la voix (hors de la page)
-const medias = (page) => page.evaluate(() => ({ video: [...document.querySelectorAll("video")].filter((v) => v.getAttribute("src")).length, voix: window.__app.voice.lecteursActifs?.() ?? null, voixCrees: (window.__app.voice.constructor.name, null) }));
+// les lecteurs de médias qui ont une source : les <audio> et <video>, dans la page ou non (la voix, la mascotte), comptés par le
+// code du journal technique (engine/etat-page.js)
+const medias = (page) => page.evaluate(() => { const e = window.__etatPage(); return { video: e.mediasVideo, voix: e.medias - e.mediasVideo }; });
 const etat = (page) => page.evaluate(() => ({ manquees: [...window.__app.voice.misses], refus: window.__app.voice.refus ?? null, fichiers: window.__app.voice.files }));
 // la mascotte touchée : sa phrase est-elle redite, et lue depuis son fichier ?
 const toucherMascotte = async (page) => {
@@ -76,7 +78,6 @@ const fin = async (o, nom) => {
   check(!o.bloques.length, `${nom} : aucun lecteur de médias refusé par le navigateur (limite ${LIMITE})${o.bloques.length ? ` — ${o.bloques.length} refus` : ""}`);
   check(!e.manquees.length, `${nom} : aucune phrase muette (${e.fichiers} fichiers lus${e.manquees.length ? ` ; sans voix : ${e.manquees.slice(0, 3).join(" | ")}` : ""})`);
   check(!o.errors.length, `${nom} : aucune erreur (${o.errors.slice(0, 2).join(" | ")})`);
-  await o.context.close();
 };
 
 // 1. une séance d'additions de 30 questions, la voix à sa vitesse réelle
@@ -118,12 +119,8 @@ if (PARTIE !== "2") {
   check(r.max <= 6 && t.dit && t.lue, `accueil, ${MIN} min sans toucher : ${r.max} lecteurs au plus ; la mascotte touchée redit « ${t.texte} »`);
   // la page cachée (l'écran en veille, une autre application) une minute, gelée, puis montrée
   for (let k = 0; k < (COURT ? 1 : 3); k++) {
-    await page.evaluate(() => { Object.defineProperty(document, "hidden", { configurable: true, get: () => true }); Object.defineProperty(document, "visibilityState", { configurable: true, get: () => "hidden" }); document.dispatchEvent(new Event("visibilitychange")); });
-    await cdp.send("Page.setWebLifecycleState", { state: "frozen" });
-    await page.waitForTimeout(COURT ? 15000 : 60000);
-    await cdp.send("Page.setWebLifecycleState", { state: "active" });
-    await page.evaluate(() => { delete document.hidden; delete document.visibilityState; document.dispatchEvent(new Event("visibilitychange")); });
-    await page.waitForTimeout(800);
+    await a.cacher(COURT ? 15000 : 60000); void cdp;
+    await page.waitForTimeout(300);
     const tt = await toucherMascotte(page);
     check(tt.dit && tt.lue, `page cachée puis montrée (${k + 1}) : la mascotte touchée redit « ${tt.texte} », lue depuis son fichier`);
   }
@@ -162,7 +159,8 @@ if (!COURT && PARTIE !== "1") for (const [nom, q, prete] of [
   await fin(o, nom);
 }
 
-writeFileSync(join(OUT, `mesures${PARTIE ? `-${PARTIE}` : ""}.json`), JSON.stringify({ limite: LIMITE, minutes: MIN, mesures }, null, 1));
-await browser.close(); srv.close();
+writeFileSync(join(OUT, `mesures${PARTIE ? `-${PARTIE}` : ""}.json`), JSON.stringify({ profil: PROFIL, limite: LIMITE, minutes: MIN, mesures, lancements: a.lancements }, null, 1));
+console.log(`     état de la page à la fin : ${resumeEtat(await a.budgets())}`);
+await a.detruire(); await serveur.fermer();
 console.log(fail.length ? `\n${fail.length} échec(s)` : "\nveille : l'application répond toujours, les lecteurs de médias restent peu nombreux");
 process.exitCode = fail.length ? 1 : 0;

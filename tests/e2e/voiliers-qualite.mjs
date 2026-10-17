@@ -9,13 +9,19 @@
 //   - le journal de l'espace parent (« Qualité des voiliers »).
 //   node tests/e2e/voiliers-qualite.mjs [--lent 4] [--bateaux 12] [--densite 1.5] [--sans-controle]
 //   --sans-controle : mesure seulement (pour comparer avec main, où la règle n'existe pas)
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { serve } from "../serve.mjs";
 
 const args = process.argv.slice(2), arg = (k, d = null) => (args.includes(k) ? args[args.indexOf(k) + 1] : d);
 const LENT = Number(arg("--lent", 4)), BATEAUX = Number(arg("--bateaux", 12)), DENSITE = Number(arg("--densite", 1.5)), CONTROLE = !args.includes("--sans-controle");
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: DENSITE, hasTouch: true });
 const page = await context.newPage(), errors = [];

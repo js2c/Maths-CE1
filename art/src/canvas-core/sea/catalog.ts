@@ -22,7 +22,7 @@ import { ATOI_R, drawAToiKey, drawBigHomeKey, drawLessonMenuTile, drawLessonsKey
 import { drawBigFlag, drawCloseKey, drawHintKey, drawLegendKey, drawShrugKey, drawSmallFish, drawStarTrail, drawTagFish, drawTallNet, drawZoneTab, FLAG_N, HOUSE_FISH, LEGEND_R, NETV_H, NETV_W, TAG, TAG_FISH_N, TRAIL_H, TRAIL_W, ZONE_TAB_R } from "./lot3bis";
 import { drawWarmupSkipKey } from "./lot3ter";
 import { drawConfirmNo, drawConfirmYes, drawDiamondStar, drawHourglass, drawPadlock, drawShineIcon, drawShopKey, drawShopTile, drawSparkle, TUILE_H, TUILE_W } from "./boutique";
-import { BAR_H, BAR_W, drawBar } from "./demarrage";
+import { ARROW_R, BAR_H, BAR_W, drawBar, drawPhone, drawTurnArrow, PHONE_H, PHONE_W } from "./demarrage";
 import { drawGalet, GALET_H, GALET_W } from "./galets";
 import { drawAgainIcon, drawAlbumIcon, drawAlbumKey, drawFreeFacts, drawMoonDecor, drawPearl, drawProgressDot, drawSkipKey, drawStepHello, drawStepLine, drawStepPlus, drawStepGlow, drawStepShell, GLOW_R, STEP_R } from "./ui";
 
@@ -44,6 +44,10 @@ export type Spec = {
 export const SPECS: Spec[] = [
   // (lot « Correctifs de la tablette ») l'écran de démarrage : le logo « Maths CE1 » (avec son étoile de mer et ses bulles) et
   // la barre de chargement, vide et pleine ; une petite planche à elle, chargée la première (main.js)
+  // (lot « Banc Android », point 5) « tourne ton téléphone » : le téléphone (pivoté par l'application) et la flèche courbe ; sur
+  // la planche du démarrage, chargée la première (la page peut s'ouvrir en portrait)
+  { name: "demarrage.tourner.telephone", sheet: "demarrage", W: PHONE_W + 40, H: PHONE_H + 40, origin: [PHONE_W / 2 + 16, PHONE_H / 2 + 16], frames: 1, draw: (g) => drawPhone(g, PHONE_W / 2 + 16, PHONE_H / 2 + 16) },
+  { name: "demarrage.tourner.fleche", sheet: "demarrage", W: 2 * ARROW_R + 80, H: 2 * ARROW_R + 80, origin: [ARROW_R + 40, ARROW_R + 40], frames: 1, draw: (g) => drawTurnArrow(g, ARROW_R + 40, ARROW_R + 40) },
   ...([["vide", false], ["pleine", true]] as const).map(([k, full]): Spec => ({ name: `demarrage.barre.${k}`, sheet: "demarrage", W: BAR_W + 30, H: BAR_H + 30, origin: [BAR_W / 2 + 10, BAR_H / 2 + 10], frames: 1, draw: (g) => drawBar(g, BAR_W / 2 + 10, BAR_H / 2 + 10, full) })),
   // (lot « Lagon en fond d'exercices » : le fond, ses rayons, ses algues et ses reflets ne sont plus fabriqués ici ; le fond de
   // l'application est le lagon du récif vivant, extrait par tools/export-lagon.mjs. Récif vivant, 5 octobre 2026 : plus de

@@ -86,9 +86,10 @@ export class CalcScreen {
     const fs = this.fs; fs.show(true); this.board.clear();
     if (q.remplir) return this.guided(q);
     if (q.aideDEmblee) this.help(q);
-    const r = await fs.ask(q), code = r.nsp ? "NSP" : r.value === answerOf(q) ? null : classifyCalc(q, r.value);
-    return { ...r, q, ok: code === null, code: code ?? (r.lent ? "C2" : null), aide: r.aide || !!q.aideDEmblee };
+    return this.finaliser(q, await fs.ask(q));
   }
+  // la réponse complétée (code d'erreur) ; aussi pour une réponse notée avant un rechargement (session/notion.js)
+  finaliser(q, r) { const code = r.nsp ? "NSP" : r.value === answerOf(q) ? null : classifyCalc(q, r.value); return { ...r, q, ok: code === null, code: code ?? (r.lent ? "C2" : null), aide: r.aide || !!q.aideDEmblee }; }
   // un calcul guidé : le chemin en petit, chaque caillou à remplir au pavé (« Plus 2 ? »), le suivant quand il est trouvé
   async guided(q) {
     const fs = this.fs, { voice, text } = this.app, t0 = performance.now();

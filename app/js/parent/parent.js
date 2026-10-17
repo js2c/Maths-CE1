@@ -14,6 +14,7 @@ import { recommended } from "../modules/calc/runner.js";
 import { ruleShare } from "../modules/facts/families.js";
 import { DB_NAME, MIGRATIONS, persist, STORES } from "../engine/store.js";
 import { lire as lireJournal, vider as viderJournal } from "../engine/journal.js";
+import { avisStockage } from "../engine/stockage.js";
 import { familyKnown, markFamilyKnown, setCalcLevel, setEtalLevel, setLineLevel, setMultLevel, setVoiliersLevel } from "./depart.js";
 import { recommendedMult } from "../modules/mult/runner.js";
 
@@ -162,6 +163,8 @@ export class ParentSpace {
     const st = this.store, [seances, reponses, niveaux, faits, recompenses] = await Promise.all(["seances", "reponses", "niveaux", "faits", "recompenses"].map((x) => st.all(x)));
     this.d = { seances: seances.sort((a, b) => b.debut - a.debut), reponses, niveaux, faits, recompenses: Object.fromEntries(recompenses.map((r) => [r.id, r])), rythme: await st.setting("boutiqueRythme", null) };
     this.d.dernierExport = await st.setting("dernierExport");
+    // (lot « Banc Android », point 2) la tablette manque de place pour l'application hors ligne
+    this.d.stockage = await avisStockage();
   }
   async dashboard() {
     removeEventListener("keydown", this.onKey);
@@ -193,6 +196,7 @@ export class ParentSpace {
     for (const b of this.tabsEl.children) b.setAttribute("aria-selected", String(b.dataset.tab === id));
     const page = h("div", { class: "pa-page" });
     const due = D.exportDue({ dernierExport: this.d.dernierExport, premiereSeance: this.d.seances.at(-1)?.debut ?? null, jours: this.c.rappelExportJours });
+    if (this.d.stockage) page.append(h("div", { class: "pa-reminder pa-stockage" }, h("p", {}, h("b", {}, "Plus assez de place sur la tablette. "), this.d.stockage.texte)));
     if (due && id !== "donnees") page.append(h("div", { class: "pa-reminder" }, h("p", {}, h("b", {}, "Pensez à la sauvegarde de la semaine. "), this.d.dernierExport ? `La dernière date du ${D.fmtDay(this.d.dernierExport)}.` : "Aucune sauvegarde n'a encore été faite."), h("button", { class: "pa-btn primary", onclick: () => this.show("donnees") }, "Sauvegarder")));
     ({ calendrier: () => this.calendar(page, opts), seances: () => this.sessions(page, opts), progression: () => this.progress(page), donnees: () => this.dataPage(page) })[id]();
     this.main.replaceChildren(page); this.main.scrollTop = 0;
@@ -281,7 +285,7 @@ export class ParentSpace {
       // (lot « Décisions sur les constats de l'agent », décision 1) la séance reprise après un rechargement de la page
       // (relecture du lot, R12 : « au début de l'étape… (après 2 questions) » semblait se contredire) l'heure, ce qui avait été fait,
       // puis ce qui a repris ; la place du rechargement est aussi marquée dans le tableau des réponses
-      (x.reprises ?? []).length > 0 && h("span", {}, x.reprises.length > 1 ? "Pages rechargées en pleine séance : " : "Page rechargée en pleine séance : ", h("b", {}, x.reprises.map((r) => `à ${D.fmtTime(r.t)}, ${r.questions ? `après ${plural(r.questions, "question")}` : "avant la première question"} ; l'étape « ${(D.STEP_NAMES[r.etape] ?? r.etape).toLowerCase()} » a repris à son début`).join(" ; "))),
+      (x.reprises ?? []).length > 0 && h("span", {}, x.reprises.length > 1 ? "Pages rechargées en pleine séance : " : "Page rechargée en pleine séance : ", h("b", {}, x.reprises.map((r) => `à ${D.fmtTime(r.t)}, ${r.questions ? `après ${plural(r.questions, "question")}` : "avant la première question"} ; l'étape « ${(D.STEP_NAMES[r.etape] ?? r.etape).toLowerCase()} » a repris ${D.repriseOu(r)}`).join(" ; "))),
       cartes.length > 0 && h("span", {}, "Cartes gagnées : ", h("b", {}, cartes.join(", ")))));
     const groups = D.answersOf(this.d.reponses, x.id);
     if (!groups.length) det.append(h("p", { class: "pa-muted" }, "Aucune réponse enregistrée pour cette séance."));
@@ -293,7 +297,7 @@ export class ParentSpace {
     const note = (r) => [r.guide && (r.passe ? "exemple guidé passé" : "exemple guidé"), r.correctionPassee && "correction passée", r.revient && "question qui revient", r.aide && !r.guide && "aide utilisée", r.libre && "entraînement libre"].filter(Boolean).join(", ");
     return h("div", { class: "pa-table-wrap" }, h("table", { class: "pa-table" },
       h("thead", {}, h("tr", {}, ["Heure", "Niveau", "Forme", "Question", "Réponse", "Attendue", "Résultat", "Temps", "Écoutes", "Erreur", "Remarque"].map((t, i) => h("th", { class: [4, 5, 7, 8].includes(i) ? "num" : "" }, t)))),
-      h("tbody", {}, rs.flatMap((r, i) => [...reprises.filter((p) => p.t <= r.t && (i === 0 ? false : rs[i - 1].t < p.t)).map((p) => h("tr", { class: "pa-reprise" }, h("td", { colspan: "11" }, `${D.fmtTime(p.t)} : page rechargée ; l'étape a repris à son début`))), h("tr", { class: r.juste ? "" : "faux" },
+      h("tbody", {}, rs.flatMap((r, i) => [...reprises.filter((p) => p.t <= r.t && (i === 0 ? false : rs[i - 1].t < p.t)).map((p) => h("tr", { class: "pa-reprise" }, h("td", { colspan: "11" }, `${D.fmtTime(p.t)} : page rechargée ; l'étape a repris ${D.repriseOu(p)}`))), h("tr", { class: r.juste ? "" : "faux" },
         h("td", {}, D.dateTime(r.t).slice(11)), h("td", { class: "num" }, r.niveau), h("td", {}, F[r.forme] ?? r.forme ?? ""), h("td", { class: "q" }, r.question),
         h("td", { class: "num" }, r.donnee ?? "—"), h("td", { class: "num" }, r.attendue ?? ""), h("td", {}, r.juste ? h("span", { class: "pa-yes" }, "✓ juste") : h("span", { class: "pa-no" }, "✗ faux")),
         h("td", { class: "num" }, D.fmtSeconds(r.tempsMs)), h("td", { class: "num" }, r.ecoutes ?? ""), h("td", { title: E[r.erreur] ?? "" }, r.juste ? "" : r.erreur === "NSP" ? "je ne sais pas" : r.erreur && r.erreur !== "autre" ? E[r.erreur] ?? "autre" : "autre"), h("td", {}, note(r)))]))));

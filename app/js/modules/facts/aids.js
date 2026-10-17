@@ -20,7 +20,9 @@ export class AidBoard {
     this.c.getContext("2d", { willReadFrequently: true });
     this.used = false; this.c.__gen = 0; this.c.__used = false; this.place(); st.onResize(() => this.place());
   }
-  place() { const { px, k } = this.app.stage; this.c.width = Math.round(1280 * px); this.c.height = Math.round(800 * px); Object.assign(this.c.style, { width: `${1280 * k}px`, height: `${800 * k}px` }); this.used = false; this.c.__used = false; }
+  // (lot « Banc Android », relecture des demandes du parent, constat 1 : la fenêtre qui change de taille ne recharge plus la page ;
+  // la résolution du calque ne change plus après le lancement : il n'est réinitialisé, et l'aide effacée, que si elle change)
+  place() { const { px, k } = this.app.stage, w = Math.round(1280 * px), h = Math.round(800 * px); if (this.c.width !== w || this.c.height !== h) { this.c.width = w; this.c.height = h; this.used = false; this.c.__used = false; } Object.assign(this.c.style, { width: `${1280 * k}px`, height: `${800 * k}px` }); }
   // dessine en coordonnées de la scène (px logiques) ; efface d'abord. Renvoie le numéro du dessin (`gen`) : une animation
   // s'arrête dès qu'un autre dessin ou un effacement l'a remplacé
   // (lot « Mascotte » : `c.__gen`, `c.__used` : la bulle de la mascotte relève ce qui est dessiné pour l'éviter, engine/bulle.js)

@@ -12,6 +12,12 @@
 //  5. la maison pendant une leçon du menu : retour à l'accueil, sans « À toi ! » ;
 //  6. L10 : le chalut plein de dix filets de dix poissons.
 //   node tests/e2e/lecons-menu.mjs [--out dossier] [--seul 1280|1920]
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -21,7 +27,7 @@ const args = process.argv.slice(2), opt = (k, d) => (args.includes(k) ? args[arg
 const OUT = resolve(opt("--out", "tests/e2e/out/lecons-menu")); mkdirSync(OUT, { recursive: true });
 const SEUL = opt("--seul", null);
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: [] });
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 const TODAY = async () => { const n = Date.now(); await window.__app.store.add("seances", { debut: n - 600000, fin: n - 1000, terminee: true, module: 1, etapes: [] }); };
 

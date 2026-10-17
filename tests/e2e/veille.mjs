@@ -158,7 +158,7 @@ if (!COURT && PARTIE !== "1") for (const [nom, q, prete] of [
   const r = await inactivite(page, nom);
   const t = await toucherMascotte(page);
   check(ok && r.max <= 6 && t.dit && t.lue, `${nom}, ${MIN} min sans toucher sur une question : ${r.debut.video + (r.debut.voix ?? 0)} lecteurs au départ, ${r.fin.video + (r.fin.voix ?? 0)} à la fin, ${r.max} au plus ; la mascotte touchée redit « ${t.texte} »`);
-  await page.screenshot({ path: join(OUT, `${nom.replace(/\W+/g, "-")}.png`) });
+  await page.screenshot({ path: join(OUT, `${nom.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\W+/g, "-")}.png`) });
   await fin(o, nom);
 }
 

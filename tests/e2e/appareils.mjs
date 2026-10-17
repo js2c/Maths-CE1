@@ -204,13 +204,15 @@ export class Appareil {
     await this.page.waitForTimeout(500);
   }
   async geler(ms) { await this.cdp.send("Page.setWebLifecycleState", { state: "frozen" }); await this.page.waitForTimeout(ms); await this.cdp.send("Page.setWebLifecycleState", { state: "active" }); await this.page.waitForTimeout(300); }
-  attendre(f, ms = 30000, arg) { return this.page.waitForFunction(f, arg, { timeout: ms, polling: 200 }); }
+  // (la poignée rendue par Playwright est libérée aussitôt : gardée, elle retient l'élément qu'elle désigne, et tout ce qui s'y
+  // rattache, dans la mémoire de la page ; le banc mesurait alors des « fuites » qui étaient les siennes)
+  async attendre(f, ms = 30000, arg) { const h = await this.page.waitForFunction(f, arg, { timeout: ms, polling: 200 }); const v = await h.jsonValue().catch(() => true); await h.dispose().catch(() => {}); return v; }
   // un toucher réel (événements tactiles, qui comptent comme un geste de l'utilisateur) au centre d'un élément, ou en (x, y)
   async toucher(cible, { ms = 70 } = {}) {
     let x, y;
     if (typeof cible === "string") {
       const b = await this.page.waitForFunction((s) => { const e = [...document.querySelectorAll(s)].find((e) => !e.closest(".stash") && e.checkVisibility({ visibilityProperty: true, opacityProperty: true })); if (!e) return null; const r = e.getBoundingClientRect(); return r.width > 0 ? [r.x + r.width / 2, r.y + r.height / 2] : null; }, cible, { timeout: 30000, polling: 100 });
-      [x, y] = await b.jsonValue();
+      [x, y] = await b.jsonValue(); await b.dispose().catch(() => {});
     } else [x, y] = cible;
     // (l'heure du contact et du lever, comme les donne l'écran tactile d'une tablette : sans elle, Chromium date l'événement quand il
     // le traite, et un navigateur saturé par le rendu graphique logiciel faisait d'un toucher de 70 ms un appui de 0,8 s, que

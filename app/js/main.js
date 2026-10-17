@@ -5,7 +5,7 @@
 // toucher débloque la voix et lance la séance (session/session.js). Pendant la séance, la maison (en haut
 // à gauche) la met en pause ; la frise d'avancement montre où l'on en est.
 // (lot « Banc Android », point 3) en premier : l'état de la page compte ce qui est créé dès les modules suivants
-import { mesurer as mesurerPage } from "./engine/etat-page.js";
+import { details as detailsPage, mesurer as mesurerPage } from "./engine/etat-page.js";
 import { repriseText } from "./engine/toucher.js";
 import { Ocean, rng } from "./engine/ocean.js";
 import { Bulle, MASCOTTE } from "./engine/bulle.js";
@@ -969,7 +969,7 @@ setInterval(() => { const e = [mode ?? "accueil", mode === "seance" ? app.sessio
 // (lot « Banc Android et recette en conditions réelles », point 3 : la mesure est celle de engine/etat-page.js, la même que celle
 // des budgets du banc d'essai, tests/e2e/appareils.mjs ; `window.__etatPage` pour le banc)
 const etatPage = () => ({ allegement: stage.perf.level, ...mesurerPage(), lecteursVoix: voice.lecteursActifs?.() ?? 0, lectureRefusees: voice.refus });
-window.__etatPage = etatPage;
+window.__etatPage = etatPage; window.__etatPageDetails = detailsPage;
 let allegementNote = 0;
 setInterval(() => noterTech("état", "état de la page", etatPage()), 600000);
 setInterval(() => { if (stage.perf.level !== allegementNote) { allegementNote = stage.perf.level; noterTech("état", allegementNote ? `affichage allégé (niveau ${allegementNote} sur 2 : la tablette peine)` : "affichage complet de nouveau", etatPage()); } }, 2000);

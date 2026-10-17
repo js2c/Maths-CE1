@@ -23,6 +23,8 @@ const connus = new WeakSet();
 const garder = (ens, objet) => { try { if (!connus.has(objet)) { connus.add(objet); ens.add(new WeakRef(objet)); } } catch { /* rien */ } };
 const vivantsDe = (ens) => { const l = []; for (const r of ens) { const o = r.deref(); if (o) l.push(o); else ens.delete(r); } return l; };
 
+// d'où vient une ressource : les fichiers de l'application dans la pile d'appels (pour `details`)
+const origine = () => [...new Set((new Error().stack ?? "").split("\n").map((l) => /\/js\/([\w/.-]+\.js):(\d+)/.exec(l)).filter(Boolean).map((m) => `${m[1]}:${m[2]}`).filter((f) => !f.startsWith("engine/etat-page.js")))].slice(0, 4).join(" < ");
 export function installer(w = globalThis) {
   if (installe || !w.document) return; installe = true;
   // les contextes des canvas (2D, WebGL), et les canvas eux-mêmes
@@ -30,7 +32,9 @@ export function installer(w = globalThis) {
     const gc = C.prototype.getContext;
     C.prototype.getContext = function (type, ...a) {
       const ctx = gc.call(this, type, ...a);
-      if (ctx && !typeContexte.has(this)) { typeContexte.set(this, { type: String(type), ctx }); garder(vivants.canvas, this); }
+      // (le contexte en référence faible : gardé tel quel, son lien interne vers le canvas retenait le canvas, que le ramasse-miettes
+      // ne libérait plus ; c'était la mesure elle-même qui faisait « fuir » les canvas, vu par un instantané de la mémoire)
+      if (ctx && !typeContexte.has(this)) { typeContexte.set(this, { type: String(type), ctx: new WeakRef(ctx), pile: origine() }); garder(vivants.canvas, this); }
       return ctx;
     };
   }
@@ -72,7 +76,7 @@ export function mesurer() {
   const canvas = vivantsDe(vivants.canvas), dom = [...d.getElementsByTagName("canvas")];
   for (const c of dom) if (!canvas.includes(c)) canvas.push(c);
   const mpx = (l) => +(l.reduce((s, c) => s + (c.width || 0) * (c.height || 0), 0) / 1e6).toFixed(2);
-  const webgl = canvas.filter((c) => { const t = typeContexte.get(c); return t && /webgl/.test(t.type) && !t.ctx.isContextLost?.(); }).length;
+  const webgl = canvas.filter((c) => { const t = typeContexte.get(c); return t && /webgl/.test(t.type) && !t.ctx.deref()?.isContextLost?.(); }).length;
   const images = vivantsDe(vivants.images).filter((i) => i.complete && i.naturalWidth > 0);
   for (const i of d.images) if (i.complete && i.naturalWidth > 0 && !images.includes(i)) images.push(i);
   const bitmaps = vivantsDe(vivants.bitmaps).filter((b) => b.width > 0);
@@ -88,3 +92,14 @@ export function mesurer() {
 }
 
 installer();
+
+// le détail, pour chercher une fuite (le banc d'essai, pas le journal) : les canvas vivants hors de la page, regroupés par origine
+export function details() {
+  const g = new Map();
+  for (const c of vivantsDe(vivants.canvas)) {
+    if (c.isConnected) continue;
+    const k = typeContexte.get(c)?.pile || "?", e = g.get(k) ?? { n: 0, mpx: 0 };
+    e.n++; e.mpx += ((c.width || 0) * (c.height || 0)) / 1e6; g.set(k, e);
+  }
+  return [...g].map(([origine, e]) => ({ origine, n: e.n, mpx: +e.mpx.toFixed(2) })).sort((a, b) => b.n - a.n);
+}

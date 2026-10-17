@@ -188,7 +188,7 @@ addEventListener("pageshow", (e) => { if (e.persisted) { noterTech("page", "page
 // chaque toucher débloque (ou réveille) le son ; un bouton fait son petit bruit (pas les bulles-réponses, qui ont
 // les leurs, ni le coquillage)
 document.addEventListener("pointerdown", (e) => {
-  sound.unlock(); voice.redireSiRefus();
+  sound.unlock(); if (voice.redireSiRefus()) noterTech("voix", "phrase redite après un refus");
   const b = e.target.closest?.("#ui button");
   if (b && !b.matches(".answer, .shelltap, .touchband") && !b.disabled) sound.play("bouton");
 }, { capture: true });
@@ -963,4 +963,4 @@ const etatPage = () => ({ allegement: stage.perf.level, memoireMo: performance.m
   medias: [...document.querySelectorAll("audio, video")].filter((m) => m.getAttribute("src")).length + (voice.lecteursActifs?.() ?? 0), calques: document.querySelectorAll("canvas").length, lectureRefusees: voice.refus });
 let allegementNote = 0;
 setInterval(() => noterTech("état", "état de la page", etatPage()), 600000);
-setInterval(() => { if (stage.perf.level !== allegementNote) { allegementNote = stage.perf.level; noterTech("état", `allègement de l'affichage : niveau ${allegementNote}`, etatPage()); } }, 2000);
+setInterval(() => { if (stage.perf.level !== allegementNote) { allegementNote = stage.perf.level; noterTech("état", allegementNote ? `affichage allégé (niveau ${allegementNote} sur 2 : la tablette peine)` : "affichage complet de nouveau", etatPage()); } }, 2000);

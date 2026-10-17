@@ -24,7 +24,7 @@
 //    essayé en même temps, et sans l'un ni l'autre une page de secours, écrite ici, dit « Toucher pour réessayer » ;
 //  - ce qui arrive au service worker (version, installation, activation, erreurs) est noté dans le journal technique de
 //    l'espace parent (point 5 ; la même base que engine/journal.js).
-const VERSION = "83db4291e72d";
+const VERSION = "bf57320cd294";
 const CACHE = `ocean-${VERSION}`;
 const PAQUET = 32, ESSAIS = 4;
 // la résolution des planches d'images de cet écran (main.js : sw.js?r=1 ou ?r=2) : on ne met en cache que
@@ -139,5 +139,5 @@ async function repondre(e, u) {
 // simple, sans rien d'autre à charger ; un toucher, ou 15 secondes, et la page est redemandée.
 const secours = () => new Response(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Maths CE1</title>
 <style>html,body{margin:0;height:100%;background:#0b5563;color:#fff;font:600 34px/1.4 system-ui,sans-serif}body{display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer}</style></head>
-<body><div><div>Maths CE1</div><div style="font-size:26px;opacity:.85;margin-top:24px">Toucher pour réessayer</div></div>
+<body><div><div>Maths CE1</div><div style="font-size:26px;opacity:.85;margin-top:24px">L'application n'a pas pu s'ouvrir.<br>Vérifiez le Wi-Fi, puis touchez l'écran pour réessayer.</div><div style="font-size:20px;opacity:.6;margin-top:18px">(nouvel essai toutes les 15 secondes)</div></div>
 <script>addEventListener("pointerdown",function(){location.reload()});setTimeout(function(){location.reload()},15000)</script></body></html>`, { status: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });

@@ -40,7 +40,7 @@ for (const [w, h, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   {
     const context = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: dpr }), page = await context.newPage();
     await page.setContent(SECOURS); await page.screenshot({ path: join(OUT, `${T}-4-secours-service-worker.png`) });
-    check(/Toucher pour réessayer/.test(await page.innerText("body")), `${T} : la page de secours du service worker`);
+    check(/Vérifiez le Wi-Fi, puis touchez l'écran pour réessayer/.test(await page.innerText("body")), `${T} : la page de secours du service worker dit quoi faire`);
     await context.close();
   }
   // 3. l'espace parent : le journal technique

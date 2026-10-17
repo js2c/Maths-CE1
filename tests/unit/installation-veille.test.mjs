@@ -17,7 +17,7 @@ test("point 1 : le service worker cherche chaque fichier par son adresse exacte,
   assert.match(sw, /cache\.match\(cle, OPTIONS\)/);
   assert.match(sw, /cle = u\.origin \+ u\.pathname/);
   assert.match(sw, /DELAI_CACHE/, "la page de lancement a un délai de secours");
-  assert.match(sw, /Toucher pour réessayer/, "la page de secours");
+  assert.match(sw, /Vérifiez le Wi-Fi, puis touchez l'écran pour réessayer/, "la page de secours dit quoi faire");
   assert.match(sw, /noter\("service worker", "installation finie"/, "le journal technique");
 });
 
@@ -90,8 +90,8 @@ test("point 5 : une ligne du journal, en français simple", () => {
   assert.equal(ligneJournal({ t, type: "lancement", message: "application lancée", premiereImageMs: 280, pretMs: 2140, version: "4452ac0e8be3", affichage: "fullscreen", controlee: true }),
     "16/10 19:42:05 · lancement · application lancée (première image en 0,3 s, prête en 2,1 s, version 4452ac0, installée)");
   assert.equal(ligneJournal({ t, type: "voix", message: "lecture refusée", phrase: "Bravo !", erreur: "NotAllowedError" }), "16/10 19:42:05 · voix · lecture refusée (« Bravo ! », NotAllowedError)");
-  assert.equal(ligneJournal({ t, type: "service worker", message: "installation finie", fichiers: 11804, nouveaux: 120, dureeMs: 42000 }), "16/10 19:42:05 · service worker · installation finie (11804 fichiers, dont 120 téléchargés, en 42,0 s)");
-  assert.equal(ligneJournal({ t, type: "page", message: "au premier plan" }), "16/10 19:42:05 · page · au premier plan");
+  assert.equal(ligneJournal({ t, type: "service worker", message: "installation finie", fichiers: 11804, nouveaux: 120, dureeMs: 42000 }), "16/10 19:42:05 · hors ligne · installation finie (11804 fichiers, dont 120 téléchargés, en 42,0 s)");
+  assert.equal(ligneJournal({ t, type: "page", message: "au premier plan" }), "16/10 19:42:05 · tablette · au premier plan");
 });
 
 test("point 5 : la sauvegarde complète comprend le journal technique ; « tout effacer » l'efface", () => {

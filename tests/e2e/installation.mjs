@@ -7,7 +7,7 @@
 //   2. dix relances avec le réseau, puis dix sans réseau (le serveur coupé) ;
 //   3. une nouvelle version publiée : dix relances pendant qu'elle s'installe, interrompue à chaque fermeture, puis qu'elle
 //      prend la main ;
-//   4. le secours du service worker : ni cache ni réseau, la page de secours « Toucher pour réessayer » ;
+//   4. le secours du service worker : ni cache ni réseau, la page de secours (« Vérifiez le Wi-Fi… ») ;
 //   5. le secours de la page : un chargement bloqué, « Chargement… » puis « Toucher pour réessayer », noté au lancement suivant ;
 //   6. le journal technique (point 5) : les lancements et le service worker y sont notés.
 // À chaque relance : le temps jusqu'à la première image (l'écran de démarrage) et jusqu'à l'application prête.
@@ -131,10 +131,10 @@ if (!ancien) {
     coupe = true;
     const t0 = Date.now();
     await page.goto(url + "?son=non").catch(() => {});
-    const texte = await page.waitForFunction(() => document.body?.innerText.includes("Toucher pour réessayer") && document.body.innerText, null, { timeout: 10000 }).then((h) => h.jsonValue(), () => null);
+    const texte = await page.waitForFunction(() => document.body?.innerText.includes("touchez l'écran pour réessayer") && document.body.innerText, null, { timeout: 10000 }).then((h) => h.jsonValue(), () => null);
     const dt = Date.now() - t0;
     await page.screenshot({ path: `${OUT}/secours-service-worker.png` });
-    check(!!texte, `ni cache ni réseau : la page de secours du service worker, « Toucher pour réessayer », en ${dt} ms`);
+    check(!!texte, `ni cache ni réseau : la page de secours du service worker, « Vérifiez le Wi-Fi, puis touchez l'écran pour réessayer », en ${dt} ms`);
     coupe = false;
     await page.locator("body").tap();
     const repart = await page.waitForFunction(() => window.__ready !== undefined, null, { timeout: 120000 }).then(() => true, () => false);

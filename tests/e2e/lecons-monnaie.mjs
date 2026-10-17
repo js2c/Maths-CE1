@@ -5,7 +5,7 @@
 // Ce parcours joue les quatre leçons depuis chaque entrée :
 //   - le menu des leçons (depuis l'accueil) ;
 //   - l'accueil en pause (une séance de l'étal en cours, la maison, puis les leçons) ;
-//   - la leçon relancée pendant l'exercice (trois erreurs de suite à l'étal, dans la séance) ;
+//   - la leçon relancée pendant l'exercice (trois erreurs de suite à l'étal, dans la séance), chacune à son niveau ;
 //   - la séance du jour faite, depuis le menu des leçons (« À toi ! » mène à l'entraînement libre, qui ne relance pas les leçons) ;
 // processeur ralenti 4 fois, à la taille de la tablette (1280 × 800, densité 2), et à 1920 × 1200. Une capture toutes les
 // 2 secondes pendant la leçon : aucune n'a plus de 20 % de pixels noirs.
@@ -43,7 +43,7 @@ const noir = async (page, buf) => page.evaluate(async (b64) => {
 }, buf.toString("base64"));
 // (les galets de l'accueil s'ouvrent ici au premier toucher : tests/e2e/navigateur.mjs, __accueilUnToucher)
 // pendant la leçon : une capture toutes les 2 s (jusqu'à `n` captures, ou la fin de la leçon) ; la pire part de noir
-const surveiller = async (page, nom, enCours, n = 6) => {
+const surveiller = async (page, nom, enCours, n = 30) => {
   let pire = 0, vues = 0;
   for (let i = 0; i < n; i++) {
     await page.waitForTimeout(i === 0 ? 700 : 2000);
@@ -51,6 +51,7 @@ const surveiller = async (page, nom, enCours, n = 6) => {
     const buf = await page.screenshot(); vues++;
     const p = await noir(page, buf); pire = Math.max(pire, p);
     if (i === 0) writeFileSync(join(OUT, `${nom}.png`), buf); // (la leçon à l'écran)
+    else writeFileSync(join(OUT, `${nom}-${i}.png`), buf); // (et la suite, toutes les 2 s : relecture du lot, R12)
     if (p > 0.2) writeFileSync(join(OUT, `${nom}-noir.png`), buf);
   }
   return { pire, vues };
@@ -93,7 +94,8 @@ for (const T of TAILLES) {
     await context.close();
   }
   // 3. la leçon relancée pendant l'exercice (dans la séance : trois erreurs) ; niveau 1 (L15) et 2 (L16)
-  for (const [niveau, id] of [[1, "L15"], [2, "L16"]]) {
+  // (relecture du lot, R12 : L17, rendre la monnaie, niveau 7 ; L18, les centimes, niveau 9)
+  for (const [niveau, id] of [[1, "L15"], [2, "L16"], [7, "L17"], [9, "L18"]]) {
     const { page, context, errors } = await ouvrir(T, `&choix=6:${niveau}&cran=conseille`, { f: async (e) => { await window.__app.store.put("niveaux", e); }, a: { ...ETAT(["L15", "L16", "L17", "L18"]), niveau } });
     await page.tap(".play", { force: true });
     await troisErreurs(page);

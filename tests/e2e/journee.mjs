@@ -224,9 +224,11 @@ await etape(7, `${MIN_INACTIF} minutes sans toucher sur l'accueil`, async () => 
   check(!depasse(e1, e0).length, `accueil, ${MIN_INACTIF} min sans toucher : ${resumeEtat(e0)} -> ${resumeEtat(e1)}`);
 });
 await etape(8, `${MIN_INACTIF} minutes sans toucher sur une question`, async () => {
+  // (« Encore ! » ouvre le choix de l'entraînement libre ; « jouer », s'il est encore là, lance une séance, dont la première
+  // question convient aussi : la cause des deux échecs de cette étape, le parcours attendait toujours l'écran de choix)
   await a.deuxTouchers(".galet.again, .galet.play");
-  await attendreVisible(".choix-ex", 20000); await attendre(800);
-  await a.deuxTouchers('.choix-ex[data-key="additions"]'); await attendreVisible(".choix-tuile", 20000); await attendre(800); await a.deuxTouchers(".choix-tuile");
+  for (let i = 0; i < 100 && !(await visible(".choix-ex")) && !(await a.page.evaluate(ATTEND).catch(() => false)); i++) await attendre(300);
+  if (await visible(".choix-ex")) { await attendre(800); await a.deuxTouchers('.choix-ex[data-key="additions"]'); await attendreVisible(".choix-tuile", 20000); await attendre(800); await a.deuxTouchers(".choix-tuile"); }
   await a.attendre(ATTEND, 120000);
   const l0 = await a.lectures(), e0 = await a.budgets();
   await attendre(MIN_INACTIF * 60000);

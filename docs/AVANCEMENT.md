@@ -37,3 +37,10 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 ## Reprise
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
+
+### Reprise du lot « Banc Android et recette en conditions réelles » (fiche 13)
+
+- Branche `ccr-3e7c2366-pv8vt6`, partie de `main` (398d794e, PR #62). Demande de fusion en brouillon : « Lot : Banc Android et recette en conditions réelles ».
+- Étapes : 0 mise en place ; 1 les échecs laissés par la PR #61 ; 2 le banc (`tests/e2e/appareils.mjs`, conditions par défaut de `navigateur.mjs`, exceptions déclarées) ; 3 les budgets ; 4 la recette en conditions réelles (journée d'usage, enfant imprévisible, agent, démarrages) ; 5 les smartphones ; 6 le banc devient la règle (CLAUDE.md, LOTS.md, travail `android` de GitHub) ; 7 recette commune, relecture, documents.
+- Fait : étape 0.
+

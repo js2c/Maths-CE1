@@ -52,7 +52,10 @@ export class EtalScreen {
   get actif() { return !!this.x; }
   get api() { return this.x?.api ?? null; }
   // la scène s'installe (au début de la notion du jour, ou de l'entraînement libre)
-  async enter({ rnd = Math.random } = {}) {
+  // (lot « Correctifs de l'installation et de la veille », point 4 : `lecon`, la scène installée le temps d'une leçon, L15 à L18 ;
+  // elle n'est figée que par la pause de son propre temps : choisie depuis l'accueil en pause, la séance est en pause pendant
+  // qu'elle se joue, et la scène, figée avant d'avoir rien dessiné, restait noire)
+  async enter({ rnd = Math.random, lecon = false } = {}) {
     const { app } = this, { stage, ocean } = app, E = this.conf, Rg = E.reglages;
     if (!document.getElementById("etal-style")) { const s = document.createElement("style"); s.id = "etal-style"; s.textContent = STYLE; document.head.append(s); }
     this.rnd = rnd;
@@ -67,7 +70,7 @@ export class EtalScreen {
     this.x = startEtal({
       images: "assets/etal/", police: "assets/polices/shantell-sans-600.woff2", reglages: Rg, meteo: orage, peche: [noms, prix],
       derniereReplique: (await app.store?.setting("etalReplique")) ?? -1,
-      fige: () => !!app.enPause || clock.paused,
+      fige: lecon ? () => clock.paused : () => !!app.enPause || clock.paused,
       toucher: () => !app.enPause && !this.verrou,
       on: (cible, type, f, o) => { cible.addEventListener(type, f, o); this.ecoute.push([cible, type, f, o]); },
       change: () => this.onChange?.(),

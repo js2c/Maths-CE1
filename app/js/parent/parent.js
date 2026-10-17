@@ -13,6 +13,7 @@ import { catalog, median } from "../modules/facts/facts.js";
 import { recommended } from "../modules/calc/runner.js";
 import { ruleShare } from "../modules/facts/families.js";
 import { DB_NAME, MIGRATIONS, persist, STORES } from "../engine/store.js";
+import { lire as lireJournal, vider as viderJournal } from "../engine/journal.js";
 import { familyKnown, markFamilyKnown, setCalcLevel, setEtalLevel, setLineLevel, setMultLevel, setVoiliersLevel } from "./depart.js";
 import { recommendedMult } from "../modules/mult/runner.js";
 
@@ -477,8 +478,11 @@ export class ParentSpace {
       h("p", { class: "pa-note" }, "Les données restent sur cette tablette. Elles disparaissent si l'on efface les données de Chrome ou si l'on désinstalle l'application : faites une sauvegarde complète chaque semaine et gardez le fichier ailleurs (ordinateur, Drive, e-mail)."),
       h("p", {}, last ? h("span", { class: "pa-ok" }, `Dernière sauvegarde complète : ${D.fmtDay(last)} à ${D.fmtTime(last)}.`) : h("b", {}, "Aucune sauvegarde complète pour l'instant.")));
     const msg = h("p", { class: "pa-note", role: "status" });
+    // (lot « Correctifs de l'installation et de la veille », point 5 : la sauvegarde complète comprend le journal technique ;
+    // une restauration l'ignore)
+    const sauvegarde = async () => JSON.stringify({ ...D.cleanDump(await this.store.dump()), journalTechnique: await lireJournal() }, null, 1);
     const full = async () => {
-      const text = JSON.stringify(D.cleanDump(await this.store.dump()), null, 1), name = D.fileName("sauvegarde", "json");
+      const text = await sauvegarde(), name = D.fileName("sauvegarde", "json");
       download(name, text, "application/json"); await this.marked(); msg.textContent = `Fichier « ${name} » enregistré dans les téléchargements.`;
       return { text, name };
     };
@@ -486,7 +490,7 @@ export class ParentSpace {
     const canShare = typeof navigator.canShare === "function" && navigator.canShare({ files: [new File(["{}"], "x.json", { type: "application/json" })] });
     exp.append(h("div", { class: "pa-row" },
       h("button", { class: "pa-btn primary", "data-export": "json", onclick: full }, "Sauvegarde complète (JSON)"),
-      canShare && h("button", { class: "pa-btn", onclick: async () => { const text = JSON.stringify(D.cleanDump(await this.store.dump()), null, 1), name = D.fileName("sauvegarde", "json"); try { await navigator.share({ files: [new File([text], name, { type: "application/json" })], title: name }); await this.marked(); msg.textContent = "Sauvegarde envoyée."; } catch { /* annulé */ } } }, "Envoyer la sauvegarde…")),
+      canShare && h("button", { class: "pa-btn", onclick: async () => { const text = await sauvegarde(), name = D.fileName("sauvegarde", "json"); try { await navigator.share({ files: [new File([text], name, { type: "application/json" })], title: name }); await this.marked(); msg.textContent = "Sauvegarde envoyée."; } catch { /* annulé */ } } }, "Envoyer la sauvegarde…")),
       h("h3", {}, "Tableaux pour un tableur (CSV)"),
       h("div", { class: "pa-row" },
         h("button", { class: "pa-btn", "data-export": "reponses", onclick: () => csv("reponses", D.ANSWER_COLUMNS, [...this.d.reponses].sort((a, b) => a.t - b.t)) }, `Toutes les réponses (${this.d.reponses.length})`),
@@ -527,6 +531,19 @@ export class ParentSpace {
         h("p", { class: "pa-note" }, "Quand la tablette peine (plus de 20 ms par image, moins de 50 images par seconde), la mer des voiliers s'allège d'un cran ; elle revient à la qualité normale quand tout redevient fluide (moins de 18 ms). Les bateaux et les bouées restent toujours nets. Si la mer s'allège à chaque partie, la tablette est trop chargée (fermer les autres onglets)."),
         h("table", { class: "pa-table" }, h("thead", {}, h("tr", {}, ["Date", "Version", "Mer", "Temps par image"].map((t) => h("th", {}, t)))),
           h("tbody", {}, [...l].reverse().map((e) => h("tr", {}, h("td", {}, `${D.fmtDay(e.t)} à ${D.fmtTime(e.t)}`), h("td", {}, String(e.version ?? "?").slice(0, 7)), h("td", {}, `${nom[e.de] ?? e.de} → ${nom[e.a] ?? e.a}`), h("td", {}, `${String(e.ms).replace(".", ",")} ms`)))))));
+    });
+    // (lot « Correctifs de l'installation et de la veille », point 5) LE JOURNAL TECHNIQUE : les 300 derniers événements (lancements
+    // et temps jusqu'à la première image, mises à jour, premier plan et arrière-plan, son, lectures refusées, erreurs, écrans),
+    // les plus récents d'abord ; à exporter seul (sans les données de l'enfant) pour le donner à la conception
+    lireJournal().then((l) => {
+      if (!l.length) return;
+      const liste = h("ol", { class: "pa-journal", reversed: true }), montrer = (n) => liste.replaceChildren(...[...l].reverse().slice(0, n).map((e) => h("li", {}, D.ligneJournal(e))));
+      const tout = l.length > 40 && h("button", { class: "pa-btn", onclick: () => { montrer(l.length); tout.remove(); } }, `Tout afficher (${l.length})`);
+      montrer(40);
+      page.append(h("div", { class: "pa-card-box pa-incidents pa-journal-box" }, h("h2", {}, "Journal technique"),
+        h("p", { class: "pa-note" }, "Ce que l'application a noté sur son fonctionnement (les 300 derniers événements, les plus récents en haut) : chaque lancement et le temps avant le premier écran, les mises à jour, les passages en arrière-plan, le son, les lectures refusées par la tablette, les erreurs et les écrans ouverts. Rien sur l'enfant. Ces lignes sont faites pour la conception : vous n'avez pas à les comprendre. Une soirée normale en contient beaucoup (lancements, écrans, passages en arrière-plan). Après un problème, touchez « Exporter le journal technique » : le fichier arrive dans les Téléchargements de la tablette ; envoyez-le à la conception (par e-mail par exemple), avec l'heure à laquelle le problème est arrivé."),
+        h("div", { class: "pa-row" }, h("button", { class: "pa-btn", "data-export": "journal", onclick: async () => { const name = D.fileName("journal-technique", "json"); download(name, JSON.stringify(await lireJournal(), null, 1), "application/json"); msg.textContent = `Fichier « ${name} » enregistré dans les téléchargements.`; } }, "Exporter le journal technique"), tout),
+        liste));
     });
     this.store.setting("journalErreurs").then((l) => {
       if (!l?.length) return;
@@ -646,7 +663,7 @@ export class ParentSpace {
     const conf = h("div");
     box.append(row("Tout effacer", "Remet l'application à zéro : séances, réponses, niveaux, étoiles, cartes et code.",
       h("button", { class: "pa-btn danger", onclick: () => conf.replaceChildren(h("div", { class: "pa-confirm" }, h("p", {}, h("b", {}, "Tout effacer ? "), "Rien ne pourra être récupéré sans sauvegarde. Pensez d'abord à la sauvegarde complète."),
-        h("div", { class: "pa-row" }, h("button", { class: "pa-btn danger primary", onclick: async () => { await this.store.wipe(); this.changed = true; this.close(); } }, "Oui, tout effacer"), h("button", { class: "pa-btn", onclick: () => conf.replaceChildren() }, "Annuler")))) }, "Tout effacer…"), conf));
+        h("div", { class: "pa-row" }, h("button", { class: "pa-btn danger primary", onclick: async () => { await this.store.wipe(); await viderJournal(); this.changed = true; this.close(); } }, "Oui, tout effacer"), h("button", { class: "pa-btn", onclick: () => conf.replaceChildren() }, "Annuler")))) }, "Tout effacer…"), conf));
     return box;
   }
 }

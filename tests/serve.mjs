@@ -2,10 +2,11 @@
 // pour vérifier que tous les chemins sont relatifs). node tests/serve.mjs [port]
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
-import { extname, join, normalize } from "node:path";
+import { extname, join, normalize, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-const ROOT = fileURLToPath(new URL("../app/", import.meta.url)), PREFIX = "/Maths-CE1/";
+// (RACINE_APP=dossier : servir une autre copie de app/, par exemple celle de main, pour voir un défaut d'avant un correctif)
+const ROOT = process.env.RACINE_APP ? resolve(process.env.RACINE_APP) + sep : fileURLToPath(new URL("../app/", import.meta.url)), PREFIX = "/Maths-CE1/";
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".mjs": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".json": "application/json", ".webmanifest": "application/manifest+json", ".webp": "image/webp", ".png": "image/png", ".svg": "image/svg+xml", ".jpg": "image/jpeg", ".ogg": "audio/ogg" };
 export const serve = (port = 0) => new Promise((res) => {
   const srv = createServer(async (req, rsp) => {

@@ -14,9 +14,15 @@
 //  - le mode accéléré des tests (`rapide`) : play() se résout tout de suite, la mascotte ne fait rien attendre ;
 //  - l'allègement automatique (`niveau()`, celui de la scène) : au niveau 2, une image sur deux est envoyée à la carte
 //    graphique (12 images/s au lieu de 24) ;
-//  - le journal des raccords (`journal`) : gardé pour la recette (combien de fondus forcés).
+//  - le journal des raccords (`journal`) : gardé pour la recette (combien de fondus forcés) ;
+//  - (lot « Correctifs de l'installation et de la veille », point 2 : sur la tablette, après quelques minutes d'inactivité,
+//    plus rien ne se lisait) DEUX LECTEURS VIDÉO SEULEMENT : les 17 clips sont téléchargés en mémoire (des blobs) mais ne sont
+//    plus 17 éléments <video> chargés en même temps (sur Android, les lecteurs de médias sont comptés) ; un lecteur joue le
+//    clip en cours, l'autre prépare le clip demandé (dès la demande : il est prêt au moment du raccord) ; une vidéo qui devrait
+//    jouer et n'avance plus est relancée ; une lecture refusée et un contexte WebGL perdu (puis rendu) sont signalés
+//    (`signaler(message, détails)` : le journal technique de l'espace parent).
 // La bulle n'est pas gérée ici : engine/bulle.js.
-export function creerMascotte({ canvas, base = "assets/mascotte/", journal = () => {}, statut = null, rapide = false, niveau = () => 0, progres = () => {} }) {
+export function creerMascotte({ canvas, base = "assets/mascotte/", journal = () => {}, statut = null, rapide = false, niveau = () => 0, progres = () => {}, signaler = () => {} }) {
   const W = 450, H = 600;
   const T0 = performance.now();
   const now = () => (performance.now() - T0) / 1000;
@@ -54,25 +60,38 @@ export function creerMascotte({ canvas, base = "assets/mascotte/", journal = () 
   // 2. LE RENDU — détourage du fond vert par la carte graphique, deux textures pour le fondu entre deux clips.
   // ======================================================================================================
   const EXT = "webm"; // RACCORD : l'application ne livre que les WebM (VP9), lus par Chrome pour Android et par le Chromium des tests
-  const videos = {};
+  // RACCORD (point 2) : chaque clip téléchargé en mémoire (son adresse : un blob, ou le fichier à défaut) ; deux lecteurs
+  const sources = {};
   async function loadVideo(k) {
     const src = `${base}${k}.${EXT}`;
     let url = src;
-    try { const r = await fetch(src); if (r.ok) url = URL.createObjectURL(await r.blob()); } catch (e) {}
+    // (un téléchargement qui ne finit pas n'arrête pas l'écran de démarrage : 15 s au plus, puis le fichier sera lu directement)
+    try { await Promise.race([(async () => { const r = await fetch(src); if (r.ok) url = URL.createObjectURL(await r.blob()); })(), new Promise((r) => setTimeout(r, 15000))]); } catch (e) {}
+    sources[k] = url;
+  }
+  const refus = (quoi) => (e) => { if (e && e.name !== "AbortError") signaler(`lecture refusée (${quoi})`, { erreur: String(e.message || e.name || e) }); };
+  const lecteurs = [0, 1].map(() => {
     const v = document.createElement("video");
     v.muted = true; v.defaultMuted = true; v.playsInline = true; v.preload = "auto";
     v.setAttribute("muted", ""); v.setAttribute("playsinline", "");
     v.addEventListener("ended", () => { if (L.cur && L.cur.video === v) L.ended(); });
-    v.src = url; vids.appendChild(v);
-    videos[k] = v;
-    await new Promise(res => {
-      if (v.readyState >= 2) return res();
-      v.addEventListener("loadeddata", res, { once: true }); v.addEventListener("error", res, { once: true });
-      setTimeout(res, 15000);
-    });
+    v._clip = null; vids.appendChild(v);
+    return v;
+  });
+  // le lecteur d'un clip : celui qui le joue déjà, sinon l'autre, chargé avec ce clip s'il ne l'a pas déjà
+  function lecteur(k) {
+    if (!sources[k]) return null;
+    const cur = L.cur && L.cur.video;
+    if (cur && cur._clip === k) return cur;
+    const v = lecteurs.find((x) => x !== cur);
+    if (v._clip !== k) { v._clip = k; v.src = sources[k]; }
+    return v;
   }
   const face = canvas;
-  const R = makeGL(face) || make2D(face);
+  let R = makeGL(face) || make2D(face);
+  // RACCORD (point 2) : la carte graphique peut retirer son contexte à la page (mémoire, mise en veille) ; rendu, il est refait
+  face.addEventListener("webglcontextlost", (e) => { e.preventDefault(); signaler("contexte WebGL perdu"); });
+  face.addEventListener("webglcontextrestored", () => { R = makeGL(face) || make2D(face); L.fresh = false; L.needDraw = true; signaler("contexte WebGL rendu"); });
   function makeGL(cv) {
     const gl = cv.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false, powerPreference: "low-power" });
     if (!gl) return null;
@@ -149,6 +168,7 @@ export function creerMascotte({ canvas, base = "assets/mascotte/", journal = () 
       req.t = now();
       if (this.pending && this.pending.onCancel) this.pending.onCancel();
       this.pending = req;
+      lecteur(req.clip); // RACCORD (point 2) : l'autre lecteur prépare le clip demandé
       if (!this.cur || this.cur.video.ended) return this.start(req, this.cur ? "fin" : "direct");
       this.check();
     },
@@ -174,7 +194,7 @@ export function creerMascotte({ canvas, base = "assets/mascotte/", journal = () 
       this.onIdle && this.onIdle();
     },
     start(req, how) {
-      const v = videos[req.clip]; if (!v) return;
+      const v = lecteur(req.clip); if (!v) return; // RACCORD (point 2)
       const prev = this.cur, waited = now() - req.t;
       if (prev && prev.video !== v) prev.video.pause();
       if (prev) { R.swap(); this.mix = 0; this.fadeMs = FADE[how]; }
@@ -183,7 +203,7 @@ export function creerMascotte({ canvas, base = "assets/mascotte/", journal = () 
       this.fresh = false; this.pending = null;
       if (off && how !== "force") { this.fadeMs = FADE.doux; how = how === "exact" || how === "fin" ? "entrée tête neutre" : how; }
       try { v.currentTime = off; } catch (e) {}
-      if (visible) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } // RACCORD : cachée (récif), la vidéo attend
+      if (visible) { const p = v.play(); if (p && p.catch) p.catch(refus("clip")); } // RACCORD : cachée (récif), la vidéo attend
       watchFrames(v);
       const lab = { exact: "neutre", doux: "tête neutre", fin: "fin du clip", force: "fondu forcé", direct: "début" }[how] || how;
       if (req.log) journal(`${req.log}${off ? ` (depuis ${off.toFixed(1)} s)` : ""} · ${lab}${waited > 0.05 ? ` après ${waited.toFixed(1)} s` : ""}`, how === "force" ? "force" : "", { clip: req.clip, raccord: how, attente: +waited.toFixed(2) });
@@ -378,7 +398,16 @@ export function creerMascotte({ canvas, base = "assets/mascotte/", journal = () 
   // RACCORD (lot « Correctifs de la tablette ») : chaque vidéo chargée fait avancer la barre de l'écran de démarrage
   M.nbVideos = Object.keys(CLIPS).length;
   M.pret = Promise.all(Object.keys(CLIPS).map((k) => loadVideo(k).then(() => { try { progres(); } catch (e) {} }))).then(() => { pret = true; M.attente("départ"); requestAnimationFrame(tick); });
-  document.addEventListener("pointerdown", () => { M.activite(); if (visible && L.cur && L.cur.video.paused && !L.cur.video.ended) L.cur.video.play().catch(() => {}); }, { passive: true });
+  document.addEventListener("pointerdown", () => { M.activite(); if (visible && L.cur && L.cur.video.paused && !L.cur.video.ended) L.cur.video.play().catch(refus("toucher")); }, { passive: true });
+  // RACCORD (point 2) : une vidéo qui devrait jouer (montrée, page visible) et n'avance plus depuis 3 s est relancée, et signalée
+  let veille = { v: null, t: -1, depuis: 0 };
+  setInterval(() => {
+    const v = L.cur && L.cur.video, now = performance.now();
+    if (!pret || !visible || !v || v.ended || document.hidden) { veille = { v: null, t: -1, depuis: now }; return; }
+    if (v !== veille.v || v.currentTime !== veille.t) { veille = { v, t: v.currentTime, depuis: now }; return; }
+    if (now - veille.depuis > 3000) { veille.depuis = now; signaler("vidéo de la mascotte arrêtée, relancée", { clip: L.cur.clip, pause: v.paused, etat: v.readyState }); v.play().catch(refus("relance")); }
+  }, 1000);
+  M.lecteurs = lecteurs; // (pour les parcours de test)
   M.etat = () => ({ clip: L.cur && L.cur.clip, tag: L.cur && L.cur.tag, ambiance: M.amb, fps: L.fps, rendu: R.kind, attente: !!L.pending, pret, visible, suspendue, parle: M.parle });
 
   // ======================================================================================================
@@ -391,7 +420,7 @@ export function creerMascotte({ canvas, base = "assets/mascotte/", journal = () 
     on = !!on; if (on === visible) return; visible = on;
     const v = L.cur && L.cur.video;
     if (!v) return;
-    if (on) { if (!v.ended) v.play().catch(() => {}); M.activite(); } else v.pause();
+    if (on) { if (!v.ended) v.play().catch(refus("affichage")); M.activite(); } else v.pause();
   };
   // (correctif de la maquette) un toucher annule aussi le geste de relance déjà dû mais pas encore joué (12 s sans toucher
   // pendant un clip qui ne cédait pas encore) : sinon le geste arrivait après le toucher, à contretemps

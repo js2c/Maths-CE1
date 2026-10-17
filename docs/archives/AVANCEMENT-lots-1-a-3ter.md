@@ -908,3 +908,8 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 - **Branche** : `claude/magical-fermi-6tvdn7`, partie de `main` (dfcd34fb) ; demande de fusion https://github.com/js2c/Maths-CE1/pull/56.
 - **Fait** : point 0 en entier (barre noire, phrases « … », contrôle des durées des voix, qualité des voiliers, lampe de l'étal, parcours qui échouaient sur `main`) ; règle de sortie unique ; enfant imprévisible (`tests/e2e/enfant.mjs`, version courte dans les tests de GitHub) ; premier passage de l'agent et son traitement (`tests/recette-fonctionnelle/out-enfant/`) ; inventaire des couches (sections 1 et 2) et premiers retraits ; journal de conception et guide du parent.
 - **Fini le 13 octobre 2026** : bilan de couverture et section 3 de `docs/COUCHES.md`, second passage de l'agent et son traitement, longues séries de l'enfant imprévisible (6 défauts trouvés, corrigés, chacun avec son parcours), recette complète ; demande de fusion sortie du brouillon.
+
+## Reprise du lot « Correctifs de l'installation et de la veille »
+
+- **Branche** : `claude/dreamy-heisenberg-9qb80z`, partie de `main` (7779eed2) ; demande de fusion https://github.com/js2c/Maths-CE1/pull/61.
+- **Fini le 17 octobre 2026** : les cinq points de la fiche 12 (relance, veille, poissons, leçons de la monnaie, journal technique), leurs parcours (`installation.mjs`, `veille.mjs`, `poissons.mjs`, `lecons-monnaie.mjs`, `correctifs-installation.mjs`), la recette de la méthode commune, la relecture indépendante et son traitement.

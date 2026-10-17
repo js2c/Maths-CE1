@@ -50,6 +50,8 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (essai du parent du 16 octobre 2026, premier essai de l'application installée) : le lot « Correctifs de l'installation et de la veille »** (fiche 12). Le lot « Décisions sur les constats de l'agent » est fait et fusionné (PR #59), et toutes les voix sont fabriquées. **État : fait** (PR #61, le 17 octobre 2026 ; aucune phrase nouvelle ; causes trouvées et choix : `docs/JOURNAL-CONCEPTION.md`).
 
+**Puis (décision du parent du 17 octobre 2026) : le lot « Banc Android et recette en conditions réelles »** (fiche 13), après le lot « Correctifs de l'installation et de la veille » (PR #61). Les défauts du 16 octobre sont passés à travers toutes les recettes, parce que le banc d'essai neutralisait les conditions réelles : sans service worker, sans voix ni son, avec le Chromium d'un ordinateur. Ce lot construit un banc qui reproduit un vrai Android et en fait le banc par défaut de tous les lots. **État : à faire.**
+
 **Pourquoi cet ordre.**
 
 - Les correctifs de la confrontation avant les leçons et les sommes : ces lots s'appuient sur les règles du module 2 telles qu'elles seront écrites.
@@ -1013,3 +1015,103 @@ Le parent pourra l'exporter et le donner à la conception.
 - les parcours des points 1 à 4 ;
 - le temps jusqu'à la première image, au premier lancement et aux suivants, avant et après le lot ;
 - dans la demande de fusion, pour chaque point : la cause trouvée, ou ce qui a été essayé, et ce que le parent doit regarder dans le journal au prochain essai.
+
+### 13. Lot « Banc Android et recette en conditions réelles »
+
+**Origine** : le parent, le 17 octobre 2026 : « Il ne devrait plus y avoir ce genre de bugs au stade où nous en sommes. » L'application doit être robuste sur la tablette de référence, une **Samsung Galaxy Tab S5e**, ancienne, et sur **tous les supports Android, smartphones compris**.
+
+**Ce qui a manqué** (`docs/JOURNAL-CONCEPTION.md`, lot « Correctifs de l'installation et de la veille ») : les défauts du 16 octobre ne pouvaient pas apparaître sur le banc d'essai, car les tests :
+- ouvraient l'application **sans service worker** (`?nosw`) et dans un navigateur neuf : jamais de relance d'une application installée ;
+- **sans voix ni son** (`voix=rapide`, `son=non`) : aucun lecteur audio n'était créé ;
+- avec la lecture automatique permise (`--autoplay-policy=no-user-gesture-required`), alors qu'Android la refuse ;
+- dans le Chromium d'un ordinateur, sans ses limites de lecteurs, de mémoire et de processeur ;
+- avec un enfant simulé qui touche sans arrêt et ne laisse jamais l'application vingt minutes sans rien faire.
+
+En plus, un parcours qui échouait une fois sur trois (`mise-a-jour.mjs`) avait été classé comme une instabilité du banc : c'était le symptôme du défaut de relance.
+
+**But du lot, en deux parties** :
+1. construire un **banc Android** et en faire le banc **par défaut** de tous les parcours, de la recette commune et des tests de GitHub ;
+2. passer sur ce banc la **recette en conditions réelles** de toute l'application, et corriger ce qu'elle trouve.
+
+**Comme les lots précédents : d'un seul tenant.** S'arrêter seulement si une correction demande une décision du parent (point 6).
+
+**Prérequis** : la PR #61 (« Correctifs de l'installation et de la veille ») est fusionnée (le 17 octobre 2026).
+
+**Partir de ce que la PR #61 a construit, sans le refaire** :
+- les parcours `installation.mjs` (relances avec service worker, avec et sans réseau, pendant une mise à jour), `veille.mjs` (limite de 8 lecteurs, 30 minutes sans toucher, page cachée puis montrée), `lecons-monnaie.mjs` (part de noir à l'écran) et `poissons.mjs` : les passer sur les profils du banc et les rattacher à ses conditions par défaut ;
+- **le journal technique** et sa ligne « état de la page » (mémoire, lecteurs de sons et de vidéos, calques), qui est écrite toutes les 10 minutes : **les budgets du point 3 se mesurent avec le même code**, pour qu'un dépassement vu dans le journal de la tablette et un dépassement vu par le banc soient le même chiffre. Le banc vérifie aussi les lignes du journal : « première image en … s », « lecture refusée », « contexte WebGL perdu » ;
+- `veille.mjs` lance encore Chromium avec `--autoplay-policy=no-user-gesture-required` et `son=non`, et `installation.mjs` avec `son=non&nosw` pour une partie de ses cas : ils passent aux conditions par défaut du point 2, ou déclarent leur exception.
+
+**Les échecs laissés par la PR #61, à régler en premier** (point 4, « aucun échec intermittent accepté sans cause ») :
+- `decisions-agent` échoue aussi sur `main`, deux fois sur deux : la flèche de « continuer » n'est pas vue 300 ms après le rechargement, **en voix accélérée**. Vérifier d'abord si l'échec vient du raccourci lui-même ;
+- `passages` est intermittent (« un seul bouton passer l'échauffement » : 2 échecs sur 4) ;
+- `aide-passer`, `crans` et `lot3bis` échouent quand d'autres parcours lourds tournent en même temps. **Le banc fixe la règle** : soit les parcours lourds tournent l'un après l'autre, soit chaque parcours tient sous la charge. Dire lequel, et pourquoi.
+
+**1. Les appareils à reproduire** (profils dans `tests/e2e/appareils.mjs`, un seul endroit) :
+
+| Profil | Ce qu'il représente | Fenêtre (px CSS), densité | Processeur |
+| --- | --- | --- | --- |
+| `s5e` (**référence**) | Galaxy Tab S5e : écran 2 560 × 1 600, Snapdragon 670, 4 Go de mémoire, Android 11 au plus (à vérifier par la session) | 1 138 × 711, 2,25 | ralenti × 4 |
+| `tablette-entree` | tablette Android d'entrée de gamme | 1 280 × 800, 1,5 | ralenti × 6 |
+| `smartphone` | smartphone récent, en paysage | 915 × 412, 2,625 | ralenti × 2 |
+| `petit-smartphone` | petit smartphone ancien, en paysage | 640 × 360, 2 | ralenti × 6 |
+
+Chaque profil a l'écran tactile seulement (`hasTouch`, `isMobile`, pas de souris ni de clavier) et l'identifiant d'un Chrome Android. Pour les smartphones, aussi en **portrait** : la page ouverte dans un onglet, avant l'installation.
+
+**2. Les conditions par défaut**, pour tous les profils et tous les parcours :
+- **le service worker actif, l'application installée** : un profil de navigateur persistant (`launchPersistentContext`), cache plein, puis des **relances** : fermer le navigateur, le rouvrir sur le même profil ;
+- **la vraie voix et le vrai son**, aux vraies durées : plus de `voix=rapide` ni de `son=non` par défaut ;
+- **la lecture automatique refusée**, comme sur Android (`--autoplay-policy=user-gesture-required`) : c'est le toucher de l'écran de démarrage qui l'autorise ;
+- **les lecteurs de médias limités** (`--max-web-media-player-count`), à 8 ;
+- **le cycle de vie d'Android** : la page cachée puis montrée (`visibilitychange`), gelée puis dégelée (`Page.setWebLifecycleState`), et **tuée puis relancée**, comme quand Android ferme Chrome ;
+- **le réseau** : hors ligne après l'installation, et lent ou coupé pendant une mise à jour ;
+- **le stockage** : un quota limité (`Storage.overrideQuotaForOrigin`), dont un cas où le cache entier ne tient pas. L'application doit le dire au parent et rester utilisable.
+- **Les raccourcis restent possibles mais doivent être explicites.** Un parcours qui a vraiment besoin de la voix rapide, ou sans service worker, le déclare et dit pourquoi en tête du fichier. Un test unitaire liste ces exceptions ; il échoue si une nouvelle apparaît sans raison écrite.
+
+**3. Ce qui ne s'émule pas, tenu par des budgets mesurés.** La mémoire graphique, les décodeurs vidéo et la mémoire réelle d'un appareil ne se reproduisent pas dans Chromium. Ils deviennent des **budgets**, vérifiés après chaque action par l'enfant imprévisible et par la journée d'usage (point 4). La session fixe les valeurs d'après les mesures, avec une marge, et les écrit dans `docs/ARCHITECTURE.md`. Chaque budget dépassé fait échouer le test.
+- **éléments `<audio>` et `<video>` vivants** : un nombre fixe et faible ;
+- **surface totale des canvas** (en mégapixels) et **nombre de contextes WebGL** ;
+- **images décodées en mémoire** ;
+- **mémoire de la page** (`performance.measureUserAgentSpecificMemory` ou CDP), qui ne doit pas croître sur la durée ;
+- **minuteries et écouteurs**, qui reviennent à leur niveau de départ.
+
+**4. La recette en conditions réelles**, sur les quatre profils, la référence `s5e` d'abord :
+- **la journée d'usage**, sur un seul profil persistant, à la vraie vitesse, sans rien remettre à zéro entre les étapes :
+  - une installation ;
+  - trois séances « jouer » complètes ;
+  - chaque exercice par « choisir » ;
+  - chaque leçon ;
+  - la boutique et un achat ;
+  - le récif et l'album ;
+  - l'espace parent ;
+  - **trente minutes sans toucher** sur l'accueil, puis sur un exercice, relances comprises ;
+  - dix relances, dont une pendant une séance (la reprise) et une pendant l'installation d'une nouvelle version ;
+  - une heure en arrière-plan, puis un retour.
+  
+  Après chaque étape : une phrase est bien jouée par un vrai lecteur, un galet touché deux fois ouvre son écran, aucun écran n'est noir (part de pixels noirs mesurée), les budgets du point 3 sont tenus ;
+- **l'enfant imprévisible sur le banc Android** : la version longue (au moins 50 graines sur `s5e`, 20 sur chaque autre profil), avec la vraie voix, de longues inactivités, des gels, des relances et des pertes de réseau tirés au hasard ;
+- **l'agent qui joue l'enfant**, une fois, au moins 30 minutes, sur le profil `s5e`, avec la vraie voix ;
+- **le temps jusqu'à la première image et jusqu'à « prêt »**, au premier lancement et aux relances, sur chaque profil.
+
+Chaque défaut trouvé est corrigé et devient un test de non-régression. **Aucun échec intermittent n'est accepté sans cause trouvée.** Un parcours qui échoue parfois est un défaut à expliquer, de l'application ou du banc, jamais à relancer jusqu'à ce qu'il passe.
+
+**5. Les smartphones**, en plus des défauts :
+- **l'orientation** : installée, l'application est en paysage (`manifest`, `orientation`). Ouverte dans un onglet en portrait, elle montre un écran clair qui demande de tourner le téléphone, avec un dessin et sans texte long, jamais une scène écrasée ;
+- **les écrans très allongés** (19,5:9) **et les encoches** : la scène reste entière et centrée, rien d'important sous l'encoche ni sous les barres d'Android (`env(safe-area-inset-*)`) ;
+- **la taille réelle des cibles** : la scène fait 1 280 × 800 et se réduit sur un téléphone. Une cible de 64 px de la scène ne mesure plus qu'environ 29 px CSS sur le petit smartphone, soit environ 5 mm, sous les 9 mm conseillés pour un doigt d'enfant. Mesurer, pour chaque écran et chaque profil, la taille réelle de chaque cible en millimètres.
+
+**6. S'arrêter pour le parent seulement si** les cibles des smartphones sont trop petites, ce qui est attendu. Rendre l'application vraiment utilisable sur un téléphone demande alors une décision : par exemple une mise en page « téléphone » avec des cibles agrandies, ou le téléphone déclaré non pris en charge pour l'enfant. Décrire le constat, les options et leur coût dans la demande de fusion, **sans refaire les écrans dans ce lot**. Tout le reste se corrige sans attendre.
+
+**7. Le banc devient la règle** :
+- `CLAUDE.md` (« Méthode de travail ») et la méthode commune de ce fichier : la recette de chaque lot se fait sur le banc Android, profil `s5e`, et sur `petit-smartphone` pour les écrans touchés par le lot ;
+- **les tests de GitHub** : un travail `android` court, environ 15 minutes au plus, à chaque demande de fusion. Il installe, relance trois fois, joue une séance courte avec la vraie voix, fait une inactivité de 5 minutes et un gel, et contrôle les budgets. Une demande de fusion qui le fait échouer ne se fusionne pas.
+
+**Voix** : aucune phrase nouvelle attendue. Si l'écran « tourne ton téléphone » parle, c'est une phrase à lister.
+
+**Recette du lot** : ce lot **est** une recette. La demande de fusion donne :
+- les profils et les conditions du banc, et ce qui ne s'émule pas ;
+- les budgets et leurs valeurs mesurées ;
+- les défauts trouvés, profil par profil, leur cause et leur test de non-régression ;
+- les temps de démarrage par profil ;
+- la taille réelle des cibles sur les smartphones, et les options du point 6 ;
+- les parcours qui gardent un raccourci, avec leur raison.

@@ -1035,7 +1035,17 @@ En plus, un parcours qui échouait une fois sur trois (`mise-a-jour.mjs`) avait 
 
 **Comme les lots précédents : d'un seul tenant.** S'arrêter seulement si une correction demande une décision du parent (point 6).
 
-**Prérequis** : la PR #61 (« Correctifs de l'installation et de la veille ») est fusionnée.
+**Prérequis** : la PR #61 (« Correctifs de l'installation et de la veille ») est fusionnée (le 17 octobre 2026).
+
+**Partir de ce que la PR #61 a construit, sans le refaire** :
+- les parcours `installation.mjs` (relances avec service worker, avec et sans réseau, pendant une mise à jour), `veille.mjs` (limite de 8 lecteurs, 30 minutes sans toucher, page cachée puis montrée), `lecons-monnaie.mjs` (part de noir à l'écran) et `poissons.mjs` : les passer sur les profils du banc et les rattacher à ses conditions par défaut ;
+- **le journal technique** et sa ligne « état de la page » (mémoire, lecteurs de sons et de vidéos, calques), qui est écrite toutes les 10 minutes : **les budgets du point 3 se mesurent avec le même code**, pour qu'un dépassement vu dans le journal de la tablette et un dépassement vu par le banc soient le même chiffre. Le banc vérifie aussi les lignes du journal : « première image en … s », « lecture refusée », « contexte WebGL perdu » ;
+- `veille.mjs` lance encore Chromium avec `--autoplay-policy=no-user-gesture-required` et `son=non`, et `installation.mjs` avec `son=non&nosw` pour une partie de ses cas : ils passent aux conditions par défaut du point 2, ou déclarent leur exception.
+
+**Les échecs laissés par la PR #61, à régler en premier** (point 4, « aucun échec intermittent accepté sans cause ») :
+- `decisions-agent` échoue aussi sur `main`, deux fois sur deux : la flèche de « continuer » n'est pas vue 300 ms après le rechargement, **en voix accélérée**. Vérifier d'abord si l'échec vient du raccourci lui-même ;
+- `passages` est intermittent (« un seul bouton passer l'échauffement » : 2 échecs sur 4) ;
+- `aide-passer`, `crans` et `lot3bis` échouent quand d'autres parcours lourds tournent en même temps. **Le banc fixe la règle** : soit les parcours lourds tournent l'un après l'autre, soit chaque parcours tient sous la charge. Dire lequel, et pourquoi.
 
 **1. Les appareils à reproduire** (profils dans `tests/e2e/appareils.mjs`, un seul endroit) :
 

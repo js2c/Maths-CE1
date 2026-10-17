@@ -18,6 +18,7 @@
 // budgets sont tenus (appareils.mjs, BUDGETS : le code du journal technique) et ce qui doit revenir à son niveau de départ y
 // revient. Le résumé : tests/e2e/out/journee/<profil>/journee.json et journee.md.
 //   node tests/e2e/journee.mjs [--profil s5e] [--court] [--seul 1,2,…] [--graine 1]
+//   --ci : la version courte des tests de GitHub (environ 15 minutes ; voir CI ci-dessous)
 //   --court : les inactivités de 3 minutes, l'arrière-plan de 5 minutes, une séance au lieu de trois, six leçons au lieu de
 //   dix-huit (pour un contrôle rapide ; la recette du lot se fait sans)
 import { Appareil, serveurBanc, REFERENCE, BUDGETS, depasse, resumeEtat } from "./appareils.mjs";
@@ -26,9 +27,13 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 const args = process.argv.slice(2), arg = (k, d = null) => (args.includes(k) ? args[args.indexOf(k) + 1] : d);
-const PROFIL = arg("--profil", REFERENCE), COURT = args.includes("--court"), SEUL = arg("--seul")?.split(","), faire = (n) => !SEUL || SEUL.includes(String(n));
-const MIN_INACTIF = COURT ? 3 : 30, MIN_FOND = COURT ? 5 : 60;
-const OUT = resolve(`tests/e2e/out/journee/${PROFIL}`); mkdirSync(OUT, { recursive: true });
+// (--ci : le travail « android » des tests de GitHub, environ 15 minutes : l'installation, une séance courte à la vraie voix, cinq
+// minutes sans toucher, trois relances (fermée, tuée, sans réseau), deux minutes en arrière-plan gelée ; les contrôles et les
+// budgets après chaque étape, comme la journée)
+const CI = args.includes("--ci");
+const PROFIL = arg("--profil", REFERENCE), COURT = args.includes("--court") || CI, SEUL = (CI ? "1,2,7,9,10" : arg("--seul"))?.split(","), faire = (n) => !SEUL || SEUL.includes(String(n));
+const MIN_INACTIF = CI ? 5 : COURT ? 3 : 30, MIN_FOND = CI ? 2 : COURT ? 5 : 60;
+const OUT = resolve(`tests/e2e/out/journee${CI ? "-ci" : ""}/${PROFIL}`); mkdirSync(OUT, { recursive: true });
 const seance = JSON.parse(readFileSync("app/content/seance.json", "utf8"));
 const LECONS = seance.menuLecons.rangees.flatMap((r) => r.lecons);
 let graine = Number(arg("--graine", 1)); const rnd = () => { graine = (graine * 16807) % 2147483647; return graine / 2147483647; };
@@ -131,6 +136,8 @@ await etape(1, "installation", async () => {
 });
 
 await etape(2, "trois séances « jouer »", async () => {
+  // (--ci : une séance courte, trois questions par étape, sans défi)
+  if (CI) await a.relancer({ q: "?questions=3&faits=3&sans=defi" });
   for (let i = 1; i <= (COURT ? 1 : 3); i++) { await jouerSeance(); await hier(); await a.relancer(); }
 });
 
@@ -221,7 +228,13 @@ await etape(8, `${MIN_INACTIF} minutes sans toucher sur une question`, async () 
   await a.toucher(".session-home").catch(() => {}); await attendre(2000);
 });
 
-await etape(9, "dix relances", async () => {
+await etape(9, CI ? "trois relances" : "dix relances", async () => {
+  if (CI) {
+    await a.relancer(); await a.tuerEtRelancer(); serveur.reseau("coupe"); const r = await a.relancer(); serveur.reseau("ok");
+    const ls = a.lancements.slice(-3);
+    check(ls.every((x) => !x.echec && x.controle), `trois relances (fermée, tuée, sans réseau) : servies par le service worker ; première image au plus ${Math.max(...ls.map((x) => x.image))} ms, prête au plus ${Math.max(...ls.map((x) => x.pret))} ms`);
+    void r; return;
+  }
   // 1 à 3 : fermée, tuée, fermée
   await a.relancer(); await a.tuerEtRelancer(); await a.relancer();
   // 4 : pendant une séance (la reprise) ; le navigateur tué en pleine question
@@ -258,7 +271,7 @@ await etape(10, `${MIN_FOND} minutes en arrière-plan`, async () => {
 });
 
 // ---------------------------------------------------------------- le résumé
-const md = [`# Journée d'usage sur le banc Android : ${PROFIL}${COURT ? " (courte)" : ""}`, "", `${new Date().toISOString()} ; durée ${minutes()} min ; ${fail.length ? `**${fail.length} échec(s)**` : "aucun échec"}.`, "",
+const md = [`# Journée d'usage sur le banc Android : ${PROFIL}${CI ? " (tests de GitHub)" : COURT ? " (courte)" : ""}`, "", `${new Date().toISOString()} ; durée ${minutes()} min ; ${fail.length ? `**${fail.length} échec(s)**` : "aucun échec"}.`, "",
   "| Étape | Durée (min) | Phrase jouée | Noir | Galet | Médias | Canvas (Mpx) | Images (Mpx) | Mémoire (Mo) | Minuteries | Écouteurs |", "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
   ...etapes.map((r) => `| ${r.etape} | ${r.minutes} | ${r.phrase.finies ? "oui" : "NON"} | ${(r.noir * 100).toFixed(1)} % | ${r.galet ? "oui" : "NON"} | ${r.etat?.medias} | ${r.etat?.canvasMpx} | ${r.etat?.imagesMpx} | ${r.etat?.memoireMo} | ${r.etat?.minuteries} | ${r.etat?.ecouteurs} |`),
   "", "## Lancements", "", "| # | Première image (ms) | Prête (ms) | Accueil (ms) | Service worker |", "| --- | --- | --- | --- | --- |",

@@ -64,7 +64,7 @@ export const CHROMIUM = process.env.CHROMIUM ?? "/opt/pw-browsers/chromium";
 // réseau qu'on peut couper (« coupe » : la connexion est fermée aussitôt, comme sans Wi-Fi), ralentir (« lent » : chaque
 // fichier attend `latence` ms et passe à `debit` Ko/s) ou rendre instable (« instable » : une requête sur `perte` échoue)
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".mjs": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".json": "application/json", ".webmanifest": "application/manifest+json", ".webp": "image/webp", ".png": "image/png", ".svg": "image/svg+xml", ".jpg": "image/jpeg", ".ogg": "audio/ogg", ".webm": "video/webm", ".woff2": "font/woff2" };
-export async function serveurBanc({ racine = "app", prefixe = "/Maths-CE1/" } = {}) {
+export async function serveurBanc({ racine = process.env.RACINE_APP ?? "app", prefixe = "/Maths-CE1/" } = {}) {
   const ROOT = resolve(racine) + "/";
   const SW = readFileSync(join(ROOT, "sw.js"), "utf8"), LISTE = JSON.parse(readFileSync(join(ROOT, "sw-files.json"), "utf8"));
   const versionDe = (v) => ({ v, sw: SW.replace(/^const VERSION = ".*";$/m, `const VERSION = "${v}";`), liste: JSON.stringify({ ...LISTE, version: v }), version: JSON.stringify({ version: v }) });

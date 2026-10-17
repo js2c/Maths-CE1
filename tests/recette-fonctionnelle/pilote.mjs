@@ -14,6 +14,8 @@
 //   curl "localhost:8790/veille?ms=10000"    l'écran éteint puis rallumé
 //   curl "localhost:8790/recharger"
 //   curl "localhost:8790/fin"         ferme tout
+//   avec --banc [--profil s5e] : curl "localhost:8790/relancer" | "/tuer" | "/cacher?ms=60000" | "/reseau?etat=coupe" (ou ok) |
+//   "/lectures" (les phrases jouées par un vrai lecteur, refusées, et l'état de la page)
 // BANC ANDROID, raccourcis : sans service worker
 // (raison : chaque cas part d'une base neuve, dans un navigateur neuf : la voix y est la vraie, mais installer l'application
 // (140 Mo, environ une minute) pour chaque cas n'apporterait rien à ce qu'il vérifie. L'application installée, relancée,
@@ -31,19 +33,38 @@ const VUE = args.includes("--tablette") ? { width: 1138, height: 711, deviceScal
 const JOURNAL = join(OUT, "journal.txt"), note = (t) => appendFileSync(JOURNAL, `${new Date().toISOString().slice(11, 19)} ${t}\n`);
 
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
-const context = await browser.newContext({ viewport: { width: VUE.width, height: VUE.height }, deviceScaleFactor: VUE.deviceScaleFactor, hasTouch: true });
-await demarrageReel(context); await accueilReel(context); await finReelle(context);
-await context.addInitScript(() => { window.__phrases = []; const poser = () => { const v = window.__app?.voice; if (!v) return setTimeout(poser, 100); const say = v.say.bind(v); v.say = (t, o) => { window.__phrases.push(t); return say(t, o); }; }; poser(); });
-const page = await context.newPage(), cdp = await context.newCDPSession(page), erreurs = [];
-page.on("pageerror", (e) => erreurs.push(e.message)); page.on("console", (m) => { if (m.type() === "error" && !/Failed to load resource/.test(m.text())) erreurs.push(m.text()); });
-await page.goto(url + "?nosw");
-if (args.includes("--base-un-mois")) {
-  const SAVE = resolve("tests/e2e/out/enfant/base-un-mois.json");
-  if (!existsSync(SAVE)) execFileSync("node", ["tools/sauvegarde-test.mjs", "reel", "2", "4", "--sortie", SAVE], { stdio: "ignore" });
-  await page.waitForFunction(() => window.__app?.store, null, { timeout: 120000 });
-  await page.evaluate(async (d) => { await window.__app.store.restore(d, ["reglages"]); }, JSON.parse(readFileSync(SAVE, "utf8")));
-  await page.reload();
+// (lot « Banc Android et recette en conditions réelles », point 4) --banc : sur le banc Android (tests/e2e/appareils.mjs), la
+// tablette de référence par défaut (--profil) : l'application installée (service worker, cache plein), la vraie voix, la lecture
+// automatique refusée (l'agent touche lui-même l'écran de démarrage), 8 lecteurs de médias, le processeur ralenti ; et les
+// commandes de la vie d'une tablette : relancer, tuer (Android ferme Chrome), cacher (l'écran éteint), reseau (coupé ou non)
+const BANC = args.includes("--banc");
+const PHRASES = () => { window.__phrases = []; const poser = () => { const v = window.__app?.voice; if (!v) return setTimeout(poser, 100); const say = v.say.bind(v); v.say = (t, o) => { window.__phrases.push(t); return say(t, o); }; }; poser(); };
+let browser = null, context, page, cdp, A = null, SB = null; const erreurs = [];
+const brancher = () => { page.on("pageerror", (e) => erreurs.push(e.message)); page.on("console", (m) => { if (m.type() === "error" && !/Failed to load resource/.test(m.text())) erreurs.push(m.text()); }); };
+if (BANC) {
+  const { Appareil, serveurBanc } = await import("../e2e/appareils.mjs");
+  SB = await serveurBanc(); A = new Appareil(arg("--profil", "s5e"), { serveur: SB, scripts: [PHRASES] });
+  await A.ouvrir(); await A.installer();
+  if (args.includes("--base-un-mois")) {
+    const SAVE = resolve("tests/e2e/out/enfant/base-un-mois.json");
+    if (!existsSync(SAVE)) execFileSync("node", ["tools/sauvegarde-test.mjs", "reel", "2", "4", "--sortie", SAVE], { stdio: "ignore" });
+    await A.page.evaluate(async (d) => { await window.__app.store.restore(d, ["reglages"]); }, JSON.parse(readFileSync(SAVE, "utf8")));
+  }
+  await A.relancer({ toucher: false }); ({ ctx: context, page, cdp } = A); brancher();
+} else {
+  browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
+  context = await browser.newContext({ viewport: { width: VUE.width, height: VUE.height }, deviceScaleFactor: VUE.deviceScaleFactor, hasTouch: true });
+  await demarrageReel(context); await accueilReel(context); await finReelle(context);
+  await context.addInitScript(PHRASES);
+  page = await context.newPage(); cdp = await context.newCDPSession(page); brancher();
+  await page.goto(url + "?nosw");
+  if (args.includes("--base-un-mois")) {
+    const SAVE = resolve("tests/e2e/out/enfant/base-un-mois.json");
+    if (!existsSync(SAVE)) execFileSync("node", ["tools/sauvegarde-test.mjs", "reel", "2", "4", "--sortie", SAVE], { stdio: "ignore" });
+    await page.waitForFunction(() => window.__app?.store, null, { timeout: 120000 });
+    await page.evaluate(async (d) => { await window.__app.store.restore(d, ["reglages"]); }, JSON.parse(readFileSync(SAVE, "utf8")));
+    await page.reload();
+  }
 }
 // de la scène (1280 × 800) à l'écran
 const ecran = async (x, y) => page.evaluate(([x, y]) => { const r = document.getElementById("stage").getBoundingClientRect(), k = r.width / 1280; return [r.left + x * k, r.top + y * k]; }, [x, y]);
@@ -74,7 +95,13 @@ const COMMANDES = {
   },
   async veille(q) { await cdp.send("Page.setWebLifecycleState", { state: "frozen" }); await page.waitForTimeout(Math.min(600000, +(q.get("ms") ?? 10000))); await cdp.send("Page.setWebLifecycleState", { state: "active" }); return { ok: true }; },
   async recharger() { await page.reload(); return { ok: true }; },
-  async fin() { setTimeout(async () => { await browser.close(); srv.close(); process.exit(0); }, 100); return { ok: true }; },
+  // (--banc) la vie d'une tablette
+  async relancer() { if (!A) return { erreur: "seulement avec --banc" }; const r = await A.relancer({ toucher: false }); ({ ctx: context, page, cdp } = A); brancher(); return r; },
+  async tuer() { if (!A) return { erreur: "seulement avec --banc" }; const r = await A.tuerEtRelancer({ toucher: false }); ({ ctx: context, page, cdp } = A); brancher(); return r; },
+  async cacher(q) { if (!A) return { erreur: "seulement avec --banc" }; await A.cacher(Math.min(3600000, +(q.get("ms") ?? 30000))); return { ok: true }; },
+  async reseau(q) { if (!A) return { erreur: "seulement avec --banc" }; SB.reseau(q.get("etat") === "coupe" ? "coupe" : "ok"); return { ok: true, reseau: SB.etat.reseau }; },
+  async lectures() { if (!A) return { erreur: "seulement avec --banc" }; return { ...(await A.lectures()), etat: await A.budgets() }; },
+  async fin() { setTimeout(async () => { if (A) { await A.detruire(); await SB.fermer(); } else await browser.close(); srv.close(); process.exit(0); }, 100); return { ok: true }; },
 };
 createServer(async (req, res) => {
   const u = new URL(req.url, "http://x"), c = COMMANDES[u.pathname.slice(1)];

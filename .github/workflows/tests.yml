@@ -55,3 +55,38 @@ jobs:
         run: node tests/e2e/enfant.mjs --graines 3 --actions 60
         env:
           VOIX_A_FABRIQUER: tolere
+
+  # (lot « Banc Android et recette en conditions réelles », point 7) LE BANC ANDROID, version courte (environ 15 minutes) : la
+  # tablette de référence (Galaxy Tab S5e : 1 138 × 711, densité 2,25, processeur ralenti 4 fois, tactile), l'application installée
+  # (service worker, cache plein), la vraie voix, la lecture automatique refusée, 8 lecteurs de médias au plus ; l'installation,
+  # une séance courte, 5 minutes sans toucher, trois relances (fermée, tuée, sans réseau), un gel ; après chaque étape, une phrase
+  # jouée par un vrai lecteur, un galet qui ouvre son écran, aucun écran noir, les budgets tenus (tests/e2e/journee.mjs --ci).
+  # Une demande de fusion qui le fait échouer ne se fusionne pas.
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Dépendances des tests
+        run: npm ci
+      - name: Chromium (playwright-core de l'atelier)
+        run: |
+          cd art && npm ci --omit=optional --ignore-scripts
+          npx playwright-core install --with-deps chromium
+          echo "CHROMIUM=$(node -e 'import("playwright-core").then((p) => console.log(p.chromium.executablePath()))')" >> "$GITHUB_ENV"
+      - name: Liste des fichiers pour le mode hors ligne (comme la publication)
+        run: node tools/precache.mjs
+      - name: Le banc Android (journée courte, tablette de référence)
+        run: node tests/e2e/journee.mjs --ci
+        env:
+          VOIX_A_FABRIQUER: tolere
+      - name: Les captures et le résumé, en cas d'échec
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: banc-android
+          path: tests/e2e/out/journee-ci/

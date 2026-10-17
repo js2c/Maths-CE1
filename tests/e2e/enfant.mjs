@@ -173,8 +173,10 @@ async function concretiser(page, rnd, type) {
 }
 const lent = (ms) => ms * Math.max(1, LENT / 2);
 async function jouer(page, cdp, act) {
-  const touche = (pts) => cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: pts.map(([x, y]) => ({ x: Math.max(1, Math.min(VUE.width - 1, x)), y: Math.max(1, Math.min(VUE.height - 1, y)) })) });
-  const leve = () => cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  // (lot « Banc Android » : l'heure réelle du contact et du lever, comme les donne l'écran tactile ; voir appareils.mjs, toucher)
+  let tContact = 0;
+  const touche = (pts) => { tContact = Date.now() / 1000; return cdp.send("Input.dispatchTouchEvent", { type: "touchStart", timestamp: tContact, touchPoints: pts.map(([x, y]) => ({ x: Math.max(1, Math.min(VUE.width - 1, x)), y: Math.max(1, Math.min(VUE.height - 1, y)) })) }); };
+  const leve = () => cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [], timestamp: Math.max(tContact, Date.now() / 1000 - 0.001) });
   const tap = async (x, y, ms = 60) => { await touche([[x, y]]); await page.waitForTimeout(ms); await leve(); };
   switch (act.type) {
     case "tap": await tap(act.x, act.y); await page.waitForTimeout(lent(250)); break;

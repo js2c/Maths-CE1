@@ -212,9 +212,13 @@ export class Appareil {
       const b = await this.page.waitForFunction((s) => { const e = [...document.querySelectorAll(s)].find((e) => !e.closest(".stash") && e.checkVisibility({ visibilityProperty: true, opacityProperty: true })); if (!e) return null; const r = e.getBoundingClientRect(); return r.width > 0 ? [r.x + r.width / 2, r.y + r.height / 2] : null; }, cible, { timeout: 30000, polling: 100 });
       [x, y] = await b.jsonValue();
     } else [x, y] = cible;
-    await this.cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
+    // (l'heure du contact et du lever, comme les donne l'écran tactile d'une tablette : sans elle, Chromium date l'événement quand il
+    // le traite, et un navigateur saturé par le rendu graphique logiciel faisait d'un toucher de 70 ms un appui de 0,8 s, que
+    // l'application ignore : la maison des voiliers « ne répondait plus » sur le banc, jamais sur une vraie tablette)
+    const t0 = Date.now() / 1000;
+    await this.cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }], timestamp: t0 });
     await this.page.waitForTimeout(ms);
-    await this.cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await this.cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [], timestamp: Math.max(t0 + ms / 1000, Date.now() / 1000 - 0.001) });
   }
   // deux touchers (les écrans de choix et l'accueil : le premier montre et dit, le second ouvre)
   async deuxTouchers(cible, ecart = 600) { await this.toucher(cible); await this.page.waitForTimeout(ecart); await this.toucher(cible); }

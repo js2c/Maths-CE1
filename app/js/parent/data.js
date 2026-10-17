@@ -313,3 +313,7 @@ export function ligneJournal(e) {
   if (e.quand) d.push(`le ${heureJournal(e.quand)}`);
   return `${heureJournal(e.t)} · ${TYPES_JOURNAL[e.type] ?? e.type} · ${e.message}${d.length ? ` (${d.join(", ")})` : ""}`;
 }
+
+// (décision du parent du 17 octobre 2026, lot « Banc Android et recette en conditions réelles ») où une étape a repris après un
+// rechargement de la page (session.js, `reprises`) ; une fiche d'avant ce lot : au début de l'étape
+export const repriseOu = (r) => ({ question: "à la question en cours", suivante: "à la question suivante (la réponse donnée juste avant est comptée)", lecon: "à la leçon en cours" })[r?.ou] ?? "à son début";

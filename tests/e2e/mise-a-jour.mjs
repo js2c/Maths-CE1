@@ -191,12 +191,12 @@ const apres = [...(await dire(page, X)), ...(await dire(page, Z))];
 check(!apres.length, `B : « ${X} » (son changé) et « ${Z} » (nouvelle) lues depuis leurs fichiers${apres.length ? ` (${apres.map(([s, c]) => `« ${s} » : ${c}`).join(" ; ")})` : ""}`);
 e = await etatSW(page);
 check(e.caches.length === 1 && e.caches[0] === "ocean-bbbbbbbbbbbb", `l'ancien cache supprimé une fois B active (${e.caches.join(", ")})`);
-// (décision 1) la séance commencée avec A est reprise par B : « continuer », puis l'échauffement à son début, la même séance
+// (décision 1) la séance commencée avec A est reprise par B : « continuer », puis l'échauffement (à la question près), la même séance
 const offre = await page.evaluate(() => ({ id: window.__app.repriseEnAttente?.id ?? null, continuer: !!document.querySelector(".keep.play") }));
 check(seanceA && offre.id === seanceA && offre.continuer, `B : la séance commencée avec A est proposée (« continuer » ; séance ${offre.id})`);
 for (let i = 0; i < 2 && (await page.evaluate(() => !!window.__app.repriseEnAttente)); i++) { await page.locator(".keep.play").tap({ force: true }); await page.waitForTimeout(300); }
 const reprise = await page.waitForFunction((id) => { const s = window.__app.session; return s?.rec?.id === id && s.progress.etape === "echauffement" && !window.__app.enPause; }, seanceA, { timeout: 30000 }).then(() => true, () => false);
-check(reprise, "B : « continuer » reprend la séance de A au début de l'échauffement");
+check(reprise, "B : « continuer » reprend la séance de A, à l'échauffement");
 await page.close();
 
 // 5. une version C dont un fichier manque : l'installation échoue, la tablette reste sur B ; puis D, réparée

@@ -80,9 +80,10 @@ export class MultScreen {
     const fs = this.fs; fs.show(true); this.board.clear();
     await this.app.sprites.load("aides");
     this.paintBand(q);
-    const r = await fs.ask(q), code = r.nsp ? "NSP" : r.value === multAnswer(q) ? null : classifyMult(q, r.value);
-    return { ...r, q, ok: code === null, code, aide: r.aide || !!q.aideDEmblee };
+    return this.finaliser(q, await fs.ask(q));
   }
+  // la réponse complétée (code d'erreur) ; aussi pour une réponse notée avant un rechargement (session/notion.js)
+  finaliser(q, r) { const code = r.nsp ? "NSP" : r.value === multAnswer(q) ? null : classifyMult(q, r.value); return { ...r, q, ok: code === null, code, aide: r.aide || !!q.aideDEmblee }; }
   // les rangées en grand, comptées rangée par rangée (la voix dit chaque total) ; `g` garde chaque attente (« passer »)
   // (relecture du lot : `reponse` faux pour l'aide et l'aide d'emblée, qui ne disent ni n'écrivent le dernier total, la
   // réponse ; la dernière rangée s'allume quand même)

@@ -1,8 +1,8 @@
 {
- "version": "f2fcc5b2f6ef",
+ "version": "1104c5b8cf8c",
  "octets": {
-  "1": 120138172,
-  "2": 135171580
+  "1": 120153824,
+  "2": 135187232
  },
  "files": [
   "./",
@@ -11799,6 +11799,7 @@
   "js/session/demarrage.js",
   "js/session/free.js",
   "js/session/frieze.js",
+  "js/session/instantane.js",
   "js/session/legend.js",
   "js/session/lessons.js",
   "js/session/notion.js",

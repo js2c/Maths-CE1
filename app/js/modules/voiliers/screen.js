@@ -227,6 +227,8 @@ export class VoiliersScreen {
         if (r.c === k) return { premier: essai === 1, fin: true };
         // une erreur : la bouée (ou les bouées du passage) s'allume, la voix explique
         if (!res.code) res.code = q.double ? (b === q.bouees ? "V4" : "V3") : codeErreur(r.c, k);
+        // (décision du 17 octobre 2026 : la réponse notée dès la première erreur, avant la correction ; remplacée par le bilan)
+        app.surReponse?.({ ...res, ok: false, listens: voice.listens });
         sound?.play("erreur"); ocean.mascotte.play("encourager");
         const e = explication(b, r.c, q.num), phrase = fill(T.voiliersErreur[e.cle], { b: e.b });
         api.allumer(e.cle.endsWith("Bouee") ? [e.bouee] : [r.c - 1, r.c].filter((i) => i >= 0 && i < b.length));
@@ -271,6 +273,8 @@ export class VoiliersScreen {
     if (q.double) { res.ok = !!(r1.premier && r2?.premier); res.demi = !res.ok && !!(r1.fin && r2?.fin) && !!(r1.premier || r2?.premier); res.corrigee = !res.ok && !!(r1.fin && r2?.fin); }
     else { res.ok = !!r1.premier; res.corrigee = !res.ok && !!r1.fin; }
     const last = q.double ? r2 : r1;
+    // (décision du parent du 17 octobre 2026, la reprise à la question près) la réponse est notée dès qu'elle est donnée, avant le « bravo »
+    app.surReponse?.({ ...res, code: res.nsp ? "NSP" : res.ok ? null : res.code ?? (res.rattrape ? "rattrape" : null), listens: voice.listens });
     if (last?.fin) {
       // rangé : il passe ; « Bravo ! » (devant les pirates : « Bravo, tu as semé les pirates ! »), ou entre deux bouées rondes
       const b = q.double ? q.rangee2 : q.bouees, k = q.double ? q.k2 : q.k, e = entre(b, k);

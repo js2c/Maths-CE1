@@ -11,6 +11,7 @@ import { clock, wait } from "../../engine/clock.js";
 import { onBrief, skipKey } from "../../engine/ui.js";
 import { aidFor, expected } from "./facts.js";
 import { repetition, vary, warmupIndex } from "./warmup.js";
+import { instantane, restaurer, donnees, enDonnees } from "../../session/instantane.js";
 import { AidBoard, paintBigDouble, paintDoublePlus, paintFishHouse, paintTenFrame, paintTwoFrames } from "./aids.js";
 
 const SKIPPED = Symbol("correction passée");
@@ -264,9 +265,10 @@ export class FactsScreen {
   // la notion du jour (session/notion.js) : la question, puis ce que le déroulement attend (juste ou non, code)
   async askNotion(q) {
     this.show(true);
-    const r = await this.ask(q), ok = r.value === expected(q);
-    return { ...r, q, ok, code: ok ? null : r.nsp ? "NSP" : "autre" };
+    return this.finaliserNotion(q, await this.ask(q));
   }
+  // la réponse complétée (bonne ou non, code) ; aussi pour une réponse notée avant un rechargement (session/notion.js)
+  finaliserNotion(q, r) { const ok = r.value === expected(q); return { ...r, q, ok, code: ok ? null : r.nsp ? "NSP" : "autre" }; }
   // la consigne lue : « 5 plus 2 ? », ou la forme à trou (« 3 plus combien, ça fait 7 ? »)
   consigne(q) {
     if (q.dictee) return this.dictee;
@@ -287,6 +289,9 @@ export class FactsScreen {
     const { voice, text, ocean } = this.app, q = this.q, value = nsp ? null : Number(this.typed), ok = value === expected(q), ms = Math.round(clock.now() - this.t0), k = this.app.vitesse ?? 1;
     this.locked = true; voice.stop();
     const r = { value, ms, listens: voice.listens, aide: this.aide, nsp }, tok = this.tok;
+    // (décision du parent du 17 octobre 2026, la reprise à la question près) la réponse est notée dès qu'elle est donnée, avant la correction
+    // (pas un caillou d'un calcul guidé : c'est la réponse au calcul entier qui compte)
+    if (!q.pont) this.app.surReponse?.(r);
     // lot 3 : le calcul rapide a sa correction (le chemin, le mur de corail et le poisson) et son retour « juste mais lent »
     if (q.module === 3 && this.calc) { await this.calc.feedback(q, r, ok); this.app.aidBoard?.clear(); const done = this.resolve; this.resolve = null; return done?.(r); }
     if (q.module === 5 && this.mult) { await this.mult.feedback(q, r, ok); this.app.aidBoard?.clear(); const done = this.resolve; this.resolve = null; return done?.(r); }
@@ -384,28 +389,44 @@ export class FactsScreen {
 // l'exercice (noté `echauffementPasse` dans l'enregistrement de la séance). Lot 3 ter (T1) : un bouton dédié, présent
 // pendant TOUT l'échauffement (il ne disparaît plus à la première réponse), avec une confirmation par la coche
 // (modules/facts/warmupskip.js) : `onSkip` n'est appelé qu'une fois la coche touchée
+// (décision du parent du 17 octobre 2026) LA REPRISE À LA QUESTION PRÈS, comme la notion du jour (session/notion.js) : le point de
+// reprise garde les questions qui restent, les dernières réponses, l'état de l'échauffement (session/instantane.js) et la
+// question en cours, avec la réponse de l'enfant dès qu'elle est donnée ; repris, l'échauffement ne redit pas son introduction
 export async function runWarmup({ session, step, end, warmup, screen, intro, rnd = Math.random, skip = null }) {
-  const [a, b] = step.questions, n = a + Math.floor(rnd() * (b - a + 1)), rest = warmup.questions(n, a);
+  const P = session.point?.(step.id) ?? null;
+  if (P?.warmup) restaurer(warmup, P.warmup);
+  const [a, b] = step.questions, rest = P ? donnees(P.rest) : warmup.questions(a + Math.floor(rnd() * (b - a + 1)), a);
   let skipped = false, abort = null; const abortP = new Promise((res) => { abort = res; });
   const btn = skip?.(() => { skipped = true; abort(); }), g = (p) => (btn ? Promise.race([p, abortP]) : p);
   screen.show(true); screen.keys(false);
-  session.expect?.(rest.length);
-  await g(intro?.(() => skipped));
+  if (!P) { session.expect?.(rest.length); await g(intro?.(() => skipped)); }
   if (!skipped) screen.keys(true);
-  const answers = []; // (lot 3 ter : jamais 3 fois de suite la même réponse, warmup.js, varyIndex)
+  const answers = P ? donnees(P.answers) : []; // (lot 3 ter : jamais 3 fois de suite la même réponse, warmup.js, varyIndex)
   // (lot « Décisions sur les constats de l'agent », décision 5 : un même fait au plus 2 fois, 4 questions d'écart, warmupIndex)
-  const faits = [], rp = repetition(warmup.c0);
-  while (!skipped && rest.length && !session.over(end)) {
-    const i = warmupIndex(rest, answers, faits, rp);
-    if (i < 0) { session.expect?.(session.progress.faites); break; }
-    const q = warmup.prepare(rest.splice(i, 1)[0]);
-    if (q) vary(q, answers);
-    if (!q) { session.expect?.(session.progress.faites + rest.length); continue; }
-    const r = await g(screen.ask(q));
+  const faits = P ? donnees(P.faits) : [], rp = repetition(warmup.c0);
+  let reprise = P?.encours ?? null;
+  const point = (encours, o) => session.notePoint?.({ etape: step.id, rest: enDonnees(rest), answers: [...answers], faits: [...faits], warmup: instantane(warmup), encours }, o);
+  while (!skipped && (rest.length || reprise?.q) && !session.over(end)) {
+    let q, r = null;
+    if (reprise?.q) { q = donnees(reprise.q); r = reprise.reponse ? donnees(reprise.reponse) : null; reprise = null; }
+    else {
+      const i = warmupIndex(rest, answers, faits, rp);
+      if (i < 0) { session.expect?.(session.progress.faites); break; }
+      q = warmup.prepare(rest.splice(i, 1)[0]);
+      if (q) vary(q, answers);
+      if (!q) { session.expect?.(session.progress.faites + rest.length); continue; }
+      await point({ q: enDonnees(q) });
+    }
+    session.enCours = q; // (la question posée, pour les parcours de test)
+    if (!r) {
+      session.surReponse = (x) => session.noteReponse?.(enDonnees(x));
+      try { r = await g(screen.ask(q)); } finally { session.surReponse = null; }
+    }
     if (skipped) break;
     if (!q.base) { answers.push(expected(q)); faits.push(q.fait); }
     const res = await warmup.record(q, r, rest);
     session.expect?.(session.progress.faites + 1 + rest.length); // un fait raté revient, la voie rapide en ajoute : des bulles de plus
+    await point(null, { sauver: false }); // (il part avec la réponse comptée, juste après)
     session.cranDown = false;
     await session.answered(res.juste);
     if (session.cranDown) warmup.drop(rest);

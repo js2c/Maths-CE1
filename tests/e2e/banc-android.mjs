@@ -2,7 +2,7 @@
 // pour l'enfant et pour le parent, avec ses captures (tests/e2e/out/banc-android/), sur le banc Android (appareils.mjs) :
 //   1. « tourne ton téléphone » : la page ouverte en portrait dans un onglet (smartphone, petit smartphone, et la tablette de
 //      référence tenue droite) : un écran clair, un dessin, pas de texte, rien de la scène ; remise en paysage, l'application est
-//      là (un seul rechargement si elle a été ouverte en portrait ; aucun si elle a été tournée puis remise en paysage) ;
+//      là, sans rechargement (demande du parent du 17 octobre 2026 : jamais de rechargement quand la fenêtre change) ;
 //   2. l'encoche d'un smartphone (zones sûres émulées) : la scène entière et centrée, rien sous l'encoche ;
 //   3. le stockage plein : l'avis en haut de chaque onglet de l'espace parent (1 280 × 800 et 1 920 × 1 200) ;
 //   4. le journal technique : la ligne « état de la page » écrite avec les mesures des budgets (le même code que le banc) ;
@@ -36,17 +36,16 @@ if (faire(1)) for (const nom of ["smartphone", "petit-smartphone", "s5e"]) {
   const couche = await a.attendre(() => { const m = getComputedStyle(document.querySelector(".tourner-pivot")).transform.match(/matrix\(([^,]+), ([^,]+)/); return m && Math.abs(+m[1]) < 0.02 && +m[2] > 0.99; }, 10000).then(() => true, () => false);
   await a.page.screenshot({ path: join(OUT, `1-tourner-${nom}-portrait-pivote.png`) });
   check(couche, `${nom} : le téléphone pivote d'un quart de tour (capture couchée)`);
-  // remis en paysage : l'application (rechargée une fois, à la bonne échelle)
+  // remis en paysage : l'application, sans rechargement (la finesse des images est celle de l'écran, choisie au lancement)
   const p = PROFILS[nom];
+  await a.page.evaluate(() => { window.__marque = 1; });
   await a.page.setViewportSize({ width: p.largeur, height: p.hauteur });
-  // (ouverte en portrait, la page se recharge une fois, à l'échelle du paysage : on attend la page rechargée et son écran de
-  // démarrage prêt ; la relecture du lot avait vu une capture prise avant le rechargement, un écran vide)
-  await a.attendre(() => performance.getEntriesByType("navigation")[0]?.type === "reload" && !!document.querySelector(".demarrage.pret") && getComputedStyle(document.getElementById("tourner")).display === "none", 60000).catch(() => {});
+  await a.attendre(() => !!document.querySelector(".demarrage.pret") && getComputedStyle(document.getElementById("tourner")).display === "none", 60000).catch(() => {});
   await a.page.waitForTimeout(800);
   const e2 = await etatTourner(a.page);
   await a.page.screenshot({ path: join(OUT, `1-tourner-${nom}-paysage.png`) });
-  const app2 = await a.page.evaluate(() => !!document.querySelector(".demarrage.pret") && performance.getEntriesByType("navigation")[0]?.type === "reload");
-  check(!e2.visible && app2 && (await a.noir()) < 0.2, `${nom} remis en paysage : l'écran « tourner » s'efface, la page rechargée à la bonne échelle montre l'écran de démarrage`);
+  const app2 = await a.page.evaluate(() => !!document.querySelector(".demarrage.pret") && window.__marque === 1 && performance.getEntriesByType("navigation")[0]?.type !== "reload").catch(() => false);
+  check(!e2.visible && app2 && (await a.noir()) < 0.2, `${nom} remis en paysage : l'écran « tourner » s'efface, l'écran de démarrage est là, sans rechargement`);
   // tournée de nouveau en portrait puis remise en paysage : plus aucun rechargement
   if (await a.page.evaluate(() => !!document.querySelector(".demarrage.pret"))) { await a.toucher(".demarrage.pret"); await a.attendre(() => window.__ready !== undefined, 60000); }
   await a.page.evaluate(() => { window.__marque = 1; });
@@ -70,7 +69,7 @@ if (faire(3) || faire(4)) for (const [w, h] of [[1280, 800], [1920, 1200]]) {
   // le stockage plein (60 Mo pour une application de 135 Mo) : l'avis dans l'espace parent
   const a = new Appareil("tablette-entree", { serveur, ralenti: false, quota: faire(3) ? 60e6 : null }); // (1 280 × 800, densité 1,5)
   await a.ouvrir();
-  // (une autre taille d'écran : la page se recharge à la bonne échelle, et l'écran de démarrage attend son toucher)
+  // (une autre taille d'écran : la scène se remet à l'échelle, sans rechargement)
   if (w !== 1280) { await a.page.setViewportSize({ width: w, height: h }); await a.page.waitForTimeout(1500); await a.attendre(() => document.querySelector(".demarrage.pret") || window.__ready !== undefined, 60000); if (await a.page.evaluate(() => !!document.querySelector(".demarrage.pret"))) { await a.toucher(".demarrage.pret"); await a.attendre(() => window.__ready !== undefined, 60000); } }
   if (faire(3)) await a.attendre(() => window.__journalTechnique, 5000).catch(() => {});
   // (l'état de la page est écrit toutes les 10 minutes : il est écrit ici tout de suite, par le même code)

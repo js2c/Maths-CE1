@@ -73,11 +73,18 @@ export async function repriseDuJour(store, now = Date.now()) {
   return s;
 }
 
+// (décision du 17 octobre 2026) le point de reprise de l'étape en cours, s'il peut servir : écrit par la même version de
+// l'application (une nouvelle version qui prend la main au lancement suivant peut avoir changé ce que garde un exercice : la
+// séance reprend alors au début de l'étape, comme avant)
+const pointValide = (r) => (r?.pointReprise && r.pointReprise.etape === r.etapeEnCours && (r.pointReprise.version ?? null) === Session.version ? r.pointReprise : null);
 export class Session {
+  // la version de l'application (main.js, version.json), écrite avec chaque point de reprise
+  static version = null;
   // content : seance.json ; handlers : { accueil, echauffement, notion, defi, probleme, recompense } ;
   // rewards : les étoiles (rewards.js) ; clock : l'heure en ms
   // onCranDown(de, a) : la protection vient de redescendre d'un cran (la voix le dit)
-  // (décision 1) `reprise` : la fiche d'une séance à reprendre (repriseDuJour) ; elle continue, au début de l'étape en cours
+  // (décision 1) `reprise` : la fiche d'une séance à reprendre (repriseDuJour) ; elle continue à l'étape en cours (décision du
+  // parent du 17 octobre 2026 : à la question près, `point`)
   constructor({ store, content, handlers, rewards = null, clock = () => Date.now(), paused = () => 0, onProgress = null, onCranDown = null, choix = null, sans = [], sansRaison = {}, mastery = () => 0, reprise = null }) {
     this.choix = reprise?.choix ?? choix; this.sans = sans; this.sansRaison = sansRaison; this.mastery = mastery; this.reprise = reprise;
     this.store = store; this.c = content; this.handlers = handlers; this.rewards = rewards; this.clock = clock; this.paused = paused; this.onProgress = onProgress; this.onCranDown = onCranDown;
@@ -110,7 +117,11 @@ export class Session {
       const r = (this.rec = this.reprise);
       this.decalage = this.clock() - (r.debut + (r.dureeS ?? 0) * 1000); this.pause0 = r.pauseS ?? 0;
       this.cranIdx = Math.max(0, CRANS.indexOf(r.cran ?? "conseille"));
-      (r.reprises ??= []).push({ t: this.clock(), etape: r.etapeEnCours, questions: r.questions ?? 0 });
+      // (décision du 17 octobre 2026) où l'étape reprend : à la question en cours, à la suivante (la réponse donnée avant le
+      // rechargement est comptée), à la leçon en cours, ou au début de l'étape (le défi, l'accueil, une étape sans question posée)
+      const p = pointValide(r), e = p?.encours;
+      const ou = !p ? "debut" : e?.lecon ? "lecon" : e?.q && !e.reponse ? "question" : "suivante";
+      (r.reprises ??= []).push({ t: this.clock(), etape: r.etapeEnCours, questions: r.questions ?? 0, ou });
       await this.save();
       return this;
     }
@@ -150,6 +161,20 @@ export class Session {
     await this.save();
     await this.onCranDown?.(de, this.cran);
   }
+  // (décision du parent du 17 octobre 2026 : la reprise à la question près) LE POINT DE REPRISE de l'étape en cours, gardé dans la
+  // fiche (`rec.pointReprise`) : où en est la suite de questions (session/notion.js, modules/facts/screen.js, runWarmup), la frise,
+  // l'état de l'exercice (session/instantane.js), la question en cours et, dès que l'enfant a répondu, sa réponse (avant la
+  // correction). `point(etape)` : celui à reprendre, une seule fois, si la séance reprise en était à cette étape.
+  point(etape) {
+    const p = this.reprise && !this.pointPris && pointValide(this.rec)?.etape === etape ? this.rec.pointReprise : null;
+    if (p) { this.pointPris = true; this.progress = { ...p.progress, etape }; this.onProgress?.(this.progress); }
+    return p;
+  }
+  // écrit le point (`sauver` false : il part avec la prochaine écriture de la fiche, la réponse comptée par exemple)
+  async notePoint(p, { sauver = true } = {}) { if (this.stopped || !this.rec) return; this.rec.pointReprise = { ...p, version: Session.version, progress: { ...this.progress } }; if (sauver) await this.save(); }
+  // la réponse de l'enfant, à l'instant où elle est donnée (avant la correction) : ajoutée au point ; une réponse provisoire (la
+  // première erreur des voiliers, de l'étal) est remplacée par la réponse finale
+  async noteReponse(r) { const p = this.rec?.pointReprise; if (this.stopped || !p?.encours) return; p.encours.reponse = r; await this.save(); }
   // une pause (bouton « maison ») : comptée dans l'enregistrement
   async notePause() { this.rec.pauses = (this.rec.pauses ?? 0) + 1; await this.save(); }
   // le parent termine la séance en pause (espace parent) : interrompue, sans récompense ; le déroulement en
@@ -186,7 +211,9 @@ export class Session {
       // la séance est terminée quand vient la récompense : si l'enfant ferme pendant, elle compte quand même
       if (step.id === "recompense") this.rec.terminee = true;
       this.progress = { etape: step.id, faites: 0, prevues: 0 }; this.onProgress?.(this.progress);
-      // (décision 1) l'étape en cours, écrite à chaque changement d'étape : c'est d'elle que repartirait une reprise
+      // (décision 1) l'étape en cours, écrite à chaque changement d'étape : c'est d'elle que repartirait une reprise ; (décision du
+      // 17 octobre) son point de reprise, gardé si la séance reprise en était là, effacé sinon
+      if (!(this.reprise && this.rec.pointReprise?.etape === step.id)) this.rec.pointReprise = null;
       this.rec.etapeEnCours = step.id; await this.save();
       await h({ session: this, step, end: step.minutes ? t0 + step.minutes * 60000 : Infinity });
       if (this.stopped) return this.rec;
@@ -194,7 +221,7 @@ export class Session {
       await this.save();
     }
     if (this.stopped) return this.rec;
-    this.rec.terminee = true; this.progress = { etape: null, faites: 0, prevues: 0 }; this.onProgress?.(this.progress); await this.save();
+    this.rec.terminee = true; this.rec.pointReprise = null; this.progress = { etape: null, faites: 0, prevues: 0 }; this.onProgress?.(this.progress); await this.save();
     return this.rec;
   }
 }

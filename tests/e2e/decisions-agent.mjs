@@ -14,7 +14,8 @@
 //     la bouée nommée aux voiliers, l'article allumé de l'étal et son ardoise ; sans place, une bulle plus courte, ou pas de bulle ;
 //  8. la finition : le compteur d'étoiles lisible dans l'étal par temps d'orage (une plaque claire) ; dans l'étal, la bulle pointe
 //     vers la bouche de la mascotte dans la fenêtre et ne se pose plus sous le rebord ; l'étoile arc-en-ciel vole vers l'album ;
-//  1. la reprise d'une séance après un rechargement de la page, le jour même, au début de l'étape en cours : pendant l'échauffement,
+//  1. la reprise d'une séance après un rechargement de la page, le jour même, à l'étape en cours (à la question près depuis le lot
+//     « Banc Android », décision du 17 octobre 2026 : tests/e2e/reprise.mjs) : pendant l'échauffement,
 //     la notion du jour (une leçon en cours, une leçon déjà passée, une correction, le vol des étoiles), le défi ; pendant une
 //     pause ; deux rechargements de suite ; après minuit (pas de reprise) ; « continuer » à l'accueil, les réponses, les étoiles,
 //     le cran gardés, le bilan qui compte toute la séance, la reprise notée pour le parent. (Le rechargement avec une nouvelle
@@ -438,7 +439,7 @@ async function reprendre(page, nom, { capture = null, vue = VUES[0] } = {}) {
   await continuer(page);
   const ok = await repris(page, avant.id, avant.etape);
   const apres = await etatSeance1(page);
-  check(ok && apres.questions >= avant.questions && apres.total >= avant.total && apres.cran === avant.cran, `1. ${nom} : « continuer » reprend la même séance au début de l'étape « ${avant.etape} » (questions ${avant.questions} -> ${apres?.questions}, étoiles ${avant.total} -> ${apres?.total}, cran ${apres?.cran})`);
+  check(ok && apres.questions >= avant.questions && apres.total >= avant.total && apres.cran === avant.cran, `1. ${nom} : « continuer » reprend la même séance à l'étape « ${avant.etape} » (questions ${avant.questions} -> ${apres?.questions}, étoiles ${avant.total} -> ${apres?.total}, cran ${apres?.cran})`);
   return { avant, apres };
 }
 // la séance de test : base neuve, additions ou ligne, sans le sélecteur (cran donné)
@@ -462,7 +463,7 @@ if (faire(1)) {
     await page.locator('[data-tab="seances"]').first().click().catch(() => {}); await page.waitForTimeout(500);
     await page.locator(".pa-session > button").first().click().catch(() => {}); await page.waitForTimeout(500);
     await shot(page, VUES[0], "1b-parent-reprise");
-    check(/Page rechargée en pleine séance : à .*, (après \d+ questions?|avant la première question) ; l'étape « échauffement » a repris à son début/.test(await page.evaluate(() => document.body.innerText)), "1. l'espace parent note la reprise dans l'historique de la séance");
+    check(/Page rechargée en pleine séance : à .*, (après \d+ questions?|avant la première question) ; l'étape « échauffement » a repris (à son début|à la question en cours|à la question suivante)/.test(await page.evaluate(() => document.body.innerText)), "1. l'espace parent note la reprise dans l'historique de la séance");
     check(await page.locator(".pa-reprise").count() === 1, "1. le tableau des réponses marque l'endroit du rechargement");
     await context.close();
   }

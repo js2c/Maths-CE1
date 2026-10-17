@@ -166,6 +166,19 @@ export class Appareil {
     this.log(`     ${this.nom} : lancement ${this.lancements.length} : ${r.echec ? `ÉCHEC (${r.echec})` : `première image ${r.image} ms, prête ${r.pret} ms${r.app ? `, accueil ${r.app} ms` : ""}${r.controle ? " (service worker)" : ""}`}`);
     return r;
   }
+  // la page rechargée en pleine partie (Android qui la recharge, une version qui prend la main) : l'écran de démarrage touché
+  // pour de vrai, jusqu'à l'application prête
+  async recharger({ attente = 120000 } = {}) {
+    await this.page.reload({ timeout: attente });
+    const fin = Date.now() + attente;
+    for (;;) {
+      const e = await this.page.evaluate(() => ({ pret: performance.getEntriesByName("demarrage-pret").length > 0, ready: window.__ready !== undefined, touche: !!window.__bancTouche })).catch(() => null);
+      if (e?.ready) return;
+      if (e?.pret && !e.touche) { await this.page.evaluate(() => { window.__bancTouche = true; }).catch(() => {}); await this.toucher(".demarrage.pret").catch(() => {}); }
+      if (Date.now() > fin) throw new Error(`pas prête en ${attente / 1000} s après le rechargement`);
+      await this.page.waitForTimeout(100).catch(() => {});
+    }
+  }
   // l'état du service worker de la page
   etatSW() { return this.page.evaluate(async () => { const r = await navigator.serviceWorker.getRegistration(); const n = (w) => (w ? w.state : null); const k = await caches.keys(); return { controle: !!navigator.serviceWorker.controller, actif: n(r?.active), attente: n(r?.waiting), installe: n(r?.installing), caches: k }; }); }
   // l'installation : attendre que le service worker de la version publiée par le serveur ait tout mis en cache, et soit actif ou
@@ -203,6 +216,15 @@ export class Appareil {
     await this.page.evaluate(() => { delete document.hidden; delete document.visibilityState; document.dispatchEvent(new Event("visibilitychange")); });
     await this.page.waitForTimeout(500);
   }
+  // (demande du parent du 17 octobre 2026) la fenêtre redimensionnée en pleine partie : les boutons d'Android qui apparaissent
+  // (`dh` px de moins en hauteur), le clavier ou la moitié d'écran (multi-fenêtre), une fenêtre plus étroite ; puis rendue
+  async redimensionner({ dw = 0, dh = 0, ms = 600 } = {}) {
+    const v = this.page.viewportSize();
+    await this.page.setViewportSize({ width: Math.max(200, v.width - dw), height: Math.max(150, v.height - dh) });
+    await this.page.waitForTimeout(ms);
+    await this.page.setViewportSize(v);
+    await this.page.waitForTimeout(ms);
+  }
   async geler(ms) { await this.cdp.send("Page.setWebLifecycleState", { state: "frozen" }); await this.page.waitForTimeout(ms); await this.cdp.send("Page.setWebLifecycleState", { state: "active" }); await this.page.waitForTimeout(300); }
   // (la poignée rendue par Playwright est libérée aussitôt : gardée, elle retient l'élément qu'elle désigne, et tout ce qui s'y
   // rattache, dans la mémoire de la page ; le banc mesurait alors des « fuites » qui étaient les siennes)
@@ -217,10 +239,13 @@ export class Appareil {
     // (l'heure du contact et du lever, comme les donne l'écran tactile d'une tablette : sans elle, Chromium date l'événement quand il
     // le traite, et un navigateur saturé par le rendu graphique logiciel faisait d'un toucher de 70 ms un appui de 0,8 s, que
     // l'application ignore : la maison des voiliers « ne répondait plus » sur le banc, jamais sur une vraie tablette)
+    // (et le lever daté exactement `ms` après le contact : daté au moment de l'envoi, il tombait 0,3 à 0,5 s plus tard quand la
+    // page était occupée, au premier lancement par exemple, et le second toucher d'un galet devenait un appui long, qui ne lance
+    // rien : la séance ne commençait pas ; c'était la cause des échecs intermittents de redimension.mjs et de reprise.mjs)
     const t0 = Date.now() / 1000;
     await this.cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }], timestamp: t0 });
     await this.page.waitForTimeout(ms);
-    await this.cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [], timestamp: Math.max(t0 + ms / 1000, Date.now() / 1000 - 0.001) });
+    await this.cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [], timestamp: t0 + ms / 1000 });
   }
   // deux touchers (les écrans de choix et l'accueil : le premier montre et dit, le second ouvre)
   async deuxTouchers(cible, ecart = 600) { await this.toucher(cible); await this.page.waitForTimeout(ecart); await this.toucher(cible); }

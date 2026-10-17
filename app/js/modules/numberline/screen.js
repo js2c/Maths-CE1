@@ -291,6 +291,8 @@ export class NumberLineScreen {
     const { voice, ocean, text, line } = this.app, q = this.q, ms = clock.now() - this.t0, code = nsp ? "NSP" : classify(q, value), ok = code === null;
     voice.stop(); this.app.fleche?.cacher();
     const result = { q, value, ok, code, ms: Math.round(ms), listens: voice.listens };
+    // (décision du parent du 17 octobre 2026, la reprise à la question près) la réponse est notée dès qu'elle est donnée, avant la correction
+    this.app.surReponse?.(result);
     this.arcs = []; this.overlay = []; this.paintFx(true); // les traces d'un exemple guidé s'effacent
     if (q.choices) {
       const good = this.buttons.find((b) => Number(b.dataset.value) === q.answer);

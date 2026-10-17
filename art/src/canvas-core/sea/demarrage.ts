@@ -4,6 +4,7 @@
 // celui de l'écran de démarrage est découpé dans l'image du parent, maquette art/logo/, art/tools/export-logo.mjs.)
 import type { Gfx, P } from "../core";
 import { blob, fillShape, ink, smooth } from "../gallery";
+import * as O from "../ocean";
 import { cel, contour, INK, shift } from "../oceanMarker";
 
 const SHADOW = "#06323b";
@@ -44,15 +45,13 @@ export const drawPhone = (g: Gfx, cx: number, cy: number) => g.group("plain", ()
   const body = rrect(cx, cy, PHONE_W, PHONE_H, 26), screen = rrect(cx, cy + 2, PHONE_W - 26, PHONE_H - 52, 12);
   fillShape(g, shift(body, 6, 9), SHADOW, 0.45);
   cel(g, body, "#35556e", "#1d3346", 6);
-  // l'écran : le lagon, plus clair en haut ; une ride à la surface, un poisson corail
-  cel(g, screen, "#6fd6d2", "#2f9fa9", 0, [shift(rrect(cx, cy - 58, PHONE_W - 26, 70, 12), 0, -24), "#a8ece4"]);
-  ink(g, [[cx - 50, cy - 46], [cx - 30, cy - 52], [cx - 10, cy - 46], [cx + 10, cy - 52], [cx + 30, cy - 46], [cx + 50, cy - 52]], "#e9fffb", { w: 3.4, shadow: 0, taper: [0.2, 0.2], seed: 9431 }, 0.85);
-  const fx = cx + 4, fy = cy + 30, fish = blob(fx, fy, 26, 16, 9440, 0.06, 12), tail: P[] = [[fx + 20, fy], [fx + 44, fy - 17], [fx + 40, fy], [fx + 44, fy + 17]];
-  fillShape(g, shift(tail, 2, 3), SHADOW, 0.3); cel(g, tail, "#ff9a7a", "#c64d3c", 2); contour(g, tail, 2.4, 9441);
-  fillShape(g, shift(fish, 2, 3), SHADOW, 0.3); cel(g, fish, "#ff8a6a", "#d4553f", 3); contour(g, fish, 2.8, 9442);
-  ink(g, [[fx + 6, fy - 13], [fx + 9, fy], [fx + 6, fy + 13]], INK, { w: 2, shadow: 0, taper: [0.3, 0.3], seed: 9443 }, 0.8); // l'ouïe
-  fillShape(g, blob(fx - 12, fy - 4, 4.2, 4.2, 9444, 0.03, 10), INK); fillShape(g, blob(fx - 13.2, fy - 5.4, 1.4, 1.4, 9445, 0.02, 8), "#ffffff");
-  for (const [bx, by, r] of [[cx - 38, cy + 4, 5], [cx - 30, cy - 14, 3.4], [cx - 44, cy - 24, 2.4]] as const) ink(g, blob(bx, by, r, r, 9450 + r, 0.05, 10), "#e9fffb", { w: 1.6, closed: true, shadow: 0, seed: 9460 + r }, 0.9);
+  // l'écran : le lagon, et l'étoile de mer du compteur au milieu (elle se lit dans les deux sens : le téléphone pivote) ; des
+  // bulles autour
+  cel(g, screen, "#6fd6d2", "#2f9fa9", 5);
+  const st = O.starShape([cx, cy + 2], 40, 17, 0.12);
+  fillShape(g, shift(st, 3, 5), SHADOW, 0.35); cel(g, st, "#ffc93a", "#e08d1c", 4); contour(g, st, 3.2, 9442);
+  ink(g, [[cx - 12, cy - 12], [cx - 4, cy - 22]], "#fff1b8", { w: 3.4, shadow: 0, taper: [0.3, 0.3], seed: 9443 }, 0.9);
+  for (const [bx, by, r] of [[cx - 40, cy - 62, 6], [cx - 26, cy - 80, 4], [cx + 38, cy + 66, 5], [cx + 26, cy + 84, 3.4], [cx + 42, cy - 50, 3]] as const) ink(g, blob(bx, by, r, r, 9450 + r, 0.05, 10), "#e9fffb", { w: 1.8, closed: true, shadow: 0, seed: 9460 + r }, 0.9);
   contour(g, screen, 2.6, 9446);
   // le reflet de la vitre, en haut à gauche
   ink(g, [[cx - PHONE_W / 2 + 26, cy - 60], [cx - PHONE_W / 2 + 46, cy - 92]], "#ffffff", { w: 5, shadow: 0, taper: [0.3, 0.3], seed: 9447 }, 0.55);

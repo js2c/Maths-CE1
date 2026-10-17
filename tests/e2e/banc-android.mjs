@@ -63,9 +63,10 @@ if (faire(2)) {
 
 if (faire(3) || faire(4)) for (const [w, h] of [[1280, 800], [1920, 1200]]) {
   // le stockage plein (60 Mo pour une application de 135 Mo) : l'avis dans l'espace parent
-  const a = new Appareil("tablette-entree", { serveur, ralenti: false, quota: faire(3) ? 60e6 : null });
+  const a = new Appareil("tablette-entree", { serveur, ralenti: false, quota: faire(3) ? 60e6 : null }); // (1 280 × 800, densité 1,5)
   await a.ouvrir();
-  await a.page.setViewportSize({ width: w, height: h });
+  // (une autre taille d'écran : la page se recharge à la bonne échelle, et l'écran de démarrage attend son toucher)
+  if (w !== 1280) { await a.page.setViewportSize({ width: w, height: h }); await a.page.waitForTimeout(1500); await a.attendre(() => document.querySelector(".demarrage.pret") || window.__ready !== undefined, 60000); if (await a.page.evaluate(() => !!document.querySelector(".demarrage.pret"))) { await a.toucher(".demarrage.pret"); await a.attendre(() => window.__ready !== undefined, 60000); } }
   if (faire(3)) await a.attendre(() => window.__journalTechnique, 5000).catch(() => {});
   // (l'état de la page est écrit toutes les 10 minutes : il est écrit ici tout de suite, par le même code)
   await a.page.evaluate(async () => { const { noter } = await import("./js/engine/journal.js"); await noter("état", "état de la page", window.__etatPage()); });

@@ -78,10 +78,14 @@ async function controle(nom, debut) {
   r.noir = +(await a.noir()).toFixed(3);
   check(r.noir <= 0.2, `${nom} : l'écran n'est pas noir (${(r.noir * 100).toFixed(1)} % de pixels noirs)`);
   if (r.noir > 0.2) await a.page.screenshot({ path: join(OUT, `noir-${etapes.length}.png`) });
-  // les budgets (et, sur l'accueil, le retour au niveau de départ)
+  // les budgets (et, sur l'accueil, le retour au niveau de départ), mesurés au repos : 20 s sans toucher ni phrase (juste après un
+  // lancement ou une phrase, une vingtaine de minuteries courtes sont en attente ; elles s'éteignent d'elles-mêmes)
+  await silence(); await attendre(20000);
   r.etat = await a.budgets();
-  depart ??= r.etat;
-  const d = depasse(r.etat, depart);
+  // (le retour au niveau de départ ne se compare que sur l'accueil hors pause : l'accueil en pause garde l'exercice en cours)
+  r.pause = await a.page.evaluate(() => !!window.__app.enPause).catch(() => false);
+  if (!r.pause) depart ??= r.etat;
+  const d = depasse(r.etat, r.pause ? null : depart);
   check(!d.length, `${nom} : budgets tenus (${resumeEtat(r.etat)})${d.length ? ` ; dépassés : ${d.join(" ; ")}` : ""}`);
   // un galet touché deux fois ouvre son écran (« choisir », ou « Encore ! » si la séance du jour est faite) ; la maison ramène
   const g = (await visible(".galet.choisir")) ? ".galet.choisir" : ".galet.again";
@@ -117,7 +121,9 @@ async function jouerSeance(maxMin = 30) {
   const fin = Date.now() + maxMin * 60000; let n = 0;
   while (Date.now() < fin) {
     if (await faite()) break;
+    // (la fin de la récompense mène à la boutique, ou au récif quand il n'y a pas de quoi acheter : l'enfant en revient)
     if (await a.page.evaluate(() => !!window.__app.boutique?.open).catch(() => false)) { await attendre(3000); await a.toucher(".boutique-retour").catch(() => {}); }
+    else if (await a.page.evaluate(() => !!window.__app.reef?.open).catch(() => false)) { await attendre(4000); await a.toucher(".homekey").catch(() => {}); }
     if ((await pas()) === "réponse") n++;
   }
   const ok = await faite();

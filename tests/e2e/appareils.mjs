@@ -209,7 +209,7 @@ export class Appareil {
   async toucher(cible, { ms = 70 } = {}) {
     let x, y;
     if (typeof cible === "string") {
-      const b = await this.page.waitForFunction((s) => { const e = [...document.querySelectorAll(s)].find((e) => e.checkVisibility()); if (!e) return null; const r = e.getBoundingClientRect(); return r.width > 0 ? [r.x + r.width / 2, r.y + r.height / 2] : null; }, cible, { timeout: 30000, polling: 100 });
+      const b = await this.page.waitForFunction((s) => { const e = [...document.querySelectorAll(s)].find((e) => !e.closest(".stash") && e.checkVisibility({ visibilityProperty: true, opacityProperty: true })); if (!e) return null; const r = e.getBoundingClientRect(); return r.width > 0 ? [r.x + r.width / 2, r.y + r.height / 2] : null; }, cible, { timeout: 30000, polling: 100 });
       [x, y] = await b.jsonValue();
     } else [x, y] = cible;
     await this.cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
@@ -249,11 +249,12 @@ export class Appareil {
 export const BUDGETS = {
   medias: 6,          // lecteurs de médias avec une source : 2 vidéos de la mascotte, 2 à 4 sons de la voix
   mediasVideo: 2,     // dont vidéos : les deux lecteurs de la mascotte
-  webgl: 3,           // contextes WebGL : la mascotte, la mer des voiliers, l'étal (la page n'en a jamais plus d'un ou deux à la fois)
+  webgl: 4,           // contextes WebGL : la mascotte et le miroitement du lagon (2), la mer des voiliers (2 de plus, aussi en pause)
   canvasMpx: 40,      // surface totale des canvas, en mégapixels
   imagesMpx: 120,     // images chargées en mémoire (<img> et ImageBitmap), en mégapixels
   memoireMo: 260,     // mémoire JavaScript de la page
-  croissance: { memoireMo: 40, minuteries: 4, ecouteurs: 10, canvas: 2, elements: 60 },
+  // (mesurée au repos : 20 s sans toucher ni phrase, les minuteries courtes du lancement ou d'une phrase éteintes)
+  croissance: { memoireMo: 40, intervalles: 2, minuteries: 6, ecouteurs: 10, canvas: 2, elements: 60 },
 };
 // les budgets dépassés par une mesure (et, avec `depart`, ce qui n'est pas revenu à son niveau)
 export function depasse(m, depart = null, b = BUDGETS) {
@@ -263,4 +264,4 @@ export function depasse(m, depart = null, b = BUDGETS) {
   if (depart) for (const [k, v] of Object.entries(b.croissance)) if (m[k] != null && depart[k] != null && m[k] - depart[k] > v) d.push(`${k} ${depart[k]} → ${m[k]} (+${m[k] - depart[k]} > ${v})`);
   return d;
 }
-export const resumeEtat = (m) => (m ? `médias ${m.medias} (vidéo ${m.mediasVideo}), canvas ${m.canvas} (${m.canvasMpx} Mpx, WebGL ${m.webgl}), images ${m.images} (${m.imagesMpx} Mpx), mémoire ${m.memoireMo} Mo, minuteries ${m.minuteries}, écouteurs ${m.ecouteurs}, éléments ${m.elements}` : "?");
+export const resumeEtat = (m) => (m ? `médias ${m.medias} (vidéo ${m.mediasVideo}), canvas ${m.canvas} (${m.canvasMpx} Mpx, WebGL ${m.webgl}), images ${m.images} (${m.imagesMpx} Mpx), mémoire ${m.memoireMo} Mo, minuteries ${m.minuteries} (répétées ${m.intervalles}), écouteurs ${m.ecouteurs}, éléments ${m.elements}` : "?");

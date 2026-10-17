@@ -5,7 +5,8 @@
 //  - les canvas vivants, leur surface totale en mégapixels, et les contextes WebGL non perdus ;
 //  - les images chargées en mémoire (éléments <img> et ImageBitmap non fermés), en mégapixels ;
 //  - la mémoire de la page (performance.memory, si Chrome la donne) ;
-//  - les minuteries en attente (setTimeout, setInterval) et les écouteurs posés sur ce qui est encore dans la page.
+//  - les minuteries en attente (setTimeout, setInterval ; `intervalles` : les seules répétées, qui ne s'éteignent jamais d'elles-mêmes)
+//    et les écouteurs posés sur ce qui est encore dans la page.
 // Le MÊME code sert au journal technique de la tablette (main.js, « état de la page », toutes les 10 minutes) et au banc
 // d'essai (tests/e2e/appareils.mjs, `budgets`) : un dépassement vu dans le journal et un dépassement vu par le banc sont le
 // même chiffre. Les valeurs des budgets : docs/ARCHITECTURE.md, « Le banc Android ».
@@ -14,7 +15,7 @@
 // Worker (la ligne graduée, line-worker.js) n'est pas compté.
 const vivants = { medias: new Set(), canvas: new Set(), images: new Set(), bitmaps: new Set() };
 const typeContexte = new WeakMap();
-const minuteries = new Set();
+const minuteries = new Set(), intervalles = new Set();
 // les écouteurs : par cible, le nombre d'écouteurs distincts (type, fonction, phase) ; les cibles en référence faible
 const ecoutes = new WeakMap(), cibles = new Set(), idFonction = new WeakMap();
 let nFonctions = 0, installe = false;
@@ -46,9 +47,9 @@ export function installer(w = globalThis) {
   // les minuteries en attente
   const st = w.setTimeout, si = w.setInterval, ct = w.clearTimeout, ci = w.clearInterval;
   w.setTimeout = function (f, ms, ...a) { const id = st.call(w, typeof f === "function" ? (...b) => { minuteries.delete(id); return f(...b); } : f, ms, ...a); minuteries.add(id); return id; };
-  w.setInterval = function (f, ms, ...a) { const id = si.call(w, f, ms, ...a); minuteries.add(id); return id; };
-  w.clearTimeout = function (id) { minuteries.delete(id); return ct.call(w, id); };
-  w.clearInterval = function (id) { minuteries.delete(id); return ci.call(w, id); };
+  w.setInterval = function (f, ms, ...a) { const id = si.call(w, f, ms, ...a); minuteries.add(id); intervalles.add(id); return id; };
+  w.clearTimeout = function (id) { minuteries.delete(id); intervalles.delete(id); return ct.call(w, id); };
+  w.clearInterval = function (id) { minuteries.delete(id); intervalles.delete(id); return ci.call(w, id); };
   // les écouteurs (les écouteurs « once » ne sont pas comptés : ils se retirent d'eux-mêmes)
   const add = w.EventTarget.prototype.addEventListener, rem = w.EventTarget.prototype.removeEventListener;
   const cle = (type, f, o) => { if (!idFonction.has(f)) idFonction.set(f, ++nFonctions); return `${type}|${typeof o === "boolean" ? o : !!o?.capture}|${idFonction.get(f)}`; };
@@ -82,7 +83,7 @@ export function mesurer() {
     canvas: canvas.length, canvasMpx: mpx(canvas), webgl,
     images: images.length + bitmaps.length, imagesMpx: +((images.reduce((s, i) => s + i.naturalWidth * i.naturalHeight, 0) + bitmaps.reduce((s, b) => s + b.width * b.height, 0)) / 1e6).toFixed(2),
     memoireMo: w.performance?.memory ? Math.round(w.performance.memory.usedJSHeapSize / 1e6) : null,
-    minuteries: minuteries.size, ecouteurs: nEcouteurs, elements: d.getElementsByTagName("*").length,
+    minuteries: minuteries.size, intervalles: intervalles.size, ecouteurs: nEcouteurs, elements: d.getElementsByTagName("*").length,
   };
 }
 

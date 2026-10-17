@@ -25,10 +25,17 @@ export class Stage {
     this.resize();
     addEventListener("resize", () => { this.resize(); this.listeners.forEach((f) => f()); });
   }
+  // (lot « Banc Android et recette en conditions réelles », point 5) les zones sûres de l'écran (encoche d'un téléphone, barres
+  // d'Android : env(safe-area-inset-*), lues sur une sonde invisible) : la scène est entière et centrée dans ce qui reste
+  insets() {
+    if (!this.sonde) { const d = (this.sonde = document.createElement("div")); d.style.cssText = "position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)"; document.body.append(d); }
+    const c = getComputedStyle(this.sonde), n = (v) => parseFloat(v) || 0;
+    return { t: n(c.paddingTop), r: n(c.paddingRight), b: n(c.paddingBottom), l: n(c.paddingLeft) };
+  }
   resize() {
-    const vw = innerWidth, vh = innerHeight, k = Math.min(vw / W, vh / H), dpr = devicePixelRatio || 1;
+    const z = this.insets(), vw = innerWidth - z.l - z.r, vh = innerHeight - z.t - z.b, k = Math.min(vw / W, vh / H), dpr = devicePixelRatio || 1;
     this.k = k; this.px = k * dpr;
-    Object.assign(this.root.style, { width: `${W * k}px`, height: `${H * k}px`, left: `${(vw - W * k) / 2}px`, top: `${(vh - H * k) / 2}px` });
+    Object.assign(this.root.style, { width: `${W * k}px`, height: `${H * k}px`, left: `${z.l + (vw - W * k) / 2}px`, top: `${z.t + (vh - H * k) / 2}px` });
     this.ui.style.transform = `scale(${k})`;
     for (const c of [this.bg]) { c.width = Math.round(W * this.px); c.height = Math.round(H * this.px); }
   }

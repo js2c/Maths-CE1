@@ -24,7 +24,7 @@
 import { chromium, demarrageReel, accueilReel, finReelle } from "./navigateur.mjs";
 import { createServer } from "node:http";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, statSync } from "node:fs";
+import { cpSync, mkdtempSync, readFileSync, rmSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { extname, join, normalize, resolve } from "node:path";
 
@@ -116,14 +116,16 @@ export class Appareil {
   // `profil` : un nom de PROFILS ; `serveur` : serveurBanc() ; `portrait` : la page dans un onglet, en portrait ; `ralenti` : le
   // processeur ralenti du profil (false : non ralenti) ; `limite` : les lecteurs de médias ; `quota` : octets de stockage
   // (Storage.overrideQuotaForOrigin), remis à chaque ouverture ; `journal` : une fonction qui reçoit chaque ligne à écrire
-  constructor(profil = REFERENCE, { serveur, portrait = false, ralenti = true, limite = LECTEURS_MAX, quota = null, args = [], dossier = null, journal = null } = {}) {
+  constructor(profil = REFERENCE, { serveur, portrait = false, ralenti = true, limite = LECTEURS_MAX, quota = null, args = [], dossier = null, journal = null, scripts = [] } = {}) {
     this.nom = profil; this.p = PROFILS[profil]; this.serveur = serveur; this.portrait = portrait;
     this.ralenti = ralenti === true ? this.p.ralenti : ralenti || 1; this.limite = limite; this.quota = quota; this.args = args;
     this.dossier = dossier ?? mkdtempSync(join(tmpdir(), `banc-${profil}-`)); this.propre = !dossier;
-    this.erreurs = []; this.refusLecteurs = 0; this.lancements = []; this.log = journal ?? (() => {});
+    this.scripts = scripts; this.erreurs = []; this.refusLecteurs = 0; this.lancements = []; this.log = journal ?? (() => {});
     this.ctx = null; this.page = null; this.cdp = null;
   }
   get url() { return this.serveur.url; }
+  // un appareil neuf qui part d'une copie de ce profil (l'application déjà installée : son cache, son service worker, ses données)
+  copier(opts = {}) { const d = mkdtempSync(join(tmpdir(), `banc-${this.nom}-`)); cpSync(this.dossier, d, { recursive: true }); for (const f of ["SingletonLock", "SingletonSocket", "SingletonCookie"]) rmSync(join(d, f), { force: true }); const a = new Appareil(this.nom, { serveur: this.serveur, ralenti: this.ralenti, limite: this.limite, quota: this.quota, args: this.args, scripts: this.scripts, ...opts, dossier: d }); a.propre = true; return a; }
   // ouvre le navigateur sur le profil et l'application ; `toucher` : l'écran de démarrage touché pour de vrai (ce qui autorise
   // la voix) ; `q` : des paramètres d'adresse ; renvoie les temps du lancement (première image, prêt, application prête)
   async ouvrir({ q = "", toucher = true, attente = 180000, accueil = true } = {}) {
@@ -131,7 +133,7 @@ export class Appareil {
     this.ctx = await chromium.launchPersistentContext(this.dossier, { executablePath: CHROMIUM, ...optionsProfil(this.nom, { portrait: this.portrait }), args: [...ARGS_ANDROID(this.limite), ...this.args], serviceWorkers: "allow" });
     // (les conditions réelles : l'écran de démarrage attend un vrai toucher, l'accueil est en deux touchers, la récompense a
     // son bouton de fin)
-    await demarrageReel(this.ctx); if (accueil) await accueilReel(this.ctx); await finReelle(this.ctx); await this.ctx.addInitScript(ESPIONS);
+    await demarrageReel(this.ctx); if (accueil) await accueilReel(this.ctx); await finReelle(this.ctx); await this.ctx.addInitScript(ESPIONS); for (const sc of this.scripts) await this.ctx.addInitScript(sc);
     this.page = this.ctx.pages()[0] ?? (await this.ctx.newPage());
     this.page.on("pageerror", (e) => this.erreurs.push(e.message));
     this.page.on("console", (m) => { if (/too many WebMediaPlayers|WebMediaPlayer/i.test(m.text())) this.refusLecteurs++; });

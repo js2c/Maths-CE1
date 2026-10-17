@@ -1,8 +1,8 @@
 {
- "version": "b6e3c5f6906f",
+ "version": "53d73596626b",
  "octets": {
-  "1": 120068673,
-  "2": 134978729
+  "1": 120133436,
+  "2": 135165604
  },
  "files": [
   "./",
@@ -11750,6 +11750,7 @@
   "js/engine/stockage.js",
   "js/engine/store.js",
   "js/engine/toucher.js",
+  "js/engine/tourner.js",
   "js/engine/turtle.js",
   "js/engine/ui.js",
   "js/engine/voice.js",

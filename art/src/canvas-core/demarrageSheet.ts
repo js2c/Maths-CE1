@@ -4,7 +4,7 @@
 import { Gfx, PENCIL, type Ctx, type Env } from "./core";
 import type { Film } from "./film";
 import { fillShape } from "./gallery";
-import { BAR_W, drawBar } from "./sea/demarrage";
+import { BAR_W, drawBar, drawPhone, drawTurnArrow } from "./sea/demarrage";
 
 const W = 1280, H = 800;
 const draw = (ctx: Ctx, _frame: number, env: Env) => {
@@ -15,5 +15,7 @@ const draw = (ctx: Ctx, _frame: number, env: Env) => {
   // la barre aux deux tiers : le plein, dévoilé jusqu'à 2/3
   ctx.save(); ctx.beginPath(); ctx.rect(0, 0, 640 - BAR_W / 2 + (BAR_W * 2) / 3, H); ctx.clip(); drawBar(g, 640, 600, true); ctx.restore();
   drawBar(g, 640, 690, true);
+  // (lot « Banc Android ») « tourne ton téléphone » : le téléphone droit et sa flèche (l'application le fait pivoter)
+  drawTurnArrow(g, 300, 300); drawPhone(g, 300, 300);
 };
 export const demarrageSheet: Film = { meta: { title: "Le démarrage · planche spécimen", W, H, fps: 8, bpm: 120, durationFrames: 1 }, assets: { images: {} }, shots: [{ id: "sheet", start: 0, end: 1, draw }] };

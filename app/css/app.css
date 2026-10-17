@@ -238,3 +238,12 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 .boutique-cle.invite { animation: invite 1.6s ease-in-out infinite; }
 .boutique-reflet::after { content: ""; position: absolute; top: -40%; bottom: -40%; width: 60%; left: -80%; transform: rotate(18deg); background: linear-gradient(90deg, transparent, rgba(255, 200, 240, 0.35) 30%, rgba(255, 255, 255, 0.7) 50%, rgba(170, 230, 255, 0.4) 70%, transparent); animation: boutique-reflet 3.5s ease-in-out infinite; }
 @keyframes boutique-reflet { 0%, 55% { left: -80%; } 100% { left: 130%; } }
+/* (lot « Banc Android et recette en conditions réelles », point 5) « tourne ton téléphone » : en portrait, un écran clair couvre
+   tout (engine/tourner.js) ; le téléphone pivote d'un quart de tour autour du même point que la flèche */
+#tourner { position: fixed; inset: 0; z-index: 10000; display: none; background: #0b5563; touch-action: none; }
+@media (orientation: portrait) { #tourner { display: block; } }
+#tourner > .tourner-centre { position: absolute; left: 50%; top: calc(50% + var(--tourner-y, 0px)); width: 0; height: 0; }
+#tourner canvas { position: absolute; display: block; }
+#tourner .tourner-pivot { position: absolute; left: 0; top: 0; width: 0; height: 0; animation: tourner-pivot 3.6s ease-in-out infinite; }
+@keyframes tourner-pivot { 0%, 22% { transform: rotate(0deg); } 48%, 82% { transform: rotate(90deg); } 100% { transform: rotate(0deg); } }
+@media (prefers-reduced-motion: reduce) { #tourner .tourner-pivot { animation: none; } }

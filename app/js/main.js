@@ -61,6 +61,7 @@ import { ParentSpace, parentLogo } from "./parent/parent.js";
 import { chargerLogo, Demarrage } from "./session/demarrage.js";
 import { fermerTout, Portee } from "./engine/portee.js";
 import { suivreMiseAJour } from "./engine/miseajour.js";
+import { installerTourner } from "./engine/tourner.js";
 import { noter as noterTech, recents as journalTechnique } from "./engine/journal.js";
 
 // les vidéos de la mascotte (engine/mascotte.js, CLIPS) : autant de pas dans la barre de chargement
@@ -98,6 +99,8 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !loc
 const [atlas, logo] = await Promise.all([loadAtlas(), chargerLogo(stage.px).catch(() => null)]);
 const sprites = new Sprites(atlas, stage.px);
 await sprites.load("demarrage").catch(() => {});
+// (lot « Banc Android », point 5) en portrait (un téléphone tenu droit, dans un onglet) : « tourne ton téléphone »
+installerTourner(atlas);
 const demarrage = new Demarrage(stage, sprites, logo);
 performance.mark("demarrage-visible");
 // (point 1) l'écran de démarrage est là : le secours de index.html s'en va ; le temps depuis le lancement (l'ouverture de la page)
@@ -126,7 +129,9 @@ stage.ticks.add((t, dt) => { lagon.update(t, dt); lagon.render(); ocean.update(t
 stage.paused = true;
 stage.start();
 // un changement d'échelle (rotation, fenêtre) demanderait d'autres planches : on recharge simplement
-stage.onResize(() => { if (Math.abs(stage.px - sprites.px) > 0.01) location.reload(); });
+// (lot « Banc Android », point 5 : en portrait, « tourne ton téléphone » couvre tout ; un téléphone tourné en portrait puis
+// remis en paysage retrouve la même échelle : aucun rechargement ; ouverte en portrait, la page se recharge une fois, en paysage)
+stage.onResize(() => { if (matchMedia("(orientation: portrait)").matches) return; if (Math.abs(stage.px - sprites.px) > 0.01) location.reload(); });
 
 const rnd = rng(Date.now() & 0xffffffff);
 // pour les tests et les captures : ?module=2 ?cran=dur ?surprise=visite:tortue ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape ?sansLecon ?lecon=L1 ?etoiles=N

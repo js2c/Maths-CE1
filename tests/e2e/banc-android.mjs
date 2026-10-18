@@ -10,6 +10,9 @@
 //   6. l'espace parent sur un écran bas, une séance en pause : « Terminer la séance » et sa confirmation se touchent (la feuille
 //      défile ; la journée d'usage du petit smartphone ne pouvait pas l'atteindre).
 //   node tests/e2e/banc-android.mjs [--seul 1,2,3,4,5,6]
+// BANC ANDROID, raccourcis : voix rapide
+// (raison : la partie 6 joue seulement une question pour mettre une séance en pause, puis regarde l'espace parent ; la voix à
+// sa vitesse réelle ne changerait rien à ce qu'elle vérifie. Les autres parties gardent la vraie voix.)
 import { Appareil, PROFILS, serveurBanc } from "./appareils.mjs";
 import { ATTEND } from "./jeu.mjs";
 import { mkdirSync } from "node:fs";

@@ -400,7 +400,9 @@ export async function runWarmup({ session, step, end, warmup, screen, intro, rnd
   const btn = skip?.(() => { skipped = true; abort(); }), g = (p) => (btn ? Promise.race([p, abortP]) : p);
   screen.show(true); screen.keys(false);
   if (!P) { session.expect?.(rest.length); await g(intro?.(() => skipped)); }
-  if (!skipped) screen.keys(true);
+  // (repris, le pavé ne vient qu'avec la question : une réponse d'avant le rechargement s'enregistre d'abord, sans question à
+  // l'écran ; l'enfant imprévisible, graine 20, l'a vu)
+  let pave = !P && !skipped; if (pave) screen.keys(true);
   const answers = P ? donnees(P.answers) : []; // (lot 3 ter : jamais 3 fois de suite la même réponse, warmup.js, varyIndex)
   // (lot « Décisions sur les constats de l'agent », décision 5 : un même fait au plus 2 fois, 4 questions d'écart, warmupIndex)
   const faits = P ? donnees(P.faits) : [], rp = repetition(warmup.c0);
@@ -420,6 +422,7 @@ export async function runWarmup({ session, step, end, warmup, screen, intro, rnd
     }
     session.enCours = q; // (la question posée, pour les parcours de test)
     if (!r) {
+      if (!pave && !skipped) { pave = true; screen.keys(true); }
       session.surReponse = (x) => session.noteReponse?.(enDonnees(x));
       try { r = await g(screen.ask(q)); } finally { session.surReponse = null; }
     }

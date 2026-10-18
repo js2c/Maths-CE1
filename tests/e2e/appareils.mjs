@@ -179,6 +179,34 @@ export class Appareil {
       await this.page.waitForTimeout(100).catch(() => {});
     }
   }
+  // QUI RETIENT LES CANVAS DÉTACHÉS (pour chercher une fuite) : un instantané de la mémoire (CDP HeapProfiler), puis, pour
+  // quelques canvas détachés, le plus court chemin de références jusqu'à une racine ; renvoie des chemins lisibles
+  async retenteurs({ max = 4, motif = /^(Detached )?(HTMLCanvasElement|<canvas)/ } = {}) {
+    await this.cdp.send("HeapProfiler.enable").catch(() => {});
+    await this.cdp.send("HeapProfiler.collectGarbage").catch(() => {});
+    let chunks = []; const f = (e) => chunks.push(e.chunk); this.cdp.on("HeapProfiler.addHeapSnapshotChunk", f);
+    await this.cdp.send("HeapProfiler.takeHeapSnapshot", { reportProgress: false }); this.cdp.off("HeapProfiler.addHeapSnapshotChunk", f);
+    const snap = JSON.parse(chunks.join("")); chunks = null;
+    const m = snap.snapshot.meta, NF = m.node_fields.length, EF = m.edge_fields.length, S = snap.strings, N = snap.nodes, E = snap.edges;
+    const nT = m.node_fields.indexOf("type"), nN = m.node_fields.indexOf("name"), nE = m.node_fields.indexOf("edge_count"), nD = m.node_fields.indexOf("detachedness");
+    const eT = m.edge_fields.indexOf("type"), eN = m.edge_fields.indexOf("name_or_index"), eTo = m.edge_fields.indexOf("to_node");
+    const ntypes = m.node_types[nT], etypes = m.edge_types[eT], n = N.length / NF, first = new Uint32Array(n);
+    for (let i = 0, e = 0; i < n; i++) { first[i] = e; e += N[i * NF + nE] * EF; }
+    const rev = Array.from({ length: n }, () => []);
+    for (let i = 0; i < n; i++) for (let e = first[i], end = e + N[i * NF + nE] * EF; e < end; e += EF) { const t = etypes[E[e + eT]]; if (t === "weak" || t === "shortcut") continue; rev[E[e + eTo] / NF].push([i, e]); }
+    const nom = (i) => `${ntypes[N[i * NF + nT]]}:${S[N[i * NF + nN]].slice(0, 60)}`;
+    const arete = (e) => { const t = etypes[E[e + eT]]; return t === "element" || t === "hidden" ? `[${E[e + eN]}]` : `.${S[E[e + eN]]}`; };
+    const cibles = []; for (let i = 0; i < n; i++) { const s = S[N[i * NF + nN]]; if (motif.test(s) && (s.startsWith("Detached") || (nD >= 0 && N[i * NF + nD] === 2))) cibles.push(i); }
+    const chemins = new Set();
+    for (const c0 of cibles) {
+      if (chemins.size >= max) break;
+      const prev = new Map([[c0, null]]), q = [c0]; let fin = null;
+      while (q.length && fin == null) { const x = q.shift(); for (const [from, e] of rev[x]) { if (prev.has(from)) continue; prev.set(from, [x, e]); if (from === 0) { fin = from; break; } q.push(from); } }
+      const ch = []; for (let x = fin; x != null && prev.get(x); ) { const [y, e] = prev.get(x); ch.push(`${nom(x)} ${arete(e)}`); x = y; }
+      chemins.add(`${nom(c0)} <- ${ch.slice(-12).reverse().join(" <- ")}`);
+    }
+    return { detaches: cibles.length, chemins: [...chemins] };
+  }
   // l'état du service worker de la page
   etatSW() { return this.page.evaluate(async () => { const r = await navigator.serviceWorker.getRegistration(); const n = (w) => (w ? w.state : null); const k = await caches.keys(); return { controle: !!navigator.serviceWorker.controller, actif: n(r?.active), attente: n(r?.waiting), installe: n(r?.installing), caches: k }; }); }
   // l'installation : attendre que le service worker de la version publiée par le serveur ait tout mis en cache, et soit actif ou

@@ -47,6 +47,9 @@ async function recharger(nom, { photo = false } = {}) {
   await vis(".keep.play", 60000).catch(() => {});
   const offerte = await a.page.evaluate(() => ({ attente: !!window.__app.repriseEnAttente, id: window.__app.repriseEnAttente?.id ?? null }));
   if (photo) await capture(`${nom}-accueil-en-pause`);
+  // (l'enfant imprévisible, graine 20 : à la reprise d'un échauffement dont la réponse était donnée, le pavé paraissait le temps
+  // d'enregistrer cette réponse, sans question à l'écran ; regardé à chaque image, de « continuer » à la question)
+  await a.page.evaluate(() => { window.__paveSansQuestion = 0; const f = () => { const x = window.__app; const k = [...document.querySelectorAll(".key:not(.etal-key)")].some((e) => !e.closest(".stash") && e.checkVisibility({ visibilityProperty: true, opacityProperty: true })); if (k && !x.enPause && !x.facts?.q && !x.dictation?.on && !x.warmupPending && !x.challenge) window.__paveSansQuestion++; requestAnimationFrame(f); }; requestAnimationFrame(f); });
   check(offerte.attente && offerte.id === avant.id, `${nom} : rechargée, la séance attend à l'accueil en pause, « continuer » offert`);
   await a.deuxTouchers(".keep.play");
   await a.attendre((id) => { const x = window.__app; return !x.enPause && !x.repriseEnAttente && x.session?.rec?.id === id; }, 30000, avant.id);
@@ -72,6 +75,8 @@ async function reponseFausse(nom, repondreFaux = null) {
   const enCorrection = await a.page.evaluate(() => (window.__app.session?.rec?.questions ?? 0));
   await recharger(`${nom}, réponse fausse`);
   await attendreQuestion(); const apres = await etat(), reps = await reponses(avant.id);
+  const pave = await a.page.evaluate(() => window.__paveSansQuestion ?? 0);
+  check(pave === 0, `${nom}, réponse fausse : jamais le pavé sans question pendant la reprise (${pave} image(s))`);
   check(apres.questions === avant.questions + 1 && apres.justes === avant.justes && apres.frise === avant.frise + 1 && reps.length === reps0.length + 1 && reps.at(-1).juste === false && apres.cle !== avant.cle,
     `${nom}, réponse fausse pendant sa correction${enCorrection === avant.questions ? "" : " (déjà comptée)"} : enregistrée (questions ${avant.questions} -> ${apres.questions}, justes ${avant.justes} -> ${apres.justes}, réponses du parent ${reps0.length} -> ${reps.length}, la dernière ${reps.at(-1)?.juste === false ? "fausse" : "?"}) ; la frise : ${avant.frise} -> ${apres.frise} ; la question suivante (${apres.cle !== avant.cle ? "une autre" : "LA MÊME"})`);
 }

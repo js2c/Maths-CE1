@@ -341,10 +341,18 @@ async function fuite() {
   return { releves, erreurs };
 }
 
+// (--android) l'appareil modèle, installé une fois (aussi pour --rejouer un défaut trouvé sur le banc)
+async function installerModele() {
+  if (!ANDROID || MODELE) return;
+  SERVEUR = await serveurBanc(); MODELE = new Appareil(PROFIL, { serveur: SERVEUR, journal: console.log });
+  await MODELE.ouvrir(); const e = await MODELE.installer(); await MODELE.fermer();
+  console.log(`banc Android : ${PROFIL}, l'application installée en ${e.dureeS} s ; chaque graine part d'une copie de ce profil`);
+}
 // ---------------------------------------------------------------- le déroulement
 const resume = { debut: new Date().toISOString(), vue: VUE, lent: LENT, parties: [] };
 if (REJOUER) {
   const d = JSON.parse(readFileSync(REJOUER, "utf8"));
+  await installerModele();
   let liste = d.faits.slice(0, d.defaut.apres + 1);
   const montre = async (l) => (await partie(d.graine, { liste: l, cherche: d.defaut.quoi })).defauts.some((x) => x.quoi === d.defaut.quoi);
   console.log(`rejoue ${liste.length} actions de la graine ${d.graine} : « ${d.defaut.quoi} »`);
@@ -374,11 +382,7 @@ if (REJOUER) {
   process.exitCode = ok && !erreurs.length ? 0 : 1;
 } else {
   const graines = Array.from({ length: GRAINES }, (_, i) => DEPART + i);
-  if (ANDROID) {
-    SERVEUR = await serveurBanc(); MODELE = new Appareil(PROFIL, { serveur: SERVEUR, journal: console.log });
-    await MODELE.ouvrir(); const e = await MODELE.installer(); await MODELE.fermer();
-    console.log(`banc Android : ${PROFIL}, l'application installée en ${e.dureeS} s ; chaque graine part d'une copie de ce profil`);
-  }
+  await installerModele();
   let suivante = 0;
   await Promise.all(Array.from({ length: PARALLELE }, async () => {
     while (suivante < graines.length) {

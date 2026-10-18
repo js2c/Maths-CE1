@@ -523,6 +523,9 @@ for (const [id, h] of Object.entries(handlers)) handlers[id] = async (ctx) => {
   const portee = new Portee(id, app.portees);
   portee.fin(() => { app.fermerEcrans(); app.line.clear(); app.line.fxClear(); app.aidBoard?.clear(); fleche.cacher(); ocean.mascotte.release(); });
   portee.fin(() => lessons.abandon()); // (rangée la première : la leçon utilise encore l'écran de la ligne)
+  // (lot « Banc Android et recette en conditions réelles », journée d'usage du petit smartphone : `app.runner`, gardé après
+  // l'étape, retenait par ses fonctions l'écran des additions détruit et le bernard-l'ermite ; Appareil.retenteurs)
+  portee.fin(() => { app.runner = null; });
   try { return await h({ ...ctx, portee }); } finally { portee.fermer(); }
 };
 // chaque gain d'étoiles pendant les questions : les étoiles s'envolent des bulles-réponses vers le compteur

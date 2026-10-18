@@ -54,7 +54,7 @@ async function versAccueil(ms = 60000) {
   const fin = Date.now() + ms;
   while (Date.now() < fin) {
     if (await surAccueil()) return true;
-    for (const s of [".boutique-retour", ".lecons-maison", ".homekey", ".session-home"]) if (await visible(s)) { await a.toucher(s).catch(() => {}); break; }
+    for (const s of [".pa-close", ".boutique-retour", ".lecons-maison", ".homekey", ".session-home"]) if (await visible(s)) { await a.toucher(s).catch(() => {}); break; }
     await attendre(1500);
   }
   return surAccueil();
@@ -179,7 +179,8 @@ await etape(4, "l'espace parent", async () => {
   for (const t of ["seances", "progression", "donnees", "calendrier"]) { await a.toucher(`[data-tab="${t}"]`); await attendre(1500); }
   // la séance laissée en pause est terminée par le parent
   if (await visible(".pa-pause .pa-btn")) { await a.toucher(".pa-pause .pa-btn"); await attendre(500); await a.toucher(".pa-confirm .danger"); }
-  else await a.page.evaluate(() => [...document.querySelectorAll(".pa-link, .pa-btn")].find((b) => /Retour/.test(b.textContent))?.click());
+  // (sans séance en pause : « Fermer », le bouton de l'espace parent ; « Retour à l'océan » n'est que sur l'écran du code)
+  else await a.toucher(".pa-close").catch(() => {});
   check(await versAccueil(), "espace parent : retour à l'accueil");
 });
 

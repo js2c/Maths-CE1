@@ -6,9 +6,12 @@
 //   2. l'encoche d'un smartphone (zones sûres émulées) : la scène entière et centrée, rien sous l'encoche ;
 //   3. le stockage plein : l'avis en haut de chaque onglet de l'espace parent (1 280 × 800 et 1 920 × 1 200) ;
 //   4. le journal technique : la ligne « état de la page » écrite avec les mesures des budgets (le même code que le banc) ;
-//   5. le code de l'espace parent sur un téléphone en paysage : le pavé tient dans l'écran.
-//   node tests/e2e/banc-android.mjs [--seul 1,2,3,4,5]
+//   5. le code de l'espace parent sur un téléphone en paysage : le pavé tient dans l'écran ;
+//   6. l'espace parent sur un écran bas, une séance en pause : « Terminer la séance » et sa confirmation se touchent (la feuille
+//      défile ; la journée d'usage du petit smartphone ne pouvait pas l'atteindre).
+//   node tests/e2e/banc-android.mjs [--seul 1,2,3,4,5,6]
 import { Appareil, PROFILS, serveurBanc } from "./appareils.mjs";
+import { ATTEND } from "./jeu.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 
@@ -110,6 +113,23 @@ if (faire(5)) for (const nom of ["smartphone", "petit-smartphone"]) {
   const r = await a.page.evaluate(() => [...document.querySelectorAll(".pa-keys button, .pa-links button")].filter((b) => b.checkVisibility({ visibilityProperty: true }) && b.getBoundingClientRect().height > 0).map((b) => { const q = b.getBoundingClientRect(); return { t: b.textContent.trim(), dedans: q.top >= 0 && q.bottom <= innerHeight && q.left >= 0 && q.right <= innerWidth, h: Math.round(q.height) }; }));
   await a.page.screenshot({ path: join(OUT, `5-code-parent-${nom}.png`) });
   check(r.length >= 11 && r.every((x) => x.dedans), `${nom} : le pavé du code parent tient dans l'écran (${r.filter((x) => !x.dedans).map((x) => x.t).join(", ") || "toutes les touches visibles"} ; touches de ${Math.min(...r.map((x) => x.h))} px)`);
+  erreurs.push(...a.erreurs); await a.detruire();
+}
+
+if (faire(6)) for (const nom of ["petit-smartphone", "smartphone"]) {
+  const a = new Appareil(nom, { serveur, ralenti: false });
+  await a.ouvrir({ q: "?voix=rapide&sansReprise&sans=echauffement&sansLecon&cran=conseille&meteo=beau&choix=2:1" });
+  await a.page.evaluate(async () => { await window.__app.store.setSetting("codeParent", "2468"); });
+  await a.deuxTouchers(".galet.play"); await a.attendre(ATTEND, 120000); await a.toucher(".session-home"); await a.page.waitForTimeout(2000);
+  await a.toucher(".logo", { ms: 2400 }); await a.attendre(() => document.querySelector(".pa-keys"), 10000); await a.page.waitForTimeout(600);
+  for (const d of "2468") { await a.toucher(`.pa-keys [data-key="${d}"]`); await a.page.waitForTimeout(250); }
+  await a.attendre(() => document.querySelector(".pa-pause .pa-btn"), 15000);
+  await a.toucher(".pa-pause .pa-btn"); await a.page.waitForTimeout(900);
+  const dedans = await a.page.evaluate(() => { const r = document.querySelector(".pa-confirm .danger")?.getBoundingClientRect(); return !!r && r.top >= 0 && r.bottom <= innerHeight; });
+  await a.page.screenshot({ path: join(OUT, `6-terminer-seance-${nom}.png`) });
+  await a.toucher(".pa-confirm .danger"); await a.page.waitForTimeout(2500);
+  const fin = await a.page.evaluate(() => ({ pause: !!window.__app.enPause, parent: !!window.__app.parent?.root?.isConnected }));
+  check(dedans && !fin.pause && !fin.parent, `${nom}, une séance en pause : « Terminer la séance » et sa confirmation se touchent dans l'écran ; la séance est terminée, retour à l'accueil`);
   erreurs.push(...a.erreurs); await a.detruire();
 }
 

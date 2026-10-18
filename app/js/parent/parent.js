@@ -188,8 +188,8 @@ export class ParentSpace {
     const conf = h("div");
     return h("div", { class: "pa-pause" },
       h("p", {}, h("b", {}, "Une séance est en pause. "), "Si l'enfant ne la reprend pas, vous pouvez la terminer ici : elle sera notée « interrompue », sans coquillage ni carte à la fin (les étoiles déjà gagnées restent). L'application revient à l'accueil."),
-      h("button", { class: "pa-btn", onclick: () => conf.replaceChildren(h("div", { class: "pa-confirm" }, h("p", {}, h("b", {}, "Terminer la séance maintenant ? "), "Elle ne pourra pas être reprise ; l'enfant pourra en commencer une autre aujourd'hui."),
-        h("div", { class: "pa-row" }, h("button", { class: "pa-btn danger primary", onclick: () => { this.terminer = true; this.close(); } }, "Oui, terminer la séance"), h("button", { class: "pa-btn", onclick: () => conf.replaceChildren() }, "Annuler")))) }, "Terminer la séance…"), conf);
+      h("button", { class: "pa-btn", onclick: () => { conf.replaceChildren(h("div", { class: "pa-confirm" }, h("p", {}, h("b", {}, "Terminer la séance maintenant ? "), "Elle ne pourra pas être reprise ; l'enfant pourra en commencer une autre aujourd'hui."),
+        h("div", { class: "pa-row" }, h("button", { class: "pa-btn danger primary", onclick: () => { this.terminer = true; this.close(); } }, "Oui, terminer la séance"), h("button", { class: "pa-btn", onclick: () => conf.replaceChildren() }, "Annuler")))); conf.scrollIntoView?.({ block: "nearest", behavior: "smooth" }); } }, "Terminer la séance…"), conf);
   }
   show(id, opts = {}) {
     this.tab = id;

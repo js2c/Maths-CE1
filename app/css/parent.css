@@ -215,3 +215,12 @@
   .pa-gate-card .pa-sub { min-height: 0; margin: 4px 0 8px; font-size: 15px; }
   .pa-keys button { height: 50px; font-size: 24px; }
 }
+/* (même lot, la journée d'usage sur le petit smartphone : 360 px de haut, une séance en pause ; la confirmation « Oui, terminer la
+   séance » tombait sous le bas de l'écran, et rien ne défilait pour l'atteindre) sur un écran bas, toute la feuille défile, le
+   bloc de la séance en pause et sa confirmation compris ; l'en-tête, avec « Fermer », reste en haut */
+@media (max-height: 560px) {
+  .pa-sheet { overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+  .pa-sheet > .pa-main { flex: none; overflow: visible; }
+  .pa-sheet > .pa-top { position: sticky; top: 0; z-index: 2; }
+}
+

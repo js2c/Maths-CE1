@@ -177,7 +177,11 @@ check(back.s === dump.seances.length && back.r === dump.reponses.length && back.
 await Promise.all([page.waitForEvent("load"), page.tap(".pa-close")]); await ready();
 
 // ---------------------------------------------------------------- à 1920 × 1200
-await Promise.all([page.waitForEvent("load"), page.setViewportSize({ width: 1920, height: 1200 })]); await ready();
+// (lot « Banc Android et recette en conditions réelles », demande du parent du 17 octobre 2026 : la page ne se recharge plus quand
+// la fenêtre change de taille ; la scène se remet à l'échelle)
+await page.evaluate(() => { window.__marque = 1; });
+await page.setViewportSize({ width: 1920, height: 1200 }); await page.waitForTimeout(1000);
+check(await page.evaluate(() => window.__marque === 1), "1920 × 1200 : la fenêtre agrandie, la page ne se recharge pas");
 await longPress(); await type("4321"); await page.waitForSelector(".pa-sheet"); await page.waitForTimeout(300);
 await shot("16-calendrier-1920");
 check(errors.length === 0, `aucune erreur dans la page ${errors.join(" | ")}`);

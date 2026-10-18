@@ -88,7 +88,10 @@ async function controle(nom, debut) {
   // voulues se remplissent, l'étal et l'album : seuls les plafonds comptent)
   if (!r.pause && etapes.length >= 5) depart ??= r.etat;
   const d = depasse(r.etat, r.pause || etapes.length < 5 ? null : depart);
-  check(!d.length, `${nom} : budgets tenus (${resumeEtat(r.etat)})${d.length ? ` ; dépassés : ${d.join(" ; ")}` : ""}`);
+  // (un dépassement : d'où viennent les canvas détachés encore vivants, et l'écran à ce moment ; constat de la journée
+  // tablette-entree, étape 8 : +23 canvas sur l'accueil, pour seulement 5 éléments de plus dans la page)
+  if (d.length) { r.detaches = await a.page.evaluate(() => (window.__etatPageDetails?.() ?? []).slice(0, 8)).catch(() => []); r.ecran = await ecran(); r.libre = await a.page.evaluate(() => ({ free: !!window.__app.free, facts: !!window.__app.facts, session: !!window.__app.session })).catch(() => null); }
+  check(!d.length, `${nom} : budgets tenus (${resumeEtat(r.etat)})${d.length ? ` ; dépassés : ${d.join(" ; ")} ; écran ${r.ecran} ${JSON.stringify(r.libre)} ; canvas détachés vivants : ${r.detaches.map((x) => `${x.n} × ${x.origine}`).join(" ; ") || "aucun"}` : ""}`);
   // un galet touché deux fois ouvre son écran (« choisir », ou « Encore ! » si la séance du jour est faite) ; la maison ramène
   const g = (await visible(".galet.choisir")) ? ".galet.choisir" : ".galet.again";
   await a.deuxTouchers(g);

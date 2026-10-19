@@ -497,12 +497,15 @@ Ce qui change pour l'enfant et pour vous :
 - **Si la tablette manque de place** pour garder l'application hors ligne, l'espace parent le dit en haut de chaque onglet, avec ce qu'il faut libérer ; l'application marche alors tant que le Wi-Fi est là, et les progrès de l'enfant sont bien enregistrés.
 - **Faire apparaître les boutons d'Android** (en glissant le doigt depuis le bas de l'écran) **ne recharge plus l'application** : la scène se remet à la nouvelle taille, la partie continue. De même pour le clavier, la rotation ou l'écran partagé en deux.
 - **Si la page se recharge quand même** (Android qui ferme Chrome pendant que la tablette est posée, par exemple), « continuer » reprend **à la question près** : la question qui était à l'écran est reposée ; si l'enfant y avait déjà répondu, sa réponse est comptée (même fausse, même si la correction était à l'écran) et c'est la question suivante ; la frise garde ses ronds. Deux exceptions : le défi record (la minute chronométrée) repart à son début, et une leçon en cours est rejouée. L'espace parent dit, dans le détail de la séance, où elle a repris.
-- **Le code de l'espace parent** tient maintenant sur l'écran d'un téléphone.
+- **L'espace parent sur un téléphone** : le pavé du code tient dans l'écran, et toute la feuille défile ; « Terminer la séance » se confirme (sur un petit téléphone, le bouton de confirmation tombait sous le bas de l'écran).
+- **Deux petits défauts trouvés par cette recette, et corrigés** : pendant l'échauffement, le pavé paraissait parfois un instant avant la question ; et, après une séance, l'application gardait en mémoire l'écran des additions qu'elle n'utilisait plus.
 - **Le journal technique** note aussi, toutes les 10 minutes, la mémoire et ce que l'application garde en mémoire graphique (« zones de dessin », « images en mémoire ») : ce sont les mêmes chiffres que ceux que vérifie le banc d'essai.
+
+**Ce qui a été vérifié sur ce banc** (le détail dans la demande de fusion) : une journée d'usage complète sur chacun des quatre appareils imités (trois séances, chaque exercice, chaque leçon, la boutique, 30 minutes sans toucher sur l'accueil puis sur une question, dix relances, une heure en arrière-plan), 110 parties de l'enfant imprévisible (50 sur la tablette de référence), tous les parcours l'un après l'autre, les temps de démarrage. Sur la tablette de référence, une relance montre l'écran de démarrage en 0,6 s, prêt en 2,4 s.
 
 **Aucune phrase à fabriquer.**
 
-**Une décision vous attend** : l'application sur un téléphone (voir la demande de fusion). Sur la tablette, tout ce qui se touche mesure au moins 14 mm. Sur un téléphone, la scène se réduit : sur un petit téléphone, une douzaine de cibles passent sous les 9 mm conseillés pour un doigt d'enfant (les touches du pavé, les pièces de l'étal, les tuiles de la boutique).
+**Une décision vous attend** : l'application sur un téléphone (voir la demande de fusion). Sur la tablette, tout ce qui se touche mesure au moins 14 mm. Sur un téléphone, la scène se réduit : sur un petit téléphone, une douzaine de cibles passent sous les 9 mm conseillés pour un doigt d'enfant (les touches du pavé, à 8,7 mm ; la lampe de l'étal, à 6,7 mm ; les onglets de la boutique, à 7,5 mm).
 
 **À essayer sur la tablette** (comme d'habitude, la nouvelle version s'installe au premier lancement et prend la main au suivant) : une soirée normale. Si quelque chose ne va pas, exporter le journal technique et le donner à la conception.
 

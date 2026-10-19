@@ -39,6 +39,8 @@ const tour = async () => {
   await a.deuxTouchers(".galet.albumkey"); await a.attendre(() => window.__app.album?.open, 20000); await a.page.waitForTimeout(2500); await a.toucher(".homekey"); await versAccueil();
   for (const ex of ["ligne", "additions", "calcul", "voiliers", "multiplication", "etal"]) {
     await a.deuxTouchers(".galet.again"); await vis(`.choix-ex[data-key="${ex}"]`); await a.page.waitForTimeout(700); await a.deuxTouchers(`.choix-ex[data-key="${ex}"]`); await vis(".choix-tuile"); await a.page.waitForTimeout(700); await a.deuxTouchers(".choix-tuile");
+    // (décision du parent du 19 octobre 2026 : l'exercice choisi, le sélecteur ne part plus seul ; la coche le lance)
+    await vis(".cran-ok"); await a.page.waitForTimeout(700); await a.toucher(".cran-ok");
     for (let n = 0; n < 2; n++) { await a.attendre(ATTEND, 120000); await a.page.waitForTimeout(800); await a.page.evaluate(REPONDRE, true); await a.page.waitForTimeout(1500); }
     await a.toucher(".session-home"); await versAccueil();
   }

@@ -913,3 +913,8 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 
 - **Branche** : `claude/dreamy-heisenberg-9qb80z`, partie de `main` (7779eed2) ; demande de fusion https://github.com/js2c/Maths-CE1/pull/61.
 - **Fini le 17 octobre 2026** : les cinq points de la fiche 12 (relance, veille, poissons, leçons de la monnaie, journal technique), leurs parcours (`installation.mjs`, `veille.mjs`, `poissons.mjs`, `lecons-monnaie.mjs`, `correctifs-installation.mjs`), la recette de la méthode commune, la relecture indépendante et son traitement.
+
+## Reprise du lot « Banc Android et recette en conditions réelles »
+
+- **Branche** : `ccr-3e7c2366-pv8vt6`, partie de `main` (398d794e, PR #62) ; demande de fusion https://github.com/js2c/Maths-CE1/pull/63.
+- **Fini le 19 octobre 2026** : les échecs laissés par la PR #61 ; le banc (`tests/e2e/appareils.mjs`, conditions par défaut, raccourcis déclarés) ; les budgets ; la journée d'usage sur les quatre profils, l'enfant imprévisible sur le banc, l'agent qui joue l'enfant (48 minutes sur `s5e`, `tests/recette-fonctionnelle/out-banc-android/agent/`), les temps de démarrage ; les smartphones (« tourne ton téléphone », zones sûres, cibles) et la décision du parent (option A) ; le banc devenu la règle (CLAUDE.md, méthode commune, travail `android`) ; les demandes du parent du 17 octobre (plus de rechargement quand la fenêtre change, reprise à la question près) ; la décision du 19 octobre sur le sélecteur ; relectures indépendantes et leur traitement.

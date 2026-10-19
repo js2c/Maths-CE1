@@ -240,6 +240,8 @@ for (const T of TAILLES) {
   await page.waitForSelector(".cran", { timeout: 15000 }); await page.waitForTimeout(400);
   await shot(page, "19a-crans", T);
   await page.tap(".cran", { force: true }).catch(() => {});
+  // (décision du parent du 19 octobre 2026 : l'exercice choisi, le sélecteur ne part plus seul ; la coche le lance)
+  await page.waitForTimeout(400); await page.tap(".cran-ok", { force: true });
   await waitBoat(page); const q = await question(page);
   const etoiles0 = await page.evaluate(() => window.__app.rewards.total);
   await deposer(page, q.k); await waitBoat(page);

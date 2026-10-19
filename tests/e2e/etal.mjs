@@ -330,6 +330,8 @@ for (const T of TAILLES) {
   await o.page.waitForTimeout(500);
   for (const s of ['.choix-tuile[data-key="4"]', '.choix-tuile[data-key="4"]']) { await o.page.tap(s, { force: true }); await o.page.waitForTimeout(500); }
   await o.page.waitForSelector(".cran", { timeout: 15000 }); await o.page.tap(".cran", { force: true }).catch(() => {});
+  // (décision du parent du 19 octobre 2026 : l'exercice choisi, le sélecteur ne part plus seul ; la coche le lance)
+  await o.page.waitForTimeout(400); await o.page.tap(".cran-ok", { force: true });
   await attend(o.page); await payer(o.page, "juste"); await coche(o.page); await attend(o.page);
   check((await reponses(o.page)).every((r) => r.niveau === 4), "entraînement libre : l'étal au niveau choisi");
   await o.page.tap(".session-home", { force: true }); await o.page.waitForTimeout(1200);

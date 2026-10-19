@@ -4,6 +4,12 @@
 // Vérifie la base (module 2 noté dans la séance, réponses marquées « notion », exemples guidés) et que chaque
 // phrase dite a son fichier. Captures dans tests/e2e/out/notion2.
 //   node tests/e2e/notion2.mjs [--questions 6] [--famille 3]   (--famille : le parent a marqué connues les familles d'avant)
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";

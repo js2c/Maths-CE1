@@ -11,6 +11,12 @@
 //  6. la table d'addition : 10 + 4 (les deux boîtes), 7 + 8 (le double + 1), 9 + 9 (le reflet) ;
 //  7. le défi et l'échauffement avec des faits au-delà de 10 (deux chiffres au pavé).
 //   node tests/e2e/sommes30.mjs [--out dossier] [--seul 1280|1920]
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -20,7 +26,7 @@ const args = process.argv.slice(2), opt = (k, d) => (args.includes(k) ? args[arg
 const OUT = resolve(opt("--out", "tests/e2e/out/sommes30")); mkdirSync(OUT, { recursive: true });
 const SEUL = opt("--seul", null);
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: [] });
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 // les familles 1 à `n` connues (point de départ du parent), pour que la famille voulue soit la famille en cours
 const KNOWN = (n) => `async () => { const { markFamilyKnown } = await import("./js/parent/depart.js"), m2 = await (await fetch("content/module2.json")).json(); for (let f = 1; f <= ${n}; f++) await markFamilyKnown(window.__app.store, m2, f); }`;

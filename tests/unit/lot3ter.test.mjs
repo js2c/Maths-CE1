@@ -224,7 +224,7 @@ test("T3, exception : les touches du pavé et les bulles-réponses répondent au
   } finally { mock.timers.reset(); }
   // les chiffres du pavé et les bulles-réponses : écouteurs du premier contact (pointerdown), sans onBrief
   const facts = readFileSync(new URL("../../app/js/modules/facts/screen.js", import.meta.url), "utf8"), line = readFileSync(new URL("../../app/js/modules/numberline/screen.js", import.meta.url), "utf8");
-  assert.match(facts, /onTap\(b, \(\) => this\.type\(String\(d\), b\)\)/);
+  assert.match(facts, /onTap\(b, \(e?\) => this\.type\(String\(d\), b(, e)?\)\)/);
   assert.match(facts, /onBrief\(app, del, [^\n]*"effacer", \{ first: true \}\)/); assert.match(facts, /onBrief\(app, ok, [^\n]*"valider", \{ first: true \}\)/);
   assert.match(line, /b\.addEventListener\("pointerdown", \(e\) => \{ e\.preventDefault\(\); this\.answer\(c\.value, b\); \}\)/);
 });

@@ -134,8 +134,8 @@ Le parent n'est pas encore convaincu par les remèdes proposés : la question es
 
 ### Après le lot « Correctifs de la tablette » (relecture indépendante du 8 octobre 2026)
 
-- **Le sélecteur de difficulté en deux touchers ?** Il n'était pas dans la fiche (exercices, niveaux, leçons) : une vague touchée dit ce qu'elle rapporte, la coche valide, et sans toucher il part seul au bout de 15 s. Le relecteur note qu'après « choisir » en deux touchers, cela fait encore deux touchers, et qu'on ne voit pas bien quelle vague est choisie. À décider par le parent.
-- **La bulle d'une tuile sur les écrans les plus pleins** (la ligne, 13 tuiles ; le calcul rapide) cache encore deux ou trois tuiles le temps de la phrase. Pistes : une bulle au-dessus de toute la grille, ou des descriptions encore plus courtes.
+- **Le sélecteur de difficulté en deux touchers ?** Il n'était pas dans la fiche (exercices, niveaux, leçons) : une vague touchée dit ce qu'elle rapporte, la coche valide, et sans toucher il part seul au bout de 15 s (depuis le 19 octobre 2026, seulement après « jouer » : `docs/SPEC.md`, section 4). Le relecteur note qu'après « choisir » en deux touchers, cela fait encore deux touchers, et qu'on ne voit pas bien quelle vague est choisie. À décider par le parent.
+- **La bulle d'une tuile sur les écrans les plus pleins** (la ligne, 13 tuiles ; le calcul rapide) cache encore deux ou trois tuiles le temps de la phrase. Pistes : une bulle au-dessus de toute la grille, ou des descriptions encore plus courtes. L'agent qui joue l'enfant sur le banc Android (19 octobre 2026, constat 5) l'a vu aussi dans la boutique (la bulle d'une créature cache deux ou trois cartes voisines), à l'étal (la consigne cache deux étiquettes de prix) et dans la leçon L6 (une grande bulle, presque vide pendant qu'elle s'écrit, où l'on voit le dessin en transparence).
 - **L'invitation au toucher de l'écran de démarrage** (le logo qui se balance) : à juger avec l'enfant ; piste : une main dessinée qui tapote.
 - **Le temps de démarrage** : l'écran de démarrage attend aussi les 17 vidéos de la mascotte (la fiche le demande) ; mesuré au processeur ralenti ×4, 7,1 s au lieu de 4,8 s sur `main` (le budget de `CLAUDE.md` est de 3 s). Pistes si c'est trop long sur la tablette : n'attendre que les vidéos de l'accueil (repos, parole, salut) et charger les autres derrière.
 
@@ -181,6 +181,8 @@ Le parent n'est pas encore convaincu par les remèdes proposés : la question es
 - **Récompenses liées à l'effort adapté** plutôt qu'à la difficulté brute : aujourd'hui « très dur » double les étoiles. À observer.
 - **Espace parent regroupé en trois ensembles** : séance et difficulté ; son et interface ; données et maintenance.
 - **La coche touchée sans réponse tapée** (lot « Recette de l'enfant et nettoyage des couches », constat 9 de l'agent qui joue l'enfant, 12 octobre 2026) : aujourd'hui elle ne fait rien, sans un mot. Une petite phrase (« Tape d'abord ta réponse. ») aiderait l'enfant qui ne comprend pas pourquoi rien ne se passe. Non fait : c'est une phrase nouvelle, donc une voix à fabriquer, et un choix pour le parent.
+
+- **Une mise en page « téléphone »** (lot « Banc Android et recette en conditions réelles », fiche 13, point 6 ; décision du parent du 19 octobre 2026 : option A, ne rien changer pour l'instant) : sur un petit smartphone, la scène de 1 280 × 800 réduite fait passer une douzaine de cibles sous les 9 mm conseillés pour un doigt d'enfant (les touches du pavé à 8,7 mm, la lampe de l'étal à 6,7 mm, les onglets de la boutique à 7,5 mm ; `tests/recette-fonctionnelle/out-banc-android/cibles.md`). Évolution possible, si un téléphone devient l'appareil de l'enfant : des écrans réagencés pour les téléphones, aux cibles agrandies (le pavé, l'étal, la boutique, l'album, les légendes), mesurés par `tests/e2e/cibles.mjs`.
 
 **Récompenses**
 
@@ -250,6 +252,10 @@ Le parent n'est pas encore convaincu par les remèdes proposés : la question es
 ## 7. À demander, à préparer
 
 - **À l'enseignante** : la progression de la classe (fractions, soustraction posée et sa méthode, heure, monnaie), pour caler les phases ; son vocabulaire (« amis de 10 », « maison des nombres », « mur ») pour l'aligner.
+- **Trois parcours en échec à expliquer** (lot « Banc Android et recette en conditions réelles », 19 octobre 2026 ; ils échouaient déjà avant les corrections de la fin du lot, `lot3bis` aussi sur `main`) : `lot3bis` (« un chiffre tapé pendant le bravo » : la voix accélérée réduit le « bravo » à environ 250 ms, le toucher du parcours arrive à la limite de la question suivante) ; `etal` (le portefeuille encore en animation, l'orage pas installé en 10 s : la scène avance d'au plus 0,05 s par image, et le dessin logiciel en fait peu) ; `boutique` (« la croix et la coche sous la tuile », vue 1280). La règle du banc : aucun échec sans cause trouvée ; à régler au début du prochain lot.
+- **L'illustration de la carte du crabe** (agent qui joue l'enfant, 19 octobre 2026, constat 6) : le crabe de la carte est vert, celui du récif et de la boutique rouge orangé ; une enfant attentive peut croire que ce n'est pas le même animal. À refaire, à la prochaine fabrication des illustrations (elles sont faites à part : `app/assets/cards/`) ?
 - **Cartes** : illustrations et anecdotes du grand large **avant début février 2027**, des abysses **avant fin avril 2027**.
 - **Calendrier scolaire 2027-2028** dans `app/content/calendrier.json`, avant la rentrée 2027.
 - **Vérifier le programme** : la synthèse du programme 2024 transmise par le parent est une reformulation (incohérence sur 1/10) ; vérifier les indicateurs de fluence dans l'annexe 4 officielle avant d'en faire des objectifs chiffrés.
+
+- **L'étal : deux étiquettes de prix se chevauchent** (relecture du lot « Banc Android », constat 4) : à certains tirages, l'étiquette des huîtres (15 €) recouvre en partie celle de la sole (10 €) ; c'est la mise en page de la maquette de l'étal (`art/etal/`), identique sur toutes les tailles d'écran. Décaler les étiquettes dans la maquette ?

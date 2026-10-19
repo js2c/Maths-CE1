@@ -3,17 +3,24 @@
 // correspond à l'index, un texte de plusieurs phrases enchaîne ses fichiers, « réécouter » rejoue le
 // fichier, et un texte sans fichier n'est dit par aucune autre voix (il est noté). Échantillon : 40 phrases tirées de l'index.
 //   node tests/e2e/voix.mjs
-import { chromium, voixPermise } from "./navigateur.mjs";
+// BANC ANDROID, raccourcis : sans service worker
+// (raison : chaque cas part d'une base neuve, dans un navigateur neuf : la voix y est la vraie, mais installer l'application
+// (140 Mo, environ une minute) pour chaque cas n'apporterait rien à ce qu'il vérifie. L'application installée, relancée,
+// gelée, hors ligne, est éprouvée sur le banc Android (installation.mjs, journee.mjs).)
+import { chromium, voixPermise, demarrageTouche } from "./navigateur.mjs";
 import { readFileSync } from "node:fs";
 import { serve } from "../serve.mjs";
 
 const index = JSON.parse(readFileSync(new URL("../../app/assets/voix/index.json", import.meta.url))).phrases;
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: [] });
 const check = (ok, msg) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${msg}`); if (!ok) process.exitCode = 1; };
-const page = await (await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true })).newPage();
+const contexte = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }); await demarrageTouche(contexte);
+const page = await contexte.newPage();
 const errors = []; page.on("pageerror", (e) => errors.push(e.message));
 await page.goto(url + "?nosw"); await page.waitForFunction(() => window.__ready !== undefined);
+// (lot « Banc Android » : l'écran de démarrage est touché pour de vrai, la bienvenue est dite ; on attend qu'elle finisse)
+await page.waitForTimeout(500); await page.waitForFunction(() => !window.__app.voice.speaking, null, { timeout: 30000 });
 
 // 1. chaque fichier de l'échantillon se décode et dure ce que dit l'index
 const keys = Object.keys(index), sample = Array.from({ length: 40 }, (_, i) => keys[Math.floor((i * keys.length) / 40)]);

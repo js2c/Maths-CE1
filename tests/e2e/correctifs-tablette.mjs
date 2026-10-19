@@ -11,6 +11,12 @@
 //      guidés, multiplication, dictée, défi), et l'ardoise jamais vide (relevé continu) ;
 // et, comme tous les parcours, aucune phrase dite sans fichier hors de l'inventaire (tests/e2e/navigateur.mjs).
 //   node tests/e2e/correctifs-tablette.mjs [--out dossier] [--seul 1280|1920]
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium, demarrageReel } from "./navigateur.mjs";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -20,7 +26,7 @@ const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k);
 const OUT = resolve(opt("--out", "tests/e2e/out/correctifs-tablette")), SEUL = opt("--seul", null);
 const T = JSON.parse(readFileSync(new URL("../../app/content/textes.json", import.meta.url)));
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: [] });
 const fail = [], check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 const BASE = "?nosw&son=non&voix=rapide";
 const resultat = { date: new Date().toISOString(), bulles: [], ardoise: [], clavier: [] };

@@ -50,7 +50,7 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (essai du parent du 16 octobre 2026, premier essai de l'application installée) : le lot « Correctifs de l'installation et de la veille »** (fiche 12). Le lot « Décisions sur les constats de l'agent » est fait et fusionné (PR #59), et toutes les voix sont fabriquées. **État : fait** (PR #61, le 17 octobre 2026 ; aucune phrase nouvelle ; causes trouvées et choix : `docs/JOURNAL-CONCEPTION.md`).
 
-**Puis (décision du parent du 17 octobre 2026) : le lot « Banc Android et recette en conditions réelles »** (fiche 13), après le lot « Correctifs de l'installation et de la veille » (PR #61). Les défauts du 16 octobre sont passés à travers toutes les recettes, parce que le banc d'essai neutralisait les conditions réelles : sans service worker, sans voix ni son, avec le Chromium d'un ordinateur. Ce lot construit un banc qui reproduit un vrai Android et en fait le banc par défaut de tous les lots. **État : à faire.**
+**Puis (décision du parent du 17 octobre 2026) : le lot « Banc Android et recette en conditions réelles »** (fiche 13), après le lot « Correctifs de l'installation et de la veille » (PR #61). Les défauts du 16 octobre sont passés à travers toutes les recettes, parce que le banc d'essai neutralisait les conditions réelles : sans service worker, sans voix ni son, avec le Chromium d'un ordinateur. Ce lot construit un banc qui reproduit un vrai Android et en fait le banc par défaut de tous les lots. **État : fait** (PR #63, le 19 octobre 2026 ; aucune phrase nouvelle ; décisions du parent du 19 octobre : les téléphones restent tels quels, option A, la mise en page « téléphone » notée comme évolution possible ; le sélecteur de difficulté ne part plus seul quand l'enfant a choisi l'exercice).
 
 **Pourquoi cet ordre.**
 
@@ -108,7 +108,8 @@ Ne reprendre qu'après la réponse du parent. Ses décisions vont dans `docs/JOU
 1. **Technique**
    - Lancer `npm test`. Seul échec admis : les phrases sans fichier, listées.
    - Lancer `node tools/precache.mjs --check`.
-   - Lancer tous les parcours `tests/e2e/*.mjs`. Ceux qui échouent sont relancés sur `main` : un échec qui existe déjà sur `main` est signalé comme tel, un échec propre à la branche est corrigé.
+   - Lancer tous les parcours, **l'un après l'autre**, sur le banc Android (lot « Banc Android et recette en conditions réelles », fiche 13) : `node tests/e2e/tous.mjs` (bilan dans `tests/e2e/out/tous/bilan.md`). Rien d'autre de lourd ne tourne pendant ce temps. Un échec est relancé une seule fois, sur `main` (`--racine` sur une copie de `main`), pour savoir s'il y existe déjà : il est alors signalé comme tel ; un échec propre à la branche est corrigé. **Aucun échec intermittent n'est accepté sans cause trouvée.**
+   - Sur le banc Android (`tests/e2e/appareils.mjs`) : la journée d'usage courte sur la tablette de référence (`node tests/e2e/journee.mjs --court`), l'enfant imprévisible sur le banc (`node tests/e2e/enfant.mjs --android --graines 5`), et le parcours du lot aussi sur le profil `petit-smartphone` pour les écrans qu'il touche (taille réelle des cibles : `tests/e2e/cibles.mjs`). Un parcours nouveau qui prend un raccourci (voix rapide, sans service worker…) le déclare en tête de son fichier, avec sa raison (`tests/unit/banc.test.mjs`).
    - Mesurer le temps d'image avec `tests/e2e/perf.mjs`, avant et après le lot.
 2. **Fonctionnelle** (`docs/SPEC.md`, section 14) :
    - lancer la simulation par profil ;

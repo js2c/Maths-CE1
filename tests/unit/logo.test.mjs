@@ -14,10 +14,11 @@ test("les images du logo, du bouton et les icônes sont celles des maquettes (re
   assert.deepEqual(ecarts, []);
   for (const [, d] of COPIES) assert.ok(existsSync(new URL(`../../app/${d}`, import.meta.url)), d);
   for (const f of RETIRES) assert.ok(!existsSync(new URL(`../../app/${f}`, import.meta.url)), `${f} : l'ancienne icône de la pieuvre`);
-  // le logo n'est plus dessiné dans la planche « demarrage » (seule la barre y reste)
+  // le logo n'est plus dessiné dans la planche « demarrage » (seule la barre y reste ; lot « Banc Android » : et les deux dessins de
+  // « tourne ton téléphone », qui doivent être là dès le premier écran)
   const atlas = JSON.parse(read("app/assets/art/atlas.json"));
   assert.equal(atlas.sprites["demarrage.logo"], undefined);
-  assert.deepEqual(Object.keys(atlas.sprites).filter((k) => atlas.sprites[k].sheet === "demarrage").sort(), ["demarrage.barre.pleine", "demarrage.barre.vide"]);
+  assert.deepEqual(Object.keys(atlas.sprites).filter((k) => atlas.sprites[k].sheet === "demarrage").sort(), ["demarrage.barre.pleine", "demarrage.barre.vide", "demarrage.tourner.fleche", "demarrage.tourner.telephone"]);
 });
 
 test("les mouvements de l'écran de démarrage sont ceux de la maquette, avec ses valeurs", () => {

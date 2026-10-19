@@ -14,6 +14,15 @@ import { chromium as pw } from "../../art/node_modules/playwright-core/index.mjs
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { inventaire } from "../../tools/voix/inventaire.mjs";
+import { ARGS_ANDROID, optionsProfil, REFERENCE } from "./appareils.mjs";
+
+// (lot « Banc Android et recette en conditions réelles », point 2) LE BANC PAR DÉFAUT : chaque Chromium est lancé dans les
+// conditions d'un Android (tests/e2e/appareils.mjs, ARGS_ANDROID) : la lecture automatique refusée, 8 lecteurs de médias au
+// plus, WebGL ; un contexte ouvert sans taille d'écran reçoit le profil de la tablette de référence (s5e : 1 138 × 711,
+// densité 2,25, tactile, Chrome Android). Les options d'un parcours passent après : un parcours qui rétablit la lecture
+// automatique, ou qui prend la voix rapide, sans service worker ou sans son, le déclare en tête de son fichier
+// (« BANC ANDROID, raccourcis : … », tests/unit/banc.test.mjs). Le banc complet (application installée, relances, appareil
+// tué, gel, réseau, quota, budgets) : la classe Appareil d'appareils.mjs.
 
 // (lot « Recette de l'enfant et nettoyage des couches », point 1) LA COUVERTURE, pour l'inventaire des couches (docs/COUCHES.md) :
 // avec COUVERTURE=dossier, chaque page relève le JavaScript exécuté et les règles CSS utilisées (Chromium, par fonction et
@@ -67,6 +76,17 @@ const brancher = async (cible) => {
   return cible;
 };
 export const demarrageReel = (cible) => cible.addInitScript(() => { window.__demarrageAuto = false; });
+// (lot « Banc Android », point 2) l'écran de démarrage TOUCHÉ POUR DE VRAI, à chaque chargement de page, dès qu'il est prêt : le
+// toucher qui autorise la voix sur Android (la lecture automatique y est refusée). Pour les parcours qui jouent la vraie voix
+// sans essayer eux-mêmes l'écran de démarrage : ils restent écrits comme avant (`goto`, puis `__ready`).
+const toucheur = (page) => page.on("domcontentloaded", () => {
+  page.waitForSelector(".demarrage.pret", { timeout: 600000 }).then(async (h) => {
+    const b = await h.boundingBox(); if (!b) return;
+    const x = b.x + b.width / 2, y = b.y + b.height * 0.75;
+    if (page.context()._options?.hasTouch) await page.touchscreen.tap(x, y); else await page.mouse.click(x, y);
+  }).catch(() => {});
+});
+export const demarrageTouche = async (contexte) => { await demarrageReel(contexte); contexte.on("page", toucheur); for (const p of contexte.pages()) toucheur(p); };
 // (lot « Correctifs : passage de l'échauffement aux voiliers », point 10 : l'accueil est en deux touchers ; dans les parcours
 // écrits avant, un galet de l'accueil s'ouvre au premier toucher : `__accueilUnToucher`. Les parcours du lot, qui essaient
 // l'accueil réel, le remettent à false : accueilReel(contexte).)
@@ -74,17 +94,20 @@ export const accueilReel = (cible) => cible.addInitScript(() => { window.__accue
 // (lot « La boutique du récif » : les parcours de la boutique essaient le vrai bouton de fin de la récompense)
 export const finReelle = (cible) => cible.addInitScript(() => { window.__finSansBouton = false; });
 
+// (un contexte sans taille d'écran : la tablette de référence)
+const profilParDefaut = (o = {}) => (o.viewport === undefined ? { ...optionsProfil(REFERENCE), ...o } : o);
+const avecAndroid = (o = {}) => ({ ...o, args: [...ARGS_ANDROID(), ...(o.args ?? [])] });
 const envelopper = (browser) => {
   const newContext = browser.newContext.bind(browser), newPage = browser.newPage.bind(browser), close = browser.close.bind(browser);
-  browser.newContext = async (...a) => brancher(await newContext(...a));
-  browser.newPage = async (...a) => { const p = await newPage(...a); await brancher(p.context()); return demarrer(p); };
+  browser.newContext = async (o, ...a) => brancher(await newContext(profilParDefaut(o), ...a));
+  browser.newPage = async (o, ...a) => { const p = await newPage(profilParDefaut(o), ...a); await brancher(p.context()); return demarrer(p); };
   if (COUV) browser.close = async (...a) => { await Promise.all(browser.contexts().map(fermerPages)); return close(...a); };
   return browser;
 };
 export const chromium = {
   ...pw,
-  launch: async (...a) => envelopper(await pw.launch(...a)),
-  launchPersistentContext: async (...a) => brancher(await pw.launchPersistentContext(...a)),
+  launch: async (o, ...a) => envelopper(await pw.launch(avecAndroid(o), ...a)),
+  launchPersistentContext: async (dir, o, ...a) => brancher(await pw.launchPersistentContext(dir, profilParDefaut(avecAndroid(o)), ...a)),
   executablePath: () => pw.executablePath(),
 };
 

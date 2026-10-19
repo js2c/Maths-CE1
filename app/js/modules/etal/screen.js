@@ -269,7 +269,7 @@ export class EtalScreen {
       temps(); res.essais = 1; res.aide = this.aide;
       if (r.nsp) { res.nsp = true; res.code = "NSP"; }
       else { res.tape = Number(this.tape); const j = jugerRendu(q, res.tape); res.ok = j.ok; res.code = j.code ?? null; }
-      this.pave(false);
+      this.pave(false); this.signaler(res);
       await this.finRendre(q, res, g); if (!vivant()) return mort();
       return this.fin(res);
     }
@@ -281,10 +281,12 @@ export class EtalScreen {
       if (r.nsp) { res.nsp = true; res.code = "NSP"; break; }
       res.essais = essai;
       const vs = api.soucoupe(); if (essai === 1) res.soucoupe = vs; else res.soucoupe2 = vs;
-      await this.compter(effet, g); if (!vivant()) return mort();
+      // (la reprise à la question près, relecture : la réponse jugée et notée dès la coche, avant que le pêcheur ne compte)
       const j = juger(cfg, q, vs);
-      if (j.ok) { res.ok = essai === 1; res.corrigee = essai > 1; if (j.rendu) res.rendu = j.rendu; await this.vendu(q, j, g); if (!vivant()) return mort(); return this.fin(res); }
-      if (!res.code) res.code = j.code;
+      if (j.ok) { res.ok = essai === 1; res.corrigee = essai > 1; if (j.rendu) res.rendu = j.rendu; } else if (!res.code) res.code = j.code;
+      this.signaler(res);
+      await this.compter(effet, g); if (!vivant()) return mort();
+      if (j.ok) { await this.vendu(q, j, g); if (!vivant()) return mort(); return this.fin(res); }
       app.sound?.play("erreur"); ocean.mascotte.play("encourager");
       const T = app.text.data;
       // deuxième essai : compléter (pas assez), ou valider de nouveau après que le pêcheur a rendu ce qui était en trop
@@ -308,9 +310,12 @@ export class EtalScreen {
       }
       break;
     }
+    this.signaler(res);
     await this.correction(q, cfg, res, g); if (!vivant()) return mort();
     return this.fin(res);
   }
+  // (décision du parent du 17 octobre 2026, la reprise à la question près) la réponse est notée dès qu'elle est donnée, avant la correction (la première erreur, remplacée ensuite par le bilan) : le résultat tel que `fin` le rendrait
+  signaler(res) { this.app.surReponse?.({ ...res, listens: this.app.voice.listens, code: res.nsp ? "NSP" : res.ok ? null : res.code }); }
   fin(res) {
     const { app } = this;
     res.listens = app.voice.listens; res.correctionPassee = !!this.skippedOnce;

@@ -2,7 +2,10 @@
 // bulles sans texte (dessins de l'atelier, art/src/canvas-core/sea/selector.ts) : des vagues de plus en plus
 // grosses et ce qu'elles rapportent en étoiles de mer (½, 1, 1½, 2). Le cran conseillé est entouré d'une lueur
 // et choisi d'avance. Toucher une bulle la choisit et la voix dit ce qu'elle rapporte ; la grosse coche
-// valide ; sans toucher pendant `attenteS` secondes, la séance commence sur le cran affiché. Le parent peut
+// valide ; sans toucher pendant `attenteS` secondes, la séance commence sur le cran affiché (seulement après « jouer » : quand
+// l'enfant a choisi l'exercice, `attenteS` est nul et rien ne démarre sans la coche ; décision du parent du 19 octobre 2026, lot
+// « Banc Android et recette en conditions réelles », constat 1 de l'agent : le toucher de l'enfant qui hésitait tombait sur la
+// première question, arrivée entre-temps, et comptait comme une réponse fausse). Le parent peut
 // limiter les crans proposés (réglage « cransAutorises » : { min, max }). Entraînement libre : les mêmes
 // bulles sans étoiles (pas de multiplicateur).
 import * as R from "../art/runtime.js";
@@ -18,7 +21,7 @@ export function allowedCrans(setting) {
 // le cran de départ : le conseillé s'il est autorisé, sinon le plus proche
 export const startCran = (allowed) => (allowed.includes("conseille") ? "conseille" : allowed[0] === "dur" || allowed[0] === "tresdur" ? allowed[0] : allowed.at(-1));
 
-// montre le sélecteur ; renvoie le nom du cran choisi. o : { allowed, stars (false : entraînement libre), attenteS,
+// montre le sélecteur ; renvoie le nom du cran choisi. o : { allowed, stars (false : entraînement libre), attenteS (null : pas de départ seul),
 // cls (classe de plus : « free » dans l'entraînement libre, rangé par la maison) }
 export async function chooseCran(app, { allowed = CRANS, stars = true, attenteS = 15, cls = "" } = {}) {
   const { sprites, voice, text } = app;
@@ -42,7 +45,7 @@ export async function chooseCran(app, { allowed = CRANS, stars = true, attenteS 
   const said = (name) => (stars ? text.data.cran[name] : text.data.cranLibre[name]);
   const name = await new Promise((res) => {
     let timer = null;
-    const arm = () => { clearTimeout(timer); timer = setTimeout(() => res(cur), attenteS * 1000); };
+    const arm = () => { clearTimeout(timer); if (attenteS) timer = setTimeout(() => res(cur), attenteS * 1000); };
     // (lot 3 ter, T3 : au lever du doigt ; l'appui long montre ce que change le cran, sans étoiles dans l'entraînement libre)
     bubbles.forEach((b) => onBrief(app, b, () => { cur = b.dataset.cran; pop(b); show(); voice.stop(); voice.say(said(cur)); arm(); }, `${stars ? "cran" : "cranLibre"}.${b.dataset.cran}`));
     onBrief(app, check, () => { clearTimeout(timer); pop(check); res(cur); }, "validerChoix");

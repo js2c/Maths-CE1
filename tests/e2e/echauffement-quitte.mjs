@@ -4,6 +4,11 @@
 // (« Tape la réponse, puis touche la coche verte. ») sur l'écran suivant. Cause : à l'abandon, les rangements de l'étape
 // coupaient la phrase en cours (`voice.stop()`), qui se terminait alors comme dite, avant que la voix soit abandonnée.
 //   node tests/e2e/echauffement-quitte.mjs
+// BANC ANDROID, raccourcis : sans service worker, son coupé
+// (raison : chaque cas part d'une base neuve, dans un navigateur neuf : la voix y est la vraie, mais installer l'application
+// (140 Mo, environ une minute) pour chaque cas n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. L'application installée, relancée, gelée, hors ligne, est éprouvée sur le banc Android
+// (installation.mjs, journee.mjs).)
 import { readFileSync } from "node:fs";
 import { chromium } from "./navigateur.mjs";
 import { serve } from "../serve.mjs";

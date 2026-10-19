@@ -198,9 +198,11 @@ export class VoiliersScreen {
     api.mer(q.mer);
     const arrive = api.arrivee({ num: q.num }).then(g);
     // l'annonce de la mer, puis le nombre (la consigne d'abord au premier bateau) ; « réécouter » redit la consigne et le nombre
-    if (q.annonce) voice.say(T.voiliersMer[q.annonce]);
+    // (un bateau repris après un rechargement, session/notion.js : la mer agitée annoncée et la consigne entière, comme au premier)
+    const annonce = q.annonce ?? (q.repris ? { vent: "vent", pirates: "pirates" }[q.mer] ?? null : null);
+    if (annonce) voice.say(T.voiliersMer[annonce]);
     const consigne = `${T.voiliersConsigne} ${q.num}`;
-    const dit = voice.say(q.premier ? consigne : String(q.num), { instruction: true }); voice.instruction = consigne;
+    const dit = voice.say(q.premier || q.repris ? consigne : String(q.num), { instruction: true }); voice.instruction = consigne;
     if (q.guide) return this.exemple(q, arrive, dit, vivant);
     this.locked = false;
     await arrive; if (!vivant()) return new Promise(() => {});
@@ -217,9 +219,10 @@ export class VoiliersScreen {
         this.attend = false; this.onNsp = null; this.nsp.style.visibility = "hidden";
         if (!vivant()) return new Promise(() => {});
         temps(); voice.stop();
-        if (r.nsp) { res.nsp = true; await this.montrer(b, k, q, { nsp: true, derniere }); return { premier: false, fin: false, nsp: true }; }
+        // (la reprise à la question près, relecture : « je ne sais pas » et le bateau rattrapé notés aussi avant ce qui suit)
+        if (r.nsp) { res.nsp = true; app.surReponse?.({ ...res, ok: false, code: "NSP", listens: voice.listens }); await this.montrer(b, k, q, { nsp: true, derniere }); return { premier: false, fin: false, nsp: true }; }
         if (r.rattrape) {
-          res.rattrape = true; ocean.mascotte.play("encourager");
+          res.rattrape = true; app.surReponse?.({ ...res, ok: false, code: res.code ?? "rattrape", listens: voice.listens }); ocean.mascotte.play("encourager");
           await Promise.all([this.dire(T.voiliersMer.rattrape), api.couler()]).then(g);
           return { premier: false, fin: false, rattrape: true };
         }
@@ -227,6 +230,8 @@ export class VoiliersScreen {
         if (r.c === k) return { premier: essai === 1, fin: true };
         // une erreur : la bouée (ou les bouées du passage) s'allume, la voix explique
         if (!res.code) res.code = q.double ? (b === q.bouees ? "V4" : "V3") : codeErreur(r.c, k);
+        // (décision du 17 octobre 2026 : la réponse notée dès la première erreur, avant la correction ; remplacée par le bilan)
+        app.surReponse?.({ ...res, ok: false, listens: voice.listens });
         sound?.play("erreur"); ocean.mascotte.play("encourager");
         const e = explication(b, r.c, q.num), phrase = fill(T.voiliersErreur[e.cle], { b: e.b });
         api.allumer(e.cle.endsWith("Bouee") ? [e.bouee] : [r.c - 1, r.c].filter((i) => i >= 0 && i < b.length));
@@ -271,6 +276,8 @@ export class VoiliersScreen {
     if (q.double) { res.ok = !!(r1.premier && r2?.premier); res.demi = !res.ok && !!(r1.fin && r2?.fin) && !!(r1.premier || r2?.premier); res.corrigee = !res.ok && !!(r1.fin && r2?.fin); }
     else { res.ok = !!r1.premier; res.corrigee = !res.ok && !!r1.fin; }
     const last = q.double ? r2 : r1;
+    // (décision du parent du 17 octobre 2026, la reprise à la question près) la réponse est notée dès qu'elle est donnée, avant le « bravo »
+    app.surReponse?.({ ...res, code: res.nsp ? "NSP" : res.ok ? null : res.code ?? (res.rattrape ? "rattrape" : null), listens: voice.listens });
     if (last?.fin) {
       // rangé : il passe ; « Bravo ! » (devant les pirates : « Bravo, tu as semé les pirates ! »), ou entre deux bouées rondes
       const b = q.double ? q.rangee2 : q.bouees, k = q.double ? q.k2 : q.k, e = entre(b, k);

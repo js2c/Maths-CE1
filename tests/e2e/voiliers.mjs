@@ -11,6 +11,12 @@
 //  7. « jouer » avec les voiliers imposés par le parent ; l'espace parent (le bloc des voiliers, le journal des erreurs) ;
 //  8. l'entraînement libre (« Encore ! ») sur les voiliers, quitté par la maison.
 //   node tests/e2e/voiliers.mjs [--out dossier] [--grand] (--grand : seulement 1920 × 1200)
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -18,7 +24,7 @@ import { serve } from "../serve.mjs";
 
 const args = process.argv.slice(2), OUT = resolve(args.includes("--out") ? args[args.indexOf("--out") + 1] : "tests/e2e/out/voiliers"); mkdirSync(OUT, { recursive: true });
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 const TAILLES = args.includes("--grand") ? [[1920, 1200]] : [[1280, 800], [1920, 1200]];
 const open = async (q, [w, h], prep = null) => {
@@ -234,6 +240,8 @@ for (const T of TAILLES) {
   await page.waitForSelector(".cran", { timeout: 15000 }); await page.waitForTimeout(400);
   await shot(page, "19a-crans", T);
   await page.tap(".cran", { force: true }).catch(() => {});
+  // (décision du parent du 19 octobre 2026 : l'exercice choisi, le sélecteur ne part plus seul ; la coche le lance)
+  await page.waitForTimeout(400); await page.tap(".cran-ok", { force: true });
   await waitBoat(page); const q = await question(page);
   const etoiles0 = await page.evaluate(() => window.__app.rewards.total);
   await deposer(page, q.k); await waitBoat(page);

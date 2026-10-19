@@ -24,7 +24,7 @@
 //    essayé en même temps, et sans l'un ni l'autre une page de secours, écrite ici, dit « Toucher pour réessayer » ;
 //  - ce qui arrive au service worker (version, installation, activation, erreurs) est noté dans le journal technique de
 //    l'espace parent (point 5 ; la même base que engine/journal.js).
-const VERSION = "bf57320cd294";
+const VERSION = "44f36e97c683";
 const CACHE = `ocean-${VERSION}`;
 const PAQUET = 32, ESSAIS = 4;
 // la résolution des planches d'images de cet écran (main.js : sw.js?r=1 ou ?r=2) : on ne met en cache que
@@ -76,6 +76,13 @@ self.addEventListener("install", (e) => {
     try {
     const list = await (await chercher("sw-files.json", { cache: "no-store" })).json(), all = new Set(list.files);
     const files = list.files.filter((f) => useful(f, all));
+    // (lot « Banc Android et recette en conditions réelles », point 2 : LE STOCKAGE) la place qu'il faut, comparée à celle que le
+    // navigateur accorde : si l'application ne tient pas, rien n'est téléchargé (chaque lancement retéléchargerait 135 Mo pour
+    // rien) ; c'est noté « stockage plein », que l'espace parent montre au parent (engine/stockage.js) ; l'application reste
+    // utilisable tant que le réseau est là
+    const besoin = list.octets?.[RES ?? "2"] ?? 0, est = await self.navigator?.storage?.estimate?.().catch(() => null);
+    const deja0 = await caches.has(CACHE);
+    if (besoin && est && est.quota - est.usage < besoin * 1.05 && !deja0) throw Object.assign(new Error(`il faut ${Math.round(besoin / 1e6)} Mo, il en reste ${Math.round((est.quota - est.usage) / 1e6)}`), { name: "QuotaExceededError", besoin, libre: est.quota - est.usage });
     // (le cache de cette version peut déjà contenir une partie des fichiers : une tentative précédente interrompue)
     const cache = await caches.open(CACHE), deja = new Set((await cache.keys()).map((r) => new URL(r.url).pathname));
     const base = new URL("./", location.href).pathname, reste = files.filter((f) => !deja.has(base + (f === "./" ? "" : f)));
@@ -86,7 +93,16 @@ self.addEventListener("install", (e) => {
       }));
     }
     await noter("service worker", "installation finie", { fichiers: files.length, nouveaux: reste.length, dureeMs: Date.now() - t0 });
-    } catch (err) { await noter("service worker", "installation interrompue", { erreur: String(err?.message ?? err), dureeMs: Date.now() - t0 }); throw err; }
+    } catch (err) {
+      // le stockage plein : le cache inachevé de cette version est effacé (la place va aux données de l'enfant, que la page
+      // enregistre dans la même réserve), et c'est noté pour le parent
+      if (err?.name === "QuotaExceededError" || /quota/i.test(String(err?.message))) {
+        const est = await self.navigator?.storage?.estimate?.().catch(() => null);
+        await caches.delete(CACHE).catch(() => {});
+        await noter("service worker", "stockage plein", { erreur: String(err?.message ?? err), besoinMo: err.besoin ? Math.round(err.besoin / 1e6) : null, libreMo: est ? Math.round((est.quota - est.usage) / 1e6) : null, quotaMo: est ? Math.round(est.quota / 1e6) : null, dureeMs: Date.now() - t0 });
+      } else await noter("service worker", "installation interrompue", { erreur: String(err?.message ?? err), dureeMs: Date.now() - t0 });
+      throw err;
+    }
   })());
 });
 // la version prend la main : au lancement suivant (plus aucune page de l'ancienne), ou quand la page le demande, pendant

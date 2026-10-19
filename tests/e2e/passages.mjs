@@ -13,6 +13,12 @@
 // bouton de l'échauffement, double « je ne sais pas ».
 //   node tests/e2e/passages.mjs [--court] [--lent 6] [--seul choisir,jouer,pause,etapes] [--out dossier]
 //   --court : un moment par exercice (pour un contrôle rapide) ; --lent N : processeur ralenti N fois (tablette lente)
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { accueilReel, chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -22,7 +28,7 @@ const args = process.argv.slice(2), arg = (k, d = null) => (args.includes(k) ? a
 const OUT = resolve(arg("--out", "tests/e2e/out/passages")); mkdirSync(OUT, { recursive: true });
 const COURT = args.includes("--court"), LENT = Number(arg("--lent", 1)), seul = arg("--seul")?.split(","), part = (p) => !seul || seul.includes(p);
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 const T = (ms) => ms * Math.max(1, LENT / 2);
 
@@ -126,11 +132,15 @@ async function cas(nom, ex, chemin, m) {
       await entrer(page, `.choix-ex[data-key="${ex.id}"]`); await page.waitForSelector(".choix-tuile", { timeout: T(15000) });
       await entrer(page, '.choix-tuile[data-key="1"]');
       await etape(page, "echauffement", ex.module);
-      // (lot « Correctifs de l'installation et de la veille » : le nombre est écrit, à l'instant où l'échauffement commence et 0,5 s après :
-      // 0 au premier relevé est un bouton pas encore posé ; 2, un reste de l'échauffement quitté, le défaut que ce contrôle surveille)
-      const nb0 = await page.evaluate(() => document.querySelectorAll(".skip-warmup").length); await page.waitForTimeout(T(500));
-      const nb1 = await page.evaluate(() => document.querySelectorAll(".skip-warmup").length);
-      check(nb0 <= 1 && nb1 === 1, `${nom} : un seul bouton « passer l'échauffement » (${nb0} au début de l'échauffement, ${nb1} 0,5 s après)`);
+      // (lot « Correctifs de l'installation et de la veille » : le nombre est écrit, à l'instant où l'échauffement commence et 0,5 s après ;
+      // lot « Banc Android », la cause des échecs d'une fois sur deux : la séance annonce l'étape avant que l'échauffement ait lu ses
+      // faits dans la base et posé son bouton ; 0 au premier relevé est un bouton pas encore posé, et sous la charge il pouvait l'être
+      // encore 0,5 s après. Le contrôle attend donc le bouton (10 s au plus), puis vérifie qu'il est seul pendant 0,5 s : 2 est le
+      // défaut surveillé, un reste de l'échauffement quitté)
+      const nb0 = await page.evaluate(() => document.querySelectorAll(".skip-warmup").length);
+      const pose = await page.waitForFunction(() => document.querySelectorAll(".skip-warmup").length > 0, null, { timeout: T(10000), polling: 50 }).then(() => true, () => false);
+      const nbs = []; for (let k = 0; k < 6; k++) { nbs.push(await page.evaluate(() => document.querySelectorAll(".skip-warmup").length)); await page.waitForTimeout(T(100)); }
+      check(pose && nb0 <= 1 && nbs.every((n) => n === 1), `${nom} : un seul bouton « passer l'échauffement » (${nb0} au début de l'échauffement, puis ${[...new Set(nbs)].join(" ou ")} une fois posé)`);
       await auMoment(page, m);
     }
     await etape(page, "notion", ex.module);

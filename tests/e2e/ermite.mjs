@@ -2,6 +2,12 @@
 // 1280 × 800, densité 2) : ses gestes (repos, sortir, montrer, se réjouir, changer de coquille), le cadre de
 // 10, la maison des nombres, le double + 1. Captures dans tests/e2e/out/ermite ; échoue sur une erreur de page.
 //   node tests/e2e/ermite.mjs
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";

@@ -4,6 +4,12 @@
 // calque : « The input ImageBitmap has been detached ». Le parcours touche « passer » juste après que la ligne corrigée est
 // montrée, plusieurs fois.
 //   node tests/e2e/passer-correction.mjs
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { serve } from "../serve.mjs";
 

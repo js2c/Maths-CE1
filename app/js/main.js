@@ -4,6 +4,8 @@
 // la lune en décor et la bulle « Encore ! » de l'entraînement libre), le récif et l'album ; le premier
 // toucher débloque la voix et lance la séance (session/session.js). Pendant la séance, la maison (en haut
 // à gauche) la met en pause ; la frise d'avancement montre où l'on en est.
+// (lot « Banc Android », point 3) en premier : l'état de la page compte ce qui est créé dès les modules suivants
+import { details as detailsPage, mesurer as mesurerPage } from "./engine/etat-page.js";
 import { repriseText } from "./engine/toucher.js";
 import { Ocean, rng } from "./engine/ocean.js";
 import { Bulle, MASCOTTE } from "./engine/bulle.js";
@@ -59,6 +61,7 @@ import { ParentSpace, parentLogo } from "./parent/parent.js";
 import { chargerLogo, Demarrage } from "./session/demarrage.js";
 import { fermerTout, Portee } from "./engine/portee.js";
 import { suivreMiseAJour } from "./engine/miseajour.js";
+import { installerTourner } from "./engine/tourner.js";
 import { noter as noterTech, recents as journalTechnique } from "./engine/journal.js";
 
 // les vidéos de la mascotte (engine/mascotte.js, CLIPS) : autant de pas dans la barre de chargement
@@ -96,6 +99,8 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !loc
 const [atlas, logo] = await Promise.all([loadAtlas(), chargerLogo(stage.px).catch(() => null)]);
 const sprites = new Sprites(atlas, stage.px);
 await sprites.load("demarrage").catch(() => {});
+// (lot « Banc Android », point 5) en portrait (un téléphone tenu droit, dans un onglet) : « tourne ton téléphone »
+installerTourner(atlas);
 const demarrage = new Demarrage(stage, sprites, logo);
 performance.mark("demarrage-visible");
 // (point 1) l'écran de démarrage est là : le secours de index.html s'en va ; le temps depuis le lancement (l'ouverture de la page)
@@ -103,7 +108,7 @@ const premiereImageMs = Math.round(performance.now());
 document.getElementById("chargement")?.remove();
 // (la version : écrite sur l'écran de démarrage, et notée avec chaque phrase sans voix, point 12)
 let versionApp = null;
-json("version.json").then((v) => { versionApp = v?.version ?? null; demarrage.infos(versionApp); }, () => demarrage.infos(null));
+json("version.json").then((v) => { versionApp = v?.version ?? null; Session.version = versionApp; demarrage.infos(versionApp); }, () => demarrage.infos(null));
 // (lot « Mascotte ») le journal des raccords de la mascotte : gardé pour la recette (combien de fondus forcés)
 const journalMascotte = []; window.__journalMascotte = journalMascotte;
 const videoChargee = demarrage.annoncer(MASCOTTE_VIDEOS, 1);
@@ -123,8 +128,12 @@ stage.ticks.add((t, dt) => { lagon.update(t, dt); lagon.render(); ocean.update(t
 // ce temps est laissé au chargement et aux mouvements du logo)
 stage.paused = true;
 stage.start();
-// un changement d'échelle (rotation, fenêtre) demanderait d'autres planches : on recharge simplement
-stage.onResize(() => { if (Math.abs(stage.px - sprites.px) > 0.01) location.reload(); });
+// (lot « Banc Android et recette en conditions réelles », demande du parent du 17 octobre 2026) PLUS JAMAIS DE RECHARGEMENT sur un
+// changement de taille de la fenêtre (avant : la page se rechargeait dès que l'échelle changeait, par exemple quand l'enfant
+// faisait apparaître les boutons d'Android) : la densité des images est fixée au lancement (engine/stage.js, `px`), la scène
+// se remet à l'échelle (`k`) ; chaque changement est noté dans le journal technique
+let tailleNotee = null;
+stage.onResize(() => { const t = `${innerWidth}×${innerHeight}`; if (t !== tailleNotee) { tailleNotee = t; noterTech("écran", "taille de la fenêtre changée", { ecran: t }); } });
 
 const rnd = rng(Date.now() & 0xffffffff);
 // pour les tests et les captures : ?module=2 ?cran=dur ?surprise=visite:tortue ?voix=rapide ?niveau=N ?format=lire|sauter|placer|estimer ?questions=N ?guides=N ?faits=N ?sans=etape ?sansLecon ?lecon=L1 ?etoiles=N
@@ -207,6 +216,9 @@ addEventListener("unhandledrejection", (ev) => { const e = { message: String(ev.
 const rewards = await new Rewards(store, cartes, calendrier).load();
 if (P.get("etoiles")) { rewards.st.total = Number(P.get("etoiles")); await rewards.save(); } // tests : un trésor de départ
 const app = { stage, sprites, ocean, lagon, voice, sound, text, rnd, atlas, store, rewards, lecons, cartes, calendrier, clock, legendes, line: new LineView(stage), bulle, fleche, portees: new Set() };
+// (décision du parent du 17 octobre 2026, la reprise à la question près) la réponse de l'enfant, signalée par l'écran dès qu'elle
+// est donnée, avant la correction : notée au point de reprise de la séance (session/notion.js)
+app.surReponse = (r) => app.session?.surReponse?.(r);
 // (lot « Recette de l'enfant », point 0.4) chaque changement de qualité de la mer des voiliers est noté pour l'espace parent
 // (« Qualité des voiliers » : la date, la version, de quelle qualité à quelle autre, le temps d'image moyen ; les 50 derniers)
 let notesQualite = Promise.resolve();
@@ -306,8 +318,9 @@ const handlers = {
       const s = forced ? { type: forced[0], id: forced[1] } : drawSurprise(rnd, cartes.surprise, prev);
       if (s) { session.rec.surprise = s; await session.save(); await playSurprise(app, s); }
     }
-    // lot 2 : le sélecteur de difficulté (?cran=dur pour les tests : sans l'écran)
-    if (seance.selecteur?.actif) await session.setCran(P.get("cran") ?? await chooseCran(app, { allowed: allowedCrans(await store.setting("cransAutorises")), attenteS: seance.selecteur.attenteS }));
+    // lot 2 : le sélecteur de difficulté (?cran=dur pour les tests : sans l'écran) ; il ne part seul qu'après « jouer » : l'exercice
+    // choisi (« choisir », « À toi ! »), rien ne démarre sans la coche (décision du parent du 19 octobre 2026)
+    if (seance.selecteur?.actif) await session.setCran(P.get("cran") ?? await chooseCran(app, { allowed: allowedCrans(await store.setting("cransAutorises")), attenteS: session.choix ? null : seance.selecteur.attenteS }));
   },
   // échauffement : faits d'addition dus (familles 1 et 2 au lot 1), précédés des questions du temps de base
   // (lot « Correctifs : passage de l'échauffement aux voiliers », point 1) l'échauffement a sa PORTÉE (engine/portee.js) : quelle
@@ -386,8 +399,8 @@ async function notion2(ctx) {
   ctx.portee.fin(() => { screen.notion = false; screen.hermit = null; if (app.hermit === hermit) app.hermit = null; hermit.remove(); });
   hermit.show(true); hermit.play("sortir");
   screen.show(true); screen.keys(false);
-  await voice.say(text.pick("notionFaits"));
-  const ask = { ask: async (q, cfg, o) => screen.askNotion(q, cfg, o) };
+  if (!session.reprendAuPoint("notion")) await voice.say(text.pick("notionFaits")); // (repris à la question près : la phrase d'entrée n'est pas redite)
+  const ask = { ask: async (q, cfg, o) => screen.askNotion(q, cfg, o), finaliser: (q, r) => screen.finaliserNotion(q, r) };
   try {
     const res = await runNotion({ ...ctx, step, runner, screen: ask, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
     for (const e of res?.events ?? []) { if (e.type === "acquise" && !e.parent && !(runner.events ?? []).some((x) => x.famille === e.famille)) await session.levelUp(); (session.rec.familles ??= []).push(e); }
@@ -409,9 +422,10 @@ async function notion3(ctx) {
   const fs = (app.facts ??= new FactsScreen(app, module2)); fs.show(true); fs.keys(false);
   // (lot 3 bis, B4) « Le petit poisson va t'aider » n'est dit que s'il est à l'écran : aux niveaux du mur, le mur et le poisson
   // sont montrés le temps de la phrase ; sinon, une phrase sans le poisson
-  if (module3.niveaux.find((c) => c.niveau === runner.niveau)?.support === "mur") await app.calc.introWall(text.pick("notionCalculMur"));
+  if (session.reprendAuPoint("notion")) { /* (repris à la question près : la phrase d'entrée n'est pas redite) */ }
+  else if (module3.niveaux.find((c) => c.niveau === runner.niveau)?.support === "mur") await app.calc.introWall(text.pick("notionCalculMur"));
   else await voice.say(text.pick("notionCalcul"));
-  await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.calc.askNotion(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
+  await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.calc.askNotion(q), finaliser: (q, r) => app.calc.finaliser(q, r) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
 }
 // LOT « MULTIPLICATION » (docs/SPEC.md, section 7 ter) : la notion du jour sur la multiplication : l'écran des additions
 // (ardoise, pavé) et les rangées de poissons (modules/mult/screen.js) ; la leçon d'entrée du niveau (L13, L14), sinon un
@@ -425,8 +439,8 @@ async function notion5(ctx) {
   await sprites.load("aides"); ctx.portee.fin(() => app.mult.leave());
   if (ctx.portee.fermee) return fige();
   const fs = (app.facts ??= new FactsScreen(app, module2)); fs.show(true); fs.keys(false);
-  await voice.say(text.pick("notionMult"));
-  await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.mult.askNotion(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
+  if (!session.reprendAuPoint("notion")) await voice.say(text.pick("notionMult")); // (repris à la question près : la phrase d'entrée n'est pas redite)
+  await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.mult.askNotion(q), finaliser: (q, r) => app.mult.finaliser(q, r) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
 }
 // LOT « LES VOILIERS » (docs/SPEC.md, section 7 bis) : la notion du jour sur le jeu des voiliers, choisi par l'enfant ou
 // imposé par le parent : la scène de la maquette (modules/voiliers/screen.js), un bateau par question, l'exemple guidé la
@@ -458,7 +472,7 @@ async function notion6(ctx) {
   // (inscrit après l'installation : une étape quittée pendant qu'elle s'installait la range aussitôt)
   ctx.portee.fin(() => scr.leave()); if (ctx.portee.fermee) return fige();
   session.rec.etalMeteo = scr.meteoDepart ? "mauvais temps" : scr.orageA != null ? "orage en cours de partie" : "beau temps"; await session.save();
-  await voice.say(text.pick("etalNotion"));
+  if (!session.reprendAuPoint("notion")) await voice.say(text.pick("etalNotion")); // (repris à la question près : la phrase d'entrée n'est pas redite)
   await runNotion({ ...ctx, step, runner, screen: { ask: (q) => scr.ask(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
 }
 // LOT 3 TER (docs/SPEC-LOT3TER.md, T1 ; décision du parent) : « PASSER L'ÉCHAUFFEMENT ». Un bouton dédié (son propre
@@ -510,6 +524,9 @@ for (const [id, h] of Object.entries(handlers)) handlers[id] = async (ctx) => {
   const portee = new Portee(id, app.portees);
   portee.fin(() => { app.fermerEcrans(); app.line.clear(); app.line.fxClear(); app.aidBoard?.clear(); fleche.cacher(); ocean.mascotte.release(); });
   portee.fin(() => lessons.abandon()); // (rangée la première : la leçon utilise encore l'écran de la ligne)
+  // (lot « Banc Android et recette en conditions réelles », journée d'usage du petit smartphone : `app.runner`, gardé après
+  // l'étape, retenait par ses fonctions l'écran des additions détruit et le bernard-l'ermite ; Appareil.retenteurs)
+  portee.fin(() => { app.runner = null; });
   try { return await h({ ...ctx, portee }); } finally { portee.fermer(); }
 };
 // chaque gain d'étoiles pendant les questions : les étoiles s'envolent des bulles-réponses vers le compteur
@@ -959,8 +976,10 @@ setInterval(() => { const e = [mode ?? "accueil", mode === "seance" ? app.sessio
 // (points 2 et 3) L'ÉTAT DE LA PAGE, toutes les 10 minutes et à chaque changement du niveau d'allègement : la mémoire (si Chrome la
 // donne), les lecteurs de médias qui ont une source (la voix, la mascotte ; leur épuisement est la piste du point 2), les calques
 // animés (acteurs) et le niveau d'allègement (la piste du point 3 : la mémoire graphique de la tablette)
-const etatPage = () => ({ allegement: stage.perf.level, memoireMo: performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1e6) : null,
-  medias: [...document.querySelectorAll("audio, video")].filter((m) => m.getAttribute("src")).length + (voice.lecteursActifs?.() ?? 0), calques: document.querySelectorAll("canvas").length, lectureRefusees: voice.refus });
+// (lot « Banc Android et recette en conditions réelles », point 3 : la mesure est celle de engine/etat-page.js, la même que celle
+// des budgets du banc d'essai, tests/e2e/appareils.mjs ; `window.__etatPage` pour le banc)
+const etatPage = () => ({ allegement: stage.perf.level, ...mesurerPage(), lecteursVoix: voice.lecteursActifs?.() ?? 0, lectureRefusees: voice.refus });
+window.__etatPage = etatPage; window.__etatPageDetails = detailsPage;
 let allegementNote = 0;
 setInterval(() => noterTech("état", "état de la page", etatPage()), 600000);
 setInterval(() => { if (stage.perf.level !== allegementNote) { allegementNote = stage.perf.level; noterTech("état", allegementNote ? `affichage allégé (niveau ${allegementNote} sur 2 : la tablette peine)` : "affichage complet de nouveau", etatPage()); } }, 2000);

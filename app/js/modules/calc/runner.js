@@ -98,7 +98,7 @@ export class Module3Runner {
   async record(r, cfg) {
     const q = r.q, events = [], code = r.nsp ? "NSP" : r.ok ? (r.lent || r.ms > this.lentMs ? "C2" : null) : classifyCalc(q, r.value);
     await this.store?.add("reponses", {
-      t: Date.now(), seance: this.seance, module: 3, niveau: q.niveau, question: calcQuestion(q), forme: q.forme, donnee: r.value, attendue: calcAnswer(q),
+      t: r.t ?? Date.now(), seance: this.seance, module: 3, niveau: q.niveau, question: calcQuestion(q), forme: q.forme, donnee: r.value, attendue: calcAnswer(q),
       juste: !!r.ok, tempsMs: r.ms, ecoutes: r.listens, aide: !!r.aide, ...(q.aideDEmblee ? { aideDEmblee: true } : {}), erreur: code, revient: !!q.revient, guide: !!q.guide, notion: true,
       ...(r.correctionPassee ? { correctionPassee: true } : {}), ...(this.libre ? { libre: true } : {}), ...(q.cran && q.cran !== "conseille" ? { cran: q.cran } : {}),
     });

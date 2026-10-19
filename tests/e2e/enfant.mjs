@@ -16,14 +16,21 @@
 //  - le temps d'image (moyenne, 95e centile) ;
 // et, avec --fuite : après 20 tours accueil, jeu, accueil, le nombre d'éléments, de canvas, de minuteries et d'écouteurs
 // revient à celui du départ.
-//   node tests/e2e/enfant.mjs [--graines 4] [--depart 1] [--actions 80] [--lent 1] [--tablette] [--parallele 1] [--recharges N]
+//   node tests/e2e/enfant.mjs [--graines 4] [--depart 1] [--actions 80] [--lent 1] [--tablette] [--parallele 1] [--recharges N] [--android [--profil s5e]]
 //                             [--fuite] [--veille-longue] [--out dossier] [--rejouer fichier.json [--reduire]]
 //   --lent N : processeur ralenti N fois ; --tablette : 1138 × 711, densité 2,25 (la tablette du parent) ; --panne : le
 //   contrôle du contrôle (une touche orpheline et une erreur injectées : le parcours doit échouer)
 //   --rejouer : rejoue les actions enregistrées d'un défaut (out/…/defaut-*.json) ; --reduire : cherche la plus courte suite
 //   d'actions qui le montre encore (delta-debugging), et l'écrit à côté (…-reduit.json)
 // Version courte (tests de GitHub, .github/workflows/tests.yml) : node tests/e2e/enfant.mjs --graines 3 --actions 60
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : la version courte et la série de centaines de graines (tests de GitHub, recette de chaque lot) jouent des milliers
+// d'actions : à la vitesse réelle de la voix, sur l'application installée, elles dureraient des jours. La version Android
+// (`--android`) joue au contraire dans les conditions du banc : application installée, vraie voix, relances, gels, réseau
+// coupé.)
 import { accueilReel, chromium } from "./navigateur.mjs";
+import { CIBLES, REPONDRE } from "./jeu.mjs";
+import { Appareil, PROFILS, REFERENCE, depasse, resumeEtat, serveurBanc } from "./appareils.mjs";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { join, resolve } from "node:path";
@@ -32,10 +39,17 @@ import { serve } from "../serve.mjs";
 const args = process.argv.slice(2), arg = (k, d = null) => (args.includes(k) ? args[args.indexOf(k) + 1] : d);
 const GRAINES = Number(arg("--graines", 4)), DEPART = Number(arg("--depart", 1)), ACTIONS = Number(arg("--actions", 80)), LENT = Number(arg("--lent", 1));
 const TABLETTE = args.includes("--tablette"), PARALLELE = Number(arg("--parallele", 1)), FUITE = args.includes("--fuite"), VEILLE_LONGUE = args.includes("--veille-longue");
-const OUT = resolve(arg("--out", "tests/e2e/out/enfant")); mkdirSync(OUT, { recursive: true });
+const OUT = resolve(arg("--out", args.includes("--android") ? `tests/e2e/out/enfant-android/${arg("--profil", "s5e")}` : "tests/e2e/out/enfant")); mkdirSync(OUT, { recursive: true });
 const REJOUER = arg("--rejouer"), REDUIRE = args.includes("--reduire"), PANNE = args.includes("--panne");
 const IMPASSE_MS = 20000;
-const VUE = TABLETTE ? { width: 1138, height: 711, deviceScaleFactor: 2.25 } : { width: 1280, height: 800, deviceScaleFactor: 1 };
+// (lot « Banc Android et recette en conditions réelles », point 4) --android : l'enfant joue sur le banc Android (appareils.mjs) :
+// l'application installée (le profil d'un appareil, copié pour chaque graine), la vraie voix et le vrai son, la lecture
+// automatique refusée (l'écran de démarrage touché pour de vrai), le processeur du profil ralenti ; et, tirés au hasard, de
+// longues inactivités, des gels, la page cachée, des relances, le navigateur tué (Android ferme Chrome) et le réseau coupé ;
+// les budgets du banc contrôlés toutes les 10 actions. --profil : s5e par défaut.
+const ANDROID = args.includes("--android"), PROFIL = arg("--profil", REFERENCE);
+let VUE = TABLETTE ? { width: 1138, height: 711, deviceScaleFactor: 2.25 } : { width: 1280, height: 800, deviceScaleFactor: 1 };
+if (ANDROID) { const p = PROFILS[PROFIL]; VUE = { width: p.largeur, height: p.hauteur, deviceScaleFactor: p.densite }; }
 // une base d'un mois (des cartes dans l'album et le récif, des étoiles pour la boutique), fabriquée une fois
 const SAVE = join(OUT, "base-un-mois.json");
 if (!existsSync(SAVE)) execFileSync("node", ["tools/sauvegarde-test.mjs", "reel", "2", "4", "--sortie", SAVE], { stdio: "ignore" });
@@ -44,7 +58,7 @@ const BASE = JSON.parse(readFileSync(SAVE, "utf8"));
 const { srv, url } = await serve(0);
 // un Chromium par partie : partagé, son processeur graphique (logiciel, ici) servait toutes les parties en parallèle, et le temps
 // d'image d'une partie montait avec le nombre de parties déjà jouées (de 190 à 550 ms au fil d'une longue série)
-const lancer = () => chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
+const lancer = () => chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
 
 // le hasard reproductible (mulberry32)
 const hasard = (graine) => { let a = graine >>> 0; return () => { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
@@ -106,32 +120,6 @@ const ETAT = () => {
   const touchable = [...document.querySelectorAll("#ui button, .pa button, .demarrage")].some((e) => vis(e) && !e.disabled && !e.matches(".mascotte-tap, .session-home, .speaker, .stars")) || !!a.voiliers?.attend || !!a.etal?.attend || c.recif;
   return { pb, touchable, c };
 };
-// les cibles possibles : boutons visibles (avec leur boîte) et scènes à toucher
-const CIBLES = () => {
-  const vis = (e) => e.isConnected && !e.closest(".stash") && e.checkVisibility({ visibilityProperty: true, opacityProperty: true });
-  return [...document.querySelectorAll("#ui button, .pa button, .pa input, canvas.recif-dessin, .demarrage, .etal-scene .etal-objet")].filter(vis).map((e) => { const r = e.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2, w: r.width, h: r.height, quoi: (e.getAttribute("aria-label") || e.className || e.tagName).toString().slice(0, 40), cls: String(e.className) }; }).filter((t) => t.w > 4 && t.h > 4 && t.x > 0 && t.y > 0 && t.x < innerWidth && t.y < innerHeight);
-};
-// répondre comme une enfant qui joue : juste (le plus souvent) ou faux, à la question en cours, quelle qu'elle soit
-const REPONDRE = async (juste) => {
-  const a = window.__app, f = a.facts, s = a.screen, r = (n) => (juste ? n : n + 1 + Math.floor(Math.random() * 3));
-  const taper = async (n) => { for (const d of String(n)) { document.querySelector(`.key[data-key="${d}"]:not(.etal-key)`)?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })); await new Promise((x) => setTimeout(x, 180)); } const v = document.querySelector('.key[data-key="valider"]:not(.etal-key)'); v?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })); v?.dispatchEvent(new PointerEvent("pointerup", { bubbles: true })); };
-  if (f?.q && f.resolve && !f.locked) {
-    const q = f.q;
-    let n = q.dictee ? q.answer : q.forme === "trouDroite" || q.forme === "trou" ? q.b : q.forme === "trouGauche" ? q.a : q.module === 5 ? q.a * q.b : q.op ? (await import("./js/modules/calc/calc.js")).answerOf(q) : q.a + q.b;
-    await taper(r(n)); return "pavé";
-  }
-  if (s?.q && s.resolve && !s.locked) { const q = s.q; if (q.choices) { const v = juste ? q.answer : q.choices.find((c) => c.value !== q.answer)?.value ?? q.answer; document.querySelector(`.answer[data-value="${v}"]`)?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })); return "bulle"; } s.aimed = juste ? q.answer : q.answer + 1; s.answer(s.aimed, null); return "ligne"; }
-  if (a.voiliers?.attend && a.voiliers.q) { const q = a.voiliers.q; a.voiliers.api.deposer(juste ? q.k : (q.k + 1) % Math.max(2, (q.bouees?.length ?? 3) + 1)); return "voiliers"; }
-  if (a.etal?.attend && a.etal.q) {
-    const e = a.etal, q = e.q;
-    if (q.type === "rendre") { const { rendu } = await import("./js/modules/etal/etal.js"); for (const d of String(Math.round((juste ? rendu(q) : rendu(q) + 100) / 100))) { document.querySelector(`.etal-key[data-key="${d}"]`)?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })); await new Promise((x) => setTimeout(x, 180)); } }
-    else { const { solution } = await import("./js/modules/etal/etal.js"), cfg = a.module6.niveaux[q.niveau - 1], sol = solution(cfg, q.type === "poser" ? 0 : q.prix, q.portefeuille, q.valeur); for (const v of juste ? sol : sol.slice(0, -1)) { await e.api.deposer(v); await new Promise((x) => setTimeout(x, 120)); } }
-    const c = document.querySelector(".etal-coche"); if (c && getComputedStyle(c).visibility === "visible") { c.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })); c.dispatchEvent(new PointerEvent("pointerup", { bubbles: true })); }
-    return "étal";
-  }
-  return null;
-};
-
 // ---------------------------------------------------------------- les actions
 // une action tirée devient une action concrète (coordonnées, durées), rejouable telle quelle
 const POIDS = [["cible", 26], ["cibleAcote", 8], ["eau", 6], ["rafale", 6], ["appuiLong", 4], ["deuxDoigts", 2], ["mascotte", 4], ["nsp", 4], ["passerEchauffement", 3], ["maison", 5], ["choisirAutre", 4], ["repondreJuste", 14], ["repondreFaux", 5], ["attendre", 5], ["pause", 2], ["veille", 1], ["parent", 1], ["recharger", 1], ["menus", 3]];
@@ -142,6 +130,9 @@ const SAGE = new Map([["repondreJuste", 45], ["repondreFaux", 10], ["cible", 12]
 // rechargée devient fréquente (le poids N, chez l'enfant sage comme chez la dissipée)
 const RECHARGES = arg("--recharges") != null ? Number(arg("--recharges")) : null;
 const poids = (sage) => POIDS.map(([k, p]) => [k, k === "recharger" && RECHARGES != null ? RECHARGES : sage ? SAGE.get(k) ?? Math.max(1, Math.round(p / 3)) : p]);
+// (--android) les conditions d'Android, tirées au hasard comme le reste
+const POIDS_ANDROID = [["longue", 2], ["geler", 2], ["cacher", 1], ["relancer", 1], ["tuer", 1], ["reseau", 1]];
+if (ANDROID) POIDS.push(...POIDS_ANDROID);
 const tirer = (rnd, sage) => { const P = poids(sage), T = P.reduce((s, [, p]) => s + p, 0); let x = rnd() * T; for (const [k, p] of P) if ((x -= p) < 0) return k; return "cible"; };
 async function concretiser(page, rnd, type) {
   const cibles = await page.evaluate(CIBLES), W = VUE.width, H = VUE.height, pick = (l) => l[Math.floor(rnd() * l.length)];
@@ -171,13 +162,21 @@ async function concretiser(page, rnd, type) {
     case "veille": return { type: "veille", ms: VEILLE_LONGUE ? 300000 : 2000 + rnd() * 8000 };
     case "parent": { const c = par(/\blogo\b/)[0]; return c ? { type: "parent", x: c.x, y: c.y, ms: 400 + rnd() * 2000, sortie: rnd() } : { type: "attendre", ms: 200 }; }
     case "recharger": return { type: "recharger" };
+    case "longue": return { type: "longue", ms: 60000 + rnd() * 240000 };
+    case "geler": return { type: "geler", ms: 10000 + rnd() * 50000 };
+    case "cacher": return { type: "cacher", ms: 30000 + rnd() * 90000 };
+    case "relancer": return { type: "relancer" };
+    case "tuer": return { type: "tuer" };
+    case "reseau": return { type: "reseau", relance: rnd() < 0.5, ms: 5000 + rnd() * 40000 };
   }
   return { type: "attendre", ms: 200 };
 }
 const lent = (ms) => ms * Math.max(1, LENT / 2);
 async function jouer(page, cdp, act) {
-  const touche = (pts) => cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: pts.map(([x, y]) => ({ x: Math.max(1, Math.min(VUE.width - 1, x)), y: Math.max(1, Math.min(VUE.height - 1, y)) })) });
-  const leve = () => cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  // (lot « Banc Android » : l'heure réelle du contact et du lever, comme les donne l'écran tactile ; voir appareils.mjs, toucher)
+  let tContact = 0;
+  const touche = (pts) => { tContact = Date.now() / 1000; return cdp.send("Input.dispatchTouchEvent", { type: "touchStart", timestamp: tContact, touchPoints: pts.map(([x, y]) => ({ x: Math.max(1, Math.min(VUE.width - 1, x)), y: Math.max(1, Math.min(VUE.height - 1, y)) })) }); };
+  const leve = () => cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [], timestamp: Math.max(tContact, Date.now() / 1000 - 0.001) });
   const tap = async (x, y, ms = 60) => { await touche([[x, y]]); await page.waitForTimeout(ms); await leve(); };
   switch (act.type) {
     case "tap": await tap(act.x, act.y); await page.waitForTimeout(lent(250)); break;
@@ -203,14 +202,27 @@ async function jouer(page, cdp, act) {
 
 // ---------------------------------------------------------------- une partie : une graine
 // `liste` : les actions concrètes à rejouer (au lieu du hasard)
+// (--android) l'appareil modèle : l'application installée une fois ; chaque graine part d'une copie de son profil
+let MODELE = null, SERVEUR = null;
 async function partie(graine, { liste = null, cherche = null } = {}) {
   const rnd = hasard(graine * 7919 + 13);
-  const browser = await lancer();
-  const context = await browser.newContext({ viewport: { width: VUE.width, height: VUE.height }, deviceScaleFactor: VUE.deviceScaleFactor, hasTouch: true });
-  await accueilReel(context); await context.addInitScript(INSTRUMENTS);
-  const page = await context.newPage(), cdp = await context.newCDPSession(page), erreurs = [];
-  page.on("pageerror", (e) => erreurs.push({ t: Date.now(), m: e.message }));
-  page.on("console", (m) => { if (m.type() === "error" && !/Failed to load resource|net::ERR/.test(m.text())) erreurs.push({ t: Date.now(), m: m.text() }); });
+  let browser = null, context, page, cdp, a = null; const erreurs = [];
+  const brancherPage = () => {
+    page.on("pageerror", (e) => erreurs.push({ t: Date.now(), m: e.message }));
+    page.on("console", (m) => { if (m.type() === "error" && !/Failed to load resource|net::ERR/.test(m.text())) erreurs.push({ t: Date.now(), m: m.text() }); });
+  };
+  if (ANDROID) {
+    a = MODELE.copier({ scripts: [INSTRUMENTS] });
+    const r = await a.ouvrir(); if (r.echec) throw new Error(`lancement : ${r.echec}`);
+    ({ ctx: context, page, cdp } = a); brancherPage();
+  } else {
+    browser = await lancer();
+    context = await browser.newContext({ viewport: { width: VUE.width, height: VUE.height }, deviceScaleFactor: VUE.deviceScaleFactor, hasTouch: true });
+    await accueilReel(context); await context.addInitScript(INSTRUMENTS);
+    page = await context.newPage(); cdp = await context.newCDPSession(page); brancherPage();
+  }
+  // (--android) une relance : le navigateur fermé ou tué, rouvert sur le même profil ; la page et ses écouteurs sont neufs
+  const relancer = async (tuer) => { const r = tuer ? await a.tuerEtRelancer() : await a.relancer(); ({ ctx: context, page, cdp } = a); brancherPage(); return r; };
   const defauts = [], faits = [], noter = (quoi, detail) => { if (!defauts.some((d) => d.quoi === quoi)) defauts.push({ quoi, detail, apres: faits.length }); };
   // la garde : une partie qui n'avance plus pendant 3 minutes (une action ou une vérification qui ne rend jamais la main) est
   // arrêtée, avec l'endroit où elle s'est arrêtée et une capture (premières longues séries : deux parties restées une heure)
@@ -223,11 +235,15 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
     context.close().catch(() => {});
   }, 5000);
   try {
-    await page.goto(url + "?nosw&voix=rapide&son=non"); await page.waitForFunction(() => window.__ready !== undefined, null, { timeout: 60000 });
-    // une graine sur deux : la base d'un mois (des créatures, des étoiles) ; sinon une base neuve
-    if (graine % 2 === 0) await page.evaluate(async (d) => { await window.__app.store.restore(d, ["reglages"]); }, BASE);
-    await page.goto(url + "?nosw&voix=rapide&son=non"); await page.waitForFunction(() => window.__ready !== undefined, null, { timeout: 60000 });
-    if (LENT > 1) await cdp.send("Emulation.setCPUThrottlingRate", { rate: LENT });
+    if (ANDROID) {
+      if (graine % 2 === 0) { await page.evaluate(async (d) => { await window.__app.store.restore(d, ["reglages"]); }, BASE); await relancer(false); }
+    } else {
+      await page.goto(url + "?nosw&voix=rapide&son=non"); await page.waitForFunction(() => window.__ready !== undefined, null, { timeout: 60000 });
+      // une graine sur deux : la base d'un mois (des créatures, des étoiles) ; sinon une base neuve
+      if (graine % 2 === 0) await page.evaluate(async (d) => { await window.__app.store.restore(d, ["reglages"]); }, BASE);
+      await page.goto(url + "?nosw&voix=rapide&son=non"); await page.waitForFunction(() => window.__ready !== undefined, null, { timeout: 60000 });
+      if (LENT > 1) await cdp.send("Emulation.setCPUThrottlingRate", { rate: LENT });
+    }
     let dernierTouchable = Date.now(), dernierEtat = 0, nPhrases = 0; const vus = new Set();
     const verifier = async (quand) => {
       let e;
@@ -248,7 +264,18 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
       pas = Date.now(); ou = `choix de l'action ${i + 1}`;
       const act = liste ? liste[i] : await concretiser(page, rnd, tirer(rnd, graine % 4 < 2));
       faits.push(act); pas = Date.now(); delai = act.ms ?? 0; ou = `action ${i + 1} : ${act.type}${act.quoi ? ` (${act.quoi})` : ""}`;
-      await jouer(page, cdp, act).catch((x) => noter(`action impossible : ${act.type}`, x.message.split("\n")[0]));
+      // (--android, le rechargement : comme sur la tablette, l'écran de démarrage attend un toucher, que l'enfant donne,
+      // Appareil.recharger ; sans lui, le banc attendait une application qui ne pouvait pas démarrer)
+      if (ANDROID && ["longue", "geler", "cacher", "relancer", "tuer", "reseau", "recharger"].includes(act.type)) {
+        try {
+          if (act.type === "longue") await page.waitForTimeout(act.ms);
+          else if (act.type === "recharger") await a.recharger({ attente: lent(120000) });
+          else if (act.type === "geler") await a.geler(act.ms);
+          else if (act.type === "cacher") await a.cacher(act.ms);
+          else if (act.type === "reseau") { SERVEUR.reseau("coupe"); if (act.relance) { const r = await relancer(false); if (r.echec) noter("relance sans réseau impossible", r.echec); } else await page.waitForTimeout(act.ms); SERVEUR.reseau("ok"); }
+          else { const r = await relancer(act.type === "tuer"); if (r.echec) noter(`relance impossible (${act.type})`, r.echec); }
+        } catch (x) { SERVEUR.reseau("ok"); noter(`action impossible : ${act.type}`, x.message.split("\n")[0]); }
+      } else await jouer(page, cdp, act).catch((x) => noter(`action impossible : ${act.type}`, x.message.split("\n")[0]));
       // (--panne : le contrôle du contrôle ; à la 5e action, une touche du pavé orpheline et une erreur de page, qui doivent
       // être vues)
       if (PANNE && i === 4) await page.evaluate(() => { const b = document.createElement("button"); b.className = "bubble key"; b.dataset.key = "5"; Object.assign(b.style, { position: "absolute", left: "600px", top: "600px", width: "80px", height: "80px" }); document.querySelector("#ui").append(b); setTimeout(() => { throw new Error("panne volontaire"); }, 10); });
@@ -256,6 +283,9 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
       await verifier(`après ${act.type}${act.quoi ? ` (${act.quoi})` : ""}`);
       if (Date.now() - dernierEtat > 1000) await verifier("chaque seconde");
       if (cherche && defauts.some((d) => d.quoi === cherche)) break;
+      // (--android) les budgets, toutes les 10 actions ; un lecteur de médias refusé par le navigateur
+      if (ANDROID && i % 10 === 9) { const m = await a.budgets().catch(() => null); for (const d of depasse(m)) noter(`budget dépassé : ${d.split(" ")[0]}`, `${d} ; ${resumeEtat(m)}`); }
+      if (ANDROID && a.refusLecteurs) noter("lecteur de médias refusé par le navigateur", `${a.refusLecteurs} refus`);
     }
     await page.waitForTimeout(1500); await verifier("à la fin");
     const temps = await page.evaluate(() => { const g = window.__enfant.gaps.filter((x) => x < 2000).sort((a, b) => a - b); return g.length ? { moyenne: +(g.reduce((s, x) => s + x, 0) / g.length).toFixed(1), p95: +g[Math.floor(0.95 * (g.length - 1))].toFixed(1), images: g.length } : null; }).catch(() => null);
@@ -264,7 +294,7 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
     if (!bloque) throw x;
     noter(`partie bloquée : ${bloque.ou.replace(/\d+/g, "#")}`, `${bloque.ou} ; ${typeof bloque.etat === "string" ? bloque.etat : JSON.stringify(bloque.etat)}`);
     return { graine, actions: faits.length, defauts, temps: null, faits, vus: [], phrases: 0 };
-  } finally { clearInterval(garde); await context.close().catch(() => {}); await browser.close().catch(() => {}); }
+  } finally { clearInterval(garde); if (a) { SERVEUR.reseau("ok"); await a.detruire(); } else { await context.close().catch(() => {}); await browser.close().catch(() => {}); } }
 }
 // un exercice parle alors qu'il n'est plus à l'écran : la phrase est rattachée au fichier qui l'a demandée
 const PROPRIETAIRES = [[/^modules\/voiliers\//, "voiliers"], [/^modules\/etal\/|^lessons\/etal\.js/, "etal"], [/^modules\/calc\//, "calc"], [/^modules\/mult\//, "mult"]];
@@ -311,10 +341,18 @@ async function fuite() {
   return { releves, erreurs };
 }
 
+// (--android) l'appareil modèle, installé une fois (aussi pour --rejouer un défaut trouvé sur le banc)
+async function installerModele() {
+  if (!ANDROID || MODELE) return;
+  SERVEUR = await serveurBanc(); MODELE = new Appareil(PROFIL, { serveur: SERVEUR, journal: console.log });
+  await MODELE.ouvrir(); const e = await MODELE.installer(); await MODELE.fermer();
+  console.log(`banc Android : ${PROFIL}, l'application installée en ${e.dureeS} s ; chaque graine part d'une copie de ce profil`);
+}
 // ---------------------------------------------------------------- le déroulement
 const resume = { debut: new Date().toISOString(), vue: VUE, lent: LENT, parties: [] };
 if (REJOUER) {
   const d = JSON.parse(readFileSync(REJOUER, "utf8"));
+  await installerModele();
   let liste = d.faits.slice(0, d.defaut.apres + 1);
   const montre = async (l) => (await partie(d.graine, { liste: l, cherche: d.defaut.quoi })).defauts.some((x) => x.quoi === d.defaut.quoi);
   console.log(`rejoue ${liste.length} actions de la graine ${d.graine} : « ${d.defaut.quoi} »`);
@@ -344,6 +382,7 @@ if (REJOUER) {
   process.exitCode = ok && !erreurs.length ? 0 : 1;
 } else {
   const graines = Array.from({ length: GRAINES }, (_, i) => DEPART + i);
+  await installerModele();
   let suivante = 0;
   await Promise.all(Array.from({ length: PARALLELE }, async () => {
     while (suivante < graines.length) {
@@ -360,5 +399,5 @@ if (REJOUER) {
   console.log(`\n${resume.parties.length} graines, ${resume.parties.reduce((s, p) => s + p.actions, 0)} actions ; ${tous.length ? `défauts : ${Object.entries(par).map(([q, n]) => `${q} (${n})`).join(" ; ")}` : "aucun défaut"}`);
   process.exitCode = tous.length ? 1 : 0;
 }
-writeFileSync(join(OUT, `resume-${TABLETTE ? "tablette" : "1280"}-lent${LENT}${FUITE ? "-fuite" : ""}-${DEPART}.json`), JSON.stringify(resume, null, 1));
-srv.close();
+writeFileSync(join(OUT, `resume-${ANDROID ? `android-${PROFIL}` : TABLETTE ? "tablette" : "1280"}-lent${LENT}${FUITE ? "-fuite" : ""}-${DEPART}.json`), JSON.stringify(resume, null, 1));
+srv.close(); if (MODELE) { await MODELE.detruire(); await SERVEUR.fermer(); }

@@ -29,10 +29,10 @@ const PROPOSE_STOP_MS = 10 * 60000;
 
 export class FreeTraining {
   constructor(app, { store, module1, module2, module3 = null, module4 = null, module5 = null, module6 = null, rnd, seance = null }) { this.app = app; this.store = store; this.m1 = module1; this.m2 = module2; this.m3 = module3; this.m4 = module4; this.m5 = module5; this.m6 = module6; this.rnd = rnd; this.seance = seance; this.rec = null; this.cran = "conseille"; }
-  // le sélecteur, sans étoiles
+  // le sélecteur, sans étoiles ; l'exercice a été choisi : il ne part jamais seul (décision du parent du 19 octobre 2026)
   async pickCran() {
     const sel = this.seance?.selecteur; if (!sel?.actif) return (this.cran = "conseille");
-    this.cran = await chooseCran(this.app, { allowed: allowedCrans(await this.store.setting("cransAutorises")), stars: false, attenteS: sel.attenteS, cls: "free" });
+    this.cran = await chooseCran(this.app, { allowed: allowedCrans(await this.store.setting("cransAutorises")), stars: false, attenteS: null, cls: "free" });
     await this.seanceId(); this.rec.cran = this.cran; await this.store.put("seances", this.rec);
     return this.cran;
   }

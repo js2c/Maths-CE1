@@ -262,6 +262,8 @@ export class Demarrage {
   // automatique des tests)
   attendreToucher() {
     this.pret = true; this.montrer(1); this.el.classList.add("pret");
+    // (lot « Banc Android » : le temps jusqu'à « prêt », mesuré par le banc d'essai à chaque lancement)
+    try { performance.mark("demarrage-pret"); } catch { /* rien */ }
     if (window.__demarrageAuto) return Promise.resolve(false);
     return new Promise((res) => {
       const go = (e) => { e.preventDefault(); this.el.removeEventListener("pointerdown", go); res(true); };

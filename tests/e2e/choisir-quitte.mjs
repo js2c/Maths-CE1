@@ -3,6 +3,12 @@
 // pendant ce temps ramenait à l'accueil, puis l'écran se construisait quand même, par-dessus l'accueil (ses exercices, puis ses
 // niveaux, touchables). La planche est ici retardée (1,5 s) : depuis l'accueil, puis depuis l'accueil en pause.
 //   node tests/e2e/choisir-quitte.mjs
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { serve } from "../serve.mjs";
 

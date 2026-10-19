@@ -3,6 +3,12 @@
 // le bouton « Oui, restaurer »), puis l'accueil (« jouer » : la dernière séance était la veille), l'album, l'espace parent
 // (onglets Calendrier, Séances, Progression) et l'écran « choisir » (niveaux validés, conseillé). Captures regardées.
 //   node tests/e2e/sauvegardes.mjs [--out dossier]
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync } from "node:fs";
@@ -12,7 +18,7 @@ import { serve } from "../serve.mjs";
 const args = process.argv.slice(2), OUT = resolve(args.includes("--out") ? args[args.indexOf("--out") + 1] : "tests/e2e/out/sauvegardes"); mkdirSync(OUT, { recursive: true });
 const CASES = [["mois", "reel", 2, 4], ["trois-mois", "reel", 3, 12], ["difficulte", "diff", 2, 6]];
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: [] });
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 for (const [name, profil, per, weeks] of CASES) {
   const file = join(OUT, `${name}.json`);

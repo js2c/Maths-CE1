@@ -13,6 +13,11 @@
 // Le bouton « passer » est toujours le même, à la même place (en haut à droite), zone tactile de 64 px au moins.
 // Captures dans tests/e2e/out/ergonomie.
 //   node tests/e2e/ergonomie.mjs [--out dossier]
+// BANC ANDROID, raccourcis : voix rapide, sans service worker
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie. La vraie voix, le son et l'application
+// installée sont éprouvés sur le banc Android (journee.mjs, enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -119,6 +124,8 @@ check((await page.locator(".choix-ex").count()) === 6, "entraînement libre : l'
 await page.tap('.choix-ex[aria-label="ligne"]', { force: true }); await page.waitForTimeout(450); await page.tap('.choix-ex[aria-label="ligne"]', { force: true }); await page.waitForTimeout(250);
 await page.waitForSelector('.choix-tuile[data-conseille="1"]', { timeout: 10000 });
 await page.tap('.choix-tuile[data-conseille="1"]', { force: true }); await page.waitForTimeout(450); await page.tap('.choix-tuile[data-conseille="1"]', { force: true }); await page.waitForTimeout(250);
+// (décision du parent du 19 octobre 2026 : l'exercice choisi, le sélecteur ne part plus seul ; la coche le lance)
+await page.waitForSelector(".cran-ok", { timeout: 20000 }); await page.tap(".cran-ok", { force: true });
 for (let i = 0; i < 3; i++) { await waitQ(); if (i === 0) { await page.waitForTimeout(300); await shot("8-libre-ligne"); } await answerRight(); await page.waitForTimeout(300); }
 const stars1 = await page.evaluate(() => [window.__app.rewards.st.total, window.__app.rewards.st.coquillages, window.__app.hud.shown]);
 check(stars1[0] === stars0[0] && stars1[1] === stars0[1] && stars1[2] === stars0[0], `entraînement libre : ni étoile ni coquillage (${stars1[0]} étoiles avant et après)`);

@@ -1,7 +1,12 @@
 // LOT 2, ÉTAPE 2 : parcours du sélecteur de difficulté (quatre crans, lueur du conseillé, cran touché, coche,
-// attente de 15 s), cran enregistré dans la séance ; la flèche qui montre la cible (lot « Mascotte ») ; le
+// attente de 15 s après « jouer », jamais quand l'exercice a été choisi), cran enregistré dans la séance ; la flèche qui montre la cible (lot « Mascotte ») ; le
 // calque d'effets et la tortue au-dessus de la mascotte ; formes à trou au cran « très dur ». Captures en densité 2.
 //   node tests/e2e/selecteur.mjs [--out dossier]
+// BANC ANDROID, raccourcis : voix rapide, sans service worker
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie. La vraie voix, le son et l'application
+// installée sont éprouvés sur le banc Android (journee.mjs, enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -9,7 +14,7 @@ import { serve } from "../serve.mjs";
 
 const args = process.argv.slice(2), OUT = resolve(args.includes("--out") ? args[args.indexOf("--out") + 1] : "tests/e2e/out/selecteur"); mkdirSync(OUT, { recursive: true });
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: [] });
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 const open = async (q = "") => {
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 2, hasTouch: true }), page = await context.newPage(), errors = [];
@@ -51,6 +56,17 @@ const tap = (page, sel) => page.tap(sel, { force: true });
   const ouvert = await page.evaluate(() => (window.__cran.parti - window.__cran.vu) / 1000);
   check(ouvert > 13, `sans toucher, le sélecteur se ferme au bout de 15 s (${ouvert.toFixed(1)} s)`);
   check((await page.evaluate(() => window.__app.session.rec.cran)) === "conseille", "le cran affiché est gardé");
+  await context.close();
+}
+// 2 bis. (lot « Banc Android et recette en conditions réelles », constat 1 de l'agent ; décision du parent du 19 octobre 2026)
+// l'exercice choisi par l'enfant (« choisir », ici ?choix) : le sélecteur ne part jamais seul ; la coche le lance
+{
+  const { page, context } = await open("&sans=echauffement,notion&choix=1:3");
+  await tap(page, ".play"); await page.waitForSelector(".cran", { timeout: 20000 });
+  await page.waitForTimeout(18000);
+  check((await page.locator(".cran").count()) === 4 && !(await page.evaluate(() => window.__app.session.rec.cran)), "exercice choisi : sans toucher, le sélecteur reste ouvert (18 s)");
+  await tap(page, ".cran-ok"); await page.waitForFunction(() => !document.querySelector(".cran"), null, { timeout: 5000 });
+  check((await page.evaluate(() => window.__app.session.rec.cran)) === "conseille", "exercice choisi : la coche lance, sur le cran affiché");
   await context.close();
 }
 // 3. la flèche montre pendant la consigne (lot « Mascotte », à la place du bras de la pieuvre) : jamais sur la réponse à

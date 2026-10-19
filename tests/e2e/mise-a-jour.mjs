@@ -16,6 +16,10 @@
 //   node tests/e2e/mise-a-jour.mjs [--racine dossier] [--reseau-parfait] [--court] [--forcer]   (--racine : servir une autre copie de app/,
 //   par exemple celle de main, pour voir le défaut d'avant le correctif ; --reseau-parfait : aucune requête n'échoue ; --court :
 //   sans les versions C et D)
+// BANC ANDROID, raccourcis : voix rapide, son coupé
+// (raison : il éprouve deux versions publiées l'une après l'autre, le service worker et le cache : les questions qui font
+// avancer la séance n'ont pas besoin de la voix à sa vitesse réelle, et le son ne change rien à ce qu'il vérifie (la voix
+// réelle avec mise à jour : installation.mjs et journee.mjs).)
 import { accueilReel, chromium, demarrageReel, voixPermise } from "./navigateur.mjs";
 import { createServer } from "node:http";
 import { existsSync, readFileSync, statSync } from "node:fs";
@@ -69,7 +73,7 @@ const url = `http://127.0.0.1:${srv.address().port}${PREFIX}`;
 console.log(`racine servie : ${ROOT} ; phrase au son changé : « ${X} » (${xf} -> ${YF})`);
 
 // ---------------------------------------------------------------- la tablette
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: [] });
 const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true });
 await accueilReel(context);
 const errors = [], manques = [];
@@ -187,12 +191,12 @@ const apres = [...(await dire(page, X)), ...(await dire(page, Z))];
 check(!apres.length, `B : « ${X} » (son changé) et « ${Z} » (nouvelle) lues depuis leurs fichiers${apres.length ? ` (${apres.map(([s, c]) => `« ${s} » : ${c}`).join(" ; ")})` : ""}`);
 e = await etatSW(page);
 check(e.caches.length === 1 && e.caches[0] === "ocean-bbbbbbbbbbbb", `l'ancien cache supprimé une fois B active (${e.caches.join(", ")})`);
-// (décision 1) la séance commencée avec A est reprise par B : « continuer », puis l'échauffement à son début, la même séance
+// (décision 1) la séance commencée avec A est reprise par B : « continuer », puis l'échauffement (à la question près), la même séance
 const offre = await page.evaluate(() => ({ id: window.__app.repriseEnAttente?.id ?? null, continuer: !!document.querySelector(".keep.play") }));
 check(seanceA && offre.id === seanceA && offre.continuer, `B : la séance commencée avec A est proposée (« continuer » ; séance ${offre.id})`);
 for (let i = 0; i < 2 && (await page.evaluate(() => !!window.__app.repriseEnAttente)); i++) { await page.locator(".keep.play").tap({ force: true }); await page.waitForTimeout(300); }
 const reprise = await page.waitForFunction((id) => { const s = window.__app.session; return s?.rec?.id === id && s.progress.etape === "echauffement" && !window.__app.enPause; }, seanceA, { timeout: 30000 }).then(() => true, () => false);
-check(reprise, "B : « continuer » reprend la séance de A au début de l'échauffement");
+check(reprise, "B : « continuer » reprend la séance de A, à l'échauffement");
 await page.close();
 
 // 5. une version C dont un fichier manque : l'installation échoue, la tablette reste sur B ; puis D, réparée

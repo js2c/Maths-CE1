@@ -16,6 +16,12 @@
 //     libre (« Encore ! ») quitté par la maison ;
 // et, partout : aucune erreur dans la page, la bulle de la mascotte ne couvre jamais la caisse.
 //   node tests/e2e/etal.mjs [--out dossier] [--petit] (--petit : seulement 1280 × 800)
+// BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
+// (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
+// navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
+// Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
+// enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -23,7 +29,7 @@ import { serve } from "../serve.mjs";
 
 const args = process.argv.slice(2), OUT = resolve(args.includes("--out") ? args[args.indexOf("--out") + 1] : "tests/e2e/out/etal"); mkdirSync(OUT, { recursive: true });
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required"] });
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: [] });
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 const TAILLES = args.includes("--petit") ? [[1280, 800]] : [[1280, 800], [1920, 1200]];
 const open = async (q, [w, h], prep = null) => {
@@ -324,6 +330,8 @@ for (const T of TAILLES) {
   await o.page.waitForTimeout(500);
   for (const s of ['.choix-tuile[data-key="4"]', '.choix-tuile[data-key="4"]']) { await o.page.tap(s, { force: true }); await o.page.waitForTimeout(500); }
   await o.page.waitForSelector(".cran", { timeout: 15000 }); await o.page.tap(".cran", { force: true }).catch(() => {});
+  // (décision du parent du 19 octobre 2026 : l'exercice choisi, le sélecteur ne part plus seul ; la coche le lance)
+  await o.page.waitForTimeout(400); await o.page.tap(".cran-ok", { force: true });
   await attend(o.page); await payer(o.page, "juste"); await coche(o.page); await attend(o.page);
   check((await reponses(o.page)).every((r) => r.niveau === 4), "entraînement libre : l'étal au niveau choisi");
   await o.page.tap(".session-home", { force: true }); await o.page.waitForTimeout(1200);

@@ -7,6 +7,11 @@
 // Les autres situations du lot ont leur propre parcours, avec leurs captures : installation.mjs (les relances), veille.mjs
 // (les longues inactivités), poissons.mjs (les poissons du lagon), lecons-monnaie.mjs (les leçons L15 à L18).
 //   node tests/e2e/correctifs-installation.mjs
+// BANC ANDROID, raccourcis : sans service worker, son coupé
+// (raison : chaque cas part d'une base neuve, dans un navigateur neuf : la voix y est la vraie, mais installer l'application
+// (140 Mo, environ une minute) pour chaque cas n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
+// rien à ce qu'il vérifie. L'application installée, relancée, gelée, hors ligne, est éprouvée sur le banc Android
+// (installation.mjs, journee.mjs).)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";

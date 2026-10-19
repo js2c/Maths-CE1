@@ -5,7 +5,11 @@
 //   node tests/e2e/recette.mjs [--out dossier] [--delai secondes : temps de réponse de l'enfant, 1,5 par défaut] [--module 2 : notion du jour imposée (lot 2, étape 6)]
 //     [--module 4 : les voiliers (lot « Les voiliers » ; la mer en WebGL logiciel, l'enfant fait glisser le bateau --delai secondes après la fin du nombre dit)]
 //     [--defi : une séance où le défi record a lieu (lot 2, étape 9) : 5 séances déjà terminées, la famille 1 connue (point de départ), la pieuvre déjà nommée]
-import { chromium } from "./navigateur.mjs";
+// BANC ANDROID, raccourcis : sans service worker
+// (raison : chaque cas part d'une base neuve, dans un navigateur neuf : la voix y est la vraie, mais installer l'application
+// (140 Mo, environ une minute) pour chaque cas n'apporterait rien à ce qu'il vérifie. L'application installée, relancée,
+// gelée, hors ligne, est éprouvée sur le banc Android (installation.mjs, journee.mjs).)
+import { chromium, demarrageTouche } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
@@ -14,8 +18,8 @@ const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k);
 const OUT = resolve(opt("--out", "tests/e2e/out/recette")); mkdirSync(OUT, { recursive: true });
 const DELAI = Math.round(Number(opt("--delai", "1.5")) * 1000); // temps de réponse de l'enfant
 const { srv, url } = await serve(0);
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--autoplay-policy=no-user-gesture-required", ...(opt("--module") === "4" ? ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] : [])] });
-const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true });
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: [...(opt("--module") === "4" ? ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] : [])] });
+const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true }); await demarrageTouche(context);
 const page = await context.newPage();
 const errors = []; page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
 let shots = 0; const shot = (n) => page.screenshot({ path: join(OUT, `${String(++shots).padStart(2, "0")}-${n}.png`) });

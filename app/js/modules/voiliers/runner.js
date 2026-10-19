@@ -108,7 +108,7 @@ export class Module4Runner {
   async record(r, cfg) {
     const q = r.q, events = [];
     await this.store?.add("reponses", {
-      t: Date.now(), seance: this.seance, module: 4, niveau: q.niveau, question: voiliersQuestion(q), forme: q.guide ? "exemple" : q.mer,
+      t: r.t ?? Date.now(), seance: this.seance, module: 4, niveau: q.niveau, question: voiliersQuestion(q), forme: q.guide ? "exemple" : q.mer,
       donnee: r.choisi == null ? null : passageTexte(q.bouees, r.choisi), attendue: passageTexte(q.bouees, q.k) + (q.double ? `, puis ${passageTexte(q.rangee2, q.k2)}` : ""),
       juste: !!r.ok, tempsMs: r.ms, ecoutes: r.listens, aide: false, erreur: r.ok ? null : r.code ?? null, revient: !!q.revient, guide: !!q.guide, notion: true,
       ...(r.corrigee ? { corrigee: true } : {}), ...(r.essais ? { essais: r.essais } : {}), ...(r.correctionPassee ? { correctionPassee: true } : {}), ...(r.exemplePasse ? { exemplePasse: true } : {}),

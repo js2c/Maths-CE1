@@ -59,6 +59,8 @@ export class Dictation {
     const r = await this.fs.askNumber(q, say); this.fs.onTyped = null; if (q.tableau) this.app.aidBoard.clear();
     const code = r.nsp ? "NSP" : classify(q, r.value), ok = code === null;
     const result = { q, value: r.value, ok, code, ms: r.ms, listens: r.listens };
+    // (la reprise à la question près : la réponse notée dès qu'elle est donnée, avant la correction)
+    this.app.surReponse?.(result);
     ocean.mascotte.play(ok ? "rejouir" : "encourager");
     if (ok) { sound?.play("bonne"); this.fs.write(n, false); await voice.say(text.pick("bravo")); await wait(500); }
     else {

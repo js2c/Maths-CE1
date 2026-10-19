@@ -134,8 +134,8 @@ Le parent n'est pas encore convaincu par les remèdes proposés : la question es
 
 ### Après le lot « Correctifs de la tablette » (relecture indépendante du 8 octobre 2026)
 
-- **Le sélecteur de difficulté en deux touchers ?** Il n'était pas dans la fiche (exercices, niveaux, leçons) : une vague touchée dit ce qu'elle rapporte, la coche valide, et sans toucher il part seul au bout de 15 s. Le relecteur note qu'après « choisir » en deux touchers, cela fait encore deux touchers, et qu'on ne voit pas bien quelle vague est choisie. À décider par le parent.
-- **La bulle d'une tuile sur les écrans les plus pleins** (la ligne, 13 tuiles ; le calcul rapide) cache encore deux ou trois tuiles le temps de la phrase. Pistes : une bulle au-dessus de toute la grille, ou des descriptions encore plus courtes.
+- **Le sélecteur de difficulté en deux touchers ?** Il n'était pas dans la fiche (exercices, niveaux, leçons) : une vague touchée dit ce qu'elle rapporte, la coche valide, et sans toucher il part seul au bout de 15 s (depuis le 19 octobre 2026, seulement après « jouer » : `docs/SPEC.md`, section 4). Le relecteur note qu'après « choisir » en deux touchers, cela fait encore deux touchers, et qu'on ne voit pas bien quelle vague est choisie. À décider par le parent.
+- **La bulle d'une tuile sur les écrans les plus pleins** (la ligne, 13 tuiles ; le calcul rapide) cache encore deux ou trois tuiles le temps de la phrase. Pistes : une bulle au-dessus de toute la grille, ou des descriptions encore plus courtes. L'agent qui joue l'enfant sur le banc Android (19 octobre 2026, constat 5) l'a vu aussi dans la boutique (la bulle d'une créature cache deux ou trois cartes voisines), à l'étal (la consigne cache deux étiquettes de prix) et dans la leçon L6 (une grande bulle, presque vide pendant qu'elle s'écrit, où l'on voit le dessin en transparence).
 - **L'invitation au toucher de l'écran de démarrage** (le logo qui se balance) : à juger avec l'enfant ; piste : une main dessinée qui tapote.
 - **Le temps de démarrage** : l'écran de démarrage attend aussi les 17 vidéos de la mascotte (la fiche le demande) ; mesuré au processeur ralenti ×4, 7,1 s au lieu de 4,8 s sur `main` (le budget de `CLAUDE.md` est de 3 s). Pistes si c'est trop long sur la tablette : n'attendre que les vidéos de l'accueil (repos, parole, salut) et charger les autres derrière.
 
@@ -252,6 +252,7 @@ Le parent n'est pas encore convaincu par les remèdes proposés : la question es
 ## 7. À demander, à préparer
 
 - **À l'enseignante** : la progression de la classe (fractions, soustraction posée et sa méthode, heure, monnaie), pour caler les phases ; son vocabulaire (« amis de 10 », « maison des nombres », « mur ») pour l'aligner.
+- **L'illustration de la carte du crabe** (agent qui joue l'enfant, 19 octobre 2026, constat 6) : le crabe de la carte est vert, celui du récif et de la boutique rouge orangé ; une enfant attentive peut croire que ce n'est pas le même animal. À refaire, à la prochaine fabrication des illustrations (elles sont faites à part : `app/assets/cards/`) ?
 - **Cartes** : illustrations et anecdotes du grand large **avant début février 2027**, des abysses **avant fin avril 2027**.
 - **Calendrier scolaire 2027-2028** dans `app/content/calendrier.json`, avant la rentrée 2027.
 - **Vérifier le programme** : la synthèse du programme 2024 transmise par le parent est une reformulation (incohérence sur 1/10) ; vérifier les indicateurs de fluence dans l'annexe 4 officielle avant d'en faire des objectifs chiffrés.

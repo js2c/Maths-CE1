@@ -116,6 +116,9 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     await tap(page, ".lecons-atoi");
     await page.waitForSelector(".cran", { timeout: 20000 }); await page.waitForTimeout(500);
     check(/À toi !|À ton tour !/.test(await said(page)), `${T} · la voix dit « À toi ! »`);
+    // (lot « Banc Android et recette en conditions réelles », constat 1 de l'agent ; décision du parent du 19 octobre 2026 :
+    // l'exercice choisi, le sélecteur ne part jamais seul)
+    if (big) { await page.waitForTimeout(17000); check((await visible(page, ".cran-ok")) === 1 && !(await page.evaluate(() => window.__app.session?.rec?.cran)), `${T} · « À toi ! » : sans toucher, le sélecteur reste ouvert (17 s)`); }
     if (big) await shot(page, "08-selecteur");
     await tap(page, ".cran-ok");
     await page.waitForFunction(() => window.__app.session?.progress.etape === "notion", null, { timeout: 30000 });
@@ -170,6 +173,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     await shot(page, "14-fin-L5-passee");
     await tap(page, ".lecons-atoi");
     await page.waitForSelector(".cran.free", { timeout: 20000 }); await page.waitForTimeout(300);
+    if (big) { await page.waitForTimeout(17000); check((await visible(page, ".cran-ok")) === 1, `${T} · entraînement libre : sans toucher, le sélecteur reste ouvert (17 s)`); }
     await tap(page, ".cran-ok");
     await page.waitForFunction(() => window.__app.free?.runner && window.__app.facts?.resolve && !window.__app.facts.locked, null, { timeout: 60000 });
     const f = await page.evaluate(() => ({ rec: window.__app.free.rec, fam: window.__app.free.runner.famille }));

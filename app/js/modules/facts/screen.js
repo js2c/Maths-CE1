@@ -32,7 +32,7 @@ export class FactsScreen {
     const digits = [];
     for (let d = 0; d <= 9; d++) {
       const b = key(COLS[d % 5], ROWS[Math.floor(d / 5)], String(d), (ctx, px) => { small("reponse", 0.9)(ctx, px); ctx.setTransform(px, 0, 0, px, 0, 0); R.drawNumber(ctx, String(d), KEY / 2, KEY / 2 - 25, 50, { w: 7, seed: 900 + d }); });
-      onTap(b, () => this.type(String(d), b)); digits.push(b);
+      onTap(b, (e) => this.type(String(d), b, e)); digits.push(b);
     }
     const del = key(SIDE, ROWS[0], "effacer", small("effacer", 0.8)), erase = () => { if (!this.typed || !this.tap("effacer")) return; pop(del); this.typed = this.typed.slice(0, -1); this.slate.repaint(); this.onTyped?.(this.typed); };
     onBrief(app, del, erase, "effacer", { first: true });
@@ -91,9 +91,11 @@ export class FactsScreen {
   }
   // lot 3 bis (A5) : la porte du pavé (un rebond de doigt sur la même touche est ignoré ; fermée pendant un retour)
   get gate() { return (this._gate ??= new TapGate(this.app.toucher ?? {})); }
-  tap(key) { return !this.locked && this.gate.accept(key, performance.now()); }
-  type(d, b) {
-    if (!this.tap(d)) return; pop(b);
+  // (lot « Banc Android et recette en conditions réelles », constat 8 de l'agent) le rebond est jugé sur l'heure du toucher lui-même
+  // (`e.timeStamp`), pas sur celle où la page le traite : une page occupée traite d'un coup deux touchers bien séparés
+  tap(key, t = performance.now()) { return !this.locked && this.gate.accept(key, t); }
+  type(d, b, e = null) {
+    if (!this.tap(d, e?.timeStamp)) return; pop(b);
     const max = this.q?.dictee ? 5 : this.q?.module === 3 || this.q?.module === 5 ? 3 : 2; // (lot « Multiplication » : jusqu'à 100) // (le calcul rapide : jusqu'à 100) // deux chiffres au plus (les sommes vont jusqu'à 10) ; la dictée : cinq (3007, 30017 sont des erreurs à reconnaître)
     this.typed = (this.typed.length >= max ? "" : this.typed) + d;
     this.slate.repaint();

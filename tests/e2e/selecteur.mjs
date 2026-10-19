@@ -1,5 +1,5 @@
 // LOT 2, ÉTAPE 2 : parcours du sélecteur de difficulté (quatre crans, lueur du conseillé, cran touché, coche,
-// attente de 15 s), cran enregistré dans la séance ; la flèche qui montre la cible (lot « Mascotte ») ; le
+// attente de 15 s après « jouer », jamais quand l'exercice a été choisi), cran enregistré dans la séance ; la flèche qui montre la cible (lot « Mascotte ») ; le
 // calque d'effets et la tortue au-dessus de la mascotte ; formes à trou au cran « très dur ». Captures en densité 2.
 //   node tests/e2e/selecteur.mjs [--out dossier]
 // BANC ANDROID, raccourcis : voix rapide, sans service worker
@@ -56,6 +56,17 @@ const tap = (page, sel) => page.tap(sel, { force: true });
   const ouvert = await page.evaluate(() => (window.__cran.parti - window.__cran.vu) / 1000);
   check(ouvert > 13, `sans toucher, le sélecteur se ferme au bout de 15 s (${ouvert.toFixed(1)} s)`);
   check((await page.evaluate(() => window.__app.session.rec.cran)) === "conseille", "le cran affiché est gardé");
+  await context.close();
+}
+// 2 bis. (lot « Banc Android et recette en conditions réelles », constat 1 de l'agent ; décision du parent du 19 octobre 2026)
+// l'exercice choisi par l'enfant (« choisir », ici ?choix) : le sélecteur ne part jamais seul ; la coche le lance
+{
+  const { page, context } = await open("&sans=echauffement,notion&choix=1:3");
+  await tap(page, ".play"); await page.waitForSelector(".cran", { timeout: 20000 });
+  await page.waitForTimeout(18000);
+  check((await page.locator(".cran").count()) === 4 && !(await page.evaluate(() => window.__app.session.rec.cran)), "exercice choisi : sans toucher, le sélecteur reste ouvert (18 s)");
+  await tap(page, ".cran-ok"); await page.waitForFunction(() => !document.querySelector(".cran"), null, { timeout: 5000 });
+  check((await page.evaluate(() => window.__app.session.rec.cran)) === "conseille", "exercice choisi : la coche lance, sur le cran affiché");
   await context.close();
 }
 // 3. la flèche montre pendant la consigne (lot « Mascotte », à la place du bras de la pieuvre) : jamais sur la réponse à

@@ -318,8 +318,9 @@ const handlers = {
       const s = forced ? { type: forced[0], id: forced[1] } : drawSurprise(rnd, cartes.surprise, prev);
       if (s) { session.rec.surprise = s; await session.save(); await playSurprise(app, s); }
     }
-    // lot 2 : le sélecteur de difficulté (?cran=dur pour les tests : sans l'écran)
-    if (seance.selecteur?.actif) await session.setCran(P.get("cran") ?? await chooseCran(app, { allowed: allowedCrans(await store.setting("cransAutorises")), attenteS: seance.selecteur.attenteS }));
+    // lot 2 : le sélecteur de difficulté (?cran=dur pour les tests : sans l'écran) ; il ne part seul qu'après « jouer » : l'exercice
+    // choisi (« choisir », « À toi ! »), rien ne démarre sans la coche (décision du parent du 19 octobre 2026)
+    if (seance.selecteur?.actif) await session.setCran(P.get("cran") ?? await chooseCran(app, { allowed: allowedCrans(await store.setting("cransAutorises")), attenteS: session.choix ? null : seance.selecteur.attenteS }));
   },
   // échauffement : faits d'addition dus (familles 1 et 2 au lot 1), précédés des questions du temps de base
   // (lot « Correctifs : passage de l'échauffement aux voiliers », point 1) l'échauffement a sa PORTÉE (engine/portee.js) : quelle

@@ -5,7 +5,8 @@
 // un toucher bref devient un appui long, qui ne lance rien. Désormais, l'appui est jugé sur la durée réelle, du contact au
 // lever (horodatage des événements). Le parcours touche la maison en pleine question, 120 ms, le lever n'arrivant à la page
 // que 0,7 s après le contact (ce que relevait le pilote) : la séance doit passer en pause. Puis un vrai appui long (0,8 s) :
-// rien ne doit être lancé.
+// rien ne doit être lancé. Puis deux touchers sur la même touche du pavé, à 300 ms d'écart, traités ensemble (constat 8 de l'agent
+// sur le banc Android) : ils tapent deux chiffres.
 //   node tests/e2e/toucher-occupe.mjs
 // BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
 // (raison : ce parcours vérifie la logique et l'affichage de nombreuses situations, chacune sur une base neuve dans un
@@ -41,5 +42,28 @@ if (await page.evaluate(() => !!window.__app.enPause)) { await page.locator(".pl
 check(await page.evaluate(() => !window.__app.enPause), "reprise");
 await toucher(800, 800);
 check(await page.evaluate(() => !window.__app.enPause), "un appui long de 0,8 s sur la maison ne lance rien");
+await context.close();
+// (lot « Banc Android et recette en conditions réelles », constat 8 de l'agent : « 11 » tapé vite, lu « 1 ») le pavé ignore un
+// second toucher sur la même touche à moins de 150 ms (un doigt qui rebondit) ; il le jugeait sur l'heure où la page traitait le
+// toucher, pas sur celle du toucher : une page occupée traite d'un coup deux touchers bien séparés. Deux touchers sur « 1 », datés
+// à 300 ms d'écart, envoyés l'un derrière l'autre : l'ardoise doit montrer « 11 ».
+{
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }), pg = await ctx.newPage(), cd = await ctx.newCDPSession(pg);
+  await pg.goto(url + "?nosw&voix=rapide&son=non&sans=echauffement&choix=2:1&cran=conseille&sansLecon&guides=0"); await pg.waitForFunction(() => window.__ready !== undefined);
+  await pg.locator(".play").first().tap({ force: true });
+  await pg.waitForFunction(() => window.__app.facts?.resolve && !window.__app.facts.locked, null, { timeout: 60000 });
+  const [kx, ky] = await pg.evaluate(() => { const q = document.querySelector('.bubble.key[data-key="1"]').getBoundingClientRect(); return [q.x + q.width / 2, q.y + q.height / 2]; });
+  // la page occupée 0,6 s (un dessin lourd sur une tablette lente) ; pendant ce temps, les deux touchers arrivent
+  await pg.evaluate(() => { setTimeout(() => { const t = performance.now(); while (performance.now() - t < 600); }, 0); });
+  const t = Date.now() / 1000;
+  await Promise.all([0, 0.3].flatMap((d) => [
+    cd.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: kx, y: ky }], timestamp: t + d }),
+    cd.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [], timestamp: t + d + 0.05 }),
+  ]));
+  await pg.waitForTimeout(400);
+  const tape = await pg.evaluate(() => window.__app.facts.typed);
+  check(tape === "11", `deux touchers sur « 1 » à 300 ms d'écart, traités ensemble par la page : « ${tape} » (attendu « 11 »)`);
+  await ctx.close();
+}
 await browser.close(); srv.close();
 process.exitCode = fail.length ? 1 : 0;

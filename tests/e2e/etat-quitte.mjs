@@ -95,7 +95,11 @@ async function launch(page, to) {
   if (process.env.TRACE) await page.evaluate(() => { window.__leaves = []; const f = window.__app.facts; if (f) { const o = f.leave.bind(f); f.leave = () => { window.__leaves.push(new Error().stack); o(); }; } });
   await tap(page, `.choix-ex[aria-label="${T.ex}"]`, 450); await tap(page, `.choix-ex[aria-label="${T.ex}"]`, 700); await tap(page, `.choix-tuile[data-key="${T.key}"]`, 450); await tap(page, `.choix-tuile[data-key="${T.key}"]`, 300);
   // (la question de la NOUVELLE séance : pendant que l'ancienne s'arrête, sa question est encore là)
-  await page.waitForFunction(`window.__app.session && window.__app.session.id !== ${JSON.stringify(old)} && ${T.ready}`, null, { timeout: 90000 }); await page.waitForTimeout(300);
+  const prete = `window.__app.session && window.__app.session.id !== ${JSON.stringify(old)} && ${T.ready}`;
+  // (décision du parent du 19 octobre 2026 : l'exercice choisi, le sélecteur ne part plus seul ; sans ?cran, la coche le lance)
+  await page.waitForFunction(`(${prete}) || !!document.querySelector(".cran-ok")`, null, { timeout: 90000 });
+  if (await page.evaluate(() => !!document.querySelector(".cran-ok"))) await tap(page, ".cran-ok", 300);
+  await page.waitForFunction(prete, null, { timeout: 90000 }); await page.waitForTimeout(300);
   if (to !== "ligne") await pad(page, "1");
   await page.waitForTimeout(300);
   return signature(page);

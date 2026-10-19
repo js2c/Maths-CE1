@@ -182,6 +182,8 @@ Le parent n'est pas encore convaincu par les remèdes proposés : la question es
 - **Espace parent regroupé en trois ensembles** : séance et difficulté ; son et interface ; données et maintenance.
 - **La coche touchée sans réponse tapée** (lot « Recette de l'enfant et nettoyage des couches », constat 9 de l'agent qui joue l'enfant, 12 octobre 2026) : aujourd'hui elle ne fait rien, sans un mot. Une petite phrase (« Tape d'abord ta réponse. ») aiderait l'enfant qui ne comprend pas pourquoi rien ne se passe. Non fait : c'est une phrase nouvelle, donc une voix à fabriquer, et un choix pour le parent.
 
+- **Une mise en page « téléphone »** (lot « Banc Android et recette en conditions réelles », fiche 13, point 6 ; décision du parent du 19 octobre 2026 : option A, ne rien changer pour l'instant) : sur un petit smartphone, la scène de 1 280 × 800 réduite fait passer une douzaine de cibles sous les 9 mm conseillés pour un doigt d'enfant (les touches du pavé à 8,7 mm, la lampe de l'étal à 6,7 mm, les onglets de la boutique à 7,5 mm ; `tests/recette-fonctionnelle/out-banc-android/cibles.md`). Évolution possible, si un téléphone devient l'appareil de l'enfant : des écrans réagencés pour les téléphones, aux cibles agrandies (le pavé, l'étal, la boutique, l'album, les légendes), mesurés par `tests/e2e/cibles.mjs`.
+
 **Récompenses**
 
 - **Cartes animées** (idée du parent, 27 septembre) : remplacer la version brillante par une courte vidéo en boucle (6 s), WebM ou MP4 sans son, 3:4, 0,3 à 0,8 Mo par carte, téléchargée à la demande. Non décidé.

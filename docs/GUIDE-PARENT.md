@@ -505,7 +505,7 @@ Ce qui change pour l'enfant et pour vous :
 
 **Aucune phrase à fabriquer.**
 
-**Une décision vous attend** : l'application sur un téléphone (voir la demande de fusion). Sur la tablette, tout ce qui se touche mesure au moins 14 mm. Sur un téléphone, la scène se réduit : sur un petit téléphone, une douzaine de cibles passent sous les 9 mm conseillés pour un doigt d'enfant (les touches du pavé, à 8,7 mm ; la lampe de l'étal, à 6,7 mm ; les onglets de la boutique, à 7,5 mm).
+**Sur un téléphone** (votre décision du 19 octobre : on ne change rien pour l'instant) : l'application marche, mais elle est pensée pour la tablette. Sur la tablette, tout ce qui se touche mesure au moins 14 mm. Sur un téléphone, la scène se réduit : sur un petit téléphone, une douzaine de cibles passent sous les 9 mm conseillés pour un doigt d'enfant (les touches du pavé, à 8,7 mm ; la lampe de l'étal, à 6,7 mm ; les onglets de la boutique, à 7,5 mm). Une version « téléphone », aux boutons plus grands, reste possible plus tard (notée dans `docs/IDEES.md`).
 
 **À essayer sur la tablette** (comme d'habitude, la nouvelle version s'installe au premier lancement et prend la main au suivant) : une soirée normale. Si quelque chose ne va pas, exporter le journal technique et le donner à la conception.
 

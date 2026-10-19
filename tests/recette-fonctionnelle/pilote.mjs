@@ -24,7 +24,7 @@ import { accueilReel, chromium, demarrageReel, finReelle } from "../e2e/navigate
 import { createServer } from "node:http";
 import { appendFileSync, mkdirSync, readFileSync, existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
 
 const args = process.argv.slice(2), arg = (k, d = null) => (args.includes(k) ? args[args.indexOf(k) + 1] : d);
@@ -47,7 +47,7 @@ if (BANC) {
   await A.ouvrir(); await A.installer();
   if (args.includes("--base-un-mois")) {
     const SAVE = resolve("tests/e2e/out/enfant/base-un-mois.json");
-    if (!existsSync(SAVE)) execFileSync("node", ["tools/sauvegarde-test.mjs", "reel", "2", "4", "--sortie", SAVE], { stdio: "ignore" });
+    if (!existsSync(SAVE)) mkdirSync(dirname(SAVE), { recursive: true }), execFileSync("node", ["tools/sauvegarde-test.mjs", "reel", "2", "4", "--sortie", SAVE], { stdio: "ignore" });
     await A.page.evaluate(async (d) => { await window.__app.store.restore(d, ["reglages"]); }, JSON.parse(readFileSync(SAVE, "utf8")));
   }
   await A.relancer({ toucher: false }); ({ ctx: context, page, cdp } = A); brancher();
@@ -60,7 +60,7 @@ if (BANC) {
   await page.goto(url + "?nosw");
   if (args.includes("--base-un-mois")) {
     const SAVE = resolve("tests/e2e/out/enfant/base-un-mois.json");
-    if (!existsSync(SAVE)) execFileSync("node", ["tools/sauvegarde-test.mjs", "reel", "2", "4", "--sortie", SAVE], { stdio: "ignore" });
+    if (!existsSync(SAVE)) mkdirSync(dirname(SAVE), { recursive: true }), execFileSync("node", ["tools/sauvegarde-test.mjs", "reel", "2", "4", "--sortie", SAVE], { stdio: "ignore" });
     await page.waitForFunction(() => window.__app?.store, null, { timeout: 120000 });
     await page.evaluate(async (d) => { await window.__app.store.restore(d, ["reglages"]); }, JSON.parse(readFileSync(SAVE, "utf8")));
     await page.reload();

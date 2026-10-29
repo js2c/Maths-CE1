@@ -21,7 +21,7 @@ import { fileURLToPath } from "node:url";
 const ICI = dirname(fileURLToPath(import.meta.url)), RACINE = join(ICI, "../..");
 const banque = JSON.parse(readFileSync(join(ICI, "enonces.json"), "utf8")).enonces;
 const contextes = JSON.parse(readFileSync(join(ICI, "contextes.json"), "utf8")).contextes;
-export const OBJETS = ["bille", "biscuit", "pomme", "oeuf", "crayon", "ballon", "bonbon", "fleur", "perle", "livre", "personne", "jeton"];
+export const OBJETS = ["bille", "biscuit", "pomme", "oeuf", "crayon", "ballon", "bonbon", "fleur", "perle", "livre", "poisson", "personne", "jeton"];
 export const CONTENANTS = ["sachet", "assiette", "boite", "panier", "vase"];
 const defauts = [], defaut = (e, m) => defauts.push(`${e.id} : ${m}`);
 const op = (o, x, y) => (o === "+" ? x + y : o === "−" ? x - y : x * y);

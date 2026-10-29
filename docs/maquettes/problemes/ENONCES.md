@@ -1,13 +1,13 @@
 # La banque des problèmes, à relire
 
-168 énoncés (source : `art/problemes/enonces.json`, contrôlée par `node art/problemes/verifier.mjs` ; ce fichier en est tiré par `--md`). Pour chaque énoncé : ce que dit la voix (l'énoncé, puis la question), la réponse et le calcul, puis la correction dite après une erreur. La difficulté (1 à 4) ne mesure que le calcul (règle : `art/problemes/README.md`).
+170 énoncés (source : `art/problemes/enonces.json`, contrôlée par `node art/problemes/verifier.mjs` ; ce fichier en est tiré par `--md`). Pour chaque énoncé : ce que dit la voix (l'énoncé, puis la question), la réponse et le calcul, puis la correction dite après une erreur. La difficulté (1 à 4) ne mesure que le calcul (règle : `art/problemes/README.md`).
 
 | Structure | 1 | 2 | 3 | 4 | Total | Réponses différentes |
 | --- | --- | --- | --- | --- | --- | --- |
 | reunion · tout | 4 | 4 | 4 | 4 | 16 | 14 |
 | reunion · partie | 3 | 3 | 3 | 3 | 12 | 9 |
 | transformation · gain · fin | 3 | 3 | 3 | 3 | 12 | 12 |
-| transformation · perte · fin | 3 | 3 | 3 | 3 | 12 | 10 |
+| transformation · perte · fin | 3 | 3 | 3 | 4 | 13 | 11 |
 | transformation · gain · changement | 2 | 2 | 2 | 2 | 8 | 7 |
 | transformation · perte · changement | 2 | 2 | 2 | 2 | 8 | 7 |
 | transformation · gain · debut | 1 | 1 | 1 | 2 | 5 | 5 |
@@ -15,11 +15,11 @@
 | comparaison · ecart | 3 | 4 | 3 | 2 | 12 | 7 |
 | comparaison · grand | 2 | 2 | 2 | 1 | 7 | 7 |
 | comparaison · petit | 2 | 1 | 1 | 1 | 5 | 5 |
-| groupes-egaux | 6 | 12 | 6 | · | 24 | 17 |
+| groupes-egaux | 6 | 13 | 6 | · | 25 | 17 |
 | partage · part | 4 | 4 | 4 | · | 12 | 8 |
 | partage · parts | 4 | 4 | 4 | · | 12 | 5 |
 | deux-etapes | · | 5 | 6 | 5 | 16 | 13 |
-| **Total** | 41 | 52 | 46 | 29 | **168** | 43 |
+| **Total** | 41 | 53 | 46 | 30 | **170** | 43 |
 
 ## Réunion (deux parties et le tout)
 
@@ -130,6 +130,8 @@
   Correction : « 31 personnes, 7 de moins, il en reste 24. »
 - **tra-pf-12** · 4 · jardin · perte, fin inconnu — Il y a 53 fraises dans le panier. Toute la famille en mange 18. *Combien de fraises reste-t-il dans le panier ?* → **35** (53 − 18 = 35)  
   Correction : « 53 fraises, 18 de moins, il en reste 35. »
+- **tra-pf-13** · 4 · etal · perte, fin inconnu — Ce matin, le pêcheur a 23 sardines sur son étal. Il en vend 9. *Combien de sardines lui reste-t-il ?* → **14** (23 − 9 = 14)  
+  Correction : « 23 sardines, 9 de moins, il en reste 14. »
 - **tra-gc-01** · 1 · chambre · gain, changement inconnu — Tu as 4 autocollants. Mamie t'en donne. Maintenant, tu as 9 autocollants. *Combien d'autocollants Mamie t'a-t-elle donnés ?* → **5** (4 + 5 = 9)  
   Correction : « De 4 pour aller à 9, il faut 5 : Mamie t'a donné 5 autocollants. »
 - **tra-gc-02** · 1 · parc · gain, changement inconnu — 5 canards nagent sur le lac. D'autres canards arrivent. Maintenant, il y a 8 canards. *Combien de canards sont arrivés ?* → **3** (5 + 3 = 8)  
@@ -276,17 +278,19 @@
   Correction : « 3 tables de 8 enfants : 8, 16, 24. Il y a 24 enfants. »
 - **grp-18** · 2 · bibliotheque — Chaque soir, tu lis 5 pages. Tu lis pendant 4 soirs. *Combien de pages as-tu lues ?* → **20** (5 + 5 + 5 + 5 = 20 (4 fois 5))  
   Correction : « 4 soirs de 5 pages : 5, 10, 15, 20. Tu as lu 20 pages. »
-- **grp-19** · 3 · classe — La maîtresse achète 4 paquets de feutres. Chaque paquet contient 10 feutres. *Combien de feutres achète-t-elle ?* → **40** (10 + 10 + 10 + 10 = 40 (4 fois 10))  
+- **grp-19** · 2 · etal — Le pêcheur remplit 4 cagettes. Dans chaque cagette, il met 5 maquereaux. *Combien de maquereaux a-t-il mis dans les cagettes ?* → **20** (5 + 5 + 5 + 5 = 20 (4 fois 5))  
+  Correction : « 4 cagettes de 5 maquereaux : 5, 10, 15, 20. Il a mis 20 maquereaux. »
+- **grp-20** · 3 · classe — La maîtresse achète 4 paquets de feutres. Chaque paquet contient 10 feutres. *Combien de feutres achète-t-elle ?* → **40** (10 + 10 + 10 + 10 = 40 (4 fois 10))  
   Correction : « 4 paquets de 10 feutres : 10, 20, 30, 40. Elle achète 40 feutres. »
-- **grp-20** · 3 · supermarche — Papa achète 6 packs d'eau. Dans chaque pack, il y a 6 bouteilles. *Combien de bouteilles Papa achète-t-il ?* → **36** (6 + 6 + 6 + 6 + 6 + 6 = 36 (6 fois 6))  
+- **grp-21** · 3 · supermarche — Papa achète 6 packs d'eau. Dans chaque pack, il y a 6 bouteilles. *Combien de bouteilles Papa achète-t-il ?* → **36** (6 + 6 + 6 + 6 + 6 + 6 = 36 (6 fois 6))  
   Correction : « 6 packs de 6 bouteilles : 6, 12, 18, 24, 30, 36. Papa achète 36 bouteilles. »
-- **grp-21** · 3 · kermesse — Pour la kermesse, il y a 5 boîtes de gâteaux. Chaque boîte contient 10 gâteaux. *Combien de gâteaux y a-t-il ?* → **50** (10 + 10 + 10 + 10 + 10 = 50 (5 fois 10))  
+- **grp-22** · 3 · kermesse — Pour la kermesse, il y a 5 boîtes de gâteaux. Chaque boîte contient 10 gâteaux. *Combien de gâteaux y a-t-il ?* → **50** (10 + 10 + 10 + 10 + 10 = 50 (5 fois 10))  
   Correction : « 5 boîtes de 10 gâteaux : 10, 20, 30, 40, 50. Il y a 50 gâteaux. »
-- **grp-22** · 3 · bus — Dans le petit car, il y a 8 rangées de sièges. Chaque rangée a 4 sièges. *Combien de sièges y a-t-il dans le petit car ?* → **32** (4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 = 32 (8 fois 4))  
+- **grp-23** · 3 · bus — Dans le petit car, il y a 8 rangées de sièges. Chaque rangée a 4 sièges. *Combien de sièges y a-t-il dans le petit car ?* → **32** (4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 = 32 (8 fois 4))  
   Correction : « 8 rangées de 4 sièges : 4, 8, 12, 16, 20, 24, 28, 32. Il y a 32 sièges. »
-- **grp-23** · 3 · ferme — La fermière remplit 7 boîtes. Dans chaque boîte, elle met 6 œufs. *Combien d'œufs a-t-elle mis dans les boîtes ?* → **42** (6 + 6 + 6 + 6 + 6 + 6 + 6 = 42 (7 fois 6))  
+- **grp-24** · 3 · ferme — La fermière remplit 7 boîtes. Dans chaque boîte, elle met 6 œufs. *Combien d'œufs a-t-elle mis dans les boîtes ?* → **42** (6 + 6 + 6 + 6 + 6 + 6 + 6 = 42 (7 fois 6))  
   Correction : « 7 boîtes de 6 œufs : 6, 12, 18, 24, 30, 36, 42. Elle a mis 42 œufs. »
-- **grp-24** · 3 · foret — Il y a 9 enfants dans la forêt. Chaque enfant ramasse 5 châtaignes. *Combien de châtaignes les enfants ont-ils ramassées ?* → **45** (5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 = 45 (9 fois 5))  
+- **grp-25** · 3 · foret — Il y a 9 enfants dans la forêt. Chaque enfant ramasse 5 châtaignes. *Combien de châtaignes les enfants ont-ils ramassées ?* → **45** (5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 + 5 = 45 (9 fois 5))  
   Correction : « 9 enfants, 5 châtaignes chacun : 5, 10, 15, 20, 25, 30, 35, 40, 45. Ils ont ramassé 45 châtaignes. »
 
 ## Partage (la valeur d'une part, le nombre de parts)

@@ -4,23 +4,23 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 
 - **Voix aujourd'hui** : 11377 phrases, dossier de 81,18 Mo (sons, index et crédits), plafond **85 Mo** (`tests/unit/voix.test.mjs`) : **il reste 3,82 Mo**.
 - **Estimation** : 491 octets + 189 octets par lettre du texte lu (droite ajustée sur les fichiers existants : elle redonne 80,65 Mo pour 80,65 Mo réels) ; 51 octets d'index par phrase ; durée 0,11 s + 63 ms par lettre.
-- **Avec les corrections dans l'histoire** : **751 phrases nouvelles, environ 6,57 Mo**, soit 2,75 Mo de plus que la place qui reste.
-- **Avec les corrections par le calcul seul** (« 17 plus 8, ça fait 25. ») : 162 phrases de calcul dont 119 nouvelles (43 existent déjà) : **663 phrases nouvelles, environ 5,21 Mo**, soit 1,40 Mo de plus que la place qui reste.
-- **Sans aucune correction propre** (la correction ne dit que la réponse, déjà dans l'inventaire : « C'était 25. ») : 544 phrases, environ 4,21 Mo.
+- **Avec les corrections dans l'histoire** : **759 phrases nouvelles, environ 6,65 Mo**, soit 2,83 Mo de plus que la place qui reste.
+- **Avec les corrections par le calcul seul** (« 17 plus 8, ça fait 25. ») : 163 phrases de calcul dont 120 nouvelles (43 existent déjà) : **669 phrases nouvelles, environ 5,27 Mo**, soit 1,45 Mo de plus que la place qui reste.
+- **Sans aucune correction propre** (la correction ne dit que la réponse, déjà dans l'inventaire : « C'était 25. ») : 549 phrases, environ 4,26 Mo.
 
 | Partie | Phrases | Nouvelles | Poids estimé | Durée |
 | --- | --- | --- | --- | --- |
-| énoncés | 348 | 348 | 2,59 Mo | 14 min |
-| questions | 166 | 166 | 1,38 Mo | 8 min |
-| corrections dans l'histoire (« 17 ballons, et 8 de plus, ça fait 25 ballons. ») | 207 | 207 | 2,35 Mo | 13 min |
+| énoncés | 351 | 351 | 2,62 Mo | 14 min |
+| questions | 168 | 168 | 1,40 Mo | 8 min |
+| corrections dans l'histoire (« 17 ballons, et 8 de plus, ça fait 25 ballons. ») | 210 | 210 | 2,38 Mo | 13 min |
 | communes : le nom et l'entrée | 4 | 4 | 0,02 Mo | 0 min |
 | communes : les objets à grouper | 12 | 12 | 0,08 Mo | 0 min |
 | communes : le schéma en barres | 8 | 8 | 0,06 Mo | 0 min |
 | communes : les deux étapes | 2 | 2 | 0,01 Mo | 0 min |
 | communes : les erreurs repérées | 4 | 4 | 0,04 Mo | 0 min |
-| **Total, corrections dans l'histoire** | | **751** | **6,57 Mo** (index compris) | 36 min |
+| **Total, corrections dans l'histoire** | | **759** | **6,65 Mo** (index compris) | 36 min |
 
-## énoncés (348)
+## énoncés (351)
 
 - Dans la corbeille, il y a 4 pommes et 3 poires.
 - Sur l'étagère, il y a 5 voitures rouges et 2 voitures bleues.
@@ -110,6 +110,7 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - À l'arrêt, 7 personnes descendent.
 - Il y a 53 fraises dans le panier.
 - Toute la famille en mange 18.
+- Ce matin, le pêcheur a 23 sardines sur son étal.
 - Tu as 4 autocollants.
 - Mamie t'en donne.
 - Maintenant, tu as 9 autocollants.
@@ -270,6 +271,8 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Autour de chaque table, il y a 8 enfants.
 - Chaque soir, tu lis 5 pages.
 - Tu lis pendant 4 soirs.
+- Le pêcheur remplit 4 cagettes.
+- Dans chaque cagette, il met 5 maquereaux.
 - La maîtresse achète 4 paquets de feutres.
 - Chaque paquet contient 10 feutres.
 - Papa achète 6 packs d'eau.
@@ -371,7 +374,7 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Le cuisinier prépare 4 plateaux de 10 yaourts.
 - Les enfants en mangent 27.
 
-## questions (166)
+## questions (168)
 
 - Combien de fruits y a-t-il dans la corbeille ?
 - Combien de voitures y a-t-il sur l'étagère ?
@@ -425,6 +428,7 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Combien de baguettes lui reste-t-il ?
 - Combien de personnes reste-t-il dans le bus ?
 - Combien de fraises reste-t-il dans le panier ?
+- Combien de sardines lui reste-t-il ?
 - Combien d'autocollants Mamie t'a-t-elle donnés ?
 - Combien de canards sont arrivés ?
 - Combien de bébés lapins sont nés ?
@@ -495,6 +499,7 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Combien de salades Papy a-t-il plantées ?
 - Combien d'enfants y a-t-il autour des tables ?
 - Combien de pages as-tu lues ?
+- Combien de maquereaux a-t-il mis dans les cagettes ?
 - Combien de feutres achète-t-elle ?
 - Combien de bouteilles Papa achète-t-il ?
 - Combien de gâteaux y a-t-il ?
@@ -540,7 +545,7 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Combien de châtaignes te reste-t-il ?
 - Combien de yaourts reste-t-il ?
 
-## corrections dans l'histoire (« 17 ballons, et 8 de plus, ça fait 25 ballons. ») (207)
+## corrections dans l'histoire (« 17 ballons, et 8 de plus, ça fait 25 ballons. ») (210)
 
 - 4 pommes et 3 poires, ça fait 7 fruits.
 - 5 voitures et 2 voitures, ça fait 7 voitures.
@@ -594,6 +599,7 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - 42 baguettes, 25 de moins, il en reste 17.
 - 31 personnes, 7 de moins, il en reste 24.
 - 53 fraises, 18 de moins, il en reste 35.
+- 23 sardines, 9 de moins, il en reste 14.
 - De 4 pour aller à 9, il faut 5 : Mamie t'a donné 5 autocollants.
 - De 5 pour aller à 8, il faut 3 : 3 canards sont arrivés.
 - De 8 pour aller à 15, il faut 7 : 7 bébés lapins sont nés.
@@ -681,6 +687,8 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Il y a 24 enfants.
 - 4 soirs de 5 pages : 5, 10, 15, 20.
 - Tu as lu 20 pages.
+- 4 cagettes de 5 maquereaux : 5, 10, 15, 20.
+- Il a mis 20 maquereaux.
 - 4 paquets de 10 feutres : 10, 20, 30, 40.
 - Elle achète 40 feutres.
 - 6 packs de 6 bouteilles : 6, 12, 18, 24, 30, 36.
@@ -795,7 +803,7 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Le bon calcul, mais une petite erreur de compte.
 - C'est la réponse de la première étape. Il en reste une.
 
-## corrections par le calcul seul (« 17 plus 8, ça fait 25. ») : les nouvelles (119)
+## corrections par le calcul seul (« 17 plus 8, ça fait 25. ») : les nouvelles (120)
 
 - 23 plus 4, ça fait 27.
 - 32 plus 15, ça fait 47.
@@ -835,6 +843,7 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - 42 moins 25, ça fait 17.
 - 31 moins 7, ça fait 24.
 - 53 moins 18, ça fait 35.
+- 23 moins 9, ça fait 14.
 - 20 plus 10, ça fait 30.
 - 18 plus 8, ça fait 26.
 - 27 plus 14, ça fait 41.

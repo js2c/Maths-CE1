@@ -38,3 +38,10 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 ## Reprise
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
+
+### Reprise du lot « Correctifs des relectures »
+
+- Branche `claude/loving-ritchie-oqan39`, demande de fusion #64 (brouillon). D'un seul tenant, sans phrase nouvelle ni modifiée.
+- Contenu (les points des relectures qui ont une valeur par défaut, `docs/IDEES.md`, section 3) : R8 (l'argent qui arrive déclaré à la bulle dans les leçons de la monnaie) ; R9 (les encoches claires du triangle « jouer » / « continuer ») ; l'outil des séquences (en-tête, famille acquise annoncée, « trou ») ; la mesure du temps de démarrage sur le banc (proposition, non appliquée). Non traités, listés dans la demande de fusion : R7 (l'argent sur les ardoises), la bulle sur les écrans pleins.
+- Fait : R8 (`lessons/etal.js`, `boitesSortie` ajouté par `art/tools/export-etal.mjs`) ; R9 (`sea/decor.ts`, `drawPlayIcon` : pointes arrondies) ; l'outil des séquences (`b-texte.mjs`, test `b-sequences-texte`) ; le parcours de mesure `tests/e2e/demarrage-temps.mjs`.
+- Reste : la mesure du démarrage (s5e) ; le parcours du lot ; la recette (méthode commune, banc Android, s5e et petit-smartphone) ; la relecture indépendante ; la documentation (SPEC, ARCHITECTURE, GUIDE-PARENT, IDEES, JOURNAL, LOTS).

@@ -20,3 +20,16 @@ export async function toucherCreature(page, id) {
   const touch = await page.evaluate(() => matchMedia("(pointer: coarse)").matches || navigator.maxTouchPoints > 0);
   if (touch) await page.touchscreen.tap(x, y); else await page.mouse.click(x, y);
 }
+// LA BASE DES ARRIVAGES DE LA BOUTIQUE « IL Y A k SEMAINES », COMPTÉE EN SEMAINES D'ÉCOLE (lot « Correctifs des relectures »,
+// recette du 30 octobre 2026) : les créatures n'arrivent que le lundi des semaines d'école (session/rewards.js, quotaAt). Une base
+// datée de « maintenant moins k semaines » ne donnait, pendant les vacances, aucune arrivée : la vitrine restait vide et les
+// parcours de la boutique échouaient selon la date. Ce lundi-là compte k + 1 semaines d'école jusqu'à maintenant (les k d'avant
+// et celle en cours), comme une base de k semaines un jour de classe.
+import { readFileSync } from "node:fs";
+import { schoolWeeks, weekStart } from "../../app/js/session/rewards.js";
+const CAL = JSON.parse(readFileSync(new URL("../../app/content/calendrier.json", import.meta.url), "utf8"));
+export function ilYaSemaines(k, now = Date.now()) {
+  const d = new Date(weekStart(now));
+  for (let i = 0; i < 104 && schoolWeeks(CAL, d.getTime(), now) < k + 1; i++) d.setDate(d.getDate() - 7);
+  return d.getTime();
+}

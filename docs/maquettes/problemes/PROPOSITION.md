@@ -177,7 +177,7 @@ Mesures de `node art/problemes/phrases.mjs` (détail et liste complète : `PHRAS
 - **Pas encore dessinés** : le pictogramme de l'exercice (écran « choisir »), celui de la frise, les plaques des neuf niveaux, la leçon du schéma en barres : ils viendront avec le lot, une fois la maquette validée. La frise n'est pas dans les captures.
 - **Des images fixes** : la mascotte est une image capturée dans l'application (elle sera la vidéo, comme partout) ; le geste du glisser, l'allumage des étiquettes et le comptage par bonds sont montrés à un instant, pas animés.
 - **Rien n'est simulé** : les niveaux et la règle de répétition (question 10) seront simulés et lus en séquences avant d'être codés (`docs/SPEC.md`, section 14).
-- **La recette** : ce travail ne touche ni `app/` ni les tests. `npm test` donne le même résultat que sur `main` (156 réussis, 30 en échec, les mêmes, sans lien avec ce travail : à expliquer au prochain lot) ; `node art/problemes/verifier.mjs` est conforme ; la planche de l'atelier est reproductible (`still.mjs` : « reproducible »).
+- **La recette** : ce travail ne touche ni `app/` ni les tests. `npm test` : 418 tests réussis, aucun échec, et les trois vérifications de GitHub (`tests`, `android`, `enfant`) passent ; `node art/problemes/verifier.mjs` est conforme ; la planche de l'atelier est reproductible (`still.mjs` : « reproducible »).
 
 ## 9. Les fichiers
 

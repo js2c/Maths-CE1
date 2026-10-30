@@ -15,7 +15,7 @@
 // rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
 // enfant.mjs --android, installation.mjs, veille.mjs).)
 import { chromium } from "./navigateur.mjs";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
 
@@ -135,6 +135,9 @@ async function run(src, moment, to) {
     const got = await launch(page, to), base = await baseline(prm, src.prep ?? null, to);
     const diff = Object.keys(base.s).filter((k) => base.s[k] !== got[k]);
     if (diff.length && process.env.TRACE) console.log(await page.evaluate(() => window.__leaves.join("\n----\n")));
+    // (contrôle « effets », intermittent depuis la PR #63, cause non trouvée : non reproduit au lot « Correctifs des relectures »
+    // en 130 cas instrumentés ; aucun dessin d'un écran de la ligne détruit. À l'échec, l'image du calque d'effets est gardée)
+    if (diff.includes("effets")) await page.evaluate(() => window.__app.line.fx.toDataURL()).then((u) => writeFileSync(join(OUT, `${src.name}-${moment}-${to}-effets.png`), Buffer.from(u.split(",")[1], "base64"))).catch(() => {});
     if (diff.length) await page.screenshot({ path: join(OUT, `${src.name}-${moment}-${to}.png`) });
     check(!diff.length && !errors.length, `${name} : comme un démarrage à neuf${diff.length ? ` (${diff.map((k) => `${k} : ${JSON.stringify(got[k])} au lieu de ${JSON.stringify(base.s[k])}`).join(" ; ")})` : ""}${errors.length ? ` ; erreurs : ${errors.join(" | ")}` : ""}`);
   } catch (e) { await page.screenshot({ path: join(OUT, `${src.name}-${moment}-${to}-erreur.png`) }).catch(() => {}); check(false, `${name} : ${e.message.split("\n")[0]}`); }

@@ -18,7 +18,7 @@ La première image tient largement le budget ; « prêt » le dépasse d'environ
 
 ## Où passe le temps (copie instrumentée, repères « etape: » posés dans `main.js` et `engine/lagon.js`)
 
-Relance typique (médianes de cinq relances, ms) :
+Plages relevées sur cinq relances (ms) :
 
 | Étape | Durée |
 | --- | --- |

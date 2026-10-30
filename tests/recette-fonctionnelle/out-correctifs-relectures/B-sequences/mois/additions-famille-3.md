@@ -2,7 +2,7 @@
 
 Point de départ de la base : ligne graduée niveau conseillé 4 ; familles ouvertes 1, 2, 3, 4, 5, 6, acquises 1, 2, 4, 6 ; calcul rapide, niveaux acquis 1, 2, 3, 4.
 
-Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequences.mjs). Chaque ligne : une question (ou une leçon). « ce qui suit » : correction (avec son code d'erreur), leçon relancée, montée, étoiles gagnées (+1★ : une bonne réponse, au multiplicateur du cran). Les mesures d'en-tête portent sur la notion du jour (l'exercice choisi).
+Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequences.mjs). Chaque ligne : une question (ou une leçon). « ce qui suit » : correction (avec son code d'erreur), leçon relancée, montée, étoiles gagnées (+1★ : une bonne réponse, au multiplicateur du cran : au cran « plus facile », une demi-étoile, donc une étoile toutes les deux bonnes réponses). « (famille N) » : la famille du fait posé ; les faits d'autres familles que celle du jour sont les révisions. Les mesures d'en-tête portent sur la notion du jour (l'exercice choisi).
 
 ## Cran « plus facile »
 
@@ -11,7 +11,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 - comportement : tout juste, 4 s par réponse
 - notion du jour : 19 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **3 (3, 6, 9 : pas de +3)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **46** (appliquée 46, réelle 37, pressée 18) ; cran à la fin : plus facile ; réussite 100 % sur 47 réponses ; durée simulée 9.8 min 
+- étoiles de la séance : **46** (appliquée 46, réelle 37, pressée 18) ; cran à la fin : plus facile ; réussite 100 % sur 47 réponses ; durée simulée 9,8 min 
 - étapes jouées : accueil, échauffement, notion du jour, défi record, récompense ; sautées : problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -65,14 +65,14 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 | 47 | défi | ? + 7 = 8 | (aucune : le défi ne lit pas les calculs) | 1 | 1 | +1★ |
 | 48 | défi | 3 + 6 = ? | (aucune : le défi ne lit pas les calculs) | 9 | 9 | +5★ (nouveau record) |
 
-Récompense et fin : étoile arc-en-ciel (niveau franchi) ; fin de la notion : la famille 7 (mélange) est acquise : ce n'est pas la famille de la séance, ses faits revus aujourd'hui (échauffement, révision) sont maintenant bien sus ; fin de la notion : la famille 7 (mélange) : sans effet (un mélange prend les formes à trou des familles de chacun de ses faits) ; défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; boutique : rien à acheter (le bouton de fin mène au récif)
+Récompense et fin : étoile arc-en-ciel (une famille acquise ou un niveau franchi, nommé plus loin) ; fin de la notion : la famille 7 (mélange) est acquise : ce n'est pas la famille de la séance, ses faits revus aujourd'hui (échauffement, révision) sont maintenant bien sus ; défi : 14 bonnes réponses, nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série : une séance sur 3 de la série en rapporte 5, quelle que soit la réussite) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 3 (amis de 10), cran « plus facile » · réelle
 
 - comportement : 25 % d'erreurs (dont 1 sur 5 en « je ne sais pas »), 5 s par réponse
 - notion du jour : 17 questions ; **8 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **2 (4, 7 : pas de +3)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **37** (appliquée 46, réelle 37, pressée 18) ; cran à la fin : plus facile ; réussite 80 % sur 44 réponses ; durée simulée 10.9 min 
+- étoiles de la séance : **37** (appliquée 46, réelle 37, pressée 18) ; cran à la fin : plus facile ; réussite 80 % sur 44 réponses ; durée simulée 10,9 min 
 - étapes jouées : accueil, échauffement, notion du jour, défi record, récompense ; sautées : problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -123,14 +123,14 @@ Récompense et fin : étoile arc-en-ciel (niveau franchi) ; fin de la notion : l
 | 44 | défi | 2 + 8 = ? | (aucune : le défi ne lit pas les calculs) | 10 | 10 |  |
 | 45 | défi | ? + 6 = 8 | (aucune : le défi ne lit pas les calculs) | 2 | 1 | la bonne réponse montrée un instant |
 
-Récompense et fin : fin de la notion : la famille 7 (mélange) s'ouvre ; défi : 7 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : rien à acheter (le bouton de fin mène au récif)
+Récompense et fin : fin de la notion : la famille 7 (mélange) s'ouvre ; défi : 7 bonnes réponses ; +10★ (fin) ; +5★ (série : une séance sur 3 de la série en rapporte 5, quelle que soit la réussite) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 3 (amis de 10), cran « plus facile » · pressée
 
 - comportement : réponses au hasard, 1 s par réponse
 - notion du jour : 16 questions ; **7 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **2 (4, 1 : pas de -3)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **18** (appliquée 46, réelle 37, pressée 18) ; cran à la fin : plus facile ; réussite 2 % sur 60 réponses ; durée simulée 11.6 min 
+- étoiles de la séance : **18** (appliquée 46, réelle 37, pressée 18) ; cran à la fin : plus facile ; réussite 2 % sur 60 réponses ; durée simulée 11,6 min 
 - étapes jouées : accueil, échauffement, notion du jour, défi record, récompense ; sautées : problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -197,7 +197,7 @@ Récompense et fin : fin de la notion : la famille 7 (mélange) s'ouvre ; défi 
 | 60 | défi | 5 + 3 = ? | (aucune : le défi ne lit pas les calculs) | 8 | 20 | la bonne réponse montrée un instant |
 | 61 | défi | ? + 5 = 7 | (aucune : le défi ne lit pas les calculs) | 2 | 20 | la bonne réponse montrée un instant |
 
-Récompense et fin : défi : 0 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : rien à acheter (le bouton de fin mène au récif)
+Récompense et fin : défi : 0 bonne réponse ; +10★ (fin) ; +5★ (série : une séance sur 3 de la série en rapporte 5, quelle que soit la réussite) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « conseillé »
 
@@ -206,7 +206,7 @@ Récompense et fin : défi : 0 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 - comportement : tout juste, 4 s par réponse
 - notion du jour : 23 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **3 (3, 6, 9 : pas de +3)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **75** (appliquée 75, réelle 55, pressée 20) ; cran à la fin : conseillé ; réussite 100 % sur 52 réponses ; durée simulée 8.6 min 
+- étoiles de la séance : **75** (appliquée 75, réelle 55, pressée 20) ; cran à la fin : conseillé ; réussite 100 % sur 52 réponses ; durée simulée 8,6 min 
 - étapes jouées : accueil, échauffement, notion du jour, défi record, récompense ; sautées : problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -265,14 +265,14 @@ Récompense et fin : défi : 0 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 52 | défi | 4 + ? = 10 | (aucune : le défi ne lit pas les calculs) | 6 | 6 | +1★ |
 | 53 | défi | ? + 2 = 5 | (aucune : le défi ne lit pas les calculs) | 3 | 3 | +1★ ; +5★ (nouveau record) |
 
-Récompense et fin : étoile arc-en-ciel (niveau franchi) ; fin de la notion : la famille 7 (mélange) est acquise : ce n'est pas la famille de la séance, ses faits revus aujourd'hui (échauffement, révision) sont maintenant bien sus ; fin de la notion : la famille 7 (mélange) : sans effet (un mélange prend les formes à trou des familles de chacun de ses faits) ; défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; boutique : rien à acheter (le bouton de fin mène au récif)
+Récompense et fin : étoile arc-en-ciel (une famille acquise ou un niveau franchi, nommé plus loin) ; fin de la notion : la famille 7 (mélange) est acquise : ce n'est pas la famille de la séance, ses faits revus aujourd'hui (échauffement, révision) sont maintenant bien sus ; défi : 14 bonnes réponses, nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série : une séance sur 3 de la série en rapporte 5, quelle que soit la réussite) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 3 (amis de 10), cran « conseillé » · réelle
 
 - comportement : 25 % d'erreurs (dont 1 sur 5 en « je ne sais pas »), 5 s par réponse
 - notion du jour : 22 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **5 %** ; plus longue suite prévisible : **2 (4, 7 : pas de +3)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **55** (appliquée 75, réelle 55, pressée 20) ; cran à la fin : conseillé ; réussite 67 % sur 48 réponses ; durée simulée 10.9 min 
+- étoiles de la séance : **55** (appliquée 75, réelle 55, pressée 20) ; cran à la fin : conseillé ; réussite 67 % sur 48 réponses ; durée simulée 10,9 min 
 - étapes jouées : accueil, échauffement, notion du jour, défi record, récompense ; sautées : problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -327,14 +327,14 @@ Récompense et fin : étoile arc-en-ciel (niveau franchi) ; fin de la notion : l
 | 48 | défi | 1 + 7 = ? | (aucune : le défi ne lit pas les calculs) | 8 | 7 | la bonne réponse montrée un instant |
 | 49 | défi | 5 + 1 = ? | (aucune : le défi ne lit pas les calculs) | 6 | 5 | la bonne réponse montrée un instant |
 
-Récompense et fin : fin de la notion : la famille 7 (mélange) s'ouvre ; défi : 7 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : rien à acheter (le bouton de fin mène au récif)
+Récompense et fin : fin de la notion : la famille 7 (mélange) s'ouvre ; défi : 7 bonnes réponses ; +10★ (fin) ; +5★ (série : une séance sur 3 de la série en rapporte 5, quelle que soit la réussite) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 3 (amis de 10), cran « conseillé » · pressée
 
 - comportement : réponses au hasard, 1 s par réponse
 - notion du jour : 21 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **10 %** ; plus longue suite prévisible : **2 (4, 1 : pas de -3)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **20** (appliquée 75, réelle 55, pressée 20) ; cran à la fin : conseillé ; réussite 3 % sur 65 réponses ; durée simulée 11.2 min 
+- étoiles de la séance : **20** (appliquée 75, réelle 55, pressée 20) ; cran à la fin : conseillé ; réussite 3 % sur 65 réponses ; durée simulée 11,2 min 
 - étapes jouées : accueil, échauffement, notion du jour, défi record, récompense ; sautées : problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -406,7 +406,7 @@ Récompense et fin : fin de la notion : la famille 7 (mélange) s'ouvre ; défi 
 | 65 | défi | 6 + 2 = ? | (aucune : le défi ne lit pas les calculs) | 8 | 8 | +1★ |
 | 66 | défi | ? + 3 = 4 | (aucune : le défi ne lit pas les calculs) | 1 | 15 | la bonne réponse montrée un instant |
 
-Récompense et fin : défi : 1 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : rien à acheter (le bouton de fin mène au récif)
+Récompense et fin : défi : 1 bonne réponse ; +10★ (fin) ; +5★ (série : une séance sur 3 de la série en rapporte 5, quelle que soit la réussite) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « plus dur »
 
@@ -415,7 +415,7 @@ Récompense et fin : défi : 1 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 - comportement : tout juste, 4 s par réponse
 - notion du jour : 23 questions ; **8 réponses attendues différentes** ; même réponse que la précédente : **5 %** ; plus longue suite prévisible : **3 (3, 6, 9 : pas de +3)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **101** (appliquée 101, réelle 67, pressée 23) ; cran à la fin : plus dur ; réussite 100 % sur 52 réponses ; durée simulée 8.6 min 
+- étoiles de la séance : **101** (appliquée 101, réelle 67, pressée 23) ; cran à la fin : plus dur ; réussite 100 % sur 52 réponses ; durée simulée 8,6 min 
 - étapes jouées : accueil, échauffement, notion du jour, défi record, récompense ; sautées : problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -474,14 +474,14 @@ Récompense et fin : défi : 1 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 52 | défi | ? + 1 = 8 | (aucune : le défi ne lit pas les calculs) | 7 | 7 | +1★ |
 | 53 | défi | 1 + ? = 2 | (aucune : le défi ne lit pas les calculs) | 1 | 1 | +2★ ; +5★ (nouveau record) |
 
-Récompense et fin : étoile arc-en-ciel (niveau franchi) ; fin de la notion : la famille 7 (mélange) est acquise : ce n'est pas la famille de la séance, ses faits revus aujourd'hui (échauffement, révision) sont maintenant bien sus ; fin de la notion : la famille 7 (mélange) : sans effet (un mélange prend les formes à trou des familles de chacun de ses faits) ; défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; boutique : rien à acheter (le bouton de fin mène au récif)
+Récompense et fin : étoile arc-en-ciel (une famille acquise ou un niveau franchi, nommé plus loin) ; fin de la notion : la famille 7 (mélange) est acquise : ce n'est pas la famille de la séance, ses faits revus aujourd'hui (échauffement, révision) sont maintenant bien sus ; défi : 14 bonnes réponses, nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série : une séance sur 3 de la série en rapporte 5, quelle que soit la réussite) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 3 (amis de 10), cran « plus dur » · réelle
 
 - comportement : 25 % d'erreurs (dont 1 sur 5 en « je ne sais pas »), 5 s par réponse
 - notion du jour : 22 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **2 (4, 7 : pas de +3)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **67** (appliquée 101, réelle 67, pressée 23) ; cran à la fin : conseillé ; réussite 77 % sur 47 réponses ; durée simulée 9.7 min 
+- étoiles de la séance : **67** (appliquée 101, réelle 67, pressée 23) ; cran à la fin : conseillé ; réussite 77 % sur 47 réponses ; durée simulée 9,7 min 
 - étapes jouées : accueil, échauffement, notion du jour, défi record, récompense ; sautées : problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -535,14 +535,14 @@ Récompense et fin : étoile arc-en-ciel (niveau franchi) ; fin de la notion : l
 | 47 | défi | 2 + 6 = ? | (aucune : le défi ne lit pas les calculs) | 8 | je ne sais pas | la bonne réponse montrée un instant |
 | 48 | défi | ? + 1 = 6 | (aucune : le défi ne lit pas les calculs) | 5 | je ne sais pas | la bonne réponse montrée un instant |
 
-Récompense et fin : fin de la notion : la famille 7 (mélange) s'ouvre ; défi : 5 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : rien à acheter (le bouton de fin mène au récif)
+Récompense et fin : fin de la notion : la famille 7 (mélange) s'ouvre ; défi : 5 bonnes réponses ; +10★ (fin) ; +5★ (série : une séance sur 3 de la série en rapporte 5, quelle que soit la réussite) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 3 (amis de 10), cran « plus dur » · pressée
 
 - comportement : réponses au hasard, 1 s par réponse
 - notion du jour : 22 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **3 (8, 6, 4 : pas de -2)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **23** (appliquée 101, réelle 67, pressée 23) ; cran à la fin : conseillé ; réussite 8 % sur 67 réponses ; durée simulée 11.4 min 
+- étoiles de la séance : **23** (appliquée 101, réelle 67, pressée 23) ; cran à la fin : conseillé ; réussite 8 % sur 67 réponses ; durée simulée 11,4 min 
 - étapes jouées : accueil, échauffement, notion du jour, défi record, récompense ; sautées : problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -616,7 +616,7 @@ Récompense et fin : fin de la notion : la famille 7 (mélange) s'ouvre ; défi 
 | 67 | défi | 3 + 6 = ? | (aucune : le défi ne lit pas les calculs) | 9 | 13 | la bonne réponse montrée un instant |
 | 68 | défi | ? + 6 = 8 | (aucune : le défi ne lit pas les calculs) | 2 | 13 | la bonne réponse montrée un instant |
 
-Récompense et fin : défi : 3 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : rien à acheter (le bouton de fin mène au récif)
+Récompense et fin : défi : 3 bonnes réponses ; +10★ (fin) ; +5★ (série : une séance sur 3 de la série en rapporte 5, quelle que soit la réussite) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ## Cran « très dur »
 
@@ -625,7 +625,7 @@ Récompense et fin : défi : 3 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 - comportement : tout juste, 4 s par réponse
 - notion du jour : 23 questions ; **8 réponses attendues différentes** ; même réponse que la précédente : **5 %** ; plus longue suite prévisible : **3 (3, 6, 9 : pas de +3)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **121** (appliquée 121, réelle 72, pressée 27) ; cran à la fin : très dur ; réussite 100 % sur 49 réponses ; durée simulée 8.1 min 
+- étoiles de la séance : **121** (appliquée 121, réelle 72, pressée 27) ; cran à la fin : très dur ; réussite 100 % sur 49 réponses ; durée simulée 8,1 min 
 - étapes jouées : accueil, échauffement, notion du jour, défi record, récompense ; sautées : problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -681,14 +681,14 @@ Récompense et fin : défi : 3 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (sér
 | 49 | défi | 5 + 1 = ? | (aucune : le défi ne lit pas les calculs) | 6 | 6 | +2★ |
 | 50 | défi | ? + 7 = 10 | (aucune : le défi ne lit pas les calculs) | 3 | 3 | +2★ ; +5★ (nouveau record) |
 
-Récompense et fin : étoile arc-en-ciel (niveau franchi) ; fin de la notion : la famille 7 (mélange) est acquise : ce n'est pas la famille de la séance, ses faits revus aujourd'hui (échauffement, révision) sont maintenant bien sus ; fin de la notion : la famille 7 (mélange) : sans effet (un mélange prend les formes à trou des familles de chacun de ses faits) ; défi : 14 bonne(s) réponse(s), nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
+Récompense et fin : étoile arc-en-ciel (une famille acquise ou un niveau franchi, nommé plus loin) ; fin de la notion : la famille 7 (mélange) est acquise : ce n'est pas la famille de la séance, ses faits revus aujourd'hui (échauffement, révision) sont maintenant bien sus ; défi : 14 bonnes réponses, nouveau record (+5 étoiles) ; +10★ (fin) ; +5★ (série : une séance sur 3 de la série en rapporte 5, quelle que soit la réussite) ; boutique : un achat est possible (le bouton de fin mène à la boutique)
 
 ### Additions, famille 3 (amis de 10), cran « très dur » · réelle
 
 - comportement : 25 % d'erreurs (dont 1 sur 5 en « je ne sais pas »), 5 s par réponse
 - notion du jour : 22 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **5 %** ; plus longue suite prévisible : **3 (9, 6, 3 : pas de -3)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **72** (appliquée 121, réelle 72, pressée 27) ; cran à la fin : plus dur ; réussite 68 % sur 47 réponses ; durée simulée 10.5 min 
+- étoiles de la séance : **72** (appliquée 121, réelle 72, pressée 27) ; cran à la fin : plus dur ; réussite 68 % sur 47 réponses ; durée simulée 10,5 min 
 - étapes jouées : accueil, échauffement, notion du jour, défi record, récompense ; sautées : problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -742,14 +742,14 @@ Récompense et fin : étoile arc-en-ciel (niveau franchi) ; fin de la notion : l
 | 47 | défi | 4 + 1 = ? | (aucune : le défi ne lit pas les calculs) | 5 | 5 | +2★ |
 | 48 | défi | 5 + 1 = ? | (aucune : le défi ne lit pas les calculs) | 6 | 6 | +1★ |
 
-Récompense et fin : fin de la notion : la famille 7 (mélange) s'ouvre ; défi : 6 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : rien à acheter (le bouton de fin mène au récif)
+Récompense et fin : fin de la notion : la famille 7 (mélange) s'ouvre ; défi : 6 bonnes réponses ; +10★ (fin) ; +5★ (série : une séance sur 3 de la série en rapporte 5, quelle que soit la réussite) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 3 (amis de 10), cran « très dur » · pressée
 
 - comportement : réponses au hasard, 1 s par réponse
 - notion du jour : 21 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **5 %** ; plus longue suite prévisible : **3 (8, 6, 4 : pas de -2)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **27** (appliquée 121, réelle 72, pressée 27) ; cran à la fin : conseillé ; réussite 8 % sur 66 réponses ; durée simulée 11.3 min 
+- étoiles de la séance : **27** (appliquée 121, réelle 72, pressée 27) ; cran à la fin : conseillé ; réussite 8 % sur 66 réponses ; durée simulée 11,3 min 
 - étapes jouées : accueil, échauffement, notion du jour, défi record, récompense ; sautées : problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -822,4 +822,4 @@ Récompense et fin : fin de la notion : la famille 7 (mélange) s'ouvre ; défi 
 | 66 | défi | ? + 6 = 7 | (aucune : le défi ne lit pas les calculs) | 1 | 18 | la bonne réponse montrée un instant |
 | 67 | défi | 7 + 2 = ? | (aucune : le défi ne lit pas les calculs) | 9 | 7 | la bonne réponse montrée un instant |
 
-Récompense et fin : défi : 2 bonne(s) réponse(s) ; +10★ (fin) ; +5★ (série) ; boutique : rien à acheter (le bouton de fin mène au récif)
+Récompense et fin : défi : 2 bonnes réponses ; +10★ (fin) ; +5★ (série : une séance sur 3 de la série en rapporte 5, quelle que soit la réussite) ; boutique : rien à acheter (le bouton de fin mène au récif)

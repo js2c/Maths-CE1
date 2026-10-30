@@ -2,7 +2,7 @@
 
 Point de départ de la base : ligne graduée niveau conseillé 1 ; familles ouvertes 1, 2, acquises aucune ; calcul rapide, niveaux acquis aucun.
 
-Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequences.mjs). Chaque ligne : une question (ou une leçon). « ce qui suit » : correction (avec son code d'erreur), leçon relancée, montée, étoiles gagnées (+1★ : une bonne réponse, au multiplicateur du cran). Les mesures d'en-tête portent sur la notion du jour (l'exercice choisi).
+Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequences.mjs). Chaque ligne : une question (ou une leçon). « ce qui suit » : correction (avec son code d'erreur), leçon relancée, montée, étoiles gagnées (+1★ : une bonne réponse, au multiplicateur du cran : au cran « plus facile », une demi-étoile, donc une étoile toutes les deux bonnes réponses). « (famille N) » : la famille du fait posé ; les faits d'autres familles que celle du jour sont les révisions. Les mesures d'en-tête portent sur la notion du jour (l'exercice choisi).
 
 ## Cran « plus facile »
 
@@ -11,7 +11,7 @@ Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequ
 - comportement : tout juste, 4 s par réponse
 - notion du jour : 19 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **2 (1, 4 : pas de +3)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **25** (appliquée 25, réelle 21, pressée 14) ; cran à la fin : plus facile ; réussite 100 % sur 25 réponses ; durée simulée 7.4 min 
+- étoiles de la séance : **25** (appliquée 25, réelle 21, pressée 14) ; cran à la fin : plus facile ; réussite 100 % sur 25 réponses ; durée simulée 7,4 min 
 - étapes jouées : accueil, échauffement, notion du jour, récompense ; sautées : défi record (pas encore (moins de 5 séances terminées, ou trop peu de faits bien sus)), problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -86,7 +86,7 @@ Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin
 - comportement : réponses au hasard, 1 s par réponse
 - notion du jour : 16 questions ; **6 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **3 (7, 6, 5 : pas de -1)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **14** (appliquée 25, réelle 21, pressée 14) ; cran à la fin : plus facile ; réussite 9 % sur 22 réponses ; durée simulée 8.7 min 
+- étoiles de la séance : **14** (appliquée 25, réelle 21, pressée 14) ; cran à la fin : plus facile ; réussite 9 % sur 22 réponses ; durée simulée 8,7 min 
 - étapes jouées : accueil, échauffement, notion du jour, récompense ; sautées : défi record (pas encore (moins de 5 séances terminées, ou trop peu de faits bien sus)), problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -124,7 +124,7 @@ Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin
 - comportement : tout juste, 4 s par réponse
 - notion du jour : 22 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **3 (7, 5, 3 : pas de -2)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **44** (appliquée 44, réelle 43, pressée 16) ; cran à la fin : conseillé ; réussite 100 % sur 31 réponses ; durée simulée 6.3 min 
+- étoiles de la séance : **44** (appliquée 44, réelle 43, pressée 16) ; cran à la fin : conseillé ; réussite 100 % sur 31 réponses ; durée simulée 6,3 min 
 - étapes jouées : accueil, échauffement, notion du jour, récompense ; sautées : défi record (pas encore (moins de 5 séances terminées, ou trop peu de faits bien sus)), problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -162,14 +162,14 @@ Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin
 | 31 | notion | 2 + 5 = ? (famille 1) | 2 plus 5 ? | 7 | 7 | +1★ |
 | 32 | notion | ? + 1 = 10 (famille 1) | Combien plus 1, ça fait 10 ? | 9 | 9 | +1★ |
 
-Récompense et fin : fin de la notion : les formes à trou s'ouvrent pour la famille 3 (amis de 10) : la moitié de ses faits sont bien sus (ses formes à elle suivent déjà le tableau des crans ; cela compte pour le mélange) ; +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
+Récompense et fin : fin de la notion : la famille 3 (amis de 10) : la moitié de ses faits sont bien sus ; ses questions ne changent pas (elles sont déjà à trou selon le cran), mais dans le mélange ses faits pourront être posés à trou ; +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 3 (amis de 10), cran « conseillé » · réelle
 
 - comportement : 25 % d'erreurs (dont 1 sur 5 en « je ne sais pas »), 5 s par réponse
 - notion du jour : 22 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **10 %** ; plus longue suite prévisible : **3 (7, 5, 3 : pas de -2)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **43** (appliquée 44, réelle 43, pressée 16) ; cran à la fin : conseillé ; réussite 87 % sur 31 réponses ; durée simulée 7.5 min 
+- étoiles de la séance : **43** (appliquée 44, réelle 43, pressée 16) ; cran à la fin : conseillé ; réussite 87 % sur 31 réponses ; durée simulée 7,5 min 
 - étapes jouées : accueil, échauffement, notion du jour, récompense ; sautées : défi record (pas encore (moins de 5 séances terminées, ou trop peu de faits bien sus)), problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -207,14 +207,14 @@ Récompense et fin : fin de la notion : les formes à trou s'ouvrent pour la fam
 | 31 | notion | 1 + 6 = ? (famille 1, revient) | 1 plus 6 ? | 7 | 7 | +2★ (erreur corrigée) |
 | 32 | notion | ? + 1 = 10 (famille 1) | Combien plus 1, ça fait 10 ? | 9 | 9 | +1★ |
 
-Récompense et fin : fin de la notion : les formes à trou s'ouvrent pour la famille 3 (amis de 10) : la moitié de ses faits sont bien sus (ses formes à elle suivent déjà le tableau des crans ; cela compte pour le mélange) ; +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
+Récompense et fin : fin de la notion : la famille 3 (amis de 10) : la moitié de ses faits sont bien sus ; ses questions ne changent pas (elles sont déjà à trou selon le cran), mais dans le mélange ses faits pourront être posés à trou ; +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 3 (amis de 10), cran « conseillé » · pressée
 
 - comportement : réponses au hasard, 1 s par réponse
 - notion du jour : 22 questions ; **8 réponses attendues différentes** ; même réponse que la précédente : **10 %** ; plus longue suite prévisible : **2 (3, 8 : pas de +5)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **16** (appliquée 44, réelle 43, pressée 16) ; cran à la fin : conseillé ; réussite 9 % sur 35 réponses ; durée simulée 10.2 min 
+- étoiles de la séance : **16** (appliquée 44, réelle 43, pressée 16) ; cran à la fin : conseillé ; réussite 9 % sur 35 réponses ; durée simulée 10,2 min 
 - étapes jouées : accueil, échauffement, notion du jour, récompense ; sautées : défi record (pas encore (moins de 5 séances terminées, ou trop peu de faits bien sus)), problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -265,7 +265,7 @@ Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin
 - comportement : tout juste, 4 s par réponse
 - notion du jour : 22 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **5 %** ; plus longue suite prévisible : **3 (5, 3, 1 : pas de -2)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **59** (appliquée 59, réelle 50, pressée 15) ; cran à la fin : plus dur ; réussite 100 % sur 31 réponses ; durée simulée 6.3 min 
+- étoiles de la séance : **59** (appliquée 59, réelle 50, pressée 15) ; cran à la fin : plus dur ; réussite 100 % sur 31 réponses ; durée simulée 6,3 min 
 - étapes jouées : accueil, échauffement, notion du jour, récompense ; sautées : défi record (pas encore (moins de 5 séances terminées, ou trop peu de faits bien sus)), problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -303,14 +303,14 @@ Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin
 | 31 | notion | 3 + ? = 5 (famille 1) | 3 plus combien, ça fait 5 ? | 2 | 2 | +2★ |
 | 32 | notion | ? + 1 = 10 (famille 1) | Combien plus 1, ça fait 10 ? | 9 | 9 | +1★ |
 
-Récompense et fin : fin de la notion : les formes à trou s'ouvrent pour la famille 3 (amis de 10) : la moitié de ses faits sont bien sus (ses formes à elle suivent déjà le tableau des crans ; cela compte pour le mélange) ; +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
+Récompense et fin : fin de la notion : la famille 3 (amis de 10) : la moitié de ses faits sont bien sus ; ses questions ne changent pas (elles sont déjà à trou selon le cran), mais dans le mélange ses faits pourront être posés à trou ; +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 3 (amis de 10), cran « plus dur » · réelle
 
 - comportement : 25 % d'erreurs (dont 1 sur 5 en « je ne sais pas »), 5 s par réponse
 - notion du jour : 22 questions ; **8 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **2 (8, 1 : pas de -7)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **50** (appliquée 59, réelle 50, pressée 15) ; cran à la fin : plus dur ; réussite 77 % sur 31 réponses ; durée simulée 7.9 min 
+- étoiles de la séance : **50** (appliquée 59, réelle 50, pressée 15) ; cran à la fin : plus dur ; réussite 77 % sur 31 réponses ; durée simulée 7,9 min 
 - étapes jouées : accueil, échauffement, notion du jour, récompense ; sautées : défi record (pas encore (moins de 5 séances terminées, ou trop peu de faits bien sus)), problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -355,7 +355,7 @@ Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin
 - comportement : réponses au hasard, 1 s par réponse
 - notion du jour : 16 questions ; **8 réponses attendues différentes** ; même réponse que la précédente : **7 %** ; plus longue suite prévisible : **3 (1, 3, 5 : pas de +2)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **15** (appliquée 59, réelle 50, pressée 15) ; cran à la fin : conseillé ; réussite 9 % sur 22 réponses ; durée simulée 7.2 min 
+- étoiles de la séance : **15** (appliquée 59, réelle 50, pressée 15) ; cran à la fin : conseillé ; réussite 9 % sur 22 réponses ; durée simulée 7,2 min 
 - étapes jouées : accueil, échauffement, notion du jour, récompense ; sautées : défi record (pas encore (moins de 5 séances terminées, ou trop peu de faits bien sus)), problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -393,7 +393,7 @@ Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin
 - comportement : tout juste, 4 s par réponse
 - notion du jour : 22 questions ; **8 réponses attendues différentes** ; même réponse que la précédente : **5 %** ; plus longue suite prévisible : **2 (8, 9 : pas de +1)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **75** (appliquée 75, réelle 46, pressée 18) ; cran à la fin : très dur ; réussite 100 % sur 31 réponses ; durée simulée 6.3 min 
+- étoiles de la séance : **75** (appliquée 75, réelle 46, pressée 18) ; cran à la fin : très dur ; réussite 100 % sur 31 réponses ; durée simulée 6,3 min 
 - étapes jouées : accueil, échauffement, notion du jour, récompense ; sautées : défi record (pas encore (moins de 5 séances terminées, ou trop peu de faits bien sus)), problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -431,14 +431,14 @@ Récompense et fin : +10★ (fin) ; boutique : rien à acheter (le bouton de fin
 | 31 | notion | ? + 7 = 9 (famille 1) | Combien plus 7, ça fait 9 ? | 2 | 2 | +2★ |
 | 32 | notion | ? + 1 = 10 (famille 1) | Combien plus 1, ça fait 10 ? | 9 | 9 | +2★ |
 
-Récompense et fin : fin de la notion : les formes à trou s'ouvrent pour la famille 3 (amis de 10) : la moitié de ses faits sont bien sus (ses formes à elle suivent déjà le tableau des crans ; cela compte pour le mélange) ; +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
+Récompense et fin : fin de la notion : la famille 3 (amis de 10) : la moitié de ses faits sont bien sus ; ses questions ne changent pas (elles sont déjà à trou selon le cran), mais dans le mélange ses faits pourront être posés à trou ; +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 3 (amis de 10), cran « très dur » · réelle
 
 - comportement : 25 % d'erreurs (dont 1 sur 5 en « je ne sais pas »), 5 s par réponse
 - notion du jour : 22 questions ; **8 réponses attendues différentes** ; même réponse que la précédente : **10 %** ; plus longue suite prévisible : **2 (6, 8 : pas de +2)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **46** (appliquée 75, réelle 46, pressée 18) ; cran à la fin : conseillé ; réussite 71 % sur 31 réponses ; durée simulée 8.4 min 
+- étoiles de la séance : **46** (appliquée 75, réelle 46, pressée 18) ; cran à la fin : conseillé ; réussite 71 % sur 31 réponses ; durée simulée 8,4 min 
 - étapes jouées : accueil, échauffement, notion du jour, récompense ; sautées : défi record (pas encore (moins de 5 séances terminées, ou trop peu de faits bien sus)), problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |
@@ -476,14 +476,14 @@ Récompense et fin : fin de la notion : les formes à trou s'ouvrent pour la fam
 | 31 | notion | 7 + 1 = ? (famille 1) | Combien font 7 plus 1 ? | 8 | 8 | +1★ |
 | 32 | notion | 3 + ? = 10 (famille 3, revient) | 3 plus combien, ça fait 10 ? | 7 | 7 | +2★ (erreur corrigée) |
 
-Récompense et fin : fin de la notion : les formes à trou s'ouvrent pour la famille 3 (amis de 10) : la moitié de ses faits sont bien sus (ses formes à elle suivent déjà le tableau des crans ; cela compte pour le mélange) ; +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
+Récompense et fin : fin de la notion : la famille 3 (amis de 10) : la moitié de ses faits sont bien sus ; ses questions ne changent pas (elles sont déjà à trou selon le cran), mais dans le mélange ses faits pourront être posés à trou ; +10★ (fin) ; boutique : rien à acheter (le bouton de fin mène au récif)
 
 ### Additions, famille 3 (amis de 10), cran « très dur » · pressée
 
 - comportement : réponses au hasard, 1 s par réponse
 - notion du jour : 21 questions ; **9 réponses attendues différentes** ; même réponse que la précédente : **0 %** ; plus longue suite prévisible : **3 (9, 8, 7 : pas de -1)**
 - leçons jouées : L5 × 1
-- étoiles de la séance : **18** (appliquée 75, réelle 46, pressée 18) ; cran à la fin : conseillé ; réussite 11 % sur 27 réponses ; durée simulée 8.3 min 
+- étoiles de la séance : **18** (appliquée 75, réelle 46, pressée 18) ; cran à la fin : conseillé ; réussite 11 % sur 27 réponses ; durée simulée 8,3 min 
 - étapes jouées : accueil, échauffement, notion du jour, récompense ; sautées : défi record (pas encore (moins de 5 séances terminées, ou trop peu de faits bien sus)), problème du jour (pas encore construit)
 
 | n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |

@@ -23,9 +23,9 @@ test("une famille acquise qui n'est pas celle de la séance le dit ; celle de la
 });
 
 test("« trou » : les formes à trou s'ouvrent, dit en clair (et, pour les familles 3 à 5, à quoi cela sert)", () => {
-  assert.equal(evenementFamilleTexte({ type: "trou", famille: 6 }, 3, familles), "les formes à trou s'ouvrent pour la famille 6 (presque-doubles) : la moitié de ses faits sont bien sus");
-  assert.match(evenementFamilleTexte({ type: "trou", famille: 3 }, 3, familles), /cela compte pour le mélange/);
-  assert.match(evenementFamilleTexte({ type: "trou", famille: 7 }, 3, familles), /^la famille 7 \(mélange\) : sans effet/, "le mélange n'a pas d'ouverture propre des formes à trou (section 6)");
+  assert.match(evenementFamilleTexte({ type: "trou", famille: 6 }, 3, familles), /^les formes à trou s'ouvrent pour la famille 6 \(presque-doubles\) : la moitié de ses faits sont bien sus/);
+  assert.match(evenementFamilleTexte({ type: "trou", famille: 3 }, 3, familles), /ses questions ne changent pas.*dans le mélange/);
+  assert.equal(evenementFamilleTexte({ type: "trou", famille: 7 }, 3, familles), null, "le mélange n'a pas d'ouverture propre des formes à trou (section 6) : rien à écrire");
   for (const e of [{ type: "trou", famille: 3 }, { type: "ouverte", famille: 8 }, { type: "depassee", famille: 4 }]) assert.ok(!/^(trou|ouverte|depassee) famille/.test(evenementFamilleTexte(e, 3, familles)));
   assert.match(evenementFamilleTexte({ type: "ouverte", famille: 9, stagnation: true }, 8, familles), /s'ouvre \(la famille d'avant n'avançait plus\)/);
 });

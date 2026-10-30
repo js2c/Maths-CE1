@@ -65,8 +65,9 @@ for (const T of TAILLES) {
       }
       return out;
     });
+    // (relecture du lot, R3 : la capture attend que l'argent sorti ait fini de bouger, sinon le portefeuille apparaissait encore)
     await page.waitForFunction(() => (window.__app.etalLecon ?? window.__app.etal)?.api?.etat().pf === "sorti", null, { timeout: 30000, polling: 50 }).catch(() => {});
-    await page.waitForTimeout(150);
+    await page.waitForFunction(() => { const a = (window.__app.etalLecon ?? window.__app.etal)?.api, b = JSON.stringify(a?.boites() ?? []), ok = b !== "[]" && b === window.__bAvant; window.__bAvant = b; return ok; }, null, { timeout: 15000, polling: 250 }).catch(() => {});
     await page.screenshot({ path: `${OUT}/r8-${T}-${mode}-${id}.png` });
     const r = await suivi;
     check(r.declare > 0, `${T}, ${mode}, ${id} : l'argent qui sort est déclaré à la bulle pendant sa phrase (${r.declare} relevés)`);

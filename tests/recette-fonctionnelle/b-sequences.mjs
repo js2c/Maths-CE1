@@ -204,7 +204,7 @@ async function uneSeance({ base, choix, cran, comp }) {
           } };
           const res = await runNotion({ ...ctx, step: { ...ctx.step, ...(ctx.step.module2 ?? {}) }, runner, screen: scr, rnd: R, lesson });
           cur = null;
-          for (const e of res?.events ?? []) { if (e.type === "acquise" && !e.parent && !runner.events.some((x) => x.famille === e.famille)) await ctx.session.levelUp(); suite(`fin de la notion : ${evenementFamille(e, runner.famille)}`); }
+          for (const e of res?.events ?? []) { if (e.type === "acquise" && !e.parent && !runner.events.some((x) => x.famille === e.famille)) await ctx.session.levelUp(); const t = evenementFamille(e, runner.famille); if (t) suite(`fin de la notion : ${t}`); }
           ctx.session.nouveaux = runner.nouveaux; return;
         }
         // lot « Les voiliers » : un bateau par question ; la « réponse » est le passage (au double encadrement, 10 × celui des
@@ -307,11 +307,11 @@ async function uneSeance({ base, choix, cran, comp }) {
         const w = await new Warmup({ store, content: module2, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => "conseille" }).load(); w.defi = true;
         const view = { show() {}, start() {}, stop() {}, pearl() {}, record() {} };
         const r = await runChallenge({ ...ctx, warmup: w, screen: defiScreen, view, store, rnd: R, stars: seance.etoiles, say: async () => add(D.consigne), now: clock, pause: async (ms) => add(ms), timer: () => new Promise(() => {}) });
-        cur = null; suite(`défi : ${r.score} bonne(s) réponse(s)${r.nouveau ? ", nouveau record (+5 étoiles)" : ""}`);
+        cur = null; suite(`défi : ${r.score} bonne${r.score > 1 ? "s" : ""} réponse${r.score > 1 ? "s" : ""}${r.nouveau ? ", nouveau record (+5 étoiles)" : ""}`);
       },
       recompense: async ({ session }) => {
         etape = "récompense"; cur = null;
-        await session.stars(seance.etoiles.seanceTerminee, "fin"); const b = await rewards.endOfSession(session.rec.debut); if (b) await session.stars(b, "série");
+        await session.stars(seance.etoiles.seanceTerminee, "fin"); const b = await rewards.endOfSession(session.rec.debut); if (b) await session.stars(b, `série : une séance sur ${cartes.serie?.bonusChaque ?? 3} de la série en rapporte ${b}, quelle que soit la réussite`);
         const others = (await store.all("seances")).filter((x) => x.terminee && !x.libre && x.id !== session.id).map((x) => x.debut);
         // (lot « La boutique du récif » : le coquillage de la série, l'étoile de diamant, la zone et son premier habitant, le
         // coquillage de diamant ; plus de coquillages ordinaires : les créatures s'achètent à la boutique, hors séance)
@@ -326,7 +326,7 @@ async function uneSeance({ base, choix, cran, comp }) {
     // chaque gain d'étoiles, attaché à la question qui le donne
     const stars0 = s.stars.bind(s);
     s.stars = async (n, raison) => { const before = s.rec?.etoiles ?? 0; await stars0(n, raison); const d = (s.rec?.etoiles ?? 0) - before; if (d) suite(`+${d}★${raison === "bonne réponse" ? "" : ` (${raison})`}`); };
-    const lvl0 = s.levelUp.bind(s); s.levelUp = async () => { await lvl0(); suite("étoile arc-en-ciel (niveau franchi)"); };
+    const lvl0 = s.levelUp.bind(s); s.levelUp = async () => { await lvl0(); suite("étoile arc-en-ciel (une famille acquise ou un niveau franchi, nommé plus loin)"); };
     const rec = await s.run();
     return { rows, lessons, extra, rec, depart, reserve: rewards.total, cartes: rewards.count };
   } finally { Date.now = realNow; }
@@ -352,7 +352,7 @@ function texteSequence(title, comp, res, m, cmp) {
   L.push(`- comportement : ${COMPORTEMENTS[comp].dit}`);
   L.push(`- notion du jour : ${m.n} questions ; **${m.distinct} réponses attendues différentes** ; même réponse que la précédente : **${Math.round(m.same * 100)} %** ; plus longue suite prévisible : **${m.suite}**`);
   L.push(`- leçons jouées : ${Object.entries(res.lessons).map(([k, v]) => `${k} × ${v}`).join(", ") || "aucune"}`);
-  L.push(`- étoiles de la séance : **${res.rec.etoiles}** (appliquée ${cmp.appliquee}, réelle ${cmp.reelle}, pressée ${cmp.pressee}) ; cran à la fin : ${CRAN_NOM[res.rec.cran] ?? res.rec.cran} ; réussite ${Math.round((res.rec.reussite ?? 0) * 100)} % sur ${res.rec.questions} réponses ; durée simulée ${Math.round(res.rec.dureeS / 6) / 10} min `);
+  L.push(`- étoiles de la séance : **${res.rec.etoiles}** (appliquée ${cmp.appliquee}, réelle ${cmp.reelle}, pressée ${cmp.pressee}) ; cran à la fin : ${CRAN_NOM[res.rec.cran] ?? res.rec.cran} ; réussite ${Math.round((res.rec.reussite ?? 0) * 100)} % sur ${res.rec.questions} réponses ; durée simulée ${(Math.round(res.rec.dureeS / 6) / 10).toLocaleString("fr-FR")} min `);
   L.push(`- étapes jouées : ${etapesTexte(res.rec.etapes)}`);
   L.push("", "| n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |", "| --- | --- | --- | --- | --- | --- | --- |");
   for (const r of res.rows) L.push(`| ${r.n} | ${r.etape} | ${cell(r.forme)} | ${cell(r.voix)} | ${cell(r.attendue)} | ${cell(r.donnee)} | ${cell(r.suite.join(" ; "))} |`);
@@ -378,7 +378,7 @@ if (TEST) {
   for (const base of ["neuve", "mois"]) for (const ex of EXOS) for (const cran of CRANS) for (const comp of ["appliquee", "reelle"]) {
     const res = await uneSeance({ base, choix: ex.choix, cran, comp }), seq = res.rows.filter((r) => r.etape === "notion" && typeof r.attendue === "number").map((r) => ({ cle: r.cle, reponse: r.attendue }));
     // (lot « Les voiliers » : avec 3 bouées, il n'y a que 4 passages : la réponse prend au moins autant de valeurs qu'il y en a)
-    const bad = checkSequence(seq, { ...seance.variete, valeursMin: Math.min(seance.variete.valeursMin, ex.passages ?? Infinity) }); n++; combos.add(`${ex.id}:${cran}`); courtes.push([seq.length, `${base} · ${ex.nom} · ${CRAN_NOM[cran]} · ${COMPORTEMENTS[comp].nom} (${Math.round(res.rec.dureeS / 6) / 10} min simulées)`]);
+    const bad = checkSequence(seq, { ...seance.variete, valeursMin: Math.min(seance.variete.valeursMin, ex.passages ?? Infinity) }); n++; combos.add(`${ex.id}:${cran}`); courtes.push([seq.length, `${base} · ${ex.nom} · ${CRAN_NOM[cran]} · ${COMPORTEMENTS[comp].nom} (${(Math.round(res.rec.dureeS / 6) / 10).toLocaleString("fr-FR")} min simulées)`]);
     if (bad.length) fails.push(`${base} · ${ex.nom} · ${CRAN_NOM[cran]} · ${COMPORTEMENTS[comp].nom} (${seq.length} questions) : ${bad.join(" ; ")}`);
     // (lot « Décisions sur les constats de l'agent », décision 5) les additions : dans un bloc (la notion du jour, l'échauffement),
     // un même fait au plus `parBlocMax` fois, et au moins `ecartMin` autres questions entre deux passages (module2.json, repetition)
@@ -415,7 +415,7 @@ const star = { neuve: [], mois: [] };
 for (const [base, baseNom] of Object.entries(BASES)) {
   mkdirSync(join(OUT, base), { recursive: true });
   for (const ex of EXOS) {
-    const parts = [`# ${ex.nom} · ${baseNom}`, "", "Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequences.mjs). Chaque ligne : une question (ou une leçon). « ce qui suit » : correction (avec son code d'erreur), leçon relancée, montée, étoiles gagnées (+1★ : une bonne réponse, au multiplicateur du cran). Les mesures d'en-tête portent sur la notion du jour (l'exercice choisi).", ""];
+    const parts = [`# ${ex.nom} · ${baseNom}`, "", "Texte des séances générées par le moteur (tests/recette-fonctionnelle/b-sequences.mjs). Chaque ligne : une question (ou une leçon). « ce qui suit » : correction (avec son code d'erreur), leçon relancée, montée, étoiles gagnées (+1★ : une bonne réponse, au multiplicateur du cran : au cran « plus facile », une demi-étoile, donc une étoile toutes les deux bonnes réponses). « (famille N) » : la famille du fait posé ; les faits d'autres familles que celle du jour sont les révisions. Les mesures d'en-tête portent sur la notion du jour (l'exercice choisi).", ""];
     let depart = null;
     for (const cran of CRANS) {
       const res = {}; for (const comp of Object.keys(COMPORTEMENTS)) res[comp] = await uneSeance({ base, choix: ex.choix, cran, comp });

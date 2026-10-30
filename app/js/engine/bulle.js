@@ -45,6 +45,18 @@ export function placesPoste(m) {
   const bouche = [m.x + m.w * 0.824 + 12, m.y + m.h * 0.715];
   return PLACES.filter((p) => p.nom !== "dessous").map((p) => ({ ...p, pointe: bouche }));
 }
+// (lot « Correctifs des relectures », constat R14 de sa relecture) LE CIEL, pour une mascotte posée ailleurs (l'étal) : tout en haut,
+// au-dessus de l'argent sorti du portefeuille (y 92 à 262). Essayé seulement quand aucune autre place ne laisse libre ce que
+// l'enfant touche et ce dont parle la voix (`dernierRecours`) : sans lui, dans les leçons de la monnaie, la bulle renonçait
+// pendant la phrase qui sort l'argent (déclaré à la bulle depuis le même lot), alors que le ciel était vide.
+export const placeCiel = (m) => ({ nom: "ciel", boite: [m.x + m.w * 0.824 + 12 + 34, 92, 1128, 262], pointe: [m.x + m.w * 0.824 + 12, m.y + m.h * 0.715] });
+// la place choisie, et le ciel en dernier recours : seulement si la place choisie touche un obstacle dur et que le ciel n'en
+// touche aucun (les choix d'avant ne changent pas)
+export function dernierRecours(p, durs, mesure, poste, souples = []) {
+  if (!p?.touche || !poste) return p;
+  const c = choisirPlace(durs, mesure, avecLarges([placeCiel(poste)]), souples);
+  return c && !c.touche ? c : p;
+}
 
 // le contour de la bulle (repris de art/voiliers/index.html, `balloonPath`) : centre, demi-axes, graine du tremblé, pointe
 export function balloonPath(cx, cy, a, b, seed, tip) {
@@ -297,7 +309,7 @@ export class Bulle {
     Object.assign(this.txt.style, { maxWidth: "1px" }); this.txt.classList.remove("coupe");
     const motLong = this.txt.scrollWidth, cible = Math.max(largeurEquilibree(this.mesure(4000)[0]), motLong + 4), m = (w, place) => { this.el.classList.toggle("large", !!place?.large); return this.mesure(Math.min(w, place?.large ? LIGNE_LARGE : cible)); };
     // (lot « Les leçons » : `places`, les places propres à un écran, la table d'addition : sous la tête, à gauche de la grille)
-    const poste = this.poste?.(), places = this.mode?.places ?? this.places ?? (poste ? placesPoste(poste) : PLACES), { durs, souples } = this.obstacles(), p = choisirPlace(durs, m, [...avecLarges(places), ...(places === PLACES ? [COLONNE] : [])], souples);
+    const poste = this.poste?.(), places = this.mode?.places ?? this.places ?? (poste ? placesPoste(poste) : PLACES), { durs, souples } = this.obstacles(), p = dernierRecours(choisirPlace(durs, m, [...avecLarges(places), ...(places === PLACES ? [COLONNE] : [])], souples), durs, m, this.mode ? null : poste, souples);
     m(largeurMax(p.place.boite), p.place);
     Object.assign(this.txt.style, { left: `${(p.cx - p.w / 2).toFixed(1)}px`, top: `${(p.cy - p.h / 2).toFixed(1)}px` });
     const d = balloonPath(p.cx, p.cy, p.a, p.b, (Math.round(p.w) * 7 + Math.round(p.h)) % 13, p.place.pointe);

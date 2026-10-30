@@ -17,10 +17,10 @@ export const etapesTexte = (etapes) => {
 export const evenementFamilleTexte = (e, jour, familles) => {
   const fam = familles.find((x) => x.id === e.famille), f = `la famille ${e.famille} (${fam?.nom ?? ""})`, autre = e.famille !== jour;
   // (un mélange n'a pas d'ouverture propre des formes à trou : chaque fait y prend celles des familles dont il relève, docs/SPEC.md,
-  // section 6 ; l'événement interne est sans effet)
-  if (e.type === "trou" && fam?.regle === "melange") return `${f} : sans effet (un mélange prend les formes à trou des familles de chacun de ses faits)`;
+  // section 6 ; l'événement interne est sans effet : il n'est pas écrit)
+  if (e.type === "trou" && fam?.regle === "melange") return null; // (rien à écrire)
   if (e.type === "acquise") return `${f} est acquise${autre ? ` : ce n'est pas la famille de la séance, ses faits revus aujourd'hui (échauffement, révision) sont maintenant bien sus` : ""}`;
-  if (e.type === "trou") return `les formes à trou s'ouvrent pour ${f} : la moitié de ses faits sont bien sus${[3, 4, 5].includes(e.famille) ? " (ses formes à elle suivent déjà le tableau des crans ; cela compte pour le mélange)" : ""}`;
+  if (e.type === "trou") return [3, 4, 5].includes(e.famille) ? `${f} : la moitié de ses faits sont bien sus ; ses questions ne changent pas (elles sont déjà à trou selon le cran), mais dans le mélange ses faits pourront être posés à trou` : `les formes à trou s'ouvrent pour ${f} : la moitié de ses faits sont bien sus, ses questions pourront être « 3 + ? = 7 »`;
   if (e.type === "ouverte") return `${f} s'ouvre${e.stagnation ? " (la famille d'avant n'avançait plus)" : ""}`;
   if (e.type === "depassee") return `${f} est dépassée (pas acquise après 6 séances) : elle reste en révision`;
   return `${e.type} famille ${e.famille}`;

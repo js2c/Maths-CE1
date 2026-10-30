@@ -6,6 +6,13 @@
 //   node art/problemes/verifier.mjs          le contrôle (sort en échec au premier défaut trouvé, avec la liste)
 //   node art/problemes/verifier.mjs --md     écrit aussi docs/maquettes/problemes/ENONCES.md (la banque à relire)
 //
+// LE NIVEAU (1 à 9, docs/LOTS.md, fiche « Problèmes ») : 1, ajouter et enlever (réunion, transformation : le tout ou la fin
+// inconnus) jusqu'à 10 ; 2, les mêmes jusqu'à 20 ; 3, groupes égaux et partage, petits nombres (difficulté 1) ; 4, chercher une
+// partie ou le changement, jusqu'à 20 ; 5, comparer, jusqu'à 20 ; 6, les structures des niveaux 1, 2 et 4 au-delà de 20 ;
+// 7, groupes égaux et partage, au-delà ; 8, le début inconnu (toute difficulté) et la comparaison au-delà de 20 ; 9, deux étapes.
+// LES MOTS DE LA CORRECTION : elle ne dit que des mots de l'énoncé ou de la question (demande du parent du 30 octobre 2026 :
+// « 43 trésors » disait un mot absent de l'histoire), sauf les mots de liaison des corrections (MOTS_CORRECTION) ; un verbe
+// peut y être à un autre temps (« vend », « vendu » : même début de mot).
 // LA DIFFICULTÉ (1 à 4) :
 //  - problèmes additifs (réunion, transformation, comparaison, deux étapes) : selon les nombres du calcul (données,
 //    résultats intermédiaires, réponse) : 1, tous jusqu'à 10 ; 2, jusqu'à 20 ; 3, au-delà de 20 sans passage de la dizaine
@@ -49,6 +56,24 @@ export function difficulte(e, E) {
   return M <= 10 ? 1 : M <= 20 ? 2 : E.some(passe) ? 4 : 3;
 }
 
+export function niveau(e) {
+  const s = e.structure, i = e.inconnue, d = e.difficulte;
+  if (s === "deux-etapes") return 9;
+  if (s === "groupes-egaux" || s === "partage") return d === 1 ? 3 : 7;
+  if (s === "comparaison") return d <= 2 ? 5 : 8;
+  if (s === "transformation" && i === "debut") return 8;
+  if (i === "tout" || i === "fin") return d === 1 ? 1 : d === 2 ? 2 : 6;
+  return d <= 2 ? 4 : 6;
+}
+export const MOTS_CORRECTION = new Set("ca fait et en de d du des le la les l à au moins plus il elle ils elles y a as ont avait avais avaient reste contre tout pour par sans chacun chacune aller faut qui qu on s".split(" "));
+const sansAccent = (w) => w.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+const mots = (t) => (t.toLowerCase().replace(/’/g, "'").match(/[a-zàâçéèêëîïôûùüÿœæ]+/g) ?? []).map(sansAccent);
+export function motsEtrangers(e) {
+  // même début de mot : les 4 premières lettres (3 pour un mot court : « mis », « mises »)
+  const src = mots([...e.enonce, e.question].join(" ")), proche = (x, w) => { const n = Math.min(4, x.length, w.length); return n >= 3 && x.slice(0, n) === w.slice(0, n); };
+  return mots(e.correction).filter((w) => !MOTS_CORRECTION.has(w) && !src.includes(w) && !src.some((x) => proche(x, w)));
+}
+
 const ids = new Set();
 for (const e of banque) {
   if (ids.has(e.id)) defaut(e, "identifiant en double"); ids.add(e.id);
@@ -60,6 +85,9 @@ for (const e of banque) {
   if (E.some(([, a, b, v]) => Math.max(a, b, v) > 100)) defaut(e, "un nombre au-delà de 100");
   const d = difficulte(e, E);
   if (d !== e.difficulte) defaut(e, `difficulté ${e.difficulte}, la règle donne ${d}`);
+  if (niveau(e) !== e.niveau) defaut(e, `niveau ${e.niveau}, la règle donne ${niveau(e)}`);
+  const etr = motsEtrangers(e);
+  if (etr.length) defaut(e, `la correction dit des mots absents de l'énoncé : ${etr.join(", ")}`);
   // le calcul écrit contient la réponse et chaque donnée
   const nb = (s) => (s.match(/\d+/g) ?? []).map(Number);
   for (const n of (e.donnees ?? E.flatMap(([, a, b]) => [a, b]).filter((n, i, t) => i === 0 || !E.some(([, , , v]) => v === n)))) if (!nb(e.calcul).includes(n)) defaut(e, `le calcul « ${e.calcul} » n'a pas ${n}`);
@@ -104,15 +132,18 @@ for (const l of lignes) {
 const tot = (d) => banque.filter((e) => e.difficulte === d).length;
 tableau.push(`| **Total** | ${[1, 2, 3, 4].map(tot).join(" | ")} | **${banque.length}** | ${new Set(banque.map((e) => e.reponse)).size} |`);
 console.log(tableau.join("\n"));
+const NOMS = ["", "ajouter, enlever, jusqu'à 10", "ajouter, enlever, jusqu'à 20", "groupes égaux et partage, petits nombres", "chercher une partie ou le changement, jusqu'à 20", "comparer, jusqu'à 20", "les mêmes structures, jusqu'à 100", "groupes égaux et partage, jusqu'à 50", "le début inconnu, comparer jusqu'à 100", "deux étapes"];
+const parNiveau = ["| Niveau | Ce qui est travaillé | Énoncés | Réponses différentes |", "| --- | --- | --- | --- |", ...[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => { const L = banque.filter((e) => e.niveau === n); return `| ${n} | ${NOMS[n]} | ${L.length} | ${new Set(L.map((e) => e.reponse)).size} |`; })];
+console.log(`\n${parNiveau.join("\n")}`);
 for (const s of STRUCT) if (!banque.some((e) => e.structure === s)) defauts.push(`aucun énoncé de structure ${s}`);
 if (banque.length < 150 || banque.length > 200) defauts.push(`${banque.length} énoncés : la banque en demande 150 à 200`);
 
 if (process.argv.includes("--md")) {
   const titres = { reunion: "Réunion (deux parties et le tout)", transformation: "Transformation (un état, un changement, un nouvel état)", comparaison: "Comparaison (de plus, de moins)", "groupes-egaux": "Groupes égaux (sans le signe ×)", partage: "Partage (la valeur d'une part, le nombre de parts)", "deux-etapes": "Deux étapes" };
-  const md = ["# La banque des problèmes, à relire", "", `${banque.length} énoncés (source : \`art/problemes/enonces.json\`, contrôlée par \`node art/problemes/verifier.mjs\` ; ce fichier en est tiré par \`--md\`). Pour chaque énoncé : ce que dit la voix (l'énoncé, puis la question), la réponse et le calcul, puis la correction dite après une erreur. La difficulté (1 à 4) ne mesure que le calcul (règle : \`art/problemes/README.md\`).`, "", tableau.join("\n"), ""];
+  const md = ["# La banque des problèmes, à relire", "", `${banque.length} énoncés (source : \`art/problemes/enonces.json\`, contrôlée par \`node art/problemes/verifier.mjs\` ; ce fichier en est tiré par \`--md\`). Pour chaque énoncé : ce que dit la voix (l'énoncé, puis la question), la réponse et le calcul, puis la correction dite après une erreur. Le niveau (1 à 9) est celui de l'exercice ; la difficulté (1 à 4) ne mesure que le calcul (règles : \`art/problemes/README.md\`).`, "", tableau.join("\n"), "", parNiveau.join("\n"), ""];
   for (const s of STRUCT) {
     md.push(`## ${titres[s]}`, "");
-    for (const e of banque.filter((x) => x.structure === s)) md.push(`- **${e.id}** · ${e.difficulte} · ${e.contexte}${e.structure === "transformation" ? ` · ${e.sens}, ${e.inconnue} inconnu` : e.inconnue && !["groupes-egaux", "deux-etapes"].includes(s) ? ` · ${e.inconnue}` : ""} — ${e.enonce.join(" ")} *${e.question}* → **${e.reponse}** (${e.calcul})  \n  Correction : « ${e.correction} »`);
+    for (const e of banque.filter((x) => x.structure === s)) md.push(`- **${e.id}** · niveau ${e.niveau}, difficulté ${e.difficulte} · ${e.contexte}${e.structure === "transformation" ? ` · ${e.sens}, ${e.inconnue} inconnu` : e.inconnue && !["groupes-egaux", "deux-etapes"].includes(s) ? ` · ${e.inconnue}` : ""} — ${e.enonce.join(" ")} *${e.question}* → **${e.reponse}** (${e.calcul})  \n  Correction : « ${e.correction} »`);
     md.push("");
   }
   writeFileSync(join(RACINE, "docs/maquettes/problemes/ENONCES.md"), md.join("\n"));

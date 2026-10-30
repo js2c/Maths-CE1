@@ -2,6 +2,8 @@
 
 Maquette de l'exercice « Problèmes de la vie courante » (`docs/SPEC.md`, section 13, « Problèmes » ; `docs/IDEES.md`, sections 1 et 3), **préparée avant le lot, pour validation du parent**, comme le veut la règle du 30 septembre (`docs/IDEES.md`, section 1 : aucun exercice nouveau en code sans maquette validée). Rien n'est codé dans l'application : `app/`, `docs/SPEC.md`, `docs/LOTS.md` et `docs/IDEES.md` ne sont pas modifiés.
 
+> **Validée par le parent le 30 octobre 2026**, avec ses réponses aux dix questions et quelques précisions : `docs/JOURNAL-CONCEPTION.md`, « Décisions du 30 octobre 2026 » ; la fiche du lot : `docs/LOTS.md`, fiche 14. Ce qui a changé depuis la maquette : le cran « plus facile » ne montre pas le schéma d'emblée (l'énoncé redit phrase par phrase et les données en objets) ; départ au niveau 2 ; le plafond de la voix à 95 Mo ; la banque passe à **200 énoncés** (30 de plus aux niveaux 1, 2 et 5 et dans les lieux peu servis : la cour, le salon, l'étal, 8 chacun), chacun avec son niveau, et ses corrections relues (elles n'emploient que des mots de l'énoncé). Les niveaux sont précisés : le niveau 5 compte toutes les comparaisons jusqu'à 20, le niveau 8 le début inconnu et les comparaisons au-delà de 20. **Les tableaux et les chiffres ci-dessous sont ceux de la maquette** (170 énoncés) ; les chiffres à jour sont dans `ENONCES.md` et `PHRASES.md`.
+
 **Ce qui est livré** :
 
 1. **La banque** : 170 énoncés de la vie courante, `art/problemes/enonces.json`, à relire dans **`ENONCES.md`** (ce dossier). Contrôlée par `node art/problemes/verifier.mjs` (réponses, calculs, aides, difficultés).

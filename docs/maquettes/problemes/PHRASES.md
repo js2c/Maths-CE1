@@ -2,25 +2,26 @@
 
 Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/problemes/phrases.mjs`, `COMMUNES`) par `node art/problemes/phrases.mjs --md`, comparé à l'inventaire de la voix de `main` (`tools/voix/inventaire.mjs`). Une phrase déjà fabriquée ne coûte rien ; une phrase qui revient dans plusieurs énoncés n'est comptée qu'une fois.
 
-- **Voix aujourd'hui** : 11377 phrases, dossier de 81,18 Mo (sons, index et crédits), plafond **85 Mo** (`tests/unit/voix.test.mjs`) : **il reste 3,82 Mo**.
+- **Voix aujourd'hui** : 11377 phrases, dossier de 81,18 Mo (sons, index et crédits). Plafond **95 Mo** (décision du parent du 30 octobre 2026, au lieu de 85 Mo dans `tests/unit/voix.test.mjs` : il en restait 3,82 Mo) : **il reste 13,82 Mo**.
+- **Après le lot** (corrections dans l'histoire, la décision du parent) : dossier d'environ 88,81 Mo, **6,19 Mo de marge** sous 95 Mo.
 - **Estimation** : 491 octets + 189 octets par lettre du texte lu (droite ajustée sur les fichiers existants : elle redonne 80,65 Mo pour 80,65 Mo réels) ; 51 octets d'index par phrase ; durée 0,11 s + 63 ms par lettre.
-- **Avec les corrections dans l'histoire** : **759 phrases nouvelles, environ 6,65 Mo**, soit 2,83 Mo de plus que la place qui reste.
-- **Avec les corrections par le calcul seul** (« 17 plus 8, ça fait 25. ») : 163 phrases de calcul dont 120 nouvelles (43 existent déjà) : **669 phrases nouvelles, environ 5,27 Mo**, soit 1,45 Mo de plus que la place qui reste.
-- **Sans aucune correction propre** (la correction ne dit que la réponse, déjà dans l'inventaire : « C'était 25. ») : 549 phrases, environ 4,26 Mo.
+- **Avec les corrections dans l'histoire** : **868 phrases nouvelles, environ 7,63 Mo**, soit 6,19 Mo de moins que la place qui reste.
+- **Avec les corrections par le calcul seul** (« 17 plus 8, ça fait 25. ») : 178 phrases de calcul dont 130 nouvelles (48 existent déjà) : **758 phrases nouvelles, environ 5,98 Mo**, soit 7,84 Mo de moins que la place qui reste.
+- **Sans aucune correction propre** (la correction ne dit que la réponse, déjà dans l'inventaire : « C'était 25. ») : 628 phrases, environ 4,91 Mo.
 
 | Partie | Phrases | Nouvelles | Poids estimé | Durée |
 | --- | --- | --- | --- | --- |
-| énoncés | 351 | 351 | 2,62 Mo | 14 min |
-| questions | 168 | 168 | 1,40 Mo | 8 min |
-| corrections dans l'histoire (« 17 ballons, et 8 de plus, ça fait 25 ballons. ») | 210 | 210 | 2,38 Mo | 13 min |
+| énoncés | 402 | 402 | 3,01 Mo | 16 min |
+| questions | 196 | 196 | 1,65 Mo | 9 min |
+| corrections dans l'histoire (« 17 ballons, et 8 de plus, ça fait 25 ballons. ») | 240 | 240 | 2,72 Mo | 15 min |
 | communes : le nom et l'entrée | 4 | 4 | 0,02 Mo | 0 min |
 | communes : les objets à grouper | 12 | 12 | 0,08 Mo | 0 min |
 | communes : le schéma en barres | 8 | 8 | 0,06 Mo | 0 min |
 | communes : les deux étapes | 2 | 2 | 0,01 Mo | 0 min |
 | communes : les erreurs repérées | 4 | 4 | 0,04 Mo | 0 min |
-| **Total, corrections dans l'histoire** | | **759** | **6,65 Mo** (index compris) | 36 min |
+| **Total, corrections dans l'histoire** | | **868** | **7,63 Mo** (index compris) | 41 min |
 
-## énoncés (351)
+## énoncés (402)
 
 - Dans la corbeille, il y a 4 pommes et 3 poires.
 - Sur l'étagère, il y a 5 voitures rouges et 2 voitures bleues.
@@ -38,6 +39,14 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Pendant la promenade, la classe a trouvé 27 pommes de pin et 16 châtaignes.
 - Au magasin, il y a 36 bouteilles d'eau et 26 bouteilles de jus.
 - Pour la fête, Mamie a gonflé 19 ballons rouges et 17 ballons jaunes.
+- Dans la cour, 4 enfants jouent à la marelle et 5 enfants jouent au ballon.
+- Sur la table du salon, il y a 6 cartes rouges et 4 cartes noires.
+- Sur l'étal, il y a 5 dorades et 3 maquereaux.
+- Sur la plage, tu construis 3 châteaux de sable.
+- Ton copain en construit 6.
+- Dans la cour, il y a 8 enfants sur le banc et 7 enfants près de l'arbre.
+- Le pêcheur a pêché 9 sardines le matin et 6 sardines le soir.
+- Dans ta boîte, il y a 7 crayons de couleur et 6 feutres.
 - Il y a 9 crayons dans la trousse.
 - 4 crayons sont rouges, les autres sont bleus.
 - Dans la boîte, il y a 8 œufs.
@@ -86,6 +95,18 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Pour ton anniversaire, on t'en offre 15.
 - La fermière a 36 poules.
 - Elle en achète 9.
+- 3 enfants sautent à la corde.
+- 4 enfants viennent sauter avec eux.
+- Tu as 2 jetons.
+- Tu gagnes 6 jetons.
+- Il y a 2 papillons sur le rosier.
+- 5 papillons arrivent.
+- Ta tour a 9 cubes.
+- Tu en ajoutes 6.
+- Ce matin, le pêcheur a 12 maquereaux.
+- Son bateau en rapporte 7 autres.
+- Il y a 9 canards sur la mare.
+- 8 canards se posent à côté d'eux.
 - Il y a 8 biscuits dans l'assiette.
 - Tu en manges 2.
 - 9 pigeons sont sur la pelouse.
@@ -111,6 +132,20 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Il y a 53 fraises dans le panier.
 - Toute la famille en mange 18.
 - Ce matin, le pêcheur a 23 sardines sur son étal.
+- Il y a 8 ballons dans le coffre de la cour.
+- Les enfants en prennent 5.
+- Il y a 9 crabes dans le seau du pêcheur.
+- Il en vend 3.
+- La boulangère a 7 baguettes.
+- Elle en vend 4.
+- Il y a 16 cerceaux dans la cour.
+- La maîtresse en range 9.
+- Au début du jeu, il y a 14 cartes dans la pioche.
+- Tu en tires 6.
+- Il y a 12 parts de gâteau.
+- Les enfants en mangent 8.
+- Le stand de la pêche aux canards a 20 lots.
+- Les enfants en gagnent 7.
 - Tu as 4 autocollants.
 - Mamie t'en donne.
 - Maintenant, tu as 9 autocollants.
@@ -211,6 +246,11 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Au parc, il y a 26 enfants et 14 adultes.
 - La ferme a 42 moutons et 27 chèvres.
 - Le marchand a 31 citrons et 18 oranges.
+- Dans la cour, il y a 8 filles et 5 garçons.
+- Tu as 13 jetons.
+- Ton copain a 9 jetons.
+- Le pêcheur a 17 sardines et 8 dorades.
+- La boulangère a 15 croissants et 6 pains au chocolat.
 - Ton copain a 5 petites voitures.
 - Tu as 3 petites voitures de plus que lui.
 - Maman a 4 crêpes dans son assiette.
@@ -225,6 +265,12 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Le livre des dinosaures a 20 pages de plus.
 - La fermière a 26 poules.
 - Elle a 17 canards de plus que de poules.
+- Ce matin, 8 enfants jouent au ballon.
+- Cet après-midi, il y en a 7 de plus.
+- Papa a planté 4 salades.
+- Maman a planté 3 salades de plus que lui.
+- Tu as 7 petites voitures.
+- Ton copain a 6 petites voitures de plus que toi.
 - Tu as 9 images.
 - Ton copain a 4 images de moins que toi.
 - Il y a 10 enfants sur les balançoires.
@@ -235,6 +281,12 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - 20 enfants de moins ont pris de la salade.
 - Le grand car a 52 places.
 - Le petit car a 19 places de moins.
+- Tu as 16 cartes.
+- Ton copain a 7 cartes de moins que toi.
+- Il y a 9 vaches dans le pré.
+- Il y a 2 chevaux de moins que de vaches.
+- Lundi, le pêcheur a vendu 18 maquereaux.
+- Mardi, il en a vendu 5 de moins.
 - Maman pose 3 assiettes sur la table.
 - Dans chaque assiette, elle met 2 crêpes.
 - Il y a 3 nids dans le poulailler.
@@ -270,7 +322,7 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - À la cantine, il y a 3 tables.
 - Autour de chaque table, il y a 8 enfants.
 - Chaque soir, tu lis 5 pages.
-- Tu lis pendant 4 soirs.
+- Tu as lu pendant 4 soirs.
 - Le pêcheur remplit 4 cagettes.
 - Dans chaque cagette, il met 5 maquereaux.
 - La maîtresse achète 4 paquets de feutres.
@@ -374,7 +426,7 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Le cuisinier prépare 4 plateaux de 10 yaourts.
 - Les enfants en mangent 27.
 
-## questions (168)
+## questions (196)
 
 - Combien de fruits y a-t-il dans la corbeille ?
 - Combien de voitures y a-t-il sur l'étagère ?
@@ -392,6 +444,13 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Combien de pommes de pin et de châtaignes a-t-elle trouvées en tout ?
 - Combien de bouteilles y a-t-il au magasin ?
 - Combien de ballons Mamie a-t-elle gonflés ?
+- Combien d'enfants jouent dans la cour ?
+- Combien de cartes y a-t-il sur la table ?
+- Combien de poissons y a-t-il sur l'étal ?
+- Combien de châteaux de sable avez-vous construits ?
+- Combien d'enfants y a-t-il dans la cour ?
+- Combien de sardines a-t-il pêchées ?
+- Combien de crayons et de feutres y a-t-il dans ta boîte ?
 - Combien de crayons bleus y a-t-il ?
 - Combien d'œufs roux y a-t-il ?
 - Combien d'enfants sont dans le bac à sable ?
@@ -416,6 +475,12 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Combien de ballons l'école a-t-elle maintenant ?
 - Combien de cartes as-tu maintenant ?
 - Combien de poules a-t-elle maintenant ?
+- Combien d'enfants sautent à la corde maintenant ?
+- Combien de jetons as-tu maintenant ?
+- Combien de papillons y a-t-il sur le rosier maintenant ?
+- Combien de cubes a ta tour maintenant ?
+- Combien de maquereaux a-t-il maintenant ?
+- Combien de canards y a-t-il sur la mare maintenant ?
 - Combien de biscuits reste-t-il dans l'assiette ?
 - Combien de pigeons reste-t-il sur la pelouse ?
 - Combien de bougies sont encore allumées ?
@@ -429,6 +494,12 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Combien de personnes reste-t-il dans le bus ?
 - Combien de fraises reste-t-il dans le panier ?
 - Combien de sardines lui reste-t-il ?
+- Combien de ballons reste-t-il dans le coffre ?
+- Combien de crabes reste-t-il dans le seau ?
+- Combien de cerceaux reste-t-il dans la cour ?
+- Combien de cartes reste-t-il dans la pioche ?
+- Combien de parts de gâteau reste-t-il ?
+- Combien de lots reste-t-il au stand ?
 - Combien d'autocollants Mamie t'a-t-elle donnés ?
 - Combien de canards sont arrivés ?
 - Combien de bébés lapins sont nés ?
@@ -469,6 +540,9 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Combien y a-t-il d'adultes de moins que d'enfants ?
 - Combien y a-t-il de moutons de plus que de chèvres ?
 - Combien y a-t-il de citrons de plus que d'oranges ?
+- Combien de jetons as-tu de plus que ton copain ?
+- Combien y a-t-il de sardines de plus que de dorades ?
+- Combien de pains au chocolat a-t-elle de moins que de croissants ?
 - Combien de petites voitures as-tu ?
 - Combien de crêpes Papa a-t-il ?
 - Combien de tulipes y a-t-il ?
@@ -476,11 +550,17 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Combien de points l'équipe bleue a-t-elle marqués ?
 - Combien de pages a le livre des dinosaures ?
 - Combien de canards a-t-elle ?
+- Combien d'enfants jouent au ballon cet après-midi ?
+- Combien de salades Maman a-t-elle plantées ?
+- Combien de petites voitures ton copain a-t-il ?
 - Combien d'images ton copain a-t-il ?
 - Combien d'enfants y a-t-il sur le toboggan ?
 - Combien de pains de campagne a-t-il faits ?
 - Combien d'enfants ont pris de la salade ?
 - Combien de places a le petit car ?
+- Combien de cartes ton copain a-t-il ?
+- Combien de chevaux y a-t-il ?
+- Combien de maquereaux a-t-il vendus mardi ?
 - Combien de crêpes y a-t-il en tout ?
 - Combien d'œufs y a-t-il en tout ?
 - Combien de billes as-tu en tout ?
@@ -506,11 +586,11 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Combien de sièges y a-t-il dans le petit car ?
 - Combien d'œufs a-t-elle mis dans les boîtes ?
 - Combien de châtaignes les enfants ont-ils ramassées ?
-- Combien de fraises a chacun ?
+- Combien de fraises chacun a-t-il ?
 - Combien de peluches y a-t-il sur chaque étagère ?
 - Combien de crayons y a-t-il dans chaque pot ?
-- Combien de bonbons a chaque enfant ?
-- Combien de croquettes a chaque chat ?
+- Combien de bonbons chaque enfant a-t-il ?
+- Combien de croquettes chaque chat a-t-il ?
 - Combien de croissants y a-t-il sur chaque plateau ?
 - Combien de salades y a-t-il dans chaque rangée ?
 - Combien d'enfants y a-t-il dans chaque équipe ?
@@ -545,7 +625,7 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Combien de châtaignes te reste-t-il ?
 - Combien de yaourts reste-t-il ?
 
-## corrections dans l'histoire (« 17 ballons, et 8 de plus, ça fait 25 ballons. ») (210)
+## corrections dans l'histoire (« 17 ballons, et 8 de plus, ça fait 25 ballons. ») (240)
 
 - 4 pommes et 3 poires, ça fait 7 fruits.
 - 5 voitures et 2 voitures, ça fait 7 voitures.
@@ -556,13 +636,20 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - 8 coquillages et 5 coquillages, ça fait 13 coquillages.
 - 7 vaches et 9 moutons, ça fait 16 animaux.
 - 23 enfants et 4 adultes, ça fait 27 personnes.
-- 32 melons et 15 pastèques, ça fait 47 fruits.
+- 32 melons et 15 pastèques, ça fait 47 en tout.
 - 40 enfants et 30 enfants, ça fait 70 enfants.
 - 24 crêpes et 13 crêpes, ça fait 37 crêpes.
 - 18 ballons et 15 ballons, ça fait 33 ballons.
-- 27 pommes de pin et 16 châtaignes, ça fait 43 trésors.
+- 27 pommes de pin et 16 châtaignes, ça fait 43 en tout.
 - 36 bouteilles et 26 bouteilles, ça fait 62 bouteilles.
 - 19 ballons et 17 ballons, ça fait 36 ballons.
+- 4 enfants et 5 enfants, ça fait 9 enfants.
+- 6 cartes et 4 cartes, ça fait 10 cartes.
+- 5 dorades et 3 maquereaux, ça fait 8 poissons.
+- 3 châteaux et 6 châteaux, ça fait 9 châteaux de sable.
+- 8 enfants et 7 enfants, ça fait 15 enfants.
+- 9 sardines et 6 sardines, ça fait 15 sardines.
+- 7 crayons et 6 feutres, ça fait 13 en tout.
 - 9 crayons en tout, 4 rouges : il y a 5 crayons bleus.
 - 8 œufs en tout, 3 blancs : il y a 5 œufs roux.
 - 10 enfants en tout, 6 sur les balançoires : 4 enfants sont dans le bac à sable.
@@ -587,6 +674,12 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - 17 ballons, et 8 de plus, ça fait 25 ballons.
 - 28 cartes, et 15 de plus, ça fait 43 cartes.
 - 36 poules, et 9 de plus, ça fait 45 poules.
+- 3 enfants, et 4 de plus, ça fait 7 enfants.
+- 2 jetons, et 6 de plus, ça fait 8 jetons.
+- 2 papillons, et 5 de plus, ça fait 7 papillons.
+- 9 cubes, et 6 de plus, ça fait 15 cubes.
+- 12 maquereaux, et 7 de plus, ça fait 19 maquereaux.
+- 9 canards, et 8 de plus, ça fait 17 canards.
 - 8 biscuits, 2 de moins, il en reste 6.
 - 9 pigeons, 4 de moins, il en reste 5.
 - 10 bougies, 7 de moins, il en reste 3.
@@ -600,6 +693,13 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - 31 personnes, 7 de moins, il en reste 24.
 - 53 fraises, 18 de moins, il en reste 35.
 - 23 sardines, 9 de moins, il en reste 14.
+- 8 ballons, 5 de moins, il en reste 3.
+- 9 crabes, 3 de moins, il en reste 6.
+- 7 baguettes, 4 de moins, il en reste 3.
+- 16 cerceaux, 9 de moins, il en reste 7.
+- 14 cartes, 6 de moins, il en reste 8.
+- 12 parts, 8 de moins, il en reste 4.
+- 20 lots, 7 de moins, il en reste 13.
 - De 4 pour aller à 9, il faut 5 : Mamie t'a donné 5 autocollants.
 - De 5 pour aller à 8, il faut 3 : 3 canards sont arrivés.
 - De 8 pour aller à 15, il faut 7 : 7 bébés lapins sont nés.
@@ -618,11 +718,11 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - 44 personnes, il en reste 29 : 15 personnes sont parties.
 - 8 billes, sans les 3 gagnées : tu avais 5 billes au début.
 - 17 cahiers, sans les 8 achetés : elle avait 9 cahiers au début.
-- 80 livres, sans les 30 reçus : elle avait 50 livres au début.
+- 80 livres, sans les 30 qu'elle reçoit : elle avait 50 livres au début.
 - 23 poules, sans les 7 achetées : elle avait 16 poules au début.
 - 31 points, sans les 9 marqués : ton équipe avait 22 points au début.
 - 6 biscuits, et les 2 mangés : il y en avait 8 au début.
-- 5 enfants, et les 4 partis : il y en avait 9 au début.
+- 5 enfants, et les 4 qui s'en vont : il y en avait 9 au début.
 - 6 croissants, et les 7 vendus : il y en avait 13 au début.
 - 5 croquettes, et les 9 mangées : il y en avait 14 au début.
 - 23 personnes, et les 5 descendues : il y en avait 28 au début.
@@ -640,6 +740,10 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - 26 enfants contre 14 adultes : il y a 12 adultes de moins.
 - 42 moutons contre 27 chèvres : il y a 15 moutons de plus.
 - 31 citrons contre 18 oranges : il y a 13 citrons de plus.
+- 8 filles contre 5 garçons : il y a 3 filles de plus.
+- 13 jetons contre 9 : tu en as 4 de plus.
+- 17 sardines contre 8 dorades : il y a 9 sardines de plus.
+- 15 croissants contre 6 pains au chocolat : il y a 9 pains au chocolat de moins.
 - 5 voitures, et 3 de plus : tu en as 8.
 - 4 crêpes, et 2 de plus : Papa en a 6.
 - 9 roses, et 6 de plus : il y a 15 tulipes.
@@ -647,11 +751,17 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - 24 points, et 12 de plus : l'équipe bleue a marqué 36 points.
 - 40 pages, et 20 de plus : le livre des dinosaures a 60 pages.
 - 26 poules, et 17 de plus : elle a 43 canards.
+- 8 enfants, et 7 de plus : 15 enfants jouent au ballon cet après-midi.
+- 4 salades, et 3 de plus : Maman en a planté 7.
+- 7 voitures, et 6 de plus : ton copain en a 13.
 - 9 images, et 4 de moins : ton copain en a 5.
 - 10 enfants, et 3 de moins : il y en a 7 sur le toboggan.
 - 18 baguettes, et 6 de moins : il a fait 12 pains de campagne.
 - 47 enfants, et 20 de moins : 27 enfants ont pris de la salade.
 - 52 places, et 19 de moins : le petit car a 33 places.
+- 16 cartes, et 7 de moins : ton copain en a 9.
+- 9 vaches, et 2 de moins : il y a 7 chevaux.
+- 18 maquereaux, et 5 de moins : il en a vendu 13 mardi.
 - 3 assiettes de 2 crêpes : 2, 4, 6.
 - Il y a 6 crêpes.
 - 3 nids de 4 œufs : 4, 8, 12.
@@ -701,7 +811,7 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Elle a mis 42 œufs.
 - 9 enfants, 5 châtaignes chacun : 5, 10, 15, 20, 25, 30, 35, 40, 45.
 - Ils ont ramassé 45 châtaignes.
-- 6 fraises en 2 parts égales : 3 chacun.
+- 6 fraises, pour toi et ton copain : 3 chacun.
 - 9 peluches sur 3 étagères : 3 sur chaque étagère.
 - 12 crayons dans 3 pots : 4 dans chaque pot.
 - 10 bonbons pour 2 enfants : 5 chacun.
@@ -735,7 +845,7 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - 15, moins 5, il en reste 10 tomates.
 - 2 sachets de 5 bonbons, ça fait 10.
 - 10, et 4 sucettes, ça fait 14 friandises.
-- 10 et 20, ça fait 30 pages lues.
+- 10 et 20, ça fait 30 pages.
 - 50, moins 30, il reste 20 pages.
 - 40, moins 10, il en reste 30.
 - 30, moins 20, il reste 10 lots.
@@ -803,7 +913,7 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - Le bon calcul, mais une petite erreur de compte.
 - C'est la réponse de la première étape. Il en reste une.
 
-## corrections par le calcul seul (« 17 plus 8, ça fait 25. ») : les nouvelles (120)
+## corrections par le calcul seul (« 17 plus 8, ça fait 25. ») : les nouvelles (130)
 
 - 23 plus 4, ça fait 27.
 - 32 plus 15, ça fait 47.
@@ -832,6 +942,7 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - 17 plus 8, ça fait 25.
 - 28 plus 15, ça fait 43.
 - 36 plus 9, ça fait 45.
+- 12 plus 7, ça fait 19.
 - 8 moins 2, ça fait 6.
 - 10 moins 7, ça fait 3.
 - 15 moins 9, ça fait 6.
@@ -844,12 +955,16 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - 31 moins 7, ça fait 24.
 - 53 moins 18, ça fait 35.
 - 23 moins 9, ça fait 14.
+- 8 moins 5, ça fait 3.
+- 9 moins 3, ça fait 6.
+- 7 moins 4, ça fait 3.
+- 16 moins 9, ça fait 7.
+- 12 moins 8, ça fait 4.
+- 20 moins 7, ça fait 13.
 - 20 plus 10, ça fait 30.
 - 18 plus 8, ça fait 26.
 - 27 plus 14, ça fait 41.
-- 7 moins 4, ça fait 3.
 - 10 moins 4, ça fait 6.
-- 16 moins 9, ça fait 7.
 - 18 moins 7, ça fait 11.
 - 45 moins 22, ça fait 23.
 - 60 moins 40, ça fait 20.
@@ -871,6 +986,8 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - 26 moins 14, ça fait 12.
 - 42 moins 27, ça fait 15.
 - 31 moins 18, ça fait 13.
+- 13 moins 9, ça fait 4.
+- 15 moins 6, ça fait 9.
 - 24 plus 12, ça fait 36.
 - 40 plus 20, ça fait 60.
 - 26 plus 17, ça fait 43.
@@ -878,6 +995,9 @@ Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/p
 - 18 moins 6, ça fait 12.
 - 47 moins 20, ça fait 27.
 - 52 moins 19, ça fait 33.
+- 16 moins 7, ça fait 9.
+- 9 moins 2, ça fait 7.
+- 18 moins 5, ça fait 13.
 - 6 fois 6, ça fait 36.
 - 7 fois 6, ça fait 42.
 - 6 partagé en 2, ça fait 3 chacun.

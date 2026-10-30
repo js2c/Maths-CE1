@@ -13,7 +13,9 @@ import { lire, VOIX } from "../../tools/voix/fabriquer.mjs";
 
 const ICI = dirname(fileURLToPath(import.meta.url)), RACINE = join(ICI, "../..");
 const banque = JSON.parse(readFileSync(join(ICI, "enonces.json"), "utf8")).enonces;
-const PLAFOND = 85e6; // tests/unit/voix.test.mjs : tout le dossier de la voix (sons, index, crédits) sous 85 Mo
+// tout le dossier de la voix (sons, index, crédits) : 85 Mo aujourd'hui (tests/unit/voix.test.mjs) ; 95 Mo décidés par le parent le
+// 30 octobre 2026 pour le lot « Problèmes », tant que la voix reste Chatterbox (docs/JOURNAL-CONCEPTION.md)
+const PLAFOND_AUJOURDHUI = 85e6, PLAFOND = 95e6;
 
 // LES PHRASES COMMUNES À TOUS LES ÉNONCÉS (proposition : la consigne, les aides, les erreurs repérées ; PROPOSITION.md)
 export const COMMUNES = {
@@ -60,6 +62,7 @@ for (const [nom, liste] of Object.entries(parties)) {
   totalN += b.nouv.length; totalO += b.o; totalMs += b.ms; lignes.push([nom, b]);
 }
 const totalIdx = totalN * indexParPhrase;
+const ecart = (d) => `${Mo(Math.abs(d))} ${d > 0 ? "de plus que" : "de moins que"}`;
 const Mo = (o) => `${(o / 1e6).toFixed(2).replace(".", ",")} Mo`, min = (t) => `${Math.round(t / 60000)} min`;
 const tableau = ["| Partie | Phrases | Nouvelles | Poids estimé | Durée |", "| --- | --- | --- | --- | --- |"];
 for (const [nom, b] of lignes) tableau.push(`| ${nom} | ${b.total} | ${b.nouv.length} | ${Mo(b.o)} | ${min(b.ms)} |`);
@@ -68,10 +71,11 @@ const [vn, vb] = Object.entries(variante)[0], vB = bilanDe(vb), corrH = lignes.f
 const totalB = totalN - corrH.nouv.length + vB.nouv.length, poidsB = totalO - corrH.o + vB.o + totalB * indexParPhrase;
 const sansCorr = totalO - corrH.o + (totalN - corrH.nouv.length) * indexParPhrase;
 const resume = [
-  `- **Voix aujourd'hui** : ${Object.keys(index).length} phrases, dossier de ${Mo(dossier)} (sons, index et crédits), plafond **85 Mo** (\`tests/unit/voix.test.mjs\`) : **il reste ${Mo(place)}**.`,
+  `- **Voix aujourd'hui** : ${Object.keys(index).length} phrases, dossier de ${Mo(dossier)} (sons, index et crédits). Plafond **95 Mo** (décision du parent du 30 octobre 2026, au lieu de 85 Mo dans \`tests/unit/voix.test.mjs\` : il en restait ${Mo(PLAFOND_AUJOURDHUI - dossier)}) : **il reste ${Mo(place)}**.`,
+  `- **Après le lot** (corrections dans l'histoire, la décision du parent) : dossier d'environ ${Mo(dossier + totalO + totalIdx)}, **${Mo(place - totalO - totalIdx)} de marge** sous 95 Mo.`,
   `- **Estimation** : ${oA.toFixed(0)} octets + ${oB.toFixed(0)} octets par lettre du texte lu (droite ajustée sur les fichiers existants : elle redonne ${Mo(estime)} pour ${Mo(reel)} réels) ; ${(indexParPhrase).toFixed(0)} octets d'index par phrase ; durée ${(mA / 1000).toFixed(2).replace(".", ",")} s + ${(mB).toFixed(0)} ms par lettre.`,
-  `- **Avec les corrections dans l'histoire** : **${totalN} phrases nouvelles, environ ${Mo(totalO + totalIdx)}**, soit ${Mo(totalO + totalIdx - place)} de plus que la place qui reste.`,
-  `- **Avec les corrections par le calcul seul** (« 17 plus 8, ça fait 25. ») : ${vB.total} phrases de calcul dont ${vB.nouv.length} nouvelles (${vB.total - vB.nouv.length} existent déjà) : **${totalB} phrases nouvelles, environ ${Mo(poidsB)}**, soit ${Mo(poidsB - place)} ${poidsB > place ? "de plus que" : "de moins que"} la place qui reste.`,
+  `- **Avec les corrections dans l'histoire** : **${totalN} phrases nouvelles, environ ${Mo(totalO + totalIdx)}**, soit ${ecart(totalO + totalIdx - place)} la place qui reste.`,
+  `- **Avec les corrections par le calcul seul** (« 17 plus 8, ça fait 25. ») : ${vB.total} phrases de calcul dont ${vB.nouv.length} nouvelles (${vB.total - vB.nouv.length} existent déjà) : **${totalB} phrases nouvelles, environ ${Mo(poidsB)}**, soit ${ecart(poidsB - place)} la place qui reste.`,
   `- **Sans aucune correction propre** (la correction ne dit que la réponse, déjà dans l'inventaire : « C'était 25. ») : ${totalN - corrH.nouv.length} phrases, environ ${Mo(sansCorr)}.`,
 ];
 console.log(tableau.join("\n")); console.log(`\n${resume.join("\n")}`);

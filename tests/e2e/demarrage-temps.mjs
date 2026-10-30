@@ -40,7 +40,9 @@ const fichiers = () => a.page.evaluate(() => {
   const sorte = (n) => (/^content\//.test(n) ? "contenus" : /voix\/index\.json$/.test(n) ? "index de la voix" : /^assets\/art\//.test(n) ? "planches" : /^assets\/logo\//.test(n) ? "logo" : /^assets\/mascotte\//.test(n) ? "vidéos" : /\.js$/.test(n) ? "code" : "autres");
   const fin = {}; for (const f of r) { const s = sorte(f.n); fin[s] = Math.max(fin[s] ?? 0, f.fin); }
   const images = T.images.filter((x) => x.t1 <= pret), videos = T.blobs.filter((b) => /^assets\/mascotte\//.test(b.u) && b.t1 <= pret).map((b) => ({ clip: b.u.replace(/^assets\/mascotte\/|\.webm$/g, ""), t1: Math.round(b.t1) }));
-  return { image: m("demarrage-visible"), pret, app: m("app-ready"), fin, imagesFin: Math.round(Math.max(0, ...images.map((x) => x.t1))), imagesMs: Math.round(images.reduce((s, x) => s + x.t1 - x.t0, 0)), videos };
+  return { image: m("demarrage-visible"), pret, app: m("app-ready"), fin, imagesFin: Math.round(Math.max(0, ...images.map((x) => x.t1))), imagesMs: Math.round(images.reduce((s, x) => s + x.t1 - x.t0, 0)), videos,
+    // (les repères « etape:… » qu'une copie instrumentée de l'application aurait posés)
+    etapes: Object.fromEntries(performance.getEntriesByType("mark").filter((x) => x.name.startsWith("etape:")).map((x) => [x.name.slice(6), Math.round(x.startTime)])) };
 });
 const lancements = [];
 const noter = async (r, nom) => {
@@ -51,7 +53,7 @@ const noter = async (r, nom) => {
   const avecAccueil = f ? Math.max(sansVideos, ...vids.filter((v) => ACCUEIL.includes(v.clip)).map((v) => v.t1)) : NaN;
   const l = { nom, ...r, mesures: f, sansVideos, avecAccueil, videosFin: derniere?.t1 ?? NaN, derniereVideo: derniere?.clip ?? null };
   lancements.push(l);
-  console.log(`     ${nom} : ${r.echec ? `ÉCHEC ${r.echec}` : `première image ${r.image} ms, prêt ${r.pret} ms, accueil ${r.app} ms ; images décodées à ${f?.imagesFin} ms (${f?.imagesMs} ms de décodage) ; tout sauf les vidéos à ${sansVideos} ms ; + vidéos de l'accueil ${avecAccueil} ms ; 17 vidéos lues à ${l.videosFin} ms (la dernière : ${derniere?.clip}, ${vids.length} relevées) ; fin par sorte ${JSON.stringify(f?.fin ?? {})}`}`);
+  console.log(`     ${nom} : ${r.echec ? `ÉCHEC ${r.echec}` : `première image ${r.image} ms, prêt ${r.pret} ms, accueil ${r.app} ms ; images décodées à ${f?.imagesFin} ms (${f?.imagesMs} ms de décodage) ; tout sauf les vidéos à ${sansVideos} ms ; + vidéos de l'accueil ${avecAccueil} ms ; 17 vidéos lues à ${l.videosFin} ms (la dernière : ${derniere?.clip}, ${vids.length} relevées) ; fin par sorte ${JSON.stringify(f?.fin ?? {})}${Object.keys(f?.etapes ?? {}).length ? ` ; étapes ${JSON.stringify(f.etapes)}` : ""}`}`);
 };
 
 await noter(await a.ouvrir(), "premier lancement (rien en cache)");

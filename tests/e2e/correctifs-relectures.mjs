@@ -82,7 +82,8 @@ for (const T of TAILLES) {
     check(!!(await zoom('.galet[data-key="jouer"]', "jouer")), `${T} : le galet « jouer » (capture agrandie du triangle)`);
     await page.screenshot({ path: `${OUT}/r9-${T}-accueil.png` });
     // l'accueil en pause : le galet « continuer », le même triangle
-    await page.tap('.galet[data-key="jouer"]', { force: true }); await page.waitForTimeout(250); await page.tap('.galet[data-key="jouer"]', { force: true });
+    // (dans les parcours, un toucher ouvre le galet : tests/e2e/navigateur.mjs, __accueilUnToucher)
+    await page.tap('.galet[data-key="jouer"]', { force: true });
     await page.waitForFunction(() => window.__app.session?.progress?.etape === "notion" && !!document.querySelector(".homekey") && document.querySelector(".homekey").style.visibility === "visible", null, { timeout: 120000, polling: 100 });
     await page.tap(".homekey", { force: true }); await page.waitForFunction(() => window.__app.enPause, null, { timeout: 15000 }); await page.waitForTimeout(800);
     const sel = (await page.locator('.galet[data-key="continuer"]').count()) ? '.galet[data-key="continuer"]' : '.galet[data-key="jouer"]';

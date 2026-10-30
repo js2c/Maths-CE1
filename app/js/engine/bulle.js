@@ -45,11 +45,14 @@ export function placesPoste(m) {
   const bouche = [m.x + m.w * 0.824 + 12, m.y + m.h * 0.715];
   return PLACES.filter((p) => p.nom !== "dessous").map((p) => ({ ...p, pointe: bouche }));
 }
-// (lot « Correctifs des relectures », constat R14 de sa relecture) LE CIEL, pour une mascotte posée ailleurs (l'étal) : tout en haut,
-// au-dessus de l'argent sorti du portefeuille (y 92 à 262). Essayé seulement quand aucune autre place ne laisse libre ce que
-// l'enfant touche et ce dont parle la voix (`dernierRecours`) : sans lui, dans les leçons de la monnaie, la bulle renonçait
-// pendant la phrase qui sort l'argent (déclaré à la bulle depuis le même lot), alors que le ciel était vide.
-export const placeCiel = (m) => ({ nom: "ciel", boite: [m.x + m.w * 0.824 + 12 + 34, 92, 1128, 262], pointe: [m.x + m.w * 0.824 + 12, m.y + m.h * 0.715] });
+// (lot « Correctifs des relectures », constat R14 de sa relecture) LE CIEL, pour la mascotte posée dans la fenêtre de l'étal : tout
+// en haut, entre la lampe (qu'on touche, jusqu'à x 344) et les boutons « rejouer » et « passer » des leçons (à partir de x 980),
+// au-dessus des billets sortis du portefeuille (à partir de y 260) ; les 8 px de marge de la règle compris. Essayé seulement quand
+// aucune autre place ne laisse libre ce que l'enfant touche et ce dont parle la voix (`dernierRecours`) : sans lui, dans les
+// leçons de la monnaie, la bulle renonçait pendant la phrase qui sort l'argent (déclaré à la bulle depuis le même lot), alors
+// que le ciel était vide. (La place occupée par une bulle est son ovale : la pointe, qui descend vers la bouche, n'y compte pas.)
+export const CIEL = [356, 92, 970, 252];
+export const placeCiel = (m) => ({ nom: "ciel", boite: CIEL, pointe: [m.x + m.w * 0.824 + 12, m.y + m.h * 0.715] });
 // la place choisie, et le ciel en dernier recours : seulement si la place choisie touche un obstacle dur et que le ciel n'en
 // touche aucun (les choix d'avant ne changent pas)
 export function dernierRecours(p, durs, mesure, poste, souples = []) {

@@ -13,7 +13,8 @@ test("le ciel n'est essayé que si la place choisie touche ce que l'enfant touch
   const libre = choisirPlace([], mesure, places);
   assert.equal(dernierRecours(libre, [], mesure, poste).place.nom, libre.place.nom, "une place libre : rien ne change");
   // l'argent sorti du portefeuille (billets vers y 318, pièces vers y 420) et la soucoupe, le portefeuille : tout le bas de la scène
-  const durs = [[300, 263, 1280, 800]];
+  // (et la lampe, et les boutons « rejouer » et « passer » des leçons : les obstacles relevés dans L16)
+  const durs = [[300, 263, 1280, 800], [258, 55, 344, 232], [980, 145, 1120, 285], [1135, 148, 1275, 288]];
   const p = choisirPlace(durs, mesure, places);
   assert.ok(p.touche, "sans le ciel, aucune place libre");
   const c = dernierRecours(p, durs, mesure, poste);
@@ -30,5 +31,5 @@ test("le ciel occupé aussi : la place d'avant reste (et la bulle renonce, comme
 test("sans mascotte posée ailleurs (les autres écrans), jamais de ciel", () => {
   const durs = [[0, 0, 1280, 800]], p = choisirPlace(durs, mesure, places);
   assert.equal(dernierRecours(p, durs, mesure, null), p);
-  assert.deepEqual(placeCiel(poste).boite.slice(1), [92, 1128, 262]);
+  assert.deepEqual(placeCiel(poste).boite, [356, 92, 970, 252]);
 });

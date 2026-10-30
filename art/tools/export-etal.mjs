@@ -167,7 +167,10 @@ const API = {
   // se refermait, il attendait pour toujours un portefeuille fermé qu'il ne rouvrait pas ; il le rouvre dès qu'il est fermé)
   async ouvrir() { while (pfEtat === 'anim' || pfEtat === 'ferme') { if (pfEtat === 'ferme') ouvrirPf(); await attendre(40); } },
   sortir() { if (pfEtat === 'ouvert') sortirTout(); },
-  async fermer() { if (pfEtat === 'sorti') rangerEtFermer(); else if (pfEtat === 'ouvert') fermerPf(); await attendre(900); },
+  // (lot « Correctifs des relectures », recette : l'argent qui rentre puis le cuir qui se referme durent 1,3 s, davantage sur
+  // une tablette lente ; l'attente fixe de 0,9 s rendait la main avant, et la question suivante attendait sa réponse pendant
+  // que le portefeuille bougeait encore : un toucher dessus ne faisait rien. On attend qu'il soit fermé, 3 s au plus)
+  async fermer() { if (pfEtat === 'sorti') rangerEtFermer(); else if (pfEtat === 'ouvert') fermerPf(); await attendre(900); const t0 = performance.now(); while ((pfEtat === 'sorti' || pfEtat === 'anim') && performance.now() - t0 < 3000) await attendre(40); },
   // ---- la soucoupe
   soucoupe: () => enSoucoupe().sort((a, b) => a.ordre - b.ordre).map(i => i.v),
   // les objets de la soucoupe, du plus gros au plus petit (l'ordre du compte du pêcheur)

@@ -161,3 +161,18 @@ La section 7 quater dit que l'argent sorti couvre les deux colonnes du milieu de
 - Dans L18, la bulle ne couvre ni l'argent, ni le portefeuille, ni la soucoupe, et sa pointe vise la bouche (sections 7 quater et 11).
 
 Je n'ai pas vu de capture de l'accueil en pause entier (seulement le triangle agrandi) : je ne peux pas juger la flèche posée sur « continuer » ni la place de la bulle à cet endroit.
+
+## Traitement (session du lot)
+
+| Constat | Traitement |
+| --- | --- |
+| R1 · l'étiquette arrive sans sa pièce | **Noté, hors du lot** (`docs/IDEES.md`, section 3) : reproduit sur `main` avec une sonde (L15 à 1920 : l'étiquette « 2 € » dans la soucoupe pendant que la pièce est encore ailleurs, jusqu'à 700 px d'écart). C'est la scène de l'étal telle que le lot « L'étal du pêcheur » l'a faite ; la cause est à chercher dans l'animation des pièces et de leurs étiquettes (l'export de la scène). |
+| R2, R14 · pas de bulle quand l'argent sort (L15, L16) | **Corrigé.** Cause : à l'étal, les places de la bulle descendent sur les billets sortis, et le ciel était occupé à gauche par la lampe (qu'on touche). La bulle essaie désormais, en dernier recours seulement, une place dans le ciel entre la lampe et les boutons de la leçon (`engine/bulle.js`, `dernierRecours`, `CIEL` ; test `bulle-ciel`). Mesuré par une sonde sur L15, L16, L18, depuis le menu et depuis la pause : 0 relevé où la voix parle sans bulle (avant : 40 % à tout le temps de parole, aussi sur `main`), jamais sur l'argent. Le parcours du lot le contrôle désormais. |
+| R3 · portefeuille fantôme à 1920 | **Corrigé (le parcours)** : la capture attend que l'argent sorti ne bouge plus. Ce n'était pas un défaut de l'application. |
+| R4 · les ardoises de prix pendant les leçons | **Question pour le parent** : c'est R7 de la relecture précédente, laissé à sa décision par la demande du lot. |
+| R5 · la pièce plus petite dans la soucoupe | **Laissé** : la soucoupe de la maquette de l'étal (pièces à 0,72), hors du lot. |
+| R6 · un point rouge aux pointes, très agrandi | **Laissé** : c'est le remplissage du triangle sous le trait, invisible à la taille réelle ; les encoches claires de R9 ont disparu. |
+| R7 · le bouton « Parents » près du galet « jouer » | **Laissé** : place décidée au lot « Correctifs : passage de l'échauffement aux voiliers » ; 108 px et un appui long, sans risque de confusion pour l'enfant. |
+| R8 à R13 · l'outil des séquences | **Corrigé** pour l'essentiel : l'étoile arc-en-ciel dit « une famille acquise ou un niveau franchi, nommé plus loin » ; l'événement sans effet du mélange n'est plus écrit ; les formes à trou des familles 3 à 5 disent ce qu'elles changent ; « +5★ (série : une séance sur 3 de la série en rapporte 5, quelle que soit la réussite) » ; l'introduction explique la demi-étoile du cran « plus facile » et les faits d'autres familles (les révisions) ; virgule décimale, pluriels. Laissés : la « suite prévisible » de 2 (une mesure de l'outil, expliquée dans `SYNTHESE.md`) et les repères entre crochets (ce que montre l'écran, pas ce que dit la voix). |
+| R15 · les étiquettes pas toujours là | **Laissé, conforme** : les leçons écrivent les valeurs seulement là où leur texte le demande (L15 et L18 : `etiquettes` dans `lecons.json`) ; la section 7 quater parle de l'exercice (cran « plus facile »). |
+| R16 · L18 n'écrit que la première phrase | **Corrigé par R14** : avec la place du ciel, la bulle écrit la phrase entière ; les lignes sont équilibrées par la règle de la bulle quand elle a toute sa place. |

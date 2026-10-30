@@ -2,7 +2,8 @@
 //   R8 : dans les leçons de la monnaie, la bulle de la mascotte ne couvre plus l'argent que la phrase sort du portefeuille (il est
 //        déclaré à la bulle avant que la voix commence : lessons/etal.js, `boitesSortie` de la scène). Chaque leçon qui sort
 //        l'argent (L15, L16, L18), depuis le menu des leçons et depuis l'accueil en pause : la bulle relevée toutes les 100 ms,
-//        jamais sur une pièce ou un billet sorti ou posé ; captures pendant la phrase qui sort l'argent.
+//        jamais sur une pièce ou un billet sorti ou posé, et toujours là quand la voix parle (relecture du lot, R14 : à l'étal, la
+//        bulle essaie le ciel en dernier recours) ; captures pendant la phrase qui sort l'argent.
 //   R9 : le triangle du galet « jouer » et du galet « continuer » (l'accueil en pause) a des pointes arrondies : plus d'encoche
 //        claire (sea/decor.ts, drawPlayIcon) ; captures agrandies des deux galets.
 // Sur le profil de la tablette de référence (s5e), sur le petit smartphone, et à 1280 × 800 et 1920 × 1200.
@@ -58,6 +59,8 @@ for (const T of TAILLES) {
         await new Promise((r) => setTimeout(r, 100));
         const s = app.etalLecon ?? app.etal, e = app.bulle?.etat?.();
         if (app.bulle?.zones?.has("argent-lecon")) out.declare++;
+        // (relecture du lot, R14 : la bulle là tant que la voix parle ; avant, à l'étal, elle renonçait faute de place)
+        if (app.voice?.speaking) { out.parle = (out.parle ?? 0) + 1; if (!app.bulle?.etat?.()?.visible) out.sans = (out.sans ?? 0) + 1; }
         if (!s?.api || !e?.visible || !e.rect) continue;
         out.vues++;
         const a = s.api.boites().reduce((x, b) => x + inter(e.rect, b), 0);
@@ -72,6 +75,7 @@ for (const T of TAILLES) {
     const r = await suivi;
     check(r.declare > 0, `${T}, ${mode}, ${id} : l'argent qui sort est déclaré à la bulle pendant sa phrase (${r.declare} relevés)`);
     check(r.couvre === 0, `${T}, ${mode}, ${id} : la bulle ne couvre jamais l'argent (${r.vues} relevés avec la bulle${r.ex.length ? ` ; ${r.ex.join(" ; ")}` : ""})`);
+    check((r.sans ?? 0) <= 2, `${T}, ${mode}, ${id} : la bulle est là tant que la voix parle (${r.sans ?? 0} relevés sans bulle sur ${r.parle ?? 0})`);
     check(!errors.length, `${T}, ${mode}, ${id} : aucune erreur (${errors.join(" | ")})`);
     await context.close();
   }

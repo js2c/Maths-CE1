@@ -1,0 +1,927 @@
+# Les phrases de l'exercice « Problèmes » et leur poids
+
+Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/problemes/phrases.mjs`, `COMMUNES`) par `node art/problemes/phrases.mjs --md`, comparé à l'inventaire de la voix de `main` (`tools/voix/inventaire.mjs`). Une phrase déjà fabriquée ne coûte rien ; une phrase qui revient dans plusieurs énoncés n'est comptée qu'une fois.
+
+- **Voix aujourd'hui** : 11377 phrases, dossier de 81,18 Mo (sons, index et crédits), plafond **85 Mo** (`tests/unit/voix.test.mjs`) : **il reste 3,82 Mo**.
+- **Estimation** : 491 octets + 189 octets par lettre du texte lu (droite ajustée sur les fichiers existants : elle redonne 80,65 Mo pour 80,65 Mo réels) ; 51 octets d'index par phrase ; durée 0,11 s + 63 ms par lettre.
+- **Avec les corrections dans l'histoire** : **759 phrases nouvelles, environ 6,65 Mo**, soit 2,83 Mo de plus que la place qui reste.
+- **Avec les corrections par le calcul seul** (« 17 plus 8, ça fait 25. ») : 163 phrases de calcul dont 120 nouvelles (43 existent déjà) : **669 phrases nouvelles, environ 5,27 Mo**, soit 1,45 Mo de plus que la place qui reste.
+- **Sans aucune correction propre** (la correction ne dit que la réponse, déjà dans l'inventaire : « C'était 25. ») : 549 phrases, environ 4,26 Mo.
+
+| Partie | Phrases | Nouvelles | Poids estimé | Durée |
+| --- | --- | --- | --- | --- |
+| énoncés | 351 | 351 | 2,62 Mo | 14 min |
+| questions | 168 | 168 | 1,40 Mo | 8 min |
+| corrections dans l'histoire (« 17 ballons, et 8 de plus, ça fait 25 ballons. ») | 210 | 210 | 2,38 Mo | 13 min |
+| communes : le nom et l'entrée | 4 | 4 | 0,02 Mo | 0 min |
+| communes : les objets à grouper | 12 | 12 | 0,08 Mo | 0 min |
+| communes : le schéma en barres | 8 | 8 | 0,06 Mo | 0 min |
+| communes : les deux étapes | 2 | 2 | 0,01 Mo | 0 min |
+| communes : les erreurs repérées | 4 | 4 | 0,04 Mo | 0 min |
+| **Total, corrections dans l'histoire** | | **759** | **6,65 Mo** (index compris) | 36 min |
+
+## énoncés (351)
+
+- Dans la corbeille, il y a 4 pommes et 3 poires.
+- Sur l'étagère, il y a 5 voitures rouges et 2 voitures bleues.
+- Papa plante 6 tulipes et 3 roses.
+- Au toboggan, il y a 3 garçons et 5 filles.
+- Dans la classe, il y a 9 filles et 8 garçons.
+- Sur la table, il y a 7 livres de contes et 6 bandes dessinées.
+- Dans ton seau, il y a 8 coquillages blancs et 5 coquillages roses.
+- Dans le pré, il y a 7 vaches et 9 moutons.
+- Dans le bus, il y a 23 enfants et 4 adultes.
+- La marchande a 32 melons et 15 pastèques.
+- À la cantine, 40 enfants mangent au premier service et 30 enfants au deuxième service.
+- À la kermesse, on a vendu 24 crêpes au sucre et 13 crêpes au chocolat.
+- Dans le grand sac, il y a 18 ballons de basket et 15 ballons de foot.
+- Pendant la promenade, la classe a trouvé 27 pommes de pin et 16 châtaignes.
+- Au magasin, il y a 36 bouteilles d'eau et 26 bouteilles de jus.
+- Pour la fête, Mamie a gonflé 19 ballons rouges et 17 ballons jaunes.
+- Il y a 9 crayons dans la trousse.
+- 4 crayons sont rouges, les autres sont bleus.
+- Dans la boîte, il y a 8 œufs.
+- 3 œufs sont blancs, les autres sont roux.
+- 10 enfants jouent au parc.
+- 6 enfants sont sur les balançoires, les autres sont dans le bac à sable.
+- Dans le jardin, il y a 15 fleurs.
+- 7 fleurs sont jaunes, les autres sont rouges.
+- Tu as 18 peluches.
+- 9 peluches sont sur ton lit, les autres sont dans le coffre.
+- Dans le poulailler, il y a 14 poules.
+- 6 poules sont blanches, les autres sont noires.
+- La bibliothèque a 48 livres d'animaux.
+- 25 livres sont rangés, les autres sont sur le chariot.
+- Le car peut transporter 50 personnes.
+- 30 places sont déjà prises.
+- Il y a 65 lots à gagner.
+- 40 lots sont des peluches, les autres sont des jeux.
+- L'école a 52 élèves.
+- 27 élèves sont des filles.
+- Dans le rayon, il y a 34 paquets de pâtes.
+- 18 paquets sont des spaghettis, les autres sont des coquillettes.
+- Il y a 41 enfants au stade.
+- 26 enfants courent, les autres sautent.
+- Tu as 5 billes.
+- Ton copain t'en donne 3.
+- Ce matin, il y a 4 œufs dans le nid.
+- La poule en pond 2 autres.
+- 6 enfants jouent au ballon.
+- 3 enfants arrivent.
+- La maîtresse a 12 cahiers.
+- Elle en achète 6 autres.
+- Papa a planté 9 salades.
+- Il en plante encore 7.
+- Il y a 8 personnes dans le bus.
+- À l'arrêt, 5 personnes montent.
+- La bibliothèque a 45 livres de contes.
+- Elle en reçoit 20 nouveaux.
+- Au début de la kermesse, il y a 32 personnes.
+- 6 personnes arrivent.
+- Ton collier a 24 perles.
+- Tu enfiles 5 perles de plus.
+- Les enfants ont rangé les 17 ballons de l'école.
+- La maîtresse en achète 8 nouveaux.
+- Tu as 28 cartes de jeu.
+- Pour ton anniversaire, on t'en offre 15.
+- La fermière a 36 poules.
+- Elle en achète 9.
+- Il y a 8 biscuits dans l'assiette.
+- Tu en manges 2.
+- 9 pigeons sont sur la pelouse.
+- 4 pigeons s'envolent.
+- Il y a 10 bougies allumées sur le gâteau.
+- Tu en souffles 7.
+- Le boulanger a 15 croissants.
+- Il en vend 9.
+- Tu as 14 coquillages dans ton seau.
+- Tu en perds 5 dans le sable.
+- Il y a 17 croquettes dans la gamelle du chat.
+- Le chat en mange 8.
+- Il y a 58 pommes sur l'étal.
+- Le marchand en vend 30.
+- La boîte contient 46 craies.
+- La maîtresse en casse 4.
+- Il y a 39 champignons dans le panier.
+- Papy en jette 6 qui ne sont pas bons.
+- Le matin, le boulanger a 42 baguettes.
+- Il en vend 25.
+- Il y a 31 personnes dans le bus.
+- À l'arrêt, 7 personnes descendent.
+- Il y a 53 fraises dans le panier.
+- Toute la famille en mange 18.
+- Ce matin, le pêcheur a 23 sardines sur son étal.
+- Tu as 4 autocollants.
+- Mamie t'en donne.
+- Maintenant, tu as 9 autocollants.
+- 5 canards nagent sur le lac.
+- D'autres canards arrivent.
+- Maintenant, il y a 8 canards.
+- Il y a 8 lapins dans le clapier.
+- Des bébés lapins naissent.
+- Maintenant, il y a 15 lapins.
+- Il y a 9 personnes dans le bus.
+- À l'arrêt, des personnes montent.
+- Maintenant, il y a 14 personnes.
+- Tu as lu 20 pages de ton livre.
+- Ce soir, tu en lis encore.
+- Maintenant, tu as lu 30 pages.
+- Ton collier a 32 perles.
+- Tu en ajoutes.
+- Maintenant, il a 38 perles.
+- Au début du match, ton équipe a 18 points.
+- À la fin du match, elle a 26 points.
+- La fermière a 27 œufs.
+- Les poules en pondent d'autres.
+- Maintenant, elle a 41 œufs.
+- Il y a 7 fraises dans le bol.
+- Tu en manges.
+- Il en reste 3.
+- La maîtresse a 10 feutres.
+- Elle en prête à un élève.
+- Il lui en reste 6.
+- La boulangère a 16 pains au chocolat.
+- Elle en vend.
+- Il lui en reste 7.
+- Au début du jeu, tu as 18 jetons.
+- Tu en perds.
+- À la fin du jeu, tu as 11 jetons.
+- Le magasin a 45 bouteilles de lait.
+- Il en vend.
+- Il lui en reste 23.
+- Il y a 60 lots dans la caisse.
+- Les enfants en gagnent.
+- Il en reste 20.
+- Il y a 35 bonbons dans le sac.
+- Les enfants en mangent.
+- Il en reste 17.
+- Il y a 44 personnes sur la plage.
+- Des personnes s'en vont.
+- Il en reste 29.
+- Tu avais des billes.
+- Tu en gagnes 3.
+- Maintenant, tu as 8 billes.
+- La maîtresse avait des cahiers.
+- Elle en achète 8.
+- Maintenant, elle a 17 cahiers.
+- La bibliothèque avait des livres.
+- Elle en reçoit 30.
+- Maintenant, elle a 80 livres.
+- La fermière avait des poules.
+- Elle en achète 7.
+- Maintenant, elle a 23 poules.
+- Ton équipe avait des points.
+- Elle marque encore 9 points.
+- Maintenant, elle a 31 points.
+- Il y avait des biscuits dans la boîte.
+- Il en reste 6.
+- Des enfants jouent au ballon.
+- 4 enfants s'en vont.
+- Il reste 5 enfants.
+- Le boulanger avait des croissants.
+- Il en vend 7.
+- Il y avait des croquettes dans la gamelle.
+- Le chien en mange 9.
+- Il en reste 5.
+- Il y avait des personnes dans le bus.
+- 5 personnes descendent.
+- Il en reste 23.
+- Tu avais des perles.
+- Tu en utilises 12 pour un bracelet.
+- Il t'en reste 25.
+- Le marchand avait des melons.
+- Il en vend 18.
+- Il lui en reste 14.
+- Tu as 7 billes.
+- Ton copain a 4 billes.
+- Sur la table, il y a 9 cuillères et 6 fourchettes.
+- Papa a cueilli 8 tomates.
+- Maman a cueilli 3 tomates.
+- Dans la classe, il y a 14 filles et 9 garçons.
+- L'équipe bleue a marqué 16 points.
+- L'équipe rouge a marqué 11 points.
+- Ta cousine a 12 coquillages.
+- Tu as 19 coquillages.
+- Tu as 15 cartes.
+- Ton copain a 8 cartes.
+- Tu as lu 35 pages.
+- Ton cousin a lu 23 pages.
+- Les CE1 ont vendu 48 gâteaux.
+- Les CP ont vendu 30 gâteaux.
+- Au parc, il y a 26 enfants et 14 adultes.
+- La ferme a 42 moutons et 27 chèvres.
+- Le marchand a 31 citrons et 18 oranges.
+- Ton copain a 5 petites voitures.
+- Tu as 3 petites voitures de plus que lui.
+- Maman a 4 crêpes dans son assiette.
+- Papa a 2 crêpes de plus.
+- Il y a 9 roses dans le jardin.
+- Il y a 6 tulipes de plus que de roses.
+- Ta trousse contient 8 crayons.
+- La trousse de ta voisine en contient 5 de plus.
+- L'équipe rouge a marqué 24 points.
+- L'équipe bleue a marqué 12 points de plus.
+- Le livre de contes a 40 pages.
+- Le livre des dinosaures a 20 pages de plus.
+- La fermière a 26 poules.
+- Elle a 17 canards de plus que de poules.
+- Tu as 9 images.
+- Ton copain a 4 images de moins que toi.
+- Il y a 10 enfants sur les balançoires.
+- Sur le toboggan, il y a 3 enfants de moins.
+- Le boulanger a fait 18 baguettes.
+- Il a fait 6 pains de campagne de moins.
+- À la cantine, 47 enfants ont pris de la soupe.
+- 20 enfants de moins ont pris de la salade.
+- Le grand car a 52 places.
+- Le petit car a 19 places de moins.
+- Maman pose 3 assiettes sur la table.
+- Dans chaque assiette, elle met 2 crêpes.
+- Il y a 3 nids dans le poulailler.
+- Dans chaque nid, il y a 4 œufs.
+- Tu as 2 boîtes.
+- Dans chaque boîte, il y a 5 billes.
+- Papa remplit 3 vases.
+- Dans chaque vase, il met 5 fleurs.
+- Il y a 4 pots sur les tables.
+- Dans chaque pot, il y a 3 crayons.
+- Il y a 4 bancs au parc.
+- Sur chaque banc, 2 personnes sont assises.
+- Papa vide 3 sachets de gourmandises dans la gamelle du chien.
+- Chaque sachet contient 6 gourmandises.
+- La boulangère remplit 5 sachets.
+- Dans chaque sachet, elle met 4 croissants.
+- Maman achète 4 boîtes d'œufs.
+- Chaque boîte contient 6 œufs.
+- La maîtresse fait 5 équipes.
+- Dans chaque équipe, il y a 4 élèves.
+- Le marchand prépare 3 paniers.
+- Dans chaque panier, il met 10 pommes.
+- Tu fabriques 2 colliers.
+- Chaque collier a 9 perles.
+- Il y a 6 enfants à la fête.
+- Chaque enfant reçoit 2 ballons.
+- Il y a 5 filets de ballons.
+- Dans chaque filet, il y a 5 ballons.
+- Il y a 7 vaches dans le pré.
+- Chaque vache a 4 pattes.
+- Papy plante 4 rangées de salades.
+- Dans chaque rangée, il y a 5 salades.
+- À la cantine, il y a 3 tables.
+- Autour de chaque table, il y a 8 enfants.
+- Chaque soir, tu lis 5 pages.
+- Tu lis pendant 4 soirs.
+- Le pêcheur remplit 4 cagettes.
+- Dans chaque cagette, il met 5 maquereaux.
+- La maîtresse achète 4 paquets de feutres.
+- Chaque paquet contient 10 feutres.
+- Papa achète 6 packs d'eau.
+- Dans chaque pack, il y a 6 bouteilles.
+- Pour la kermesse, il y a 5 boîtes de gâteaux.
+- Chaque boîte contient 10 gâteaux.
+- Dans le petit car, il y a 8 rangées de sièges.
+- Chaque rangée a 4 sièges.
+- La fermière remplit 7 boîtes.
+- Dans chaque boîte, elle met 6 œufs.
+- Il y a 9 enfants dans la forêt.
+- Chaque enfant ramasse 5 châtaignes.
+- Tu as 6 fraises.
+- Tu les partages entre toi et ton copain.
+- Vous en avez autant chacun.
+- Tu ranges 9 peluches sur 3 étagères.
+- Il y a autant de peluches sur chaque étagère.
+- La maîtresse a 12 crayons.
+- Elle les met dans 3 pots.
+- Chaque pot a le même nombre de crayons.
+- Maman partage 10 bonbons entre 2 enfants.
+- Chaque enfant en a autant.
+- Il y a 16 croquettes.
+- Tu les partages entre les 2 chats.
+- Chaque chat en a autant.
+- Le boulanger range 20 croissants sur 4 plateaux.
+- Il met autant de croissants sur chaque plateau.
+- Papa plante 15 salades en 3 rangées.
+- Il y a autant de salades dans chaque rangée.
+- 18 enfants font 3 équipes.
+- Chaque équipe a autant d'enfants.
+- La maîtresse partage 35 feuilles entre 5 groupes.
+- Chaque groupe en reçoit autant.
+- La fermière range 36 œufs dans 6 boîtes.
+- Chaque boîte contient autant d'œufs.
+- On partage 40 gâteaux entre 4 tables.
+- Chaque table en reçoit autant.
+- Le marchand met 45 pommes dans 5 paniers.
+- Il y a autant de pommes dans chaque panier.
+- Tu as 8 biscuits.
+- Tu en mets 2 dans chaque assiette.
+- Tu as 10 billes.
+- Tu en mets 5 dans chaque sachet.
+- Tu as 12 fleurs.
+- Tu fais des bouquets de 4 fleurs.
+- 9 enfants veulent faire un tour de barque.
+- Dans chaque barque, il y a 3 places.
+- La maîtresse fabrique des carnets.
+- Elle a 28 pages.
+- Elle utilise 4 pages pour chaque carnet.
+- La boulangère a 20 croissants.
+- Elle en met 5 dans chaque sachet.
+- 24 enfants font des équipes de 6 enfants.
+- La fermière a 18 œufs.
+- Elle les range par 6 dans des boîtes.
+- Tu as 40 perles.
+- Il faut 10 perles pour faire un bracelet.
+- 36 enfants partent en sortie.
+- Dans chaque minibus, il y a 9 places.
+- Le magasin a 32 yaourts.
+- Il les vend par paquets de 4.
+- Il y a 42 enfants à la cantine.
+- On met 6 enfants à chaque table.
+- Tu as 6 billes.
+- Ton copain t'en donne 5.
+- Puis tu en perds 3.
+- Il y a 12 biscuits dans la boîte.
+- Tu en manges 2, et Papa en mange 3.
+- Il y a 10 personnes dans le bus.
+- À l'arrêt, 4 personnes descendent et 6 personnes montent.
+- Papa cueille 7 tomates.
+- Maman en cueille 8.
+- Toute la famille en mange 5 au déjeuner.
+- Pour la fête, Mamie achète 2 sachets de 5 bonbons.
+- Elle achète aussi 4 sucettes.
+- Ton livre a 50 pages.
+- Lundi, tu lis 10 pages.
+- Mardi, tu lis 20 pages.
+- Le stand a 40 lots.
+- Le matin, les enfants en gagnent 10.
+- L'après-midi, ils en gagnent 20.
+- Le boulanger fait 30 croissants et 25 pains au chocolat.
+- Il en vend 40 en tout.
+- Le marchand prépare 3 paniers de 10 pommes.
+- Il a aussi 6 pommes sur la table.
+- La fermière a 24 poules et 12 canards.
+- Elle vend 5 canards.
+- Ton équipe marque 12 points au premier jeu et 15 points au deuxième jeu.
+- L'autre équipe a marqué 20 points en tout.
+- Il y a 26 personnes dans le bus.
+- À l'arrêt, 8 personnes descendent et 13 personnes montent.
+- L'école a 3 classes.
+- Il y a 24 élèves dans la première, 23 dans la deuxième et 25 dans la troisième.
+- Papa a 50 euros.
+- Il dépense 18 euros chez le marchand de fruits et 14 euros chez le boulanger.
+- Le matin, tu ramasses 17 châtaignes.
+- L'après-midi, tu en ramasses 16.
+- Tu en donnes 9 à Mamie.
+- Le cuisinier prépare 4 plateaux de 10 yaourts.
+- Les enfants en mangent 27.
+
+## questions (168)
+
+- Combien de fruits y a-t-il dans la corbeille ?
+- Combien de voitures y a-t-il sur l'étagère ?
+- Combien de fleurs Papa plante-t-il ?
+- Combien d'enfants y a-t-il au toboggan ?
+- Combien d'élèves y a-t-il dans la classe ?
+- Combien de livres y a-t-il sur la table ?
+- Combien de coquillages y a-t-il dans ton seau ?
+- Combien d'animaux y a-t-il dans le pré ?
+- Combien de personnes y a-t-il dans le bus ?
+- Combien de melons et de pastèques a-t-elle en tout ?
+- Combien d'enfants mangent à la cantine ?
+- Combien de crêpes a-t-on vendues ?
+- Combien de ballons y a-t-il dans le grand sac ?
+- Combien de pommes de pin et de châtaignes a-t-elle trouvées en tout ?
+- Combien de bouteilles y a-t-il au magasin ?
+- Combien de ballons Mamie a-t-elle gonflés ?
+- Combien de crayons bleus y a-t-il ?
+- Combien d'œufs roux y a-t-il ?
+- Combien d'enfants sont dans le bac à sable ?
+- Combien de fleurs rouges y a-t-il ?
+- Combien de peluches sont dans le coffre ?
+- Combien de poules noires y a-t-il ?
+- Combien de livres sont sur le chariot ?
+- Combien de places sont libres ?
+- Combien de jeux y a-t-il ?
+- Combien de garçons y a-t-il ?
+- Combien de paquets de coquillettes y a-t-il ?
+- Combien d'enfants sautent ?
+- Combien de billes as-tu maintenant ?
+- Combien d'œufs y a-t-il dans le nid maintenant ?
+- Combien d'enfants jouent au ballon maintenant ?
+- Combien de cahiers a-t-elle maintenant ?
+- Combien de salades y a-t-il dans le potager ?
+- Combien de personnes y a-t-il dans le bus maintenant ?
+- Combien de livres de contes a-t-elle maintenant ?
+- Combien de personnes y a-t-il maintenant ?
+- Combien de perles a ton collier maintenant ?
+- Combien de ballons l'école a-t-elle maintenant ?
+- Combien de cartes as-tu maintenant ?
+- Combien de poules a-t-elle maintenant ?
+- Combien de biscuits reste-t-il dans l'assiette ?
+- Combien de pigeons reste-t-il sur la pelouse ?
+- Combien de bougies sont encore allumées ?
+- Combien de croissants lui reste-t-il ?
+- Combien de coquillages te reste-t-il ?
+- Combien de croquettes reste-t-il dans la gamelle ?
+- Combien de pommes reste-t-il sur l'étal ?
+- Combien de craies entières reste-t-il dans la boîte ?
+- Combien de champignons reste-t-il dans le panier ?
+- Combien de baguettes lui reste-t-il ?
+- Combien de personnes reste-t-il dans le bus ?
+- Combien de fraises reste-t-il dans le panier ?
+- Combien de sardines lui reste-t-il ?
+- Combien d'autocollants Mamie t'a-t-elle donnés ?
+- Combien de canards sont arrivés ?
+- Combien de bébés lapins sont nés ?
+- Combien de personnes sont montées ?
+- Combien de pages as-tu lues ce soir ?
+- Combien de perles as-tu ajoutées ?
+- Combien de points ton équipe a-t-elle marqués pendant le match ?
+- Combien d'œufs les poules ont-elles pondus ?
+- Combien de fraises as-tu mangées ?
+- Combien de feutres a-t-elle prêtés ?
+- Combien de pains au chocolat a-t-elle vendus ?
+- Combien de jetons as-tu perdus ?
+- Combien de bouteilles de lait le magasin a-t-il vendues ?
+- Combien de lots les enfants ont-ils gagnés ?
+- Combien de bonbons les enfants ont-ils mangés ?
+- Combien de personnes sont parties ?
+- Combien de billes avais-tu au début ?
+- Combien de cahiers avait-elle au début ?
+- Combien de livres avait-elle au début ?
+- Combien de poules avait-elle au début ?
+- Combien de points avait ton équipe au début ?
+- Combien de biscuits y avait-il au début ?
+- Combien d'enfants jouaient au début ?
+- Combien de croissants avait-il au début ?
+- Combien de croquettes y avait-il au début ?
+- Combien de personnes y avait-il au début ?
+- Combien de perles avais-tu au début ?
+- Combien de melons avait-il au début ?
+- Combien de billes as-tu de plus que ton copain ?
+- Combien y a-t-il de cuillères de plus que de fourchettes ?
+- Combien de tomates Papa a-t-il cueillies de plus que Maman ?
+- Combien y a-t-il de filles de plus que de garçons ?
+- Combien de points l'équipe bleue a-t-elle de plus que l'équipe rouge ?
+- Combien de coquillages as-tu de plus que ta cousine ?
+- Combien de cartes ton copain a-t-il de moins que toi ?
+- Combien de pages as-tu lues de plus que ton cousin ?
+- Combien de gâteaux les CE1 ont-ils vendus de plus que les CP ?
+- Combien y a-t-il d'adultes de moins que d'enfants ?
+- Combien y a-t-il de moutons de plus que de chèvres ?
+- Combien y a-t-il de citrons de plus que d'oranges ?
+- Combien de petites voitures as-tu ?
+- Combien de crêpes Papa a-t-il ?
+- Combien de tulipes y a-t-il ?
+- Combien de crayons y a-t-il dans la trousse de ta voisine ?
+- Combien de points l'équipe bleue a-t-elle marqués ?
+- Combien de pages a le livre des dinosaures ?
+- Combien de canards a-t-elle ?
+- Combien d'images ton copain a-t-il ?
+- Combien d'enfants y a-t-il sur le toboggan ?
+- Combien de pains de campagne a-t-il faits ?
+- Combien d'enfants ont pris de la salade ?
+- Combien de places a le petit car ?
+- Combien de crêpes y a-t-il en tout ?
+- Combien d'œufs y a-t-il en tout ?
+- Combien de billes as-tu en tout ?
+- Combien de fleurs Papa a-t-il mises dans les vases ?
+- Combien de crayons y a-t-il en tout ?
+- Combien de personnes sont assises sur les bancs ?
+- Combien de gourmandises y a-t-il dans la gamelle ?
+- Combien de croissants a-t-elle mis dans les sachets ?
+- Combien d'œufs Maman achète-t-elle ?
+- Combien d'élèves y a-t-il dans les équipes ?
+- Combien de pommes a-t-il mises dans les paniers ?
+- Combien de perles as-tu utilisées ?
+- Combien de ballons faut-il en tout ?
+- Combien de ballons y a-t-il en tout ?
+- Combien de pattes y a-t-il en tout ?
+- Combien de salades Papy a-t-il plantées ?
+- Combien d'enfants y a-t-il autour des tables ?
+- Combien de pages as-tu lues ?
+- Combien de maquereaux a-t-il mis dans les cagettes ?
+- Combien de feutres achète-t-elle ?
+- Combien de bouteilles Papa achète-t-il ?
+- Combien de gâteaux y a-t-il ?
+- Combien de sièges y a-t-il dans le petit car ?
+- Combien d'œufs a-t-elle mis dans les boîtes ?
+- Combien de châtaignes les enfants ont-ils ramassées ?
+- Combien de fraises a chacun ?
+- Combien de peluches y a-t-il sur chaque étagère ?
+- Combien de crayons y a-t-il dans chaque pot ?
+- Combien de bonbons a chaque enfant ?
+- Combien de croquettes a chaque chat ?
+- Combien de croissants y a-t-il sur chaque plateau ?
+- Combien de salades y a-t-il dans chaque rangée ?
+- Combien d'enfants y a-t-il dans chaque équipe ?
+- Combien de feuilles reçoit chaque groupe ?
+- Combien d'œufs y a-t-il dans chaque boîte ?
+- Combien de gâteaux reçoit chaque table ?
+- Combien de pommes y a-t-il dans chaque panier ?
+- Combien d'assiettes peux-tu remplir ?
+- Combien de sachets te faut-il ?
+- Combien de bouquets peux-tu faire ?
+- Combien de barques faut-il ?
+- Combien de carnets peut-elle fabriquer ?
+- Combien de sachets remplit-elle ?
+- Combien d'équipes y a-t-il ?
+- Combien de boîtes remplit-elle ?
+- Combien de bracelets peux-tu faire ?
+- Combien de minibus faut-il ?
+- Combien de paquets de yaourts y a-t-il ?
+- Combien de tables faut-il ?
+- Combien de billes as-tu à la fin ?
+- Combien de biscuits reste-t-il dans la boîte ?
+- Combien de tomates reste-t-il ?
+- Combien de friandises Mamie achète-t-elle ?
+- Combien de pages te reste-t-il à lire ?
+- Combien de lots reste-t-il ?
+- Combien de viennoiseries lui reste-t-il ?
+- Combien de pommes a-t-il en tout ?
+- Combien d'animaux lui reste-t-il ?
+- Combien de points ton équipe a-t-elle de plus que l'autre équipe ?
+- Combien d'élèves y a-t-il dans l'école ?
+- Combien d'euros lui reste-t-il ?
+- Combien de châtaignes te reste-t-il ?
+- Combien de yaourts reste-t-il ?
+
+## corrections dans l'histoire (« 17 ballons, et 8 de plus, ça fait 25 ballons. ») (210)
+
+- 4 pommes et 3 poires, ça fait 7 fruits.
+- 5 voitures et 2 voitures, ça fait 7 voitures.
+- 6 tulipes et 3 roses, ça fait 9 fleurs.
+- 3 garçons et 5 filles, ça fait 8 enfants.
+- 9 filles et 8 garçons, ça fait 17 élèves.
+- 7 livres de contes et 6 bandes dessinées, ça fait 13 livres.
+- 8 coquillages et 5 coquillages, ça fait 13 coquillages.
+- 7 vaches et 9 moutons, ça fait 16 animaux.
+- 23 enfants et 4 adultes, ça fait 27 personnes.
+- 32 melons et 15 pastèques, ça fait 47 fruits.
+- 40 enfants et 30 enfants, ça fait 70 enfants.
+- 24 crêpes et 13 crêpes, ça fait 37 crêpes.
+- 18 ballons et 15 ballons, ça fait 33 ballons.
+- 27 pommes de pin et 16 châtaignes, ça fait 43 trésors.
+- 36 bouteilles et 26 bouteilles, ça fait 62 bouteilles.
+- 19 ballons et 17 ballons, ça fait 36 ballons.
+- 9 crayons en tout, 4 rouges : il y a 5 crayons bleus.
+- 8 œufs en tout, 3 blancs : il y a 5 œufs roux.
+- 10 enfants en tout, 6 sur les balançoires : 4 enfants sont dans le bac à sable.
+- 15 fleurs en tout, 7 jaunes : il y a 8 fleurs rouges.
+- 18 peluches en tout, 9 sur le lit : 9 peluches sont dans le coffre.
+- 14 poules en tout, 6 blanches : il y a 8 poules noires.
+- 48 livres en tout, 25 rangés : 23 livres sont sur le chariot.
+- 50 places en tout, 30 prises : 20 places sont libres.
+- 65 lots en tout, 40 peluches : il y a 25 jeux.
+- 52 élèves en tout, 27 filles : il y a 25 garçons.
+- 34 paquets en tout, 18 de spaghettis : il y a 16 paquets de coquillettes.
+- 41 enfants en tout, 26 qui courent : 15 enfants sautent.
+- 5 billes, et 3 de plus, ça fait 8 billes.
+- 4 œufs, et 2 de plus, ça fait 6 œufs.
+- 6 enfants, et 3 de plus, ça fait 9 enfants.
+- 12 cahiers, et 6 de plus, ça fait 18 cahiers.
+- 9 salades, et 7 de plus, ça fait 16 salades.
+- 8 personnes, et 5 de plus, ça fait 13 personnes.
+- 45 livres, et 20 de plus, ça fait 65 livres.
+- 32 personnes, et 6 de plus, ça fait 38 personnes.
+- 24 perles, et 5 de plus, ça fait 29 perles.
+- 17 ballons, et 8 de plus, ça fait 25 ballons.
+- 28 cartes, et 15 de plus, ça fait 43 cartes.
+- 36 poules, et 9 de plus, ça fait 45 poules.
+- 8 biscuits, 2 de moins, il en reste 6.
+- 9 pigeons, 4 de moins, il en reste 5.
+- 10 bougies, 7 de moins, il en reste 3.
+- 15 croissants, 9 de moins, il en reste 6.
+- 14 coquillages, 5 de moins, il en reste 9.
+- 17 croquettes, 8 de moins, il en reste 9.
+- 58 pommes, 30 de moins, il en reste 28.
+- 46 craies, 4 de moins, il en reste 42.
+- 39 champignons, 6 de moins, il en reste 33.
+- 42 baguettes, 25 de moins, il en reste 17.
+- 31 personnes, 7 de moins, il en reste 24.
+- 53 fraises, 18 de moins, il en reste 35.
+- 23 sardines, 9 de moins, il en reste 14.
+- De 4 pour aller à 9, il faut 5 : Mamie t'a donné 5 autocollants.
+- De 5 pour aller à 8, il faut 3 : 3 canards sont arrivés.
+- De 8 pour aller à 15, il faut 7 : 7 bébés lapins sont nés.
+- De 9 pour aller à 14, il faut 5 : 5 personnes sont montées.
+- De 20 pour aller à 30, il faut 10 : tu as lu 10 pages ce soir.
+- De 32 pour aller à 38, il faut 6 : tu as ajouté 6 perles.
+- De 18 pour aller à 26, il faut 8 : ton équipe a marqué 8 points.
+- De 27 pour aller à 41, il faut 14 : les poules ont pondu 14 œufs.
+- 7 fraises, il en reste 3 : tu en as mangé 4.
+- 10 feutres, il en reste 6 : elle en a prêté 4.
+- 16 pains au chocolat, il en reste 7 : elle en a vendu 9.
+- 18 jetons, il en reste 11 : tu en as perdu 7.
+- 45 bouteilles, il en reste 23 : le magasin en a vendu 22.
+- 60 lots, il en reste 20 : les enfants en ont gagné 40.
+- 35 bonbons, il en reste 17 : les enfants en ont mangé 18.
+- 44 personnes, il en reste 29 : 15 personnes sont parties.
+- 8 billes, sans les 3 gagnées : tu avais 5 billes au début.
+- 17 cahiers, sans les 8 achetés : elle avait 9 cahiers au début.
+- 80 livres, sans les 30 reçus : elle avait 50 livres au début.
+- 23 poules, sans les 7 achetées : elle avait 16 poules au début.
+- 31 points, sans les 9 marqués : ton équipe avait 22 points au début.
+- 6 biscuits, et les 2 mangés : il y en avait 8 au début.
+- 5 enfants, et les 4 partis : il y en avait 9 au début.
+- 6 croissants, et les 7 vendus : il y en avait 13 au début.
+- 5 croquettes, et les 9 mangées : il y en avait 14 au début.
+- 23 personnes, et les 5 descendues : il y en avait 28 au début.
+- 25 perles, et les 12 utilisées : tu en avais 37 au début.
+- 14 melons, et les 18 vendus : il y en avait 32 au début.
+- 7 billes contre 4 : tu en as 3 de plus.
+- 9 cuillères contre 6 fourchettes : il y a 3 cuillères de plus.
+- 8 tomates contre 3 : Papa en a cueilli 5 de plus.
+- 14 filles contre 9 garçons : il y a 5 filles de plus.
+- 16 points contre 11 : l'équipe bleue a 5 points de plus.
+- 19 coquillages contre 12 : tu en as 7 de plus.
+- 15 cartes contre 8 : ton copain en a 7 de moins.
+- 35 pages contre 23 : tu en as lu 12 de plus.
+- 48 gâteaux contre 30 : les CE1 en ont vendu 18 de plus.
+- 26 enfants contre 14 adultes : il y a 12 adultes de moins.
+- 42 moutons contre 27 chèvres : il y a 15 moutons de plus.
+- 31 citrons contre 18 oranges : il y a 13 citrons de plus.
+- 5 voitures, et 3 de plus : tu en as 8.
+- 4 crêpes, et 2 de plus : Papa en a 6.
+- 9 roses, et 6 de plus : il y a 15 tulipes.
+- 8 crayons, et 5 de plus : ta voisine en a 13.
+- 24 points, et 12 de plus : l'équipe bleue a marqué 36 points.
+- 40 pages, et 20 de plus : le livre des dinosaures a 60 pages.
+- 26 poules, et 17 de plus : elle a 43 canards.
+- 9 images, et 4 de moins : ton copain en a 5.
+- 10 enfants, et 3 de moins : il y en a 7 sur le toboggan.
+- 18 baguettes, et 6 de moins : il a fait 12 pains de campagne.
+- 47 enfants, et 20 de moins : 27 enfants ont pris de la salade.
+- 52 places, et 19 de moins : le petit car a 33 places.
+- 3 assiettes de 2 crêpes : 2, 4, 6.
+- Il y a 6 crêpes.
+- 3 nids de 4 œufs : 4, 8, 12.
+- Il y a 12 œufs.
+- 2 boîtes de 5 billes : 5, 10.
+- 3 vases de 5 fleurs : 5, 10, 15.
+- Papa a mis 15 fleurs.
+- 4 pots de 3 crayons : 3, 6, 9, 12.
+- Il y a 12 crayons.
+- 4 bancs de 2 personnes : 2, 4, 6, 8.
+- 8 personnes sont assises.
+- 3 sachets de 6 gourmandises : 6, 12, 18.
+- Il y a 18 gourmandises dans la gamelle.
+- 5 sachets de 4 croissants : 4, 8, 12, 16, 20.
+- Elle a mis 20 croissants.
+- 4 boîtes de 6 œufs : 6, 12, 18, 24.
+- Maman achète 24 œufs.
+- 5 équipes de 4 élèves : 4, 8, 12, 16, 20.
+- Il y a 20 élèves.
+- 3 paniers de 10 pommes : 10, 20, 30.
+- Il a mis 30 pommes.
+- 2 colliers de 9 perles : 9, 18.
+- Tu as utilisé 18 perles.
+- 6 enfants, 2 ballons chacun : 2, 4, 6, 8, 10, 12.
+- Il faut 12 ballons.
+- 5 filets de 5 ballons : 5, 10, 15, 20, 25.
+- Il y a 25 ballons.
+- 7 vaches de 4 pattes : 4, 8, 12, 16, 20, 24, 28.
+- Il y a 28 pattes.
+- 4 rangées de 5 salades : 5, 10, 15, 20.
+- Papy a planté 20 salades.
+- 3 tables de 8 enfants : 8, 16, 24.
+- Il y a 24 enfants.
+- 4 soirs de 5 pages : 5, 10, 15, 20.
+- Tu as lu 20 pages.
+- 4 cagettes de 5 maquereaux : 5, 10, 15, 20.
+- Il a mis 20 maquereaux.
+- 4 paquets de 10 feutres : 10, 20, 30, 40.
+- Elle achète 40 feutres.
+- 6 packs de 6 bouteilles : 6, 12, 18, 24, 30, 36.
+- Papa achète 36 bouteilles.
+- 5 boîtes de 10 gâteaux : 10, 20, 30, 40, 50.
+- Il y a 50 gâteaux.
+- 8 rangées de 4 sièges : 4, 8, 12, 16, 20, 24, 28, 32.
+- Il y a 32 sièges.
+- 7 boîtes de 6 œufs : 6, 12, 18, 24, 30, 36, 42.
+- Elle a mis 42 œufs.
+- 9 enfants, 5 châtaignes chacun : 5, 10, 15, 20, 25, 30, 35, 40, 45.
+- Ils ont ramassé 45 châtaignes.
+- 6 fraises en 2 parts égales : 3 chacun.
+- 9 peluches sur 3 étagères : 3 sur chaque étagère.
+- 12 crayons dans 3 pots : 4 dans chaque pot.
+- 10 bonbons pour 2 enfants : 5 chacun.
+- 16 croquettes pour 2 chats : 8 chacun.
+- 20 croissants sur 4 plateaux : 5 sur chaque plateau.
+- 15 salades en 3 rangées : 5 dans chaque rangée.
+- 18 enfants en 3 équipes : 6 dans chaque équipe.
+- 35 feuilles pour 5 groupes : 7 chacun.
+- 36 œufs dans 6 boîtes : 6 dans chaque boîte.
+- 40 gâteaux pour 4 tables : 10 chacune.
+- 45 pommes dans 5 paniers : 9 dans chaque panier.
+- 8 biscuits, 2 par assiette : 4 assiettes.
+- 10 billes, 5 par sachet : 2 sachets.
+- 12 fleurs, 4 par bouquet : 3 bouquets.
+- 9 enfants, 3 par barque : 3 barques.
+- 28 pages, 4 par carnet : 7 carnets.
+- 20 croissants, 5 par sachet : 4 sachets.
+- 24 enfants, 6 par équipe : 4 équipes.
+- 18 œufs, 6 par boîte : 3 boîtes.
+- 40 perles, 10 par bracelet : 4 bracelets.
+- 36 enfants, 9 par minibus : 4 minibus.
+- 32 yaourts, 4 par paquet : 8 paquets.
+- 42 enfants, 6 par table : 7 tables.
+- 6 et 5, ça fait 11.
+- 11, moins 3, il en reste 8 billes.
+- 12, moins 2, il en reste 10.
+- 10, moins 3, il en reste 7 biscuits.
+- 10, moins 4, il en reste 6.
+- 6, et 6 de plus, ça fait 12 personnes.
+- 7 et 8, ça fait 15.
+- 15, moins 5, il en reste 10 tomates.
+- 2 sachets de 5 bonbons, ça fait 10.
+- 10, et 4 sucettes, ça fait 14 friandises.
+- 10 et 20, ça fait 30 pages lues.
+- 50, moins 30, il reste 20 pages.
+- 40, moins 10, il en reste 30.
+- 30, moins 20, il reste 10 lots.
+- 30 et 25, ça fait 55.
+- 55, moins 40, il en reste 15.
+- 3 paniers de 10 pommes, ça fait 30.
+- 30, et 6, ça fait 36 pommes.
+- 24 et 12, ça fait 36 animaux.
+- 36, moins 5, il en reste 31.
+- 12 et 15, ça fait 27 points.
+- 27 contre 20 : ton équipe a 7 points de plus.
+- 26, moins 8, il en reste 18.
+- 18, et 13 de plus, ça fait 31 personnes.
+- 24 et 23, ça fait 47.
+- 47 et 25, ça fait 72 élèves.
+- 50, moins 18, il en reste 32.
+- 32, moins 14, il reste 18 euros.
+- 17 et 16, ça fait 33.
+- 33, moins 9, il en reste 24 châtaignes.
+- 4 plateaux de 10 yaourts, ça fait 40.
+- 40, moins 27, il en reste 13 yaourts.
+
+## communes : le nom et l'entrée (4)
+
+- Les problèmes.
+- Écoute bien l'histoire.
+- Écoute l'histoire, puis tape ta réponse.
+- Touche-moi pour réécouter l'histoire.
+
+## communes : les objets à grouper (12)
+
+- Fais des groupes avec les objets.
+- Glisse les objets dans les cercles.
+- Mets-en autant dans chaque cercle.
+- Mets-en autant dans chaque sachet.
+- Mets-en autant dans chaque assiette.
+- Mets-en autant dans chaque boîte.
+- Mets-en autant dans chaque panier.
+- Mets-en autant dans chaque vase.
+- Chaque groupe en a autant.
+- Compte les groupes.
+- Compte les objets d'un groupe.
+- Compte tous les objets.
+
+## communes : le schéma en barres (8)
+
+- Regarde le schéma.
+- La grande barre, c'est le tout.
+- Les petites barres, ce sont les parties.
+- On connaît les deux parties : on les ajoute.
+- On connaît le tout et une partie : on enlève la partie.
+- La barre du haut, c'est le plus grand.
+- Le bout qui dépasse, c'est l'écart.
+- On cherche le point d'interrogation.
+
+## communes : les deux étapes (2)
+
+- D'abord, la première partie de l'histoire.
+- Puis, la suite de l'histoire.
+
+## communes : les erreurs repérées (4)
+
+- Tu as redit un nombre de l'histoire. Il faut calculer.
+- Attention : « de plus » ne veut pas dire qu'il faut ajouter.
+- Le bon calcul, mais une petite erreur de compte.
+- C'est la réponse de la première étape. Il en reste une.
+
+## corrections par le calcul seul (« 17 plus 8, ça fait 25. ») : les nouvelles (120)
+
+- 23 plus 4, ça fait 27.
+- 32 plus 15, ça fait 47.
+- 40 plus 30, ça fait 70.
+- 24 plus 13, ça fait 37.
+- 18 plus 15, ça fait 33.
+- 27 plus 16, ça fait 43.
+- 36 plus 26, ça fait 62.
+- 19 plus 17, ça fait 36.
+- 9 moins 4, ça fait 5.
+- 8 moins 3, ça fait 5.
+- 10 moins 6, ça fait 4.
+- 15 moins 7, ça fait 8.
+- 18 moins 9, ça fait 9.
+- 14 moins 6, ça fait 8.
+- 48 moins 25, ça fait 23.
+- 50 moins 30, ça fait 20.
+- 65 moins 40, ça fait 25.
+- 52 moins 27, ça fait 25.
+- 34 moins 18, ça fait 16.
+- 41 moins 26, ça fait 15.
+- 12 plus 6, ça fait 18.
+- 45 plus 20, ça fait 65.
+- 32 plus 6, ça fait 38.
+- 24 plus 5, ça fait 29.
+- 17 plus 8, ça fait 25.
+- 28 plus 15, ça fait 43.
+- 36 plus 9, ça fait 45.
+- 8 moins 2, ça fait 6.
+- 10 moins 7, ça fait 3.
+- 15 moins 9, ça fait 6.
+- 14 moins 5, ça fait 9.
+- 17 moins 8, ça fait 9.
+- 58 moins 30, ça fait 28.
+- 46 moins 4, ça fait 42.
+- 39 moins 6, ça fait 33.
+- 42 moins 25, ça fait 17.
+- 31 moins 7, ça fait 24.
+- 53 moins 18, ça fait 35.
+- 23 moins 9, ça fait 14.
+- 20 plus 10, ça fait 30.
+- 18 plus 8, ça fait 26.
+- 27 plus 14, ça fait 41.
+- 7 moins 4, ça fait 3.
+- 10 moins 4, ça fait 6.
+- 16 moins 9, ça fait 7.
+- 18 moins 7, ça fait 11.
+- 45 moins 22, ça fait 23.
+- 60 moins 40, ça fait 20.
+- 35 moins 18, ça fait 17.
+- 44 moins 15, ça fait 29.
+- 80 moins 30, ça fait 50.
+- 23 moins 7, ça fait 16.
+- 31 moins 9, ça fait 22.
+- 23 plus 5, ça fait 28.
+- 25 plus 12, ça fait 37.
+- 14 plus 18, ça fait 32.
+- 9 moins 6, ça fait 3.
+- 14 moins 9, ça fait 5.
+- 16 moins 11, ça fait 5.
+- 19 moins 12, ça fait 7.
+- 15 moins 8, ça fait 7.
+- 35 moins 23, ça fait 12.
+- 48 moins 30, ça fait 18.
+- 26 moins 14, ça fait 12.
+- 42 moins 27, ça fait 15.
+- 31 moins 18, ça fait 13.
+- 24 plus 12, ça fait 36.
+- 40 plus 20, ça fait 60.
+- 26 plus 17, ça fait 43.
+- 10 moins 3, ça fait 7.
+- 18 moins 6, ça fait 12.
+- 47 moins 20, ça fait 27.
+- 52 moins 19, ça fait 33.
+- 6 fois 6, ça fait 36.
+- 7 fois 6, ça fait 42.
+- 6 partagé en 2, ça fait 3 chacun.
+- 9 partagé en 3, ça fait 3 chacun.
+- 12 partagé en 3, ça fait 4 chacun.
+- 10 partagé en 2, ça fait 5 chacun.
+- 16 partagé en 2, ça fait 8 chacun.
+- 20 partagé en 4, ça fait 5 chacun.
+- 15 partagé en 3, ça fait 5 chacun.
+- 18 partagé en 3, ça fait 6 chacun.
+- 35 partagé en 5, ça fait 7 chacun.
+- 36 partagé en 6, ça fait 6 chacun.
+- 40 partagé en 4, ça fait 10 chacun.
+- 45 partagé en 5, ça fait 9 chacun.
+- Dans 8, il y a 4 fois 2.
+- Dans 10, il y a 2 fois 5.
+- Dans 12, il y a 3 fois 4.
+- Dans 9, il y a 3 fois 3.
+- Dans 28, il y a 7 fois 4.
+- Dans 20, il y a 4 fois 5.
+- Dans 24, il y a 4 fois 6.
+- Dans 18, il y a 3 fois 6.
+- Dans 40, il y a 4 fois 10.
+- Dans 36, il y a 4 fois 9.
+- Dans 32, il y a 8 fois 4.
+- Dans 42, il y a 7 fois 6.
+- 11 moins 3, ça fait 8.
+- 12 moins 2, ça fait 10.
+- 15 moins 5, ça fait 10.
+- 10 plus 20, ça fait 30.
+- 40 moins 10, ça fait 30.
+- 30 moins 20, ça fait 10.
+- 30 plus 25, ça fait 55.
+- 55 moins 40, ça fait 15.
+- 30 plus 6, ça fait 36.
+- 36 moins 5, ça fait 31.
+- 12 plus 15, ça fait 27.
+- 27 moins 20, ça fait 7.
+- 26 moins 8, ça fait 18.
+- 18 plus 13, ça fait 31.
+- 24 plus 23, ça fait 47.
+- 47 plus 25, ça fait 72.
+- 50 moins 18, ça fait 32.
+- 32 moins 14, ça fait 18.
+- 17 plus 16, ça fait 33.
+- 33 moins 9, ça fait 24.
+- 40 moins 27, ça fait 13.

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- MAQUETTE DE L'EXERCICE « PROBLÈMES » (docs/maquettes/problemes/PROPOSITION.md ; banque : art/problemes/enonces.json).
+     Les écrans clés, faits avec les pièces de l'application (le lagon, le pavé, le coquillage, « je ne sais pas », lus dans
+     app/ sans le modifier ; la mascotte, la maison et les étoiles capturées dans l'application) et les dessins nouveaux de
+     l'atelier (art/src/canvas-core/sea/problemes.ts, empaquetés en dessins.js par construire.mjs). L'illustration de l'étal
+     est l'image de l'étal du pêcheur (art/etal/sources/) ; les autres contextes, pas encore générés, sont marqués « à
+     générer ». La bulle écrit ce que dit la voix. Captures : node art/problemes/captures.mjs -->
+<base href="../../app/">
+<title>Maquette — les problèmes</title>
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/app.css">
+<style>
+  #nav { position: fixed; left: 8px; bottom: 8px; z-index: 50; display: flex; flex-wrap: wrap; gap: 4px; max-width: 96vw; font: 13px/1.2 system-ui, sans-serif; }
+  #nav button { padding: 5px 9px; border: 1px solid #0a3f49; border-radius: 6px; background: #fffaf0e8; cursor: pointer; }
+  #nav button.on { background: #ffd23a; }
+  #monde { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; transform-origin: 0 0; }
+  .couche { position: absolute; left: 0; top: 0; }
+  #dit { position: absolute; z-index: 30; left: 252px; top: 150px; max-width: 420px; padding: 14px 24px 16px; border-radius: 44px; background: #fffef8; border: 4px solid #111; box-shadow: 7px 9px 0 rgba(10, 20, 30, 0.24); font: 600 30px/1.16 "Shantell Sans", "Comic Sans MS", cursive; color: #111; text-align: center; }
+  #dit::before { content: ""; position: absolute; left: -30px; bottom: 26px; border: 16px solid transparent; border-right: 30px solid #111; border-left: 0; }
+  #dit::after { content: ""; position: absolute; left: -22px; bottom: 30px; border: 12px solid transparent; border-right: 24px solid #fffef8; border-left: 0; }
+  #dit:empty { display: none; }
+  #dit .n { color: #c0302a; }
+  #a-generer { position: absolute; z-index: 5; display: none; text-align: center; font: 600 22px/1.25 "Shantell Sans", system-ui, sans-serif; color: #6b5a3a; }
+</style>
+</head>
+<body>
+<div id="stage"><div id="monde"><canvas id="bg" class="couche"></canvas><canvas id="scene" class="couche"></canvas><div id="a-generer"></div><div id="dit"></div></div></div>
+<div id="nav"></div>
+<script type="module">
+import { Sprites, loadAtlas } from "./js/engine/sprites.js";
+import * as R from "./js/art/runtime.js";
+import * as D from "../art/problemes/dessins.js";
+
+const P = new URLSearchParams(location.search), CAPTURE = P.has("capture");
+const W = 1280, H = 800, root = document.getElementById("stage"), monde = document.getElementById("monde"), bg = document.getElementById("bg"), scene = document.getElementById("scene");
+const k = Math.min(innerWidth / W, innerHeight / H), px = k * (devicePixelRatio || 1);
+Object.assign(root.style, { position: "absolute", left: `${(innerWidth - W * k) / 2}px`, top: `${(innerHeight - H * k) / 2}px`, width: `${W * k}px`, height: `${H * k}px` });
+monde.style.transform = `scale(${k})`;
+for (const c of [bg, scene]) { c.width = W * px; c.height = H * px; Object.assign(c.style, { width: `${W}px`, height: `${H}px` }); }
+const sprites = new Sprites(await loadAtlas(), px);
+await Promise.all(["petits", "lagon", "aides"].map((s) => sprites.load(s)));
+const img = (src) => new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = src; });
+const [mascotte, maison, etoiles, etal] = await Promise.all(["../art/problemes/mascotte.png", "../art/problemes/maison.png", "../art/problemes/etoiles.png", "../art/etal/sources/etal-beau-temps.jpg"].map(img));
+await document.fonts.load('600 30px "Shantell Sans"');
+const bctx = bg.getContext("2d"); bctx.setTransform(1, 0, 0, 1, 0, 0); sprites.draw(bctx, "lagon.fond", 0, 0, 0);
+const ctx = scene.getContext("2d");
+const BANQUE = (await (await fetch("../art/problemes/enonces.json")).json()).enonces, E = (id) => BANQUE.find((e) => e.id === id);
+
+// ce qui ne change pas d'un écran à l'autre : la mascotte, la maison, les étoiles (captures de l'application)
+const chrome = () => { ctx.setTransform(px, 0, 0, px, 0, 0); ctx.drawImage(maison, 10, 6, 130, 130); ctx.drawImage(etoiles, 960, 40, 140, 70); ctx.drawImage(mascotte, 22, 136, 210, 280); };
+// une image de la planche de l'application, réduite (les touches du pavé)
+const small = (name, x, y, s) => { const q = sprites.frame(name, 0); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, x * px + q.dx * s, y * px + q.dy * s, q.w * s, q.h * s); };
+// le pavé, le coquillage, « je ne sais pas » (les places de modules/facts/screen.js)
+const KEY = 112, ROWS = [540, 668], COLS = [390, 508, 626, 744, 862], SIDE = 1010;
+const pave = () => {
+  for (let d = 0; d <= 9; d++) { const x = COLS[d % 5], y = ROWS[Math.floor(d / 5)]; small("reponse", x, y, 0.9); ctx.setTransform(px, 0, 0, px, 0, 0); R.drawNumber(ctx, String(d), x, y - 25, 50, { w: 7, seed: 900 + d }); }
+  small("effacer", SIDE, ROWS[0], 0.8); small("valider", SIDE, ROWS[1], 0.7);
+};
+const boutons = () => { ctx.setTransform(1, 0, 0, 1, 0, 0); sprites.draw(ctx, "aide", 0, 222, 580); sprites.draw(ctx, "nsp", 0, 1165, 604); };
+// l'illustration du contexte dans son cadre : l'image de l'étal, ou la place d'une image à générer
+const CADRE = { x: 496, y: 116, w: 620, h: 350 };
+const illustration = (g, contexte) => {
+  const { x, y, w, h } = CADRE; D.drawCadre(g, x, y, w, h, "fond");
+  const inn = D.cadreInterieur(x, y, w, h), ix = x + D.CADRE_BORD, iy = y + D.CADRE_BORD, iw = w - 2 * D.CADRE_BORD, ih = h - 2 * D.CADRE_BORD;
+  ctx.save(); ctx.setTransform(px, 0, 0, px, 0, 0); ctx.beginPath(); inn.forEach(([a, b], i) => (i ? ctx.lineTo(a, b) : ctx.moveTo(a, b))); ctx.closePath(); ctx.clip();
+  const lab = document.getElementById("a-generer");
+  if (contexte === "etal") { const s = Math.max(iw / etal.width, ih / etal.height); ctx.drawImage(etal, ix + (iw - etal.width * s) / 2, iy + (ih - etal.height * s) / 2, etal.width * s, etal.height * s); lab.style.display = "none"; }
+  else {
+    ctx.fillStyle = "#f3ead6"; ctx.fillRect(ix, iy, iw, ih); ctx.strokeStyle = "#e4d6b8"; ctx.lineWidth = 3; for (let i = -20; i < 40; i++) { ctx.beginPath(); ctx.moveTo(ix + i * 26, iy + ih); ctx.lineTo(ix + i * 26 + ih, iy); ctx.stroke(); }
+    const C = { classe: "la classe", bus: "le bus et le car" }[contexte] ?? contexte;
+    Object.assign(lab.style, { display: "block", left: `${ix}px`, top: `${iy + ih / 2 - 40}px`, width: `${iw}px` }); lab.innerHTML = `Illustration à générer :<br>${C}<br><small>(prompt dans art/problemes/contextes.json)</small>`;
+  }
+  ctx.restore(); D.drawCadre(g, x, y, w, h, "devant");
+};
+// les étiquettes des données, au bas de l'illustration, et la plaque de la réponse
+const donnees = (g, items, rep, objet, o = {}) => {
+  // (trois données : des étiquettes plus petites et une plaque plus étroite, pour que tout tienne sur une ligne)
+  const em = items.length > 2 ? 32 : 38, pw = items.length > 2 ? 176 : 220;
+  let x = CADRE.x + 28; const y = CADRE.y + CADRE.h - 26 - D.ETIQ_H;
+  items.forEach(([t, obj, lit], i) => { x += D.drawEtiquette(g, x, y, t, obj, { lit, seed: i + 1, em }) + 14; });
+  if (rep !== null) D.drawReponse(g, CADRE.x + CADRE.w - 28 - pw, y - 18, pw, rep, objet, o);
+};
+const dit = (t) => { document.getElementById("dit").innerHTML = t.replace(/\d+/g, (n) => `<span class="n">${n}</span>`); };
+const nouveau = () => { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, scene.width, scene.height); chrome(); return D.gfx(ctx, W, H, px); };
+
+// LES ÉCRANS : ce que voit l'enfant, et ce que dit la voix (la bulle l'écrit)
+const sardines = E("tra-pf-13"), maquereaux = E("grp-19"), crayons = E("cmp-g-04"), pots = E("par-v-03"), bus = E("etp-03");
+const ECRANS = {
+  "enonce": () => { const g = nouveau(); illustration(g, "etal"); donnees(g, [["23", "poisson", true]], "?", "poisson"); pave(); boutons(); dit(sardines.enonce[0]); },
+  "question": () => { const g = nouveau(); illustration(g, "etal"); donnees(g, [["23", "poisson"], ["9", "poisson", true]], "?", "poisson"); pave(); boutons(); dit(sardines.question); },
+  "pave": () => { const g = nouveau(); illustration(g, "etal"); donnees(g, [["23", "poisson"], ["9", "poisson"]], "32", "poisson"); pave(); boutons(); dit(""); },
+  "erreur-barres": () => { const g = nouveau(); illustration(g, "etal"); donnees(g, [["23", "poisson"], ["9", "poisson"]], "?", "poisson"); D.drawBarres(g, 360, 520, 640, sardines.barres, "poisson"); boutons(); dit("Regarde le schéma. On connaît le tout et une partie : on enlève la partie."); },
+  "correction": () => { const g = nouveau(); illustration(g, "etal"); donnees(g, [["23", "poisson"], ["9", "poisson"]], "14", "poisson", { juste: true }); D.drawBarres(g, 360, 500, 640, sardines.barres, "poisson", { montre: true }); D.drawCalcul(g, 680, 680, sardines.calcul); boutons(); dit(sardines.correction); },
+  "groupes": () => { const g = nouveau(); illustration(g, "etal"); donnees(g, [["4", null], ["5", "poisson"]], "?", "poisson");
+    [0, 1, 2, 3].forEach((i) => { const cx = 410 + i * 180; D.drawGroupe(g, "boite", "poisson", cx, 576, 5, 0.95, { seed: i + 1, lit: i === 3 }); ctx.setTransform(px, 0, 0, px, 0, 0); R.drawNumber(ctx, String((i + 1) * 5), cx, 676, 46, { w: 6.5, seed: 960 + i }); });
+    boutons(); dit("4 cagettes de 5 maquereaux : 5, 10, 15, 20."); },
+  "partage": () => { const g = nouveau(); illustration(g, "classe"); donnees(g, [["12", "crayon"], ["3", null]], "?", "crayon");
+    [[318, 520], [372, 556], [326, 610], [384, 640], [330, 694], [392, 726]].forEach(([x, y], i) => D.drawObjet(g, "crayon", x, y, 1.05, 70 + i, i));
+    [0, 1, 2].forEach((i) => D.drawGroupe(g, "boite", "crayon", 600 + i * 190, 640, 4, 1, { plein: 2, seed: i + 1 }));
+    g.group("plain", () => {}); ctx.setTransform(px, 0, 0, px, 0, 0); ctx.setLineDash([8, 10]); ctx.lineWidth = 4; ctx.strokeStyle = "#fffaf0"; ctx.beginPath(); ctx.moveTo(420, 600); ctx.quadraticCurveTo(700, 470, 960, 560); ctx.stroke(); ctx.setLineDash([]);
+    D.drawObjet(g, "crayon", 870, 506, 1.3, 90, 3); boutons(); dit("Mets-en autant dans chaque boîte."); },
+  "comparaison": () => { const g = nouveau(); illustration(g, "classe"); donnees(g, [["8", "crayon"], ["5", "crayon"]], "?", "crayon"); D.drawComparaison(g, 360, 520, 640, crayons.comparaison, "crayon"); boutons(); dit("Regarde le schéma. La barre du haut, c'est le plus grand."); },
+  "deux-etapes": () => { const g = nouveau(); illustration(g, "bus"); donnees(g, [["10", "personne"], ["4", "personne"], ["6", "personne"]], "?", "personne");
+    D.drawBarres(g, 318, 530, 340, bus.etapes[0].barres, "personne", { montre: true, seed: 1 }); D.drawBarres(g, 700, 530, 340, bus.etapes[1].barres, "personne", { seed: 2 });
+    ctx.setTransform(px, 0, 0, px, 0, 0); R.drawNumber(ctx, "1", 488, 712, 34, { w: 5, seed: 971 }); R.drawNumber(ctx, "2", 870, 712, 34, { w: 5, seed: 972 });
+    boutons(); dit("D'abord, la première partie de l'histoire. Puis, la suite de l'histoire."); },
+};
+const nav = document.getElementById("nav"), go = (id) => { dit(""); ECRANS[id](); [...nav.children].forEach((b) => b.classList.toggle("on", b.dataset.id === id)); window.__ecran = id; };
+for (const id of Object.keys(ECRANS)) { const b = document.createElement("button"); b.textContent = id; b.dataset.id = id; b.onclick = () => go(id); nav.append(b); }
+if (CAPTURE) nav.style.display = "none";
+go(P.get("ecran") ?? "enonce");
+window.__go = go; window.__ready = true;
+</script>
+</body>
+</html>

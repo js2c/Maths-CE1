@@ -510,6 +510,21 @@ Ce qui change pour l'enfant et pour vous :
 
 **À essayer sur la tablette** (comme d'habitude, la nouvelle version s'installe au premier lancement et prend la main au suivant) : une soirée normale. Si quelque chose ne va pas, exporter le journal technique et le donner à la conception.
 
+## d novodecies) Lot « Correctifs des relectures » : les petits défauts laissés par les relectures
+
+Les points des relectures indépendantes qui avaient déjà une réponse par défaut, faits d'un seul tenant. Ce que la session a trouvé et décidé est dans `docs/JOURNAL-CONCEPTION.md`.
+
+- **Dans les leçons de la monnaie** (L15, L16, L18), la bulle du capitaine ne recouvre plus les pièces et les billets que le portefeuille vient de sortir : avant, pendant un instant, elle cachait justement les pièces dont parlait la voix. Quand l'argent prend toute la place, la bulle est plus courte, ou ne s'affiche pas le temps de cette phrase (la règle de la bulle : mieux vaut une phrase non écrite qu'un objet caché).
+- **Le galet « jouer »** (et « continuer », pendant une pause) : le triangle n'a plus les petites encoches claires à ses trois pointes ; ses pointes sont légèrement arrondies.
+- **L'outil des séquences** (pour les relectures) écrit en clair ce qui se passe dans une séance. Rien ne change dans l'application.
+- **Le temps de démarrage** a été mesuré sur le banc d'essai qui imite la tablette : l'écran de démarrage apparaît en moins d'une seconde ; « Toucher pour continuer » vient en 3,7 s environ, un peu au-dessus de l'objectif de 3 s. Une piste est proposée, **sans être appliquée** : préparer le reflet de la surface de l'eau (en haut de l'écran) pendant que l'écran de démarrage attend votre toucher, ce qui ramène « Toucher pour continuer » à 2,9 s sur le banc. **À vous de décider** ; le plus simple est de regarder d'abord le vrai temps sur la tablette : espace parent, journal technique, ligne « lancement » (« prête en … »). Sur le banc, le reflet est dessiné sans carte graphique ; sur la tablette, il est sans doute plus rapide.
+
+**Aucune phrase à fabriquer.**
+
+**Restent à décider** (inchangés par ce lot) : l'argent posé sur les ardoises de prix pendant les leçons de la monnaie (R7), et la bulle sur les écrans pleins (elle cache quelques tuiles ou articles le temps d'une phrase ; dans les leçons de la monnaie, elle manque souvent, faute de place).
+
+**À essayer sur la tablette** : une leçon de la monnaie (le menu des leçons, puis L18) ; l'accueil, le galet « jouer ».
+
 ## e) Ce qui reste approximatif ou à ajuster
 
 **À vérifier sur la vraie tablette.** Écouter la voix (aucune phrase n'a été écoutée par une personne, la vérification a été automatique) et regarder les illustrations des cartes en grand. Toutes les mesures ont été faites sur un ordinateur, en ralentissant le processeur 4 fois pour imiter une tablette : démarrage en moins de 1,5 s, animation à 50 à 60 images par seconde la plupart du temps, avec des baisses vers 30 pendant certaines animations (l'application allège alors d'elle-même le décor). Il faut confirmer que tout reste fluide sur la tablette.

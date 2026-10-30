@@ -32,6 +32,7 @@ import { checkSequence } from "../../app/js/modules/variete.js";
 import { Module6Runner, soucoupeTexte } from "../../app/js/modules/etal/runner.js";
 import { juger, montantDit, montantEcrit, solution } from "../../app/js/modules/etal/etal.js";
 import { runChallenge } from "../../app/js/modules/facts/challenge.js";
+import { etapesTexte, evenementFamilleTexte } from "./b-texte.mjs";
 
 const ROOT = new URL("../../", import.meta.url).pathname;
 const load = (f) => JSON.parse(readFileSync(join(ROOT, "app/content", f), "utf8"));
@@ -54,6 +55,8 @@ const COMPORTEMENTS = {
 // sert qu'au plafond de la séance (12 minutes) et à la durée des étapes
 const D = { consigne: 3000, bravo: 1500, correction: 11000, correctionCalc: 14000, demo: 12000, lecon: 75000, accueil: 20000, selecteur: 8000, defiApres: 500 };
 const CRANS = ["facile", "conseille", "dur", "tresdur"], CRAN_NOM = { facile: "plus facile", conseille: "conseillé", dur: "plus dur", tresdur: "très dur" };
+// (lot « Correctifs des relectures ») les étapes et les événements des familles, en mots simples : b-texte.mjs
+const evenementFamille = (e, jour) => evenementFamilleTexte(e, jour, module2.familles), nomFamille = (id) => module2.familles.find((f) => f.id === id)?.nom ?? "";
 
 const pickT = (R, k, v = {}) => { const e = T[k]; return fill(Array.isArray(e) ? e[Math.floor(R() * e.length)] : e, v); };
 const any = (R, xs) => xs[Math.floor(R() * xs.length)];
@@ -172,7 +175,7 @@ async function uneSeance({ base, choix, cran, comp }) {
       return { value: r.value, ms: C.ms, listens: 0, aide: false, nsp: !!r.nsp, after: Promise.resolve() };
     } };
     const lesson = async (id, raison) => { lessons[id] = (lessons[id] ?? 0) + 1; cur = null; row({ forme: `LEÇON ${id}`, voix: `(leçon animée ${id}, raison : ${raison === "niveau" ? "entrée du niveau" : raison === "difficulte" ? "difficulté persistante" : `erreur ${raison} répétée`})`, attendue: "", donnee: "regardée jusqu'au bout" }); add(D.lecon); return { vue: true }; };
-    const wrapRunner = (runner) => { const rec = runner.record.bind(runner); runner.record = async (r, cfg) => { const res = await rec(r, cfg); for (const e of res.events ?? []) suite(e.type === "montee" ? `MONTÉE (${e.de ? `niveau ${e.de} → ${e.a}` : e.niveau ? `niveau ${e.niveau} acquis` : `famille ${e.famille} acquise`})` : e.type === "lecon" ? `leçon ${e.id} relancée` : e.type === "difficulte" ? "difficulté persistante" : e.type === "plusBas" ? "niveau inférieur jusqu'à la fin (leçon déjà jouée)" : e.type); return res; }; return runner; };
+    const wrapRunner = (runner) => { const rec = runner.record.bind(runner); runner.record = async (r, cfg) => { const res = await rec(r, cfg); for (const e of res.events ?? []) suite(e.type === "montee" ? `MONTÉE (${e.de ? `niveau ${e.de} → ${e.a}` : e.niveau ? `niveau ${e.niveau} acquis` : `famille ${e.famille} (${nomFamille(e.famille)}) acquise`})` : e.type === "lecon" ? `leçon ${e.id} relancée` : e.type === "difficulte" ? "difficulté persistante" : e.type === "plusBas" ? "niveau inférieur jusqu'à la fin (leçon déjà jouée)" : e.type); return res; }; return runner; };
     const s = new Session({ store, content: seance, rewards, clock, choix, mastery: (m) => mast[m] ?? 0, onCranDown: async (de, a) => { suite(`le cran redescend : ${CRAN_NOM[de]} → ${CRAN_NOM[a]} (« ${T.cranDescente} »)`); add(3000); }, handlers: {
       accueil: async ({ session }) => { etape = "accueil"; add(D.accueil); await session.setCran(cran); add(D.selecteur); },
       echauffement: async (ctx) => { etape = "échauffement"; const w = await new Warmup({ store, content: module2, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load(); await runWarmup({ ...ctx, warmup: w, screen: warmScreen, rnd: R }); cur = null; },
@@ -201,7 +204,7 @@ async function uneSeance({ base, choix, cran, comp }) {
           } };
           const res = await runNotion({ ...ctx, step: { ...ctx.step, ...(ctx.step.module2 ?? {}) }, runner, screen: scr, rnd: R, lesson });
           cur = null;
-          for (const e of res?.events ?? []) { if (e.type === "acquise" && !e.parent && !runner.events.some((x) => x.famille === e.famille)) await ctx.session.levelUp(); suite(`fin de la notion : ${e.type} famille ${e.famille}`); }
+          for (const e of res?.events ?? []) { if (e.type === "acquise" && !e.parent && !runner.events.some((x) => x.famille === e.famille)) await ctx.session.levelUp(); suite(`fin de la notion : ${evenementFamille(e, runner.famille)}`); }
           ctx.session.nouveaux = runner.nouveaux; return;
         }
         // lot « Les voiliers » : un bateau par question ; la « réponse » est le passage (au double encadrement, 10 × celui des
@@ -349,7 +352,8 @@ function texteSequence(title, comp, res, m, cmp) {
   L.push(`- comportement : ${COMPORTEMENTS[comp].dit}`);
   L.push(`- notion du jour : ${m.n} questions ; **${m.distinct} réponses attendues différentes** ; même réponse que la précédente : **${Math.round(m.same * 100)} %** ; plus longue suite prévisible : **${m.suite}**`);
   L.push(`- leçons jouées : ${Object.entries(res.lessons).map(([k, v]) => `${k} × ${v}`).join(", ") || "aucune"}`);
-  L.push(`- étoiles de la séance : **${res.rec.etoiles}** (appliquée ${cmp.appliquee}, réelle ${cmp.reelle}, pressée ${cmp.pressee}) ; cran à la fin : ${CRAN_NOM[res.rec.cran] ?? res.rec.cran} ; réussite ${Math.round((res.rec.reussite ?? 0) * 100)} % sur ${res.rec.questions} réponses ; durée simulée ${Math.round(res.rec.dureeS / 6) / 10} min ; étapes : ${res.rec.etapes.map((e) => `${e.id}${e.sautee ? ` (sautée : ${e.sautee})` : ""}`).join(", ")}`);
+  L.push(`- étoiles de la séance : **${res.rec.etoiles}** (appliquée ${cmp.appliquee}, réelle ${cmp.reelle}, pressée ${cmp.pressee}) ; cran à la fin : ${CRAN_NOM[res.rec.cran] ?? res.rec.cran} ; réussite ${Math.round((res.rec.reussite ?? 0) * 100)} % sur ${res.rec.questions} réponses ; durée simulée ${Math.round(res.rec.dureeS / 6) / 10} min `);
+  L.push(`- étapes jouées : ${etapesTexte(res.rec.etapes)}`);
   L.push("", "| n° | étape | forme affichée | voix | attendue | donnée | ce qui suit |", "| --- | --- | --- | --- | --- | --- | --- |");
   for (const r of res.rows) L.push(`| ${r.n} | ${r.etape} | ${cell(r.forme)} | ${cell(r.voix)} | ${cell(r.attendue)} | ${cell(r.donnee)} | ${cell(r.suite.join(" ; "))} |`);
   if (res.extra.length) L.push("", `Récompense et fin : ${res.extra.join(" ; ")}`);

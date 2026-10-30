@@ -3,7 +3,8 @@
 // étapes, comme une tablette qui sert tous les soirs :
 //   1. l'installation (le service worker met l'application en cache) ;
 //   2. trois séances « jouer » complètes (après chacune, la séance est datée de la veille au soir : la suivante est celle du
-//      lendemain ; c'est la seule chose que le parcours change dans les données) ;
+//      lendemain ; avec la base des arrivages de la boutique, datée de la rentrée à l'étape 6, c'est tout ce que le parcours
+//      change dans les données) ;
 //   3. chaque exercice par « choisir » (la ligne, les additions, le calcul rapide, les voiliers, la multiplication, l'étal) :
 //      quelques questions, puis la maison ; l'exercice suivant est choisi depuis l'accueil en pause ;
 //   4. l'espace parent (appui long, le code, les onglets) : il termine la séance laissée en pause ;
@@ -201,6 +202,10 @@ await etape(5, "chaque leçon", async () => {
 
 await etape(6, "la boutique, le récif et l'album", async () => {
   await versAccueil(); await silence();
+  // la base des arrivages datée de la rentrée, comme une tablette qui sert depuis septembre : sur une base neuve, la boutique ne
+  // reçoit ses créatures que le lundi des semaines d'école (session/rewards.js, quotaAt) ; pendant les vacances, elle restait
+  // vide et l'achat échouait (lot « Correctifs des relectures », recette du 30 octobre 2026, vacances de la Toussaint)
+  await a.page.evaluate(async () => { const r = window.__app.rewards, [y, m, d] = r.cal.rentree.split("-").map(Number); r.base = { ...r.base, date: Math.min(r.base.date, new Date(y, m - 1, d).getTime()) }; await window.__app.store.put("recompenses", r.base); });
   await a.deuxTouchers(".galet.reefkey");
   check(await attendreVisible(".boutique-cle", 30000), "le récif s'ouvre, avec son bouton de la boutique");
   await attendre(3000); await a.toucher(".boutique-cle");

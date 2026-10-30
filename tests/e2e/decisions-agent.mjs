@@ -31,7 +31,7 @@ import { accueilReel, chromium, finReelle } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
-import { recifOuvert } from "./recif-commun.mjs";
+import { ilYaSemaines, recifOuvert } from "./recif-commun.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const OUT = resolve(opt("--out", "tests/e2e/out/decisions-agent")); mkdirSync(OUT, { recursive: true });
@@ -96,11 +96,11 @@ async function jusquaLaFin(page) {
 }
 const owned = (list) => ({ id: "cartes", cartes: Object.fromEntries(list.map((id) => [id, { n: 1, premiere: 1, brillante: false }])) });
 const lagon = cartes.cartes.filter((c) => c.zone === "lagon" && c.rarete !== "legendaire").map((c) => c.id);
-const prepFin = async (s, { lagon }) => { await s.put("recompenses", { id: "cartes", cartes: Object.fromEntries(lagon.slice(0, 3).map((id) => [id, { n: 1, premiere: 1, brillante: false }])) }); await s.put("recompenses", { id: "etoiles", total: 120, cumul: 220, dorees: 0, doreesDepensees: 0, arcEnCiel: 0, arcDepensees: 0, arcLibre: 0, coquillages: 0, coquillagesDores: 0 }); await s.put("recompenses", { id: "quota", date: Date.now() - 7 * 86400000, cartes: 3 }); };
+const prepFin = async (s, { lagon, base }) => { await s.put("recompenses", { id: "cartes", cartes: Object.fromEntries(lagon.slice(0, 3).map((id) => [id, { n: 1, premiere: 1, brillante: false }])) }); await s.put("recompenses", { id: "etoiles", total: 120, cumul: 220, dorees: 0, doreesDepensees: 0, arcEnCiel: 0, arcDepensees: 0, arcLibre: 0, coquillages: 0, coquillagesDores: 0 }); await s.put("recompenses", { id: "quota", date: base, cartes: 3 }); };
 const QFIN = `${Q}&sansLecon&sans=echauffement&questions=2&guides=0&module=1`;
 if (faire(2)) {
   for (const vue of VUES) {
-    const { context, page } = await fresh({ q: QFIN, vue, prep: prepFin, arg: { lagon }, fin: true, reel: false });
+    const { context, page } = await fresh({ q: QFIN, vue, prep: prepFin, arg: { lagon, base: ilYaSemaines(1) }, fin: true, reel: false });
     await tap(page, ".play"); const st = await jusquaLaFin(page);
     await page.waitForTimeout(700);
     await shot(page, vue, "2a-fin-boutique-et-maison");
@@ -117,7 +117,7 @@ if (faire(2)) {
   }
   // sans toucher : « à demain » au bout de 15 s (cartes.json, boutique.finAttenteS)
   check(cartes.boutique.finAttenteS === 15, "2. l'attente avant « à demain » est de 15 s (cartes.json, boutique.finAttenteS)");
-  const { context, page } = await fresh({ q: QFIN, prep: prepFin, arg: { lagon }, fin: true, reel: false });
+  const { context, page } = await fresh({ q: QFIN, prep: prepFin, arg: { lagon, base: ilYaSemaines(1) }, fin: true, reel: false });
   await tap(page, ".play"); await jusquaLaFin(page);
   const t0 = Date.now(); await page.waitForSelector(".moon", { timeout: 25000 }); const dt = (Date.now() - t0) / 1000;
   check(dt > 12 && dt < 18, `2. sans toucher, « à demain » vient au bout d'environ 15 s (${dt.toFixed(1)} s)`);
@@ -224,9 +224,9 @@ async function boutique(page) {
   await page.waitForTimeout(1800);
 }
 if (faire(7)) {
-  const prep = async (s, { lagon }) => { await s.put("recompenses", { id: "cartes", cartes: Object.fromEntries(lagon.slice(0, 3).map((id) => [id, { n: 1, premiere: 1, brillante: false }])) }); await s.put("recompenses", { id: "etoiles", total: 230, cumul: 330, dorees: 0, doreesDepensees: 0, arcEnCiel: 0, arcDepensees: 0, arcLibre: 0, coquillages: 0, coquillagesDores: 0 }); await s.put("recompenses", { id: "quota", date: Date.now() - 7 * 86400000, cartes: 3 }); };
+  const prep = async (s, { lagon, base }) => { await s.put("recompenses", { id: "cartes", cartes: Object.fromEntries(lagon.slice(0, 3).map((id) => [id, { n: 1, premiere: 1, brillante: false }])) }); await s.put("recompenses", { id: "etoiles", total: 230, cumul: 330, dorees: 0, doreesDepensees: 0, arcEnCiel: 0, arcDepensees: 0, arcLibre: 0, coquillages: 0, coquillagesDores: 0 }); await s.put("recompenses", { id: "quota", date: base, cartes: 3 }); };
   for (const vue of VUES) {
-    const { context, page } = await fresh({ vue, prep, arg: { lagon } });
+    const { context, page } = await fresh({ vue, prep, arg: { lagon, base: ilYaSemaines(1) } });
     await boutique(page);
     await shot(page, vue, "7a-vitrine-sans-prix-pour-briller");
     const v = await page.evaluate(() => Object.fromEntries(window.__app.boutique.vit)), terne = Object.keys(v).find((k) => v[k] === "terne"), vendre = Object.keys(v).find((k) => v[k] === "vendre");

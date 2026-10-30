@@ -1,6 +1,6 @@
 # La taille réelle des cibles, par profil et par écran
 
-Mesurée par tests/e2e/cibles.mjs le 2026-10-18 ; conseillé pour un doigt d'enfant : au moins 9 mm.
+Mesurée par tests/e2e/cibles.mjs le 2026-10-30 ; conseillé pour un doigt d'enfant : au moins 9 mm.
 
 | Écran | s5e | tablette-entree | smartphone | petit-smartphone |
 | --- | --- | --- | --- | --- |

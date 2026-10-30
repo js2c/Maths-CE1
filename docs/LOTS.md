@@ -52,6 +52,8 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (décision du parent du 17 octobre 2026) : le lot « Banc Android et recette en conditions réelles »** (fiche 13), après le lot « Correctifs de l'installation et de la veille » (PR #61). Les défauts du 16 octobre sont passés à travers toutes les recettes, parce que le banc d'essai neutralisait les conditions réelles : sans service worker, sans voix ni son, avec le Chromium d'un ordinateur. Ce lot construit un banc qui reproduit un vrai Android et en fait le banc par défaut de tous les lots. **État : fait** (PR #63, le 19 octobre 2026 ; aucune phrase nouvelle ; décisions du parent du 19 octobre : les téléphones restent tels quels, option A, la mise en page « téléphone » notée comme évolution possible ; le sélecteur de difficulté ne part plus seul quand l'enfant a choisi l'exercice).
 
+**Puis (demande du parent du 29 octobre 2026) : le lot « Correctifs des relectures »**, sans fiche : les points des relectures qui avaient une valeur par défaut (`docs/IDEES.md`, section 3 : R8, R9, l'outil des séquences) et la mesure du temps de démarrage sur le banc, avec une proposition non appliquée ; R7 et la bulle sur les écrans pleins restent à décider. **État : fait** (PR #64 ; aucune phrase nouvelle).
+
 **Pourquoi cet ordre.**
 
 - Les correctifs de la confrontation avant les leçons et les sommes : ces lots s'appuient sur les règles du module 2 telles qu'elles seront écrites.

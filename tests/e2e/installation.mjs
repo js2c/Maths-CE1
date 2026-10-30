@@ -164,7 +164,9 @@ if (!ancien && faire(7)) {
   while (Date.now() < fin) { j = await q.journalTechnique().catch(() => []); if (j.some((e) => e.message === "stockage plein")) break; await q.page.waitForTimeout(2000); }
   const plein = j.find((e) => e.message === "stockage plein");
   check(!!plein, `quota de 60 Mo : l'installation qui ne tient pas est notée « stockage plein » dans le journal technique${plein ? ` (${plein.erreur ?? ""})` : ""}`);
-  const est = await q.page.evaluate(async () => { const e = await navigator.storage.estimate(); return { usage: Math.round(e.usage / 1e6), quota: Math.round(e.quota / 1e6) }; });
+  // (lot « Correctifs des relectures », mesuré : le cache inachevé est effacé aussitôt, mais Chrome ne rend sa place qu'une
+  // vingtaine de secondes plus tard (26 s) ; mesurée juste après « stockage plein », elle paraissait encore prise : 60 Mo)
+  let est = null; for (const t0 = Date.now(); Date.now() - t0 < 90000; await q.page.waitForTimeout(2000)) { est = await q.page.evaluate(async () => { const e = await navigator.storage.estimate(); return { usage: Math.round(e.usage / 1e6), quota: Math.round(e.quota / 1e6) }; }); if (est.usage < 30) break; }
   check(est.usage < 30, `la place prise par l'installation inachevée est rendue (${est.usage} Mo utilisés sur ${est.quota})`);
   // l'application reste utilisable : une séance commence, ses réponses s'enregistrent
   await q.deuxTouchers(".galet.play");

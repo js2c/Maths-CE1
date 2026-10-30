@@ -136,7 +136,10 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const sc = await said(page); check(!/fois, ce n'est pas plus/.test(sc) && /regardons ensemble/.test(sc) && /ça fait/.test(sc), `${T} · niveau 1 : la correction dit « regardons ensemble », les rangées et le calcul (${sc.slice(0, 160)})`);
     await note(page, `une erreur M1 sur ${x.a} × ${x.b} (réponse ${wrong}) : la correction`);
     const err = await page.evaluate(async () => (await window.__app.store.all("reponses")).filter((r) => r.module === 5 && !r.juste).map((r) => r.erreur).at(-1));
-    check(err === "M1", `${T} · l'erreur est rangée avec son code (${err})`);
+    // (lot « Correctifs des relectures » : pour 2 × 2, a + b est la bonne réponse ; le parcours tape alors 5, qui n'est pas une
+    // addition, et 2 × 2 n'a jamais de M1 (modules/mult/mult.js, classifyMult) : « autre ». Avant, ce tirage faisait échouer)
+    const attendue = x.a + x.b === x.attendu ? "autre" : "M1";
+    check(err === attendue, `${T} · l'erreur est rangée avec son code (${err}, attendu ${attendue}${attendue === "autre" ? ` : ${x.a} × ${x.b}` : ""})`);
     check(!errors.length, `${T} · 2 : aucune erreur (${errors.slice(0, 3).join(" | ")})`); await context.close();
   }
 
@@ -199,8 +202,11 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
   {
     const { page, context, errors } = await open("&choix=5:7&cran=facile&sans=echauffement&guides=0&sansLecon&questions=4");
     await tap(page, ".play");
-    await page.waitForFunction(() => window.__app.facts?.q?.aideDEmblee, null, { timeout: 120000 }); await page.waitForTimeout(2600);
-    const r = await board(page); check(rowsOk(r), `${T} · plus facile : les rangées comptées d'emblée (${r})`);
+    await page.waitForFunction(() => window.__app.facts?.q?.aideDEmblee, null, { timeout: 120000 });
+    // (lot « Correctifs des relectures », mesuré : les rangées sont sur l'ardoise de 0,4 s à 2,8 à 3,7 s après la question, puis
+    // passent dans la bande (paintBand) ; regardées à 2,6 s fixes, un léger retard du banc chargé tombait après : « null »)
+    let r = null; for (const fin = Date.now() + 10000; Date.now() < fin && !rowsOk(r); await page.waitForTimeout(100)) r = await board(page);
+    check(rowsOk(r), `${T} · plus facile : les rangées comptées d'emblée (${r})`);
     await shot(page, "15-facile-demblee");
     check(!errors.length, `${T} · 5b : aucune erreur (${errors.slice(0, 3).join(" | ")})`); await context.close();
   }

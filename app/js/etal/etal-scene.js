@@ -898,7 +898,10 @@ const API = {
   // se refermait, il attendait pour toujours un portefeuille fermé qu'il ne rouvrait pas ; il le rouvre dès qu'il est fermé)
   async ouvrir() { while (pfEtat === 'anim' || pfEtat === 'ferme') { if (pfEtat === 'ferme') ouvrirPf(); await attendre(40); } },
   sortir() { if (pfEtat === 'ouvert') sortirTout(); },
-  async fermer() { if (pfEtat === 'sorti') rangerEtFermer(); else if (pfEtat === 'ouvert') fermerPf(); await attendre(900); },
+  // (lot « Correctifs des relectures », recette : l'argent qui rentre puis le cuir qui se referme durent 1,3 s, davantage sur
+  // une tablette lente ; l'attente fixe de 0,9 s rendait la main avant, et la question suivante attendait sa réponse pendant
+  // que le portefeuille bougeait encore : un toucher dessus ne faisait rien. On attend qu'il soit fermé, 3 s au plus)
+  async fermer() { if (pfEtat === 'sorti') rangerEtFermer(); else if (pfEtat === 'ouvert') fermerPf(); await attendre(900); const t0 = performance.now(); while ((pfEtat === 'sorti' || pfEtat === 'anim') && performance.now() - t0 < 3000) await attendre(40); },
   // ---- la soucoupe
   soucoupe: () => enSoucoupe().sort((a, b) => a.ordre - b.ordre).map(i => i.v),
   // les objets de la soucoupe, du plus gros au plus petit (l'ordre du compte du pêcheur)
@@ -962,6 +965,13 @@ const API = {
   // ---- pour les parcours de test
   // les boîtes de l'argent sorti et posé (px de la scène) : ce que l'enfant touche (la bulle ne les couvre jamais)
   boites: () => items.filter(i => (i.lieu === 'sortie' || i.lieu === 'soucoupe') && i.op > 0).map(i => { const w = LARG[i.v] * i.sc, h = hauteur(i) * i.sc; return [i.x - w / 2 - 6, i.y - h / 2 - 6, i.x + w / 2 + 6, i.y + h / 2 + 6]; }),
+  // (lot « Correctifs des relectures », R8) les boîtes que l'argent du portefeuille occupera une fois sorti (px de la scène), avant
+  // qu'il sorte : une leçon les déclare à la bulle au début de la phrase qui le sort (la bulle, posée quand la voix commence,
+  // couvrait les pièces arrivées après elle) ; « valeurs » : le portefeuille que la phrase va remplir (sinon celui d'à présent)
+  boitesSortie: (valeurs = null) => {
+    const A = valeurs ? valeurs.map(v => ({ v, b: v >= 500 })) : items.filter(i => i.lieu === 'poche' || i.lieu === 'sortie');
+    return [true, false].flatMap(b => { const L = A.filter(i => i.b === b).sort((x, y) => y.v - x.v); return L.map((it, k) => { const [x, y, , sc] = posSortie(it, k, L.length), w = LARG[it.v] * sc, h = hauteur(it) * sc; return [x - w / 2 - 6, y - h / 2 - 6, x + w / 2 + 6, y + h / 2 + 6]; }); });
+  },
   // les produits allumés, leur ardoise comprise (pour la bulle : elle ne les couvre jamais)
   allumes: () => souleves.filter(s => s.el.style.visibility !== 'hidden').map(s => { const r = cadre(peche[s.i]); return [r.x0 + 14, r.y0 + 14, r.x0 + r.w - 14, r.y0 + r.h - 14]; }),
   // pour les parcours de test : la boîte à l'écran de chaque objet

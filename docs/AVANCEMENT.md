@@ -38,3 +38,12 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 ## Reprise
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
+
+### Reprise du lot « Correctifs des relectures »
+
+- Branche `claude/loving-ritchie-oqan39`, demande de fusion #64 (brouillon). D'un seul tenant, sans phrase nouvelle ni modifiée.
+- Contenu (les points des relectures qui ont une valeur par défaut, `docs/IDEES.md`, section 3) : R8 (l'argent qui arrive déclaré à la bulle dans les leçons de la monnaie) ; R9 (les encoches claires du triangle « jouer » / « continuer ») ; l'outil des séquences (en-tête, famille acquise annoncée, « trou ») ; la mesure du temps de démarrage sur le banc (proposition, non appliquée). Non traités, listés dans la demande de fusion : R7 (l'argent sur les ardoises), la bulle sur les écrans pleins.
+- Fait : R8 (`lessons/etal.js`, `boitesSortie` ajouté par `art/tools/export-etal.mjs`) ; R9 (`sea/decor.ts`, `drawPlayIcon` : pointes arrondies) ; l'outil des séquences (`b-texte.mjs`, test `b-sequences-texte`) ; le parcours de mesure `tests/e2e/demarrage-temps.mjs`.
+- Fait aussi : la mesure du démarrage et la proposition (`tests/recette-fonctionnelle/out-correctifs-relectures/DEMARRAGE.md`) ; le parcours du lot `correctifs-relectures.mjs` (85 contrôles, quatre tailles) ; la relecture indépendante et son traitement (`RELECTURE.md` : R14, la bulle de l'étal dans le ciel en dernier recours, corrigé) ; la documentation.
+- Recette faite sur le code final (`tests/e2e/out/recette-lot/BILAN.txt`). Elle a trouvé, hors du contenu du lot et aussi sur `main` : la boutique vide pendant les vacances dans quatre parcours (ils comptent désormais en semaines d'école), le portefeuille de l'étal qui se refermait encore quand la question commençait (corrigé dans `art/tools/export-etal.mjs`), et des attentes du banc trop justes (étal, multiplication, installation), chacune mesurée et corrigée. Restent à expliquer ou à décider : `etat-quitte` « effets » et `notion2` (`docs/IDEES.md`, section 7).
+- Reste : la demande de fusion complétée et sortie du brouillon ; à la fusion, la rubrique va dans l'archive.

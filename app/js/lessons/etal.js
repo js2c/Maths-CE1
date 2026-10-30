@@ -71,9 +71,16 @@ export class LessonEtalPlayer {
     ocean.mascotte.hold("montrer");
     for (const beat of this.lesson.phrases[p]) {
       if (this.quitte) return new Promise(() => {}); // (la leçon quittée : la phrase en cours ne continue pas)
-      const said = beat.dire ? voice.say(beat.dire, { instruction: true }) : Promise.resolve();
-      const done = (async () => { for (const a of beat.faire ?? []) await this.g(this.act(a)); })();
-      await this.g(Promise.all([said, done]));
+      // (lot « Correctifs des relectures », R8 ; relecture du lot « Correctifs de l'installation et de la veille ») l'argent que la
+      // phrase sort du portefeuille est déclaré à la bulle avant que la voix commence : la bulle se pose au début de la phrase,
+      // l'argent arrive après, et elle couvrait le haut des pièces dont parle la voix (L18, « Voici des pièces de centimes »)
+      const sort = (beat.faire ?? []).some((a) => "sortir" in a), vals = (beat.faire ?? []).find((a) => "remplir" in a)?.remplir ?? null;
+      if (sort) this.app.bulle?.eviter("argent-lecon", () => this.s?.api?.boitesSortie?.(vals) ?? null);
+      try {
+        const said = beat.dire ? voice.say(beat.dire, { instruction: true }) : Promise.resolve();
+        const done = (async () => { for (const a of beat.faire ?? []) await this.g(this.act(a)); })();
+        await this.g(Promise.all([said, done]));
+      } finally { if (sort) this.app.bulle?.eviter("argent-lecon", null); }
     }
     ocean.mascotte.release();
   }

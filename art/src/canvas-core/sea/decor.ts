@@ -109,7 +109,17 @@ export const drawSpeaker = (g: Gfx, cx: number, cy: number) => {
 };
 // le bouton « commencer » : la bulle, un triangle de lecture corail
 // (lot « Correctifs : passage… », point 10 : le pictogramme seul, repris agrandi sur le galet de l'accueil, sea/galets.ts)
-export const drawPlayIcon = (g: Gfx, cx: number, cy: number) => g.group("plain", () => { const t = smooth([[cx - 14, cy - 24], [cx - 14, cy - 24], [cx + 26, cy], [cx + 26, cy], [cx - 14, cy + 24], [cx - 14, cy + 24]], true, 3); cel(g, t, "#ff7a5c", "#c64d3c", 4); contour(g, t, 4, 350); });
+// (lot « Correctifs des relectures », R9 de la relecture du lot « Décisions sur les constats de l'agent » : les trois pointes étaient
+// des angles vifs, où le trait d'encre se retournait ; agrandi sur le galet « jouer » / « continuer », chaque pointe montrait une
+// petite encoche claire. Chaque pointe est désormais arrondie (`PLAY_ARRONDI`, plus que la demi-épaisseur du trait qui s'épaissit du
+// côté de l'ombre : en dessous, le bord intérieur du trait se recroisait encore), comme le triangle d'« Encore ! » (ui.ts, `tri`).)
+export const PLAY_ARRONDI = 11;
+export const playTriangle = (cx: number, cy: number): P[] => {
+  const c: P[] = [[cx - 14, cy - 24], [cx + 26, cy], [cx - 14, cy + 24]], r = PLAY_ARRONDI, out: P[] = [];
+  c.forEach((p, i) => { const vers = (q: P): P => { const d = Math.hypot(q[0] - p[0], q[1] - p[1]); return [p[0] + ((q[0] - p[0]) * r) / d, p[1] + ((q[1] - p[1]) * r) / d]; }; out.push(vers(c[(i + 2) % 3]), [p[0], p[1]], vers(c[(i + 1) % 3])); });
+  return smooth(out, true, 4);
+};
+export const drawPlayIcon = (g: Gfx, cx: number, cy: number) => g.group("plain", () => { const t = playTriangle(cx, cy); cel(g, t, "#ff7a5c", "#c64d3c", 4); contour(g, t, 4, 350); });
 export const drawPlay = (g: Gfx, cx: number, cy: number) => {
   drawAnswerBubble(g, cx, cy, 8, 60);
   drawPlayIcon(g, cx, cy);

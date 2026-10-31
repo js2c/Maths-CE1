@@ -24,7 +24,7 @@
 //    essayé en même temps, et sans l'un ni l'autre une page de secours, écrite ici, dit « Toucher pour réessayer » ;
 //  - ce qui arrive au service worker (version, installation, activation, erreurs) est noté dans le journal technique de
 //    l'espace parent (point 5 ; la même base que engine/journal.js).
-const VERSION = "182e20cd48f8";
+const VERSION = "eff50f65b860";
 const CACHE = `ocean-${VERSION}`;
 const PAQUET = 32, ESSAIS = 4;
 // la résolution des planches d'images de cet écran (main.js : sw.js?r=1 ou ?r=2) : on ne met en cache que

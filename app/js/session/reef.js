@@ -37,8 +37,8 @@ export function recifCreatures(collection) {
 // tablette. Désormais le seuil est le budget de CLAUDE.md (30 images/s au minimum : 33 ms), et chaque cran retire d'abord ce qui
 // coûte sans rien ôter à la netteté ; la densité ne baisse qu'ensuite, d'abord à 1,5, et la densité 1 est le dernier recours :
 //  0. complet : la densité de l'écran (au plus 2), l'ondulation des créatures recalculée à chaque image ;
-//  1. l'ondulation des créatures recalculée 15 fois par seconde (chaque créature déformée est gardée dans une image entre-temps),
-//     avec deux fois moins de bandes de déformation ;
+//  1. l'ondulation des créatures recalculée au plus 15 fois par seconde et au plus une image sur deux (chaque créature déformée
+//     est gardée dans une image entre-temps, et dessinée d'un seul appel), avec deux fois moins de bandes de déformation ;
 //  2. en plus, la densité 1,5 (si l'écran est plus dense) ;
 //  3. en plus, la densité 1 (si l'écran est plus dense).
 export const SEUIL_MS = 33;
@@ -136,23 +136,25 @@ export class Reef {
     const ecoute = []; this.ecoute = ecoute;
     const gaps = []; let last = 0, t0 = 0;
     const palier = () => this.paliers[this.niveau];
+    // (la qualité demandée par le module à chaque créature : le cran, et le numéro de l'image, pour la cadence de l'ondulation)
+    const qualite = { ...palier(), image: 0 };
     this.api = startRecif({
       cv, glc, donnees: this.donnees, owned, brillantes,
       size: () => ({ w: stage.root.clientWidth, h: stage.root.clientHeight }), rect: () => cv.getBoundingClientRect(),
       dpr: () => palier().densite,
-      qualite: () => palier(), reduite: (src, w, h, k) => this.reductions.pour(src, w, h, k, nImage),
+      qualite: () => qualite, reduite: (src, w, h, k) => this.reductions.pour(src, w, h, k, nImage),
       canvas: () => { const c = document.createElement("canvas"); travail.push(c); return c; },
       on: (cible, type, f, o) => { cible.addEventListener(type, f, o); ecoute.push([cible, type, f, o]); },
       onFiche: (id) => this.fiche(id), scintille, arrivee: (id, t, x) => arriveeNage(this.arr, id, t, x),
       // l'allègement (`alleger`) : un cran de plus, noté dans le journal technique (le niveau, la densité du dessin, l'intervalle
       // moyen mesuré, la zone de la mer)
       mesure: (t) => {
-        nImage++;
+        nImage++; qualite.image = nImage;
         t0 ||= t; if (last && garderIntervalle(t - last)) gaps.push(t - last); last = t; if (gaps.length > 60) gaps.shift();
         if (tenu == null && this.niveau < this.paliers.length - 1 && alleger(gaps, t - t0)) {
           const ms = moyenneIntervalles(gaps), avant = palier().densite;
           this.niveau++; gaps.length = 0; t0 = t - (3000 - APRES_CRAN_MS);
-          const p = palier();
+          const p = palier(); Object.assign(qualite, p);
           if (p.densite !== avant) this.api?.resize();
           noter("récif", `récif allégé : ${p.nom}`, { niveauRecif: this.niveau, niveauxRecif: this.paliers.length - 1, densiteDessin: p.densite, intervalleMs: Math.round(ms * 10) / 10, zoneRecif: this.api?.zone || null });
         }

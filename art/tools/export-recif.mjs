@@ -62,19 +62,22 @@ const FICHE = [/function ouvreFiche\(c\)\{[\s\S]*?\n\}\n/, "function ouvreFiche(
 //  - depuis l'image déjà réduite à la taille d'affichage (OPTS.reduite, recif/reduction.js) au lieu de l'image d'environ 600 px
 //    réduite 4 à 8 fois à chaque image : net (pas de crénelage) et moins coûteux ; la grande image en attendant qu'elle soit
 //    prête, et pendant l'arrivée d'une créature achetée, quand elle grossit (c.agrandi) ;
-//  - selon l'allègement (OPTS.qualite() : { cadence, bandes }) : avec `cadence`, la créature déformée est gardée dans une image,
-//    refaite `cadence` fois par seconde (chaque créature à son tour), et dessinée d'un seul coup aux autres images ; `bandes` :
-//    la part des bandes de déformation gardées.
+//  - selon l'allègement (OPTS.qualite() : { cadence, bandes, image }) : avec `cadence`, la créature déformée est gardée dans
+//    une image, refaite au plus `cadence` fois par seconde et au plus une image sur deux (la moitié des créatures à chaque image,
+//    selon leur rang : `image` est le numéro de l'image), et dessinée d'un seul appel entre-temps ; ainsi le cran allège aussi un
+//    appareil très lent (une cadence en temps seulement y referait chaque créature à chaque image) ; `bandes` : la part des
+//    bandes de déformation gardées.
 const LAGBLIT = [/function lagBlit\(c, src, t, X0, Y0, rec\)\{[\s\S]*?\n\}\n/, `function lagBlit(c, src, t, X0, Y0, rec){
   const Q = OPTS.qualite(), RD = (c.agrandi || 1) > 1.05 ? null : OPTS.reduite(src, c.w, c.h, sc*c.k), im = RD ? RD.img : src, r = RD ? RD.r : 1;
   const NC = Math.max(4, Math.round((c.nc || LAG_NC)*Q.bandes)), NR = Math.max(4, Math.round((c.nr || LAG_NR)*Q.bandes));
   if (Q.cadence && (c.col || c.row) && src === lagImg[c.id]){
-    const ph = (c.ph*0.618) % 1, tq = (Math.floor(t*Q.cadence + ph) - ph)/Q.cadence;
+    c.cadRang ??= lagOrder.indexOf(c) % 2;
     const W2 = Math.ceil((c.w + 2*c.pad)*r), H2 = Math.ceil((c.h + 2*c.pad)*r);
     if (!c.cad || c.cad.width !== W2 || c.cad.height !== H2){ c.cad = c.cad || OPTS.canvas(); c.cad.width = W2; c.cad.height = H2; c.cadg = c.cad.getContext('2d'); c.cadT = null; }
-    if (c.cadT !== tq || c.cadIm !== im || c.cadN !== NC*100 + NR){
+    const due = c.cadT == null || (Q.image - c.cadF >= 2 && (Q.image + c.cadRang) % 2 === 0 && t - c.cadT >= 1/Q.cadence);
+    if (due || c.cadIm !== im || c.cadN !== NC*100 + NR){
       const g = c.cadg; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W2, H2); g.setTransform(r, 0, 0, r, c.pad*r, c.pad*r);
-      lagDeforme(g, c, im, r, tq, 0, 0, rec, NC, NR); c.cadT = tq; c.cadIm = im; c.cadN = NC*100 + NR;
+      lagDeforme(g, c, im, r, t, 0, 0, rec, NC, NR); c.cadT = t; c.cadF = Q.image; c.cadIm = im; c.cadN = NC*100 + NR;
     }
     ctx.drawImage(c.cad, X0 - c.pad, Y0 - c.pad, W2/r, H2/r);
     return;

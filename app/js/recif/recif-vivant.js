@@ -1431,12 +1431,13 @@ function lagBlit(c, src, t, X0, Y0, rec){
   const Q = OPTS.qualite(), RD = (c.agrandi || 1) > 1.05 ? null : OPTS.reduite(src, c.w, c.h, sc*c.k), im = RD ? RD.img : src, r = RD ? RD.r : 1;
   const NC = Math.max(4, Math.round((c.nc || LAG_NC)*Q.bandes)), NR = Math.max(4, Math.round((c.nr || LAG_NR)*Q.bandes));
   if (Q.cadence && (c.col || c.row) && src === lagImg[c.id]){
-    const ph = (c.ph*0.618) % 1, tq = (Math.floor(t*Q.cadence + ph) - ph)/Q.cadence;
+    c.cadRang ??= lagOrder.indexOf(c) % 2;
     const W2 = Math.ceil((c.w + 2*c.pad)*r), H2 = Math.ceil((c.h + 2*c.pad)*r);
     if (!c.cad || c.cad.width !== W2 || c.cad.height !== H2){ c.cad = c.cad || OPTS.canvas(); c.cad.width = W2; c.cad.height = H2; c.cadg = c.cad.getContext('2d'); c.cadT = null; }
-    if (c.cadT !== tq || c.cadIm !== im || c.cadN !== NC*100 + NR){
+    const due = c.cadT == null || (Q.image - c.cadF >= 2 && (Q.image + c.cadRang) % 2 === 0 && t - c.cadT >= 1/Q.cadence);
+    if (due || c.cadIm !== im || c.cadN !== NC*100 + NR){
       const g = c.cadg; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W2, H2); g.setTransform(r, 0, 0, r, c.pad*r, c.pad*r);
-      lagDeforme(g, c, im, r, tq, 0, 0, rec, NC, NR); c.cadT = tq; c.cadIm = im; c.cadN = NC*100 + NR;
+      lagDeforme(g, c, im, r, t, 0, 0, rec, NC, NR); c.cadT = t; c.cadF = Q.image; c.cadIm = im; c.cadN = NC*100 + NR;
     }
     ctx.drawImage(c.cad, X0 - c.pad, Y0 - c.pad, W2/r, H2/r);
     return;

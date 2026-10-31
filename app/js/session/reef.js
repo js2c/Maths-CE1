@@ -45,8 +45,8 @@ export const SEUIL_MS = 33;
 export function niveauxRecif(dpr) {
   const d0 = Math.min(2, dpr || 1), leger = { cadence: 15, bandes: 0.5 };
   const l = [{ nom: "complet", densite: d0, cadence: 0, bandes: 1 }, { nom: "ondulation des créatures ralentie", densite: d0, ...leger }];
-  if (d0 > 1.5) l.push({ nom: "densité 1,5", densite: 1.5, ...leger });
-  if (d0 > 1) l.push({ nom: "densité 1", densite: 1, ...leger });
+  if (d0 > 1.5) l.push({ nom: "définition un peu réduite", densite: 1.5, ...leger });
+  if (d0 > 1) l.push({ nom: "définition réduite de moitié", densite: 1, ...leger });
   return l;
 }
 // un cran de plus : passé les 3 premières secondes (ou les 2 secondes qui suivent un cran), si l'intervalle moyen des dernières
@@ -156,7 +156,7 @@ export class Reef {
           this.niveau++; gaps.length = 0; t0 = t - (3000 - APRES_CRAN_MS);
           const p = palier(); Object.assign(qualite, p);
           if (p.densite !== avant) this.api?.resize();
-          noter("récif", `récif allégé : ${p.nom}`, { niveauRecif: this.niveau, niveauxRecif: this.paliers.length - 1, densiteDessin: p.densite, intervalleMs: Math.round(ms * 10) / 10, zoneRecif: this.api?.zone || null });
+          noter("récif", `allégé : ${p.nom}`, { niveauRecif: this.niveau, niveauxRecif: this.paliers.length - 1, densiteDessin: p.densite, intervalleMs: Math.round(ms * 10) / 10, zoneRecif: this.api?.zone || null });
         }
       },
     });

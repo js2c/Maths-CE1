@@ -83,12 +83,12 @@ test("l'allègement par crans : la définition baisse en dernier, d'abord à 1,5
   assert.ok(s5e[1].cadence > 0 && s5e[1].cadence < 30 && s5e[1].bandes < 1, "le premier cran : l'ondulation à cadence réduite, moins de bandes");
   assert.deepEqual(niveauxRecif(1.5).map((p) => p.densite), [1.5, 1.5, 1], "écran de densité 1,5 : pas de cran à 1,5");
   assert.deepEqual(niveauxRecif(1).map((p) => p.densite), [1, 1], "écran de densité 1 : seul l'allègement des créatures");
-  assert.match(reefJs, /noter\("récif", `récif allégé : \$\{p\.nom\}`, \{ niveauRecif: this\.niveau, niveauxRecif: this\.paliers\.length - 1, densiteDessin: p\.densite, intervalleMs:/, "chaque cran est noté au journal technique");
+  assert.match(reefJs, /noter\("récif", `allégé : \$\{p\.nom\}`, \{ niveauRecif: this\.niveau, niveauxRecif: this\.paliers\.length - 1, densiteDessin: p\.densite, intervalleMs:/, "chaque cran est noté au journal technique");
 });
 
 test("le journal technique : un allègement du récif, en clair pour le parent (densité, intervalle mesuré)", () => {
-  const l = ligneJournal({ t: new Date(2026, 9, 31, 19, 42, 5).getTime(), type: "récif", message: "récif allégé : densité 1,5", niveauRecif: 2, niveauxRecif: 3, densiteDessin: 1.5, intervalleMs: 41.2, zoneRecif: "Le lagon" });
-  assert.equal(l, "31/10 19:42:05 · récif · récif allégé : densité 1,5 (niveau 2 sur 3, dessin en densité 1,5, 41,2 ms par image en moyenne, le lagon)");
+  const l = ligneJournal({ t: new Date(2026, 9, 31, 19, 42, 5).getTime(), type: "récif", message: "allégé : définition un peu réduite", niveauRecif: 2, niveauxRecif: 3, densiteDessin: 1.5, intervalleMs: 41.2, zoneRecif: "Le lagon" });
+  assert.equal(l, "31/10 19:42:05 · récif · allégé : définition un peu réduite (niveau 2 sur 3, dessin en densité 1,5, 41,2 ms par image en moyenne, le lagon)");
 });
 
 test("les créatures réduites une fois, à leur taille d'affichage (au double), par moitiés exactes", () => {

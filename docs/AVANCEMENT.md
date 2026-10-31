@@ -38,3 +38,9 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 ## Reprise
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
+
+### Reprise du lot « Netteté du récif » (31 octobre 2026)
+
+- Branche `claude/upbeat-shannon-brp4dg`, demande de fusion #68 (brouillon). Fiche : `docs/LOTS.md`, fiche 14.
+- Fait : `app/js/recif/reduction.js` (créatures réduites une fois, par moitiés, au double de leur taille d'affichage) ; `lagBlit` remplacé par l'outil d'export (`LAGBLIT`, `art/tools/export-recif.mjs`) ; `reef.js` : seuil 33 ms, quatre crans (complet ; ondulation à 15 images/s et moitié des bandes ; densité 1,5 ; densité 1), chaque cran noté au journal technique ; `parent/data.js` (`ligneJournal`) ; tests unitaires ; parcours `tests/e2e/recif-nettete.mjs`.
+- Reste : mesures avant/après sur `s5e` et `petit-smartphone`, captures dans `docs/maquettes/recif-nettete/`, documentation (SPEC, ARCHITECTURE, GUIDE-PARENT, JOURNAL-CONCEPTION, CLAUDE.md), recette commune, relecture indépendante, demande de fusion complète.

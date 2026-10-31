@@ -38,6 +38,14 @@ await demarrageTouche(context);
 await context.addInitScript(() => {
   const raf = window.requestAnimationFrame.bind(window); window.__travail = 0;
   window.requestAnimationFrame = (cb) => raf((t) => { const a = performance.now(); try { cb(t); } finally { window.__travail += performance.now() - a; } });
+  // les appels de dessin d'images (drawImage) et les pixels relus dans leurs sources : ce que la carte graphique de la tablette
+  // reçoit, indépendamment du rendu logiciel du banc
+  const di = CanvasRenderingContext2D.prototype.drawImage; window.__dessins = { n: 0, px: 0 };
+  CanvasRenderingContext2D.prototype.drawImage = function (im, ...a) {
+    const d = window.__dessins; d.n++;
+    d.px += a.length >= 8 ? Math.abs(a[2] * a[3]) : (im.naturalWidth ?? im.width) * (im.naturalHeight ?? im.height);
+    return di.call(this, im, ...a);
+  };
 });
 const page = await context.newPage(), errors = [];
 page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
@@ -68,7 +76,7 @@ const dessin = () => page.evaluate(() => {
 });
 // les intervalles entre deux images, et le travail du fil principal par image (tous les rappels d'image réunis : la mesure
 // du dessin du récif lui-même ; le reste de l'intervalle est l'attente de l'affichage)
-const intervalles = async (ms, travail = null) => { const r = await page.evaluate((ms) => new Promise((ok) => { const g = [], w = []; let last = 0, w0 = window.__travail; const t0 = performance.now(); const f = (t) => { if (last) { g.push(t - last); w.push(window.__travail - w0); } w0 = window.__travail; last = t; if (t - t0 < ms) requestAnimationFrame(f); else ok({ g, w }); }; requestAnimationFrame(f); }), ms); travail?.push(...r.w); return r.g; };
+const intervalles = async (ms, travail = null, dessins = null) => { const r = await page.evaluate((ms) => new Promise((ok) => { const g = [], w = [], d = []; let last = 0, w0 = window.__travail, n0 = window.__dessins.n, p0 = window.__dessins.px; const t0 = performance.now(); const f = (t) => { const D = window.__dessins; if (last) { g.push(t - last); w.push(window.__travail - w0); d.push([D.n - n0, D.px - p0]); } w0 = window.__travail; n0 = D.n; p0 = D.px; last = t; if (t - t0 < ms) requestAnimationFrame(f); else ok({ g, w, d }); }; requestAnimationFrame(f); }), ms); travail?.push(...r.w); dessins?.push(...r.d); return r.g; };
 const allerA = (x) => page.evaluate((x) => { const a = window.__app.reef.api; a.camX = x - a.vue.viewW / 2; }, x);
 const resultat = { date: new Date().toISOString(), profil: `${PROFIL} : ${P.nom}, ${P.largeur} × ${P.hauteur} px CSS, densité ${P.densite}, processeur ralenti × ${RALENTI}`, version: nouveau ? "avec les niveaux d'allègement" : "sans niveaux (densité 2, puis 1)", niveaux: NIVEAUX, zones: {}, libre: null, erreurs: errors };
 
@@ -78,9 +86,9 @@ if (!args.includes("--sans-mesure")) {
   for (const n of tenus) {
     await entrer(n); const d = await dessin();
     const parZone = {};
-    for (const [z, x0, x1] of ZONES) { await allerA((x0 + x1) / 2); await page.waitForTimeout(1500); const w = []; parZone[z] = stats(await intervalles(SECONDES * 1000, w)); parZone[z].travail = stats(w).moyenne; }
+    for (const [z, x0, x1] of ZONES) { await allerA((x0 + x1) / 2); await page.waitForTimeout(1500); const w = [], dd = []; parZone[z] = stats(await intervalles(SECONDES * 1000, w, dd)); parZone[z].travail = stats(w).moyenne; parZone[z].appels = Math.round(stats(dd.map((x) => x[0])).moyenne); parZone[z].mpxRelus = +(stats(dd.map((x) => x[1])).moyenne / 1e6).toFixed(2); }
     resultat.zones[`${n} · ${NIVEAUX[n]?.nom ?? n}`] = { ...d, ...parZone };
-    console.log(`niveau ${n} (${NIVEAUX[n]?.nom}, densité ${d.densite}) : ${ZONES.map(([z]) => `${z} ${parZone[z].moyenne} ms (travail ${parZone[z].travail})`).join(", ")}`);
+    console.log(`niveau ${n} (${NIVEAUX[n]?.nom}, densité ${d.densite}) : ${ZONES.map(([z]) => `${z} ${parZone[z].moyenne} ms (travail ${parZone[z].travail}, ${parZone[z].appels} appels, ${parZone[z].mpxRelus} Mpx relus)`).join(", ")}`);
     await sortir();
   }
   // la visite libre : l'entrée par le lagon, puis chaque zone ; seconde par seconde, l'intervalle moyen et le niveau

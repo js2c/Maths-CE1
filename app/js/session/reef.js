@@ -116,7 +116,8 @@ export class Reef {
     const tenu = Number.isInteger(globalThis.__recifNiveau) ? Math.min(this.paliers.length - 1, Math.max(0, globalThis.__recifNiveau)) : null;
     this.niveau = tenu ?? 0;
     const travail = []; this.travail = travail;
-    this.reductions = new Reductions({ creer: () => { const c = document.createElement("canvas"); travail.push(c); return c; } });
+    // (les étapes intermédiaires d'une réduction sont rendues aussitôt par reduire ; les images finales, par vider en sortant)
+    this.reductions = new Reductions();
     let nImage = 0;
     this.donnees ??= await (await fetch("assets/recif/donnees.json")).json();
     const { owned, brillantes } = recifCreatures(rewards.collection());
@@ -191,8 +192,10 @@ export class Reef {
   leave() {
     const { app } = this;
     this.api?.stop(); this.api = null;
-    // (les images réduites et les canvas de travail des créatures : rendus aussitôt)
-    this.reductions?.vider(); for (const c of this.travail ?? []) c.width = c.height = 0; this.travail = [];
+    // (les images réduites et les canvas de travail des créatures : rendus aussitôt, et plus rien de la visite n'est gardé : un
+    // objet qui survivrait à la visite retiendrait, par ses fonctions, le canvas du récif, ses écouteurs et toutes ses images)
+    this.reductions?.vider(); this.reductions = null;
+    for (const c of this.travail ?? []) c.width = c.height = 0; this.travail = null;
     for (const [cible, type, f, o] of this.ecoute ?? []) cible.removeEventListener(type, f, o);
     this.ecoute = [];
     this.canvases?.forEach((c) => { c.width = c.height = 0; c.remove(); }); this.canvases = null;

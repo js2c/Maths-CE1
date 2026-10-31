@@ -62,6 +62,10 @@ await page.evaluate(async ({ ids, br }) => {
 await go();
 
 // le récif : entrer (le niveau d'allègement tenu, ou libre : null), sortir ; l'état de son dessin
+// la mémoire de la page (le code du journal technique, engine/etat-page.js), après un passage du ramasse-miettes
+const memoire = async () => { await cdp.send("HeapProfiler.collectGarbage").catch(() => {}); await page.waitForTimeout(300); return page.evaluate(() => window.__etatPage?.() ?? null); };
+await page.waitForTimeout(3000);
+const auDepart = await memoire();
 const nouveau = await page.evaluate(() => typeof window.__app.reef.niveaux === "function");
 const NIVEAUX = nouveau ? await page.evaluate(() => window.__app.reef.niveaux()) : [{ nom: "densité 2" }, { nom: "densité 1 (allégé)" }];
 const entrer = async (niveau) => {
@@ -136,6 +140,11 @@ if (!args.includes("--sans-captures")) {
   }
 }
 
+// (défaut trouvé pendant le lot : l'objet des réductions survivait à la visite et retenait, par ses fonctions, tout le récif)
+await page.waitForTimeout(3000);
+const aLaFin = await memoire();
+if (TEST && auDepart && aLaFin) check(aLaFin.imagesMpx - auDepart.imagesMpx <= 2 && aLaFin.canvasMpx - auDepart.canvasMpx <= 2, `en sortant, le récif est rendu : images ${auDepart.imagesMpx} → ${aLaFin.imagesMpx} Mpx, canvas ${auDepart.canvasMpx} → ${aLaFin.canvasMpx} Mpx`);
+resultat.memoire = { auDepart, aLaFin };
 if (TEST) check(errors.length === 0, `aucune erreur dans la page (${errors.slice(0, 3).join(" | ")})`);
 writeFileSync(join(OUT, "mesures.json"), JSON.stringify({ ...resultat, echecs: fail }, null, 1));
 await browser.close(); srv.close();

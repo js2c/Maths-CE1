@@ -1,0 +1,212 @@
+{
+ "date": "2026-10-31T18:29:42.627Z",
+ "profil": "s5e : Galaxy Tab S5e (référence), 1138 × 711 px CSS, densité 2.25, processeur ralenti × 4",
+ "version": "sans niveaux (densité 2, puis 1)",
+ "niveaux": [
+  {
+   "nom": "densité 2"
+  },
+  {
+   "nom": "densité 1 (allégé)"
+  }
+ ],
+ "zones": {
+  "0 · densité 2": {
+   "niveau": 0,
+   "densite": 2,
+   "canvas": "2276×1422",
+   "reduites": null,
+   "lagon": {
+    "n": 17,
+    "moyenne": 288.2,
+    "p50": 316.7,
+    "p95": 400,
+    "plusDe33ms": 16,
+    "travail": 26.5,
+    "appels": 1002,
+    "mpxRelus": 13.66
+   },
+   "corail": {
+    "n": 28,
+    "moyenne": 185.1,
+    "p50": 183.3,
+    "p95": 216.7,
+    "plusDe33ms": 27,
+    "travail": 36.2,
+    "appels": 1338,
+    "mpxRelus": 12.23
+   },
+   "large": {
+    "n": 21,
+    "moyenne": 240.5,
+    "p50": 233.4,
+    "p95": 300,
+    "plusDe33ms": 21,
+    "travail": 12.6,
+    "appels": 561,
+    "mpxRelus": 9.64
+   },
+   "abysses": {
+    "n": 18,
+    "moyenne": 263.9,
+    "p50": 266.7,
+    "p95": 333.2,
+    "plusDe33ms": 17,
+    "travail": 16.4,
+    "appels": 626,
+    "mpxRelus": 5.75
+   }
+  }
+ },
+ "libre": {
+  "seconde_par_seconde": [
+   {
+    "s": 1,
+    "moyenne": 300,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 2,
+    "moyenne": 190,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 3,
+    "moyenne": 311.1,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 4,
+    "moyenne": 327.8,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 5,
+    "moyenne": 327.8,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 6,
+    "moyenne": 327.8,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 7,
+    "moyenne": 166.7,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 8,
+    "moyenne": 216.7,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 9,
+    "moyenne": 533.3,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 10,
+    "moyenne": 163.9,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 11,
+    "moyenne": 186.7,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 12,
+    "moyenne": 210,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 13,
+    "moyenne": 203.3,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 14,
+    "moyenne": 338.9,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 15,
+    "moyenne": 333.3,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 16,
+    "moyenne": 288.9,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 17,
+    "moyenne": 344.4,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 18,
+    "moyenne": 305.5,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 19,
+    "moyenne": 333.3,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 20,
+    "moyenne": 233.3,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 21,
+    "moyenne": 233.3,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 22,
+    "moyenne": 233.3,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 23,
+    "moyenne": 250,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 24,
+    "moyenne": 270.8,
+    "niveau": 0,
+    "densite": 2
+   }
+  ],
+  "journal": []
+ },
+ "erreurs": [],
+ "echecs": []
+}

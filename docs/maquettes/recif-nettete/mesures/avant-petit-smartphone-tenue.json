@@ -1,0 +1,212 @@
+{
+ "date": "2026-10-31T18:35:44.646Z",
+ "profil": "petit-smartphone : petit smartphone ancien, en paysage, 640 × 360 px CSS, densité 2, processeur ralenti × 6",
+ "version": "sans niveaux (densité 2, puis 1)",
+ "niveaux": [
+  {
+   "nom": "densité 2"
+  },
+  {
+   "nom": "densité 1 (allégé)"
+  }
+ ],
+ "zones": {
+  "0 · densité 2": {
+   "niveau": 0,
+   "densite": 2,
+   "canvas": "1152×720",
+   "reduites": null,
+   "lagon": {
+    "n": 47,
+    "moyenne": 105.7,
+    "p50": 116.7,
+    "p95": 133.4,
+    "plusDe33ms": 47,
+    "travail": 27.6,
+    "appels": 890,
+    "mpxRelus": 13.51
+   },
+   "corail": {
+    "n": 71,
+    "moyenne": 70.9,
+    "p50": 66.7,
+    "p95": 83.4,
+    "plusDe33ms": 70,
+    "travail": 31.3,
+    "appels": 792,
+    "mpxRelus": 11.61
+   },
+   "large": {
+    "n": 47,
+    "moyenne": 105,
+    "p50": 100,
+    "p95": 116.7,
+    "plusDe33ms": 47,
+    "travail": 18.4,
+    "appels": 571,
+    "mpxRelus": 9.56
+   },
+   "abysses": {
+    "n": 28,
+    "moyenne": 178,
+    "p50": 183.3,
+    "p95": 233.4,
+    "plusDe33ms": 26,
+    "travail": 21.3,
+    "appels": 643,
+    "mpxRelus": 6.19
+   }
+  }
+ },
+ "libre": {
+  "seconde_par_seconde": [
+   {
+    "s": 1,
+    "moyenne": 98.3,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 2,
+    "moyenne": 83.3,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 3,
+    "moyenne": 89.4,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 4,
+    "moyenne": 125,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 5,
+    "moyenne": 125,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 6,
+    "moyenne": 127.1,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 7,
+    "moyenne": 80.5,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 8,
+    "moyenne": 72.6,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 9,
+    "moyenne": 200,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 10,
+    "moyenne": 80.8,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 11,
+    "moyenne": 80.8,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 12,
+    "moyenne": 71.4,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 13,
+    "moyenne": 81.9,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 14,
+    "moyenne": 245.8,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 15,
+    "moyenne": 125,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 16,
+    "moyenne": 180.6,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 17,
+    "moyenne": 186.7,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 18,
+    "moyenne": 213.3,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 19,
+    "moyenne": 311.1,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 20,
+    "moyenne": 277.7,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 21,
+    "moyenne": 170,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 22,
+    "moyenne": 193.3,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 23,
+    "moyenne": 210,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 24,
+    "moyenne": 163.9,
+    "niveau": 0,
+    "densite": 2
+   }
+  ],
+  "journal": []
+ },
+ "erreurs": [],
+ "echecs": []
+}

@@ -510,6 +510,20 @@ Ce qui change pour l'enfant et pour vous :
 
 **À essayer sur la tablette** (comme d'habitude, la nouvelle version s'installe au premier lancement et prend la main au suivant) : une soirée normale. Si quelque chose ne va pas, exporter le journal technique et le donner à la conception.
 
+## d novodecies) Lot « Netteté du récif » : votre constat du 31 octobre
+
+**Ce que vous aviez vu** : dans le récif, les créatures devenaient très pixelisées quelques secondes après l'entrée. C'était l'allègement automatique : dès que la tablette mettait plus de 20 ms par image (moins de 50 images par seconde), le récif se dessinait avec deux fois moins de pixels pour tout le reste de la visite, puis l'image était étirée sur l'écran.
+
+**Ce qui change** :
+
+- **Les créatures sont plus nettes et coûtent moins.** Chaque créature est une grande image (environ 600 pixels) affichée 4 à 8 fois plus petite. Avant, elle était réduite à chaque image, ce qui sautait des pixels. Maintenant, elle est réduite une seule fois, avec soin, à sa taille d'affichage, et le récif dessine cette petite image.
+- **L'allègement attend plus longtemps et procède par étapes.** Il ne commence qu'au-delà de 33 ms par image (moins de 30 images par seconde, le seuil fixé pour toute l'application). Il ralentit d'abord l'ondulation des créatures (elles nagent et se déplacent comme avant, seule leur ondulation est recalculée moins souvent), sans rien ôter à la netteté. La définition ne baisse qu'ensuite, d'abord un peu (1,5 au lieu de 2), puis, en dernier recours, de moitié comme avant.
+- **Vous pouvez le vérifier** : chaque allègement est écrit dans le **journal technique** (espace parent, « Données et réglages »), par exemple « récif · récif allégé : ondulation des créatures ralentie (niveau 1 sur 3, dessin en densité 2, 38,4 ms par image en moyenne, le lagon) ». Le niveau 3 sur 3 veut dire que la tablette a dû revenir à l'ancien mode flou.
+
+**Aucune phrase à fabriquer.**
+
+**À essayer sur la tablette** : entrer dans le récif, regarder le poisson-clown, l'hippocampe et le crabe, puis rester une minute en faisant défiler la mer. Ensuite, ouvrir le journal technique : s'il n'y a aucune ligne « récif allégé », le récif est resté au plus net ; sinon, la ligne dit jusqu'où il est descendu et à quelle vitesse tournait la tablette. Si les créatures redeviennent floues, exporter le journal technique et le donner à la conception : il dira quoi alléger d'autre.
+
 ## e) Ce qui reste approximatif ou à ajuster
 
 **À vérifier sur la vraie tablette.** Écouter la voix (aucune phrase n'a été écoutée par une personne, la vérification a été automatique) et regarder les illustrations des cartes en grand. Toutes les mesures ont été faites sur un ordinateur, en ralentissant le processeur 4 fois pour imiter une tablette : démarrage en moins de 1,5 s, animation à 50 à 60 images par seconde la plupart du temps, avec des baisses vers 30 pendant certaines animations (l'application allège alors d'elle-même le décor). Il faut confirmer que tout reste fluide sur la tablette.

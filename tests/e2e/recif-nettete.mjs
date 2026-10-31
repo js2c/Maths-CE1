@@ -3,10 +3,11 @@
 //  1. MESURE : l'intervalle moyen entre deux images dans le récif, zone par zone, à chaque niveau d'allègement tenu (le niveau
 //     ne bouge pas pendant la mesure), puis la visite libre : quand l'allègement se déclenche, et jusqu'où il descend ;
 //  2. CAPTURES : le poisson-clown, l'hippocampe et le crabe, de près, à chaque niveau (pixels de l'appareil, sans agrandir) ;
-//  3. CONTRÔLES (avec --test) : les créatures sont dessinées depuis une image déjà réduite à leur taille d'affichage ; chaque
-//     allègement est écrit dans le journal technique ; la visite libre ne descend pas en densité 1 quand la tablette tient
-//     le seuil autrement.
-//   node tests/e2e/recif-nettete.mjs [--profil s5e] [--ralenti n] [--out dossier] [--secondes 5] [--test] [--sans-mesure] [--sans-captures]
+//  3. CONTRÔLES (sur une version qui a les crans) : les créatures sont dessinées depuis une image déjà réduite à leur taille
+//     d'affichage ; chaque allègement est écrit dans le journal technique, avec la densité et l'intervalle mesuré ; les crans
+//     viennent dans l'ordre, un par un, et la densité ne baisse qu'après l'allègement des créatures (densité 1 en dernier) ;
+//     aucune erreur dans la page.
+//   node tests/e2e/recif-nettete.mjs [--profil s5e] [--ralenti n] [--out dossier] [--secondes 5] [--sans-mesure] [--sans-captures]
 //   (RACINE_APP=copie de app/ : la même chose sur une autre version, par exemple celle de main, pour les chiffres « avant ».
 //    Sur une version sans niveaux d'allègement, `--tenir-avant` : le niveau 0 est tenu par une copie dont le seuil est retiré.)
 // BANC ANDROID, raccourcis : sans service worker
@@ -21,7 +22,7 @@ import { recifOuvert } from "./recif-commun.mjs";
 import { PROFILS, optionsProfil } from "./appareils.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
-const PROFIL = opt("--profil", "s5e"), P = PROFILS[PROFIL], RALENTI = Number(opt("--ralenti", P?.ralenti ?? 1)), SECONDES = Number(opt("--secondes", 5)), TEST = args.includes("--test");
+const PROFIL = opt("--profil", "s5e"), P = PROFILS[PROFIL], RALENTI = Number(opt("--ralenti", P?.ralenti ?? 1)), SECONDES = Number(opt("--secondes", 5)), TEST = true;
 const OUT = resolve(opt("--out", `tests/e2e/out/recif-nettete/${PROFIL}`)); mkdirSync(OUT, { recursive: true });
 const cartes = JSON.parse(readFileSync(new URL("../../app/content/cartes.json", import.meta.url), "utf8"));
 const BRILLANTES = ["crabe", "poisson-clown", "hippocampe", "tortue-verte", "poisson-perroquet", "requin-baleine", "dauphin", "calmar-geant", "poisson-lanterne", "pieuvre-dumbo"];
@@ -105,7 +106,11 @@ if (!args.includes("--sans-mesure")) {
   console.log(`journal : ${JSON.stringify(journal)}`);
   if (TEST && nouveau) {
     check(journal.length > 0 || fil.every((f) => f.niveau === 0), `chaque allègement du récif est écrit dans le journal technique (${journal.length} ligne(s))`);
-    check(journal.every((e) => e.densite != null && e.intervalleMs != null), "chaque ligne du journal donne la densité et l'intervalle mesuré");
+    check(journal.every((e) => e.densite != null && e.intervalleMs > 33), "chaque ligne du journal donne la densité et l'intervalle mesuré (au-delà de 33 ms)");
+    check(journal.every((e, i) => e.niveau === i + 1), `les crans viennent un par un, dans l'ordre (${journal.map((e) => e.niveau).join(", ")})`);
+    const d2 = journal.findIndex((e) => e.densite < NIVEAUX[0].densite);
+    check(d2 !== 0 && (d2 < 0 || journal.slice(0, d2).some((e) => e.message.includes("ondulation"))), "la densité ne baisse qu'après l'allègement des créatures");
+    check(fil.every((f, i) => i === 0 || f.niveau >= fil[i - 1].niveau), "le récif ne remonte pas pendant la visite");
   }
   await sortir();
 }

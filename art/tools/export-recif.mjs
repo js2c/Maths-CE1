@@ -6,7 +6,8 @@
 //   2. fabrique app/js/recif/recif-vivant.js : le script de la maquette lui-même, enveloppé dans une fonction
 //      `startRecif(OPTS)`, avec ses seuls raccords à l'application retouchés (RETOUCHES ci-dessous : l'écran et ses
 //      canvas, la taille et la densité, le toucher, la fiche remplacée par la carte de la collection, les créatures
-//      possédées seulement, le scintillement des brillantes, l'arrêt de l'animation en sortant). Chaque retouche doit
+//      possédées seulement, le scintillement des brillantes, l'arrêt de l'animation en sortant ; depuis le lot « Netteté du
+//      récif », le dessin des créatures depuis une image déjà réduite, et leur allègement : LAGBLIT). Chaque retouche doit
 //      trouver son texte exactement une fois : si la maquette change, l'export échoue au lieu de produire un module faux.
 //
 //   node tools/export-recif.mjs
@@ -50,12 +51,66 @@ const RETOUCHES = [
   ["const zoneEl = document.getElementById('zone');", "const zoneEl = { textContent: '' };", "pas de nom de zone écrit (l'enfant ne lit pas)"],
   // (lot « La boutique du récif ») la créature qui vient d'être achetée arrive à la nage, avec son halo, jusqu'à sa place :
   // OPTS.arrivee(id, t, x à l'écran, largeur vue) donne son décalage { dx, dy } et son halo, ou null
-  ["const P = c.pose ? c.pose(t, c) : {}, dx = P.dx || 0, dy = P.dy || 0, rot = P.rot || 0, sx = (P.sx || 1)*kf, sy = (P.sy || 1)*kf;", "const P = c.pose ? c.pose(t, c) : {}, AR = OPTS.arrivee?.(c.id, t, c.x - camX, viewW) ?? null, dx = (P.dx || 0) + (AR ? AR.dx : 0), dy = (P.dy || 0) + (AR ? AR.dy : 0), rot = P.rot || 0, sx = (P.sx || 1)*kf*(AR ? AR.s : 1), sy = (P.sy || 1)*kf*(AR ? AR.s : 1);", "la créature achetée arrive à la nage, plus grande au milieu de son arc"],
+  ["const P = c.pose ? c.pose(t, c) : {}, dx = P.dx || 0, dy = P.dy || 0, rot = P.rot || 0, sx = (P.sx || 1)*kf, sy = (P.sy || 1)*kf;", "const P = c.pose ? c.pose(t, c) : {}, AR = OPTS.arrivee?.(c.id, t, c.x - camX, viewW) ?? null, dx = (P.dx || 0) + (AR ? AR.dx : 0), dy = (P.dy || 0) + (AR ? AR.dy : 0), rot = P.rot || 0, sx = (P.sx || 1)*kf*(AR ? AR.s : 1), sy = (P.sy || 1)*kf*(AR ? AR.s : 1); c.agrandi = AR ? AR.s : 1;", "la créature achetée arrive à la nage, plus grande au milieu de son arc"],
   ["c.halo += ((c === hoverC || c === holdC ? 1 : 0) - c.halo)*0.2;", "c.halo += ((c === hoverC || c === holdC || AR?.halo ? 1 : 0) - c.halo)*0.2;", "et avec son halo"],
   ["function frame(now){\n  requestAnimationFrame(frame);", "function frame(now){\n  if (!VIVANT) return; RAF = requestAnimationFrame(frame); OPTS.mesure?.(now);", "l'animation s'arrête en sortant ; le temps d'image est mesuré"],
 ];
 // la fiche : remplacée par la carte de la collection (session/recif.js)
 const FICHE = [/function ouvreFiche\(c\)\{[\s\S]*?\n\}\n/, "function ouvreFiche(c){ hoverC = null; vel = 0; OPTS.onFiche(c.id); }\n"];
+// (lot « Netteté du récif », décision du parent du 31 octobre 2026) LE DESSIN D'UNE CRÉATURE (lagBlit) : la même déformation que
+// la maquette (mêmes fonctions col et row, mêmes bandes, même recouvrement), mais
+//  - depuis l'image déjà réduite à la taille d'affichage (OPTS.reduite, recif/reduction.js) au lieu de l'image d'environ 600 px
+//    réduite 4 à 8 fois à chaque image : net (pas de crénelage) et moins coûteux ; la grande image en attendant qu'elle soit
+//    prête, et pendant l'arrivée d'une créature achetée, quand elle grossit (c.agrandi) ;
+//  - selon l'allègement (OPTS.qualite() : { cadence, bandes }) : avec `cadence`, la créature déformée est gardée dans une image,
+//    refaite `cadence` fois par seconde (chaque créature à son tour), et dessinée d'un seul coup aux autres images ; `bandes` :
+//    la part des bandes de déformation gardées.
+const LAGBLIT = [/function lagBlit\(c, src, t, X0, Y0, rec\)\{[\s\S]*?\n\}\n/, `function lagBlit(c, src, t, X0, Y0, rec){
+  const Q = OPTS.qualite(), RD = (c.agrandi || 1) > 1.05 ? null : OPTS.reduite(src, c.w, c.h, sc*c.k), im = RD ? RD.img : src, r = RD ? RD.r : 1;
+  const NC = Math.max(4, Math.round((c.nc || LAG_NC)*Q.bandes)), NR = Math.max(4, Math.round((c.nr || LAG_NR)*Q.bandes));
+  if (Q.cadence && (c.col || c.row) && src === lagImg[c.id]){
+    const ph = (c.ph*0.618) % 1, tq = (Math.floor(t*Q.cadence + ph) - ph)/Q.cadence;
+    const W2 = Math.ceil((c.w + 2*c.pad)*r), H2 = Math.ceil((c.h + 2*c.pad)*r);
+    if (!c.cad || c.cad.width !== W2 || c.cad.height !== H2){ c.cad = c.cad || OPTS.canvas(); c.cad.width = W2; c.cad.height = H2; c.cadg = c.cad.getContext('2d'); c.cadT = null; }
+    if (c.cadT !== tq || c.cadIm !== im || c.cadN !== NC*100 + NR){
+      const g = c.cadg; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W2, H2); g.setTransform(r, 0, 0, r, c.pad*r, c.pad*r);
+      lagDeforme(g, c, im, r, tq, 0, 0, rec, NC, NR); c.cadT = tq; c.cadIm = im; c.cadN = NC*100 + NR;
+    }
+    ctx.drawImage(c.cad, X0 - c.pad, Y0 - c.pad, W2/r, H2/r);
+    return;
+  }
+  lagDeforme(ctx, c, im, r, t, X0, Y0, rec, NC, NR);
+}
+// la déformation de la maquette, dessinée dans g (repère : px de l'image de la créature) depuis im, la même image à l'échelle r
+function lagDeforme(g, c, im, r, t, X0, Y0, rec, NC, NR){
+  const pad = c.pad, w = c.w, h = c.h;
+  if (c.col && c.row){
+    // deux passes : colonnes dans un canvas de travail (à l'échelle de l'image), puis lignes
+    const W2 = Math.ceil((w + 2*pad)*r), H2 = Math.ceil((h + 2*pad)*r);
+    if (!c.tr || c.tr.width !== W2 || c.tr.height !== H2){ c.tr = c.tr || OPTS.canvas(); c.tr.width = W2; c.tr.height = H2; c.trg = c.tr.getContext('2d'); }
+    const q = c.trg; q.setTransform(1, 0, 0, 1, 0, 0); q.clearRect(0, 0, W2, H2); q.setTransform(r, 0, 0, r, 0, 0);
+    for (let i = 0; i < NC; i++){
+      const x0 = i*w/NC, sw = w/NC;
+      q.drawImage(im, x0*r, 0, sw*r, h*r, pad + x0, pad + c.col((i + 0.5)/NC, t, c)*h, sw + rec, h);
+    }
+    const sh = (h + 2*pad)/NR;
+    for (let j = 0; j < NR; j++){
+      const v = clamp(((j + 0.5)*sh - pad)/h, 0, 1);
+      g.drawImage(c.tr, 0, j*sh*r, W2, sh*r, X0 - pad + c.row(v, t, c)*w, Y0 - pad + j*sh, W2/r, sh + rec);
+    }
+  } else if (c.col){
+    for (let i = 0; i < NC; i++){
+      const x0 = i*w/NC, sw = w/NC;
+      g.drawImage(im, x0*r, 0, sw*r, h*r, X0 + x0, Y0 + c.col((i + 0.5)/NC, t, c)*h, sw + rec, h);
+    }
+  } else if (c.row){
+    for (let j = 0; j < NR; j++){
+      const y0 = j*h/NR, sh = h/NR;
+      g.drawImage(im, 0, y0*r, w*r, sh*r, X0 + c.row((j + 0.5)/NR, t, c)*w, Y0 + y0, w, sh + rec);
+    }
+  } else g.drawImage(im, 0, 0, w*r, h*r, X0, Y0, w, h);
+}
+`];
 // remplacements partout : la taille de l'écran (la scène de l'application, pas la fenêtre), les coordonnées du doigt
 // (relatives au canvas), les écouteurs de la fenêtre (retirés en sortant)
 const PARTOUT = [
@@ -102,6 +157,7 @@ export function exportRecif({ log = console.log } = {}) {
     js = js.replace(a, () => b);
   }
   if (!FICHE[0].test(js)) throw new Error("export-recif : fonction ouvreFiche introuvable"); js = js.replace(FICHE[0], FICHE[1]);
+  if (!LAGBLIT[0].test(js)) throw new Error("export-recif : fonction lagBlit introuvable"); js = js.replace(LAGBLIT[0], () => LAGBLIT[1]);
   for (const [re, b] of PARTOUT) js = js.replace(re, b);
   if (/document\.getElementById/.test(js)) throw new Error(`export-recif : un élément de la page de la maquette reste : ${js.match(/document\.getElementById\([^)]*\)/)[0]}`);
   const fin = "\nrequestAnimationFrame(frame);";
@@ -115,7 +171,9 @@ export function exportRecif({ log = console.log } = {}) {
 // la maquette) possédées et brillantes ; size() : { w, h } de la scène en px CSS ; rect() : sa place à l'écran ; dpr() :
 // la densité ; on(cible, type, f) : un écouteur à retirer en sortant ; onFiche(id) : une créature touchée ;
 // scintille(ctx, c, x0, y0, t, k) : le scintillement d'une brillante ; mesure(t) : appelé à chaque image ;
-// arrivee(id, t, x, vue) : la créature qui vient d'être achetée, son décalage et son halo pendant son arrivée }
+// arrivee(id, t, x, vue) : la créature qui vient d'être achetée, son décalage et son halo pendant son arrivée ;
+// reduite(src, w, h, k) : l'image src déjà réduite pour k px d'écran par px, { img, r }, ou null ; qualite() : { cadence,
+// bandes }, l'allègement des créatures ; canvas() : un canvas de travail (rendu en sortant) }
 /* eslint-disable */
 export function startRecif(OPTS) {
 let VIVANT = true, RAF = 0;
@@ -127,6 +185,7 @@ return {
   get camX() { return camX; },
   set camX(x) { camX = x; clampCam(); },
   get vue() { return { sc, viewW, W, H }; },
+  get zone() { return zoneName; },
   creatureAt(x, y, tol = 26) { return creatureAt(x, y, tol)?.id ?? null; },
   vivantes() { return lagOrder.map((c) => c.id); },
   aller(id) { const c = lagOrder.find((c) => c.id === id); if (c) { vel = 0; camX = c.x - viewW / 2; clampCam(); } },

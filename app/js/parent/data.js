@@ -310,6 +310,11 @@ export function ligneJournal(e) {
   if (e.imagesMpx != null) d.push(`images en mémoire ${String(e.imagesMpx).replace(".", ",")} mégapixels`);
   if (e.lectureRefusees) d.push(`${e.lectureRefusees} lectures refusées`);
   if (e.allegement && !/affichage/.test(e.message)) d.push(`affichage allégé ${e.allegement}`);
+  // (lot « Netteté du récif ») un allègement du récif : son niveau, la densité du dessin, l'intervalle moyen mesuré, la zone
+  if (e.niveauRecif != null) d.push(`niveau ${e.niveauRecif} sur ${e.niveauxRecif}`);
+  if (e.densiteDessin != null) d.push(`dessin en densité ${String(e.densiteDessin).replace(".", ",")}`);
+  if (e.intervalleMs != null) d.push(`${String(e.intervalleMs).replace(".", ",")} ms par image en moyenne`);
+  if (e.zoneRecif) d.push(e.zoneRecif.replace(/^L/, "l"));
   if (e.quand) d.push(`le ${heureJournal(e.quand)}`);
   return `${heureJournal(e.t)} · ${TYPES_JOURNAL[e.type] ?? e.type} · ${e.message}${d.length ? ` (${d.join(", ")})` : ""}`;
 }

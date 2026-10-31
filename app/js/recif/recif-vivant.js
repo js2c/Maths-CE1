@@ -6,7 +6,9 @@
 // la maquette) possédées et brillantes ; size() : { w, h } de la scène en px CSS ; rect() : sa place à l'écran ; dpr() :
 // la densité ; on(cible, type, f) : un écouteur à retirer en sortant ; onFiche(id) : une créature touchée ;
 // scintille(ctx, c, x0, y0, t, k) : le scintillement d'une brillante ; mesure(t) : appelé à chaque image ;
-// arrivee(id, t, x, vue) : la créature qui vient d'être achetée, son décalage et son halo pendant son arrivée }
+// arrivee(id, t, x, vue) : la créature qui vient d'être achetée, son décalage et son halo pendant son arrivée ;
+// reduite(src, w, h, k) : l'image src déjà réduite pour k px d'écran par px, { img, r }, ou null ; qualite() : { cadence,
+// bandes }, l'allègement des créatures ; canvas() : un canvas de travail (rendu en sortant) }
 /* eslint-disable */
 export function startRecif(OPTS) {
 let VIVANT = true, RAF = 0;
@@ -1426,30 +1428,49 @@ let showCreatures = true, hoverC = null, holdC = null, lagT = 0;
 // rec = recouvrement entre bandes voisines : il évite les jours dans l'image, mais doit être nul pour le halo
 // (translucide, il se rayerait là où deux bandes se superposent)
 function lagBlit(c, src, t, X0, Y0, rec){
-  const pad = c.pad, NC = c.nc || LAG_NC, NR = c.nr || LAG_NR;
-  if (c.col && c.row){
-    // deux passes : colonnes dans un canvas de travail, puis lignes vers l'écran
-    const g = c.g; g.clearRect(0, 0, c.cv.width, c.cv.height);
-    for (let i = 0; i < NC; i++){
-      const x0 = i*c.w/NC, sw = c.w/NC;
-      g.drawImage(src, x0, 0, sw, c.h, pad + x0, pad + c.col((i + 0.5)/NC, t, c)*c.h, sw + rec, c.h);
+  const Q = OPTS.qualite(), RD = (c.agrandi || 1) > 1.05 ? null : OPTS.reduite(src, c.w, c.h, sc*c.k), im = RD ? RD.img : src, r = RD ? RD.r : 1;
+  const NC = Math.max(4, Math.round((c.nc || LAG_NC)*Q.bandes)), NR = Math.max(4, Math.round((c.nr || LAG_NR)*Q.bandes));
+  if (Q.cadence && (c.col || c.row) && src === lagImg[c.id]){
+    const ph = (c.ph*0.618) % 1, tq = (Math.floor(t*Q.cadence + ph) - ph)/Q.cadence;
+    const W2 = Math.ceil((c.w + 2*c.pad)*r), H2 = Math.ceil((c.h + 2*c.pad)*r);
+    if (!c.cad || c.cad.width !== W2 || c.cad.height !== H2){ c.cad = c.cad || OPTS.canvas(); c.cad.width = W2; c.cad.height = H2; c.cadg = c.cad.getContext('2d'); c.cadT = null; }
+    if (c.cadT !== tq || c.cadIm !== im || c.cadN !== NC*100 + NR){
+      const g = c.cadg; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W2, H2); g.setTransform(r, 0, 0, r, c.pad*r, c.pad*r);
+      lagDeforme(g, c, im, r, tq, 0, 0, rec, NC, NR); c.cadT = tq; c.cadIm = im; c.cadN = NC*100 + NR;
     }
-    const sh = c.cv.height/NR;
+    ctx.drawImage(c.cad, X0 - c.pad, Y0 - c.pad, W2/r, H2/r);
+    return;
+  }
+  lagDeforme(ctx, c, im, r, t, X0, Y0, rec, NC, NR);
+}
+// la déformation de la maquette, dessinée dans g (repère : px de l'image de la créature) depuis im, la même image à l'échelle r
+function lagDeforme(g, c, im, r, t, X0, Y0, rec, NC, NR){
+  const pad = c.pad, w = c.w, h = c.h;
+  if (c.col && c.row){
+    // deux passes : colonnes dans un canvas de travail (à l'échelle de l'image), puis lignes
+    const W2 = Math.ceil((w + 2*pad)*r), H2 = Math.ceil((h + 2*pad)*r);
+    if (!c.tr || c.tr.width !== W2 || c.tr.height !== H2){ c.tr = c.tr || OPTS.canvas(); c.tr.width = W2; c.tr.height = H2; c.trg = c.tr.getContext('2d'); }
+    const q = c.trg; q.setTransform(1, 0, 0, 1, 0, 0); q.clearRect(0, 0, W2, H2); q.setTransform(r, 0, 0, r, 0, 0);
+    for (let i = 0; i < NC; i++){
+      const x0 = i*w/NC, sw = w/NC;
+      q.drawImage(im, x0*r, 0, sw*r, h*r, pad + x0, pad + c.col((i + 0.5)/NC, t, c)*h, sw + rec, h);
+    }
+    const sh = (h + 2*pad)/NR;
     for (let j = 0; j < NR; j++){
-      const v = clamp(((j + 0.5)*sh - pad)/c.h, 0, 1);
-      ctx.drawImage(c.cv, 0, j*sh, c.cv.width, sh, X0 - pad + c.row(v, t, c)*c.w, Y0 - pad + j*sh, c.cv.width, sh + rec);
+      const v = clamp(((j + 0.5)*sh - pad)/h, 0, 1);
+      g.drawImage(c.tr, 0, j*sh*r, W2, sh*r, X0 - pad + c.row(v, t, c)*w, Y0 - pad + j*sh, W2/r, sh + rec);
     }
   } else if (c.col){
     for (let i = 0; i < NC; i++){
-      const x0 = i*c.w/NC, sw = c.w/NC;
-      ctx.drawImage(src, x0, 0, sw, c.h, X0 + x0, Y0 + c.col((i + 0.5)/NC, t, c)*c.h, sw + rec, c.h);
+      const x0 = i*w/NC, sw = w/NC;
+      g.drawImage(im, x0*r, 0, sw*r, h*r, X0 + x0, Y0 + c.col((i + 0.5)/NC, t, c)*h, sw + rec, h);
     }
   } else if (c.row){
     for (let j = 0; j < NR; j++){
-      const y0 = j*c.h/NR, sh = c.h/NR;
-      ctx.drawImage(src, 0, y0, c.w, sh, X0 + c.row((j + 0.5)/NR, t, c)*c.w, Y0 + y0, c.w, sh + rec);
+      const y0 = j*h/NR, sh = h/NR;
+      g.drawImage(im, 0, y0*r, w*r, sh*r, X0 + c.row((j + 0.5)/NR, t, c)*w, Y0 + y0, w, sh + rec);
     }
-  } else ctx.drawImage(src, X0, Y0, c.w, c.h);
+  } else g.drawImage(im, 0, 0, w*r, h*r, X0, Y0, w, h);
 }
 // opacité de l'image, pixel par pixel : sert au halo et à savoir si le doigt touche vraiment la créature
 function lagAlpha(c){
@@ -1517,7 +1538,7 @@ function drawLagon(t, sc, camX, viewW){
     }
     const kf = 1 - 0.4*far, Wd = (c.w - 2*c.m)*c.k*kf, Hd = (c.h - 2*c.m)*c.k*kf;
     if (far > 0.985 || c.x + Wd + 150 < camX || c.x - Wd - 150 > camX + viewW) continue;
-    const P = c.pose ? c.pose(t, c) : {}, AR = OPTS.arrivee?.(c.id, t, c.x - camX, viewW) ?? null, dx = (P.dx || 0) + (AR ? AR.dx : 0), dy = (P.dy || 0) + (AR ? AR.dy : 0), rot = P.rot || 0, sx = (P.sx || 1)*kf*(AR ? AR.s : 1), sy = (P.sy || 1)*kf*(AR ? AR.s : 1);
+    const P = c.pose ? c.pose(t, c) : {}, AR = OPTS.arrivee?.(c.id, t, c.x - camX, viewW) ?? null, dx = (P.dx || 0) + (AR ? AR.dx : 0), dy = (P.dy || 0) + (AR ? AR.dy : 0), rot = P.rot || 0, sx = (P.sx || 1)*kf*(AR ? AR.s : 1), sy = (P.sy || 1)*kf*(AR ? AR.s : 1); c.agrandi = AR ? AR.s : 1;
     c.cx = c.x + dx; c.cy = c.y + dy; c.kd = c.k*kf; c.vis = far < 0.6;
     // ombre au sol
     const ox = (c.x + dx - camX)*sc, oy = (c.ombre || c.y)*sc;
@@ -1695,6 +1716,7 @@ return {
   get camX() { return camX; },
   set camX(x) { camX = x; clampCam(); },
   get vue() { return { sc, viewW, W, H }; },
+  get zone() { return zoneName; },
   creatureAt(x, y, tol = 26) { return creatureAt(x, y, tol)?.id ?? null; },
   vivantes() { return lagOrder.map((c) => c.id); },
   aller(id) { const c = lagOrder.find((c) => c.id === id); if (c) { vel = 0; camX = c.x - viewW / 2; clampCam(); } },

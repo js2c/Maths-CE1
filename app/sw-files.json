@@ -1,8 +1,8 @@
 {
- "version": "44f36e97c683",
+ "version": "2e2005ba5a17",
  "octets": {
-  "1": 120161126,
-  "2": 135194534
+  "1": 120171704,
+  "2": 135205112
  },
  "files": [
   "./",
@@ -11792,6 +11792,7 @@
   "js/parent/depart.js",
   "js/parent/parent.js",
   "js/recif/recif-vivant.js",
+  "js/recif/reduction.js",
   "js/session/album.js",
   "js/session/boutique.js",
   "js/session/cards.js",

@@ -5,7 +5,9 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { alleger, garderIntervalle, recifCreatures, versCarte, versMaquette } from "../../app/js/session/reef.js";
+import { alleger, garderIntervalle, niveauxRecif, recifCreatures, SEUIL_MS, versCarte, versMaquette } from "../../app/js/session/reef.js";
+import { aRefaire, echelleReduite, etapes, MARGE, reduire, Reductions } from "../../app/js/recif/reduction.js";
+import { ligneJournal } from "../../app/js/parent/data.js";
 
 const root = new URL("../../", import.meta.url), read = (p) => readFileSync(new URL(p, root), "utf8");
 const cartes = JSON.parse(read("app/content/cartes.json")), donnees = JSON.parse(read("app/assets/recif/donnees.json"));
@@ -61,14 +63,63 @@ test("pendant la visite : le lagon en pause, ni la mascotte ni le compteur d'ét
   assert.match(reefJs, /this\.api\?\.stop\(\)/); assert.match(reefJs, /removeEventListener/);
 });
 
-test("l'allègement : après 3 s, au-delà de 20 ms d'intervalle moyen, même quand chaque image est très lente", () => {
+test("l'allègement : après 3 s, au-delà de 33 ms d'intervalle moyen (30 images/s, CLAUDE.md), même quand chaque image est très lente", () => {
   const n = (k, ms) => Array(k).fill(ms);
+  assert.equal(SEUIL_MS, 33);
   assert.equal(alleger(n(60, 16), 5000), false, "60 images/s : rien");
-  assert.equal(alleger(n(60, 25), 5000), true, "40 images/s : allégé");
-  assert.equal(alleger(n(60, 25), 2000), false, "pas avant 3 s");
+  assert.equal(alleger(n(60, 25), 5000), false, "40 images/s : rien (avant le lot « Netteté du récif » : allégé)");
+  assert.equal(alleger(n(60, 30), 5000), false, "33 images/s : rien");
+  assert.equal(alleger(n(60, 40), 5000), true, "25 images/s : allégé");
+  assert.equal(alleger(n(60, 40), 2000), false, "pas avant 3 s");
   assert.equal(alleger(n(12, 350), 4200), true, "une image toutes les 350 ms (machine très lente) : allégé dès 3 s");
   assert.equal(alleger(n(5, 350), 4200), false, "trop peu de mesures");
   assert.ok(garderIntervalle(350) && !garderIntervalle(4000), "un onglet caché (plusieurs secondes) n'est pas compté");
+});
+
+test("l'allègement par crans : la définition baisse en dernier, d'abord à 1,5, la densité 1 en dernier recours", () => {
+  const s5e = niveauxRecif(2.25);
+  assert.deepEqual(s5e.map((p) => p.densite), [2, 2, 1.5, 1], "tablette de référence : 2, 2, 1,5, 1");
+  assert.equal(s5e[0].cadence, 0); assert.equal(s5e[0].bandes, 1);
+  assert.ok(s5e[1].cadence > 0 && s5e[1].cadence < 30 && s5e[1].bandes < 1, "le premier cran : l'ondulation à cadence réduite, moins de bandes");
+  assert.deepEqual(niveauxRecif(1.5).map((p) => p.densite), [1.5, 1.5, 1], "écran de densité 1,5 : pas de cran à 1,5");
+  assert.deepEqual(niveauxRecif(1).map((p) => p.densite), [1, 1], "écran de densité 1 : seul l'allègement des créatures");
+  assert.match(reefJs, /noter\("récif", `récif allégé : \$\{p\.nom\}`, \{ niveauRecif: this\.niveau, niveauxRecif: this\.paliers\.length - 1, densiteDessin: p\.densite, intervalleMs:/, "chaque cran est noté au journal technique");
+});
+
+test("le journal technique : un allègement du récif, en clair pour le parent (densité, intervalle mesuré)", () => {
+  const l = ligneJournal({ t: new Date(2026, 9, 31, 19, 42, 5).getTime(), type: "récif", message: "récif allégé : densité 1,5", niveauRecif: 2, niveauxRecif: 3, densiteDessin: 1.5, intervalleMs: 41.2, zoneRecif: "Le lagon" });
+  assert.equal(l, "31/10 19:42:05 · récif · récif allégé : densité 1,5 (niveau 2 sur 3, dessin en densité 1,5, 41,2 ms par image en moyenne, le lagon)");
+});
+
+test("les créatures réduites une fois, à leur taille d'affichage (au double), par moitiés exactes", () => {
+  assert.equal(MARGE, 2);
+  assert.equal(echelleReduite(0.2), 0.4); assert.equal(echelleReduite(0.7), 1, "jamais plus grande que l'image");
+  assert.deepEqual(etapes(600, 400, 0.13), [[300, 200], [150, 100], [78, 52]], "des moitiés, puis la cible");
+  assert.deepEqual(etapes(600, 400, 0.25), [[300, 200], [150, 100]], "la cible est une moitié exacte");
+  assert.deepEqual(etapes(600, 400, 0.8), [[480, 320]], "moins d'une moitié : une seule étape");
+  assert.ok(!aRefaire(0.4, 0.42) && aRefaire(0.4, 0.3) && aRefaire(null, 0.3), "refaite seulement si la densité change vraiment");
+  // un faux canvas : on suit les étapes et ce qui est rendu
+  const faits = [];
+  const creer = () => { const c = { width: 0, height: 0, getContext: () => ({ drawImage: (im, sx, sy, sw, sh, dx, dy, dw, dh) => faits.push([sw, sh, dw, dh]) }) }; return c; };
+  const out = reduire({ src: 1 }, 600, 400, 0.13, creer);
+  assert.deepEqual([out.width, out.height], [78, 52]);
+  assert.deepEqual(faits, [[600, 400, 300, 200], [300, 200, 150, 100], [150, 100, 78, 52]]);
+  // au plus deux réductions par image ; la même image source n'est réduite qu'une fois ; tout est rendu en sortant
+  const R = new Reductions({ creer }), a = {}, b = {}, c = {};
+  assert.ok(R.pour(a, 600, 400, 0.1, 1) && R.pour(b, 600, 400, 0.1, 1));
+  assert.equal(R.pour(c, 600, 400, 0.1, 1), null, "la troisième attend l'image suivante");
+  assert.ok(R.pour(c, 600, 400, 0.1, 2));
+  assert.equal(R.pour(a, 600, 400, 0.1, 3), R.pour(a, 600, 400, 0.105, 3), "gardée");
+  assert.equal(R.pour(a, 600, 400, 0.7, 3), null, "à l'échelle 1 : la grande image");
+  assert.equal(R.nombre, 3); R.vider(); assert.equal(R.nombre, 0);
+});
+
+test("le module dessine les créatures depuis l'image réduite, avec la déformation de la maquette (lagBlit, export-recif.mjs)", () => {
+  assert.match(moduleJs, /function lagBlit\(c, src, t, X0, Y0, rec\)\{\n  const Q = OPTS\.qualite\(\), RD = \(c\.agrandi \|\| 1\) > 1\.05 \? null : OPTS\.reduite\(src, c\.w, c\.h, sc\*c\.k\)/);
+  assert.match(moduleJs, /function lagDeforme\(g, c, im, r, t, X0, Y0, rec, NC, NR\)/);
+  const maquette = read("art/recif-vivant/index.html");
+  for (const f of ["c.col((i + 0.5)/NC, t, c)", "c.row(v, t, c)", "c.row((j + 0.5)/NR, t, c)"]) assert.ok(maquette.includes(f) && moduleJs.includes(f), `la déformation de la maquette : ${f}`);
+  assert.match(reefJs, /this\.reductions\?\.vider\(\)/, "les images réduites rendues en sortant");
 });
 
 test("le grand large : les nageuses réparties sur toute la hauteur, moins de grappes (art/tools/grand-large.mjs)", async () => {

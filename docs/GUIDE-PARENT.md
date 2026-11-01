@@ -510,6 +510,21 @@ Ce qui change pour l'enfant et pour vous :
 
 **À essayer sur la tablette** (comme d'habitude, la nouvelle version s'installe au premier lancement et prend la main au suivant) : une soirée normale. Si quelque chose ne va pas, exporter le journal technique et le donner à la conception.
 
+## d novodecies) Lot « Netteté du récif » : votre constat du 31 octobre
+
+**Ce que vous aviez vu** : dans le récif, les créatures devenaient très pixelisées quelques secondes après l'entrée. C'était l'allègement automatique : dès que la tablette mettait plus de 20 ms par image (moins de 50 images par seconde), le récif se dessinait avec deux fois moins de pixels pour tout le reste de la visite, puis l'image était étirée sur l'écran.
+
+**Ce qui change** :
+
+- **Les créatures sont plus nettes et coûtent moins.** Chaque créature est une grande image (environ 600 pixels) affichée jusqu'à 4 fois plus petite (8 fois quand le récif est allégé). Avant, elle était réduite à chaque image, ce qui sautait des pixels : c'étaient les petits carrés et les bords en escalier. Maintenant, elle est réduite une seule fois, avec soin, au double de sa taille d'affichage, et le récif dessine cette petite image : plus de petits carrés, à aucun niveau.
+- **L'allègement attend plus longtemps et procède par étapes.** Il ne commence qu'au-delà de 33 ms par image (moins de 30 images par seconde, le seuil fixé pour toute l'application). Niveau 1 : il ralentit l'ondulation des créatures (elles nagent et se déplacent comme avant, seule leur ondulation est recalculée moins souvent), sans rien ôter à la netteté. Niveau 2 : la définition baisse un peu (1,5 au lieu de 2) ; à l'œil, presque rien ne change. Niveau 3, en dernier recours : la définition baisse de moitié, comme avant ; les créatures sont alors plus douces, un peu floues, mais sans les petits carrés d'avant (comparaison dans `docs/maquettes/recif-nettete/`).
+- **Vous pouvez le vérifier** : chaque allègement est écrit dans le **journal technique** (espace parent, « Données et réglages »), par exemple « récif · allégé : ondulation des créatures ralentie (niveau 1 sur 3, dessin en densité 2, 38,4 ms par image en moyenne, le lagon) ». Comment lire : le niveau va de 1 à 3 (plus il est haut, plus le récif a été allégé) ; « ms par image » est le temps que mettait la tablette à ce moment-là (au-delà de 33, elle peine). Une visite peut écrire jusqu'à trois lignes, une par niveau, et chaque visite repart du plus net : la ligne la plus récente d'une visite donne le niveau atteint.
+- **Ce que nous ne savons pas encore** : sur notre banc d'essai (un ordinateur qui imite la tablette, mais dessine sans carte graphique, donc bien plus lentement), le récif descend au niveau 3 en quelques secondes. Votre tablette a une carte graphique : elle devrait s'arrêter plus haut, mais seul son journal le dira.
+
+**Aucune phrase à fabriquer.**
+
+**À essayer sur la tablette** : entrer dans le récif, regarder le poisson-clown, l'hippocampe et le crabe, puis rester une minute en faisant défiler la mer. Ensuite, ouvrir le journal technique : s'il n'y a aucune ligne « récif · allégé », le récif est resté au plus net ; sinon, la plus récente dit jusqu'où il est descendu et à quelle vitesse tournait la tablette. Dans deux cas, exporter le journal technique et le donner à la conception : si vous revoyez de petits carrés ou des bords en escalier sur les créatures (ce serait un défaut) ; ou si le récif atteint le niveau 3 à chaque visite et que les créatures vous paraissent trop douces (il faudra alors alléger autre chose avant la définition, par exemple les faisceaux de lumière : à décider ensemble).
+
 ## e) Ce qui reste approximatif ou à ajuster
 
 **À vérifier sur la vraie tablette.** Écouter la voix (aucune phrase n'a été écoutée par une personne, la vérification a été automatique) et regarder les illustrations des cartes en grand. Toutes les mesures ont été faites sur un ordinateur, en ralentissant le processeur 4 fois pour imiter une tablette : démarrage en moins de 1,5 s, animation à 50 à 60 images par seconde la plupart du temps, avec des baisses vers 30 pendant certaines animations (l'application allège alors d'elle-même le décor). Il faut confirmer que tout reste fluide sur la tablette.

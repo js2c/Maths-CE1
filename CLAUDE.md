@@ -41,7 +41,7 @@ Mesure faite le 26 septembre 2026 : dessiner la scène complète en direct coût
 2. **Composé en direct par l'application** : affichage de la bonne image de la boucle, déplacements, flottement, légères rotations (au plus une couche tournée par image). Le décor fixe est composé une fois dans un canvas de fond.
 3. **Dessiné en direct, seulement ce qui est léger et dynamique** : bulles, miroitement, arcs des sauts, surbrillances. La ligne graduée d'un exercice (bornes, graduations, chiffres) change à chaque question : elle est dessinée une fois par question avec les primitives du style (même encre, mêmes chiffres que `ocean.ts`) dans un canvas mis en cache, puis simplement affichée.
 
-Budget à tenir sur la tablette : démarrage en moins de 3 s, animation à 30 images/s au minimum (viser 60), mémoire des sprites raisonnable. Mesurer le temps d'image dans l'application et réduire automatiquement les effets si la moyenne dépasse 20 ms.
+Budget à tenir sur la tablette : démarrage en moins de 3 s, animation à 30 images/s au minimum (viser 60), mémoire des sprites raisonnable. Mesurer le temps d'image dans l'application et réduire automatiquement les effets si la moyenne dépasse 20 ms (le récif vivant : 33 ms, par crans, la définition en dernier ; lot « Netteté du récif »).
 
 ## Personnages
 

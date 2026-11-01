@@ -52,6 +52,8 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (décision du parent du 17 octobre 2026) : le lot « Banc Android et recette en conditions réelles »** (fiche 13), après le lot « Correctifs de l'installation et de la veille » (PR #61). Les défauts du 16 octobre sont passés à travers toutes les recettes, parce que le banc d'essai neutralisait les conditions réelles : sans service worker, sans voix ni son, avec le Chromium d'un ordinateur. Ce lot construit un banc qui reproduit un vrai Android et en fait le banc par défaut de tous les lots. **État : fait** (PR #63, le 19 octobre 2026 ; aucune phrase nouvelle ; décisions du parent du 19 octobre : les téléphones restent tels quels, option A, la mise en page « téléphone » notée comme évolution possible ; le sélecteur de difficulté ne part plus seul quand l'enfant a choisi l'exercice).
 
+**Puis (constat du parent du 31 octobre 2026) : le lot court « Netteté du récif »** (fiche 14) : sur la tablette, les créatures du récif vivant deviennent très pixelisées quelques secondes après l'entrée. **État : fait** (PR #68 ; aucune phrase nouvelle).
+
 **Pourquoi cet ordre.**
 
 - Les correctifs de la confrontation avant les leçons et les sommes : ces lots s'appuient sur les règles du module 2 telles qu'elles seront écrites.
@@ -1116,3 +1118,20 @@ Chaque défaut trouvé est corrigé et devient un test de non-régression. **Auc
 - les temps de démarrage par profil ;
 - la taille réelle des cibles sur les smartphones, et les options du point 6 ;
 - les parcours qui gardent un raccourci, avec leur raison.
+
+### 14. Lot « Netteté du récif » (lot court)
+
+**Origine** : le parent, le 31 octobre 2026 : sur la tablette, les créatures du récif vivant sont très pixelisées ; nettes les premières secondes, floues ensuite (confirmé le 31 octobre). Cause probable, reproduite sur le banc : l'allègement automatique du récif (`app/js/session/reef.js`, `alleger` et `densite`) : passé 3 s, si l'intervalle moyen entre deux images dépasse 20 ms, la densité tombe à 1 pour toute la visite ; le récif est dessiné en 1 138 × 711 puis étiré sur un écran de densité 2,25.
+
+**D'un seul tenant**, avec la recette sur le banc Android (profil `s5e`, puis `petit-smartphone`).
+
+1. **Mesurer** sur le banc (profil `s5e`, processeur ralenti) l'intervalle moyen des images dans le récif, par zone ; donner les chiffres dans la demande de fusion.
+2. **Seuil** : aligner l'allègement du récif sur le budget de `CLAUDE.md` (30 images/s au minimum : 33 ms) au lieu de 20 ms.
+3. **Allègement** : ne plus diviser la définition en premier. Commencer par réduire ce qui coûte (l'ondulation des créatures à cadence réduite, moins de bandes de déformation) ; ne passer en densité 1 qu'en dernier recours, après une densité intermédiaire (1,5).
+4. **Journal** : chaque allègement du récif est noté dans le journal technique de l'espace parent (densité, intervalle mesuré).
+5. **Qualité de réduction** : chaque créature est une image d'environ 600 px réduite 4 à 8 fois à chaque image, par bandes (`lagBlit`). Préparer une fois par créature une version déjà réduite à sa taille d'affichage, avec un rééchantillonnage de qualité. Ne pas modifier `app/js/recif/recif-vivant.js` à la main : passer par `art/tools/export-recif.mjs` (la maquette `art/recif-vivant/` n'est pas modifiée).
+6. **Captures** avant/après du poisson-clown, de l'hippocampe et du crabe, à la densité 2 et en mode allégé, regardées et jointes à la demande de fusion.
+
+**Voix** : aucune phrase nouvelle.
+
+**Recette du lot** : `tests/e2e/recif-nettete.mjs` (mesures par zone et par niveau, visite libre, captures, contrôles avec `--test`), sur `s5e` et `petit-smartphone`, contre une copie de `main` pour les chiffres « avant » ; les parcours du récif (`recif-vivant.mjs`, `boutique.mjs`) et la recette commune.

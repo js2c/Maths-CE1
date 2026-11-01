@@ -2,12 +2,12 @@
 
 Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 à 3 ter (ce qui a été fait, décisions prises en cours de route, recettes) est dans `docs/archives/AVANCEMENT-lots-1-a-3ter.md`.
 
-## Où en est-on (19 octobre 2026)
+## Où en est-on (1er novembre 2026)
 
 - **En ligne** (https://js2c.github.io/Maths-CE1/) : lots 1, 1 bis, 2, 3, 3 bis, 3 ter et « Lagon en fond d'exercices », tous fusionnés (dernière demande de fusion : PR #30, le lagon).
 - **Ce que fait l'application** : `docs/SPEC.md` (spécification unique ; ce qui reste à construire y est marqué « à construire », section 13).
-- **Prochains lots** : « Banc Android et recette en conditions réelles » (fiche 13) est fait (PR #63 ; à essayer sur la tablette : `docs/GUIDE-PARENT.md`, section « d octodecies »). Le banc Android est désormais le banc par défaut de tous les lots. Le lot suivant reste à décider par le parent (`docs/LOTS.md`, `docs/IDEES.md`).
-- **En attente du parent** : aucune phrase à fabriquer pour ce lot. Une soirée normale sur la tablette, et l'export du journal technique si quelque chose ne va pas (les temps de démarrage réels y sont notés) ; les questions de `docs/IDEES.md`, section 3.
+- **Prochains lots** : « Banc Android et recette en conditions réelles » (fiche 13) est fait (PR #63) ; le lot court « Netteté du récif » (fiche 14, constat du parent du 31 octobre) est fait (PR #68 ; à essayer sur la tablette : `docs/GUIDE-PARENT.md`, section « d novodecies »). Le lot suivant reste à décider par le parent (`docs/LOTS.md`, `docs/IDEES.md`).
+- **En attente du parent** : aucune phrase à fabriquer pour ces deux lots. Une visite du récif sur la tablette puis la lecture du journal technique (lignes « récif · allégé ») ; une soirée normale sur la tablette, et l'export du journal technique si quelque chose ne va pas (les temps de démarrage réels y sont notés) ; les questions de `docs/IDEES.md`, section 3.
 - **Projet parallèle** : la refonte graphique (hors de ce fichier).
 
 ## Lots
@@ -34,6 +34,7 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 | Décisions sur les constats de l'agent | La séance reprise après un rechargement de la page (le jour même, au début de l'étape), la maison en fin de séance (15 s), l'accueil en pause en deux touchers, la bulle qui évite ce dont parle la voix, la répétition des additions (2 passages, 4 questions d'écart ; après la relecture : le fait retourné espacé, la notion du jour qui s'arrête quand sa famille est épuisée), les voiliers (toucher un passage), le prix pour briller, les finitions ; recette et relecture indépendante | fait (PR #59) ; 4 phrases nouvelles |
 | Correctifs de l'installation et de la veille | L'essai de l'application installée (16 octobre) : la relance qui restait sur l'écran bleu (le service worker parcourait tout le cache pour chaque fichier), l'application figée après une longue inactivité (lecteurs de médias peu nombreux et réutilisés), le fond noir des leçons de la monnaie depuis l'accueil en pause, le contrôle des poissons coupés, le journal technique de l'espace parent ; d'un seul tenant | fait (PR #61) ; aucune phrase à fabriquer |
 | Banc Android et recette en conditions réelles | Un banc qui imite un vrai Android (quatre profils, la tablette de référence Galaxy Tab S5e : application installée, relancée, tuée, gelée, hors ligne, vraie voix, lecture automatique refusée, lecteurs limités, budgets de mémoire), banc par défaut de tous les parcours et des tests de GitHub (travail `android`) ; la recette de toute l'application sur ce banc (journées d'usage, enfant imprévisible, agent qui joue l'enfant) ; « tourne ton téléphone », zones sûres, taille réelle des cibles ; plus de rechargement quand la fenêtre change ; la reprise à la question près ; le sélecteur sans départ seul quand l'exercice est choisi | fait (PR #63) ; aucune phrase à fabriquer |
+| Netteté du récif | Les créatures du récif restent nettes : chacune dessinée depuis une image réduite une fois avec soin ; l'allègement au seuil de 33 ms, par crans (l'ondulation des créatures ralentie, puis la densité 1,5, la densité 1 en dernier recours), chaque cran noté au journal technique ; lot court | fait (PR #68) ; aucune phrase à fabriquer |
 
 ## Reprise
 

@@ -918,3 +918,9 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 
 - **Branche** : `ccr-3e7c2366-pv8vt6`, partie de `main` (398d794e, PR #62) ; demande de fusion https://github.com/js2c/Maths-CE1/pull/63.
 - **Fini le 19 octobre 2026** : les échecs laissés par la PR #61 ; le banc (`tests/e2e/appareils.mjs`, conditions par défaut, raccourcis déclarés) ; les budgets ; la journée d'usage sur les quatre profils, l'enfant imprévisible sur le banc, l'agent qui joue l'enfant (48 minutes sur `s5e`, `tests/recette-fonctionnelle/out-banc-android/agent/`), les temps de démarrage ; les smartphones (« tourne ton téléphone », zones sûres, cibles) et la décision du parent (option A) ; le banc devenu la règle (CLAUDE.md, méthode commune, travail `android`) ; les demandes du parent du 17 octobre (plus de rechargement quand la fenêtre change, reprise à la question près) ; la décision du 19 octobre sur le sélecteur ; relectures indépendantes et leur traitement.
+
+## Reprise du lot « Netteté du récif »
+
+- **Branche** : `claude/upbeat-shannon-brp4dg`, partie de `main` (18971432, PR #63) ; demande de fusion https://github.com/js2c/Maths-CE1/pull/68.
+- **Fiche** : `docs/LOTS.md`, fiche 14 ; lot court, d'un seul tenant.
+- **Fini le 1er novembre 2026** : `app/js/recif/reduction.js` (créatures réduites une fois, par moitiés, au double de leur taille d'affichage) ; `lagBlit` remplacé par l'outil d'export (`LAGBLIT`, `art/tools/export-recif.mjs`, la maquette n'est pas modifiée) ; `reef.js` : seuil 33 ms, quatre crans, chaque cran noté au journal technique ; mesures avant/après et captures sur `s5e` et `petit-smartphone` (`docs/maquettes/recif-nettete/`) ; documentation ; relecture indépendante ; recette complète (un défaut de mémoire du lot trouvé et corrigé ; trois défauts de parcours, sur `main` aussi, corrigés ; les échecs hérités et leur cause : `docs/JOURNAL-CONCEPTION.md`, points 7 à 9). Aucune phrase nouvelle.

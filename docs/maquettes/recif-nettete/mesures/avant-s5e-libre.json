@@ -1,0 +1,165 @@
+{
+ "date": "2026-10-31T18:31:24.644Z",
+ "profil": "s5e : Galaxy Tab S5e (référence), 1138 × 711 px CSS, densité 2.25, processeur ralenti × 4",
+ "version": "sans niveaux (densité 2, puis 1)",
+ "niveaux": [
+  {
+   "nom": "densité 2"
+  },
+  {
+   "nom": "densité 1 (allégé)"
+  }
+ ],
+ "zones": {},
+ "libre": {
+  "seconde_par_seconde": [
+   {
+    "s": 1,
+    "moyenne": 254.2,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 2,
+    "moyenne": 183.3,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 3,
+    "moyenne": 116.7,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 4,
+    "moyenne": 129.2,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 5,
+    "moyenne": 129.2,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 6,
+    "moyenne": 98.3,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 7,
+    "moyenne": 86.1,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 8,
+    "moyenne": 124.1,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 9,
+    "moyenne": 1233.3,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 10,
+    "moyenne": 80.3,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 11,
+    "moyenne": 89.4,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 12,
+    "moyenne": 90.9,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 13,
+    "moyenne": 86.4,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 14,
+    "moyenne": 450,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 15,
+    "moyenne": 123.8,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 16,
+    "moyenne": 103.7,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 17,
+    "moyenne": 140.5,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 18,
+    "moyenne": 122.9,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 19,
+    "moyenne": 477.7,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 20,
+    "moyenne": 144.4,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 21,
+    "moyenne": 155.6,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 22,
+    "moyenne": 193.3,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 23,
+    "moyenne": 180,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 24,
+    "moyenne": 180,
+    "niveau": 1,
+    "densite": 1
+   }
+  ],
+  "journal": []
+ },
+ "erreurs": [],
+ "echecs": []
+}

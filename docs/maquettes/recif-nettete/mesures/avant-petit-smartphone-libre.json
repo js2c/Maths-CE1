@@ -1,0 +1,165 @@
+{
+ "date": "2026-10-31T18:37:16.818Z",
+ "profil": "petit-smartphone : petit smartphone ancien, en paysage, 640 × 360 px CSS, densité 2, processeur ralenti × 6",
+ "version": "sans niveaux (densité 2, puis 1)",
+ "niveaux": [
+  {
+   "nom": "densité 2"
+  },
+  {
+   "nom": "densité 1 (allégé)"
+  }
+ ],
+ "zones": {},
+ "libre": {
+  "seconde_par_seconde": [
+   {
+    "s": 1,
+    "moyenne": 88.3,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 2,
+    "moyenne": 57.4,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 3,
+    "moyenne": 73.8,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 4,
+    "moyenne": 72.6,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 5,
+    "moyenne": 71.4,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 6,
+    "moyenne": 49.2,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 7,
+    "moyenne": 53.5,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 8,
+    "moyenne": 71.4,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 9,
+    "moyenne": 1983.2,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 10,
+    "moyenne": 48.2,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 11,
+    "moyenne": 46.8,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 12,
+    "moyenne": 47.6,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 13,
+    "moyenne": 42.4,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 14,
+    "moyenne": 1183.3,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 15,
+    "moyenne": 62.1,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 16,
+    "moyenne": 62.5,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 17,
+    "moyenne": 67.7,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 18,
+    "moyenne": 57.4,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 19,
+    "moyenne": 450,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 20,
+    "moyenne": 105,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 21,
+    "moyenne": 105,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 22,
+    "moyenne": 107.4,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 23,
+    "moyenne": 105.6,
+    "niveau": 1,
+    "densite": 1
+   },
+   {
+    "s": 24,
+    "moyenne": 106.7,
+    "niveau": 1,
+    "densite": 1
+   }
+  ],
+  "journal": []
+ },
+ "erreurs": [],
+ "echecs": []
+}

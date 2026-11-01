@@ -98,7 +98,7 @@ if (!args.includes("--sans-mesure")) {
   }
   // la visite libre : l'entrée par le lagon, puis chaque zone ; seconde par seconde, l'intervalle moyen et le niveau
   await page.evaluate(() => { delete window.__recifNiveau; });
-  await page.tap(".reefkey", { force: true }); await page.waitForFunction(() => window.__app.reef?.open && window.__app.reef.api, null, { timeout: 60000 });
+  await page.tap(".reefkey", { force: true }); await page.waitForFunction(() => !!(window.__app.reef?.open && window.__app.reef.api), null, { timeout: 60000 });
   const fil = [];
   for (let s = 0; s < 24; s++) {
     if (s === 8 || s === 13 || s === 18) await allerA(ZONES[s === 8 ? 1 : s === 13 ? 2 : 3][1] + 1200);
@@ -127,7 +127,7 @@ if (!args.includes("--sans-captures")) {
     if (TEST && nouveau && i === 0) check(d.reduites > 0, `les créatures sont dessinées depuis une image déjà réduite à leur taille (${d.reduites})`);
     for (const id of PORTRAITS) {
       await page.evaluate((k) => window.__app.reef.api.aller(k), id);
-      await page.waitForFunction((k) => window.__app.reef.api.ou(k), id, { timeout: 15000 }).catch(() => {});
+      await page.waitForFunction((k) => !!window.__app.reef.api.ou(k), id, { timeout: 15000 }).catch(() => {});
       await page.waitForTimeout(1200);
       const pos = await page.evaluate((k) => window.__app.reef.api.ou(k), id), box = await page.locator("canvas.recif-dessin").boundingBox();
       if (!pos) { check(false, `${id} visible`); continue; }

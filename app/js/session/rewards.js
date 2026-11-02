@@ -21,7 +21,8 @@
 //   achats   { liste: [{ t, carte, prix, briller, brillante }] } : le journal des achats, pour l'espace parent ;
 //   cadeaux, decors : les décors du récif (cadeaux de la surprise, décors des doublons) ; supprimés le 5 octobre 2026
 //            (décision du parent), ces fiches restent dans les données mais ne sont plus lues.
-// Le rythme de la boutique (Arrivages ou Libre) est un réglage du parent (reglages, « boutiqueRythme »).
+// Le rythme de la boutique (Arrivages ou Libre) est un réglage du parent (reglages, « boutiqueRythme »), comme le niveau de
+// prix (« boutiquePrix », lot « Prix de la boutique réglables ») : il change les prix aussitôt, les étoiles restent.
 // Les règles (prix, arrivages, brillantes, série, semaines réussies) viennent de content/cartes.json ; les semaines d'école, de
 // content/calendrier.json. Les fonctions pures sont testées par tests/unit/rewards.test.mjs, tests/unit/cartes.test.mjs et
 // tests/unit/boutique.test.mjs.
@@ -109,6 +110,11 @@ export function etatPlace(c, { owned, open, arrived }) {
   if (!open.includes(c.zone)) return "fermee";
   return arrived.has(c.id) ? "vendre" : "bientot";
 }
+// (lot « Prix de la boutique réglables », décision du parent du 2 novembre 2026) le niveau de prix : un réglage du parent
+// (reglages, « boutiquePrix »), parmi boutique.niveauxPrix ; un niveau inconnu (retiré du contenu) : celui par défaut
+export const niveauPrix = (B, id) => { const L = B?.niveauxPrix ?? []; return L.find((n) => n.id === id) ?? L.find((n) => n.id === B?.niveauPrix) ?? L[0] ?? null; };
+// les règles de la boutique au niveau de prix `id` : boutique.prix et boutique.briller sont ceux de ce niveau
+export const auNiveau = (B, id) => { const n = niveauPrix(B, id); return n ? { ...B, prix: n.prix, briller: n.briller, niveau: n.id } : B; };
 // ce que coûte une place : une créature à vendre (boutique.prix), une créature du récif à faire briller (boutique.briller) ;
 // rien sinon (null : elle ne s'achète pas)
 export const coutPlace = (B, c, etat) => (etat === "vendre" ? B.prix[c.rarete] : etat === "terne" ? B.briller[c.rarete] ?? null : null);
@@ -149,7 +155,7 @@ export class Rewards {
     this.store = store; this.c = content; this.cal = calendrier; this.listeners = new Set();
     this.st = { id: "etoiles", total: 0, cumul: 0, dorees: 0, doreesDepensees: 0, arcEnCiel: 0, arcDepensees: 0, arcLibre: 0, coquillages: 0, coquillagesDores: 0 };
     this.owned = {}; this.serie = null; this.base = null; this.zones = null;
-    this.bq = { id: "boutique", annoncees: [], vues: [], visites: 0 }; this.achats = { id: "achats", liste: [] }; this.rythme = null;
+    this.bq = { id: "boutique", annoncees: [], vues: [], visites: 0 }; this.achats = { id: "achats", liste: [] }; this.rythme = null; this.niveau = null;
     this.arrivee = null; // la dernière créature achetée (ou rendue brillante) : elle arrive à la nage dans le récif
     this.ordre = content?.zones ? ordreArrivages(content) : [];
   }
@@ -166,6 +172,7 @@ export class Rewards {
     this.bq = { ...this.bq, ...((await this.store.get("recompenses", "boutique")) ?? {}) };
     this.achats = { ...this.achats, ...((await this.store.get("recompenses", "achats")) ?? {}) };
     this.rythme = this.store.setting ? await this.store.setting("boutiqueRythme", null) : null;
+    this.niveau = this.store.setting ? await this.store.setting("boutiquePrix", null) : null;
     return this;
   }
   get total() { return this.st.total; }
@@ -188,6 +195,9 @@ export class Rewards {
   // le rythme : « arrivages » (par défaut, cartes.json) ou « libre » (réglage du parent)
   get mode() { return this.rythme ?? this.c?.boutique?.mode ?? "arrivages"; }
   async setMode(m) { this.rythme = m; await this.store.setSetting?.("boutiqueRythme", m); }
+  // les règles de la boutique au niveau de prix choisi par le parent (cartes.json, boutique.niveauxPrix), quel que soit le rythme
+  get boutique() { return auNiveau(this.c?.boutique, this.niveau); }
+  async setPrix(id) { this.niveau = id; await this.store.setSetting?.("boutiquePrix", id); }
   // combien de créatures sont arrivées en vitrine (mode Arrivages) : la base, plus `parSemaine` par semaine d'école commencée
   // depuis elle ; en mode Libre, ou sans calendrier, toutes
   nbArrivees(now = Date.now()) { return this.mode === "libre" ? Infinity : quotaAt(this.base, this.cal, now, { parSemaine: this.c.boutique.parSemaine, max: Infinity }); }
@@ -196,7 +206,7 @@ export class Rewards {
   // au lundi en pleine visite ne change rien sous le doigt de l'enfant)
   vitrine(now = Date.now()) { const ctx = { owned: this.owned, open: this.zones.ouvertes, arrived: this.arrived(now) }; return new Map(this.c.cartes.map((c) => [c.id, etatPlace(c, ctx)])); }
   carte(id) { return this.c.cartes.find((c) => c.id === id) ?? null; }
-  cout(id, etat) { const c = this.carte(id); return c ? coutPlace(this.c.boutique, c, etat) : null; }
+  cout(id, etat) { const c = this.carte(id); return c ? coutPlace(this.boutique, c, etat) : null; }
   // un achat est-il possible ? (une créature à vendre, ou à faire briller, avec assez d'étoiles)
   peutAcheter(now = Date.now()) { for (const [id, e] of this.vitrine(now)) { const k = this.cout(id, e); if (k !== null && this.total >= k) return true; } return false; }
   // les créatures arrivées, pas encore dans le récif, et pas encore annoncées (fin de séance, entrée de la boutique)

@@ -96,6 +96,16 @@
 .pa-setting > div:first-child span { color: var(--pa-ink-2); font-size: 15px; }
 @media (max-width: 800px) { .pa-setting { grid-template-columns: 1fr; } }
 .pa-full { flex-basis: 100%; }
+/* lot « Prix de la boutique réglables » : trois choix, chacun avec ses prix et, dessous, ce qu'il suppose */
+.pa-prix { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; width: 100%; }
+.pa-prix-choix { display: grid; gap: 6px; align-content: start; min-height: 64px; padding: 12px 14px; text-align: left; border-radius: 16px; border: 2px solid var(--pa-sea); background: #fff; color: var(--pa-ink); font: inherit; }
+.pa-prix-choix b { color: var(--pa-sea); font-size: 17px; }
+.pa-prix-chiffres { font-weight: 650; font-size: 15px; }
+.pa-prix-suppose { color: var(--pa-ink-2); font-size: 14px; }
+.pa-prix-choix[aria-pressed="true"] { background: var(--pa-sea); }
+.pa-prix-choix[aria-pressed="true"] b, .pa-prix-choix[aria-pressed="true"] span { color: #fff; }
+.pa-prix-choix[aria-pressed="true"] b::before { content: "✓ "; } /* le choix en cours : pas seulement la couleur */
+@media (max-width: 700px) { .pa-prix { grid-template-columns: 1fr; } } /* un petit écran : un choix par ligne */
 .pa-ok { color: var(--pa-good); font-weight: 650; }
 .pa-confirm { margin-top: 12px; padding: 14px 16px; border-radius: 16px; background: var(--pa-low-bg); }
 .pa-confirm p { margin: 0 0 10px; }

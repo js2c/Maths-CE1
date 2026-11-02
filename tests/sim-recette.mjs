@@ -75,18 +75,22 @@ const T = { achat: 24000, achatCorrige: 40000, achatManque: 46000, achatRendre: 
 export const EFFET_CRAN = { facile: 0.1, conseille: 0, dur: -0.08, tresdur: -0.15 };
 // `horloge` (lot 3, tools/sauvegarde-test.mjs) : pendant la simulation, Date.now() donne l'heure simulée (le moteur la
 // prend à plusieurs endroits : réponses, obtention d'un niveau…) ; le résultat garde la base (`out.store`)
-export async function simulate({ profil, jours, seed = 1, zonesPretes = true, choix = null, cran = null, horloge = false, rythme = null }) {
+export async function simulate({ profil, jours, seed = 1, zonesPretes = true, choix = null, cran = null, horloge = false, rythme = null, prix = null, boutique = null }) {
   const realNow = Date.now;
-  try { return await simulate0({ profil, jours, seed, zonesPretes, choix, cran, horloge, rythme }); } finally { Date.now = realNow; }
+  try { return await simulate0({ profil, jours, seed, zonesPretes, choix, cran, horloge, rythme, prix, boutique }); } finally { Date.now = realNow; }
 }
-async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horloge, rythme }) {
+async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horloge, rythme, prix, boutique }) {
   JUSTES.clear();
   // (lot « La boutique du récif » : zonesPretes « dates » : le contenu du grand large arrive le 1er février 2027, celui des
   // abysses le 26 avril 2027, comme le prévoit la SPEC, section 10 : le calibrage de la boutique, art/boutique/README.md)
-  const cartes = zonesPretes === "dates" ? structuredClone(cartes0) : zonesPretes ? pretes(cartes0) : cartes0;
+  let cartes = zonesPretes === "dates" ? structuredClone(cartes0) : zonesPretes ? pretes(cartes0) : cartes0;
+  // (lot « Prix de la boutique réglables » : `prix` le niveau de prix, comme le parent le choisit ; `boutique` : un niveau
+  // d'essai pour le calibrage, { prix, briller }, à la place des niveaux du contenu)
+  if (boutique) cartes = { ...cartes, boutique: { ...cartes.boutique, niveauxPrix: [{ id: "essai", nom: "essai", ...boutique }], niveauPrix: "essai" } };
   const PRET = zonesPretes === "dates" ? { large: new Date(2027, 1, 1).getTime(), abysses: new Date(2027, 3, 26).getTime() } : {};
   const P = { ...PROFILS[profil], ...(cran ? { cran } : {}) }, R = rng(seed), store = await Store.open(new IDBFactory()), rewards = await new Rewards(store, cartes, calendrier).load(jours[0].getTime() + 18 * 3600000);
   if (rythme) await rewards.setMode(rythme);
+  if (prix) await rewards.setPrix(String(prix));
   let t = 0; const clock = () => t, add = (ms) => { t += ms; };
   if (horloge) Date.now = () => Math.round(t);
   const essais = {}; const out = [];

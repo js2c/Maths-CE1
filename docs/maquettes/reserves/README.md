@@ -93,7 +93,44 @@ Quand une zone peut s'ouvrir, Z vaut au moins 1 : si l'enfant avait eu une étoi
 
 ## 4. Simulation de l'année, chaque niveau de prix
 
-`tests/sim-boutique.mjs` (une année, mode Arrivages, la règle proposée ; refaite avec le code de l'application après la validation, pour la demande de fusion) : voir la demande de fusion, section « Simulation ».
+`node tests/sim-boutique.mjs` : une année (du 28 septembre 2026 au 2 juillet 2027), mode Arrivages, le grand large prêt le 1er février et les abysses le 26 avril, la règle proposée ; l'enfant dépense ses étoiles arc-en-ciel dès qu'elle le peut. Pour l'instant, le paiement en étoile arc-en-ciel est imité par la simulation (`tests/sim-recette.mjs`, `arcBriller`) ; le tableau sera refait avec le code de l'application pour la demande de fusion.
+
+| Prix pour | Profil | Séances par semaine | Créatures (sur 60) | Collection complète | Séances sans rien de nouveau | Arc-en-ciel gagnées | pour les zones | pour faire briller | restantes | Diamant gagnées | utilisées | Zones ouvertes (corail, large, abysses) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 2 séances | reel | 2 | 60 | 14/06/2027 | 10/64 | 37 | 3 | 34 | 0 | 8 | 5 | 07/12, 04/02, 26/04 |
+| 2 séances | reel | 3 | 60 | 24/05/2027 | 67/96 | 44 | 3 | 29 | 12 | 8 | 5 | 02/12, 03/02, 26/04 |
+| 2 séances | reel | 4 | 60 | 21/05/2027 | 100/128 | 43 | 3 | 23 | 17 | 8 | 5 | 01/12, 02/02, 26/04 |
+| 2 séances | sait | 2 | 60 | 27/05/2027 | 33/64 | 43 | 3 | 35 | 5 | 8 | 5 | 03/12, 04/02, 26/04 |
+| 2 séances | sait | 3 | 60 | 24/05/2027 | 67/96 | 43 | 3 | 25 | 15 | 8 | 5 | 02/12, 03/02, 26/04 |
+| 2 séances | sait | 4 | 60 | 21/05/2027 | 100/128 | 43 | 3 | 21 | 19 | 8 | 5 | 01/12, 02/02, 26/04 |
+| 2 séances | diff | 2 | 60 | 01/07/2027 | 3/64 | 15 | 3 | 12 | 0 | 8 | 5 | 10/12, 08/03, 13/05 |
+| 2 séances | diff | 3 | 60 | 28/05/2027 | 45/96 | 21 | 3 | 18 | 0 | 8 | 5 | 02/12, 05/02, 26/04 |
+| 2 séances | diff | 4 | 60 | 28/05/2027 | 83/128 | 26 | 3 | 20 | 3 | 8 | 5 | 01/12, 04/02, 26/04 |
+| 3 séances | reel | 2 | 40 | non | 0/64 | 35 | 2 | 31 | 2 | 8 | 0 | 21/01, 10/05, — |
+| 3 séances | reel | 3 | 60 | 25/06/2027 | 6/96 | 46 | 3 | 40 | 3 | 8 | 5 | 11/12, 05/03, 10/05 |
+| 3 séances | reel | 4 | 60 | 21/05/2027 | 93/128 | 44 | 3 | 39 | 2 | 8 | 5 | 01/12, 02/02, 26/04 |
+| 3 séances | sait | 2 | 50 | non | 0/64 | 43 | 3 | 33 | 7 | 8 | 2 | 14/01, 19/04, 17/06 |
+| 3 séances | sait | 3 | 60 | 24/05/2027 | 43/96 | 43 | 3 | 33 | 7 | 8 | 5 | 04/12, 03/02, 26/04 |
+| 3 séances | sait | 4 | 60 | 21/05/2027 | 97/128 | 43 | 3 | 28 | 12 | 8 | 5 | 01/12, 02/02, 26/04 |
+| 3 séances | diff | 2 | 33 | non | 0/64 | 16 | 2 | 13 | 1 | 8 | 0 | 22/02, 24/06, — |
+| 3 séances | diff | 3 | 49 | non | 0/96 | 18 | 3 | 15 | 0 | 8 | 2 | 11/01, 19/04, 21/06 |
+| 3 séances | diff | 4 | 60 | 24/06/2027 | 9/128 | 24 | 3 | 21 | 0 | 8 | 5 | 10/12, 01/03, 30/04 |
+| 4 séances | reel | 2 | 29 | non | 0/64 | 35 | 1 | 20 | 14 | 8 | 0 | 11/03, —, — |
+| 4 séances | reel | 3 | 43 | non | 0/96 | 44 | 2 | 30 | 12 | 8 | 0 | 15/01, 30/04, — |
+| 4 séances | reel | 4 | 60 | 24/06/2027 | 8/128 | 44 | 3 | 36 | 5 | 8 | 5 | 15/12, 11/03, 11/05 |
+| 4 séances | sait | 2 | 35 | non | 0/64 | 43 | 2 | 27 | 14 | 8 | 0 | 22/02, 10/06, — |
+| 4 séances | sait | 3 | 54 | non | 0/96 | 43 | 3 | 33 | 7 | 8 | 2 | 06/01, 24/03, 02/06 |
+| 4 séances | sait | 4 | 60 | 27/05/2027 | 37/128 | 43 | 3 | 38 | 2 | 8 | 5 | 04/12, 05/02, 26/04 |
+| 4 séances | diff | 2 | 25 | non | 0/64 | 14 | 1 | 11 | 2 | 8 | 0 | 22/04, —, — |
+| 4 séances | diff | 3 | 36 | non | 0/96 | 21 | 2 | 18 | 1 | 8 | 0 | 05/02, 07/06, — |
+| 4 séances | diff | 4 | 42 | non | 0/128 | 27 | 2 | 24 | 1 | 8 | 0 | 08/01, 20/04, — |
+
+**Ce qu'il montre.**
+
+- **Au niveau qui correspond au rythme** (prix pour 2 à 2 séances, pour 3 à 3, pour 4 à 4), le profil `reel` garde le calibrage du lot précédent : 10 séances sur 64 sans rien de nouveau, collection complète le 14 juin (inchangé) ; 6 sur 96, le 25 juin (5 sur 96, le 28 juin, sans les étoiles arc-en-ciel) ; 8 sur 128, le 24 juin (7 sur 128, le 25 juin). Faire briller avec les étoiles arc-en-ciel laisse un peu plus d'étoiles de mer pour les créatures nouvelles : l'effet est faible là où les prix suivent le rythme.
+- **Les étoiles arc-en-ciel servent** : à ces niveaux, 34, 40 et 36 font briller une créature (sur 37 à 46 gagnées) ; il en reste 0 à 5 en fin d'année. Celles qui restent ailleurs : toutes les créatures qui peuvent briller brillent déjà, ou la collection n'est pas complète (moins de créatures à faire briller).
+- **Les étoiles de diamant** : 8 gagnées dans l'année ; 5 utilisées quand la collection est complète (les 5 légendaires), moins sinon (une légendaire attend que toute sa zone soit dans le récif).
+- **L'enfant en difficulté** à 3 séances par semaine : aucun niveau n'est juste (comme au lot précédent ; pas de niveau intermédiaire, décision du parent).
 
 ## 5. Les décisions du parent sur le lot « Prix de la boutique réglables »
 

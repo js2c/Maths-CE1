@@ -56,7 +56,7 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (décision du parent du 2 novembre 2026) : le lot court « Prix de la boutique réglables »** (fiche 15) : dans l'espace parent, les prix de la boutique selon le nombre de séances par semaine (2, 3 ou 4), calibrés par la simulation. **État : fait** (PR #69 ; 8 phrases nouvelles, les nouveaux prix).
 
-**Puis (décisions du parent du 2 novembre 2026) : le lot « Réserves d'étoiles et étoiles arc-en-ciel »** (fiche 16), avec un point d'arrêt « maquette » : montrer à l'enfant ses réserves d'étoiles arc-en-ciel et de diamant, un usage pour les étoiles arc-en-ciel en surplus (faire briller une créature), les réponses du parent aux questions du lot « Prix de la boutique réglables », et la documentation du Python unique de la voix. **État : maquette en attente de la validation du parent** (`docs/maquettes/reserves/README.md`).
+**Puis (décisions du parent du 2 novembre 2026) : le lot « Réserves d'étoiles et étoiles arc-en-ciel »** (fiche 17), avec un point d'arrêt « maquette » : montrer à l'enfant ses réserves d'étoiles arc-en-ciel et de diamant, un usage pour les étoiles arc-en-ciel en surplus (faire briller une créature), les réponses du parent aux questions du lot « Prix de la boutique réglables », et la documentation du Python unique de la voix. **État : fait** (maquette validée le 2 novembre 2026, avec des corrections ; 108 phrases nouvelles à fabriquer, 6 qui ne servent plus).
 
 **Pourquoi cet ordre.**
 
@@ -1156,7 +1156,7 @@ Chaque défaut trouvé est corrigé et devient un test de non-régression. **Auc
 
 **Recette du lot** : tests unitaires (niveaux, changement de prix, étoiles gardées, mode Libre, rechargement), `tests/e2e/prix-boutique.mjs` (1280 × 800, 1920 × 1200, `s5e`, `petit-smartphone`), `tests/e2e/boutique.mjs`, la recette commune.
 
-### 16. Lot « Réserves d'étoiles et étoiles arc-en-ciel » (avec un point d'arrêt « maquette »)
+### 17. Lot « Réserves d'étoiles et étoiles arc-en-ciel » (avec un point d'arrêt « maquette »)
 
 **Origine** : décisions du parent du 2 novembre 2026. Les étoiles arc-en-ciel et de diamant volent vers l'album à la récompense, puis disparaissent : l'enfant ne sait pas combien elle en a. Et la simulation d'une année (profil `reel`, 3 séances par semaine) donne 44 étoiles arc-en-ciel gagnées pour 3 utilisées (les trois zones à ouvrir) : 41 ne servent à rien.
 

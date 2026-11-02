@@ -41,7 +41,7 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
 
-### Reprise du lot « Réserves d'étoiles et étoiles arc-en-ciel » (fiche 16)
+### Reprise du lot « Réserves d'étoiles et étoiles arc-en-ciel » (fiche 17)
 
 - **Branche** : `claude/beautiful-goodall-30h3pg` ; demande de fusion en brouillon, « Lot : Réserves d'étoiles et étoiles arc-en-ciel ».
 - **Fait** : la documentation de la voix (point 6 : `docs/VOIX.md`, « Le Python de la voix » ; `tools/voix/publier.mjs` ; en-têtes de `tools/voix/essais/`) ; la maquette (`art/reserves/`) et ses captures (`docs/maquettes/reserves/`), la proposition (règle de réserve, phrases, questions) ; la simulation étendue (`tests/sim-recette.mjs`, option `arcBriller` ; `tests/sim-boutique.mjs`, le tableau par niveau de prix, profil et rythme) ; les décisions du parent sur le lot précédent dans le journal et les idées.

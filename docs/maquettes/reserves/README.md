@@ -1,6 +1,13 @@
-# Maquette — réserves d'étoiles et étoiles arc-en-ciel (en attente de la validation du parent)
+# Maquette — réserves d'étoiles et étoiles arc-en-ciel (validée par le parent le 2 novembre 2026, avec des corrections)
 
-Lot « Réserves d'étoiles et étoiles arc-en-ciel » (`docs/LOTS.md`, fiche 16 ; décisions du parent du 2 novembre 2026). Point d'arrêt « maquette » : rien n'est encore changé sous `app/`. La maquette se pose sur l'application elle-même (sa mascotte, sa bulle, sa boutique, ses dessins) : `art/reserves/` (son `README.md`).
+Lot « Réserves d'étoiles et étoiles arc-en-ciel » (`docs/LOTS.md`, fiche 17 ; décisions du parent du 2 novembre 2026). Point d'arrêt « maquette » : rien n'est encore changé sous `app/`. La maquette se pose sur l'application elle-même (sa mascotte, sa bulle, sa boutique, ses dessins) : `art/reserves/` (son `README.md`).
+
+**La validation** (le parent, le 2 novembre 2026) : validée, avec ces réponses et corrections, faites dans le code (`docs/JOURNAL-CONCEPTION.md`) :
+1. pendant les exercices (échauffement, notion du jour, défi, leçons, exemples guidés), les réserves restent visibles mais **ne réagissent pas** au toucher ; elles répondent à l'accueil, dans la boutique, à la récompense et dans l'accueil en pause (capture `05`, refaite avec l'application) ;
+2. une étoile arc-en-ciel pour faire briller, commune ou rare ; 3. une étoile gardée par zone encore fermée ; 4. les légendaires ne se font pas briller ; 5. les étoiles de diamant en trop : rien ne change pour l'instant ;
+6. **des phrases plus courtes à la boutique** : « C'est le crabe ! Il est déjà dans ton récif. Pour le faire briller : 150 étoiles, ou une étoile arc-en-ciel. Touche la coche de l'étoile que tu veux donner. » ; même principe pour l'étoile gardée (captures `06` et `09`, refaites avec l'application). Les phrases sont recomptées à la section 6.
+
+Les captures `05`, `06` et `09` sont celles de l'application, après le code (parcours `tests/e2e/reserves.mjs`) ; les autres sont celles de la maquette, validées. Les phrases des tableaux ci-dessous sont celles de la maquette ; celles de l'application sont dans `docs/SPEC.md`, section 10.
 
 Les captures sont en 1280 × 800 (`*-1280.png`) et sur le petit smartphone du banc Android (`*-petit-smartphone.png`, 640 × 360, densité 2). Dans les captures, la bulle écrit les phrases nouvelles : elles ne sont pas encore fabriquées.
 
@@ -138,20 +145,17 @@ Quand une zone peut s'ouvrir, Z vaut au moins 1 : si l'enfant avait eu une étoi
 - **Pas de niveau intermédiaire** pour l'enfant en difficulté à 3 séances par semaine (noté dans `docs/IDEES.md`, à rouvrir si une collection prend du retard).
 - **« Il te manque N étoiles. »** reste dit de 1 à 299 ; au-delà, le prix seul.
 
-## 6. Les phrases nouvelles à fabriquer
+## 6. Les phrases nouvelles à fabriquer (recomptées après la validation)
 
-**83 phrases, environ 0,9 Mo** (estimation : la taille moyenne des fichiers de la voix selon la longueur du texte). La voix pèse aujourd'hui 81,3 Mo ; avec elles, environ **82,2 Mo**, sous la limite de 85 Mo.
+**108 phrases, environ 1,2 Mo** (estimation : la taille moyenne des fichiers de la voix selon la longueur du texte) ; **6 ne servent plus** (« Pour la faire briller, il faut 150 étoiles. », et 250, 300, 350, 500, 700 : remplacées par la forme courte). La voix pèse aujourd'hui 81,3 Mo ; ensuite, environ **82,4 Mo**, sous la limite de 85 Mo. La liste exacte est dans la demande de fusion :
 
-- « Tu as une étoile arc-en-ciel. », « Tu as 2 étoiles arc-en-ciel. » … « Tu as 50 étoiles arc-en-ciel. », « Tu as beaucoup d'étoiles arc-en-ciel. » (51)
-- « Elles ouvrent les nouvelles zones du récif, et font briller tes créatures. », « Elle ouvrira la prochaine zone du récif. », « Elles ouvriront les prochaines zones du récif. », « Elle fait briller une créature, à la boutique. », « Elles font briller tes créatures, à la boutique. » (5)
-- « Tu as une étoile de diamant. », « Tu as 2 étoiles de diamant. » … « Tu as 15 étoiles de diamant. », « Tu as beaucoup d'étoiles de diamant. » (16)
-- « Tu as déjà toutes les créatures légendaires ! », « À la fin de ta prochaine séance, une étoile de diamant t'offrira une créature légendaire ! », « Elle t'offrira une créature légendaire, quand tu auras toutes les créatures du grand large. », « Elles t'offriront les créatures légendaires, quand tu auras toutes les créatures du grand large. », les deux mêmes avec « des abysses » (6)
-- « Ou bien une étoile arc-en-ciel ! », « Touche la coche de l'étoile que tu veux donner. », « Ton étoile arc-en-ciel est gardée pour ouvrir une nouvelle zone. », « Tes étoiles arc-en-ciel sont gardées pour ouvrir les nouvelles zones. » (4)
-- « Les prix de la boutique ont changé ! » (1)
+- les réserves : « Tu as une étoile arc-en-ciel. », « Tu as 2 étoiles arc-en-ciel. » … « Tu as 50 étoiles arc-en-ciel. », « Tu as beaucoup d'étoiles arc-en-ciel. » (51) ; leurs 5 rôles ; « Tu as une étoile de diamant. » … « Tu as 15 étoiles de diamant. », « Tu as beaucoup d'étoiles de diamant. » (16) ; leurs 6 rôles ;
+- la boutique : « Il est déjà dans ton récif. », « Elle est déjà dans ton récif. » ; « Pour le faire briller : 150 étoiles. » et « Pour la faire briller : 150 étoiles. », à chaque prix de chaque niveau (150, 300, 250, 500, 350, 700 : 12), les mêmes avec « , ou une étoile arc-en-ciel. » (12) ; « Touche la coche de l'étoile que tu veux donner. » ; « Ton étoile arc-en-ciel est gardée pour la prochaine zone. », « Tes étoiles arc-en-ciel sont gardées pour les nouvelles zones. » (29 en tout) ;
+- « Les prix de la boutique ont changé ! » (1).
 
-Réutilisées, sans fabrication : « Une nouvelle zone va bientôt s'ouvrir. », « Si tu es d'accord, touche la coche verte. », « C'est le crabe ! Oh ! Elle est brillante ! », « Et une étoile arc-en-ciel ! ».
+Réutilisées, sans fabrication : « Une nouvelle zone va bientôt s'ouvrir. », « Si tu es d'accord, touche la coche verte. », « Il te manque … étoiles. », « C'est le crabe ! Oh ! Elle est brillante ! », « Et une étoile arc-en-ciel ! », « Cette créature est déjà dans ton récif. » (une légendaire du récif).
 
-## 7. Questions, chacune avec sa valeur par défaut
+## 7. Questions, chacune avec sa valeur par défaut (tranchées par le parent le 2 novembre 2026 : voir « La validation », en tête)
 
 1. **Les réserves pendant les exercices** : montrées et touchables partout où est le compteur (la demande du parent). Le risque : un toucher au milieu d'une question fait parler la mascotte d'autre chose. Par défaut : partout ; autre possibilité : seulement à l'accueil, à la récompense et à la boutique.
 2. **Le prix d'une étoile arc-en-ciel** : une étoile, pour une commune comme pour une rare. Par défaut : une.

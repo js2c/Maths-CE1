@@ -544,6 +544,21 @@ Ce qui change pour l'enfant et pour vous :
 
 **À essayer sur la tablette** : choisir « 3 séances par semaine », puis ouvrir la boutique depuis le récif et toucher une créature à vendre : la tuile et le capitaine disent 70 (ou 175 pour une rare). Revenir à « Prix pour 2 séances par semaine » : les prix reviennent, les étoiles n'ont pas bougé.
 
+## d duovicies) Lot « Réserves d'étoiles et étoiles arc-en-ciel » : vos décisions du 2 novembre
+
+**Ce qui change pour l'enfant** :
+- **Ses réserves d'étoiles sont visibles** : à droite du compteur d'étoiles de mer, une petite étoile arc-en-ciel et une petite étoile de diamant, chacune avec son nombre (elles n'apparaissent pas tant qu'elle n'en a pas). Si elle en touche une, le capitaine dit combien elle en a et à quoi elles servent (« Tu as 4 étoiles arc-en-ciel. Elles ouvrent les nouvelles zones du récif, et font briller tes créatures. »). Elles répondent à l'accueil, dans la boutique, à la fin de la séance et pendant une pause ; **pendant les questions, elles ne réagissent pas** (votre décision : le seul toucher hors réponse reste le capitaine, qui redit la consigne).
+- **À la fin de la séance**, les étoiles arc-en-ciel et de diamant gagnées volent jusqu'à leur réserve, qui avance d'un cran à chaque étoile. Quand une zone s'ouvre, son étoile part de la réserve.
+- **À la boutique, une créature déjà dans son récif peut briller avec une étoile arc-en-ciel**, à la place des étoiles de mer : une étoile, pour une commune comme pour une rare. Sous la tuile, deux coches : celle de l'étoile de mer et celle de l'étoile arc-en-ciel. Le capitaine le dit en phrases courtes : « C'est le crabe ! Il est déjà dans ton récif. Pour le faire briller : 150 étoiles, ou une étoile arc-en-ciel. Touche la coche de l'étoile que tu veux donner. »
+- **Une étoile arc-en-ciel est gardée pour chaque zone encore fermée** (3 au début de l'année, puis 2, puis 1) : ainsi, l'ouverture d'une zone n'est jamais retardée. Quand toutes ses étoiles sont gardées, la tuile montre l'étoile arc-en-ciel avec un petit cadenas et le capitaine dit : « Tes étoiles arc-en-ciel sont gardées pour les nouvelles zones. »
+- **Quand vous changez le niveau de prix**, le capitaine dit une seule fois, à la visite suivante de la boutique : « Les prix de la boutique ont changé ! ».
+
+**Pour vous** : dans « Cartes et boutique », la réserve d'étoiles arc-en-ciel dit combien ont ouvert des zones et combien ont fait briller une créature ; la liste des achats montre « 1 étoile arc-en-ciel » à la place du prix (et l'export a une colonne « étoile arc-en-ciel »). Ce qui est simulé sur une année (`docs/maquettes/reserves/simulation.md`) : au niveau de prix qui suit votre rythme, environ 35 étoiles arc-en-ciel font briller une créature au lieu de rester inutiles ; les zones s'ouvrent aux mêmes dates ; la collection est complète en juin, comme avant.
+
+**108 phrases à fabriquer**, environ 1,2 Mo (la voix passera d'environ 81,3 à 82,4 Mo, sous la limite de 85 Mo) ; 6 phrases ne servent plus (« Pour la faire briller, il faut 150 étoiles. » et les autres prix), leur fichier sera effacé : `node tools\voix\publier.mjs` (`docs/VOIX.md`). Tant qu'elles manquent, la bulle du capitaine écrit la phrase sans la dire.
+
+**À essayer sur la tablette** : à l'accueil, toucher l'étoile arc-en-ciel puis l'étoile de diamant, à côté du compteur ; pendant une question, les toucher ne doit rien faire. À la boutique, toucher une créature déjà dans le récif : si elle a plus d'étoiles arc-en-ciel que de zones fermées, la coche arc-en-ciel apparaît ; la toucher fait briller la créature, et la réserve baisse d'une étoile.
+
 ## e) Ce qui reste approximatif ou à ajuster
 
 **À vérifier sur la vraie tablette.** Écouter la voix (aucune phrase n'a été écoutée par une personne, la vérification a été automatique) et regarder les illustrations des cartes en grand. Toutes les mesures ont été faites sur un ordinateur, en ralentissant le processeur 4 fois pour imiter une tablette : démarrage en moins de 1,5 s, animation à 50 à 60 images par seconde la plupart du temps, avec des baisses vers 30 pendant certaines animations (l'application allège alors d'elle-même le décor). Il faut confirmer que tout reste fluide sur la tablette.

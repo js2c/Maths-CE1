@@ -94,13 +94,9 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
   let t = 0; const clock = () => t, add = (ms) => { t += ms; };
   if (horloge) Date.now = () => Math.round(t);
   const essais = {}; const out = [];
-  // (lot « Réserves d'étoiles et étoiles arc-en-ciel », proposition du point d'arrêt) faire briller une créature du récif avec une
-  // étoile arc-en-ciel ; `arcBriller` : « aucun » (comme avant le lot), « un » (une étoile gardée tant qu'une zone est fermée),
-  // « zones » (une étoile gardée par zone encore fermée : la règle proposée). En attendant le code de l'application, la simulation
-  // range elle-même la brillante et compte l'étoile (arcBrillees, comptée aussi dans arcDepensees : la réserve reste juste).
-  const fermees = () => cartes.zones.filter((z) => !rewards.zones.ouvertes.includes(z.id)).length;
-  const gardees = () => (arcBriller === "un" ? (fermees() ? 1 : 0) : arcBriller === "zones" ? fermees() : Infinity);
-  let arcBrillees = 0;
+  // (lot « Réserves d'étoiles et étoiles arc-en-ciel », décisions du parent du 2 novembre 2026) faire briller une créature du récif
+  // avec une étoile arc-en-ciel, par le code de l'application (rewards.acheter, { arc: true } : une étoile gardée par zone encore
+  // fermée) ; `arcBriller` : « zones » (l'application), « aucun » (l'enfant ne s'en sert jamais : comme avant le lot)
   for (const [i, day] of jours.entries()) {
     t = day.getTime() + 18 * 3600000;
     for (const [z, d] of Object.entries(PRET)) if (t >= d) for (const c of cartes.cartes) if (c.zone === z) { c.illustration ??= `fictif/${c.id}.webp`; c.anecdote ??= "Anecdote fictive."; }
@@ -255,12 +251,12 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
         if (rewards.goldenCard(t)) { const g = await rewards.openGolden(R, t); log.cartes.push(`${g.carte.id}(diamant)`); }
         const vendre = () => [...rewards.vitrine(t)].filter(([, e]) => e === "vendre").map(([id]) => id);
         log.vitrineVide = !vendre().length;
-        // (proposition du lot « Réserves d'étoiles… ») d'abord les étoiles arc-en-ciel qu'elle peut dépenser : chacune fait briller
-        // une créature du récif (les rares d'abord : les plus chères en étoiles de mer)
-        for (;;) {
+        // (lot « Réserves d'étoiles… ») d'abord les étoiles arc-en-ciel qu'elle peut dépenser : chacune fait briller une créature du
+        // récif (les rares d'abord : les plus chères en étoiles de mer)
+        while (arcBriller !== "aucun" && rewards.arcPourBriller > 0) {
           const ternes = cartes.cartes.filter((c) => rewards.owned[c.id] && !rewards.owned[c.id].brillante && c.rarete !== "legendaire").sort((a, b) => (a.rarete === "rare" ? 0 : 1) - (b.rarete === "rare" ? 0 : 1));
-          if (!ternes.length || rewards.arcDispo - gardees() < 1) break;
-          const c = ternes[0]; rewards.owned = { ...rewards.owned, [c.id]: { ...rewards.owned[c.id], brillante: true, brillanteLe: t } }; rewards.st = { ...rewards.st, arcDepensees: (rewards.st.arcDepensees ?? 0) + 1 }; arcBrillees++; log.achats.push(`${c.id}(briller arc)`);
+          if (!ternes.length) break;
+          const g = rewards.acheter(ternes[0].id, t, R, { arc: true }); if (!g) break; await g.ecrit; log.achats.push(`${ternes[0].id}(briller arc)`);
         }
         for (;;) {
           const v = vendre();
@@ -272,7 +268,7 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
         log.reserve = rewards.total; },
     } });
     const rec = await s.run();
-    Object.assign(log, { cran: rec.cran, cranDepart: rec.cranDepart, reussite: rec.reussite, questions: rec.questions, etoiles: rec.etoiles, duree: Math.round(rec.dureeS / 60 * 10) / 10, arc: rec.arcEnCiel ?? 0, reste: rewards.total, nbCartes: rewards.count, brillantes: Object.values(rewards.owned).filter((o) => o.brillante).length, legendaires: cartes.cartes.filter((c) => c.rarete === "legendaire" && rewards.owned[c.id]).length, ouvertes: [...rewards.zones.ouvertes], doreesDispo: rewards.doreesDispo, arcDispo: rewards.arcDispo, arcGagnees: rewards.st.arcEnCiel ?? 0, arcBrillees, arcZones: (rewards.st.arcDepensees ?? 0) - arcBrillees, doreesGagnees: rewards.st.dorees ?? 0, doreesDepensees: rewards.st.doreesDepensees ?? 0 });
+    Object.assign(log, { cran: rec.cran, cranDepart: rec.cranDepart, reussite: rec.reussite, questions: rec.questions, etoiles: rec.etoiles, duree: Math.round(rec.dureeS / 60 * 10) / 10, arc: rec.arcEnCiel ?? 0, reste: rewards.total, nbCartes: rewards.count, brillantes: Object.values(rewards.owned).filter((o) => o.brillante).length, legendaires: cartes.cartes.filter((c) => c.rarete === "legendaire" && rewards.owned[c.id]).length, ouvertes: [...rewards.zones.ouvertes], doreesDispo: rewards.doreesDispo, arcDispo: rewards.arcDispo, arcGagnees: rewards.st.arcEnCiel ?? 0, arcBrillees: rewards.st.arcBrillees ?? 0, arcZones: rewards.st.arcDepensees ?? 0, doreesGagnees: rewards.st.dorees ?? 0, doreesDepensees: rewards.st.doreesDepensees ?? 0 });
     log.defiSaute = rec.etapes.find((e) => e.id === "defi")?.sautee ?? null;
     const fam = await store.get("niveaux", 2); log.fOuvertes = [...(fam?.ouvertes ?? [])]; log.fAcquises = [...(fam?.acquises ?? [])]; log.fTrou = [...(fam?.trou ?? [])]; log.fDepassees = (fam?.depassees ?? []).map((d) => d.famille);
     // lot 3 ter (T2) : les ouvertures de familles, l'évaluation de fin d'échauffement, les réponses attendues à l'échauffement

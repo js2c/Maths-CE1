@@ -23,6 +23,7 @@ import { MASCOTTE, MENTON, PLACES } from "../engine/bulle.js";
 import { manque } from "./rewards.js";
 import { bulleTuile, rectStyle } from "./selection.js";
 import { versMaquette } from "./reef.js";
+import { volVersReserve } from "./reserves.js";
 import { fill } from "../modules/numberline/screen.js";
 
 // la scène de la maquette : tuiles de 170 × 196 en 5 colonnes à partir de x 340 (à droite de la tête de la mascotte), onglets
@@ -33,23 +34,35 @@ export const RETOUR = { x: 22, y: 14, w: 112, h: 116 };
 export const PLACES_BOUTIQUE = [{ nom: "dessous", boite: [8, MASCOTTE.y + MASCOTTE.h + 34, 326, 792], pointe: MENTON, haut: true }, ...PLACES];
 // la place d'une tuile (i : son rang dans la zone)
 export const placeTuile = (i) => ({ x: VITRINE.x + (i % VITRINE.cols) * (VITRINE.w + VITRINE.gx), y: VITRINE.y + Math.floor(i / VITRINE.cols) * (VITRINE.h + VITRINE.gy) });
-// la coche et la croix, sous la tuile (au-dessus pour la dernière rangée), gardées dans l'écran : { x, y } du coin du couple
-export function placeConfirmation([x0, y0, x1, y1]) {
-  const l = 2 * CONF + CONF_GAP;
-  return { x: Math.min(1272 - l, (x0 + x1) / 2 - l / 2), y: y1 + CONF + 4 > 800 ? y0 - CONF + 22 : y1 + 2 };
+// la croix et la coche (ou les deux coches : lot « Réserves d'étoiles et étoiles arc-en-ciel »), sous la tuile (au-dessus pour la
+// dernière rangée), gardées dans l'écran : { x, y } du coin de la rangée de `n` boutons. (Maquette du lot « Réserves d'étoiles »,
+// validée le 2 novembre 2026 : la rangée se pose à côté du départ de la bulle, à droite du milieu du bas de la tuile, ou à gauche
+// près du bord droit, pour que la pointe de la bulle ne passe sur aucun bouton.)
+export function placeConfirmation([x0, y0, x1, y1], n = 2) {
+  const l = n * CONF + (n - 1) * CONF_GAP, mid = (x0 + x1) / 2;
+  return { x: mid + 14 + l <= 1272 ? mid + 14 : Math.max(8, mid - 14 - l), y: y1 + CONF + 4 > 800 ? y0 - CONF + 22 : y1 + 2 };
 }
 // dans une zone : ses créatures dans l'ordre de l'album (communes, rares, légendaires)
 export const parZone = (cartes, z) => ["commune", "rare", "legendaire"].flatMap((r) => cartes.cartes.filter((c) => c.zone === z && c.rarete === r));
 // CE QUE DIT LA MASCOTTE quand on touche une place (art/boutique/README.md, « Une place de la vitrine, selon son état »)
 // `T` : textes.json ; `cartes` : cartes.json ; `etat` : l'état de la place ; `cout` : son prix (null s'il ne s'achète pas) ;
-// `total` : les étoiles de l'enfant. « Il te manque N étoiles. » n'est dit que de 1 à boutique.manqueDitMax (299) : une
-// rare à faire briller (300) sans aucune étoile, seul le prix est dit.
-export function texteTuile(T, cartes, c, etat, cout, total) {
-  const B = T.boutique, nom = fill(T.carteNouvelle, { nom: c.nomLu ?? c.nom });
+// `total` : les étoiles de l'enfant. « Il te manque N étoiles. » n'est dit que de 1 à boutique.manqueDitMax (299) : au-delà,
+// seul le prix est dit (décision du parent du 2 novembre 2026).
+// (lot « Réserves d'étoiles et étoiles arc-en-ciel », décisions du parent du 2 novembre 2026) `arc` : { dispo (la réserve d'étoiles
+// arc-en-ciel), libres (celles qu'elle peut dépenser : une est gardée par zone fermée) }. Une créature du récif, en phrases courtes :
+// « C'est le crabe ! Il est déjà dans ton récif. Pour le faire briller : 150 étoiles, ou une étoile arc-en-ciel. Touche la coche de
+// l'étoile que tu veux donner. » ; sans étoile arc-en-ciel à dépenser, « Pour le faire briller : 150 étoiles. », puis, si elle en a
+// mais qu'elles sont gardées, « Tes étoiles arc-en-ciel sont gardées pour les nouvelles zones. », puis la coche ou ce qui manque
+export function texteTuile(T, cartes, c, etat, cout, total, arc = { dispo: 0, libres: 0 }) {
+  const B = T.boutique, nom = fill(T.carteNouvelle, { nom: c.nomLu ?? c.nom }), f = c.genre === "f";
   const suite = () => { const n = manque(cout, total); if (n === null) return B.daccord; if (n > (cartes.boutique.manqueDitMax ?? 299)) return null; return n === 1 ? B.manqueUn : fill(B.manque, { n }); };
   const j = (...xs) => xs.filter(Boolean).join(" ");
   if (etat === "vendre") return j(nom, fill(B.prix, { n: cout }), suite());
-  if (etat === "terne") return j(nom, B.dejaLa, fill(B.briller, { n: cout }), suite());
+  if (etat === "terne") {
+    const deja = f ? B.dejaLaElle : B.dejaLaIl;
+    if (arc.libres > 0) return j(nom, deja, fill(f ? B.brillerLaArc : B.brillerLeArc, { n: cout }), total >= cout ? B.choisisCoche : B.daccord);
+    return j(nom, deja, fill(f ? B.brillerLa : B.brillerLe, { n: cout }), arc.dispo > 0 ? (arc.dispo === 1 ? B.arcGardeeUne : B.arcGardees) : null, suite());
+  }
   if (etat === "brillante") return j(nom, B.brilleDeja);
   if (etat === "legendeAToi") return j(nom, B.dejaLa);
   if (etat === "bientot") return B.bientot;
@@ -102,15 +115,23 @@ export class Boutique {
     const rc = document.createElement("canvas"); rc.width = Math.round(RETOUR.w * stage.px); rc.height = Math.round(RETOUR.h * stage.px); retour.append(rc);
     poser(sprites, rc.getContext("2d"), stage.px, "recif", 0, RETOUR.w / 2, RETOUR.h / 2, RETOUR.w / 180 * 1.18);
     stage.ui.append(retour); this.retour = retour; this.els.push(retour);
-    // la coche et la croix
-    this.conf = ["croix", "coche"].map((k) => {
-      const b = document.createElement("button"); b.className = `bubble boutique-conf ${k}${k === "coche" ? " invite" : ""}`; b.setAttribute("aria-label", k === "coche" ? "acheter" : "annuler");
+    // la croix et la coche ; (lot « Réserves d'étoiles et étoiles arc-en-ciel », maquette validée le 2 novembre 2026) la coche de
+    // l'étoile arc-en-ciel, pour faire briller une créature du récif avec elle. Quand les deux coches sont là, chacune porte dans
+    // son coin ce qu'on donne (l'étoile de mer, l'étoile arc-en-ciel)
+    this.conf = ["croix", "coche", "arc"].map((k) => {
+      const b = document.createElement("button"); b.className = `bubble boutique-conf ${k === "arc" ? "coche coche-arc" : k}${k !== "croix" ? " invite" : ""}`; b.setAttribute("aria-label", k === "coche" ? "acheter" : k === "arc" ? "faire briller avec une étoile arc-en-ciel" : "annuler");
       Object.assign(b.style, { width: `${CONF}px`, height: `${CONF}px`, visibility: "hidden" });
       const c = document.createElement("canvas"); c.width = c.height = Math.round(CONF * stage.px); b.append(c);
-      poser(sprites, c.getContext("2d"), stage.px, `boutique.${k}`, 0, CONF / 2 - 2, CONF / 2 - 2, 1.05);
+      poser(sprites, c.getContext("2d"), stage.px, `boutique.${k === "croix" ? "croix" : "coche"}`, 0, CONF / 2 - 2, CONF / 2 - 2, 1.05);
+      if (k !== "croix") {
+        const S = 52, d = document.createElement("canvas"); d.className = "boutique-badge"; d.width = d.height = Math.round(S * stage.px);
+        Object.assign(d.style, { position: "absolute", right: "-14px", bottom: "-12px", width: `${S}px`, height: `${S}px`, pointerEvents: "none", display: k === "arc" ? "" : "none" });
+        poser(sprites, d.getContext("2d"), stage.px, k === "arc" ? "etoile.arc" : "etoile", 0, S / 2, S / 2, k === "arc" ? 0.62 : 0.5); b.append(d); b.badge = d;
+      }
       stage.ui.append(b); this.els.push(b); return b;
     });
     onBrief(app, this.conf[1], () => this.acheter(), null);
+    onBrief(app, this.conf[2], () => this.acheter(true), null);
     onBrief(app, this.conf[0], () => { if (this.verrou) return; pop(this.conf[0]); voice.stop(); bulle.silence(); setTimeout(() => this.deselection(), 150); }, null);
     // un toucher ailleurs (ni une tuile, ni la coche ou la croix, ni un onglet, ni la mascotte) désélectionne
     this.dehors = (e) => { if (!this.open || this.verrou || !this.sel) return; if (e.target.closest?.(".boutique-tuile, .boutique-conf, .boutique-onglet, .mascotte-tap, .boutique-retour")) return; this.deselection(); voice.stop(); };
@@ -122,6 +143,9 @@ export class Boutique {
     // la consigne (et, à la première visite, la bienvenue ; s'il y a des arrivées pas encore annoncées, l'annonce)
     const B = text.data.boutique;
     if (premiere) voice.say(B.bienvenue); else if (nouvelles.length) voice.say(B.arrivees);
+    // (lot « Réserves d'étoiles et étoiles arc-en-ciel », décision du parent du 2 novembre 2026) le niveau de prix a changé depuis
+    // la dernière visite : la mascotte le dit, une seule fois, sans le pourquoi (à la première visite, rien : les prix sont nouveaux)
+    if (await rewards.prixAnnonce() && !premiere) voice.say(B.prixChanges);
     voice.say(B.consigne, { instruction: true });
     await new Promise((r) => onBrief(app, retour, () => { pop(retour); r(); }, "recif"));
     this.leave();
@@ -210,6 +234,14 @@ export class Boutique {
       ctx.setTransform(1, 0, 0, 1, 0, 0); poser(sprites, ctx, px, "etoile", 0, x0 + wi + wn + 6 + ws / 2, cy, 0.3);
     } else if (e === "bientot") poser(sprites, ctx, px, "boutique.sablier", 0, M + 85, cy);
     if (rewards.owned[c.id]) poser(sprites, ctx, px, "recif", 0, M + 9, M + 9, 50 / 180);
+    // (lot « Réserves d'étoiles et étoiles arc-en-ciel ») la tuile choisie d'une créature du récif, quand l'enfant a des étoiles
+    // arc-en-ciel : l'étoile arc-en-ciel dans le coin ; pâlie, avec le cadenas, quand elles sont toutes gardées pour les zones
+    if (e === "terne" && this.sel === b && rewards.arcDispo > 0) {
+      const garde = rewards.arcPourBriller < 1;
+      if (garde) ctx.filter = "saturate(0.55) brightness(0.95)";
+      poser(sprites, ctx, px, "etoile.arc", 0, M + VITRINE.w - 15, M + 13, 0.62); ctx.filter = "none";
+      if (garde) poser(sprites, ctx, px, "boutique.cadenas", 0, M + VITRINE.w - 3, M + 25, 0.62);
+    }
   }
   // ce qui vit sur une tuile : l'étoile de diamant d'une légendaire, le reflet et les étincelles d'une brillante, le halo d'une
   // arrivée pas encore touchée
@@ -239,12 +271,15 @@ export class Boutique {
     if (this.aVoir.has(c.id)) { this.aVoir.delete(c.id); rewards.voir(c.id); b.classList.remove("nouvelle"); }
     if (this.sel !== b) { this.deselection(); this.sel = b; this.entourer(b, true); if (e === "terne") b.repaint(); setTimeout(() => { if (this.sel === b && !this.verrou) b.classList.add("choisie"); }, 450); }
     pop(b);
-    // la coche et la croix, seulement s'il y a de quoi acheter
-    const r = rectStyle(b), assez = cout !== null && rewards.total >= cout;
-    if (assez) { const p = placeConfirmation(r); this.conf.forEach((k, i) => Object.assign(k.style, { left: `${p.x + i * (CONF + CONF_GAP)}px`, top: `${p.y}px`, visibility: "visible" })); }
-    else this.conf.forEach((k) => { k.style.visibility = "hidden"; });
-    const t = texteTuile(text.data, cartes, c, e, cout, rewards.total);
-    bulleTuile(app, b, this.tuiles, t, { commandes: ".boutique-retour, .boutique-onglet, .boutique-conf" });
+    // la coche et la croix, seulement s'il y a de quoi acheter ; (lot « Réserves d'étoiles et étoiles arc-en-ciel ») sur une créature
+    // du récif, la coche de l'étoile arc-en-ciel quand l'enfant en a une à dépenser
+    const r = rectStyle(b), assez = cout !== null && rewards.total >= cout, arc = { dispo: rewards.arcDispo, libres: rewards.arcPourBriller }, avecArc = e === "terne" && arc.libres > 0;
+    const montres = [...(assez || avecArc ? [this.conf[0]] : []), ...(assez ? [this.conf[1]] : []), ...(avecArc ? [this.conf[2]] : [])];
+    this.conf[1].badge.style.display = assez && avecArc ? "" : "none";
+    const p = placeConfirmation(r, montres.length);
+    this.conf.forEach((k) => { const i = montres.indexOf(k); if (i < 0) k.style.visibility = "hidden"; else Object.assign(k.style, { left: `${p.x + i * (CONF + CONF_GAP)}px`, top: `${p.y}px`, visibility: "visible" }); });
+    const t = texteTuile(text.data, cartes, c, e, cout, rewards.total, e === "terne" ? arc : undefined);
+    bulleTuile(app, b, this.tuiles, t, { commandes: ".boutique-retour, .boutique-onglet, .boutique-conf, .reserve" });
     // (lot « Recette de l'enfant et nettoyage des couches », second passage de l'agent, constat 8) tant que la tuile est
     // choisie, toucher la mascotte redit ce qu'elle a dit de la créature (son prix, « touche la coche verte »), pas la
     // consigne générale ; la tuile quittée, la consigne générale revient
@@ -259,20 +294,25 @@ export class Boutique {
     if (b) this.app.voice.instruction = this.app.text.data.boutique.consigne;
   }
   // ---------------------------------------------------------------- la coche : acheter, ou faire briller
-  async acheter() {
+  // (lot « Réserves d'étoiles et étoiles arc-en-ciel ») `arc` : la coche de l'étoile arc-en-ciel (faire briller avec elle)
+  async acheter(arc = false) {
     if (this.verrou || !this.sel) return;
     const { app } = this, { rewards, rnd, voice, bulle, hud, text, ocean, cartes } = app, b = this.sel, c = b.carte, e = this.etat(c);
-    pop(this.conf[1]);
+    pop(this.conf[arc ? 2 : 1]);
+    // (la réserve, avant l'achat : l'étoile arc-en-ciel en part)
+    const de = hud?.reserves?.centre("arc") ?? [1170, 56];
     // L'ACHAT, enregistré tout de suite (rien si ce n'est plus possible : un second toucher très rapide, pas assez d'étoiles)
-    const got = rewards.acheter(c.id, Date.now(), rnd, { vitrine: this.vit });
+    const got = rewards.acheter(c.id, Date.now(), rnd, { vitrine: this.vit, arc });
     if (!got) return;
+    void e;
     this.verrou = true;
     await got.ecrit;
     this.vit = rewards.vitrine(this.t);
     this.conf.forEach((k) => { k.style.visibility = "hidden"; }); this.deselection(); voice.stop(); bulle.cacher(true);
     const [x0, y0, x1, y1] = rectStyle(b), centre = [(x0 + x1) / 2, (y0 + y1) / 2];
-    // les étoiles volent du compteur jusqu'à la créature, le compteur descend avec elles
-    await this.volEtoiles(got.prix, centre, b);
+    // les étoiles volent du compteur jusqu'à la créature, le compteur descend avec elles ; (lot « Réserves d'étoiles ») l'étoile
+    // arc-en-ciel vole de sa réserve (qui descend d'un cran : la sauvegarde est déjà écrite) jusqu'à la créature
+    if (got.arc) { await volVersReserve(app, "etoile.arc", de, centre, { k: 0.62, dur: 1000 }); pop(b); } else await this.volEtoiles(got.prix, centre, b);
     if (this.fini) return;
     hud.set(rewards.total);
     if (got.briller) {
@@ -280,7 +320,8 @@ export class Boutique {
       b.repaint(); this.decorer(b); pop(b);
       app.sound?.play("brillante");
       const t = `${fill(text.data.carteNouvelle, { nom: c.nomLu ?? c.nom })} ${text.data.carteBrillanteTirage}`;
-      bulleTuile(app, b, this.tuiles, t, { commandes: ".boutique-retour, .boutique-onglet" });
+      // (lot « Réserves d'étoiles et étoiles arc-en-ciel » : ni sur les réserves, ni sur le compteur, en haut à droite)
+      bulleTuile(app, b, this.tuiles, t, { commandes: ".boutique-retour, .boutique-onglet, .reserve, .hud.stars" });
       await voice.say(t);
     } else await this.sortie(b, got);
     if (this.fini) return;

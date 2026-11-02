@@ -725,6 +725,15 @@ const frieze = new Frieze(app, seance.etapes.filter((e) => e.actif !== false && 
 app.frieze = frieze;
 let mode = null; // "seance", "libre" ou null (écran d'accueil)
 app.modeEcran = () => mode; // (lot « Recette de l'enfant » : pour les parcours, tests/e2e/enfant.mjs)
+// (lot « Réserves d'étoiles et étoiles arc-en-ciel », décision du parent du 2 novembre 2026, à la validation de la maquette) les
+// réserves d'étoiles ne réagissent au toucher qu'à l'accueil, dans la boutique, à la récompense et dans l'accueil en pause ;
+// pendant l'échauffement, la notion du jour, le défi, les leçons, les exemples guidés et l'entraînement libre, elles restent
+// visibles mais inertes : le seul toucher hors réponse reste la mascotte (session/reserves.js)
+app.reservesTouchables = () => {
+  if (visiting || app.lessonCancel) return false;
+  if (app.enPause) return mode === "seance";
+  return mode === null || mode === "fin" || (mode === "seance" && app.session?.progress?.etape === "recompense");
+};
 const homeKey = spriteBox(app, { x: 14, y: 10, w: 120, h: 120, cls: "bubble homekey session-home keep", label: "maison", paint: (ctx, px) => { const q = sprites.frame("maison", 0), k = 120 / 140; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 60 * px + q.dx * k, 60 * px + q.dy * k, q.w * k, q.h * k); } });
 homeKey.style.visibility = "hidden";
 const progress = (p) => {

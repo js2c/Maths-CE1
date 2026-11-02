@@ -19,8 +19,9 @@ test("chaque état d'une place a sa phrase, et chaque phrase est dans l'inventai
     [crabe, "vendre", 40, 50, /^C'est le crabe ! Pour l'avoir, il faut 40 étoiles\. Si tu es d'accord, touche la coche verte\.$/],
     [hippo, "vendre", 100, 58, /^C'est l'hippocampe ! Pour l'avoir, il faut 100 étoiles\. Il te manque 42 étoiles\.$/],
     [crabe, "vendre", 40, 39, /Il te manque une étoile\.$/],
-    [crabe, "terne", 150, 58, /^C'est le crabe ! Cette créature est déjà dans ton récif\. Pour la faire briller, il faut 150 étoiles\. Il te manque 92 étoiles\.$/],
-    [hippo, "terne", 300, 0, /il faut 300 étoiles\.$/], // (300 qui manquent : seul le prix est dit)
+    // (lot « Réserves d'étoiles et étoiles arc-en-ciel », décision du parent du 2 novembre 2026 : des phrases plus courtes)
+    [crabe, "terne", 150, 58, /^C'est le crabe ! Il est déjà dans ton récif\. Pour le faire briller : 150 étoiles\. Il te manque 92 étoiles\.$/],
+    [hippo, "terne", 300, 0, /Pour le faire briller : 300 étoiles\.$/], // (300 qui manquent : seul le prix est dit)
     [crabe, "brillante", null, 0, /^C'est le crabe ! Cette créature brille déjà dans ton récif\.$/],
     [crabe, "bientot", null, 0, /^Cette créature arrive bientôt à la boutique !$/],
     [requin, "legende", null, 999, /^C'est une créature légendaire ! Elle se gagne avec les étoiles de diamant\.$/],

@@ -3,7 +3,7 @@
 // année (tests/sim-recette.mjs, mode Arrivages, le contenu des zones 3 et 4 à ses dates) ; un tableau en Markdown :
 // créatures, date de la collection complète, séances sans rien de nouveau en vitrine, étoiles arc-en-ciel (gagnées, utilisées
 // pour les zones et pour faire briller, restantes), étoiles de diamant (gagnées, utilisées), dates d'ouverture des zones.
-//   node tests/sim-boutique.mjs [--prix 2,3,4] [--profils reel,sait,diff] [--rythmes 2,3,4] [--arc aucun,un,zones] [--json fichier]
+//   node tests/sim-boutique.mjs [--prix 2,3,4] [--profils reel,sait,diff] [--rythmes 2,3,4] [--arc zones,aucun] [--json fichier]
 // Chaque simulation tourne dans son propre processus (4 à la fois).
 import { readFileSync, writeFileSync } from "node:fs";
 import { spawn } from "node:child_process";

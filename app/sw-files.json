@@ -1,8 +1,8 @@
 {
- "version": "d13148c6cbbf",
+ "version": "47a42ab2451b",
  "octets": {
-  "1": 120257374,
-  "2": 135290782
+  "1": 120280963,
+  "2": 135314371
  },
  "files": [
   "./",
@@ -11813,6 +11813,7 @@
   "js/session/lessons.js",
   "js/session/notion.js",
   "js/session/reef.js",
+  "js/session/reserves.js",
   "js/session/rewards.js",
   "js/session/screens.js",
   "js/session/selection.js",

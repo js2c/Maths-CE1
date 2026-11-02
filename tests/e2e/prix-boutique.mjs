@@ -46,11 +46,19 @@ async function fresh(state, vue) {
 }
 const owned = (list) => ({ id: "cartes", cartes: Object.fromEntries(list.map((id) => [id, { n: 1, premiere: 1, brillante: false }])) });
 const etoiles = (total) => ({ id: "etoiles", total, cumul: total + 100, dorees: 0, doreesDepensees: 0, arcEnCiel: 0, arcDepensees: 0, arcLibre: 0, coquillages: 0, coquillagesDores: 0 });
-const tap = async (page, sel) => { const b = await page.locator(sel).first().boundingBox(); if (!b) throw new Error(`introuvable : ${sel}`); await page.touchscreen.tap(b.x + b.width / 2, b.y + b.height / 2); };
+const tap = async (page, sel) => { await page.locator(sel).first().evaluate((el) => el.closest(".pa-main") && el.scrollIntoView({ block: "center" })); await page.waitForTimeout(100); const b = await page.locator(sel).first().boundingBox(); if (!b) throw new Error(`introuvable : ${sel}`); await page.touchscreen.tap(b.x + b.width / 2, b.y + b.height / 2); };
 const said = (page) => page.evaluate(() => window.__said.join(" | "));
 const parent = async (page, tab) => { await page.evaluate(async (tab) => { const p = window.__app.parent; p.tab = tab; p.open(); await p.dashboard(); }, tab); await page.waitForTimeout(500); };
 const fermer = (page) => page.evaluate(() => window.__app.parent.close?.());
 const pressed = (row) => row.locator('.pa-prix-choix[aria-pressed="true"]').getAttribute("data-v");
+// (relecture du lot, constat 10) ce que voit le parent : le bloc amené en haut de la zone qui défile (sous l'en-tête fixe de
+// l'espace parent), capture de l'écran ; s'il est plus haut que la zone visible, une seconde capture, la suite
+const montrer = async (page, loc, nom) => {
+  const h = await loc.evaluate((el) => { el.scrollIntoView({ block: "start" }); const m = el.closest(".pa-main"); return [el.getBoundingClientRect().height, m ? m.clientHeight : innerHeight]; });
+  await page.waitForTimeout(150); await page.screenshot({ path: join(OUT, `${nom}.png`) });
+  if (h[0] > h[1]) { await loc.evaluate((el, d) => el.closest(".pa-main")?.scrollBy(0, d), h[1] - 40); await page.waitForTimeout(150); await page.screenshot({ path: join(OUT, `${nom}-suite.png`) }); }
+};
+const sp = (t) => t.replace(/\u00a0/g, " ");
 
 for (const vue of VUES) {
   const v = vue[0], tout = v === "1280";
@@ -61,27 +69,28 @@ for (const vue of VUES) {
   await parent(page, "donnees");
   const row = page.locator(".pa-setting", { hasText: "Prix de la boutique" });
   check(await row.count() === 1, `${v} : réglages, « Prix de la boutique »`);
-  await row.scrollIntoViewIfNeeded(); await page.waitForTimeout(200);
-  await row.screenshot({ path: join(OUT, `01-reglage-defaut-${v}.png`) });
-  const choix = await row.locator(".pa-prix-choix").evaluateAll((bs) => bs.map((b) => ({ v: b.dataset.v, t: b.textContent, h: b.getBoundingClientRect().height, w: b.getBoundingClientRect().width })));
+  await montrer(page, row, `01-reglage-defaut-${v}`);
+  const choix = await row.locator(".pa-prix-choix").evaluateAll((bs) => bs.map((b) => ({ v: b.dataset.v, t: b.textContent.replace(/\u00a0/g, " "), x: b.getBoundingClientRect().x, h: b.getBoundingClientRect().height, w: b.getBoundingClientRect().width })));
   check(choix.map((c) => c.v).join() === "2,3,4", `${v} : trois choix (${choix.map((c) => c.v).join()})`);
   check(choix.every((c) => c.h >= 64 && c.w >= 64), `${v} : chaque choix fait au moins 64 px (${choix.map((c) => `${Math.round(c.w)}×${Math.round(c.h)}`).join(", ")})`);
   check(choix.every((c) => { const n = N[c.v]; return c.t.includes(n.nom) && c.t.includes(n.suppose) && c.t.includes(`${n.prix.commune} ★`) && c.t.includes(`${n.prix.rare} ★`); }), `${v} : chaque choix dit son nom, ses prix et ce qu'il suppose`);
   check(await pressed(row) === "2", `${v} : par défaut, « Prix pour 2 séances par semaine »`);
+  check(await row.locator('.pa-prix-choix[aria-pressed="true"] b').evaluate((b) => getComputedStyle(b, "::before").content.includes("✓")), `${v} : le choix en cours est coché (pas seulement la couleur)`);
+  if (v === "petit-smartphone") check(new Set(choix.map((c) => Math.round(c.x))).size === 1, `${v} : un choix par ligne`);
   const largeur = await page.evaluate(() => [document.documentElement.scrollWidth, innerWidth]);
   check(largeur[0] <= largeur[1], `${v} : pas de défilement horizontal (${largeur.join(" / ")})`);
   // 2. un toucher sur « 3 séances par semaine »
   await tap(page, '.pa-prix-choix[data-v="3"]'); await page.waitForTimeout(300);
-  await row.screenshot({ path: join(OUT, `02-reglage-3-seances-${v}.png`) });
+  await montrer(page, row, `02-reglage-3-seances-${v}`);
   const apres = await page.evaluate(() => ({ s: null, n: window.__app.rewards.boutique.niveau, total: window.__app.rewards.total }));
   apres.s = await page.evaluate(() => window.__app.store.setting("boutiquePrix"));
   check(apres.s === "3" && apres.n === "3" && apres.total === 260 && await pressed(row) === "3", `${v} : un toucher : enregistré, les prix du niveau 3 tout de suite, les étoiles restent (${JSON.stringify(apres)})`);
-  check(/Enregistré/.test(await row.textContent()), `${v} : « Enregistré » s'écrit`);
+  check(/Enregistré/.test(await row.textContent()) && await row.locator(".pa-ok").isVisible(), `${v} : « Enregistré » s'écrit`);
   if (tout) {
     await parent(page, "progression");
     const box = page.locator(".pa-card-box", { has: page.locator("h2", { hasText: /^Cartes et boutique$/ }) });
-    await box.scrollIntoViewIfNeeded(); await box.screenshot({ path: join(OUT, `03-cartes-et-boutique-${v}.png`) });
-    const t = await box.textContent();
+    await montrer(page, box, `03-cartes-et-boutique-${v}`);
+    const t = sp(await box.textContent());
     check(t.includes(`${N[3].prix.commune} étoiles une créature commune, ${N[3].prix.rare} une rare ; ${N[3].briller.commune} et ${N[3].briller.rare}`) && /3 séances par semaine/.test(t), "le bloc « Cartes et boutique » dit les prix du niveau choisi");
   }
   await fermer(page); await page.waitForTimeout(400);
@@ -123,7 +132,7 @@ for (const vue of VUES) {
     await tap(page, '.pa-prix-choix[data-v="2"]'); await page.waitForTimeout(300);
     const c2 = await page.evaluate((id) => [window.__app.rewards.cout(id, "vendre"), window.__app.rewards.total], rare);
     check(c2[0] === N[2].prix.rare && c2[1] === t0, `le retour aux prix pour 2 séances : ${c2[0]} une rare, étoiles inchangées (${c2[1]})`);
-    await row2.screenshot({ path: join(OUT, `06-reglage-retour-${v}.png`) });
+    await montrer(page, row2, `06-reglage-retour-${v}`);
     // relu après un rechargement
     await page.reload(); await page.waitForFunction(() => window.__ready !== undefined);
     check(await page.evaluate(() => window.__app.rewards.boutique.niveau) === "2", "après un rechargement, le niveau choisi est gardé");

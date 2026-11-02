@@ -54,6 +54,8 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (constat du parent du 31 octobre 2026) : le lot court « Netteté du récif »** (fiche 14) : sur la tablette, les créatures du récif vivant deviennent très pixelisées quelques secondes après l'entrée. **État : fait** (PR #68 ; aucune phrase nouvelle).
 
+**Puis (décision du parent du 2 novembre 2026) : le lot court « Prix de la boutique réglables »** (fiche 15) : dans l'espace parent, les prix de la boutique selon le nombre de séances par semaine (2, 3 ou 4), calibrés par la simulation. **État : fait** (PR #69 ; 8 phrases nouvelles, les nouveaux prix).
+
 **Pourquoi cet ordre.**
 
 - Les correctifs de la confrontation avant les leçons et les sommes : ces lots s'appuient sur les règles du module 2 telles qu'elles seront écrites.
@@ -1135,3 +1137,19 @@ Chaque défaut trouvé est corrigé et devient un test de non-régression. **Auc
 **Voix** : aucune phrase nouvelle.
 
 **Recette du lot** : `tests/e2e/recif-nettete.mjs` (mesures par zone et par niveau, visite libre, captures, contrôles avec `--test`), sur `s5e` et `petit-smartphone`, contre une copie de `main` pour les chiffres « avant » ; les parcours du récif (`recif-vivant.mjs`, `boutique.mjs`) et la recette commune.
+
+### 15. Lot « Prix de la boutique réglables » (lot court)
+
+**Origine** : décision du parent du 2 novembre 2026. Les prix de la boutique sont calibrés pour 2 séances par semaine ; à 3 ou 4 séances, l'enfant gagne plus d'étoiles, mais les créatures arrivent au même rythme (2 par semaine d'école) : elle achète tout dès le lundi et la vitrine reste vide le reste de la semaine.
+
+**D'un seul tenant.**
+
+1. **Le réglage** : dans l'espace parent, à côté du « rythme de la boutique », un réglage en un toucher : « Prix pour 2 séances par semaine » (par défaut : les prix d'avant, commune 40, rare 100, faire briller 150 et 300), « 3 séances par semaine », « 4 séances par semaine ». Sous chaque choix, une phrase simple qui dit ce qu'il suppose.
+2. **Ce qu'il fait** : le niveau change les prix immédiatement ; les étoiles gagnées restent ; il vaut aussi en mode Libre.
+3. **Contenu, pas code** : les niveaux sont des réglages de `app/content/cartes.json` (bloc `boutique`, `niveauxPrix`).
+4. **Calibrage** par la simulation d'une année (`tests/sim-seances.mjs`, mode Arrivages, profils `reel`, `sait`, `diff`) : pour chaque niveau, au rythme qu'il annonce, l'enfant au profil `reel` achète presque exactement les arrivées de la semaine (le moins possible de séances où la vitrine n'a rien de nouveau) et la collection est complète en juin. Point de départ pour « 3 séances » : 70 / 175, faire briller 250 / 500. Garder le rapport de 2,5 entre rare et commune. Le tableau complet (chaque niveau à 2, 3 et 4 séances par semaine, pour les trois profils) dans la demande de fusion.
+5. **Documents** : `docs/SPEC.md` (section 10, « Prix » et « Calibrage », et les réglages de l'espace parent, section 12), le guide du parent, le journal de conception.
+
+**Voix** : les phrases des nouveaux prix (« Pour l'avoir, il faut 70 étoiles. »…), à fabriquer par le parent.
+
+**Recette du lot** : tests unitaires (niveaux, changement de prix, étoiles gardées, mode Libre, rechargement), `tests/e2e/prix-boutique.mjs` (1280 × 800, 1920 × 1200, `s5e`, `petit-smartphone`), `tests/e2e/boutique.mjs`, la recette commune.

@@ -32,7 +32,7 @@ const ids = (z, r = null) => cartes.cartes.filter((c) => c.zone === z && (r ? c.
 const lagon = ids("lagon"), corail = ids("corail"), large = ids("large");
 // l'ordre de la vitrine (celui de l'album) : communes, rares, légendaires
 const album = (z) => ["commune", "rare", "legendaire"].flatMap((r) => ids(z, r));
-const prix = (id) => cartes.boutique.prix[cartes.cartes.find((c) => c.id === id).rarete];
+const prix = (id) => cartes.boutique.niveauxPrix.find((x) => x.id === cartes.boutique.niveauPrix).prix[cartes.cartes.find((c) => c.id === id).rarete];
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium" });
 const errors = [];

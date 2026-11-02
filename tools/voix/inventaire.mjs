@@ -80,8 +80,9 @@ function domaines(C) {
     // lot « La boutique du récif » (session/boutique.js) : les prix d'une créature et pour la faire briller (cartes.json,
     // boutique.prix et boutique.briller), ce qui manque (de 2 à boutique.manqueDitMax ; une seule : boutique.manqueUn),
     // les étoiles du coquillage de la série quand tout brille (serie.coquillageEtoiles)
-    "boutique.prix": [...new Set(Object.values(C.cartes.boutique?.prix ?? {}))].map((n) => ({ n })),
-    "boutique.briller": [...new Set(Object.values(C.cartes.boutique?.briller ?? {}))].map((n) => ({ n })),
+    // (lot « Prix de la boutique réglables » : les prix de tous les niveaux, boutique.niveauxPrix)
+    "boutique.prix": [...new Set((C.cartes.boutique?.niveauxPrix ?? []).flatMap((x) => Object.values(x.prix)))].map((n) => ({ n })),
+    "boutique.briller": [...new Set((C.cartes.boutique?.niveauxPrix ?? []).flatMap((x) => Object.values(x.briller)))].map((n) => ({ n })),
     "boutique.manque": range(2, C.cartes.boutique?.manqueDitMax ?? 299).map((n) => ({ n })),
     coquillageSerieEtoiles: [{ n: C.cartes.serie.coquillageEtoiles }],
     // lot 3 bis (B6) : plusieurs étoiles arc-en-ciel à la récompense, une seule phrase (au plus un niveau par question)

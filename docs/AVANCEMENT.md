@@ -40,3 +40,10 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 ## Reprise
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
+
+### Reprise du lot « Réserves d'étoiles et étoiles arc-en-ciel » (fiche 16)
+
+- **Branche** : `claude/beautiful-goodall-30h3pg` ; demande de fusion en brouillon, « Lot : Réserves d'étoiles et étoiles arc-en-ciel ».
+- **Fait** : la documentation de la voix (point 6 : `docs/VOIX.md`, « Le Python de la voix » ; `tools/voix/publier.mjs` ; en-têtes de `tools/voix/essais/`) ; la maquette (`art/reserves/`) et ses captures (`docs/maquettes/reserves/`), la proposition (règle de réserve, phrases, questions) ; la simulation étendue (`tests/sim-recette.mjs`, option `arcBriller` ; `tests/sim-boutique.mjs`, le tableau par niveau de prix, profil et rythme) ; les décisions du parent sur le lot précédent dans le journal et les idées.
+- **Où il en est** : **arrêté au point d'arrêt « maquette »**, en attente de la validation du parent. Rien n'est changé sous `app/`.
+- **Reste, après la validation** : le code (`session/rewards.js` : `arcBrillees`, la règle de réserve, l'achat payé en étoile arc-en-ciel ; `session/screens.js` : les réserves près du compteur, les vols de la récompense, l'ouverture d'une zone et le coquillage de diamant depuis la réserve ; `session/boutique.js` : les deux coches, l'étoile gardée, l'annonce du changement de prix ; `textes.json` et l'inventaire de la voix ; l'espace parent) ; la simulation par le code de l'application (le paiement en étoile arc-en-ciel est pour l'instant imité par `tests/sim-recette.mjs`) ; tests unitaires, `tests/e2e/reserves.mjs`, la recette commune sur le banc Android (`s5e`, `petit-smartphone`) ; `docs/SPEC.md` (section 10), le guide du parent, le journal.

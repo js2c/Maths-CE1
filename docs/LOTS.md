@@ -56,6 +56,8 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (décision du parent du 2 novembre 2026) : le lot court « Prix de la boutique réglables »** (fiche 15) : dans l'espace parent, les prix de la boutique selon le nombre de séances par semaine (2, 3 ou 4), calibrés par la simulation. **État : fait** (PR #69 ; 8 phrases nouvelles, les nouveaux prix).
 
+**Puis (décisions du parent du 2 novembre 2026) : le lot « Réserves d'étoiles et étoiles arc-en-ciel »** (fiche 16), avec un point d'arrêt « maquette » : montrer à l'enfant ses réserves d'étoiles arc-en-ciel et de diamant, un usage pour les étoiles arc-en-ciel en surplus (faire briller une créature), les réponses du parent aux questions du lot « Prix de la boutique réglables », et la documentation du Python unique de la voix. **État : maquette en attente de la validation du parent** (`docs/maquettes/reserves/README.md`).
+
 **Pourquoi cet ordre.**
 
 - Les correctifs de la confrontation avant les leçons et les sommes : ces lots s'appuient sur les règles du module 2 telles qu'elles seront écrites.
@@ -1153,3 +1155,20 @@ Chaque défaut trouvé est corrigé et devient un test de non-régression. **Auc
 **Voix** : les phrases des nouveaux prix (« Pour l'avoir, il faut 70 étoiles. »…), à fabriquer par le parent.
 
 **Recette du lot** : tests unitaires (niveaux, changement de prix, étoiles gardées, mode Libre, rechargement), `tests/e2e/prix-boutique.mjs` (1280 × 800, 1920 × 1200, `s5e`, `petit-smartphone`), `tests/e2e/boutique.mjs`, la recette commune.
+
+### 16. Lot « Réserves d'étoiles et étoiles arc-en-ciel » (avec un point d'arrêt « maquette »)
+
+**Origine** : décisions du parent du 2 novembre 2026. Les étoiles arc-en-ciel et de diamant volent vers l'album à la récompense, puis disparaissent : l'enfant ne sait pas combien elle en a. Et la simulation d'une année (profil `reel`, 3 séances par semaine) donne 44 étoiles arc-en-ciel gagnées pour 3 utilisées (les trois zones à ouvrir) : 41 ne servent à rien.
+
+**Point d'arrêt « maquette »** (méthode commune) : la maquette (`art/reserves/`, posée sur l'application elle-même), les captures en 1280 × 800 et sur `petit-smartphone` (`docs/maquettes/reserves/`), la règle de réserve proposée et sa justification, la liste des phrases nouvelles et leur poids ; puis l'arrêt pour la validation du parent.
+
+1. **Les réserves montrées à l'enfant** : près du compteur d'étoiles de mer (là où il est affiché) et dans la boutique, une petite étoile arc-en-ciel et une petite étoile de diamant, chacune avec son nombre (masquée à 0). La toucher fait dire combien il y en a et ce qu'elles débloquent, en phrases courtes, selon l'état (zone en cours, légendaires possibles ou non). À la récompense, les étoiles gagnées volent jusqu'à leur réserve, qui se met à jour. La règle de la bulle (elle ne couvre jamais ce que l'enfant touche) et la taille des cibles (64 px) sont tenues.
+2. **Faire briller avec une étoile arc-en-ciel** : à la boutique, sur une créature déjà dans le récif, « faire briller » se paie soit en étoiles de mer (le prix du niveau choisi), soit avec 1 étoile arc-en-ciel. L'ouverture d'une zone ne doit jamais en être retardée : la session propose la règle la plus simple qui le garantit, et la justifie. Les brillantes ainsi obtenues suivent les règles actuelles.
+3. **Les réponses du parent au lot « Prix de la boutique réglables »** : quand le niveau de prix change, la mascotte le dit une seule fois, à la première visite de la boutique qui suit (« Les prix de la boutique ont changé ! », sans le pourquoi) ; pas de niveau intermédiaire pour l'enfant en difficulté à 3 séances par semaine (dans `docs/IDEES.md`, à rouvrir si une collection prend du retard) ; « Il te manque N étoiles. » reste dit de 1 à 299, au-delà le prix seul. Reportées dans le journal de conception.
+4. **Simulation finale** (`tests/sim-boutique.mjs`) : pour chaque niveau de prix (2, 3 et 4 séances), chaque profil (`reel`, `sait`, `diff`), à 2, 3 et 4 séances par semaine : créatures, date de la collection complète, séances sans rien de nouveau en vitrine, étoiles arc-en-ciel gagnées, utilisées pour les zones et pour faire briller, restantes en fin d'année, étoiles de diamant gagnées et utilisées. Le tableau dans la demande de fusion.
+5. **La voix, documentation** (indépendant du reste, même demande de fusion) : le Python unique de la voix (Python 3.11, sans environnement virtuel, la variable `PYTHON`) dans `docs/VOIX.md` (« Le Python de la voix », tableau d'installation, fabrication à la main), les en-têtes de `tools/voix/essais/` (`& $env:PYTHON …`), l'ordre de recherche de `tools/voix/publier.mjs` (la variable `PYTHON`, puis `py -3.11`, puis `python`, et un message qui dit quoi vérifier) ; la règle : un seul Python pour toutes les voix, un nouvel outil s'y installe, une incompatibilité est dite au parent avant toute installation, un environnement d'essai est supprimé à la fin de l'essai. Aucun chemin personnel dans le code.
+
+**Après la validation** : le code, `docs/SPEC.md` (section 10), le guide du parent, le journal de conception ; les phrases à fabriquer dans la demande de fusion.
+
+**Recette** : la méthode commune, sur le banc Android (profil `s5e`, et `petit-smartphone` pour les écrans touchés) ; tests unitaires (la règle de réserve, le paiement en étoile arc-en-ciel, l'annonce du changement de prix, les phrases des réserves selon l'état) ; un parcours `tests/e2e/reserves.mjs` (le compteur et ses réserves, chaque phrase, la boutique dans les trois cas, l'achat jamais à moitié ni deux fois, la récompense, l'ouverture d'une zone).
+

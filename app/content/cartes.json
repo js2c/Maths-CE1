@@ -3,7 +3,7 @@
   "boutique": {"mode": "arrivages", "parSemaine": 2, "niveauPrix": "2", "niveauxPrix": [
     {"id": "2", "nom": "Prix pour 2 séances par semaine", "suppose": "Suppose environ 2 séances par semaine : chaque semaine, l'enfant peut acheter les 2 créatures qui arrivent, et sa collection est complète en juin.", "prix": {"commune": 40, "rare": 100}, "briller": {"commune": 150, "rare": 300}},
     {"id": "3", "nom": "3 séances par semaine", "suppose": "Suppose environ 3 séances par semaine : les créatures coûtent plus cher, pour que les étoiles en plus ne vident pas la vitrine avant le lundi.", "prix": {"commune": 70, "rare": 175}, "briller": {"commune": 250, "rare": 500}},
-    {"id": "4", "nom": "4 séances par semaine", "suppose": "Suppose environ 4 séances par semaine : les créatures coûtent encore plus cher, pour la même raison.", "prix": {"commune": 100, "rare": 250}, "briller": {"commune": 350, "rare": 700}}
+    {"id": "4", "nom": "4 séances par semaine", "suppose": "Suppose environ 4 séances par semaine : les créatures coûtent encore plus cher, pour la même raison.", "prix": {"commune": 96, "rare": 240}, "briller": {"commune": 350, "rare": 700}}
   ], "brillanteAchat": 0.2, "manqueDitMax": 299, "finAttenteS": 15},
   "brillanteNouvelle": 0.2,
   "serie": {"bonusChaque": 3, "bonus": 5, "coquillageChaque": 10, "coquillageEtoiles": 20},

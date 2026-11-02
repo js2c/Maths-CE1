@@ -31,7 +31,6 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? 
 const errors = [];
 const check = (ok, msg) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${msg}`); if (!ok) process.exitCode = 1; };
 const Q = "?nosw&voix=rapide&sansLecon&sans=echauffement&questions=2&guides=0";
-const SEMAINE = 7 * 86400000;
 const VUES = args.includes("--vite") ? [["1280", { viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true }]]
   : [["1280", { viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true }], ["1920", { viewport: { width: 1920, height: 1200 }, deviceScaleFactor: 1, hasTouch: true }], ["s5e", optionsProfil("s5e")], ["petit-smartphone", optionsProfil("petit-smartphone")]];
 
@@ -55,8 +54,9 @@ const pressed = (row) => row.locator('.pa-prix-choix[aria-pressed="true"]').getA
 
 for (const vue of VUES) {
   const v = vue[0], tout = v === "1280";
-  // 6 créatures du lagon dans le récif, 260 étoiles, la base des arrivages il y a 3 semaines (des créatures à vendre)
-  const { context, page } = await fresh([owned(lagon.slice(0, 6)), etoiles(260), { id: "quota", date: Date.now() - 3 * SEMAINE, cartes: 2 }], vue);
+  // 6 créatures du lagon dans le récif, 260 étoiles ; la base des arrivages posée aujourd'hui à 9 arrivées (au moins 3 créatures
+  // à vendre, quelle que soit la date : une base dans le passé tomberait parfois dans des vacances, qui n'apportent rien)
+  const { context, page } = await fresh([owned(lagon.slice(0, 6)), etoiles(260), { id: "quota", date: Date.now(), cartes: 9 }], vue);
   // 1. l'espace parent, Réglages
   await parent(page, "donnees");
   const row = page.locator(".pa-setting", { hasText: "Prix de la boutique" });

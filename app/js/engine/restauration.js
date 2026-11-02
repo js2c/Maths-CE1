@@ -21,7 +21,13 @@
 // Les écouteurs sont posés sur le document, à la capture : un « contextrestored » ne remonte pas, mais passe par ses ancêtres.
 
 export const CALME_MS = 400;
-const inscrits = new Map(); // canvas → fonction qui le redessine en entier
+// canvas → fonction qui le redessine en entier. Le registre ne retient AUCUN canvas : la fonction est rangée dans une WeakMap
+// (clé : le canvas), et la liste à parcourir ne garde que des références faibles. Un canvas sorti de la page (un poisson qui a
+// quitté le lagon, un écran détruit) est donc libéré comme avant (constat de la journée du banc, étape 7, sur la première
+// version : en 5 minutes sur l'accueil, 51 canvas vivants devenus 100, ceux des poissons passés, retenus par ce registre).
+const dessins = new WeakMap();
+const refs = new WeakMap(); // canvas → sa WeakRef dans `inscrits`
+const inscrits = new Set(); // WeakRef des canvas inscrits
 const abonnes = new Set();
 let journal = () => {};
 let perte = null; // la rafale en cours : { t, perdus2d, perdusGL, rendus2d, rendusGL }
@@ -29,14 +35,15 @@ let minuterie = 0;
 export const compteurs = { pertes: 0, reprises: 0 };
 
 // un canvas dessiné une fois : `f()` le redessine en entier (effacement compris) ; f = null le retire
-// (les canvas retirés de la page sont oubliés de temps en temps : la liste ne retient jamais ceux des écrans détruits, des
-// poissons sortis du lagon ; un canvas inscrit doit être dans la page, ce que font spriteBox et Actor)
+// (les références des canvas libérés sont oubliées de temps en temps, quand la liste double)
 let seuil = 300;
+const oublier = () => { for (const r of inscrits) if (!r.deref()) inscrits.delete(r); seuil = Math.max(300, 2 * inscrits.size); };
 export function repeindre(c, f) {
   if (!c) return;
-  if (!f) { inscrits.delete(c); return; }
-  inscrits.set(c, f);
-  if (inscrits.size > seuil) { for (const k of inscrits.keys()) if (!k.isConnected) inscrits.delete(k); seuil = Math.max(300, 2 * inscrits.size); }
+  if (!f) { dessins.delete(c); const r = refs.get(c); if (r) inscrits.delete(r); refs.delete(c); return; }
+  dessins.set(c, f);
+  if (!refs.has(c)) { const r = new WeakRef(c); refs.set(c, r); inscrits.add(r); }
+  if (inscrits.size > seuil) oublier();
 }
 export const nbInscrits = () => inscrits.size;
 // une reprise propre à une partie de l'application (peut être asynchrone) ; renvoie de quoi se désabonner
@@ -44,9 +51,11 @@ export function apresPerte(f) { abonnes.add(f); return () => abonnes.delete(f); 
 export function journaliser(f) { journal = f; }
 
 const essayer = (f) => { try { return f(); } catch (e) { journal("redessin impossible", { erreur: String(e?.message ?? e) }); } };
+// (tous les canvas encore vivants, même hors de la page : un écran gardé de côté puis remis ne doit pas revenir vide ; on compte
+// ceux de la page)
 function redessinerTout() {
   let n = 0;
-  for (const [c, f] of inscrits) { if (!c.isConnected) { inscrits.delete(c); continue; } essayer(f); n++; }
+  for (const r of inscrits) { const c = r.deref(); if (!c) { inscrits.delete(r); continue; } const f = dessins.get(c); if (f) essayer(f); if (c.isConnected) n++; }
   return n;
 }
 function rafale(genre) {
@@ -68,6 +77,6 @@ export const reprendreMaintenant = async () => { perte ??= { t: performance.now(
 if (typeof globalThis.document?.addEventListener === "function") { // (les tests unitaires donnent parfois un faux document)
   document.addEventListener("contextlost", () => rafale("perdus2d"), true);
   document.addEventListener("webglcontextlost", () => rafale("perdusGL"), true);
-  document.addEventListener("contextrestored", (e) => { const f = inscrits.get(e.target); if (f) essayer(f); rafale("rendus2d"); }, true);
+  document.addEventListener("contextrestored", (e) => { const f = dessins.get(e.target); if (f) essayer(f); rafale("rendus2d"); }, true);
   document.addEventListener("webglcontextrestored", () => rafale("rendusGL"), true);
 }

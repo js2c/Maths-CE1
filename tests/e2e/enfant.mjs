@@ -216,7 +216,7 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
   const rnd = hasard(graine * 7919 + 13);
   let browser = null, context, page, cdp, a = null; const erreurs = [];
   const brancherPage = () => {
-    page.on("pageerror", (e) => erreurs.push({ t: Date.now(), m: e.message }));
+    page.on("pageerror", (e) => erreurs.push({ t: Date.now(), m: e.message, pile: e.stack }));
     page.on("console", (m) => { if (m.type() === "error" && !/Failed to load resource|net::ERR/.test(m.text())) erreurs.push({ t: Date.now(), m: m.text() }); });
   };
   if (ANDROID) {
@@ -271,7 +271,7 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
       const nouvelles = await page.evaluate(() => { const l = window.__enfant.phrases.splice(0); return l; }).catch(() => []);
       nPhrases += nouvelles.length;
       for (const p of nouvelles) { const pb = phraseHorsEcran(p); if (pb) noter(`phrase d'une étape quittée : ${pb.split(" (")[0]}`, `« ${p.texte} » ${pb} ; ${JSON.stringify(p.ctx)}`); }
-      for (const x of erreurs.splice(0)) noter(`erreur : ${x.m.slice(0, 80)}`, x.m);
+      for (const x of erreurs.splice(0)) noter(`erreur : ${x.m.slice(0, 80)}`, x.pile ?? x.m); // (la pile d'appels, quand la page la donne : où chercher)
       dernierEtat = Date.now();
     };
     const n = liste ? liste.length : ACTIONS;
@@ -369,9 +369,11 @@ if (REJOUER) {
   const d = JSON.parse(readFileSync(REJOUER, "utf8"));
   await installerModele();
   let liste = d.faits.slice(0, d.defaut.apres + 1);
-  const montre = async (l) => (await partie(d.graine, { liste: l, cherche: d.defaut.quoi })).defauts.some((x) => x.quoi === d.defaut.quoi);
+  let vu = null;
+  const montre = async (l) => { const x = (await partie(d.graine, { liste: l, cherche: d.defaut.quoi })).defauts.find((x) => x.quoi === d.defaut.quoi); if (x) vu = x; return !!x; };
   console.log(`rejoue ${liste.length} actions de la graine ${d.graine} : « ${d.defaut.quoi} »`);
   if (!(await montre(liste))) console.log("     le défaut ne se reproduit pas à l'identique (le hasard de l'application) ; nouvel essai…");
+  else console.log(`     reproduit : ${String(vu.detail).slice(0, 1200)}`);
   if (REDUIRE) {
     // delta-debugging : retirer des tranches d'actions tant que le défaut se montre encore (deux essais par candidat)
     let k = 2;

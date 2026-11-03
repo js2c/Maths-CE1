@@ -451,12 +451,15 @@ async function notion4(ctx) {
   const runner = await new Module4Runner({ store, content: module4, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, choix: session.choix?.module === 4 ? session.choix.niveau : null }).load();
   app.runner = runner; session.rec.niveauVoiliers = runner.niveau; await session.save();
   const scr = app.voiliers;
-  if (!(await scr.enter())) {
+  // (lot « Correctif : l'étal resté actif à l'accueil », comme l'étal : la sortie inscrite avant l'installation, qu'elle arrête net)
+  if (ctx.portee.fermee) return fige();
+  ctx.portee.fin(() => scr.leave());
+  const ok = await scr.enter();
+  if (ok === null || ctx.portee.fermee) return fige();
+  if (!ok) {
     journal({ type: "voiliers sans WebGL" }); session.rec.module = 1; session.rec.voiliersSansWebGL = true; await session.save(); frieze.notionIcon(1);
     return handlers.notion(ctx);
   }
-  // (inscrit après l'installation : une étape quittée pendant qu'elle s'installait la range aussitôt)
-  ctx.portee.fin(() => scr.leave()); if (ctx.portee.fermee) return fige();
   await runNotion({ ...ctx, step, runner, screen: { ask: (q) => scr.ask(q) }, lesson: async () => false, rnd });
 }
 // LOT « L'ÉTAL DU PÊCHEUR » (docs/SPEC.md, section 7 quater) : la notion du jour à l'étal, choisie par l'enfant ou imposée par
@@ -468,9 +471,12 @@ async function notion6(ctx) {
   const runner = await new Module6Runner({ store, content: module6, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, choix: session.choix?.module === 6 ? session.choix.niveau : null }).load();
   app.runner = runner; afterLesson(session, runner); session.rec.niveauEtal = runner.niveau; await session.save();
   const scr = app.etal;
-  await scr.enter({ rnd });
-  // (inscrit après l'installation : une étape quittée pendant qu'elle s'installait la range aussitôt)
-  ctx.portee.fin(() => scr.leave()); if (ctx.portee.fermee) return fige();
+  // (lot « Correctif : l'étal resté actif à l'accueil ») la sortie est inscrite AVANT l'installation : une étape quittée pendant
+  // que la scène s'installe l'arrête net (modules/etal/screen.js, `enter` rend false) ; quittée avant, elle ne l'installe pas.
+  // Inscrite après, comme avant ce lot, la scène restait sur l'accueil le temps de charger ses images.
+  if (ctx.portee.fermee) return fige();
+  ctx.portee.fin(() => scr.leave());
+  if (!(await scr.enter({ rnd })) || ctx.portee.fermee) return fige();
   session.rec.etalMeteo = scr.meteoDepart ? "mauvais temps" : scr.orageA != null ? "orage en cours de partie" : "beau temps"; await session.save();
   if (!session.reprendAuPoint("notion")) await voice.say(text.pick("etalNotion")); // (repris à la question près : la phrase d'entrée n'est pas redite)
   await runNotion({ ...ctx, step, runner, screen: { ask: (q) => scr.ask(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });

@@ -55,8 +55,14 @@ export class EtalScreen {
   // (lot « Correctifs de l'installation et de la veille », point 4 : `lecon`, la scène installée le temps d'une leçon, L15 à L18 ;
   // elle n'est figée que par la pause de son propre temps : choisie depuis l'accueil en pause, la séance est en pause pendant
   // qu'elle se joue, et la scène, figée avant d'avoir rien dessiné, restait noire)
+  // (lot « Correctif : l'étal resté actif à l'accueil ») L'INSTALLATION S'ARRÊTE NET SI LA SCÈNE EST QUITTÉE EN ROUTE : `leave()`
+  // peut venir à tout moment, y compris pendant les deux attentes de l'installation (le réglage lu, puis les images) ; il change
+  // le jeton, et l'installation, à son réveil, ne pose plus rien (avant la scène) ou s'arrête (après : `leave()` l'a déjà retirée).
+  // Elle rend alors `false`. Avant ce lot, l'installation allait jusqu'au bout : la scène quittée pendant qu'elle s'installait
+  // restait sur l'accueil, active, le temps de charger ses images (0,2 à 2 s), ou y était posée après coup.
   async enter({ rnd = Math.random, lecon = false } = {}) {
-    const { app } = this, { stage, ocean } = app, E = this.conf, Rg = E.reglages;
+    if (this.x) this.leave(); // (jamais deux scènes à la fois)
+    const { app } = this, { stage, ocean } = app, E = this.conf, Rg = E.reglages, tok = this.tok, vivant = () => tok === this.tok;
     if (!document.getElementById("etal-style")) { const s = document.createElement("style"); s.id = "etal-style"; s.textContent = STYLE; document.head.append(s); }
     this.rnd = rnd;
     // le temps du jour : mauvais une fois sur deux à l'entrée ; sinon, une fois sur deux, l'orage arrive en cours de partie
@@ -67,9 +73,11 @@ export class EtalScreen {
     this.t0 = clock.now(); this.meteoDepart = orage;
     // la pêche du jour : 8 produits sur 12, au hasard, avec des prix de décor (ceux de l'exercice sont posés à chaque question)
     const noms = [...PRODUITS].sort(() => rnd() - 0.5).slice(0, 8), prix = Object.fromEntries(noms.map((n) => [n, 100 * (2 + Math.floor(rnd() * 15))]));
+    const derniereReplique = (await app.store?.setting("etalReplique")) ?? -1;
+    if (!vivant()) return false; // (quittée pendant la lecture du réglage : rien n'est posé)
     this.x = startEtal({
       images: "assets/etal/", police: "assets/polices/shantell-sans-600.woff2", reglages: Rg, meteo: orage, peche: [noms, prix],
-      derniereReplique: (await app.store?.setting("etalReplique")) ?? -1,
+      derniereReplique,
       fige: lecon ? () => clock.paused : () => !!app.enPause || clock.paused,
       toucher: () => !app.enPause && !this.verrou,
       on: (cible, type, f, o) => { cible.addEventListener(type, f, o); this.ecoute.push([cible, type, f, o]); },
@@ -88,6 +96,7 @@ export class EtalScreen {
     app.hudSombre = () => !app.enPause && (this.api?.etat().meteo ?? 0) > 0.5;
     this.boutons();
     await this.x.api.pret;
+    if (!vivant()) return false; // (quittée pendant le chargement des images : `leave()` a tout retiré)
     this.lampe();
     return true;
   }

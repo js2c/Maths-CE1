@@ -306,8 +306,10 @@ export class ProblemesScreen {
     voice.say(q.e.question, { instruction: true }); voice.instruction = [...q.e.enonce, q.e.question].join(" ");
   }
   // ---------------------------------------------------------------- après la réponse (FactsScreen.submit)
-  async feedback(q, r, ok) {
+  async feedback(q, r) {
     const fs = this.fs, { voice, text, ocean, sound } = this.app, T = this.T, k = this.app.vitesse ?? 1, e = q.e;
+    // (jugée ici : l'écran des additions ne sait pas ce qu'attend un problème)
+    const ok = classer(e, r.value, r.nsp) === null;
     this.tok++; // (l'histoire en cours s'arrête là)
     ocean.mascotte.play(ok ? "rejouir" : "encourager");
     if (ok) { sound?.play("bonne"); this.juste = true; this.repaint(); await voice.say(text.pick("bravo")); await wait(350); return; }

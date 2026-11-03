@@ -48,6 +48,8 @@ export class Module7Runner {
   // l'énoncé suivant : le retour d'une erreur (exercice), un énoncé manqué d'une séance précédente, puis ceux du tour pas encore
   // passés ; jamais un énoncé déjà posé dans la séance
   pick(n) {
+    // (parcours de test : `force`, des identifiants d'énoncés posés d'abord, dans l'ordre ; main.js, ?enonce=…)
+    while (this.force?.length) { const id = this.force.shift(), e = this.banque.find((x) => x.id === id); if (e) return e; }
     const P = this.pool(n), libre = (e) => !this.poses.has(e.id);
     if (!P.length) return null;
     // (une question plus simple, après une difficulté persistante : un énoncé de difficulté plus basse du même niveau, sinon du

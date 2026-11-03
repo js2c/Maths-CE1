@@ -62,7 +62,9 @@ export function classer(e, v, nsp = false) {
   return "autre";
 }
 // le calcul écrit sur la plaque (« 23 − 9 = 14 » ; deux étapes : les deux, l'un après l'autre)
-export const calculDe = (e) => e.calcul.split(" ; ");
+// (sans ce qui est entre parenthèses, « (3 fois 2) », « (2 parts de 3) » : l'écriture des chiffres de l'application n'a pas de
+// parenthèses, et la plaque montre le calcul lui-même : « 2 + 2 + 2 = 6 », « 6 = 3 + 3 »)
+export const calculDe = (e) => e.calcul.split(" ; ").map((t) => t.replace(/\s*\(.*\)\s*$/, ""));
 // la réponse attendue
 export const reponseDe = (e) => e.reponse;
 

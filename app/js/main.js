@@ -487,7 +487,9 @@ async function notion4(ctx) {
 // parent (hors de la rotation de « jouer ») : l'écran des problèmes (modules/problemes/screen.js), la leçon L19 la première fois à un
 // niveau du schéma en barres ; un niveau acquis rapporte une étoile arc-en-ciel
 async function problemeRunner(session, o = {}) {
-  return new Module7Runner({ store, content: module7, banque: problemes, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, choix: session.choix?.module === 7 ? session.choix.niveau : null, depart: (await store.setting("departProblemes")) ?? module7.depart, ...o }).load();
+  const r = await new Module7Runner({ store, content: module7, banque: problemes, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, choix: session.choix?.module === 7 ? session.choix.niveau : null, depart: (await store.setting("departProblemes")) ?? module7.depart, ...o }).load();
+  if (P.get("enonce")) r.force = P.get("enonce").split(","); // (parcours de test : les énoncés imposés)
+  return r;
 }
 async function notion7(ctx) {
   const { session } = ctx, conf = ctx.step.module7 ?? ctx.step;

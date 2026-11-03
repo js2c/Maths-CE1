@@ -219,12 +219,12 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
         }
         if (ctx.session.rec.module === 2) {
           const runner = await new Module2Runner({ store, content: module2, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux, choix: ctx.session.choix?.famille ?? null }).load();
-          log.module = 2; log.famille = runner.famille;
+          log.module = 2; log.famille = runner.famille; const t0n = t; // (lot « Correctifs de la confrontation 2 » : la durée de la notion du jour)
           // lot 3 : part des questions sur la règle de la famille en cours (hors exemples guidés), leçons jouées pour elle
           const rule = new Set(ruleFacts(module2, runner.famille).map((f) => f.fait)), asked = [];
           const scr = { ask: async (q, cfg, o) => { if (!q.guide) asked.push(q.fait); return factScreen.ask(q, cfg, o); } };
           const res = await runNotion({ ...ctx, step: { ...ctx.step, ...(ctx.step.module2 ?? {}) }, runner, screen: scr, rnd: R, lesson: async (id) => { add(T.lecon); log.lecons.push(id); return { vue: true }; } });
-          log.asked = asked; log.partFamille = asked.length ? asked.filter((f) => rule.has(f)).length / asked.length : null;
+          log.notionS = Math.round((t - t0n) / 1000); log.asked = asked; log.partFamille = asked.length ? asked.filter((f) => rule.has(f)).length / asked.length : null;
           log.doubles = asked.length ? asked.filter((f) => { const [a, b] = f.split("+").map(Number); return Math.abs(a - b) <= 1 && Math.max(a, b) <= 5; }).length / asked.length : null;
           for (const e of res?.events ?? []) if (e.type === "acquise" && !e.parent && !runner.events.some((x) => x.famille === e.famille)) await ctx.session.levelUp();
           ctx.session.nouveaux = runner.nouveaux; return;

@@ -399,6 +399,7 @@
     "C1moins": "Quand on retire dix, seules les dizaines changent. On monte d'une rangée.",
     "C3": "Plus neuf, c'est plus dix, puis on recule d'un pas.",
     "C4": "{u} plus {b} dépasse dix : on passe à la dizaine suivante.",
+    "C4dizaine": "{u} plus {b}, ça fait dix : on arrive à la dizaine suivante.",
     "C5": "On ne peut pas retirer {b} de {u} : on casse une dizaine.",
     "autre": "Hmm, regardons ensemble."
   },

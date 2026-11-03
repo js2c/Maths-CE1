@@ -132,7 +132,9 @@ function domaines(C) {
         // (lot 3 bis : le trou sur le nombre de départ aux niveaux à pas fixe, « Combien plus 10 ? Ça fait 57. »)
         calcTrouDepartPlus: all.filter((x) => x.op === "+" && x.trouDepart).map(({ b, n }) => ({ b, n })), calcTrouDepartMoins: all.filter((x) => x.op === "-" && x.trouDepart).map(({ b, n }) => ({ b, n })),
         "calcPont.plus": k("+"), "calcPont.moins": k("-"),
-        "erreurCalc.C4": all.filter((x) => x.op === "+" && x.b < 10 && u(x.a) + x.b >= 10).map((x) => ({ u: u(x.a), b: x.b })),
+        "erreurCalc.C4": all.filter((x) => x.op === "+" && x.b < 10 && u(x.a) + x.b > 10).map((x) => ({ u: u(x.a), b: x.b })),
+        // (lot « Correctifs de la confrontation 2 », écart 6.12 : les calculs qui tombent sur la dizaine, 24 + 6)
+        "erreurCalc.C4dizaine": all.filter((x) => x.op === "+" && x.b < 10 && u(x.a) + x.b === 10).map((x) => ({ u: u(x.a), b: x.b })),
         "erreurCalc.C5": all.filter((x) => x.op === "-" && x.b < 10 && u(x.a) < x.b).map((x) => ({ b: x.b, u: u(x.a) })),
         // lot 3 bis (B4) : l'aide du coquillage dit le premier pas (calc/screen.js, help) : au mur, le poisson descend ou monte
         // d'une ou plusieurs rangées ; sur un chemin de plusieurs ponts, « D'abord, on va jusqu'à 40 » ; d'un seul pont, le départ et le pas

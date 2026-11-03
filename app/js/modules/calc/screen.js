@@ -14,6 +14,9 @@ import { wait } from "../../engine/clock.js";
 import { pop, skipKey } from "../../engine/ui.js";
 import { answerOf, classifyCalc } from "./calc.js";
 import { WallFish } from "./wallfish.js";
+// (lot « Correctifs de la confrontation 2 », écart 6.12) la phrase de C4 : « 8 plus 5 dépasse dix » ; pour un calcul qui tombe sur la
+// dizaine (24 + 6), « 4 plus 6, ça fait dix »
+export const phraseC4 = (E, q) => fill((q.a % 10) + q.b === 10 && E.C4dizaine ? E.C4dizaine : E.C4, { u: q.a % 10, b: q.b });
 
 const SKIPPED = Symbol("passé");
 // le mur des corrections (à la place du pavé) ; le chemin en petit (au-dessus du pavé) et en grand (à la place du pavé)
@@ -134,7 +137,7 @@ export class CalcScreen {
       // est entourée dès le début, comme aux additions. Au mur : la phrase de l'erreur (C1, C3), le poisson, « C'était 64. » ;
       // sur le chemin : « Ce n'est pas grave, regardons ensemble », les ponts rejoués, puis la phrase de C4 ou C5
       const code = ok ? null : r.nsp ? "NSP" : classifyCalc(q, r.value), E = T.erreurCalc, wall = q.support === "mur";
-      const why = code === "C1" ? (q.op === "-" ? E.C1moins : E.C1) : code === "C4" ? fill(E.C4, { u: q.a % 10, b: q.b }) : code === "C5" ? fill(E.C5, { b: q.b, u: q.a % 10 }) : code === "C3" ? E.C3 : null;
+      const why = code === "C1" ? (q.op === "-" ? E.C1moins : E.C1) : code === "C4" ? phraseC4(E, q) : code === "C5" ? fill(E.C5, { b: q.b, u: q.a % 10 }) : code === "C3" ? E.C3 : null;
       if (ok) { r.lent = true; await g(voice.say(T.calcLent)); }
       else {
         if (!r.nsp) fs.slate.classList.add("shake");
@@ -182,7 +185,7 @@ export class CalcScreen {
   async bridgeFix(step, r) {
     const fs = this.fs, { voice, text } = this.app, T = text.data, E = T.erreurCalc, k = this.app.vitesse ?? 1, q = step.parent, i = step.i ?? 0;
     const pont = fill(step.op === "-" ? T.calcPont.moins : T.calcPont.plus, { k: step.b });
-    const why = !q ? null : q.type === "passerPlus" ? fill(E.C4, { u: q.a % 10, b: q.b }) : q.type === "passerMoins" ? fill(E.C5, { b: q.b, u: q.a % 10 }) : q.type === "plus9" ? E.C3 : null;
+    const why = !q ? null : q.type === "passerPlus" ? phraseC4(E, q) : q.type === "passerMoins" ? fill(E.C5, { b: q.b, u: q.a % 10 }) : q.type === "plus9" ? E.C3 : null;
     let abort = null; const abortP = new Promise((_, rej) => { abort = () => rej(SKIPPED); }); abortP.catch(() => {});
     const g = (p) => Promise.race([p, abortP]), skip = skipKey(this.app, () => abort(), "passer la correction");
     const draw = (o) => q && this.board.draw((ctx) => this.paintPath(ctx, q, PATH_SMALL, o));

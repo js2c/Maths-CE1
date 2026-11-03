@@ -108,8 +108,11 @@ export class Module7Runner {
     if (q.guide) { await this.save(); return { etoiles: code === null ? 1 : 0, events }; }
     this.count++; if (code === null) this.ok++;
     let etoiles = code === null ? 1 : 0; if (code === null && q.revient) etoiles += 1;
-    if (code !== null && !q.revient && !this.etape) this.replays.push({ q, in: this.c.repetition?.retourErreur ?? 3 });
-    const relaunch = (id, raison) => { if (id && !this.etape && !this.played.has(id)) { this.played.add(id); events.push({ type: "lecon", id, raison }); } };
+    // (relecture du lot, R1 : un énoncé manqué ne revient plus dans la séance : sa réponse venait d'être dite par la correction, et la
+    // retaper rapportait le double d'étoiles ; il revient à une séance suivante, avant les autres, `manques` ; `retourErreur` : 0)
+    if (code !== null && !q.revient && !this.etape && (this.c.repetition?.retourErreur ?? 0) > 0) this.replays.push({ q, in: this.c.repetition.retourErreur });
+    // (relecture du lot, R7 : la leçon L19, le schéma en barres, n'est relancée qu'aux niveaux où l'aide est ce schéma : `lecons`)
+    const relaunch = (id, raison) => { if (id && !this.etape && this.c.lecons?.[q.niveauEnonce] === id && !this.played.has(id)) { this.played.add(id); events.push({ type: "lecon", id, raison }); } };
     // la montée : le niveau de la question (le sien ou celui choisi), sauf au cran « plus facile » et pour un niveau déjà acquis
     const n = q.niveau;
     if (q.cran !== "facile" && !this.st.acquis.includes(n)) {

@@ -124,19 +124,19 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     await shot(page, "08-juste");
     // 4. les erreurs : P1 à la comparaison (7 billes, 4 billes : 3 de plus ; « 11 »)
     await q7(page); check((await qid(page)) === "cmp-e-01", `${T} · la comparaison`); await finPhrases(page);
-    await resetSaid(page); await typeIn(page, 11);
+    await note(page, "l'histoire, une étiquette touchée, la mascotte, la bonne réponse"); await resetSaid(page); await typeIn(page, 11);
     await page.waitForFunction((t) => window.__said.includes(t), textes.erreurProbleme.P1comparaison, { timeout: 15000 }).catch(() => {});
     await page.waitForTimeout(700); await shot(page, "09-P1-comparaison"); await zonesOk(page, "l'aide de la comparaison");
     check((await said(page)).includes(textes.erreurProbleme.P1comparaison), `${T} · P1 à la comparaison : « de plus » ne veut pas dire ajouter`);
     // P2 : un nombre de l'histoire redit (4 pommes et 3 poires : « 4 »)
-    await q7(page); await finPhrases(page); await resetSaid(page); await typeIn(page, 4);
+    await q7(page); await note(page, "P1 à la comparaison"); await finPhrases(page); await resetSaid(page); await typeIn(page, 4);
     await page.waitForFunction((t) => window.__said.includes(t), textes.erreurProbleme.P2, { timeout: 15000 }).catch(() => {});
     await page.waitForTimeout(900); await shot(page, "10-P2-barres");
     check((await said(page)).includes(textes.erreurProbleme.P2), `${T} · P2 : « Tu as redit un nombre de l'histoire »`);
     await page.waitForFunction(() => window.__said.some((t) => /ça fait 7 fruits/.test(t)), null, { timeout: 20000 }).catch(() => {}); await page.waitForTimeout(400);
     await shot(page, "11-correction-calcul");
     // P4 : deux étapes, la réponse de la première (11)
-    await q7(page); await finPhrases(page); await resetSaid(page); await typeIn(page, 11);
+    await q7(page); await note(page, "P2 et la correction"); await finPhrases(page); await resetSaid(page); await typeIn(page, 11);
     await page.waitForFunction((t) => window.__said.includes(t), textes.erreurProbleme.P4, { timeout: 15000 }).catch(() => {});
     await page.waitForTimeout(1500); await shot(page, "12-P4-deux-etapes");
     check((await said(page)).includes(textes.erreurProbleme.P4), `${T} · P4 : la réponse de la première étape`);

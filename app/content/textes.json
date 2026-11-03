@@ -763,6 +763,7 @@
     "P1comparaison": "Attention : « de plus » ne veut pas dire qu'il faut ajouter.",
     "P2": "Tu as redit un nombre de l'histoire. Il faut calculer.",
     "P3": "Le bon calcul, mais une petite erreur de compte.",
-    "P4": "C'est la réponse de la première étape. Il en reste une."
+    "P4": "C'est la réponse de la première étape. Il en reste une.",
+    "P1comparaisonMoins": "Attention : « de moins » ne veut pas dire qu'il faut enlever."
   }
 }

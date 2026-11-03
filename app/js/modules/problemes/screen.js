@@ -148,6 +148,9 @@ export class ProblemesScreen {
       onBrief(this.app, b, () => { if (!this.q || this.q !== q || this.occupe) return; this.allumer(it.i); voice.stop(); voice.say(q.e.enonce[it.phrase]).then(() => { if (this.q === q && this.lit === it.i) this.allumer(-1); }); }, "etiquette");
       this.els.push(b); return b;
     });
+    // (relecture du lot, R5 : toucher la plaque de la réponse redit la question seule)
+    { const b = document.createElement("button"); b.className = "bubble probleme-plaque"; b.setAttribute("aria-label", "redire la question"); Object.assign(b.style, { left: `${L.rep.x}px`, top: `${L.rep.y}px`, width: `${L.rep.w}px`, height: `${REP_H}px` }); this.app.stage.ui.append(b); this.els.push(b);
+      onBrief(this.app, b, () => { if (this.q !== q || this.occupe) return; voice.stop(); voice.say(q.e.question); }, "plaque"); }
     this.app.bulle?.eviter("probleme", () => (this.q ? [...this.boutons.filter((b) => b.style.visibility !== "hidden"), [L.rep.x, L.rep.y, L.rep.x + L.rep.w, L.rep.y + REP_H], ...(this.objets ? [[PLAQUE_OBJETS.x, PLAQUE_OBJETS.y, PLAQUE_OBJETS.x + PLAQUE_OBJETS.w, PLAQUE_OBJETS.y + PLAQUE_OBJETS.h]] : []), ...(this.aideVisible ? [[ZONE_AIDE.x, ZONE_AIDE.y, ZONE_AIDE.x + ZONE_AIDE.w, ZONE_AIDE.y + ZONE_AIDE.h]] : [])] : null));
     fs.help.style.visibility = q.coquillage ? "visible" : "hidden";
     const p = new Promise((res) => { fs.resolve = res; });
@@ -317,12 +320,16 @@ export class ProblemesScreen {
     if (!r.nsp) sound?.play("erreur");
     const { g, abort, fin } = this.garde(), skip = skipKey(this.app, () => abort(), "passer la correction");
     let quitte = false;
-    const montrer = () => { this.montre = true; fs.typed = ""; this.juste = true; this.repaint(); };
+    // (relecture du lot, R4 : à la correction, la réponse s'écrit sur la plaque restée neutre ; le vert est pour sa propre bonne réponse)
+    const montrer = () => { this.montre = true; fs.typed = ""; this.juste = false; this.repaint(); };
     try {
       fs.keys(false);
       const code = r.nsp ? "NSP" : classer(e, r.value);
       // le code d'erreur, sa phrase s'il en a une (P1 : seulement pour une comparaison, le schéma montre le reste)
-      const dit = r.nsp ? T.faitNSP : code === "P1" ? (e.structure === "comparaison" ? T.erreurProbleme.P1comparaison : null) : T.erreurProbleme[code] ?? T.erreur.autre;
+      // (relecture du lot, R6 : à une comparaison, la phrase du mot que dit l'histoire, et seulement s'il a trompé l'enfant : « de plus »
+      // quand elle a ajouté, « de moins » quand elle a enlevé)
+      const texte = [...e.enonce, e.question].join(" "), ajoute = !r.nsp && r.value === e.donnees?.[0] + e.donnees?.[1];
+      const dit = r.nsp ? T.faitNSP : code === "P1" ? (e.structure !== "comparaison" ? null : ajoute && /de plus/.test(texte) ? T.erreurProbleme.P1comparaison : !ajoute && /de moins/.test(texte) ? T.erreurProbleme.P1comparaisonMoins : null) : T.erreurProbleme[code] ?? T.erreur.autre;
       if (dit) await g(voice.say(dit));
       // l'aide, puis la correction dans l'histoire et le calcul écrit
       this.paintAide(q);

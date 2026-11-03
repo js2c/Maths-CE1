@@ -240,15 +240,15 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 
 | Niveau | Ce qui est travaillé | Exemple |
 | --- | --- | --- |
-| 1 | Ajouter ou enlever jusqu'à 10, le tout ou la fin inconnus. | 4 pommes et 3 poires, combien de fruits |
-| 2 | Ajouter ou enlever jusqu'à 20, le niveau de départ. | 17 ballons et 8 de plus |
-| 3 | Groupes égaux et partage avec de petits nombres, en rangeant les objets. | 6 fraises pour 2, 3 chacun |
-| 4 | Chercher une partie ou le changement, jusqu'à 20. | 23 sardines, il en vend 9, il en reste 14 |
-| 5 | Comparer, de plus et de moins, jusqu'à 20. | 7 billes contre 4, 3 de plus |
-| 6 | Ajouter, enlever, chercher une partie, jusqu'à 100. | 35 + 20 = 55 |
-| 7 | Groupes égaux et partage, jusqu'à 50. | 4 cagettes de 5, 20 |
-| 8 | Le début inconnu, et comparer au-delà de 20. | Il en perd 6, il en reste 12, 18 au début |
-| 9 | Deux étapes, deux calculs l'un après l'autre. | 6 + 5 = 11, puis 11 - 3 = 8 |
+| 1 | Ajouter ou enlever jusqu'à 10, le tout ou la fin inconnus. | 4 pommes et 3 poires, combien de fruits ? |
+| 2 | Ajouter ou enlever jusqu'à 20, le niveau de départ. | 12 parts de gâteau, 8 mangées, combien en reste-t-il ? |
+| 3 | Groupes égaux et partage avec de petits nombres, l'enfant range les objets. | 6 fraises pour 2, combien chacun ? |
+| 4 | Chercher une partie ou le changement, jusqu'à 20. | 9 crayons dont 4 rouges, combien de bleus ? |
+| 5 | Comparer, de plus et de moins, jusqu'à 20. | 7 billes contre 4, combien de plus ? |
+| 6 | Ajouter, enlever, chercher une partie, jusqu'à 100. | 35 enfants, 20 à la cantine, combien chez eux ? |
+| 7 | Groupes égaux et partage, jusqu'à 50. | 4 cagettes de 5 poissons, combien en tout ? |
+| 8 | Le début inconnu, et comparer au-delà de 20. | Il en perd 6, il en reste 12, combien au début ? |
+| 9 | Deux étapes, deux calculs l'un après l'autre. | 6 billes, 5 de plus, puis 3 perdues |
 
 **Les leçons**
 

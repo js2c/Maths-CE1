@@ -404,7 +404,7 @@ export class ParentSpace {
       const cur = Math.min(9, st7.niveau ?? 2), acq = st7.acquis ?? [];
       m7.append(h("p", { class: "pa-big" }, `Niveau : ${cur} sur 9 · ${plural(acq.length, "niveau acquis", "niveaux acquis")}`), h("p", { class: "pa-note" }, M7.niveaux[cur]),
         h("div", { class: "pa-levels", "aria-hidden": "true" }, Array.from({ length: 9 }, (_, i) => h("span", { class: acq.includes(i + 1) ? "done" : i + 1 === cur ? "cur" : "" }, i + 1))),
-        h("p", { class: "pa-note" }, "Une histoire de la vie courante, lue à voix haute, illustrée par son lieu ; les nombres sont sur des étiquettes, la réponse se tape au pavé. Après une erreur, l'aide : le schéma en barres (le tout et ses deux parties), la comparaison, ou les objets groupés ; puis la correction dite dans l'histoire. Un niveau est acquis avec 8 bonnes réponses sur 10 (au plus une aide), sur deux jours au moins ; les réponses du « Problème du jour » comptent. Un énoncé ne revient pas avant que tous ceux de son niveau soient passés ; un énoncé manqué revient à une séance suivante."),
+        h("ul", { class: "pa-note" }, ["Une histoire de la vie courante, lue à voix haute, illustrée par son lieu. Les nombres sont sur des étiquettes ; la réponse se tape au pavé.", "Après une erreur : l'aide (le schéma en barres, ou les objets groupés), puis la correction dite dans l'histoire.", "Un niveau est acquis avec 8 bonnes réponses sur les 10 dernières, au plus une avec le coquillage d'aide, sur deux jours au moins. Les réponses du problème du jour comptent ; au cran « plus facile », elles ne comptent pas.", "Un problème ne revient pas dans la même séance. Un problème manqué revient à une séance suivante, avant les autres."].map((t) => h("li", {}, t))),
         h("h3", {}, "Historique des niveaux"), h("ul", { class: "pa-hist" }, (st7.obtenus ?? []).filter((o) => o.acquis || o.parent).map((o) => h("li", {}, o.parent ? `${D.fmtDay(o.date)} : niveau ${o.niveau} choisi par le parent (point de départ)` : `${D.fmtDay(o.date)} : niveau ${o.niveau} acquis${o.choix ? " (choisi par l'enfant)" : o.etape ? " (au problème du jour)" : ""}`))),
         ...((st7.lecons ?? []).length ? [h("p", { class: "pa-note" }, `Leçons déjà vues : ${st7.lecons.join(", ")}.`)] : []));
     }
@@ -614,7 +614,7 @@ export class ParentSpace {
     const seg = h("div", { class: "pa-seg", role: "group", "aria-label": "problème du jour" }), paint = (v) => { for (const b of seg.children) b.setAttribute("aria-pressed", String((b.dataset.v === "oui") === v)); };
     for (const [v, t] of [["oui", "activé"], ["non", "désactivé"]]) seg.append(h("button", { "data-v": v, onclick: async () => { await this.store.setSetting("problemeDuJour", v === "oui"); paint(v === "oui"); } }, t));
     this.store.setting("problemeDuJour").then((v) => paint(v !== false));
-    return row("Problème du jour", "Un ou deux problèmes de la vie courante à chaque séance, après le défi (1 min 30, prises sur la notion du jour : celle-ci dure alors 4 min 30 au lieu de 6). Pas quand l'exercice du jour est déjà « Problèmes ». Désactivé, la notion du jour garde ses 6 minutes.", seg);
+    return row("Problème du jour", "Activé : un ou deux problèmes à la fin de chaque séance, sans l'allonger (le temps est pris sur l'exercice du jour).", seg);
   }
   echauffementRow(row) {
     const seg = h("div", { class: "pa-seg", role: "group", "aria-label": "échauffement" }), paint = (v) => { for (const b of seg.children) b.setAttribute("aria-pressed", String((b.dataset.v === "oui") === v)); };

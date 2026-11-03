@@ -1,15 +1,15 @@
 # Les phrases à fabriquer
 
-`node tools/voix/a-fabriquer.mjs --md` : 967 phrases de l'inventaire n'ont pas encore de fichier son, environ **8,39 Mo** (estimation : 504 octets + 188 par lettre du texte lu, plus l'index). Le dossier de la voix pèse 82,21 Mo ; après leur fabrication, environ **90,60 Mo**, sous le plafond de 95 Mo (marge : 4,40 Mo).
+`node tools/voix/a-fabriquer.mjs --md` : 968 phrases de l'inventaire n'ont pas encore de fichier son, environ **8,40 Mo** (estimation : 504 octets + 188 par lettre du texte lu, plus l'index). Le dossier de la voix pèse 82,21 Mo ; après leur fabrication, environ **90,61 Mo**, sous le plafond de 95 Mo (marge : 4,39 Mo).
 
 | Partie | Phrases | Poids estimé |
 | --- | --- | --- |
-| problèmes : noms, niveaux, consignes, aides, erreurs | 57 | 0,48 Mo |
+| problèmes : noms, niveaux, consignes, aides, erreurs | 58 | 0,49 Mo |
 | calcul rapide : niveau 7 (lot « Correctifs de la confrontation 2 ») | 57 | 0,39 Mo |
 | la leçon L19 | 17 | 0,12 Mo |
 | problèmes : énoncés, questions, corrections | 836 | 7,40 Mo |
 
-## problèmes : noms, niveaux, consignes, aides, erreurs (57)
+## problèmes : noms, niveaux, consignes, aides, erreurs (58)
 
 - Écoute une histoire, et trouve la réponse.
 - Le tout en haut, ses deux parties en dessous.
@@ -68,6 +68,7 @@
 - Le bon calcul, mais une petite erreur de compte.
 - C'est la réponse de la première étape.
 - Il en reste une.
+- Attention : « de moins » ne veut pas dire qu'il faut enlever.
 
 ## calcul rapide : niveau 7 (lot « Correctifs de la confrontation 2 ») (57)
 

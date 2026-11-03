@@ -203,12 +203,11 @@ export const SESSION_COLUMNS = [
 ];
 export const ANSWER_COLUMNS = [
   ["réponse", (r) => r.id], ["séance", (r) => r.seance], ["horodatage", (r) => dateTime(r.t)], ["module", (r) => r.module], ["niveau", (r) => r.niveau],
-  ["question", (r) => r.question], ["énoncé", (r) => r.enonce ?? ""], ["forme", (r) => r.forme], ["réponse donnée", (r) => r.donnee], ["réponse attendue", (r) => r.attendue], ["juste", (r) => !!r.juste],
+  ["question", (r) => r.question], ["forme", (r) => r.forme], ["réponse donnée", (r) => r.donnee], ["réponse attendue", (r) => r.attendue], ["juste", (r) => !!r.juste],
   ["temps (s)", (r) => (typeof r.tempsMs === "number" ? Math.round(r.tempsMs / 100) / 10 : null)], ["écoutes de la consigne", (r) => r.ecoutes], ["aide utilisée", (r) => !!r.aide],
   ["code d'erreur", (r) => r.erreur], ["question qui revient", (r) => !!r.revient], ["exemple guidé", (r) => !!r.guide],
   ["exemple passé", (r) => !!r.passe], ["correction passée", (r) => !!r.correctionPassee], ["entraînement libre", (r) => !!r.libre],
-  ["cran", (r) => (r.cran ? CRAN_NAMES[r.cran] : null)], ["notion du jour", (r) => !!r.notion], ["défi record", (r) => !!r.defi],
-];
+  ["cran", (r) => (r.cran ? CRAN_NAMES[r.cran] : null)], ["notion du jour", (r) => !!r.notion], ["défi record", (r) => !!r.defi], ["énoncé (problèmes)", (r) => r.enonce ?? ""]];
 export const FACT_COLUMNS = [
   ["fait", (f) => f.fait.replace("+", " + ")], ["famille", (f) => f.famille], ["boîte", (f) => f.boite], ["prochain passage", (f) => dayKey(f.prochain)],
   ["passages", (f) => (f.historique ?? []).filter((h) => !h.parent).length], ["erreurs", (f) => (f.historique ?? []).filter((h) => !h.juste && !h.parent).length], ["temps médian (s)", (f) => (typeof f.tempsMedian === "number" ? Math.round(f.tempsMedian / 100) / 10 : null)],

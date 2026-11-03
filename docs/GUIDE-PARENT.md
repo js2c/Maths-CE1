@@ -636,7 +636,7 @@ Votre enfant résout maintenant des **problèmes** : de petites histoires de la 
 
 **Les images des lieux** : seule celle de l'étal est là (c'est celle de l'étal du pêcheur). Les 21 autres sont à générer avec les prompts de `art/problemes/contextes.json` ; en attendant, ces problèmes ont un fond de papier uni. Déposez chaque image dans `art/problemes/sources/<lieu>.png` (1920 × 1080), puis une petite demande de fusion : `node art/tools/export-problemes.mjs` et `node tools/precache.mjs`.
 
-**Phrases à fabriquer** : 910 phrases pour ce lot (les histoires, les questions, les corrections, les noms, les aides, la leçon), plus les 57 du lot « Correctifs de la confrontation 2 » : 967 en tout, environ 8,4 Mo. La voix passera d'environ 82,2 à 90,6 Mo, sous le nouveau plafond de 95 Mo. La liste exacte : `tests/recette-fonctionnelle/out-problemes/PHRASES.md`.
+**Phrases à fabriquer** : 911 phrases pour ce lot (les histoires, les questions, les corrections, les noms, les aides, la leçon), plus les 57 du lot « Correctifs de la confrontation 2 » : 968 en tout, environ 8,4 Mo. La voix passera d'environ 82,2 à 90,6 Mo, sous le nouveau plafond de 95 Mo. La liste exacte : `tests/recette-fonctionnelle/out-problemes/PHRASES.md`.
 
 **À relire** : les rôles familiaux des histoires (« Papa », « Mamie », « ton copain »…), dans `docs/maquettes/problemes/ENONCES.md` ; signalez ceux à changer.
 

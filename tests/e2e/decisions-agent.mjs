@@ -393,18 +393,19 @@ if (faire(8)) {
       check(await page.evaluate(() => !window.__app.hud.sombre), "8. étal, beau temps : le compteur sans plaque");
       await context.close();
     }
-    // c. l'étoile arc-en-ciel à la récompense : un niveau franchi pendant la séance (la ligne, voie rapide) ; l'album à l'arrivée
+    // c. l'étoile arc-en-ciel à la récompense : un niveau franchi pendant la séance (la ligne, voie rapide) ; (lot « Réserves d'étoiles et
+    // étoiles arc-en-ciel », maquette validée le 2 novembre 2026 : elle vole jusqu'à sa réserve, à côté du compteur, au lieu de l'album)
     {
       const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=echauffement,defi&questions=8&guides=0&module=1`, vue, reel: false });
       await page.evaluate(() => { window.__arcAlbum = 0; new MutationObserver(() => { if (document.querySelector(".arc-album")) window.__arcAlbum++; }).observe(document.querySelector("#ui"), { childList: true, subtree: true }); });
       await tap(page, ".play");
-      const vu = attendre(page, () => !!document.querySelector(".arc-album") && !!document.querySelector(".etoile-vol"), null, 240000);
+      const vu = attendre(page, () => !!document.querySelector(".etoile-vol"), null, 240000);
       const fin = jusquaLaFin(page);
-      if (await vu) { await page.waitForTimeout(500); await shot(page, vue, "8c-etoile-arc-en-ciel-vers-l-album"); }
+      if (await vu) { await page.waitForTimeout(500); await shot(page, vue, "8c-etoile-arc-en-ciel-vers-sa-reserve"); }
       await fin.catch(() => {});
       if (un) {
         const s1 = await said(page);
-        check(s1.includes(T.etoileArc) && await page.evaluate(() => window.__arcAlbum > 0), "8. « Et une étoile arc-en-ciel ! » : l'album apparaît, l'étoile y vole");
+        check(s1.includes("Et une étoile arc-en-ciel !") && await page.evaluate(() => window.__arcAlbum === 0 && window.__app.hud.reserves.n.arc >= 1), "8. « Et une étoile arc-en-ciel ! » : l'étoile vole jusqu'à sa réserve, qui la compte (plus d'album posé : lot « Réserves d'étoiles »)");
         check(!(await visible(page, ".arc-album")), "8. puis l'album s'en va");
       }
       await context.close();

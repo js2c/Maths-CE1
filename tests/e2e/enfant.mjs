@@ -22,7 +22,9 @@
 //   contrôle du contrôle (une touche orpheline et une erreur injectées : le parcours doit échouer)
 //   --rejouer : rejoue les actions enregistrées d'un défaut (out/…/defaut-*.json) ; --reduire : cherche la plus courte suite
 //   d'actions qui le montre encore (delta-debugging), et l'écrit à côté (…-reduit.json)
-// Version courte (tests de GitHub, .github/workflows/tests.yml) : node tests/e2e/enfant.mjs --graines 3 --actions 60
+// Version courte (tests de GitHub, .github/workflows/tests.yml) : node tests/e2e/enfant.mjs --graines 3 --actions 60 ; quand elle
+// échoue, GitHub garde 14 jours le dossier tests/e2e/out/enfant/ (les fichiers defaut-*.json, leurs captures, le résumé, la base
+// d'un mois) : l'archive « enfant-defauts » de la page du travail, à rejouer ici avec --rejouer (docs/ARCHITECTURE.md)
 // BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
 // (raison : la version courte et la série de centaines de graines (tests de GitHub, recette de chaque lot) jouent des milliers
 // d'actions : à la vitesse réelle de la voix, sur l'application installée, elles dureraient des jours. La version Android
@@ -223,7 +225,13 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
   }
   // (--android) une relance : le navigateur fermé ou tué, rouvert sur le même profil ; la page et ses écouteurs sont neufs
   const relancer = async (tuer) => { const r = tuer ? await a.tuerEtRelancer() : await a.relancer(); ({ ctx: context, page, cdp } = a); brancherPage(); return r; };
-  const defauts = [], faits = [], noter = (quoi, detail) => { if (!defauts.some((d) => d.quoi === quoi)) defauts.push({ quoi, detail, apres: faits.length }); };
+  // (lot « Correctif : l'étal resté actif à l'accueil ») chaque défaut, la première fois qu'il est vu : une capture de l'écran à cet
+  // instant, à côté de son fichier (defaut-<graine>-<défaut>.png) ; sur GitHub, les deux sont gardés quand le travail échoue
+  const defauts = [], faits = [], noter = (quoi, detail) => {
+    if (defauts.some((d) => d.quoi === quoi)) return;
+    defauts.push({ quoi, detail, apres: faits.length });
+    if (!REJOUER) page?.screenshot({ path: join(OUT, `defaut-${graine}-${quoi.replace(/[^a-z0-9]+/gi, "-").slice(0, 50)}.png`), timeout: 10000 }).catch(() => {});
+  };
   // la garde : une partie qui n'avance plus pendant 3 minutes (une action ou une vérification qui ne rend jamais la main) est
   // arrêtée, avec l'endroit où elle s'est arrêtée et une capture (premières longues séries : deux parties restées une heure)
   let pas = Date.now(), ou = "chargement", bloque = null, delai = 0; // (`delai` : une action longue voulue, la veille de 5 minutes)

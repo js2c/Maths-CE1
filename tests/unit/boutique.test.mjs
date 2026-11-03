@@ -67,7 +67,7 @@ test("« il te manque N étoiles » : N entre 1 et 299, et chaque N a sa phrase 
   // chaque prix de chaque niveau a sa phrase (lot « Prix de la boutique réglables »)
   for (const x of NIVEAUX) {
     for (const n of Object.values(x.prix)) assert.ok(inv.has(textes.boutique.prix.replace("{n}", n)), `prix ${n}`);
-    for (const n of Object.values(x.briller)) assert.ok(inv.has(textes.boutique.briller.replace("{n}", n)), `briller ${n}`);
+    for (const n of Object.values(x.briller)) for (const k of ["brillerLe", "brillerLa", "brillerLeArc", "brillerLaArc"]) assert.ok(inv.has(textes.boutique[k].replace("{n}", n)), `${k} ${n}`);
   }
 });
 

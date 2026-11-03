@@ -3,7 +3,7 @@
 # versions, dans un seul lot. Et une vérification utile pour la suite : un autre seed donne-t-il un autre son ?
 # (sans cela, impossible de refaire une phrase refusée par le contrôle : le Batch rend le même son à demande égale)
 #
-#   .\.venv-gemini\Scripts\python.exe tools\voix\essais\batch_reglages.py
+#   & $env:PYTHON tools\voix\essais\batch_reglages.py
 # Comme batch_gemini.py : on peut fermer PowerShell pendant l'attente, relancer reprend le suivi ; --nouveau renvoie un lot.
 import argparse, base64, html, json, os, sys, time, wave
 

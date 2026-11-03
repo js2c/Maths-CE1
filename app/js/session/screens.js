@@ -8,6 +8,8 @@ import { goldenStar } from "./rewards.js";
 import { imageCreature } from "./boutique.js";
 import { wait } from "../engine/clock.js";
 import { onBrief, onTap, spriteBox } from "../engine/ui.js";
+import { Reserves, volVersReserve } from "./reserves.js";
+import { sentences } from "../engine/phrases.js";
 
 export { onTap, spriteBox };
 const ease = (u) => 1 - Math.pow(1 - u, 3);
@@ -21,6 +23,8 @@ export class StarHud {
   constructor(app, rewards) {
     this.app = app; this.shown = rewards.total; this.pool = []; this.flights = [];
     this.box = spriteBox(app, { x: 960, y: 22, w: 170, h: 100, cls: "hud stars", still: true, paint: (ctx, px) => this.paint(ctx, px) });
+    // (lot « Réserves d'étoiles et étoiles arc-en-ciel ») les réserves d'étoiles arc-en-ciel et de diamant, à sa droite
+    this.reserves = rewards?.c ? new Reserves(app, this, rewards) : null;
     app.ocean.front.push((t) => this.tick(t));
   }
   paint(ctx, px) {
@@ -49,6 +53,7 @@ export class StarHud {
   tick(t) {
     // (décision 8) le fond derrière le compteur est-il sombre ? relu deux fois par seconde
     if (!(t - (this.vuSombre ?? -1) < 0.5)) { this.vuSombre = t; const s = !!this.app.hudSombre?.(); if (s !== !!this.sombre) { this.sombre = s; this.box.repaint(); } }
+    this.reserves?.suivre();
     this.flights = this.flights.filter((f) => {
       const u = (t - f.t0) / f.dur;
       if (u < 0) return true;
@@ -123,7 +128,10 @@ async function bonuses(app, { session, hud }) {
     const S = 170, el = spriteBox(app, { x: 640 - S / 2 + (i - (specials.length - 1) / 2) * 190, y: 410, w: S, h: S, cls: "hud special pop", still: true, paint: (ctx, px) => app.sprites.draw(ctx, sprite, 0, S / 2, S / 2) });
     const vif = (t) => { if (!el.isConnected) { stage.ticks.delete(vif); return; } el.repaint((ctx, px) => { const q = app.sprites.frame(sprite, 0), k = 1.5; if (q) ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (S / 2) * px + q.dx * k, (S / 2) * px + q.dy * k, q.w * k, q.h * k); ctx.setTransform(px, 0, 0, px, 0, 0); R.drawDiamantVif(ctx, S / 2, S / 2, 66, t); }); };
     stage.ticks.add(vif);
+    // (lot « Réserves d'étoiles et étoiles arc-en-ciel ») la réserve montre encore le nombre d'avant ; l'étoile y vole après sa phrase
+    const res = hud.reserves; if (res && sprite === "etoile.diamant") res.set("diamant", rewards.doreesDispo - 1);
     app.sound?.play("brillante"); ocean.mascotte.play("rejouir", { fort: true }); await voice.say(say); await wait(500);
+    if (res && sprite === "etoile.diamant") { const [x, y] = [parseFloat(el.style.left) + S / 2, parseFloat(el.style.top) + S / 2]; el.style.visibility = "hidden"; await volVersReserve(app, "etoile.diamant", [x, y], res.centre("diamant"), { k: 1.1 }); res.plus("diamant"); }
   }
   // (lot 3 bis, B6 ; R13) les étoiles arc-en-ciel : une seule phrase, au pluriel s'il y en a plusieurs ; elles apparaissent
   // sous le bilan puis volent, avec leur traînée, jusqu'à l'album (en bas à droite), pendant que la voix parle ; le
@@ -131,8 +139,18 @@ async function bonuses(app, { session, hud }) {
   const arcs = (session.rec.arcEnCiel ?? 0) + libres;
   if (arcs) {
     ocean.mascotte.play("rejouir");
-    const said = voice.say(arcs === 1 ? text.data.etoileArc : fill(text.data.etoilesArc, { n: arcs }));
-    await flyRainbowStars(app, arcs, { from: [640, 500 + (specials.length ? 120 : 0)] });
+    // (lot « Réserves d'étoiles et étoiles arc-en-ciel ») elles volent jusqu'à leur réserve, à côté du compteur, qui avance d'un
+    // cran à chaque arrivée ; toutes les zones ouvertes, la phrase s'arrête à « Et une étoile arc-en-ciel ! » (« Un jour, elle
+    // t'ouvrira un nouveau coin du récif » ne serait plus vrai)
+    // (relecture du lot, constat 2 : « Un jour, elles t'ouvriront… », puis une zone s'ouvrait aussitôt) quand une zone va s'ouvrir à
+    // cette récompense, la phrase s'arrête aussi au nombre ; (constat 1 : le bilan, avec son étoile de mer jaune, est retiré le temps
+    // des étoiles arc-en-ciel)
+    const t = arcs === 1 ? text.data.etoileArc : fill(text.data.etoilesArc, { n: arcs }), res = hud.reserves;
+    const ouvrira = !!rewards.nextZone() && rewards.arcDispo > 0;
+    document.querySelectorAll(".hud.tally").forEach((e) => e.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 250, fill: "forwards" }));
+    const said = voice.say(rewards.fermees && !ouvrira ? t : sentences(t)[0]);
+    if (res) { res.set("arc", rewards.arcDispo - arcs); await flyRainbowStars(app, arcs, { from: [640, 500 + (specials.length ? 120 : 0)], to: res.centre("arc"), album: false, arrivee: () => res.plus("arc") }); }
+    else await flyRainbowStars(app, arcs, { from: [640, 500 + (specials.length ? 120 : 0)] });
     await said;
   }
 }
@@ -142,7 +160,9 @@ export const ALBUM_AT = [1165, 650];
 // (lot « Décisions sur les constats de l'agent », décision 8 ; constat 15 : « Et une étoile arc-en-ciel ! » et l'écran ne la montrait
 // nulle part : elle filait vers un coin vide) l'album est posé à l'arrivée (`album`), comme à l'ouverture d'une zone ; il sautille à
 // chaque étoile qui y entre, puis s'en va
-export async function flyRainbowStars(app, n, { from = [640, 500], to = ALBUM_AT, gap = 110, k = app.vitesse ?? 1, album = true } = {}) {
+// (lot « Réserves d'étoiles et étoiles arc-en-ciel ») `to` : la réserve, à côté du compteur, sans l'album ; `arrivee` : à chaque étoile
+// arrivée (la réserve avance d'un cran ; au-delà de 9 étoiles dessinées, la dernière apporte le reste)
+export async function flyRainbowStars(app, n, { from = [640, 500], to = ALBUM_AT, gap = 110, k = app.vitesse ?? 1, album = true, arrivee = null } = {}) {
   const { sprites } = app, W = 240, H = 130, hx = 180, hy = 65, els = [];
   const shown = Math.min(n, 9);
   const livre = album ? spriteBox(app, { x: to[0] - 90, y: to[1] - 90, w: 180, h: 180, cls: "hud special arc-album pop", still: true, paint: (ctx) => sprites.draw(ctx, "album", 0, 90, 90) }) : null;
@@ -164,7 +184,7 @@ export async function flyRainbowStars(app, n, { from = [640, 500], to = ALBUM_AT
   const flights = els.map((el, i) => el.animate([
     { transform: `translate(0px, 0px) rotate(${el.fly.a}rad) scale(1)`, opacity: 1 },
     { transform: `translate(${el.fly.dx}px, ${el.fly.dy}px) rotate(${el.fly.a}rad) scale(0.45)`, opacity: 0.15 },
-  ], { duration: 900 / k, delay: (i * 120) / k, easing: "cubic-bezier(.5,0,.8,.6)", fill: "forwards" }).finished.catch(() => {}).then(() => { if (livre) pop(livre); }));
+  ], { duration: 900 / k, delay: (i * 120) / k, easing: "cubic-bezier(.5,0,.8,.6)", fill: "forwards" }).finished.catch(() => {}).then(() => { if (livre) pop(livre); if (arrivee) for (let j = 0; j < (i === els.length - 1 ? n - shown + 1 : 1); j++) arrivee(); }));
   await Promise.all(flights);
   els.forEach((e) => e.remove());
   if (livre) { await wait(700 / k); livre.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300 / k, fill: "forwards" }); await wait(300 / k); livre.remove(); }
@@ -189,7 +209,12 @@ export async function shells(app, { session, hud }) {
   }
   if (rewards.goldenCard(now())) {
     const got = await rewards.openGolden(rnd, now());
-    if (got) { (session.rec.cartes ??= []).push(got.carte.id); if (got.parTirage) (session.rec.brillantes ??= []).push(got.carte.id); session.rec.coquillageDore = got.carte.id; await session.save(); await openShell(app, { session, hud, gold: true, say: text.data.coquillageDore, got }); }
+    if (got) {
+      (session.rec.cartes ??= []).push(got.carte.id); if (got.parTirage) (session.rec.brillantes ??= []).push(got.carte.id); session.rec.coquillageDore = got.carte.id; await session.save();
+      // (lot « Réserves d'étoiles et étoiles arc-en-ciel ») l'étoile de diamant part de sa réserve jusqu'au coquillage
+      const res = hud?.reserves; if (res) { const de = res.centre("diamant"); res.moins("diamant"); await volVersReserve(app, "etoile.diamant", de, [640, 640], { k: 0.9 }); }
+      await openShell(app, { session, hud, gold: true, say: text.data.coquillageDore, got });
+    }
   }
   sprites.unload("cartes");
 }
@@ -246,7 +271,9 @@ export async function zoneCeremony(app, { zone, hud }) {
   // l'étoile arc-en-ciel vole du bas de l'écran jusqu'au dos de la zone
   const star = ocean.spriteActor(ocean.frontEl, "etoile.arc");
   star.draw(0); star.show(false);
-  await new Promise((done) => hud.flights.push({ a: star, t0: performance.now() / 1000, dur: 1.1, from: [640, 760], to: [640, 370], dx: -60, done }));
+  // (lot « Réserves d'étoiles et étoiles arc-en-ciel ») elle part de sa réserve, à côté du compteur, qui descend d'un cran
+  const res = hud.reserves, de = res ? res.centre("arc") : [640, 760]; res?.moins("arc");
+  await new Promise((done) => hud.flights.push({ a: star, t0: performance.now() / 1000, dur: 1.1, from: de, to: [640, 370], dx: -60, done }));
   star.show(false); star.remove(); ocean.actors.splice(ocean.actors.indexOf(star), 1);
   back.classList.remove("zone-closed"); app.sound?.play("zone");
   const glint = ocean.spriteActor(ocean.frontEl, "eclat"), t0 = performance.now() / 1000, tick = (t) => { const u = (t - t0) / 1.4; glint.show(u < 1); if (u < 1) glint.moveTo(640, 370, 0.5 + 1.2 * Math.sin(Math.PI * u), Math.round(Math.sin(Math.PI * u) * 20) / 20); };

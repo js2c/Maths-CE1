@@ -4,8 +4,8 @@
 # Les sons vont dans tools/voix/essais/out/gemini-styles/, avec une page ecoute.html qui regroupe les versions
 # d'une même phrase et peut les jouer à la suite (le plus parlant pour entendre un changement de timbre).
 #
-#   .\.venv-gemini\Scripts\python.exe tools\voix\essais\essai_styles.py            fabrique ce qui manque (21 sons)
-#   .\.venv-gemini\Scripts\python.exe tools\voix\essais\essai_styles.py --refaire  refait tout (nouveaux tirages)
+#   & $env:PYTHON tools\voix\essais\essai_styles.py            fabrique ce qui manque (21 sons)
+#   & $env:PYTHON tools\voix\essais\essai_styles.py --refaire  refait tout (nouveaux tirages)
 import argparse, base64, html, os, sys, time
 
 STYLES = ["", "friendly", "curious", "joyful", "gentle", "calm"]  # "" = sans style

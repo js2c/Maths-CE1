@@ -924,3 +924,11 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 - **Branche** : `claude/upbeat-shannon-brp4dg`, partie de `main` (18971432, PR #63) ; demande de fusion https://github.com/js2c/Maths-CE1/pull/68.
 - **Fiche** : `docs/LOTS.md`, fiche 14 ; lot court, d'un seul tenant.
 - **Fini le 1er novembre 2026** : `app/js/recif/reduction.js` (créatures réduites une fois, par moitiés, au double de leur taille d'affichage) ; `lagBlit` remplacé par l'outil d'export (`LAGBLIT`, `art/tools/export-recif.mjs`, la maquette n'est pas modifiée) ; `reef.js` : seuil 33 ms, quatre crans, chaque cran noté au journal technique ; mesures avant/après et captures sur `s5e` et `petit-smartphone` (`docs/maquettes/recif-nettete/`) ; documentation ; relecture indépendante ; recette complète (un défaut de mémoire du lot trouvé et corrigé ; trois défauts de parcours, sur `main` aussi, corrigés ; les échecs hérités et leur cause : `docs/JOURNAL-CONCEPTION.md`, points 7 à 9). Aucune phrase nouvelle.
+
+## Reprise du lot « Réserves d'étoiles et étoiles arc-en-ciel »
+
+- **Branche** : `claude/beautiful-goodall-30h3pg` ; demande de fusion https://github.com/js2c/Maths-CE1/pull/70.
+- **Fiche** : `docs/LOTS.md`, fiche 17 ; point d'arrêt « maquette » (`art/reserves/`, `docs/maquettes/reserves/`), validée par le parent le 2 novembre 2026 avec des corrections.
+- **Fini le 3 novembre 2026** : `session/reserves.js` (les réserves, ce qu'elles disent) ; `rewards.js` (`arcBrillees`, la règle de réserve, `acheter(…, { arc })`, `prixAnnonce`) ; la boutique (deux coches, l'étoile gardée, les phrases courtes, le genre des cartes) ; la récompense (les vols vers les réserves et depuis elles) ; l'espace parent ; la documentation de la voix ; la simulation par le code (`tests/sim-boutique.mjs`) ; tests unitaires et `tests/e2e/reserves.mjs` ; la recette sur le banc Android et la relecture indépendante (`tests/recette-fonctionnelle/out-reserves/RELECTURE.md`).
+- **Échecs hérités de `main`** : `etal` et `installation` (corrigés par la PR #64), `notion2` (`docs/IDEES.md`).
+

@@ -28,8 +28,8 @@ node tools\voix\publier.mjs
 La commande fait tout, dans l'ordre :
 1. elle se met sur `main` et récupère les lots fusionnés depuis la dernière fois ;
 2. elle dit combien de phrases sont à fabriquer, et en montre quelques-unes ;
-3. elle trouve le Python de Chatterbox : un environnement `.venv-voix` dans le dossier du jeu ou à côté, sinon celui
-   qui est activé ;
+3. elle trouve le Python de la voix (section « Le Python de la voix », plus bas) : celui de la variable `PYTHON`,
+   sinon `py -3.11`, sinon `python` ; elle affiche le chemin de celui qu'elle a pris ;
 4. elle demande « Fabriquer maintenant ? », puis fabrique (environ 4 secondes par phrase ; si on l'interrompt,
    la relancer reprend où elle s'était arrêtée) ;
 5. elle s'arrête pour laisser écouter les phrases refusées par le contrôle (la page `a-reecouter.html` qu'elle
@@ -38,8 +38,8 @@ La commande fait tout, dans l'ordre :
 
 Variantes : `--oui` (aucune question, pour la laisser tourner la nuit), `--ref D:\ref-posee.wav` (une autre place
 pour l'enregistrement de référence, `..\ref-posee.wav` par défaut), `--branche <nom>` (sur la branche d'un lot,
-avant sa fusion), `--sans-envoi` (tout sauf l'envoi). Si Python ne trouve pas Chatterbox, activer d'abord son
-environnement, ou donner son Python : `$env:PYTHON = "C:\chemin\python.exe"`.
+avant sa fusion), `--sans-envoi` (tout sauf l'envoi). Si elle ne trouve pas de Python avec Chatterbox, elle dit
+lesquels elle a essayés, ce qui manque à chacun, et quoi vérifier (section « Le Python de la voix »).
 
 Les sections suivantes détaillent les mêmes étapes à la main, et la correction d'une phrase mal dite.
 
@@ -48,8 +48,55 @@ Les sections suivantes détaillent les mêmes étapes à la main, et la correcti
 | Quoi | Où | Pourquoi |
 | --- | --- | --- |
 | L'enregistrement de référence `ref-posee.wav` | hors du dépôt (`Documents`), avec une copie de secours | Sans ce fichier exact, les sons nouveaux n'auraient plus la même voix que les anciens. Il ne doit jamais aller dans le dépôt, qui est public. |
-| L'installation Python (Chatterbox, Whisper) | sur l'ordinateur | La réinstaller : en-tête de `tools\\voix\\essais\\essai_chatterbox.py`, plus `pip install imageio-ffmpeg`. |
+| Le Python de la voix (Python 3.11 avec Chatterbox, Whisper, imageio-ffmpeg et google-genai) et la variable `PYTHON` | sur l'ordinateur | Le réinstaller : section « Le Python de la voix », tableau d'installation. |
 | Le dossier `tools\voix\travail\` | dans le dépôt, mais jamais envoyé sur GitHub | Les sons bruts de chaque phrase. Il permet de reprendre un lot, de recompresser, et il contient les sons corrigés à la main. On peut le supprimer pour gagner de la place : les sons du jeu restent dans `app\assets\voix\`. Mais alors, ne plus jamais lancer `--tout`, qui referait tout (neuf heures et demie). |
+
+## Le Python de la voix
+
+Décision du parent du 2 novembre 2026, après le ménage de son ordinateur : **un seul Python pour toutes les voix**.
+
+- C'est **Python 3.11**, à cet endroit :
+  `C:\Users\alanl\AppData\Local\Programs\Python\Python311\python.exe`.
+- Tout y est installé **directement**, sans environnement virtuel (plus de `.venv-voix` ni de `.venv-gemini`) :
+  Chatterbox, Whisper (par `transformers`), imageio-ffmpeg et google-genai.
+- La **variable d'utilisateur Windows `PYTHON`** donne ce chemin. Les outils la lisent (`publier.mjs`, `fabriquer.mjs`) et
+  les essais se lancent avec elle : `& $env:PYTHON tools\voix\essais\essai_gemini.py`.
+
+**La règle.**
+
+- Un nouvel outil de voix s'installe **dans ce même Python**.
+- S'il ne peut pas s'y installer (une version incompatible avec Chatterbox, PyTorch ou un autre outil déjà là), Claude **le
+  dit au parent avant toute installation**, avec ce qui serait changé. Rien n'est installé sans son accord.
+- Un environnement d'essai, s'il en faut un, est **supprimé à la fin de l'essai** (son dossier effacé) : il ne reste jamais
+  qu'un seul Python pour les voix.
+
+**Vérifier, dans PowerShell.**
+
+```
+$env:PYTHON
+```
+
+doit afficher le chemin ci-dessus (si la variable vient d'être créée ou changée : fermer et rouvrir PowerShell).
+
+```
+& $env:PYTHON -c "import chatterbox, transformers, imageio_ffmpeg, google.genai"
+```
+
+ne doit rien afficher. Un message « No module named … » dit ce qui manque : l'installer avec le tableau ci-dessous.
+
+**Créer la variable** (une fois) : menu Démarrer, « Modifier les variables d'environnement pour votre compte », bouton
+« Nouvelle… », nom `PYTHON`, valeur : le chemin ci-dessus. Puis fermer et rouvrir PowerShell.
+
+**Le tableau d'installation** (pour tout réinstaller, dans cet ordre ; chaque ligne une fois) :
+
+| Quoi | Commande, dans PowerShell | Pourquoi |
+| --- | --- | --- |
+| Python 3.11 | l'installeur de python.org (version 3.11), « Install for me only » | le seul Python des voix ; son chemin va dans `PYTHON` |
+| PyTorch avec la carte graphique | `& $env:PYTHON -m pip install torch==2.6.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cu124` | avant Chatterbox : sinon pip installe un PyTorch sans carte graphique |
+| Chatterbox | `& $env:PYTHON -m pip install git+https://github.com/resemble-ai/chatterbox.git soundfile` | la voix |
+| Whisper (le contrôle) | `& $env:PYTHON -m pip install transformers` (en général déjà là avec Chatterbox) | la retranscription de chaque son |
+| imageio-ffmpeg | `& $env:PYTHON -m pip install imageio-ffmpeg` | la compression des sons |
+| google-genai | `& $env:PYTHON -m pip install "google-genai>=2.25.0"` | les essais de la voix Gemini (`tools\voix\essais\`) |
 
 ## Ajouter les sons quand le jeu évolue
 
@@ -62,7 +109,7 @@ les tests échouent avec « phrases sans fichier à jour »).
    git checkout main
    git pull
    ```
-2. Fabriquer ce qui manque (si Chatterbox est installé dans un environnement Python, par exemple `.venv-voix`, l'activer d'abord : `.venv-voix\Scripts\activate` ; le début de la ligne affiche alors `(.venv-voix)`) :
+2. Fabriquer ce qui manque (l'outil prend le Python de la variable `PYTHON` : rien à activer ; section « Le Python de la voix ») :
    ```
    node tools\voix\fabriquer.mjs --ref ..\ref-posee.wav
    ```
@@ -77,7 +124,7 @@ les tests échouent avec « phrases sans fichier à jour »).
    git commit -m "Voix : phrases nouvelles"
    git push
    ```
-   Le test doit finir par `# fail 0`. `git add app tools\voix` n'ajoute que les sons, l'index et les fichiers de l'outil : jamais l'enregistrement de référence, ni un environnement Python posé dans le dossier. À la publication, GitHub refait lui-même la liste des fichiers du mode
+   Le test doit finir par `# fail 0`. `git add app tools\voix` n'ajoute que les sons, l'index et les fichiers de l'outil : jamais l'enregistrement de référence. À la publication, GitHub refait lui-même la liste des fichiers du mode
    hors ligne et lance tous les tests : si l'un échoue, rien n'est publié et l'ancienne version reste en ligne
    (onglet « Actions » du dépôt).
 
@@ -233,7 +280,7 @@ Avant de changer une règle, essayer les écritures candidates : dans `tools\voi
 la liste `PHRASES` donne, pour chaque phrase, l'écriture actuelle puis les écritures à comparer.
 
 ```
-python tools\voix\essais\essai_ecritures.py --ref ..\ref-posee.wav
+& $env:PYTHON tools\voix\essais\essai_ecritures.py --ref ..\ref-posee.wav
 ```
 
 La page d'écoute produite montre cinq tirages de chaque écriture. Choisir à l'oreille.

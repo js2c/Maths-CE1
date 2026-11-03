@@ -7,7 +7,8 @@
 //            coquillagesDores } : `total` ce qui reste à dépenser (à la boutique), `cumul` tout ce qui a été gagné depuis le
 //            début ; `dorees` les étoiles de diamant gagnées (4 semaines réussies ; le nom interne reste), dont `doreesDepensees`
 //            ont ouvert un coquillage de diamant ; `arcEnCiel` les étoiles arc-en-ciel gagnées (niveaux franchis), dont
-//            `arcDepensees` ont ouvert une zone ; `arcLibre` celles gagnées pendant l'entraînement libre, remises à la récompense
+//            `arcDepensees` ont ouvert une zone et `arcBrillees` ont fait briller une créature à la boutique (lot « Réserves
+//            d'étoiles et étoiles arc-en-ciel » ; absent des sauvegardes d'avant : 0) ; `arcLibre` celles gagnées pendant l'entraînement libre, remises à la récompense
 //            de la séance suivante ; `coquillages` les coquillages ordinaires ouverts avant la boutique ; on ne perd jamais rien ;
 //   cartes   { cartes: { id: { n, premiere, brillante, origine } } } : la collection ; `origine` : « achat » (la boutique),
 //            « zone » (le premier habitant offert à l'ouverture d'une zone), « diamant » (une légendaire) ; absente pour les
@@ -16,9 +17,12 @@
 //   quota    { date, cartes } : la base des arrivages de la boutique (c'était celle du quota de cartes nouvelles, enregistrée
 //            au premier lancement de la version du lot 2, ou après « tout effacer ») : rien n'est converti ;
 //   zones    { ouvertes: [id], dates: { id: t } } : les zones ouvertes (au départ, celles que cartes.json marque `ouverte`) ;
-//   boutique { annoncees: [id], vues: [id], visites } : les arrivées déjà annoncées (fin de séance ou entrée de la boutique),
+//   boutique { annoncees: [id], vues: [id], visites, prixChange } : les arrivées déjà annoncées (fin de séance ou entrée de la boutique),
 //            celles dont la tuile a été touchée (leur halo s'éteint), le nombre de visites (« Bienvenue » à la première) ;
-//   achats   { liste: [{ t, carte, prix, briller, brillante }] } : le journal des achats, pour l'espace parent ;
+//            `prixChange` : le parent a changé le niveau de prix depuis la dernière visite (« Les prix de la boutique ont changé ! »,
+//            une seule fois ; lot « Réserves d'étoiles et étoiles arc-en-ciel », décision du parent du 2 novembre 2026) ;
+//   achats   { liste: [{ t, carte, prix, briller, brillante, arc }] } : le journal des achats, pour l'espace parent (`arc` : payé
+//            avec une étoile arc-en-ciel, `prix` 0) ;
 //   cadeaux, decors : les décors du récif (cadeaux de la surprise, décors des doublons) ; supprimés le 5 octobre 2026
 //            (décision du parent), ces fiches restent dans les données mais ne sont plus lues.
 // Le rythme de la boutique (Arrivages ou Libre) est un réglage du parent (reglages, « boutiqueRythme »), comme le niveau de
@@ -120,6 +124,16 @@ export const auNiveau = (B, id) => { const n = niveauPrix(B, id); return n ? { .
 export const coutPlace = (B, c, etat) => (etat === "vendre" ? B.prix[c.rarete] : etat === "terne" ? B.briller[c.rarete] ?? null : null);
 // ce qui manque pour l'acheter : null si l'enfant a assez d'étoiles, sinon le nombre d'étoiles qui manquent
 export const manque = (cout, total) => (cout === null || total >= cout ? null : cout - total);
+// (lot « Réserves d'étoiles et étoiles arc-en-ciel », décisions du parent du 2 novembre 2026) FAIRE BRILLER AVEC UNE ÉTOILE
+// ARC-EN-CIEL : une étoile, pour une commune comme pour une rare, à la place du prix en étoiles de mer. Une étoile reste GARDÉE
+// PAR ZONE ENCORE FERMÉE : l'ouverture d'une zone n'est jamais retardée. (Comparée à la réserve qu'elle aurait sans jamais
+// faire briller, R, la réserve de l'enfant R′ reste au moins égale au plus petit de R et du nombre de zones fermées Z : gagner
+// ajoute 1 aux deux, faire briller n'est permis que si R′ > Z, ouvrir une zone retire 1 à R′, R et Z. Quand une zone peut
+// s'ouvrir, Z ≥ 1 : si R ≥ 1, alors R′ ≥ 1. docs/maquettes/reserves/README.md, section 2.)
+// les zones encore fermées (autant d'étoiles arc-en-ciel gardées)
+export const zonesFermees = (content, ouvertes) => (content?.zones ?? []).filter((z) => !ouvertes.includes(z.id)).length;
+// les étoiles arc-en-ciel que l'enfant peut dépenser pour faire briller : sa réserve moins celles gardées
+export const arcLibres = (dispo, fermees) => Math.max(0, dispo - fermees);
 
 // ---------------------------------------------------------------- la série et les semaines réussies
 // une séance terminée de plus dans la série ; toutes les `bonusChaque` séances, un bonus d'étoiles ; toutes les
@@ -153,7 +167,7 @@ export class Rewards {
   // content : cartes.json ; calendrier : calendrier.json (les arrivages de la boutique ; sans lui, tout est arrivé)
   constructor(store, content = null, calendrier = null) {
     this.store = store; this.c = content; this.cal = calendrier; this.listeners = new Set();
-    this.st = { id: "etoiles", total: 0, cumul: 0, dorees: 0, doreesDepensees: 0, arcEnCiel: 0, arcDepensees: 0, arcLibre: 0, coquillages: 0, coquillagesDores: 0 };
+    this.st = { id: "etoiles", total: 0, cumul: 0, dorees: 0, doreesDepensees: 0, arcEnCiel: 0, arcDepensees: 0, arcBrillees: 0, arcLibre: 0, coquillages: 0, coquillagesDores: 0 };
     this.owned = {}; this.serie = null; this.base = null; this.zones = null;
     this.bq = { id: "boutique", annoncees: [], vues: [], visites: 0 }; this.achats = { id: "achats", liste: [] }; this.rythme = null; this.niveau = null;
     this.arrivee = null; // la dernière créature achetée (ou rendue brillante) : elle arrive à la nage dans le récif
@@ -186,7 +200,11 @@ export class Rewards {
   async special(kind, n = 1) { this.st = { ...this.st, [kind]: (this.st[kind] ?? 0) + n }; await this.save(); }
   // les réserves : étoiles de diamant et arc-en-ciel pas encore dépensées
   get doreesDispo() { return (this.st.dorees ?? 0) - (this.st.doreesDepensees ?? 0); }
-  get arcDispo() { return (this.st.arcEnCiel ?? 0) - (this.st.arcDepensees ?? 0); }
+  get arcDispo() { return (this.st.arcEnCiel ?? 0) - (this.st.arcDepensees ?? 0) - (this.st.arcBrillees ?? 0); }
+  // (lot « Réserves d'étoiles et étoiles arc-en-ciel ») les zones encore fermées, et les étoiles arc-en-ciel à dépenser pour
+  // faire briller (une est gardée par zone fermée)
+  get fermees() { return zonesFermees(this.c, this.zones?.ouvertes ?? []); }
+  get arcPourBriller() { return arcLibres(this.arcDispo, this.fermees); }
   // les cartes possédées (légendaires comprises)
   get count() { return Object.keys(this.owned).length; }
   // les zones ouvertes
@@ -197,7 +215,14 @@ export class Rewards {
   async setMode(m) { this.rythme = m; await this.store.setSetting?.("boutiqueRythme", m); }
   // les règles de la boutique au niveau de prix choisi par le parent (cartes.json, boutique.niveauxPrix), quel que soit le rythme
   get boutique() { return auNiveau(this.c?.boutique, this.niveau); }
-  async setPrix(id) { this.niveau = id; await this.store.setSetting?.("boutiquePrix", id); }
+  // (lot « Réserves d'étoiles et étoiles arc-en-ciel », décision du parent du 2 novembre 2026) un changement de niveau est noté :
+  // la mascotte le dit une fois, à la visite suivante de la boutique (prixAnnonce)
+  async setPrix(id) {
+    const avant = this.boutique?.niveau; this.niveau = id; await this.store.setSetting?.("boutiquePrix", id);
+    if (avant !== this.boutique?.niveau) { this.bq = { ...this.bq, prixChange: true }; await this.store.put("recompenses", this.bq); }
+  }
+  // à l'entrée de la boutique : le changement de prix est-il à dire ? (une seule fois)
+  async prixAnnonce() { if (!this.bq.prixChange) return false; this.bq = { ...this.bq, prixChange: false }; await this.store.put("recompenses", this.bq); return true; }
   // combien de créatures sont arrivées en vitrine (mode Arrivages) : la base, plus `parSemaine` par semaine d'école commencée
   // depuis elle ; en mode Libre, ou sans calendrier, toutes
   nbArrivees(now = Date.now()) { return this.mode === "libre" ? Infinity : quotaAt(this.base, this.cal, now, { parSemaine: this.c.boutique.parSemaine, max: Infinity }); }
@@ -208,7 +233,8 @@ export class Rewards {
   carte(id) { return this.c.cartes.find((c) => c.id === id) ?? null; }
   cout(id, etat) { const c = this.carte(id); return c ? coutPlace(this.boutique, c, etat) : null; }
   // un achat est-il possible ? (une créature à vendre, ou à faire briller, avec assez d'étoiles)
-  peutAcheter(now = Date.now()) { for (const [id, e] of this.vitrine(now)) { const k = this.cout(id, e); if (k !== null && this.total >= k) return true; } return false; }
+  // (lot « Réserves d'étoiles et étoiles arc-en-ciel » : faire briller avec une étoile arc-en-ciel compte aussi)
+  peutAcheter(now = Date.now()) { const arc = this.arcPourBriller > 0; for (const [id, e] of this.vitrine(now)) { const k = this.cout(id, e); if (k !== null && (this.total >= k || (arc && e === "terne"))) return true; } return false; }
   // les créatures arrivées, pas encore dans le récif, et pas encore annoncées (fin de séance, entrée de la boutique)
   nouvelles(now = Date.now()) { const v = this.vitrine(now); return this.ordre.filter((id) => v.get(id) === "vendre" && !this.bq.annoncees.includes(id)); }
   // les créatures arrivées dont la tuile n'a pas encore été touchée (leur halo)
@@ -219,17 +245,20 @@ export class Rewards {
   // ACHETER (ou faire briller) : tout se décide et se range en mémoire AVANT la première attente (un second toucher, même
   // très rapide, voit la créature déjà achetée et n'achète rien), puis les étoiles, la collection et le journal sont écrits
   // en une seule transaction (jamais à moitié) ; l'animation vient après. Renvoie ce qui s'est passé, ou null (rien acheté).
-  acheter(id, now = Date.now(), rnd = Math.random, { vitrine = null } = {}) {
-    const c = this.carte(id), e = (vitrine ?? this.vitrine(now)).get(id), prix = this.cout(id, e);
-    if (!c || (e !== "vendre" && e !== "terne") || prix === null || this.total < prix) return null;
-    const briller = e === "terne", brillante = briller || shinyDraw(rnd, this.c.boutique.brillanteAchat ?? 0);
-    this.st = { ...this.st, total: this.st.total - prix };
+  // (lot « Réserves d'étoiles et étoiles arc-en-ciel ») `arc` : faire briller une créature du récif avec une étoile arc-en-ciel
+  // (une, quelle que soit la rareté ; jamais une de celles gardées pour les zones), au lieu des étoiles de mer
+  acheter(id, now = Date.now(), rnd = Math.random, { vitrine = null, arc = false } = {}) {
+    const c = this.carte(id), e = (vitrine ?? this.vitrine(now)).get(id), cout = this.cout(id, e);
+    if (!c || (e !== "vendre" && e !== "terne") || cout === null) return null;
+    if (arc ? e !== "terne" || this.arcPourBriller < 1 : this.total < cout) return null;
+    const prix = arc ? 0 : cout, briller = e === "terne", brillante = briller || shinyDraw(rnd, this.c.boutique.brillanteAchat ?? 0);
+    this.st = arc ? { ...this.st, arcBrillees: (this.st.arcBrillees ?? 0) + 1 } : { ...this.st, total: this.st.total - prix };
     const had = this.owned[id];
     this.owned = briller ? { ...this.owned, [id]: { ...had, brillante: true, brillanteLe: now } } : addCard(this.owned, c, now, brillante, "achat").owned;
-    this.achats = { ...this.achats, liste: [...this.achats.liste, { t: now, carte: id, prix, briller, brillante }] };
+    this.achats = { ...this.achats, liste: [...this.achats.liste, { t: now, carte: id, prix, briller, brillante, ...(arc ? { arc: true } : {}) }] };
     this.arrivee = { id, briller };
     const ecrit = this.ecrire([this.st, { id: "cartes", cartes: this.owned }, this.achats]);
-    return { carte: c, prix, briller, brillante, nouvelle: !briller, ecrit };
+    return { carte: c, prix, briller, brillante, nouvelle: !briller, arc, ecrit };
   }
   // ---------------------------------------------------------------- entraînement libre
   // un niveau franchi pendant l'entraînement libre : l'étoile arc-en-ciel attend la séance suivante

@@ -75,11 +75,11 @@ const T = { achat: 24000, achatCorrige: 40000, achatManque: 46000, achatRendre: 
 export const EFFET_CRAN = { facile: 0.1, conseille: 0, dur: -0.08, tresdur: -0.15 };
 // `horloge` (lot 3, tools/sauvegarde-test.mjs) : pendant la simulation, Date.now() donne l'heure simulée (le moteur la
 // prend à plusieurs endroits : réponses, obtention d'un niveau…) ; le résultat garde la base (`out.store`)
-export async function simulate({ profil, jours, seed = 1, zonesPretes = true, choix = null, cran = null, horloge = false, rythme = null, prix = null, boutique = null }) {
+export async function simulate({ profil, jours, seed = 1, zonesPretes = true, choix = null, cran = null, horloge = false, rythme = null, prix = null, boutique = null, arcBriller = "zones" }) {
   const realNow = Date.now;
-  try { return await simulate0({ profil, jours, seed, zonesPretes, choix, cran, horloge, rythme, prix, boutique }); } finally { Date.now = realNow; }
+  try { return await simulate0({ profil, jours, seed, zonesPretes, choix, cran, horloge, rythme, prix, boutique, arcBriller }); } finally { Date.now = realNow; }
 }
-async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horloge, rythme, prix, boutique }) {
+async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horloge, rythme, prix, boutique, arcBriller }) {
   JUSTES.clear();
   // (lot « La boutique du récif » : zonesPretes « dates » : le contenu du grand large arrive le 1er février 2027, celui des
   // abysses le 26 avril 2027, comme le prévoit la SPEC, section 10 : le calibrage de la boutique, art/boutique/README.md)
@@ -94,6 +94,9 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
   let t = 0; const clock = () => t, add = (ms) => { t += ms; };
   if (horloge) Date.now = () => Math.round(t);
   const essais = {}; const out = [];
+  // (lot « Réserves d'étoiles et étoiles arc-en-ciel », décisions du parent du 2 novembre 2026) faire briller une créature du récif
+  // avec une étoile arc-en-ciel, par le code de l'application (rewards.acheter, { arc: true } : une étoile gardée par zone encore
+  // fermée) ; `arcBriller` : « zones » (l'application), « aucun » (l'enfant ne s'en sert jamais : comme avant le lot)
   for (const [i, day] of jours.entries()) {
     t = day.getTime() + 18 * 3600000;
     for (const [z, d] of Object.entries(PRET)) if (t >= d) for (const c of cartes.cartes) if (c.zone === z) { c.illustration ??= `fictif/${c.id}.webp`; c.anecdote ??= "Anecdote fictive."; }
@@ -248,6 +251,13 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
         if (rewards.goldenCard(t)) { const g = await rewards.openGolden(R, t); log.cartes.push(`${g.carte.id}(diamant)`); }
         const vendre = () => [...rewards.vitrine(t)].filter(([, e]) => e === "vendre").map(([id]) => id);
         log.vitrineVide = !vendre().length;
+        // (lot « Réserves d'étoiles… ») d'abord les étoiles arc-en-ciel qu'elle peut dépenser : chacune fait briller une créature du
+        // récif (les rares d'abord : les plus chères en étoiles de mer)
+        while (arcBriller !== "aucun" && rewards.arcPourBriller > 0) {
+          const ternes = cartes.cartes.filter((c) => rewards.owned[c.id] && !rewards.owned[c.id].brillante && c.rarete !== "legendaire").sort((a, b) => (a.rarete === "rare" ? 0 : 1) - (b.rarete === "rare" ? 0 : 1));
+          if (!ternes.length) break;
+          const g = rewards.acheter(ternes[0].id, t, R, { arc: true }); if (!g) break; await g.ecrit; log.achats.push(`${ternes[0].id}(briller arc)`);
+        }
         for (;;) {
           const v = vendre();
           if (v.length) { const w = v[Math.floor(R() * v.length)], k = rewards.cout(w, "vendre"); if (rewards.total >= k) { const g = rewards.acheter(w, t, R); await g.ecrit; log.achats.push(`${w}${g.brillante ? "(brillante)" : ""}`); continue; } break; }
@@ -258,7 +268,7 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
         log.reserve = rewards.total; },
     } });
     const rec = await s.run();
-    Object.assign(log, { cran: rec.cran, cranDepart: rec.cranDepart, reussite: rec.reussite, questions: rec.questions, etoiles: rec.etoiles, duree: Math.round(rec.dureeS / 60 * 10) / 10, arc: rec.arcEnCiel ?? 0, reste: rewards.total, nbCartes: rewards.count, brillantes: Object.values(rewards.owned).filter((o) => o.brillante).length, legendaires: cartes.cartes.filter((c) => c.rarete === "legendaire" && rewards.owned[c.id]).length, ouvertes: [...rewards.zones.ouvertes], doreesDispo: rewards.doreesDispo, arcDispo: rewards.arcDispo });
+    Object.assign(log, { cran: rec.cran, cranDepart: rec.cranDepart, reussite: rec.reussite, questions: rec.questions, etoiles: rec.etoiles, duree: Math.round(rec.dureeS / 60 * 10) / 10, arc: rec.arcEnCiel ?? 0, reste: rewards.total, nbCartes: rewards.count, brillantes: Object.values(rewards.owned).filter((o) => o.brillante).length, legendaires: cartes.cartes.filter((c) => c.rarete === "legendaire" && rewards.owned[c.id]).length, ouvertes: [...rewards.zones.ouvertes], doreesDispo: rewards.doreesDispo, arcDispo: rewards.arcDispo, arcGagnees: rewards.st.arcEnCiel ?? 0, arcBrillees: rewards.st.arcBrillees ?? 0, arcZones: rewards.st.arcDepensees ?? 0, doreesGagnees: rewards.st.dorees ?? 0, doreesDepensees: rewards.st.doreesDepensees ?? 0 });
     log.defiSaute = rec.etapes.find((e) => e.id === "defi")?.sautee ?? null;
     const fam = await store.get("niveaux", 2); log.fOuvertes = [...(fam?.ouvertes ?? [])]; log.fAcquises = [...(fam?.acquises ?? [])]; log.fTrou = [...(fam?.trou ?? [])]; log.fDepassees = (fam?.depassees ?? []).map((d) => d.famille);
     // lot 3 ter (T2) : les ouvertures de familles, l'évaluation de fin d'échauffement, les réponses attendues à l'échauffement

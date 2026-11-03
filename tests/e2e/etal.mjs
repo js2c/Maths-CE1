@@ -220,12 +220,15 @@ for (const T of TAILLES) {
     await page.waitForTimeout(1600);
     const T0 = await page.evaluate(() => window.__app.text.data.etalOrage);
     check((await said(page)).split(" | ").some((t) => T0.includes(t)), `${W} : la mascotte dit une réplique de l'orage`);
-    await page.waitForFunction(() => window.__app.etal.api.etat().meteo >= 1, null, { timeout: 10000 });
+    // (lot « Correctifs des relectures », mesuré : la scène avance son temps d'au plus 0,05 s par image ; le dessin logiciel du
+    // banc la fait tourner à 4 ou 5 images/s, et la transition de 3 s y dure 15 à 25 s ; sur la tablette, à 30 images/s ou plus,
+    // 3 s. L'attente du parcours est celle du banc, pas celle de l'enfant)
+    await page.waitForFunction(() => window.__app.etal.api.etat().meteo >= 1, null, { timeout: 60000 });
     await shot(page, "18b-lampe-orage", T);
     const n1 = await page.evaluate(() => window.__said.length);
     await page.touchscreen.tap(zone.x, zone.y); await page.waitForTimeout(400);
     check((await etat(page)).meteoCible === 0, `${W} : la lampe touchée par mauvais temps, l'orage s'en va`);
-    await page.waitForFunction(() => window.__app.etal.api.etat().meteo <= 0, null, { timeout: 10000 });
+    await page.waitForFunction(() => window.__app.etal.api.etat().meteo <= 0, null, { timeout: 60000 });
     check(await page.evaluate((n) => window.__said.length === n, n1), `${W} : l'orage qui s'en va, la mascotte ne dit rien`);
     const apres = await page.evaluate(() => ({ q: JSON.stringify(window.__app.etal.q), soucoupe: JSON.stringify(window.__app.etal.api.soucoupe()), attend: window.__app.etal.attend }));
     check(apres.q === avant.q && apres.soucoupe === avant.soucoupe && apres.attend, `${W} : la question en cours n'a pas changé (ni argent posé, ni réponse)`);

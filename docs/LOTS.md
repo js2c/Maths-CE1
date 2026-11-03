@@ -62,6 +62,8 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (demande du parent du 29 octobre 2026) : le lot « Correctifs des relectures »** (fiche 19, écrite après coup : le lot avait été lancé sans fiche ; fusionné après le lot 18) : les points des relectures qui avaient une valeur par défaut (`docs/IDEES.md`, section 3 : R8, R9, l'outil des séquences) et la mesure du temps de démarrage sur le banc, avec une proposition non appliquée ; R7 et la bulle sur les écrans pleins restent à décider. **État : fait** (PR #64 ; aucune phrase nouvelle).
 
+**Puis (décisions du parent du 3 novembre 2026) : le lot « Correctifs de la confrontation 2 »** (fiche 21) : les écarts de la deuxième confrontation (`docs/ECARTS-SPEC-2.md`), tranchés, et la version lisible à l'écran de démarrage ; dans le même bloc que le lot « Problèmes », qui le suit. **État : en cours** (branche `claude/clever-lovelace-aqsfk1`).
+
 **Puis (décisions du parent du 30 octobre 2026) : le lot « Problèmes »** (fiche 20 : les problèmes de la vie courante, une étape fixe « Problème du jour » à chaque séance et un septième exercice). La maquette est validée (`art/problemes/`, PR #66) ; la banque compte 200 énoncés ; le plafond de la voix passe à 95 Mo. D'un seul tenant. Environ 868 phrases à fabriquer, environ 7,6 Mo ; les illustrations des 22 lieux sont générées par le parent, à part. **État : à lancer** (une fois cette fiche fusionnée — le lot « Correctifs des relectures », fiche 19, l'est depuis le 3 novembre 2026, PR #64 — et après le lot « Correctifs de la confrontation 2 », qui tranche et applique, entre autres, la durée des séances d'additions : `docs/ECARTS-SPEC-2.md`, écart 2.6).
 
 **Pourquoi cet ordre.**
@@ -1334,3 +1336,21 @@ La même erreur deux fois dans une séance relance la leçon (une fois), comme p
 
 - **Deux problèmes par soir, ou un ?** Par défaut : 1 à 2 en 1 min 30, la durée prime. À un problème par soir, l'enfant de référence n'atteindrait que le niveau 6 en fin d'année (simulation de la conception) ; si la vraie séance n'en tient qu'un en moyenne, la demande de fusion le dit et propose : plus de temps pour l'étape, ou une règle de montée plus courte pour les problèmes (4 bonnes sur les 5 dernières : 24 semaines à un problème par soir, mais une enfant en difficulté passe plus souvent un niveau par chance).
 - **Les rôles familiaux** : le parent relit `docs/maquettes/problemes/ENONCES.md` et signale ceux à changer (décision du 30 octobre 2026) ; le changement d'un rôle ne touche que le contenu et la voix de la phrase.
+
+### 21. Lot « Correctifs de la confrontation 2 »
+
+**Origine** : la deuxième confrontation de la spécification avec le code (`docs/ECARTS-SPEC-2.md`, 29 octobre 2026), tranchée par le parent le 3 novembre 2026. Lancé dans le même bloc que le lot « Problèmes » (fiche 20), qui le suit dans la même branche et la même demande de fusion : un commit par étape ; entre les deux lots, les tests rapides (`npm test`, la simulation des séances, `b-sequences.mjs --test`) ; la recette complète une seule fois, à la fin du bloc.
+
+1. **Spécification datée (le code a raison)** : la proposition du rapport pour 2.7, 3.4, 3.5, 3.7, 6.13, 7 quater.1 (avec le poids actuel de la voix), 7 quater.2, 8.2, 9.5, 9.6, 9.7, 9.8, 9.10 et 10.5, écrite dans `docs/SPEC.md` ; les 8 comportements de la dernière partie du rapport, tels quels, sauf le n° 2, modifié par 3.8. Vérifier que ces règles n'ont pas changé depuis le rapport (fiches 14 à 20).
+2. **Code à revoir** : 9.9, le pavé de l'étal et les cases des tables jugent le rebond à l'heure du toucher (`e.timeStamp`), avec un parcours de non-régression sur le banc ralenti (« 11 » tapé vite reste « 11 ») ; 7 ter.2, pas d'exemple guidé au cran « très dur » à la multiplication.
+3. **Décisions** :
+   - 2.6 : quand la famille en cours est épuisée avant la moitié du temps de l'étape, la notion du jour se termine sur des révisions de faits déjà vus des autres familles (dus en premier, selon la révision espacée), en respectant l'espacement de 4 questions ; la séance retrouve sa durée visée de 9 à 11 minutes ;
+   - 6.10 : l'exception à la limite des faits nouveaux est plafonnée à 8 faits nouveaux par séance au total ; au-delà, révisions comme en 2.6 ;
+   - 6.11 : l'espacement de 4 questions est gardé ; la règle devient « environ 80 % des questions sur la famille en cours, moins pour les familles de moins de 10 faits » ;
+   - 6.12 : les calculs qui tombent sur la dizaine supérieure (24 + 6, 17 + 3, 45 + 5) entrent au calcul rapide ; la session choisit le niveau (4, 7 ou un niveau nouveau), le justifie et compte leurs phrases ;
+   - 7 ter.1 : l'exemple guidé de la multiplication seulement au premier passage d'un niveau, jamais au cran « très dur » ;
+   - 3.6 : le défi record est gardé après « À toi ! » ; l'écrire ;
+   - 3.8 : l'entraînement libre qui suit une leçon commence par les exemples guidés de l'exercice associé, comme la séance du jour.
+4. **Ajouté par le parent le 3 novembre 2026** : l'écran de démarrage écrit la date de la dernière fusion à la place de l'année et le numéro de la demande de fusion divisé par 100 à la place de l'empreinte (« 03/11/2026 · js2c · version 0.72 » ; la 100 donnera 1.00).
+
+**Mesures avant et après dans la demande de fusion** : la durée des séances d'additions, la part de la famille en cours, les faits nouveaux par séance ; profils `reel`, `sait`, `diff`, à 2 et 3 séances par semaine (`tests/recette-fonctionnelle/mesure-additions.mjs`). `docs/ECARTS-SPEC-2.md` marqué « tranché le 3 novembre 2026, appliqué par ce lot ».

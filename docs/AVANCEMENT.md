@@ -45,6 +45,13 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
 
+### Reprise du bloc « Correctifs de la confrontation 2 » puis « Problèmes »
+
+- Branche `claude/clever-lovelace-aqsfk1` (partie de `main` à jour, 46174df8), une seule demande de fusion pour les deux lots (fiches 21 puis 20 de `docs/LOTS.md`). Méthode du bloc : un commit par étape, les tests rapides seulement entre les étapes (`npm test`, la simulation, `b-sequences.mjs --test`), la recette complète une fois, à la fin, sur le code final.
+- Fait (lot 1) : la version lisible à l'écran de démarrage (`tools/version-libelle.mjs`, publication) ; 9.9 (pavé de l'étal, cases des tables : `e.timeStamp` ; parcours `toucher-occupe.mjs`, qui échoue sur l'ancien code) ; 7 ter.1 et 7 ter.2 (`Module5Runner.guidesDus`, `st.passes`) ; 3.8 (`free.js`, `guidesApresLecon`) ; 2.6 et 6.10 (`modules/facts/runner.js` : `revisions`, `pickRevision`, `exceptionPleine` ; `module2.json`, `notion.revisionsFamilleEpuisee`, `revisionsAvantPart`, `nouveauxMaxException`) ; 6.12 (niveau 7 du calcul rapide, `C4dizaine` ; 57 phrases nouvelles) ; la spécification (étape 1 : les écarts datés, les 8 comportements, les décisions).
+- Mesures : `tests/recette-fonctionnelle/mesure-additions.mjs` (avant : sur `main`, voir la demande de fusion).
+- Reste (lot 1) : trancher avec le parent l'effet du plafond 6.10 vu en simulation (voir la demande de fusion) ; `b-sequences --test` et la simulation ; `docs/ECARTS-SPEC-2.md` marqué tranché ; `docs/JOURNAL-CONCEPTION.md` (les décisions du 3 novembre, le choix du niveau 7 pour 6.12, la lecture de « révisions comme en 2.6 ») ; `docs/GUIDE-PARENT.md`. Puis le lot 2 (fiche 20) en entier, puis la recette du bloc.
+
 ### Reprise du lot « Correctifs des relectures »
 
 - Branche `claude/loving-ritchie-oqan39`, demande de fusion #64 (sortie du brouillon). Fiche 19 de `docs/LOTS.md`, écrite après coup. `main` fusionné dans la branche le 3 novembre 2026 (fiches 14 à 18 ; les deux contenus gardés). D'un seul tenant, sans phrase nouvelle ni modifiée.

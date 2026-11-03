@@ -17,9 +17,10 @@
 // et, avec --fuite : après 20 tours accueil, jeu, accueil, le nombre d'éléments, de canvas, de minuteries et d'écouteurs
 // revient à celui du départ.
 //   node tests/e2e/enfant.mjs [--graines 4] [--depart 1] [--actions 80] [--lent 1] [--tablette] [--parallele 1] [--recharges N] [--android [--profil s5e]]
-//                             [--fuite] [--veille-longue] [--out dossier] [--rejouer fichier.json [--reduire]]
+//                             [--fuite] [--veille-longue] [--images-lentes [ms]] [--out dossier] [--rejouer fichier.json [--reduire]]
 //   --lent N : processeur ralenti N fois ; --tablette : 1138 × 711, densité 2,25 (la tablette du parent) ; --panne : le
 //   contrôle du contrôle (une touche orpheline et une erreur injectées : le parcours doit échouer)
+//   --images-lentes [ms] : les images des scènes servies avec ce retard (1 500 ms) : les courses d'installation plus fréquentes
 //   --rejouer : rejoue les actions enregistrées d'un défaut (out/…/defaut-*.json) ; --reduire : cherche la plus courte suite
 //   d'actions qui le montre encore (delta-debugging), et l'écrit à côté (…-reduit.json)
 // Version courte (tests de GitHub, .github/workflows/tests.yml) : node tests/e2e/enfant.mjs --graines 3 --actions 60 ; quand elle
@@ -50,6 +51,11 @@ const IMPASSE_MS = 20000;
 // longues inactivités, des gels, la page cachée, des relances, le navigateur tué (Android ferme Chrome) et le réseau coupé ;
 // les budgets du banc contrôlés toutes les 10 actions. --profil : s5e par défaut.
 const ANDROID = args.includes("--android"), PROFIL = arg("--profil", REFERENCE);
+// (lot « Correctif : l'étal resté actif à l'accueil ») --images-lentes [ms] : chaque image des scènes (l'étal, les voiliers, le
+// récif, les planches) servie avec ce retard (1 500 ms par défaut), comme sur un appareil ou un réseau lent : les installations
+// durent plus longtemps, et les courses qui s'y jouent (une maison touchée pendant qu'une scène s'installe) se montrent bien
+// plus souvent ; sans lui, 300 graines de 40 actions n'avaient pas montré celle de l'étal, vue une fois sur GitHub
+const LENTES = args.includes("--images-lentes") ? Number(/^\d+$/.test(arg("--images-lentes") ?? "") ? arg("--images-lentes") : 1500) : 0;
 let VUE = TABLETTE ? { width: 1138, height: 711, deviceScaleFactor: 2.25 } : { width: 1280, height: 800, deviceScaleFactor: 1 };
 if (ANDROID) { const p = PROFILS[PROFIL]; VUE = { width: p.largeur, height: p.hauteur, deviceScaleFactor: p.densite }; }
 // une base d'un mois (des cartes dans l'album et le récif, des étoiles pour la boutique), fabriquée une fois
@@ -221,6 +227,7 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
     browser = await lancer();
     context = await browser.newContext({ viewport: { width: VUE.width, height: VUE.height }, deviceScaleFactor: VUE.deviceScaleFactor, hasTouch: true });
     await accueilReel(context); await context.addInitScript(INSTRUMENTS);
+    if (LENTES) await context.route(/\/assets\/(etal|voiliers|recif|art)\//, async (r) => { await new Promise((ok) => setTimeout(ok, LENTES)); await r.continue().catch(() => {}); });
     page = await context.newPage(); cdp = await context.newCDPSession(page); brancherPage();
   }
   // (--android) une relance : le navigateur fermé ou tué, rouvert sur le même profil ; la page et ses écouteurs sont neufs
@@ -397,7 +404,7 @@ if (REJOUER) {
       const g = graines[suivante++], t0 = Date.now();
       const r = await partie(g).catch((e) => ({ graine: g, actions: 0, defauts: [{ quoi: `partie interrompue : ${e.message.split("\n")[0].slice(0, 80)}`, detail: e.stack, apres: 0 }], faits: [] }));
       r.dureeS = Math.round((Date.now() - t0) / 1000);
-      for (const d of r.defauts) writeFileSync(join(OUT, `defaut-${g}-${d.quoi.replace(/[^a-z0-9]+/gi, "-").slice(0, 50)}.json`), JSON.stringify({ graine: g, vue: VUE, lent: LENT, defaut: d, faits: r.faits }, null, 1));
+      for (const d of r.defauts) writeFileSync(join(OUT, `defaut-${g}-${d.quoi.replace(/[^a-z0-9]+/gi, "-").slice(0, 50)}.json`), JSON.stringify({ graine: g, vue: VUE, lent: LENT, imagesLentes: LENTES, defaut: d, faits: r.faits }, null, 1));
       console.log(`${r.defauts.length ? "ÉCHEC" : "ok  "} graine ${g} : ${r.actions} actions en ${r.dureeS} s${r.temps ? `, image ${r.temps.moyenne} ms (95e centile ${r.temps.p95})` : ""}${r.defauts.length ? ` ; ${r.defauts.map((d) => d.quoi).join(" ; ")}` : ""}`);
       resume.parties.push({ graine: g, actions: r.actions, dureeS: r.dureeS, temps: r.temps, vus: r.vus, phrases: r.phrases, types: Object.entries(r.faits.reduce((m, a) => ({ ...m, [a.type]: (m[a.type] ?? 0) + 1 }), {})), defauts: r.defauts.map(({ quoi, detail, apres }) => ({ quoi, detail: String(detail).slice(0, 600), apres })) });
     }

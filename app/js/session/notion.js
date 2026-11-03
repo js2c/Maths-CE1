@@ -87,7 +87,9 @@ export async function runNotion({ session, step, end, runner, screen, lesson = a
   // écoulé ; les boucles, qui s'arrêtent sur le temps, ne la verraient pas)
   else if (reprise?.q && (!reprise.phase || (reprise.reponse && session.over(end)))) await one(reprise.phase ? reprise.phase === "guide" : true, reprise.after ?? null, reprise.phase ?? null);
   // la leçon du niveau la première fois, sinon deux exemples guidés
-  const entry = P ? null : runner.entryLesson(), guides = step.guides ?? 0;
+  // (lot « Correctifs de la confrontation 2 », écarts 7 ter.1 et 7 ter.2) l'exercice peut en donner moins (la multiplication : à la
+  // première séance sur un niveau seulement, jamais au cran « très dur » ; `runner.guidesDus`)
+  const entry = P ? null : runner.entryLesson(), guides = runner.guidesDus ? runner.guidesDus(step.guides ?? 0) : step.guides ?? 0;
   if (!P) session.expect?.((entry ? 1 : guides) + S.n);
   const seen = P ? S.entree : entry ? await watch(entry, "niveau") : false;
   if (!seen && !P) session.expect?.(session.progress.faites + guides + S.n);

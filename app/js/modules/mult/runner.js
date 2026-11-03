@@ -6,8 +6,10 @@
 //  - le niveau conseillé : le plus bas des niveaux ouverts (module5.json, debloque : niveaux acquis) pas encore acquis ;
 //  - avec « jouer » : le niveau conseillé, et une question sur cinq (melange) prise dans les niveaux déjà acquis ; avec
 //    « choisir » (`choix`) : toutes les questions au niveau choisi ;
-//  - déroulé d'un nouveau niveau : la leçon (L13 au niveau 1, L14 au niveau 6), puis 2 exemples guidés (les rangées
-//    comptées, la réponse donnée) ; l'image des rangées : toujours là aux niveaux 1 et 2, au coquillage ailleurs (cran
+//  - déroulé d'un nouveau niveau : la leçon (L13 au niveau 1, L14 au niveau 6), sinon un exemple guidé (les rangées
+//    comptées, la réponse donnée) ; (lot « Correctifs de la confrontation 2 », écarts 7 ter.1 et 7 ter.2, décision du parent du
+//    3 novembre 2026) seulement à la première séance sur ce niveau, jamais au cran « très dur » (`guidesDus` ; avant, au début de
+//    chaque séance et à tous les crans) ; l'image des rangées : toujours là aux niveaux 1 et 2, au coquillage ailleurs (cran
 //    « plus facile » : d'emblée ; « plus dur » et « très dur » : sans image ni coquillage ; « très dur » : formes à trou) ;
 //  - montée (acquis) : 8 bonnes réponses sur les 10 dernières du niveau, au plus une aide, ou la voie rapide (progress.js) ;
 //  - erreurs : une erreur revient 3 questions plus loin ; la même erreur (M1, M2) deux fois : la leçon L13, une fois par
@@ -32,7 +34,10 @@ export class Module5Runner {
   async load() {
     this.st = (await this.store?.get("niveaux", 5)) ?? initialMultState(this.clock());
     for (const k of ["acquis", "obtenus", "lecons"]) this.st[k] ??= []; this.st.vus ??= {}; this.st.fenetres ??= {};
-    this.niveau = this.choix ?? recommendedMult(this.c, this.st);
+    // (écart 7 ter.1) les niveaux déjà joués à une séance : leur exemple guidé est déjà donné (une base d'avant ce lot : les niveaux
+    // qui ont des questions vues)
+    this.st.passes ??= Object.keys(this.st.vus).map(Number).filter((n) => this.st.vus[n] > 0);
+    this.niveau = this.choix ?? recommendedMult(this.c, this.st); this.niveau0 = this.niveau;
     return this;
   }
   cfg(n) { return this.c.niveaux[Math.min(this.c.niveaux.length, Math.max(1, n)) - 1]; }
@@ -40,6 +45,9 @@ export class Module5Runner {
   get lentMs() { return this.baseMs + (this.c.lenteurS ?? 10) * 1000; }
   entryLesson() { const l = this.cfg(this.niveau).lecon; return l && !this.st.lecons.includes(l) && !this.played.has(l) ? l : null; }
   lessonPlayed(id) { this.played.add(id); }
+  // (écarts 7 ter.1 et 7 ter.2) les exemples guidés de la séance (session/notion.js) : `n` (seance.json) à la première séance sur le
+  // niveau, aucun ensuite, aucun au cran « très dur »
+  guidesDus(n) { return this.cran() === "tresdur" || this.st.passes.includes(this.niveau) ? 0 : n; }
   async lessonSeen(id) { if (!this.st.lecons.includes(id)) this.st.lecons.push(id); await this.save(); }
   next({ guide = false } = {}) {
     if (!guide) this.replays.forEach((r) => r.in--);
@@ -77,7 +85,7 @@ export class Module5Runner {
       ...(r.correctionPassee ? { correctionPassee: true } : {}), ...(this.libre ? { libre: true } : {}), ...(q.cran && q.cran !== "conseille" ? { cran: q.cran } : {}),
     });
     this.st.vus[q.niveau] = (this.st.vus[q.niveau] ?? 0) + 1;
-    if (q.guide) { await this.save(); return { etoiles: r.ok ? 1 : 0, events }; }
+    if (q.guide) { if (!this.st.passes.includes(q.niveau)) this.st.passes.push(q.niveau); await this.save(); return { etoiles: r.ok ? 1 : 0, events }; }
     this.count++; if (r.ok) this.ok++;
     let etoiles = r.ok ? 1 : 0; if (r.ok && q.revient) etoiles += 1;
     if (!r.ok && !q.revient && this.var.times(multKey(q)) < this.var.c.memeQuestionMax) this.replays.push({ q, cfg, in: 3 });
@@ -105,6 +113,6 @@ export class Module5Runner {
     await this.save();
     return { etoiles, events, code };
   }
-  async finish() { this.st.seances = (this.st.seances ?? 0) + 1; await this.save(); return { rate: this.count ? this.ok / this.count : null, events: this.events }; }
+  async finish() { this.st.seances = (this.st.seances ?? 0) + 1; const n0 = this.niveau0 ?? this.niveau; if (!this.st.passes.includes(n0)) this.st.passes.push(n0); await this.save(); return { rate: this.count ? this.ok / this.count : null, events: this.events }; }
   save() { return this.store?.put("niveaux", this.st); }
 }

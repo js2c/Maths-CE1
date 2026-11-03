@@ -126,3 +126,24 @@ test("la voix : chaque multiplication posée a sa consigne et sa correction ; la
   assert.ok(I.has("3 rangées de 4 poissons.") && I.has("Une rangée de 4 poissons.") && I.has("Et 5 fois 3 ?"));
   assert.ok(I.has("10 fois 10, 100.") && I.has("1 fois 1, 1."));
 });
+
+// (lot « Correctifs de la confrontation 2 », écarts 7 ter.1 et 7 ter.2, décision du parent du 3 novembre 2026) l'exemple guidé de la
+// multiplication : seulement à la première séance sur un niveau, jamais au cran « très dur »
+test("l'exemple guidé : à la première séance sur le niveau seulement, jamais au cran « très dur »", async () => {
+  const store = await open();
+  let cran = "conseille";
+  const r1 = await new Module5Runner({ store, content: m5, rnd: rng(3), cran: () => cran, clock: () => T0 }).load();
+  assert.equal(r1.guidesDus(1), 1, "première séance au niveau 1 : l'exemple");
+  cran = "tresdur"; assert.equal(r1.guidesDus(1), 0, "au cran « très dur » : aucun"); cran = "conseille";
+  const x = r1.next({ guide: true }); await r1.record({ q: x.q, value: multAnswer(x.q), ok: true, ms: 3000 }, x.cfg);
+  await r1.finish();
+  const r2 = await new Module5Runner({ store, content: m5, rnd: rng(4), cran: () => cran, clock: () => T0 + DAY }).load();
+  assert.equal(r2.guidesDus(1), 0, "deuxième séance au même niveau : plus d'exemple");
+  // un autre niveau, pas encore joué : l'exemple à sa première séance
+  const r3 = await new Module5Runner({ store, content: m5, rnd: rng(5), cran: () => cran, choix: 3, clock: () => T0 + DAY }).load();
+  assert.equal(r3.guidesDus(1), 1, "un niveau jamais joué : l'exemple");
+  // une base d'avant ce lot : les niveaux qui ont des questions vues sont déjà passés
+  const st = { ...initialMultState(T0), vus: { 1: 12, 2: 0 } }; const s2 = await open(); await s2.put("niveaux", st);
+  const r4 = await new Module5Runner({ store: s2, content: m5, rnd: rng(6), clock: () => T0 }).load();
+  assert.deepEqual(r4.st.passes, [1]); assert.equal(r4.guidesDus(1), 0);
+});

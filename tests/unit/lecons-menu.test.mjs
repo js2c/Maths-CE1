@@ -99,3 +99,16 @@ test("les phrases du lot : accueil à cinq bulles, fin de leçon, table d'additi
   assert.ok(textes.choixNom.lecons && textes.choixLecon);
   assert.ok(!("lecons" in (seance.choix ?? {})), "les leçons ne sont plus proposées par l'écran « choisir »");
 });
+
+// (lot « Correctifs de la confrontation 2 », écart 3.8, décision du parent du 3 novembre 2026) l'entraînement libre qui suit une leçon
+// commence par les exemples guidés de l'exercice associé, comme la séance du jour
+test("entraînement libre après une leçon : les exemples guidés de la notion du jour, sinon aucun", async () => {
+  const { guidesApresLecon } = await import("../../app/js/session/free.js");
+  const seance = JSON.parse(readFileSync(new URL("../../app/content/seance.json", import.meta.url)));
+  const N = seance.etapes.find((e) => e.id === "notion");
+  assert.equal(guidesApresLecon(seance, 1, {}, "L1"), N.guides);
+  assert.equal(guidesApresLecon(seance, 2, {}, "L4"), N.module2.guides);
+  assert.equal(guidesApresLecon(seance, 2, {}, null), 0, "sans leçon : aucun exemple guidé");
+  assert.equal(guidesApresLecon(seance, 5, { guidesDus: () => 0 }, "L13"), 0, "la multiplication décide (niveau déjà passé, « très dur »)");
+  assert.equal(guidesApresLecon(seance, 5, { guidesDus: (n) => n }, "L13"), N.module5.guides);
+});

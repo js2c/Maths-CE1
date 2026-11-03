@@ -14,9 +14,9 @@ test("version lisible : le numéro de la demande de fusion divisé par 100, la d
     { sujet: "Fusion de main", date: "2026-11-03T20:04:43+00:00" },
     { sujet: "Merge pull request #72 from js2c/claude/awesome-sagan-0v5slw", date: "2026-11-03T10:00:00+01:00" },
   ];
-  assert.equal(libelle(commits), "0.72 03/11/2026");
+  assert.deepEqual(libelle(commits), { numero: "0.72", date: "03/11/2026" });
   // 23 h 30 à Paris le 3 novembre, 22 h 30 en temps universel : c'est le 3 ; minuit et demi à Paris, c'est le 4
-  assert.equal(libelle([{ sujet: "Merge pull request #100 from x", date: "2026-11-03T22:30:00Z" }]), "1.00 03/11/2026");
-  assert.equal(libelle([{ sujet: "Merge pull request #100 from x", date: "2026-11-03T23:30:00Z" }]), "1.00 04/11/2026");
+  assert.deepEqual(libelle([{ sujet: "Merge pull request #100 from x", date: "2026-11-03T22:30:00Z" }]), { numero: "1.00", date: "03/11/2026" });
+  assert.deepEqual(libelle([{ sujet: "Merge pull request #100 from x", date: "2026-11-03T23:30:00Z" }]), { numero: "1.00", date: "04/11/2026" });
   assert.equal(libelle([{ sujet: "Un commit", date: "2026-11-03T22:30:00Z" }]), null);
 });

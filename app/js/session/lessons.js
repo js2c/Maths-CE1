@@ -161,9 +161,11 @@ export async function additionTable(app, o) {
   onTap(grid, (e) => {
     const r = grid.getBoundingClientRect(), k = stage.k, hit = tableHit(T, max, T.x - T.pad + (e.clientX - r.left) / k, T.y - T.pad + (e.clientY - r.top) / k, min);
     if (!hit) return;
-    const key = hit.join("+"), now = performance.now();
+    // (lot « Correctifs de la confrontation 2 », écart 9.9) l'écart est mesuré entre les heures des touchers eux-mêmes (`e.timeStamp`),
+    // pas entre les moments où la page les traite, comme au pavé des additions
+    const key = hit.join("+"), now = e.timeStamp ?? performance.now();
     if (key === last.k && now - last.t < (C.doubleToucherMs ?? 150)) return; // un second toucher trop rapide de la même case
-    last = { k: key, t: now };
+    last = { k: key, t: now }; grid.dataset.touchers = String(Number(grid.dataset.touchers ?? 0) + 1);
     lit = hit; over.repaint(); panel.repaint(); pop(over); grid.dataset.case = key;
     app.ocean?.mascotte?.activite?.();
     voice.stop(); voice.say(mul ? text.pick("tableCaseMult", { a: hit[0], b: hit[1], n: hit[0] * hit[1] }) : text.pick("tableCase", { a: hit[0], b: hit[1], n: hit[0] + hit[1] }));

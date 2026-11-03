@@ -159,20 +159,23 @@ export class EtalScreen {
     if (v && !this.keys) {
       this.keys = [];
       const small = (name, k) => (ctx, px) => { const q = sprites.frame(name, 0); ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (KEY / 2) * px + q.dx * k, (KEY / 2) * px + q.dy * k, q.w * k, q.h * k); };
-      const tap = (d, b) => { if (!this.onTape) return; const t = performance.now(); if (b.__t && t - b.__t < (app.toucher?.doubleMs ?? 150)) return; b.__t = t; pop(b); this.onTape(d); };
+      // (lot « Correctifs de la confrontation 2 », écart 9.9) le rebond est jugé sur l'heure du toucher lui-même (`e.timeStamp`),
+      // comme au pavé des additions (modules/facts/screen.js) : une page occupée traite d'un coup deux touchers bien séparés, et
+      // « 11 » devenait « 1 »
+      const tap = (d, b, t = performance.now()) => { if (!this.onTape) return; if (b.__t != null && t - b.__t < (app.toucher?.doubleMs ?? 150)) return; b.__t = t; pop(b); this.onTape(d); };
       for (let d = 0; d <= 9; d++) {
         const b = spriteBox(app, { x: PAD_X[d % 5] - KEY / 2, y: PAD_Y[Math.floor(d / 5)] - KEY / 2, w: KEY, h: KEY, cls: "bubble key etal-key", label: String(d), paint: (ctx, px) => { small("reponse", 0.84)(ctx, px); ctx.setTransform(px, 0, 0, px, 0, 0); R.drawNumber(ctx, String(d), KEY / 2, KEY / 2 - 23, 46, { w: 7, seed: 900 + d }); } });
-        b.dataset.key = String(d); onTap(b, () => tap(String(d), b)); this.keys.push(b);
+        b.dataset.key = String(d); onTap(b, (e) => tap(String(d), b, e?.timeStamp)); this.keys.push(b);
       }
       const del = spriteBox(app, { x: PAD_SLATE[0] + 170 - KEY / 2, y: PAD_SLATE[1] - KEY / 2, w: KEY, h: KEY, cls: "bubble key etal-key", label: "effacer", paint: small("effacer", 0.75) });
-      del.dataset.key = "effacer"; onBrief(app, del, () => tap("effacer", del), "effacer", { first: true }); this.keys.push(del);
+      del.dataset.key = "effacer"; onBrief(app, del, (e) => tap("effacer", del, e?.timeStamp), "effacer", { first: true }); this.keys.push(del);
       this.slate = spriteBox(app, { x: PAD_SLATE[0] - 110, y: PAD_SLATE[1] - 42, w: 220, h: 84, cls: "hud etal-ardoise", still: true, paint: (ctx, px) => this.paintSlate(ctx, px) });
       this.onKey = (e) => {
         if (e.ctrlKey || e.metaKey || e.altKey || e.repeat || app.parent?.root?.isConnected || app.enPause || !this.onTape) return;
         const k = /^[0-9]$/.test(e.key) ? e.key : /^Numpad[0-9]$/.test(e.code) ? e.code.slice(6) : e.key === "Backspace" ? "effacer" : e.key === "Enter" ? "valider" : null;
         if (!k) return; e.preventDefault();
         if (k === "valider") { if (this.coche.style.visibility === "visible") { pop(this.coche); this.onCoche?.(); } return; }
-        tap(k, this.keys.find((b) => b.dataset.key === k));
+        tap(k, this.keys.find((b) => b.dataset.key === k), e.timeStamp);
       };
       addEventListener("keydown", this.onKey);
     }

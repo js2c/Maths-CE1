@@ -9,13 +9,17 @@
 //  - on entre toujours par le lagon ; la maison ramène à l'accueil ; le livre ouvre l'album ; ni la pieuvre ni le compteur
 //    d'étoiles par-dessus la mer (comme dans la maquette) ;
 //  - pendant la visite, le lagon de l'application (le fond, lagon.js) se met en pause sous le récif ; les images du récif
-//    ne sont chargées qu'à l'entrée et libérées en sortant ; si le temps d'image moyen dépasse 20 ms, le récif se dessine
-//    en densité 1 (`alleger`).
+//    ne sont chargées qu'à l'entrée et libérées en sortant ; les créatures sont dessinées depuis une image déjà réduite à
+//    leur taille d'affichage (recif/reduction.js) ; si l'intervalle moyen entre deux images dépasse 33 ms, le récif s'allège
+//    d'un cran : d'abord l'ondulation des créatures, la densité du dessin seulement ensuite (`niveauxRecif`, `alleger`), et
+//    chaque allègement est noté dans le journal technique (lot « Netteté du récif »).
 // Remplace le récif en pages (lot 3, étape 5) depuis le 5 octobre 2026 (décision du parent).
 import { CardView, forgetPictures } from "./cards.js";
 import { spriteBox } from "../engine/ui.js";
 import { onBrief } from "../engine/ui.js";
 import { startRecif } from "../recif/recif-vivant.js";
+import { Reductions } from "../recif/reduction.js";
+import { noter } from "../engine/journal.js";
 
 const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };
 // les quatre créatures qui ne portent pas le même nom dans la maquette et dans cartes.json
@@ -27,14 +31,34 @@ export const versCarte = (id) => NOM_CARTE[id] ?? id;
 export function recifCreatures(collection) {
   return { owned: new Set(collection.map((c) => versMaquette(c.id))), brillantes: new Set(collection.filter((c) => c.brillante).map((c) => versMaquette(c.id))) };
 }
-// la densité de dessin : celle de l'écran (au plus 2), ou 1 quand l'allègement le demande
-const densite = (lent) => (lent ? 1 : Math.min(2, devicePixelRatio || 1));
-// l'allègement : passé les 3 premières secondes, si l'intervalle moyen des dernières images (60 au plus, 10 au moins)
-// dépasse 20 ms. Un intervalle de plus d'une seconde (onglet caché, appareil en veille) n'est pas compté ; une image
-// lente, si : sur une tablette très lente, c'est elle qu'il faut alléger (`gaps` : les intervalles retenus, en ms ;
-// `ecoule` : le temps depuis l'entrée, en ms)
+// (lot « Netteté du récif », constat du parent du 31 octobre 2026 : les créatures très pixelisées sur la tablette, nettes les
+// premières secondes puis floues) L'ALLÈGEMENT DU RÉCIF, PAR CRANS. Avant ce lot, passé 3 s au-delà de 20 ms par image, le récif
+// passait d'un coup en densité 1 pour toute la visite : dessiné en 1 138 × 711 et étiré sur les 2 560 × 1 600 pixels de la
+// tablette. Désormais le seuil est le budget de CLAUDE.md (30 images/s au minimum : 33 ms), et chaque cran retire d'abord ce qui
+// coûte sans rien ôter à la netteté ; la densité ne baisse qu'ensuite, d'abord à 1,5, et la densité 1 est le dernier recours :
+//  0. complet : la densité de l'écran (au plus 2), l'ondulation des créatures recalculée à chaque image ;
+//  1. l'ondulation des créatures recalculée au plus 15 fois par seconde et au plus une image sur deux (chaque créature déformée
+//     est gardée dans une image entre-temps, et dessinée d'un seul appel), avec deux fois moins de bandes de déformation ;
+//  2. en plus, la densité 1,5 (si l'écran est plus dense) ;
+//  3. en plus, la densité 1 (si l'écran est plus dense).
+export const SEUIL_MS = 33;
+export function niveauxRecif(dpr) {
+  const d0 = Math.min(2, dpr || 1), leger = { cadence: 15, bandes: 0.5 };
+  const l = [{ nom: "complet", densite: d0, cadence: 0, bandes: 1 }, { nom: "ondulation des créatures ralentie", densite: d0, ...leger }];
+  if (d0 > 1.5) l.push({ nom: "définition un peu réduite", densite: 1.5, ...leger });
+  if (d0 > 1) l.push({ nom: "définition réduite de moitié", densite: 1, ...leger });
+  return l;
+}
+// un cran de plus : passé les 3 premières secondes (ou les 2 secondes qui suivent un cran), si l'intervalle moyen des dernières
+// images (60 au plus, 10 au moins) dépasse 33 ms. Un intervalle de plus d'une seconde (onglet caché, appareil en veille) n'est
+// pas compté ; une image lente, si : sur une tablette très lente, c'est elle qu'il faut alléger (`gaps` : les intervalles
+// retenus, en ms ; `ecoule` : le temps depuis l'entrée ou le dernier cran, en ms)
 export const garderIntervalle = (dt) => dt > 0 && dt < 1000;
-export const alleger = (gaps, ecoule) => ecoule > 3000 && gaps.length >= 10 && gaps.reduce((a, b) => a + b, 0) / gaps.length > 20;
+export const moyenneIntervalles = (gaps) => gaps.reduce((a, b) => a + b, 0) / gaps.length;
+export const alleger = (gaps, ecoule) => ecoule > 3000 && gaps.length >= 10 && moyenneIntervalles(gaps) > SEUIL_MS;
+// après un cran, on laisse le récif se redessiner à son nouveau niveau (les images réduites refaites si la densité change) :
+// la mesure reprend de zéro, et le cran suivant ne peut venir qu'après 2 s
+export const APRES_CRAN_MS = 2000;
 
 // le scintillement d'une créature brillante : trois étoiles à quatre branches qui s'allument tour à tour, posées sur la
 // créature (dans son repère : `k` px d'écran par px de son image) ; dessiné en direct, comme les bulles
@@ -71,6 +95,8 @@ export function arriveeNage(A, id, t, x) {
 
 export class Reef {
   constructor(app) { this.app = app; this.open = false; this.view = new CardView(app); this.donnees = null; }
+  // les niveaux d'allègement de cet écran (pour les parcours de test et le journal)
+  niveaux() { return niveauxRecif(devicePixelRatio).map((p) => ({ ...p })); }
   // la visite ; la promesse se résout quand l'enfant touche la maison. (Lot « La boutique du récif » : le bouton de la boutique,
   // au-dessus de l'album, hors séance ; il se balance quand un achat est possible ; touché, la boutique s'ouvre, et son bouton
   // du récif ramène ici, où la créature achetée arrive à la nage. `boutique` : la visite commence par la boutique : la fin de
@@ -84,7 +110,15 @@ export class Reef {
   }
   async visite() {
     const { app } = this, { sprites, ocean, voice, text, rewards, stage } = app;
-    this.open = true; this.els = []; this.lent = false;
+    this.open = true; this.els = [];
+    // (les parcours de test peuvent tenir un niveau : window.__recifNiveau)
+    this.paliers = niveauxRecif(devicePixelRatio);
+    const tenu = Number.isInteger(globalThis.__recifNiveau) ? Math.min(this.paliers.length - 1, Math.max(0, globalThis.__recifNiveau)) : null;
+    this.niveau = tenu ?? 0;
+    const travail = []; this.travail = travail;
+    // (les étapes intermédiaires d'une réduction sont rendues aussitôt par reduire ; les images finales, par vider en sortant)
+    this.reductions = new Reductions();
+    let nImage = 0;
     this.donnees ??= await (await fetch("assets/recif/donnees.json")).json();
     const { owned, brillantes } = recifCreatures(rewards.collection());
     // les deux canvas du récif, au-dessus du lagon (mis en pause) et sous la pieuvre et les boutons
@@ -102,16 +136,29 @@ export class Reef {
     this.arr = arr && !arr.briller && owned.has(versMaquette(arr.id)) ? { id: versMaquette(arr.id) } : null;
     const ecoute = []; this.ecoute = ecoute;
     const gaps = []; let last = 0, t0 = 0;
+    const palier = () => this.paliers[this.niveau];
+    // (la qualité demandée par le module à chaque créature : le cran, et le numéro de l'image, pour la cadence de l'ondulation)
+    const qualite = { ...palier(), image: 0 };
     this.api = startRecif({
       cv, glc, donnees: this.donnees, owned, brillantes,
       size: () => ({ w: stage.root.clientWidth, h: stage.root.clientHeight }), rect: () => cv.getBoundingClientRect(),
-      dpr: () => densite(this.lent),
+      dpr: () => palier().densite,
+      qualite: () => qualite, reduite: (src, w, h, k) => this.reductions.pour(src, w, h, k, nImage),
+      canvas: () => { const c = document.createElement("canvas"); travail.push(c); return c; },
       on: (cible, type, f, o) => { cible.addEventListener(type, f, o); ecoute.push([cible, type, f, o]); },
       onFiche: (id) => this.fiche(id), scintille, arrivee: (id, t, x) => arriveeNage(this.arr, id, t, x),
-      // l'allègement (`alleger`) : la densité passe à 1
+      // l'allègement (`alleger`) : un cran de plus, noté dans le journal technique (le niveau, la densité du dessin, l'intervalle
+      // moyen mesuré, la zone de la mer)
       mesure: (t) => {
+        nImage++; qualite.image = nImage;
         t0 ||= t; if (last && garderIntervalle(t - last)) gaps.push(t - last); last = t; if (gaps.length > 60) gaps.shift();
-        if (!this.lent && alleger(gaps, t - t0)) { this.lent = true; this.api?.resize(); }
+        if (tenu == null && this.niveau < this.paliers.length - 1 && alleger(gaps, t - t0)) {
+          const ms = moyenneIntervalles(gaps), avant = palier().densite;
+          this.niveau++; gaps.length = 0; t0 = t - (3000 - APRES_CRAN_MS);
+          const p = palier(); Object.assign(qualite, p);
+          if (p.densite !== avant) this.api?.resize();
+          noter("récif", `allégé : ${p.nom}`, { niveauRecif: this.niveau, niveauxRecif: this.paliers.length - 1, densiteDessin: p.densite, intervalleMs: Math.round(ms * 10) / 10, zoneRecif: this.api?.zone || null });
+        }
       },
     });
     const home = spriteBox(app, { x: 90 - 70, y: 712 - 70, w: 140, h: 140, cls: "bubble homekey", label: "revenir", paint: (ctx) => sprites.draw(ctx, "maison", 0, 70, 70) });
@@ -145,6 +192,10 @@ export class Reef {
   leave() {
     const { app } = this;
     this.api?.stop(); this.api = null;
+    // (les images réduites et les canvas de travail des créatures : rendus aussitôt, et plus rien de la visite n'est gardé : un
+    // objet qui survivrait à la visite retiendrait, par ses fonctions, le canvas du récif, ses écouteurs et toutes ses images)
+    this.reductions?.vider(); this.reductions = null;
+    for (const c of this.travail ?? []) c.width = c.height = 0; this.travail = null;
     for (const [cible, type, f, o] of this.ecoute ?? []) cible.removeEventListener(type, f, o);
     this.ecoute = [];
     this.canvases?.forEach((c) => { c.width = c.height = 0; c.remove(); }); this.canvases = null;

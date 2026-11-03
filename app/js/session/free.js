@@ -137,7 +137,11 @@ export class FreeTraining {
     const { app } = this; await this.pickCran(); if (this.fini) return;
     const runner = await new Module4Runner({ store: this.store, content: this.m4, rnd: this.rnd, seance: await this.seanceId(), variete: this.seance?.variete, cran: () => this.cran, choix: niveau }).load();
     runner.libre = true; this.runner = runner;
-    if (!(await app.voiliers.enter())) return this.menu(); if (this.fini) return app.voiliers.leave();
+    // (lot « Correctif : l'étal resté actif à l'accueil ») la maison pendant l'installation : la portée de l'entraînement libre a
+    // déjà appelé `leave()`, qui l'arrête net (`enter` rend null) ; rien n'est posé ni relancé ensuite
+    if (this.fini) return;
+    // (quittée en route, elle a déjà été rangée : la ranger encore retirerait la scène d'un exercice suivant)
+    const ok = await app.voiliers.enter(); if (ok === null) return; if (this.fini) return app.voiliers.leave(); if (!ok) return this.menu();
     for (;;) {
       if (this.fini) return;
       const x = runner.next(); if (!x) { runner.var = new runner.var.constructor(runner.var.c); continue; }
@@ -153,7 +157,10 @@ export class FreeTraining {
     const { app } = this; await this.pickCran(); if (this.fini) return;
     const runner = await new Module6Runner({ store: this.store, content: this.m6, rnd: this.rnd, seance: await this.seanceId(), variete: this.seance?.variete, cran: () => this.cran, choix: niveau }).load();
     runner.libre = true; this.runner = runner;
-    await app.etal.enter({ rnd: this.rnd }); if (this.fini) return app.etal.leave();
+    // (lot « Correctif : l'étal resté actif à l'accueil ») la maison pendant l'installation l'arrête net (`enter` rend false : la
+    // portée de l'entraînement libre a déjà rangé la scène ; la ranger encore retirerait celle d'un exercice suivant)
+    if (this.fini) return;
+    if (!(await app.etal.enter({ rnd: this.rnd }))) return; if (this.fini) return app.etal.leave();
     for (;;) {
       if (this.fini) return;
       const x = runner.next(); if (!x) { runner.var = new runner.var.constructor(runner.var.c); continue; }

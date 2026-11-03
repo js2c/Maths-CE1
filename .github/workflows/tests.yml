@@ -55,6 +55,18 @@ jobs:
         run: node tests/e2e/enfant.mjs --graines 3 --actions 60
         env:
           VOIX_A_FABRIQUER: tolere
+      # (lot « Correctif : l'étal resté actif à l'accueil ») un échec vu ici se rejoue sur un ordinateur : les fichiers de chaque
+      # défaut (les actions jouées, defaut-*.json), la capture prise quand il a été vu, le résumé de chaque graine et la base
+      # d'un mois, gardés 14 jours (l'archive « enfant-defauts » en bas de la page du travail ; docs/ARCHITECTURE.md, « Rejouer
+      # un échec vu sur GitHub »)
+      - name: Les défauts et leurs captures, en cas d'échec
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: enfant-defauts
+          path: tests/e2e/out/enfant/
+          retention-days: 14
+          if-no-files-found: warn
 
   # (lot « Banc Android et recette en conditions réelles », point 7) LE BANC ANDROID, version courte (environ 15 minutes) : la
   # tablette de référence (Galaxy Tab S5e : 1 138 × 711, densité 2,25, processeur ralenti 4 fois, tactile), l'application installée
@@ -90,3 +102,5 @@ jobs:
         with:
           name: banc-android
           path: tests/e2e/out/journee-ci/
+          retention-days: 14
+          if-no-files-found: warn

@@ -24,6 +24,7 @@
 // La bulle n'est pas gérée ici : engine/bulle.js.
 export function creerMascotte({ canvas, base = "assets/mascotte/", journal = () => {}, statut = null, rapide = false, niveau = () => 0, progres = () => {}, signaler = () => {} }) {
   const W = 450, H = 600;
+  let M_apresPerte = () => {};
   const T0 = performance.now();
   const now = () => (performance.now() - T0) / 1000;
   const vids = document.createElement("div");
@@ -87,11 +88,42 @@ export function creerMascotte({ canvas, base = "assets/mascotte/", journal = () 
     if (v._clip !== k) { v._clip = k; v.src = sources[k]; }
     return v;
   }
-  const face = canvas;
+  let face = canvas;
   let R = makeGL(face) || make2D(face);
   // RACCORD (point 2) : la carte graphique peut retirer son contexte à la page (mémoire, mise en veille) ; rendu, il est refait
-  face.addEventListener("webglcontextlost", (e) => { e.preventDefault(); signaler("contexte WebGL perdu"); });
-  face.addEventListener("webglcontextrestored", () => { R = makeGL(face) || make2D(face); L.fresh = false; L.needDraw = true; signaler("contexte WebGL rendu"); });
+  // RACCORD (lot « Correctifs : la carte graphique perdue », constat du parent du 2 novembre 2026 : la mascotte avait disparu) :
+  // un contexte qui n'est pas rendu dans les 3 s (Chrome peut refuser WebGL à la page après la perte de son processus graphique)
+  // est remplacé par un canvas neuf, en WebGL si possible, sinon en 2D ; et après toute perte, le clip en cours est rechargé
+  // dans son lecteur (le décodeur vidéo de la tablette peut être perdu avec la carte graphique : la vidéo ne donnait plus d'image)
+  let perduDepuis = 0;
+  const suivre = (cv) => {
+    cv.addEventListener("webglcontextlost", (e) => { e.preventDefault(); perduDepuis = performance.now(); signaler("contexte WebGL perdu"); setTimeout(() => { if (cv === face && perduDepuis && performance.now() - perduDepuis >= 2900) remplacer("contexte WebGL non rendu en 3 s"); }, 3000); });
+    cv.addEventListener("webglcontextrestored", () => { if (cv !== face) return; perduDepuis = 0; R = makeGL(cv) || R; L.fresh = false; L.needDraw = true; signaler("contexte WebGL rendu"); recharger("contexte rendu"); });
+  };
+  suivre(face);
+  function remplacer(pourquoi) {
+    const nc = document.createElement("canvas"); nc.width = face.width; nc.height = face.height;
+    const r = makeGL(nc) || make2D(nc); if (!r) return;
+    face.replaceWith(nc); face = nc; R = r; perduDepuis = 0; suivre(nc);
+    L.fresh = false; L.needDraw = true;
+    signaler("canvas de la mascotte refait", { pourquoi, rendu: r.kind });
+    recharger(pourquoi);
+  }
+  // le clip en cours, rechargé dans son lecteur, au même moment ; l'autre lecteur est vidé (il se rechargera à la demande)
+  function recharger(pourquoi) {
+    for (const v of lecteurs) {
+      const k = v._clip; if (!k || !sources[k]) continue;
+      const enCours = L.cur && L.cur.video === v, t = v.currentTime;
+      v.removeAttribute("src"); v.load();
+      if (!enCours) { v._clip = null; continue; }
+      v.src = sources[k]; try { v.currentTime = t; } catch (e) {}
+      v._gen = (v._gen || 0) + 1; v._watched = false; watchFrames(v);
+      if (visible && !v.ended) v.play().catch(refus("rechargement"));
+    }
+    L.needDraw = true; signaler("vidéo de la mascotte rechargée", { pourquoi });
+  }
+  // (engine/restauration.js) après une perte de la carte graphique : le contexte encore perdu est remplacé, sinon le clip rechargé
+  M_apresPerte = () => { if (R.kind === "WebGL" && R.perdu()) remplacer("contexte encore perdu après la reprise"); else recharger("reprise de la carte graphique"); };
   function makeGL(cv) {
     const gl = cv.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false, powerPreference: "low-power" });
     if (!gl) return null;
@@ -124,6 +156,7 @@ export function creerMascotte({ canvas, base = "assets/mascotte/", journal = () 
     let curI = 0;
     return {
       kind: "WebGL",
+      perdu: () => gl.isContextLost(),
       swap() { curI = 1 - curI; },
       upload(v) { gl.activeTexture(gl.TEXTURE0 + curI); gl.bindTexture(gl.TEXTURE_2D, tex[curI]);
                   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, v); },
@@ -132,13 +165,14 @@ export function creerMascotte({ canvas, base = "assets/mascotte/", journal = () 
     };
   }
   function make2D(cv) {
-    const ctx = cv.getContext("2d"), work = document.createElement("canvas"); work.width = W; work.height = H;
+    const ctx = cv.getContext("2d"); if (!ctx) return null;
+    const work = document.createElement("canvas"); work.width = W; work.height = H;
     const w = work.getContext("2d", { willReadFrequently: true });
     const frames = [document.createElement("canvas"), document.createElement("canvas")];
     frames.forEach(f => { f.width = W; f.height = H; });
     let curI = 0;
     return {
-      kind: "2D",
+      kind: "2D", perdu: () => false,
       swap() { curI = 1 - curI; },
       upload(v) {
         w.drawImage(v, 0, 0, W, H); const img = w.getImageData(0, 0, W, H), d = img.data;
@@ -214,7 +248,8 @@ export function creerMascotte({ canvas, base = "assets/mascotte/", journal = () 
   const hasRVFC = "requestVideoFrameCallback" in HTMLVideoElement.prototype;
   function watchFrames(v) {
     if (!hasRVFC || v._watched) return; v._watched = true;
-    const cb = (n, meta) => { if (L.cur && L.cur.video === v) newFrame(v, meta && meta.mediaTime); v.requestVideoFrameCallback(cb); };
+    const gen = v._gen || 0; // RACCORD (la carte graphique perdue) : un lecteur rechargé repart avec une seule surveillance
+    const cb = (n, meta) => { if ((v._gen || 0) !== gen) return; if (L.cur && L.cur.video === v) newFrame(v, meta && meta.mediaTime); v.requestVideoFrameCallback(cb); };
     v.requestVideoFrameCallback(cb);
   }
   let lastT = -1, lastUp = 0;
@@ -408,6 +443,7 @@ export function creerMascotte({ canvas, base = "assets/mascotte/", journal = () 
     if (now - veille.depuis > 3000) { veille.depuis = now; signaler("vidéo de la mascotte arrêtée, relancée", { clip: L.cur.clip, pause: v.paused, etat: v.readyState }); v.play().catch(refus("relance")); }
   }, 1000);
   M.lecteurs = lecteurs; // (pour les parcours de test)
+  M.apresPerte = () => M_apresPerte(); M.canvas = () => face;
   M.etat = () => ({ clip: L.cur && L.cur.clip, tag: L.cur && L.cur.tag, ambiance: M.amb, fps: L.fps, rendu: R.kind, attente: !!L.pending, pret, visible, suspendue, parle: M.parle });
 
   // ======================================================================================================

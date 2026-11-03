@@ -918,3 +918,23 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 
 - **Branche** : `ccr-3e7c2366-pv8vt6`, partie de `main` (398d794e, PR #62) ; demande de fusion https://github.com/js2c/Maths-CE1/pull/63.
 - **Fini le 19 octobre 2026** : les échecs laissés par la PR #61 ; le banc (`tests/e2e/appareils.mjs`, conditions par défaut, raccourcis déclarés) ; les budgets ; la journée d'usage sur les quatre profils, l'enfant imprévisible sur le banc, l'agent qui joue l'enfant (48 minutes sur `s5e`, `tests/recette-fonctionnelle/out-banc-android/agent/`), les temps de démarrage ; les smartphones (« tourne ton téléphone », zones sûres, cibles) et la décision du parent (option A) ; le banc devenu la règle (CLAUDE.md, méthode commune, travail `android`) ; les demandes du parent du 17 octobre (plus de rechargement quand la fenêtre change, reprise à la question près) ; la décision du 19 octobre sur le sélecteur ; relectures indépendantes et leur traitement.
+
+## Reprise du lot « Netteté du récif »
+
+- **Branche** : `claude/upbeat-shannon-brp4dg`, partie de `main` (18971432, PR #63) ; demande de fusion https://github.com/js2c/Maths-CE1/pull/68.
+- **Fiche** : `docs/LOTS.md`, fiche 14 ; lot court, d'un seul tenant.
+- **Fini le 1er novembre 2026** : `app/js/recif/reduction.js` (créatures réduites une fois, par moitiés, au double de leur taille d'affichage) ; `lagBlit` remplacé par l'outil d'export (`LAGBLIT`, `art/tools/export-recif.mjs`, la maquette n'est pas modifiée) ; `reef.js` : seuil 33 ms, quatre crans, chaque cran noté au journal technique ; mesures avant/après et captures sur `s5e` et `petit-smartphone` (`docs/maquettes/recif-nettete/`) ; documentation ; relecture indépendante ; recette complète (un défaut de mémoire du lot trouvé et corrigé ; trois défauts de parcours, sur `main` aussi, corrigés ; les échecs hérités et leur cause : `docs/JOURNAL-CONCEPTION.md`, points 7 à 9). Aucune phrase nouvelle.
+
+## Reprise du lot « Réserves d'étoiles et étoiles arc-en-ciel »
+
+- **Branche** : `claude/beautiful-goodall-30h3pg` ; demande de fusion https://github.com/js2c/Maths-CE1/pull/70.
+- **Fiche** : `docs/LOTS.md`, fiche 17 ; point d'arrêt « maquette » (`art/reserves/`, `docs/maquettes/reserves/`), validée par le parent le 2 novembre 2026 avec des corrections.
+- **Fini le 3 novembre 2026** : `session/reserves.js` (les réserves, ce qu'elles disent) ; `rewards.js` (`arcBrillees`, la règle de réserve, `acheter(…, { arc })`, `prixAnnonce`) ; la boutique (deux coches, l'étoile gardée, les phrases courtes, le genre des cartes) ; la récompense (les vols vers les réserves et depuis elles) ; l'espace parent ; la documentation de la voix ; la simulation par le code (`tests/sim-boutique.mjs`) ; tests unitaires et `tests/e2e/reserves.mjs` ; la recette sur le banc Android et la relecture indépendante (`tests/recette-fonctionnelle/out-reserves/RELECTURE.md`).
+- **Échecs hérités de `main`** : `etal` et `installation` (corrigés par la PR #64), `notion2` (`docs/IDEES.md`).
+
+## Reprise du lot « Correctif : l'étal resté actif à l'accueil »
+
+- **Branche** : `claude/awesome-sagan-0v5slw`, partie de `main` (c26546a0, PR #65) ; demande de fusion https://github.com/js2c/Maths-CE1/pull/72.
+- **Fiche** : `docs/LOTS.md`, fiche 18 ; lot court, d'un seul tenant.
+- **Fini le 3 novembre 2026** : la cause (l'installation de la scène de l'étal n'était pas interruptible ; la sortie inscrite après elle), le correctif (`modules/etal/screen.js`, `modules/voiliers/screen.js`, `main.js`, `session/free.js`, `lessons/etal.js`), le second défaut de la même famille (le portefeuille touché pendant l'installation), le parcours `tests/e2e/etal-quitte-installation.mjs`, `enfant.mjs --images-lentes`, la pile d'appels dans les fichiers de défaut, les archives des tests de GitHub (14 jours), la recette (cause, correctif et mesures : `docs/JOURNAL-CONCEPTION.md`). Aucune phrase nouvelle.
+

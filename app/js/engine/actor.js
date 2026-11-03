@@ -4,12 +4,17 @@
 // (2560 × 1600) coûtait ~880 ms de copie par seconde avec le processeur ÷4. Ici, un acteur ne redessine
 // son petit canvas que quand son image change (12 à 15 fois par seconde au plus), et ses déplacements,
 // sa taille (jamais au-dessus de 1) et son opacité sont confiés au compositeur (transform CSS).
+import { repeindre } from "./restauration.js";
+
 export class Actor {
   // w, h : taille du canvas en px logiques ; (ax, ay) : le point d'ancrage dans ce canvas
   constructor(stage, parent, w, h, ax, ay) {
     this.st = stage; this.w = w; this.h = h; this.ax = ax; this.ay = ay;
     this.c = document.createElement("canvas"); this.c.className = "actor"; this.ctx = this.c.getContext("2d");
     parent.append(this.c); this.key = null; this.css = ""; this.op = 1; this.vis = true; this.resize();
+    // (lot « Correctifs : la carte graphique perdue ») après une perte de la carte graphique, le dernier dessin est refait : un acteur
+    // qui n'est pas redessiné à chaque image (un poisson figé par l'allègement, une algue figée) restait vide ou coupé
+    repeindre(this.c, () => { if (!this.dessin) return; const k = this.key; this.key = null; this.paint(k, this.dessin); });
   }
   resize() {
     const { px, k } = this.st;
@@ -22,7 +27,7 @@ export class Actor {
   paint(key, paint) {
     if (key === this.key) return;
     this.ctx.setTransform(1, 0, 0, 1, 0, 0); this.ctx.clearRect(0, 0, this.c.width, this.c.height);
-    paint(this.ctx); this.key = key;
+    paint(this.ctx); this.key = key; this.dessin = paint;
   }
   // place l'ancrage en (x, y) logiques ; s <= 1 : réduction seulement (jamais agrandir une image)
   // `rot` : une légère rotation (degrés) autour de l'ancrage (au plus une couche tournée à la fois : CLAUDE.md)

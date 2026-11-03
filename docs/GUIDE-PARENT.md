@@ -56,9 +56,18 @@ Le dépôt est public : l'application et son code sont visibles par tous, mais *
 
 **Une séance par jour.** Une fois la séance du jour finie, l'écran montre la lune (« à demain »), qui n'est qu'un décor. La bulle **« Encore ! »** (triangle doré) ouvre l'entraînement libre : la ligne des nombres, les additions ou une leçon déjà vue, aussi longtemps que l'enfant veut (la voix propose d'arrêter au bout de 10 minutes ; la maison ramène à la lune). L'entraînement libre ne rapporte ni étoiles de mer ni coquillages, pour que les récompenses restent liées au rendez-vous du soir, mais ses réponses comptent dans le suivi ; un niveau franchi pendant l'entraînement libre garde son étoile arc-en-ciel, remise à la fin de la séance suivante. Le récif et l'**album** (le livre au coquillage) se visitent librement.
 
-**Les cartes, l'album et la boutique (depuis le lot « La boutique du récif »).** L'enfant **achète les créatures de son récif à la boutique** avec ses étoiles de mer : 40 étoiles une créature commune, 100 une rare ; 150 et 300 pour faire briller une créature qu'elle a déjà. La boutique s'ouvre depuis le récif (le bouton à auvent rayé, au-dessus de l'album ; pas pendant une séance en pause) et, en fin de séance, quand elle peut acheter quelque chose, le bouton de fin y mène directement (sinon il mène au récif). Elle touche une créature : le capitaine dit son prix ; si elle a assez d'étoiles, une coche verte et une croix rouge apparaissent : **seule la coche achète**, la croix annule. Un achat est définitif ; les étoiles ne se perdent jamais. Une créature achetée a une chance sur cinq de sortir brillante. L'album montre les quatre zones du récif : les cartes de ses créatures, le dos de celles qui restent à découvrir, et les zones pas encore ouvertes (assombries).
+**Les cartes, l'album et la boutique (depuis le lot « La boutique du récif »).** L'enfant **achète les créatures de son récif à la boutique** avec ses étoiles de mer : 40 étoiles une créature commune, 100 une rare ; 150 et 300 pour faire briller une créature qu'elle a déjà (ce sont les « prix pour 2 séances par semaine » ; si elle joue plus souvent, voir « Les prix », plus bas). La boutique s'ouvre depuis le récif (le bouton à auvent rayé, au-dessus de l'album ; pas pendant une séance en pause) et, en fin de séance, quand elle peut acheter quelque chose, le bouton de fin y mène directement (sinon il mène au récif). Elle touche une créature : le capitaine dit son prix ; si elle a assez d'étoiles, une coche verte et une croix rouge apparaissent : **seule la coche achète**, la croix annule. Un achat est définitif ; les étoiles ne se perdent jamais. Une créature achetée a une chance sur cinq de sortir brillante. L'album montre les quatre zones du récif : les cartes de ses créatures, le dos de celles qui restent à découvrir, et les zones pas encore ouvertes (assombries).
 
 **Le rythme (réglage « Rythme de la boutique », onglet Données et réglages).** Par défaut, **Arrivages** : 2 créatures nouvelles arrivent à la boutique chaque semaine d'école, le lundi (les vacances n'en apportent pas ; une semaine sans séance n'en fait rien perdre). Plus de séances donnent plus d'étoiles, mais pas plus de créatures : les étoiles en plus servent à faire briller. Les calculs faits sur toute l'année prévoient, à 2 séances par semaine, toute la collection en juin, même pour une enfant qui a plus de mal. **Libre** : toutes les créatures des zones ouvertes sont en vitrine ; plus de séances, plus vite. Quand toutes les créatures ordinaires d'une zone sont dans le récif, la zone suivante s'ouvre à la fin d'une séance, avec une **étoile arc-en-ciel** (gagnée en franchissant un niveau), et offre son **premier habitant** (une créature commune tirée au hasard). Le récif de corail est prêt ; le grand large et les abysses attendent leurs illustrations et leurs anecdotes.
+
+**Les prix (réglage « Prix de la boutique », juste sous le rythme ; depuis le 2 novembre 2026).** Plus l'enfant fait de séances, plus elle gagne d'étoiles ; mais les créatures arrivent toujours 2 par semaine. Aux prix d'origine, à 3 ou 4 soirs par semaine, elle achète tout dès le lundi et n'a plus rien de nouveau à acheter ensuite. **Que choisir ?**
+
+- elle joue 2 soirs par semaine : **« Prix pour 2 séances par semaine »** (par défaut : 40 une commune, 100 une rare ; 150 et 300 pour faire briller) ;
+- 3 soirs : **« 3 séances par semaine »** (70, 175 ; 250 et 500) ;
+- 4 soirs : **« 4 séances par semaine »** (96, 240 ; 350 et 700) ;
+- si elle a du mal (elle gagne alors moins d'étoiles par séance) : le choix du dessous.
+
+Les nouveaux prix comptent tout de suite ; ses étoiles restent ; vous pouvez changer à tout moment, rien n'est perdu (cela vaut aussi en rythme libre). D'après les calculs faits sur toute l'année, chacun à son rythme, la collection est complète en juin, et environ une séance sur 20 seulement n'a rien de nouveau à acheter (une sur six à 2 séances : souvent le jeudi, quand elle a tout acheté le lundi). Des prix plus chers que son vrai rythme l'empêchent de finir (aux prix pour 3 séances, à 2 séances par semaine : environ 40 créatures sur 60 en juin). **Un repère** (onglet Progression, « Cartes et boutique », « créatures en vitrine ») : plus de 4 créatures en vitrine deux semaines de suite, c'est trop cher ; 0 presque à chaque fois, c'est trop bas. **Si les prix montent**, l'enfant le verra (70 au lieu de 40) ; le capitaine ne l'explique pas : vous pouvez lui dire, par exemple, « Tu joues plus souvent, alors les créatures coûtent un peu plus cher ; tu en auras autant. »
 
 **Le coquillage de la série.** Toutes les 10 séances de la série, un coquillage fait briller une créature du récif tirée au hasard (20 étoiles si toutes brillent déjà). Les 5 étoiles toutes les 3 séances restent.
 
@@ -510,7 +519,61 @@ Ce qui change pour l'enfant et pour vous :
 
 **À essayer sur la tablette** (comme d'habitude, la nouvelle version s'installe au premier lancement et prend la main au suivant) : une soirée normale. Si quelque chose ne va pas, exporter le journal technique et le donner à la conception.
 
-## d novodecies) Lot « Correctifs des relectures » : les petits défauts laissés par les relectures
+## d novodecies) Lot « Netteté du récif » : votre constat du 31 octobre
+
+**Ce que vous aviez vu** : dans le récif, les créatures devenaient très pixelisées quelques secondes après l'entrée. C'était l'allègement automatique : dès que la tablette mettait plus de 20 ms par image (moins de 50 images par seconde), le récif se dessinait avec deux fois moins de pixels pour tout le reste de la visite, puis l'image était étirée sur l'écran.
+
+**Ce qui change** :
+
+- **Les créatures sont plus nettes et coûtent moins.** Chaque créature est une grande image (environ 600 pixels) affichée jusqu'à 4 fois plus petite (8 fois quand le récif est allégé). Avant, elle était réduite à chaque image, ce qui sautait des pixels : c'étaient les petits carrés et les bords en escalier. Maintenant, elle est réduite une seule fois, avec soin, au double de sa taille d'affichage, et le récif dessine cette petite image : plus de petits carrés, à aucun niveau.
+- **L'allègement attend plus longtemps et procède par étapes.** Il ne commence qu'au-delà de 33 ms par image (moins de 30 images par seconde, le seuil fixé pour toute l'application). Niveau 1 : il ralentit l'ondulation des créatures (elles nagent et se déplacent comme avant, seule leur ondulation est recalculée moins souvent), sans rien ôter à la netteté. Niveau 2 : la définition baisse un peu (1,5 au lieu de 2) ; à l'œil, presque rien ne change. Niveau 3, en dernier recours : la définition baisse de moitié, comme avant ; les créatures sont alors plus douces, un peu floues, mais sans les petits carrés d'avant (comparaison dans `docs/maquettes/recif-nettete/`).
+- **Vous pouvez le vérifier** : chaque allègement est écrit dans le **journal technique** (espace parent, « Données et réglages »), par exemple « récif · allégé : ondulation des créatures ralentie (niveau 1 sur 3, dessin en densité 2, 38,4 ms par image en moyenne, le lagon) ». Comment lire : le niveau va de 1 à 3 (plus il est haut, plus le récif a été allégé) ; « ms par image » est le temps que mettait la tablette à ce moment-là (au-delà de 33, elle peine). Une visite peut écrire jusqu'à trois lignes, une par niveau, et chaque visite repart du plus net : la ligne la plus récente d'une visite donne le niveau atteint.
+- **Ce que nous ne savons pas encore** : sur notre banc d'essai (un ordinateur qui imite la tablette, mais dessine sans carte graphique, donc bien plus lentement), le récif descend au niveau 3 en quelques secondes. Votre tablette a une carte graphique : elle devrait s'arrêter plus haut, mais seul son journal le dira.
+
+**Aucune phrase à fabriquer.**
+
+**À essayer sur la tablette** : entrer dans le récif, regarder le poisson-clown, l'hippocampe et le crabe, puis rester une minute en faisant défiler la mer. Ensuite, ouvrir le journal technique : s'il n'y a aucune ligne « récif · allégé », le récif est resté au plus net ; sinon, la plus récente dit jusqu'où il est descendu et à quelle vitesse tournait la tablette. Dans deux cas, exporter le journal technique et le donner à la conception : si vous revoyez de petits carrés ou des bords en escalier sur les créatures (ce serait un défaut) ; ou si le récif atteint le niveau 3 à chaque visite et que les créatures vous paraissent trop douces (il faudra alors alléger autre chose avant la définition, par exemple les faisceaux de lumière : à décider ensemble).
+
+## d vicies) Lot « Prix de la boutique réglables » : votre décision du 2 novembre
+
+**Ce qui change** : dans l'espace parent (onglet « Données et réglages »), sous « Rythme de la boutique », un nouveau réglage **« Prix de la boutique »** : trois cases à toucher, chacune avec ses prix et, dessous, une phrase qui dit pour qui elle est faite (voir « Les prix », plus haut, dans « Les cartes, l'album et la boutique »). Par défaut, rien ne change : ce sont les prix d'origine. Le bloc « Cartes et boutique » (onglet Progression) dit les prix en cours.
+
+**Pour l'enfant** : seuls les prix changent (sur les tuiles de la boutique et dans ce que dit le capitaine). Ses étoiles ne bougent pas.
+
+**8 phrases à fabriquer** (les nouveaux prix) : « Pour l'avoir, il faut 70 étoiles. », 175, 96 et 240 ; « Pour la faire briller, il faut 250 étoiles. », 500, 350 et 700 (`node tools\voix\publier.mjs`, `docs/VOIX.md`). Tant qu'elles manquent, la bulle du capitaine écrit la phrase sans la dire (seulement si vous choisissez les prix pour 3 ou 4 séances).
+
+**À essayer sur la tablette** : choisir « 3 séances par semaine », puis ouvrir la boutique depuis le récif et toucher une créature à vendre : la tuile et le capitaine disent 70 (ou 175 pour une rare). Revenir à « Prix pour 2 séances par semaine » : les prix reviennent, les étoiles n'ont pas bougé.
+
+## d unvicies) Lot « Correctifs : la carte graphique perdue » : votre constat du 2 novembre
+
+**Ce que vous aviez vu** : la tablette laissée ouverte longtemps, une première partie faite, puis un autre jeu : la mascotte et le bouton de la maison avaient disparu, des poissons du fond étaient coupés net (le compteur d'étoiles avait aussi disparu).
+
+**La cause** : quand une page reste ouverte longtemps, Android reprend la mémoire de la carte graphique, et Chrome perd alors tout ce qu'elle affichait. Il rend des images vides : ce que l'application redessine sans cesse revient seul, mais ce qu'elle n'avait dessiné qu'une fois (la maison, le compteur d'étoiles, les boutons de l'écran en cours) restait vide, alors que le bouton était toujours là, touchable. La mascotte, elle, a besoin d'un mode d'affichage (WebGL) que Chrome refuse parfois après une telle perte : elle ne revenait jamais. Nous avons reproduit la panne sur notre banc d'essai en provoquant la même perte : la version d'avant perd exactement la mascotte, la maison et le compteur.
+
+**Ce qui change** : après une perte, l'application redessine tout ce qui était à l'écran, recharge les images (dont celles des poissons), refait le fond, et refait la mascotte ; si Chrome refuse WebGL, la mascotte s'affiche autrement (un peu plus de travail pour la tablette, jusqu'au prochain lancement).
+
+**Vous pouvez le vérifier** : après une longue inactivité, le journal technique (espace parent, « Données et réglages ») écrit « carte graphique perdue » puis « carte graphique rendue : tout est redessiné » ; si la mascotte a dû changer d'affichage, « canvas de la mascotte refait ». Si vous revoyez un écran incomplet, exportez ce journal : il dira si la perte a eu lieu.
+
+**Ce que nous ne savons pas** : les poissons coupés à moitié ne se reproduisent pas tels quels sur le banc (il n'a pas de vraie carte graphique) ; le rechargement des images devrait les réparer, la tablette le confirmera.
+
+**Aucune phrase à fabriquer.**
+
+## d duovicies) Lot « Réserves d'étoiles et étoiles arc-en-ciel » : vos décisions du 2 novembre
+
+**Ce qui change pour l'enfant** :
+- **Ses réserves d'étoiles sont visibles** : à droite du compteur d'étoiles de mer, une petite étoile arc-en-ciel et une petite étoile de diamant, chacune avec son nombre (elles n'apparaissent pas tant qu'elle n'en a pas). Si elle en touche une, le capitaine dit combien elle en a et à quoi elles servent (« Tu as 4 étoiles arc-en-ciel. Elles ouvrent les nouvelles zones du récif, et font briller tes créatures. »). Elles répondent à l'accueil, dans la boutique, à la fin de la séance et pendant une pause ; **pendant les questions, elles ne réagissent pas** (votre décision : le seul toucher hors réponse reste le capitaine, qui redit la consigne).
+- **À la fin de la séance**, les étoiles arc-en-ciel et de diamant gagnées volent jusqu'à leur réserve, qui avance d'un cran à chaque étoile. Quand une zone s'ouvre, son étoile part de la réserve.
+- **À la boutique, une créature déjà dans son récif peut briller avec une étoile arc-en-ciel**, à la place des étoiles de mer : une étoile, pour une commune comme pour une rare. Sous la tuile, deux coches : celle de l'étoile de mer et celle de l'étoile arc-en-ciel. Le capitaine le dit en phrases courtes : « C'est le crabe ! Il est déjà dans ton récif. Pour le faire briller : 150 étoiles, ou une étoile arc-en-ciel. Touche la coche de l'étoile que tu veux donner. »
+- **Une étoile arc-en-ciel est gardée pour chaque zone encore fermée** (3 au début de l'année, puis 2, puis 1) : ainsi, l'ouverture d'une zone n'est jamais retardée. Quand toutes ses étoiles sont gardées, la tuile montre l'étoile arc-en-ciel avec un petit cadenas et le capitaine dit : « Tes étoiles arc-en-ciel sont gardées pour les nouvelles zones. »
+- **Quand vous changez le niveau de prix**, le capitaine dit une seule fois, à la visite suivante de la boutique : « Les prix de la boutique ont changé ! ».
+
+**Pour vous** : dans « Cartes et boutique », la réserve d'étoiles arc-en-ciel dit combien ont ouvert des zones et combien ont fait briller une créature ; la liste des achats montre « 1 étoile arc-en-ciel » à la place du prix (et l'export a une colonne « étoile arc-en-ciel »). Ce qui est simulé sur une année (`docs/maquettes/reserves/simulation.md`) : au niveau de prix qui suit votre rythme, environ 35 étoiles arc-en-ciel font briller une créature au lieu de rester inutiles ; les zones s'ouvrent aux mêmes dates ; la collection est complète en juin, comme avant.
+
+**110 phrases à fabriquer**, environ 1,2 Mo (la voix passera d'environ 81,3 à 82,4 Mo, sous la limite de 85 Mo) ; 6 phrases ne servent plus (« Pour la faire briller, il faut 150 étoiles. » et les autres prix), leur fichier sera effacé : `node tools\voix\publier.mjs` (`docs/VOIX.md`). Tant qu'elles manquent, la bulle du capitaine écrit la phrase sans la dire.
+
+**À essayer sur la tablette** : à l'accueil, toucher l'étoile arc-en-ciel puis l'étoile de diamant, à côté du compteur ; pendant une question, les toucher ne doit rien faire. À la boutique, toucher une créature déjà dans le récif : si elle a plus d'étoiles arc-en-ciel que de zones fermées, la coche arc-en-ciel apparaît ; la toucher fait briller la créature, et la réserve baisse d'une étoile.
+
+## d tervicies) Lot « Correctifs des relectures » : les petits défauts laissés par les relectures
 
 Les points des relectures indépendantes qui avaient déjà une réponse par défaut, faits d'un seul tenant. Ce que la session a trouvé et décidé est dans `docs/JOURNAL-CONCEPTION.md`.
 

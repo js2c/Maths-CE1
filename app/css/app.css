@@ -98,7 +98,9 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 #stage.paused #front > * { visibility: hidden !important; }
 /* (sauf la flèche de la consigne de la pause, posée sur le galet « continuer » : engine/fleche.js, `enPause`) */
 #stage.paused #front > canvas.actor.en-pause { visibility: visible !important; }
-#stage.paused #ui > :not(.keep):not(.stars) { visibility: hidden !important; }
+#stage.paused #ui > :not(.keep):not(.stars):not(.reserve) { visibility: hidden !important; }
+/* (lot « Réserves d'étoiles et étoiles arc-en-ciel ») les réserves à côté du compteur : pendant une question, elles restent visibles mais ne réagissent pas au toucher (session/reserves.js) */
+.reserve.inerte { pointer-events: none; }
 /* lot 3, étape 5 : pendant une visite depuis l'accueil en pause (récif, album, choisir, leçon), ce que montrait la séance est mis de côté tel quel */
 .stash { visibility: hidden !important; pointer-events: none !important; }
 /* lot 3 ter (T3) : l'étiquette de l'appui long apparaît et s'efface en fondu (durées : legendes.json, appuiLong) */

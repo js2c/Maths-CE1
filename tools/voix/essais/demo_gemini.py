@@ -1,9 +1,9 @@
 # DÉMOS GEMINI : trois passages longs, avec un style commun, voix Digital Assistant 2, fr-FR (gemini-3.8-flash-tts).
 # Les sons vont dans tools/voix/essais/out/gemini-demos/ (non versionné). Trois requêtes en tout.
 #
-#   .\.venv-gemini\Scripts\python.exe tools\voix\essais\demo_gemini.py              fabrique les démos qui manquent
-#   .\.venv-gemini\Scripts\python.exe tools\voix\essais\demo_gemini.py --refaire    les refait toutes
-#   .\.venv-gemini\Scripts\python.exe tools\voix\essais\demo_gemini.py --voix Kore  une autre voix
+#   & $env:PYTHON tools\voix\essais\demo_gemini.py              fabrique les démos qui manquent
+#   & $env:PYTHON tools\voix\essais\demo_gemini.py --refaire    les refait toutes
+#   & $env:PYTHON tools\voix\essais\demo_gemini.py --voix Kore  une autre voix
 import argparse, base64, os, sys, time
 
 STYLE = (

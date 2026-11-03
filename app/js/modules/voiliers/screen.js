@@ -62,9 +62,14 @@ export class VoiliersScreen {
   constructor(app, content) { this.app = app; this.c = content; this.api = null; this.tok = 0; this.attend = false; this.locked = true; this.resolve = null; }
   get actif() { return !!this.api; }
   // la scène s'installe (au début de la notion du jour, ou de l'entraînement libre)
+  // (lot « Correctif : l'étal resté actif à l'accueil », la même course que l'étal) `leave()` peut venir pendant l'installation :
+  // à la première entrée, la scène attend ses données avant d'être posée ; quittée entre-temps, elle n'est plus posée du tout.
+  // Rend `null` si la scène a été quittée en route, `false` sans WebGL, `true` sinon.
   async enter() {
-    const { app } = this, { stage } = app;
+    if (this.cv) this.leave(); // (jamais deux scènes à la fois)
+    const { app } = this, { stage } = app, tok = this.tok;
     this.donnees ??= await (await fetch("assets/voiliers/donnees.json")).json();
+    if (tok !== this.tok) return null;
     const mk = (cls) => { const c = document.createElement("canvas"); c.className = `voiliers ${cls}`; return c; };
     this.cv = { gl: mk("voiliers-mer"), gs: mk("voiliers-bateaux"), fx: mk("voiliers-effets") };
     const line = stage.root.querySelector("#line");
@@ -129,7 +134,7 @@ export class VoiliersScreen {
     // couvrait la bouée 63) la bouée allumée, celle que nomme la voix, n'est jamais couverte par la bulle
     app.bulle?.eviter("bouee", () => this.boueesNommees());
     await this.api.pret();
-    return true;
+    return tok === this.tok ? true : null; // (quittée pendant les premières images : `leave()` a tout retiré)
   }
   // la scène s'en va (fin de la notion du jour, maison de l'entraînement libre, séance terminée par le parent)
   leave() {

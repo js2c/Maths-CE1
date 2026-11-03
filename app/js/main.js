@@ -63,6 +63,7 @@ import { fermerTout, Portee } from "./engine/portee.js";
 import { suivreMiseAJour } from "./engine/miseajour.js";
 import { installerTourner } from "./engine/tourner.js";
 import { noter as noterTech, recents as journalTechnique } from "./engine/journal.js";
+import * as restauration from "./engine/restauration.js";
 
 // les vidéos de la mascotte (engine/mascotte.js, CLIPS) : autant de pas dans la barre de chargement
 const MASCOTTE_VIDEOS = 17;
@@ -124,6 +125,14 @@ await Promise.all(["lagon", "lagon-vie", "poissons", "petits", "tortue"].map((s)
 const lagon = new Lagon(stage, sprites, atlas);
 lagon.paintStatic();
 stage.ticks.add((t, dt) => { lagon.update(t, dt); lagon.render(); ocean.update(t, dt); ocean.render(); });
+// (lot « Correctifs : la carte graphique perdue », engine/restauration.js) après une perte de la carte graphique : les planches
+// décodées à nouveau, puis le lagon et la mascotte refaits, puis tout ce qui n'avait été dessiné qu'une fois redessiné ; noté
+// dans le journal technique
+restauration.journaliser((m, d) => noterTech("carte graphique", m, d));
+restauration.apresPerte(() => sprites.recharger());
+restauration.apresPerte(() => lagon.apresPerte());
+restauration.apresPerte(() => ocean.mascotte.apresPerte());
+window.__restauration = restauration;
 // (lot « Correctifs : passage… », point 9 : tant que l'écran de démarrage, opaque, couvre tout, la scène ne dessine rien dessous ;
 // ce temps est laissé au chargement et aux mouvements du logo)
 stage.paused = true;
@@ -451,12 +460,15 @@ async function notion4(ctx) {
   const runner = await new Module4Runner({ store, content: module4, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, choix: session.choix?.module === 4 ? session.choix.niveau : null }).load();
   app.runner = runner; session.rec.niveauVoiliers = runner.niveau; await session.save();
   const scr = app.voiliers;
-  if (!(await scr.enter())) {
+  // (lot « Correctif : l'étal resté actif à l'accueil », comme l'étal : la sortie inscrite avant l'installation, qu'elle arrête net)
+  if (ctx.portee.fermee) return fige();
+  ctx.portee.fin(() => scr.leave());
+  const ok = await scr.enter();
+  if (ok === null || ctx.portee.fermee) return fige();
+  if (!ok) {
     journal({ type: "voiliers sans WebGL" }); session.rec.module = 1; session.rec.voiliersSansWebGL = true; await session.save(); frieze.notionIcon(1);
     return handlers.notion(ctx);
   }
-  // (inscrit après l'installation : une étape quittée pendant qu'elle s'installait la range aussitôt)
-  ctx.portee.fin(() => scr.leave()); if (ctx.portee.fermee) return fige();
   await runNotion({ ...ctx, step, runner, screen: { ask: (q) => scr.ask(q) }, lesson: async () => false, rnd });
 }
 // LOT « L'ÉTAL DU PÊCHEUR » (docs/SPEC.md, section 7 quater) : la notion du jour à l'étal, choisie par l'enfant ou imposée par
@@ -468,9 +480,12 @@ async function notion6(ctx) {
   const runner = await new Module6Runner({ store, content: module6, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, choix: session.choix?.module === 6 ? session.choix.niveau : null }).load();
   app.runner = runner; afterLesson(session, runner); session.rec.niveauEtal = runner.niveau; await session.save();
   const scr = app.etal;
-  await scr.enter({ rnd });
-  // (inscrit après l'installation : une étape quittée pendant qu'elle s'installait la range aussitôt)
-  ctx.portee.fin(() => scr.leave()); if (ctx.portee.fermee) return fige();
+  // (lot « Correctif : l'étal resté actif à l'accueil ») la sortie est inscrite AVANT l'installation : une étape quittée pendant
+  // que la scène s'installe l'arrête net (modules/etal/screen.js, `enter` rend false) ; quittée avant, elle ne l'installe pas.
+  // Inscrite après, comme avant ce lot, la scène restait sur l'accueil le temps de charger ses images.
+  if (ctx.portee.fermee) return fige();
+  ctx.portee.fin(() => scr.leave());
+  if (!(await scr.enter({ rnd })) || ctx.portee.fermee) return fige();
   session.rec.etalMeteo = scr.meteoDepart ? "mauvais temps" : scr.orageA != null ? "orage en cours de partie" : "beau temps"; await session.save();
   if (!session.reprendAuPoint("notion")) await voice.say(text.pick("etalNotion")); // (repris à la question près : la phrase d'entrée n'est pas redite)
   await runNotion({ ...ctx, step, runner, screen: { ask: (q) => scr.ask(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
@@ -725,6 +740,15 @@ const frieze = new Frieze(app, seance.etapes.filter((e) => e.actif !== false && 
 app.frieze = frieze;
 let mode = null; // "seance", "libre" ou null (écran d'accueil)
 app.modeEcran = () => mode; // (lot « Recette de l'enfant » : pour les parcours, tests/e2e/enfant.mjs)
+// (lot « Réserves d'étoiles et étoiles arc-en-ciel », décision du parent du 2 novembre 2026, à la validation de la maquette) les
+// réserves d'étoiles ne réagissent au toucher qu'à l'accueil, dans la boutique, à la récompense et dans l'accueil en pause ;
+// pendant l'échauffement, la notion du jour, le défi, les leçons, les exemples guidés et l'entraînement libre, elles restent
+// visibles mais inertes : le seul toucher hors réponse reste la mascotte (session/reserves.js)
+app.reservesTouchables = () => {
+  if (visiting || app.lessonCancel) return false;
+  if (app.enPause) return mode === "seance";
+  return mode === null || mode === "fin" || (mode === "seance" && app.session?.progress?.etape === "recompense");
+};
 const homeKey = spriteBox(app, { x: 14, y: 10, w: 120, h: 120, cls: "bubble homekey session-home keep", label: "maison", paint: (ctx, px) => { const q = sprites.frame("maison", 0), k = 120 / 140; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 60 * px + q.dx * k, 60 * px + q.dy * k, q.w * k, q.h * k); } });
 homeKey.style.visibility = "hidden";
 const progress = (p) => {

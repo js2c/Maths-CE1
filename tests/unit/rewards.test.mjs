@@ -36,7 +36,7 @@ test("la série : une séance par jour compte, un jour manqué ne la fait pas re
 });
 
 test("un achat coûte son prix en étoiles (cartes.json, boutique), range la créature dans la collection ; tout est enregistré", async () => {
-  const store = await Store.open(new IDBFactory()), rw = await new Rewards(store, cartes).load(), c = cartes.cartes[0], P = cartes.boutique.prix[c.rarete];
+  const store = await Store.open(new IDBFactory()), rw = await new Rewards(store, cartes).load(), c = cartes.cartes[0], P = cartes.boutique.niveauxPrix[0].prix[c.rarete];
   await rw.add(P - 1); assert.equal(rw.acheter(c.id, Date.now(), rng(1)), null);
   await rw.add(45); const o = rw.acheter(c.id, Date.now(), () => 0.9); await o.ecrit;
   assert.ok(o.carte && o.nouvelle && !o.brillante); assert.equal(rw.total, P + 44 - P); assert.equal(rw.st.cumul, P + 44);

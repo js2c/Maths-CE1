@@ -31,11 +31,19 @@ export class LessonEtalPlayer {
     // (lot « Recette de l'enfant et nettoyage des couches » : la leçon quittée pendant que sa scène s'installe — l'enfant
     // imprévisible, graine 1 — laissait la scène de l'étal à l'écran ; elle est désormais à la leçon dès le début, et retirée si
     // la leçon a été quittée entre-temps)
+    // (lot « Correctif : l'étal resté actif à l'accueil ») quittée pendant l'installation, la scène est rangée tout de suite
+    // (`abandon`), ce qui arrête l'installation net (`enter` rend false) ; avant ce lot, elle n'était rangée qu'une fois installée,
+    // et restait sur l'accueil, active, le temps de charger ses images. Le lecteur sert à toutes les leçons de la monnaie : une
+    // autre leçon commencée entre-temps a sa propre scène (`this.s` a changé), celle-ci ne continue pas.
     if (this.own) {
-      app.etalLecon = this.s; this.installe = true;
-      await this.s.enter({ rnd: app.rnd, lecon: true });
+      const s = this.s; app.etalLecon = s; this.installe = true;
+      const ok = await s.enter({ rnd: app.rnd, lecon: true });
+      if (!ok || this.quitte || this.s !== s) {
+        s.leave(); if (app.etalLecon === s) app.etalLecon = null;
+        if (this.s === s) { this.s = null; this.installe = false; }
+        return new Promise(() => {});
+      }
       this.installe = false;
-      if (this.quitte) { this.s.leave(); if (app.etalLecon === this.s) app.etalLecon = null; this.s = null; return new Promise(() => {}); }
     }
     this.s.enLecon = true; // (la lampe ne change pas le temps pendant une leçon : modules/etal/screen.js)
     this.p = 0; this.skipped = false; this.abort = null; this.goto = undefined;
@@ -112,5 +120,10 @@ export class LessonEtalPlayer {
     if (this.own) { s.leave(); if (this.app.etalLecon === s) this.app.etalLecon = null; }
     this.s = null;
   }
-  abandon() { this.quitte = true; if (this.installe) return; if (!this.keys) return; this.tok++; this.abort = null; this.keys.forEach((k) => k.remove()); this.keys = null; this.clear(); }
+  abandon() {
+    this.quitte = true;
+    if (this.installe) { const s = this.s; s?.leave(); if (this.app.etalLecon === s) this.app.etalLecon = null; return; }
+    if (!this.keys) return;
+    this.tok++; this.abort = null; this.keys.forEach((k) => k.remove()); this.keys = null; this.clear();
+  }
 }

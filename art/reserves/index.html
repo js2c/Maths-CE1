@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquette — réserves d'étoiles</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0d2a33; font: 15px system-ui, sans-serif; color: #f4ecd8; }
+  .barre { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px; align-items: center; }
+  .barre button { font: inherit; padding: 8px 12px; border-radius: 10px; border: 2px solid #18132a; background: #fff3c4; color: #18132a; cursor: pointer; }
+  .barre span { opacity: 0.8; }
+  iframe { display: block; width: 1280px; height: 800px; max-width: 100%; border: 0; margin: 0 auto; }
+</style>
+</head>
+<body>
+<div class="barre">
+  <b>Maquette « Réserves d'étoiles »</b>
+  <button data-cas="deux">4 arc-en-ciel, 2 diamant, 260 étoiles</button>
+  <button data-cas="arc">4 arc-en-ciel, 60 étoiles</button>
+  <button data-cas="gardee">2 arc-en-ciel (gardées), 260 étoiles</button>
+  <button id="recompense">La récompense</button>
+  <span>Toucher une réserve ; à la boutique (le récif, puis l'étal), toucher une créature déjà dans le récif.</span>
+</div>
+<iframe id="app" title="l'application"></iframe>
+<script type="module">
+// La maquette se pose sur l'application elle-même (servie depuis la racine du dépôt : python -m http.server 8080, puis
+// http://localhost:8080/art/reserves/). Rien n'est modifié sous app/ ; l'état de la boutique est posé dans la base de la page.
+const f = document.getElementById("app"), Q = "../../app/index.html?nosw&voix=rapide&sansLecon&sans=echauffement&questions=2&guides=0";
+const lagon = ["poisson-clown", "etoile-de-mer", "crabe", "crevette", "bernard-l-ermite", "moule"];
+const CAS = { deux: { total: 260, arc: 4, diamant: 2 }, arc: { total: 60, arc: 4, diamant: 2 }, gardee: { total: 260, arc: 2, diamant: 0 } };
+let cas = "deux";
+const attendre = (w, cond) => new Promise((ok) => { const t = setInterval(() => { try { if (cond(w)) { clearInterval(t); ok(); } } catch { /* pas encore */ } }, 100); });
+async function charger(etat) {
+  f.src = Q; await new Promise((ok) => { f.onload = ok; });
+  const w = f.contentWindow; await attendre(w, (w) => w.__ready !== undefined);
+  if (etat) {
+    const s = w.__app.store; await s.wipe();
+    await s.put("recompenses", { id: "cartes", cartes: Object.fromEntries(lagon.map((id) => [id, { n: 1, premiere: 1, brillante: false }])) });
+    await s.put("recompenses", { id: "etoiles", total: etat.total, cumul: etat.total + 400, dorees: etat.diamant, doreesDepensees: 0, arcEnCiel: etat.arc + 1, arcDepensees: 1, arcLibre: 0, coquillages: 0, coquillagesDores: 0 });
+    await s.put("recompenses", { id: "quota", date: Date.now(), cartes: 9 });
+    return charger(null).then(() => poser(etat));
+  }
+}
+async function poser(etat) {
+  const w = f.contentWindow, d = f.contentDocument, sc = d.createElement("script"); sc.src = "../art/reserves/maquette.js"; d.head.append(sc);
+  await attendre(w, (w) => !!w.MaquetteReserves);
+  const M = w.MaquetteReserves, app = w.__app;
+  await M.reserves(app, { arc: etat.arc, diamant: etat.diamant });
+  // à la boutique : une créature du récif touchée montre ce que le lot propose
+  const accrocher = () => {
+    const B = app.boutique; if (!B || B.__maquette) return; B.__maquette = true;
+    const t0 = B.toucher.bind(B);
+    B.toucher = (b) => {
+      t0(b);
+      if (B.etat(b.carte) !== "terne") return;
+      const fermees = app.rewards.c.zones.filter((z) => !app.rewards.zones.ouvertes.includes(z.id)).length, n = M.etat.st.arc, libres = n - fermees, cout = app.rewards.cout(b.carte.id, "terne");
+      if (n < 1) return;
+      M.boutique(app, { facon: libres >= 1 ? (app.rewards.total >= cout ? "deux" : "arc") : "gardee", gardees: n }).then(() => {
+        const arc = d.querySelector(".maquette-conf");
+        arc?.addEventListener("pointerdown", async () => { app.voice.stop(); app.bulle.cacher(true); d.querySelectorAll(".boutique-conf").forEach((k) => { k.style.visibility = "hidden"; }); const t = B.sel; await M.brillerArc(app); app.rewards.owned[t.carte.id].brillante = true; B.vit.set(t.carte.id, "brillante"); B.gerbe([t.offsetLeft + 85, t.offsetTop + 98], 16, 130); t.repaint(); B.decorer(t); app.voice.say(`${app.text.data.carteNouvelle.replace("{nom}", t.carte.nomLu)} ${app.text.data.carteBrillanteTirage}`); });
+      });
+    };
+  };
+  setInterval(accrocher, 300);
+}
+for (const b of document.querySelectorAll("[data-cas]")) b.onclick = () => { cas = b.dataset.cas; charger(CAS[cas]); };
+document.getElementById("recompense").onclick = async () => {
+  const w = f.contentWindow, M = w.MaquetteReserves; if (!M) return;
+  w.document.querySelectorAll("#ui .galet, #ui .play, #ui .reefkey").forEach((e) => { e.style.visibility = "hidden"; });
+  const avant = { ...M.etat.st };
+  await M.recompense(w.__app, { arcs: 2, diamant: true, arret: null });
+  M.etat.set("arc", avant.arc + 2); M.etat.set("diamant", avant.diamant + 1);
+};
+charger(CAS[cas]);
+</script>
+</body>
+</html>

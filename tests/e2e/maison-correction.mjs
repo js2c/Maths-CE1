@@ -43,8 +43,12 @@ for (const [ex, niveau] of [["multiplication", 2], ["calcul", 4]]) for (const ap
   };
   await taper(true); await page.waitForTimeout(500); await taper(false);
   await page.waitForTimeout(apres);
-  const avant = await page.evaluate(() => window.__said.length);
+  // (ce qui est dit est compté à partir de l'appui sur la maison, relevé dans la page : relevé avant d'envoyer le toucher, il
+  // comptait une phrase dite pendant les 40 à 100 ms du trajet du toucher, le « 10 » du comptage de la correction, à 5000 ms ;
+  // échec intermittent du parcours, sur main aussi, mesuré le 1er novembre 2026)
+  await page.evaluate(() => { window.__avantMaison = undefined; document.querySelector(".session-home").addEventListener("pointerdown", () => { window.__avantMaison = window.__said.length; }, { capture: true, once: true }); });
   await page.tap(".session-home", { force: true });
+  const avant = await page.evaluate(() => window.__avantMaison ?? window.__said.length);
   await page.waitForTimeout(7000);
   const r = await page.evaluate((avant) => ({ dit: window.__said.slice(avant), aides: !!window.__app.aidBoard?.used, slate: [...document.querySelectorAll(".slate, .skip, .key")].filter((e) => e.isConnected && getComputedStyle(e).visibility !== "hidden").length, accueil: !!document.querySelector(".galet") }), avant);
   const accueil = await page.evaluate(() => Object.values(window.__app.text.data.accueilDescription ?? {}).concat(window.__app.text.data.accueil ?? [], window.__app.text.data.encore ?? []));

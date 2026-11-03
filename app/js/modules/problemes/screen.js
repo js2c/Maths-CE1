@@ -256,7 +256,8 @@ export class ProblemesScreen {
       else if (q.aide === "etapes") e.etapes.forEach((s, i) => D.drawBarres(g, i ? 700 : 318, 530, 340, s.barres, e.objet, { montre: montre || i === 0, seed: i + 1 }));
       else { const G = e.groupes; this.groupesDans({ x: Z.x, y: Z.y, w: Z.w, h: 200 }, e.contenant ?? "anneau", e.objet, G.nombre, G.taille, { bonds: montre ? G.nombre : this.bonds ?? 0, lit: this.litGroupe ?? -1 })(g); }
       // les deux étapes : leurs numéros sous les schémas
-      if (q.aide === "etapes") [["1", 488], ["2", 870]].forEach(([t, x]) => D.drawCalcul(g, x, 700, t, 30));
+      // (les numéros des deux étapes pendant l'aide ; à la correction, les deux calculs prennent leur place)
+      if (q.aide === "etapes" && !montre) [["1", 488], ["2", 870]].forEach(([t, x]) => D.drawCalcul(g, x, 700, t, 30));
       if (voir === "tout") ctx.restore();
     }, "probleme-aide");
   }

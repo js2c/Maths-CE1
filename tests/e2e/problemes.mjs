@@ -39,7 +39,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const context = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: dpr, hasTouch: true }), page = await context.newPage(), errors = [];
     page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
     await page.goto(url + "?nosw&voix=rapide&son=non" + q); await page.waitForFunction(() => window.__ready !== undefined);
-    await page.evaluate(() => { const v = window.__app.voice, say = v.say.bind(v); window.__said = []; v.say = (t, o) => { window.__said.push(t); return say(t, o); }; });
+    await page.evaluate(() => { const v = window.__app.voice, say = v.say.bind(v); window.__said = []; v.say = (t, o) => { window.__said.push(t); return say(t, o); }; const p = window.__app.prob, al = p.allumer.bind(p); window.__lit = []; p.allumer = (i) => { window.__lit.push([i, window.__said.at(-1) ?? ""]); return al(i); }; });
     return { page, context, errors };
   };
   const shot = (page, n) => page.screenshot({ path: join(OUT, `${T}-${n}.png`) });
@@ -93,7 +93,11 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     await shot(page, "04-probleme-du-jour"); await zonesOk(page, "le problème du jour");
     await typeIn(page, await rep(page)); await page.waitForTimeout(1200);
     await shot(page, "05-probleme-du-jour-juste");
-    await page.waitForFunction(() => window.__app.session.rec.etapes.some((e) => e.id === "probleme"), null, { timeout: 120000 }).catch(() => {});
+    // (le second problème, s'il reste assez de temps : répondu aussi, jusqu'à la fin de l'étape)
+    for (let i = 0; i < 60 && !(await page.evaluate(() => window.__app.session.rec.etapes.some((e) => e.id === "probleme"))); i++) {
+      if (await page.evaluate(() => { const f = window.__app.facts; return f?.q?.module === 7 && f.resolve && !f.locked && !window.__app.prob.occupe; })) await typeIn(page, await rep(page));
+      await page.waitForTimeout(1000);
+    }
     const pb = await page.evaluate(() => window.__app.session.rec.etapes.find((e) => e.id === "probleme"));
     check(pb && pb.dureeS <= 100, `${T} · l'étape tient dans ses 1 min 30 (${pb?.dureeS} s)`);
     await fermer(o, "le problème du jour");
@@ -106,7 +110,8 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     await page.waitForFunction(() => window.__app.facts?.q?.module === 7, null, { timeout: 60000 });
     await page.waitForFunction(() => window.__said.some((t) => /23 sardines/.test(t)), null, { timeout: 20000 }); await page.waitForTimeout(150);
     await shot(page, "06-histoire-etiquette-allumee");
-    check(await page.evaluate(() => window.__app.prob.lit === 0), `${T} · la première étiquette s'allume avec sa phrase`);
+    const lit = await page.evaluate(() => window.__lit.filter(([i]) => i >= 0).map(([i]) => i).join(","));
+    check(lit.startsWith("0,1"), `${T} · les étiquettes s'allument l'une après l'autre, avec leur phrase (${lit})`);
     await q7(page); await finPhrases(page); await page.waitForTimeout(400);
     check((await visible(page, ".probleme-etiquette")) === 2, `${T} · deux étiquettes, touchables`);
     await shot(page, "07-question"); await zonesOk(page, "la question");
@@ -135,8 +140,10 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     await page.waitForFunction((t) => window.__said.includes(t), textes.erreurProbleme.P4, { timeout: 15000 }).catch(() => {});
     await page.waitForTimeout(1500); await shot(page, "12-P4-deux-etapes");
     check((await said(page)).includes(textes.erreurProbleme.P4), `${T} · P4 : la réponse de la première étape`);
-    // P3 : la bonne opération, une erreur de compte (12 − 8 → 5)
-    await q7(page); await finPhrases(page); await resetSaid(page); await typeIn(page, 5);
+    // P3 : la bonne opération, une erreur de compte (à 1 ou à 10 près, pour le problème qui vient : l'ordre imposé laisse revenir les
+    // problèmes manqués plus haut)
+    await q7(page); await finPhrases(page); await resetSaid(page);
+    await typeIn(page, await page.evaluate(async () => { const { classer } = await import("./js/modules/problemes/problemes.js"), e = window.__app.facts.q.e; return [e.reponse + 1, e.reponse - 1, e.reponse + 10].find((v) => v >= 0 && classer(e, v) === "P3"); }));
     await page.waitForFunction((t) => window.__said.includes(t), textes.erreurProbleme.P3, { timeout: 15000 }).catch(() => {});
     check((await said(page)).includes(textes.erreurProbleme.P3), `${T} · P3 : une petite erreur de compte`);
     // « je ne sais pas » ; un lieu sans image (la classe)
@@ -144,6 +151,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     check((await said(page)).includes(textes.faitNSP), `${T} · « je ne sais pas » : « Ce n'est pas grave »`);
     await page.waitForTimeout(800); await shot(page, "13-nsp-lieu-sans-image");
     await note(page, "l'exercice choisi : bonne réponse, P1, P2, P4, P3, je ne sais pas");
+    for (let i = 0; i < 60 && !(await page.evaluate(async () => (await window.__app.store.all("reponses")).some((r) => r.module === 7 && r.erreur === "NSP"))); i++) await page.waitForTimeout(500);
     const codes = await page.evaluate(async () => (await window.__app.store.all("reponses")).filter((r) => r.module === 7).map((r) => r.erreur ?? "juste").join(","));
     check(/juste.*P1.*P2.*P4.*P3.*NSP/.test(codes), `${T} · les réponses enregistrées avec leur code (${codes})`);
     await fermer(o, "l'exercice choisi");

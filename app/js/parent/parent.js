@@ -73,7 +73,7 @@ export class ParentSpace {
   // (lot 3 bis, B2 et B10) la légende des niveaux de « choisir », le même texte que le panneau du petit livre (legendes.json)
   legendsBox() {
     const L = this.legendes; if (!L) return null;
-    const ex = [["ligne", "La ligne graduée"], ["additions", "Les additions"], ["calcul", "Le calcul rapide"], ["voiliers", "Les voiliers"], ["multiplication", "La multiplication"], ["lecons", "Les leçons"]];
+    const ex = [["ligne", "La ligne graduée"], ["additions", "Les additions"], ["calcul", "Le calcul rapide"], ["voiliers", "Les voiliers"], ["multiplication", "La multiplication"], ["problemes", "Les problèmes"], ["lecons", "Les leçons"]];
     return h("div", { class: "pa-card-box" }, h("h2", {}, "Les niveaux de « choisir », en bref"),
       h("p", { class: "pa-note" }, "Le même texte que la légende de l'écran « choisir » (le bouton du petit livre, en haut à droite des niveaux). Chaque plaque porte son numéro : vous pouvez dire « fais le 7 »."),
       ex.map(([k, titre]) => h("details", { class: "pa-niveaux" }, h("summary", {}, titre),
@@ -429,7 +429,7 @@ export class ParentSpace {
     const tr = h("div", { class: "pa-card-box" }, h("h2", {}, "Le trésor de l'enfant"), h("div", { class: "pa-stats" },
       stat(String(et.cumul ?? 0), "étoiles de mer gagnées depuis le début"), stat(String(et.total ?? 0), "étoiles à dépenser à la boutique"), stat(String(R.achats?.liste?.length ?? 0), `achats à la boutique${et.coquillages ? ` (et ${plural(et.coquillages, "coquillage ouvert", "coquillages ouverts")} avant la boutique)` : ""}`),
       stat(String(R.serie?.seances ?? 0), "séances dans la série (elle ne retombe jamais à zéro)")));
-    page.append(m1, m2, m3, m4, m5, m6, df, jr, tr, this.cardsBox(), this.legendsBox());
+    page.append(m1, m2, m3, m4, m5, m6, m7, df, jr, tr, this.cardsBox(), this.legendsBox());
   }
   // LA GRILLE DES ADDITIONS (lot 2, étape 7) : a en ligne, b en colonne ; couleur selon la boîte, anneau vert si le
   // fait est donné vite ; les cases « + 0 » en gris avec le temps de base ; toucher une case montre son historique

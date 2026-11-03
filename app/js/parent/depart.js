@@ -8,6 +8,7 @@ import { catalog, DAY, familyOf, ruleFacts, startOfDay } from "../modules/facts/
 import { initialFamilies, updateFamilies } from "../modules/facts/families.js";
 import { initialCalcState } from "../modules/calc/runner.js";
 import { initialMultState } from "../modules/mult/runner.js";
+import { initialProblemesState } from "../modules/problemes/runner.js";
 
 // le niveau actuel de la ligne graduée, choisi par le parent
 export async function setLineLevel(store, niveau, now = Date.now()) {
@@ -84,5 +85,15 @@ export async function setEtalLevel(store, niveau, now = Date.now()) {
   if (st0.niveau === niveau) return st0;
   const st = { ...st0, niveau, fenetre: [], vus: 0, taux: [], obtenus: [...(st0.obtenus ?? []), { niveau, date: now, parent: true, de: st0.niveau }] };
   await store.put("niveaux", st);
+  return st;
+}
+
+// lot « Problèmes » : le niveau de départ des problèmes choisi par le parent (1 à 9, 2 par défaut ; décision du parent du 30 octobre
+// 2026) : le niveau de l'enfant dès la prochaine séance (l'étape « Problème du jour » comme l'exercice) ; les niveaux d'avant ne sont
+// pas comptés acquis (un problème n'est pas une table qu'on sait ou non) ; noté comme son choix, sans étoile
+export async function setProblemesLevel(store, niveau, now = Date.now()) {
+  const st0 = (await store.get("niveaux", 7)) ?? initialProblemesState(niveau, now);
+  const st = { ...st0, niveau, depart: niveau, obtenus: [...(st0.obtenus ?? []), { niveau, date: now, parent: true }] };
+  await store.put("niveaux", st); await store.setSetting("departProblemes", niveau);
   return st;
 }

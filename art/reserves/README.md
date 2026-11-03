@@ -1,6 +1,6 @@
 # Maquette — réserves d'étoiles et étoiles arc-en-ciel
 
-Maquette du lot « Réserves d'étoiles et étoiles arc-en-ciel » (`docs/LOTS.md`, fiche 16 ; décisions du parent du 2 novembre 2026). La proposition, les captures, les phrases et les questions : `docs/maquettes/reserves/README.md`.
+Maquette du lot « Réserves d'étoiles et étoiles arc-en-ciel » (`docs/LOTS.md`, fiche 17 ; décisions du parent du 2 novembre 2026). La proposition, les captures, les phrases et les questions : `docs/maquettes/reserves/README.md`.
 
 **Elle se pose sur l'application elle-même** : la mascotte, la bulle, la boutique, le compteur et les dessins sont ceux de `app/`, qui n'est jamais modifié. `maquette.js` est injecté dans la page de l'application et ajoute ce que le lot propose (les réserves près du compteur, les deux façons de faire briller, l'étoile gardée, les vols de la récompense). Les dessins sont ceux de l'atelier déjà dans l'application (`etoile.arc`, `etoile.diamant`, `etoile`, `boutique.coche`, `boutique.cadenas`) : rien de nouveau à dessiner.
 

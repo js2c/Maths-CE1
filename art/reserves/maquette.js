@@ -1,4 +1,4 @@
-// MAQUETTE DU LOT « RÉSERVES D'ÉTOILES ET ÉTOILES ARC-EN-CIEL » (décisions du parent du 2 novembre 2026 ; docs/LOTS.md, fiche 16).
+// MAQUETTE DU LOT « RÉSERVES D'ÉTOILES ET ÉTOILES ARC-EN-CIEL » (décisions du parent du 2 novembre 2026 ; docs/LOTS.md, fiche 17).
 // Elle se pose SUR l'application elle-même (sa mascotte, sa bulle, ses dessins, sa boutique), sans rien modifier sous app/ :
 // ce script est injecté dans la page de l'application (art/reserves/index.html, ou art/reserves/captures.mjs) et ajoute ce que
 // le lot propose :

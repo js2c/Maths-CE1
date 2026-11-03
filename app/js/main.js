@@ -63,6 +63,7 @@ import { fermerTout, Portee } from "./engine/portee.js";
 import { suivreMiseAJour } from "./engine/miseajour.js";
 import { installerTourner } from "./engine/tourner.js";
 import { noter as noterTech, recents as journalTechnique } from "./engine/journal.js";
+import * as restauration from "./engine/restauration.js";
 
 // les vidéos de la mascotte (engine/mascotte.js, CLIPS) : autant de pas dans la barre de chargement
 const MASCOTTE_VIDEOS = 17;
@@ -124,6 +125,14 @@ await Promise.all(["lagon", "lagon-vie", "poissons", "petits", "tortue"].map((s)
 const lagon = new Lagon(stage, sprites, atlas);
 lagon.paintStatic();
 stage.ticks.add((t, dt) => { lagon.update(t, dt); lagon.render(); ocean.update(t, dt); ocean.render(); });
+// (lot « Correctifs : la carte graphique perdue », engine/restauration.js) après une perte de la carte graphique : les planches
+// décodées à nouveau, puis le lagon et la mascotte refaits, puis tout ce qui n'avait été dessiné qu'une fois redessiné ; noté
+// dans le journal technique
+restauration.journaliser((m, d) => noterTech("carte graphique", m, d));
+restauration.apresPerte(() => sprites.recharger());
+restauration.apresPerte(() => lagon.apresPerte());
+restauration.apresPerte(() => ocean.mascotte.apresPerte());
+window.__restauration = restauration;
 // (lot « Correctifs : passage… », point 9 : tant que l'écran de démarrage, opaque, couvre tout, la scène ne dessine rien dessous ;
 // ce temps est laissé au chargement et aux mouvements du logo)
 stage.paused = true;

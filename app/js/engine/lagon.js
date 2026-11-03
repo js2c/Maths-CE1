@@ -112,8 +112,9 @@ export class Lagon {
     } catch { return null; }
     // opaque : masquée tant qu'elle n'a pas été dessinée (texture en chargement), et pour de bon si le contexte est perdu
     c.style.visibility = "hidden";
-    c.addEventListener("webglcontextlost", () => { c.remove(); this.surface = null; this.gl = null; });
-    this.el.append(c);
+    // (lot « Correctifs : la carte graphique perdue » : il est refait après la perte, `apresPerte`)
+    c.addEventListener("webglcontextlost", () => { c.remove(); if (this.surface === c) { this.surface = null; this.gl = null; this.surfaceShown = false; } });
+    this.el.prepend(c); // (tout en dessous du lagon, sous les poissons, aussi quand il est refait)
     return c;
   }
   // la texture : la bande du haut du fond, à la résolution de l'écran
@@ -285,6 +286,16 @@ export class Lagon {
   }
   // `due(nom, t)` : l'instant quantifié à la cadence du niveau, ou null si rien à redessiner (cadence nulle : figé)
   due(name, t) { const fps = FPS[name][this.level]; if (!fps) return this.keys[name] === undefined ? (this.keys[name] = t) : null; const q = Math.floor(t * fps) / fps; if (this.keys[name] === q) return null; this.keys[name] = q; return q; }
+  // (lot « Correctifs : la carte graphique perdue », engine/restauration.js) après une perte de la carte graphique : le fond est
+  // recomposé, le miroitement refait (son contexte WebGL a été retiré), les algues et les faisceaux redessinés à la prochaine image,
+  // et chaque poisson reçoit un canvas neuf (redessiné depuis la planche rechargée : ils restaient coupés net)
+  apresPerte() {
+    this.keys = {};
+    for (const g of this.groups) for (const m of g.members) this.drop(m);
+    if (!this.surface) { this.surface = this.makeSurface(); if (this.surface) this.sizeCanvases(); }
+    else this.surfaceTexture();
+    this.paintStatic();
+  }
   // en pause pendant la visite du récif vivant (session/reef.js), qui le recouvre : plus rien n'est calculé ni dessiné
   pause(v) { this.paused = v; this.el.style.visibility = v ? "hidden" : ""; }
   update(t, dt) {

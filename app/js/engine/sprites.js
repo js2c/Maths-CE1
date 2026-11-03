@@ -28,6 +28,27 @@ export class Sprites {
     return this.loading.get(key).then(clock.hold()); // (lot 3, étape 5 : la porte de l'activité qui charge)
   }
   ready(sheet) { return this.pages.has(sheet); }
+  // (lot « Correctifs : la carte graphique perdue ») après une perte de la carte graphique, les images décodées des planches
+  // peuvent être abîmées (les poissons du lagon, redessinés depuis leur planche, restaient coupés net) : chaque planche chargée est
+  // décodée à nouveau (depuis le cache), puis remplace l'ancienne. Une planche libérée pendant ce temps n'est pas
+  // reprise. Renvoie le nombre de planches refaites.
+  async recharger() {
+    let n = 0;
+    await Promise.all([...this.pages.entries()].map(async ([sheet, avant]) => {
+      const scale = this.atlas.sheets[`${sheet}@${this.src}`] ? this.src : 1, r = avant.r;
+      try {
+        const pages = await Promise.all(this.atlas.sheets[`${sheet}@${scale}`].map(async (p) => {
+          const blob = await (await fetch(BASE + p.file)).blob();
+          return Math.abs(r - 1) < 0.01 ? createImageBitmap(blob) : createImageBitmap(blob, { resizeWidth: Math.round(p.w * r), resizeHeight: Math.round(p.h * r), resizeQuality: "high" });
+        }));
+        if (this.pages.get(sheet) !== avant) { pages.forEach((b) => b.close?.()); return; }
+        // (les anciennes images ne sont pas fermées : un dessin en cours peut encore les tenir, et dessiner une image fermée échoue ;
+        // le ramasse-miettes les rend)
+        this.pages.set(sheet, { pages, r }); n++;
+      } catch { /* la planche d'avant reste : mieux vaut une image peut-être abîmée que rien */ }
+    }));
+    return n;
+  }
   // les planches chargées ou en cours de chargement
   held() { return new Set([...this.pages.keys(), ...[...this.loading.keys()].map((k) => k.split("@")[0])]); }
   // libère une grande planche dont on n'a plus besoin (récif, cartes) : la mémoire décodée est rendue

@@ -544,6 +544,20 @@ Ce qui change pour l'enfant et pour vous :
 
 **À essayer sur la tablette** : choisir « 3 séances par semaine », puis ouvrir la boutique depuis le récif et toucher une créature à vendre : la tuile et le capitaine disent 70 (ou 175 pour une rare). Revenir à « Prix pour 2 séances par semaine » : les prix reviennent, les étoiles n'ont pas bougé.
 
+## d unvicies) Lot « Correctifs : la carte graphique perdue » : votre constat du 2 novembre
+
+**Ce que vous aviez vu** : la tablette laissée ouverte longtemps, une première partie faite, puis un autre jeu : la mascotte et le bouton de la maison avaient disparu, des poissons du fond étaient coupés net (le compteur d'étoiles avait aussi disparu).
+
+**La cause** : quand une page reste ouverte longtemps, Android reprend la mémoire de la carte graphique, et Chrome perd alors tout ce qu'elle affichait. Il rend des images vides : ce que l'application redessine sans cesse revient seul, mais ce qu'elle n'avait dessiné qu'une fois (la maison, le compteur d'étoiles, les boutons de l'écran en cours) restait vide, alors que le bouton était toujours là, touchable. La mascotte, elle, a besoin d'un mode d'affichage (WebGL) que Chrome refuse parfois après une telle perte : elle ne revenait jamais. Nous avons reproduit la panne sur notre banc d'essai en provoquant la même perte : la version d'avant perd exactement la mascotte, la maison et le compteur.
+
+**Ce qui change** : après une perte, l'application redessine tout ce qui était à l'écran, recharge les images (dont celles des poissons), refait le fond, et refait la mascotte ; si Chrome refuse WebGL, la mascotte s'affiche autrement (un peu plus de travail pour la tablette, jusqu'au prochain lancement).
+
+**Vous pouvez le vérifier** : après une longue inactivité, le journal technique (espace parent, « Données et réglages ») écrit « carte graphique perdue » puis « carte graphique rendue : tout est redessiné » ; si la mascotte a dû changer d'affichage, « canvas de la mascotte refait ». Si vous revoyez un écran incomplet, exportez ce journal : il dira si la perte a eu lieu.
+
+**Ce que nous ne savons pas** : les poissons coupés à moitié ne se reproduisent pas tels quels sur le banc (il n'a pas de vraie carte graphique) ; le rechargement des images devrait les réparer, la tablette le confirmera.
+
+**Aucune phrase à fabriquer.**
+
 ## e) Ce qui reste approximatif ou à ajuster
 
 **À vérifier sur la vraie tablette.** Écouter la voix (aucune phrase n'a été écoutée par une personne, la vérification a été automatique) et regarder les illustrations des cartes en grand. Toutes les mesures ont été faites sur un ordinateur, en ralentissant le processeur 4 fois pour imiter une tablette : démarrage en moins de 1,5 s, animation à 50 à 60 images par seconde la plupart du temps, avec des baisses vers 30 pendant certaines animations (l'application allège alors d'elle-même le décor). Il faut confirmer que tout reste fluide sur la tablette.

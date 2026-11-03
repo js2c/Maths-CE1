@@ -170,7 +170,11 @@ for (const [quoi, aller] of [["leçon L15", async (page) => { await deux(page, "
   const choisir = await aller(page); retarder = true; await choisir();
   await page.waitForFunction(() => !!document.querySelector("#etal-scene"), null, { timeout: 20000 });
   const pendant = await page.evaluate(() => !(window.__app.etalLecon ?? window.__app.etal)?.lampeB);
-  for (let i = 0; i < 4; i++) { await page.touchscreen.tap(1100, 675); await page.waitForTimeout(150); } // (le portefeuille fermé)
+  // (avant ses images, la scène n'a pas encore placé le portefeuille : il est en haut à gauche, sous la maison ; on touche un
+  // point où il est bien le premier sous le doigt, comme la graine 15 « à côté de la maison »)
+  const pt = await page.evaluate(() => { const pf = document.querySelector("#etal-pf"), r = pf.getBoundingClientRect(); for (let y = r.y + 10; y < r.bottom; y += 20) for (let x = r.x + 10; x < r.right; x += 20) if (document.elementFromPoint(x, y) === pf) return [x, y]; return null; });
+  check(!!pt, `${quoi} : le portefeuille est à portée du doigt pendant l'installation (${pt})`);
+  for (let i = 0; i < 4 && pt; i++) { await page.touchscreen.tap(...pt); await page.waitForTimeout(150); }
   await page.waitForTimeout(4000);
   check(pendant, `${quoi} : le portefeuille touché pendant l'installation (la scène s'installait encore)`);
   check(!errors.length, `${quoi}, le portefeuille touché pendant l'installation : aucune erreur${errors.length ? ` (${errors.join(" | ")})` : ""}`);

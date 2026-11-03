@@ -924,3 +924,10 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 - **Branche** : `claude/upbeat-shannon-brp4dg`, partie de `main` (18971432, PR #63) ; demande de fusion https://github.com/js2c/Maths-CE1/pull/68.
 - **Fiche** : `docs/LOTS.md`, fiche 14 ; lot court, d'un seul tenant.
 - **Fini le 1er novembre 2026** : `app/js/recif/reduction.js` (créatures réduites une fois, par moitiés, au double de leur taille d'affichage) ; `lagBlit` remplacé par l'outil d'export (`LAGBLIT`, `art/tools/export-recif.mjs`, la maquette n'est pas modifiée) ; `reef.js` : seuil 33 ms, quatre crans, chaque cran noté au journal technique ; mesures avant/après et captures sur `s5e` et `petit-smartphone` (`docs/maquettes/recif-nettete/`) ; documentation ; relecture indépendante ; recette complète (un défaut de mémoire du lot trouvé et corrigé ; trois défauts de parcours, sur `main` aussi, corrigés ; les échecs hérités et leur cause : `docs/JOURNAL-CONCEPTION.md`, points 7 à 9). Aucune phrase nouvelle.
+
+## Reprise du lot « Correctif : l'étal resté actif à l'accueil »
+
+- **Branche** : `claude/awesome-sagan-0v5slw`, partie de `main` (c26546a0, PR #65) ; demande de fusion https://github.com/js2c/Maths-CE1/pull/72.
+- **Fiche** : `docs/LOTS.md`, fiche 16 ; lot court, d'un seul tenant.
+- **Fini le 3 novembre 2026** : la cause (l'installation de la scène de l'étal n'était pas interruptible ; la sortie inscrite après elle), le correctif (`modules/etal/screen.js`, `modules/voiliers/screen.js`, `main.js`, `session/free.js`, `lessons/etal.js`), le second défaut de la même famille (le portefeuille touché pendant l'installation), le parcours `tests/e2e/etal-quitte-installation.mjs`, `enfant.mjs --images-lentes`, la pile d'appels dans les fichiers de défaut, les archives des tests de GitHub (14 jours), la recette (cause, correctif et mesures : `docs/JOURNAL-CONCEPTION.md`). Aucune phrase nouvelle.
+

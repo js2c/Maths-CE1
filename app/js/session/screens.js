@@ -142,8 +142,13 @@ async function bonuses(app, { session, hud }) {
     // (lot « Réserves d'étoiles et étoiles arc-en-ciel ») elles volent jusqu'à leur réserve, à côté du compteur, qui avance d'un
     // cran à chaque arrivée ; toutes les zones ouvertes, la phrase s'arrête à « Et une étoile arc-en-ciel ! » (« Un jour, elle
     // t'ouvrira un nouveau coin du récif » ne serait plus vrai)
+    // (relecture du lot, constat 2 : « Un jour, elles t'ouvriront… », puis une zone s'ouvrait aussitôt) quand une zone va s'ouvrir à
+    // cette récompense, la phrase s'arrête aussi au nombre ; (constat 1 : le bilan, avec son étoile de mer jaune, est retiré le temps
+    // des étoiles arc-en-ciel)
     const t = arcs === 1 ? text.data.etoileArc : fill(text.data.etoilesArc, { n: arcs }), res = hud.reserves;
-    const said = voice.say(rewards.fermees ? t : sentences(t)[0]);
+    const ouvrira = !!rewards.nextZone() && rewards.arcDispo > 0;
+    document.querySelectorAll(".hud.tally").forEach((e) => e.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 250, fill: "forwards" }));
+    const said = voice.say(rewards.fermees && !ouvrira ? t : sentences(t)[0]);
     if (res) { res.set("arc", rewards.arcDispo - arcs); await flyRainbowStars(app, arcs, { from: [640, 500 + (specials.length ? 120 : 0)], to: res.centre("arc"), album: false, arrivee: () => res.plus("arc") }); }
     else await flyRainbowStars(app, arcs, { from: [640, 500 + (specials.length ? 120 : 0)] });
     await said;

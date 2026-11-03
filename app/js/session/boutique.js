@@ -60,7 +60,9 @@ export function texteTuile(T, cartes, c, etat, cout, total, arc = { dispo: 0, li
   if (etat === "vendre") return j(nom, fill(B.prix, { n: cout }), suite());
   if (etat === "terne") {
     const deja = f ? B.dejaLaElle : B.dejaLaIl;
-    if (arc.libres > 0) return j(nom, deja, fill(f ? B.brillerLaArc : B.brillerLeArc, { n: cout }), total >= cout ? B.choisisCoche : B.daccord);
+    // (relecture du lot, constat 3 : sans assez d'étoiles de mer, « 150 étoiles, ou… » proposait un prix impossible) seule l'étoile
+    // arc-en-ciel est dite quand c'est la seule coche
+    if (arc.libres > 0) return total >= cout ? j(nom, deja, fill(f ? B.brillerLaArc : B.brillerLeArc, { n: cout }), B.choisisCoche) : j(nom, deja, f ? B.brillerLaArcSeul : B.brillerLeArcSeul, B.daccord);
     return j(nom, deja, fill(f ? B.brillerLa : B.brillerLe, { n: cout }), arc.dispo > 0 ? (arc.dispo === 1 ? B.arcGardeeUne : B.arcGardees) : null, suite());
   }
   if (etat === "brillante") return j(nom, B.brilleDeja);
@@ -124,9 +126,10 @@ export class Boutique {
       const c = document.createElement("canvas"); c.width = c.height = Math.round(CONF * stage.px); b.append(c);
       poser(sprites, c.getContext("2d"), stage.px, `boutique.${k === "croix" ? "croix" : "coche"}`, 0, CONF / 2 - 2, CONF / 2 - 2, 1.05);
       if (k !== "croix") {
-        const S = 52, d = document.createElement("canvas"); d.className = "boutique-badge"; d.width = d.height = Math.round(S * stage.px);
-        Object.assign(d.style, { position: "absolute", right: "-14px", bottom: "-12px", width: `${S}px`, height: `${S}px`, pointerEvents: "none", display: k === "arc" ? "" : "none" });
-        poser(sprites, d.getContext("2d"), stage.px, k === "arc" ? "etoile.arc" : "etoile", 0, S / 2, S / 2, k === "arc" ? 0.62 : 0.5); b.append(d); b.badge = d;
+        // (relecture du lot, constat 4 : l'étoile des coches, environ 28 px, ne les distinguait pas assez) une étoile d'environ 50 px
+        const S = 64, d = document.createElement("canvas"); d.className = "boutique-badge"; d.width = d.height = Math.round(S * stage.px);
+        Object.assign(d.style, { position: "absolute", right: "-20px", bottom: "-18px", width: `${S}px`, height: `${S}px`, pointerEvents: "none", display: k === "arc" ? "" : "none" });
+        poser(sprites, d.getContext("2d"), stage.px, k === "arc" ? "etoile.arc" : "etoile", 0, S / 2, S / 2, k === "arc" ? 0.95 : 0.6); b.append(d); b.badge = d;
       }
       stage.ui.append(b); this.els.push(b); return b;
     });
@@ -166,6 +169,9 @@ export class Boutique {
       poser(sprites, ctx, px, `album.zone.${z.id}`, 0, W / 2, m + d / 2, d / 112);
       ctx.filter = "none";
       if (!ouverte) poser(sprites, ctx, px, "boutique.cadenas", 0, W / 2 + 36, m + d / 2 + 32);
+      // (lot « Réserves d'étoiles et étoiles arc-en-ciel », relecture, constat 5 : rien ne reliait les étoiles gardées aux zones
+      // fermées) sur l'onglet de chaque zone fermée, l'étoile arc-en-ciel gardée pour elle, s'il y en a une en réserve
+      if (!ouverte && rewards.arcDispo > cartes.zones.filter((x, j) => j < i && !rewards.zoneOpen(x.id)).length) poser(sprites, ctx, px, "etoile.arc", 0, W / 2 - 34, m + d / 2 - 30, 0.5);
       ctx.setTransform(px, 0, 0, px, 0, 0);
       if (z.id === this.zone) R.drawSelectRound(ctx, W / 2, m + d / 2, d / 2 + 6);
       // les 15 perles : les créatures de la zone déjà dans le récif (sans chiffre)
@@ -238,9 +244,10 @@ export class Boutique {
     // arc-en-ciel : l'étoile arc-en-ciel dans le coin ; pâlie, avec le cadenas, quand elles sont toutes gardées pour les zones
     if (e === "terne" && this.sel === b && rewards.arcDispo > 0) {
       const garde = rewards.arcPourBriller < 1;
+      // (relecture du lot, constat 6 : dans le coin, l'étoile et son cadenas étaient coupés par le cadre de la sélection) posée dans la tuile
       if (garde) ctx.filter = "saturate(0.55) brightness(0.95)";
-      poser(sprites, ctx, px, "etoile.arc", 0, M + VITRINE.w - 15, M + 13, 0.62); ctx.filter = "none";
-      if (garde) poser(sprites, ctx, px, "boutique.cadenas", 0, M + VITRINE.w - 3, M + 25, 0.62);
+      poser(sprites, ctx, px, "etoile.arc", 0, M + VITRINE.w - 30, M + 30, 0.78); ctx.filter = "none";
+      if (garde) poser(sprites, ctx, px, "boutique.cadenas", 0, M + VITRINE.w - 16, M + 44, 0.9);
     }
   }
   // ce qui vit sur une tuile : l'étoile de diamant d'une légendaire, le reflet et les étincelles d'une brillante, le halo d'une
@@ -288,7 +295,9 @@ export class Boutique {
   entourer(b, oui) { entourage(this.app, b, oui, (ctx, x, y) => R.drawSelectTile(ctx, x + VITRINE.w / 2, y + VITRINE.h / 2, VITRINE.w, VITRINE.h, 22, -7)); }
   deselection() {
     const b = this.sel; this.sel = null;
-    if (b) { b.classList.remove("choisie"); this.entourer(b, false); if (this.etat(b.carte) === "terne") b.repaint(); }
+    // (relecture du lot « Réserves d'étoiles », constat 8 : après « faire briller », le prix restait écrit pendant le vol) la tuile
+    // quittée est toujours redessinée
+    if (b) { b.classList.remove("choisie"); this.entourer(b, false); b.repaint(); }
     this.conf?.forEach((k) => { k.style.visibility = "hidden"; });
     this.app.bulle.ancrer(null);
     if (b) this.app.voice.instruction = this.app.text.data.boutique.consigne;

@@ -141,7 +141,8 @@ test("chaque phrase des réserves, jusqu'aux nombres dits, est dans l'inventaire
 test("la boutique, une créature du récif : les phrases courtes, avec et sans étoile arc-en-ciel", () => {
   const crabe = carte("crabe"), crevette = carte("crevette"), B2 = T.boutique, t = (c, total, arc) => texteTuile(T, cartes, c, "terne", 150, total, arc);
   assert.equal(t(crabe, 260, { dispo: 4, libres: 1 }), "C'est le crabe ! Il est déjà dans ton récif. Pour le faire briller : 150 étoiles, ou une étoile arc-en-ciel. Touche la coche de l'étoile que tu veux donner.");
-  assert.equal(t(crabe, 60, { dispo: 4, libres: 1 }), `C'est le crabe ! Il est déjà dans ton récif. Pour le faire briller : 150 étoiles, ou une étoile arc-en-ciel. ${B2.daccord}`);
+  // (relecture du lot, constat 3 : sans assez d'étoiles de mer, seule l'étoile arc-en-ciel est dite)
+  assert.equal(t(crabe, 60, { dispo: 4, libres: 1 }), `C'est le crabe ! Il est déjà dans ton récif. Pour le faire briller : une étoile arc-en-ciel. ${B2.daccord}`);
   assert.equal(t(crevette, 260, { dispo: 2, libres: 0 }), "C'est la crevette ! Elle est déjà dans ton récif. Pour la faire briller : 150 étoiles. Tes étoiles arc-en-ciel sont gardées pour les nouvelles zones. Si tu es d'accord, touche la coche verte.");
   assert.equal(t(crevette, 58, { dispo: 1, libres: 0 }), `C'est la crevette ! Elle est déjà dans ton récif. Pour la faire briller : 150 étoiles. ${B2.arcGardeeUne} Il te manque 92 étoiles.`);
   assert.equal(t(crabe, 260, { dispo: 0, libres: 0 }), `C'est le crabe ! Il est déjà dans ton récif. Pour le faire briller : 150 étoiles. ${B2.daccord}`);

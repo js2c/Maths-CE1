@@ -114,9 +114,11 @@ for (const vue of VUES) {
     await tap(page, ".session-home"); await page.waitForTimeout(2000);
     r = await reserves(page);
     check(r.arc.vu && !r.arc.inerte, Vs("dans l'accueil en pause : visibles et touchables"));
-    await saidReset(page); await tap(page, ".reserve.arc"); await page.waitForTimeout(900);
+    await saidReset(page); await tap(page, ".reserve.arc"); await page.waitForTimeout(250);
+    // (relecture du lot, constat 16 : la capture prise pendant que la bulle est là)
+    await shot(page, vue, "06-accueil-en-pause", 0);
+    await page.waitForTimeout(600);
     check((await said(page)).includes("Tu as 4 étoiles arc-en-ciel."), Vs("dans l'accueil en pause, la réserve répond"));
-    await shot(page, vue, "06-accueil-en-pause", 300);
     await context.close();
   }
   // ---------------------------------------------------------------- 3. la boutique
@@ -159,7 +161,7 @@ for (const vue of VUES) {
     await boutique(page);
     await saidReset(page); await tap(page, '.boutique-tuile[data-id="crabe"]'); await page.waitForTimeout(900);
     check((await confs(page)).join() === "croix,arc", Vs(`pas assez d'étoiles de mer : la croix et la coche arc-en-ciel (${(await confs(page)).join()})`));
-    check((await said(page)).includes(BQ.brillerLeArc.replace("{n}", 150) + " " + BQ.daccord) && !(await said(page)).includes("Il te manque"), Vs("« … ou une étoile arc-en-ciel. Si tu es d'accord, touche la coche verte. », sans « il te manque »"));
+    check((await said(page)).includes(BQ.dejaLaIl + " " + BQ.brillerLeArcSeul + " " + BQ.daccord) && !(await said(page)).includes("Il te manque") && !(await said(page)).includes("150"), Vs("« Pour le faire briller : une étoile arc-en-ciel. Si tu es d'accord, touche la coche verte. », sans prix impossible ni « il te manque » (relecture, constat 3)"));
     await shot(page, vue, "11-boutique-arc-seule", 1200);
     await context.close();
   }
@@ -199,13 +201,15 @@ for (const vue of VUES) {
       if (st.fin || st.moon) break;
       if (st.q !== null) { if (st.f === "lire" || st.f === "sauter") await page.tap(`.answer[data-value="${st.q}"]`, { force: true }).catch(() => {}); else await page.evaluate(() => { const s = window.__app.screen; s.aimed = s.q.answer; s.answer(s.q.answer, null); }); await page.waitForTimeout(200); continue; }
       if (st.vol && !vus.vol) { vus.vol = st.n; await page.waitForTimeout(700); await shot(page, vue, "14-recompense-vol-vers-la-reserve", 0); }
-      if (st.zone && !vus.zone) { vus.zone = st.n; await shot(page, vue, "15-ouverture-zone-depuis-la-reserve", 300); }
+      // (relecture du lot, constat 15 : la capture pendant le vol de l'étoile qui part de la réserve)
+      if (st.zone && !vus.zone) { vus.zone = st.n; await shot(page, vue, "15-ouverture-zone-depuis-la-reserve", 1300 / 1); vus.zoneApres = await page.evaluate(() => window.__app.hud.reserves.n.arc); }
       if (st.shell) { await page.waitForTimeout(900); await page.tap(".shelltap", { force: true }); await page.waitForTimeout(300); continue; }
       if (st.card && st.check) { await page.waitForTimeout(1000); await page.tap(".check", { force: true }); await page.waitForTimeout(800); continue; }
       await page.waitForTimeout(120);
     }
     const s = await said(page), fin = await page.evaluate(() => ({ arc: window.__app.rewards.arcDispo, n: window.__app.hud.reserves.n.arc, zones: window.__app.rewards.zones.ouvertes }));
-    check(s.includes(T.etoilesArc.replace("{n}", 2)), Vs("la récompense annonce les deux étoiles arc-en-ciel"));
+    check(s.includes("2 étoiles arc-en-ciel !") && !s.includes("Un jour, elles t'ouvriront"), Vs("la récompense annonce les deux étoiles arc-en-ciel, sans « Un jour… » : une zone s'ouvre aussitôt (relecture, constat 2)"));
+    check(vus.zoneApres === (vus.zone ?? 0) - 1, Vs(`pendant le vol vers le dos de la zone, la réserve a déjà donné son étoile (${vus.zone} → ${vus.zoneApres})`));
     check(vus.vol !== null && vus.vol <= 2, Vs(`pendant le vol, la réserve montre encore le nombre d'avant (${vus.vol})`));
     check(fin.zones.includes("corail") && vus.zone !== null, Vs(`le récif de corail s'ouvre ; à la cérémonie, la réserve a donné son étoile (${vus.zone})`));
     check(fin.arc === 2 && fin.n === 2, Vs(`à la fin, la réserve juste : 1 + 2 − 1 = 2 (${fin.arc}, montré ${fin.n})`));

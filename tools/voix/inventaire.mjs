@@ -13,7 +13,7 @@ import { catalog } from "../../app/js/modules/facts/facts.js";
 import { allMults, multsOf } from "../../app/js/modules/mult/mult.js";
 
 const CONTENT = new URL("../../app/content/", import.meta.url);
-export const lireContenu = () => Object.fromEntries(["textes", "lecons", "cartes", "module1", "module2", "module3", "module4", "module5", "module6", "seance"].map((k) => [k, JSON.parse(readFileSync(new URL(`${k}.json`, CONTENT), "utf8"))]));
+export const lireContenu = () => Object.fromEntries(["textes", "lecons", "cartes", "module1", "module2", "module3", "module4", "module5", "module6", "module7", "problemes", "seance"].map((k) => [k, JSON.parse(readFileSync(new URL(`${k}.json`, CONTENT), "utf8"))]));
 
 const range = (a, b, s = 1) => { const out = []; for (let v = a; v <= b; v += s) out.push(v); return out; };
 const TOUS = range(0, 100); // tout nombre de la ligne graduée (le module 1 va de 0 à 100)
@@ -243,6 +243,9 @@ export function inventaire(C = lireContenu()) {
   // lot 2, étape 8 : les nombres des lignes des niveaux 9 à 11, comptés pendant les corrections
   const M1 = C.module1.niveaux;
   for (const c of M1.filter((x) => x.niveau >= 9 && x.niveau <= 11)) for (const n of levelValues(c)) if (n > 100) add(String(n), "comptage");
+  // lot « Problèmes » (app/content/problemes.json) : chaque phrase de l'énoncé (une phrase, un fichier : elle est dite quand son
+  // étiquette s'allume, et redite quand on la touche), la question, la correction dans l'histoire
+  if (C.problemes) for (const e of C.problemes.enonces) { for (const s of e.enonce) add(s, `problemes.${e.id}`); add(e.question, `problemes.${e.id}.question`); add(e.correction, `problemes.${e.id}.correction`); }
   // lot « Les voiliers » : le nombre du bateau, dit seul (pickNumber : de 1 à 99 jusqu'à 100, de 1 à 999 jusqu'à 1 000)
   if (C.module4) for (const n of range(1, Math.max(...C.module4.niveaux.map((c) => c.max)) - 1)) add(String(n), "voiliers");
   return out;

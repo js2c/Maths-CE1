@@ -203,3 +203,40 @@ test("relecture, R3 : sans aucun autre fait pour espacer, le retourné est posé
   assert.equal(qs.length, 18, `les 9 amis de 10, deux fois chacun (${qs.map((q) => q.fait).join(" ")})`);
   assert.ok(reps(qs.map((q) => q.fait)).ecart >= 4, "le même fait reste à 4 questions d'écart");
 });
+
+// (lot « Correctifs de la confrontation 2 », écarts 2.6 et 6.10, décisions du parent du 3 novembre 2026)
+test("écart 2.6 : la famille épuisée avant la moitié du temps de l'étape : la notion du jour finit sur des révisions des autres familles, dus d'abord, 4 questions d'écart", async () => {
+  assert.equal(m2.notion.revisionsFamilleEpuisee, true);
+  const store = await sues(), m = await new Module2Runner({ store, content: m2, rnd: rng(5), seance: 1, clock: () => NOW + 30 * 86400e3, cran: () => "conseille", choix: 3 }).load(), qs = [];
+  m.avantMoitie = () => true;
+  for (let i = 0; i < 80; i++) { const x = m.next(); if (!x) break; qs.push(x.q); await m.record({ q: x.q, value: expected(x.q), ok: true, ms: 2000, listens: 1 }, x.cfg); }
+  assert.ok(m.revisions, "les révisions ont commencé");
+  const rev = qs.slice(m.revisionsDes);
+  assert.ok(rev.length >= 10, `des révisions après la famille (${rev.length})`);
+  assert.ok(rev.every((q) => !m.inFamily(q.fait)), "des faits des autres familles");
+  assert.ok(rev.every((q) => q.nouveau !== true), "des faits déjà vus, jamais un fait nouveau");
+  const e = reps(qs.map((q) => q.fait));
+  assert.ok(e.max <= m2.repetition.parBlocMax && e.ecart >= m2.repetition.ecartMin, `au plus ${m2.repetition.parBlocMax} passages, ${m2.repetition.ecartMin} questions d'écart (${JSON.stringify(e)})`);
+  // épuisée après la moitié du temps : elle s'arrête, comme avant
+  const m3 = await new Module2Runner({ store: await sues(), content: m2, rnd: rng(5), seance: 1, clock: () => NOW, cran: () => "conseille", choix: 3 }).load(); let n3 = 0;
+  m3.avantMoitie = () => false;
+  for (let i = 0; i < 80; i++) { const x = m3.next(); if (!x) break; n3++; await m3.record({ q: x.q, value: expected(x.q), ok: true, ms: 2000, listens: 1 }, x.cfg); }
+  assert.ok(!m3.revisions && n3 < rev.length + m.revisionsDes, `après la moitié : arrêt (${n3} questions)`);
+});
+
+test("écart 2.6 : les révisions prennent les faits dus en premier (révision espacée)", async () => {
+  const store = await sues(), all = await store.all("faits");
+  // un fait de la famille 1 très en retard, les autres pas encore dus
+  const cible = all.find((f) => !["3+7", "7+3"].includes(f.fait)); for (const f of all) await store.put("faits", { ...f, prochain: f.fait === cible.fait ? NOW - 5 * 86400e3 : NOW + 9 * 86400e3 });
+  const m = await new Module2Runner({ store, content: m2, rnd: rng(5), seance: 1, clock: () => NOW, cran: () => "conseille", choix: 3 }).load();
+  m.revisions = true;
+  assert.equal(m.pickRevision().fait, cible.fait);
+});
+
+test("écart 6.10 : l'exception à la limite des faits nouveaux plafonnée à 8 faits nouveaux par séance, échauffement compris", async () => {
+  assert.equal(m2.notion.nouveauxMaxException, 8);
+  const m = await new Module2Runner({ store: await open(), content: m2, rnd: rng(2), seance: 1, clock: () => NOW, cran: () => "conseille", dejaNouveaux: 8 }).load();
+  assert.ok(m.exceptionPleine); assert.equal(m.pickOverflow(), null);
+  const m4 = await new Module2Runner({ store: await open(), content: m2, rnd: rng(2), seance: 1, clock: () => NOW, cran: () => "conseille", dejaNouveaux: 7 }).load();
+  assert.ok(!m4.exceptionPleine);
+});

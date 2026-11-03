@@ -4,7 +4,7 @@
 // famille en cours, les faits nouveaux par séance (échauffement et notion du jour).
 //   node tests/recette-fonctionnelle/mesure-additions.mjs [--profils reel,sait,diff] [--rythmes 2,3] [--detail]
 import { readFileSync } from "node:fs";
-import { simulate } from "../sim-recette.mjs";
+import { simulate, contenu } from "../sim-recette.mjs";
 import { dateOf } from "../../app/js/session/rewards.js";
 const cal = JSON.parse(readFileSync(new URL("../../app/content/calendrier.json", import.meta.url)));
 const hol = cal.vacances.map((v) => [new Date(dateOf(v.debut)), new Date(dateOf(v.reprise))]), fin = new Date(dateOf("2027-07-02") + 86400000);
@@ -12,6 +12,7 @@ const days = (perWeek) => { const out = []; let d = new Date("2026-09-28T00:00:0
   while (d < fin) { if (!hol.some(([a, b]) => d >= a && d < b) && wd.includes(d.getDay())) out.push(new Date(d)); d = new Date(d.getTime() + 86400000); } return out; };
 const argv = process.argv.slice(2), val = (k) => (argv.includes(k) ? argv[argv.indexOf(k) + 1] : null);
 const profils = (val("--profils") ?? "reel,sait,diff").split(","), rythmes = (val("--rythmes") ?? "2,3").split(",").map(Number);
+for (const kv of (val("--essai") ?? "").split(",").filter(Boolean)) { const [k, v] = kv.split("="); contenu.module2.notion[k] = JSON.parse(v); console.log(`# essai : notion.${k} = ${v}`); }
 const moy = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : NaN), f1 = (x) => (Number.isFinite(x) ? x.toFixed(1) : "-");
 console.log("| profil | rythme | séances d'additions | durée moyenne (min) | durée min – max | sous 9 min | notion du jour moyenne (min) | part de la famille : moyenne, min | faits nouveaux : moyenne, max | séances à plus de 8 faits nouveaux |");
 console.log("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |");
@@ -21,3 +22,4 @@ for (const profil of profils) for (const r of rythmes) {
   console.log(`| ${profil} | ${r}/sem | ${add.length} | ${f1(moy(d))} | ${f1(Math.min(...d))} – ${f1(Math.max(...d))} | ${d.filter((x) => x < 9).length} | ${f1(moy(add.map((x) => x.notionS / 60)))} | ${Math.round(moy(part) * 100)} %, ${Math.round(Math.min(...part) * 100)} % | ${f1(moy(nv))}, ${Math.max(...nv)} | ${nv.filter((x) => x > 8).length} |`);
   if (argv.includes("--detail")) for (const x of add) console.log(`    séance ${x.n} (${x.date}) famille ${x.famille} : ${x.duree} min, notion ${f1(x.notionS / 60)} min, ${x.asked.length} questions, part ${Math.round((x.partFamille ?? 0) * 100)} %, ${x.nouveaux} faits nouveaux`);
 }
+// (--essai cle=valeur,… : un réglage de module2.json, notion, changé le temps de la mesure, pour comparer : nouveauxMaxException=99)

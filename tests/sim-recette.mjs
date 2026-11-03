@@ -25,6 +25,8 @@ const load = (f) => JSON.parse(readFileSync(new URL(`../app/content/${f}`, impor
 const module5 = load("module5.json");
 const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), module3 = load("module3.json"), module4 = load("module4.json"), module6 = load("module6.json"), cartes0 = load("cartes.json"), calendrier = load("calendrier.json");
 // les zones 3 et 4 « prêtes » (illustrations et anecdotes fictives) pour vérifier le rythme des cartes sur l'année
+// (lot « Correctifs de la confrontation 2 » : les contenus chargés, pour qu'une mesure change un réglage le temps d'un essai)
+export const contenu = { module2 };
 const pretes = (c) => ({ ...c, cartes: c.cartes.map((x) => ({ ...x, illustration: x.illustration ?? `fictif/${x.id}.webp`, anecdote: x.anecdote ?? "Anecdote fictive." })) });
 const gen = (cfg, r, o = {}) => (o.format === "ecrire" ? makeWrite(cfg, r, o) : o.format === "sauter" ? makeJump(cfg, r) : o.format === "placer" ? makePlace(cfg, r, o) : o.format === "estimer" ? makeEstimate(cfg, r, o) : makeRead(cfg, r, o));
 const ERR = { 1: "E1", 2: "E1", 3: "E1", 4: "E3", 5: "E2", 6: "E5", 7: "E2", 8: "autre", 9: "E6", 10: "E6", 11: "E3", 12: "E6", 13: "autre" };

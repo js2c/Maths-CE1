@@ -34,6 +34,10 @@
     "partFamille": 0.8,
     "_arretFamilleEpuisee": "Relecture du lot « Décisions sur les constats de l'agent », R4, décision du parent du 14 octobre 2026 : la famille du jour n'a plus aucune question possible (ses faits connus posés `repetition.parBlocMax` fois, plus aucun fait nouveau permis) : la notion du jour s'arrête, au lieu de se finir sur des faits faciles d'autres familles.",
     "arretFamilleEpuisee": true,
+    "_revisionsFamilleEpuisee": "Lot « Correctifs de la confrontation 2 », écart 2.6, décision du parent du 3 novembre 2026 : la famille en cours épuisée avant la moitié du temps de l'étape (avec « jouer » comme avec « choisir »), la notion du jour ne s'arrête pas : elle se termine sur des révisions de faits déjà vus des autres familles (les dus en premier, selon la révision espacée, puis les plus faibles), toujours à `repetition.ecartMin` questions d'écart au moins ; épuisée après la moitié, elle s'arrête (arretFamilleEpuisee). nouveauxMaxException (écart 6.10, même décision) : l'exception à la limite des faits nouveaux (la famille en cours n'a plus d'autre question, moins de boite1Max faits ratés en boîte 1) s'arrête quand la séance compte ce nombre de faits nouveaux en tout, échauffement compris ; au-delà, la famille est épuisée et la notion du jour continue sur des révisions, comme en 2.6, à tout moment de l'étape (le plafond ne raccourcit pas la séance).",
+    "revisionsFamilleEpuisee": true,
+    "revisionsAvantPart": 0.5,
+    "nouveauxMaxException": 8,
     "difficulte": { "sur": 5, "erreurs": 3 },
     "crans": {
       "facile": { "directe": true, "aideDEmblee": true, "familleSeule": true },

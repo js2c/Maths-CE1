@@ -70,7 +70,27 @@ export class Module2Runner {
     if (pool.some((f) => this.stored(f.fait) && this.under(f))) return false;
     if (!pool.some((f) => !this.stored(f.fait) && !this.asked.has(f.fait))) return true;
     if ((this.choix != null ? Infinity : roomForNew(this.c, this.w.facts, this.w.nouveaux)) > 0) return false;
+    if (this.exceptionPleine) return true; // (écart 6.10 : le plafond de l'exception atteint)
     return this.w.facts.filter((f) => f.boite === 1 && (f.historique ?? []).some((h) => h.juste === false)).length >= this.c.boite1Max;
+  }
+  // (lot « Correctifs de la confrontation 2 », écart 6.10, décision du parent du 3 novembre 2026) l'exception à la limite des faits
+  // nouveaux (`pickOverflow`) est plafonnée : au plus `notion.nouveauxMaxException` faits nouveaux dans la séance en tout
+  // (échauffement compris) ; au-delà, la famille est épuisée, et la notion du jour continue sur des révisions, comme en 2.6, à
+  // tout moment de l'étape (le plafond ne doit pas raccourcir la séance : sans lui, l'exception l'aurait remplie de faits nouveaux)
+  get exceptionPleine() { return this.w.nouveaux >= (this.N.nouveauxMaxException ?? Infinity); }
+  // (écart 2.6, décision du parent du 3 novembre 2026) la famille en cours épuisée AVANT la moitié du temps de l'étape : au lieu de
+  // s'arrêter, la notion du jour se termine sur des révisions de faits déjà vus des autres familles (module2.json,
+  // notion.revisionsFamilleEpuisee) ; épuisée après la moitié : elle s'arrête, comme avant (décision du 14 octobre). Une fois
+  // commencées, les révisions continuent jusqu'à la fin de l'étape (`this.revisions`). `avantMoitie` : posé par session/notion.js.
+  get revisionsPermises() { return !!this.N.revisionsFamilleEpuisee && (this.revisions || !!this.avantMoitie?.(this.N.revisionsAvantPart ?? 0.5) || (this.choix == null && this.exceptionPleine)); }
+  // une révision : un fait déjà vu d'une autre famille, les faits dus d'abord (la révision espacée : les plus en retard, puis la
+  // boîte la plus basse), puis les plus faibles ; jamais un fait posé dans les `ecartMin` dernières questions (usable)
+  pickRevision() {
+    const inFam = new Set(this.corePool().map((f) => f.fait)), cat = new Map(catalog(this.c0).map((f) => [f.fait, f])), now = this.clock();
+    const list = this.w.facts.filter((f) => !inFam.has(f.fait) && cat.has(f.fait) && this.usable(f));
+    const dus = list.filter((f) => f.prochain != null && f.prochain <= now).sort((x, y) => x.prochain - y.prochain || x.boite - y.boite);
+    const f = dus[0] ?? this.weakest(list.filter((x) => !dus.includes(x)))[0];
+    return f ? { ...f, famille: cat.get(f.fait).famille, revision: true } : null;
   }
   // (lot 3 : famille choisie, les crans à l'intérieur de la famille, notion.cransChoix)
   get effet() { return (this.choix != null ? this.N.cransChoix : this.N.crans)?.[this.cran()] ?? {}; }
@@ -205,6 +225,8 @@ export class Module2Runner {
   choose(guide) {
     let f = null;
     if (this.simpler) f = this.pickEasy();
+    // (écart 2.6) les révisions de la fin de la notion du jour
+    if (!f && this.revisions && !guide) return this.pickRevision();
     // exemples guidés : un fait de la famille déjà rencontré de préférence (l'exemple montre la méthode)
     if (!f && guide) f = this.pickFamily(false) ?? this.pickFamily(true);
     // lot 3 : au moins 80 % sur la famille en cours (partFamille ; toutes au cran « plus facile ») : une question sur
@@ -222,6 +244,7 @@ export class Module2Runner {
   // qui se trompe beaucoup ; les faits nouveaux de la séance, pas encore ratés, n'y comptent pas) ; comme pour une famille
   // choisie (lot 3), plutôt que d'arrêter la notion du jour au bout de quelques minutes ou de tourner sur les mêmes faits
   pickOverflow() {
+    if (this.exceptionPleine) return null;
     const ratés = this.w.facts.filter((f) => f.boite === 1 && (f.historique ?? []).some((h) => h.juste === false)).length;
     if (ratés >= this.c.boite1Max) return null;
     const f0 = this.corePool().filter((f) => !this.stored(f.fait) && !this.asked.has(f.fait) && !this.tried?.has(f.fait) && !this.recent(f)).sort((x, y) => this.rank(x) - this.rank(y))[0];
@@ -233,9 +256,12 @@ export class Module2Runner {
     if (!guide && !sansDecompte) this.replays.forEach((r) => r.in--);
     // (une question qui revient d'une autre famille attend si elle ferait passer la famille sous 80 % ; lot 3 bis : ou si elle
     // ferait une troisième fois de suite la même réponse, ou une suite prévisible)
-    const due = guide || this.simpler ? -1 : this.replays.findIndex((r) => r.in <= 0 && !this.recent(r.q) && (this.inFamily(r.q.fait) || this.otherAllowed()) && this.var.cost(this.cand(r.q), { retour: true }) < 50);
+    const due = guide || this.simpler ? -1 : this.replays.findIndex((r) => r.in <= 0 && !this.recent(r.q) && (this.inFamily(r.q.fait) || this.otherAllowed() || this.revisions) && this.var.cost(this.cand(r.q), { retour: true }) < 50);
     if (due >= 0) { const r = this.replays.splice(due, 1)[0]; return this.ret({ ...r.q, revient: true }); }
-    if (!guide && this.N.arretFamilleEpuisee && this.familleEpuisee() && !this.replays.some((r) => this.inFamily(r.q.fait))) return null;
+    if (!guide && !this.revisions && this.N.arretFamilleEpuisee && this.familleEpuisee() && !this.replays.some((r) => this.inFamily(r.q.fait))) {
+      if (!this.revisionsPermises) return null;
+      this.revisions = true; this.revisionsDes = this.nAll ?? 0; // (écart 2.6 : la suite, des révisions ; noté pour la mesure)
+    }
     // lot 3 bis (docs/SPEC-LOT3BIS.md, §0) : plusieurs candidats, le premier qui respecte les règles de la réponse qui varie ;
     // aucun sous la limite de passages : la notion du jour s'arrête (null)
     this.tried = new Set(); let best = null;
@@ -248,7 +274,7 @@ export class Module2Runner {
     }
     this.tried = null;
     // (relecture, R3) rien sans le retourné d'une question récente : plutôt que d'arrêter la notion du jour, il est posé
-    if ((!best || best.cout >= MANQUE) && this.RP.retourneNotion && !this.souple && !(this.N.arretFamilleEpuisee && this.familleEpuisee())) {
+    if ((!best || best.cout >= MANQUE) && this.RP.retourneNotion && !this.souple && (this.revisions || !(this.N.arretFamilleEpuisee && this.familleEpuisee()))) {
       this.souple = true; try { return this.next({ guide, sansDecompte: true }); } finally { this.souple = false; }
     }
     if (!best || best.cout >= MANQUE) return null;

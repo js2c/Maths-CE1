@@ -23,8 +23,7 @@ import { chromium, finReelle, voixPermise } from "./navigateur.mjs";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
-import { recifOuvert } from "./recif-commun.mjs";
-import { schoolWeek, weekStart } from "../../app/js/session/rewards.js";
+import { ilYaSemaines, recifOuvert } from "./recif-commun.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const OUT = resolve(opt("--out", "tests/e2e/out/boutique")); mkdirSync(OUT, { recursive: true });
@@ -41,11 +40,6 @@ const check = (ok, msg) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${msg}`); if
 const Q = "?nosw&voix=rapide&sansLecon&sans=echauffement&questions=2&guides=0";
 const VUES = args.includes("--vite") ? [["1280", { width: 1280, height: 800 }, 1]] : [["1280", { width: 1280, height: 800 }, 1], ["1920", { width: 1920, height: 1200 }, 1], ["tablette", { width: 1138, height: 711 }, 2.25]];
 const SEMAINE = 7 * 86400000;
-// (lot « Réserves d'étoiles et étoiles arc-en-ciel », recette : le parcours échouait sur main aussi après la Toussaint) « il y a k
-// semaines » compte des SEMAINES D'ÉCOLE : la base des arrivages posée k semaines de calendrier plus tôt tombait dans les vacances,
-// qui n'apportent rien (le 3 novembre 2026, trois semaines plus tôt : deux semaines de vacances, la vitrine sans rien à vendre)
-const cal = JSON.parse(readFileSync(new URL("../../app/content/calendrier.json", import.meta.url)));
-const ilYa = (k) => { let w = weekStart(Date.now()), n = 0; for (let i = 0; n < k && i < 80; i++) { w -= SEMAINE; if (schoolWeek(cal, w)) n++; } return n < k ? Date.now() - k * SEMAINE : w + 12 * 3600000; }; // (avant la rentrée : en semaines de calendrier)
 // (le contenu fictif du grand large, pour les captures de son ouverture et du coquillage de diamant : ces phrases ne sont pas fabriquées)
 voixPermise(/^Anecdote fictive pour la capture\.$/, ...cartes.cartes.filter((c) => !c.anecdote).map((c) => new RegExp(`^C.est ${c.nomLu.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} !$`)));
 
@@ -91,7 +85,7 @@ const fini = (page) => page.waitForFunction(() => !window.__app.boutique.verrou,
 
 // une situation de février : le lagon et le récif de corail (une créature sur quatre brillante), le grand large ouvert (son
 // contenu fictif), 136 étoiles, une étoile de diamant ; une base d'arrivages qui fait arriver les créatures du grand large
-const fevrier = (total = 136) => [owned([...lagon, ...corail].filter((_, i) => i % 9 !== 4)), etoiles(total, { dorees: 1 }), { id: "zones", ouvertes: ["lagon", "corail", "large"], dates: {} }, { id: "quota", date: ilYa(2), cartes: 34 }];
+const fevrier = (total = 136) => [owned([...lagon, ...corail].filter((_, i) => i % 9 !== 4)), etoiles(total, { dorees: 1 }), { id: "zones", ouvertes: ["lagon", "corail", "large"], dates: {} }, { id: "quota", date: ilYaSemaines(2), cartes: 34 }];
 const brillantes = (st, list) => { const o = st.find((x) => x.id === "cartes"); for (const id of list) o.cartes[id].brillante = true; return st; };
 const fictif = (page) => page.evaluate(() => { for (const c of window.__app.cartes.cartes) if (c.zone === "large") { c.anecdote ??= "Anecdote fictive pour la capture."; c.illustration ??= "assets/cards/fictive.webp"; } });
 
@@ -99,7 +93,7 @@ const fictif = (page) => page.evaluate(() => { for (const c of window.__app.cart
 for (const vue of VUES) {
   // 1. le récif et la vitrine du lagon : 6 créatures (2 brillantes), 230 étoiles, la base posée il y a 4 semaines (8 arrivées)
   {
-    const { context, page } = await fresh([brillantes([owned(lagon.slice(0, 6)), etoiles(230), { id: "quota", date: ilYa(3), cartes: 2 }], [lagon[1], lagon[4]])].flat(), { vue });
+    const { context, page } = await fresh([brillantes([owned(lagon.slice(0, 6)), etoiles(230), { id: "quota", date: ilYaSemaines(3), cartes: 2 }], [lagon[1], lagon[4]])].flat(), { vue });
     await tap(page, ".reefkey"); await recifOuvert(page); await page.waitForSelector(".boutique-cle");
     await shot(page, vue, "01-recif-bouton");
     if (vue[0] === "1280") check(await page.evaluate(() => document.querySelector(".boutique-cle").classList.contains("invite")), "récif : le bouton de la boutique se balance (un achat est possible)");
@@ -219,7 +213,7 @@ for (const vue of VUES) {
   }
   // 3. la zone complète : « Tu as toutes les créatures de cette zone ! Une nouvelle zone va bientôt s'ouvrir. »
   {
-    const { context, page } = await fresh([owned(lagon.slice(0, 14)), etoiles(150), { id: "quota", date: ilYa(10), cartes: 15 }], { vue });
+    const { context, page } = await fresh([owned(lagon.slice(0, 14)), etoiles(150), { id: "quota", date: ilYaSemaines(10), cartes: 15 }], { vue });
     await boutique(page);
     const last = lagon[14];
     await tap(page, tuile(last)); await page.waitForTimeout(400); await saidReset(page);
@@ -251,7 +245,7 @@ async function jouer(page, { vu = async () => {} } = {}) {
 const vue0 = VUES[0];
 {
   // a. un achat possible (120 étoiles), des arrivées pas encore annoncées : les arrivages, l'invitation, le bouton vers la boutique
-  const { context, page } = await fresh([owned(lagon.slice(0, 3)), etoiles(120), { id: "quota", date: ilYa(1), cartes: 3 }], { fin: true });
+  const { context, page } = await fresh([owned(lagon.slice(0, 3)), etoiles(120), { id: "quota", date: ilYaSemaines(1), cartes: 3 }], { fin: true });
   const vus = new Set();
   const st = await jouer(page, { vu: async (k) => { if (k === "mini" && !vus.has(k)) { vus.add(k); await page.waitForTimeout(500); await shot(page, vue0, "21-fin-arrivages"); } } });
   await page.waitForTimeout(600); await shot(page, vue0, "22-fin-vers-boutique");
@@ -307,7 +301,7 @@ const vue0 = VUES[0];
 }
 {
   // d. le coquillage de diamant : une étoile de diamant en réserve, le grand large complet (contenu fictif)
-  const { context, page } = await fresh([owned([...lagon, ...corail, ...large]), etoiles(0, { dorees: 1 }), { id: "zones", ouvertes: ["lagon", "corail", "large"], dates: {} }, { id: "quota", date: ilYa(30), cartes: 0 }], { fin: true });
+  const { context, page } = await fresh([owned([...lagon, ...corail, ...large]), etoiles(0, { dorees: 1 }), { id: "zones", ouvertes: ["lagon", "corail", "large"], dates: {} }, { id: "quota", date: ilYaSemaines(30), cartes: 0 }], { fin: true });
   await page.route("**/fictive.webp", (r) => r.fulfill({ status: 200, contentType: "image/webp", body: "" }));
   await page.evaluate(() => { for (const c of window.__app.cartes.cartes) if (c.zone === "large") { c.anecdote ??= "Anecdote fictive pour la capture."; c.illustration ??= "assets/cards/fictive.webp"; } });
   voixPermise(/^C.est le grand requin blanc !$/);
@@ -332,7 +326,7 @@ const vue0 = VUES[0];
 {
   // (un état cohérent : les deux créatures brillantes sont celles du journal, une étoile de diamant gagnée et pas encore dépensée)
   const o9 = owned(lagon.slice(0, 9)); o9.cartes[lagon[8]].brillante = true; o9.cartes[lagon[0]].brillante = true;
-  const { context, page } = await fresh([o9, etoiles(57, { dorees: 1, doreesDepensees: 0 }), { id: "quota", date: ilYa(3), cartes: 6 }, { id: "achats", liste: [{ t: Date.now() - 86400000 * 3, carte: lagon[7], prix: 40, briller: false, brillante: false }, { t: Date.now() - 86400000, carte: lagon[8], prix: 40, briller: false, brillante: true }, { t: Date.now() - 3600000, carte: lagon[0], prix: 150, briller: true, brillante: true }] }]);
+  const { context, page } = await fresh([o9, etoiles(57, { dorees: 1, doreesDepensees: 0 }), { id: "quota", date: ilYaSemaines(3), cartes: 6 }, { id: "achats", liste: [{ t: Date.now() - 86400000 * 3, carte: lagon[7], prix: 40, briller: false, brillante: false }, { t: Date.now() - 86400000, carte: lagon[8], prix: 40, briller: false, brillante: true }, { t: Date.now() - 3600000, carte: lagon[0], prix: 150, briller: true, brillante: true }] }]);
   await page.evaluate(async () => { const p = window.__app.parent; p.tab = "progression"; p.open(); await p.dashboard(); });
   await page.waitForTimeout(500);
   const box = page.locator(".pa-card-box", { has: page.locator("h2", { hasText: /^Cartes et boutique$/ }) });
@@ -351,7 +345,7 @@ const vue0 = VUES[0];
   await context.close();
 }
 {
-  const { context, page } = await fresh([owned(lagon.slice(0, 4)), etoiles(300), { id: "quota", date: ilYa(3), cartes: 2 }]);
+  const { context, page } = await fresh([owned(lagon.slice(0, 4)), etoiles(300), { id: "quota", date: ilYaSemaines(3), cartes: 2 }]);
   await tap(page, ".play");
   await page.waitForFunction(() => window.__app.session?.progress?.etape === "notion" && document.querySelector(".session-home")?.style.visibility === "visible", null, { timeout: 60000 });
   await page.waitForTimeout(800); await tap(page, ".session-home"); await page.waitForSelector(".reefkey.keep", { timeout: 20000 }); await page.waitForTimeout(600);
@@ -396,7 +390,7 @@ const vue0 = VUES[0];
   // une sauvegarde de la version d'avant la boutique : la vitrine s'ouvre dessus, avec la bonne vitrine
   const gagnees = [lagon[0], lagon[3], lagon[5], lagon[7], lagon[9], lagon[11], lagon[12], lagon[14]];
   const o = owned(gagnees); o.cartes[lagon[3]].brillante = true; o.cartes[lagon[12]].brillante = true;
-  const { context, page } = await fresh([o, etoiles(187, { coquillages: 8, dorees: 1 }), { id: "serie", seances: 17, derniere: Date.now() - 86400000 }, { id: "quota", date: ilYa(4), cartes: 0 }, { id: "zones", ouvertes: ["lagon"], dates: {} }, { id: "cadeaux", liste: ["algue"] }]);
+  const { context, page } = await fresh([o, etoiles(187, { coquillages: 8, dorees: 1 }), { id: "serie", seances: 17, derniere: Date.now() - 86400000 }, { id: "quota", date: ilYaSemaines(4), cartes: 0 }, { id: "zones", ouvertes: ["lagon"], dates: {} }, { id: "cadeaux", liste: ["algue"] }]);
   await boutique(page);
   const v = await vitrine(page), n = (e) => Object.values(v).filter((x) => x === e).length, N = await page.evaluate(() => window.__app.rewards.nbArrivees());
   await shot(page, vue0, "32-sauvegarde-ancienne");

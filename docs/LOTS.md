@@ -60,6 +60,8 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (constat du 2 novembre 2026, tests de GitHub) : le lot court « Correctif : l'étal resté actif à l'accueil »** (fiche 18) : le travail « enfant » a échoué une fois (graine 1 : « étal actif à l'accueil ») sur une demande de fusion qui ne touchait que la documentation ; une course de vitesse dans l'application. **État : fait** (PR #72 ; aucune phrase nouvelle).
 
+**Puis (demande du parent du 29 octobre 2026) : le lot « Correctifs des relectures »** (fiche 19, écrite après coup : le lot avait été lancé sans fiche ; fusionné après le lot 18) : les points des relectures qui avaient une valeur par défaut (`docs/IDEES.md`, section 3 : R8, R9, l'outil des séquences) et la mesure du temps de démarrage sur le banc, avec une proposition non appliquée ; R7 et la bulle sur les écrans pleins restent à décider. **État : fait** (PR #64 ; aucune phrase nouvelle).
+
 **Pourquoi cet ordre.**
 
 - Les correctifs de la confrontation avant les leçons et les sommes : ces lots s'appuient sur les règles du module 2 telles qu'elles seront écrites.
@@ -1205,3 +1207,19 @@ Chaque défaut trouvé est corrigé et devient un test de non-régression. **Auc
 **Voix** : aucune phrase nouvelle.
 
 **Recette du lot** : `tests/e2e/etal-quitte-installation.mjs` (échoue sur `main`), l'enfant imprévisible en version longue, la recette commune.
+
+### 19. Lot « Correctifs des relectures » (lot court)
+
+**Fiche écrite après coup** (3 novembre 2026) : le lot a été lancé le 29 octobre 2026 sans fiche, sur une demande du parent, avant les lots 14 à 18 ; il est fusionné après eux. Elle dit ce que le lot a fait, pour qu'on le retrouve comme les autres.
+
+**Origine** : la demande du parent du 29 octobre 2026 : faire, d'un seul tenant et sans phrase nouvelle, les points des relectures qui avaient déjà une valeur par défaut (`docs/IDEES.md`, section 3), et mesurer le temps de démarrage sur le banc Android avec une proposition, sans l'appliquer. R7 (l'argent posé sur les ardoises de prix) et la bulle sur les écrans pleins restent à décider.
+
+1. **R8, la bulle sur l'argent des leçons de la monnaie** (L15, L16, L18) : l'argent que la phrase sort du portefeuille est déclaré à la bulle avant que la voix commence (`lessons/etal.js` ; `boitesSortie`, ajouté à la scène par `art/tools/export-etal.mjs`). Après la relecture (R14) : à l'étal, quand aucune place ne reste, la bulle essaie le ciel en dernier recours (`engine/bulle.js`, `CIEL`).
+2. **R9, le triangle des galets « jouer » et « continuer »** : pointes arrondies, plus d'encoches claires (atelier, `sea/decor.ts`, `drawPlayIcon`).
+3. **L'outil des séquences** (`tests/recette-fonctionnelle/b-sequences.mjs`, `b-texte.mjs`) : les étapes et les événements des familles en mots simples. Rien ne change dans l'application.
+4. **Le temps de démarrage**, mesuré sur le banc (profil `s5e`, `tests/e2e/demarrage-temps.mjs`) : où passe le temps, variantes essayées sur des copies, une proposition non appliquée (`tests/recette-fonctionnelle/out-correctifs-relectures/DEMARRAGE.md`).
+5. **Trouvé par la recette et corrigé** : `fermer()` de la scène de l'étal attend que le portefeuille soit refermé (la question suivante commençait pendant qu'il se refermait encore ; dans `art/tools/export-etal.mjs`, module refabriqué ; ce n'est pas la course corrigée au lot 18, voir `docs/JOURNAL-CONCEPTION.md`) ; les parcours qui dépendaient de la date comptent en semaines d'école (`recif-commun.mjs`, `ilYaSemaines`) ; des attentes du banc trop justes, chacune mesurée (l'orage de l'étal, les rangées de la multiplication, la place rendue après un stockage plein).
+
+**Voix** : aucune phrase nouvelle.
+
+**Recette du lot** : `tests/e2e/correctifs-relectures.mjs` (s5e, petit-smartphone, 1280 × 800, 1920 × 1200), la relecture indépendante (`tests/recette-fonctionnelle/out-correctifs-relectures/RELECTURE.md`), la recette commune.

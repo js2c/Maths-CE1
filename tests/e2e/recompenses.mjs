@@ -17,7 +17,7 @@ import { chromium } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
-import { recifOuvert, toucherCreature } from "./recif-commun.mjs";
+import { ilYaSemaines, recifOuvert, toucherCreature } from "./recif-commun.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const OUT = resolve(opt("--out", "tests/e2e/out/recompenses"));
@@ -59,6 +59,8 @@ await page.waitForSelector(".moon", { timeout: 60000 }); await page.waitForTimeo
 await shot("5-a-demain");
 const db = await page.evaluate(async () => { const s = window.__app.store; return { etoiles: await s.get("recompenses", "etoiles"), cartes: await s.get("recompenses", "cartes"), serie: await s.get("recompenses", "serie"), seance: (await s.all("seances")).at(-1) }; });
 // (une créature, pour la suite du parcours : achetée comme à la boutique)
+// (la base des arrivages comptée en semaines d'école : pendant les vacances, une base neuve n'a encore rien reçu ; recif-commun.mjs)
+await page.evaluate(async (date) => { const r = window.__app.rewards; r.base = { ...r.base, date: Math.min(r.base.date, date) }; await window.__app.store.put("recompenses", r.base); }, ilYaSemaines(1));
 await page.evaluate(async () => { const r = window.__app.rewards, id = [...r.vitrine()].find(([, e]) => e === "vendre")[0]; await r.acheter(id).ecrit; r.arrivee = null; }); // (sans son arrivée à la nage : on la touche aussitôt)
 const owned = Object.keys(await page.evaluate(async () => (await window.__app.store.get("recompenses", "cartes")).cartes));
 check(owned.length === 1 && db.etoiles.coquillages === 0, `aucune carte gagnée à la récompense ; une créature achetée (${owned.join(", ")})`);

@@ -8,7 +8,7 @@ Préparée avant le lot, pour la validation du parent (`docs/maquettes/problemes
 | `verifier.mjs` | Le contrôle de la banque (réponses, calculs, aides, niveaux, difficultés, ponctuation, contextes, mots des corrections) ; `--md` écrit `docs/maquettes/problemes/ENONCES.md`, la banque à relire. |
 | `contextes.json` | Les 22 contextes d'illustration (une image par lieu, réutilisée par tous ses énoncés) et le prompt Nano Banana de chacun. |
 | `phrases.mjs` | Le compte des phrases à fabriquer et leur poids, comparé à la place qui reste sous le plafond de la voix ; `--md` écrit `docs/maquettes/problemes/PHRASES.md`. Il contient aussi les phrases communes proposées (`COMMUNES`). |
-| `sim-niveaux.mjs` | Une première simulation de la montée des niveaux (1 ou 2 problèmes par soir, deux règles de montée) ; le lot la refait avec la vraie séance (`docs/LOTS.md`, fiche 14). |
+| `sim-niveaux.mjs` | Une première simulation de la montée des niveaux (1 ou 2 problèmes par soir, deux règles de montée) ; le lot la refait avec la vraie séance (`docs/LOTS.md`, fiche 20). |
 | `index.html` | La maquette des écrans clés (ouvrir avec un serveur à la racine du dépôt, par exemple `npm run serve`, puis `/art/problemes/`). |
 | `captures.mjs` | Les captures de chaque écran dans `docs/maquettes/problemes/`. |
 | `construire.mjs`, `dessins.js` | Les dessins de l'atelier (`art/src/canvas-core/sea/problemes.ts`) empaquetés pour la page ; `dessins.js` est généré. |
@@ -25,7 +25,7 @@ cd art && node tools/still.mjs problemesSheet --out ../docs/maquettes/problemes/
 
 ## Le niveau d'un énoncé (1 à 9)
 
-Celui de l'exercice (`docs/LOTS.md`, fiche 14 ; `verifier.mjs`, fonction `niveau`) : **1**, ajouter et enlever (réunion, transformation : le tout ou la fin inconnus) jusqu'à 10 ; **2**, les mêmes jusqu'à 20 (le niveau de départ) ; **3**, groupes égaux et partage, petits nombres ; **4**, chercher une partie ou le changement, jusqu'à 20 ; **5**, comparer, jusqu'à 20 ; **6**, les structures des niveaux 1, 2 et 4 au-delà de 20 ; **7**, groupes égaux et partage au-delà ; **8**, le début inconnu, et comparer au-delà de 20 ; **9**, deux étapes.
+Celui de l'exercice (`docs/LOTS.md`, fiche 20 ; `verifier.mjs`, fonction `niveau`) : **1**, ajouter et enlever (réunion, transformation : le tout ou la fin inconnus) jusqu'à 10 ; **2**, les mêmes jusqu'à 20 (le niveau de départ) ; **3**, groupes égaux et partage, petits nombres ; **4**, chercher une partie ou le changement, jusqu'à 20 ; **5**, comparer, jusqu'à 20 ; **6**, les structures des niveaux 1, 2 et 4 au-delà de 20 ; **7**, groupes égaux et partage au-delà ; **8**, le début inconnu, et comparer au-delà de 20 ; **9**, deux étapes.
 
 ## La difficulté d'un énoncé (1 à 4)
 

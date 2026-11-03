@@ -7,7 +7,7 @@ import { readFileSync } from "node:fs";
 import { IDBFactory } from "fake-indexeddb";
 import { Store } from "../../app/js/engine/store.js";
 import { rng } from "../../app/js/engine/ocean.js";
-import { arrivees, coutPlace, dateOf, etatPlace, manque, ordreArrivages, Rewards } from "../../app/js/session/rewards.js";
+import { arrivees, auNiveau, coutPlace, dateOf, etatPlace, manque, niveauPrix, ordreArrivages, Rewards } from "../../app/js/session/rewards.js";
 import { inventaire } from "../../tools/voix/inventaire.mjs";
 
 const load = (f) => JSON.parse(readFileSync(new URL(`../../app/content/${f}`, import.meta.url)));
@@ -17,7 +17,8 @@ const byZone = (z, withLeg = false) => cartes.cartes.filter((c) => c.zone === z 
 const own = (list, extra = {}) => Object.fromEntries(list.map((c) => [c.id, { n: 1, premiere: 0, brillante: false, ...extra }]));
 const allReady = { ...cartes, cartes: cartes.cartes.map((c) => ({ ...c, illustration: c.illustration ?? `fictif/${c.id}.webp`, anecdote: c.anecdote ?? "Anecdote fictive." })) };
 const fresh = async (now = at("2026-09-28"), content = cartes) => { const store = await Store.open(new IDBFactory()); return { store, rw: await new Rewards(store, content, cal).load(now) }; };
-const B = cartes.boutique;
+// les règles au niveau de prix par défaut (lot « Prix de la boutique réglables » : « Prix pour 2 séances par semaine »)
+const B = auNiveau(cartes.boutique), NIVEAUX = cartes.boutique.niveauxPrix;
 
 test("les règles du parent sont dans cartes.json : prix 40 et 100, briller 150 et 300, une chance sur cinq, 2 arrivages par semaine", () => {
   assert.deepEqual([B.mode, B.parSemaine, B.prix, B.briller, B.brillanteAchat], ["arrivages", 2, { commune: 40, rare: 100 }, { commune: 150, rare: 300 }, 0.2]);
@@ -53,16 +54,21 @@ test("la vitrine : chaque état de place, et ce qu'elle coûte", () => {
 });
 
 test("« il te manque N étoiles » : N entre 1 et 299, et chaque N a sa phrase ; rien quand l'enfant a assez", () => {
-  const inv = inventaire(), costs = [...Object.values(B.prix), ...Object.values(B.briller)];
+  const inv = inventaire(), costs = [...new Set(NIVEAUX.flatMap((x) => [...Object.values(x.prix), ...Object.values(x.briller)]))];
   assert.equal(manque(40, 40), null); assert.equal(manque(40, 39), 1); assert.equal(manque(null, 0), null);
   for (const c of costs) for (let t = 0; t < c; t++) {
     const n = manque(c, t);
     assert.ok(n >= 1 && n <= c);
     if (n <= B.manqueDitMax) assert.ok(inv.has(n === 1 ? textes.boutique.manqueUn : textes.boutique.manque.replace("{n}", n)), `${n}`);
   }
-  // 300 (aucune étoile devant une rare à faire briller) n'est pas dit : seul le prix l'est (session/boutique.js)
-  assert.equal(B.manqueDitMax, 299); assert.equal(Math.max(...costs) - 1, 299);
-  for (const n of [...Object.values(B.prix), ...Object.values(B.briller)]) assert.ok(inv.has(textes.boutique.prix.replace("{n}", n)) || inv.has(textes.boutique.briller.replace("{n}", n)));
+  // au-delà de 299 (300 : aucune étoile devant une rare à faire briller, aux prix pour 2 séances ; plus aux autres niveaux),
+  // seul le prix est dit (session/boutique.js)
+  assert.equal(B.manqueDitMax, 299); assert.equal(Math.max(...Object.values(B.prix), ...Object.values(B.briller)) - 1, 299);
+  // chaque prix de chaque niveau a sa phrase (lot « Prix de la boutique réglables »)
+  for (const x of NIVEAUX) {
+    for (const n of Object.values(x.prix)) assert.ok(inv.has(textes.boutique.prix.replace("{n}", n)), `prix ${n}`);
+    for (const n of Object.values(x.briller)) for (const k of ["brillerLe", "brillerLa", "brillerLeArc", "brillerLaArc"]) assert.ok(inv.has(textes.boutique[k].replace("{n}", n)), `${k} ${n}`);
+  }
 });
 
 test("arrivages : 2 le lundi de chaque semaine d'école ; une semaine sans séance n'en perd aucune ; les vacances n'en apportent pas", async () => {
@@ -188,4 +194,43 @@ test("une sauvegarde d'avant la boutique se restaure : cartes, brillantes, séri
   assert.equal(rw.peutAcheter(at("2026-11-09")), true);
   // rien n'est converti : l'ancienne fiche des cadeaux reste
   assert.deepEqual((await store.get("recompenses", "cadeaux")).liste, ["algue"]);
+});
+
+// ---------------------------------------------------------------- lot « Prix de la boutique réglables » (décision du parent du
+// 2 novembre 2026) : trois niveaux de prix, réglages de contenu ; le niveau change les prix aussitôt, les étoiles restent, en
+// mode Arrivages comme en mode Libre
+test("les niveaux de prix sont dans cartes.json : 2, 3 et 4 séances par semaine, le premier aux prix d'avant ; une rare vaut 2,5 communes", () => {
+  assert.deepEqual(NIVEAUX.map((x) => x.id), ["2", "3", "4"]); assert.equal(cartes.boutique.niveauPrix, "2");
+  assert.ok(!("prix" in cartes.boutique) && !("briller" in cartes.boutique), "les prix ne sont plus qu'aux niveaux");
+  assert.deepEqual([NIVEAUX[0].prix, NIVEAUX[0].briller], [{ commune: 40, rare: 100 }, { commune: 150, rare: 300 }]);
+  assert.deepEqual([NIVEAUX[1].prix, NIVEAUX[1].briller], [{ commune: 70, rare: 175 }, { commune: 250, rare: 500 }]);
+  assert.deepEqual(NIVEAUX.map((x) => x.nom), ["Prix pour 2 séances par semaine", "3 séances par semaine", "4 séances par semaine"]);
+  for (const [i, x] of NIVEAUX.entries()) {
+    assert.equal(x.prix.rare, 2.5 * x.prix.commune, x.id);
+    assert.ok(x.briller.commune > x.prix.rare && x.briller.rare === 2 * x.briller.commune, x.id);
+    assert.ok(typeof x.suppose === "string" && x.suppose.length > 20 && !/PLACEHOLDER/.test(x.suppose), x.id);
+    if (i) for (const k of ["commune", "rare"]) assert.ok(x.prix[k] > NIVEAUX[i - 1].prix[k] && x.briller[k] > NIVEAUX[i - 1].briller[k], `${x.id} ${k}`);
+  }
+  // un niveau inconnu (retiré du contenu) : celui par défaut
+  assert.equal(niveauPrix(cartes.boutique, "9").id, "2"); assert.equal(niveauPrix(cartes.boutique, null).id, "2");
+});
+
+test("changer de niveau change les prix aussitôt, en Arrivages comme en Libre ; les étoiles restent ; le choix est gardé", async () => {
+  const { store, rw } = await fresh(at("2026-09-28")), now = at("2026-11-30"), L = byZone("lagon"), rare = L.find((c) => c.rarete === "rare");
+  await rw.add(120);
+  const vend = [...rw.vitrine(now)].find(([, e]) => e === "vendre")[0], k = cartes.cartes.find((c) => c.id === vend).rarete;
+  assert.equal(rw.cout(vend, "vendre"), NIVEAUX[0].prix[k]);
+  await rw.setPrix("3");
+  assert.equal(rw.cout(vend, "vendre"), NIVEAUX[1].prix[k]); assert.equal(rw.total, 120); assert.equal(rw.st.cumul, 120);
+  assert.equal(await store.setting("boutiquePrix"), "3");
+  // en mode Libre aussi
+  await rw.setMode("libre"); assert.equal(rw.cout(rare.id, "vendre"), 175); await rw.setPrix("4"); assert.equal(rw.cout(rare.id, "vendre"), NIVEAUX[2].prix.rare);
+  // l'achat paie le prix du niveau, et le journal le garde
+  const g = rw.acheter(L[0].id, now, () => 0.9); await g.ecrit; assert.equal(g.prix, NIVEAUX[2].prix.commune); assert.equal(rw.total, 120 - NIVEAUX[2].prix.commune);
+  assert.equal(rw.cout(L[0].id, "terne"), NIVEAUX[2].briller.commune);
+  // relu après un rechargement
+  const again = await new Rewards(store, cartes, cal).load(now);
+  assert.equal(again.boutique.niveau, "4"); assert.equal(again.cout(rare.id, "vendre"), NIVEAUX[2].prix.rare); assert.equal(again.total, 120 - NIVEAUX[2].prix.commune);
+  // revenir aux prix d'avant : les étoiles ne bougent pas
+  await again.setPrix("2"); assert.equal(again.cout(rare.id, "vendre"), 100); assert.equal(again.total, 120 - NIVEAUX[2].prix.commune);
 });

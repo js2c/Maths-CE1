@@ -2,18 +2,18 @@
 
 Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/problemes/phrases.mjs`, `COMMUNES`) par `node art/problemes/phrases.mjs --md`, comparé à l'inventaire de la voix de `main` (`tools/voix/inventaire.mjs`). Une phrase déjà fabriquée ne coûte rien ; une phrase qui revient dans plusieurs énoncés n'est comptée qu'une fois.
 
-- **Voix aujourd'hui** : 11377 phrases, dossier de 81,18 Mo (sons, index et crédits). Plafond **95 Mo** (décision du parent du 30 octobre 2026, au lieu de 85 Mo dans `tests/unit/voix.test.mjs` : il en restait 3,82 Mo) : **il reste 13,82 Mo**.
-- **Après le lot** (corrections dans l'histoire, la décision du parent) : dossier d'environ 88,81 Mo, **6,19 Mo de marge** sous 95 Mo.
-- **Estimation** : 491 octets + 189 octets par lettre du texte lu (droite ajustée sur les fichiers existants : elle redonne 80,65 Mo pour 80,65 Mo réels) ; 51 octets d'index par phrase ; durée 0,11 s + 63 ms par lettre.
-- **Avec les corrections dans l'histoire** : **868 phrases nouvelles, environ 7,63 Mo**, soit 6,19 Mo de moins que la place qui reste.
-- **Avec les corrections par le calcul seul** (« 17 plus 8, ça fait 25. ») : 178 phrases de calcul dont 130 nouvelles (48 existent déjà) : **758 phrases nouvelles, environ 5,98 Mo**, soit 7,84 Mo de moins que la place qui reste.
+- **Voix aujourd'hui** : 11489 phrases, dossier de 82,21 Mo (sons, index et crédits). Plafond **95 Mo** (décision du parent du 30 octobre 2026, au lieu de 85 Mo dans `tests/unit/voix.test.mjs` : il en restait 2,79 Mo) : **il reste 12,79 Mo**.
+- **Après le lot** (corrections dans l'histoire, la décision du parent) : dossier d'environ 89,84 Mo, **5,16 Mo de marge** sous 95 Mo.
+- **Estimation** : 504 octets + 188 octets par lettre du texte lu (droite ajustée sur les fichiers existants : elle redonne 81,67 Mo pour 81,67 Mo réels) ; 51 octets d'index par phrase ; durée 0,11 s + 63 ms par lettre.
+- **Avec les corrections dans l'histoire** : **868 phrases nouvelles, environ 7,63 Mo**, soit 5,16 Mo de moins que la place qui reste.
+- **Avec les corrections par le calcul seul** (« 17 plus 8, ça fait 25. ») : 178 phrases de calcul dont 130 nouvelles (48 existent déjà) : **758 phrases nouvelles, environ 5,98 Mo**, soit 6,81 Mo de moins que la place qui reste.
 - **Sans aucune correction propre** (la correction ne dit que la réponse, déjà dans l'inventaire : « C'était 25. ») : 628 phrases, environ 4,91 Mo.
 
 | Partie | Phrases | Nouvelles | Poids estimé | Durée |
 | --- | --- | --- | --- | --- |
 | énoncés | 402 | 402 | 3,01 Mo | 16 min |
 | questions | 196 | 196 | 1,65 Mo | 9 min |
-| corrections dans l'histoire (« 17 ballons, et 8 de plus, ça fait 25 ballons. ») | 240 | 240 | 2,72 Mo | 15 min |
+| corrections dans l'histoire (« 17 ballons, et 8 de plus, ça fait 25 ballons. ») | 240 | 240 | 2,71 Mo | 15 min |
 | communes : le nom et l'entrée | 4 | 4 | 0,02 Mo | 0 min |
 | communes : les objets à grouper | 12 | 12 | 0,08 Mo | 0 min |
 | communes : le schéma en barres | 8 | 8 | 0,06 Mo | 0 min |

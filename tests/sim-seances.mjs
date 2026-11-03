@@ -1,7 +1,7 @@
 // RECETTE : simule N séances pour un profil d'enfant (voir tests/sim-recette.mjs) et affiche, séance par séance,
 // le niveau de la ligne, les additions posées, les étoiles et les cartes ; puis le bilan des cartes (lot 2) :
 // dates où chaque zone s'ouvre, créatures achetées à la boutique (lot « La boutique du récif »), légendaires, brillantes.
-//   node tests/sim-seances.mjs [sait|reel|diff|tresdur|facile] [séances par semaine : 2|3|5] [nombre de séances, ou « annee » : jusqu'au 2 juillet 2027] [--court]
+//   node tests/sim-seances.mjs [sait|reel|diff|tresdur|facile] [séances par semaine : 2|3|4|5] [nombre de séances, ou « annee » : jusqu'au 2 juillet 2027] [--court]
 //   lot 3 : [--choix 1:5 | 2:4] l'enfant choisit toujours cet exercice (ligne, niveau 5 ; additions, famille 4) ; [--cran facile|conseille|dur|tresdur]
 //   lot « Correctifs » (écart 6.2) : [--deux-par-jour] deux séances chaque soir (la seconde une heure après la première,
 //   comme une séance interrompue suivie d'une autre) : au plus une famille d'additions ouverte par jour, toutes voies confondues.
@@ -12,17 +12,20 @@ import { dateOf } from "../app/js/session/rewards.js";
 const cal = JSON.parse(readFileSync(new URL("../app/content/calendrier.json", import.meta.url)));
 const M2 = JSON.parse(readFileSync(new URL("../app/content/module2.json", import.meta.url))), FAMS = M2.familles.map((f) => f.id), NONMIX = M2.familles.filter((f) => f.regle !== "melange").map((f) => f.id);
 const hol = cal.vacances.map((v) => [new Date(dateOf(v.debut)), new Date(dateOf(v.reprise))]), fin = new Date(dateOf("2027-07-02") + 86400000);
-const days = (perWeek, n) => { const out = []; let d = new Date("2026-09-28T00:00:00"); const wd = perWeek === 2 ? [1, 4] : perWeek === 3 ? [1, 3, 5] : [1, 2, 3, 4, 5];
+const days = (perWeek, n) => { const out = []; let d = new Date("2026-09-28T00:00:00"); const wd = perWeek === 2 ? [1, 4] : perWeek === 3 ? [1, 3, 5] : perWeek === 4 ? [1, 2, 4, 5] : [1, 2, 3, 4, 5];
   while (n === "annee" ? d < fin : out.length < n) { if (!hol.some(([a, b]) => d >= a && d < b) && wd.includes(d.getDay())) out.push(new Date(d)); d = new Date(d.getTime() + 86400000); } return out; };
 const argv = process.argv.slice(2), val = (k) => (argv.includes(k) ? argv[argv.indexOf(k) + 1] : null);
-const args = argv.filter((a, i) => !a.startsWith("--") && !["--choix", "--cran"].includes(argv[i - 1])), court = argv.includes("--court");
+const args = argv.filter((a, i) => !a.startsWith("--") && !["--choix", "--cran", "--prix", "--essai"].includes(argv[i - 1])), court = argv.includes("--court");
 const ch = val("--choix")?.split(":").map(Number), choix = ch ? (ch[0] === 2 ? { module: 2, famille: ch[1] } : { module: ch[0], niveau: ch[1] }) : null;
 const [profil = "reel", perWeek = "2", n = "30"] = args;
 const jours0 = days(+perWeek, n === "annee" ? "annee" : +n), jours = argv.includes("--deux-par-jour") ? jours0.flatMap((d) => [d, new Date(d.getTime() + 3600000)]) : jours0;
 // (lot « La boutique du récif » : le contenu des zones 3 et 4 arrive à ses dates, `--pretes` les donne prêtes dès le départ ;
 // `--libre` : le rythme Libre de la boutique)
+// (lot « Prix de la boutique réglables » : `--prix 3` le niveau de prix choisi par le parent, boutique.niveauxPrix ; `--essai
+// 70,175,250,500` un niveau d'essai pour le calibrage : commune, rare, faire briller une commune, une rare)
 const pretes = argv.includes("--pretes") ? true : "dates", rythme = argv.includes("--libre") ? "libre" : "arrivages";
-const res = await simulate({ profil, jours, seed: 7, choix, cran: val("--cran"), zonesPretes: pretes, rythme });
+const ess = val("--essai")?.split(",").map(Number), essai = ess ? { prix: { commune: ess[0], rare: ess[1] }, briller: { commune: ess[2], rare: ess[3] } } : null;
+const res = await simulate({ profil, jours, seed: 7, choix, cran: val("--cran"), zonesPretes: pretes, rythme, prix: val("--prix"), boutique: essai });
 if (choix) console.log(`# lot 3 : l'enfant choisit toujours ${choix.module === 6 ? (choix.niveau ? `l'étal, niveau ${choix.niveau}` : "l'étal, au niveau conseillé") : choix.module === 4 ? (choix.niveau ? `les voiliers, niveau ${choix.niveau}` : "les voiliers, au niveau conseillé") : choix.module === 3 ? `le calcul rapide, niveau ${choix.niveau}` : choix.module === 1 ? `la ligne, niveau ${choix.niveau}` : `les additions, famille ${choix.famille}`}, cran ${val("--cran") ?? PROFILS[profil].cran ?? "conseille"} : réussite de la notion du jour (10 premières séances, exemples guidés exclus) ${(() => { const xs = res.slice(0, 10).flatMap((r) => r.notionOk ?? []); return Math.round((100 * xs.filter(Boolean).length) / Math.max(1, xs.length)); })()} % ; descentes de cran ${res.slice(0, 10).reduce((a, r) => a + r.descentes, 0)}`);
 console.log(`# profil ${PROFILS[profil].nom}, ${perWeek}/sem, ${res.length} séances`);
 if (!court) for (const r of res) console.log(`${r.n}\t${r.date}\t${r.cranDepart}${r.descentes ? `->${r.cran}` : ""}\t${r.module === 2 ? "additions" : r.module === 3 ? `calcul ${r.niv0}->${r.niv1}` : r.module === 4 ? `voiliers ${r.niv0}->${r.niv1}` : r.module === 6 ? `étal ${r.niv0}->${r.niv1}` : `niv ${r.niv0}->${r.niv1}`}\tq=${r.questions} ${Math.round((r.reussite ?? 0) * 100)}% nsp ${r.nsp} nouveaux ${r.nouveaux}\t${r.duree}min\tm${r.module}${r.defi !== undefined ? ` défi ${r.defi}${r.record ? "!" : ""}` : ""}${r.module === 2 ? ` f${r.famille}` : ""}\t★${r.etoiles}\tarc${r.arc}${r.doree ? " DORÉE" : ""}${r.surprise ? ` surprise ${r.surprise}` : ""}\tcartes ${r.nbCartes} [${[...r.cartes, ...r.achats.map((a) => `achat ${a}`)].join(",")}] ★${r.reserve}${r.zones.length ? ` ZONE ${r.zones.join(",")}` : ""}\tfaits vus ${r.faitsVus} boîtes ${r.boites.join("/")}\tchauffe: ${r.faits.join(" ")}\tligne: ${r.ligne.join(" ")}${r.lecons.length ? " leçons " + r.lecons.join(",") : ""}`);
@@ -146,7 +149,8 @@ console.log(`premier défi à la séance ${defis[0]?.n ?? "jamais"} ; ${defis.le
 // communes et rares ; les légendaires viennent en plus), comme le tableau de art/boutique/README.md, « Le calibrage »)
 const first = (f) => res.find(f)?.date ?? "jamais";
 const nonLeg = (r) => r.nbCartes - r.legendaires;
-console.log(`\n## cartes et boutique (${perWeek} séances par semaine, ${pretes === "dates" ? "grand large prêt le 1er février, abysses le 26 avril" : "zones 3 et 4 prêtes"} ; rythme ${rythme})`);
+console.log(`\n## cartes et boutique (${perWeek} séances par semaine, ${pretes === "dates" ? "grand large prêt le 1er février, abysses le 26 avril" : "zones 3 et 4 prêtes"} ; rythme ${rythme} ; prix ${essai ? `d'essai ${ess.join("/")}` : `niveau ${val("--prix") ?? "par défaut"}`})`);
+console.log(`collection complète (60 cartes) : ${first((r) => r.nbCartes >= 60)} ; communes et rares (55) : ${first((r) => nonLeg(r) >= 55)} ; vitrine sans créature nouvelle : ${res.filter((r) => r.vitrineVide).length}/${res.length} séances`);
 console.log(`ouverture : récif de corail ${first((r) => r.zones.includes("corail"))}, grand large ${first((r) => r.zones.includes("large"))}, abysses ${first((r) => r.zones.includes("abysses"))}`);
 console.log(`créatures (communes et rares) : 15 ${first((r) => nonLeg(r) >= 15)}, 30 ${first((r) => nonLeg(r) >= 30)}, 45 ${first((r) => nonLeg(r) >= 45)}, 55 ${first((r) => nonLeg(r) >= 55)} ; fin : ${res.at(-1).nbCartes} cartes sur 60 dont ${res.at(-1).legendaires} légendaires, ${res.at(-1).brillantes} brillantes`);
 console.log(`étoiles gagnées : ${res.reduce((a, r) => a + r.etoiles, 0)} ; étoiles au compteur à la fin : ${res.at(-1).reserve ?? "?"} ; achats : ${res.reduce((a, r) => a + r.achats.filter((x) => !x.includes("briller")).length, 0)} créatures, ${res.reduce((a, r) => a + r.achats.filter((x) => x.includes("briller")).length, 0)} « faire briller » ; séances sans achat : ${res.filter((r) => !r.achats.length).length}/${res.length} ; vitrine sans créature nouvelle : ${res.filter((r) => r.vitrineVide).length}`);

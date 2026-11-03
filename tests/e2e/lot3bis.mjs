@@ -142,7 +142,22 @@ if (run("toucher")) {
   await page.waitForTimeout(300); const c2 = await page.evaluate(() => window.__app.voice.instruction);
   // la bonne réponse, puis un chiffre tapé aussitôt, pendant le « bravo »
   for (const d of String(answerOf(q2))) { await touch(page, `.key[data-key="${d}"]`); await page.waitForTimeout(170); }
-  await touch(page, '.key[data-key="valider"]'); await page.waitForTimeout(150); await touch(page, '.key[data-key="5"]');
+  // (le « 5 » est envoyé depuis la page, 150 ms après l'appui sur la coche : avec la voix rapide, le « bravo » et son attente ne
+  // verrouillent le pavé que 380 à 475 ms, et le toucher réel de Chromium arrivait 365 à 825 ms après la coche, parfois sur la
+  // question suivante, où le chiffre doit bien s'écrire : un échec intermittent du parcours, pas de l'application ; mesuré le
+  // 1er novembre 2026)
+  await page.evaluate(() => {
+    window.__pendantBravo = undefined;
+    const f = window.__app.facts, coche = document.querySelector('.key[data-key="valider"]'), el = document.querySelector('.key[data-key="5"]');
+    coche.addEventListener("pointerdown", () => setTimeout(() => {
+      const r = el.getBoundingClientRect(), verrou = f.locked;
+      const o = { bubbles: true, cancelable: true, pointerId: 7, pointerType: "touch", isPrimary: true, clientX: r.x + r.width / 2, clientY: r.y + r.height / 2 };
+      el.dispatchEvent(new PointerEvent("pointerdown", o)); setTimeout(() => { el.dispatchEvent(new PointerEvent("pointerup", o)); window.__pendantBravo = verrou; }, 40);
+    }, 150), { once: true });
+  });
+  await touch(page, '.key[data-key="valider"]');
+  await page.waitForFunction(() => window.__pendantBravo !== undefined, null, { timeout: 10000 });
+  check(await page.evaluate(() => window.__pendantBravo), "le « 5 » est bien tapé pendant le « bravo » (le pavé verrouillé)");
   await waitQ(page); await page.waitForTimeout(400);
   const after = await page.evaluate(() => ({ typed: window.__app.facts.typed, q: window.__app.facts.q.fait, said: window.__said.slice(-2) }));
   check(after.typed === "", `un chiffre tapé pendant le « bravo » n'est pas dans la question suivante (ardoise « ${after.typed} »)`);

@@ -4,19 +4,17 @@ Tourne sur l'ordinateur du parent (carte graphique NVIDIA), jamais sur la tablet
 l'application : il fabrique une trentaine de phrases du jeu avec plusieurs réglages, et une page d'écoute
 (tools/voix/essais/out/ecoute.html) où chaque phrase est à côté de la voix actuelle (Piper).
 
-Installation, une fois (Python 3.11 conseillé ; l'ordre compte : sans la première ligne, pip installe un
-PyTorch sans carte graphique) :
+Installation, une fois, dans le Python unique de la voix (docs/VOIX.md, « Le Python de la voix » : Python 3.11, la variable
+PYTHON, sans environnement virtuel ; l'ordre compte : sans la première ligne, pip installe un PyTorch sans carte graphique) :
 
-    python -m venv .venv-voix
-    .venv-voix\\Scripts\\activate                      (Windows ; sous Linux : source .venv-voix/bin/activate)
-    pip install torch==2.6.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cu124
-    pip install git+https://github.com/resemble-ai/chatterbox.git soundfile
+    & $env:PYTHON -m pip install torch==2.6.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cu124
+    & $env:PYTHON -m pip install git+https://github.com/resemble-ai/chatterbox.git soundfile
 
-Lancement, depuis la racine du dépôt :
+Lancement, dans PowerShell, depuis la racine du dépôt :
 
-    python tools/voix/essais/essai_chatterbox.py --ref ma-voix.wav
-    python tools/voix/essais/essai_chatterbox.py --ref voix-a.wav --ref voix-b.wav --graines 3
-    python tools/voix/essais/essai_chatterbox.py                  (sans --ref : la voix par défaut du modèle)
+    & $env:PYTHON tools\\voix\\essais\\essai_chatterbox.py --ref ma-voix.wav
+    & $env:PYTHON tools\\voix\\essais\\essai_chatterbox.py --ref voix-a.wav --ref voix-b.wav --graines 3
+    & $env:PYTHON tools\\voix\\essais\\essai_chatterbox.py                  (sans --ref : la voix par défaut du modèle)
 
 --ref : un enregistrement de référence de 10 à 15 secondes, en français, sans musique ni bruit de fond,
 dit sur le ton voulu pour le jeu (chaleureux, posé, souriant). Le modèle imite le timbre ET le ton de cet

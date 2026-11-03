@@ -3,7 +3,7 @@
 # Le Batch passe par l'ancienne interface (generateContent), pas par celle des essais précédents (interactions) :
 # c'est justement ce qu'il faut vérifier.
 #
-#   .\.venv-gemini\Scripts\python.exe tools\voix\essais\batch_gemini.py
+#   & $env:PYTHON tools\voix\essais\batch_gemini.py
 #
 # Ce que fait la commande :
 #   1. un appel normal (une requête, hors Batch) avec la même forme de demande : s'il échoue, inutile d'attendre le

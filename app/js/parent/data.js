@@ -269,12 +269,13 @@ export function cardsSummary(R, cartes, calendrier, seances, now = Date.now(), m
     legendaires: C.filter((c) => c.rarete === "legendaire" && owned[c.id]).length, legendairesTotal: C.filter((c) => c.rarete === "legendaire").length,
     mode, vitrine, aVenir, achats, depense, base: R.quota ?? null, zones, suivante: next ? { nom: next.nom, attend } : null,
     dorees: et.dorees ?? 0, doreesDepensees: et.doreesDepensees ?? 0, semaines, prochaineDoree: per - (semaines % per),
-    arc: et.arcEnCiel ?? 0, arcDepensees: et.arcDepensees ?? 0, arcLibre: et.arcLibre ?? 0,
+    arc: et.arcEnCiel ?? 0, arcDepensees: et.arcDepensees ?? 0, arcBrillees: et.arcBrillees ?? 0, arcLibre: et.arcLibre ?? 0,
   };
 }
-// le journal des achats de la boutique (pour le tableur) : date, créature, prix, « faire briller » ou non, sortie brillante
+// le journal des achats de la boutique (pour le tableur) : date, créature, prix, « faire briller » ou non, sortie brillante ;
+// (lot « Réserves d'étoiles et étoiles arc-en-ciel ») payé avec une étoile arc-en-ciel (le prix en étoiles est alors 0)
 export const PURCHASE_COLUMNS = [
-  ["date", (a) => dateTime(a.t)], ["créature", (a) => a.nom ?? a.carte], ["prix (étoiles)", (a) => a.prix], ["faire briller", (a) => !!a.briller], ["brillante", (a) => !!a.brillante],
+  ["date", (a) => dateTime(a.t)], ["créature", (a) => a.nom ?? a.carte], ["prix (étoiles)", (a) => a.prix], ["faire briller", (a) => !!a.briller], ["brillante", (a) => !!a.brillante], ["étoile arc-en-ciel", (a) => !!a.arc],
 ];
 
 // (lot « Correctifs de l'installation et de la veille », point 5) UNE LIGNE DU JOURNAL TECHNIQUE (engine/journal.js), en français
@@ -310,6 +311,11 @@ export function ligneJournal(e) {
   if (e.imagesMpx != null) d.push(`images en mémoire ${String(e.imagesMpx).replace(".", ",")} mégapixels`);
   if (e.lectureRefusees) d.push(`${e.lectureRefusees} lectures refusées`);
   if (e.allegement && !/affichage/.test(e.message)) d.push(`affichage allégé ${e.allegement}`);
+  // (lot « Netteté du récif ») un allègement du récif : son niveau, la densité du dessin, l'intervalle moyen mesuré, la zone
+  if (e.niveauRecif != null) d.push(`niveau ${e.niveauRecif} sur ${e.niveauxRecif}`);
+  if (e.densiteDessin != null) d.push(`dessin en densité ${String(e.densiteDessin).replace(".", ",")}`);
+  if (e.intervalleMs != null) d.push(`${String(e.intervalleMs).replace(".", ",")} ms par image en moyenne`);
+  if (e.zoneRecif) d.push(e.zoneRecif.replace(/^L/, "l"));
   if (e.quand) d.push(`le ${heureJournal(e.quand)}`);
   return `${heureJournal(e.t)} · ${TYPES_JOURNAL[e.type] ?? e.type} · ${e.message}${d.length ? ` (${d.join(", ")})` : ""}`;
 }

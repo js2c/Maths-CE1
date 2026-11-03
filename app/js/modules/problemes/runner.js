@@ -44,13 +44,23 @@ export class Module7Runner {
   async lessonSeen(id) { if (!this.st.lecons.includes(id)) this.st.lecons.push(id); await this.save(); }
   guidesDus() { return 0; }
   // les énoncés possibles au niveau n, pour ce cran
-  pool(n) { return this.effet.difficulteDessus ? poolTresDur(this.banque, n) : this.banque.filter((e) => e.niveau === n); }
+  // (au cran « très dur » : ceux d'une difficulté au-dessus d'abord, puis, une fois passés, ceux du niveau, les plus difficiles d'abord :
+  // la réserve « au-dessus » n'a que 5 à 7 énoncés aux niveaux 4, 5, 8 et 9, et la notion du jour s'arrêtait au bout de 3 à 6 minutes ;
+  // choix de la session, docs/JOURNAL-CONCEPTION.md)
+  pool(n) {
+    const N = this.banque.filter((e) => e.niveau === n);
+    if (!this.effet.difficulteDessus) return N;
+    const D = poolTresDur(this.banque, n), ids = new Set(D.map((e) => e.id));
+    return [...D, ...N.filter((e) => !ids.has(e.id)).sort((a, b) => b.difficulte - a.difficulte)];
+  }
   // l'énoncé suivant : le retour d'une erreur (exercice), un énoncé manqué d'une séance précédente, puis ceux du tour pas encore
   // passés ; jamais un énoncé déjà posé dans la séance
   pick(n) {
     // (parcours de test : `force`, des identifiants d'énoncés posés d'abord, dans l'ordre ; main.js, ?enonce=…)
     while (this.force?.length) { const id = this.force.shift(), e = this.banque.find((x) => x.id === id); if (e) return e; }
-    const P = this.pool(n), libre = (e) => !this.poses.has(e.id);
+    // (les énoncés possibles : jamais posés dans la séance ; dans l'exercice, sans faire une troisième fois de suite la même réponse ni
+    // une suite prévisible, section 9 : la règle vaut aussi pour les manqués repris et la question plus simple)
+    const P = this.pool(n), libre = (e) => !this.poses.has(e.id) && (this.etape || this.var.cost(this.cand(e)) < MANQUE);
     if (!P.length) return null;
     // (une question plus simple, après une difficulté persistante : un énoncé de difficulté plus basse du même niveau, sinon du
     // niveau d'en dessous)
@@ -58,6 +68,8 @@ export class Module7Runner {
     if (this.c.repetition?.["manquesD'abord"] !== false) { const m = this.st.manques.map((id) => P.find((e) => e.id === id)).find((e) => e && libre(e)); if (m) return m; }
     const tour = new Set(this.st.tour[n] ?? []);
     let L = P.filter((e) => libre(e) && !tour.has(e.id));
+    // (très dur : les plus difficiles d'abord ; ceux d'une difficulté au-dessus, tant qu'il en reste)
+    if (this.effet.difficulteDessus && L.length) { const D = new Set(poolTresDur(this.banque, n).map((e) => e.id)), L2 = L.filter((e) => D.has(e.id)); if (L2.length) L = L2; else { const dmax = Math.max(...L.map((e) => e.difficulte)); L = L.filter((e) => e.difficulte === dmax); } }
     if (!L.length) { this.st.tour[n] = []; L = P.filter(libre); }
     if (!L.length) return null;
     // la règle « une réponse qui varie » (section 9), dans l'exercice ; à l'étape fixe, un ou deux problèmes : le premier possible
@@ -71,7 +83,8 @@ export class Module7Runner {
     // l'étape fixe : un deuxième problème seulement s'il reste assez de temps ; jamais de question « pour finir sur une réussite »
     if (this.etape && (this.k >= (this.c.etape?.problemes ?? 2) || (this.k >= 1 && (this.reste?.() ?? Infinity) < (this.c.etape?.minResteS ?? 45) * 1000) || (this.simpler && this.k >= 1))) { this.simpler = false; return null; }
     if (!guide && !this.etape) this.replays.forEach((r) => r.in--);
-    const due = guide || this.etape ? -1 : this.replays.findIndex((r) => r.in <= 0);
+    // (le retour d'une erreur attend s'il ferait une troisième fois de suite la même réponse, ou une suite prévisible : section 9)
+    const due = guide || this.etape ? -1 : this.replays.findIndex((r) => r.in <= 0 && this.var.cost(this.cand(r.q.e), { retour: true }) < 50);
     if (due >= 0) { const r = this.replays.splice(due, 1)[0]; return this.ret({ ...r.q, revient: true, guide: false }); }
     const e = this.pick(this.niveau);
     if (!e) return null;

@@ -31,12 +31,14 @@ import { MultScreen } from "../../app/js/modules/mult/screen.js";
 import { checkSequence } from "../../app/js/modules/variete.js";
 import { Module6Runner, soucoupeTexte } from "../../app/js/modules/etal/runner.js";
 import { juger, montantDit, montantEcrit, solution } from "../../app/js/modules/etal/etal.js";
+import { Module7Runner } from "../../app/js/modules/problemes/runner.js";
+import { classer, operations } from "../../app/js/modules/problemes/problemes.js";
 import { runChallenge } from "../../app/js/modules/facts/challenge.js";
 import { etapesTexte, evenementFamilleTexte } from "./b-texte.mjs";
 
 const ROOT = new URL("../../", import.meta.url).pathname;
 const load = (f) => JSON.parse(readFileSync(join(ROOT, "app/content", f), "utf8"));
-const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), module3 = load("module3.json"), module4 = load("module4.json"), module5 = load("module5.json"), module6 = load("module6.json"), cartes = load("cartes.json"), calendrier = load("calendrier.json"), T = load("textes.json"), lecons = load("lecons.json");
+const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), module3 = load("module3.json"), module4 = load("module4.json"), module5 = load("module5.json"), module6 = load("module6.json"), module7 = load("module7.json"), problemes = load("problemes.json"), cartes = load("cartes.json"), calendrier = load("calendrier.json"), T = load("textes.json"), lecons = load("lecons.json");
 const OUT = join(ROOT, process.env.RECETTE_OUT ?? "tests/recette-fonctionnelle/out", "B-sequences");
 mkdirSync(OUT, { recursive: true });
 // --test (lot 3 bis, docs/SPEC-LOT3BIS.md, §0) : rien n'est écrit ; les quatre règles de la réponse qui varie sont vérifiées
@@ -174,9 +176,22 @@ async function uneSeance({ base, choix, cran, comp }) {
       add(C.ms + (ok ? D.defiApres : seance.etapes.find((e) => e.id === "defi").apresErreurMs)); if (!ok) x.suite.push("la bonne réponse montrée un instant");
       return { value: r.value, ms: C.ms, listens: 0, aide: false, nsp: !!r.nsp, after: Promise.resolve() };
     } };
+    // lot « Problèmes » : un problème par question ; la « réponse » est celle de l'énoncé ; la voix : l'histoire, la question, puis
+    // l'erreur repérée (P1 à P4), l'aide et la correction dans l'histoire (modules/problemes/screen.js)
+    const probScr = { ask: async (q) => {
+      const e = q.e, good = e.reponse, O = operations(e), last = O.at(-1), pieges = [...(e.donnees ?? []), last[0] === "+" ? Math.abs(last[1] - last[2]) : last[1] + last[2], ...(O.length > 1 ? [O[0][3]] : [])];
+      const r = q.guide ? { value: good } : reponseNombre(R, C, good, { max: 100, pieges }), code = r.nsp ? "NSP" : classer(e, r.value), ok = code === null;
+      const aide = q.aide === "barres" ? T.problemeAide.regarde : q.aide === "comparaison" ? `${T.problemeAide.regarde} ${T.problemeAide.grand}` : q.aide === "etapes" ? `${T.problemeAide.etape1} ${T.problemeAide.etape2}` : T.problemeAide.groupes;
+      const x = row({ cle: e.id, forme: `${e.id} (niveau ${e.niveau}, ${q.structure}${q.manipuler ? ", objets manipulés" : ""}${q.objets ? ", données en objets" : ""}${q.coquillage ? "" : ", sans coquillage"}${q.etape ? ", problème du jour" : ""}${q.revient ? ", revient" : ""})`, voix: [...e.enonce, e.question].join(" "), attendue: good, donnee: q.guide ? `${good} (guidé)` : r.nsp ? "je ne sais pas" : r.value });
+      add(D.consigne * 3 + C.ms * 2 + (ok ? D.bravo : D.correction));
+      if (!ok) x.suite.push(`correction ${code} : « ${r.nsp ? T.faitNSP : code === "P1" ? (e.structure === "comparaison" ? T.erreurProbleme.P1comparaison : "") : T.erreurProbleme[code] ?? T.erreur.autre} ${aide} ${e.correction} » [${e.calcul}]`);
+      return { q, value: r.value, ok, code, ms: C.ms * 2, listens: 1, aide: false, nsp: !!r.nsp };
+    } };
     const lesson = async (id, raison) => { lessons[id] = (lessons[id] ?? 0) + 1; cur = null; row({ forme: `LEÇON ${id}`, voix: `(leçon animée ${id}, raison : ${raison === "niveau" ? "entrée du niveau" : raison === "difficulte" ? "difficulté persistante" : `erreur ${raison} répétée`})`, attendue: "", donnee: "regardée jusqu'au bout" }); add(D.lecon); return { vue: true }; };
     const wrapRunner = (runner) => { const rec = runner.record.bind(runner); runner.record = async (r, cfg) => { const res = await rec(r, cfg); for (const e of res.events ?? []) suite(e.type === "montee" ? `MONTÉE (${e.de ? `niveau ${e.de} → ${e.a}` : e.niveau ? `niveau ${e.niveau} acquis` : `famille ${e.famille} (${nomFamille(e.famille)}) acquise`})` : e.type === "lecon" ? `leçon ${e.id} relancée` : e.type === "difficulte" ? "difficulté persistante" : e.type === "plusBas" ? "niveau inférieur jusqu'à la fin (leçon déjà jouée)" : e.type); return res; }; return runner; };
     const s = new Session({ store, content: seance, rewards, clock, choix, mastery: (m) => mast[m] ?? 0, onCranDown: async (de, a) => { suite(`le cran redescend : ${CRAN_NOM[de]} → ${CRAN_NOM[a]} (« ${T.cranDescente} »)`); add(3000); }, handlers: {
+      // lot « Problèmes » : l'étape fixe (son temps : ses 1 min 30 ; ses problèmes au niveau de l'enfant)
+      probleme: async (ctx) => { etape = "problème du jour"; const runner = wrapRunner(await new Module7Runner({ store, content: module7, banque: problemes, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, etape: true }).load()); const n = module7.etape?.problemes ?? 2; await runNotion({ ...ctx, step: { ...ctx.step, questions: [n, n], guides: 0 }, runner, screen: probScr, rnd: R, lesson: async () => ({ vue: false }) }); cur = null; },
       accueil: async ({ session }) => { etape = "accueil"; add(D.accueil); await session.setCran(cran); add(D.selecteur); },
       echauffement: async (ctx) => { etape = "échauffement"; const w = await new Warmup({ store, content: module2, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, dejaNouveaux: ctx.session.nouveaux }).load(); await runWarmup({ ...ctx, warmup: w, screen: warmScreen, rnd: R }); cur = null; },
       notion: async (ctx) => {
@@ -267,6 +282,10 @@ async function uneSeance({ base, choix, cran, comp }) {
             return { q, ok, corrigee, code, nsp, soucoupe: [], ms: C.ms * 2, listens: 1, essais: ok ? 1 : 2 };
           } };
           await runNotion({ ...ctx, step: { ...ctx.step, ...(ctx.step.module6 ?? {}) }, runner, screen: scr, rnd: R, lesson }); cur = null; return;
+        }
+        if (m === 7) {
+          const runner = wrapRunner(await new Module7Runner({ store, content: module7, banque: problemes, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, choix: ctx.session.choix?.module === 7 ? ctx.session.choix.niveau : null }).load());
+          await runNotion({ ...ctx, step: { ...ctx.step, ...(ctx.step.module7 ?? {}) }, runner, screen: probScr, rnd: R, lesson }); cur = null; return;
         }
         // lot « Multiplication » : la consigne et la correction de l'écran lui-même (mult/screen.js)
         if (m === 5) {
@@ -368,6 +387,7 @@ const EXOS = [
   ...module3.niveaux.map((c) => ({ id: `calcul-${c.niveau}`, choix: { module: 3, niveau: c.niveau }, nom: `Calcul rapide, niveau ${c.niveau} (${c.type}, ${c.support})` })),
   ...module5.niveaux.map((c) => ({ id: `multiplication-${c.niveau}`, choix: { module: 5, niveau: c.niveau }, nom: `Multiplication, niveau ${c.niveau} (${c.type}${c.table ? ` ${c.table}` : ""})` })),
   ...module6.niveaux.map((c) => ({ id: `etal-${String(c.niveau).padStart(2, "0")}`, choix: { module: 6, niveau: c.niveau }, nom: `Étal du pêcheur, niveau ${c.niveau} (${c.type})`, passages: c.type === "poser" ? c.valeurs.length : undefined })),
+  ...module7.niveaux.map((c) => ({ id: `problemes-${c.niveau}`, choix: { module: 7, niveau: c.niveau }, nom: `Problèmes, niveau ${c.niveau} (${c.nom})`, passages: problemes.enonces.filter((e) => e.niveau === c.niveau).length })),
   ...module4.niveaux.map((c) => ({ id: `voiliers-${c.niveau}`, choix: { module: 4, niveau: c.niveau }, nom: `Voiliers, niveau ${c.niveau} (${c.bouees} bouées, ${c.ecart}, ${c.place})`, passages: c.ecart === "double" ? 12 : c.bouees + 1 })),
 ].filter((e) => !only || (e.choix.module === only[0] && (only[1] == null || (e.choix.niveau ?? e.choix.famille) === only[1]))); // (--seulement 4 : tout le module 4)
 // le plus grand nombre de passages d'un même fait, et le plus petit nombre d'autres questions entre deux passages

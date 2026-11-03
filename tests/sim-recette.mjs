@@ -20,13 +20,15 @@ import { Module4Runner } from "../app/js/modules/voiliers/runner.js";
 import { Module5Runner, multMastery } from "../app/js/modules/mult/runner.js";
 import { codeErreur } from "../app/js/modules/voiliers/voiliers.js";
 import { Module6Runner } from "../app/js/modules/etal/runner.js";
+import { Module7Runner } from "../app/js/modules/problemes/runner.js";
+import { classer } from "../app/js/modules/problemes/problemes.js";
 
 const load = (f) => JSON.parse(readFileSync(new URL(`../app/content/${f}`, import.meta.url)));
-const module5 = load("module5.json");
+const module5 = load("module5.json"), module7 = load("module7.json"), problemes = load("problemes.json"), textes = load("textes.json");
 const seance = load("seance.json"), module1 = load("module1.json"), module2 = load("module2.json"), module3 = load("module3.json"), module4 = load("module4.json"), module6 = load("module6.json"), cartes0 = load("cartes.json"), calendrier = load("calendrier.json");
 // les zones 3 et 4 « prêtes » (illustrations et anecdotes fictives) pour vérifier le rythme des cartes sur l'année
 // (lot « Correctifs de la confrontation 2 » : les contenus chargés, pour qu'une mesure change un réglage le temps d'un essai)
-export const contenu = { module2 };
+export const contenu = { module2, module7, seance };
 const pretes = (c) => ({ ...c, cartes: c.cartes.map((x) => ({ ...x, illustration: x.illustration ?? `fictif/${x.id}.webp`, anecdote: x.anecdote ?? "Anecdote fictive." })) });
 const gen = (cfg, r, o = {}) => (o.format === "ecrire" ? makeWrite(cfg, r, o) : o.format === "sauter" ? makeJump(cfg, r) : o.format === "placer" ? makePlace(cfg, r, o) : o.format === "estimer" ? makeEstimate(cfg, r, o) : makeRead(cfg, r, o));
 const ERR = { 1: "E1", 2: "E1", 3: "E1", 4: "E3", 5: "E2", 6: "E5", 7: "E2", 8: "autre", 9: "E6", 10: "E6", 11: "E3", 12: "E6", 13: "autre" };
@@ -43,11 +45,16 @@ const ERR = { 1: "E1", 2: "E1", 3: "E1", 4: "E3", 5: "E2", 6: "E5", 7: "E2", 8: 
 // lot « L'étal du pêcheur » : etal(n) : probabilité de payer juste du premier coup au niveau n (hypothèse : le niveau 1 se fait
 // sans peine ; le portefeuille restreint, la monnaie impossible et les centimes coûtent) ; au deuxième essai (compléter, ou
 // valider après que le pêcheur a rendu ce qui était en trop), `ETAL.deuxieme` de plus
-const reel = { etal: (n) => [0, 0.92, 0.85, 0.78, 0.68, 0.6, 0.58, 0.6, 0.65, 0.62, 0.5][n], voiliers: (n) => [0, 0.88, 0.8, 0.8, 0.72, 0.6, 0.55, 0.6, 0.5, 0.5][n], calcul: (n) => [0, 0.9, 0.8, 0.7, 0.8, 0.7, 0.55, 0.45, 0.6, 0.4][n], mult: (n) => [0, 0.9, 0.85, 0.8, 0.85, 0.75, 0.7, 0.65, 0.6, 0.55][n], calculMs: 6000, ligne: (n) => [0, 0.95, 0.9, 0.85, 0.55, 0.45, 0.45, 0.4, 0.45, 0.5, 0.45, 0.4, 0.5, 0.45][n], apprend: 0.006, fait: 0.9, fait20: 0.8, faitMs: 5000, baseMs: 3500, nsp: 0.3, trou: 0.85 };
+// lot « Problèmes » : probleme(n) : probabilité de résoudre un problème du niveau n (hypothèse de la session : l'enfant de référence a
+// eu 2,5/3 aux problèmes à l'évaluation de septembre ; le niveau 2, celui du départ, se réussit à 80 % ; chercher une partie, comparer
+// et le début inconnu coûtent ; l'enfant apprend un peu à chaque essai du niveau, `apprend`, comme la ligne) ; au cran « plus facile »,
+// les objets dessinés aident (+ 0,08) ; une aide (coquillage) n'est pas simulée
+const PROB = { reel: [0, 0.88, 0.8, 0.76, 0.68, 0.64, 0.66, 0.6, 0.52, 0.5], diff: [0, 0.75, 0.62, 0.6, 0.5, 0.46, 0.46, 0.42, 0.35, 0.32] };
+const reel = { probleme: (n) => PROB.reel[n], etal: (n) => [0, 0.92, 0.85, 0.78, 0.68, 0.6, 0.58, 0.6, 0.65, 0.62, 0.5][n], voiliers: (n) => [0, 0.88, 0.8, 0.8, 0.72, 0.6, 0.55, 0.6, 0.5, 0.5][n], calcul: (n) => [0, 0.9, 0.8, 0.7, 0.8, 0.7, 0.55, 0.45, 0.6, 0.4][n], mult: (n) => [0, 0.9, 0.85, 0.8, 0.85, 0.75, 0.7, 0.65, 0.6, 0.55][n], calculMs: 6000, ligne: (n) => [0, 0.95, 0.9, 0.85, 0.55, 0.45, 0.45, 0.4, 0.45, 0.5, 0.45, 0.4, 0.5, 0.45][n], apprend: 0.006, fait: 0.9, fait20: 0.8, faitMs: 5000, baseMs: 3500, nsp: 0.3, trou: 0.85 };
 export const PROFILS = {
-  sait: { nom: "sait déjà (rapide)", etal: (n) => (n <= 4 ? 0.95 : 0.88), voiliers: (n) => (n <= 4 ? 0.95 : 0.88), calcul: (n) => (n <= 5 ? 0.95 : 0.88), mult: (n) => (n <= 5 ? 0.95 : 0.88), calculMs: 4000, ligne: (n) => (n <= 5 ? 0.97 : 0.85), apprend: 0.004, fait: 0.97, fait20: 0.92, faitMs: 3500, baseMs: 3000, nsp: 0.2, trou: 0.95 },
+  sait: { nom: "sait déjà (rapide)", probleme: (n) => (n <= 5 ? 0.93 : 0.86), etal: (n) => (n <= 4 ? 0.95 : 0.88), voiliers: (n) => (n <= 4 ? 0.95 : 0.88), calcul: (n) => (n <= 5 ? 0.95 : 0.88), mult: (n) => (n <= 5 ? 0.95 : 0.88), calculMs: 4000, ligne: (n) => (n <= 5 ? 0.97 : 0.85), apprend: 0.004, fait: 0.97, fait20: 0.92, faitMs: 3500, baseMs: 3000, nsp: 0.2, trou: 0.95 },
   reel: { nom: "profil de l'évaluation (ligne faible au-delà de 20, faits en partie sus)", ...reel },
-  diff: { nom: "en difficulté", etal: (n) => [0, 0.85, 0.75, 0.65, 0.55, 0.45, 0.42, 0.45, 0.5, 0.48, 0.38][n], voiliers: (n) => [0, 0.78, 0.65, 0.65, 0.55, 0.45, 0.4, 0.45, 0.35, 0.35][n], calcul: (n) => [0, 0.8, 0.65, 0.55, 0.65, 0.55, 0.4, 0.3, 0.45, 0.3][n], mult: (n) => [0, 0.8, 0.7, 0.65, 0.7, 0.6, 0.55, 0.5, 0.45, 0.4][n], calculMs: 9000, ligne: (n) => [0, 0.85, 0.75, 0.7, 0.45, 0.35, 0.35, 0.3, 0.35, 0.4, 0.35, 0.3, 0.4, 0.35][n], apprend: 0.004, fait: 0.75, fait20: 0.6, faitMs: 8000, baseMs: 4000, nsp: 0.4, trou: 0.75 },
+  diff: { nom: "en difficulté", probleme: (n) => PROB.diff[n], etal: (n) => [0, 0.85, 0.75, 0.65, 0.55, 0.45, 0.42, 0.45, 0.5, 0.48, 0.38][n], voiliers: (n) => [0, 0.78, 0.65, 0.65, 0.55, 0.45, 0.4, 0.45, 0.35, 0.35][n], calcul: (n) => [0, 0.8, 0.65, 0.55, 0.65, 0.55, 0.4, 0.3, 0.45, 0.3][n], mult: (n) => [0, 0.8, 0.7, 0.65, 0.7, 0.6, 0.55, 0.5, 0.45, 0.4][n], calculMs: 9000, ligne: (n) => [0, 0.85, 0.75, 0.7, 0.45, 0.35, 0.35, 0.3, 0.35, 0.4, 0.35, 0.3, 0.4, 0.35][n], apprend: 0.004, fait: 0.75, fait20: 0.6, faitMs: 8000, baseMs: 4000, nsp: 0.4, trou: 0.75 },
   tresdur: { nom: "profil de l'évaluation, choisit toujours « très dur »", ...reel, cran: "tresdur" },
   facile: { nom: "profil de l'évaluation, choisit toujours « plus facile »", ...reel, cran: "facile" },
 };
@@ -67,6 +74,20 @@ export const VOILIERS = { deuxieme: 0.2, vent: 0.04, pirates: 0.08, rattrape: 0.
 // lot « L'étal du pêcheur » : un achat payé juste (le produit et son prix dits, ouvrir, sortir, poser, la coche, le compte, l'emballage),
 // au deuxième essai, manqué (la correction), l'exemple guidé ; le niveau 7 se tape au pavé, plus court
 export const ETAL = { deuxieme: 0.25 };
+// lot « Problèmes » : la durée d'un problème (hypothèse de la session) : l'histoire et la question lues (une phrase : 0,7 s et 60 ms
+// par lettre, l'ordre de grandeur des phrases déjà fabriquées), la recherche (12 s environ pour une bonne réponse, 18 s pour une
+// mauvaise, plus longue aux niveaux 6 à 9), la réponse au pavé, puis le bravo (2,5 s) ou l'aide et la correction (deux phrases
+// d'aide, la correction dans l'histoire, le calcul : 1,5 s de plus) ; au partage manipulé (niveau 3), chaque objet glissé (2,2 s) ;
+// la consigne de la première fois ; au cran « plus facile », l'histoire redite
+export const PROBLEME = { lettreMs: 60, phraseMs: 700, rechercheMs: 12000, rechercheFauxMs: 18000, grandsNiveauxMs: 6000, bravoMs: 2500, aideMs: 5500, calculMs: 1500, objetMs: 2200 };
+const lu = (t) => (t ? PROBLEME.phraseMs + PROBLEME.lettreMs * t.length : 0);
+const dureeProbleme = (q, ok, R) => {
+  const e = q.e, histoire = e.enonce.reduce((a, x) => a + lu(x), 0) + lu(e.question);
+  let ms = histoire * (q.redire ? 2 : 1) + (ok ? PROBLEME.rechercheMs : PROBLEME.rechercheFauxMs) * (0.7 + R() * 0.6) + (e.niveau >= 6 ? PROBLEME.grandsNiveauxMs : 0);
+  if (q.manipuler && e.structure === "partage" && e.groupes.inconnue === "taille") ms += e.donnees[0] * PROBLEME.objetMs;
+  ms += ok ? PROBLEME.bravoMs : PROBLEME.aideMs + lu(e.correction) + PROBLEME.calculMs;
+  return ms;
+};
 const T = { achat: 24000, achatCorrige: 40000, achatManque: 46000, achatRendre: 14000, achatRendreFaux: 26000, exempleEtal: 26000, bateau: 9500, bateauCorrige: 19000, bateauManque: 24000, bateauCoule: 13000, exempleVoilier: 16000, calc: 9000, calcFaux: 24000, calcGuide: 26000, phrase: 3000, defiEnPlus: 500, chauffe: 7000, chauffeFaux: 9000, notion: 15000, notionFaux: 30000, guide: 30000, lecon: 75000, add: 8000, addFaux: 16000, addGuide: 16000 };
 
 // lot 3 : `choix` ({ module: 1, niveau } ou { module: 2, famille }) : l'enfant choisit toujours cet exercice (écran
@@ -125,6 +146,16 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
       const value = ok ? expected(q) : nsp ? null : expected(q) + 1; if (!q.guide) noteFait(q, ok);
       return { q, value, ok, code: ok ? null : nsp ? "NSP" : "autre", ms: ok ? msFait(P, q) * (0.7 + R() * 0.6) : 9000, listens: 1, aide: false, nsp }; } };
     log.add = [];
+    // lot « Problèmes » : l'écran simulé d'un problème (l'étape fixe et l'exercice) ; `log.problemes` : les énoncés posés
+    const probScreen = (ou) => ({ ask: async (q) => {
+      const niv = `p${q.niveauEnonce}`; essais[niv] = (essais[niv] ?? 0) + 1;
+      const p = q.guide ? 1 : Math.max(0.05, Math.min(0.97, (P.probleme?.(q.niveauEnonce) ?? 0.7) + P.apprend * essais[niv] + (q.objets ? 0.08 : 0) + (q.cran === "dur" ? -0.04 : q.cran === "tresdur" ? -0.12 : 0)));
+      const ok = R() < p, nsp = !ok && R() < P.nsp; if (nsp) log.nsp++;
+      add(dureeProbleme(q, ok, R)); (log[ou] ??= []).push(`${q.id}${ok ? "" : nsp ? "?" : "✗"}${q.guide ? "g" : ""}`);
+      const value = ok ? q.e.reponse : nsp ? null : q.e.reponse + (q.e.reponse > 1 && R() < 0.5 ? -1 : 1);
+      return { q, value, ok, code: classer(q.e, value, nsp), ms: 20000, listens: 1, aide: false, nsp };
+    } });
+    const premiereFois = { dit: false };
     // le défi record (lot 2, étape 7) : faits bien sus, réponses un peu plus rapides qu'à l'échauffement (pas de
     // consigne lue), la bonne réponse montrée un instant après une erreur ; le temps n'avance qu'avec les réponses
     const defiStep = seance.etapes.find((e) => e.id === "defi");
@@ -185,6 +216,14 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
           log.niv1 = runner.st.niveau;
           return;
         }
+        // lot « Problèmes » : le module 7 (choisi, ou imposé par le parent ; hors de la rotation de « jouer »)
+        if (ctx.session.rec.module === 7) {
+          const runner = await new Module7Runner({ store, content: module7, banque: problemes, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, choix: ctx.session.choix?.module === 7 ? ctx.session.choix.niveau : null }).load();
+          log.module = 7; log.niv0 = runner.niveau;
+          await runNotion({ ...ctx, step: { ...ctx.step, ...(ctx.step.module7 ?? {}) }, runner, screen: probScreen("problemes"), rnd: R, lesson: async (id) => { add(T.lecon); log.lecons.push(id); return { vue: true }; } });
+          log.niv1 = runner.st.niveau; log.acquis7 = [...runner.st.acquis];
+          return;
+        }
         // lot « Multiplication » : le module 5 (dans la rotation à partir de janvier, ou choisi)
         if (ctx.session.rec.module === 5) {
           const runner = await new Module5Runner({ store, content: module5, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, choix: ctx.session.choix?.module === 5 ? ctx.session.choix.niveau : null }).load();
@@ -234,6 +273,14 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
         log.module = 1;
         const runner = await new Module1Runner({ screen: lineScreen, store, content: module1, rnd: R, seance: ctx.session.id, variete: seance.variete, offset: () => ctx.session.offset, cran: () => ctx.session.cran, choix: ctx.session.choix?.niveau ?? null }).load(); log.niv0 = runner.st.niveau;
         await runNotion({ ...ctx, runner, screen: lineScreen, rnd: R, lesson: async (id) => { add(T.lecon); log.lecons.push(id); return { vue: true }; } }); log.niv1 = runner.st.niveau; },
+      // lot « Problèmes » : l'étape fixe « Problème du jour » (1 à 2 problèmes en 1 min 30, au niveau de l'enfant)
+      probleme: async (ctx) => {
+        const runner = await new Module7Runner({ store, content: module7, banque: problemes, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => ctx.session.cran, etape: true }).load();
+        log.nivProbleme0 = runner.niveau; add(T.phrase); if (!premiereFois.dit && !(await store.setting("problemesConsigne"))) { premiereFois.dit = true; await store.setSetting("problemesConsigne", true); add(lu(textes.problemeConsigne) + lu(textes.problemeReecouter)); }
+        const n = module7.etape?.problemes ?? 2;
+        await runNotion({ ...ctx, step: { ...ctx.step, questions: [n, n], guides: 0 }, runner, screen: probScreen("problemeDuJour"), rnd: R, lesson: async () => ({ vue: false }) });
+        log.nivProbleme1 = runner.st.niveau; log.acquis7 = [...runner.st.acquis];
+      },
       defi: async (ctx) => {
         const w = await new Warmup({ store, content: module2, rnd: R, seance: ctx.session.id, variete: seance.variete, clock, cran: () => "conseille" }).load(); w.defi = true;
         const view = { show() {}, start() {}, stop() {}, pearl() {}, record() {} };
@@ -272,6 +319,7 @@ async function simulate0({ profil, jours, seed, zonesPretes, choix, cran, horlog
     const rec = await s.run();
     Object.assign(log, { cran: rec.cran, cranDepart: rec.cranDepart, reussite: rec.reussite, questions: rec.questions, etoiles: rec.etoiles, duree: Math.round(rec.dureeS / 60 * 10) / 10, arc: rec.arcEnCiel ?? 0, reste: rewards.total, nbCartes: rewards.count, brillantes: Object.values(rewards.owned).filter((o) => o.brillante).length, legendaires: cartes.cartes.filter((c) => c.rarete === "legendaire" && rewards.owned[c.id]).length, ouvertes: [...rewards.zones.ouvertes], doreesDispo: rewards.doreesDispo, arcDispo: rewards.arcDispo, arcGagnees: rewards.st.arcEnCiel ?? 0, arcBrillees: rewards.st.arcBrillees ?? 0, arcZones: rewards.st.arcDepensees ?? 0, doreesGagnees: rewards.st.dorees ?? 0, doreesDepensees: rewards.st.doreesDepensees ?? 0 });
     log.defiSaute = rec.etapes.find((e) => e.id === "defi")?.sautee ?? null;
+    { const e = rec.etapes.find((x) => x.id === "probleme"); log.problemeSaute = e?.sautee ?? null; log.problemeS = e?.dureeS ?? null; log.notionS2 = rec.etapes.find((x) => x.id === "notion")?.dureeS ?? null; }
     const fam = await store.get("niveaux", 2); log.fOuvertes = [...(fam?.ouvertes ?? [])]; log.fAcquises = [...(fam?.acquises ?? [])]; log.fTrou = [...(fam?.trou ?? [])]; log.fDepassees = (fam?.depassees ?? []).map((d) => d.famille);
     // lot 3 ter (T2) : les ouvertures de familles, l'évaluation de fin d'échauffement, les réponses attendues à l'échauffement
     log.fOuvertures = structuredClone(fam?.ouvertures ?? []); log.opening = log.warm?.opening ?? null; delete log.warm;

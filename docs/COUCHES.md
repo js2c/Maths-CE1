@@ -206,7 +206,7 @@ que ce qu'elle contient.
 
 ### 3.6 Ce que l'enfant imprévisible a trouvé dans les couches
 
-Six défauts, chacun réduit à un parcours de non-régression qui échoue sur le code d'avant la correction :
+Six défauts, et un septième vu sur GitHub le 2 novembre 2026, chacun réduit à un parcours de non-régression qui échoue sur le code d'avant la correction :
 
 | Graine | Le défaut | La cause | Le parcours |
 | --- | --- | --- | --- |
@@ -216,3 +216,4 @@ Six défauts, chacun réduit à un parcours de non-régression qui échoue sur l
 | 1023 | L'écran « choisir » construit par-dessus l'accueil | Quitté pendant le chargement de sa planche, il se construisait ensuite quand même : sa portée naissait après le chargement (`session/choice.js`) | `tests/e2e/choisir-quitte.mjs` |
 | 1062 | Une erreur de la page en passant la correction de la ligne (existait sur `main`) | La même image de la ligne était redonnée au calque, déjà « détachée » (`engine/line.js`) | `tests/e2e/passer-correction.mjs` |
 | 1063 | La seconde phrase de l'échauffement dite sur l'exercice suivant | À l'abandon, les portées étaient fermées avant la voix : le `voice.stop()` d'un rangement terminait la phrase en cours comme dite, et la suite de l'étape quittée parlait (`main.js`, `abandonActivity`) | `tests/e2e/echauffement-quitte.mjs` |
+| 1 (GitHub, 2 novembre 2026) | L'étal actif sur l'accueil, sa scène visible, pendant 0,2 à 2 s, après la maison touchée pendant que la scène s'installait (une leçon de la monnaie, la notion du jour abandonnée) ; dans l'entraînement libre, une erreur de la page (« zoneLampe ») ; les voiliers de même, à leur première entrée | Le correctif de la graine 1 (ci-dessus) rangeait la scène une fois installée : l'installation n'était pas interruptible, et la sortie n'était inscrite qu'après elle (`modules/etal/screen.js`, `enter` ; `main.js`, `notion6`, `notion4` ; `session/free.js` ; `lessons/etal.js`). Désormais `leave()` arrête l'installation net, et la sortie est inscrite avant (lot « Correctif : l'étal resté actif à l'accueil ») | `tests/e2e/etal-quitte-installation.mjs` |

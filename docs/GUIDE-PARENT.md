@@ -589,6 +589,23 @@ Les points des relectures indépendantes qui avaient déjà une réponse par dé
 
 **À essayer sur la tablette** : une leçon de la monnaie (le menu des leçons, puis L18) ; l'accueil, le galet « jouer » ; l'étal, au début (l'exemple du pêcheur, puis ouvrir le portefeuille).
 
+## d quatervicies) Lot « Correctifs de la confrontation 2 » : vos décisions du 3 novembre
+
+Les écarts de la deuxième confrontation de la spécification avec l'application (`docs/ECARTS-SPEC-2.md`), tels que vous les avez tranchés. Ce qui change pour votre enfant :
+
+- **Les séances d'additions durent à nouveau 9 à 11 minutes.** Quand la famille du jour n'a plus de question possible (une petite famille, déjà bien sue), la séance ne s'arrête plus au bout de 5 minutes : elle finit sur des révisions de faits des autres familles, ceux qui sont dus d'abord. Sur l'année simulée : 9,8 minutes en moyenne (8,8 avant), 10 séances d'additions sur 526 sous 7 minutes (64 avant).
+- **Au plus 10 faits nouveaux par séance** (avant : jusqu'à 15 ou 16).
+- **La contrepartie** : environ 68 % des questions portent sur la famille du jour en moyenne (80 % avant) ; c'est la part que prennent les révisions. Vous aviez fixé l'ordre des critères ; si vous préférez plus de questions sur la famille du jour et acceptez des séances plus courtes, il suffit d'un réglage (`docs/JOURNAL-CONCEPTION.md`, « Décisions du 3 novembre 2026 »).
+- **Au calcul rapide, niveau 7**, de nouveaux calculs : ceux qui tombent juste sur la dizaine (24 + 6, 17 + 3).
+- **À la multiplication**, l'exemple montré par le capitaine ne vient plus qu'au premier passage d'un niveau, et jamais au cran « très dur ».
+- **Après une leçon du menu**, l'entraînement qui suit commence par les exemples guidés, comme dans la séance du jour.
+- **À l'étal et dans les tables**, deux touchers rapides (« 1 » puis « 1 » pour 11) ne sont plus pris pour un seul, même quand la tablette est occupée.
+- **L'écran de démarrage** écrit la version lisiblement : « 03/11/2026 · js2c · version 0.72 ».
+
+**Phrases à fabriquer** : 57 phrases nouvelles (les calculs du niveau 7), avec celles du lot « Problèmes » qui suit dans la même demande de fusion.
+
+**À essayer sur la tablette** : une séance « jouer » d'additions (sa durée, notée dans l'espace parent) ; l'écran de démarrage (la version).
+
 ## e) Ce qui reste approximatif ou à ajuster
 
 **À vérifier sur la vraie tablette.** Écouter la voix (aucune phrase n'a été écoutée par une personne, la vérification a été automatique) et regarder les illustrations des cartes en grand. Toutes les mesures ont été faites sur un ordinateur, en ralentissant le processeur 4 fois pour imiter une tablette : démarrage en moins de 1,5 s, animation à 50 à 60 images par seconde la plupart du temps, avec des baisses vers 30 pendant certaines animations (l'application allège alors d'elle-même le décor). Il faut confirmer que tout reste fluide sur la tablette.

@@ -78,11 +78,13 @@ export class Module2Runner {
   // (échauffement compris) ; au-delà, la famille est épuisée, et la notion du jour continue sur des révisions, comme en 2.6, à
   // tout moment de l'étape (le plafond ne doit pas raccourcir la séance : sans lui, l'exception l'aurait remplie de faits nouveaux)
   get exceptionPleine() { return this.w.nouveaux >= (this.N.nouveauxMaxException ?? Infinity); }
-  // (écart 2.6, décision du parent du 3 novembre 2026) la famille en cours épuisée AVANT la moitié du temps de l'étape : au lieu de
-  // s'arrêter, la notion du jour se termine sur des révisions de faits déjà vus des autres familles (module2.json,
-  // notion.revisionsFamilleEpuisee) ; épuisée après la moitié : elle s'arrête, comme avant (décision du 14 octobre). Une fois
-  // commencées, les révisions continuent jusqu'à la fin de l'étape (`this.revisions`). `avantMoitie` : posé par session/notion.js.
-  get revisionsPermises() { return !!this.N.revisionsFamilleEpuisee && (this.revisions || !!this.avantMoitie?.(this.N.revisionsAvantPart ?? 0.5) || (this.choix == null && this.exceptionPleine)); }
+  // (écart 2.6, décision du parent du 3 novembre 2026) la famille en cours épuisée (plus de question possible, ou le plafond de
+  // l'exception atteint) : au lieu de s'arrêter, la notion du jour se termine sur des révisions de faits déjà vus des autres
+  // familles (module2.json, notion.revisionsFamilleEpuisee), si elle l'est avant la part `notion.revisionsAvantPart` du temps de
+  // l'étape (1 : à tout moment ; 0,5 : avant la moitié, sinon elle s'arrête, comme avant, décision du 14 octobre). La part est
+  // celle que la simulation a retenue (réponse du parent du 3 novembre 2026, docs/JOURNAL-CONCEPTION.md). Une fois commencées,
+  // les révisions continuent jusqu'à la fin de l'étape (`this.revisions`). `avantMoitie` : posé par session/notion.js.
+  get revisionsPermises() { return !!this.N.revisionsFamilleEpuisee && (this.revisions || !!this.avantMoitie?.(this.N.revisionsAvantPart ?? 0.5)); }
   // une révision : un fait déjà vu d'une autre famille, les faits dus d'abord (la révision espacée : les plus en retard, puis la
   // boîte la plus basse), puis les plus faibles ; jamais un fait posé dans les `ecartMin` dernières questions (usable)
   pickRevision() {

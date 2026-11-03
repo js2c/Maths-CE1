@@ -109,7 +109,7 @@ const premiereImageMs = Math.round(performance.now());
 document.getElementById("chargement")?.remove();
 // (la version : écrite sur l'écran de démarrage, et notée avec chaque phrase sans voix, point 12)
 let versionApp = null;
-json("version.json").then((v) => { versionApp = v?.version ?? null; Session.version = versionApp; demarrage.infos(versionApp); }, () => demarrage.infos(null));
+json("version.json").then((v) => { versionApp = v?.version ?? null; Session.version = versionApp; demarrage.infos(versionApp, v?.libelle ?? null); }, () => demarrage.infos(null));
 // (lot « Mascotte ») le journal des raccords de la mascotte : gardé pour la recette (combien de fondus forcés)
 const journalMascotte = []; window.__journalMascotte = journalMascotte;
 const videoChargee = demarrage.annoncer(MASCOTTE_VIDEOS, 1);

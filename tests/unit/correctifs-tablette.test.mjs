@@ -75,6 +75,8 @@ test("1 : la barre de chargement avance selon ce qui est chargé ; les petites l
   assert.equal(avancement(0, 10), 0); assert.equal(avancement(5, 10), 0.5); assert.equal(avancement(12, 10), 1); assert.equal(avancement(0, 0), 1);
   assert.deepEqual(lignesInfo("f8aeaedb7e95"), ["2026", "js2c", "version f8aeaed"]);
   assert.deepEqual(lignesInfo(null), ["2026", "js2c"]);
+  // (demande du parent du 3 novembre 2026) le libellé de la publication remplace l'empreinte
+  assert.deepEqual(lignesInfo("f8aeaedb7e95", "0.72 03/11/2026"), ["2026", "js2c", "version 0.72 03/11/2026"]);
 });
 
 test("1 et 2 : les phrases nouvelles sont dans l'inventaire de la voix (bienvenues, descriptions des tuiles, consignes, « Touche-moi… »)", () => {

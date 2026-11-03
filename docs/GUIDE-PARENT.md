@@ -621,6 +621,27 @@ Les écarts de la deuxième confrontation de la spécification avec l'applicatio
 
 **À essayer sur la tablette** : une séance « jouer » d'additions (sa durée, notée dans l'espace parent) ; l'écran de démarrage (la version).
 
+## d quinvicies) Lot « Problèmes » : les problèmes de la vie courante
+
+Votre enfant résout maintenant des **problèmes** : de petites histoires de la vie courante (la cuisine, l'école, l'étal du pêcheur…), lues à voix haute, avec une image du lieu. Les nombres de l'histoire sont sur des **étiquettes** sous l'image ; elle tape la réponse au pavé, comme aux additions.
+
+- **Un problème chaque soir, le « Problème du jour »** : après le défi, juste avant la récompense, un ou deux problèmes en 1 min 30 environ, à son niveau. Pour garder la séance à sa durée, ce temps est pris sur l'exercice du jour (4 min 30 au lieu de 6). Vous pouvez le désactiver (Données et réglages, « Problème du jour »).
+- **Un septième exercice dans « choisir »** : les problèmes, 9 niveaux (le pictogramme : une grande barre et ses deux parties). Ils n'entrent pas dans la rotation de « jouer » (le problème du jour suffit) ; vous pouvez les imposer pour une séance.
+- **Elle commence au niveau 2** (ajouter ou enlever jusqu'à 20), d'après son évaluation de septembre. Vous pouvez choisir un autre niveau (Données et réglages, « Point de départ », « Niveau des problèmes »).
+- **Pendant l'histoire**, chaque étiquette s'allume quand la voix dit son nombre. **Toucher une étiquette** redit sa phrase ; **toucher le capitaine** redit toute l'histoire.
+- **Après une erreur**, l'application dit ce qui s'est passé quand elle le reconnaît (un nombre de l'histoire redit, la réponse de la première étape, une petite erreur de compte, « de plus » qui ne veut pas dire ajouter), puis montre l'aide : le **schéma en barres** (le tout en haut, ses deux parties en dessous, le point d'interrogation à la place de ce qu'on cherche), ou les objets groupés et comptés ; puis la correction est dite dans l'histoire, et le calcul s'écrit.
+- **Au niveau 3**, elle range elle-même les objets dans les assiettes ou les boîtes (elle les fait glisser du doigt), puis tape la réponse.
+- **Une nouvelle leçon, L19 « Le schéma en barres »**, dans le menu des leçons (une sixième rangée).
+- **Espace parent** : le bloc « Module 7 · Les problèmes » (onglet Progression), les erreurs P1 à P4 dans le journal des erreurs, et, dans le détail d'une séance, l'énoncé de chaque problème.
+
+**Les images des lieux** : seule celle de l'étal est là (c'est celle de l'étal du pêcheur). Les 21 autres sont à générer avec les prompts de `art/problemes/contextes.json` ; en attendant, ces problèmes ont un fond de papier uni. Déposez chaque image dans `art/problemes/sources/<lieu>.png` (1920 × 1080), puis une petite demande de fusion : `node art/tools/export-problemes.mjs` et `node tools/precache.mjs`.
+
+**Phrases à fabriquer** : 910 phrases pour ce lot (les histoires, les questions, les corrections, les noms, les aides, la leçon), plus les 57 du lot « Correctifs de la confrontation 2 » : 967 en tout, environ 8,4 Mo. La voix passera d'environ 82,2 à 90,6 Mo, sous le nouveau plafond de 95 Mo. La liste exacte : `tests/recette-fonctionnelle/out-problemes/PHRASES.md`.
+
+**À relire** : les rôles familiaux des histoires (« Papa », « Mamie », « ton copain »…), dans `docs/maquettes/problemes/ENONCES.md` ; signalez ceux à changer.
+
+**À essayer sur la tablette** : une séance « jouer » jusqu'au problème du jour ; « choisir », les problèmes, niveau 3 (glisser les objets) ; une erreur, pour voir le schéma ; la leçon L19.
+
 ## e) Ce qui reste approximatif ou à ajuster
 
 **À vérifier sur la vraie tablette.** Écouter la voix (aucune phrase n'a été écoutée par une personne, la vérification a été automatique) et regarder les illustrations des cartes en grand. Toutes les mesures ont été faites sur un ordinateur, en ralentissant le processeur 4 fois pour imiter une tablette : démarrage en moins de 1,5 s, animation à 50 à 60 images par seconde la plupart du temps, avec des baisses vers 30 pendant certaines animations (l'application allège alors d'elle-même le décor). Il faut confirmer que tout reste fluide sur la tablette.

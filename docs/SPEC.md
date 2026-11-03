@@ -39,7 +39,7 @@ Cinq bulles : **jouer**, **choisir**, **les leçons**, **le récif**, **l'album*
 | Échauffement | Des additions : faits dus de la révision espacée et faits nouveaux (section 6). Passable. |
 | Notion du jour | L'exercice du jour : leçon si besoin, exemples guidés, questions (sections 5 à 7). |
 | Défi record | 1 minute d'additions déjà bien sues (section 6). À partir de la **6e séance** (5 déjà terminées : décision du parent du 6 octobre 2026, 2.1) et si au moins 8 faits sont en boîte 3 ou plus ; sinon sauté sans rien dire. Désactivable par le parent. |
-| Problème du jour | **(à construire)** Un problème court (section 13). |
+| Problème du jour | 1 à 2 problèmes de la vie courante, en **1 min 30** prises sur la notion du jour (celle-ci dure alors 4 min 30), au niveau de l'enfant et au cran de la séance (section 7 quinquies ; lot « Problèmes », décisions du parent du 30 octobre 2026). Pas quand l'exercice du jour est « Problèmes », ni en entraînement libre. Désactivable par le parent (activé par défaut ; désactivé, la notion du jour garde ses 6 minutes). |
 | Récompense | Étoiles, coquillages des occasions, étoiles arc-en-ciel et de diamant, arrivages, invitation et bouton de la boutique (section 10). |
 
 - **Durée visée : 9 à 11 minutes** pour une enfant qui répond en 4,5 s, avec « jouer ». **La durée prime** sur le nombre de questions : chaque étape a une durée et une plage de questions (`seance.json`) ; si la mesure donne moins de 9 minutes, les nombres de questions sont relevés. Plafond de sécurité réglable par le parent (10, 12 ou 15 min ; 12 par défaut).
@@ -126,7 +126,7 @@ Lot « Les leçons » (octobre 2026) ; maquette validée par le parent le 7 octo
 - « Le moins avancé » se mesure à la part du parcours faite : ligne, le niveau atteint sur 13 ; additions, les familles acquises sur 13 (sur 7 avant le lot « Sommes jusqu'à 30 » : une enfant qui avait fini les sept premières familles revient à la moitié, et les additions reviennent plus souvent dans « jouer » tant que les familles nouvelles ne sont pas acquises) ; calcul rapide, les niveaux acquis sur 9 ; multiplication, les niveaux acquis sur 9 ; à égalité, l'ordre qui suit l'exercice de la dernière séance dans le cycle ligne, additions, calcul, multiplication (après les additions : le calcul, puis la multiplication, puis la ligne). « La dernière », c'est la dernière séance terminée, une séance d'exercice choisi comprise ; **après une séance hors rotation** (voiliers, étal, ou multiplication avant qu'elle n'entre dans la rotation), il n'y a pas d'exercice suivant : l'ordre repart de la ligne (3.7).
 - Quand tout ce qui est débloqué dans un exercice est acquis, « jouer » y révise le plus haut niveau acquis.
 - **Module imposé par le parent** : valable pour la prochaine séance lancée par « jouer » ; si l'enfant choisit elle-même, il attend la suivante. Il est consommé dès qu'une séance « jouer » commence, même si elle est ensuite interrompue.
-- **Les voiliers n'entrent pas dans la rotation** (décision du parent du 6 octobre 2026 : on y accède par « choisir », comme aux autres exercices) ; le parent peut les imposer pour la prochaine séance « jouer » (`seance.json`, `alternance.horsRotation`). **L'étal non plus** (fiche du lot « L'étal du pêcheur » ; question ouverte pour le parent) : même règle.
+- **Les voiliers n'entrent pas dans la rotation** (décision du parent du 6 octobre 2026 : on y accède par « choisir », comme aux autres exercices) ; le parent peut les imposer pour la prochaine séance « jouer » (`seance.json`, `alternance.horsRotation`). **L'étal non plus** (fiche du lot « L'étal du pêcheur » ; question ouverte pour le parent) : même règle. **Les problèmes non plus** (lot « Problèmes », décision du parent du 30 octobre 2026 : l'étape fixe donne déjà un problème chaque soir) : par « choisir », ou imposés par le parent (`alternance.horsRotation`).
 
 ## 4. La difficulté : le sélecteur à quatre crans
 
@@ -552,6 +552,61 @@ Lot « L'étal du pêcheur » (octobre 2026 ; fiche 7 de `docs/LOTS.md`), fait d
 
 **Fluidité** : 60 images/s mesurées par le parent sur la tablette avec la maquette (beau et mauvais temps, après l'optimisation du 10 octobre). L'intégration ajoute peu : le produit allumé est un petit calque posé, le calque de l'étal n'est recomposé qu'une fois par question. Mesures : `tests/e2e/perf.mjs --etal beau` et `--etal orage` (dans la demande de fusion).
 
+## 7 quinquies. Les problèmes de la vie courante (module 7)
+
+Fait par le lot « Problèmes » (novembre 2026 ; décisions du parent du 30 octobre 2026, maquette validée `art/problemes/`, PR #66 ; `docs/LOTS.md`, fiche 20). Des énoncés de la vie courante, **lus à voix haute**, illustrés par le lieu de l'histoire ; les quantités sont portées par le code (étiquettes, objets, schéma en barres), jamais par l'image ; la réponse au pavé. Présent de deux façons : l'**étape fixe « Problème du jour »** de chaque séance (section 2) et un **septième exercice** dans « choisir » (après l'étal), hors de la rotation de « jouer ».
+
+**La banque** : `app/content/problemes.json`, **200 énoncés**, la seule source (avant le lot : `art/problemes/enonces.json`) ; chacun a son identifiant, sa structure, son niveau, sa difficulté, son lieu, son objet (et son contenant), ses phrases (l'énoncé phrase par phrase, la question, la correction dans l'histoire), ses données, sa réponse, son calcul et son aide (`barres`, `comparaison`, `groupes`, `etapes`). Ses contrôles (`art/problemes/verifier.mjs`, fonction `controler`) sont un test unitaire (`tests/unit/problemes-banque.test.mjs`) : réponse et calcul recalculés, aide, niveau, difficulté, données dites, réponse jamais dite, ponctuation, le nombre 1 en lettres, les mots de la correction pris dans l'histoire, lieu et objet connus. Aucun prénom : « tu » et des rôles (Papa, la maîtresse, ton copain…). Réglages : `app/content/module7.json`.
+
+| Niveau | Ce qui est travaillé | Énoncés |
+| --- | --- | --- |
+| 1 | ajouter, enlever (réunion et transformation, le tout ou la fin inconnus), jusqu'à 10 | 20 |
+| 2 | les mêmes, jusqu'à 20 (**niveau de départ**) | 20 |
+| 3 | groupes égaux et partage, petits nombres, **en manipulant les objets** | 14 |
+| 4 | chercher une partie ou le changement, jusqu'à 20 | 14 |
+| 5 | comparer (« de plus », « de moins »), jusqu'à 20 | 24 |
+| 6 | les structures des niveaux 1, 2 et 4, jusqu'à 100 | 35 |
+| 7 | groupes égaux et partage, jusqu'à 50 | 35 |
+| 8 | le début inconnu ; comparer au-delà de 20 | 22 |
+| 9 | deux étapes | 16 |
+
+- **Le niveau de départ** est le 2 (2,5/3 aux problèmes à l'évaluation de septembre), réglable dans l'espace parent (1 à 9, « Point de départ ») ; le niveau 1 reste accessible par « choisir ».
+- **La montée** : la règle commune (8 bonnes réponses sur les 10 dernières du niveau, au plus une aide : le coquillage), **sur deux jours au moins**, sans voie rapide ; **les réponses de l'étape fixe comptent** ; au cran « plus facile », elles ne comptent pas (section 4). Un niveau acquis rapporte une étoile arc-en-ciel. Pas de redescente.
+- **La répétition** : un énoncé ne revient pas dans la même séance, ni avant que tous ceux de son niveau soient passés (le tour du niveau) ; un énoncé manqué revient à une séance suivante, avant les autres. Dans l'exercice, une erreur fait revenir l'énoncé 3 questions plus loin, une fois (section 9) ; à l'étape fixe, il revient à une séance suivante. La règle « une réponse qui varie » (section 9) vaut dans l'exercice, pour les énoncés repris et revenus aussi (`tests/recette-fonctionnelle/b-sequences.mjs`, module 7).
+
+**L'étape fixe « Problème du jour »** (`seance.json`, `probleme` ; `module7.json`, `etape`) : entre le défi et la récompense ; **1 à 2 problèmes, la durée prime** : le second n'est commencé que s'il reste au moins 45 s à l'étape ; ni leçon, ni exemple guidé, ni question « pour finir sur une réussite » ; « Le problème du jour ! » à son début ; un pictogramme sur la frise (le tout et ses deux parties), le même que l'exercice en notion du jour.
+
+**L'exercice** (« choisir », imposé par le parent, l'entraînement libre, « À toi ! » après la leçon L19) : 10 à 14 problèmes prévus, la durée de l'étape décide ; la leçon L19 la première fois, à un niveau du schéma en barres (1, 2, 4, 6) ; pas d'exemple guidé (sauf celui qui suit une leçon).
+
+**L'écran** (`modules/problemes/screen.js`) : l'**illustration du lieu** dans un cadre de nacre (620 × 350, de x 496 à 1116, y 116 à 466 : à gauche des réserves d'étoiles, inertes pendant le problème) ; une image par lieu (22 lieux, `art/problemes/contextes.json`), générée par le parent et réduite par `art/tools/export-problemes.mjs` (`app/assets/problemes/`, et sa liste `index.json`) ; un lieu sans image a le papier du cadre (sans texte) ; l'étal reprend l'image de l'étal du pêcheur. Au bas de l'illustration, **une étiquette par donnée** (le nombre et l'objet ; aux groupes égaux, le nombre de groupes sans objet ; au partage, le nombre de parts), et la **plaque de la réponse** (« ? » rouge, puis ce qui est tapé, verte quand c'est juste) ; trois données : des étiquettes plus petites. Dessous, le pavé, le coquillage et « je ne sais pas » à leurs places ; pas d'ardoise. Tout est dessiné par le code de l'atelier (`app/js/art/problemes.js`, généré depuis `sea/problemes.ts`), une fois par question ou à chaque objet posé, dans des canvas mis en cache.
+
+**Le déroulement d'une question** :
+
+1. La voix dit l'énoncé phrase par phrase ; **chaque étiquette apparaît et s'allume quand sa phrase est dite** ; puis la question ; le pavé répond dès le début. La première fois : « Écoute l'histoire, puis tape ta réponse. » et « Touche-moi pour réécouter l'histoire. ».
+2. **Toucher une étiquette redit sa phrase** ; toucher la mascotte redit l'histoire entière et la question (compté comme une écoute). La relance comme partout.
+3. Juste : la plaque passe au vert, la mascotte se réjouit, « Bravo ! » (la correction n'est pas dite).
+4. Faux : la phrase de l'erreur (ci-dessous), puis **l'aide** à la place du pavé : le schéma en barres (le tout en haut, ses deux parties dessous, le « ? » à sa place ; « Regarde le schéma. », « On connaît les deux parties : on les ajoute. » ou « On connaît le tout et une partie : on enlève la partie. »), la comparaison (la barre du grand, celle du petit et l'écart en pointillés), les deux schémas numérotés des deux étapes, ou les groupes d'objets comptés par bonds (5, 10, 15, 20) ; puis la **correction dite dans l'histoire** (« 23 sardines, 9 de moins, il en reste 14 sardines. ») et le **calcul écrit** sur une plaque (« 23 − 9 = 14 » ; sans ce qui est entre parenthèses dans la banque).
+5. « Je ne sais pas », « passer » (l'exemple, la correction, l'aide), la pause et la reprise à la question près : comme partout.
+
+| Code | Erreur | Ce qui est dit avant l'aide |
+| --- | --- | --- |
+| P1 | la mauvaise opération (a ajouté au lieu d'enlever, ou l'inverse ; a ajouté au lieu de grouper ou de partager) | rien de plus (le schéma le montre) ; à une comparaison : « Attention : « de plus » ne veut pas dire qu'il faut ajouter. » |
+| P2 | a redit un nombre de l'histoire | « Tu as redit un nombre de l'histoire. Il faut calculer. » |
+| P3 | la bonne opération, une erreur de compte (à 1 ou à 10 près) | « Le bon calcul, mais une petite erreur de compte. » |
+| P4 | deux étapes : la réponse de la première | « C'est la réponse de la première étape. Il en reste une. » |
+
+La même erreur (P1, P2 ou P4) deux fois dans une séance relance la leçon L19, une fois (pas à l'étape fixe). Les codes et NSP sont comptés dans l'espace parent.
+
+**Les objets** : au **niveau 3**, ils sont la question : au **partage** (la valeur d'une part), les objets en tas et les contenants vides à la place du pavé ; l'enfant les fait glisser un à un ; un contenant qui a déjà sa part refuse l'objet (« Mets-en autant dans chaque assiette. ») ; tout rangé, les contenants remplis montent sur l'illustration et le pavé revient ; aux **groupes égaux** (et au partage en nombre de parts), les groupes sont montrés formés sur l'illustration. Aux niveaux suivants, les objets ne viennent qu'en aide.
+
+**Les crans** (section 4) : « plus facile » : pas de schéma d'emblée ; l'histoire redite phrase par phrase avec ses étiquettes ; les données dessinées en objets sur l'illustration (une collection par étiquette, séparées ; au-delà de 20, des paquets de dix et les objets seuls) ; le schéma au coquillage et après une erreur. Conseillé : le schéma (ou les objets) au coquillage et après une erreur. « Plus dur » : sans coquillage. « Très dur » : sans coquillage, les énoncés des mêmes structures une difficulté au-dessus (au niveau 2, ceux du niveau 6 de même structure) ; une fois ceux-là passés dans la séance, les plus difficiles du niveau (choix de la session : la réserve « au-dessus » n'a que 5 à 7 énoncés aux niveaux 4, 5, 8 et 9).
+
+**La leçon L19 « Le schéma en barres »** (`lecons.json`) : une histoire (« Tu as 4 billes. Ton copain t'en donne 3. »), le tout et ses deux parties qui se dessinent, « on connaît les deux parties : on les ajoute » ; une histoire où l'on enlève (« Il y a 9 biscuits… Tu en manges 4. »), « on connaît le tout et une partie : on enlève la partie » ; le « ? » trouvé. Sur la scène de l'exercice. « À toi ! » : le niveau 2. Sa rangée dans le menu des leçons (la sixième).
+
+**Récompenses** : celles de la section 10 (étoiles selon le cran, erreur corrigée, niveau franchi), à l'étape fixe comme dans l'exercice ; jusqu'à 8 étoiles arc-en-ciel de plus dans l'année.
+
+**Espace parent** : le bloc « Module 7 · Les problèmes » (niveau, niveaux acquis, historique, semaine par semaine), les codes P1 à P4 et NSP dans le journal des erreurs, l'énoncé de chaque réponse dans le détail de la séance et dans l'export ; les réglages : le niveau de départ, « Problème du jour » (activé par défaut) ; les problèmes parmi les notions qu'on peut imposer.
+
 ## 8. Les leçons animées
 
 - **Dix-huit leçons** de 30 à 90 s (L11 et L12 depuis le lot « Sommes jusqu'à 30 », L13 et L14 depuis le lot « Multiplication », L15 à L18 depuis le lot « L'étal du pêcheur », jouées à l'étal même : `lessons/etal.js` ; choisies depuis l'accueil en pause, leur scène vit, elle n'est plus figée par la pause de la séance, où elle restait noire : lot « Correctifs de l'installation et de la veille », point 4), découpées en temps courts : une phrase lue, puis une animation qui attend la fin de la phrase. Textes dans `app/content/lecons.json` (tutoiement). Quand la pieuvre montrait quelque chose, une flèche le montre (section 11) : la tortue, l'étoile de mer et la loupe dans L1 à L3, le petit poisson du mur et de la ligne dans L7 à L9. Dans L4 à L6 et L10, où la pieuvre ne montrait rien de précis, le bernard-l'ermite et les aides suffisent.
@@ -833,14 +888,9 @@ Construit dans le module 2 (section 6) : les familles 8 à 13 (faits de 11 à 20
 
 Construit comme un cinquième exercice (section 7 ter) : les rangées, le signe ×, le tour des rangées, les tables de 2, 3, 4, 5 et 10 ; les leçons L13 et L14 ; la table de multiplication à consulter (section 3). Restent le partage (la division) et les problèmes multiplicatifs (ci-dessous). Proposition et choix faits sans le parent : `docs/maquettes/multiplication/PROPOSITION.md`.
 
-### Problèmes (à construire, phase 1)
+### Problèmes (fait : lot « Problèmes », novembre 2026)
 
-**Situations de la vie courante** (décision du parent du 30 septembre : le thème marin serait trop restrictif), par exemple : « Papa vide trois sachets de gourmandises dans la gamelle du chien. Chaque sachet contient 6 gourmandises. », « La maîtresse fabrique des carnets. Elle a 28 pages. Elle utilise 4 pages pour chaque carnet. », « Les enfants ont rangé les 17 ballons de l'école. La maîtresse en achète 8 nouveaux. ».
-
-- Lus à voix haute (l'énoncé n'est pas à lire), illustrés ; « réécouter » toujours disponible ; réponse au pavé.
-- **Structures** : additives (réunion, transformation avec début, changement ou fin inconnu, comparaison), et dès le départ, avec de petits nombres, **multiplicatives** (groupes égaux) et de **partage** (valeur d'une part, nombre de parts), résolues sans le signe × en groupant des objets ou par additions répétées ; problèmes en deux étapes ensuite.
-- **Aide après une erreur** : le schéma en barres (le tout et ses parties) pour les problèmes additifs ; des objets à grouper pour les autres.
-- Place dans la séance (étape fixe ou exercice à choisir), banque d'énoncés, illustrations : `docs/IDEES.md`.
+Section 7 quinquies. Reste ouvert : les illustrations des 21 lieux qui n'ont pas encore leur image (générées par le parent, `art/problemes/contextes.json`, puis `node art/tools/export-problemes.mjs`).
 
 ### Dénombrement (à construire)
 

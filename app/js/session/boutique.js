@@ -119,7 +119,7 @@ export class Boutique {
     // l'étoile arc-en-ciel, pour faire briller une créature du récif avec elle. Quand les deux coches sont là, chacune porte dans
     // son coin ce qu'on donne (l'étoile de mer, l'étoile arc-en-ciel)
     this.conf = ["croix", "coche", "arc"].map((k) => {
-      const b = document.createElement("button"); b.className = `bubble boutique-conf ${k === "arc" ? "coche coche-arc" : k}${k !== "croix" ? " invite" : ""}`; b.setAttribute("aria-label", k === "coche" ? "acheter" : k === "arc" ? "faire briller avec une étoile arc-en-ciel" : "annuler");
+      const b = document.createElement("button"); b.className = `bubble boutique-conf ${k === "arc" ? "coche-arc" : k}${k !== "croix" ? " invite" : ""}`; b.setAttribute("aria-label", k === "coche" ? "acheter" : k === "arc" ? "faire briller avec une étoile arc-en-ciel" : "annuler");
       Object.assign(b.style, { width: `${CONF}px`, height: `${CONF}px`, visibility: "hidden" });
       const c = document.createElement("canvas"); c.width = c.height = Math.round(CONF * stage.px); b.append(c);
       poser(sprites, c.getContext("2d"), stage.px, `boutique.${k === "croix" ? "croix" : "coche"}`, 0, CONF / 2 - 2, CONF / 2 - 2, 1.05);

@@ -92,7 +92,9 @@ export class Reserves {
   // à chaque image (StarHud.tick) : la visibilité du compteur, le toucher permis ou non ; hors séance, le nombre de la sauvegarde
   suivre() {
     const { app, hud } = this, vis = hud.box.style.visibility, mode = app.modeEcran?.() ?? null, r = app.rewards;
-    for (const s of SORTES) { const e = this.els[s]; if (e.style.visibility !== vis) e.style.visibility = vis; e.classList.toggle("inerte", !(app.reservesTouchables?.() ?? true)); }
+    // (rien n'est écrit dans la page si rien n'a changé : elle est relue à chaque image)
+    const inerte = !(app.reservesTouchables?.() ?? true);
+    if (vis !== this.vis || inerte !== this.inerte) { this.vis = vis; this.inerte = inerte; for (const s of SORTES) { const e = this.els[s]; e.style.visibility = vis; e.classList.toggle("inerte", inerte); } }
     if (r && mode !== "seance" && mode !== "fin") { this.set("arc", r.arcDispo); this.set("diamant", r.doreesDispo); }
     if (this.sombre !== !!hud.sombre) { this.sombre = !!hud.sombre; SORTES.forEach((s) => this.els[s].repaint()); }
   }

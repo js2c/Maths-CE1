@@ -236,7 +236,7 @@ if (faire(7)) {
     await shot(page, vue, "7b-tuile-touchee-prix-et-coche");
     if (vue === VUES[0]) {
       check(e0 < 15 && eV > 60, `7. une créature déjà dans le récif : pas de prix écrit sur sa tuile (encre ${e0.toFixed(0)}, à côté d'une tuile à vendre : ${eV.toFixed(0)})`);
-      check(e1 > 60 && /Pour la faire briller, il faut 150 étoiles/.test(await said(page)) && await visible(page, ".boutique-conf.coche"), `7. la tuile touchée : le prix est dit et écrit (encre ${e1.toFixed(0)}), avec la coche`);
+      check(e1 > 60 && /Pour (le|la) faire briller : 150 étoiles/.test(await said(page)) && await visible(page, ".boutique-conf.coche"), `7. la tuile touchée : le prix est dit et écrit (encre ${e1.toFixed(0)}), avec la coche`);
       await page.touchscreen.tap(250, 760); await page.waitForTimeout(500);
       check((await encrePrix(page, terne)) < 15, "7. un toucher ailleurs : le prix disparaît de nouveau");
       // l'achat : juste après, la tuile n'affiche aucun prix

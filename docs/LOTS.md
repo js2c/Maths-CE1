@@ -58,6 +58,8 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (décisions du parent du 2 novembre 2026) : le lot « Réserves d'étoiles et étoiles arc-en-ciel »** (fiche 17), avec un point d'arrêt « maquette » : montrer à l'enfant ses réserves d'étoiles arc-en-ciel et de diamant, un usage pour les étoiles arc-en-ciel en surplus (faire briller une créature), les réponses du parent aux questions du lot « Prix de la boutique réglables », et la documentation du Python unique de la voix. **État : fait** (maquette validée le 2 novembre 2026, avec des corrections ; 110 phrases nouvelles à fabriquer, 6 qui ne servent plus).
 
+**Puis (constat du 2 novembre 2026, tests de GitHub) : le lot court « Correctif : l'étal resté actif à l'accueil »** (fiche 18) : le travail « enfant » a échoué une fois (graine 1 : « étal actif à l'accueil ») sur une demande de fusion qui ne touchait que la documentation ; une course de vitesse dans l'application. **État : fait** (PR #72 ; aucune phrase nouvelle).
+
 **Pourquoi cet ordre.**
 
 - Les correctifs de la confrontation avant les leçons et les sommes : ces lots s'appuient sur les règles du module 2 telles qu'elles seront écrites.
@@ -1188,3 +1190,18 @@ Chaque défaut trouvé est corrigé et devient un test de non-régression. **Auc
 
 **Recette** : la méthode commune, sur le banc Android (profil `s5e`, et `petit-smartphone` pour les écrans touchés) ; tests unitaires (la règle de réserve, le paiement en étoile arc-en-ciel, l'annonce du changement de prix, les phrases des réserves selon l'état) ; un parcours `tests/e2e/reserves.mjs` (le compteur et ses réserves, chaque phrase, la boutique dans les trois cas, l'achat jamais à moitié ni deux fois, la récompense, l'ouverture d'une zone).
 
+### 18. Lot « Correctif : l'étal resté actif à l'accueil » (lot court)
+
+**Origine** : sur GitHub, le 2 novembre 2026, le travail « enfant » (`node tests/e2e/enfant.mjs --graines 3 --actions 60`) a échoué une fois, sur une demande de fusion qui ne changeait qu'un fichier de `docs/` : « ÉCHEC graine 1 : 60 actions en 77 s, image 32.3 ms (95e centile 50) ; incohérence : étal actif à l'accueil ; incohérence : à l'accueil : etal-scene keep ». Relancé sur `main` : les trois graines passent, la graine 1 quatre fois (normal, `--lent 2`, `--lent 0.5`). Une course de vitesse intermittente dans l'application.
+
+**D'un seul tenant.**
+
+1. **Trouver la cause** : rejouer la graine 1 de nombreuses fois, en variant la vitesse (`--lent`, `--tablette`), puis des centaines de graines courtes, jusqu'à reproduire le défaut ; `--rejouer` et `--reduire` pour la plus courte suite d'actions. Lire le code de sortie de l'étal (sa portée, `engine/portee.js` ; `docs/COUCHES.md`) : la maison touchée pendant que l'étal s'ouvre, se ferme, pendant l'orage, pendant le portefeuille. Si le défaut ne se reproduit pas, raisonner sur le code et démontrer la course par un parcours qui la force.
+2. **Corriger** dans l'outil d'export de l'étal ou dans le code de l'application (jamais dans le module généré à la main), selon la règle de sortie unique.
+3. **Un parcours de non-régression** qui force cette course.
+4. **Tests de GitHub** : quand le travail « enfant » ou « android » échoue, garder ses fichiers de défaut et ses captures comme archive téléchargeable (`actions/upload-artifact`, 14 jours), pour rejouer un échec vu sur GitHub ; le dire dans `docs/ARCHITECTURE.md`.
+5. **Recette** : l'enfant imprévisible en version longue (au moins 200 graines) sur le code corrigé, sur le banc. Cause, correctif et mesures dans la demande de fusion et le journal de conception.
+
+**Voix** : aucune phrase nouvelle.
+
+**Recette du lot** : `tests/e2e/etal-quitte-installation.mjs` (échoue sur `main`), l'enfant imprévisible en version longue, la recette commune.

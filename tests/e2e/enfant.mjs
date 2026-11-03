@@ -17,12 +17,15 @@
 // et, avec --fuite : après 20 tours accueil, jeu, accueil, le nombre d'éléments, de canvas, de minuteries et d'écouteurs
 // revient à celui du départ.
 //   node tests/e2e/enfant.mjs [--graines 4] [--depart 1] [--actions 80] [--lent 1] [--tablette] [--parallele 1] [--recharges N] [--android [--profil s5e]]
-//                             [--fuite] [--veille-longue] [--out dossier] [--rejouer fichier.json [--reduire]]
+//                             [--fuite] [--veille-longue] [--images-lentes [ms]] [--out dossier] [--rejouer fichier.json [--reduire]]
 //   --lent N : processeur ralenti N fois ; --tablette : 1138 × 711, densité 2,25 (la tablette du parent) ; --panne : le
 //   contrôle du contrôle (une touche orpheline et une erreur injectées : le parcours doit échouer)
+//   --images-lentes [ms] : les images des scènes servies avec ce retard (1 500 ms) : les courses d'installation plus fréquentes
 //   --rejouer : rejoue les actions enregistrées d'un défaut (out/…/defaut-*.json) ; --reduire : cherche la plus courte suite
 //   d'actions qui le montre encore (delta-debugging), et l'écrit à côté (…-reduit.json)
-// Version courte (tests de GitHub, .github/workflows/tests.yml) : node tests/e2e/enfant.mjs --graines 3 --actions 60
+// Version courte (tests de GitHub, .github/workflows/tests.yml) : node tests/e2e/enfant.mjs --graines 3 --actions 60 ; quand elle
+// échoue, GitHub garde 14 jours le dossier tests/e2e/out/enfant/ (les fichiers defaut-*.json, leurs captures, le résumé, la base
+// d'un mois) : l'archive « enfant-defauts » de la page du travail, à rejouer ici avec --rejouer (docs/ARCHITECTURE.md)
 // BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
 // (raison : la version courte et la série de centaines de graines (tests de GitHub, recette de chaque lot) jouent des milliers
 // d'actions : à la vitesse réelle de la voix, sur l'application installée, elles dureraient des jours. La version Android
@@ -48,6 +51,11 @@ const IMPASSE_MS = 20000;
 // longues inactivités, des gels, la page cachée, des relances, le navigateur tué (Android ferme Chrome) et le réseau coupé ;
 // les budgets du banc contrôlés toutes les 10 actions. --profil : s5e par défaut.
 const ANDROID = args.includes("--android"), PROFIL = arg("--profil", REFERENCE);
+// (lot « Correctif : l'étal resté actif à l'accueil ») --images-lentes [ms] : chaque image des scènes (l'étal, les voiliers, le
+// récif, les planches) servie avec ce retard (1 500 ms par défaut), comme sur un appareil ou un réseau lent : les installations
+// durent plus longtemps, et les courses qui s'y jouent (une maison touchée pendant qu'une scène s'installe) se montrent bien
+// plus souvent ; sans lui, 300 graines de 40 actions n'avaient pas montré celle de l'étal, vue une fois sur GitHub
+const LENTES = args.includes("--images-lentes") ? Number(/^\d+$/.test(arg("--images-lentes") ?? "") ? arg("--images-lentes") : 1500) : 0;
 let VUE = TABLETTE ? { width: 1138, height: 711, deviceScaleFactor: 2.25 } : { width: 1280, height: 800, deviceScaleFactor: 1 };
 if (ANDROID) { const p = PROFILS[PROFIL]; VUE = { width: p.largeur, height: p.hauteur, deviceScaleFactor: p.densite }; }
 // une base d'un mois (des cartes dans l'album et le récif, des étoiles pour la boutique), fabriquée une fois
@@ -209,7 +217,7 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
   const rnd = hasard(graine * 7919 + 13);
   let browser = null, context, page, cdp, a = null; const erreurs = [];
   const brancherPage = () => {
-    page.on("pageerror", (e) => erreurs.push({ t: Date.now(), m: e.message }));
+    page.on("pageerror", (e) => erreurs.push({ t: Date.now(), m: e.message, pile: e.stack }));
     page.on("console", (m) => { if (m.type() === "error" && !/Failed to load resource|net::ERR/.test(m.text())) erreurs.push({ t: Date.now(), m: m.text() }); });
   };
   if (ANDROID) {
@@ -220,11 +228,18 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
     browser = await lancer();
     context = await browser.newContext({ viewport: { width: VUE.width, height: VUE.height }, deviceScaleFactor: VUE.deviceScaleFactor, hasTouch: true });
     await accueilReel(context); await context.addInitScript(INSTRUMENTS);
+    if (LENTES) await context.route(/\/assets\/(etal|voiliers|recif|art)\//, async (r) => { await new Promise((ok) => setTimeout(ok, LENTES)); await r.continue().catch(() => {}); });
     page = await context.newPage(); cdp = await context.newCDPSession(page); brancherPage();
   }
   // (--android) une relance : le navigateur fermé ou tué, rouvert sur le même profil ; la page et ses écouteurs sont neufs
   const relancer = async (tuer) => { const r = tuer ? await a.tuerEtRelancer() : await a.relancer(); ({ ctx: context, page, cdp } = a); brancherPage(); return r; };
-  const defauts = [], faits = [], noter = (quoi, detail) => { if (!defauts.some((d) => d.quoi === quoi)) defauts.push({ quoi, detail, apres: faits.length }); };
+  // (lot « Correctif : l'étal resté actif à l'accueil ») chaque défaut, la première fois qu'il est vu : une capture de l'écran à cet
+  // instant, à côté de son fichier (defaut-<graine>-<défaut>.png) ; sur GitHub, les deux sont gardés quand le travail échoue
+  const defauts = [], faits = [], noter = (quoi, detail) => {
+    if (defauts.some((d) => d.quoi === quoi)) return;
+    defauts.push({ quoi, detail, apres: faits.length });
+    if (!REJOUER) page?.screenshot({ path: join(OUT, `defaut-${graine}-${quoi.replace(/[^a-z0-9]+/gi, "-").slice(0, 50)}.png`), timeout: 10000 }).catch(() => {});
+  };
   // la garde : une partie qui n'avance plus pendant 3 minutes (une action ou une vérification qui ne rend jamais la main) est
   // arrêtée, avec l'endroit où elle s'est arrêtée et une capture (premières longues séries : deux parties restées une heure)
   let pas = Date.now(), ou = "chargement", bloque = null, delai = 0; // (`delai` : une action longue voulue, la veille de 5 minutes)
@@ -257,7 +272,7 @@ async function partie(graine, { liste = null, cherche = null } = {}) {
       const nouvelles = await page.evaluate(() => { const l = window.__enfant.phrases.splice(0); return l; }).catch(() => []);
       nPhrases += nouvelles.length;
       for (const p of nouvelles) { const pb = phraseHorsEcran(p); if (pb) noter(`phrase d'une étape quittée : ${pb.split(" (")[0]}`, `« ${p.texte} » ${pb} ; ${JSON.stringify(p.ctx)}`); }
-      for (const x of erreurs.splice(0)) noter(`erreur : ${x.m.slice(0, 80)}`, x.m);
+      for (const x of erreurs.splice(0)) noter(`erreur : ${x.m.slice(0, 80)}`, x.pile ?? x.m); // (la pile d'appels, quand la page la donne : où chercher)
       dernierEtat = Date.now();
     };
     const n = liste ? liste.length : ACTIONS;
@@ -355,9 +370,11 @@ if (REJOUER) {
   const d = JSON.parse(readFileSync(REJOUER, "utf8"));
   await installerModele();
   let liste = d.faits.slice(0, d.defaut.apres + 1);
-  const montre = async (l) => (await partie(d.graine, { liste: l, cherche: d.defaut.quoi })).defauts.some((x) => x.quoi === d.defaut.quoi);
+  let vu = null;
+  const montre = async (l) => { const x = (await partie(d.graine, { liste: l, cherche: d.defaut.quoi })).defauts.find((x) => x.quoi === d.defaut.quoi); if (x) vu = x; return !!x; };
   console.log(`rejoue ${liste.length} actions de la graine ${d.graine} : « ${d.defaut.quoi} »`);
   if (!(await montre(liste))) console.log("     le défaut ne se reproduit pas à l'identique (le hasard de l'application) ; nouvel essai…");
+  else console.log(`     reproduit : ${String(vu.detail).slice(0, 1200)}`);
   if (REDUIRE) {
     // delta-debugging : retirer des tranches d'actions tant que le défaut se montre encore (deux essais par candidat)
     let k = 2;
@@ -390,7 +407,7 @@ if (REJOUER) {
       const g = graines[suivante++], t0 = Date.now();
       const r = await partie(g).catch((e) => ({ graine: g, actions: 0, defauts: [{ quoi: `partie interrompue : ${e.message.split("\n")[0].slice(0, 80)}`, detail: e.stack, apres: 0 }], faits: [] }));
       r.dureeS = Math.round((Date.now() - t0) / 1000);
-      for (const d of r.defauts) writeFileSync(join(OUT, `defaut-${g}-${d.quoi.replace(/[^a-z0-9]+/gi, "-").slice(0, 50)}.json`), JSON.stringify({ graine: g, vue: VUE, lent: LENT, defaut: d, faits: r.faits }, null, 1));
+      for (const d of r.defauts) writeFileSync(join(OUT, `defaut-${g}-${d.quoi.replace(/[^a-z0-9]+/gi, "-").slice(0, 50)}.json`), JSON.stringify({ graine: g, vue: VUE, lent: LENT, imagesLentes: LENTES, defaut: d, faits: r.faits }, null, 1));
       console.log(`${r.defauts.length ? "ÉCHEC" : "ok  "} graine ${g} : ${r.actions} actions en ${r.dureeS} s${r.temps ? `, image ${r.temps.moyenne} ms (95e centile ${r.temps.p95})` : ""}${r.defauts.length ? ` ; ${r.defauts.map((d) => d.quoi).join(" ; ")}` : ""}`);
       resume.parties.push({ graine: g, actions: r.actions, dureeS: r.dureeS, temps: r.temps, vus: r.vus, phrases: r.phrases, types: Object.entries(r.faits.reduce((m, a) => ({ ...m, [a.type]: (m[a.type] ?? 0) + 1 }), {})), defauts: r.defauts.map(({ quoi, detail, apres }) => ({ quoi, detail: String(detail).slice(0, 600), apres })) });
     }

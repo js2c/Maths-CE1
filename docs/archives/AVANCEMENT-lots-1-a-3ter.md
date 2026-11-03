@@ -932,3 +932,9 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 - **Fini le 3 novembre 2026** : `session/reserves.js` (les réserves, ce qu'elles disent) ; `rewards.js` (`arcBrillees`, la règle de réserve, `acheter(…, { arc })`, `prixAnnonce`) ; la boutique (deux coches, l'étoile gardée, les phrases courtes, le genre des cartes) ; la récompense (les vols vers les réserves et depuis elles) ; l'espace parent ; la documentation de la voix ; la simulation par le code (`tests/sim-boutique.mjs`) ; tests unitaires et `tests/e2e/reserves.mjs` ; la recette sur le banc Android et la relecture indépendante (`tests/recette-fonctionnelle/out-reserves/RELECTURE.md`).
 - **Échecs hérités de `main`** : `etal` et `installation` (corrigés par la PR #64), `notion2` (`docs/IDEES.md`).
 
+## Reprise du lot « Correctif : l'étal resté actif à l'accueil »
+
+- **Branche** : `claude/awesome-sagan-0v5slw`, partie de `main` (c26546a0, PR #65) ; demande de fusion https://github.com/js2c/Maths-CE1/pull/72.
+- **Fiche** : `docs/LOTS.md`, fiche 18 ; lot court, d'un seul tenant.
+- **Fini le 3 novembre 2026** : la cause (l'installation de la scène de l'étal n'était pas interruptible ; la sortie inscrite après elle), le correctif (`modules/etal/screen.js`, `modules/voiliers/screen.js`, `main.js`, `session/free.js`, `lessons/etal.js`), le second défaut de la même famille (le portefeuille touché pendant l'installation), le parcours `tests/e2e/etal-quitte-installation.mjs`, `enfant.mjs --images-lentes`, la pile d'appels dans les fichiers de défaut, les archives des tests de GitHub (14 jours), la recette (cause, correctif et mesures : `docs/JOURNAL-CONCEPTION.md`). Aucune phrase nouvelle.
+

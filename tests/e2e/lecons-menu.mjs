@@ -80,7 +80,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     check((await page.locator(".lecons-rangee").count()) === 5 && (await page.locator(".legende").count()) === 1, `${T} · cinq pictogrammes de rangée et le petit livre`);
     check(/Les leçons\. \| Quelle leçon veux-tu regarder \? Touche une image : je te dis ce que c.est\. Touche-la encore pour la regarder\./.test(await said(page)), `${T} · « Les leçons. », puis la consigne du menu`);
     const keys = await page.evaluate(() => [...document.querySelectorAll(".lecons-tuile")].map((e) => e.dataset.key).join(","));
-    check(keys === "L1,L2,L3,L10,L4,L5,L6,L11,L12,L7,L8,L9,L13,L14,L15,L16,L17,L18,table.addition,table.multiplication", `${T} · l'ordre des tuiles (${keys})`);
+    check(keys === "L1,L2,L3,L10,L4,L5,L6,L11,L12,L7,L8,L9,L13,L14,L15,L16,L17,L18,L19,table.addition,table.multiplication", `${T} · l'ordre des tuiles (${keys})`);
     const b = await bulle(page); check(b.visible && !b.couvre, `${T} · la bulle du menu ne couvre aucune tuile (${b.place})`);
     await shot(page, "03-menu"); await note(page, "accueil, puis la bulle « les leçons »");
     const t7 = await hold(page, '.lecons-tuile[data-key="L7"]'); check(t7.label === null, `${T} · appui long sur la tuile 7 : aucune étiquette (${t7.label})`);

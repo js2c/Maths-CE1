@@ -90,7 +90,7 @@ for (const T of TAILLES) {
   {
     const { page, context, errors } = await open("", T);
     await page.tap(".choisir", { force: true }); await page.waitForSelector(".choix-ex", { timeout: 15000 }); await page.waitForTimeout(500);
-    check((await page.locator(".choix-ex").count()) === 6, `${W} : six exercices dans « choisir »`);
+    check((await page.locator(".choix-ex").count()) === 7, `${W} : sept exercices dans « choisir » (lot « Problèmes »)`);
     await page.tap('.choix-ex[data-key="etal"]', { force: true }); await page.waitForTimeout(700);
     await shot(page, "01-choisir-exercices", T);
     await page.tap('.choix-ex[data-key="etal"]', { force: true }); await page.waitForTimeout(900);

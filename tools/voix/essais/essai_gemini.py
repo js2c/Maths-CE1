@@ -2,18 +2,18 @@
 # Ne touche pas à l'application : les sons vont dans tools/voix/essais/out/gemini/ (non versionné),
 # avec une page ecoute.html qui met chaque phrase Gemini à côté du son Chatterbox du jeu.
 #
-# Installation (une fois, dans PowerShell, depuis le dossier du jeu) :
-#   python -m venv .venv-gemini
-#   .venv-gemini\Scripts\python.exe -m pip install "google-genai>=2.25.0"
+# Installation (une fois, dans PowerShell, depuis le dossier du jeu), dans le Python unique de la voix (docs/VOIX.md, « Le
+# Python de la voix » : la variable PYTHON ; plus d'environnement .venv-gemini depuis le 2 novembre 2026) :
+#   & $env:PYTHON -m pip install "google-genai>=2.25.0"
 # La clé : variable d'environnement GEMINI_API_KEY (jamais dans le dépôt, qui est public).
 #
 # Utilisation :
-#   .venv-gemini\Scripts\python.exe tools\voix\essais\essai_gemini.py --voix-dispo   liste les voix fr-FR de la bibliothèque
-#   .venv-gemini\Scripts\python.exe tools\voix\essais\essai_gemini.py                fabrique ce qui manque (reprend où il s'était arrêté)
-#   .venv-gemini\Scripts\python.exe tools\voix\essais\essai_gemini.py --refaire 9,17 refait les phrases 9 et 17 (après avoir changé texte ou style)
-#   .venv-gemini\Scripts\python.exe tools\voix\essais\essai_gemini.py --refaire tout refait tout
-#   .venv-gemini\Scripts\python.exe tools\voix\essais\essai_gemini.py --a-blanc      montre les requêtes sans rien envoyer
-#   .venv-gemini\Scripts\python.exe tools\voix\essais\essai_gemini.py --seulement 9,12,13  ne fabrique que ces phrases (si elles manquent)
+#   & $env:PYTHON tools\voix\essais\essai_gemini.py --voix-dispo   liste les voix fr-FR de la bibliothèque
+#   & $env:PYTHON tools\voix\essais\essai_gemini.py                fabrique ce qui manque (reprend où il s'était arrêté)
+#   & $env:PYTHON tools\voix\essais\essai_gemini.py --refaire 9,17 refait les phrases 9 et 17 (après avoir changé texte ou style)
+#   & $env:PYTHON tools\voix\essais\essai_gemini.py --refaire tout refait tout
+#   & $env:PYTHON tools\voix\essais\essai_gemini.py --a-blanc      montre les requêtes sans rien envoyer
+#   & $env:PYTHON tools\voix\essais\essai_gemini.py --seulement 9,12,13  ne fabrique que ces phrases (si elles manquent)
 # Options : --voix <nom ou id> (Digital Assistant 2 par défaut, cherchée parmi les voix fr-FR), --pause <secondes> entre deux requêtes (6,5 par défaut : 10 par minute au niveau 1 payant).
 # Palier gratuit : 10 requêtes par jour ; au quota du jour, le script s'arrête et reprend le lendemain là où il en était.
 import argparse, base64, html, json, os, sys, time, wave

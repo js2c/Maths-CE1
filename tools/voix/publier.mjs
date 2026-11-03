@@ -12,7 +12,10 @@
 //   node tools/voix/publier.mjs --branche claude/x   sur la branche d'un lot, avant sa fusion (puis retour sur main)
 //   node tools/voix/publier.mjs --sans-envoi         tout sauf l'envoi sur GitHub
 //   node tools/voix/publier.mjs --oui                sans les deux questions (pour laisser tourner la nuit)
-// Python : la variable PYTHON, sinon un environnement .venv-voix dans le dossier du jeu ou à côté, sinon « python ».
+// Python (décision du parent du 2 novembre 2026 : un seul Python pour toutes les voix, Python 3.11, sans environnement virtuel ;
+// docs/VOIX.md, « Le Python de la voix ») : la variable PYTHON, sinon « py -3.11 » (le lanceur de Windows), sinon « python » ;
+// le premier qui a Chatterbox, Whisper (transformers) et imageio-ffmpeg. Aucun chemin personnel ici : le chemin complet n'est
+// écrit que dans la documentation destinée au parent.
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -75,14 +78,33 @@ if (afaire.length) {
   const ref = resolve(RACINE, option("--ref") || process.env.VOIX_REF || join("..", "ref-posee.wav"));
   if (!existsSync(ref)) stop(`L'enregistrement de référence est introuvable : ${ref}`, "Le donner avec --ref, par exemple : node tools\\voix\\publier.mjs --ref D:\\ref-posee.wav");
   env.VOIX_REF = ref;
-  const candidats = process.env.PYTHON ? [process.env.PYTHON] : [
-    ...[RACINE, resolve(RACINE, "..")].flatMap((d) => [join(d, ".venv-voix", WIN ? "Scripts\\python.exe" : "bin/python")]).filter(existsSync),
-    WIN ? "python" : "python3",
-  ];
-  const python = candidats.find((p) => lancer(p, ["-c", "import chatterbox, imageio_ffmpeg"], { capter: true, accepterEchec: true }).ok);
-  if (!python) stop("Python ne trouve pas Chatterbox. Essayés : " + candidats.join(", "), "Activer d'abord l'environnement où il est installé (par exemple .venv-voix\\Scripts\\activate), ou donner son Python : $env:PYTHON = \"C:\\chemin\\python.exe\"");
+  // chaque candidat : la commande, ses arguments, et d'où il vient ; on demande à chacun le chemin exact de son python.exe, qui
+  // est ensuite donné à fabriquer.mjs (variable PYTHON)
+  const candidats = [
+    process.env.PYTHON ? { cmd: process.env.PYTHON, args: [], nom: `la variable PYTHON (« ${process.env.PYTHON} »)` } : null,
+    WIN ? { cmd: "py", args: ["-3.11"], nom: "py -3.11" } : { cmd: "python3.11", args: [], nom: "python3.11" },
+    { cmd: WIN ? "python" : "python3", args: [], nom: WIN ? "python" : "python3" },
+  ].filter(Boolean);
+  const MODULES = "import chatterbox, transformers, imageio_ffmpeg, sys; print(sys.executable)";
+  const essais = [];
+  let python = null;
+  for (const c of candidats) {
+    const r = lancer(c.cmd, [...c.args, "-c", MODULES], { capter: true, accepterEchec: true });
+    const exe = r.ok ? r.out.split(/\r?\n/).pop().trim() : "";
+    if (r.ok && exe) { python = exe; console.log(`Python : ${c.nom} → ${exe}`); break; }
+    // la raison, en une ligne : introuvable, ou le module qui manque
+    const derniere = (r.err || r.out || "").split(/\r?\n/).filter(Boolean).pop() ?? "";
+    const manque = /No module named '([^']+)'/.exec(derniere)?.[1];
+    essais.push(`  - ${c.nom} : ${manque ? `il n'a pas le module « ${manque} »` : /ENOENT|not found|introuvable|n'est pas reconnu/i.test(derniere) || !derniere ? "introuvable" : derniere}`);
+  }
+  if (!python) stop("Aucun Python avec Chatterbox, Whisper et imageio-ffmpeg n'a été trouvé. Essayés, dans l'ordre :", ...essais, "",
+    "À vérifier, dans l'ordre (docs\\VOIX.md, « Le Python de la voix ») :",
+    "  1. la variable d'utilisateur Windows PYTHON existe et donne le chemin de python.exe de Python 3.11 :",
+    "     dans PowerShell, « $env:PYTHON » doit afficher ce chemin (variable créée ou changée : fermer et rouvrir PowerShell) ;",
+    "  2. ce Python a bien les trois outils : « & $env:PYTHON -c \"import chatterbox, transformers, imageio_ffmpeg\" » ne doit rien afficher ;",
+    "     s'il dit « No module named … », réinstaller ce qui manque dans ce même Python (docs\\VOIX.md, tableau d'installation) ;",
+    "  3. ne pas installer un autre Python ni un environnement virtuel : il n'y a qu'un seul Python pour toutes les voix.");
   env.PYTHON = python;
-  console.log(`Python : ${python}`);
   console.log(`Référence : ${ref}`);
 }
 if (!(await question("\nFabriquer maintenant ? (O/n) "))) stop("Arrêté, rien n'a changé.");

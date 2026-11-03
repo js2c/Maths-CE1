@@ -252,7 +252,9 @@ if (want("fins")) {
   await page.waitForSelector(".card.zone-closed", { timeout: 20000 });
   const r = await page.evaluate(() => { const i = window.__said.findIndex((t) => /arc-en-ciel/.test(t)); return { arc: window.__said.filter((t) => /arc-en-ciel/.test(t)), dt: performance.now() - window.__saidAt[i] }; });
   await shot(page, "B6-zone-apres-les-etoiles");
-  check(r.arc.length === 1 && /^3 étoiles arc-en-ciel ! Un jour, elles/.test(r.arc[0]), `une seule phrase, au pluriel (« ${r.arc.join(" | ")} »)`);
+  // (lot « Réserves d'étoiles et étoiles arc-en-ciel », relecture, constat 2 : une zone s'ouvre à cette même récompense, la phrase
+  // s'arrête au nombre, sans « Un jour, elles t'ouvriront… »)
+  check(r.arc.length === 1 && /^3 étoiles arc-en-ciel !$/.test(r.arc[0]), `une seule phrase, au pluriel, sans « un jour » : la zone s'ouvre aussitôt (« ${r.arc.join(" | ")} »)`);
   // (lot « Décisions sur les constats de l'agent », décision 8 : l'album reçoit l'étoile, sautille puis s'efface, environ 1 s de plus)
   check(r.dt < 7000, `la suite (l'ouverture d'une zone) vient ${(r.dt / 1000).toFixed(1)} s après le début de la phrase (voix accélérée)`);
   check(!errors.length, `fins : aucune erreur (${errors.join(" | ")})`); await context.close();

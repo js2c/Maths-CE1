@@ -56,7 +56,9 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (décision du parent du 2 novembre 2026) : le lot court « Prix de la boutique réglables »** (fiche 15) : dans l'espace parent, les prix de la boutique selon le nombre de séances par semaine (2, 3 ou 4), calibrés par la simulation. **État : fait** (PR #69 ; 8 phrases nouvelles, les nouveaux prix).
 
-**Puis (constat du 2 novembre 2026, tests de GitHub) : le lot court « Correctif : l'étal resté actif à l'accueil »** (fiche 16) : le travail « enfant » a échoué une fois (graine 1 : « étal actif à l'accueil ») sur une demande de fusion qui ne touchait que la documentation ; une course de vitesse dans l'application. **État : fait** (PR #72 ; aucune phrase nouvelle).
+**Puis (décisions du parent du 2 novembre 2026) : le lot « Réserves d'étoiles et étoiles arc-en-ciel »** (fiche 17), avec un point d'arrêt « maquette » : montrer à l'enfant ses réserves d'étoiles arc-en-ciel et de diamant, un usage pour les étoiles arc-en-ciel en surplus (faire briller une créature), les réponses du parent aux questions du lot « Prix de la boutique réglables », et la documentation du Python unique de la voix. **État : fait** (maquette validée le 2 novembre 2026, avec des corrections ; 110 phrases nouvelles à fabriquer, 6 qui ne servent plus).
+
+**Puis (constat du 2 novembre 2026, tests de GitHub) : le lot court « Correctif : l'étal resté actif à l'accueil »** (fiche 18) : le travail « enfant » a échoué une fois (graine 1 : « étal actif à l'accueil ») sur une demande de fusion qui ne touchait que la documentation ; une course de vitesse dans l'application. **État : fait** (PR #72 ; aucune phrase nouvelle).
 
 **Pourquoi cet ordre.**
 
@@ -1156,7 +1158,39 @@ Chaque défaut trouvé est corrigé et devient un test de non-régression. **Auc
 
 **Recette du lot** : tests unitaires (niveaux, changement de prix, étoiles gardées, mode Libre, rechargement), `tests/e2e/prix-boutique.mjs` (1280 × 800, 1920 × 1200, `s5e`, `petit-smartphone`), `tests/e2e/boutique.mjs`, la recette commune.
 
-### 16. Lot « Correctif : l'étal resté actif à l'accueil » (lot court)
+### 16. Lot « Correctifs : la carte graphique perdue » (lot court)
+
+**Origine** : le parent, le 2 novembre 2026 (trois captures de la tablette) : l'application laissée ouverte longtemps, l'enfant a déjà fait une première partie puis lance un autre jeu ; **la mascotte et le bouton de la maison ont disparu**, et **des poissons du fond sont coupés net**, à l'horizontale (le compteur d'étoiles avait aussi disparu). Le contrôle des poissons coupés du lot 12 (le dessin touchait-il le bord de son canvas ?) ne trouvait rien : ce n'était pas la cause.
+
+**Cause, reproduite sur le banc** : Android reprend la mémoire de la carte graphique d'une page restée longtemps ouverte, et Chrome peut alors arrêter son processus graphique. Le banc le provoque pour de vrai en tuant ce processus. Alors : chaque canvas 2D est rendu **vide** par Chrome ; ce qui est redessiné à chaque image s'en remet, mais ce qui n'avait été dessiné qu'une fois reste vide pour toujours (présent, touchable, invisible : la maison, le compteur d'étoiles, les tuiles de l'écran en cours, les poissons figés par l'allègement) ; les contextes WebGL sont perdus et, après la mort du processus, **Chrome refuse WebGL à la page** : la mascotte, en WebGL, ne revenait jamais. Sur `main`, le parcours du lot échoue exactement sur ces points (la maison, le compteur, les tuiles, la mascotte, un poisson figé vide). Les poissons coupés à moitié ne sont pas reproduits tels quels sur le banc (sans carte graphique, les images des planches ne s'abîment pas) : la cause la plus probable est la même perte, qui abîme les images décodées des planches, d'où le rechargement des planches.
+
+**D'un seul tenant** :
+
+1. `engine/restauration.js` : chaque canvas dessiné une fois s'inscrit avec son dessin (`spriteBox`, l'entourage, les acteurs) ; un canvas rendu vide est redessiné aussitôt ; après la rafale, les planches sont décodées à nouveau, le lagon refait (fond, miroitement, un canvas neuf pour chaque poisson), la mascotte reprise, puis tout est redessiné ; perte et reprise notées dans le journal technique (« carte graphique »).
+2. La mascotte : un contexte WebGL non rendu en 3 s, ou encore perdu après la reprise, est remplacé par un canvas neuf, en WebGL si possible, sinon en 2D (détourage par le processeur) ; le clip en cours est rechargé dans son lecteur.
+3. Parcours `tests/e2e/carte-graphique.mjs` (vraie perte : le processus graphique tué ; accueil, écran « choisir », lagon figé, perte de la mascotte non rendue), qui échoue sur `main` (`RACINE_APP`).
+
+**Voix** : aucune phrase nouvelle.
+
+**À vérifier sur la tablette** : après une longue inactivité, le journal technique dit si la perte a eu lieu (« carte graphique · carte graphique perdue », puis « … rendue : tout est redessiné ») et si la mascotte a dû passer en 2D (« mascotte · canvas de la mascotte refait », `rendu : 2D`) ; en 2D, la mascotte coûte plus au processeur jusqu'au lancement suivant.
+
+### 17. Lot « Réserves d'étoiles et étoiles arc-en-ciel » (avec un point d'arrêt « maquette »)
+
+**Origine** : décisions du parent du 2 novembre 2026. Les étoiles arc-en-ciel et de diamant volent vers l'album à la récompense, puis disparaissent : l'enfant ne sait pas combien elle en a. Et la simulation d'une année (profil `reel`, 3 séances par semaine) donne 44 étoiles arc-en-ciel gagnées pour 3 utilisées (les trois zones à ouvrir) : 41 ne servent à rien.
+
+**Point d'arrêt « maquette »** (méthode commune) : la maquette (`art/reserves/`, posée sur l'application elle-même), les captures en 1280 × 800 et sur `petit-smartphone` (`docs/maquettes/reserves/`), la règle de réserve proposée et sa justification, la liste des phrases nouvelles et leur poids ; puis l'arrêt pour la validation du parent.
+
+1. **Les réserves montrées à l'enfant** : près du compteur d'étoiles de mer (là où il est affiché) et dans la boutique, une petite étoile arc-en-ciel et une petite étoile de diamant, chacune avec son nombre (masquée à 0). La toucher fait dire combien il y en a et ce qu'elles débloquent, en phrases courtes, selon l'état (zone en cours, légendaires possibles ou non). À la récompense, les étoiles gagnées volent jusqu'à leur réserve, qui se met à jour. La règle de la bulle (elle ne couvre jamais ce que l'enfant touche) et la taille des cibles (64 px) sont tenues.
+2. **Faire briller avec une étoile arc-en-ciel** : à la boutique, sur une créature déjà dans le récif, « faire briller » se paie soit en étoiles de mer (le prix du niveau choisi), soit avec 1 étoile arc-en-ciel. L'ouverture d'une zone ne doit jamais en être retardée : la session propose la règle la plus simple qui le garantit, et la justifie. Les brillantes ainsi obtenues suivent les règles actuelles.
+3. **Les réponses du parent au lot « Prix de la boutique réglables »** : quand le niveau de prix change, la mascotte le dit une seule fois, à la première visite de la boutique qui suit (« Les prix de la boutique ont changé ! », sans le pourquoi) ; pas de niveau intermédiaire pour l'enfant en difficulté à 3 séances par semaine (dans `docs/IDEES.md`, à rouvrir si une collection prend du retard) ; « Il te manque N étoiles. » reste dit de 1 à 299, au-delà le prix seul. Reportées dans le journal de conception.
+4. **Simulation finale** (`tests/sim-boutique.mjs`) : pour chaque niveau de prix (2, 3 et 4 séances), chaque profil (`reel`, `sait`, `diff`), à 2, 3 et 4 séances par semaine : créatures, date de la collection complète, séances sans rien de nouveau en vitrine, étoiles arc-en-ciel gagnées, utilisées pour les zones et pour faire briller, restantes en fin d'année, étoiles de diamant gagnées et utilisées. Le tableau dans la demande de fusion.
+5. **La voix, documentation** (indépendant du reste, même demande de fusion) : le Python unique de la voix (Python 3.11, sans environnement virtuel, la variable `PYTHON`) dans `docs/VOIX.md` (« Le Python de la voix », tableau d'installation, fabrication à la main), les en-têtes de `tools/voix/essais/` (`& $env:PYTHON …`), l'ordre de recherche de `tools/voix/publier.mjs` (la variable `PYTHON`, puis `py -3.11`, puis `python`, et un message qui dit quoi vérifier) ; la règle : un seul Python pour toutes les voix, un nouvel outil s'y installe, une incompatibilité est dite au parent avant toute installation, un environnement d'essai est supprimé à la fin de l'essai. Aucun chemin personnel dans le code.
+
+**Après la validation** : le code, `docs/SPEC.md` (section 10), le guide du parent, le journal de conception ; les phrases à fabriquer dans la demande de fusion.
+
+**Recette** : la méthode commune, sur le banc Android (profil `s5e`, et `petit-smartphone` pour les écrans touchés) ; tests unitaires (la règle de réserve, le paiement en étoile arc-en-ciel, l'annonce du changement de prix, les phrases des réserves selon l'état) ; un parcours `tests/e2e/reserves.mjs` (le compteur et ses réserves, chaque phrase, la boutique dans les trois cas, l'achat jamais à moitié ni deux fois, la récompense, l'ouverture d'une zone).
+
+### 18. Lot « Correctif : l'étal resté actif à l'accueil » (lot court)
 
 **Origine** : sur GitHub, le 2 novembre 2026, le travail « enfant » (`node tests/e2e/enfant.mjs --graines 3 --actions 60`) a échoué une fois, sur une demande de fusion qui ne changeait qu'un fichier de `docs/` : « ÉCHEC graine 1 : 60 actions en 77 s, image 32.3 ms (95e centile 50) ; incohérence : étal actif à l'accueil ; incohérence : à l'accueil : etal-scene keep ». Relancé sur `main` : les trois graines passent, la graine 1 quatre fois (normal, `--lent 2`, `--lent 0.5`). Une course de vitesse intermittente dans l'application.
 

@@ -4,7 +4,7 @@ Pour chaque phrase, plusieurs écritures du même texte sont fabriquées avec pl
 « régulier » du lot), puis retranscrites et comparées au texte attendu, comme dans le lot. Le script affiche
 le taux de réussite de chaque écriture et écrit une page d'écoute. Il ne modifie rien dans l'application.
 
-    python tools\\voix\\essais\\essai_ecritures.py --ref ..\\ref-posee.wav
+    & $env:PYTHON tools\\voix\\essais\\essai_ecritures.py --ref ..\\ref-posee.wav      (le Python de la voix : docs/VOIX.md)
 """
 import argparse
 import html

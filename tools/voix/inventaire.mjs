@@ -82,9 +82,17 @@ function domaines(C) {
     // les étoiles du coquillage de la série quand tout brille (serie.coquillageEtoiles)
     // (lot « Prix de la boutique réglables » : les prix de tous les niveaux, boutique.niveauxPrix)
     "boutique.prix": [...new Set((C.cartes.boutique?.niveauxPrix ?? []).flatMap((x) => Object.values(x.prix)))].map((n) => ({ n })),
-    "boutique.briller": [...new Set((C.cartes.boutique?.niveauxPrix ?? []).flatMap((x) => Object.values(x.briller)))].map((n) => ({ n })),
+    // (lot « Réserves d'étoiles et étoiles arc-en-ciel » : faire briller, en phrases courtes, au masculin et au féminin, avec ou sans
+    // l'étoile arc-en-ciel ; session/boutique.js, texteTuile)
+    ...Object.fromEntries(["brillerLe", "brillerLa", "brillerLeArc", "brillerLaArc"].map((k) => [`boutique.${k}`, [...new Set((C.cartes.boutique?.niveauxPrix ?? []).flatMap((x) => Object.values(x.briller)))].map((n) => ({ n }))])),
     "boutique.manque": range(2, C.cartes.boutique?.manqueDitMax ?? 299).map((n) => ({ n })),
     coquillageSerieEtoiles: [{ n: C.cartes.serie.coquillageEtoiles }],
+    // (lot « Réserves d'étoiles et étoiles arc-en-ciel », session/reserves.js, texteReserve) le nombre d'une réserve, de 2 à
+    // cartes.json, reserves.arcDitMax et diamantDitMax (une seule : arcUne, diamantUne ; au-delà : « beaucoup ») ; la zone dont
+    // il faut toutes les créatures pour une légendaire (les zones qui ont des légendaires, cartes.json, duLu)
+    "reserves.arcN": range(2, C.cartes.reserves?.arcDitMax ?? 50).map((n) => ({ n })),
+    "reserves.diamantN": range(2, C.cartes.reserves?.diamantDitMax ?? 15).map((n) => ({ n })),
+    ...Object.fromEntries(["diamantQuandUne", "diamantQuand"].map((k) => [`reserves.${k}`, C.cartes.zones.filter((z) => C.cartes.cartes.some((c) => c.zone === z.id && c.rarete === "legendaire")).map((z) => ({ zone: z.duLu }))])),
     // lot 3 bis (B6) : plusieurs étoiles arc-en-ciel à la récompense, une seule phrase (au plus un niveau par question)
     etoilesArc: range(2, 20).map((n) => ({ n })),
     fait: faits, faitTrouDroite: faits, faitTrouGauche: faits, faitCorrection: faits,

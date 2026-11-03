@@ -119,9 +119,10 @@ const ETAT = () => {
   if (c.etal && c.mode === null && !c.recif && !c.album && !c.boutique) pb.push("étal actif à l'accueil");
   if (a.hermit && c.mode === null) pb.push("bernard-l'ermite à l'accueil");
   if (n(".defi-timer, .defi-row") && c.etape !== "defi") pb.push("défi hors de son étape");
-  // l'accueil (ni séance, ni visite, ni parent) : seulement ses galets, la lune, le bouton du parent, la tête et le compteur
+  // l'accueil (ni séance, ni visite, ni parent) : seulement ses galets, la lune, le bouton du parent, la tête et le compteur, et (lot
+  // « Réserves d'étoiles et étoiles arc-en-ciel ») les réserves d'étoiles à côté du compteur
   if (c.mode === null && !c.parent && !c.recif && !c.album && !c.boutique && !document.querySelector(".fin-recompense, .card, .shelltap, .coquillage")) {
-    const autres = [...document.querySelectorAll("#ui > *")].filter((e) => vis(e) && !e.matches(".galet, .moon, .logo, .mascotte-tap, .stars, .bulle, .speaker, .etiquette, .hud.stars, .entourage") && !e.closest(".galet"));
+    const autres = [...document.querySelectorAll("#ui > *")].filter((e) => vis(e) && !e.matches(".galet, .moon, .logo, .mascotte-tap, .stars, .bulle, .speaker, .etiquette, .hud.stars, .entourage, .reserve") && !e.closest(".galet"));
     if (autres.length) pb.push(`à l'accueil : ${autres.slice(0, 4).map((e) => e.className || e.tagName).join(", ")}`);
   }
   // quelque chose à toucher (hors maison, tête et compteur) : un bouton, ou une scène qui attend le geste

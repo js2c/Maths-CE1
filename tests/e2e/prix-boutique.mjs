@@ -109,7 +109,8 @@ for (const vue of VUES) {
     await page.evaluate(() => { window.__said = []; });
     await tap(page, `.boutique-tuile[data-id="${terne}"]`); await page.waitForTimeout(1500);
     const b3 = N[3].briller[rarete(terne)];
-    check((await said(page)).includes(T.boutique.briller.replace("{n}", b3)), `${v} : faire briller : le prix du niveau 3 (${b3})`);
+    // (lot « Réserves d'étoiles et étoiles arc-en-ciel » : les phrases courtes, « Pour le faire briller : 250 étoiles. »)
+    check((await said(page)).includes(T.boutique[cartes.cartes.find((c) => c.id === terne).genre === "f" ? "brillerLa" : "brillerLe"].replace("{n}", b3)), `${v} : faire briller : le prix du niveau 3 (${b3})`);
     if (tout) await page.screenshot({ path: join(OUT, `05-briller-3-seances-${v}.png`) });
     // un achat paie le prix du niveau
     if (tout) {

@@ -62,6 +62,10 @@ export class EtalScreen {
   // restait sur l'accueil, active, le temps de charger ses images (0,2 à 2 s), ou y était posée après coup.
   async enter({ rnd = Math.random, lecon = false } = {}) {
     if (this.x) this.leave(); // (jamais deux scènes à la fois)
+    // (même lot ; l'enfant imprévisible, images lentes, graine 70) rien ne se touche avant qu'un achat attende l'enfant (`ask`
+    // ouvre la caisse) : posée, la scène est visible avant que ses images soient chargées, et le portefeuille touché à ce
+    // moment s'animait sans ses images (« drawImage », erreur de la page)
+    this.verrou = true;
     const { app } = this, { stage, ocean } = app, E = this.conf, Rg = E.reglages, tok = this.tok, vivant = () => tok === this.tok;
     if (!document.getElementById("etal-style")) { const s = document.createElement("style"); s.id = "etal-style"; s.textContent = STYLE; document.head.append(s); }
     this.rnd = rnd;

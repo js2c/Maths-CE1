@@ -11,7 +11,8 @@
 // la maison, aucune erreur. Situations : une leçon de la monnaie du menu (L15, L18) ; l'étal de l'entraînement libre ; les voiliers
 // de l'entraînement libre (première entrée) ; la notion du jour à l'étal mise en pause pendant l'installation, puis terminée par
 // le parent ; et, pour vérifier que la pause n'arrête pas l'installation, la même pause suivie de « continuer » (la partie
-// commence normalement). Échoue sur le code d'avant le correctif (RACINE_APP=copie de main).
+// commence normalement) ; enfin, le portefeuille touché pendant l'installation (l'enfant imprévisible, images lentes : une erreur
+// de la page). Échoue sur le code d'avant le correctif (RACINE_APP=copie de main).
 //   node tests/e2e/etal-quitte-installation.mjs [--out dossier]
 // BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
 // (raison : la course se joue entre le toucher de la maison et le chargement des images ; le parcours la force en retardant ces
@@ -155,6 +156,24 @@ const ouvrirParent = async (page) => {
   await page.screenshot({ path: join(OUT, "seance-pause-continuer.png") });
   check(attend, "notion du jour à l'étal, pause pendant l'installation puis « continuer » : la partie commence (un achat attend l'enfant)");
   check(!errors.length, `pause puis « continuer » : aucune erreur${errors.length ? ` (${errors.join(" | ")})` : ""}`);
+  await context.close();
+}
+// 6. (l'enfant imprévisible, images lentes, graine 70) le portefeuille touché pendant que la scène s'installe : posée avant ses
+// images, la scène répondait au toucher, et le portefeuille s'animait sans ses images (« drawImage », erreur de la page)
+for (const [quoi, aller] of [["leçon L15", async (page) => { await deux(page, ".leconskey"); await page.waitForSelector('.lecons-tuile[data-key="L15"]'); await page.waitForTimeout(500); return () => deux(page, '.lecons-tuile[data-key="L15"]'); }],
+  ["notion du jour", async (page) => () => deux(page, ".play")]]) {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }), page = await context.newPage(), errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  let retarder = false;
+  await context.route(/assets\/etal\//, async (r) => { if (retarder) await new Promise((ok) => setTimeout(ok, 2500)); await r.continue().catch(() => {}); });
+  await page.goto(url + "?nosw&voix=rapide&son=non&cran=conseille&sansLecon&sans=echauffement&module=6"); await page.waitForFunction(() => window.__ready !== undefined);
+  const choisir = await aller(page); retarder = true; await choisir();
+  await page.waitForFunction(() => !!document.querySelector("#etal-scene"), null, { timeout: 20000 });
+  const pendant = await page.evaluate(() => !(window.__app.etalLecon ?? window.__app.etal)?.lampeB);
+  for (let i = 0; i < 4; i++) { await page.touchscreen.tap(1100, 675); await page.waitForTimeout(150); } // (le portefeuille fermé)
+  await page.waitForTimeout(4000);
+  check(pendant, `${quoi} : le portefeuille touché pendant l'installation (la scène s'installait encore)`);
+  check(!errors.length, `${quoi}, le portefeuille touché pendant l'installation : aucune erreur${errors.length ? ` (${errors.join(" | ")})` : ""}`);
   await context.close();
 }
 await browser.close(); srv.close();

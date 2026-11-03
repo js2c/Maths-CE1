@@ -1156,6 +1156,22 @@ Chaque défaut trouvé est corrigé et devient un test de non-régression. **Auc
 
 **Recette du lot** : tests unitaires (niveaux, changement de prix, étoiles gardées, mode Libre, rechargement), `tests/e2e/prix-boutique.mjs` (1280 × 800, 1920 × 1200, `s5e`, `petit-smartphone`), `tests/e2e/boutique.mjs`, la recette commune.
 
+### 16. Lot « Correctifs : la carte graphique perdue » (lot court)
+
+**Origine** : le parent, le 2 novembre 2026 (trois captures de la tablette) : l'application laissée ouverte longtemps, l'enfant a déjà fait une première partie puis lance un autre jeu ; **la mascotte et le bouton de la maison ont disparu**, et **des poissons du fond sont coupés net**, à l'horizontale (le compteur d'étoiles avait aussi disparu). Le contrôle des poissons coupés du lot 12 (le dessin touchait-il le bord de son canvas ?) ne trouvait rien : ce n'était pas la cause.
+
+**Cause, reproduite sur le banc** : Android reprend la mémoire de la carte graphique d'une page restée longtemps ouverte, et Chrome peut alors arrêter son processus graphique. Le banc le provoque pour de vrai en tuant ce processus. Alors : chaque canvas 2D est rendu **vide** par Chrome ; ce qui est redessiné à chaque image s'en remet, mais ce qui n'avait été dessiné qu'une fois reste vide pour toujours (présent, touchable, invisible : la maison, le compteur d'étoiles, les tuiles de l'écran en cours, les poissons figés par l'allègement) ; les contextes WebGL sont perdus et, après la mort du processus, **Chrome refuse WebGL à la page** : la mascotte, en WebGL, ne revenait jamais. Sur `main`, le parcours du lot échoue exactement sur ces points (la maison, le compteur, les tuiles, la mascotte, un poisson figé vide). Les poissons coupés à moitié ne sont pas reproduits tels quels sur le banc (sans carte graphique, les images des planches ne s'abîment pas) : la cause la plus probable est la même perte, qui abîme les images décodées des planches, d'où le rechargement des planches.
+
+**D'un seul tenant** :
+
+1. `engine/restauration.js` : chaque canvas dessiné une fois s'inscrit avec son dessin (`spriteBox`, l'entourage, les acteurs) ; un canvas rendu vide est redessiné aussitôt ; après la rafale, les planches sont décodées à nouveau, le lagon refait (fond, miroitement, un canvas neuf pour chaque poisson), la mascotte reprise, puis tout est redessiné ; perte et reprise notées dans le journal technique (« carte graphique »).
+2. La mascotte : un contexte WebGL non rendu en 3 s, ou encore perdu après la reprise, est remplacé par un canvas neuf, en WebGL si possible, sinon en 2D (détourage par le processeur) ; le clip en cours est rechargé dans son lecteur.
+3. Parcours `tests/e2e/carte-graphique.mjs` (vraie perte : le processus graphique tué ; accueil, écran « choisir », lagon figé, perte de la mascotte non rendue), qui échoue sur `main` (`RACINE_APP`).
+
+**Voix** : aucune phrase nouvelle.
+
+**À vérifier sur la tablette** : après une longue inactivité, le journal technique dit si la perte a eu lieu (« carte graphique · carte graphique perdue », puis « … rendue : tout est redessiné ») et si la mascotte a dû passer en 2D (« mascotte · canvas de la mascotte refait », `rendu : 2D`) ; en 2D, la mascotte coûte plus au processeur jusqu'au lancement suivant.
+
 ### 17. Lot « Réserves d'étoiles et étoiles arc-en-ciel » (avec un point d'arrêt « maquette »)
 
 **Origine** : décisions du parent du 2 novembre 2026. Les étoiles arc-en-ciel et de diamant volent vers l'album à la récompense, puis disparaissent : l'enfant ne sait pas combien elle en a. Et la simulation d'une année (profil `reel`, 3 séances par semaine) donne 44 étoiles arc-en-ciel gagnées pour 3 utilisées (les trois zones à ouvrir) : 41 ne servent à rien.

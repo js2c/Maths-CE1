@@ -1,14 +1,18 @@
 // LES BOUTONS DE L'ÉCRAN : un élément HTML dans #ui qui porte un petit canvas dessiné une fois (sprites de
 // l'atelier, chiffres et lettres encrés en direct), et le toucher franc.
 import * as R from "../art/runtime.js";
+import { repeindre } from "./restauration.js";
 // un bouton (ou un simple calque si `still`) : un canvas à la taille de la boîte, `paint(ctx)` en px logiques
 export function spriteBox(app, { x, y, w, h, cls = "bubble", label = "", still = false, paint }) {
   const { stage } = app, b = document.createElement(still ? "div" : "button"), c = document.createElement("canvas");
   b.className = cls; Object.assign(b.style, { left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${h}px` });
   if (label) b.setAttribute("aria-label", label);
   c.width = Math.round(w * stage.px); c.height = Math.round(h * stage.px); b.append(c); stage.ui.append(b);
-  b.repaint = (f = paint) => { const ctx = c.getContext("2d"); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height); f(ctx, stage.px); };
+  b.repaint = (f = paint) => { b.__dessin = f; const ctx = c.getContext("2d"); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height); f(ctx, stage.px); };
   b.repaint();
+  // (lot « Correctifs : la carte graphique perdue ») dessinée une fois : redessinée après une perte de la carte graphique, avec le
+  // dernier dessin demandé, par `b.repaint` du moment (un écran qui le remplace, l'accueil, les tuiles du choix, est suivi)
+  repeindre(c, () => b.repaint(b.__dessin));
   return b;
 }
 // (lot « Correctifs : passage de l'échauffement aux voiliers », point 8 et relecture : l'entourage de sélection d'une tuile est
@@ -20,7 +24,8 @@ export function entourage(app, b, visible, dessin, m = 18) {
   const c = (b.__entourage ??= document.createElement("canvas"));
   c.className = "entourage"; c.width = Math.round((w + 2 * m) * px); c.height = Math.round((h + 2 * m) * px);
   Object.assign(c.style, { position: "absolute", left: `${-m}px`, top: `${-m}px`, width: `${w + 2 * m}px`, height: `${h + 2 * m}px`, pointerEvents: "none" });
-  const ctx = c.getContext("2d"); ctx.setTransform(px, 0, 0, px, 0, 0); ctx.clearRect(0, 0, w + 2 * m, h + 2 * m); dessin(ctx, m, m);
+  const peindre = () => { const ctx = c.getContext("2d"); ctx.setTransform(px, 0, 0, px, 0, 0); ctx.clearRect(0, 0, w + 2 * m, h + 2 * m); dessin(ctx, m, m); };
+  peindre(); repeindre(c, peindre); // (lot « Correctifs : la carte graphique perdue »)
   if (!c.isConnected) b.append(c);
 }
 // un toucher franc : pointerdown (pas de délai de clic)

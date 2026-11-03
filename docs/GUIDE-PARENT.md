@@ -236,6 +236,20 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 | 9 | Les centimes, prix ronds ou en 50 centimes, écrits avec une virgule. | 3,50 = 2 + 1 + 0,50 |
 | 10 | Les centimes, prix en 10, 20 et 50 centimes. | 2,70 = 2 + 0,50 + 0,20 |
 
+**Les problèmes** (lot « Problèmes »)
+
+| Niveau | Ce qui est travaillé | Exemple |
+| --- | --- | --- |
+| 1 | Ajouter ou enlever jusqu'à 10, le tout ou la fin inconnus. | 4 pommes et 3 poires, combien de fruits |
+| 2 | Ajouter ou enlever jusqu'à 20, le niveau de départ. | 17 ballons et 8 de plus |
+| 3 | Groupes égaux et partage avec de petits nombres, en rangeant les objets. | 6 fraises pour 2, 3 chacun |
+| 4 | Chercher une partie ou le changement, jusqu'à 20. | 23 sardines, il en vend 9, il en reste 14 |
+| 5 | Comparer, de plus et de moins, jusqu'à 20. | 7 billes contre 4, 3 de plus |
+| 6 | Ajouter, enlever, chercher une partie, jusqu'à 100. | 35 + 20 = 55 |
+| 7 | Groupes égaux et partage, jusqu'à 50. | 4 cagettes de 5, 20 |
+| 8 | Le début inconnu, et comparer au-delà de 20. | Il en perd 6, il en reste 12, 18 au début |
+| 9 | Deux étapes, deux calculs l'un après l'autre. | 6 + 5 = 11, puis 11 - 3 = 8 |
+
 **Les leçons**
 
 | Leçon | Ce qui est travaillé | Exemple |
@@ -258,6 +272,7 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 | L16 | Payer juste, du plus gros au plus petit. | 17, 10, 15, 16, 17 |
 | L17 | Rendre la monnaie, on compte à partir du prix jusqu'à ce qu'on a donné. | de 13 à 20, 7 |
 | L18 | Les centimes, 100 centimes font 1 euro, 3,50 c'est 3 euros et 50 centimes. | 0,50 + 0,50 = 1 |
+| L19 | Le schéma en barres, le tout et ses deux parties, on ajoute ou on enlève. | 4 + 3 = 7, 9 - 4 = 5 |
 | + | La table d'addition, toucher une case dit et montre le calcul. | 7 + 5 = 12 |
 | × | La table de multiplication, toucher une case dit et montre le calcul. | 3 × 4 = 12 |
 

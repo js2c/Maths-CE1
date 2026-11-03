@@ -1,8 +1,8 @@
 {
- "version": "17aa4e5c8837",
+ "version": "6c073893bd32",
  "octets": {
-  "1": 121262952,
-  "2": 136295266
+  "1": 121728543,
+  "2": 136950315
  },
  "files": [
   "./",
@@ -179,6 +179,9 @@
   "assets/mascotte/talk-b.webm",
   "assets/mascotte/wrong.webm",
   "assets/polices/shantell-sans-600.woff2",
+  "assets/problemes/etal@1x.webp",
+  "assets/problemes/etal@2x.webp",
+  "assets/problemes/index.json",
   "assets/recif/abysses-abysse2.webp",
   "assets/recif/abysses-abysse3.webp",
   "assets/recif/abysses-abysse4.webp",
@@ -11829,7 +11832,9 @@
   "content/module4.json",
   "content/module5.json",
   "content/module6.json",
+  "content/module7.json",
   "content/parent.json",
+  "content/problemes.json",
   "content/seance.json",
   "content/son.json",
   "content/textes.json",
@@ -11841,6 +11846,7 @@
   "icons/icone-maskable-512.png",
   "index.html",
   "js/art/line-worker.js",
+  "js/art/problemes.js",
   "js/art/runtime.js",
   "js/engine/actor.js",
   "js/engine/bulle.js",
@@ -11871,6 +11877,7 @@
   "js/lessons/etal.js",
   "js/lessons/player.js",
   "js/lessons/player2.js",
+  "js/lessons/problemes.js",
   "js/lessons/script.js",
   "js/main.js",
   "js/modules/calc/calc.js",
@@ -11896,6 +11903,9 @@
   "js/modules/numberline/generator.js",
   "js/modules/numberline/runner.js",
   "js/modules/numberline/screen.js",
+  "js/modules/problemes/problemes.js",
+  "js/modules/problemes/runner.js",
+  "js/modules/problemes/screen.js",
   "js/modules/progress.js",
   "js/modules/variete.js",
   "js/modules/voiliers/runner.js",

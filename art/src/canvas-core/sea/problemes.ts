@@ -16,6 +16,8 @@ import { blob, clipped, fillShape, ink, mix, smooth } from "../gallery";
 import { cel, contour, INK, shift } from "../oceanMarker";
 import { rrect } from "./treasure";
 import { drawNumber, drawWord, RED, wordWidth } from "./runtime";
+import { drawAnswerBubble } from "./decor";
+import { drawTileNumber, inside, plaque, TILE_H, TILE_W, underline, VIGN_Y } from "./choice";
 
 const SH = "#0a3f49", NACRE = "#fffaf0", NACRE_S = "#e3d6bb", LIT = "#ffe45c", ORANGE = "#ffb13b", ORANGE_S = "#d5781a", BLUE = "#5cb8f0", BLUE_S = "#2f7fb8";
 export type Objet = "bille" | "biscuit" | "pomme" | "oeuf" | "crayon" | "ballon" | "bonbon" | "fleur" | "perle" | "livre" | "poisson" | "personne" | "jeton";
@@ -299,3 +301,53 @@ export const drawPlancheProblemes = (g: Gfx) => {
   drawComparaison(g, 60, 680, 560, { grand: 13, petit: 8, ecart: 5, inconnue: "grand" }, "crayon");
   drawEtiquette(g, 700, 690, "23", "poisson", { seed: 1 }); drawEtiquette(g, 880, 690, "9", "poisson", { seed: 2, lit: true }); drawReponse(g, 1040, 680, 220, "?", "poisson");
 };
+
+// ---------------------------------------------------------------- ce qui annonce l'exercice (lot « Problèmes ») : le pictogramme de
+// l'exercice (écran « choisir »), les 9 plaques de niveaux, le pictogramme plat de la frise (l'étape « Problème du jour » et
+// l'exercice) et de la rangée du menu des leçons, la vignette de la leçon L19 (le schéma en barres)
+// un petit schéma en barres : le tout en haut (nacre), ses deux parties dessous (orange, bleu) ; « ? » en rouge ; `ecart` : la
+// comparaison (la partie bleue en pointillés, au bout de la barre du dessous)
+const miniBarres = (g: Gfx, x: number, y: number, w: number, h: number, tout: string, a: string, b: string, o: { wa?: number; seed?: number; ecart?: boolean } = {}) => {
+  const seed = 15000 + (o.seed ?? 0) * 13, wa = (o.wa ?? 0.56) * w, gap = h * 0.32, em = h * 0.78;
+  const bar = (bx: number, by: number, bw: number, t: string, c: readonly [string, string], i: number, pointille = false) => g.group("plain", () => {
+    const s = rrect(bx, by, bw, h, h * 0.24);
+    if (pointille) { fillShape(g, s, NACRE, 0.9); ink(g, s, t === "?" ? RED : INK, { w: 1.6, closed: true, shadow: 0, seed: seed + i + 40 }, 0.8); }
+    else { fillShape(g, shift(s, 2, 3), SH, 0.28); cel(g, s, c[0], c[1], 2); contour(g, s, 2.2, seed + i); }
+    drawNumber(g.cur as CanvasRenderingContext2D, t, bx + bw / 2, by + h / 2 - em / 2, em, { color: t === "?" ? RED : INK, w: Math.max(1.6, em * 0.16), seed: seed + 20 + i });
+  });
+  bar(x, y, w, tout, [NACRE, NACRE_S], 0);
+  bar(x, y + h + gap, wa, a, o.ecart ? [BLUE, BLUE_S] : [ORANGE, ORANGE_S], 1);
+  bar(x + wa + (o.ecart ? 3 : 0), y + h + gap, w - wa - (o.ecart ? 3 : 0), b, [BLUE, BLUE_S], 2, !!o.ecart);
+};
+export const drawExerciseProblemes = (g: Gfx, cx: number, cy: number) => {
+  drawAnswerBubble(g, cx, cy, 29, 70);
+  miniBarres(g, cx - 50, cy - 34, 100, 28, "?", "9", "5", { wa: 0.6, seed: 1 });
+  g.group("plain", () => g.mark([[cx - 70, cy - 70], [cx + 70, cy + 70]]));
+};
+// le pictogramme plat de la frise et de la rangée du menu des leçons : le tout et ses deux parties, sans contour (comme les autres
+// étapes), un point d'interrogation rouge sur le tout
+export const drawStepProbleme = (g: Gfx, cx: number, cy: number) => g.group("plain", () => {
+  fillShape(g, rrect(cx - 15, cy - 12, 30, 10, 3), "#fff4de");
+  fillShape(g, rrect(cx - 15, cy + 2, 17, 10, 3), ORANGE); fillShape(g, rrect(cx + 3.5, cy + 2, 11.5, 10, 3), BLUE);
+  drawNumber(g.cur as CanvasRenderingContext2D, "?", cx, cy - 12.5, 10.5, { color: RED, w: 2.2, seed: 15100 });
+});
+// le moment clé de chaque niveau, sous son numéro (VIGN_Y : le centre de la vignette)
+const VIGN: Record<number, (g: Gfx, x: number, y: number) => void> = {
+  1: (g, x, y) => miniBarres(g, x - 46, y - 18, 92, 16, "?", "3", "4", { seed: 1 }),
+  2: (g, x, y) => miniBarres(g, x - 46, y - 18, 92, 16, "?", "12", "5", { wa: 0.66, seed: 2 }),
+  3: (g, x, y) => { drawGroupe(g, "assiette", "pomme", x - 30, y + 2, 3, 0.36, { seed: 3 }); drawGroupe(g, "assiette", "pomme", x + 30, y + 2, 3, 0.36, { seed: 4 }); },
+  4: (g, x, y) => miniBarres(g, x - 46, y - 18, 92, 16, "15", "8", "?", { seed: 4 }),
+  5: (g, x, y) => miniBarres(g, x - 46, y - 18, 92, 16, "9", "6", "?", { wa: 0.62, seed: 5, ecart: true }),
+  6: (g, x, y) => miniBarres(g, x - 46, y - 18, 92, 16, "?", "35", "20", { wa: 0.6, seed: 6 }),
+  7: (g, x, y) => [-40, 0, 40].forEach((d, i) => drawGroupe(g, "anneau", "jeton", x + d, y + 2, 4, 0.3, { seed: 7 + i })),
+  8: (g, x, y) => miniBarres(g, x - 46, y - 18, 92, 16, "30", "?", "7", { wa: 0.7, seed: 8 }),
+  9: (g, x, y) => { miniBarres(g, x - 52, y - 18, 46, 16, "?", "6", "5", { seed: 9 }); miniBarres(g, x + 6, y - 18, 46, 16, "11", "?", "3", { wa: 0.62, seed: 10 }); },
+};
+export const drawProblemesTile = (g: Gfx, cx: number, cy: number, level: number) => {
+  plaque(g, cx, cy, 15200 + level);
+  g.group("plain", () => clipped(g, inside(cx, cy), () => underline(g, cx, cy, 15220 + level)));
+  VIGN[level]?.(g, cx, cy + VIGN_Y + 2);
+  g.group("plain", () => { drawTileNumber(g, cx, cy, level); g.mark([[cx - TILE_W / 2, cy - TILE_H / 2], [cx + TILE_W / 2, cy + TILE_H / 2]]); });
+};
+// L19 · Le schéma en barres : le tout, ses deux parties, le « ? » trouvé
+export const vL19 = (g: Gfx) => miniBarres(g, -70, -26, 140, 22, "7", "4", "3", { seed: 11 });

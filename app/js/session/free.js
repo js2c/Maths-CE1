@@ -24,6 +24,7 @@ import { median } from "../modules/facts/facts.js";
 import { Module4Runner } from "../modules/voiliers/runner.js";
 import { Module5Runner } from "../modules/mult/runner.js";
 import { Module6Runner } from "../modules/etal/runner.js";
+import { Module7Runner } from "../modules/problemes/runner.js";
 
 const PROPOSE_STOP_MS = 10 * 60000;
 // (lot « Correctifs de la confrontation 2 », écart 3.8, décision du parent du 3 novembre 2026) l'entraînement libre qui suit une leçon
@@ -37,7 +38,7 @@ export const guidesApresLecon = (seance, module, runner, apresLecon) => {
 };
 
 export class FreeTraining {
-  constructor(app, { store, module1, module2, module3 = null, module4 = null, module5 = null, module6 = null, rnd, seance = null }) { this.app = app; this.store = store; this.m1 = module1; this.m2 = module2; this.m3 = module3; this.m4 = module4; this.m5 = module5; this.m6 = module6; this.rnd = rnd; this.seance = seance; this.rec = null; this.cran = "conseille"; }
+  constructor(app, { store, module1, module2, module3 = null, module4 = null, module5 = null, module6 = null, module7 = null, problemes = null, rnd, seance = null }) { this.m7 = module7; this.banque = problemes; this.app = app; this.store = store; this.m1 = module1; this.m2 = module2; this.m3 = module3; this.m4 = module4; this.m5 = module5; this.m6 = module6; this.rnd = rnd; this.seance = seance; this.rec = null; this.cran = "conseille"; }
   // le sélecteur, sans étoiles ; l'exercice a été choisi : il ne part jamais seul (décision du parent du 19 octobre 2026)
   async pickCran() {
     const sel = this.seance?.selecteur; if (!sel?.actif) return (this.cran = "conseille");
@@ -63,7 +64,7 @@ export class FreeTraining {
   async menu() {
     const { app } = this;
     this.t0 ??= app.clock.now();
-    const c = await choose(app, { intro: `${app.text.data.encore} ${app.text.data.libre}`, stars: false, store: this.store, content: { module1: this.m1, module2: this.m2, module3: this.m3, module4: this.m4, module5: this.m5, module6: this.m6, seance: this.seance ?? {} } });
+    const c = await choose(app, { intro: `${app.text.data.encore} ${app.text.data.libre}`, stars: false, store: this.store, content: { module1: this.m1, module2: this.m2, module3: this.m3, module4: this.m4, module5: this.m5, module6: this.m6, module7: this.m7, seance: this.seance ?? {} } });
     return this.start(c);
   }
   // l'exercice choisi ({ module, niveau } ou { module: 2, famille }), sans fin ; (lot « Les leçons » : `apresLecon`, la leçon
@@ -77,6 +78,7 @@ export class FreeTraining {
     if (c.module === 3) return this.calc(c.niveau);
     if (c.module === 5) return this.mult(c.niveau);
     if (c.module === 6) return this.etal(c.niveau);
+    if (c.module === 7) return this.problemes(c.niveau);
     return this.voiliers(c.niveau);
   }
   // la ligne graduée au niveau choisi, sans fin
@@ -143,6 +145,25 @@ export class FreeTraining {
       for (const e of events) if (e.type === "montee") await app.rewards.arcFromFree();
       if (!guide) await this.answered(r.ok);
     }
+  }
+  // lot « Problèmes » : les problèmes au niveau choisi, sans fin (réponses marquées « libre ») ; tous les énoncés du niveau passés,
+  // ils peuvent revenir (le tour du niveau recommence) ; pas de problème du jour en entraînement libre
+  async problemes(niveau) {
+    const { app } = this; await this.pickCran(); if (this.fini) return;
+    const runner = await new Module7Runner({ store: this.store, content: this.m7, banque: this.banque, rnd: this.rnd, seance: await this.seanceId(), variete: this.seance?.variete, cran: () => this.cran, choix: niveau }).load();
+    runner.libre = true; this.runner = runner;
+    const fs = (app.facts ??= new FactsScreen(app, this.m2)); fs.show(false);
+    try {
+      for (let vide = 0; ;) {
+        if (this.fini) return;
+        const x = runner.next(); if (!x) { if (++vide > 2) return; runner.poses = new Set(); runner.var = new runner.var.constructor(runner.var.c); continue; }
+        vide = 0;
+        const r = await app.prob.askNotion(x.q);
+        const { events } = await runner.record(r, x.cfg);
+        for (const e of events) if (e.type === "montee") await app.rewards.arcFromFree();
+        await this.answered(r.ok);
+      }
+    } finally { if (this.fini) app.prob.leave(); } // (la portée de l’entraînement libre, main.js, le fait aussi)
   }
   // lot « Les voiliers » : les voiliers au niveau choisi, sans fin (réponses marquées « libre ») ; la maison les quitte
   // (main.js, abandonActivity : la scène s'en va)

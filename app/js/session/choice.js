@@ -17,6 +17,7 @@ import { deuxTouchers } from "./selection.js";
 import { currentFamily, initialFamilies, ruleShare } from "../modules/facts/families.js";
 import { initialCalcState, recommended } from "../modules/calc/runner.js";
 import { initialMultState, recommendedMult } from "../modules/mult/runner.js";
+import { initialProblemesState } from "../modules/problemes/runner.js";
 
 // (lot 3 bis, B1 : plaques de 150 × 136 numérotées, en 4 colonnes de x 496 à 1084, entre les bras de la pieuvre et les
 // algues de droite ; le calcul rapide : ses neuf plaques sur le chemin de cailloux, CALC_AT = le centre de la plaque 1)
@@ -32,6 +33,7 @@ export const EXERCISES = [
   { id: "voiliers", sprite: "choix.ex.voiliers", module: 4, graine: 328 },
   { id: "multiplication", sprite: "choix.ex.multiplication", module: 5, graine: 328 },
   { id: "etal", sprite: "choix.ex.etal", module: 6, graine: 328 },
+  { id: "problemes", sprite: "choix.ex.problemes", module: 7, graine: 329 },
 ];
 // la bulle d'un exercice (rayon 70 dans l'atelier, son trait compris : 75) ; l'entourage passe à 6 px de son bord
 export const EX_BULLE_R = 70, EX_ENTOURAGE_R = 81;
@@ -39,6 +41,10 @@ export const EX_BULLE_R = 70, EX_ENTOURAGE_R = 81;
 // cinq exercices, l'écart resserré de 190 à 172 px)
 // (lot « L'étal du pêcheur » : six exercices, de x 350 à 1180 : entre la tête de la mascotte et le bord droit)
 export const EX_PITCH = 166, EX_CX = 765;
+// (lot « Problèmes » : sept exercices ne tiennent plus sur une rangée sans rapetisser les bulles : deux rangées, 4 puis 3, au pas de
+// 196 px, entre la tête de la mascotte et le bord droit ; `exPos`)
+export const EX_ROWS = [370, 570], EX_PITCH2 = 196, EX_PAR_RANGEE = 4;
+export const exPos = (i, n = EXERCISES.length) => { if (n <= 6) return [EX_CX + (i - (n - 1) / 2) * EX_PITCH, EX_Y]; const r = i < EX_PAR_RANGEE ? 0 : 1, m = r ? n - EX_PAR_RANGEE : EX_PAR_RANGEE, j = r ? i - EX_PAR_RANGEE : i; return [EX_CX + (j - (m - 1) / 2) * EX_PITCH2, EX_ROWS[r]]; };
 
 // les vignettes de l'étape « niveau » d'un exercice : { key, sprite, conseille, valide }
 // st1 : l'état du module 1 (magasin « niveaux », clé 1) ; st2 : celui du module 2 ; module1, module2 : le contenu
@@ -46,7 +52,12 @@ export const EX_PITCH = 166, EX_CX = 765;
 // (lot « Les voiliers » : st4, module4 : ses 9 niveaux ; conseillé : le niveau atteint, validés : ceux d'avant)
 // (lot « Multiplication » : st5, module5 : ses 9 niveaux ; conseillé : `recommendedMult`, validés : les acquis)
 // (lot « L'étal du pêcheur » : st6, module6 : ses 10 niveaux ; conseillé : le niveau atteint, validés : ceux d'avant)
-export function levelItems(ex, { st1 = null, st2 = null, st3 = null, st4 = null, st5 = null, st6 = null, module1, module2, module3 = null, module4 = null, module5 = null, module6 = null, familyShare = () => 0 }) {
+// (lot « Problèmes » : st7, module7 : ses 9 niveaux ; conseillé : le niveau de l'enfant, validés : les acquis)
+export function levelItems(ex, { st1 = null, st2 = null, st3 = null, st4 = null, st5 = null, st6 = null, st7 = null, module1, module2, module3 = null, module4 = null, module5 = null, module6 = null, module7 = null, familyShare = () => 0 }) {
+  if (ex === "problemes") {
+    const st = st7 ?? initialProblemesState(module7.depart);
+    return module7.niveaux.map((c) => ({ key: c.niveau, sprite: `choix.problemes.${c.niveau}`, conseille: c.niveau === st.niveau, valide: (st.acquis ?? []).includes(c.niveau) }));
+  }
   if (ex === "etal") {
     const n = module6.niveaux.length, cur = Math.min(n, st6?.niveau ?? 1);
     return module6.niveaux.map((c) => ({ key: c.niveau, sprite: `choix.etal.${c.niveau}`, conseille: c.niveau === cur, valide: c.niveau < cur }));
@@ -93,7 +104,7 @@ export async function choose(app, o) {
   const CANCEL = Symbol("annulé"), cancelled = new Promise((res) => { app.choiceCancel = () => { annule = true; res(CANCEL); }; });
   const done = () => { portee.fermer(); voice.stop(); return null; };
   await sprites.load("choix");
-  const [st1, st2, st3, st4, st5, st6, faits] = await Promise.all([store.get("niveaux", 1), store.get("niveaux", 2), store.get("niveaux", 3), store.get("niveaux", 4), store.get("niveaux", 5), store.get("niveaux", 6), store.all("faits")]);
+  const [st1, st2, st3, st4, st5, st6, st7, faits] = await Promise.all([store.get("niveaux", 1), store.get("niveaux", 2), store.get("niveaux", 3), store.get("niveaux", 4), store.get("niveaux", 5), store.get("niveaux", 6), store.get("niveaux", 7), store.all("faits")]);
   if (portee.fermee) return new Promise(() => {});
   if (annule) return done();
   const familyShare = (id, boite) => ruleShare(o.content.module2, faits, id, boite);
@@ -110,7 +121,7 @@ export async function choose(app, o) {
   for (;;) {
     // 1. l'exercice
     const xs = EXERCISES, exBtn = xs.map((e, i) => {
-      const b = spriteBox(app, { x: EX_CX + (i - (xs.length - 1) / 2) * EX_PITCH - 90, y: EX_Y - 90, w: 180, h: 180, cls: "bubble choix-ex", label: e.id, paint: (ctx, px) => { sprites.draw(ctx, e.sprite, 0, 90, 90); if (sel.key === e.id) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawSelectRound(ctx, 90, 90, EX_ENTOURAGE_R, e.graine); } } });
+      const [ex0, ey0] = exPos(i, xs.length), b = spriteBox(app, { x: ex0 - 90, y: ey0 - 90, w: 180, h: 180, cls: "bubble choix-ex", label: e.id, paint: (ctx, px) => { sprites.draw(ctx, e.sprite, 0, 90, 90); if (sel.key === e.id) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawSelectRound(ctx, 90, 90, EX_ENTOURAGE_R, e.graine); } } });
       b.dataset.key = e.id; els.push(b); return b;
     });
     // (lot « Recette de l'enfant et nettoyage des couches », second passage de l'agent, constat 5) `intro` : la phrase d'entrée
@@ -121,7 +132,7 @@ export async function choose(app, o) {
     if (ex === CANCEL) return done();
     clear();
     // 2. le niveau, la famille ou la leçon
-    const exo = xs.find((e) => e.id === ex), items = levelItems(ex, { st1, st2, st3, st4, st5, st6, module1: o.content.module1, module2: o.content.module2, module3: o.content.module3, module4: o.content.module4, module5: o.content.module5, module6: o.content.module6, familyShare });
+    const exo = xs.find((e) => e.id === ex), items = levelItems(ex, { st1, st2, st3, st4, st5, st6, st7, module1: o.content.module1, module2: o.content.module2, module3: o.content.module3, module4: o.content.module4, module5: o.content.module5, module6: o.content.module6, module7: o.content.module7, familyShare });
     const back = spriteBox(app, { x: BACK[0] - 60, y: BACK[1] - 60, w: 120, h: 120, cls: "bubble choix-retour", label: "retour", paint: (ctx, px) => { const q = sprites.frame(exo.sprite, 0), k = 120 / 180; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 60 * px + q.dx * k, 60 * px + q.dy * k, q.w * k, q.h * k); } });
     els.push(back);
     // (lot 3 bis, B1) le chemin de cailloux du calcul rapide, dessiné en direct une fois par ouverture, sous les plaques
@@ -143,7 +154,7 @@ export async function choose(app, o) {
     legendKey(app, ex, { keys: items.map((it) => it.key), els });
     voice.stop();
     voice.say(text.data.choixNiveau, { instruction: true });
-    const name = (k) => dire(ex === "ligne" ? text.data.choixLigne[k] : ex === "additions" ? text.data.choixFamille[k] : ex === "calcul" ? text.data.choixCalcul[k] : ex === "multiplication" ? text.data.choixMult[k] : ex === "etal" ? text.data.choixEtal[k] : text.data.choixVoiliers[k], D[ex]?.[k]);
+    const name = (k) => dire(ex === "ligne" ? text.data.choixLigne[k] : ex === "additions" ? text.data.choixFamille[k] : ex === "calcul" ? text.data.choixCalcul[k] : ex === "multiplication" ? text.data.choixMult[k] : ex === "etal" ? text.data.choixEtal[k] : ex === "problemes" ? text.data.choixProblemes[k] : text.data.choixVoiliers[k], D[ex]?.[k]);
     const backP = new Promise((res) => onBrief(app, back, () => { pop(back); res(null); }, "retourExercices"));
     const key = await Promise.race([pick(tiles, name), backP, cancelled]);
     if (key === CANCEL) return done();
@@ -156,6 +167,7 @@ export async function choose(app, o) {
     if (ex === "calcul") return { module: 3, niveau: Number(key) };
     if (ex === "multiplication") return { module: 5, niveau: Number(key) };
     if (ex === "etal") return { module: 6, niveau: Number(key) };
+    if (ex === "problemes") return { module: 7, niveau: Number(key) };
     return { module: 4, niveau: Number(key) };
   }
 }

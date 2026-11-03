@@ -29,7 +29,9 @@ import { paintRows } from "../modules/mult/screen.js";
 // 165 à 155 px, pour en tenir cinq ; la cinquième colonne n'a rien sur la rangée de la ligne, sous le petit livre)
 // (lot « L'étal du pêcheur » : une cinquième rangée, la monnaie (L15 à L18) ; les tuiles sont réduites (k : 0,86), les rangées
 // resserrées, et le petit livre de la légende remonte dans la case vide de la première rangée, `legende`)
-export const MENU = { rowY: [190, 324, 458, 592, 726], colX: [575, 730, 885, 1040, 1195], iconX: 452, tile: { w: 129, h: 117 }, k: 0.86, icon: { w: 92, h: 90 }, legende: [1210, 186] };
+// (lot « Problèmes » : une sixième rangée, les problèmes (L19) ; les tuiles réduites encore (k : 0,74 ; 111 × 101 px), les rangées
+// au pas de 111 px)
+export const MENU = { rowY: [181, 292, 403, 514, 625, 736], colX: [575, 730, 885, 1040, 1195], iconX: 452, tile: { w: 111, h: 101 }, k: 0.74, icon: { w: 92, h: 90 }, legende: [1210, 186] };
 // les éléments du menu et leur place : { kind: "icone", ex } | { kind: "lecon", id } | { kind: "table", id }, avec x, y
 export function menuLayout(menu, M = MENU) {
   const out = [];

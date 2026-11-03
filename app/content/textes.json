@@ -298,11 +298,23 @@
       "L15": "Une pièce de deux euros vaut deux pièces de un euro.",
       "L16": "On paie juste, du plus gros au plus petit.",
       "L17": "On compte à partir du prix, jusqu'à l'argent qu'on a donné.",
-      "L18": "Cent centimes, ça fait un euro."
+      "L18": "Cent centimes, ça fait un euro.",
+      "L19": "Le tout en haut, ses deux parties en dessous."
     },
     "tables": {
       "addition": "Toutes les additions de zéro à dix, dans une grille.",
       "multiplication": "Toutes les multiplications jusqu'à dix fois dix, dans une grille."
+    },
+    "problemes": {
+      "1": "Des histoires où l'on ajoute ou l'on enlève, jusqu'à dix.",
+      "2": "Les mêmes histoires, jusqu'à vingt.",
+      "3": "Tu ranges les objets dans des groupes égaux.",
+      "4": "Tu cherches ce qui manque dans l'histoire.",
+      "5": "Combien de plus, combien de moins ?",
+      "6": "Des histoires avec de grands nombres, jusqu'à cent.",
+      "7": "Des groupes et des partages, avec beaucoup d'objets.",
+      "8": "Tu cherches ce qu'il y avait au début.",
+      "9": "Une histoire, deux calculs, l'un après l'autre."
     }
   },
   "choixTable": "La table d'addition.",
@@ -366,7 +378,8 @@
     "L15": "Pièces et billets.",
     "L16": "Payer juste.",
     "L17": "Rendre la monnaie.",
-    "L18": "Les centimes."
+    "L18": "Les centimes.",
+    "L19": "Le schéma en barres."
   },
   "rappelDouble": "{a} plus {b}, c'est {d} plus {d}, et encore 1.",
   "multFois": "{a} fois {b} ?",
@@ -701,15 +714,15 @@
     "diamantTout": "Tu as déjà toutes les créatures légendaires !"
   },
   "choixProblemes": {
-    "1": "Ajouter ou enlever, jusqu'à dix.",
-    "2": "Ajouter ou enlever, jusqu'à vingt.",
-    "3": "Des groupes et des partages : tu ranges les objets.",
-    "4": "Trouve ce qui manque, jusqu'à vingt.",
-    "5": "Combien de plus, combien de moins ?",
-    "6": "Les mêmes histoires, jusqu'à cent.",
-    "7": "Des groupes et des partages, avec plus d'objets.",
-    "8": "Trouve ce qu'il y avait au début.",
-    "9": "Des histoires en deux étapes."
+    "1": "Ajouter ou enlever.",
+    "2": "Jusqu'à vingt.",
+    "3": "Des groupes et des partages.",
+    "4": "Ce qui manque.",
+    "5": "De plus, de moins.",
+    "6": "Jusqu'à cent.",
+    "7": "Groupes et partages, plus grands.",
+    "8": "Le début de l'histoire.",
+    "9": "Deux étapes."
   },
   "_problemes": "Lot « Problèmes » (docs/LOTS.md, fiche 20 ; modules/problemes/screen.js) : l'entrée de l'exercice (notionProblemes) et de l'étape fixe (problemeDuJour) ; la consigne, dite la première fois (problemeConsigne, problemeReecouter) ; les aides (problemeAide : le schéma en barres, la comparaison, les deux étapes, les groupes ; problemeMettre : le partage manipulé, selon le contenant) ; les erreurs repérées (erreurProbleme, dites avant l'aide ; P1 seulement pour une comparaison). Les phrases de chaque énoncé (l'histoire, la question, la correction) sont dans problemes.json.",
   "notionProblemes": [

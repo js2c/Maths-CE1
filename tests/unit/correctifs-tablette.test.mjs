@@ -86,7 +86,7 @@ test("1 et 2 : les phrases nouvelles sont dans l'inventaire de la voix (bienvenu
   for (const k of ["choixExercice", "choixNiveau", "choixLecon"]) for (const s of sentences(T[k])) assert.ok(inv.has(s), s);
   // chaque tuile de chaque écran de choix a sa description
   const L = JSON.parse(readFileSync(racine("app/content/legendes.json"), "utf8"));
-  for (const ex of ["ligne", "additions", "calcul", "voiliers", "multiplication"]) for (const r of L[ex]) assert.ok(T.choixDescription[ex][r.n], `${ex} ${r.n}`);
+  for (const ex of ["ligne", "additions", "calcul", "voiliers", "multiplication", "problemes"]) for (const r of L[ex]) assert.ok(T.choixDescription[ex][r.n], `${ex} ${r.n}`);
   for (const r of L.lecons) assert.ok(r.n === "+" || r.n === "×" ? T.choixDescription.tables[r.n === "+" ? "addition" : "multiplication"] : T.choixDescription.lecons[r.n], r.n);
 });
 

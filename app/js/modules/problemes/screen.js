@@ -82,7 +82,7 @@ export class ProblemesScreen {
     const q = this.q; if (!q) return;
     const L = this.layout(q);
     for (const it of L.items) if (this.vues.has(it.i)) D.drawEtiquette(g, it.x, it.y, String(it.n), it.objet, { lit: this.lit === it.i, seed: it.i + 1, em: L.em });
-    const t = this.fs.typed || (this.montre ? String(q.e.reponse) : "?");
+    const t = (q.lecon ? "" : this.fs.typed) || (this.montre ? String(q.e.reponse) : "?");
     D.drawReponse(g, L.rep.x, L.rep.y, L.rep.w, t, q.e.objet, { juste: !!this.juste });
   }
   repaint() { if (this.q) this.calque("donnees", ZONE_CADRE, (g) => this.paintDonnees(g), "probleme-donnees"); }
@@ -163,6 +163,16 @@ export class ProblemesScreen {
     this.raconter(q, tok, { partage }).catch(() => {});
     return p;
   }
+  // (la leçon L19, lessons/problemes.js) la scène seule : l'illustration, les étiquettes (montrées quand elles sont allumées) et la plaque
+  // de la réponse, sans pavé ni voix
+  async scene(q) {
+    this.leaveQuestion(); this.q = q; this.vues = new Set(); this.lit = -1; this.juste = false; this.montre = false; this.tok = (this.tok ?? 0) + 1;
+    const img = await this.lieu(q.e.contexte), L = this.layout(q);
+    this.calque("cadre", ZONE_CADRE, (g, ctx) => this.paintCadre(g, ctx, img), "probleme-cadre");
+    this.boutons = L.items.map(() => ({ style: {} }));
+    this.app.bulle?.eviter("probleme", () => (this.q ? [[CADRE.x, ETIQ_Y - 18, CADRE.x + CADRE.w, ETIQ_Y + D.ETIQ_H], ...(this.aideVisible ? [[ZONE_AIDE.x, ZONE_AIDE.y, ZONE_AIDE.x + ZONE_AIDE.w, ZONE_AIDE.y + ZONE_AIDE.h]] : [])] : null));
+    this.repaint();
+  }
   setObjets(f) { this.objets = f; this.calque("objets", ZONE_OBJETS, (g, ctx) => this.paintObjets(g, ctx), "probleme-objets"); }
   allumer(i) { this.lit = i; if (i >= 0) { this.vues.add(i); this.boutons[i].style.visibility = "visible"; } this.repaint(); }
   // l'histoire, phrase par phrase : chaque étiquette s'allume avec sa phrase ; puis la question (la consigne que la mascotte redit :
@@ -235,16 +245,19 @@ export class ProblemesScreen {
     this.occupe = false; this.fs.keys(true); this.fs.help.style.visibility = q.coquillage ? "visible" : "hidden"; this.fs.t0 = clock.now();
   }
   // ---------------------------------------------------------------- l'aide (à la place du pavé)
-  paintAide(q, { montre = false } = {}) {
+  // `voir` (la leçon L19) : « tout » ne montre que la grande barre (le schéma se dessine en deux temps)
+  paintAide(q, { montre = false, voir = null } = {}) {
     const e = q.e, Z = ZONE_AIDE;
     this.aideVisible = true;
-    this.calque("aide", Z, (g) => {
+    this.calque("aide", Z, (g, ctx) => {
+      if (voir === "tout") { ctx.save(); ctx.beginPath(); ctx.rect(0, 0, Z.w * this.px, (520 + D.BARRE_H + 10 - Z.y) * this.px); ctx.clip(); }
       if (q.aide === "barres") D.drawBarres(g, 360, 520, 640, e.barres, e.objet, { montre });
       else if (q.aide === "comparaison") D.drawComparaison(g, 360, 520, 640, e.comparaison, e.objet, { montre });
       else if (q.aide === "etapes") e.etapes.forEach((s, i) => D.drawBarres(g, i ? 700 : 318, 530, 340, s.barres, e.objet, { montre: montre || i === 0, seed: i + 1 }));
       else { const G = e.groupes; this.groupesDans({ x: Z.x, y: Z.y, w: Z.w, h: 200 }, e.contenant ?? "anneau", e.objet, G.nombre, G.taille, { bonds: montre ? G.nombre : this.bonds ?? 0, lit: this.litGroupe ?? -1 })(g); }
       // les deux étapes : leurs numéros sous les schémas
       if (q.aide === "etapes") [["1", 488], ["2", 870]].forEach(([t, x]) => D.drawCalcul(g, x, 700, t, 30));
+      if (voir === "tout") ctx.restore();
     }, "probleme-aide");
   }
   effacerAide() { this.aideVisible = false; this.retirer("aide"); this.retirer("calcul"); }

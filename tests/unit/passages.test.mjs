@@ -78,7 +78,7 @@ test("point 7 : sur les écrans de choix, l'appui long d'une tuile ne montre plu
 test("point 8 : l'entourage d'un exercice reprend la forme de sa bulle (la même graine que dans l'atelier)", async () => {
   const { EXERCISES } = await import("../../app/js/session/choice.js");
   const art = (f) => readFileSync(new URL(`../../art/src/canvas-core/sea/${f}`, import.meta.url), "utf8");
-  const fichiers = { ligne: ["choice.ts", "drawExerciseLine"], additions: ["ui.ts", "drawFreeFacts"], calcul: ["calc.ts", "drawExerciseCalc"], voiliers: ["voiliers.ts", "drawExerciseVoiliers"], multiplication: ["mult.ts", "drawExerciseMult"], etal: ["etal.ts", "drawExerciseEtal"] };
+  const fichiers = { ligne: ["choice.ts", "drawExerciseLine"], additions: ["ui.ts", "drawFreeFacts"], calcul: ["calc.ts", "drawExerciseCalc"], voiliers: ["voiliers.ts", "drawExerciseVoiliers"], multiplication: ["mult.ts", "drawExerciseMult"], problemes: ["problemes.ts", "drawExerciseProblemes"], etal: ["etal.ts", "drawExerciseEtal"] };
   for (const e of EXERCISES) {
     const [f, fn] = fichiers[e.id], s = art(f), corps = s.slice(s.indexOf(`export const ${fn} =`));
     const i = Number(corps.match(/drawAnswerBubble\(g, cx, cy, (\d+), 70\)/)[1]);

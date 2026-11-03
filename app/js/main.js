@@ -1011,7 +1011,7 @@ async function freeTraining(start = null) {
   // quel qu'il soit, et ce que ses écrans ont laissé
   const portee = new Portee("entraînement libre", app.portees);
   portee.fin(() => { if (app.free) app.free.fini = true; app.fermerEcrans(); app.line.clear(); app.line.fxClear(); app.aidBoard?.clear(); fleche.cacher(); ocean.mascotte.release(); sprites.unload("calcul"); });
-  portee.fin(() => { app.voiliers.leave(); app.etal.leave(); app.calc.leave(); app.mult.leave(); lessons.abandon(); });
+  portee.fin(() => { app.voiliers.leave(); app.etal.leave(); app.calc.leave(); app.mult.leave(); app.prob.leave(); lessons.abandon(); });
   const free = new FreeTraining(app, { store, module1, module2, module3, module4, module5, module6, module7, problemes, rnd, seance });
   app.free = free;
   await (start ? free.start(start) : free.menu());

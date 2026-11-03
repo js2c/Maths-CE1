@@ -62,6 +62,8 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (demande du parent du 29 octobre 2026) : le lot « Correctifs des relectures »** (fiche 19, écrite après coup : le lot avait été lancé sans fiche ; fusionné après le lot 18) : les points des relectures qui avaient une valeur par défaut (`docs/IDEES.md`, section 3 : R8, R9, l'outil des séquences) et la mesure du temps de démarrage sur le banc, avec une proposition non appliquée ; R7 et la bulle sur les écrans pleins restent à décider. **État : fait** (PR #64 ; aucune phrase nouvelle).
 
+**Puis (décisions du parent du 30 octobre 2026) : le lot « Problèmes »** (fiche 20 : les problèmes de la vie courante, une étape fixe « Problème du jour » à chaque séance et un septième exercice). La maquette est validée (`art/problemes/`, PR #66) ; la banque compte 200 énoncés ; le plafond de la voix passe à 95 Mo. D'un seul tenant. Environ 868 phrases à fabriquer, environ 7,6 Mo ; les illustrations des 22 lieux sont générées par le parent, à part. **État : à lancer** (une fois cette fiche fusionnée — le lot « Correctifs des relectures », fiche 19, l'est depuis le 3 novembre 2026, PR #64 — et après le lot « Correctifs de la confrontation 2 », qui tranche et applique, entre autres, la durée des séances d'additions : `docs/ECARTS-SPEC-2.md`, écart 2.6).
+
 **Pourquoi cet ordre.**
 
 - Les correctifs de la confrontation avant les leçons et les sommes : ces lots s'appuient sur les règles du module 2 telles qu'elles seront écrites.
@@ -73,7 +75,7 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 **Pas encore dans la liste** (`docs/IDEES.md`, section 1) :
 
 - les fractions : plus tard (décision du parent du 6 octobre 2026), bien que le programme les attende au plus tard en période 2, c'est-à-dire avant les vacances de Noël ;
-- les problèmes de la vie courante, la pêche, suites et rangs ;
+- la pêche, suites et rangs ;
 - les bilans périodiques.
 
 Chacun deviendra un lot de ce tableau quand le parent le décidera.
@@ -1223,3 +1225,112 @@ Chaque défaut trouvé est corrigé et devient un test de non-régression. **Auc
 **Voix** : aucune phrase nouvelle.
 
 **Recette du lot** : `tests/e2e/correctifs-relectures.mjs` (s5e, petit-smartphone, 1280 × 800, 1920 × 1200), la relecture indépendante (`tests/recette-fonctionnelle/out-correctifs-relectures/RELECTURE.md`), la recette commune.
+
+### 20. Lot « Problèmes » (les problèmes de la vie courante)
+
+**But** : l'exercice « Problèmes » (`docs/SPEC.md`, section 13, « Problèmes ») devient le **module 7** de l'application, présent de deux façons : une **étape fixe « Problème du jour »** à chaque séance, et un **septième exercice** dans « choisir ». Des énoncés de la vie courante, lus à voix haute, illustrés par le lieu de l'histoire ; les quantités sont portées par le code (étiquettes, objets, schéma en barres), jamais par l'image ; la réponse au pavé. Le lot écrit la section **7 quinquies** de `docs/SPEC.md` (le module 7) et y retire « à construire » de ce qu'il fait.
+
+**À lire** : la maquette validée et sa proposition (`art/problemes/`, son `README.md` ; `docs/maquettes/problemes/PROPOSITION.md` et les captures `00-planche.png` à `09-deux-etapes.png`) ; les décisions du parent du 30 octobre 2026 (`docs/JOURNAL-CONCEPTION.md`, « Décisions du 30 octobre 2026 ») ; la banque (`art/problemes/enonces.json`, à relire dans `docs/maquettes/problemes/ENONCES.md`) ; les phrases (`docs/maquettes/problemes/PHRASES.md`) ; la fiche 5 (la multiplication : un exercice au pavé avec ses aides dessinées en direct) et la fiche 7 (l'étal : l'intégration d'images faites à part).
+
+**D'un seul tenant, sans arrêt pour une validation** : la maquette est validée, les règles ci-dessous sont celles du parent ou proposées par la conception et acceptées. Si une règle pose problème en simulation, la session tranche elle-même ; chaque choix va dans `docs/JOURNAL-CONCEPTION.md`, marqué « choix de la session, à revoir par le parent », et dans une section « Choix faits sans le parent » en tête de la demande de fusion. **Exception** : si la simulation montre que l'étape fixe est sautée plus d'une séance sur vingt, ou que les niveaux ne se parcourent pas dans l'année (voir « Le nombre de problèmes par soir »), s'arrêter et le décrire au parent.
+
+**Prérequis** : la maquette (PR #66) et cette fiche sont fusionnées sur `main`, ainsi que le lot « Correctifs des relectures » (fiche 19, PR #64, fusionné le 3 novembre 2026) ; **le lot « Correctifs de la confrontation 2 » est fait et fusionné** : c'est lui qui tranche avec le parent et applique **la durée des séances d'additions** (`docs/ECARTS-SPEC-2.md`, écart 2.6), dont la décision doit être écrite dans `docs/JOURNAL-CONCEPTION.md` (voir « La place dans la séance »). Sinon, s'arrêter et le dire au parent. Les illustrations ne sont pas un prérequis (voir « Les illustrations »).
+
+**Ce qui a changé sur `main` depuis la maquette** (30 octobre 2026), à prendre en compte : les lots 14 à 19 (le 19, PR #64, fusionné le 3 novembre 2026 : sans phrase nouvelle, il ne change pas le poids de la voix), en particulier les **réserves d'étoiles** à côté du compteur (fiche 17 ; `docs/SPEC.md`, section 10) et les **prix de la boutique réglables** (fiche 15), calibrés par une simulation qui ne connaissait pas encore les problèmes ; la voix pèse désormais 82,2 Mo (voir « Voix »). La maquette et ses captures ne montrent pas les réserves.
+
+**Le contenu** (tout ce qui se règle dans `app/content/`, rien dans le moteur) :
+
+- **La banque** : `art/problemes/enonces.json` (200 énoncés) est reprise dans `app/content/problemes.json`, qui devient la seule source ; ses contrôles (`art/problemes/verifier.mjs` : réponses, calculs, aides, niveaux, difficultés, ponctuation, mots des corrections) deviennent un test unitaire qui lit `app/content/problemes.json`. Chaque énoncé a son identifiant, sa structure, son niveau, sa difficulté, son contexte, son objet (et son contenant), ses phrases (énoncé, question, correction), ses données, sa réponse, son calcul et son aide (`barres`, `comparaison`, `groupes`, `etapes`).
+- **Les niveaux et les réglages** : `app/content/module7.json`.
+
+**Les niveaux** (`art/problemes/verifier.mjs`, fonction `niveau` ; nombre d'énoncés de la banque) :
+
+| Niveau | Ce qui est travaillé | Énoncés |
+| --- | --- | --- |
+| 1 | ajouter, enlever (réunion et transformation, le tout ou la fin inconnus), jusqu'à 10 | 20 |
+| 2 | les mêmes, jusqu'à 20 (**niveau de départ**) | 20 |
+| 3 | groupes égaux et partage, petits nombres, **en manipulant les objets** | 14 |
+| 4 | chercher une partie ou le changement, jusqu'à 20 | 14 |
+| 5 | comparer (« de plus », « de moins »), jusqu'à 20 | 24 |
+| 6 | les structures des niveaux 1, 2 et 4, jusqu'à 100 | 35 |
+| 7 | groupes égaux et partage, jusqu'à 50 | 35 |
+| 8 | le début inconnu ; comparer au-delà de 20 | 22 |
+| 9 | deux étapes | 16 |
+
+- **Le niveau de départ** est le **niveau 2** (décision du parent : 2,5/3 aux problèmes à l'évaluation de septembre ; le niveau 1 l'ennuierait), **réglable dans l'espace parent** (1 à 9), comme le point de départ des autres exercices (section 12) ; le niveau 1 reste accessible par « choisir ».
+- **La montée** : la règle commune (section 9 : 8 bonnes réponses sur les 10 dernières du niveau, au plus une aide), **sur deux jours au moins**, comme la multiplication. Pas de voie rapide (la vitesse n'est pas l'objet de l'exercice). **Les réponses de l'étape fixe comptent** pour la montée (décision du parent : sinon le niveau ne bouge jamais quand l'exercice n'est pas choisi), comme celles de l'exercice choisi.
+- **La répétition** (décision du parent ; simulée avant le code) : un énoncé ne revient pas dans la même séance, ni avant que tous ceux de son niveau soient passés ; un énoncé manqué revient à une séance suivante, avant les autres. La règle « une réponse qui varie » (section 9) s'applique à l'exercice choisi ; `tests/recette-fonctionnelle/b-sequences.mjs` est étendu au module 7.
+
+**La place dans la séance** (décision du parent : les deux) :
+
+- **L'étape fixe « Problème du jour »**, déjà prévue dans `seance.json` (`{ "id": "probleme", "actif": false }`, entre le défi et la récompense) : activée, **1 à 2 problèmes en 1 min 30** (la durée prime, comme partout), au niveau de l'enfant, au cran de la séance. **Ses 1 min 30 sont prises sur la notion du jour** (6 min aujourd'hui, donc 4 min 30), pour que l'étape ne soit presque jamais sautée faute de temps : une étape pas encore commencée quand le temps est écoulé est sautée (section 2). **Mesure à donner dans la demande de fusion** : la proportion de séances où l'étape est sautée, par profil et par rythme (`tests/sim-seances.mjs`, étendu), et la durée de la séance avant et après ; au-delà d'une séance sur vingt, s'arrêter (voir plus haut). **Avec la décision sur l'écart 2.6** (prise et appliquée par le lot « Correctifs de la confrontation 2 », avant ce lot) : dans les séances d'additions des petites familles, la notion du jour s'arrêtait avant ses 6 min quand la famille était épuisée (séances de 5 à 9 min avec « jouer » pour l'enfant en difficulté, mesure de `docs/ECARTS-SPEC-2.md`) ; la session part de la règle telle que ce lot l'a laissée (sans la rouvrir), puis mesure, dans ces séances en particulier, la durée de la séance et celle de l'étape fixe, avant et après le lot ; un écart à la durée visée (9 à 11 min avec « jouer », section 2) que la décision n'a pas prévu est décrit au parent dans la demande de fusion, sans changer la règle. Elle a sa place sur la frise (un pictogramme nouveau, dessiné dans l'atelier). Elle n'a pas lieu quand la séance du jour est déjà l'exercice « Problèmes », ni en entraînement libre. Elle est désactivable dans l'espace parent, comme le défi record (activée par défaut).
+- **Le septième exercice** dans « choisir » (après l'étal) : sa tuile, ses 9 plaques de niveau, sa légende pour le parent, l'entraînement libre ; **hors de la rotation de « jouer »** (`alternance.horsRotation`) : l'étape fixe donne déjà un problème chaque soir ; le parent peut l'imposer pour une séance, comme les voiliers.
+- **Le nombre de problèmes par soir** : simulé par la conception (`art/problemes/sim-niveaux.mjs`, départ au niveau 2, règle commune) : l'enfant de référence (2,5/3), à deux séances par semaine, parcourt les niveaux 2 à 9 en environ **58 semaines à un problème par soir** (il atteint le niveau 6 fin juin), **29 semaines à deux** (fin juin) ; à cinq séances par semaine, 23 et 12 semaines. La session refait cette simulation avec la vraie séance (le nombre moyen de problèmes que tient l'étape en 1 min 30, les séances « choisir ») et donne dans la demande de fusion **le temps pour parcourir les 9 niveaux** à 1 et à 2 problèmes par soir, par profil.
+
+**L'écran** (la maquette, `art/problemes/index.html`) : l'illustration du lieu dans un cadre de nacre en haut (620 × 350, de x 496 à 1116 et de y 116 à 466) ; au bas de l'illustration, une **étiquette par donnée** (le nombre et l'objet dessiné) et la **plaque de la réponse** (« ? » rouge, puis ce qui est tapé, verte quand c'est juste) ; dessous, le pavé, le coquillage et « je ne sais pas » à leurs places habituelles (`modules/facts/screen.js`) ; la mascotte, sa bulle, la maison, les étoiles comme partout, **avec les réserves d'étoiles** (fiche 17 : deux cases de 68 × 100 px à droite du compteur, x 1136 à 1276, y 22 à 122, `session/reserves.js`, `CASE`), absentes de la maquette : elles restent hors du cadre de l'illustration (qui s'arrête à x 1116), **visibles mais inertes pendant le problème**, à l'étape fixe comme dans l'exercice (comme pendant les autres exercices : le seul toucher hors réponse reste la mascotte), et les étiquettes, le partage glissé et l'aide ne s'en approchent pas ; à vérifier aussi sur `petit-smartphone`. Trois données : les étiquettes rétrécissent pour tenir sur une ligne (capture 09). L'aide prend la place du pavé.
+
+**Le déroulement d'une question** :
+
+1. La voix dit l'énoncé phrase par phrase ; **chaque étiquette s'allume quand sa phrase est dite** (décision du parent), puis la question ; le pavé répond dès le début.
+2. **Toucher une étiquette redit sa phrase** (sans phrase nouvelle) ; toucher la mascotte redit l'énoncé entier et la question (réécouter, compté comme partout). La relance (12 s, 25 s) comme partout.
+3. Juste : la plaque passe au vert, réaction de la mascotte, la correction n'est pas dite (une phrase courte de bravo, celles qui existent).
+4. Faux : le code d'erreur, sa phrase s'il en a une, puis **l'aide** : le schéma en barres (problèmes additifs ; deux schémas numérotés pour les deux étapes) ou les objets groupés (groupes égaux, partage) ; puis la correction dite dans l'histoire (le champ `correction` de l'énoncé, décision du parent) et le calcul écrit sur une plaque (« 23 − 9 = 14 ») ; la question revient plus loin (section 9).
+5. « Je ne sais pas », « passer » (exemple, correction, aide), la pause et la reprise à la question près : comme partout (sections 2 et 9).
+
+**Les objets** (décision du parent) :
+
+- **Au niveau 3**, les objets sont la question elle-même : au **partage**, l'enfant fait glisser les objets un à un dans les contenants (capture 07), puis tape la réponse ; aux **groupes égaux**, les groupes sont montrés formés, l'enfant les compte ; la correction compte par bonds (5, 10, 15, 20, capture 06).
+- **Aux niveaux suivants**, les objets ne viennent qu'en aide (au coquillage, ou après une erreur).
+
+**Les crans** (section 4 ; décision du parent) :
+
+- **plus facile** : pas de schéma d'emblée (il montrerait l'opération avant que l'enfant ait cherché, et c'est justement la compétence travaillée) ; l'énoncé est **redit phrase par phrase avec ses étiquettes**, et **les données sont dessinées en objets** (une collection par étiquette, sans disposition qui suggère l'opération ; au-delà de 20, par dizaines : un paquet de dix et les objets seuls) ; le schéma au coquillage et après une erreur, comme au cran conseillé ;
+- **conseillé** : les étiquettes ; le schéma (ou les objets) au coquillage et après une erreur ;
+- **plus dur** : sans coquillage ; l'aide seulement après une erreur ;
+- **très dur** : sans coquillage, et les énoncés des mêmes structures pris une difficulté au-dessus (au niveau 2, ceux du niveau 6 de même structure ; là où il n'y a pas de difficulté au-dessus, les plus difficiles du niveau).
+
+**Les erreurs** (décision du parent ; comptées dans l'espace parent, comme NSP) :
+
+| Code | Erreur | Exemple | Ce qui est dit avant l'aide |
+| --- | --- | --- | --- |
+| P1 | la mauvaise opération (a ajouté au lieu d'enlever, ou l'inverse) | 23 et 9 → 32 | rien de plus (le schéma le montre) ; pour une comparaison : « Attention : « de plus » ne veut pas dire qu'il faut ajouter. » |
+| P2 | a redit un nombre de l'énoncé | → 23 | « Tu as redit un nombre de l'histoire. Il faut calculer. » |
+| P3 | la bonne opération, une erreur de compte (à 1 ou à 10 près) | 23 − 9 → 15 | « Le bon calcul, mais une petite erreur de compte. » |
+| P4 | deux étapes : la réponse de la première étape | → 6 au lieu de 12 | « C'est la réponse de la première étape. Il en reste une. » |
+
+La même erreur deux fois dans une séance relance la leçon (une fois), comme partout.
+
+**La leçon « Le schéma en barres »** (L19, la suivante des numéros ; fait partie du lot, décision du parent) : une histoire courte, ses deux données, le tout et ses deux parties qui se dessinent ; « on connaît les deux parties : on les ajoute » ; puis une histoire où l'on enlève (« on connaît le tout et une partie : on enlève la partie ») ; le « ? » à sa place, trouvé. Suivie de « À toi ! » vers le niveau 2. Dans le menu des leçons, une rangée « problèmes ». Son texte et ses images sont faits par la session (choix de la session, à revoir par le parent).
+
+**Les dessins** (style A ; `art/src/canvas-core/sea/problemes.ts`, la planche `node art/tools/still.mjs problemesSheet`) :
+
+- **fabriqués à l'avance**, dans les planches de l'application (`art/tools/export-app.mjs`) : les 13 objets, les 5 contenants et l'anneau de corde, le cadre de l'illustration ; **à dessiner dans le lot** : la tuile de l'exercice, le pictogramme de la frise (l'étape et l'exercice), les 9 plaques de niveau, la rangée et la tuile de la leçon ;
+- **dessinés une fois par question** dans un canvas mis en cache, avec les primitives de `runtime.ts` (comme la ligne graduée) : les étiquettes, la plaque de la réponse, la plaque du calcul, le schéma en barres, la comparaison, la disposition des objets ;
+- **la bulle** déclare à `engine/bulle.js` (`eviter`) les étiquettes, la plaque de la réponse et l'aide : elle peut couvrir le haut de l'illustration (le décor), jamais ce dont parle la voix.
+
+**Les illustrations** (décision du parent : une par lieu, 22 lieux ; `art/problemes/contextes.json`) : **générées par le parent**, avec le prompt de chaque lieu et l'image de l'étal en référence, et déposées dans `art/problemes/sources/<lieu>.png` (ou `.jpg`, 1920 × 1080). Un outil de l'atelier, `art/tools/export-problemes.mjs`, les recadre et les réduit en WebP (@1x et @2x) dans `app/assets/problemes/`, et les ajoute à la liste du service worker. **L'étal** reprend l'image de l'étal du pêcheur (`art/etal/sources/etal-beau-temps.jpg`), déjà là. **Un lieu sans image** (le parent ne les a pas toutes faites au moment du lot) : une image de remplacement neutre (le papier du cadre, sans texte), et la liste des lieux qui manquent dans la demande de fusion ; l'image arrivera par une petite demande de fusion, sans toucher au moteur.
+
+**Récompenses** : les règles de la section 10 (étoiles selon le cran, erreur corrigée, niveau franchi), à l'étape fixe comme dans l'exercice. Le module 7 change ce que l'enfant gagne dans l'année : jusqu'à 8 étoiles arc-en-ciel de plus (un niveau franchi, du niveau 2 au niveau 9), qui suivent la règle de réserve (une gardée par zone fermée) ; des étoiles de mer gagnées au problème du jour au lieu de 1 min 30 de notion du jour. **Les prix de la boutique ne sont pas changés par le lot** (une décision du parent, fiche 15) : la session refait la simulation finale de la fiche 17 (`tests/sim-boutique.mjs`, étendu au module 7 : chaque niveau de prix, profils `reel`, `sait`, `diff`, à 2, 3 et 4 séances par semaine ; créatures, date de la collection complète, séances sans rien de nouveau en vitrine, étoiles arc-en-ciel gagnées, utilisées pour les zones et pour faire briller, restantes) et la compare à celle de la fiche 17 (`docs/maquettes/reserves/simulation.md`). **Ce qui peut bouger** (hypothèse de la conception, à mesurer) : un problème demande bien plus de temps qu'un fait d'addition (l'énoncé lu, puis la recherche), donc le problème du jour rapportera vraisemblablement **moins d'étoiles de mer** que les 1 min 30 de notion du jour qu'il remplace (1 à 2 bonnes réponses au lieu d'une dizaine) ; la demande de fusion donne les étoiles de mer gagnées par séance, avant et après, par profil et par cran. La ligne la plus serrée de la fiche 17 est le niveau de prix « 2 séances », profil `reel`, à 2 séances par semaine (collection complète le 14 juin 2027) : c'est elle qu'il faut regarder en premier ; les étoiles arc-en-ciel de plus, elles, ne peuvent que desserrer les zones et faire briller. Si un niveau ne tient plus ses critères (fiche 15, point 4 : presque exactement les arrivées de la semaine, la collection complète en juin), le tableau et une proposition vont en tête de la demande de fusion, pour le parent.
+
+**Espace parent** : un bloc « Module 7 · Les problèmes » (niveau, niveaux acquis, historique, semaine par semaine), les codes P1 à P4 et NSP dans le journal des erreurs, l'énoncé de chaque réponse (son identifiant et sa question) dans le détail de la séance ; les réglages : **niveau de départ** (1 à 9, 2 par défaut), **étape « Problème du jour »** (oui par défaut) ; le module 7 parmi les notions qu'on peut imposer.
+
+**Voix** — **aucune voix n'est fabriquée dans ce lot** (`CLAUDE.md`, « Voix ») :
+
+- le **plafond de la voix passe de 85 à 95 Mo** (décision du parent du 30 octobre 2026) : le test `tests/unit/voix.test.mjs` est modifié pour cela, avec la décision citée dans son titre (c'est une décision du parent, pas un moyen de faire passer les tests). **Elle ne vaut que tant que la voix reste Chatterbox** : si le parent change de voix (essais Gemini, `tools/voix/essais/`), toute la voix sera refaite et le plafond recalculé ;
+- les phrases : les énoncés, les questions et les corrections de la banque, les phrases communes proposées (`art/problemes/phrases.mjs`, `COMMUNES` : la consigne, les objets, le schéma, les deux étapes, les erreurs), plus celles du lot (noms de l'exercice et des niveaux, la leçon L19, la frise, les réglages) ; estimation de la conception : **868 phrases, environ 7,6 Mo** (`docs/maquettes/problemes/PHRASES.md`, refait le 3 novembre 2026 sur la voix de `main`) ; la voix pèse aujourd'hui **82,2 Mo** (toutes les phrases des lots 15 et 17 fabriquées ; 81,2 Mo le 30 octobre) : après le lot, environ **89,8 Mo**, soit **5,2 Mo de marge** sous 95 Mo (6,2 Mo le 30 octobre), avant les phrases propres au lot (noms, niveaux, L19, frise, réglages) ; la demande de fusion donne le poids réel restant ;
+- l'énoncé est dit **phrase par phrase** (une phrase, un fichier) ; les nombres en chiffres dans le texte, écrits en lettres par l'outil de la voix ;
+- la demande de fusion donne la liste exacte des phrases nouvelles, leur nombre et leur poids estimé.
+
+**Recette, en plus de la méthode commune** :
+
+- tests unitaires : la banque (les contrôles de `art/problemes/verifier.mjs`), les niveaux, la montée (étape fixe comprise), la répétition, le classement des erreurs P1 à P4, le cran « plus facile » (jamais de schéma avant une erreur ou le coquillage) ;
+- la simulation de la boutique (`tests/sim-boutique.mjs`, voir « Récompenses ») ;
+- la simulation (`tests/sim-seances.mjs`, étendu au module 7) : **la proportion de séances où l'étape est sautée** et **le temps pour parcourir les 9 niveaux** à 1 et 2 problèmes par soir, par profil, à 2 et 5 séances par semaine ; les séquences lues ;
+- un parcours `tests/e2e/problemes.mjs`, captures en 1280 × 800 et 1920 × 1200 : l'étape fixe dans une séance « jouer » ; l'exercice choisi ; l'énoncé et ses étiquettes qui s'allument ; toucher une étiquette ; la réponse juste ; chaque erreur P1 à P4 et son aide (barres, comparaison, deux étapes) ; le partage manipulé et les groupes égaux au niveau 3 ; chaque cran ; « je ne sais pas » ; la pause et la reprise ; la leçon L19 ; un lieu avec image et un lieu sans image ; l'espace parent ;
+- sur le banc Android (profil `s5e`, et `petit-smartphone` pour l'écran de l'exercice : les étiquettes et le glisser du partage) ;
+- relecture indépendante (méthode commune).
+
+**Questions ouvertes, avec leur valeur par défaut** (à confirmer par le parent, dans `docs/IDEES.md` à la fin du lot) :
+
+- **Deux problèmes par soir, ou un ?** Par défaut : 1 à 2 en 1 min 30, la durée prime. À un problème par soir, l'enfant de référence n'atteindrait que le niveau 6 en fin d'année (simulation de la conception) ; si la vraie séance n'en tient qu'un en moyenne, la demande de fusion le dit et propose : plus de temps pour l'étape, ou une règle de montée plus courte pour les problèmes (4 bonnes sur les 5 dernières : 24 semaines à un problème par soir, mais une enfant en difficulté passe plus souvent un niveau par chance).
+- **Les rôles familiaux** : le parent relit `docs/maquettes/problemes/ENONCES.md` et signale ceux à changer (décision du 30 octobre 2026) ; le changement d'un rôle ne touche que le contenu et la voix de la phrase.

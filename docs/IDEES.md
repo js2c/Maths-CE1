@@ -15,7 +15,7 @@ Les lots prêts à lancer, dans l'ordre, sont dans **`docs/LOTS.md`** (décision
 **Phase 1, maintenant** — ordre proposé le 30 septembre (un lot court chacun ; les leçons et les sommes jusqu'à 30 sont devenues les lots « Les leçons » et « Sommes jusqu'à 30 » de `docs/LOTS.md`) :
 
 1. Les leçons (`docs/SPEC.md`, section 3, « Les leçons ») : bulle à l'accueil, menu refait, leçon suivie de son exercice, table d'addition à consulter ; correction des filets de la leçon L10 (10 poissons).
-2. Les problèmes de la vie courante (`docs/SPEC.md`, section 13) : l'essentiel du travail est la banque d'énoncés, rédigée en conception.
+2. Les problèmes de la vie courante (`docs/SPEC.md`, section 13) : l'essentiel du travail est la banque d'énoncés, rédigée en conception. **Devenu le lot « Problèmes »** (`docs/LOTS.md`, fiche 20 ; maquette validée le 30 octobre 2026, banque de 200 énoncés).
 3. La pêche (section 2 ci-dessous).
 4. Le banc de poissons (section 2) : **couvert pour l'essentiel par le jeu des voiliers** (encadrer entre des bouées, lot « Les voiliers » de `docs/LOTS.md`) ; ce qui n'y est pas (« donne un nombre compris entre », les signes <, >, =) reste à placer.
 5. Suites et rangs (section 2).
@@ -56,12 +56,12 @@ Au cran « plus facile », l'écriture 600 + 30 + 5 s'affiche sous la cale. Un f
 
 ## 3. Questions à trancher
 
-- **Les problèmes** : une étape courte de chaque séance (recommandation de conception : un ou deux problèmes par soir, c'est une compétence d'usage) ou un exercice qu'on choisit ?
-- **La banque de problèmes** : chaque phrase lue est fabriquée à l'avance (plafond 80 Mo, 51 Mo utilisés) ; des énoncés à nombres variables multiplieraient les fichiers. Recommandation : une banque fixe de 150 à 200 énoncés rédigés en conception et relus par le parent (quelques Mo de voix).
-- **Les illustrations des problèmes** : 150 à 200 scènes de la vie courante ne sont pas dessinables en code à un coût raisonnable ; Nano Banana, une image fixe par énoncé (ou par contexte réutilisé), dans un style fixé par une image de référence. Point de vigilance : un générateur d'images compte mal (« 3 sachets de 6 » ne sera pas exact) ; l'image montre le contexte, les quantités sont dessinées par l'application (objets à grouper) ou dites par la voix.
+- ~~**Les problèmes**~~ (**tranché** le 30 octobre 2026 : les deux, une étape fixe « Problème du jour » et un septième exercice ; `docs/JOURNAL-CONCEPTION.md`, « Décisions du 30 octobre 2026 » ; `docs/LOTS.md`, fiche 20) : une étape courte de chaque séance (recommandation de conception : un ou deux problèmes par soir, c'est une compétence d'usage) ou un exercice qu'on choisit ?
+- ~~**La banque de problèmes**~~ (**tranché** le 30 octobre 2026 : une banque fixe de 200 énoncés, le plafond de la voix relevé à 95 Mo ; fiche 20) : chaque phrase lue est fabriquée à l'avance (plafond 80 Mo, 51 Mo utilisés) ; des énoncés à nombres variables multiplieraient les fichiers. Recommandation : une banque fixe de 150 à 200 énoncés rédigés en conception et relus par le parent (quelques Mo de voix).
+- ~~**Les illustrations des problèmes**~~ (**tranché** le 30 octobre 2026 : une image par lieu, 22 lieux, générées par le parent ; fiche 20) : 150 à 200 scènes de la vie courante ne sont pas dessinables en code à un coût raisonnable ; Nano Banana, une image fixe par énoncé (ou par contexte réutilisé), dans un style fixé par une image de référence. Point de vigilance : un générateur d'images compte mal (« 3 sachets de 6 » ne sera pas exact) ; l'image montre le contexte, les quantités sont dessinées par l'application (objets à grouper) ou dites par la voix.
 - **L'échauffement quand un exercice est choisi** : aujourd'hui il reste, sauf si on le passe. Le garder, le supprimer, ou le réduire ?
 - **Le nombre de crans de difficulté** : quatre crans multiplient les cas à tester (116 combinaisons pour la seule vérification des séquences). En garder quatre, ou passer à trois ?
-- **Le crabe**, prévu comme personnage des problèmes : au vu de ce que le bernard-l'ermite a apporté (rien de pédagogique, avis du parent), le laisser de côté ?
+- ~~**Le crabe**~~ (**tranché** le 30 octobre 2026 : pas de personnage guide pour les problèmes ; fiche 20), prévu comme personnage des problèmes : au vu de ce que le bernard-l'ermite a apporté (rien de pédagogique, avis du parent), le laisser de côté ?
 - **+ 19, + 29, − 9** (programme) : extension peu coûteuse du niveau 6 du calcul rapide (L8 enseigne déjà « + 10 puis un pas en arrière »), aujourd'hui limité à + 9.
 - **Le lagon sous les exercices** (lot « Lagon en fond d'exercices », octobre 2026). Décision du parent : aucune adaptation de lisibilité. Relevé, pour mémoire, de ce que le fond met sous l'exercice (captures : `node tests/e2e/lagon.mjs`) :
   - les nombres de la ligne graduée sont écrits sur le sable du panorama, dont les rides sont des traits d'encre aussi épais que les chiffres ; le bord du sable passe au ras du haut des nombres à gauche ;

@@ -555,7 +555,7 @@ Ce qui change pour l'enfant et pour vous :
 
 **Pour vous** : dans « Cartes et boutique », la réserve d'étoiles arc-en-ciel dit combien ont ouvert des zones et combien ont fait briller une créature ; la liste des achats montre « 1 étoile arc-en-ciel » à la place du prix (et l'export a une colonne « étoile arc-en-ciel »). Ce qui est simulé sur une année (`docs/maquettes/reserves/simulation.md`) : au niveau de prix qui suit votre rythme, environ 35 étoiles arc-en-ciel font briller une créature au lieu de rester inutiles ; les zones s'ouvrent aux mêmes dates ; la collection est complète en juin, comme avant.
 
-**108 phrases à fabriquer**, environ 1,2 Mo (la voix passera d'environ 81,3 à 82,4 Mo, sous la limite de 85 Mo) ; 6 phrases ne servent plus (« Pour la faire briller, il faut 150 étoiles. » et les autres prix), leur fichier sera effacé : `node tools\voix\publier.mjs` (`docs/VOIX.md`). Tant qu'elles manquent, la bulle du capitaine écrit la phrase sans la dire.
+**110 phrases à fabriquer**, environ 1,2 Mo (la voix passera d'environ 81,3 à 82,4 Mo, sous la limite de 85 Mo) ; 6 phrases ne servent plus (« Pour la faire briller, il faut 150 étoiles. » et les autres prix), leur fichier sera effacé : `node tools\voix\publier.mjs` (`docs/VOIX.md`). Tant qu'elles manquent, la bulle du capitaine écrit la phrase sans la dire.
 
 **À essayer sur la tablette** : à l'accueil, toucher l'étoile arc-en-ciel puis l'étoile de diamant, à côté du compteur ; pendant une question, les toucher ne doit rien faire. À la boutique, toucher une créature déjà dans le récif : si elle a plus d'étoiles arc-en-ciel que de zones fermées, la coche arc-en-ciel apparaît ; la toucher fait briller la créature, et la réserve baisse d'une étoile.
 

@@ -147,7 +147,7 @@ Quand une zone peut s'ouvrir, Z vaut au moins 1 : si l'enfant avait eu une étoi
 
 ## 6. Les phrases nouvelles à fabriquer (recomptées après la validation)
 
-**108 phrases, environ 1,2 Mo** (estimation : la taille moyenne des fichiers de la voix selon la longueur du texte) ; **6 ne servent plus** (« Pour la faire briller, il faut 150 étoiles. », et 250, 300, 350, 500, 700 : remplacées par la forme courte). La voix pèse aujourd'hui 81,3 Mo ; ensuite, environ **82,4 Mo**, sous la limite de 85 Mo. La liste exacte est dans la demande de fusion :
+**110 phrases, environ 1,2 Mo** (estimation : la taille moyenne des fichiers de la voix selon la longueur du texte) ; **6 ne servent plus** (« Pour la faire briller, il faut 150 étoiles. », et 250, 300, 350, 500, 700 : remplacées par la forme courte). La voix pèse aujourd'hui 81,3 Mo ; ensuite, environ **82,4 Mo**, sous la limite de 85 Mo. La liste exacte est dans la demande de fusion :
 
 - les réserves : « Tu as une étoile arc-en-ciel. », « Tu as 2 étoiles arc-en-ciel. » … « Tu as 50 étoiles arc-en-ciel. », « Tu as beaucoup d'étoiles arc-en-ciel. » (51) ; leurs 5 rôles ; « Tu as une étoile de diamant. » … « Tu as 15 étoiles de diamant. », « Tu as beaucoup d'étoiles de diamant. » (16) ; leurs 6 rôles ;
 - la boutique : « Il est déjà dans ton récif. », « Elle est déjà dans ton récif. » ; « Pour le faire briller : 150 étoiles. » et « Pour la faire briller : 150 étoiles. », à chaque prix de chaque niveau (150, 300, 250, 500, 350, 700 : 12), les mêmes avec « , ou une étoile arc-en-ciel. » (12) ; « Touche la coche de l'étoile que tu veux donner. » ; « Ton étoile arc-en-ciel est gardée pour la prochaine zone. », « Tes étoiles arc-en-ciel sont gardées pour les nouvelles zones. » (29 en tout) ;

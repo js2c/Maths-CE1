@@ -56,7 +56,7 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (décision du parent du 2 novembre 2026) : le lot court « Prix de la boutique réglables »** (fiche 15) : dans l'espace parent, les prix de la boutique selon le nombre de séances par semaine (2, 3 ou 4), calibrés par la simulation. **État : fait** (PR #69 ; 8 phrases nouvelles, les nouveaux prix).
 
-**Puis (décisions du parent du 2 novembre 2026) : le lot « Réserves d'étoiles et étoiles arc-en-ciel »** (fiche 17), avec un point d'arrêt « maquette » : montrer à l'enfant ses réserves d'étoiles arc-en-ciel et de diamant, un usage pour les étoiles arc-en-ciel en surplus (faire briller une créature), les réponses du parent aux questions du lot « Prix de la boutique réglables », et la documentation du Python unique de la voix. **État : fait** (maquette validée le 2 novembre 2026, avec des corrections ; 108 phrases nouvelles à fabriquer, 6 qui ne servent plus).
+**Puis (décisions du parent du 2 novembre 2026) : le lot « Réserves d'étoiles et étoiles arc-en-ciel »** (fiche 17), avec un point d'arrêt « maquette » : montrer à l'enfant ses réserves d'étoiles arc-en-ciel et de diamant, un usage pour les étoiles arc-en-ciel en surplus (faire briller une créature), les réponses du parent aux questions du lot « Prix de la boutique réglables », et la documentation du Python unique de la voix. **État : fait** (maquette validée le 2 novembre 2026, avec des corrections ; 110 phrases nouvelles à fabriquer, 6 qui ne servent plus).
 
 **Pourquoi cet ordre.**
 

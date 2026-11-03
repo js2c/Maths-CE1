@@ -11,7 +11,7 @@
 //   node art/problemes/sim-niveaux.mjs
 import { readFileSync } from "node:fs";
 
-const banque = JSON.parse(readFileSync(new URL("enonces.json", import.meta.url), "utf8")).enonces;
+const banque = JSON.parse(readFileSync(new URL("../../app/content/problemes.json", import.meta.url), "utf8")).enonces;
 const parNiveau = (n) => banque.filter((e) => e.niveau === n).map((e) => e.id);
 // un tirage déterministe
 const rng = (seed) => () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };

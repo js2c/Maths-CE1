@@ -4,7 +4,7 @@ Préparée avant le lot, pour la validation du parent (`docs/maquettes/problemes
 
 | Fichier | Rôle |
 | --- | --- |
-| `enonces.json` | **La banque** : 200 énoncés de la vie courante, classés par structure, par niveau (1 à 9) et par difficulté, avec leurs phrases lues, leur réponse, leur calcul et leur aide (barres, comparaison, groupes, étapes). La seule source : on la modifie à la main. |
+| `app/content/problemes.json` (depuis le lot « Problèmes » ; avant, `enonces.json` ici) | **La banque** : 200 énoncés de la vie courante, classés par structure, par niveau (1 à 9) et par difficulté, avec leurs phrases lues, leur réponse, leur calcul et leur aide (barres, comparaison, groupes, étapes). La seule source : on la modifie à la main. |
 | `verifier.mjs` | Le contrôle de la banque (réponses, calculs, aides, niveaux, difficultés, ponctuation, contextes, mots des corrections) ; `--md` écrit `docs/maquettes/problemes/ENONCES.md`, la banque à relire. |
 | `contextes.json` | Les 22 contextes d'illustration (une image par lieu, réutilisée par tous ses énoncés) et le prompt Nano Banana de chacun. |
 | `phrases.mjs` | Le compte des phrases à fabriquer et leur poids, comparé à la place qui reste sous le plafond de la voix ; `--md` écrit `docs/maquettes/problemes/PHRASES.md`. Il contient aussi les phrases communes proposées (`COMMUNES`). |

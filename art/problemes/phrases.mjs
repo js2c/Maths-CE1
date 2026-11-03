@@ -12,7 +12,7 @@ import { inventaire } from "../../tools/voix/inventaire.mjs";
 import { lire, VOIX } from "../../tools/voix/fabriquer.mjs";
 
 const ICI = dirname(fileURLToPath(import.meta.url)), RACINE = join(ICI, "../..");
-const banque = JSON.parse(readFileSync(join(ICI, "enonces.json"), "utf8")).enonces;
+const banque = JSON.parse(readFileSync(join(ICI, "../../app/content/problemes.json"), "utf8")).enonces;
 // tout le dossier de la voix (sons, index, crédits) : 85 Mo aujourd'hui (tests/unit/voix.test.mjs) ; 95 Mo décidés par le parent le
 // 30 octobre 2026 pour le lot « Problèmes », tant que la voix reste Chatterbox (docs/JOURNAL-CONCEPTION.md)
 const PLAFOND_AUJOURDHUI = 85e6, PLAFOND = 95e6;
@@ -81,7 +81,7 @@ const resume = [
 console.log(tableau.join("\n")); console.log(`\n${resume.join("\n")}`);
 
 if (process.argv.includes("--md")) {
-  const md = ["# Les phrases de l'exercice « Problèmes » et leur poids", "", "Tiré de `art/problemes/enonces.json` et des phrases communes proposées (`art/problemes/phrases.mjs`, `COMMUNES`) par `node art/problemes/phrases.mjs --md`, comparé à l'inventaire de la voix de `main` (`tools/voix/inventaire.mjs`). Une phrase déjà fabriquée ne coûte rien ; une phrase qui revient dans plusieurs énoncés n'est comptée qu'une fois.", "", resume.join("\n"), "", tableau.join("\n"), ""];
+  const md = ["# Les phrases de l'exercice « Problèmes » et leur poids", "", "Tiré de `app/content/problemes.json` et des phrases communes proposées (`art/problemes/phrases.mjs`, `COMMUNES`) par `node art/problemes/phrases.mjs --md`, comparé à l'inventaire de la voix de `main` (`tools/voix/inventaire.mjs`). Une phrase déjà fabriquée ne coûte rien ; une phrase qui revient dans plusieurs énoncés n'est comptée qu'une fois.", "", resume.join("\n"), "", tableau.join("\n"), ""];
   for (const [nom, b] of lignes) { md.push(`## ${nom} (${b.nouv.length})`, ""); for (const s of b.nouv) md.push(`- ${s}`); md.push(""); }
   md.push(`## ${vn} : les nouvelles (${vB.nouv.length})`, "", ...vB.nouv.map((s) => `- ${s}`), "");
   writeFileSync(join(RACINE, "docs/maquettes/problemes/PHRASES.md"), md.join("\n"));

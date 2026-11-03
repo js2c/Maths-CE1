@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- MAQUETTE DE L'EXERCICE « PROBLÈMES » (docs/maquettes/problemes/PROPOSITION.md ; banque : art/problemes/enonces.json).
+<!-- MAQUETTE DE L'EXERCICE « PROBLÈMES » (docs/maquettes/problemes/PROPOSITION.md ; banque : app/content/problemes.json).
      Les écrans clés, faits avec les pièces de l'application (le lagon, le pavé, le coquillage, « je ne sais pas », lus dans
      app/ sans le modifier ; la mascotte, la maison et les étoiles capturées dans l'application) et les dessins nouveaux de
      l'atelier (art/src/canvas-core/sea/problemes.ts, empaquetés en dessins.js par construire.mjs). L'illustration de l'étal
@@ -48,7 +48,7 @@ const [mascotte, maison, etoiles, etal] = await Promise.all(["../art/problemes/m
 await document.fonts.load('600 30px "Shantell Sans"');
 const bctx = bg.getContext("2d"); bctx.setTransform(1, 0, 0, 1, 0, 0); sprites.draw(bctx, "lagon.fond", 0, 0, 0);
 const ctx = scene.getContext("2d");
-const BANQUE = (await (await fetch("../art/problemes/enonces.json")).json()).enonces, E = (id) => BANQUE.find((e) => e.id === id);
+const BANQUE = (await (await fetch("content/problemes.json")).json()).enonces, E = (id) => BANQUE.find((e) => e.id === id);
 
 // ce qui ne change pas d'un écran à l'autre : la mascotte, la maison, les étoiles (captures de l'application)
 const chrome = () => { ctx.setTransform(px, 0, 0, px, 0, 0); ctx.drawImage(maison, 10, 6, 130, 130); ctx.drawImage(etoiles, 960, 40, 140, 70); ctx.drawImage(mascotte, 22, 136, 210, 280); };

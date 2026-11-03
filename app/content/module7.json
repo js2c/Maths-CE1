@@ -1,0 +1,30 @@
+{
+  "_doc": "Module 7, les problèmes de la vie courante (lot « Problèmes », docs/LOTS.md, fiche 20 ; docs/SPEC.md, section 7 quinquies ; la banque : problemes.json). niveaux : dans l'ordre ; chaque énoncé de la banque porte son niveau (règle : art/problemes/verifier.mjs, fonction niveau) ; nom : pour l'espace parent (la légende est dans legendes.json). depart : le niveau de départ (décision du parent du 30 octobre 2026 : 2,5/3 aux problèmes à l'évaluation de septembre), réglable dans l'espace parent (1 à 9). Montée : la règle commune (reglesAdaptation : 8 bonnes sur les 10 dernières du niveau, au plus une aide), sans voie rapide (voieRapide.premieres inatteignable : la vitesse n'est pas l'objet de l'exercice), sur acquisJours jours au moins ; les réponses de l'étape fixe « Problème du jour » comptent comme celles de l'exercice choisi ; au cran « plus facile », elles ne comptent pas (comme partout). repetition : un énoncé ne revient pas dans la même séance, ni avant que tous ceux de son niveau soient passés ; un énoncé manqué revient à une séance suivante, avant les autres (manquesD'abord). Dans l'exercice choisi, une erreur fait revenir l'énoncé `retourErreur` questions plus loin (section 9), une seule fois. crans : facile = l'énoncé redit phrase par phrase avec ses étiquettes, les données dessinées en objets (au-delà de `objetsDizainesAuDela`, par dizaines), le schéma au coquillage et après une erreur ; conseille = le schéma (ou les objets) au coquillage et après une erreur ; dur = sans coquillage, l'aide seulement après une erreur ; tresdur = sans coquillage, les énoncés des mêmes structures pris une difficulté au-dessus (difficulteDessus : au niveau 2, ceux du niveau 6 de même structure ; sans difficulté au-dessus, les plus difficiles du niveau). manipuler : aux niveaux listés, les objets sont la question (le partage : glisser les objets un à un dans les contenants ; les groupes égaux : les groupes montrés formés). erreurs : P1 la mauvaise opération, P2 un nombre de l'énoncé redit, P3 la bonne opération avec une erreur de compte (à 1 ou à 10 près), P4 deux étapes : la réponse de la première ; la même erreur deux fois relance la leçon (lecon), une fois par séance. etape : l'étape fixe de la séance (seance.json, « probleme ») : `problemes` problèmes au plus, la durée prime (un problème n'est commencé que s'il reste au moins `minResteS` secondes à l'étape, sauf le premier).",
+  "depart": 2,
+  "niveaux": [
+    { "niveau": 1, "nom": "ajouter, enlever, jusqu'à 10" },
+    { "niveau": 2, "nom": "ajouter, enlever, jusqu'à 20" },
+    { "niveau": 3, "nom": "groupes égaux et partage, en manipulant les objets" },
+    { "niveau": 4, "nom": "chercher une partie ou le changement, jusqu'à 20" },
+    { "niveau": 5, "nom": "comparer, de plus, de moins, jusqu'à 20" },
+    { "niveau": 6, "nom": "ajouter, enlever, chercher une partie, jusqu'à 100" },
+    { "niveau": 7, "nom": "groupes égaux et partage, jusqu'à 50" },
+    { "niveau": 8, "nom": "le début inconnu, comparer au-delà de 20" },
+    { "niveau": 9, "nom": "deux étapes" }
+  ],
+  "reglesAdaptation": { "montee": { "sur": 10, "justes": 8, "aidesMax": 1 }, "voieRapide": { "premieres": 9999, "tempsMaxS": 0 }, "difficulte": { "sur": 5, "erreurs": 3 }, "memeErreurLecon": 2 },
+  "acquisJours": 2,
+  "repetition": { "manquesD'abord": true, "retourErreur": 3 },
+  "manipuler": [3],
+  "objetsDizainesAuDela": 20,
+  "lecon": "L19",
+  "lecons": { "1": "L19", "2": "L19", "4": "L19", "6": "L19" },
+  "erreurs": { "P1": "L19", "P2": "L19", "P3": null, "P4": "L19" },
+  "crans": {
+    "facile": { "objets": true, "redire": true },
+    "conseille": {},
+    "dur": { "coquillage": false },
+    "tresdur": { "coquillage": false, "difficulteDessus": true }
+  },
+  "etape": { "problemes": 2, "minResteS": 45 }
+}

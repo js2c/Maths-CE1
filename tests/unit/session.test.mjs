@@ -29,7 +29,8 @@ test("une séance enchaîne les étapes, saute celles désactivées ou pas encor
   assert.equal(rec.etapes.find((e) => e.id === "echauffement").sautee, "pas encore construite");
   // lot 2 : le défi record est actif, mais pas avant la 5e séance terminée (ni sans 8 faits en boîte 3)
   assert.equal(rec.etapes.find((e) => e.id === "defi").sautee, "pas encore");
-  assert.equal(rec.etapes.find((e) => e.id === "probleme").sautee, "désactivée");
+  // (lot « Problèmes » : l'étape fixe est active ; sans gestionnaire, elle est sautée comme une étape pas encore construite)
+  assert.equal(rec.etapes.find((e) => e.id === "probleme").sautee, "pas encore construite");
   const saved = await store.get("seances", rec.id);
   assert.equal(saved.terminee, true); assert.equal(saved.module, 1); assert.equal(saved.etoiles, 10);
   assert.equal(rewards.total, 10); assert.equal((await store.get("recompenses", "etoiles")).cumul, 10);
@@ -133,4 +134,21 @@ test("une première séance complète, une réponse sur deux juste, rapporte au 
   // (lot « La boutique du récif » : plus de coquillage à 25 étoiles ; cette séance très courte, deux questions par étape, en
   // rapporte au moins autant, et une séance ordinaire de quoi acheter une créature, 40 : simulation, 61 étoiles en moyenne)
   assert.ok(rewards.total >= 25, `${rewards.total} étoiles`);
+});
+
+// (lot « Problèmes », docs/LOTS.md, fiche 20) l'étape fixe « Problème du jour » : ses 1 min 30 prises sur la notion du jour quand elle
+// aura lieu ; sautée quand l'exercice du jour est les problèmes, ou retirée par le parent (la notion garde alors ses 6 minutes)
+test("le problème du jour : 1 min 30 prises sur la notion du jour ; sauté quand l'exercice du jour est les problèmes", async () => {
+  const run = async (o) => {
+    const { store, rewards } = await mk(), c = clock(), fins = {};
+    const h = (id) => async ({ session, end }) => { fins[id] = Number.isFinite(end) ? Math.round((end - session.active()) / 1000) : null; };
+    const s = new Session({ store, content: seance, rewards, clock: c, handlers: { accueil: h("accueil"), notion: h("notion"), probleme: h("probleme"), recompense: h("recompense") }, ...o });
+    const rec = await s.run(); return { fins, rec };
+  };
+  const a = await run({});
+  assert.equal(a.fins.notion, 270, "4 min 30"); assert.equal(a.fins.probleme, 90);
+  const b = await run({ sans: ["probleme"] });
+  assert.equal(b.fins.notion, 360); assert.equal(b.rec.etapes.find((e) => e.id === "probleme").sautee, "réglage du parent");
+  const c7 = await run({ choix: { module: 7, niveau: 2 } });
+  assert.equal(c7.fins.notion, 360); assert.equal(c7.fins.probleme, undefined); assert.equal(c7.rec.etapes.find((e) => e.id === "probleme").sautee, "exercice du jour");
 });

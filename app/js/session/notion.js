@@ -28,6 +28,9 @@ export async function runNotion({ session, step, end, runner, screen, lesson = a
   // (les additions : leur famille épuisée tôt, la notion du jour finit sur des révisions ; modules/facts/runner.js)
   // (`part` : la part du temps de l'étape, module2.json, notion.revisionsAvantPart, 0,5 : la moitié)
   const debutEtape = Number.isFinite(end) && step.minutes ? end - step.minutes * 60000 : null;
+  // (lot « Problèmes ») le temps qui reste à l'étape (l'étape fixe « Problème du jour » ne commence un deuxième problème que s'il en
+  // reste assez : modules/problemes/runner.js)
+  runner.reste = () => (Number.isFinite(end) && session.active ? end - session.active() : Infinity);
   runner.avantMoitie = (part = 0.5) => (session.active && debutEtape != null ? session.active() < debutEtape + part * step.minutes * 60000 : false);
   let reprise = P?.encours ?? null;
   const point = (encours, o) => session.notePoint?.({ etape: step.id, n: S.n, k: S.k, g: S.g, entree: S.entree, fin: S.fin, last: S.last ? { ok: !!S.last.ok } : null, runner: instantane(runner), encours }, o);

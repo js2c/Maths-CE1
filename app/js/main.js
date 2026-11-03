@@ -31,6 +31,8 @@ import { initialFamilies } from "./modules/facts/families.js";
 import { CalcScreen } from "./modules/calc/screen.js";
 import { initialMultState, Module5Runner, multMastery } from "./modules/mult/runner.js";
 import { MultScreen } from "./modules/mult/screen.js";
+import { Module7Runner, problemesMastery } from "./modules/problemes/runner.js";
+import { ProblemesScreen } from "./modules/problemes/screen.js";
 import { Module4Runner } from "./modules/voiliers/runner.js";
 import { VoiliersScreen } from "./modules/voiliers/screen.js";
 import { initialEtalState, Module6Runner } from "./modules/etal/runner.js";
@@ -116,7 +118,7 @@ const videoChargee = demarrage.annoncer(MASCOTTE_VIDEOS, 1);
 const ocean = new Ocean(stage, sprites, atlas, { rapide: location.search.includes("voix=rapide"), progres: videoChargee, signaler: (m, d) => noterTech("mascotte", m, d), journal: (texte, genre, info) => { journalMascotte.push({ t: Math.round(performance.now()), texte, genre, ...info }); if (journalMascotte.length > 2000) journalMascotte.shift(); } });
 const T = (p, poids = 1) => demarrage.tache(p, poids);
 const [module1, module2, textes, seance, lecons, cartes, calendrier, parentContent, voix] = await Promise.all([T(json("content/module1.json")), T(json("content/module2.json")), T(json("content/textes.json")), T(json("content/seance.json")), T(json("content/lecons.json")), T(json("content/cartes.json")), T(json("content/calendrier.json")), T(json("content/parent.json")), T(json("assets/voix/index.json").catch(() => null), 3)]);
-const [sonContent, sonIndex, module3, legendes, module4, module5, module6, etalConf] = await Promise.all([T(json("content/son.json")), T(json("assets/son/index.json").catch(() => null)), T(json("content/module3.json")), T(json("content/legendes.json")), T(json("content/module4.json")), T(json("content/module5.json")), T(json("content/module6.json")), T(json("content/etal.json"))]);
+const [sonContent, sonIndex, module3, legendes, module4, module5, module6, etalConf, module7, problemes] = await Promise.all([T(json("content/son.json")), T(json("assets/son/index.json").catch(() => null)), T(json("content/module3.json")), T(json("content/legendes.json")), T(json("content/module4.json")), T(json("content/module5.json")), T(json("content/module6.json")), T(json("content/etal.json")), T(json("content/module7.json")), T(json("content/problemes.json"))]);
 // la base locale ; au premier lancement, on demande au navigateur de ne jamais l'effacer de lui-même
 const store = await Store.open();
 if (!(await store.setting("premierLancement"))) { await store.setSetting("premierLancement", new Date().toISOString()); await store.setSetting("stockagePersistant", await persist()); }
@@ -257,6 +259,8 @@ app.mult = new MultScreen(app, () => (app.facts ??= new FactsScreen(app, module2
 app.module4 = module4; app.voiliers = new VoiliersScreen(app, module4);
 // lot « L'étal du pêcheur » : le module 6 (sa scène est installée le temps de la notion du jour)
 app.module6 = module6; app.etal = new EtalScreen(app, module6, etalConf);
+// lot « Problèmes » : le module 7, l'écran des problèmes (l'illustration, les étiquettes ; le pavé de l'écran des additions)
+app.module7 = module7; app.problemes = problemes; app.prob = new ProblemesScreen(app, () => (app.facts ??= new FactsScreen(app, module2)));
 window.__app = app;
 // la musique baisse pendant que la voix parle
 stage.ticks.add(() => sound.duck(voice.speaking));
@@ -362,6 +366,7 @@ const handlers = {
     if (ctx.session.rec.module === 4) return notion4(ctx);
     if (ctx.session.rec.module === 5) return notion5(ctx);
     if (ctx.session.rec.module === 6) return notion6(ctx);
+    if (ctx.session.rec.module === 7) return notion7(ctx);
     const screen = app.lineScreen();
     // lot 3 : le niveau choisi par l'enfant (écran « choisir ») : toutes les questions à ce niveau
     const runner = await new Module1Runner({ screen, store, content: module1, rnd, seance: ctx.session.id, variete: seance.variete, offset: () => ctx.session.offset, cran: () => ctx.session.cran, choix: ctx.session.choix?.niveau ?? null }).load();
@@ -380,6 +385,10 @@ const handlers = {
     const view = new ChallengeView(app); app.challenge = view; ctx.portee.fin(() => { view.remove(); app.challenge = null; });
     await runChallenge({ ...ctx, warmup, screen, view, store, rnd, mascotte: ocean.mascotte, stars: seance.etoiles, say: (k, v = {}) => voice.say(text.pick(k, v)) });
   },
+  // LOT « PROBLÈMES » : l'étape fixe « Problème du jour » (seance.json, « probleme » ; docs/LOTS.md, fiche 20) : 1 à 2 problèmes
+  // au niveau de l'enfant, au cran de la séance, dans ses 1 min 30 (prises sur la notion du jour, session.js) ; pas quand la séance
+  // du jour est déjà l'exercice « Problèmes » (session.js), ni en entraînement libre ; désactivable dans l'espace parent
+  probleme: (ctx) => probleme7(ctx),
   recompense: (ctx) => reward(app, { ...ctx, hud }),
 };
 // lot « Les leçons » : après « À toi ! », la leçon qui vient d'être vue depuis le menu ne peut pas être relancée dans la séance
@@ -474,6 +483,33 @@ async function notion4(ctx) {
 // LOT « L'ÉTAL DU PÊCHEUR » (docs/SPEC.md, section 7 quater) : la notion du jour à l'étal, choisie par l'enfant ou imposée par
 // le parent : la scène de la maquette (modules/etal/screen.js), un achat par question, la leçon d'entrée du niveau (L15 à L18)
 // ou l'exemple guidé la première fois qu'un niveau est joué
+// LOT « PROBLÈMES » (docs/SPEC.md, section 7 quinquies) : la notion du jour sur les problèmes, choisie par l'enfant ou imposée par le
+// parent (hors de la rotation de « jouer ») : l'écran des problèmes (modules/problemes/screen.js), la leçon L19 la première fois à un
+// niveau du schéma en barres ; un niveau acquis rapporte une étoile arc-en-ciel
+async function problemeRunner(session, o = {}) {
+  return new Module7Runner({ store, content: module7, banque: problemes, rnd, seance: session.id, variete: seance.variete, cran: () => session.cran, choix: session.choix?.module === 7 ? session.choix.niveau : null, depart: (await store.setting("departProblemes")) ?? module7.depart, ...o }).load();
+}
+async function notion7(ctx) {
+  const { session } = ctx, conf = ctx.step.module7 ?? ctx.step;
+  const step = { ...ctx.step, ...conf, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}) };
+  const runner = await problemeRunner(session);
+  app.runner = runner; afterLesson(session, runner); session.rec.niveauProblemes = runner.niveau; await session.save();
+  if (ctx.portee.fermee) return fige();
+  ctx.portee.fin(() => app.prob.leave());
+  const fs = (app.facts ??= new FactsScreen(app, module2)); fs.show(false);
+  if (!session.reprendAuPoint("notion")) await voice.say(text.pick("notionProblemes"));
+  await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.prob.askNotion(q), finaliser: (q, r) => app.prob.finaliser(q, r) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
+}
+async function probleme7(ctx) {
+  const { session } = ctx, step = { ...ctx.step, questions: [module7.etape?.problemes ?? 2, module7.etape?.problemes ?? 2], guides: 0 };
+  const runner = await problemeRunner(session, { etape: true, choix: null });
+  app.runner = runner; session.rec.niveauProblemeDuJour = runner.niveau; await session.save();
+  if (ctx.portee.fermee) return fige();
+  ctx.portee.fin(() => app.prob.leave());
+  const fs = (app.facts ??= new FactsScreen(app, module2)); fs.show(false);
+  if (!session.reprendAuPoint("probleme")) await voice.say(text.pick("problemeDuJour"));
+  await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.prob.askNotion(q), finaliser: (q, r) => app.prob.finaliser(q, r) }, lesson: async () => false, rnd });
+}
 async function notion6(ctx) {
   const { session } = ctx, conf = ctx.step.module6 ?? ctx.step;
   const step = { ...ctx.step, ...conf, ...(P.get("questions") ? { questions: [Number(P.get("questions")), Number(P.get("questions"))] } : {}) };
@@ -624,7 +660,7 @@ async function showHome({ done, first = false, bienvenue = false }) {
     choisir: async () => {
       voice.unlock(); clearHome();
       mode = "choix"; homeKey.style.visibility = "visible";
-      const c = await choose(app, { store, content: { module1, module2, module3, module4, module5, module6, seance } });
+      const c = await choose(app, { store, content: { module1, module2, module3, module4, module5, module6, module7, seance } });
       mode = null; homeKey.style.visibility = "hidden";
       await runSession(c);
     },
@@ -672,8 +708,12 @@ async function runSession(choix = null, reprise = null) {
   if (!reprise && !sans.length && (await store.all("seances")).some((s) => !s.libre && sameDay(s.debut, Date.now()) && (s.etapes ?? []).some((e) => e.id === "echauffement" && e.dureeS !== undefined))) { sans.push("echauffement"); sansRaison.echauffement = "déjà fait aujourd'hui"; }
   // lot « Les leçons » : « À toi ! » après une leçon du menu : sans échauffement
   if (choix?.apresLecon && !sans.includes("echauffement")) { sans.push("echauffement"); sansRaison.echauffement = "après une leçon"; }
+  // (lot « Problèmes ») « Problème du jour : non » (réglage du parent) ; pas de problème du jour quand l'exercice choisi est déjà les
+  // problèmes (session.js le saute aussi quand le parent les impose)
+  if (!reprise && (await store.setting("problemeDuJour")) === false) { sans.push("probleme"); sansRaison.probleme = "réglage du parent"; }
+  if (!reprise && choix?.module === 7 && !sans.includes("probleme")) { sans.push("probleme"); sansRaison.probleme = "exercice du jour"; }
   // lot 3 : la rotation de « jouer » entre les trois modules, le moins maîtrisé d'abord (session.js, chooseModule)
-  const [n1, n2, n3, n5] = await Promise.all([1, 2, 3, 5].map((k) => store.get("niveaux", k))), mastery = { 1: ((n1?.niveau ?? 1) - 1) / module1.niveaux.length, 2: (n2?.acquises?.length ?? 0) / module2.familles.length, 3: calcMastery(module3, n3), 5: multMastery(module5, n5) };
+  const [n1, n2, n3, n5] = await Promise.all([1, 2, 3, 5].map((k) => store.get("niveaux", k))), mastery = { 1: ((n1?.niveau ?? 1) - 1) / module1.niveaux.length, 2: (n2?.acquises?.length ?? 0) / module2.familles.length, 3: calcMastery(module3, n3), 5: multMastery(module5, n5), 7: problemesMastery(module7, await store.get("niveaux", 7)) };
   const session = new Session({ store, content: { ...seance, dureeMaxMin: await store.setting("dureeSeanceMin", seance.dureeMaxMin) }, handlers, rewards, paused: () => clock.pausedTotal(), onProgress: (p) => progress(p), choix, sans, sansRaison, mastery: (m) => mastery[m] ?? 0, reprise,
     // la protection du sélecteur redescend d'un cran : la mascotte encourage, la voix le dit doucement
     onCranDown: async () => { voice.stop(); ocean.mascotte.play("encourager"); await voice.say(text.data.cranDescente); } });
@@ -689,7 +729,10 @@ async function runSession(choix = null, reprise = null) {
     sound.startMusic(reprise.musique ?? pickMusic(sonIndex, rnd));
     ocean.mascotte.play("saluer"); voice.say(text.data.reprise);
   } else {
-    await session.start(); session.rec.plan = { sans: [...sans], sansRaison: { ...sansRaison }, frise }; await session.save();
+    await session.start();
+    // (lot « Problèmes ») les problèmes imposés par le parent : pas d'étape « Problème du jour » (session.js), ni sur la frise
+    if (session.rec.module === 7 && !frise.includes("probleme")) { frise.push("probleme"); frieze.only(frise); }
+    session.rec.plan = { sans: [...sans], sansRaison: { ...sansRaison }, frise }; await session.save();
   }
   await session.run();
   // (une séance interrompue dont l'étape abandonnée s'est réveillée : ce n'est plus elle qui mène l'écran)
@@ -830,7 +873,7 @@ async function visitInPause(fn) {
 // l'écran « choisir » depuis la pause : la maison y revient sans rien valider
 async function pickInPause() {
   mode = "pause-choix"; homeKey.style.visibility = "visible";
-  const c = await choose(app, { store, content: { module1, module2, module3, module4, module5, module6, seance } });
+  const c = await choose(app, { store, content: { module1, module2, module3, module4, module5, module6, module7, seance } });
   mode = "seance"; homeKey.style.visibility = "hidden";
   if (!c) return null;
   return { exercice: c };
@@ -969,7 +1012,7 @@ async function freeTraining(start = null) {
   const portee = new Portee("entraînement libre", app.portees);
   portee.fin(() => { if (app.free) app.free.fini = true; app.fermerEcrans(); app.line.clear(); app.line.fxClear(); app.aidBoard?.clear(); fleche.cacher(); ocean.mascotte.release(); sprites.unload("calcul"); });
   portee.fin(() => { app.voiliers.leave(); app.etal.leave(); app.calc.leave(); app.mult.leave(); lessons.abandon(); });
-  const free = new FreeTraining(app, { store, module1, module2, module3, module4, module5, module6, rnd, seance });
+  const free = new FreeTraining(app, { store, module1, module2, module3, module4, module5, module6, module7, problemes, rnd, seance });
   app.free = free;
   await (start ? free.start(start) : free.menu());
 }

@@ -2,6 +2,7 @@
 //   app/assets/art/<planche>@<1|2>x[-p].webp   les planches de sprites (WebP sans perte)
 //   app/assets/art/atlas.json                  où est chaque image, son décalage par rapport à l'ancrage, sa cadence
 //   app/js/art/runtime.js                      le dessin en direct (ligne graduée, chiffres), module ES généré
+//   app/js/art/problemes.js                    les dessins des problèmes (étiquettes, schémas, objets), module ES généré
 // puis vérifie : (1) reproductibilité : chaque planche est rendue une seconde fois dans une page neuve
 // et les empreintes de toutes les images doivent être identiques ; (2) raccord des boucles (voir `seams` dans
 // src/hosts/export-app.ts). (Lot « Mascotte » : plus de planches de la pieuvre ; la mascotte est en vidéo, art/mascotte/.)
@@ -34,6 +35,10 @@ const die = (m) => { console.error(`export-app: ${m}`); process.exit(1); };
 const banner = "// FICHIER GÉNÉRÉ par art/tools/export-app.mjs depuis art/src/canvas-core/sea/runtime.ts : ne pas modifier à la main.\n";
 await build({ entryPoints: ["src/canvas-core/sea/runtime.ts"], bundle: true, format: "esm", target: "es2020", minify: true, outfile: RUNTIME, banner: { js: banner }, legalComments: "none" });
 console.log(`runtime  -> ${RUNTIME} (${(readFileSync(RUNTIME).length / 1024).toFixed(1)} Ko)`);
+// (lot « Problèmes ») les dessins de l'exercice des problèmes, dessinés une fois par question par l'application
+const PROBLEMES = join(ROOT, "app/js/art/problemes.js");
+await build({ entryPoints: ["src/hosts/problemes-app.ts"], bundle: true, format: "esm", target: "es2020", minify: true, outfile: PROBLEMES, banner: { js: "// FICHIER GÉNÉRÉ par art/tools/export-app.mjs depuis art/src/hosts/problemes-app.ts (art/src/canvas-core/sea/problemes.ts) : ne pas modifier à la main.\n" }, legalComments: "none" });
+console.log(`problemes -> ${PROBLEMES} (${(readFileSync(PROBLEMES).length / 1024).toFixed(1)} Ko)`);
 if (args.includes("--runtime")) process.exit(0); // seulement le dessin en direct
 
 // 2. la page d'export

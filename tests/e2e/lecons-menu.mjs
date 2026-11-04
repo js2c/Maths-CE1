@@ -76,8 +76,8 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     if (big) await shot(page, "02-accueil-appui-long");
     await h.release(); check((await page.locator(".lecons-tuile").count()) === 0, `${T} · l'appui long ne lance rien`);
     await tap(page, ".leconskey"); await page.waitForSelector(".lecons-tuile"); await page.waitForTimeout(700);
-    check((await page.locator(".lecons-tuile").count()) === 20, `${T} · le menu : dix-huit leçons (L11 et L12 depuis le lot « Sommes jusqu'à 30 », L13 et L14 depuis le lot « Multiplication », L15 à L18 depuis le lot « L'étal du pêcheur ») et les tables d'addition et de multiplication`);
-    check((await page.locator(".lecons-rangee").count()) === 5 && (await page.locator(".legende").count()) === 1, `${T} · cinq pictogrammes de rangée et le petit livre`);
+    check((await page.locator(".lecons-tuile").count()) === 21, `${T} · le menu : dix-neuf leçons (lot « Problèmes » : L19) (L11 et L12 depuis le lot « Sommes jusqu'à 30 », L13 et L14 depuis le lot « Multiplication », L15 à L18 depuis le lot « L'étal du pêcheur ») et les tables d'addition et de multiplication`);
+    check((await page.locator(".lecons-rangee").count()) === 6 && (await page.locator(".legende").count()) === 1, `${T} · six pictogrammes de rangée (lot « Problèmes ») et le petit livre`);
     check(/Les leçons\. \| Quelle leçon veux-tu regarder \? Touche une image : je te dis ce que c.est\. Touche-la encore pour la regarder\./.test(await said(page)), `${T} · « Les leçons. », puis la consigne du menu`);
     const keys = await page.evaluate(() => [...document.querySelectorAll(".lecons-tuile")].map((e) => e.dataset.key).join(","));
     check(keys === "L1,L2,L3,L10,L4,L5,L6,L11,L12,L7,L8,L9,L13,L14,L15,L16,L17,L18,L19,table.addition,table.multiplication", `${T} · l'ordre des tuiles (${keys})`);
@@ -85,9 +85,9 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     await shot(page, "03-menu"); await note(page, "accueil, puis la bulle « les leçons »");
     const t7 = await hold(page, '.lecons-tuile[data-key="L7"]'); check(t7.label === null, `${T} · appui long sur la tuile 7 : aucune étiquette (${t7.label})`);
     if (big) await shot(page, "04-menu-appui-long");
-    await t7.release(); check(!(await page.evaluate(() => window.__app.lessons.p ?? window.__app.lessons.p2?.p ?? null)) && (await page.locator(".lecons-tuile").count()) === 20, `${T} · l'appui long ne lance pas la leçon`);
+    await t7.release(); check(!(await page.evaluate(() => window.__app.lessons.p ?? window.__app.lessons.p2?.p ?? null)) && (await page.locator(".lecons-tuile").count()) === 21, `${T} · l'appui long ne lance pas la leçon`);
     await tap(page, ".legende", 600);
-    const rows = await page.locator(".legende-ligne").count(); check(rows === 20, `${T} · la légende du parent : une ligne par leçon et une par table (${rows})`);
+    const rows = await page.locator(".legende-ligne").count(); check(rows === 21, `${T} · la légende du parent : une ligne par leçon et une par table (${rows})`);
     await shot(page, "05-legende");
     await tap(page, ".legende-fermer", 400);
     await tap(page, ".homekey", 800); check((await visible(page, ".leconskey")) === 1 && (await page.locator(".lecons-tuile").count()) === 0, `${T} · la maison ramène le menu à l'accueil`);

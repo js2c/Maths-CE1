@@ -15,6 +15,8 @@
 // (140 Mo, environ une minute) pour chaque cas n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
 // rien à ce qu'il vérifie. L'application installée, relancée, gelée, hors ligne, est éprouvée sur le banc Android
 // (installation.mjs, journee.mjs).)
+// (lot « Problèmes » : sans le problème du jour, `sans=probleme` : il n'est pas l'objet de ce parcours ; tests/e2e/problemes.mjs, la journée
+// d'usage et l'enfant imprévisible le jouent)
 import { chromium, voixPermise, demarrageTouche } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -26,7 +28,7 @@ const OUT = resolve(opt("--out", "tests/e2e/out/mascotte")), SEUL = opt("--seul"
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
 const fail = [], check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
-const BASE = "?nosw&son=non&sansReprise"; // (sansReprise : main.js)
+const BASE = "?nosw&sans=probleme&son=non&sansReprise"; // (sansReprise : main.js)
 const PETITES = ["idle-approbation", "idle-sourire", "idle-amuse"], RELANCE = ["idle-sourcils", "idle-curiosite"];
 const resultat = { date: new Date().toISOString(), ecrans: [], journal: {} };
 

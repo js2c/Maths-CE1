@@ -25,6 +25,8 @@
 // Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
 // rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
 // enfant.mjs --android, installation.mjs, veille.mjs).)
+// (lot « Problèmes » : sans le problème du jour, `sans=probleme` : il n'est pas l'objet de ce parcours ; tests/e2e/problemes.mjs, la journée
+// d'usage et l'enfant imprévisible le jouent)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -41,10 +43,10 @@ const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉC
 export const open = async (q = "", { prep = null, prepArg = null, size = [1280, 800], scale = 2 } = {}) => {
   const context = await browser.newContext({ viewport: { width: size[0], height: size[1] }, deviceScaleFactor: scale, hasTouch: true }), page = await context.newPage(), errors = [];
   page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
-  await page.goto(url + "?nosw&voix=rapide&son=non"); await page.waitForFunction(() => window.__ready !== undefined);
+  await page.goto(url + "?nosw&sans=probleme&voix=rapide&son=non"); await page.waitForFunction(() => window.__ready !== undefined);
   await page.evaluate(async () => { await window.__app.store.setSetting("mascotte", "Pili"); });
   if (prep) await page.evaluate(prep, prepArg);
-  await page.goto(url + "?nosw&voix=rapide&son=non" + q); await page.waitForFunction(() => window.__ready !== undefined);
+  await page.goto(url + "?nosw&sans=probleme&voix=rapide&son=non" + q); await page.waitForFunction(() => window.__ready !== undefined);
   return { page, context, errors };
 };
 const tap = async (page, sel, ms = 250) => { await page.tap(sel, { force: true }); await page.waitForTimeout(ms); };
@@ -289,9 +291,9 @@ if (want("lecons")) {
     // voix réelle (non accélérée) : la chronologie et la durée sont celles de la tablette
     const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 2, hasTouch: true }), page = await context.newPage(), errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
-    await page.goto(url + "?nosw&son=non"); await page.waitForFunction(() => window.__ready !== undefined);
+    await page.goto(url + "?nosw&sans=probleme&son=non"); await page.waitForFunction(() => window.__ready !== undefined);
     await page.evaluate(async () => { await window.__app.store.setSetting("mascotte", "Pili"); });
-    await page.goto(url + `?nosw&son=non&lecon=${id}`); await page.waitForFunction(() => window.__ready !== undefined);
+    await page.goto(url + `?nosw&sans=probleme&son=non&lecon=${id}`); await page.waitForFunction(() => window.__ready !== undefined);
     await page.evaluate(() => {
       const v = window.__app.voice, say = v.say.bind(v), t0 = performance.now(); window.__said = []; window.__jumps = [];
       v.say = (t, o) => { window.__said.push({ t: performance.now() - t0, text: t }); return say(t, o); };

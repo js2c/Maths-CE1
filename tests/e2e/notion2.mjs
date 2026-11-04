@@ -10,6 +10,8 @@
 // Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
 // rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
 // enfant.mjs --android, installation.mjs, veille.mjs).)
+// (lot « Problèmes » : sans le problème du jour, `sans=probleme` : il n'est pas l'objet de ce parcours ; tests/e2e/problemes.mjs, la journée
+// d'usage et l'enfant imprévisible le jouent)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -26,7 +28,7 @@ const page = await (await browser.newContext({ viewport: { width: 1280, height: 
 const errors = []; page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
 const shot = (n) => page.screenshot({ path: join(OUT, `${n}.png`) });
 const check = (ok, msg) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${msg}`); if (!ok) process.exitCode = 1; };
-await page.goto(url + `?nosw&voix=rapide&son=non&module=2&cran=conseille&faits=3&questions=${N}&guides=2`); await page.waitForFunction(() => window.__ready !== undefined);
+await page.goto(url + `?nosw&sans=probleme&voix=rapide&son=non&module=2&cran=conseille&faits=3&questions=${N}&guides=2`); await page.waitForFunction(() => window.__ready !== undefined);
 await page.evaluate(async (fam) => {
   const s = window.__app.store; await s.setSetting("mascotte", "Pili"); window.__app.mascotte = "Pili";
   if (fam > 1) { const { markFamilyKnown } = await import("./js/parent/depart.js"), m2 = await (await fetch("content/module2.json")).json(); for (let f = 1; f < fam; f++) await markFamilyKnown(s, m2, f); }

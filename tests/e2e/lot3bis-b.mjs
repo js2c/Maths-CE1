@@ -413,8 +413,16 @@ if (want("cosmetique")) {
 if (want("reprise")) {
   const { page, context, errors } = await calcOpen(7, "conseille", {});
   await spy(page); await page.tap(".play", { force: true });
-  await page.waitForFunction(() => { const f = window.__app.facts; return f?.q?.pont && f.resolve && !f.locked; }, null, { timeout: 30000 });
-  const n = await page.evaluate(() => window.__app.facts.q.n); await typeN(page, n);
+  // (lot « Correctifs de la confrontation 2 », 6.12 : le niveau 7 a aussi des calculs qui tombent sur la dizaine, à un seul caillou ;
+  // la pause doit tomber entre deux cailloux d'un même calcul : on attend le premier caillou d'un calcul qui en a deux ou plus, en
+  // répondant aux autres)
+  for (let k = 0; k < 12; k++) {
+    await page.waitForFunction(() => { const f = window.__app.facts; return f?.q?.pont && f.resolve && !f.locked; }, null, { timeout: 30000 });
+    const ok = await page.evaluate(() => { const q = window.__app.facts.q; return q.i === 0 && q.parent.chemin.length >= 2; });
+    const n = await page.evaluate(() => window.__app.facts.q.n); await typeN(page, n);
+    if (ok) break;
+    await page.waitForTimeout(1500);
+  }
   await page.waitForTimeout(250); await page.tap(".session-home", { force: true }); await page.waitForSelector(".reefkey.keep");
   await page.tap(".reefkey.keep", { force: true }); await page.waitForTimeout(2500);
   await page.tap(".homekey:not(.session-home)", { force: true }); await page.waitForSelector(".play.keep");

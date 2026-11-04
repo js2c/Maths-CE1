@@ -230,8 +230,9 @@ export class Session {
       if (!(this.reprise && this.rec.pointReprise?.etape === step.id)) this.rec.pointReprise = null;
       this.rec.etapeEnCours = step.id; this.rec.etapeDebut = t0; await this.save();
       // (lot « Problèmes ») les minutes de l'étape fixe « Problème du jour » sont prises sur la notion du jour, quand elle aura lieu
-      // (étape active, ni retirée par le parent, ni l'exercice du jour) : `priseSur` (seance.json)
-      const M = step.minutes ? step.minutes - this.c.etapes.filter((x) => x.priseSur === step.id && x.actif !== false && this.handlers[x.id] && !this.sans.includes(x.id) && !(x.id === "probleme" && this.rec.module === 7)).reduce((a, x) => a + (x.minutes ?? 0), 0) : 0;
+      // (étape active, ni retirée par le parent, ni l'exercice du jour) : `priseSur` (seance.json) ; pas sur les exercices de
+      // `saufModules` (décision du parent du 4 novembre 2026 : l'étal et les voiliers, lents ; l'étape s'ajoute à leur séance)
+      const M = step.minutes ? step.minutes - this.c.etapes.filter((x) => x.priseSur === step.id && x.actif !== false && this.handlers[x.id] && !this.sans.includes(x.id) && !(x.id === "probleme" && this.rec.module === 7) && !(x.saufModules ?? []).includes(this.rec.module)).reduce((a, x) => a + (x.minutes ?? 0), 0) : 0;
       await h({ session: this, step, end: M ? t0 + M * 60000 : Infinity });
       if (this.stopped) return this.rec;
       this.rec.etapes.push({ id: step.id, dureeS: Math.round((this.active() - t0) / 1000) });

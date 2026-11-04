@@ -149,6 +149,8 @@ test("le problème du jour : 1 min 30 prises sur la notion du jour ; sauté quan
   assert.equal(a.fins.notion, 270, "4 min 30"); assert.equal(a.fins.probleme, 90);
   const b = await run({ sans: ["probleme"] });
   assert.equal(b.fins.notion, 360); assert.equal(b.rec.etapes.find((e) => e.id === "probleme").sautee, "réglage du parent");
+  // (décision du parent du 4 novembre 2026) les voiliers et l'étal gardent leurs 6 minutes : le problème du jour s'ajoute à la séance
+  for (const m of [4, 6]) { const v = await run({ choix: { module: m, niveau: 1 } }); assert.equal(v.fins.notion, 360, `module ${m}`); assert.equal(v.fins.probleme, 90); }
   const c7 = await run({ choix: { module: 7, niveau: 2 } });
   assert.equal(c7.fins.notion, 360); assert.equal(c7.fins.probleme, undefined); assert.equal(c7.rec.etapes.find((e) => e.id === "probleme").sautee, "exercice du jour");
 });

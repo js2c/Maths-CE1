@@ -60,11 +60,12 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   const repondre = async (juste) => {
     const q = await page.evaluate(() => { const s = window.__app.screen.q; return { answer: s.answer, wrong: s.choices?.find((c) => c.value !== s.answer)?.value ?? null }; });
     const v = juste ? q.answer : q.wrong, diag = await page.evaluate((v) => [...document.querySelectorAll(`.answer[data-value="${v}"]`)].map((e) => ({ vis: getComputedStyle(e).visibility, op: getComputedStyle(e).opacity, pe: getComputedStyle(e).pointerEvents, cls: e.className, r: e.getBoundingClientRect().x | 0 })), v);
-    if (process.env.DIAG) console.log(`     DIAG ${v} ${JSON.stringify(diag)} locked=${await page.evaluate(() => window.__app.screen.locked)}`);
+    const cpt = () => page.evaluate(() => { const m = window.__app.ocean.mascotte; return { serie: m.serie ?? m.c?.serie, erreurs: m.erreurs ?? m.c?.erreurs, revient: !!window.__app.screen.q?.revient, guide: !!window.__app.screen.q?.guide }; });
+    if (process.env.DIAG) console.log(`     DIAG ${juste ? "juste" : "faux"} ${v} ${JSON.stringify(diag)} locked=${await page.evaluate(() => window.__app.screen.locked)} avant ${JSON.stringify(await cpt())}`);
     const q0 = await page.evaluate(() => window.__app.screen.q);
     const sous = process.env.DIAG ? await page.evaluate((v) => { const e = document.querySelector(`.answer[data-value="${v}"]`), r = e.getBoundingClientRect(), t = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return t === e || e.contains(t) ? "la bulle" : `${t?.tagName}.${String(t?.className).slice(0, 40)}#${t?.id}`; }, v) : null;
     await page.tap(`.answer[data-value="${v}"]`, { force: true });
-    if (process.env.DIAG) { await page.waitForTimeout(900); const pris = await page.evaluate((q0) => { const s = window.__app.screen; return !(s.q && s.resolve && !s.locked && JSON.stringify(s.q) === JSON.stringify(q0)); }, q0); if (!pris) console.log(`     DIAG NON PRIS : sous le doigt ${sous} ; ${JSON.stringify(await etat())}`); }
+    if (process.env.DIAG) { await page.waitForTimeout(900); const pris = await page.evaluate((q0) => { const s = window.__app.screen; return !(s.q && s.resolve && !s.locked && JSON.stringify(s.q) === JSON.stringify(q0)); }, q0); if (!pris) console.log(`     DIAG NON PRIS : sous le doigt ${sous} ; ${JSON.stringify(await etat())}`); console.log(`     DIAG après ${JSON.stringify(await cpt())}`); }
   };
   const ROW = "&cran=conseille&sans=echauffement,defi&sansLecon&guides=0";
 
@@ -100,7 +101,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   // deux bonnes réponses de plus : la troisième de suite est une grande joie
   for (let k = 0; k < 3; k++) { await ligne(); await page.waitForTimeout(200); await repondre(true); if (k < 2) await page.waitForTimeout(400); }
   // (recherche d'un échec isolé, 4 novembre 2026 : en cas d'échec, le journal de la mascotte et ce qui a été répondu)
-  { const ok = await clip(["success"]); check(ok, `${W} trois réussites de suite : grande joie`); if (!ok) console.log(`     journal de la mascotte : ${JSON.stringify(await page.evaluate(() => window.__journalMascotte.slice(-25)))} ; ${JSON.stringify((await etat()).m)}`); }
+  { const ok = await clip(["success"]); check(ok, `${W} trois réussites de suite : grande joie`); if (!ok) console.log(`     journal de la mascotte : ${JSON.stringify(await page.evaluate(() => window.__journalMascotte.slice(-70)))} ; ${JSON.stringify((await etat()).m)}`); }
   await page.waitForTimeout(700); await shot("13-grande-joie");
   // l'encouragement : une seconde erreur sans nouvelle consigne (protection du sélecteur, défi) : demandé directement ici
   await ligne(); await repondre(false); const deçue = await clip(["wrong"]);

@@ -18,6 +18,8 @@
 // fois (service worker, cache plein) ; chaque cas efface les données (« Tout effacer ») et relance l'application ; la vraie voix,
 // le vrai son, la lecture automatique refusée, l'écran de démarrage touché pour de vrai, le processeur du profil ralenti ; les
 // lecteurs comptés par le code du journal technique, app/js/engine/etat-page.js)
+// (lot « Problèmes » : sans le problème du jour, `sans=probleme` : il n'est pas l'objet de ce parcours ; tests/e2e/problemes.mjs, la journée
+// d'usage et l'enfant imprévisible le jouent)
 import { Appareil, serveurBanc, REFERENCE, resumeEtat } from "./appareils.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -36,7 +38,7 @@ const ouvrir = async (q = "", prep = null) => {
   const errors = [], bloques = [], e0 = a.erreurs.length, b0 = a.refusLecteurs, page = a.page;
   await page.evaluate(async () => { await window.__app.store.setSetting("echauffement", false); await window.__app.store.setSetting("mascotteTouchee", true); });
   if (prep) await page.evaluate(prep.f, prep.a);
-  await a.relancer({ q: "?sansReprise&sansLecon&guides=0&cran=conseille&meteo=beau" + q });
+  await a.relancer({ q: "?sansReprise&sansLecon&guides=0&cran=conseille&meteo=beau&sans=probleme" + q });
   // ce que la voix dit (le texte, et s'il a été lu depuis ses fichiers) ; la bienvenue du lancement d'abord finie
   await a.page.waitForTimeout(500); await a.attendre(() => !window.__app.voice.speaking, 30000).catch(() => {});
   await a.page.evaluate(() => {

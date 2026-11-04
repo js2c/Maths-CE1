@@ -13,6 +13,8 @@
 // (raison : le parcours recharge la page une trentaine de fois, à des moments précis d'une séance et de six exercices ; la voix à
 // sa vitesse réelle ne changerait rien à ce qui est repris, mais triplerait sa durée ; la vraie voix après un rechargement est
 // éprouvée par journee.mjs, étape 9, et enfant.mjs --android.)
+// (lot « Problèmes » : sans le problème du jour, `sans=probleme` : il n'est pas l'objet de ce parcours ; tests/e2e/problemes.mjs, la journée
+// d'usage et l'enfant imprévisible le jouent)
 import { Appareil, serveurBanc, REFERENCE } from "./appareils.mjs";
 import { ATTEND, REPONDRE } from "./jeu.mjs";
 import { mkdirSync } from "node:fs";
@@ -24,7 +26,7 @@ const OUT = resolve("tests/e2e/out/reprise"); mkdirSync(OUT, { recursive: true }
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
 const serveur = await serveurBanc();
 const a = new Appareil(PROFIL, { serveur, ralenti: false });
-const Q = "?voix=rapide&cran=conseille&meteo=beau";
+const Q = "?voix=rapide&cran=conseille&meteo=beau&sans=probleme";
 
 // l'état de la séance, vu de la page : l'étape, la frise, les réponses comptées, la question posée (ses données qui comptent)
 const ETAT = () => {

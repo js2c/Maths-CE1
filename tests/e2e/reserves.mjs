@@ -16,6 +16,8 @@
 // vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application pour chaque situation n'apporterait
 // rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
 // enfant.mjs --android, installation.mjs, veille.mjs).)
+// (lot « Problèmes » : sans le problème du jour, `sans=probleme` : il n'est pas l'objet de ce parcours ; tests/e2e/problemes.mjs, la journée
+// d'usage et l'enfant imprévisible le jouent)
 import { chromium, finReelle } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -31,7 +33,7 @@ const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium" });
 const errors = [];
 const check = (ok, msg) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${msg}`); if (!ok) process.exitCode = 1; };
-const Q = "?nosw&voix=rapide&sansLecon&sans=echauffement&questions=2&guides=0";
+const Q = "?nosw&sans=probleme&voix=rapide&sansLecon&sans=echauffement&questions=2&guides=0";
 const V1280 = ["1280", { viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true }];
 const VUES = args.includes("--vite") ? [V1280] : [V1280, ["1920", { viewport: { width: 1920, height: 1200 }, deviceScaleFactor: 1, hasTouch: true }], ["s5e", optionsProfil("s5e")], ["petit-smartphone", optionsProfil("petit-smartphone")]];
 const lagon = cartes.cartes.filter((c) => c.zone === "lagon" && c.rarete !== "legendaire").map((c) => c.id);

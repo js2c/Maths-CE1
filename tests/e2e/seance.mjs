@@ -8,6 +8,8 @@
 // navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
 // Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie. La vraie voix, le son et l'application
 // installée sont éprouvés sur le banc Android (journee.mjs, enfant.mjs --android, installation.mjs, veille.mjs).)
+// (lot « Problèmes » : sans le problème du jour, `sans=probleme` : il n'est pas l'objet de ce parcours ; tests/e2e/problemes.mjs, la journée
+// d'usage et l'enfant imprévisible le jouent)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -23,7 +25,7 @@ const page = await context.newPage();
 const errors = []; page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
 const shot = (n) => page.screenshot({ path: join(OUT, `${n}.png`) });
 const check = (ok, msg) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${msg}`); if (!ok) process.exitCode = 1; };
-const q = `?nosw&voix=rapide&questions=${N}&guides=2&faits=5`;
+const q = `?nosw&sans=probleme&voix=rapide&questions=${N}&guides=2&faits=5`;
 
 await page.goto(url + q); await page.waitForFunction(() => window.__ready !== undefined);
 await shot("1-accueil");

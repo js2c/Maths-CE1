@@ -13,6 +13,8 @@
 // navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
 // Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie. La vraie voix, le son et l'application
 // installée sont éprouvés sur le banc Android (journee.mjs, enfant.mjs --android, installation.mjs, veille.mjs).)
+// (lot « Problèmes » : sans le problème du jour, `sans=probleme` : il n'est pas l'objet de ce parcours ; tests/e2e/problemes.mjs, la journée
+// d'usage et l'enfant imprévisible le jouent)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -35,7 +37,7 @@ const voixOk = async (quand) => { const m = await page.evaluate(() => [...window
 // ---- 1. une séance courte, puis le coquillage
 // la série en est à 2 séances (hier) : celle-ci est la 3e, elle rapporte 5 étoiles ; cinq bonnes réponses
 // rapides au niveau 1 font franchir un niveau (voie rapide) : une étoile arc-en-ciel
-const Q = `?nosw&voix=rapide&etoiles=75&sansLecon&sans=echauffement&questions=5&guides=0`;
+const Q = `?nosw&sans=probleme&voix=rapide&etoiles=75&sansLecon&sans=echauffement&questions=5&guides=0`;
 await page.goto(url + Q); await page.waitForFunction(() => window.__ready !== undefined);
 await page.evaluate(() => window.__app.store.put("recompenses", { id: "serie", seances: 2, derniere: Date.now() - 86400000 }));
 await page.reload(); await page.waitForFunction(() => window.__ready !== undefined);

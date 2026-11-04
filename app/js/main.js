@@ -566,7 +566,8 @@ function warmupSkipKey(onSkip) {
   return { remove() { ws.stop(); key.remove(); check.remove(); stage.root.classList.remove("attente-passer"); app.warmupPending = false; if (app.warmupSkip === ws) app.warmupSkip = null; } };
 }
 // pour les mesures : ?sans=echauffement (ou une autre étape) la saute
-for (const id of (P.get("sans") ?? "").split(",").filter(Boolean)) delete handlers[id];
+// (tests : ?sans=… peut venir plusieurs fois dans l’adresse, une adresse de base et la situation ; tous comptent)
+for (const id of P.getAll("sans").join(",").split(",").filter(Boolean)) delete handlers[id];
 // (lot « Recette de l'enfant et nettoyage des couches », point 2) UNE SEULE RÈGLE DE SORTIE : chaque étape de la séance a sa
 // portée (engine/portee.js, `ctx.portee`), où elle inscrit ce qu'elle crée au moment où elle le crée (le bernard-l'ermite, une
 // planche, la scène des voiliers ou de l'étal, la vue du défi…). Quitter l'étape, de quelque façon que ce soit (fin normale,

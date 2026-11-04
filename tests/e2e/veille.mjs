@@ -96,7 +96,9 @@ if (PARTIE !== "2") {
     await page.waitForFunction(() => !window.__app.facts?.resolve || window.__app.facts.locked, null, { timeout: 30000 }).catch(() => {});
     const m = await medias(page); maxM = Math.max(maxM, m.video + (m.voix ?? 0));
   }
-  check(n >= (COURT ? 12 : 30), `séance : ${n} questions répondues, la voix à vitesse réelle`);
+  // (lot « Correctifs de la confrontation 2 », 6.10 : sur une base neuve sans échauffement, le plafond de 10 faits nouveaux arrête la notion
+  // du jour vers la 16e question ; avant, l'exception allait jusqu'à 15 faits nouveaux et une trentaine de questions)
+  check(n >= (COURT ? 12 : 15), `séance : ${n} questions répondues, la voix à vitesse réelle`);
   check(maxM <= 6, `séance : au plus ${maxM} lecteurs de médias avec une source à la fois (2 vidéos de la mascotte, 2 à 4 sons de la voix)`);
   // 2. une longue inactivité sur une question des additions
   const r = await inactivite(page, "question des additions");

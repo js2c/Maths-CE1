@@ -12,6 +12,8 @@
 // Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
 // rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
 // enfant.mjs --android, installation.mjs, veille.mjs).)
+// (lot « Problèmes » : sans le problème du jour, `sans=probleme` : il n'est pas l'objet de ce parcours ; tests/e2e/problemes.mjs, la journée
+// d'usage et l'enfant imprévisible le jouent)
 import { chromium } from "./navigateur.mjs";
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -33,7 +35,7 @@ export const open = async (q = "", prep = null, { width = 1280, height = 800 } =
   await page.goto(url + "?nosw&voix=rapide&son=non"); await page.waitForFunction(() => window.__ready !== undefined);
   await page.evaluate(async () => { await window.__app.store.setSetting("mascotte", "Pili"); });
   if (prep) await page.evaluate(prep, prepArg);
-  await page.goto(url + "?nosw&voix=rapide&son=non" + q); await page.waitForFunction(() => window.__ready !== undefined);
+  await page.goto(url + "?nosw&voix=rapide&son=non&sans=probleme" + q); await page.waitForFunction(() => window.__ready !== undefined);
   // la voix : chaque texte dit, dans l'ordre
   await page.evaluate(() => { const v = window.__app.voice, say = v.say.bind(v); window.__said = []; v.say = (t, o) => { window.__said.push(t); return say(t, o); }; });
   return { page, context, errors };

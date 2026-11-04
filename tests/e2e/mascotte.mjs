@@ -59,7 +59,9 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   const pave = () => until(() => { const f = window.__app.facts; return f?.q && f.resolve && !f.locked; }, null, 60000);
   const repondre = async (juste) => {
     const q = await page.evaluate(() => { const s = window.__app.screen.q; return { answer: s.answer, wrong: s.choices?.find((c) => c.value !== s.answer)?.value ?? null }; });
-    await page.tap(`.answer[data-value="${juste ? q.answer : q.wrong}"]`, { force: true });
+    const v = juste ? q.answer : q.wrong, diag = await page.evaluate((v) => [...document.querySelectorAll(`.answer[data-value="${v}"]`)].map((e) => ({ vis: getComputedStyle(e).visibility, op: getComputedStyle(e).opacity, pe: getComputedStyle(e).pointerEvents, cls: e.className, r: e.getBoundingClientRect().x | 0 })), v);
+    if (process.env.DIAG) console.log(`     DIAG ${v} ${JSON.stringify(diag)} locked=${await page.evaluate(() => window.__app.screen.locked)}`);
+    await page.tap(`.answer[data-value="${v}"]`, { force: true });
   };
   const ROW = "&cran=conseille&sans=echauffement,defi&sansLecon&guides=0";
 

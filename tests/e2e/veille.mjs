@@ -87,7 +87,9 @@ if (PARTIE !== "2") {
   const o = await ouvrir("&module=2"), { page } = o;
   for (let i = 0; i < 2; i++) { await page.tap(".galet.play", { force: true }); await page.waitForTimeout(400); }
   let n = 0, maxM = 0;
-  for (; n < (COURT ? 12 : 30); n++) {
+  // (14 questions, pas 30 : sur une base neuve sans échauffement, la notion du jour s'arrête vers la 16e depuis le plafond de 10 faits
+  // nouveaux, lot « Correctifs de la confrontation 2 » ; il faut qu'une question reste ouverte pour l'inactivité qui suit)
+  for (; n < (COURT ? 12 : 14); n++) {
     if (!(await attendreQuestion(page, () => window.__app.facts?.q && window.__app.facts.resolve && !window.__app.facts.locked))) break;
     await page.waitForTimeout(400);
     const r = await page.evaluate(() => { const q = window.__app.facts.q; return q.a + q.b; });
@@ -96,9 +98,7 @@ if (PARTIE !== "2") {
     await page.waitForFunction(() => !window.__app.facts?.resolve || window.__app.facts.locked, null, { timeout: 30000 }).catch(() => {});
     const m = await medias(page); maxM = Math.max(maxM, m.video + (m.voix ?? 0));
   }
-  // (lot « Correctifs de la confrontation 2 », 6.10 : sur une base neuve sans échauffement, le plafond de 10 faits nouveaux arrête la notion
-  // du jour vers la 16e question ; avant, l'exception allait jusqu'à 15 faits nouveaux et une trentaine de questions)
-  check(n >= (COURT ? 12 : 15), `séance : ${n} questions répondues, la voix à vitesse réelle`);
+  check(n >= (COURT ? 12 : 14), `séance : ${n} questions répondues, la voix à vitesse réelle`);
   check(maxM <= 6, `séance : au plus ${maxM} lecteurs de médias avec une source à la fois (2 vidéos de la mascotte, 2 à 4 sons de la voix)`);
   // 2. une longue inactivité sur une question des additions
   const r = await inactivite(page, "question des additions");

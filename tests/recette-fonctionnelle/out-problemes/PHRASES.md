@@ -1,11 +1,12 @@
 # Les phrases à fabriquer
 
-`node tools/voix/a-fabriquer.mjs --md` : 968 phrases de l'inventaire n'ont pas encore de fichier son, environ **8,40 Mo** (estimation : 504 octets + 188 par lettre du texte lu, plus l'index). Le dossier de la voix pèse 82,21 Mo ; après leur fabrication, environ **90,61 Mo**, sous le plafond de 95 Mo (marge : 4,39 Mo).
+`node tools/voix/a-fabriquer.mjs --md` : 972 phrases de l'inventaire n'ont pas encore de fichier son, environ **8,44 Mo** (estimation : 504 octets + 188 par lettre du texte lu, plus l'index). Le dossier de la voix pèse 82,21 Mo ; après leur fabrication, environ **90,65 Mo**, sous le plafond de 95 Mo (marge : 4,35 Mo).
 
 | Partie | Phrases | Poids estimé |
 | --- | --- | --- |
 | problèmes : noms, niveaux, consignes, aides, erreurs | 58 | 0,49 Mo |
 | calcul rapide : niveau 7 (lot « Correctifs de la confrontation 2 ») | 57 | 0,39 Mo |
+| boutique : les prix des niveaux « 3 séances » et « 4 séances » (décision du parent du 4 novembre 2026) | 4 | 0,04 Mo |
 | la leçon L19 | 17 | 0,12 Mo |
 | problèmes : énoncés, questions, corrections | 836 | 7,40 Mo |
 
@@ -129,6 +130,13 @@
 - 5 plus 5, ça fait dix : on arrive à la dizaine suivante.
 - 6 plus 4, ça fait dix : on arrive à la dizaine suivante.
 - 7 plus 3, ça fait dix : on arrive à la dizaine suivante.
+
+## boutique : les prix des niveaux « 3 séances » et « 4 séances » (décision du parent du 4 novembre 2026) (4)
+
+- Pour l'avoir, il faut 64 étoiles.
+- Pour l'avoir, il faut 160 étoiles.
+- Pour l'avoir, il faut 88 étoiles.
+- Pour l'avoir, il faut 220 étoiles.
 
 ## la leçon L19 (17)
 

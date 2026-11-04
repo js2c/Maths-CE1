@@ -14,7 +14,7 @@ const n = pts.length, sx = pts.reduce((s, p) => s + p[0], 0), sy = pts.reduce((s
 const b = (n * sxy - sx * sy) / (n * sxx - sx * sx), a = (sy - b * sx) / n, parIndex = statSync(join(VOIX, "index.json")).size / n;
 const dossier = readdirSync(VOIX).reduce((s, f) => s + statSync(join(VOIX, f)).size, 0);
 const manque = [...inventaire()].filter(([t]) => !index[t]);
-const groupe = (o) => (o.startsWith("problemes.") ? "problèmes : énoncés, questions, corrections" : o.startsWith("lecons.L19") ? "la leçon L19" : o.startsWith("erreurCalc") || o.startsWith("calc") ? "calcul rapide : niveau 7 (lot « Correctifs de la confrontation 2 »)" : /^(choix|notionProblemes|problemeDuJour|probleme|erreurProbleme|_problemes)/.test(o) ? "problèmes : noms, niveaux, consignes, aides, erreurs" : `autres (${o.split(".")[0]})`);
+const groupe = (o) => (o.startsWith("boutique") ? "boutique : les prix des niveaux « 3 séances » et « 4 séances » (décision du parent du 4 novembre 2026)" : o.startsWith("problemes.") ? "problèmes : énoncés, questions, corrections" : o.startsWith("lecons.L19") ? "la leçon L19" : o.startsWith("erreurCalc") || o.startsWith("calc") ? "calcul rapide : niveau 7 (lot « Correctifs de la confrontation 2 »)" : /^(choix|notionProblemes|problemeDuJour|probleme|erreurProbleme|_problemes)/.test(o) ? "problèmes : noms, niveaux, consignes, aides, erreurs" : `autres (${o.split(".")[0]})`);
 const G = new Map(); for (const [t, o] of manque) { const g = groupe(o); (G.get(g) ?? G.set(g, []).get(g)).push(t); }
 const Mo = (x) => `${(x / 1e6).toFixed(2).replace(".", ",")} Mo`, poids = (L) => L.reduce((s, t) => s + a + b * lire(t).length + parIndex, 0);
 const total = poids(manque.map(([t]) => t));

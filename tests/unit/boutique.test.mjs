@@ -203,7 +203,11 @@ test("les niveaux de prix sont dans cartes.json : 2, 3 et 4 séances par semaine
   assert.deepEqual(NIVEAUX.map((x) => x.id), ["2", "3", "4"]); assert.equal(cartes.boutique.niveauPrix, "2");
   assert.ok(!("prix" in cartes.boutique) && !("briller" in cartes.boutique), "les prix ne sont plus qu'aux niveaux");
   assert.deepEqual([NIVEAUX[0].prix, NIVEAUX[0].briller], [{ commune: 40, rare: 100 }, { commune: 150, rare: 300 }]);
-  assert.deepEqual([NIVEAUX[1].prix, NIVEAUX[1].briller], [{ commune: 70, rare: 175 }, { commune: 250, rare: 500 }]);
+  // (décision du parent du 4 novembre 2026, lot « Problèmes » : les prix d'achat des niveaux « 3 séances » et « 4 séances » baissés
+  // d'environ 10 %, le problème du jour rapportant moins d'étoiles de mer ; avant : 70 et 175, 96 et 240 ; les prix pour faire briller
+  // ne changent pas)
+  assert.deepEqual([NIVEAUX[1].prix, NIVEAUX[1].briller], [{ commune: 64, rare: 160 }, { commune: 250, rare: 500 }]);
+  assert.deepEqual([NIVEAUX[2].prix, NIVEAUX[2].briller], [{ commune: 88, rare: 220 }, { commune: 350, rare: 700 }]);
   assert.deepEqual(NIVEAUX.map((x) => x.nom), ["Prix pour 2 séances par semaine", "3 séances par semaine", "4 séances par semaine"]);
   for (const [i, x] of NIVEAUX.entries()) {
     assert.equal(x.prix.rare, 2.5 * x.prix.commune, x.id);
@@ -224,7 +228,7 @@ test("changer de niveau change les prix aussitôt, en Arrivages comme en Libre ;
   assert.equal(rw.cout(vend, "vendre"), NIVEAUX[1].prix[k]); assert.equal(rw.total, 120); assert.equal(rw.st.cumul, 120);
   assert.equal(await store.setting("boutiquePrix"), "3");
   // en mode Libre aussi
-  await rw.setMode("libre"); assert.equal(rw.cout(rare.id, "vendre"), 175); await rw.setPrix("4"); assert.equal(rw.cout(rare.id, "vendre"), NIVEAUX[2].prix.rare);
+  await rw.setMode("libre"); assert.equal(rw.cout(rare.id, "vendre"), NIVEAUX[1].prix.rare); await rw.setPrix("4"); assert.equal(rw.cout(rare.id, "vendre"), NIVEAUX[2].prix.rare);
   // l'achat paie le prix du niveau, et le journal le garde
   const g = rw.acheter(L[0].id, now, () => 0.9); await g.ecrit; assert.equal(g.prix, NIVEAUX[2].prix.commune); assert.equal(rw.total, 120 - NIVEAUX[2].prix.commune);
   assert.equal(rw.cout(L[0].id, "terne"), NIVEAUX[2].briller.commune);

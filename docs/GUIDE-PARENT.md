@@ -63,8 +63,8 @@ Le dépôt est public : l'application et son code sont visibles par tous, mais *
 **Les prix (réglage « Prix de la boutique », juste sous le rythme ; depuis le 2 novembre 2026).** Plus l'enfant fait de séances, plus elle gagne d'étoiles ; mais les créatures arrivent toujours 2 par semaine. Aux prix d'origine, à 3 ou 4 soirs par semaine, elle achète tout dès le lundi et n'a plus rien de nouveau à acheter ensuite. **Que choisir ?**
 
 - elle joue 2 soirs par semaine : **« Prix pour 2 séances par semaine »** (par défaut : 40 une commune, 100 une rare ; 150 et 300 pour faire briller) ;
-- 3 soirs : **« 3 séances par semaine »** (70, 175 ; 250 et 500) ;
-- 4 soirs : **« 4 séances par semaine »** (96, 240 ; 350 et 700) ;
+- 3 soirs : **« 3 séances par semaine »** (64, 160 ; 250 et 500 ; 70 et 175 avant le lot « Problèmes ») ;
+- 4 soirs : **« 4 séances par semaine »** (88, 220 ; 350 et 700 ; 96 et 240 avant le lot « Problèmes ») ;
 - si elle a du mal (elle gagne alors moins d'étoiles par séance) : le choix du dessous.
 
 Les nouveaux prix comptent tout de suite ; ses étoiles restent ; vous pouvez changer à tout moment, rien n'est perdu (cela vaut aussi en rythme libre). D'après les calculs faits sur toute l'année, chacun à son rythme, la collection est complète en juin, et environ une séance sur 20 seulement n'a rien de nouveau à acheter (une sur six à 2 séances : souvent le jeudi, quand elle a tout acheté le lundi). Des prix plus chers que son vrai rythme l'empêchent de finir (aux prix pour 3 séances, à 2 séances par semaine : environ 40 créatures sur 60 en juin). **Un repère** (onglet Progression, « Cartes et boutique », « créatures en vitrine ») : plus de 4 créatures en vitrine deux semaines de suite, c'est trop cher ; 0 presque à chaque fois, c'est trop bas. **Si les prix montent**, l'enfant le verra (70 au lieu de 40) ; le capitaine ne l'explique pas : vous pouvez lui dire, par exemple, « Tu joues plus souvent, alors les créatures coûtent un peu plus cher ; tu en auras autant. »
@@ -636,7 +636,11 @@ Votre enfant résout maintenant des **problèmes** : de petites histoires de la 
 
 **Les images des lieux** : seule celle de l'étal est là (c'est celle de l'étal du pêcheur). Les 21 autres sont à générer avec les prompts de `art/problemes/contextes.json` ; en attendant, ces problèmes ont un fond de papier uni. Déposez chaque image dans `art/problemes/sources/<lieu>.png` (1920 × 1080), puis une petite demande de fusion : `node art/tools/export-problemes.mjs` et `node tools/precache.mjs`.
 
-**Phrases à fabriquer** : 911 phrases pour ce lot (les histoires, les questions, les corrections, les noms, les aides, la leçon), plus les 57 du lot « Correctifs de la confrontation 2 » : 968 en tout, environ 8,4 Mo. La voix passera d'environ 82,2 à 90,6 Mo, sous le nouveau plafond de 95 Mo. La liste exacte : `tests/recette-fonctionnelle/out-problemes/PHRASES.md`.
+**Phrases à fabriquer** : 911 phrases pour ce lot (les histoires, les questions, les corrections, les noms, les aides, la leçon), 4 pour les nouveaux prix, plus les 57 du lot « Correctifs de la confrontation 2 » : 972 en tout, environ 8,4 Mo. La voix passera d'environ 82,2 à 90,6 Mo, sous le nouveau plafond de 95 Mo. La liste exacte : `tests/recette-fonctionnelle/out-problemes/PHRASES.md`.
+
+**Les prix de la boutique** (votre décision du 4 novembre) : le problème du jour rapporte un peu moins d'étoiles de mer ; les prix d'achat des niveaux « 3 séances par semaine » et « 4 séances par semaine » baissent d'environ 10 % : 64 et 160 étoiles (au lieu de 70 et 175), 88 et 220 (au lieu de 96 et 240). Les prix pour faire briller ne changent pas. Quatre phrases nouvelles : « Pour l'avoir, il faut 64 étoiles. », et 160, 88, 220.
+
+**L'étal et les voiliers** (votre décision du 4 novembre) : le problème du jour s'ajoute à leur séance, sans raccourcir l'exercice ; la séance reste sous 12 minutes.
 
 **À relire** : les rôles familiaux des histoires (« Papa », « Mamie », « ton copain »…), dans `docs/maquettes/problemes/ENONCES.md` ; signalez ceux à changer.
 

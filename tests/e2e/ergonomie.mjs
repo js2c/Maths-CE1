@@ -18,6 +18,8 @@
 // navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
 // Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie. La vraie voix, le son et l'application
 // installée sont éprouvés sur le banc Android (journee.mjs, enfant.mjs --android, installation.mjs, veille.mjs).)
+// (lot « Problèmes » : sans le problème du jour, `sans=probleme` : il n'est pas l'objet de ce parcours ; tests/e2e/problemes.mjs, la journée
+// d'usage et l'enfant imprévisible le jouent)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -45,9 +47,9 @@ const sameSkip = (b) => b.x === SKIP_BOX.x && b.y === SKIP_BOX.y && b.w === SKIP
 const answerRight = async () => { const q = await page.evaluate(() => { const s = window.__app.screen; return { f: s.q.format, a: s.q.answer }; }); if (q.f === "lire" || q.f === "sauter") await page.tap(`.answer[data-value="${q.a}"]`, { force: true }); else await page.evaluate(() => { const s = window.__app.screen; s.aimed = s.q.answer; s.answer(s.q.answer, null); }); await page.waitForFunction(() => !window.__app.screen?.resolve || window.__app.screen.locked, null, { timeout: 30000 }).catch(() => {}); };
 
 // ---- 1 et 2 : une séance (nom déjà choisi, exemples guidés jamais vus, sans leçon ni échauffement)
-await page.goto(url + "?nosw&voix=rapide"); await ready();
+await page.goto(url + "?nosw&voix=rapide&sans=probleme"); await ready();
 await page.evaluate(async () => { const s = window.__app.store; await s.setSetting("mascotte", "Pili"); });
-await page.goto(url + "?nosw&voix=rapide&sansLecon&sans=echauffement&questions=7&guides=1&format=lire"); await ready();
+await page.goto(url + "?nosw&voix=rapide&sansLecon&sans=echauffement,probleme&questions=7&guides=1&format=lire"); await ready();
 await page.tap(".play", { force: true });
 // l'exemple guidé, vu pour la première fois : « passer » apparaît
 await page.waitForSelector(".skip", { timeout: 30000 }); await page.waitForTimeout(700);
@@ -145,7 +147,7 @@ check(await page.evaluate(() => import("./js/session/session.js").then((m) => m.
   const c2 = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true }); await c2.addInitScript(SPY);
   const p2 = await c2.newPage();
   p2.on("pageerror", (e) => errors.push(e.message));
-  await p2.goto(url + "?nosw&voix=rapide&lecon=L1"); await p2.waitForFunction(() => window.__ready !== undefined);
+  await p2.goto(url + "?nosw&voix=rapide&lecon=L1&sans=probleme"); await p2.waitForFunction(() => window.__ready !== undefined);
   await p2.tap(".play", { force: true });
   await p2.waitForSelector(".skip", { timeout: 2000 });
   const lb = await skipBox(p2);
@@ -158,9 +160,9 @@ check(await page.evaluate(() => import("./js/session/session.js").then((m) => m.
   const L = await p2.evaluate(() => window.__lecon);
   check(L.passee === true && L.vue === false, `leçon passée : ni vue jusqu'au bout, ni étoiles (${JSON.stringify(L)})`);
   // ---- 2 bis : « passer » la correction au pavé des additions
-  await p2.goto(url + "?nosw&voix=rapide"); await p2.waitForFunction(() => window.__ready !== undefined);
+  await p2.goto(url + "?nosw&voix=rapide&sans=probleme"); await p2.waitForFunction(() => window.__ready !== undefined);
   await p2.evaluate(async () => { await window.__app.store.setSetting("mascotte", "Pili"); await window.__app.store.setSetting("tempsDeBase", { mesures: [3000, 3000, 3000] }); });
-  await p2.goto(url + "?nosw&voix=rapide&sansLecon&sans=notion&faits=5"); await p2.waitForFunction(() => window.__ready !== undefined);
+  await p2.goto(url + "?nosw&voix=rapide&sansLecon&sans=notion,probleme&faits=5"); await p2.waitForFunction(() => window.__ready !== undefined);
   await p2.tap(".play", { force: true });
   await p2.waitForFunction(() => { const f = window.__app.facts; return f?.q && f.resolve && !f.locked; }, null, { timeout: 30000 });
   await p2.waitForTimeout(300);
@@ -180,7 +182,7 @@ check(await page.evaluate(() => import("./js/session/session.js").then((m) => m.
 }
 
 // ---- 5 : l'espace parent
-await page.goto(url + "?nosw&voix=rapide"); await ready();
+await page.goto(url + "?nosw&voix=rapide&sans=probleme"); await ready();
 await page.evaluate(async () => { await window.__app.store.setSetting("codeParent", "1234"); });
 page.evaluate(() => window.__app.parent.open()).catch(() => {});
 await page.waitForSelector(".pa-keys", { timeout: 10000 });

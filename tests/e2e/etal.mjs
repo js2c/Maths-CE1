@@ -301,7 +301,7 @@ for (const T of TAILLES) {
   {
     const { page, context, errors } = await open("", T);
     await page.tap(".leconskey", { force: true }); await page.waitForSelector(".lecons-tuile", { timeout: 15000 }); await page.waitForTimeout(500);
-    check((await page.locator(".lecons-tuile").count()) === 20, `${W} : dix-huit leçons et deux tables au menu`);
+    check((await page.locator(".lecons-tuile").count()) === 21, `${W} : dix-neuf leçons et deux tables au menu (lot « Problèmes » : L19)`);
     await page.tap('.lecons-tuile[data-key="L17"]', { force: true }); await page.waitForTimeout(800);
     await shot(page, "29-menu-lecons", T);
     await fin(page, context, errors, `${W} menu des leçons`);

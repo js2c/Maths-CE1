@@ -126,7 +126,7 @@ async function sonder(page, scenario) {
 
 // SUIVRE LA SÉANCE jusqu'à `fin` : à chaque écran nouveau, resté 0,7 s, la mascotte est touchée ; une question qui attend est répondue
 // (juste) une fois la mascotte touchée ; le sélecteur validé, les coquillages ouverts, les cartes rangées
-async function suivre(page, scenario, fin, { ms = 240000, pendant = null } = {}) {
+async function suivre(page, scenario, fin, { ms = 240000, pendant = null, sansFin = false } = {}) {
   const t1 = Date.now(), sondes = new Set();
   while (Date.now() - t1 < ms) {
     if (await page.evaluate(fin).catch(() => false)) return true;
@@ -140,7 +140,7 @@ async function suivre(page, scenario, fin, { ms = 240000, pendant = null } = {})
     }
     await page.waitForTimeout(200);
   }
-  check(false, `${scenario} : la séance n'est pas arrivée au bout en ${ms / 1000} s`);
+  if (!sansFin) check(false, `${scenario} : la séance n'est pas arrivée au bout en ${ms / 1000} s`);
   return false;
 }
 const fini = async (nom, { context, errors }) => { check(!errors.length, `${nom} : aucune erreur dans la page${errors.length ? ` (${errors[0]})` : ""}`); await context.close(); };
@@ -244,8 +244,7 @@ if (!SEUL || SEUL === "encore") {
   await tap(page, '.choix-ex[data-key="additions"]'); await page.waitForTimeout(300); await tap(page, '.choix-ex[data-key="additions"]'); await attendreSel(page, ".choix-tuile"); await page.waitForTimeout(900);
   await tap(page, ".choix-tuile"); await page.waitForTimeout(300); await tap(page, ".choix-tuile");
   let n = 0;
-  await suivre(page, N, () => false, { ms: 45000, pendant: async () => { n++; } }).catch(() => {});
-  fail.splice(fail.findIndex((f) => f.startsWith(`${N} : la séance n'est pas arrivée`)) >>> 0, fail.some((f) => f.startsWith(`${N} : la séance n'est pas arrivée`)) ? 1 : 0); // (pas de fin : 45 s suffisent)
+  await suivre(page, N, () => false, { ms: 45000, sansFin: true, pendant: async () => { n++; } }); // (l'entraînement libre n'a pas de fin : 45 s suffisent)
   check(n >= 3, `${N} : ${n} écrans essayés`);
   await fini(N, s);
 }

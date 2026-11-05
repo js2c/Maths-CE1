@@ -94,10 +94,11 @@ for (const vue of VUES) {
     await context.close();
   }
   if (tout) {
-    // masquée à 0 : il n'y a que les étoiles de diamant, leur case prend la première place
+    // masquée à 0 : il n'y a que les étoiles de diamant, leur case prend la première place (lot « Correctifs du 5 novembre » : la rangée
+    // des compteurs, alignée sur le bord droit ; le diamant au bout, à droite du compteur d'étoiles de mer)
     const { context, page } = await fresh(etat(260, 0, 1), vue);
-    const r = await reserves(page);
-    check(!r.arc.vu && r.diamant.vu && Math.round(r.diamant.x) === 1136, Vs(`sans étoile arc-en-ciel : sa réserve masquée, le diamant à sa place (x ${Math.round(r.diamant.x)})`));
+    const r = await reserves(page), mer = await page.evaluate(() => { const b = document.querySelector(".hud.stars").getBoundingClientRect(); return b.x + b.width; });
+    check(!r.arc.vu && r.diamant.vu && r.diamant.x >= mer - 0.5 && Math.abs(r.diamant.x + r.diamant.w - 1270) < 2, Vs(`sans étoile arc-en-ciel : sa réserve masquée, le diamant juste après le compteur, au bout de la rangée (x ${Math.round(r.diamant.x)})`));
     await shot(page, vue, "04-une-seule-reserve");
     await context.close();
   }

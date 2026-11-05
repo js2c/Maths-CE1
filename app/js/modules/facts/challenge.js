@@ -43,7 +43,8 @@ export async function runChallenge({ session, step, warmup, screen, view, say, m
   const prev = (await store.get("recompenses", "defi")) ?? null;
   screen.show(true); screen.keys(false);
   view.show(true, { record: prev?.record ?? null });
-  await say(prev ? "defiIntro" : "defiIntroPremier");
+  // (lot « Correctifs du 5 novembre ») la consigne du défi : la mascotte touchée pendant la minute redit l'explication
+  await say(prev ? "defiIntro" : "defiIntroPremier", {}, { instruction: true });
   await say("defiPartez");
   screen.keys(true);
   let score = 0, posees = 0; const t0 = now(), left = () => dur - (now() - t0);

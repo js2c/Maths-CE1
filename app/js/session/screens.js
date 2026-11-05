@@ -137,7 +137,9 @@ export async function reward(app, { session, hud }) {
   // (lot 3 bis, R21 : jamais « tu as gagné 0 étoiles » : une séance sans étoile est saluée sans nombre)
   // (lot « Correctifs de la tablette », point 5 : au-delà de `bilanDitMax` étoiles, le nombre n'a pas de phrase fabriquée et
   // passait par la synthèse du navigateur, une autre voix : une phrase sans nombre, le nombre reste écrit)
-  const said = voice.say(!earned ? text.data.recompenseZero : earned > (E.bilanDitMax ?? 60) ? text.data.recompenseBeaucoup : fill(text.pick("recompense"), { etoiles: phrase(earned) }));
+  // (lot « Correctifs du 5 novembre » : chaque phrase de la récompense devient la consigne ; avant, la mascotte touchée redisait la
+  // dernière question de la séance)
+  const said = voice.say(!earned ? text.data.recompenseZero : earned > (E.bilanDitMax ?? 60) ? text.data.recompenseBeaucoup : fill(text.pick("recompense"), { etoiles: phrase(earned) }), { instruction: true });
   for (let i = 1; i <= 20 && shown < earned; i++) { shown = Math.round((earned * i) / 20); tally.repaint(); await wait(60); }
   shown = earned; tally.repaint();
   await said;
@@ -146,7 +148,7 @@ export async function reward(app, { session, hud }) {
   // que la voix a fini (avant, son chargement laissait jusqu'à 1,5 s sans rien à toucher ni à entendre)
   if (wantsCards(app)) app.sprites.load("cartes");
   const flown = hud.fly(E.seanceTerminee, [635, 305]);
-  await voice.say(text.pick("seanceFinie")); await flown;
+  await voice.say(text.pick("seanceFinie"), { instruction: true }); await flown;
   await wait(400);
   await bonuses(app, { session, hud });
   tally.remove(); document.querySelectorAll(".special").forEach((e) => e.remove());
@@ -164,12 +166,12 @@ async function bonuses(app, { session, hud }) {
   if (!rewards.c) return;
   app.starFrom = [635, 305];
   const b = await rewards.endOfSession(session.rec.debut);
-  if (b) { const said = voice.say(fill(text.data.serieBonus, { n: b })); await session.stars(b, "série"); await said; await wait(600); }
+  if (b) { const said = voice.say(fill(text.data.serieBonus, { n: b }), { instruction: true }); await session.stars(b, "série"); await said; await wait(600); }
   // (lot « La boutique du récif ») le coquillage de la série
   if (rewards.coquillageSerie) {
     rewards.coquillageSerie = false; session.rec.coquillageSerie = true; await session.save();
     const g = await rewards.serieShell(app.rnd, Date.now());
-    if (g.etoiles) { ocean.mascotte.play("rejouir"); const said = voice.say(fill(text.data.coquillageSerieEtoiles, { n: g.etoiles })); await session.stars(g.etoiles, "coquillage de la série"); await said; await wait(500); }
+    if (g.etoiles) { ocean.mascotte.play("rejouir"); const said = voice.say(fill(text.data.coquillageSerieEtoiles, { n: g.etoiles }), { instruction: true }); await session.stars(g.etoiles, "coquillage de la série"); await said; await wait(500); }
     else { await app.sprites.load("cartes"); (session.rec.brillantes ??= []).push(g.carte.id); await session.save(); await openShell(app, { session, hud, say: text.data.coquillageSerie, got: g }); }
   }
   const others = (await store.all("seances")).filter((x) => x.terminee && !x.libre && x.id !== session.id).map((x) => x.debut);
@@ -183,7 +185,7 @@ async function bonuses(app, { session, hud }) {
     stage.ticks.add(vif);
     // (lot « Réserves d'étoiles et étoiles arc-en-ciel ») la réserve montre encore le nombre d'avant ; l'étoile y vole après sa phrase
     const res = hud.reserves; if (res && sprite === "etoile.diamant") res.set("diamant", rewards.doreesDispo - 1);
-    app.sound?.play("brillante"); ocean.mascotte.play("rejouir", { fort: true }); await voice.say(say); await wait(500);
+    app.sound?.play("brillante"); ocean.mascotte.play("rejouir", { fort: true }); await voice.say(say, { instruction: true }); await wait(500);
     if (res && sprite === "etoile.diamant") { const [x, y] = [parseFloat(el.style.left) + S / 2, parseFloat(el.style.top) + S / 2]; el.style.visibility = "hidden"; await volVersReserve(app, "etoile.diamant", [x, y], res.centre("diamant"), { k: 1.1 }); res.plus("diamant"); }
   }
   // (lot 3 bis, B6 ; R13) les étoiles arc-en-ciel : une seule phrase, au pluriel s'il y en a plusieurs ; elles apparaissent
@@ -201,7 +203,7 @@ async function bonuses(app, { session, hud }) {
     const t = arcs === 1 ? text.data.etoileArc : fill(text.data.etoilesArc, { n: arcs }), res = hud.reserves;
     const ouvrira = !!rewards.nextZone() && rewards.arcDispo > 0;
     document.querySelectorAll(".hud.tally").forEach((e) => e.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 250, fill: "forwards" }));
-    const said = voice.say(rewards.fermees && !ouvrira ? t : sentences(t)[0]);
+    const said = voice.say(rewards.fermees && !ouvrira ? t : sentences(t)[0], { instruction: true });
     if (res) { res.set("arc", rewards.arcDispo - arcs); await flyRainbowStars(app, arcs, { from: [640, 500 + (specials.length ? 120 : 0)], to: res.centre("arc"), album: false, arrivee: () => res.plus("arc") }); }
     else await flyRainbowStars(app, arcs, { from: [640, 500 + (specials.length ? 120 : 0)] });
     await said;
@@ -292,11 +294,11 @@ export async function finRecompense(app) {
       imageCreature(app, c, 146 * k, 128 * k).then((img) => { if (img && el.isConnected) el.repaint((ctx, px) => { tuile(ctx, px); ctx.drawImage(img, (2 + 12 * k + (146 * k) / 2) * px - img.width / 2, (2 + 12 * k + (128 * k) / 2) * px - img.height / 2 + 12 * k * px); }); });
     }
     ocean.mascotte.play("rejouir");
-    await voice.say(text.data.boutique.arrivees); await rewards.annoncer(nouvelles);
+    await voice.say(text.data.boutique.arrivees, { instruction: true }); await rewards.annoncer(nouvelles);
     await wait(400); minis.forEach((m) => m.remove()); if (!app.boutique?.open) sprites.unload("boutique");
   }
   const versBoutique = rewards.peutAcheter(now);
-  if (versBoutique) await voice.say(text.data.boutique.invitation);
+  if (versBoutique) await voice.say(text.data.boutique.invitation, { instruction: true });
   if (window.__finSansBouton) return null;
   const S = 150, b = spriteBox(app, { x: 1175 - S / 2, y: 688 - S / 2, w: S, h: S, cls: `bubble invite fin-recompense ${versBoutique ? "vers-boutique" : "vers-recif"}`, label: versBoutique ? "la boutique" : "le récif", paint: (ctx, px) => { const q = sprites.frame(versBoutique ? "boutique" : "recif", 0), k = versBoutique ? S / 150 : S / 180; if (q) ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (S / 2) * px + q.dx * k, (S / 2) * px + q.dy * k, q.w * k, q.h * k); } });
   voice.instruction = versBoutique ? text.data.boutique.invitation : voice.instruction;

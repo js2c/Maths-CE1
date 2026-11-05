@@ -180,15 +180,21 @@ export class ProblemesScreen {
   allumer(i) { this.lit = i; if (i >= 0) { this.vues.add(i); this.boutons[i].style.visibility = "visible"; } this.repaint(); }
   // l'histoire, phrase par phrase : chaque étiquette s'allume avec sa phrase ; puis la question (la consigne que la mascotte redit :
   // l'histoire entière et la question) ; au cran « plus facile », l'histoire redite avec ses étiquettes
+  // (lot « Correctifs du 5 novembre », constat du parent du 5 novembre 2026 : au partage manipulé, la mascotte touchée redisait la
+  // consigne de l'écran précédent, « Choisis ton niveau… » : la consigne n'était posée qu'après le partage) LA CONSIGNE EST POSÉE DÈS LE
+  // DÉBUT DE L'HISTOIRE, pour toutes les formes : la mascotte touchée redit l'histoire entière et la question. Touchée pendant
+  // l'histoire, elle l'a redite en entier : l'histoire ne reprend pas où elle en était (elle serait dite deux fois), la suite enchaîne.
   async raconter(q, tok, { partage = false, redire = q.redire } = {}) {
-    const { voice } = this.app, T = this.T, e = q.e, vivant = () => tok === this.tok && this.q === q;
+    const { voice } = this.app, T = this.T, e = q.e, vivant = () => tok === this.tok && this.q === q, consigne = [...e.enonce, e.question].join(" ");
     voice.stop();
+    voice.instruction = consigne; voice.listens = 1;
+    const ecoutes0 = voice.listens, redite = () => voice.listens !== ecoutes0;
     const premiere = !this.app.store ? false : !(await this.app.store.setting("problemesConsigne"));
     if (!vivant()) return;
     if (premiere && !q.repris) { await say(this.app, T.problemeConsigne); await this.app.store.setSetting("problemesConsigne", true); }
     const histoire = async () => {
       for (const [j, s] of e.enonce.entries()) {
-        if (!vivant()) return;
+        if (!vivant() || redite()) return;
         const its = q.etiquettes.map((t, i) => ({ ...t, i })).filter((t) => t.phrase === j);
         if (its.length) this.allumer(its.at(-1).i); for (const t of its) this.vues.add(t.i), (this.boutons[t.i].style.visibility = "visible");
         this.repaint();
@@ -198,12 +204,15 @@ export class ProblemesScreen {
     };
     await histoire();
     if (!vivant()) return;
+    const dejaRedite = redite();
     if (partage) { await this.partager(q, tok); if (!vivant()) return; }
-    await voice.say(e.question, { instruction: true });
-    // (la mascotte touchée redit l'histoire entière et la question : `voice.instruction`, compté comme une écoute)
-    voice.instruction = [...e.enonce, e.question].join(" ");
+    // (la mascotte touchée redit l'histoire entière et la question : `voice.instruction`, compté comme une écoute ; touchée pendant
+    // l'histoire, la question vient d'être dite : elle n'est redite qu'après le partage)
+    if (!dejaRedite || partage) { const dit = voice.say(e.question, { instruction: true }); voice.instruction = consigne; await dit; }
+    else this.app.ocean?.mascotte?.ambiance?.("ecoute"); // (la question attend sa réponse : la mascotte écoute, comme après une consigne)
+    voice.instruction = consigne;
     if (premiere && vivant()) await say(this.app, T.problemeReecouter);
-    if (redire && vivant()) { await histoire(); if (vivant()) await voice.say(e.question); voice.instruction = [...e.enonce, e.question].join(" "); }
+    if (redire && vivant() && !redite()) { const n = voice.listens; await histoire(); if (vivant() && voice.listens === n) await voice.say(e.question); voice.instruction = consigne; }
   }
   // ---------------------------------------------------------------- le partage manipulé (niveau 3)
   async partager(q, tok) {

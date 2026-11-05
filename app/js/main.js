@@ -340,7 +340,7 @@ const handlers = {
     // autrefois reste dans la base, sans être montré)
     // (lot « Les leçons » : après « À toi ! », à la fin d'une leçon du menu, ni salut ni surprise : on enchaîne sur le sélecteur)
     if (!session.choix?.apresLecon) {
-      ocean.mascotte.play("saluer"); await voice.say(text.pick("accueil"));
+      ocean.mascotte.play("saluer"); await voice.say(text.pick("accueil"), { instruction: true });
       // une séance sur cinq environ : une surprise (un visiteur) ; ?surprise=visite:tortue|visite:poissons (tests)
       const forced = P.get("surprise")?.split(":"), prev = previousSession(await store.all("seances"), session.id);
       const s = forced ? { type: forced[0], id: forced[1] } : drawSurprise(rnd, cartes.surprise, prev);
@@ -370,7 +370,7 @@ const handlers = {
       // lot 3 ter (T1) : le bouton « passer l'échauffement », présent pendant tout l'échauffement, confirmé par la coche (et
       // sans effet une fois l'échauffement fermé ou la séance interrompue)
       const skip = (onSkip) => portee.el(warmupSkipKey(() => { if (!portee.fermee && !ctx.session.stopped) onSkip(); }));
-      await runWarmup({ ...ctx, step, warmup, screen, rnd, skip, intro: async (skipped) => { await voice.say(text.pick("echauffement")); if (!warmup.base.mesures.length && !skipped()) await voice.say(text.data.pave); } });
+      await runWarmup({ ...ctx, step, warmup, screen, rnd, skip, intro: async (skipped) => { await voice.say(text.pick("echauffement"), { instruction: true }); if (!warmup.base.mesures.length && !skipped()) await voice.say(text.data.pave, { instruction: true }); } });
       fini = true;
     }
   },
@@ -398,7 +398,7 @@ const handlers = {
     warmup.defi = true;
     await sprites.load("defi"); ctx.portee.fin(() => sprites.unload("defi")); if (ctx.portee.fermee) return fige();
     const view = new ChallengeView(app); app.challenge = view; ctx.portee.fin(() => { view.remove(); app.challenge = null; });
-    await runChallenge({ ...ctx, warmup, screen, view, store, rnd, mascotte: ocean.mascotte, stars: seance.etoiles, say: (k, v = {}) => voice.say(text.pick(k, v)) });
+    await runChallenge({ ...ctx, warmup, screen, view, store, rnd, mascotte: ocean.mascotte, stars: seance.etoiles, say: (k, v = {}, o = {}) => voice.say(text.pick(k, v), o) });
   },
   // LOT « PROBLÈMES » : l'étape fixe « Problème du jour » (seance.json, « probleme » ; docs/LOTS.md, fiche 20) : 1 à 2 problèmes
   // au niveau de l'enfant, au cran de la séance, dans ses 1 min 30 (prises sur la notion du jour, session.js) ; pas quand la séance
@@ -432,7 +432,7 @@ async function notion2(ctx) {
   ctx.portee.fin(() => { screen.notion = false; screen.hermit = null; if (app.hermit === hermit) app.hermit = null; hermit.remove(); });
   hermit.show(true); hermit.play("sortir");
   screen.show(true); screen.keys(false);
-  if (!session.reprendAuPoint("notion")) await voice.say(text.pick("notionFaits")); // (repris à la question près : la phrase d'entrée n'est pas redite)
+  if (!session.reprendAuPoint("notion")) await voice.say(text.pick("notionFaits"), { instruction: true }); // (repris à la question près : la phrase d'entrée n'est pas redite)
   const ask = { ask: async (q, cfg, o) => screen.askNotion(q, cfg, o), finaliser: (q, r) => screen.finaliserNotion(q, r) };
   try {
     const res = await runNotion({ ...ctx, step, runner, screen: ask, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
@@ -457,7 +457,7 @@ async function notion3(ctx) {
   // sont montrés le temps de la phrase ; sinon, une phrase sans le poisson
   if (session.reprendAuPoint("notion")) { /* (repris à la question près : la phrase d'entrée n'est pas redite) */ }
   else if (module3.niveaux.find((c) => c.niveau === runner.niveau)?.support === "mur") await app.calc.introWall(text.pick("notionCalculMur"));
-  else await voice.say(text.pick("notionCalcul"));
+  else await voice.say(text.pick("notionCalcul"), { instruction: true });
   await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.calc.askNotion(q), finaliser: (q, r) => app.calc.finaliser(q, r) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
 }
 // LOT « MULTIPLICATION » (docs/SPEC.md, section 7 ter) : la notion du jour sur la multiplication : l'écran des additions
@@ -472,7 +472,7 @@ async function notion5(ctx) {
   await sprites.load("aides"); ctx.portee.fin(() => app.mult.leave());
   if (ctx.portee.fermee) return fige();
   const fs = (app.facts ??= new FactsScreen(app, module2)); fs.show(true); fs.keys(false);
-  if (!session.reprendAuPoint("notion")) await voice.say(text.pick("notionMult")); // (repris à la question près : la phrase d'entrée n'est pas redite)
+  if (!session.reprendAuPoint("notion")) await voice.say(text.pick("notionMult"), { instruction: true }); // (repris à la question près : la phrase d'entrée n'est pas redite)
   await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.mult.askNotion(q), finaliser: (q, r) => app.mult.finaliser(q, r) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
 }
 // LOT « LES VOILIERS » (docs/SPEC.md, section 7 bis) : la notion du jour sur le jeu des voiliers, choisi par l'enfant ou
@@ -514,7 +514,7 @@ async function notion7(ctx) {
   if (ctx.portee.fermee) return fige();
   ctx.portee.fin(() => app.prob.leave());
   const fs = (app.facts ??= new FactsScreen(app, module2)); fs.show(false);
-  if (!session.reprendAuPoint("notion")) await voice.say(text.pick("notionProblemes"));
+  if (!session.reprendAuPoint("notion")) await voice.say(text.pick("notionProblemes"), { instruction: true });
   await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.prob.askNotion(q), finaliser: (q, r) => app.prob.finaliser(q, r) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
 }
 async function probleme7(ctx) {
@@ -524,7 +524,7 @@ async function probleme7(ctx) {
   if (ctx.portee.fermee) return fige();
   ctx.portee.fin(() => app.prob.leave());
   const fs = (app.facts ??= new FactsScreen(app, module2)); fs.show(false);
-  if (!session.reprendAuPoint("probleme")) await voice.say(text.pick("problemeDuJour"));
+  if (!session.reprendAuPoint("probleme")) await voice.say(text.pick("problemeDuJour"), { instruction: true });
   await runNotion({ ...ctx, step, runner, screen: { ask: (q) => app.prob.askNotion(q), finaliser: (q, r) => app.prob.finaliser(q, r) }, lesson: async () => false, rnd });
 }
 async function notion6(ctx) {
@@ -540,7 +540,7 @@ async function notion6(ctx) {
   ctx.portee.fin(() => scr.leave());
   if (!(await scr.enter({ rnd })) || ctx.portee.fermee) return fige();
   session.rec.etalMeteo = scr.meteoDepart ? "mauvais temps" : scr.orageA != null ? "orage en cours de partie" : "beau temps"; await session.save();
-  if (!session.reprendAuPoint("notion")) await voice.say(text.pick("etalNotion")); // (repris à la question près : la phrase d'entrée n'est pas redite)
+  if (!session.reprendAuPoint("notion")) await voice.say(text.pick("etalNotion"), { instruction: true }); // (repris à la question près : la phrase d'entrée n'est pas redite)
   await runNotion({ ...ctx, step, runner, screen: { ask: (q) => scr.ask(q) }, lesson: P.has("sansLecon") ? async () => false : lessonIn(session), rnd });
 }
 // LOT 3 TER (docs/SPEC-LOT3TER.md, T1 ; décision du parent) : « PASSER L'ÉCHAUFFEMENT ». Un bouton dédié (son propre
@@ -718,7 +718,7 @@ async function openLessons() {
   }
   mode = null; homeKey.style.visibility = "hidden";
   if (!go) return showHome({ done: await doneToday(store) });
-  voice.say(text.pick("aToi"));
+  voice.say(text.pick("aToi"), { instruction: true });
   if (await doneToday(store)) return freeTraining(go);
   await runSession(go);
 }

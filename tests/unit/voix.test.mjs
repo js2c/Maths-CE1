@@ -60,7 +60,7 @@ test("inventaire : chaque texte du contenu est couvert, un gabarit sans règle e
   // chaque texte sans variable de textes.json, chaque phrase des leçons, chaque anecdote
   const textes = [];
   const walk = (k, v) => (typeof v === "string" ? textes.push([k, v]) : Array.isArray(v) ? v.forEach((x) => walk(k, x)) : Object.entries(v).forEach(([kk, x]) => walk(`${k}.${kk}`, x)));
-  Object.entries(C.textes).forEach(([k, v]) => k !== "_doc" && walk(k, v));
+  Object.entries(C.textes).forEach(([k, v]) => !k.startsWith("_") && walk(k, v));
   for (const [k, t] of textes) if (!/\{/.test(t) && !["unSaut", "sauts", "uneEtoile", "uneDizaine", "uneUnite", "placesUnites", "placesDizainesUnites"].includes(k)) for (const s of sentences(t)) assert.ok(inv.has(s), `${k} : ${s}`);
   for (const [id, L] of Object.entries(C.lecons)) if (id !== "_doc") for (const b of L.phrases.flat()) if (b.dire) for (const s of sentences(b.dire)) assert.ok(inv.has(s), `${id} : ${s}`);
   for (const c of C.cartes.cartes.filter((x) => x.anecdote)) for (const s of sentences(c.anecdote)) assert.ok(inv.has(s), c.id);

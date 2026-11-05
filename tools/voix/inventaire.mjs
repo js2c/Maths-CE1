@@ -226,7 +226,7 @@ export function inventaire(C = lireContenu()) {
     if (Array.isArray(v)) return v.forEach((x) => parcourir(cle, x));
     for (const [k, x] of Object.entries(v)) parcourir(`${cle}.${k}`, x);
   };
-  for (const [k, v] of Object.entries(C.textes)) if (k !== "_doc" && !FRAGMENTS.has(k)) parcourir(k, v);
+  for (const [k, v] of Object.entries(C.textes)) if (!k.startsWith("_") && !FRAGMENTS.has(k)) parcourir(k, v);
   // les leçons : chaque phrase dite, et ce que la voix dit au premier exercice guidé
   for (const [id, L] of Object.entries(C.lecons)) {
     if (id === "_doc") continue;

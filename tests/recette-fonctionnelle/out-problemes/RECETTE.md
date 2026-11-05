@@ -29,14 +29,14 @@ Faite sur le code final de la branche (`claude/clever-lovelace-aqsfk1`, demande 
 - reproduit 4 fois sur 25 passages (le parcours raccourci à ses deux premières parties, `--jusqua 2`, chaque passage aux deux tailles) ;
 - la cause, trouvée avec le diagnostic du compteur de réussites (`DIAG=1`) : la troisième réponse, touchée pendant que la mascotte parlait, comptait bien trois réussites ; la grande joie, demandée, attendait le raccord du clip en cours ; à la fin de la phrase, la demande du clip d'attente la **remplaçait** (le moteur ne garde qu'une demande en attente) : elle était perdue. Un défaut de l'application (une réponse rapide privait la mascotte de sa réaction), pas du banc ;
 - corrigé dans la maquette (`art/mascotte/`, `silence()` : la fin de la parole ne remplace plus une réaction en attente), puis reporté dans `app/js/engine/mascotte.js` ; le parcours touche désormais sa troisième réponse pendant la consigne (le cas est gardé) ;
-- après la correction : **20 passages sur 20** réussis (`--jusqua 2`, les deux tailles), puis le parcours complet RESULTAT_COMPLET.
+- après la correction : **20 passages sur 20** réussis (`--jusqua 2`, les deux tailles), puis le parcours complet (112 contrôles, la séance simulée : 122 raccords, aucun fondu forcé) : tout est bon.
 
 ## Fonctionnelle
 
 | Contrôle | Résultat |
 | --- | --- |
 | Simulation de l'année (`mesure-problemes.mjs`, `mesure-additions.mjs`, `grille-additions.mjs`) | `MESURES.md` (ce dossier) et `../out-confrontation2/MESURES.md` |
-| `b-sequences.mjs --test` | d'abord 288 combinaisons, 1 152 séances, 4 en défaut, toutes à l'étal (4 réponses différentes au lieu de 5, sur 7 à 9 achats : la notion du jour perdait ses 1 min 30 au profit du problème du jour) ; après la décision du parent du 4 novembre (le problème du jour s'ajoute aux séances de l'étal et des voiliers) : RESULTAT_BSEQ |
+| `b-sequences.mjs --test` | d'abord 288 combinaisons, 1 152 séances, 4 en défaut, toutes à l'étal (4 réponses différentes au lieu de 5, sur 7 à 9 achats : la notion du jour perdait ses 1 min 30 au profit du problème du jour) ; après la décision du parent du 4 novembre (le problème du jour s'ajoute aux séances de l'étal et des voiliers) : 288 combinaisons, 1 152 séances, **0 en défaut** (5 novembre) |
 | L'étal et les voiliers avec le problème du jour (`mesure-etal-voiliers.mjs`) | `ETAL-VOILIERS.md` : la séance la plus longue 11,6 min (plafond 12), le problème du jour jamais sauté (0 sur 252) |
 | Les prix de la boutique (`sim-boutique.mjs`) | `BOUTIQUE.md` : 64/160 et 88/220 ; collection complète en juin pour `reel` et `sait`, pas pour `diff` (53 et 54 sur 60) |
 | Séance à vitesse réelle (`recette.mjs --delai 4.5`) | sans erreur |

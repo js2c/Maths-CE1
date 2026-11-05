@@ -66,6 +66,8 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (décisions du parent du 30 octobre 2026) : le lot « Problèmes »** (fiche 20 : les problèmes de la vie courante, une étape fixe « Problème du jour » à chaque séance et un septième exercice). La maquette est validée (`art/problemes/`, PR #66) ; la banque compte 200 énoncés ; le plafond de la voix passe à 95 Mo. D'un seul tenant. Environ 868 phrases à fabriquer, environ 7,6 Mo ; les illustrations des 22 lieux sont générées par le parent, à part. **État : fait** (branche `claude/clever-lovelace-aqsfk1`, PR #73, après le lot « Correctifs de la confrontation 2 » ; 911 phrases à fabriquer, 4 pour les nouveaux prix de la boutique, avec les 57 du lot 21 : 972, environ 8,4 Mo ; l'étape fixe n'est jamais sautée en simulation ; à 2 séances par semaine, les 9 niveaux ne se parcourent pas dans l'année : rien ne change, décision du parent du 4 novembre 2026 ; même jour : les prix « 3 séances » et « 4 séances » baissés, le problème du jour ajouté aux séances de l'étal et des voiliers, sans prendre sur leur notion du jour).
 
+**Puis (constats et décisions du parent du 5 novembre 2026) : le lot court « Correctifs du 5 novembre »** (fiche 22) : la musique hors séance, la boutique pendant une pause, la mascotte qui redit la consigne de l'écran visible, la prononciation de « plus », les trois compteurs sur une ligne, les compteurs et la petite tête de la mascotte dans le récif, l'accueil sans galet de l'album. **État : fait** (PR #75 ; 4 phrases à fabriquer, 2 qui ne servent plus).
+
 **Pourquoi cet ordre.**
 
 - Les correctifs de la confrontation avant les leçons et les sommes : ces lots s'appuient sur les règles du module 2 telles qu'elles seront écrites.

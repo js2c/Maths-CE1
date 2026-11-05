@@ -946,3 +946,12 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 - Fait aussi : la mesure du démarrage et la proposition (`tests/recette-fonctionnelle/out-correctifs-relectures/DEMARRAGE.md`) ; le parcours du lot `correctifs-relectures.mjs` (85 contrôles, quatre tailles) ; la relecture indépendante et son traitement (`RELECTURE.md` : R14, la bulle de l'étal dans le ciel en dernier recours, corrigé) ; la documentation.
 - Recette faite sur le code final (`tests/e2e/out/recette-lot/BILAN.txt`). Elle a trouvé, hors du contenu du lot et aussi sur `main` : la boutique vide pendant les vacances dans quatre parcours (ils comptent désormais en semaines d'école), le portefeuille de l'étal qui se refermait encore quand la question commençait (corrigé dans `art/tools/export-etal.mjs`), et des attentes du banc trop justes (étal, multiplication, installation), chacune mesurée et corrigée. Restent à expliquer ou à décider : `etat-quitte` « effets » et `notion2` (`docs/IDEES.md`, section 7).
 - **Fusionné le 3 novembre 2026** (PR #64) ; rubrique archivée le 4 novembre 2026 (lot « Correctifs de la confrontation 2 » puis « Problèmes »).
+
+## Reprise du bloc « Correctifs de la confrontation 2 » puis « Problèmes »
+
+- Branche `claude/clever-lovelace-aqsfk1`, demande de fusion #73 (prête). Fiches 21 puis 20 de `docs/LOTS.md`.
+- **Les deux lots sont faits** (code, contenu, tests, simulations, spécification, journal, guide, architecture ; relecture indépendante et son traitement : `tests/recette-fonctionnelle/out-problemes/RELECTURE.md` ; mesures : `out-problemes/MESURES.md`, `out-confrontation2/MESURES.md`).
+- **Recette du bloc faite** sur le code final (`tests/recette-fonctionnelle/out-problemes/RECETTE.md`).
+- **Réponses du parent du 4 novembre appliquées** (journal de conception) : prix « 3 séances » et « 4 séances » baissés (64/160, 88/220 ; `out-problemes/BOUTIQUE.md`) ; le problème du jour s'ajoute aux séances de l'étal et des voiliers (`out-problemes/ETAL-VOILIERS.md`) ; l'échec isolé du parcours `mascotte` expliqué et corrigé (la grande joie perdue à la fin de la parole).
+- **Reste** : les 972 phrases à fabriquer par le parent (`out-problemes/PHRASES.md`), les images des 21 lieux, sa relecture des rôles (`docs/maquettes/problemes/ENONCES.md`). À la fusion, cette rubrique va dans l'archive.
+- **Fusionné** (PR #73) ; rubrique archivée le 5 novembre 2026 (lot « Correctifs du 5 novembre »).

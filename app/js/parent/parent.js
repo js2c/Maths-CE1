@@ -639,7 +639,7 @@ export class ParentSpace {
     const paint = () => { for (const [g, key] of segs) for (const b of g.children) b.setAttribute("aria-pressed", String(b.dataset.v === String(cur[key]))); vol.style.opacity = cur.musique ? "1" : "0.45"; };
     this.store.setting("son").then((v) => { if (v) cur = { ...cur, ...v }; paint(); });
     const line = (t, g, ...more) => h("div", { class: "pa-row" }, h("span", { class: "pa-muted", style: "min-width: 9em" }, t), g, ...more);
-    return row("Son", "Une musique douce pendant la séance (l'une des trois, tirée au hasard), toujours plus basse que la voix, et de petits bruitages (bonne réponse, étoiles, coquillage…). Ils s'arrêtent dans cet espace.",
+    return row("Son", "Une musique douce : la même à l'accueil, dans le récif, la boutique et l'album ; pendant la séance, l'une des trois, tirée au hasard ; toujours plus basse que la voix, et de petits bruitages (bonne réponse, étoiles, coquillage…). Ils s'arrêtent dans cet espace.",
       h("div", { style: "display: grid; gap: 10px" }, line("Musique :", mus), line("Volume :", vol), line("Bruitages :", sfx, ok)));
   }
   // le point de départ : le niveau de la ligne graduée, les familles de faits déjà connues

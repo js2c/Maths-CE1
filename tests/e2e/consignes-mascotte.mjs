@@ -59,14 +59,15 @@ const INSTRUMENTER = () => {
     // (pas le mode de main.js : il change aussi sans que l'écran change, entre la fin d'une leçon et son écran de fin)
     const lecon = !!(a.lessons?.keys || a.lessons?.p2?.keys || a.lessons?.p6?.keys || a.lessons?.p7?.keys || a.lessonCancel);
     return JSON.stringify([a.session?.progress?.etape ?? "", !!a.enPause, !!a.reef?.open, !!a.boutique?.open, !!a.album?.open, a.boutique?.sel?.carte?.id ?? "",
-      lecon ? "leçon" : id(q), phaseProb, lecon, ...[".galet", ".cran", ".choix-ex", ".choix-tuile", ".lecons-tuile", ".lecons-atoi", ".table-grille", ".hud.tally", ".shelltap", ".card", ".moon", ".probleme-objet"].map(vis)]);
+      // (pendant le défi, les questions défilent sans consigne chacune : la consigne est l'explication du défi)
+      lecon ? "leçon" : a.challenge ? "défi" : id(q), phaseProb, lecon, ...[".galet", ".cran", ".choix-ex", ".choix-tuile", ".lecons-tuile", ".lecons-atoi", ".table-grille", ".hud.tally", ".shelltap", ".card", ".moon", ".probleme-objet"].map(vis)]);
   };
   // (un écran vide, de passage : rien à l'écran que le lagon, le temps qu'une étoile vole au compteur entre la fin d'une leçon et son
   // écran de fin ; la mascotte y redit la dernière phrase de ce qui vient de finir : il n'est pas jugé)
   window.__vide = () => { const s = JSON.parse(window.__signature()); return !s.slice(1).some((x) => x && x !== "0" && x !== 0) && !s[0]; };
   // (la clé de l'oracle : la signature sans la phase d'un problème, qui change sans que l'écran change : la consigne d'un problème est
   // posée au début de son histoire et vaut pour le partage et la question)
-  const cle = (s) => { const x = JSON.parse(s); x[8] = ""; return JSON.stringify(x); };
+  const cle = (s) => { const x = JSON.parse(s); x[7] = ""; x[x.length - 1] = false; return JSON.stringify(x); }; // (la phase, et les objets du partage)
   window.__changements = [{ t: performance.now(), s: window.__signature() }]; window.__cles = [{ t: performance.now(), s: cle(window.__signature()) }];
   window.__relever = () => { try { const s = window.__signature(); if (s !== window.__changements.at(-1).s) window.__changements.push({ t: performance.now(), s }); const k = cle(s); if (k !== window.__cles.at(-1).s) window.__cles.push({ t: performance.now(), s: k }); } catch { /* écran en cours de construction */ } };
   const suivre = () => { window.__relever(); requestAnimationFrame(suivre); };

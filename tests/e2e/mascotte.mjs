@@ -99,7 +99,9 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   check(await clip(["wrong"]), `${W} première erreur : déception bienveillante`);
   await page.waitForTimeout(900); await shot("12-deception", "la correction");
   // deux bonnes réponses de plus : la troisième de suite est une grande joie
-  for (let k = 0; k < 3; k++) { await ligne(); await page.waitForTimeout(200); await repondre(true); if (k < 2) await page.waitForTimeout(400); }
+  // (5 novembre 2026 : la troisième réponse est touchée pendant la consigne, ce que fait souvent l'enfant ; la grande joie demandée pendant la
+  // parole était perdue quand la parole finissait, l'échec isolé de ce contrôle ; engine/mascotte.js, silence())
+  for (let k = 0; k < 3; k++) { await ligne(); if (k === 2) await until(() => window.__app.voice.speaking, null, 5000); else await page.waitForTimeout(200); await repondre(true); if (k < 2) await page.waitForTimeout(400); }
   // (recherche d'un échec isolé, 4 novembre 2026 : en cas d'échec, le journal de la mascotte et ce qui a été répondu)
   { const ok = await clip(["success"]); check(ok, `${W} trois réussites de suite : grande joie`); if (!ok) console.log(`     journal de la mascotte : ${JSON.stringify(await page.evaluate(() => window.__journalMascotte.slice(-70)))} ; ${JSON.stringify((await etat()).m)}`); }
   await page.waitForTimeout(700); await shot("13-grande-joie");

@@ -49,7 +49,8 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 
 ### Reprise du bloc « Correctifs de la confrontation 2 » puis « Problèmes »
 
-- Branche `claude/clever-lovelace-aqsfk1`, demande de fusion #73 (brouillon). Fiches 21 puis 20 de `docs/LOTS.md`.
+- Branche `claude/clever-lovelace-aqsfk1`, demande de fusion #73 (prête). Fiches 21 puis 20 de `docs/LOTS.md`.
 - **Les deux lots sont faits** (code, contenu, tests, simulations, spécification, journal, guide, architecture ; relecture indépendante et son traitement : `tests/recette-fonctionnelle/out-problemes/RELECTURE.md` ; mesures : `out-problemes/MESURES.md`, `out-confrontation2/MESURES.md`).
-- **Recette du bloc faite** sur le code final (`tests/recette-fonctionnelle/out-problemes/RECETTE.md`) : tous les parcours passent, sauf `centaines` (les phrases sans voix) et un échec isolé de `mascotte`, sans cause trouvée, non reproduit ; journée d'usage, enfant imprévisible, cibles, temps d'image, vitesse réelle, attentes ; `b-sequences --test` : 4 séances de l'étal à 4 réponses différentes (la notion du jour raccourcie). Reste : la demande de fusion complétée et sortie du brouillon ; à la fusion, cette rubrique va dans l'archive.
-- **Questions au parent** (en tête de la demande de fusion) : les 9 niveaux ne se parcourent pas dans l'année à 2 séances par semaine ; les séances plus courtes ; trois niveaux de prix de la boutique qui ne finissent plus la collection en juin ; les choix de la session (journal de conception).
+- **Recette du bloc faite** sur le code final (`tests/recette-fonctionnelle/out-problemes/RECETTE.md`).
+- **Réponses du parent du 4 novembre appliquées** (journal de conception) : prix « 3 séances » et « 4 séances » baissés (64/160, 88/220 ; `out-problemes/BOUTIQUE.md`) ; le problème du jour s'ajoute aux séances de l'étal et des voiliers (`out-problemes/ETAL-VOILIERS.md`) ; l'échec isolé du parcours `mascotte` expliqué et corrigé (la grande joie perdue à la fin de la parole).
+- **Reste** : les 972 phrases à fabriquer par le parent (`out-problemes/PHRASES.md`), les images des 21 lieux, sa relecture des rôles (`docs/maquettes/problemes/ENONCES.md`). À la fusion, cette rubrique va dans l'archive.

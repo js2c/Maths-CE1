@@ -805,6 +805,7 @@ app.modeEcran = () => mode; // (lot « Recette de l'enfant » : pour les parcour
 // visibles mais inertes : le seul toucher hors réponse reste la mascotte (session/reserves.js)
 app.reservesTouchables = () => {
   // (lot « Correctifs du 5 novembre » : affichées dans le récif, elles n'y réagissent pas ; une créature reste touchable à travers)
+  if (app.boutique?.open) return true; // (dans la boutique, aussi pendant une séance en pause : lot « Correctifs du 5 novembre »)
   if (visiting || app.lessonCancel || app.reef?.open) return false;
   if (app.enPause) return mode === "seance";
   return mode === null || mode === "fin" || (mode === "seance" && app.session?.progress?.etape === "recompense");
@@ -921,7 +922,8 @@ sprites.keep = ALWAYS; // jamais libérées (engine/sprites.js, unload)
 function sandbox() {
   const o = ocean, st = stage, kids = (el) => new Set(el.children);
   const ui = kids(st.ui), front = kids(o.frontEl), root = kids(st.root);
-  const hidden = [...[...ui].filter((e) => !e.matches(".stars, .speaker, .mascotte-tap, .session-home, .bulle")), ...front, ...[...root].filter((e) => e.matches("#line, #fx, #aides, .aid-board, canvas.voiliers, canvas.etal-decor, .etal-plaque"))];
+  // (lot « Correctifs du 5 novembre » : les réserves d'étoiles restent, comme le compteur : la boutique et le récif les montrent)
+  const hidden = [...[...ui].filter((e) => !e.matches(".stars, .reserve, .speaker, .mascotte-tap, .session-home, .bulle")), ...front, ...[...root].filter((e) => e.matches("#line, #fx, #aides, .aid-board, canvas.voiliers, canvas.etal-decor, .etal-plaque"))];
   hidden.forEach((e) => e.classList.add("stash"));
   o.poste(null); // (lot « L'étal du pêcheur » : la mascotte reprend sa place habituelle le temps de la visite)
   const actors = [...o.actors], oFront = [...o.front], ticks = new Set(st.ticks), sheets = sprites.held();

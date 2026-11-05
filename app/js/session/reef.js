@@ -168,10 +168,12 @@ export class Reef {
     const book = spriteBox(app, { x: 90 - 70, y: 560 - 70, w: 140, h: 140, cls: "bubble albumkey", label: "l'album", paint: (ctx) => { const q = sprites.frame("album", 0), k = 140 / 180, px = sprites.px; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 70 * px + q.dx * k, 70 * px + q.dy * k, q.w * k, q.h * k); } });
     onBrief(app, book, async () => { pop(book); await this.view.close(); if (app.album && !app.album.open) { await app.album.visit(); voice.say(text.data.recifBienvenue, { instruction: true }); } }, "album");
     this.els.push(home, book);
-    // (lot « La boutique du récif ») la boutique : hors séance seulement (pendant une séance en pause, pas de bouton)
+    // (lot « La boutique du récif ») la boutique ; (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026) aussi
+    // pendant une séance en pause : l'achat ne touche pas à la séance (sa voix, son horloge, ce qu'elle montre sont mis de côté par
+    // le bac à sable de la visite, main.js) ; « continuer » la reprend exactement
     let vers = null;
     const fin = new Promise((r) => { vers = r; });
-    if (!app.enPause && app.boutique) {
+    if (app.boutique) {
       const shop = spriteBox(app, { x: 90 - 70, y: 408 - 70, w: 140, h: 140, cls: `bubble boutique-cle${rewards.peutAcheter() ? " invite" : ""}`, label: "la boutique", paint: (ctx) => { const q = sprites.frame("boutique", 0), k = 140 / 150, px = sprites.px; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 70 * px + q.dx * k, 70 * px + q.dy * k, q.w * k, q.h * k); } });
       onBrief(app, shop, () => { if (app.album?.open) return; pop(shop); setTimeout(() => vers("boutique"), 200); }, "boutique");
       this.els.push(shop);
@@ -179,7 +181,7 @@ export class Reef {
     // (une créature achetée qui vit plus loin que le lagon : la mer s'ouvre à sa place pour qu'on la voie arriver)
     if (this.arr && app.cartes.cartes.find((c) => c.id === versCarte(this.arr.id))?.zone !== "lagon") this.api.aller(this.arr.id);
     voice.stop(); voice.say(text.data[owned.size ? "recifBienvenue" : "recifVide"], { instruction: true });
-    if (!owned.size && !app.enPause && rewards.peutAcheter()) voice.say(text.data.boutique.invitation);
+    if (!owned.size && rewards.peutAcheter()) voice.say(text.data.boutique.invitation);
     onBrief(app, home, () => { if (app.album?.open) return; pop(home); vers("maison"); }, "maison");
     const r = await fin;
     await this.view.close();

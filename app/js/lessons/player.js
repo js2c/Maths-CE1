@@ -19,6 +19,7 @@ import { actions, countLabel, lessonLineSpec, settle, stateAt, tickOf } from "./
 import { clock, wait } from "../engine/clock.js";
 import { Lesson2Player } from "./player2.js";
 import { LessonEtalPlayer } from "./etal.js";
+import { LessonProblemesPlayer } from "./problemes.js";
 
 const ABORT = Symbol("leçon interrompue");
 const ease = (u) => 1 - Math.pow(1 - u, 3);
@@ -41,6 +42,8 @@ export class LessonPlayer {
     // (lot 2, étape 8 : L10, les centaines, a aussi sa scène : chaluts et filets sur le calque des aides)
     // (lot « L'étal du pêcheur » : L15 à L18, à l'étal)
     if (this.c[id]?.module === 6) return (this.p6 ??= new LessonEtalPlayer(this.app, this.c)).play(id);
+    // (lot « Problèmes » : L19, le schéma en barres, sur la scène de l'exercice : lessons/problemes.js)
+    if (this.c[id]?.module === 7) return (this.p7 ??= new LessonProblemesPlayer(this.app, this.c)).play(id);
     if (this.c[id]?.module === 2 || this.c[id]?.module === 5 || this.c[id]?.scene) return (this.p2 ??= new Lesson2Player(this.app, this.c)).play(id); // (lot « Multiplication » : L13, L14)
     const { app } = this, lesson = this.c[id], nl = this.nl, t0 = Date.now(), stats = { rejouees: 0 };
     if (!lesson) return { vue: false };
@@ -222,7 +225,7 @@ export class LessonPlayer {
   // la leçon est quittée pour de bon (entraînement libre : bouton « maison ») ; le déroulement abandonné
   // reste figé (engine/clock.js), on range la scène
   abandon() {
-    this.p2?.abandon(); this.p6?.abandon();
+    this.p2?.abandon(); this.p6?.abandon(); this.p7?.abandon();
     if (!this.keys) return;
     this.tok++; this.abort = null; this.keys.forEach((k) => k.remove()); this.keys = null; this.clear();
   }

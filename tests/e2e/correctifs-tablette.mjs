@@ -17,6 +17,8 @@
 // Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
 // rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
 // enfant.mjs --android, installation.mjs, veille.mjs).)
+// (lot « Problèmes » : sans le problème du jour, `sans=probleme` : il n'est pas l'objet de ce parcours ; tests/e2e/problemes.mjs, la journée
+// d'usage et l'enfant imprévisible le jouent)
 import { chromium, demarrageReel } from "./navigateur.mjs";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -28,7 +30,7 @@ const T = JSON.parse(readFileSync(new URL("../../app/content/textes.json", impor
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: [] });
 const fail = [], check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
-const BASE = "?nosw&son=non&voix=rapide";
+const BASE = "?nosw&son=non&voix=rapide&sans=probleme";
 const resultat = { date: new Date().toISOString(), bulles: [], ardoise: [], clavier: [] };
 const sleep = (p, ms) => p.waitForTimeout(ms);
 
@@ -177,7 +179,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
 
     // l'entraînement libre : la séance du jour finie, « Encore ! » ouvre le même écran, en deux touchers
     const F = await nouveau();
-    await F.page.goto(url + BASE + "&cran=conseille&sans=echauffement,notion,defi"); await F.page.waitForFunction(() => window.__ready !== undefined);
+    await F.page.goto(url + BASE + "&cran=conseille&sans=echauffement,notion,defi,probleme"); await F.page.waitForFunction(() => window.__ready !== undefined);
     await tap(F.page, ".play", 500);
     await F.page.waitForSelector(".again", { timeout: 120000 }).catch(() => {});
     for (let i = 0; i < 40 && !(await F.page.locator(".again").count()); i++) { await F.page.touchscreen.tap(640, 400); await sleep(F.page, 1500); }
@@ -197,7 +199,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   // ---------------------------------------------------------------- 3. toucher la mascotte pour réécouter
   {
     const { context, page, errors } = await nouveau();
-    await page.goto(url + BASE + "&choix=2:3&cran=conseille&sans=echauffement&sansLecon&guides=0"); await page.waitForFunction(() => window.__ready !== undefined);
+    await page.goto(url + BASE + "&choix=2:3&cran=conseille&sans=echauffement,probleme&sansLecon&guides=0"); await page.waitForFunction(() => window.__ready !== undefined);
     const vis = (s) => page.evaluate((s) => { const e = document.querySelector(s); return !!e && getComputedStyle(e).visibility !== "hidden"; }, s);
     check(await vis(".mascotte-tap") && !(await vis(".speaker")), `${W} accueil : plus de bouton « réécouter » ; la mascotte se touche`);
     const zone = await page.locator(".mascotte-tap").boundingBox(), k = W / 1280;
@@ -230,10 +232,10 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   const veille = () => { window.__vides = []; setInterval(() => { const f = window.__app?.facts; if (!f) return; const s = f.slate, v = getComputedStyle(s).visibility === "visible" && !s.closest(".stash") && !document.querySelector("#stage.paused"); if (v && !f.q && !f.slateQ) window.__vides.push(window.__app.bulle.etat().texte || "(silence)"); const b = window.__app.bulle.etat(); if (v && b.visible && /Suis le chemin/.test(b.texte)) (window.__guide ??= []).push(b.gene); }, 40); };
   const exos = [
     ["additions (échauffement et notion du jour)", "&choix=2:3&cran=conseille&faits=3&guides=0&sansLecon", 6],
-    ["calcul rapide (calculs guidés d'un niveau nouveau)", "&choix=3:4&cran=conseille&sans=echauffement&sansLecon", 6],
-    ["calcul rapide (questions)", "&choix=3:2&cran=conseille&sans=echauffement&sansLecon", 4],
-    ["multiplication", "&choix=5:3&cran=conseille&sans=echauffement&sansLecon&guides=0", 4],
-    ["dictée (ligne, niveau 12, avec son exemple guidé)", "&choix=1:12&cran=conseille&sans=echauffement&sansLecon&guides=1", 3],
+    ["calcul rapide (calculs guidés d'un niveau nouveau)", "&choix=3:4&cran=conseille&sans=echauffement,probleme&sansLecon", 6],
+    ["calcul rapide (questions)", "&choix=3:2&cran=conseille&sans=echauffement,probleme&sansLecon", 4],
+    ["multiplication", "&choix=5:3&cran=conseille&sans=echauffement,probleme&sansLecon&guides=0", 4],
+    ["dictée (ligne, niveau 12, avec son exemple guidé)", "&choix=1:12&cran=conseille&sans=echauffement,probleme&sansLecon&guides=1", 3],
   ];
   for (const [nom, q, n] of exos) {
     const { context, page, errors } = await nouveau();
@@ -269,7 +271,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   {
     const { context, page, errors } = await nouveau();
     await page.addInitScript(veille);
-    await page.goto(url + BASE + "&cran=conseille&sans=echauffement,notion"); await page.waitForFunction(() => window.__ready !== undefined);
+    await page.goto(url + BASE + "&cran=conseille&sans=echauffement,notion,probleme"); await page.waitForFunction(() => window.__ready !== undefined);
     await page.evaluate(async () => {
       const s = window.__app.store, now = Date.now(), DAY = 86400000;
       for (let i = 0; i < 5; i++) await s.add("seances", { debut: now - (10 - i) * DAY, fin: now - (10 - i) * DAY + 600000, terminee: true, module: 1 + (i % 2), questions: 30, justes: 25, etapes: [] });

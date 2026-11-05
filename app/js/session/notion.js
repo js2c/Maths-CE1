@@ -24,6 +24,14 @@ export async function runNotion({ session, step, end, runner, screen, lesson = a
   // `fin` (essais pour finir sur une réussite), `last` (la dernière réponse)
   const S = P ? { n: P.n, k: P.k, g: P.g, entree: P.entree, fin: P.fin, last: P.last, fini: false } : { n: a + Math.floor(rnd() * (b - a + 1)), k: 0, g: 0, entree: false, fin: 0, last: null, fini: false };
   if (P?.runner) restaurer(runner, P.runner);
+  // (lot « Correctifs de la confrontation 2 », écart 2.6) l'exercice peut demander s'il reste plus de la moitié du temps de l'étape
+  // (les additions : leur famille épuisée tôt, la notion du jour finit sur des révisions ; modules/facts/runner.js)
+  // (`part` : la part du temps de l'étape, module2.json, notion.revisionsAvantPart, 0,5 : la moitié)
+  const debutEtape = Number.isFinite(end) && step.minutes ? end - step.minutes * 60000 : null;
+  // (lot « Problèmes ») le temps qui reste à l'étape (l'étape fixe « Problème du jour » ne commence un deuxième problème que s'il en
+  // reste assez : modules/problemes/runner.js)
+  runner.reste = () => (Number.isFinite(end) && session.active ? end - session.active() : Infinity);
+  runner.avantMoitie = (part = 0.5) => (session.active && debutEtape != null ? session.active() < debutEtape + part * step.minutes * 60000 : false);
   let reprise = P?.encours ?? null;
   const point = (encours, o) => session.notePoint?.({ etape: step.id, n: S.n, k: S.k, g: S.g, entree: S.entree, fin: S.fin, last: S.last ? { ok: !!S.last.ok } : null, runner: instantane(runner), encours }, o);
   // une question ; `after` : la leçon qui vient d'être jouée (le premier exercice guidé qui la suit) ; `phase` : ce qu'elle
@@ -87,7 +95,9 @@ export async function runNotion({ session, step, end, runner, screen, lesson = a
   // écoulé ; les boucles, qui s'arrêtent sur le temps, ne la verraient pas)
   else if (reprise?.q && (!reprise.phase || (reprise.reponse && session.over(end)))) await one(reprise.phase ? reprise.phase === "guide" : true, reprise.after ?? null, reprise.phase ?? null);
   // la leçon du niveau la première fois, sinon deux exemples guidés
-  const entry = P ? null : runner.entryLesson(), guides = step.guides ?? 0;
+  // (lot « Correctifs de la confrontation 2 », écarts 7 ter.1 et 7 ter.2) l'exercice peut en donner moins (la multiplication : à la
+  // première séance sur un niveau seulement, jamais au cran « très dur » ; `runner.guidesDus`)
+  const entry = P ? null : runner.entryLesson(), guides = runner.guidesDus ? runner.guidesDus(step.guides ?? 0) : step.guides ?? 0;
   if (!P) session.expect?.((entry ? 1 : guides) + S.n);
   const seen = P ? S.entree : entry ? await watch(entry, "niveau") : false;
   if (!seen && !P) session.expect?.(session.progress.faites + guides + S.n);

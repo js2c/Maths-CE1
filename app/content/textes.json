@@ -202,7 +202,8 @@
       "calcul": "Des astuces pour calculer sans compter un par un.",
       "voiliers": "Tu ranges les bateaux entre les bouées.",
       "multiplication": "Des rangées de poissons, et les tables.",
-      "etal": "Tu fais les courses chez le pêcheur, avec des pièces et des billets."
+      "etal": "Tu fais les courses chez le pêcheur, avec des pièces et des billets.",
+      "problemes": "Écoute une histoire, et trouve la réponse."
     },
     "ligne": {
       "1": "Tu comptes les sauts de la tortue, de un en un.",
@@ -297,11 +298,23 @@
       "L15": "Une pièce de deux euros vaut deux pièces de un euro.",
       "L16": "On paie juste, du plus gros au plus petit.",
       "L17": "On compte à partir du prix, jusqu'à l'argent qu'on a donné.",
-      "L18": "Cent centimes, ça fait un euro."
+      "L18": "Cent centimes, ça fait un euro.",
+      "L19": "Le tout en haut, ses deux parties en dessous."
     },
     "tables": {
       "addition": "Toutes les additions de zéro à dix, dans une grille.",
       "multiplication": "Toutes les multiplications jusqu'à dix fois dix, dans une grille."
+    },
+    "problemes": {
+      "1": "Des histoires où l'on ajoute ou l'on enlève, jusqu'à dix.",
+      "2": "Les mêmes histoires, jusqu'à vingt.",
+      "3": "Tu ranges les objets dans des groupes égaux.",
+      "4": "Tu cherches ce qui manque dans l'histoire.",
+      "5": "Combien de plus, combien de moins ?",
+      "6": "Des histoires avec de grands nombres, jusqu'à cent.",
+      "7": "Des groupes et des partages, avec beaucoup d'objets.",
+      "8": "Tu cherches ce qu'il y avait au début.",
+      "9": "Une histoire, deux calculs, l'un après l'autre."
     }
   },
   "choixTable": "La table d'addition.",
@@ -314,7 +327,8 @@
     "lecons": "Les leçons.",
     "voiliers": "Les voiliers.",
     "multiplication": "La multiplication.",
-    "etal": "L'étal du pêcheur."
+    "etal": "L'étal du pêcheur.",
+    "problemes": "Les problèmes."
   },
   "choixLigne": {
     "1": "La corde de zéro à dix, avec presque tous les nombres.",
@@ -364,7 +378,8 @@
     "L15": "Pièces et billets.",
     "L16": "Payer juste.",
     "L17": "Rendre la monnaie.",
-    "L18": "Les centimes."
+    "L18": "Les centimes.",
+    "L19": "Le schéma en barres."
   },
   "rappelDouble": "{a} plus {b}, c'est {d} plus {d}, et encore 1.",
   "multFois": "{a} fois {b} ?",
@@ -377,9 +392,26 @@
   "multRangeesUn": "{a} rangées d'un poisson.",
   "multCombien": "Combien de poissons en tout ?",
   "multAideTrou": "Il faut {n} poissons en tout. Compte les places qui brillent !",
-  "multAstuce": {"2": "Fois deux, c'est le double.", "4": "Fois quatre, c'est le double du double.", "5": "Fois cinq, c'est la moitié de fois dix.", "10": "Fois dix, ce sont des dizaines."},
-  "erreurMult": {"M1": "Attention : fois, ce n'est pas plus. On compte les rangées."},
-  "choixMult": {"1": "Des rangées égales.", "2": "Le signe fois.", "3": "La table de deux.", "4": "La table de dix.", "5": "La table de cinq.", "6": "On tourne les rangées.", "7": "La table de trois.", "8": "La table de quatre.", "9": "Les tables mélangées."},
+  "multAstuce": {
+    "2": "Fois deux, c'est le double.",
+    "4": "Fois quatre, c'est le double du double.",
+    "5": "Fois cinq, c'est la moitié de fois dix.",
+    "10": "Fois dix, ce sont des dizaines."
+  },
+  "erreurMult": {
+    "M1": "Attention : fois, ce n'est pas plus. On compte les rangées."
+  },
+  "choixMult": {
+    "1": "Des rangées égales.",
+    "2": "Le signe fois.",
+    "3": "La table de deux.",
+    "4": "La table de dix.",
+    "5": "La table de cinq.",
+    "6": "On tourne les rangées.",
+    "7": "La table de trois.",
+    "8": "La table de quatre.",
+    "9": "Les tables mélangées."
+  },
   "choixTableMult": "La table de multiplication.",
   "tableCaseMult": "{a} fois {b}, {n}.",
   "calcPlus": "{a} plus {b} ?",
@@ -399,6 +431,7 @@
     "C1moins": "Quand on retire dix, seules les dizaines changent. On monte d'une rangée.",
     "C3": "Plus neuf, c'est plus dix, puis on recule d'un pas.",
     "C4": "{u} plus {b} dépasse dix : on passe à la dizaine suivante.",
+    "C4dizaine": "{u} plus {b}, ça fait dix : on arrive à la dizaine suivante.",
     "C5": "On ne peut pas retirer {b} de {u} : on casse une dizaine.",
     "autre": "Hmm, regardons ensemble."
   },
@@ -492,18 +525,66 @@
     "centimes": "Il y a des centimes ! Paie juste le prix, puis touche la coche."
   },
   "etalProduit": {
-    "sardines": { "achete": "Achète les sardines.", "coute": "Elles coûtent…", "nom": "Les sardines coûtent…" },
-    "maquereau": { "achete": "Achète le maquereau.", "coute": "Il coûte…", "nom": "Le maquereau coûte…" },
-    "bar": { "achete": "Achète le bar.", "coute": "Il coûte…", "nom": "Le bar coûte…" },
-    "dorade": { "achete": "Achète la dorade.", "coute": "Elle coûte…", "nom": "La dorade coûte…" },
-    "sole": { "achete": "Achète la sole.", "coute": "Elle coûte…", "nom": "La sole coûte…" },
-    "seiche": { "achete": "Achète la seiche.", "coute": "Elle coûte…", "nom": "La seiche coûte…" },
-    "crevettes": { "achete": "Achète les crevettes.", "coute": "Elles coûtent…", "nom": "Les crevettes coûtent…" },
-    "moules": { "achete": "Achète les moules.", "coute": "Elles coûtent…", "nom": "Les moules coûtent…" },
-    "huitres": { "achete": "Achète les huîtres.", "coute": "Elles coûtent…", "nom": "Les huîtres coûtent…" },
-    "saint-jacques": { "achete": "Achète les coquilles Saint-Jacques.", "coute": "Elles coûtent…", "nom": "Les coquilles Saint-Jacques coûtent…" },
-    "homard": { "achete": "Achète le homard.", "coute": "Il coûte…", "nom": "Le homard coûte…" },
-    "tourteau": { "achete": "Achète le tourteau.", "coute": "Il coûte…", "nom": "Le tourteau coûte…" }
+    "sardines": {
+      "achete": "Achète les sardines.",
+      "coute": "Elles coûtent…",
+      "nom": "Les sardines coûtent…"
+    },
+    "maquereau": {
+      "achete": "Achète le maquereau.",
+      "coute": "Il coûte…",
+      "nom": "Le maquereau coûte…"
+    },
+    "bar": {
+      "achete": "Achète le bar.",
+      "coute": "Il coûte…",
+      "nom": "Le bar coûte…"
+    },
+    "dorade": {
+      "achete": "Achète la dorade.",
+      "coute": "Elle coûte…",
+      "nom": "La dorade coûte…"
+    },
+    "sole": {
+      "achete": "Achète la sole.",
+      "coute": "Elle coûte…",
+      "nom": "La sole coûte…"
+    },
+    "seiche": {
+      "achete": "Achète la seiche.",
+      "coute": "Elle coûte…",
+      "nom": "La seiche coûte…"
+    },
+    "crevettes": {
+      "achete": "Achète les crevettes.",
+      "coute": "Elles coûtent…",
+      "nom": "Les crevettes coûtent…"
+    },
+    "moules": {
+      "achete": "Achète les moules.",
+      "coute": "Elles coûtent…",
+      "nom": "Les moules coûtent…"
+    },
+    "huitres": {
+      "achete": "Achète les huîtres.",
+      "coute": "Elles coûtent…",
+      "nom": "Les huîtres coûtent…"
+    },
+    "saint-jacques": {
+      "achete": "Achète les coquilles Saint-Jacques.",
+      "coute": "Elles coûtent…",
+      "nom": "Les coquilles Saint-Jacques coûtent…"
+    },
+    "homard": {
+      "achete": "Achète le homard.",
+      "coute": "Il coûte…",
+      "nom": "Le homard coûte…"
+    },
+    "tourteau": {
+      "achete": "Achète le tourteau.",
+      "coute": "Il coûte…",
+      "nom": "Le tourteau coûte…"
+    }
   },
   "etalPaire": "Achète les deux.",
   "etalPaieLesDeux": "Paie les deux ensemble.",
@@ -553,7 +634,10 @@
   "etalManque": "Il manque…",
   "etalComplete": "Complète, puis touche la coche.",
   "etalTrop": "Tu peux faire le compte juste. Je te rends ton argent.",
-  "etalSansElle": { "la": "Recommence sans elle, puis touche la coche.", "les": "Recommence sans elles, puis touche la coche." },
+  "etalSansElle": {
+    "la": "Recommence sans elle, puis touche la coche.",
+    "les": "Recommence sans elles, puis touche la coche."
+  },
   "etalEssaieEncore": "Essaie encore, puis touche la coche.",
   "etalGardeLa": "Celle-là, garde-la !",
   "etalGardeLes": "Celles-là, garde-les !",
@@ -628,5 +712,58 @@
     "diamantQuandUne": "Elle t'offrira une créature légendaire, quand tu auras toutes les créatures {zone}.",
     "diamantQuand": "Elles t'offriront les créatures légendaires, quand tu auras toutes les créatures {zone}.",
     "diamantTout": "Tu as déjà toutes les créatures légendaires !"
+  },
+  "choixProblemes": {
+    "1": "Ajouter ou enlever.",
+    "2": "Jusqu'à vingt.",
+    "3": "Des groupes et des partages.",
+    "4": "Ce qui manque.",
+    "5": "De plus, de moins.",
+    "6": "Jusqu'à cent.",
+    "7": "Groupes et partages, plus grands.",
+    "8": "Le début de l'histoire.",
+    "9": "Deux étapes."
+  },
+  "_problemes": "Lot « Problèmes » (docs/LOTS.md, fiche 20 ; modules/problemes/screen.js) : l'entrée de l'exercice (notionProblemes) et de l'étape fixe (problemeDuJour) ; la consigne, dite la première fois (problemeConsigne, problemeReecouter) ; les aides (problemeAide : le schéma en barres, la comparaison, les deux étapes, les groupes ; problemeMettre : le partage manipulé, selon le contenant) ; les erreurs repérées (erreurProbleme, dites avant l'aide ; P1 seulement pour une comparaison). Les phrases de chaque énoncé (l'histoire, la question, la correction) sont dans problemes.json.",
+  "notionProblemes": [
+    "Maintenant, les problèmes !",
+    "Au tour des problèmes ! Écoute bien l'histoire."
+  ],
+  "problemeDuJour": [
+    "Le problème du jour !",
+    "Et maintenant, le problème du jour !"
+  ],
+  "problemeConsigne": "Écoute l'histoire, puis tape ta réponse.",
+  "problemeReecouter": "Touche-moi pour réécouter l'histoire.",
+  "problemeAide": {
+    "regarde": "Regarde le schéma.",
+    "tout": "La grande barre, c'est le tout.",
+    "parties": "Les petites barres, ce sont les parties.",
+    "ajoute": "On connaît les deux parties : on les ajoute.",
+    "enleve": "On connaît le tout et une partie : on enlève la partie.",
+    "grand": "La barre du haut, c'est le plus grand.",
+    "ecart": "Le bout qui dépasse, c'est l'écart.",
+    "cherche": "On cherche le point d'interrogation.",
+    "etape1": "D'abord, la première partie de l'histoire.",
+    "etape2": "Puis, la suite de l'histoire.",
+    "groupes": "Chaque groupe en a autant.",
+    "compteGroupes": "Compte les groupes.",
+    "compteObjets": "Compte les objets.",
+    "faisGroupes": "Fais des groupes avec les objets."
+  },
+  "problemeMettre": {
+    "sachet": "Mets-en autant dans chaque sachet.",
+    "assiette": "Mets-en autant dans chaque assiette.",
+    "boite": "Mets-en autant dans chaque boîte.",
+    "panier": "Mets-en autant dans chaque panier.",
+    "vase": "Mets-en autant dans chaque vase.",
+    "anneau": "Mets-en autant dans chaque cercle."
+  },
+  "erreurProbleme": {
+    "P1comparaison": "Attention : « de plus » ne veut pas dire qu'il faut ajouter.",
+    "P2": "Tu as redit un nombre de l'histoire. Il faut calculer.",
+    "P3": "Le bon calcul, mais une petite erreur de compte.",
+    "P4": "C'est la réponse de la première étape. Il en reste une.",
+    "P1comparaisonMoins": "Attention : « de moins » ne veut pas dire qu'il faut enlever."
   }
 }

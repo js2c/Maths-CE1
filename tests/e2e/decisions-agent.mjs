@@ -27,6 +27,8 @@
 // navigateur neuf : à la vitesse réelle de la voix il durerait plusieurs fois plus longtemps, et installer l'application (140
 // Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie. La vraie voix, le son et l'application
 // installée sont éprouvés sur le banc Android (journee.mjs, enfant.mjs --android, installation.mjs, veille.mjs).)
+// (lot « Problèmes » : sans le problème du jour, `sans=probleme` : il n'est pas l'objet de ce parcours ; tests/e2e/problemes.mjs, la journée
+// d'usage et l'enfant imprévisible le jouent)
 import { accueilReel, chromium, finReelle } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -44,7 +46,7 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? 
 const errors = [];
 const check = (ok, msg) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${msg}`); if (!ok) process.exitCode = 1; };
 const VUES = args.includes("--vite") ? [["1280", { width: 1280, height: 800 }, 1]] : [["1280", { width: 1280, height: 800 }, 1], ["1920", { width: 1920, height: 1200 }, 1], ["tablette", { width: 1138, height: 711 }, 2.25]];
-const Q = "?nosw&voix=rapide";
+const Q = "?nosw&voix=rapide&sans=probleme";
 const DAY = 86400000;
 
 // une page neuve ; `prep(store)` (dans la page) pose un état, puis la page est rechargée avec `q`
@@ -97,7 +99,7 @@ async function jusquaLaFin(page) {
 const owned = (list) => ({ id: "cartes", cartes: Object.fromEntries(list.map((id) => [id, { n: 1, premiere: 1, brillante: false }])) });
 const lagon = cartes.cartes.filter((c) => c.zone === "lagon" && c.rarete !== "legendaire").map((c) => c.id);
 const prepFin = async (s, { lagon, base }) => { await s.put("recompenses", { id: "cartes", cartes: Object.fromEntries(lagon.slice(0, 3).map((id) => [id, { n: 1, premiere: 1, brillante: false }])) }); await s.put("recompenses", { id: "etoiles", total: 120, cumul: 220, dorees: 0, doreesDepensees: 0, arcEnCiel: 0, arcDepensees: 0, arcLibre: 0, coquillages: 0, coquillagesDores: 0 }); await s.put("recompenses", { id: "quota", date: base, cartes: 3 }); };
-const QFIN = `${Q}&sansLecon&sans=echauffement&questions=2&guides=0&module=1`;
+const QFIN = `${Q}&sansLecon&sans=echauffement,probleme&questions=2&guides=0&module=1`;
 if (faire(2)) {
   for (const vue of VUES) {
     const { context, page } = await fresh({ q: QFIN, vue, prep: prepFin, arg: { lagon, base: ilYaSemaines(1) }, fin: true, reel: false });
@@ -127,7 +129,7 @@ if (faire(2)) {
 
 // ---------------------------------------------------------------- 3. « continuer » en deux touchers
 // une séance d'additions en cours (échauffement passé), puis la maison : l'accueil en pause
-const QPAUSE = `${Q}&sansLecon&sans=echauffement&guides=0&module=2&cran=conseille`;
+const QPAUSE = `${Q}&sansLecon&sans=echauffement,probleme&guides=0&module=2&cran=conseille`;
 async function enPause(vue) {
   const { context, page } = await fresh({ q: QPAUSE, vue });
   // (l'accueil réel, en deux touchers : « jouer » deux fois)
@@ -318,7 +320,7 @@ if (faire(4)) {
     const un = vue === VUES[0];
     // a. l'aide de la tortue à l'échauffement (famille 1) : la bulle n'est jamais sur l'égalité de l'ardoise
     {
-      const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=notion,defi&cran=conseille`, vue, reel: false });
+      const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=notion,defi,probleme&cran=conseille`, vue, reel: false });
       await tap(page, ".play"); await questionPrete(page);
       // (une question de la famille 1, dont l'aide est la tortue : on passe les autres)
       for (let i = 0; i < 14 && !(await page.evaluate(() => !window.__app.facts.q.base && window.__app.facts.aidKind(window.__app.facts.q) === "ligne")); i++) { await repondreJuste(page); await questionPrete(page); }
@@ -334,7 +336,7 @@ if (faire(4)) {
     }
     // b. le calcul rapide guidé (niveau 4) : le chemin n'est jamais couvert
     {
-      const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=echauffement&choix=3:4&cran=conseille`, vue, reel: false });
+      const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=echauffement,probleme&choix=3:4&cran=conseille`, vue, reel: false });
       await tap(page, ".play");
       await attendre(page, () => (window.__app.aidBoard?.zones ?? []).length > 0, null, 60000);
       const r = await releverBulle(page, 30, "() => []", () => shot(page, vue, "4b-calcul-chemin"));
@@ -354,7 +356,7 @@ if (faire(4)) {
     }
     // d. l'étal (niveau 3) : l'article allumé et son ardoise ne sont jamais couverts
     {
-      const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=echauffement&choix=6:3&cran=conseille`, vue, reel: false });
+      const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=echauffement,probleme&choix=6:3&cran=conseille`, vue, reel: false });
       await tap(page, ".play");
       await attendre(page, () => !!window.__app.etal?.api && (window.__app.etal.api.allumes?.() ?? []).length > 0, null, 90000);
       const r = await releverBulle(page, 24, "() => window.__app.etal?.api?.allumes?.() ?? []", () => shot(page, vue, "4d-etal-article-allume"));
@@ -370,7 +372,7 @@ if (faire(8)) {
     const un = vue === VUES[0];
     // a. l'étal par temps d'orage : le compteur sur une plaque claire ; la bulle à droite de la fenêtre, jamais sous le rebord
     {
-      const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=echauffement&choix=6:3&cran=conseille&meteo=orage`, vue, reel: false });
+      const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=echauffement,probleme&choix=6:3&cran=conseille&meteo=orage`, vue, reel: false });
       await page.evaluate(() => window.__app.store.put("recompenses", { id: "etoiles", total: 234, cumul: 334, dorees: 0, doreesDepensees: 0, arcEnCiel: 0, arcDepensees: 0, arcLibre: 0, coquillages: 0, coquillagesDores: 0 }));
       await page.reload(); await page.waitForFunction(() => window.__ready !== undefined); await espion(page);
       await tap(page, ".play");
@@ -388,7 +390,7 @@ if (faire(8)) {
     }
     // b. par beau temps : pas de plaque
     if (un) {
-      const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=echauffement&choix=6:3&cran=conseille&meteo=beau`, vue, reel: false });
+      const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=echauffement,probleme&choix=6:3&cran=conseille&meteo=beau`, vue, reel: false });
       await tap(page, ".play"); await attendre(page, () => !!window.__app.etal?.attend, null, 90000); await page.waitForTimeout(1200);
       check(await page.evaluate(() => !window.__app.hud.sombre), "8. étal, beau temps : le compteur sans plaque");
       await context.close();
@@ -396,7 +398,7 @@ if (faire(8)) {
     // c. l'étoile arc-en-ciel à la récompense : un niveau franchi pendant la séance (la ligne, voie rapide) ; (lot « Réserves d'étoiles et
     // étoiles arc-en-ciel », maquette validée le 2 novembre 2026 : elle vole jusqu'à sa réserve, à côté du compteur, au lieu de l'album)
     {
-      const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=echauffement,defi&questions=8&guides=0&module=1`, vue, reel: false });
+      const { context, page } = await fresh({ q: `${Q}&sansLecon&sans=echauffement,defi,probleme&questions=8&guides=0&module=1`, vue, reel: false });
       await page.evaluate(() => { window.__arcAlbum = 0; new MutationObserver(() => { if (document.querySelector(".arc-album")) window.__arcAlbum++; }).observe(document.querySelector("#ui"), { childList: true, subtree: true }); });
       await tap(page, ".play");
       const vu = attendre(page, () => !!document.querySelector(".etoile-vol"), null, 240000);
@@ -447,7 +449,7 @@ async function reprendre(page, nom, { capture = null, vue = VUES[0] } = {}) {
 if (faire(1)) {
   // a. pendant l'échauffement ; puis la séance jusqu'au bout : le bilan compte toute la séance, la reprise est notée
   if (cas("a")) {
-    const { context, page } = await fresh({ q: `${Q}&sansLecon&guides=0&module=2&questions=6&cran=dur&sans=defi`, reel: false });
+    const { context, page } = await fresh({ q: `${Q}&sansLecon&guides=0&module=2&questions=6&cran=dur&sans=defi,probleme`, reel: false });
     await tap(page, ".play"); await questionPrete(page); await repondreJuste(page); await questionPrete(page); await repondreJuste(page); await questionPrete(page);
     const { avant } = await reprendre(page, "pendant l'échauffement", { capture: "1a-reprise-accueil-continuer" });
     check(avant.etape === "echauffement", "1. l'étape reprise est l'échauffement");
@@ -470,7 +472,7 @@ if (faire(1)) {
   }
   // b. pendant la leçon d'entrée : la leçon n'a pas été vue, elle est rejouée
   if (cas("b")) {
-    const { context, page } = await fresh({ q: `${Q}&guides=0&module=1&cran=conseille&sans=echauffement,defi`, reel: false });
+    const { context, page } = await fresh({ q: `${Q}&guides=0&module=1&cran=conseille&sans=echauffement,defi,probleme`, reel: false });
     await tap(page, ".play");
     await attendre(page, () => !!window.__app.lessons.keys && window.__app.lessons.p >= 1, null, 60000);
     await reprendre(page, "pendant une leçon");
@@ -485,7 +487,7 @@ if (faire(1)) {
   }
   // c. pendant une correction (additions) ; d. pendant le vol des étoiles
   if (cas("c")) {
-    const { context, page } = await fresh({ q: `${Q}&sansLecon&guides=0&module=2&cran=conseille&sans=echauffement,defi`, reel: false });
+    const { context, page } = await fresh({ q: `${Q}&sansLecon&guides=0&module=2&cran=conseille&sans=echauffement,defi,probleme`, reel: false });
     await tap(page, ".play"); await questionPrete(page);
     await page.evaluate(() => { const f = window.__app.facts; f.type("9", document.querySelector('.key[data-key="9"]')); f.type("9", document.querySelector('.key[data-key="9"]')); f.submit(); });
     await page.waitForTimeout(500);
@@ -507,7 +509,7 @@ if (faire(1)) {
   // e. pendant le défi
   if (cas("e")) {
     const prepDefi = async (s) => { const now = Date.now(), DAY = 86400000; for (let i = 0; i < 5; i++) await s.add("seances", { debut: now - (10 - i) * DAY, fin: now - (10 - i) * DAY + 600000, terminee: true, module: 1 + (i % 2), questions: 30, justes: 25, etapes: [] }); for (const [i, k] of ["1+1", "2+1", "3+1", "2+2", "4+1", "5+1", "3+3", "6+1", "1+2", "4+4"].entries()) { const [a, b] = k.split("+").map(Number); await s.put("faits", { fait: k, a, b, boite: 3 + (i % 3), prochain: now + 9 * DAY, historique: [{ t: now - DAY, juste: true, ms: 2000 }], introduit: now - 20 * DAY }); } };
-    const { context, page } = await fresh({ q: `${Q}&cran=conseille&sans=echauffement,notion`, prep: prepDefi, reel: false });
+    const { context, page } = await fresh({ q: `${Q}&cran=conseille&sans=echauffement,notion,probleme`, prep: prepDefi, reel: false });
     await tap(page, ".play");
     await attendre(page, () => !!window.__app.challenge && !!window.__app.facts?.resolve, null, 60000); await repondreJuste(page);
     await reprendre(page, "pendant le défi");
@@ -516,7 +518,7 @@ if (faire(1)) {
   }
   // f. pendant une pause ; g. deux rechargements de suite ; puis un rechargement après la reprise
   if (cas("f")) {
-    const { context, page } = await fresh({ q: `${Q}&sansLecon&guides=0&module=2&cran=conseille&sans=echauffement,defi`, reel: false });
+    const { context, page } = await fresh({ q: `${Q}&sansLecon&guides=0&module=2&cran=conseille&sans=echauffement,defi,probleme`, reel: false });
     await tap(page, ".play"); await questionPrete(page); await repondreJuste(page); await questionPrete(page);
     await tap(page, ".session-home"); await page.waitForSelector(".keep.play", { timeout: 10000 });
     const id = (await etatSeance1(page)).id;
@@ -534,7 +536,7 @@ if (faire(1)) {
   }
   // h. après minuit : la séance d'hier soir reste interrompue
   if (cas("h")) {
-    const { context, page } = await fresh({ q: `${Q}&sansLecon&guides=0&module=2&cran=conseille&sans=echauffement,defi`, reel: false });
+    const { context, page } = await fresh({ q: `${Q}&sansLecon&guides=0&module=2&cran=conseille&sans=echauffement,defi,probleme`, reel: false });
     await tap(page, ".play"); await questionPrete(page); await repondreJuste(page);
     const id = (await etatSeance1(page)).id;
     await page.evaluate(async (id) => { const s = window.__app.store, r = await s.get("seances", id), h = new Date(); h.setHours(0, 0, 0, 0); r.debut = h.getTime() - 10 * 60000; await s.put("seances", r); }, id);

@@ -19,7 +19,10 @@ export const KEEP = {
   unitesPlus: (a, op, b) => units(a) >= 1 && units(a) + b <= 9,
   unitesMoins: (a, op, b) => units(a) - b >= 0 && units(a) > b - 1 && a - b >= 10,
   plus9: (a, op, b) => units(a) !== 0 && a + b <= 99,
-  passerPlus: (a, op, b) => units(a) + b >= 11 && a + b <= 99,
+  // (lot « Correctifs de la confrontation 2 », écart 6.12, décision du parent du 3 novembre 2026 : les calculs qui tombent sur la
+  // dizaine supérieure, 24 + 6, 17 + 3, 45 + 5, entrent au niveau 7 : c'est le premier pont du passage de la dizaine, aller
+  // jusqu'à la dizaine, que la leçon L9 montre ; avant, aucun niveau ne les avait)
+  passerPlus: (a, op, b) => units(a) >= 1 && units(a) + b >= 10 && a + b <= 99,
   deuxNombres: (a, op, b) => units(a) + units(b) <= 9 && a + b <= 99 && tens(a) >= 10,
   passerMoins: (a, op, b) => units(a) >= 1 && units(a) < b && a - b >= 10,
 };
@@ -36,7 +39,7 @@ export function chemin(q) {
   switch (q.type) {
     case "dizaines": for (let i = 0; i < b / 10; i++) step(op, 10); break;
     case "plus9": step("+", 10); step("-", 1); break;
-    case "passerPlus": step("+", 10 - units(a)); step("+", b - (10 - units(a))); break;
+    case "passerPlus": step("+", 10 - units(a)); if (b > 10 - units(a)) step("+", b - (10 - units(a))); break; // (24 + 6 : un seul pont, jusqu'à 30)
     case "passerMoins": step("-", units(a)); step("-", b - units(a)); break;
     // (lot 3, étape 5 : les dizaines d'un seul pont, puis les unités : 23 + 34 → + 30 → 53 → + 4 → 57, comme 23 + 10 + 4)
     case "deuxNombres": step("+", tens(b)); if (units(b)) step("+", units(b)); break;

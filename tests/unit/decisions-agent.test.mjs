@@ -203,3 +203,48 @@ test("relecture, R3 : sans aucun autre fait pour espacer, le retourné est posé
   assert.equal(qs.length, 18, `les 9 amis de 10, deux fois chacun (${qs.map((q) => q.fait).join(" ")})`);
   assert.ok(reps(qs.map((q) => q.fait)).ecart >= 4, "le même fait reste à 4 questions d'écart");
 });
+
+// (lot « Correctifs de la confrontation 2 », écarts 2.6 et 6.10, décisions du parent du 3 novembre 2026)
+test("écart 2.6 : la famille épuisée pendant l'étape (à tout moment, réglage choisi par la simulation du 3 novembre) : la notion du jour finit sur des révisions des autres familles, dus d'abord, 4 questions d'écart", async () => {
+  assert.equal(m2.notion.revisionsFamilleEpuisee, true);
+  assert.equal(m2.notion.revisionsAvantPart, 1, "à tout moment de l'étape (essayé aussi : avant la moitié)");
+  const store = await sues(), m = await new Module2Runner({ store, content: m2, rnd: rng(5), seance: 1, clock: () => NOW + 30 * 86400e3, cran: () => "conseille", choix: 3 }).load(), qs = [];
+  m.avantMoitie = () => true;
+  for (let i = 0; i < 80; i++) { const x = m.next(); if (!x) break; qs.push(x.q); await m.record({ q: x.q, value: expected(x.q), ok: true, ms: 2000, listens: 1 }, x.cfg); }
+  assert.ok(m.revisions, "les révisions ont commencé");
+  const rev = qs.slice(m.revisionsDes);
+  assert.ok(rev.length >= 10, `des révisions après la famille (${rev.length})`);
+  assert.ok(rev.every((q) => !m.inFamily(q.fait)), "des faits des autres familles");
+  assert.ok(rev.every((q) => q.nouveau !== true), "des faits déjà vus, jamais un fait nouveau");
+  const e = reps(qs.map((q) => q.fait));
+  assert.ok(e.max <= m2.repetition.parBlocMax && e.ecart >= m2.repetition.ecartMin, `au plus ${m2.repetition.parBlocMax} passages, ${m2.repetition.ecartMin} questions d'écart (${JSON.stringify(e)})`);
+  // épuisée après la part du temps permise (avec une part plus petite que 1, comme 0,5 essayé) : elle s'arrête, comme avant
+  const m3 = await new Module2Runner({ store: await sues(), content: m2, rnd: rng(5), seance: 1, clock: () => NOW, cran: () => "conseille", choix: 3 }).load(); let n3 = 0;
+  m3.avantMoitie = () => false;
+  for (let i = 0; i < 80; i++) { const x = m3.next(); if (!x) break; n3++; await m3.record({ q: x.q, value: expected(x.q), ok: true, ms: 2000, listens: 1 }, x.cfg); }
+  assert.ok(!m3.revisions && n3 < rev.length + m.revisionsDes, `après la moitié : arrêt (${n3} questions)`);
+});
+
+test("écart 2.6 : les révisions prennent les faits dus en premier (révision espacée)", async () => {
+  const store = await sues(), all = await store.all("faits");
+  // un fait de la famille 1 très en retard, les autres pas encore dus
+  const cible = all.find((f) => !["3+7", "7+3"].includes(f.fait)); for (const f of all) await store.put("faits", { ...f, prochain: f.fait === cible.fait ? NOW - 5 * 86400e3 : NOW + 9 * 86400e3 });
+  const m = await new Module2Runner({ store, content: m2, rnd: rng(5), seance: 1, clock: () => NOW, cran: () => "conseille", choix: 3 }).load();
+  m.revisions = true;
+  assert.equal(m.pickRevision().fait, cible.fait);
+});
+
+test("écart 6.10 : l'exception à la limite des faits nouveaux plafonnée à 10 faits nouveaux par séance, échauffement compris (réglage choisi par la simulation du 3 novembre)", async () => {
+  assert.equal(m2.notion.nouveauxMaxException, 10);
+  const m = await new Module2Runner({ store: await open(), content: m2, rnd: rng(2), seance: 1, clock: () => NOW, cran: () => "conseille", dejaNouveaux: 10 }).load();
+  assert.ok(m.exceptionPleine); assert.equal(m.pickOverflow(), null);
+  const m4 = await new Module2Runner({ store: await open(), content: m2, rnd: rng(2), seance: 1, clock: () => NOW, cran: () => "conseille", dejaNouveaux: 9 }).load();
+  assert.ok(!m4.exceptionPleine);
+});
+
+test("écarts 2.6 et 6.10 : la part du temps de l'étape vient du contenu (1 : à tout moment) ; le plafond atteint, la famille est épuisée et finit sur des révisions comme en 2.6", async () => {
+  const store = await sues(), m = await new Module2Runner({ store, content: m2, rnd: rng(5), seance: 1, clock: () => NOW + 30 * 86400e3, cran: () => "conseille", dejaNouveaux: m2.notion.nouveauxMaxException }).load();
+  const parts = []; m.avantMoitie = (p) => { parts.push(p); return p >= 1; }; // une session à la fin de l'étape : seule la part 1 reste vraie
+  assert.ok(m.exceptionPleine && m.revisionsPermises, "révisions permises jusqu'à la fin de l'étape");
+  assert.deepEqual([...new Set(parts)], [m2.notion.revisionsAvantPart]);
+});

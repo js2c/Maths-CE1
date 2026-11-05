@@ -15,6 +15,8 @@
 // (140 Mo, environ une minute) pour chaque cas n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
 // rien à ce qu'il vérifie. L'application installée, relancée, gelée, hors ligne, est éprouvée sur le banc Android
 // (installation.mjs, journee.mjs).)
+// (lot « Problèmes » : sans le problème du jour, `sans=probleme` : il n'est pas l'objet de ce parcours ; tests/e2e/problemes.mjs, la journée
+// d'usage et l'enfant imprévisible le jouent)
 import { chromium, voixPermise, demarrageTouche } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -22,11 +24,11 @@ import { serve } from "../serve.mjs";
 import { recifOuvert } from "./recif-commun.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
-const OUT = resolve(opt("--out", "tests/e2e/out/mascotte")), SEUL = opt("--seul", null);
+const OUT = resolve(opt("--out", "tests/e2e/out/mascotte")), SEUL = opt("--seul", null), JUSQUA = Number(opt("--jusqua", 99)); // (--jusqua 2 : les parties 1 et 2 seulement ; recherche d'un échec isolé, docs/IDEES.md)
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium", args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
 const fail = [], check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
-const BASE = "?nosw&son=non&sansReprise"; // (sansReprise : main.js)
+const BASE = "?nosw&sans=probleme&son=non&sansReprise"; // (sansReprise : main.js)
 const PETITES = ["idle-approbation", "idle-sourire", "idle-amuse"], RELANCE = ["idle-sourcils", "idle-curiosite"];
 const resultat = { date: new Date().toISOString(), ecrans: [], journal: {} };
 
@@ -57,7 +59,13 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   const pave = () => until(() => { const f = window.__app.facts; return f?.q && f.resolve && !f.locked; }, null, 60000);
   const repondre = async (juste) => {
     const q = await page.evaluate(() => { const s = window.__app.screen.q; return { answer: s.answer, wrong: s.choices?.find((c) => c.value !== s.answer)?.value ?? null }; });
-    await page.tap(`.answer[data-value="${juste ? q.answer : q.wrong}"]`, { force: true });
+    const v = juste ? q.answer : q.wrong, diag = await page.evaluate((v) => [...document.querySelectorAll(`.answer[data-value="${v}"]`)].map((e) => ({ vis: getComputedStyle(e).visibility, op: getComputedStyle(e).opacity, pe: getComputedStyle(e).pointerEvents, cls: e.className, r: e.getBoundingClientRect().x | 0 })), v);
+    const cpt = () => page.evaluate(() => { const m = window.__app.ocean.mascotte; return { serie: m.serie ?? m.c?.serie, erreurs: m.erreurs ?? m.c?.erreurs, revient: !!window.__app.screen.q?.revient, guide: !!window.__app.screen.q?.guide }; });
+    if (process.env.DIAG) console.log(`     DIAG ${juste ? "juste" : "faux"} ${v} ${JSON.stringify(diag)} locked=${await page.evaluate(() => window.__app.screen.locked)} avant ${JSON.stringify(await cpt())}`);
+    const q0 = await page.evaluate(() => window.__app.screen.q);
+    const sous = process.env.DIAG ? await page.evaluate((v) => { const e = document.querySelector(`.answer[data-value="${v}"]`), r = e.getBoundingClientRect(), t = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return t === e || e.contains(t) ? "la bulle" : `${t?.tagName}.${String(t?.className).slice(0, 40)}#${t?.id}`; }, v) : null;
+    await page.tap(`.answer[data-value="${v}"]`, { force: true });
+    if (process.env.DIAG) { await page.waitForTimeout(900); const pris = await page.evaluate((q0) => { const s = window.__app.screen; return !(s.q && s.resolve && !s.locked && JSON.stringify(s.q) === JSON.stringify(q0)); }, q0); if (!pris) console.log(`     DIAG NON PRIS : sous le doigt ${sous} ; ${JSON.stringify(await etat())}`); console.log(`     DIAG après ${JSON.stringify(await cpt())}`); }
   };
   const ROW = "&cran=conseille&sans=echauffement,defi&sansLecon&guides=0";
 
@@ -91,8 +99,11 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   check(await clip(["wrong"]), `${W} première erreur : déception bienveillante`);
   await page.waitForTimeout(900); await shot("12-deception", "la correction");
   // deux bonnes réponses de plus : la troisième de suite est une grande joie
-  for (let k = 0; k < 3; k++) { await ligne(); await page.waitForTimeout(200); await repondre(true); if (k < 2) await page.waitForTimeout(400); }
-  check(await clip(["success"]), `${W} trois réussites de suite : grande joie`);
+  // (5 novembre 2026 : la troisième réponse est touchée pendant la consigne, ce que fait souvent l'enfant ; la grande joie demandée pendant la
+  // parole était perdue quand la parole finissait, l'échec isolé de ce contrôle ; engine/mascotte.js, silence())
+  for (let k = 0; k < 3; k++) { await ligne(); if (k === 2) await until(() => window.__app.voice.speaking, null, 5000); else await page.waitForTimeout(200); await repondre(true); if (k < 2) await page.waitForTimeout(400); }
+  // (recherche d'un échec isolé, 4 novembre 2026 : en cas d'échec, le journal de la mascotte et ce qui a été répondu)
+  { const ok = await clip(["success"]); check(ok, `${W} trois réussites de suite : grande joie`); if (!ok) console.log(`     journal de la mascotte : ${JSON.stringify(await page.evaluate(() => window.__journalMascotte.slice(-70)))} ; ${JSON.stringify((await etat()).m)}`); }
   await page.waitForTimeout(700); await shot("13-grande-joie");
   // l'encouragement : une seconde erreur sans nouvelle consigne (protection du sélecteur, défi) : demandé directement ici
   await ligne(); await repondre(false); const deçue = await clip(["wrong"]);
@@ -100,6 +111,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   check(await clip(["encourage"], 14000), `${W} erreur suivante : encouragement (la déception avant : ${deçue ? "oui" : "non"} ; ${JSON.stringify((await etat()).m)})`);
   await page.waitForTimeout(800); await shot("14-encouragement");
 
+  if (JUSQUA < 3) { await context.close(); continue; }
   // ---- 3. la relance : 12 s sans toucher, un geste ; 25 s, la phrase ; puis plus rien
   await ligne();
   await page.evaluate(() => { window.__relance = []; const m = window.__app.ocean.mascotte; m.activite(); const t0 = performance.now(); const id = setInterval(() => { const c = m.etat().clip; if (window.__relance.at(-1)?.c !== c) window.__relance.push({ t: Math.round((performance.now() - t0) / 100) / 10, c }); }, 100); window.__relanceStop = () => clearInterval(id); });
@@ -185,7 +197,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
 }
 
 // ---- une séance simulée suivie de bout en bout : le journal des raccords (combien de fondus forcés)
-{
+if (JUSQUA >= 99) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true }); await demarrageTouche(context);
   const page = await context.newPage();
   await page.goto(url + BASE + "&cran=conseille&sans=defi&sansLecon&questions=10&faits=8");

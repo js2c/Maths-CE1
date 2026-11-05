@@ -290,7 +290,9 @@ function creerMascotte({ canvas, base = 'v/', embed = null, journal = () => {}, 
     silence() {
       this.parle = false;
       L.cancel('parole');                                       // une parole très courte pendant une réaction : rien à jouer
-      if (L.cur && L.cur.tag === 'parole') {
+      // (5 novembre 2026, l'échec isolé du parcours mascotte : une réaction demandée pendant la parole, la grande joie d'une réponse
+      // touchée pendant la consigne, attend un raccord ; le clip d'attente de la fin de la parole la remplaçait, et elle était perdue)
+      if (L.cur && L.cur.tag === 'parole' && !(L.pending && L.pending.tag === 'reaction')) {
         const clip = this.choisirAttente();
         L.request({ clip, tag: 'attente', doux: true, log: `fin de la parole → ${clip}`, onStart: () => this.noter(clip) });
       }

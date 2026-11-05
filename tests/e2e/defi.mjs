@@ -10,6 +10,8 @@
 // Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
 // rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
 // enfant.mjs --android, installation.mjs, veille.mjs).)
+// (lot « Problèmes » : sans le problème du jour, `sans=probleme` : il n'est pas l'objet de ce parcours ; tests/e2e/problemes.mjs, la journée
+// d'usage et l'enfant imprévisible le jouent)
 import { chromium } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -26,7 +28,7 @@ async function run(n, { record = null, answers = 12, wrongAt = 3 } = {}) {
   const page = await (await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true })).newPage();
   const errors = []; page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
   const shot = (k) => page.screenshot({ path: join(OUT, `${n}-${k}.png`) });
-  await page.goto(url + "?nosw&voix=rapide&son=non&cran=conseille&sans=echauffement,notion"); await page.waitForFunction(() => window.__ready !== undefined);
+  await page.goto(url + "?nosw&voix=rapide&son=non&cran=conseille&sans=echauffement,notion,probleme"); await page.waitForFunction(() => window.__ready !== undefined);
   await page.evaluate(async ({ record, DAY }) => {
     const s = window.__app.store, now = Date.now(); await s.setSetting("mascotte", "Pili"); window.__app.mascotte = "Pili";
     for (let i = 0; i < 5; i++) await s.add("seances", { debut: now - (10 - i) * DAY, fin: now - (10 - i) * DAY + 600000, terminee: true, module: 1 + (i % 2), questions: 30, justes: 25, etapes: [] });

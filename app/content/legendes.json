@@ -41,7 +41,8 @@
     "cranLibre.tresdur": "Très dur. Les questions les plus difficiles.",
     "voiliers": "Ranger un nombre entre des bouées, jusqu'à 1 000.",
     "multiplication": "Les tables de multiplication, des rangées égales de poissons.",
-    "etal": "L'étal du pêcheur, payer avec des pièces et des billets."
+    "etal": "L'étal du pêcheur, payer avec des pièces et des billets.",
+    "problemes": "Les problèmes, des histoires de la vie courante, lues à voix haute."
   },
   "titres": { "travail": "Ce qui est travaillé", "exemple": "Exemple" },
   "ligne": [
@@ -119,6 +120,17 @@
     { "n": 9, "travail": "Les centimes, prix ronds ou en 50 centimes, écrits avec une virgule.", "exemple": "3,50 = 2 + 1 + 0,50" },
     { "n": 10, "travail": "Les centimes, prix en 10, 20 et 50 centimes.", "exemple": "2,70 = 2 + 0,50 + 0,20" }
   ],
+  "problemes": [
+    { "n": 1, "travail": "Ajouter ou enlever jusqu'à 10, le tout ou la fin inconnus.", "exemple": "4 pommes et 3 poires, combien de fruits ?" },
+    { "n": 2, "travail": "Ajouter ou enlever jusqu'à 20, le niveau de départ.", "exemple": "12 parts de gâteau, 8 mangées, combien en reste-t-il ?" },
+    { "n": 3, "travail": "Groupes égaux et partage avec de petits nombres, l'enfant range les objets.", "exemple": "6 fraises pour 2, combien chacun ?" },
+    { "n": 4, "travail": "Chercher une partie ou le changement, jusqu'à 20.", "exemple": "9 crayons dont 4 rouges, combien de bleus ?" },
+    { "n": 5, "travail": "Comparer, de plus et de moins, jusqu'à 20.", "exemple": "7 billes contre 4, combien de plus ?" },
+    { "n": 6, "travail": "Ajouter, enlever, chercher une partie, jusqu'à 100.", "exemple": "35 enfants, 20 à la cantine, combien chez eux ?" },
+    { "n": 7, "travail": "Groupes égaux et partage, jusqu'à 50.", "exemple": "4 cagettes de 5 poissons, combien en tout ?" },
+    { "n": 8, "travail": "Le début inconnu, et comparer au-delà de 20.", "exemple": "Il en perd 6, il en reste 12, combien au début ?" },
+    { "n": 9, "travail": "Deux étapes, deux calculs l'un après l'autre.", "exemple": "6 billes, 5 de plus, puis 3 perdues" }
+  ],
   "lecons": [
     { "n": "L1", "travail": "On compte les sauts, pas les bouées.", "exemple": "De 0 à 3, 3 sauts" },
     { "n": "L2", "travail": "Un saut peut valoir dix.", "exemple": "10, 20, 30" },
@@ -138,6 +150,7 @@
     { "n": "L16", "travail": "Payer juste, du plus gros au plus petit.", "exemple": "17, 10, 15, 16, 17" },
     { "n": "L17", "travail": "Rendre la monnaie, on compte à partir du prix jusqu'à ce qu'on a donné.", "exemple": "de 13 à 20, 7" },
     { "n": "L18", "travail": "Les centimes, 100 centimes font 1 euro, 3,50 c'est 3 euros et 50 centimes.", "exemple": "0,50 + 0,50 = 1" },
+    { "n": "L19", "travail": "Le schéma en barres, le tout et ses deux parties, on ajoute ou on enlève.", "exemple": "4 + 3 = 7, 9 - 4 = 5" },
     { "n": "+", "travail": "La table d'addition, toucher une case dit et montre le calcul.", "exemple": "7 + 5 = 12" },
     { "n": "×", "travail": "La table de multiplication, toucher une case dit et montre le calcul.", "exemple": "3 × 4 = 12" }
   ]

@@ -1,0 +1,29 @@
+{
+ "_doc": "Généré par art/tools/export-problemes.mjs : les lieux des problèmes qui ont leur illustration (app/assets/problemes/<lieu>@1x.webp et @2x.webp). Les autres lieux ont l'image de remplacement neutre.",
+ "lieux": [
+  "etal"
+ ],
+ "manquent": [
+  "cuisine",
+  "chambre",
+  "jardin",
+  "parc",
+  "classe",
+  "cour",
+  "bibliotheque",
+  "cantine",
+  "boulangerie",
+  "marche",
+  "supermarche",
+  "ferme",
+  "animaux",
+  "bus",
+  "plage",
+  "foret",
+  "gymnase",
+  "kermesse",
+  "anniversaire",
+  "atelier",
+  "salon"
+ ]
+}

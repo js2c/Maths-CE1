@@ -14,6 +14,8 @@ export const REPONDRE = async (juste) => {
   const taper = async (n) => { for (const d of String(n)) { document.querySelector(`.key[data-key="${d}"]:not(.etal-key)`)?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })); await new Promise((x) => setTimeout(x, 180)); } const v = document.querySelector('.key[data-key="valider"]:not(.etal-key)'); v?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })); v?.dispatchEvent(new PointerEvent("pointerup", { bubbles: true })); };
   if (f?.q && f.resolve && !f.locked) {
     const q = f.q;
+    // (lot « Problèmes » : un problème, la réponse de l'énoncé ; au partage du niveau 3, la réponse est tapée sans ranger les objets)
+    if (q.module === 7) { await taper(r(q.e.reponse)); return "problème"; }
     let n = q.dictee ? q.answer : q.forme === "trouDroite" || q.forme === "trou" ? q.b : q.forme === "trouGauche" ? q.a : q.module === 5 ? q.a * q.b : q.op ? (await import("./js/modules/calc/calc.js")).answerOf(q) : q.a + q.b;
     await taper(r(n)); return "pavé";
   }

@@ -22,7 +22,10 @@ export const INFO_Y = 744;
 // la part chargée, de 0 à 1, à partir des poids des tâches finies (fonction pure, testée)
 export const avancement = (fait, total) => (total > 0 ? Math.max(0, Math.min(1, fait / total)) : 1);
 // les petites lignes d'information : « 2026 », « js2c », « version 1a2b3c4 » (pas de prénom d'enfant : le dépôt est public)
-export const lignesInfo = (version) => ["2026", "js2c", version ? `version ${String(version).slice(0, 7)}` : null].filter(Boolean);
+// (demande du parent du 3 novembre 2026) ce qu'écrit la publication (tools/version-libelle.mjs) : la date de la dernière fusion à
+// la place de l'année, le numéro de la demande de fusion divisé par 100 à la place de l'empreinte (« 03/11/2026 », « js2c »,
+// « version 0.72 ») ; sans eux, l'année et l'empreinte, comme avant
+export const lignesInfo = (version, lisible = null) => [lisible?.date ?? "2026", "js2c", lisible?.numero ? `version ${lisible.numero}` : version ? `version ${String(version).slice(0, 7)}` : null].filter(Boolean);
 // l'allègement (fonction pure, testée) : le niveau suivant selon l'intervalle moyen des dernières images (au moins 20 images) ;
 // 1 : moins de bulles ; 2 : faisceaux figés aussi. On ne remonte pas : l'écran ne dure que quelques secondes.
 export const allegement = (niveau, intervalles) => {
@@ -233,9 +236,9 @@ export class Demarrage {
     ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1;
   }
   // les petites lignes, sous la barre, écrites au feutre en bleu clair (la version n'est connue qu'un peu plus tard)
-  infos(version) {
+  infos(version, lisible = null) {
     this.info?.remove();
-    const lignes = lignesInfo(version), em = 18, gap = 36, ws = lignes.map((l) => R.wordWidth(l) * em), w = ws.reduce((a, b) => a + b, 0) + gap * (lignes.length - 1) + 20, h = 34;
+    const lignes = lignesInfo(version, lisible), em = 18, gap = 36, ws = lignes.map((l) => R.wordWidth(l) * em), w = ws.reduce((a, b) => a + b, 0) + gap * (lignes.length - 1) + 20, h = 34;
     const c = document.createElement("canvas"); c.className = "demarrage-info";
     c.width = Math.round(w * this.st.px); c.height = Math.round(h * this.st.px);
     Object.assign(c.style, { left: `${640 - w / 2}px`, top: `${INFO_Y}px`, width: `${w}px`, height: `${h}px` });

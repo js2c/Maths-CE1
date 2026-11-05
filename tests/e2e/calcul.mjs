@@ -82,7 +82,9 @@ for (const cran of ["conseille", "facile", "tresdur"]) {
     // le parcours la cherchait 0,9 s après « passer », avant qu'elle soit dite : elle est vérifiée à la fin de la correction)
     await waitQ(page);
     const s = await page.evaluate(() => window.__said.join(" | "));
-    check(/dépasse dix/.test(s), `C4 reconnue : « … dépasse dix : on passe à la dizaine suivante »${/dépasse dix/.test(s) ? "" : ` (question ${JSON.stringify(q)} ; dit : ${s})`}`);
+    // (lot « Correctifs de la confrontation 2 », 6.12 : un calcul qui tombe sur la dizaine dit « ça fait dix », C4dizaine)
+    const c4 = (q.a % 10) + q.b === 10 ? /ça fait dix/ : /dépasse dix/;
+    check(c4.test(s), `C4 reconnue : « … ${(q.a % 10) + q.b === 10 ? "ça fait dix" : "dépasse dix"} : on passe à la dizaine suivante »${c4.test(s) ? "" : ` (question ${JSON.stringify(q)} ; dit : ${s})`}`);
     const rep = await page.evaluate(async () => (await window.__app.store.all("reponses")).filter((r) => r.module === 3 && !r.guide));
     check(rep.some((r) => r.erreur === "C4" && !r.juste), `réponse enregistrée avec l'erreur C4 (${rep.map((r) => `${r.question}:${r.erreur}`).join(", ")})`);
   }
@@ -93,7 +95,7 @@ for (const cran of ["conseille", "facile", "tresdur"]) {
   const { page, context, errors } = await open();
   await page.tap(".choisir", { force: true }); await page.waitForSelector(".choix-ex"); await page.waitForTimeout(400);
   // (lot « Les voiliers » : cinq exercices ; lot « Les leçons » : quatre, les leçons ont leur bulle à l'accueil ; lot « L'étal du pêcheur » : six)
-  check((await page.locator(".choix-ex").count()) === 6, "six exercices (ligne, additions, calcul rapide, voiliers, multiplication, étal)");
+  check((await page.locator(".choix-ex").count()) === 7, "sept exercices (ligne, additions, calcul rapide, voiliers, multiplication, étal ; lot « Problèmes » : les problèmes)");
   await shot(page, "11-choisir-exercices");
   await page.tap('.choix-ex[aria-label="calcul"]', { force: true }); await page.waitForTimeout(450); await page.tap('.choix-ex[aria-label="calcul"]', { force: true }); await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(400);
   check((await page.locator(".choix-tuile").count()) === 9, "les 9 niveaux du calcul rapide, tous accessibles");

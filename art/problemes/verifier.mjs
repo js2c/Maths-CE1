@@ -1,5 +1,5 @@
 // CONTRÔLE DE LA BANQUE DES PROBLÈMES (maquette de l'exercice « Problèmes », docs/maquettes/problemes/PROPOSITION.md).
-// Recalcule chaque énoncé de art/problemes/enonces.json à partir de sa structure et de ses données : la réponse, le calcul
+// Recalcule chaque énoncé de app/content/problemes.json (la seule source depuis le lot « Problèmes » ; avant : art/problemes/enonces.json) à partir de sa structure et de ses données : la réponse, le calcul
 // écrit, l'aide (barres, comparaison, groupes, étapes), la difficulté (règle ci-dessous) ; vérifie que les nombres des
 // données sont dits dans l'énoncé, que chaque phrase finit par sa ponctuation, que le contexte d'illustration et l'objet
 // dessiné existent ; puis dit la répartition (structure × difficulté) et la variété des réponses.
@@ -26,11 +26,10 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ICI = dirname(fileURLToPath(import.meta.url)), RACINE = join(ICI, "../..");
-const banque = JSON.parse(readFileSync(join(ICI, "enonces.json"), "utf8")).enonces;
-const contextes = JSON.parse(readFileSync(join(ICI, "contextes.json"), "utf8")).contextes;
+const banque0 = JSON.parse(readFileSync(join(RACINE, "app/content/problemes.json"), "utf8")).enonces;
+const contextes0 = JSON.parse(readFileSync(join(ICI, "contextes.json"), "utf8")).contextes;
 export const OBJETS = ["bille", "biscuit", "pomme", "oeuf", "crayon", "ballon", "bonbon", "fleur", "perle", "livre", "poisson", "personne", "jeton"];
 export const CONTENANTS = ["sachet", "assiette", "boite", "panier", "vase"];
-const defauts = [], defaut = (e, m) => defauts.push(`${e.id} : ${m}`);
 const op = (o, x, y) => (o === "+" ? x + y : o === "−" ? x - y : x * y);
 
 // les étapes du calcul [opération, x, y, résultat], recalculées depuis la structure et les données
@@ -74,54 +73,63 @@ export function motsEtrangers(e) {
   return mots(e.correction).filter((w) => !MOTS_CORRECTION.has(w) && !src.includes(w) && !src.some((x) => proche(x, w)));
 }
 
-const ids = new Set();
-for (const e of banque) {
-  if (ids.has(e.id)) defaut(e, "identifiant en double"); ids.add(e.id);
-  const E = etapes(e);
-  if (!E) { defaut(e, `structure inconnue ${e.structure}/${e.inconnue}`); continue; }
-  const r = E.at(-1)[3];
-  if (r !== e.reponse) defaut(e, `réponse ${e.reponse}, le calcul donne ${r}`);
-  if (!Number.isInteger(r) || r <= 0 || E.some(([, a, b, v]) => !Number.isInteger(v) || v < 0 || a <= 0 || b <= 0)) defaut(e, "un nombre qui n'est pas entier, nul ou négatif");
-  if (E.some(([, a, b, v]) => Math.max(a, b, v) > 100)) defaut(e, "un nombre au-delà de 100");
-  const d = difficulte(e, E);
-  if (d !== e.difficulte) defaut(e, `difficulté ${e.difficulte}, la règle donne ${d}`);
-  if (niveau(e) !== e.niveau) defaut(e, `niveau ${e.niveau}, la règle donne ${niveau(e)}`);
-  const etr = motsEtrangers(e);
-  if (etr.length) defaut(e, `la correction dit des mots absents de l'énoncé : ${etr.join(", ")}`);
-  // le calcul écrit contient la réponse et chaque donnée
-  const nb = (s) => (s.match(/\d+/g) ?? []).map(Number);
-  for (const n of (e.donnees ?? E.flatMap(([, a, b]) => [a, b]).filter((n, i, t) => i === 0 || !E.some(([, , , v]) => v === n)))) if (!nb(e.calcul).includes(n)) defaut(e, `le calcul « ${e.calcul} » n'a pas ${n}`);
-  if (!nb(e.calcul).includes(r)) defaut(e, `le calcul « ${e.calcul} » n'a pas la réponse`);
-  // les données sont dites (en chiffres dans le texte, la voix les dit en lettres) ; la réponse n'est pas dans l'énoncé
-  const dits = nb([...e.enonce, e.question].join(" "));
-  const donnees = e.structure === "deux-etapes" ? e.operations.flatMap(([, a, b]) => [a, b]).filter((n) => n !== "_") : e.donnees;
-  for (const n of donnees) if (!dits.includes(n) && !(e.structure === "partage" && e.inconnue === "part" && n === 2 && /entre toi et/.test(e.enonce.join(" ")))) defaut(e, `la donnée ${n} n'est pas dite`);
-  if (dits.includes(r) && !donnees.includes(r)) defaut(e, `la réponse ${r} est dite dans l'énoncé`);
-  if (!nb(e.correction).includes(r)) defaut(e, "la correction ne dit pas la réponse");
-  // la ponctuation, ce que la voix découpe en phrases
-  for (const s of e.enonce) if (!/[.!?]$/.test(s)) defaut(e, `phrase sans point : ${s}`);
-  if (!/ \?$/.test(e.question)) defaut(e, "la question ne finit pas par « ? »");
-  if (/\b1\b/.test([...e.enonce, e.question].join(" "))) defaut(e, "le nombre 1 (un ou une : à écrire en lettres)");
-  // l'illustration et les dessins
-  if (!contextes.some((c) => c.id === e.contexte)) defaut(e, `contexte inconnu ${e.contexte}`);
-  if (!OBJETS.includes(e.objet)) defaut(e, `objet inconnu ${e.objet}`);
-  if (e.contenant && !CONTENANTS.includes(e.contenant)) defaut(e, `contenant inconnu ${e.contenant}`);
-  // l'aide
-  const b = e.barres;
-  if (b && b.parties[0] + b.parties[1] !== b.tout) defaut(e, "les barres : les parties ne font pas le tout");
-  if (b && (b.inconnue === "tout" ? b.tout : b.parties[b.inconnue]) !== r) defaut(e, "les barres : l'inconnue n'est pas la réponse");
-  const c = e.comparaison;
-  if (c && (c.petit + c.ecart !== c.grand || c[c.inconnue] !== r)) defaut(e, "la comparaison");
-  const g = e.groupes;
-  if (g && (g.inconnue === "tout" ? g.nombre * g.taille : g[g.inconnue]) !== r) defaut(e, "les groupes");
-  if (["reunion", "transformation"].includes(e.structure) && !b) defaut(e, "pas de barres");
-  if (e.structure === "comparaison" && !c) defaut(e, "pas de comparaison");
-  if (["groupes-egaux", "partage"].includes(e.structure) && !g) defaut(e, "pas de groupes");
-  if (e.structure === "deux-etapes" && (e.operations.length !== 2 || e.etapes?.length !== 2)) defaut(e, "deux étapes, pas plus");
+export const STRUCT = ["reunion", "transformation", "comparaison", "groupes-egaux", "partage", "deux-etapes"];
+// (lot « Problèmes » : le contrôle est une fonction, que le test unitaire tests/unit/problemes-banque.test.mjs appelle aussi)
+export function controler(banque, contextes) {
+  const defauts = [], defaut = (e, m) => defauts.push(`${e.id} : ${m}`);
+  const ids = new Set();
+  for (const e of banque) {
+    if (ids.has(e.id)) defaut(e, "identifiant en double"); ids.add(e.id);
+    const E = etapes(e);
+    if (!E) { defaut(e, `structure inconnue ${e.structure}/${e.inconnue}`); continue; }
+    const r = E.at(-1)[3];
+    if (r !== e.reponse) defaut(e, `réponse ${e.reponse}, le calcul donne ${r}`);
+    if (!Number.isInteger(r) || r <= 0 || E.some(([, a, b, v]) => !Number.isInteger(v) || v < 0 || a <= 0 || b <= 0)) defaut(e, "un nombre qui n'est pas entier, nul ou négatif");
+    if (E.some(([, a, b, v]) => Math.max(a, b, v) > 100)) defaut(e, "un nombre au-delà de 100");
+    const d = difficulte(e, E);
+    if (d !== e.difficulte) defaut(e, `difficulté ${e.difficulte}, la règle donne ${d}`);
+    if (niveau(e) !== e.niveau) defaut(e, `niveau ${e.niveau}, la règle donne ${niveau(e)}`);
+    const etr = motsEtrangers(e);
+    if (etr.length) defaut(e, `la correction dit des mots absents de l'énoncé : ${etr.join(", ")}`);
+    // le calcul écrit contient la réponse et chaque donnée
+    const nb = (s) => (s.match(/\d+/g) ?? []).map(Number);
+    for (const n of (e.donnees ?? E.flatMap(([, a, b]) => [a, b]).filter((n, i, t) => i === 0 || !E.some(([, , , v]) => v === n)))) if (!nb(e.calcul).includes(n)) defaut(e, `le calcul « ${e.calcul} » n'a pas ${n}`);
+    if (!nb(e.calcul).includes(r)) defaut(e, `le calcul « ${e.calcul} » n'a pas la réponse`);
+    // les données sont dites (en chiffres dans le texte, la voix les dit en lettres) ; la réponse n'est pas dans l'énoncé
+    const dits = nb([...e.enonce, e.question].join(" "));
+    const donnees = e.structure === "deux-etapes" ? e.operations.flatMap(([, a, b]) => [a, b]).filter((n) => n !== "_") : e.donnees;
+    for (const n of donnees) if (!dits.includes(n) && !(e.structure === "partage" && e.inconnue === "part" && n === 2 && /entre toi et/.test(e.enonce.join(" ")))) defaut(e, `la donnée ${n} n'est pas dite`);
+    if (dits.includes(r) && !donnees.includes(r)) defaut(e, `la réponse ${r} est dite dans l'énoncé`);
+    if (!nb(e.correction).includes(r)) defaut(e, "la correction ne dit pas la réponse");
+    // la ponctuation, ce que la voix découpe en phrases
+    for (const s of e.enonce) if (!/[.!?]$/.test(s)) defaut(e, `phrase sans point : ${s}`);
+    if (!/ \?$/.test(e.question)) defaut(e, "la question ne finit pas par « ? »");
+    if (/\b1\b/.test([...e.enonce, e.question].join(" "))) defaut(e, "le nombre 1 (un ou une : à écrire en lettres)");
+    // l'illustration et les dessins
+    if (!contextes.some((c) => c.id === e.contexte)) defaut(e, `contexte inconnu ${e.contexte}`);
+    if (!OBJETS.includes(e.objet)) defaut(e, `objet inconnu ${e.objet}`);
+    if (e.contenant && !CONTENANTS.includes(e.contenant)) defaut(e, `contenant inconnu ${e.contenant}`);
+    // l'aide
+    const b = e.barres;
+    if (b && b.parties[0] + b.parties[1] !== b.tout) defaut(e, "les barres : les parties ne font pas le tout");
+    if (b && (b.inconnue === "tout" ? b.tout : b.parties[b.inconnue]) !== r) defaut(e, "les barres : l'inconnue n'est pas la réponse");
+    const c = e.comparaison;
+    if (c && (c.petit + c.ecart !== c.grand || c[c.inconnue] !== r)) defaut(e, "la comparaison");
+    const g = e.groupes;
+    if (g && (g.inconnue === "tout" ? g.nombre * g.taille : g[g.inconnue]) !== r) defaut(e, "les groupes");
+    if (["reunion", "transformation"].includes(e.structure) && !b) defaut(e, "pas de barres");
+    if (e.structure === "comparaison" && !c) defaut(e, "pas de comparaison");
+    if (["groupes-egaux", "partage"].includes(e.structure) && !g) defaut(e, "pas de groupes");
+    if (e.structure === "deux-etapes" && (e.operations.length !== 2 || e.etapes?.length !== 2)) defaut(e, "deux étapes, pas plus");
+  }
+  for (const s of STRUCT) if (!banque.some((e) => e.structure === s)) defauts.push(`aucun énoncé de structure ${s}`);
+  if (banque.length < 150 || banque.length > 200) defauts.push(`${banque.length} énoncés : la banque en demande 150 à 200`);
+  return defauts;
 }
 
-// la répartition et la variété des réponses
-const STRUCT = ["reunion", "transformation", "comparaison", "groupes-egaux", "partage", "deux-etapes"];
+// la répartition et la variété des réponses (la ligne de commande seulement)
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+const banque = banque0, defauts = controler(banque0, contextes0);
 const cle = (e) => (e.structure === "transformation" ? `transformation · ${e.sens} · ${e.inconnue}` : e.structure === "groupes-egaux" || e.structure === "deux-etapes" ? e.structure : `${e.structure} · ${e.inconnue}`);
 const lignes = [...new Set(banque.map(cle))];
 const tableau = ["| Structure | 1 | 2 | 3 | 4 | Total | Réponses différentes |", "| --- | --- | --- | --- | --- | --- | --- |"];
@@ -135,12 +143,9 @@ console.log(tableau.join("\n"));
 const NOMS = ["", "ajouter, enlever, jusqu'à 10", "ajouter, enlever, jusqu'à 20", "groupes égaux et partage, petits nombres", "chercher une partie ou le changement, jusqu'à 20", "comparer, jusqu'à 20", "les mêmes structures, jusqu'à 100", "groupes égaux et partage, jusqu'à 50", "le début inconnu, comparer jusqu'à 100", "deux étapes"];
 const parNiveau = ["| Niveau | Ce qui est travaillé | Énoncés | Réponses différentes |", "| --- | --- | --- | --- |", ...[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => { const L = banque.filter((e) => e.niveau === n); return `| ${n} | ${NOMS[n]} | ${L.length} | ${new Set(L.map((e) => e.reponse)).size} |`; })];
 console.log(`\n${parNiveau.join("\n")}`);
-for (const s of STRUCT) if (!banque.some((e) => e.structure === s)) defauts.push(`aucun énoncé de structure ${s}`);
-if (banque.length < 150 || banque.length > 200) defauts.push(`${banque.length} énoncés : la banque en demande 150 à 200`);
-
 if (process.argv.includes("--md")) {
   const titres = { reunion: "Réunion (deux parties et le tout)", transformation: "Transformation (un état, un changement, un nouvel état)", comparaison: "Comparaison (de plus, de moins)", "groupes-egaux": "Groupes égaux (sans le signe ×)", partage: "Partage (la valeur d'une part, le nombre de parts)", "deux-etapes": "Deux étapes" };
-  const md = ["# La banque des problèmes, à relire", "", `${banque.length} énoncés (source : \`art/problemes/enonces.json\`, contrôlée par \`node art/problemes/verifier.mjs\` ; ce fichier en est tiré par \`--md\`). Pour chaque énoncé : ce que dit la voix (l'énoncé, puis la question), la réponse et le calcul, puis la correction dite après une erreur. Le niveau (1 à 9) est celui de l'exercice ; la difficulté (1 à 4) ne mesure que le calcul (règles : \`art/problemes/README.md\`).`, "", tableau.join("\n"), "", parNiveau.join("\n"), ""];
+  const md = ["# La banque des problèmes, à relire", "", `${banque.length} énoncés (source : \`app/content/problemes.json\`, contrôlée par \`node art/problemes/verifier.mjs\` ; ce fichier en est tiré par \`--md\`). Pour chaque énoncé : ce que dit la voix (l'énoncé, puis la question), la réponse et le calcul, puis la correction dite après une erreur. Le niveau (1 à 9) est celui de l'exercice ; la difficulté (1 à 4) ne mesure que le calcul (règles : \`art/problemes/README.md\`).`, "", tableau.join("\n"), "", parNiveau.join("\n"), ""];
   for (const s of STRUCT) {
     md.push(`## ${titres[s]}`, "");
     for (const e of banque.filter((x) => x.structure === s)) md.push(`- **${e.id}** · niveau ${e.niveau}, difficulté ${e.difficulte} · ${e.contexte}${e.structure === "transformation" ? ` · ${e.sens}, ${e.inconnue} inconnu` : e.inconnue && !["groupes-egaux", "deux-etapes"].includes(s) ? ` · ${e.inconnue}` : ""} — ${e.enonce.join(" ")} *${e.question}* → **${e.reponse}** (${e.calcul})  \n  Correction : « ${e.correction} »`);
@@ -151,3 +156,4 @@ if (process.argv.includes("--md")) {
 }
 if (defauts.length) { console.error(`\n${defauts.length} défaut(s) :\n${defauts.join("\n")}`); process.exit(1); }
 console.log(`\nbanque conforme : ${banque.length} énoncés`);
+}

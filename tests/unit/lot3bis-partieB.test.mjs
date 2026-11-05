@@ -68,7 +68,7 @@ test("B10 : erreurs d'additions détaillées (se trompe de 1, un des deux nombre
 
 test("B12 : le guide du parent reprend la légende des niveaux (le même texte que legendes.json) et les durées d'appui", () => {
   const guide = readFileSync(new URL("../../docs/GUIDE-PARENT.md", import.meta.url), "utf8"), nb = (s) => s.replace(/ /g, " ");
-  for (const ex of ["ligne", "additions", "calcul", "multiplication", "etal", "lecons"]) for (const r of legendes[ex]) assert.ok(guide.includes(`| ${r.n} | ${nb(r.travail)} | ${nb(r.exemple)} |`), `${ex} ${r.n} : la ligne du guide diffère du contenu`);
+  for (const ex of ["ligne", "additions", "calcul", "multiplication", "etal", "problemes", "lecons"]) for (const r of legendes[ex]) assert.ok(guide.includes(`| ${r.n} | ${nb(r.travail)} | ${nb(r.exemple)} |`), `${ex} ${r.n} : la ligne du guide diffère du contenu`);
   const parent = JSON.parse(readFileSync(new URL("../../app/content/parent.json", import.meta.url), "utf8"));
   assert.match(guide, new RegExp(`garder le doigt ${parent.appuiLongMs / 1000} secondes|dure \\*\\*${parent.appuiLongMs / 1000} secondes`));
   assert.equal(legendes.appuiLong.ms, 500); assert.match(guide, /une demi-seconde/);

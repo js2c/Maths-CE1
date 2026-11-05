@@ -75,6 +75,8 @@ test("1 : la barre de chargement avance selon ce qui est chargé ; les petites l
   assert.equal(avancement(0, 10), 0); assert.equal(avancement(5, 10), 0.5); assert.equal(avancement(12, 10), 1); assert.equal(avancement(0, 0), 1);
   assert.deepEqual(lignesInfo("f8aeaedb7e95"), ["2026", "js2c", "version f8aeaed"]);
   assert.deepEqual(lignesInfo(null), ["2026", "js2c"]);
+  // (demande du parent du 3 novembre 2026) la date de la fusion remplace l'année, le numéro remplace l'empreinte
+  assert.deepEqual(lignesInfo("f8aeaedb7e95", { numero: "0.72", date: "03/11/2026" }), ["03/11/2026", "js2c", "version 0.72"]);
 });
 
 test("1 et 2 : les phrases nouvelles sont dans l'inventaire de la voix (bienvenues, descriptions des tuiles, consignes, « Touche-moi… »)", () => {
@@ -84,7 +86,7 @@ test("1 et 2 : les phrases nouvelles sont dans l'inventaire de la voix (bienvenu
   for (const k of ["choixExercice", "choixNiveau", "choixLecon"]) for (const s of sentences(T[k])) assert.ok(inv.has(s), s);
   // chaque tuile de chaque écran de choix a sa description
   const L = JSON.parse(readFileSync(racine("app/content/legendes.json"), "utf8"));
-  for (const ex of ["ligne", "additions", "calcul", "voiliers", "multiplication"]) for (const r of L[ex]) assert.ok(T.choixDescription[ex][r.n], `${ex} ${r.n}`);
+  for (const ex of ["ligne", "additions", "calcul", "voiliers", "multiplication", "problemes"]) for (const r of L[ex]) assert.ok(T.choixDescription[ex][r.n], `${ex} ${r.n}`);
   for (const r of L.lecons) assert.ok(r.n === "+" || r.n === "×" ? T.choixDescription.tables[r.n === "+" ? "addition" : "multiplication"] : T.choixDescription.lecons[r.n], r.n);
 });
 

@@ -15,7 +15,7 @@ import { ruleShare } from "../modules/facts/families.js";
 import { DB_NAME, MIGRATIONS, persist, STORES } from "../engine/store.js";
 import { lire as lireJournal, vider as viderJournal } from "../engine/journal.js";
 import { avisStockage } from "../engine/stockage.js";
-import { familyKnown, markFamilyKnown, setCalcLevel, setEtalLevel, setLineLevel, setMultLevel, setVoiliersLevel } from "./depart.js";
+import { familyKnown, markFamilyKnown, setCalcLevel, setEtalLevel, setLineLevel, setMultLevel, setProblemesLevel, setVoiliersLevel } from "./depart.js";
 import { recommendedMult } from "../modules/mult/runner.js";
 import { auNiveau, niveauPrix } from "../session/rewards.js";
 
@@ -73,7 +73,7 @@ export class ParentSpace {
   // (lot 3 bis, B2 et B10) la légende des niveaux de « choisir », le même texte que le panneau du petit livre (legendes.json)
   legendsBox() {
     const L = this.legendes; if (!L) return null;
-    const ex = [["ligne", "La ligne graduée"], ["additions", "Les additions"], ["calcul", "Le calcul rapide"], ["voiliers", "Les voiliers"], ["multiplication", "La multiplication"], ["lecons", "Les leçons"]];
+    const ex = [["ligne", "La ligne graduée"], ["additions", "Les additions"], ["calcul", "Le calcul rapide"], ["voiliers", "Les voiliers"], ["multiplication", "La multiplication"], ["problemes", "Les problèmes"], ["lecons", "Les leçons"]];
     return h("div", { class: "pa-card-box" }, h("h2", {}, "Les niveaux de « choisir », en bref"),
       h("p", { class: "pa-note" }, "Le même texte que la légende de l'écran « choisir » (le bouton du petit livre, en haut à droite des niveaux). Chaque plaque porte son numéro : vous pouvez dire « fais le 7 »."),
       ex.map(([k, titre]) => h("details", { class: "pa-niveaux" }, h("summary", {}, titre),
@@ -299,7 +299,7 @@ export class ParentSpace {
     return h("div", { class: "pa-table-wrap" }, h("table", { class: "pa-table" },
       h("thead", {}, h("tr", {}, ["Heure", "Niveau", "Forme", "Question", "Réponse", "Attendue", "Résultat", "Temps", "Écoutes", "Erreur", "Remarque"].map((t, i) => h("th", { class: [4, 5, 7, 8].includes(i) ? "num" : "" }, t)))),
       h("tbody", {}, rs.flatMap((r, i) => [...reprises.filter((p) => p.t <= r.t && (i === 0 ? false : rs[i - 1].t < p.t)).map((p) => h("tr", { class: "pa-reprise" }, h("td", { colspan: "11" }, `${D.fmtTime(p.t)} : page rechargée ; l'étape a repris ${D.repriseOu(p)}`))), h("tr", { class: r.juste ? "" : "faux" },
-        h("td", {}, D.dateTime(r.t).slice(11)), h("td", { class: "num" }, r.niveau), h("td", {}, F[r.forme] ?? r.forme ?? ""), h("td", { class: "q" }, r.question),
+        h("td", {}, D.dateTime(r.t).slice(11)), h("td", { class: "num" }, r.niveau), h("td", {}, F[r.forme] ?? r.forme ?? ""), h("td", { class: "q" }, r.enonce ? `${r.question} (${r.enonce}${r.etape ? ", problème du jour" : ""})` : r.question), // (lot « Problèmes » : l'énoncé de la réponse, son identifiant)
         h("td", { class: "num" }, r.donnee ?? "—"), h("td", { class: "num" }, r.attendue ?? ""), h("td", {}, r.juste ? h("span", { class: "pa-yes" }, "✓ juste") : h("span", { class: "pa-no" }, "✗ faux")),
         h("td", { class: "num" }, D.fmtSeconds(r.tempsMs)), h("td", { class: "num" }, r.ecoutes ?? ""), h("td", { title: E[r.erreur] ?? "" }, r.juste ? "" : r.erreur === "NSP" ? "je ne sais pas" : r.erreur && r.erreur !== "autre" ? E[r.erreur] ?? "autre" : "autre"), h("td", {}, note(r)))]))));
   }
@@ -396,6 +396,19 @@ export class ParentSpace {
         ...((st6.lecons ?? []).length ? [h("p", { class: "pa-note" }, `Leçons déjà vues : ${st6.lecons.join(", ")}.`)] : []));
     }
     this.weeklyBlock(m6, 6);
+    // lot « Problèmes » : le niveau de l'enfant, les niveaux acquis, l'historique, semaine par semaine (l'étape « Problème du jour » et
+    // l'exercice choisi)
+    const M7 = this.c.modules[7], st7 = this.d.niveaux.find((n) => n.module === 7) ?? null, m7 = h("div", { class: "pa-card-box" }, h("h2", {}, `Module 7 · ${M7?.nom ?? "Les problèmes"}`));
+    if (!st7) m7.append(h("p", { class: "pa-empty" }, "Pas encore joué. Un problème vient à chaque séance (l'étape « Problème du jour », après le défi) ; l'exercice entier se prend par « choisir », ou vous pouvez l'imposer pour la prochaine séance « jouer » (réglages)."));
+    else {
+      const cur = Math.min(9, st7.niveau ?? 2), acq = st7.acquis ?? [];
+      m7.append(h("p", { class: "pa-big" }, `Niveau : ${cur} sur 9 · ${plural(acq.length, "niveau acquis", "niveaux acquis")}`), h("p", { class: "pa-note" }, M7.niveaux[cur]),
+        h("div", { class: "pa-levels", "aria-hidden": "true" }, Array.from({ length: 9 }, (_, i) => h("span", { class: acq.includes(i + 1) ? "done" : i + 1 === cur ? "cur" : "" }, i + 1))),
+        h("ul", { class: "pa-note" }, ["Une histoire de la vie courante, lue à voix haute, illustrée par son lieu. Les nombres sont sur des étiquettes ; la réponse se tape au pavé.", "Après une erreur : l'aide (le schéma en barres, ou les objets groupés), puis la correction dite dans l'histoire.", "Un niveau est acquis avec 8 bonnes réponses sur les 10 dernières, au plus une avec le coquillage d'aide, sur deux jours au moins. Les réponses du problème du jour comptent ; au cran « plus facile », elles ne comptent pas.", "Un problème ne revient pas dans la même séance. Un problème manqué revient à une séance suivante, avant les autres."].map((t) => h("li", {}, t))),
+        h("h3", {}, "Historique des niveaux"), h("ul", { class: "pa-hist" }, (st7.obtenus ?? []).filter((o) => o.acquis || o.parent).map((o) => h("li", {}, o.parent ? `${D.fmtDay(o.date)} : niveau ${o.niveau} choisi par le parent (point de départ)` : `${D.fmtDay(o.date)} : niveau ${o.niveau} acquis${o.choix ? " (choisi par l'enfant)" : o.etape ? " (au problème du jour)" : ""}`))),
+        ...((st7.lecons ?? []).length ? [h("p", { class: "pa-note" }, `Leçons déjà vues : ${st7.lecons.join(", ")}.`)] : []));
+    }
+    this.weeklyBlock(m7, 7);
     // le défi record
     const DS = D.challengeSummary(this.d.recompenses.defi, this.d.seances);
     const df = h("div", { class: "pa-card-box" }, h("h2", {}, "Défi record"),
@@ -416,7 +429,7 @@ export class ParentSpace {
     const tr = h("div", { class: "pa-card-box" }, h("h2", {}, "Le trésor de l'enfant"), h("div", { class: "pa-stats" },
       stat(String(et.cumul ?? 0), "étoiles de mer gagnées depuis le début"), stat(String(et.total ?? 0), "étoiles à dépenser à la boutique"), stat(String(R.achats?.liste?.length ?? 0), `achats à la boutique${et.coquillages ? ` (et ${plural(et.coquillages, "coquillage ouvert", "coquillages ouverts")} avant la boutique)` : ""}`),
       stat(String(R.serie?.seances ?? 0), "séances dans la série (elle ne retombe jamais à zéro)")));
-    page.append(m1, m2, m3, m4, m5, m6, df, jr, tr, this.cardsBox(), this.legendsBox());
+    page.append(m1, m2, m3, m4, m5, m6, m7, df, jr, tr, this.cardsBox(), this.legendsBox());
   }
   // LA GRILLE DES ADDITIONS (lot 2, étape 7) : a en ligne, b en colonne ; couleur selon la boîte, anneau vert si le
   // fait est donné vite ; les cases « + 0 » en gris avec le temps de base ; toucher une case montre son historique
@@ -596,6 +609,13 @@ export class ParentSpace {
     return row("Prix de la boutique", "Plus l'enfant fait de séances dans la semaine, plus elle gagne d'étoiles\u00a0; les créatures, elles, arrivent toujours 2 par semaine. Choisissez les prix qui vont avec son nombre de séances\u00a0: chaque semaine, elle pourra acheter les nouvelles venues, sans tout acheter dès le lundi. Si elle a du mal, prenez plutôt le choix du dessous. Vous pouvez changer à tout moment\u00a0: ses étoiles restent, rien n'est perdu (cela vaut aussi en rythme libre).", grp, ok);
   }
   // lot 3 (docs/SPEC-LOT3.md, section 4) : l'échauffement, oui ou non
+  // lot « Problèmes » : l'étape « Problème du jour » (activée par défaut)
+  problemeRow(row) {
+    const seg = h("div", { class: "pa-seg", role: "group", "aria-label": "problème du jour" }), paint = (v) => { for (const b of seg.children) b.setAttribute("aria-pressed", String((b.dataset.v === "oui") === v)); };
+    for (const [v, t] of [["oui", "activé"], ["non", "désactivé"]]) seg.append(h("button", { "data-v": v, onclick: async () => { await this.store.setSetting("problemeDuJour", v === "oui"); paint(v === "oui"); } }, t));
+    this.store.setting("problemeDuJour").then((v) => paint(v !== false));
+    return row("Problème du jour", "Activé : un ou deux problèmes à la fin de chaque séance, sans l'allonger (le temps est pris sur l'exercice du jour).", seg);
+  }
   echauffementRow(row) {
     const seg = h("div", { class: "pa-seg", role: "group", "aria-label": "échauffement" }), paint = (v) => { for (const b of seg.children) b.setAttribute("aria-pressed", String((b.dataset.v === "oui") === v)); };
     for (const [v, t] of [["oui", "oui"], ["non", "non"]]) seg.append(h("button", { "data-v": v, onclick: async () => { await this.store.setSetting("echauffement", v === "oui"); paint(v === "oui"); } }, t));
@@ -606,7 +626,7 @@ export class ParentSpace {
   moduleRow(row) {
     const seg = h("div", { class: "pa-seg", role: "group", "aria-label": "module de la prochaine séance" }), ok = h("span", { class: "pa-ok" });
     const paint = (v) => { for (const b of seg.children) b.setAttribute("aria-pressed", String(b.dataset.v === String(v ?? "auto"))); };
-    for (const [v, t] of [["auto", "au choix de l'application"], ["1", "ligne graduée"], ["2", "additions"], ["3", "calcul rapide"], ["5", "la multiplication"], ["4", "les voiliers"], ["6", "l'étal du pêcheur"]]) seg.append(h("button", { "data-v": v, onclick: async () => { await this.store.setSetting("moduleImpose", v === "auto" ? null : { module: Number(v), t: Date.now() }); paint(v === "auto" ? null : v); ok.textContent = "Enregistré."; } }, t));
+    for (const [v, t] of [["auto", "au choix de l'application"], ["1", "ligne graduée"], ["2", "additions"], ["3", "calcul rapide"], ["5", "la multiplication"], ["4", "les voiliers"], ["6", "l'étal du pêcheur"], ["7", "les problèmes"]]) seg.append(h("button", { "data-v": v, onclick: async () => { await this.store.setSetting("moduleImpose", v === "auto" ? null : { module: Number(v), t: Date.now() }); paint(v === "auto" ? null : v); ok.textContent = "Enregistré."; } }, t));
     this.store.setting("moduleImpose").then((m) => paint(m?.module ?? null));
     return row("Notion du jour de la prochaine séance", "D'habitude, la ligne graduée, les additions et le calcul rapide tournent d'une séance à l'autre (le moins avancé d'abord, jamais deux fois de suite le même), et la multiplication avec eux à partir de janvier. Les voiliers et l'étal du pêcheur ne tournent pas : l'enfant y vient par « choisir ». Vous pouvez imposer l'un des six exercices, voiliers, multiplication et étal compris, pour la prochaine séance seulement (celle que l'enfant lance avec « jouer » : si elle choisit elle-même son exercice, votre choix attend la séance suivante).", seg, ok);
   }
@@ -652,8 +672,12 @@ export class ParentSpace {
     const etal = h("div", { class: "pa-seg pa-levels-seg", role: "group", "aria-label": "niveau de l'étal" }), paintE = (n) => { for (const b of etal.children) b.setAttribute("aria-pressed", String(Number(b.dataset.v) === n)); };
     for (let n = 1; n <= (this.depart.etalMax ?? 10); n++) etal.append(h("button", { "data-v": n, onclick: async () => { const st = await setEtalLevel(this.store, n); paintE(st.niveau); msg.textContent = `Étal du pêcheur : niveau ${n} à la prochaine partie.`; } }, String(n)));
     this.store.get("niveaux", 6).then((st) => paintE(st?.niveau ?? 1));
-    box.append(h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau de la ligne graduée :"), levels), h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau du calcul rapide :"), calc), h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau des voiliers :"), voil), h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau de la multiplication :"), mul), fams, msg, h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau de l'étal du pêcheur :"), etal));
-    return row("Point de départ", "Si l'enfant sait déjà faire : choisissez le niveau de la ligne graduée, du calcul rapide, des voiliers, de la multiplication ou de l'étal du pêcheur où elle commencera, ou marquez une famille de faits d'addition comme connue (ses faits seront revus moins souvent). C'est noté dans l'historique comme votre choix, et cela ne rapporte rien à l'enfant.", box);
+    // lot « Problèmes » : le niveau de départ des problèmes (2 par défaut)
+    const pb = h("div", { class: "pa-seg pa-levels-seg", role: "group", "aria-label": "niveau des problèmes" }), paintP = (n) => { for (const b of pb.children) b.setAttribute("aria-pressed", String(Number(b.dataset.v) === n)); };
+    for (let n = 1; n <= 9; n++) pb.append(h("button", { "data-v": n, onclick: async () => { const st = await setProblemesLevel(this.store, n); paintP(st.niveau); msg.textContent = `Problèmes : niveau ${n} à la prochaine séance.`; } }, String(n)));
+    Promise.all([this.store.get("niveaux", 7), this.store.setting("departProblemes")]).then(([st, d]) => paintP(st?.niveau ?? d ?? 2));
+    box.append(h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau de la ligne graduée :"), levels), h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau du calcul rapide :"), calc), h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau des voiliers :"), voil), h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau de la multiplication :"), mul), fams, msg, h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau de l'étal du pêcheur :"), etal), h("div", { class: "pa-row" }, h("span", { class: "pa-muted" }, "Niveau des problèmes :"), pb));
+    return row("Point de départ", "Si l'enfant sait déjà faire : choisissez le niveau de la ligne graduée, du calcul rapide, des voiliers, de la multiplication, de l'étal du pêcheur ou des problèmes (le 2 par défaut) où elle commencera, ou marquez une famille de faits d'addition comme connue (ses faits seront revus moins souvent). C'est noté dans l'historique comme votre choix, et cela ne rapporte rien à l'enfant.", box);
   }
   async marked() { const t = Date.now(); await this.store.setSetting("dernierExport", t); this.d.dernierExport = t; }
   settingsBox() {
@@ -668,7 +692,7 @@ export class ParentSpace {
     this.store.setting("dureeSeanceMin", this.seance.dureeMaxMin).then(paint);
     box.append(row("Durée maximale d'une séance", "Au bout de ce temps, l'application dit « à demain » (la dernière minute est gardée pour la récompense).", seg));
     // lot 2 : le sélecteur de difficulté (crans proposés à l'enfant), le défi record, le point de départ
-    box.append(...[this.moduleRow(row), this.sonRow(row), this.cransRow(row), this.echauffementRow(row), this.defiRow(row), this.rythmeRow(row), this.prixRow(row), this.departRow(row)].filter(Boolean));
+    box.append(...[this.moduleRow(row), this.sonRow(row), this.cransRow(row), this.echauffementRow(row), this.defiRow(row), this.problemeRow(row), this.rythmeRow(row), this.prixRow(row), this.departRow(row)].filter(Boolean));
     // le code
     box.append(row("Code parent", "Le code à 4 chiffres qui ouvre cet espace.", h("button", { class: "pa-btn", onclick: () => { this.root.replaceChildren(h("div", { class: "pa-veil" })); this.app.stage.paused = false; this.gate("choisir"); } }, "Changer le code")));
     // le stockage persistant

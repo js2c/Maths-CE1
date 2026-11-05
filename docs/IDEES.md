@@ -71,6 +71,10 @@ Au cran « plus facile », l'écriture 600 + 30 + 5 s'affiche sous la cale. Un f
   - leçons : en L9, l'étoile de mer du sable est juste sous « 40 41 » ; en L10, le « 0 » et le « 7 » de 307 décomposé sont écrits sur le rocher de droite ; en L3 et au niveau 11, le « ? » rouge est traversé par les feuilles d'une algue (derrière lui) ;
   - écran « choisir » : les tuiles 10, 11 et 13 de la ligne sont posées devant les algues et les rochers (la règle de la section 3 dit « ni posée sur la pieuvre ou les algues ») : garder ainsi, ou déplacer les tuiles ?
 
+### Après le lot « Problèmes » (novembre 2026)
+
+Tranchées par le parent le 4 novembre 2026 (`docs/JOURNAL-CONCEPTION.md`) : les niveaux parcourus à 2 séances par semaine et les séances plus courtes (rien ne change), les prix des niveaux « 3 séances » et « 4 séances » (baissés), l'étal et les voiliers (le problème du jour s'ajoute à leur séance). Restent : les illustrations des 21 lieux (le fond de papier en attendant) ; les rôles familiaux, relus par le parent.
+
 ### Après le second passage de l'agent qui joue l'enfant (lot « Recette de l'enfant et nettoyage des couches », 12 octobre 2026)
 
 Les huit questions de ce passage sont tranchées (décisions du parent du 13 octobre 2026, `docs/JOURNAL-CONCEPTION.md`) et faites au lot « Décisions sur les constats de l'agent ». Reste au parent : regénérer les illustrations des cartes du crabe et de l'anémone (constat 16), et revoir les choix faits par la session (même journal, « les choix de la session, à revoir par le parent »).

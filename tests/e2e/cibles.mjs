@@ -21,7 +21,7 @@ const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉC
 // les cibles visibles, en pixels CSS (l'espace parent à part : il est pour le parent)
 const MESURER = () => {
   const vis = (e) => e.isConnected && !e.closest(".stash") && e.checkVisibility({ visibilityProperty: true, opacityProperty: true });
-  const sel = "#ui button, .mascotte-tap, .etal-scene .etal-objet, .pa button, .pa-keys [data-key]";
+  const sel = "#ui button, .mascotte-tap, .etal-scene .etal-objet, .pa button, .pa-keys [data-key]"; // (les étiquettes et les objets des problèmes sont des boutons de #ui)
   return [...document.querySelectorAll(sel)].filter(vis).map((e) => { const r = e.getBoundingClientRect(); return { quoi: (e.getAttribute("aria-label") || e.dataset.key || String(e.className)).toString().slice(0, 40), cls: String(e.className).slice(0, 40), w: r.width, h: r.height, parent: !!e.closest(".pa") }; })
     .filter((t) => t.w > 4 && t.h > 4 && t.w < innerWidth * 0.9);
 };
@@ -53,6 +53,9 @@ for (const nom of NOMS) {
   await vue("multiplication", () => exercice("5:1"));
   await vue("voiliers", () => exercice("4:1"));
   await vue("étal", () => exercice("6:2"));
+  // (lot « Problèmes » : l'écran des problèmes, ses étiquettes et la plaque ; le partage du niveau 3, ses objets à glisser)
+  await vue("problèmes", () => exercice("7:2&enonce=tra-pf-13"));
+  await vue("problèmes : le partage", async () => { await exercice("7:3&enonce=par-v-01"); await vis(".probleme-objet"); });
   await vue("récif", async () => { await a.relancer({ q: "?sansReprise" }); await a.deuxTouchers(".galet.reefkey"); await vis(".boutique-cle"); });
   await vue("boutique", async () => { await a.toucher(".boutique-cle"); await vis(".boutique-tuile"); });
   await vue("album", async () => { await a.relancer({ q: "?sansReprise" }); await a.deuxTouchers(".galet.albumkey"); await a.attendre(() => window.__app.album?.open, 20000); });

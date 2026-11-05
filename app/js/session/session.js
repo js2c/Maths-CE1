@@ -217,6 +217,8 @@ export class Session {
       if (step.actif !== false && h && step.id === "defi" && !(await challengeReady(this.store, step))) { this.rec.etapes.push({ id: step.id, sautee: "pas encore" }); continue; }
       if (this.sans.includes(step.id)) { this.rec.etapes.push({ id: step.id, sautee: this.sansRaison[step.id] ?? "réglage du parent" }); continue; }
       if (step.actif === false || !h) { this.rec.etapes.push({ id: step.id, sautee: step.actif === false ? "désactivée" : "pas encore construite" }); continue; }
+      // (lot « Problèmes ») pas de « Problème du jour » quand la séance du jour est déjà l'exercice « Problèmes » (choisi ou imposé)
+      if (step.id === "probleme" && this.rec.module === 7) { this.rec.etapes.push({ id: step.id, sautee: "exercice du jour" }); continue; }
       const asks = step.id !== "accueil" && step.id !== "recompense";
       // (constat 5 de la même relecture : une réponse donnée juste avant le rechargement est enregistrée, même si le temps est écoulé)
       if (asks && this.over() && !(this.reprendAuPoint(step.id) && this.rec.pointReprise.encours?.reponse)) { this.rec.etapes.push({ id: step.id, sautee: "temps écoulé" }); continue; }
@@ -227,7 +229,11 @@ export class Session {
       // 17 octobre) son point de reprise, gardé si la séance reprise en était là, effacé sinon
       if (!(this.reprise && this.rec.pointReprise?.etape === step.id)) this.rec.pointReprise = null;
       this.rec.etapeEnCours = step.id; this.rec.etapeDebut = t0; await this.save();
-      await h({ session: this, step, end: step.minutes ? t0 + step.minutes * 60000 : Infinity });
+      // (lot « Problèmes ») les minutes de l'étape fixe « Problème du jour » sont prises sur la notion du jour, quand elle aura lieu
+      // (étape active, ni retirée par le parent, ni l'exercice du jour) : `priseSur` (seance.json) ; pas sur les exercices de
+      // `saufModules` (décision du parent du 4 novembre 2026 : l'étal et les voiliers, lents ; l'étape s'ajoute à leur séance)
+      const M = step.minutes ? step.minutes - this.c.etapes.filter((x) => x.priseSur === step.id && x.actif !== false && this.handlers[x.id] && !this.sans.includes(x.id) && !(x.id === "probleme" && this.rec.module === 7) && !(x.saufModules ?? []).includes(this.rec.module)).reduce((a, x) => a + (x.minutes ?? 0), 0) : 0;
+      await h({ session: this, step, end: M ? t0 + M * 60000 : Infinity });
       if (this.stopped) return this.rec;
       this.rec.etapes.push({ id: step.id, dureeS: Math.round((this.active() - t0) / 1000) });
       await this.save();

@@ -18,6 +18,8 @@
 // fois (service worker, cache plein) ; chaque cas efface les données (« Tout effacer ») et relance l'application ; la vraie voix,
 // le vrai son, la lecture automatique refusée, l'écran de démarrage touché pour de vrai, le processeur du profil ralenti ; les
 // lecteurs comptés par le code du journal technique, app/js/engine/etat-page.js)
+// (lot « Problèmes » : sans le problème du jour, `sans=probleme` : il n'est pas l'objet de ce parcours ; tests/e2e/problemes.mjs, la journée
+// d'usage et l'enfant imprévisible le jouent)
 import { Appareil, serveurBanc, REFERENCE, resumeEtat } from "./appareils.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -36,7 +38,7 @@ const ouvrir = async (q = "", prep = null) => {
   const errors = [], bloques = [], e0 = a.erreurs.length, b0 = a.refusLecteurs, page = a.page;
   await page.evaluate(async () => { await window.__app.store.setSetting("echauffement", false); await window.__app.store.setSetting("mascotteTouchee", true); });
   if (prep) await page.evaluate(prep.f, prep.a);
-  await a.relancer({ q: "?sansReprise&sansLecon&guides=0&cran=conseille&meteo=beau" + q });
+  await a.relancer({ q: "?sansReprise&sansLecon&guides=0&cran=conseille&meteo=beau&sans=probleme" + q });
   // ce que la voix dit (le texte, et s'il a été lu depuis ses fichiers) ; la bienvenue du lancement d'abord finie
   await a.page.waitForTimeout(500); await a.attendre(() => !window.__app.voice.speaking, 30000).catch(() => {});
   await a.page.evaluate(() => {
@@ -85,7 +87,9 @@ if (PARTIE !== "2") {
   const o = await ouvrir("&module=2"), { page } = o;
   for (let i = 0; i < 2; i++) { await page.tap(".galet.play", { force: true }); await page.waitForTimeout(400); }
   let n = 0, maxM = 0;
-  for (; n < (COURT ? 12 : 30); n++) {
+  // (14 questions, pas 30 : sur une base neuve sans échauffement, la notion du jour s'arrête vers la 16e depuis le plafond de 10 faits
+  // nouveaux, lot « Correctifs de la confrontation 2 » ; il faut qu'une question reste ouverte pour l'inactivité qui suit)
+  for (; n < (COURT ? 12 : 14); n++) {
     if (!(await attendreQuestion(page, () => window.__app.facts?.q && window.__app.facts.resolve && !window.__app.facts.locked))) break;
     await page.waitForTimeout(400);
     const r = await page.evaluate(() => { const q = window.__app.facts.q; return q.a + q.b; });
@@ -94,7 +98,7 @@ if (PARTIE !== "2") {
     await page.waitForFunction(() => !window.__app.facts?.resolve || window.__app.facts.locked, null, { timeout: 30000 }).catch(() => {});
     const m = await medias(page); maxM = Math.max(maxM, m.video + (m.voix ?? 0));
   }
-  check(n >= (COURT ? 12 : 30), `séance : ${n} questions répondues, la voix à vitesse réelle`);
+  check(n >= (COURT ? 12 : 14), `séance : ${n} questions répondues, la voix à vitesse réelle`);
   check(maxM <= 6, `séance : au plus ${maxM} lecteurs de médias avec une source à la fois (2 vidéos de la mascotte, 2 à 4 sons de la voix)`);
   // 2. une longue inactivité sur une question des additions
   const r = await inactivite(page, "question des additions");

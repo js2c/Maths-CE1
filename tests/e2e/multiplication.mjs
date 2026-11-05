@@ -74,7 +74,8 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const ex = await page.evaluate(() => [...document.querySelectorAll("[data-key]")].filter((e) => e.isConnected && !/^\d+$/.test(e.dataset.key) && getComputedStyle(e).visibility !== "hidden").map((e) => e.dataset.key));
     check(["ligne", "additions", "calcul", "voiliers", "multiplication"].every((k) => ex.includes(k)), `${T} · « choisir » : cinq exercices (${ex.join(",")})`);
     const r0 = await page.evaluate(() => ["ligne", "additions", "calcul", "voiliers", "multiplication"].map((k) => document.querySelector(`[data-key="${k}"]`).getBoundingClientRect()).map((b) => [b.left, b.top, b.right, b.bottom]));
-    check(r0.every((b) => b[0] >= 0 && b[2] <= W && b[3] <= H) && r0.every((b, i) => i === 0 || (b[0] + b[2]) / 2 - (r0[i - 1][0] + r0[i - 1][2]) / 2 >= (160 * W) / 1280), `${T} · les cinq bulles côte à côte, dans l'écran (${r0.map((b) => Math.round(b[0])).join(" ")})`);
+    // (lot « Problèmes » : sept exercices sur deux rangées, quatre puis trois ; les bulles dans l'écran, sans se toucher)
+    check(r0.every((b) => b[0] >= 0 && b[2] <= W && b[3] <= H) && r0.every((b, i) => r0.every((c, k) => k === i || Math.hypot((b[0] + b[2]) / 2 - (c[0] + c[2]) / 2, (b[1] + b[3]) / 2 - (c[1] + c[3]) / 2) >= (160 * W) / 1280)), `${T} · les bulles des exercices dans l'écran, sans se toucher (${r0.map((b) => Math.round(b[0])).join(" ")})`);
     const b0 = await bulle(page); check(!b0.couvre, `${T} · la bulle ne couvre aucun exercice (${b0.place})`);
     await shot(page, "01-choisir-exercices");
     if (big) { const h = await hold(page, '[data-key="multiplication"]'); check(h.label === null, `${T} · appui long : aucune étiquette (lot « Correctifs : passage de l'échauffement aux voiliers », point 7) (${h.label})`); await shot(page, "02-appui-long-multiplication"); await h.release(); }
@@ -216,12 +217,12 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const { page, context, errors } = await open();
     await tap(page, ".leconskey"); await page.waitForSelector(".lecons-tuile"); await page.waitForTimeout(700);
     const keys = await page.evaluate(() => [...document.querySelectorAll(".lecons-tuile")].map((e) => e.dataset.key).join(","));
-    check(keys === "L1,L2,L3,L10,L4,L5,L6,L11,L12,L7,L8,L9,L13,L14,L15,L16,L17,L18,table.addition,table.multiplication", `${T} · le menu : L13, L14 et les deux tables (${keys})`);
+    check(keys === "L1,L2,L3,L10,L4,L5,L6,L11,L12,L7,L8,L9,L13,L14,L15,L16,L17,L18,L19,table.addition,table.multiplication", `${T} · le menu : L13, L14 et les deux tables (${keys})`);
     const rr = await page.evaluate(() => [...document.querySelectorAll(".lecons-tuile, .lecons-rangee")].map((e) => e.getBoundingClientRect()).map((b) => [b.left, b.top, b.right, b.bottom]));
     check(rr.every((b) => b[0] >= 0 && b[2] <= W + 1 && b[3] <= H + 1), `${T} · les seize tuiles et les quatre pictogrammes tiennent dans l'écran`);
     const b = await bulle(page); check(!b.couvre, `${T} · la bulle du menu ne couvre aucune tuile (${b.place})`);
     await shot(page, "16-menu-lecons");
-    if (big) { await tap(page, ".legende", 600); const n = await page.locator(".legende-ligne").count(); check(n === 20, `${T} · la légende du menu : 20 lignes (${n})`); await shot(page, "17-menu-legende"); await tap(page, ".legende-fermer", 400); }
+    if (big) { await tap(page, ".legende", 600); const n = await page.locator(".legende-ligne").count(); check(n === 21, `${T} · la légende du menu : 21 lignes (${n} ; lot « Problèmes » : L19)`); await shot(page, "17-menu-legende"); await tap(page, ".legende-fermer", 400); }
     await resetSaid(page); await tap(page, '.lecons-tuile[data-key="L14"]', 450); await tap(page, '.lecons-tuile[data-key="L14"]');
     check((await said(page)).startsWith("On tourne les rangées."), `${T} · la tuile 14 dit « On tourne les rangées. » (${(await said(page)).slice(0, 60)})`);
     await page.waitForFunction(() => window.__said.some((t) => /tourne/.test(t) && !/^On tourne les rangées\.$/.test(t)), null, { timeout: 60000 }).catch(() => {}); await page.waitForTimeout(2500);

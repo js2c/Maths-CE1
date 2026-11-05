@@ -13,14 +13,14 @@ const read = (f) => JSON.parse(readFileSync(new URL(`../../app/content/${f}.json
 const [seance, lecons, textes, legendes, m1, m2, m3, m5] = ["seance", "lecons", "textes", "legendes", "module1", "module2", "module3", "module5"].map(read);
 const menu = seance.menuLecons;
 
-test("menu : les dix-huit leçons (lot « Sommes jusqu'à 30 » : L11 et L12 ; lot « Multiplication » : L13 et L14 ; lot « L'étal du pêcheur » : L15 à L18, une cinquième rangée), chacune une fois, rangées par exercice ; les tables d'addition et de multiplication au bout de la dernière rangée", () => {
+test("menu : les dix-neuf leçons (lot « Sommes jusqu'à 30 » : L11 et L12 ; lot « Multiplication » : L13 et L14 ; lot « L'étal du pêcheur » : L15 à L18, une cinquième rangée ; lot « Problèmes » : L19, une sixième), chacune une fois, rangées par exercice ; les tables d'addition et de multiplication au bout de la dernière rangée", () => {
   const ids = menu.rangees.flatMap((r) => r.lecons);
   assert.deepEqual([...ids].sort(), Object.keys(lecons).filter((k) => k !== "_doc").sort());
-  assert.deepEqual(menu.rangees.map((r) => r.exercice), ["ligne", "additions", "calcul", "multiplication", "etal"]);
-  assert.deepEqual(menu.rangees.map((r) => r.lecons), [["L1", "L2", "L3", "L10"], ["L4", "L5", "L6", "L11", "L12"], ["L7", "L8", "L9"], ["L13", "L14"], ["L15", "L16", "L17", "L18"]]);
+  assert.deepEqual(menu.rangees.map((r) => r.exercice), ["ligne", "additions", "calcul", "multiplication", "etal", "problemes"]);
+  assert.deepEqual(menu.rangees.map((r) => r.lecons), [["L1", "L2", "L3", "L10"], ["L4", "L5", "L6", "L11", "L12"], ["L7", "L8", "L9"], ["L13", "L14"], ["L15", "L16", "L17", "L18"], ["L19"]]);
   assert.deepEqual(menu.tables, ["addition", "multiplication"]);
   const L = menuLayout(menu);
-  assert.equal(L.filter((x) => x.kind === "lecon").length, 18); assert.equal(L.filter((x) => x.kind === "icone").length, 5); assert.deepEqual(L.filter((x) => x.kind === "table").map((x) => x.id), ["addition", "multiplication"]);
+  assert.equal(L.filter((x) => x.kind === "lecon").length, 19); assert.equal(L.filter((x) => x.kind === "icone").length, 6); assert.deepEqual(L.filter((x) => x.kind === "table").map((x) => x.id), ["addition", "multiplication"]);
   // les deux tables : dans la rangée de la multiplication, à droite de ses deux leçons (tablesPlace : rangée 4, colonnes 4 et 5)
   const last = L.filter((x) => x.y === L.find((y) => y.id === "L13").y).map((x) => x.id ?? x.ex); assert.deepEqual(last, ["multiplication", "L13", "L14", "addition", "multiplication"]);
   // chaque leçon a son nom dit au toucher, sa ligne de légende et son numéro
@@ -98,4 +98,17 @@ test("les phrases du lot : accueil à cinq bulles, fin de leçon, table d'additi
   assert.equal(textes.tableCase.replace("{a}", 7).replace("{b}", 5).replace("{n}", 12), "7 plus 5, 12.");
   assert.ok(textes.choixNom.lecons && textes.choixLecon);
   assert.ok(!("lecons" in (seance.choix ?? {})), "les leçons ne sont plus proposées par l'écran « choisir »");
+});
+
+// (lot « Correctifs de la confrontation 2 », écart 3.8, décision du parent du 3 novembre 2026) l'entraînement libre qui suit une leçon
+// commence par les exemples guidés de l'exercice associé, comme la séance du jour
+test("entraînement libre après une leçon : les exemples guidés de la notion du jour, sinon aucun", async () => {
+  const { guidesApresLecon } = await import("../../app/js/session/free.js");
+  const seance = JSON.parse(readFileSync(new URL("../../app/content/seance.json", import.meta.url)));
+  const N = seance.etapes.find((e) => e.id === "notion");
+  assert.equal(guidesApresLecon(seance, 1, {}, "L1"), N.guides);
+  assert.equal(guidesApresLecon(seance, 2, {}, "L4"), N.module2.guides);
+  assert.equal(guidesApresLecon(seance, 2, {}, null), 0, "sans leçon : aucun exemple guidé");
+  assert.equal(guidesApresLecon(seance, 5, { guidesDus: () => 0 }, "L13"), 0, "la multiplication décide (niveau déjà passé, « très dur »)");
+  assert.equal(guidesApresLecon(seance, 5, { guidesDus: (n) => n }, "L13"), N.module5.guides);
 });

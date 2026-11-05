@@ -63,11 +63,11 @@ Le dépôt est public : l'application et son code sont visibles par tous, mais *
 **Les prix (réglage « Prix de la boutique », juste sous le rythme ; depuis le 2 novembre 2026).** Plus l'enfant fait de séances, plus elle gagne d'étoiles ; mais les créatures arrivent toujours 2 par semaine. Aux prix d'origine, à 3 ou 4 soirs par semaine, elle achète tout dès le lundi et n'a plus rien de nouveau à acheter ensuite. **Que choisir ?**
 
 - elle joue 2 soirs par semaine : **« Prix pour 2 séances par semaine »** (par défaut : 40 une commune, 100 une rare ; 150 et 300 pour faire briller) ;
-- 3 soirs : **« 3 séances par semaine »** (70, 175 ; 250 et 500) ;
-- 4 soirs : **« 4 séances par semaine »** (96, 240 ; 350 et 700) ;
+- 3 soirs : **« 3 séances par semaine »** (64, 160 ; 250 et 500 ; 70 et 175 avant le lot « Problèmes ») ;
+- 4 soirs : **« 4 séances par semaine »** (88, 220 ; 350 et 700 ; 96 et 240 avant le lot « Problèmes ») ;
 - si elle a du mal (elle gagne alors moins d'étoiles par séance) : le choix du dessous.
 
-Les nouveaux prix comptent tout de suite ; ses étoiles restent ; vous pouvez changer à tout moment, rien n'est perdu (cela vaut aussi en rythme libre). D'après les calculs faits sur toute l'année, chacun à son rythme, la collection est complète en juin, et environ une séance sur 20 seulement n'a rien de nouveau à acheter (une sur six à 2 séances : souvent le jeudi, quand elle a tout acheté le lundi). Des prix plus chers que son vrai rythme l'empêchent de finir (aux prix pour 3 séances, à 2 séances par semaine : environ 40 créatures sur 60 en juin). **Un repère** (onglet Progression, « Cartes et boutique », « créatures en vitrine ») : plus de 4 créatures en vitrine deux semaines de suite, c'est trop cher ; 0 presque à chaque fois, c'est trop bas. **Si les prix montent**, l'enfant le verra (70 au lieu de 40) ; le capitaine ne l'explique pas : vous pouvez lui dire, par exemple, « Tu joues plus souvent, alors les créatures coûtent un peu plus cher ; tu en auras autant. »
+Les nouveaux prix comptent tout de suite ; ses étoiles restent ; vous pouvez changer à tout moment, rien n'est perdu (cela vaut aussi en rythme libre). D'après les calculs faits sur toute l'année, chacun à son rythme, la collection est complète en juin, et environ une séance sur 20 seulement n'a rien de nouveau à acheter (une sur six à 2 séances : souvent le jeudi, quand elle a tout acheté le lundi). Des prix plus chers que son vrai rythme l'empêchent de finir (aux prix pour 3 séances, à 2 séances par semaine : environ 40 créatures sur 60 en juin). **Un repère** (onglet Progression, « Cartes et boutique », « créatures en vitrine ») : plus de 4 créatures en vitrine deux semaines de suite, c'est trop cher ; 0 presque à chaque fois, c'est trop bas. **Si les prix montent**, l'enfant le verra (64 au lieu de 40) ; le capitaine ne l'explique pas : vous pouvez lui dire, par exemple, « Tu joues plus souvent, alors les créatures coûtent un peu plus cher ; tu en auras autant. »
 
 **Le coquillage de la série.** Toutes les 10 séances de la série, un coquillage fait briller une créature du récif tirée au hasard (20 étoiles si toutes brillent déjà). Les 5 étoiles toutes les 3 séances restent.
 
@@ -236,6 +236,20 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 | 9 | Les centimes, prix ronds ou en 50 centimes, écrits avec une virgule. | 3,50 = 2 + 1 + 0,50 |
 | 10 | Les centimes, prix en 10, 20 et 50 centimes. | 2,70 = 2 + 0,50 + 0,20 |
 
+**Les problèmes** (lot « Problèmes »)
+
+| Niveau | Ce qui est travaillé | Exemple |
+| --- | --- | --- |
+| 1 | Ajouter ou enlever jusqu'à 10, le tout ou la fin inconnus. | 4 pommes et 3 poires, combien de fruits ? |
+| 2 | Ajouter ou enlever jusqu'à 20, le niveau de départ. | 12 parts de gâteau, 8 mangées, combien en reste-t-il ? |
+| 3 | Groupes égaux et partage avec de petits nombres, l'enfant range les objets. | 6 fraises pour 2, combien chacun ? |
+| 4 | Chercher une partie ou le changement, jusqu'à 20. | 9 crayons dont 4 rouges, combien de bleus ? |
+| 5 | Comparer, de plus et de moins, jusqu'à 20. | 7 billes contre 4, combien de plus ? |
+| 6 | Ajouter, enlever, chercher une partie, jusqu'à 100. | 35 enfants, 20 à la cantine, combien chez eux ? |
+| 7 | Groupes égaux et partage, jusqu'à 50. | 4 cagettes de 5 poissons, combien en tout ? |
+| 8 | Le début inconnu, et comparer au-delà de 20. | Il en perd 6, il en reste 12, combien au début ? |
+| 9 | Deux étapes, deux calculs l'un après l'autre. | 6 billes, 5 de plus, puis 3 perdues |
+
 **Les leçons**
 
 | Leçon | Ce qui est travaillé | Exemple |
@@ -258,6 +272,7 @@ Chaque commande fabrique un fichier `sauvegarde-test-….json` : une vraie sauve
 | L16 | Payer juste, du plus gros au plus petit. | 17, 10, 15, 16, 17 |
 | L17 | Rendre la monnaie, on compte à partir du prix jusqu'à ce qu'on a donné. | de 13 à 20, 7 |
 | L18 | Les centimes, 100 centimes font 1 euro, 3,50 c'est 3 euros et 50 centimes. | 0,50 + 0,50 = 1 |
+| L19 | Le schéma en barres, le tout et ses deux parties, on ajoute ou on enlève. | 4 + 3 = 7, 9 - 4 = 5 |
 | + | La table d'addition, toucher une case dit et montre le calcul. | 7 + 5 = 12 |
 | × | La table de multiplication, toucher une case dit et montre le calcul. | 3 × 4 = 12 |
 
@@ -588,6 +603,48 @@ Les points des relectures indépendantes qui avaient déjà une réponse par dé
 **Restent à décider** (inchangés par ce lot) : l'argent posé sur les ardoises de prix pendant les leçons de la monnaie (R7), et la bulle sur les écrans pleins (elle cache quelques tuiles ou articles le temps d'une phrase).
 
 **À essayer sur la tablette** : une leçon de la monnaie (le menu des leçons, puis L18) ; l'accueil, le galet « jouer » ; l'étal, au début (l'exemple du pêcheur, puis ouvrir le portefeuille).
+
+## d quatervicies) Lot « Correctifs de la confrontation 2 » : vos décisions du 3 novembre
+
+Les écarts de la deuxième confrontation de la spécification avec l'application (`docs/ECARTS-SPEC-2.md`), tels que vous les avez tranchés. Ce qui change pour votre enfant :
+
+- **Les séances d'additions durent à nouveau 9 à 11 minutes.** Quand la famille du jour n'a plus de question possible (une petite famille, déjà bien sue), la séance ne s'arrête plus au bout de 5 minutes : elle finit sur des révisions de faits des autres familles, ceux qui sont dus d'abord. Sur l'année simulée : 9,8 minutes en moyenne (8,8 avant), 10 séances d'additions sur 526 sous 7 minutes (64 avant).
+- **Au plus 10 faits nouveaux par séance** (avant : jusqu'à 15 ou 16).
+- **La contrepartie** : environ 68 % des questions portent sur la famille du jour en moyenne (80 % avant) ; c'est la part que prennent les révisions. Vous aviez fixé l'ordre des critères ; si vous préférez plus de questions sur la famille du jour et acceptez des séances plus courtes, il suffit d'un réglage (`docs/JOURNAL-CONCEPTION.md`, « Décisions du 3 novembre 2026 »).
+- **Au calcul rapide, niveau 7**, de nouveaux calculs : ceux qui tombent juste sur la dizaine (24 + 6, 17 + 3).
+- **À la multiplication**, l'exemple montré par le capitaine ne vient plus qu'au premier passage d'un niveau, et jamais au cran « très dur ».
+- **Après une leçon du menu**, l'entraînement qui suit commence par les exemples guidés, comme dans la séance du jour.
+- **À l'étal et dans les tables**, deux touchers rapides (« 1 » puis « 1 » pour 11) ne sont plus pris pour un seul, même quand la tablette est occupée.
+- **L'écran de démarrage** écrit la version lisiblement : « 03/11/2026 · js2c · version 0.72 ».
+
+**Phrases à fabriquer** : 57 phrases nouvelles (les calculs du niveau 7), avec celles du lot « Problèmes » qui suit dans la même demande de fusion.
+
+**À essayer sur la tablette** : une séance « jouer » d'additions (sa durée, notée dans l'espace parent) ; l'écran de démarrage (la version).
+
+## d quinvicies) Lot « Problèmes » : les problèmes de la vie courante
+
+Votre enfant résout maintenant des **problèmes** : de petites histoires de la vie courante (la cuisine, l'école, l'étal du pêcheur…), lues à voix haute, avec une image du lieu. Les nombres de l'histoire sont sur des **étiquettes** sous l'image ; elle tape la réponse au pavé, comme aux additions.
+
+- **Un problème chaque soir, le « Problème du jour »** : après le défi, juste avant la récompense, un ou deux problèmes en 1 min 30 environ, à son niveau. Pour garder la séance à sa durée, ce temps est pris sur l'exercice du jour (4 min 30 au lieu de 6). Vous pouvez le désactiver (Données et réglages, « Problème du jour »).
+- **Un septième exercice dans « choisir »** : les problèmes, 9 niveaux (le pictogramme : une grande barre et ses deux parties). Ils n'entrent pas dans la rotation de « jouer » (le problème du jour suffit) ; vous pouvez les imposer pour une séance.
+- **Elle commence au niveau 2** (ajouter ou enlever jusqu'à 20), d'après son évaluation de septembre. Vous pouvez choisir un autre niveau (Données et réglages, « Point de départ », « Niveau des problèmes »).
+- **Pendant l'histoire**, chaque étiquette s'allume quand la voix dit son nombre. **Toucher une étiquette** redit sa phrase ; **toucher le capitaine** redit toute l'histoire.
+- **Après une erreur**, l'application dit ce qui s'est passé quand elle le reconnaît (un nombre de l'histoire redit, la réponse de la première étape, une petite erreur de compte, « de plus » qui ne veut pas dire ajouter), puis montre l'aide : le **schéma en barres** (le tout en haut, ses deux parties en dessous, le point d'interrogation à la place de ce qu'on cherche), ou les objets groupés et comptés ; puis la correction est dite dans l'histoire, et le calcul s'écrit.
+- **Au niveau 3**, elle range elle-même les objets dans les assiettes ou les boîtes (elle les fait glisser du doigt), puis tape la réponse.
+- **Une nouvelle leçon, L19 « Le schéma en barres »**, dans le menu des leçons (une sixième rangée).
+- **Espace parent** : le bloc « Module 7 · Les problèmes » (onglet Progression), les erreurs P1 à P4 dans le journal des erreurs, et, dans le détail d'une séance, l'énoncé de chaque problème.
+
+**Les images des lieux** : seule celle de l'étal est là (c'est celle de l'étal du pêcheur). Les 21 autres sont à générer avec les prompts de `art/problemes/contextes.json` ; en attendant, ces problèmes ont un fond de papier uni. Déposez chaque image dans `art/problemes/sources/<lieu>.png` (1920 × 1080), puis une petite demande de fusion : `node art/tools/export-problemes.mjs` et `node tools/precache.mjs`.
+
+**Phrases à fabriquer** : 911 phrases pour ce lot (les histoires, les questions, les corrections, les noms, les aides, la leçon), 4 pour les nouveaux prix, plus les 57 du lot « Correctifs de la confrontation 2 » : 972 en tout, environ 8,4 Mo. La voix passera d'environ 82,2 à 90,6 Mo, sous le nouveau plafond de 95 Mo. La liste exacte : `tests/recette-fonctionnelle/out-problemes/PHRASES.md`.
+
+**Les prix de la boutique** (votre décision du 4 novembre) : le problème du jour rapporte un peu moins d'étoiles de mer ; les prix d'achat des niveaux « 3 séances par semaine » et « 4 séances par semaine » baissent d'environ 10 % : 64 et 160 étoiles (au lieu de 70 et 175), 88 et 220 (au lieu de 96 et 240). Les prix pour faire briller ne changent pas. Quatre phrases nouvelles : « Pour l'avoir, il faut 64 étoiles. », et 160, 88, 220.
+
+**L'étal et les voiliers** (votre décision du 4 novembre) : le problème du jour s'ajoute à leur séance, sans raccourcir l'exercice ; la séance reste sous 12 minutes.
+
+**À relire** : les rôles familiaux des histoires (« Papa », « Mamie », « ton copain »…), dans `docs/maquettes/problemes/ENONCES.md` ; signalez ceux à changer.
+
+**À essayer sur la tablette** : une séance « jouer » jusqu'au problème du jour ; « choisir », les problèmes, niveau 3 (glisser les objets) ; une erreur, pour voir le schéma ; la leçon L19.
 
 ## e) Ce qui reste approximatif ou à ajuster
 

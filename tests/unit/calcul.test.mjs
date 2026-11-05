@@ -28,7 +28,8 @@ test("les 9 niveaux : chaque calcul respecte la procédure du niveau (docs/SPEC.
   assert.ok(all(4).every((c) => c.op === "+" && t(c.n) === t(c.a)));
   assert.ok(all(5).every((c) => c.op === "-" && t(c.n) === t(c.a)));
   assert.ok(all(6).every((c) => c.b === 9 && c.op === "+"));
-  assert.ok(all(7).every((c) => c.op === "+" && t(c.n) === t(c.a) + 1 && u(c.n) !== 0));
+  // (écart 6.12 : les calculs qui tombent sur la dizaine, 24 + 6, y sont aussi)
+  assert.ok(all(7).every((c) => c.op === "+" && t(c.n) === t(c.a) + 1));
   assert.ok(all(8).every((c) => c.b >= 11 && u(c.a) + u(c.b) <= 9));
   assert.ok(all(9).every((c) => c.op === "-" && t(c.n) === t(c.a) - 1 && u(c.a) >= 1));
   for (let n = 1; n <= 9; n++) assert.ok(all(n).length >= 60 && all(n).every((c) => c.n >= 1 && c.n <= 100), `niveau ${n}`);
@@ -141,4 +142,21 @@ test("« jouer » : rotation entre les trois modules, le moins maîtrisé d'abor
   assert.equal(chooseModule(seance, [s(1, 1)], null, () => true, m4, JAN).module, 5);
   assert.equal(chooseModule(seance, [s(5, 1)], null, () => true, m4, JAN).module, 3, "jamais deux fois de suite");
   assert.equal(chooseModule(seance, [s(1, 1)], null, () => true, m4, new Date(2027, 0, 3, 18).getTime()).module, 3, "pas avant le 4 janvier");
+});
+
+// (lot « Correctifs de la confrontation 2 », écart 6.12, décision du parent du 3 novembre 2026) les calculs qui tombent sur la dizaine
+// supérieure entrent au niveau 7 : un seul pont, jusqu'à la dizaine ; la phrase de C4 dit « ça fait dix »
+test("écart 6.12 : 24 + 6, 17 + 3, 45 + 5 au niveau 7 (un seul pont), et dans aucun autre niveau ; C4 « ça fait dix »", async () => {
+  const m3 = JSON.parse(readFileSync(new URL("../../app/content/module3.json", import.meta.url))), all = (n) => calcsOf(m3.niveaux[n - 1]);
+  const has = (n, a, b) => all(n).some((c) => c.op === "+" && c.a === a && c.b === b);
+  for (const [a, b] of [[24, 6], [17, 3], [45, 5], [13, 7], [12, 8], [86, 4]]) { assert.ok(has(7, a, b), `${a} + ${b} au niveau 7`); for (const n of [4, 8]) assert.ok(!has(n, a, b), `${a} + ${b} pas au niveau ${n}`); }
+  assert.equal(all(7).filter((c) => (c.a % 10) + c.b === 10).length, 48);
+  assert.ok(!has(7, 20, 8), "un nombre rond au départ n'est pas un passage de dizaine");
+  const path = (a, op, b, type) => chemin({ a, op, b, type }).map((s) => `${s.op}${s.k}>${s.a}`).join(" ");
+  assert.equal(path(24, "+", 6, "passerPlus"), "+6>30");
+  assert.equal(classifyCalc({ a: 24, op: "+", b: 6, type: "passerPlus", forme: "directe" }, 20), "C4");
+  const { phraseC4 } = await import("../../app/js/modules/calc/screen.js");
+  const E = JSON.parse(readFileSync(new URL("../../app/content/textes.json", import.meta.url))).erreurCalc;
+  assert.equal(phraseC4(E, { a: 24, b: 6 }), "4 plus 6, ça fait dix : on arrive à la dizaine suivante.");
+  assert.equal(phraseC4(E, { a: 38, b: 5 }), "8 plus 5 dépasse dix : on passe à la dizaine suivante.");
 });

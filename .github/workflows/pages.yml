@@ -31,6 +31,10 @@ jobs:
       url: ${{ steps.deploiement.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # toute l'histoire de main, sans le contenu des fichiers anciens : le numéro de version lisible (tools/version-libelle.mjs)
+          fetch-depth: 0
+          filter: blob:none
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -41,6 +45,8 @@ jobs:
         run: |
           node tools/precache.mjs
           git diff --quiet -- app/sw-files.json app/sw.js app/version.json || echo "::warning::app/sw-files.json n'était pas à jour dans le dépôt : la liste a été refaite pour cette publication (lancer node tools/precache.mjs)."
+          # (demande du parent du 3 novembre 2026) l'écran de démarrage écrit « 03/11/2026 · js2c · version 0.72 »
+          node tools/version-libelle.mjs
       - name: Tests unitaires
         run: npm test
         env:

@@ -1,0 +1,1 @@
+Les illustrations des lieux, générées par le parent (prompts : ../contextes.json), une par lieu : <lieu>.png ou .jpg, 1920 × 1080. Puis : node art/tools/export-problemes.mjs, et node tools/precache.mjs.

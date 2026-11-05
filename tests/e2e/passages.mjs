@@ -19,6 +19,8 @@
 // Mo, environ une minute) pour chaque situation n'apporterait rien à ce qu'il vérifie ; le son (bruitages, musique) ne change
 // rien à ce qu'il vérifie. La vraie voix, le son et l'application installée sont éprouvés sur le banc Android (journee.mjs,
 // enfant.mjs --android, installation.mjs, veille.mjs).)
+// (lot « Problèmes » : sans le problème du jour, `sans=probleme` : il n'est pas l'objet de ce parcours ; tests/e2e/problemes.mjs, la journée
+// d'usage et l'enfant imprévisible le jouent)
 import { accueilReel, chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -39,9 +41,9 @@ async function open(q = "", prep = null) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, hasTouch: true }); await accueilReel(context);
   const page = await context.newPage(), errors = [];
   page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error" && !/Failed to load resource/.test(m.text())) errors.push(m.text()); });
-  await page.goto(url + "?nosw&voix=rapide&son=non"); await page.waitForFunction(() => window.__ready !== undefined);
+  await page.goto(url + "?nosw&sans=probleme&voix=rapide&son=non"); await page.waitForFunction(() => window.__ready !== undefined);
   if (prep) { await page.evaluate(prep); }
-  await page.goto(url + "?nosw&voix=rapide&son=non&cran=conseille&faits=5&questions=2&sansLecon" + q); await page.waitForFunction(() => window.__ready !== undefined);
+  await page.goto(url + "?nosw&sans=probleme&voix=rapide&son=non&cran=conseille&faits=5&questions=2&sansLecon" + q); await page.waitForFunction(() => window.__ready !== undefined);
   if (LENT > 1) { const s = await context.newCDPSession(page); await s.send("Emulation.setCPUThrottlingRate", { rate: LENT }); }
   return { page, context, errors };
 }
@@ -125,7 +127,7 @@ async function cas(nom, ex, chemin, m) {
     } else if (chemin === "pause") {
       // la séance proposée (ici les additions) ; pause pendant l'échauffement ; « choisir » ; l'exercice ; puis l'échauffement
       // de la nouvelle séance est passé au moment voulu (le chemin du défaut)
-      await page.goto(url + "?nosw&voix=rapide&son=non&cran=conseille&faits=5&questions=2&sansLecon&module=2"); await page.waitForFunction(() => window.__ready !== undefined);
+      await page.goto(url + "?nosw&sans=probleme&voix=rapide&son=non&cran=conseille&faits=5&questions=2&sansLecon&module=2"); await page.waitForFunction(() => window.__ready !== undefined);
       await entrer(page, ".play"); await etape(page, "echauffement", 2); await question(page);
       await page.tap(".session-home", { force: true }); await page.waitForTimeout(T(700));
       await entrer(page, ".choisir"); await page.waitForSelector(".choix-ex", { timeout: T(15000) });

@@ -197,6 +197,11 @@ voice.onSilence = () => { ocean.mascotte.silence(); bulle.silence(); };
 // les bruitages et la musique (lot 2) ; ?son=non : silence (mesures)
 const sound = new Sound({ content: sonContent, index: sonIndex, off: P.get("son") === "non" });
 sound.setPrefs(await store.setting("son"));
+// (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026, qui change celle du 6 octobre 2026, 2.4 et 11.2) LA MUSIQUE
+// HORS SÉANCE : une musique d'ambiance (son.json, musique.horsSeance) dès le toucher de l'écran de démarrage, à l'accueil, à l'écran
+// de choix, au menu des leçons, dans la boutique, le récif et l'album ; la séance (et l'entraînement libre) garde la sienne, tirée au
+// hasard ; les enchaînements en fondu (engine/son.js) ; rien dans l'espace parent (le son y est suspendu)
+const ambiance = () => sound.startMusic(sonContent.musique.horsSeance ?? "profondeurs");
 sound.onEtat = (etat) => noterTech("son", `son : ${({ running: "en marche", suspended: "suspendu", interrupted: "coupé par le système", closed: "fermé" })[etat] ?? etat}`);
 // (lot « Correctifs de l'installation et de la veille », point 2) LE PREMIER PLAN ET L'ARRIÈRE-PLAN (veille, verrouillage, autre
 // application) : notés dans le journal technique ; au retour, le son est repris (la vidéo de la mascotte est surveillée par
@@ -613,7 +618,12 @@ const parent = new ParentSpace(app, { content: parentContent, seance, module2, c
 app.parent = parent;
 // l'espace parent coupe le son ; à la sortie, ses réglages (musique, volume, bruitages) sont relus
 // (pendant une pause, le parent peut terminer la séance : endPausedSession)
-const openParent = async () => { voice.stop(); sound.suspend(); const r = await parent.open(); if (r?.terminer) await endPausedSession({ par: "parent", raison: "terminée par le parent pendant une pause" }); if (r?.reload) location.reload(); sound.setPrefs(await store.setting("son")); sound.resume(); };
+const openParent = async () => { voice.stop(); sound.suspend(); const r = await parent.open(); if (r?.terminer) await endPausedSession({ par: "parent", raison: "terminée par le parent pendant une pause" }); if (r?.reload) location.reload(); sound.setPrefs(await store.setting("son"));
+// (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026, qui change celle du 6 octobre 2026, 2.4 et 11.2) LA MUSIQUE
+// HORS SÉANCE : une musique d'ambiance (son.json, musique.horsSeance) dès le toucher de l'écran de démarrage, à l'accueil, à l'écran
+// de choix, au menu des leçons, dans la boutique, le récif et l'album ; la séance (et l'entraînement libre) garde la sienne, tirée au
+// hasard ; les enchaînements en fondu (engine/son.js) ; rien dans l'espace parent (le son y est suspendu)
+const ambiance = () => sound.startMusic(sonContent.musique.horsSeance ?? "profondeurs"); sound.resume(); };
 // (lot « Correctifs : passage de l'échauffement aux voiliers », point 10 ; demande du parent du 10 octobre 2026) LES GALETS DE
 // L'ACCUEIL : plus grands (au moins 200 px de large) et chacun sa forme de galet (atelier : sea/galets.ts, sprites
 // « accueil.galet.* ») ; le bouton est la boîte du galet, son dessin (ombre comprise) déborde un peu. Sélectionné, l'entourage
@@ -637,7 +647,7 @@ let homeEls = [], bienvenueEnCours = false;
 // (une bulle touchée pendant la bienvenue du lancement la coupe : la suite parle aussitôt)
 const clearHome = () => { homeEls.forEach((e) => e.remove()); homeEls = []; homeSel = null; if (bienvenueEnCours) { bienvenueEnCours = false; voice.stop(); } };
 async function showHome({ done, first = false, bienvenue = false }) {
-  clearHome(); ocean.mascotte.ambiance("pause"); fleche.cacher();
+  clearHome(); ocean.mascotte.ambiance("pause"); fleche.cacher(); ambiance();
   // (lot 3 bis, R22) ce que « réécouter » redit à l'accueil (point 10 : « Touche une bulle : je te dis ce que c'est. Touche-la
   // encore pour y aller. »)
   voice.instruction = done ? text.data.accueilConsigneFaite : text.data.accueilConsigne;
@@ -754,7 +764,8 @@ async function runSession(choix = null, reprise = null) {
   // (une séance interrompue dont l'étape abandonnée s'est réveillée : ce n'est plus elle qui mène l'écran)
   if (session.stopped) return;
   mode = null; frieze.show(false); homeKey.style.visibility = "hidden";
-  sound.stopMusic();
+  // (lot « Correctifs du 5 novembre ») la séance finie, la musique d'ambiance revient en fondu, avant la boutique ou le récif
+  ambiance();
   // (lot « La boutique du récif ») le bouton de fin de la récompense : la boutique (un achat est possible) ou le récif ; « à
   // demain » vient au retour
   const vers = app.finVers; app.finVers = null;
@@ -984,7 +995,9 @@ function abandonActivity() {
   bulle.cacher(); fleche.cacher(); ocean.mascotte.release(); ocean.mascotte.ambiance("pause");
   // (le filet : un bouton « passer » ou du sélecteur libre posé hors de toute portée)
   document.querySelectorAll("#ui .free, #ui .skip").forEach((e) => e.remove());
-  mode = null; homeKey.style.visibility = "hidden"; sound.stopMusic();
+  // (lot « Correctifs du 5 novembre » : la musique n'est plus arrêtée ici ; l'écran qui suit choisit la sienne : l'accueil, la musique
+  // d'ambiance, une séance, la sienne ; l'enchaînement se fait en fondu)
+  mode = null; homeKey.style.visibility = "hidden";
 }
 // quitter l'entraînement libre
 function quitFree() { abandonActivity(); showHome({ done: true }); }
@@ -1047,11 +1060,16 @@ noterTech("lancement", "application lancée", { premiereImageMs, pretMs: Math.ro
   affichage: ["fullscreen", "standalone", "minimal-ui"].find((m) => matchMedia(`(display-mode: ${m})`).matches) ?? "navigateur", ecran: `${innerWidth}×${innerHeight}`, densite: devicePixelRatio, navigateur: navigator.userAgent });
 const toucheDemarrage = await demarrage.attendreToucher();
 demarrageTouche = true;
+// (décision 1) une séance du jour à reprendre après un rechargement : l'accueil en pause, avec « continuer »
+// (lot « Correctifs du 5 novembre » : lue avant le fondu de sortie, pour savoir quelle musique commence avec ce toucher)
+const reprisePromise = P.has("sansReprise") ? Promise.resolve(null) : repriseDuJour(dejaLues, Date.now());
 if (toucheDemarrage) { voice.unlock(); sound.unlock(); }
+// (lot « Correctifs du 5 novembre ») LA MUSIQUE COMMENCE AVEC CE TOUCHER, le premier son permis par Android : la musique d'ambiance,
+// ou, pour une séance à reprendre, la sienne, au niveau de la pause (sans toucher, elle commencera au premier : engine/son.js, unlock)
+const aReprendre = await reprisePromise;
+if (aReprendre) { aReprendre.musique ??= pickMusic(sonIndex, rnd); sound.pauseLevel(true); sound.startMusic(aReprendre.musique); } else ambiance();
 stage.paused = false; // (la scène reprend sous le fondu de sortie)
 await demarrage.fermer();
-// (décision 1) une séance du jour à reprendre après un rechargement : l'accueil en pause, avec « continuer »
-const aReprendre = P.has("sansReprise") ? null : await repriseDuJour(dejaLues, Date.now());
 if (aReprendre) preparerReprise(aReprendre);
 else showHome({ done: await doneToday(dejaLues), bienvenue: toucheDemarrage });
 requestAnimationFrame(() => requestAnimationFrame(() => { performance.mark("app-ready"); window.__ready = performance.now() - T0; }));

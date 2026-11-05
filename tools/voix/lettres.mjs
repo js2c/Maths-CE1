@@ -26,10 +26,13 @@ const PLEIN = /(?<![\p{L}])(six|huit|dix|cinq)(?= (?:plusse|moins|fois|égale)(?
 const plein = (m) => (m[0] === m[0].toLowerCase() ? PLEINES[m] : PLEINES[m.toLowerCase()].replace(/^./, (c) => c.toUpperCase()));
 
 // une phrase telle que la voix doit la lire : symboles puis nombres en lettres
+// (lot « Correctifs du 5 novembre ») le « ? » d'un calcul (« 3 + ? = 5 ») se dit « combien » ; seulement dans une phrase qui a un
+// signe d'opération : « Combien de plus, combien de moins ? » était donné à la voix « … combien de moins combien »
 export function pourLaVoix(phrase) {
+  const calcul = /[+−–×=]/.test(phrase);
   return phrase
     .replace(/\s*\+\s*/g, " plus ").replace(/\s*[−–]\s*/g, " moins ").replace(/\s*×\s*/g, " fois ").replace(/\s*=\s*/g, " égale ")
-    .replace(/(?<=plus |moins |fois |égale )\?/g, "combien").replace(/^\?(?= plus)/, "Combien")
+    .replace(/(?<=plus |moins |fois |égale )\?/g, (m) => (calcul ? "combien" : m)).replace(/^\?(?= plus)/, "Combien")
     .replace(/\d+/g, (d, i, s) => enLettres(Number(d), { feminin: FEMININS.test(s.slice(i + d.length).trimStart()) }))
     .replace(/\s{2,}/g, " ").trim()
     .replace(PLUS, "$1lusse").replace(PLEIN, plein);

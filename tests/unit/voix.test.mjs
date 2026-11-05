@@ -26,6 +26,7 @@ test("une phrase pour la voix : nombres, symboles, féminin", () => {
   assert.equal(pourLaVoix("Place le poisson sur le nombre 37."), "Place le poisson sur le nombre trente-sept.");
   assert.equal(pourLaVoix("5 + 2 = ?"), "cinque plusse deux égale combien");
   assert.equal(pourLaVoix("3 + ? = 7"), "trois plusse combien égale sept");
+  assert.equal(pourLaVoix("Combien de plus, combien de moins ?"), "Combien de plusse, combien de moins ?"); // (lot « Correctifs du 5 novembre » : pas de calcul, le « ? » reste)
   assert.equal(pourLaVoix("26 plus 10 ?"), "vingt-sisse plusse dix ?"); assert.equal(pourLaVoix("Combien font 8 plus 7 ?"), "Combien font huite plusse sept ?"); // la forme pleine devant une opération
   assert.equal(pourLaVoix("70 moins 20 ?"), "soixante-disse moins vingt ?"); assert.equal(pourLaVoix("6 poissons et 8 perles, ça fait 14."), "six poissons et huit perles, ça fait quatorze.");
   assert.equal(pourLaVoix("? + 4 = 6"), "Combien plusse quatre égale six");

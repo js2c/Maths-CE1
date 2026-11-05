@@ -18,6 +18,7 @@ import { chromium } from "./navigateur.mjs";
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { albumParLeRecif } from "./recif-commun.mjs";
 import { serve } from "../serve.mjs";
 
 const args = process.argv.slice(2), OUT = resolve(args.includes("--out") ? args[args.indexOf("--out") + 1] : "tests/e2e/out/lot3ter"); mkdirSync(OUT, { recursive: true });
@@ -218,7 +219,7 @@ if (part("appui")) {
   {
     const { page, context, errors } = await open("&cran=conseille&sans=echauffement");
     await page.waitForSelector(".choisir"); await page.waitForTimeout(400);
-    for (const [sel, n] of [[".play", "jouer"], [".leconskey", "les leçons"], [".reefkey", "le récif"], [".albumkey", "l'album"], [".choisir", "choisir"]]) await probe(page, "accueil", sel, n, { label: false, shot: n === "jouer", brief: n === "choisir" ? changed : null });
+    for (const [sel, n] of [[".play", "jouer"], [".leconskey", "les leçons"], [".reefkey", "le récif"], [".choisir", "choisir"]]) await probe(page, "accueil", sel, n, { label: false, shot: n === "jouer", brief: n === "choisir" ? changed : null });
     await page.waitForSelector(".choix-ex"); await page.waitForTimeout(300);
     for (const ex of ["ligne", "additions", "calcul", "voiliers"]) await probe(page, "choisir", `.choix-ex[aria-label="${ex}"]`, ex, { label: false });
     for (const ex of ["ligne", "additions", "calcul", "voiliers"]) {
@@ -271,7 +272,7 @@ if (part("appui")) {
     await page.waitForTimeout(600);
     // (lot « Décisions sur les constats de l'agent », décision 3 : l'accueil en pause prend les galets de l'accueil, en deux touchers,
     // sans étiquette ; « continuer » reprend au second toucher)
-    for (const [sel, n] of [[".keep.choisir", "choisir"], [".keep.reefkey", "le récif"], [".keep.albumkey", "l'album"], [".keep.play", "continuer"]]) await probe(page, "accueil en pause", sel, n, { label: false, shot: n === "continuer", brief: n === "continuer" ? async (p) => { await p.waitForTimeout(300); if (await p.evaluate(() => window.__app.enPause)) { await (await press(p, sel, 80))(); await p.waitForTimeout(400); } return !(await p.evaluate(() => window.__app.enPause)); } : null });
+    for (const [sel, n] of [[".keep.choisir", "choisir"], [".keep.reefkey", "le récif"], [".keep.play", "continuer"]]) await probe(page, "accueil en pause", sel, n, { label: false, shot: n === "continuer", brief: n === "continuer" ? async (p) => { await p.waitForTimeout(300); if (await p.evaluate(() => window.__app.enPause)) { await (await press(p, sel, 80))(); await p.waitForTimeout(400); } return !(await p.evaluate(() => window.__app.enPause)); } : null });
     check(!errors.length, `séance : aucune erreur (${errors.join(" | ")})`); await context.close();
   }
   // 3. la ligne graduée : « je ne sais pas » ; les bulles-réponses répondent au premier contact
@@ -298,8 +299,8 @@ if (part("appui")) {
   {
     const dump = JSON.parse(readFileSync(SAVE, "utf8"));
     const { page, context, errors } = await open("&sans=echauffement", async (d) => { await window.__app.store.restore(d, ["reglages"]); }, {}, dump);
-    await page.waitForSelector(".albumkey"); await page.waitForTimeout(300);
-    await press(page, ".albumkey", 60).then((r) => r()); await page.waitForSelector(".album-tab"); await page.waitForTimeout(800);
+    await page.waitForSelector(".reefkey"); await page.waitForTimeout(300);
+    await albumParLeRecif(page, (s) => press(page, s, 60).then((r) => r())); await page.waitForSelector(".album-tab"); await page.waitForTimeout(800);
     const tabs = await page.evaluate(() => [...document.querySelectorAll(".album-tab")].map((e) => e.getAttribute("aria-label")));
     for (const t of tabs) await probe(page, "album", `.album-tab[aria-label="${t}"]`, `onglet ${t}`, { shot: t === tabs[0] });
     await probe(page, "album", ".album-card.back", "carte à découvrir", { shot: true });
@@ -308,8 +309,8 @@ if (part("appui")) {
     await probe(page, "carte en grand", ".card", "retourner la carte", { shot: true, brief: async (p) => (await p.locator(".card.flipped").count()) > 0 });
     await probe(page, "carte en grand", ".bubble.check", "c'est bon", { brief: async (p) => { await p.waitForTimeout(500); return !(await p.locator(".card").count()); } });
     await probe(page, "album", ".homekey:not(.session-home)", "maison", { brief: async (p) => { await p.waitForTimeout(800); return !(await p.evaluate(() => window.__app.album.open)); } });
-    await page.waitForSelector(".reefkey"); await page.waitForTimeout(300);
-    await press(page, ".reefkey", 60).then((r) => r()); await page.waitForFunction(() => window.__app.reef?.open, null, { timeout: 15000 }); await page.waitForTimeout(1500);
+    // (lot « Correctifs du 5 novembre » : l'album ouvert depuis le récif ; sa maison y ramène)
+    await page.waitForFunction(() => window.__app.reef?.open, null, { timeout: 15000 }); await page.waitForTimeout(1500);
     await probe(page, "récif", ".albumkey", "l'album", { shot: true });
     if (await page.locator(".reef-pearl").count()) await probe(page, "récif", ".reef-pearl", "perle d'une zone");
     await probe(page, "récif", ".homekey:not(.session-home)", "maison", { brief: async (p) => { await p.waitForTimeout(800); return !(await p.evaluate(() => window.__app.reef.open)); } });

@@ -60,7 +60,7 @@ for (const nom of NOMS) {
   await ecran("accueil en pause", async () => { await a.attendre(ATTEND, 60000).catch(() => {}); await a.page.waitForTimeout(800); await a.toucher(".session-home"); await vis(".keep.play"); await secouer("accueil en pause"); });
   await ecran("récif", async () => { await a.relancer({ q: Q }); await a.deuxTouchers(".galet.reefkey"); await vis(".boutique-cle"); await a.page.waitForTimeout(1500); await secouer("récif"); });
   await ecran("boutique", async () => { await a.toucher(".boutique-cle"); await vis(".boutique-tuile"); await secouer("boutique"); });
-  await ecran("album", async () => { await a.relancer({ q: Q }); await a.deuxTouchers(".galet.albumkey"); await a.attendre(() => window.__app.album?.open, 20000); await secouer("album"); });
+  await ecran("album", async () => { await a.relancer({ q: Q }); await a.deuxTouchers(".galet.reefkey"); await vis(".boutique-cle"); await a.toucher(".albumkey"); await a.attendre(() => window.__app.album?.open, 20000); await secouer("album"); });
   await ecran("espace parent", async () => { await a.relancer({ q: Q }); await a.page.waitForTimeout(1000); await a.toucher(".logo", { ms: 2400 }); await vis(".pa-keys"); await secouer("espace parent"); });
   check(!a.erreurs.length, `${nom} : aucune erreur dans la page${a.erreurs.length ? ` (${a.erreurs[0]})` : ""}`);
   await a.detruire();

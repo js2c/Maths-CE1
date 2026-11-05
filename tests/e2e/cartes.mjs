@@ -90,8 +90,7 @@ async function playToReward(page, { onCeremony, atShell, atCard } = {}) {
   // (quatre créatures portent un autre nom dans la maquette du récif vivant : session/reef.js, NOM_MAQUETTE)
   const MAQ = { "benitier-geant": "benitier", "meduse-criniere": "meduse", "ver-tubicole-geant": "ver-tubicole", "requin-groenland": "requin-du-groenland" };
   check(won.every((id) => viv.includes(MAQ[id] ?? id)) && viv.length === lagon.length + won.length, `récif : ${viv.length} créatures, dont celles du récif de corail`);
-  await page.tap(".homekey:not(.session-home)", { force: true }); await page.waitForTimeout(600);
-  // l'album : la page du récif de corail, avec les vignettes brillantes
+  // l'album : la page du récif de corail, avec les vignettes brillantes (lot « Correctifs du 5 novembre » : depuis le récif, son livre)
   await page.waitForSelector(".albumkey", { timeout: 20000 }); await page.tap(".albumkey", { force: true }); await page.waitForSelector(".album-card", { timeout: 10000 });
   await page.waitForTimeout(500);
   const tabs = await page.$$(".album-tab"); await tabs[1].tap({ force: true }); await page.waitForTimeout(1200);

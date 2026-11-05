@@ -19,7 +19,7 @@ import { chromium } from "./navigateur.mjs";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
-import { ilYaSemaines, recifOuvert, toucherCreature } from "./recif-commun.mjs";
+import { albumParLeRecif, ilYaSemaines, recifOuvert, toucherCreature } from "./recif-commun.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const OUT = resolve(opt("--out", "tests/e2e/out/recompenses"));
@@ -107,7 +107,7 @@ await shot("10-carte-brillante");
 await voixOk("récif complet");
 await page.tap(".check", { force: true }); await page.waitForTimeout(600);
 
-// ---- 4. l'album, depuis le récif puis depuis l'accueil
+// ---- 4. l'album, depuis le récif (lot « Correctifs du 5 novembre » : il n'a plus de galet à l'accueil ; on y va toujours par le récif)
 await page.tap(".albumkey", { force: true }); await page.waitForSelector(".album-card.got", { timeout: 20000 }); await page.waitForTimeout(1200);
 await shot("11-album-depuis-le-recif");
 check((await page.locator(".album-page .album-card").count()) === 15 && (await page.locator(".album-card.got").count()) === 15, "album : le lagon complet, 15 cartes visibles");
@@ -123,10 +123,10 @@ check((await page.locator(".album-page .album-card.closed").count()) === 15, "al
 await page.tap(".homekey:not(.session-home) >> nth=-1", { force: true }); await page.waitForTimeout(600);
 check((await page.locator(".album-page").count()) === 0 && (await page.evaluate(() => window.__app.reef.open && window.__app.reef.api.vivantes().length)) === 15, "la maison de l'album ramène au récif");
 await page.tap(".homekey:not(.session-home)", { force: true }); await page.waitForTimeout(600);
-// l'album depuis l'accueil, avec quelques cartes seulement : des dos à découvrir
+// l'album (par le récif), avec quelques cartes seulement : des dos à découvrir
 await page.evaluate(async () => { await window.__app.store.put("recompenses", { id: "cartes", cartes: { crabe: { n: 1, premiere: Date.now() }, hippocampe: { n: 1, premiere: Date.now() }, "poisson-clown": { n: 1, premiere: Date.now() } } }); });
 await page.reload(); await page.waitForFunction(() => window.__ready !== undefined); await page.waitForTimeout(500);
-await page.tap(".albumkey", { force: true }); await page.waitForSelector(".album-card.back", { timeout: 20000 }); await page.waitForTimeout(1200);
+await albumParLeRecif(page); await page.waitForSelector(".album-card.back", { timeout: 20000 }); await page.waitForTimeout(1200);
 await shot("15-album-a-decouvrir");
 check((await page.locator(".album-page .album-card.got").count()) === 3 && (await page.locator(".album-page .album-card.back").count()) === 12, "album : 3 cartes obtenues, 12 dos à découvrir");
 await page.tap(".album-card.back >> nth=0", { force: true }); await page.waitForTimeout(400);

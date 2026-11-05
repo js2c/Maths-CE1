@@ -7,6 +7,7 @@
 //   node tests/recette-fonctionnelle/c-toucher.mjs [--seulement essai[,essai]] (essais : voir ESSAIS en bas)
 import { writeFileSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { albumParLeRecif } from "../e2e/recif-commun.mjs";
 import { OUT, Serie, attendre, ecrireIndex, indexPartie, navigateur, opt, ouvrir, touchables, toucher } from "./commun.mjs";
 
 const DIR = join(OUT, "C-toucher");
@@ -198,7 +199,7 @@ async function rien() {
     ["récompense : la carte retournée", { base: "neuve", nom: true, params: "cran=conseille&sans=echauffement,notion,defi&etoiles=30" }, async (p) => { await toucher(p, ".play"); await attendre(p, () => document.querySelector(".shelltap"), null, 60000); await pause(p, 1000); await toucher(p, ".shelltap"); await attendre(p, () => document.querySelector(".card.flipped"), null, 30000); }],
     ["fin de séance : la lune", { base: "neuve", nom: true, params: "cran=conseille&sans=echauffement,notion,defi" }, async (p) => { await toucher(p, ".play"); await attendre(p, () => document.querySelector(".moon"), null, 90000); }],
     ["le récif", { base: "mois", nom: true }, async (p) => { await toucher(p, ".reefkey"); }],
-    ["l'album", { base: "mois", nom: true }, async (p) => { await toucher(p, ".albumkey"); }],
+    ["l'album", { base: "mois", nom: true }, async (p) => { await albumParLeRecif(p, (sel) => toucher(p, sel)); }], // (lot « Correctifs du 5 novembre » : par le récif)
     ["espace parent", { base: "mois", nom: true }, async (p) => { p.evaluate(() => window.__app.parent.open()).catch(() => {}); await attendre(p, () => document.querySelector(".pa-keys")); for (const d of "1234") { await p.dispatchEvent(`.pa-keys button[data-key="${d}"]`, "pointerdown"); await pause(p, 80); } }],
   ];
   // toutes les pages en même temps : chacune va à son écran, puis 60 s d'attente commune

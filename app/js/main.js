@@ -1,7 +1,7 @@
 // DÉMARRAGE. Charge l'atlas et les planches nécessaires au premier écran (le lagon, les boutons, la tortue), lance
 // l'animation et la mascotte (ses vidéos se chargent en arrière-plan : engine/mascotte.js), puis le reste.
 // Premier écran : l'océan vivant et une grosse bulle « jouer » (ou, si la séance du jour est déjà faite,
-// la lune en décor et la bulle « Encore ! » de l'entraînement libre), le récif et l'album ; le premier
+// la lune en décor et la bulle « Encore ! » de l'entraînement libre), les leçons, le récif (l'album s'ouvre depuis le récif) ; le premier
 // toucher débloque la voix et lance la séance (session/session.js). Pendant la séance, la maison (en haut
 // à gauche) la met en pause ; la frise d'avancement montre où l'on en est.
 // (lot « Banc Android », point 3) en premier : l'état de la page compte ce qui est créé dès les modules suivants
@@ -277,7 +277,17 @@ sprites.load("aides"); // lot 2 : les aides visuelles du module 2 (petite planch
 // droite : on TOUCHE LA MASCOTTE pour la faire répéter (mêmes effets : la consigne redite, le compteur d'écoutes, la bulle
 // refaite). La zone à toucher couvre toute la tête (MASCOTTE, 210 × 280 px). Là où la mascotte n'est pas affichée (le récif
 // vivant), le bouton « réécouter » revient, comme avant.
-const speaker = spriteBox(app, { x: 1140, y: 8, w: 130, h: 130, cls: "hud speaker keep", label: "réécouter", paint: (ctx) => sprites.draw(ctx, "reecouter", 0, 65, 65) });
+// (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026) dans le récif, le bouton « réécouter » est une petite
+// tête de la mascotte (une image tirée de ses clips : art/mascotte/tete.py), en haut à gauche, là où se tient la mascotte ailleurs,
+// au-dessus des boutons du récif ; le coin en haut à droite est aux compteurs d'étoiles
+const TETE = { x: 26, y: 24, w: 118, h: 150 };
+const teteImg = new Image(); teteImg.src = "assets/tete/tete-mascotte.webp";
+const speaker = spriteBox(app, { ...TETE, cls: "hud speaker tete keep", label: "réécouter", paint: (ctx, px) => {
+  if (!teteImg.complete || !teteImg.naturalWidth) return;
+  const k = Math.min(TETE.w / teteImg.naturalWidth, TETE.h / teteImg.naturalHeight), w = teteImg.naturalWidth * k, h = teteImg.naturalHeight * k;
+  ctx.imageSmoothingQuality = "high"; ctx.drawImage(teteImg, ((TETE.w - w) / 2) * px, (TETE.h - h) * px, w * px, h * px);
+} });
+teteImg.decode().then(() => speaker.repaint(), () => {});
 const headTap = document.createElement("button");
 headTap.className = "mascotte-tap keep"; headTap.setAttribute("aria-label", "réécouter");
 Object.assign(headTap.style, { left: `${MASCOTTE.x}px`, top: `${MASCOTTE.y}px`, width: `${MASCOTTE.w}px`, height: `${MASCOTTE.h}px` });
@@ -589,7 +599,7 @@ rewards.onChange((n, raison) => { if (raison !== "séance terminée") hud.fly(n,
 
 // ---------------------------------------------------------------- premier écran
 // L'océan vivant, la bulle « jouer » (ou la lune et « Encore ! » si la séance du jour est faite), la bulle
-// du récif et le livre de l'album : la visite du récif et de l'album est toujours libre (docs/SPEC.md,
+// du récif (et, dans le récif, le livre de l'album) : la visite du récif et de l'album est toujours libre (docs/SPEC.md,
 // « Séance plafonnée »).
 const reef = new Reef(app);
 app.reef = reef;
@@ -641,10 +651,12 @@ async function showHome({ done, first = false, bienvenue = false }) {
     voice.say(astuce ? `${text.pick("bienvenueLancement")} ${text.data.astuceMascotte}` : text.pick("bienvenueLancement")).then(() => { bienvenueEnCours = false; });
   }
   // les galets : jouer (ou, la séance du jour faite, « Encore ! », l'entraînement libre, le même écran « choisir » sans étoiles,
-  // et la lune en décor), choisir (lot 3 : l'exercice et le niveau), les leçons, le récif, l'album
+  // et la lune en décor), choisir (lot 3 : l'exercice et le niveau), les leçons, le récif
+  // (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026 : plus de galet de l'album ; l'album s'ouvre depuis le
+  // récif ; les quatre galets se répartissent sur la place des cinq)
   const tuiles = done
-    ? [galet("encore", GALET_X[1], "encore", "play again"), galet("lecons", GALET_X[2], "les leçons", "leconskey"), galet("recif", GALET_X[3], "le récif", "reefkey"), galet("album", GALET_X[4], "l'album", "albumkey")]
-    : [galet("jouer", GALET_X[0], "jouer", "play"), galet("choisir", GALET_X[1], "choisir", "choisir"), galet("lecons", GALET_X[2], "les leçons", "leconskey"), galet("recif", GALET_X[3], "le récif", "reefkey"), galet("album", GALET_X[4], "l'album", "albumkey")];
+    ? [galet("encore", GALET_X[1], "encore", "play again"), galet("lecons", GALET_X[2], "les leçons", "leconskey"), galet("recif", GALET_X[3], "le récif", "reefkey")]
+    : [galet("jouer", GALET_X[0], "jouer", "play"), galet("choisir", GALET_X[1], "choisir", "choisir"), galet("lecons", GALET_X[2], "les leçons", "leconskey"), galet("recif", GALET_X[3], "le récif", "reefkey")];
   homeEls.push(...tuiles, parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }));
   if (done) homeEls.push(goodNight(app, { first }));
   const visit = (place) => async () => { voice.unlock(); voice.stop(); clearHome(); await place.visit(); showHome({ done: await doneToday(store) }); };
@@ -669,15 +681,16 @@ async function showHome({ done, first = false, bienvenue = false }) {
     },
     encore: () => { voice.unlock(); clearHome(); freeTraining(); },
     lecons: () => openLessons(),
-    recif: visit(reef), album: visit(album),
+    recif: visit(reef),
   };
   // (point 10) EN DEUX TOUCHERS, comme les écrans de choix (session/selection.js) : le premier sélectionne le galet, la mascotte
   // dit ce que c'est (accueilDescription), la bulle part du galet ; le second y va ; un toucher ailleurs désélectionne ; deux
   // touchers rapides y vont aussitôt (point 11)
   deuxTouchers(app, { tuiles, texte: (k) => text.data.accueilDescription[k], peindre: (k) => { homeSel = k; }, commandes: ".logo", unToucher: !!window.__accueilUnToucher }).then((k) => actions[k]?.());
 }
-// (point 10) les galets de l'accueil : plus grands, environ 228 px de l'un à l'autre, entre le bouton de l'espace parent et le bord droit
-const GALET_X = [250, 478, 705, 933, 1160], GALET_Y = 652;
+// (point 10) les galets de l'accueil : plus grands, entre le bouton de l'espace parent et le bord droit
+// (lot « Correctifs du 5 novembre » : quatre galets au lieu de cinq, environ 303 px de l'un à l'autre, sur la même étendue)
+const GALET_X = [250, 553, 857, 1160], GALET_Y = 652;
 // LES LEÇONS (lot « Les leçons », session/lessons.js) : le menu ; une leçon, puis l'écran « À toi ! » (l'exercice associé :
 // séance du jour s'il n'y en a pas encore eu, entraînement libre sinon) ; la table d'addition ; la maison ramène à l'accueil
 async function openLessons() {
@@ -791,7 +804,8 @@ app.modeEcran = () => mode; // (lot « Recette de l'enfant » : pour les parcour
 // pendant l'échauffement, la notion du jour, le défi, les leçons, les exemples guidés et l'entraînement libre, elles restent
 // visibles mais inertes : le seul toucher hors réponse reste la mascotte (session/reserves.js)
 app.reservesTouchables = () => {
-  if (visiting || app.lessonCancel) return false;
+  // (lot « Correctifs du 5 novembre » : affichées dans le récif, elles n'y réagissent pas ; une créature reste touchable à travers)
+  if (visiting || app.lessonCancel || app.reef?.open) return false;
   if (app.enPause) return mode === "seance";
   return mode === null || mode === "fin" || (mode === "seance" && app.session?.progress?.etape === "recompense");
 };
@@ -816,9 +830,9 @@ let ambianceAvantPause = null;
 // L'ACCUEIL COMPLET PENDANT UNE PAUSE (lot 3, étape 5 ; décision du parent du 28 septembre ; docs/SPEC.md, « Navigation
 // pendant la séance ») : « continuer » (reprise exacte), « choisir » (l'écran de choix : revenir sans valider ramène ici ;
 // valider un exercice termine la séance en pause, interrompue, et lance l'exercice choisi comme séance du jour ; valider
-// une leçon la joue puis revient ici), le récif et l'album (visite libre, puis retour ici), le logo de l'espace parent.
+// une leçon la joue puis revient ici), le récif (visite libre, l'album et la boutique compris, puis retour ici), le logo de l'espace parent.
 // Horloge, voix et musique de la séance restent en pause pendant les visites (le temps n'est pas compté).
-let pausedEls = null; // l'accueil en pause : continuer, choisir, le récif, l'album, le logo de l'espace parent
+let pausedEls = null; // l'accueil en pause : continuer, choisir, les leçons, le récif, le logo de l'espace parent
 let visiting = false;
 async function pauseSession() {
   clock.pause(); voice.pause(); sound.pauseLevel(true); stage.root.classList.add("paused"); homeKey.style.visibility = "hidden";
@@ -835,10 +849,10 @@ function clearPauseHome() { pausedEls?.forEach((e) => e.remove()); pausedEls = n
 // dit ce que c'est (« Continuer. On reprend la séance. »), le second y va ; deux touchers rapides y vont aussitôt
 function showPauseHome() {
   clearPauseHome(); homeSel = null;
-  const tuiles = [galet("jouer", GALET_X[0], "continuer", "play keep"), galet("choisir", GALET_X[1], "choisir", "choisir keep"), galet("lecons", GALET_X[2], "les leçons", "leconskey keep"), galet("recif", GALET_X[3], "le récif", "reefkey keep"), galet("album", GALET_X[4], "l'album", "albumkey keep")];
+  const tuiles = [galet("jouer", GALET_X[0], "continuer", "play keep"), galet("choisir", GALET_X[1], "choisir", "choisir keep"), galet("lecons", GALET_X[2], "les leçons", "leconskey keep"), galet("recif", GALET_X[3], "le récif", "reefkey keep")];
   const logo = parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }); logo.classList.add("keep");
   pausedEls = [...tuiles, logo];
-  const actions = { jouer: resumeSession, choisir: () => visitInPause(pickInPause), lecons: () => visitInPause(lessonsInPause), recif: () => visitInPause(() => reef.visit()), album: () => visitInPause(() => album.visit()) };
+  const actions = { jouer: resumeSession, choisir: () => visitInPause(pickInPause), lecons: () => visitInPause(lessonsInPause), recif: () => visitInPause(() => reef.visit()) };
   const descr = { ...text.data.accueilDescription, jouer: text.data.accueilDescription.continuer };
   deuxTouchers(app, { tuiles, texte: (k) => descr[k], peindre: (k) => { homeSel = k; }, commandes: ".logo", unToucher: !!window.__accueilUnToucher, dire: direEnPause, taire: () => { if (pauseTalk) voice.stop(); } }).then((k) => { if (app.enPause && pausedEls?.includes(tuiles[0])) actions[k]?.(); });
 }
@@ -943,7 +957,7 @@ function sandbox() {
 // (lot « Décisions sur les constats de l'agent », décision 1 du parent du 13 octobre 2026 ; constat 1 de l'agent) LA REPRISE APRÈS UN
 // RECHARGEMENT : la séance du jour, ni terminée ni interrompue, attend dans l'accueil en pause, comme après la maison : « continuer »
 // la reprend au début de son étape en cours (resumeSession) ; « choisir » l'interrompt et lance l'exercice choisi ; les leçons, le
-// récif, l'album se visitent ; le parent peut la terminer. La mascotte le dit : « Te revoilà ! Touche la grande bulle pour
+// récif (et l'album, depuis le récif) se visitent ; le parent peut la terminer. La mascotte le dit : « Te revoilà ! Touche la grande bulle pour
 // continuer. » (deux phrases qui existent déjà : la bienvenue, la consigne de la pause)
 function preparerReprise(rec) {
   const session = new Session({ store, content: seance, handlers, rewards, reprise: rec });

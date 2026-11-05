@@ -33,3 +33,15 @@ export function ilYaSemaines(k, now = Date.now()) {
   for (let i = 0; i < 104 && schoolWeeks(CAL, d.getTime(), now) < k + 1; i++) d.setDate(d.getDate() - 7);
   return d.getTime();
 }
+// (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026 : plus de galet de l'album à l'accueil) L'ALBUM DEPUIS
+// L'ACCUEIL : par le récif (son galet), puis le livre du récif. `toucher(sélecteur)` : la façon de toucher du parcours ; l'accueil
+// est en un toucher dans les parcours (navigateur.mjs, __accueilUnToucher), sinon le galet est touché une seconde fois. La maison de
+// l'album ramène au récif, celle du récif à l'accueil.
+export async function albumParLeRecif(page, toucher = (s) => page.tap(s, { force: true })) {
+  await toucher(".galet.reefkey");
+  if (!(await page.waitForFunction(() => !!window.__app.reef?.open, null, { timeout: 1500 }).then(() => true, () => false))) await toucher(".galet.reefkey");
+  await page.waitForFunction(() => !!(window.__app.reef?.open && window.__app.reef.api) && !document.querySelector(".galet"), null, { timeout: 30000 });
+  await page.waitForTimeout(600);
+  await toucher(".albumkey");
+  await page.waitForFunction(() => !!window.__app.album?.open, null, { timeout: 20000 });
+}

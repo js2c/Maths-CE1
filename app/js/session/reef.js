@@ -6,8 +6,9 @@
 //  - un toucher bref sur une créature ouvre sa carte en grand (cards.js, CardView : la voix dit son nom et son anecdote
 //    une fois) ; doigt posé : son halo ; doigt posé puis glissé : on la déplace (oublié à la visite suivante) ; ailleurs,
 //    glisser fait défiler la mer (tout cela est le code de la maquette) ;
-//  - on entre toujours par le lagon ; la maison ramène à l'accueil ; le livre ouvre l'album ; ni la pieuvre ni le compteur
-//    d'étoiles par-dessus la mer (comme dans la maquette) ;
+//  - on entre toujours par le lagon ; la maison ramène à l'accueil ; le livre ouvre l'album ; pas de mascotte par-dessus la mer
+//    (comme dans la maquette) : « réécouter » est sa petite tête ; les trois compteurs d'étoiles en haut à droite (lot « Correctifs
+//    du 5 novembre ») ;
 //  - pendant la visite, le lagon de l'application (le fond, lagon.js) se met en pause sous le récif ; les images du récif
 //    ne sont chargées qu'à l'entrée et libérées en sortant ; les créatures sont dessinées depuis une image déjà réduite à
 //    leur taille d'affichage (recif/reduction.js) ; si l'intervalle moyen entre deux images dépasse 33 ms, le récif s'allège
@@ -127,10 +128,11 @@ export class Reef {
     const line = stage.root.querySelector("#line"); stage.root.insertBefore(glc, line); stage.root.insertBefore(cv, line);
     this.canvases = [glc, cv];
     app.lagon?.pause(true); stage.ui.classList.add("ui-recif");
-    // comme dans la maquette : ni la pieuvre (fixe, elle cachait des créatures et le sous-marin) ni le compteur d'étoiles
-    // (illisible sur le noir des abysses) par-dessus la mer
-    this.cache = { mascotte: ocean.mascotteVisible, etoiles: stage.ui.querySelector(".hud.stars") };
-    ocean.mascotteVisible = false; this.cache.etoiles?.classList.add("recif-masque");
+    // comme dans la maquette : pas de mascotte (fixe, elle cachait des créatures et le sous-marin) par-dessus la mer
+    // (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026 : les trois compteurs d'étoiles y sont affichés, à leur
+    // place, en haut à droite, toujours sur leur plaque claire, lisible sur le noir des abysses ; avant, le compteur était caché)
+    this.cache = { mascotte: ocean.mascotteVisible, sombre: app.hudSombre };
+    ocean.mascotteVisible = false; app.hudSombre = () => true;
     // la créature qui vient d'être achetée (pas celle qu'on vient de faire briller) arrive à la nage
     const arr = rewards.arrivee; rewards.arrivee = null;
     this.arr = arr && !arr.briller && owned.has(versMaquette(arr.id)) ? { id: versMaquette(arr.id) } : null;
@@ -200,7 +202,7 @@ export class Reef {
     this.ecoute = [];
     this.canvases?.forEach((c) => { c.width = c.height = 0; c.remove(); }); this.canvases = null;
     app.stage.ui.classList.remove("ui-recif"); app.lagon?.pause(false);
-    if (this.cache) { app.ocean.mascotteVisible = this.cache.mascotte; this.cache.etoiles?.classList.remove("recif-masque"); this.cache = null; }
+    if (this.cache) { app.ocean.mascotteVisible = this.cache.mascotte; app.hudSombre = this.cache.sombre; this.cache = null; }
     this.els.forEach((e) => e.remove()); this.els = []; this.open = false;
     app.sprites.unload("cartes"); forgetPictures();
   }

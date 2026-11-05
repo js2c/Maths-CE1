@@ -9,7 +9,7 @@
 import { join } from "node:path";
 import { readFileSync } from "node:fs";
 import { OUT, Serie, attendre, ecrireIndex, indexPartie, navigateur, opt, ouvrir, silence, toucher } from "./commun.mjs";
-import { recifOuvert, toucherCreature } from "../e2e/recif-commun.mjs";
+import { albumParLeRecif, recifOuvert, toucherCreature } from "../e2e/recif-commun.mjs";
 
 const DIR = join(OUT, "A-ecrans");
 const nav = await navigateur();
@@ -282,7 +282,7 @@ async function recifAlbum() {
     if (viv.length) { await toucherCreature(s.page, viv[0]); await pause(s.page, 2500); await S.shot(s.page, { ecran: "le récif", etat: `${B}, une créature touchée : sa carte` }); await toucher(s.page, ".card"); await pause(s.page, 2000); await S.shot(s.page, { ecran: "le récif", etat: `${B}, la carte touchée (retournée)` }); }
     await s.context.close();
     s = await ouvrir(nav, { base, nom: true });
-    await toucher(s.page, ".albumkey"); await pause(s.page, 2500);
+    await albumParLeRecif(s.page, (sel) => toucher(s.page, sel)); await pause(s.page, 2500);
     await S.shot(s.page, { ecran: "l'album", etat: B });
     if (await toucher(s.page, ".album-card.got")) { await pause(s.page, 2500); await S.shot(s.page, { ecran: "l'album", etat: `${B}, une carte ouverte` }); await toucher(s.page, ".card"); await pause(s.page, 2000); await S.shot(s.page, { ecran: "l'album", etat: `${B}, la carte retournée (anecdote)` }); await toucher(s.page, ".check"); await pause(s.page, 800); }
     if (await toucher(s.page, ".album-card.back:not(.closed)")) { await pause(s.page, 1500); await S.shot(s.page, { ecran: "l'album", etat: `${B}, le dos d'une carte pas encore gagnée touché` }); }

@@ -25,7 +25,7 @@ import { chromium, finReelle, voixPermise } from "./navigateur.mjs";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
-import { ilYaSemaines, recifOuvert } from "./recif-commun.mjs";
+import { albumParLeRecif, ilYaSemaines, recifOuvert } from "./recif-commun.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const OUT = resolve(opt("--out", "tests/e2e/out/boutique")); mkdirSync(OUT, { recursive: true });
@@ -316,7 +316,7 @@ const vue0 = VUES[0];
 {
   // e. l'album des légendaires : le dos porte l'étoile de diamant
   const { context, page } = await fresh([owned([...lagon, ...corail]), etoiles(10), { id: "zones", ouvertes: ["lagon", "corail", "large"], dates: {} }]);
-  await tap(page, ".albumkey"); await page.waitForSelector(".album-card", { timeout: 20000 }); await page.waitForTimeout(800);
+  await albumParLeRecif(page, (s) => tap(page, s)); await page.waitForSelector(".album-card", { timeout: 20000 }); await page.waitForTimeout(800);
   await tap(page, ".album-tab >> nth=2"); await page.waitForTimeout(1200); await saidReset(page);
   const dos = page.locator(".album-card.back").last(); await dos.tap({ force: true }); await page.waitForTimeout(1500);
   await shot(page, vue0, "28-album-legendaires");

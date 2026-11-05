@@ -18,27 +18,80 @@ const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classL
 // ---------------------------------------------------------------- le compteur d'étoiles et leur vol
 // Le compteur montre le trésor (rewards.total). Chaque gain fait voler des étoiles de mer jusqu'à lui ;
 // il avance d'un cran à chaque arrivée. Au plus 10 étoiles en vol pour un gain (chacune en vaut alors plus).
-export const HUD_STAR = [1010, 72];
+// (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026) LA RANGÉE DES COMPTEURS : les étoiles de mer, les
+// étoiles arc-en-ciel et les étoiles de diamant (session/reserves.js) sur une seule ligne, en haut à droite, chaque étoile à gauche
+// de son nombre, les trois étoiles à la même taille et à la même hauteur, les trois nombres aussi. Chaque compteur est une boîte
+// (cible d'au moins 64 px pour les réserves, qu'on touche) ; la rangée est alignée sur le bord droit, entre la frise (jusqu'à x 950)
+// et le bord ; si elle est trop longue (beaucoup d'étoiles), tout est un peu réduit pour qu'elle tienne.
+//   etoile : le côté de l'étoile dessinée (px logiques) ; chiffre : la hauteur des chiffres ; cy : le milieu de la ligne
+export const RANGEE = { gauche: 952, droite: 1270, y: 22, h: 100, cy: 72, etoile: 44, chiffre: 32, marge: 9, ecart: 6, entre: 4, min: 70 };
+// la largeur d'un nombre écrit par R.drawNumber (mesurée : environ 0,73 fois sa hauteur par chiffre)
+export const largeurNombre = (t, h) => Math.round(String(t).length * 0.735 * h);
+// la taille de chaque étoile dans l'atelier (partie pleine, mesurée sur les images) : pour qu'elles se dessinent à la même taille
+export const ETOILE_PLEINE = { etoile: 78, "etoile.arc": 86, "etoile.diamant": 87 };
+// la rangée : `groupes`, de gauche à droite, [{ id, texte }] (seulement ceux qui sont montrés) → { k (réduction, 1 au plus), boites :
+// { id: { x, w, etoile: [cx, cy] (le centre de l'étoile, px de l'écran), chiffre: [cx, haut, hauteur] (dans la boîte) } } }
+export function rangeeCompteurs(groupes, R0 = RANGEE) {
+  const larg = (g, k) => Math.max(R0.min, (2 * R0.marge + R0.etoile + R0.ecart) * k + largeurNombre(g.texte, R0.chiffre * k));
+  const total = (k) => groupes.reduce((a, g) => a + larg(g, k), 0) + R0.entre * Math.max(0, groupes.length - 1);
+  let k = 1;
+  while (k > 0.6 && total(k) > R0.droite - R0.gauche) k -= 0.02;
+  k = Math.round(k * 100) / 100;
+  let x = R0.droite - total(k);
+  const boites = {};
+  for (const g of groupes) {
+    const w = Math.round(larg(g, k)), D = R0.etoile * k, h = R0.chiffre * k, cyb = R0.cy - R0.y;
+    const ex = R0.marge * k + D / 2, nx = R0.marge * k + D + R0.ecart * k + largeurNombre(g.texte, h) / 2;
+    boites[g.id] = { x: Math.round(x), w, k, etoile: [Math.round(x) + ex, R0.cy], dansBoite: { etoile: [ex, cyb], d: D, chiffre: [nx, cyb - 0.456 * h, h] } };
+    x += w + R0.entre;
+  }
+  return { k, boites };
+}
+// une étoile de l'atelier, posée à la taille commune, son centre en (cx, cy) (px logiques de la boîte)
+export function dessinerEtoileRangee(app, ctx, px, sprite, [cx, cy], d) {
+  const q = app.sprites.frame(sprite, 0); if (!q) return;
+  // (comme partout : les images des planches sont à la densité de l'écran, `k` s'applique directement à leurs pixels)
+  const k = d / ETOILE_PLEINE[sprite];
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, cx * px + q.dx * k, cy * px + q.dy * k, q.w * k, q.h * k);
+}
+// une boîte de la rangée à sa place et à sa largeur (son canvas refait si la largeur change), puis redessinée
+export function poserBoite(app, b, x, w) {
+  b.style.left = `${x}px`;
+  if (parseFloat(b.style.width) !== w) { b.style.width = `${w}px`; const c = b.querySelector("canvas"); if (c) c.width = Math.round(w * app.stage.px); }
+  b.repaint();
+}
 export class StarHud {
   constructor(app, rewards) {
     this.app = app; this.shown = rewards.total; this.pool = []; this.flights = [];
-    this.box = spriteBox(app, { x: 960, y: 22, w: 170, h: 100, cls: "hud stars", still: true, paint: (ctx, px) => this.paint(ctx, px) });
+    this.box = spriteBox(app, { x: 960, y: RANGEE.y, w: 170, h: RANGEE.h, cls: "hud stars", still: true, paint: (ctx, px) => this.paint(ctx, px) });
     // (lot « Réserves d'étoiles et étoiles arc-en-ciel ») les réserves d'étoiles arc-en-ciel et de diamant, à sa droite
     this.reserves = rewards?.c ? new Reserves(app, this, rewards) : null;
+    this.disposer();
     app.ocean.front.push((t) => this.tick(t));
   }
-  paint(ctx, px) {
-    const q = this.app.sprites.frame("etoile", 0), k = 0.62, s0 = String(this.shown); // l'étoile, réduite (jamais agrandie)
-    // (lot « Décisions sur les constats de l'agent », décision 8 ; constat 14 : par temps d'orage, dans l'étal, le nombre bleu nuit
-    // se fondait dans le ciel sombre) sur un fond sombre (`app.hudSombre()`), le nombre est posé sur une petite plaque claire
-    // (recette du lot : sur la plaque, le nombre est plus petit quand il est long ; à la taille habituelle, 234 en touchait les bords)
-    const plaque = this.sombre ? (s0.length > 2 ? 84 : 72) : 0, taille = plaque ? [40, 40, 36, 28, 22][Math.min(4, s0.length)] : s0.length > 2 ? 34 : 40;
-    if (plaque) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawPanel(ctx, 82, 18, plaque, 64); ctx.setTransform(1, 0, 0, 1, 0, 0); }
-    ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 50 * px + q.dx * k, 50 * px + q.dy * k, q.w * k, q.h * k);
-    ctx.setTransform(px, 0, 0, px, 0, 0);
-    const s = String(this.shown); R.drawNumber(ctx, s, plaque ? 82 + plaque / 2 : 118 + (s.length > 2 ? 6 : 0), plaque ? 32 + (40 - taille) / 2 : 32, taille, { w: 5.6 });
+  // la rangée : le compteur des étoiles de mer, puis les réserves montrées (session/reserves.js, `montrees`)
+  rangee(n = this.reserves?.n) {
+    return rangeeCompteurs([{ id: "mer", texte: String(this.shown) }, ...(this.reserves ? this.reserves.montrees(n).map((s) => ({ id: s, texte: String(n[s]) })) : [])]);
   }
-  set(v) { if (v !== this.shown) { this.shown = v; this.box.repaint(); } }
+  disposer() {
+    const r = this.rangee(); this.place = r.boites;
+    const b = r.boites.mer; poserBoite(this.app, this.box, b.x, b.w);
+    this.reserves?.poser(r.boites);
+  }
+  // le centre de l'étoile de mer du compteur (où volent les étoiles gagnées)
+  centre() { return this.place?.mer?.etoile ?? [1010, 72]; }
+  paint(ctx, px) {
+    const b = this.place?.mer; if (!b) return;
+    const { etoile, d, chiffre: [nx, haut, h] } = b.dansBoite, s = String(this.shown);
+    // (lot « Décisions sur les constats de l'agent », décision 8 ; constat 14 : par temps d'orage, dans l'étal, le nombre bleu nuit
+    // se fondait dans le ciel sombre) sur un fond sombre (`app.hudSombre()`), une petite plaque claire derrière le compteur
+    if (this.sombre) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawPanel(ctx, 2, 18, b.w - 4, 64); }
+    dessinerEtoileRangee(this.app, ctx, px, "etoile", etoile, d);
+    ctx.setTransform(px, 0, 0, px, 0, 0);
+    R.drawNumber(ctx, s, nx, haut, h, { w: 4.8 });
+  }
+  set(v) { if (v === this.shown) return; const n0 = String(this.shown).length; this.shown = v; if (String(v).length !== n0) this.disposer(); else this.box.repaint(); }
   // n étoiles gagnées, qui partent de `from` (px logiques) ; la promesse se résout à la dernière arrivée
   fly(n, from, { gap = 110, dur = 750 } = {}) {
     if (n <= 0) return Promise.resolve();
@@ -47,7 +100,7 @@ export class StarHud {
       const a = this.pool.pop() ?? this.app.ocean.spriteActor(this.app.ocean.frontEl, "etoile");
       a.draw(0); a.show(false);
       const t0 = performance.now() / 1000 + (i * gap) / 1000, dx = (i % 2 ? 1 : -1) * (30 + 12 * i);
-      this.flights.push({ a, t0, dur: dur / 1000, from, to: HUD_STAR, dx, done: () => { if (i === 0) this.app.sound?.play("etoile"); this.set(this.shown + v); pop(this.box); this.pool.push(a); res(); } });
+      this.flights.push({ a, t0, dur: dur / 1000, from, to: this.centre(), dx, done: () => { if (i === 0) this.app.sound?.play("etoile"); this.set(this.shown + v); pop(this.box); this.pool.push(a); res(); } });
     })));
   }
   tick(t) {

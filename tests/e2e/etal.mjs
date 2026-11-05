@@ -229,7 +229,11 @@ for (const T of TAILLES) {
     await page.touchscreen.tap(zone.x, zone.y); await page.waitForTimeout(400);
     check((await etat(page)).meteoCible === 0, `${W} : la lampe touchée par mauvais temps, l'orage s'en va`);
     await page.waitForFunction(() => window.__app.etal.api.etat().meteo <= 0, null, { timeout: 60000 });
-    check(await page.evaluate((n) => window.__said.length === n, n1), `${W} : l'orage qui s'en va, la mascotte ne dit rien`);
+    // (fusion de main, 3 novembre 2026 : échouait sur main aussi, à 1920) sur le banc, le retour au beau temps dure 15 à 25 s ;
+    // pendant ce temps, la question attend toujours sa réponse et la mascotte la relance (à 12 s, 25 s), ce qui n'est pas une
+    // réplique de l'orage. Le contrôle porte donc sur les répliques de l'orage, et écrit tout ce qui a été dit.
+    const ditsDepart = await page.evaluate((n) => window.__said.slice(n), n1);
+    check(!ditsDepart.some((t) => T0.includes(t)), `${W} : l'orage qui s'en va, la mascotte ne dit rien de l'orage (dit pendant ce temps : ${ditsDepart.join(" | ") || "rien"})`);
     const apres = await page.evaluate(() => ({ q: JSON.stringify(window.__app.etal.q), soucoupe: JSON.stringify(window.__app.etal.api.soucoupe()), attend: window.__app.etal.attend }));
     check(apres.q === avant.q && apres.soucoupe === avant.soucoupe && apres.attend, `${W} : la question en cours n'a pas changé (ni argent posé, ni réponse)`);
     check(await page.evaluate(() => (window.__etalLampe ?? []).length === 2), `${W} : deux touchers, deux changements de temps`);
@@ -314,6 +318,10 @@ for (const T of TAILLES) {
   await page.tap(".play", { force: true }); await attend(page);
   check(await page.evaluate(() => window.__app.session.rec.module === 6 && window.__app.frieze.icon === "frise.etal"), "module imposé : l'étal, son pictogramme dans la frise");
   await shot(page, "30-jouer-impose", T);
+  // (fusion de main, 3 novembre 2026 : échec intermittent, aussi sur main) au niveau 2, un portefeuille peut valoir exactement le
+  // prix (10 € : 4 × 2 € et 2 × 1 €, un tirage sur quatre environ) : rien ne reste pour « donner trop ». On paie alors juste, et
+  // l'erreur se fait à la question suivante.
+  for (let i = 0; i < 4 && (await page.evaluate(() => { const q = window.__app.etal.q; return q.portefeuille.reduce((a, b) => a + b, 0) === q.prix; })); i++) { await payer(page, "juste"); await coche(page); await attend(page); }
   await payer(page, "trop"); await coche(page); await attend(page); await payer(page, "juste"); await coche(page); await attend(page);
   await page.evaluate(async () => { await window.__app.store.setSetting("codeParent", "1234"); });
   page.evaluate(() => window.__app.parent.open()).catch(() => {}); await page.waitForSelector(".pa-keys", { timeout: 10000 });

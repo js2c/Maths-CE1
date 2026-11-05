@@ -24,7 +24,7 @@ const pop = (el) => { el.classList.remove("pop"); void el.offsetWidth; el.classL
 // (cible d'au moins 64 px pour les réserves, qu'on touche) ; la rangée est alignée sur le bord droit, entre la frise (jusqu'à x 950)
 // et le bord ; si elle est trop longue (beaucoup d'étoiles), tout est un peu réduit pour qu'elle tienne.
 //   etoile : le côté de l'étoile dessinée (px logiques) ; chiffre : la hauteur des chiffres ; cy : le milieu de la ligne
-export const RANGEE = { gauche: 952, droite: 1270, y: 22, h: 100, cy: 72, etoile: 44, chiffre: 32, marge: 9, ecart: 6, entre: 4, min: 70 };
+export const RANGEE = { gauche: 952, droite: 1270, y: 22, h: 100, cy: 72, etoile: 44, chiffre: 32, marge: 7, ecart: 6, entre: 3, min: 70 };
 // la largeur d'un nombre écrit par R.drawNumber (mesurée : environ 0,73 fois sa hauteur par chiffre)
 export const largeurNombre = (t, h) => Math.round(String(t).length * 0.735 * h);
 // la taille de chaque étoile dans l'atelier (partie pleine, mesurée sur les images) : pour qu'elles se dessinent à la même taille

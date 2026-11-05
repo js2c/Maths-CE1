@@ -1354,3 +1354,21 @@ La même erreur deux fois dans une séance relance la leçon (une fois), comme p
 4. **Ajouté par le parent le 3 novembre 2026** : l'écran de démarrage écrit la date de la dernière fusion à la place de l'année et le numéro de la demande de fusion divisé par 100 à la place de l'empreinte (« 03/11/2026 · js2c · version 0.72 » ; la 100 donnera 1.00).
 
 **Mesures avant et après dans la demande de fusion** : la durée des séances d'additions, la part de la famille en cours, les faits nouveaux par séance ; profils `reel`, `sait`, `diff`, à 2 et 3 séances par semaine (`tests/recette-fonctionnelle/mesure-additions.mjs`). `docs/ECARTS-SPEC-2.md` marqué « tranché le 3 novembre 2026, appliqué par ce lot ».
+
+### 22. Lot « Correctifs du 5 novembre » (lot court)
+
+**Origine** : les constats et décisions du parent du 5 novembre 2026, après l'essai sur la tablette du bloc « Correctifs de la confrontation 2 » puis « Problèmes » (PR #73).
+
+**D'un seul tenant**, avec la recette sur le banc Android (profil `s5e`, et `petit-smartphone` pour les écrans touchés).
+
+1. **La musique hors séance** (change la décision du parent du 6 octobre 2026, 2.4 et 11.2) : une musique d'ambiance démarre au toucher de l'écran de démarrage (le premier son permis par Android) et joue à l'accueil, à l'écran de choix, au menu des leçons, dans la boutique, le récif et l'album ; la séance garde sa propre musique, tirée au hasard ; les enchaînements se font en fondu, sans trou ni superposition ; pas de musique dans l'espace parent ; mêmes réglages du parent (musique oui/non, volume), même baisse sous la voix.
+2. **La boutique pendant une séance en pause** : le bouton de la boutique est aussi dans le récif visité depuis l'accueil en pause (avant : hors séance seulement). L'achat ne touche pas à la séance en pause ; la reprise par « continuer » reste exacte.
+3. **La mascotte redit la bonne consigne dans les problèmes** : au partage manipulé (niveau 3, les pommes dans les assiettes), la mascotte touchée redisait la consigne précédente (« Choisis ton niveau… ») parce que `voice.instruction` n'était posé qu'après le partage (`modules/problemes/screen.js`, `raconter`). La consigne (l'histoire et la question) est posée dès le début de l'histoire, pour toutes les formes de problème. Les autres exercices sont vérifiés : à chaque instant où l'enfant peut toucher la mascotte, elle redit la consigne de l'écran visible. Un parcours de non-régression touche la mascotte à chaque phase.
+4. **La prononciation** : « Plus c'est dur, plus tu gagnes d'étoiles ! » était dit « plusse c'est dur, plu… ». L'écriture « Plu c'est dur, plu tu gagnes d'étoiles ! » est ajoutée à `tools/voix/ecritures.json`. Toutes les phrases de l'inventaire où « plus » n'est pas l'addition (« plus … plus », « le plus », « ne … plus », « de plus » sans nombre) sont listées dans la demande de fusion, pour que le parent les écoute.
+5. **Les compteurs en haut à droite** : les trois (étoiles de mer, arc-en-ciel, diamant) sur une seule ligne, chaque étoile à gauche de son nombre, à la même hauteur et à la même taille ; l'étoile de diamant affichée même à 0. Captures à 1280 × 800 et sur `petit-smartphone`, regardées.
+6. **Le récif** : les trois compteurs y sont affichés aussi (à la même place, sans couvrir une créature touchable ni un bouton) ; le bouton « réécouter » du récif devient une petite tête de la mascotte (une image tirée de ses clips), au lieu du haut-parleur.
+7. **L'accueil** : le galet de l'album est retiré (l'album reste ouvert depuis le récif) ; de même à l'accueil en pause ; les galets restants se répartissent.
+
+**Documents** : `docs/SPEC.md`, le guide du parent, le journal de conception ; les phrases à fabriquer dans la demande de fusion.
+
+**Recette du lot** : la méthode commune, sur le banc Android ; un parcours `tests/e2e/correctifs-5-novembre.mjs` (la musique et ses enchaînements, la boutique en pause et la reprise, les compteurs, le récif, l'accueil ; 1280 × 800, 1920 × 1200, `s5e`, `petit-smartphone`) et un parcours `tests/e2e/consignes-mascotte.mjs` (la mascotte touchée à chaque phase).

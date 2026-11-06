@@ -88,7 +88,9 @@ if (part("accueil")) for (const taille of TAILLES) {
   const { page, context, errors } = await open(taille);
   await page.waitForSelector(".galet"); await page.waitForTimeout(500);
   await shot(page, "accueil-0", taille);
-  const ids = ["jouer", "choisir", "lecons", "recif", "album"], R = {};
+  // (lot « Correctifs du 5 novembre » : plus de galet de l'album)
+  const ids = ["jouer", "choisir", "lecons", "recif"], R = {};
+  check(!(await page.locator('.galet[data-key="album"]').count()), `${nom(taille)} accueil : pas de galet de l'album`);
   for (const k of ids) R[k] = await rect(page, `.galet[data-key="${k}"]`);
   const logo = await rect(page, ".logo");
   check(ids.every((k) => !coupe(R[k], MASCOTTE) && !coupe(R[k], logo)), `${nom(taille)} accueil : aucun galet sur la mascotte ni sur le bouton de l'espace parent`);
@@ -116,8 +118,8 @@ if (part("accueil")) for (const taille of TAILLES) {
   // la séance du jour faite : « Encore ! » et la lune
   const F = await open(taille, "", { prep: async () => { await window.__app.store.add("seances", { debut: Date.now() - 600000, fin: Date.now() - 60000, terminee: true, module: 1, questions: 20, justes: 18, etapes: [] }); } });
   await F.page.waitForSelector(".galet.again"); await F.page.waitForTimeout(600);
-  const lune = await rect(F.page, ".moon"), G = await Promise.all(["encore", "lecons", "recif", "album"].map((k) => rect(F.page, `.galet[data-key="${k}"]`)));
-  check(G.every((r) => !coupe(r, lune) && !coupe(r, MASCOTTE)), `${nom(taille)} séance faite : « Encore ! », les leçons, le récif et l'album, rien sur la lune ni la mascotte`);
+  const lune = await rect(F.page, ".moon"), G = await Promise.all(["encore", "lecons", "recif"].map((k) => rect(F.page, `.galet[data-key="${k}"]`)));
+  check(G.every((r) => r && !coupe(r, lune) && !coupe(r, MASCOTTE)), `${nom(taille)} séance faite : « Encore ! », les leçons, le récif (lot « Correctifs du 5 novembre » : plus l'album), rien sur la lune ni la mascotte`);
   await F.page.locator('.galet[data-key="encore"]').tap({ force: true }); await F.page.waitForTimeout(900);
   check((await F.page.evaluate(() => window.__said.at(-1))) === textes.accueilDescription.encore, `${nom(taille)} séance faite : « Encore ! » sélectionné, la mascotte le dit`);
   await shot(F.page, "accueil-encore", taille);

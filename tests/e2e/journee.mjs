@@ -222,7 +222,8 @@ await etape(6, "la boutique, le récif et l'album", async () => {
   check(apres === avant + 1, `boutique : une créature achetée (${choix ?? "aucune à vendre"} ; achats ${avant} -> ${apres})`);
   await a.toucher(".boutique-retour").catch(() => {}); await attendre(6000); // (la créature arrive à la nage dans le récif)
   await versAccueil();
-  await a.deuxTouchers(".galet.albumkey");
+  // (lot « Correctifs du 5 novembre » : l'album s'ouvre depuis le récif)
+  await a.deuxTouchers(".galet.reefkey"); await a.attendre(() => !!window.__app.reef?.api, 30000); await attendre(1500); await a.toucher(".albumkey");
   check(await a.attendre(() => window.__app.album?.open, 20000).then(() => true, () => false), "l'album s'ouvre");
   await attendre(5000);
 });

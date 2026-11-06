@@ -31,6 +31,7 @@ import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
+import { albumParLeRecif } from "./recif-commun.mjs";
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 
@@ -115,7 +116,7 @@ if (want("legende")) {
 if (want("appui")) {
   const { page, context, errors } = await open("&cran=conseille&sans=echauffement");
   await page.waitForSelector(".choisir"); await page.waitForTimeout(300);
-  for (const [sel, key] of [[".play", "jouer"], [".choisir", "choisir"], [".reefkey", "recif"], [".albumkey", "album"]]) {
+  for (const [sel, key] of [[".play", "jouer"], [".choisir", "choisir"], [".reefkey", "recif"]]) { // (lot « Correctifs du 5 novembre » : plus de galet de l'album)
     await hold(page, sel, 800); await page.waitForTimeout(100);
     const st = await page.evaluate(() => ({ lab: !!document.querySelector(".etiquette"), home: !!document.querySelector(".choisir"), choix: !!document.querySelector(".choix-ex"), session: !!window.__app.session }));
     // (lot « Correctifs : passage de l'échauffement aux voiliers », points 7 et 10 : l'accueil en galets est un écran de choix,
@@ -365,11 +366,12 @@ if (want("cosmetique")) {
     // de 60 px de rayon, restent entre le rocher de gauche, jusqu'à x 285, et le corail de droite, depuis x 1155)
     // (lot « Correctifs : passage de l'échauffement aux voiliers », point 10 : cinq galets, d'environ 105 px de demi-largeur, sur
     // toute la largeur : dans l'écran, sans se toucher, sans toucher le bouton des parents en bas à gauche)
+    // (lot « Correctifs du 5 novembre » : quatre galets, plus celui de l'album)
     const b = await boxes(page, ".play, .choisir, .leconskey, .reefkey, .albumkey"), lg = (await boxes(page, ".logo"))[0], cx = b.map((r) => r.x + r.w / 2);
-    check(b.length === 5 && cx.every((x, i) => x - 105 >= 0 && x + 105 <= 1280 && (!i || x - cx[i - 1] >= 215)) && (!lg || cx[0] - 105 >= lg.x + lg.w), `accueil : les cinq galets dans l'écran, sans se toucher ni toucher le bouton des parents (${cx.map(Math.round).join(", ")})`);
+    check(b.length === 4 && cx.every((x, i) => x - 105 >= 0 && x + 105 <= 1280 && (!i || x - cx[i - 1] >= 215)) && (!lg || cx[0] - 105 >= lg.x + lg.w), `accueil : les quatre galets dans l'écran, sans se toucher ni toucher le bouton des parents (${cx.map(Math.round).join(", ")})`);
     await spy(page); await page.tap(".mascotte-tap", { force: true }); await page.waitForTimeout(600);
     check(/Touche une bulle/.test(await said(page)), "accueil : « réécouter » dit ce qu'on peut faire");
-    await tap(page, ".albumkey"); await page.waitForSelector(".album-tab"); await page.waitForTimeout(700); await shot(page, "B11-album");
+    await albumParLeRecif(page, (s) => tap(page, s)); await page.waitForSelector(".album-tab"); await page.waitForTimeout(700); await shot(page, "B11-album");
     check((await page.locator(".album-tab").count()) === 4, "album : quatre médaillons de zone");
     check(!errors.length, `accueil, album : aucune erreur (${errors.join(" | ")})`); await context.close();
   }

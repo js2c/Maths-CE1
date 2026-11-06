@@ -21,7 +21,7 @@ import { chromium, voixPermise, demarrageTouche } from "./navigateur.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
-import { recifOuvert } from "./recif-commun.mjs";
+import { albumParLeRecif, recifOuvert } from "./recif-commun.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const OUT = resolve(opt("--out", "tests/e2e/out/mascotte")), SEUL = opt("--seul", null), JUSQUA = Number(opt("--jusqua", 99)); // (--jusqua 2 : les parties 1 et 2 seulement ; recherche d'un échec isolé, docs/IDEES.md)
@@ -187,7 +187,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   e = await shot("52-recif");
   check(!(await page.evaluate(() => window.__app.ocean.mascotteVisible)) && !e.m.visible && !e.b.visible, `${W} récif : ni la mascotte ni sa bulle`);
   await page.tap(".session-home, .homekey", { force: true }).catch(() => {});
-  await go(""); await page.tap(".albumkey", { force: true }); await bulle(/./); await page.waitForTimeout(1200); await shot("53-album");
+  await go(""); await albumParLeRecif(page); await bulle(/./); await page.waitForTimeout(1200); await shot("53-album");
 
   // ---- le journal des raccords de la mascotte (toute la visite à cette taille d'écran, dernière page)
   const j = await page.evaluate(() => window.__journalMascotte.filter((x) => x.raccord));

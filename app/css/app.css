@@ -31,7 +31,9 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 #stage > canvas.recif-dessin.drag { cursor: grabbing; }
 #ui.ui-recif { pointer-events: none; }
 #ui.ui-recif > * { pointer-events: auto; }
-.recif-masque { visibility: hidden !important; }
+/* (lot « Correctifs du 5 novembre ») dans le récif, les compteurs d'étoiles se voient mais ne se touchent pas : une créature qui nage
+   dessous reste touchable à travers eux */
+#ui.ui-recif > .hud.stars, #ui.ui-recif > .reserve { pointer-events: none; }
 #ui { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; transform-origin: 0 0; }
 
 /* bulles et boutons : un calque dessiné par l'atelier, sans bord ni fond de navigateur */

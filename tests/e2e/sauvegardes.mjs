@@ -14,6 +14,7 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
+import { albumParLeRecif } from "./recif-commun.mjs";
 
 const args = process.argv.slice(2), OUT = resolve(args.includes("--out") ? args[args.indexOf("--out") + 1] : "tests/e2e/out/sauvegardes"); mkdirSync(OUT, { recursive: true });
 const CASES = [["mois", "reel", 2, 4], ["trois-mois", "reel", 3, 12], ["difficulte", "diff", 2, 6]];
@@ -35,7 +36,7 @@ for (const [name, profil, per, weeks] of CASES) {
   check(!problem, `${name} : fichier accepté par la restauration (${problem ?? "aucun problème"})`);
   check(st.n > 0 && st.last === yesterday && st.play && st.code === "1234", `${name} : ${st.n} séances, la dernière hier (${st.last}), « jouer » proposé, code parent gardé, niveau de la ligne ${st.niveau}`);
   await page.screenshot({ path: join(OUT, `${name}-1-accueil.png`) });
-  await page.tap(".albumkey", { force: true }); await page.waitForTimeout(2500); await page.screenshot({ path: join(OUT, `${name}-2-album.png`) });
+  await albumParLeRecif(page); await page.waitForTimeout(2500); await page.screenshot({ path: join(OUT, `${name}-2-album.png`) });
   await page.goto(url + "?nosw&voix=rapide&son=non"); await page.waitForFunction(() => window.__ready !== undefined);
   await page.tap(".choisir", { force: true }); await page.tap('.choix-ex[aria-label="ligne"]', { force: true }); await page.waitForTimeout(450); await page.tap('.choix-ex[aria-label="ligne"]', { force: true }); await page.waitForTimeout(300);
   await page.waitForSelector(".choix-tuile"); await page.waitForTimeout(500);

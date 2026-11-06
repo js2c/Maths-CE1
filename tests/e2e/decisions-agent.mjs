@@ -191,7 +191,7 @@ if (faire(3)) {
   // les autres galets de la pause : un premier toucher les présente, sans y aller ; un toucher ailleurs désélectionne
   {
     const { context, page } = await enPause(VUES[0]);
-    for (const [cls, k] of [["reefkey", "recif"], ["albumkey", "album"], ["leconskey", "lecons"], ["choisir", "choisir"]]) {
+    for (const [cls, k] of [["reefkey", "recif"], ["leconskey", "lecons"], ["choisir", "choisir"]]) { // (lot « Correctifs du 5 novembre » : plus de galet de l'album)
       await saidReset(page);
       await tap(page, `.keep.${cls}`); await page.waitForTimeout(700);
       check((await etatSeance(page)).enPause && (await said(page)).includes(T.accueilDescription[k]) && !(await page.evaluate(() => window.__app.reef?.open || window.__app.album?.open)), `3. pause, premier toucher sur ${k} : « ${T.accueilDescription[k]} », on reste à l'accueil en pause`);

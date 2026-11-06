@@ -134,11 +134,14 @@ export class CardView {
     // bruitage du retournement sonne
     onBrief(app, el, () => { el.flip(); app.sound?.play("carte"); }, "retourner");
     onBrief(app, veil, () => this.close()); onBrief(app, ok, () => this.close(), "cestBon");
+    // (lot « Correctifs du 5 novembre ») la consigne de l'écran d'en dessous est gardée : la carte rangée, la mascotte (ou sa petite tête,
+    // dans le récif) redit de nouveau celle de l'écran visible
+    this.avant ??= voice.instruction;
     voice.stop(); voice.say(cardLine(text, c), { instruction: true });
   }
   async close() {
     if (!this.card) return;
     const { veil, el, ok } = this.card; this.card = null; this.tok++;
-    this.app.voice.stop(); ok.remove(); el.classList.add("leave"); veil.remove(); await wait(400); el.remove();
+    this.app.voice.stop(); if (this.avant !== undefined) { this.app.voice.instruction = this.avant; this.avant = undefined; } ok.remove(); el.classList.add("leave"); veil.remove(); await wait(400); el.remove();
   }
 }

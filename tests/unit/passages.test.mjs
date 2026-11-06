@@ -112,15 +112,19 @@ test("point 10 : les galets de l'accueil, chacun sa forme, au moins 200 px de la
   assert.deepEqual(Object.keys(R.GALETS).sort(), [...ids].sort());
   assert.equal(new Set(ids.map((k) => JSON.stringify({ ...R.GALETS[k], seed: 0 }))).size, ids.length, "des formes différentes");
   const X = JSON.parse(main.match(/const GALET_X = (\[[^\]]+\])/)[1]);
-  for (const [i, k] of ["jouer", "choisir", "lecons", "recif", "album"].entries()) {
+  // (lot « Correctifs du 5 novembre » : plus de galet de l'album, quatre galets ; sa forme reste dans l'atelier)
+  const accueil = ["jouer", "choisir", "lecons", "recif"];
+  assert.equal(X.length, accueil.length);
+  for (const [i, k] of accueil.entries()) {
     const f = R.GALETS[k];
     assert.ok(2 * f.rx >= 200, `${k} : ${2 * f.rx} px`);
-    if (i) assert.ok(X[i] - f.rx > X[i - 1] + R.GALETS[["jouer", "choisir", "lecons", "recif", "album"][i - 1]].rx, `${k} ne chevauche pas son voisin`);
+    if (i) assert.ok(X[i] - f.rx > X[i - 1] + R.GALETS[accueil[i - 1]].rx, `${k} ne chevauche pas son voisin`);
   }
   assert.ok(X[0] - R.GALETS.jouer.rx > 134, "à droite du bouton de l'espace parent (x 26 à 134)");
-  assert.ok(X[4] + R.GALETS.album.rx < 1272, "dans l'écran");
+  assert.ok(X.at(-1) + R.GALETS.recif.rx < 1272, "dans l'écran");
+  assert.ok(!/galet\("album"/.test(main), "plus de galet de l'album");
   // les phrases (validées par le parent le 10 octobre 2026)
-  assert.deepEqual(T.accueilDescription, { jouer: "Jouer. Je choisis les exercices du soir pour toi.", encore: "Encore ! Tu rejoues autant que tu veux.", choisir: "Choisir. C'est toi qui choisis l'exercice.", lecons: "Les leçons. Je t'explique avec des images.", recif: "Le récif. Viens voir tes créatures.", album: "L'album. Toutes tes cartes sont rangées ici.",
+  assert.deepEqual(T.accueilDescription, { jouer: "Jouer. Je choisis les exercices du soir pour toi.", encore: "Encore ! Tu rejoues autant que tu veux.", choisir: "Choisir. C'est toi qui choisis l'exercice.", lecons: "Les leçons. Je t'explique avec des images.", recif: "Le récif. Viens voir tes créatures.",
     // (lot « Décisions sur les constats de l'agent », décision 3 : « continuer » de l'accueil en pause, en deux touchers)
     continuer: "Continuer. On reprend la séance." });
   assert.equal(T.accueilConsigne, "Touche une bulle : je te dis ce que c'est. Touche-la encore pour y aller.");

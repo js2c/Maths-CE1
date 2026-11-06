@@ -58,7 +58,7 @@ for (const nom of NOMS) {
   await vue("problèmes : le partage", async () => { await exercice("7:3&enonce=par-v-01"); await vis(".probleme-objet"); });
   await vue("récif", async () => { await a.relancer({ q: "?sansReprise" }); await a.deuxTouchers(".galet.reefkey"); await vis(".boutique-cle"); });
   await vue("boutique", async () => { await a.toucher(".boutique-cle"); await vis(".boutique-tuile"); });
-  await vue("album", async () => { await a.relancer({ q: "?sansReprise" }); await a.deuxTouchers(".galet.albumkey"); await a.attendre(() => window.__app.album?.open, 20000); });
+  await vue("album", async () => { await a.relancer({ q: "?sansReprise" }); await a.deuxTouchers(".galet.reefkey"); await vis(".boutique-cle"); await a.toucher(".albumkey"); await a.attendre(() => window.__app.album?.open, 20000); });
   await vue("espace parent : le code", async () => { await a.relancer({ q: "?sansReprise" }); await a.page.waitForTimeout(1500); await a.toucher(".logo", { ms: 2400 }); await vis(".pa-keys"); });
   // la scène entière, centrée, hors des zones sûres (l'encoche des smartphones, émulée par le banc)
   await a.relancer({ q: "?sansReprise" });

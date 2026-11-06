@@ -37,7 +37,7 @@ const pick = async (page, sel) => { await page.waitForSelector(sel, { timeout: 1
 {
   const { page, context, errors } = await open("&cran=conseille&sans=echauffement");
   await page.waitForSelector(".choisir"); await page.waitForTimeout(400);
-  check((await page.locator(".play, .choisir, .leconskey, .reefkey, .albumkey").count()) === 5, "l'accueil : jouer, choisir, les leçons, le récif, l'album");
+  check((await page.locator(".play, .choisir, .leconskey, .reefkey, .albumkey").count()) === 4, "l'accueil : jouer, choisir, les leçons, le récif (lot « Correctifs du 5 novembre » : plus de galet de l'album)");
   await page.screenshot({ path: join(OUT, "1-accueil.png") });
   taps = 0;
   await tap(page, ".choisir");

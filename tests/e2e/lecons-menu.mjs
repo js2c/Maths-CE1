@@ -66,9 +66,10 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
   {
     const { page, context, errors } = await open();
     await page.waitForSelector(".leconskey"); await page.waitForTimeout(500);
-    check((await visible(page, ".play, .choisir, .leconskey, .reefkey, .albumkey")) === 5, `${T} · l'accueil : jouer, choisir, les leçons, le récif, l'album`);
-    const xs = await page.evaluate(() => [".play", ".choisir", ".leconskey", ".reefkey", ".albumkey"].map((s) => document.querySelector(s).getBoundingClientRect()).map((r) => [Math.round(r.x), Math.round(r.right)]));
-    check(xs.every((r, i) => !i || r[0] >= xs[i - 1][1] - 2) && xs.at(-1)[1] <= W, `${T} · cinq bulles côte à côte, dans l'écran (${xs.map((r) => r.join("-")).join(" ")})`);
+    // (lot « Correctifs du 5 novembre » : plus de galet de l'album, quatre galets)
+    check((await visible(page, ".play, .choisir, .leconskey, .reefkey, .albumkey")) === 4, `${T} · l'accueil : jouer, choisir, les leçons, le récif`);
+    const xs = await page.evaluate(() => [".play", ".choisir", ".leconskey", ".reefkey"].map((s) => document.querySelector(s).getBoundingClientRect()).map((r) => [Math.round(r.x), Math.round(r.right)]));
+    check(xs.every((r, i) => !i || r[0] >= xs[i - 1][1] - 2) && xs.at(-1)[1] <= W, `${T} · quatre bulles côte à côte, dans l'écran (${xs.map((r) => r.join("-")).join(" ")})`);
     await shot(page, "01-accueil");
     // (lot « Correctifs : passage de l'échauffement aux voiliers », points 7 et 10 : plus d'étiquette d'appui long sur les écrans
     // de choix, l'accueil en galets compris ; seule la bulle de la mascotte décrit)
@@ -160,7 +161,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
   {
     const { page, context, errors } = await open("", TODAY);
     await page.waitForSelector(".again"); await page.waitForTimeout(400);
-    check((await visible(page, ".again, .leconskey, .reefkey, .albumkey")) === 4, `${T} · après la séance du jour : Encore !, les leçons, le récif, l'album`);
+    check((await visible(page, ".again, .leconskey, .reefkey, .albumkey")) === 3, `${T} · après la séance du jour : Encore !, les leçons, le récif`);
     check(/^La séance du jour est finie\. Touche une bulle/.test(await page.evaluate(() => window.__app.voice.instruction)), `${T} · la consigne de l'accueil après la séance (lot « Correctifs : passage de l'échauffement aux voiliers » : touche une bulle, je te dis ce que c'est)`);
     await shot(page, "13-accueil-seance-faite");
     const t0 = await page.evaluate(() => window.__app.rewards.total);

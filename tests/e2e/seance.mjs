@@ -14,6 +14,7 @@ import { chromium } from "./navigateur.mjs";
 import { mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
+import { readFileSync } from "node:fs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const OUT = resolve(opt("--out", "tests/e2e/out/seance")), N = Number(opt("--questions", 3));
@@ -96,11 +97,13 @@ check((se.cartes?.length ?? 0) === 0, `plus de coquillage ordinaire à la récom
 check(db.reponses.filter((r) => !r.guide).at(-1)?.juste === true, "la séance finit sur une réussite");
 const hudShown = await page.evaluate(() => window.__app.hud.shown); check(hudShown === db.etoiles.total, `le compteur affiche le trésor (${hudShown})`);
 console.log(JSON.stringify({ seance: { ...se, etapes: se.etapes.map((e) => `${e.id}${e.sautee ? ` (sautée : ${e.sautee})` : ` ${e.dureeS} s`}`) } }, null, 1));
-// le son (lot 2, étape 4) : contexte à 48 kHz, bruitages joués et décodés, musique de la séance tirée et enregistrée, arrêtée à la fin
+// le son (lot 2, étape 4) : contexte à 48 kHz, bruitages joués et décodés, musique de la séance tirée et enregistrée, puis l'ambiance
 const son = await page.evaluate(() => { const s = window.__app.sound; return { rate: s.ctx?.sampleRate, played: [...new Set(s.played)], decoded: Object.values(s.buffers).filter(Boolean).length, music: s.musicKey }; });
 check(son.rate === 48000 && son.decoded === 8, `son : contexte à ${son.rate} Hz, ${son.decoded} bruitages décodés`);
 check(["bonne", "erreur", "etoile", "bouton"].every((k) => son.played.includes(k)), `bruitages joués : ${son.played.join(", ")}`);
-check(["harpe", "marimba", "profondeurs"].includes(se.musique) && son.music === null, `musique de la séance « ${se.musique} », arrêtée après la séance`);
+// (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026 : après la séance, la musique d'ambiance, en fondu ; avant, plus de musique)
+const ambiance = JSON.parse(readFileSync(new URL("../../app/content/son.json", import.meta.url), "utf8")).musique.horsSeance;
+check(["harpe", "marimba", "profondeurs"].includes(se.musique) && son.music === ambiance, `musique de la séance « ${se.musique} » ; après la séance, la musique d'ambiance « ${son.music} »`);
 const voix = await page.evaluate(() => ({ manques: [...window.__app.voice.misses], index: !!window.__app.voice.index }));
 check(voix.index && voix.manques.length === 0, `chaque phrase dite a son fichier son${voix.manques.length ? ` ; sans fichier : ${voix.manques.join(" | ")}` : ""}`);
 // relance le même jour : la lune, pas de « jouer »

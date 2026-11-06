@@ -62,7 +62,8 @@ const tap = async (page, sel, ms = 400) => { await page.waitForSelector(sel, { t
 // la pause, la visite du récif (une carte ouverte et rangée) puis de l'album, et le retour à l'accueil en pause
 async function visits(page, name, errors, { shots = false } = {}) {
   await tap(page, ".session-home", 700);
-  check(await page.evaluate(() => document.querySelectorAll(".keep.play, .keep.choisir, .keep.reefkey, .keep.albumkey, .logo.keep").length) === 5, `${name} : l'accueil en pause montre continuer, choisir, le récif, l'album et le logo du parent`);
+  // (lot « Correctifs du 5 novembre » : plus de galet de l'album ; l'album s'ouvre depuis le récif)
+  check(await page.evaluate(() => document.querySelectorAll(".keep.play, .keep.choisir, .keep.leconskey, .keep.reefkey, .keep.albumkey, .logo.keep").length) === 5, `${name} : l'accueil en pause montre continuer, choisir, les leçons, le récif et le logo du parent`);
   if (shots) await page.screenshot({ path: join(OUT, "1-accueil-en-pause.png") });
   const s0 = await state(page), t0 = await page.evaluate(() => window.__app.clock.pausedTotal()), w0 = Date.now();
   await tap(page, ".keep.reefkey", 1200);
@@ -73,9 +74,10 @@ async function visits(page, name, errors, { shots = false } = {}) {
   if (shots) await page.screenshot({ path: join(OUT, "3-recif-carte-en-pause.png") });
   await tap(page, ".check:not(.key):not(.stash)", 700);
   if (name === "ligne") await measure(page);
-  await tap(page, ".homekey:not(.session-home)", 900);
-  await tap(page, ".keep.albumkey", 1200); await page.waitForSelector(".album-card", { timeout: 20000 }); await page.waitForTimeout(500);
+  await tap(page, ".albumkey:not(.galet)", 1200); await page.waitForSelector(".album-card", { timeout: 20000 }); await page.waitForTimeout(500);
   if (shots) await page.screenshot({ path: join(OUT, "4-album-en-pause.png") });
+  await tap(page, ".homekey:not(.session-home) >> nth=-1", 900); // (la maison de l'album ramène au récif)
+  await page.waitForFunction(() => window.__app.reef?.open && !window.__app.album?.open, null, { timeout: 10000 });
   await tap(page, ".homekey:not(.session-home)", 900);
   await page.waitForSelector(".keep.play", { timeout: 10000 });
   const s1 = await state(page), t1 = await page.evaluate(() => window.__app.clock.pausedTotal()), dt = Date.now() - w0;

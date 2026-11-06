@@ -8,7 +8,7 @@
 //  4. l'achat, faire briller, une brillante par chance ; l'arrivée dans le récif ;
 //  5. la fin de séance qui mène à la boutique, et celle qui mène au récif ; les arrivages de la semaine ; le coquillage de la
 //     série, l'ouverture d'une zone et son premier habitant, l'étoile et le coquillage de diamant ; l'album des légendaires ;
-//  6. l'espace parent ; la pause sans bouton de boutique ;
+//  6. l'espace parent ; la pause, avec le bouton de la boutique (depuis le lot « Correctifs du 5 novembre ») ;
 //  7. les situations à tenir : la coche touchée trois fois très vite (un seul achat), la page rechargée pendant le vol des
 //     étoiles (débitées une fois), toucher deux fois une tuile n'achète rien, la croix et un toucher ailleurs annulent, pas de
 //     coche sans assez d'étoiles, une sauvegarde d'avant la boutique.
@@ -25,7 +25,7 @@ import { chromium, finReelle, voixPermise } from "./navigateur.mjs";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
-import { ilYaSemaines, recifOuvert } from "./recif-commun.mjs";
+import { albumParLeRecif, ilYaSemaines, recifOuvert } from "./recif-commun.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const OUT = resolve(opt("--out", "tests/e2e/out/boutique")); mkdirSync(OUT, { recursive: true });
@@ -316,7 +316,7 @@ const vue0 = VUES[0];
 {
   // e. l'album des légendaires : le dos porte l'étoile de diamant
   const { context, page } = await fresh([owned([...lagon, ...corail]), etoiles(10), { id: "zones", ouvertes: ["lagon", "corail", "large"], dates: {} }]);
-  await tap(page, ".albumkey"); await page.waitForSelector(".album-card", { timeout: 20000 }); await page.waitForTimeout(800);
+  await albumParLeRecif(page, (s) => tap(page, s)); await page.waitForSelector(".album-card", { timeout: 20000 }); await page.waitForTimeout(800);
   await tap(page, ".album-tab >> nth=2"); await page.waitForTimeout(1200); await saidReset(page);
   const dos = page.locator(".album-card.back").last(); await dos.tap({ force: true }); await page.waitForTimeout(1500);
   await shot(page, vue0, "28-album-legendaires");
@@ -352,8 +352,10 @@ const vue0 = VUES[0];
   await page.waitForFunction(() => window.__app.session?.progress?.etape === "notion" && document.querySelector(".session-home")?.style.visibility === "visible", null, { timeout: 60000 });
   await page.waitForTimeout(800); await tap(page, ".session-home"); await page.waitForSelector(".reefkey.keep", { timeout: 20000 }); await page.waitForTimeout(600);
   await tap(page, ".reefkey.keep"); await recifOuvert(page); await page.waitForTimeout(500);
-  await page.screenshot({ path: join(OUT, "31-pause-recif-sans-boutique.png") });
-  check((await page.locator(".boutique-cle").count()) === 0, "pendant une séance en pause : pas de bouton de la boutique dans le récif");
+  // (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026 : la boutique aussi pendant une pause ; l'achat en pause et la
+  // reprise exacte : tests/e2e/correctifs-5-novembre.mjs)
+  await page.screenshot({ path: join(OUT, "31-pause-recif-avec-boutique.png") });
+  check((await page.locator(".boutique-cle").count()) === 1, "pendant une séance en pause : le bouton de la boutique est dans le récif");
   await context.close();
 }
 

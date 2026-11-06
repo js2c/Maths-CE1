@@ -36,7 +36,7 @@ const tour = async () => {
   await a.deuxTouchers(".galet.leconskey"); await vis(".lecons-tuile"); await a.page.waitForTimeout(800); await a.toucher(".homekey"); await versAccueil();
   await a.deuxTouchers(".galet.leconskey"); await vis('.lecons-tuile[data-key="L15"]'); await a.page.waitForTimeout(800); await a.deuxTouchers('.lecons-tuile[data-key="L15"]'); await vis(".lecons-atoi", 180000); await a.toucher(".lecons-maison"); await versAccueil();
   await a.deuxTouchers(".galet.reefkey"); await vis(".boutique-cle"); await a.page.waitForTimeout(2500); await a.toucher(".boutique-cle"); await vis(".boutique-tuile"); await a.page.waitForTimeout(2500); await a.toucher(".boutique-retour"); await vis(".boutique-cle"); await a.page.waitForTimeout(2000); await a.toucher(".homekey"); await versAccueil();
-  await a.deuxTouchers(".galet.albumkey"); await a.attendre(() => window.__app.album?.open, 20000); await a.page.waitForTimeout(2500); await a.toucher(".homekey"); await versAccueil();
+  await a.deuxTouchers(".galet.reefkey"); await vis(".boutique-cle"); await a.page.waitForTimeout(1500); await a.toucher(".albumkey"); await a.attendre(() => window.__app.album?.open, 20000); await a.page.waitForTimeout(2500); await a.toucher(".homekey"); await versAccueil();
   for (const ex of ["ligne", "additions", "calcul", "voiliers", "multiplication", "etal"]) {
     await a.deuxTouchers(".galet.again"); await vis(`.choix-ex[data-key="${ex}"]`); await a.page.waitForTimeout(700); await a.deuxTouchers(`.choix-ex[data-key="${ex}"]`); await vis(".choix-tuile"); await a.page.waitForTimeout(700); await a.deuxTouchers(".choix-tuile");
     // (décision du parent du 19 octobre 2026 : l'exercice choisi, le sélecteur ne part plus seul ; la coche le lance)

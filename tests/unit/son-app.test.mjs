@@ -86,3 +86,40 @@ test("sans Web Audio, ou ?son=non : silencieux, sans erreur", async () => {
   s.unlock(); s.play("bonne"); await s.startMusic("harpe"); s.duck(true); s.pauseLevel(true); s.stopMusic(); s.suspend(); s.resume();
   assert.equal(s.musicKey, null);
 });
+
+// (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026) LA MUSIQUE HORS SÉANCE ET LES ENCHAÎNEMENTS : la musique
+// voulue avant le premier toucher démarre avec lui ; une autre musique est décodée pendant que la première continue, puis elles
+// s'enchaînent (l'une monte pendant que l'autre baisse : jamais de silence entre les deux) ; la même, redemandée, continue ; une
+// demande remplacée avant la fin de son décodage est oubliée ; la musique rallumée par le parent reprend la musique voulue.
+test("musique : hors séance dès le premier toucher, fondus enchaînés sans trou, demandes remplacées, réglage du parent", async () => {
+  let attente = []; // les décodages, résolus à la main
+  class Ctx extends FakeCtx { decodeAudioData() { return new Promise((r) => attente.push(() => r({ duration: 1 }))); } }
+  const tour = () => new Promise((r) => setTimeout(r, 0));
+  const decoder = async () => { for (let i = 0; i < 6; i++) { await tour(); while (attente.length) { attente.shift()(); await tour(); } } };
+  globalThis.AudioContext = Ctx; globalThis.fetch = async () => ({ arrayBuffer: async () => new ArrayBuffer(8) });
+  try {
+    const s = new Sound({ content: C, index: INDEX });
+    s.startMusic(C.musique.horsSeance); assert.equal(s.musiqueJouee, null); // avant le toucher : rien, mais elle est retenue
+    s.unlock(); await decoder(); await new Promise((r) => setTimeout(r, 0));
+    assert.equal(s.musiqueJouee, "profondeurs"); const amb = s.joue;
+    assert.equal(amb.g.gain.value, 1);
+    // la même, redemandée (l'accueil, puis le choix, puis le récif) : rien ne change
+    s.startMusic("profondeurs"); assert.equal(s.joue, amb); assert.equal(attente.length, 0);
+    // la séance : sa musique se décode pendant que l'ambiance continue
+    const p = s.startMusic("harpe"); assert.equal(s.musiqueJouee, "profondeurs"); assert.ok(!amb.src.stopped);
+    await decoder(); await p;
+    assert.equal(s.musiqueJouee, "harpe"); assert.ok(amb.src.stopped, "l'ambiance s'arrête, à la fin de son fondu"); assert.equal(amb.g.gain.value, 0); assert.equal(s.joue.g.gain.value, 1);
+    // une demande remplacée avant la fin de son décodage : oubliée ; la musique qui joue, redemandée, reste
+    const seance = s.joue;
+    s.startMusic("marimba"); s.startMusic("harpe"); await decoder();
+    assert.equal(s.joue, seance); assert.equal(s.musiqueJouee, "harpe");
+    // le parent coupe la musique, puis la rallume : la musique voulue reprend
+    s.setPrefs({ musique: false }); assert.equal(s.musiqueJouee, null); assert.ok(seance.src.stopped);
+    s.setPrefs({ musique: true }); await decoder(); await new Promise((r) => setTimeout(r, 0)); assert.equal(s.musiqueJouee, "harpe");
+  } finally { delete globalThis.AudioContext; }
+});
+
+test("musique : la musique d'ambiance est l'une des trois ; le fondu enchaîné dure 1 à 4 s", () => {
+  assert.ok(Object.keys(INDEX.musiques).includes(C.musique.horsSeance));
+  assert.ok(C.musique.fonduEnchaine >= 1 && C.musique.fonduEnchaine <= 4);
+});

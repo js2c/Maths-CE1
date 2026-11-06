@@ -335,7 +335,8 @@ const lessonIn = () => (id) => lessons.play(id); // notée dans la séance par r
 const handlers = {
   accueil: async ({ session }) => {
     // la musique de la séance : l'une des trois, tirée au hasard, gardée toute la séance (pause comprise)
-    session.rec.musique ??= pickMusic(sonIndex, rnd); await session.save(); sound.startMusic(session.rec.musique);
+    // (?musique=harpe : les tests, une musique de séance imposée)
+    session.rec.musique ??= P.get("musique") ?? pickMusic(sonIndex, rnd); await session.save(); sound.startMusic(session.rec.musique);
     // la mascotte salue et souhaite la bienvenue (lot « Mascotte » : elle n'a pas de nom ; le nom de la pieuvre choisi
     // autrefois reste dans la base, sans être montré)
     // (lot « Les leçons » : après « À toi ! », à la fin d'une leçon du menu, ni salut ni surprise : on enchaîne sur le sélecteur)

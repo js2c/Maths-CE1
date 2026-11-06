@@ -12,7 +12,7 @@
 //     enchaîné, sans trou (la puissance relevée toutes les 50 ms) ; la séance finie, l'ambiance revient ; l'espace parent se tait ;
 //     la musique coupée puis rallumée par le parent ; une séance reprise après un rechargement commence avec sa propre musique.
 // Captures dans tests/e2e/out/correctifs-5-novembre/ ; échoue si une vérification échoue ou si la page a une erreur.
-//   node tests/e2e/correctifs-5-novembre.mjs [--vite]   (--vite : seulement 1280 × 800)
+//   node tests/e2e/correctifs-5-novembre.mjs [--vite] [--musique]   (--vite : seulement 1280 × 800 ; --musique : la partie 5 seule)
 // BANC ANDROID, raccourcis : voix rapide, sans service worker
 // (raison : chaque situation part d'une base neuve ; à la vitesse réelle de la voix le parcours durerait plusieurs fois plus longtemps,
 // et installer l'application pour chacune n'apporterait rien à ce qu'il vérifie. Le son, lui, est gardé pour la partie 5 : c'est
@@ -69,7 +69,8 @@ const rangee = async (page, vue, ou) => {
 };
 
 // ---------------------------------------------------------------- 1, 2, 3 : l'accueil, les compteurs, le récif (chaque taille)
-for (const vue of VUES) {
+const MUSIQUE = args.includes("--musique");
+for (const vue of MUSIQUE ? [] : VUES) {
   const { context, page } = await ouvrir(vue, [owned(lagon.slice(0, 6)), etoiles(123, 2, 0), { id: "quota", date: ilYaSemaines(3), cartes: 6 }]);
   await page.waitForTimeout(1500);
   const g = await boites(page, ".galet");
@@ -115,7 +116,7 @@ for (const vue of VUES) {
 const ETAT = () => window.__app && (() => { const a = window.__app, s = a.screen, q = s?.q;
   return { q: q ? JSON.stringify([q.format, q.target, q.answer, q.niveau, q.start, q.jumps]) : null, consigne: a.voice.instruction, questions: a.session.rec.questions, etoilesSeance: a.session.rec.etoiles, etape: a.session.progress.etape, id: a.session.id, enPause: !!a.enPause };
 })();
-{
+if (!MUSIQUE) {
   const vue = VUES[0];
   const { context, page } = await ouvrir(vue, [owned(lagon.slice(0, 4)), etoiles(300, 1, 0), { id: "quota", date: ilYaSemaines(3), cartes: 4 }], Q + "&choix=1:5&cran=conseille&sans=echauffement&sansLecon&guides=0&questions=4");
   await page.waitForTimeout(800); await tap(page, ".galet.play");
@@ -154,7 +155,7 @@ const ETAT = () => window.__app && (() => { const a = window.__app, s = a.screen
 
 // ---------------------------------------------------------------- 5 : la musique (avec le son)
 {
-  const vue = VUES[0], QS = "?nosw&voix=rapide&sans=probleme&sansReprise&sans=echauffement&cran=conseille&sansLecon&guides=0&questions=1&module=1";
+  const vue = VUES[0], QS = "?nosw&voix=rapide&sans=probleme&sansReprise&sans=echauffement&cran=conseille&sansLecon&guides=0&questions=1&module=1&musique=harpe"; // (la séance a une autre musique que l'ambiance : le fondu est essayé)
   const { context, page } = await ouvrir(vue, [], QS, { reel: true });
   await page.waitForSelector(".demarrage", { timeout: 60000 });
   await page.waitForFunction(() => !!window.__app?.sound, null, { timeout: 60000 }).catch(() => {});
@@ -170,14 +171,15 @@ const ETAT = () => window.__app && (() => { const a = window.__app, s = a.screen
   await tap(page, ".galet.reefkey"); await page.waitForTimeout(300); if (!(await page.evaluate(() => window.__app.reef?.open))) await tap(page, ".galet.reefkey");
   await recifOuvert(page);
   check((await page.evaluate(() => window.__app.sound.musiqueJouee)) === SON.musique.horsSeance, "musique : dans le récif, l'ambiance continue");
-  await tap(page, ".homekey"); await page.waitForSelector(".galet.play", { timeout: 15000 }); await page.waitForTimeout(500);
+  await tap(page, ".homekey:not(.session-home)"); await page.waitForSelector(".galet.play", { timeout: 15000 }); await page.waitForTimeout(500);
   // « jouer » : la musique de la séance, en fondu enchaîné
   const n0 = await page.evaluate(() => window.__g.length);
   await tap(page, ".galet.play");
   await page.waitForFunction(() => window.__app.session?.rec?.musique, null, { timeout: 30000 });
   const mSeance = await page.evaluate(() => window.__app.session.rec.musique);
   await page.waitForTimeout((SON.musique.fonduEnchaine + 2) * 1000);
-  check((await page.evaluate(() => window.__app.sound.musiqueJouee)) === mSeance, `musique : la séance a la sienne (« ${mSeance} »)`);
+  const etatSon = await page.evaluate(() => ({ joue: window.__app.sound.musiqueJouee, voulue: window.__app.sound.voulue, music: window.__app.sound.music?.key, etape: window.__app.session?.progress?.etape, mode: window.__app.modeEcran() }));
+  check(etatSon.joue === mSeance, `musique : la séance a la sienne (« ${mSeance} » ; ${JSON.stringify(etatSon)})`);
   const g = await page.evaluate((n0) => window.__g.slice(n0), n0);
   const puiss = g.filter((x) => x.m.length).map((x) => x.m.reduce((a, [, v]) => a + v * v, 0)), deux = g.filter((x) => x.m.length > 1);
   check(Math.min(...puiss) > 0.9, `musique : pas de trou pendant l'enchaînement (puissance la plus basse ${Math.min(...puiss).toFixed(2)}, sur ${puiss.length} relevés)`);
@@ -187,9 +189,11 @@ const ETAT = () => window.__app && (() => { const a = window.__app, s = a.screen
   check(await page.waitForFunction((k) => window.__app.sound.musiqueJouee === k, SON.musique.horsSeance, { timeout: 15000 }).then(() => true, () => false), "musique : la séance finie, l'ambiance revient (« à demain »)");
   await shot(page, vue, "10-a-demain-avec-musique");
   // l'espace parent : tout se tait ; la musique coupée puis rallumée par le parent
-  await page.evaluate(() => { window.__app.parent.open().catch(() => {}); }); await page.waitForTimeout(800);
-  check(await page.evaluate(() => window.__app.sound.ctx.state === "suspended" || window.__app.sound.held === true), "musique : rien dans l'espace parent (le son est suspendu)");
-  await page.evaluate(() => window.__app.parent.close?.()); await page.waitForTimeout(300);
+  // (l'appui long sur le bouton de l'espace parent, comme le parent)
+  { const b = await page.locator(".logo").boundingBox(); await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2); await page.mouse.down(); await page.waitForTimeout(2400); await page.mouse.up(); }
+  await page.waitForSelector(".pa-gate", { timeout: 10000 }); await page.waitForTimeout(600);
+  check(await page.evaluate(() => window.__app.sound.held === true && window.__app.sound.ctx.state !== "running"), `musique : rien dans l'espace parent (le son est suspendu : ${await page.evaluate(() => window.__app.sound.ctx.state)})`);
+  await shot(page, vue, "11-espace-parent-sans-musique", 200);
   await page.evaluate(() => { window.__app.sound.resume(); window.__app.sound.setPrefs({ musique: false }); }); await page.waitForTimeout(400);
   check((await page.evaluate(() => window.__app.sound.musiqueJouee)) === null, "musique : coupée par le parent");
   await page.evaluate(() => window.__app.sound.setPrefs({ musique: true }));

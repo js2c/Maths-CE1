@@ -8,7 +8,7 @@
 //  4. l'achat, faire briller, une brillante par chance ; l'arrivée dans le récif ;
 //  5. la fin de séance qui mène à la boutique, et celle qui mène au récif ; les arrivages de la semaine ; le coquillage de la
 //     série, l'ouverture d'une zone et son premier habitant, l'étoile et le coquillage de diamant ; l'album des légendaires ;
-//  6. l'espace parent ; la pause sans bouton de boutique ;
+//  6. l'espace parent ; la pause, avec le bouton de la boutique (depuis le lot « Correctifs du 5 novembre ») ;
 //  7. les situations à tenir : la coche touchée trois fois très vite (un seul achat), la page rechargée pendant le vol des
 //     étoiles (débitées une fois), toucher deux fois une tuile n'achète rien, la croix et un toucher ailleurs annulent, pas de
 //     coche sans assez d'étoiles, une sauvegarde d'avant la boutique.

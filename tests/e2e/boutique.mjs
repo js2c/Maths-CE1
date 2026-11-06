@@ -352,8 +352,10 @@ const vue0 = VUES[0];
   await page.waitForFunction(() => window.__app.session?.progress?.etape === "notion" && document.querySelector(".session-home")?.style.visibility === "visible", null, { timeout: 60000 });
   await page.waitForTimeout(800); await tap(page, ".session-home"); await page.waitForSelector(".reefkey.keep", { timeout: 20000 }); await page.waitForTimeout(600);
   await tap(page, ".reefkey.keep"); await recifOuvert(page); await page.waitForTimeout(500);
-  await page.screenshot({ path: join(OUT, "31-pause-recif-sans-boutique.png") });
-  check((await page.locator(".boutique-cle").count()) === 0, "pendant une séance en pause : pas de bouton de la boutique dans le récif");
+  // (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026 : la boutique aussi pendant une pause ; l'achat en pause et la
+  // reprise exacte : tests/e2e/correctifs-5-novembre.mjs)
+  await page.screenshot({ path: join(OUT, "31-pause-recif-avec-boutique.png") });
+  check((await page.locator(".boutique-cle").count()) === 1, "pendant une séance en pause : le bouton de la boutique est dans le récif");
   await context.close();
 }
 

@@ -117,6 +117,9 @@ export class FactsScreen {
     // aide d'emblée l'interrompt, et sa suite redisait la consigne sur l'accueil ; elle ne fait plus rien)
     const fini = () => this.detruit || this.q !== q;
     const then = () => { if (fini()) return; this.app.aidBoard?.clear(); if (q.module === 5) this.mult?.paintBand(q); this.locked = false; this.keys(true); this.t0 = clock.now(); voice.say(this.consigne(q), { instruction: true }); };
+    // (lot « Correctifs du 5 novembre ») la consigne de la question est posée tout de suite, même quand un exemple guidé ou une aide
+    // d'emblée la précède : la mascotte touchée redit la question qu'on voit, pas celle d'avant
+    if (q.guide || q.aideDEmblee) voice.instruction = this.consigne(q);
     // (lot « Multiplication » : l'exemple guidé et l'aide d'emblée de la multiplication sont les siens, modules/mult/screen.js)
     if (q.guide) { this.locked = true; (q.module === 5 && this.mult ? this.mult.demo(q) : this.demo(q)).then(then); return p; }
     if (q.aideDEmblee && q.module === 5 && this.mult) { this.locked = true; this.keys(false); this.mult.autoAid(q).then(() => { if (fini()) return; this.locked = false; this.keys(true); this.t0 = clock.now(); voice.say(this.consigne(q), { instruction: true }); }); return p; }

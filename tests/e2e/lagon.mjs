@@ -15,7 +15,7 @@ import { chromium } from "./navigateur.mjs";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { serve } from "../serve.mjs";
-import { recifOuvert } from "./recif-commun.mjs";
+import { albumParLeRecif, recifOuvert } from "./recif-commun.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const OUT = resolve(opt("--out", "tests/e2e/out/lagon")), SEUL = opt("--seul", null);
@@ -110,7 +110,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   await go(""); await page.evaluate(async () => { const a = window.__app, ids = a.cartes.cartes.filter((c) => c.zone === "lagon").map((c) => c.id); await a.store.put("recompenses", { id: "cartes", cartes: Object.fromEntries(ids.map((id) => [id, { n: 1, premiere: Date.now() }])) }); await a.rewards.load(); });
   await go(""); await page.tap(".reefkey", { force: true }); const viv = await recifOuvert(page); await shot("50-recif");
   check(viv.length === 15, `${W} récif vivant : les 15 créatures gagnées (${viv.length})`);
-  await go(""); await page.tap(".albumkey", { force: true }); await page.waitForTimeout(2000); await shot("51-album");
+  await go(""); await albumParLeRecif(page); await page.waitForTimeout(2000); await shot("51-album");
   check(errors.length === 0, `${W} : aucune erreur dans la page (${errors.slice(0, 3).join(" | ")})`);
   await context.close();
 }

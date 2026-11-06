@@ -1,8 +1,8 @@
 {
- "version": "2d68fb9cdf3d",
+ "version": "8a991c480eae",
  "octets": {
-  "1": 129606423,
-  "2": 144828195
+  "1": 129668354,
+  "2": 144890126
  },
  "files": [
   "./",
@@ -314,6 +314,7 @@
   "assets/son/musique-harpe-bbd3f03d.ogg",
   "assets/son/musique-marimba-027f8675.ogg",
   "assets/son/musique-profondeurs-dc1159ed.ogg",
+  "assets/tete/tete-mascotte.webp",
   "assets/voiliers/boats-cata-map.webp",
   "assets/voiliers/boats-cata-tex-broken.webp",
   "assets/voiliers/boats-cata-tex-full.webp",

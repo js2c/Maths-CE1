@@ -212,7 +212,7 @@ export class CalcScreen {
     fs.keys(false); fs.slate.style.visibility = "hidden"; await this.app.sprites.load("calcul");
     this.board.draw((ctx) => R.drawWall(ctx, { ...CALC_WALL, lit: [] }));
     this.fish ??= new WallFish(this.app); this.fish.at(CALC_WALL.x - 40, CALC_WALL.y + 60);
-    const talk = voice.say(phrase);
+    const talk = voice.say(phrase, { instruction: true }); // (lot « Correctifs du 5 novembre » : la mascotte touchée redit la phrase d'entrée)
     await this.fish.swim(...R.wallCell(CALC_WALL, 45), 1400);
     await talk; await wait(300);
     this.fishDone(); this.board.clear(); fs.showSlate();

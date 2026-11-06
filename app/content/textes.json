@@ -113,7 +113,6 @@
     "choisir": "Choisir. C'est toi qui choisis l'exercice.",
     "lecons": "Les leçons. Je t'explique avec des images.",
     "recif": "Le récif. Viens voir tes créatures.",
-    "album": "L'album. Toutes tes cartes sont rangées ici.",
     "continuer": "Continuer. On reprend la séance."
   },
   "pauseConsigne": "C'est la pause. Touche cette bulle pour continuer.",
@@ -705,6 +704,8 @@
     "arcProchainesZones": "Elles ouvriront les prochaines zones du récif.",
     "arcBrillerUne": "Elle fait briller une créature, à la boutique.",
     "arcBriller": "Elles font briller tes créatures, à la boutique.",
+    "diamantZero": "Tu n'as pas encore d'étoile de diamant.",
+    "diamantGagner": "Viens jouer souvent : tu en gagneras une !",
     "diamantUne": "Tu as une étoile de diamant.",
     "diamantN": "Tu as {n} étoiles de diamant.",
     "diamantBeaucoup": "Tu as beaucoup d'étoiles de diamant.",

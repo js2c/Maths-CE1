@@ -14,13 +14,15 @@ import * as R from "../art/runtime.js";
 import { onBrief, pop, spriteBox } from "../engine/ui.js";
 import { fill } from "../modules/numberline/screen.js";
 import { zoneDone } from "./rewards.js";
+import { dessinerEtoileRangee, poserBoite } from "./screens.js";
 
-// deux cases de 68 × 100 px logiques (cibles d'au moins 64 px), à droite du compteur (960 à 1130) ; une réserve vide n'est pas
-// montrée : s'il n'y a que les étoiles de diamant, leur case prend la première place
-export const CASE = { x: 1136, y: 22, w: 68, h: 100, pas: 72 };
+// (lot « Correctifs du 5 novembre ») les deux réserves sont posées par la rangée des compteurs (screens.js, rangeeCompteurs), à droite
+// du compteur d'étoiles de mer, chaque étoile à gauche de son nombre ; la réserve arc-en-ciel n'est pas montrée à 0, celle de
+// diamant l'est toujours (décision du parent du 5 novembre 2026 ; avant, masquée à 0 elle aussi)
 export const SORTES = ["arc", "diamant"];
-// le centre de l'étoile d'une réserve, à la case `k` (0 ou 1)
-export const centreCase = (k) => [CASE.x + k * CASE.pas + CASE.w / 2, CASE.y + 34];
+export const toujoursMontree = (s) => s === "diamant";
+// les réserves montrées, de gauche à droite, pour les nombres `n`
+export const reservesMontrees = (n) => SORTES.filter((s) => toujoursMontree(s) || n[s] > 0);
 
 // L'ÉTAT D'UNE RÉSERVE, pour ce qu'en dit la mascotte. `n` : le nombre montré.
 //   arc : { n, fermees (zones encore fermées : autant d'étoiles gardées), zonePrete (la zone en cours est complète : une zone va
@@ -43,6 +45,9 @@ export function texteReserve(T, cartes, sorte, e) {
     const role = !e.fermees ? (e.n === 1 ? X.arcBrillerUne : X.arcBriller) : e.n > e.fermees ? X.arcZonesEtBriller : e.n === 1 ? X.arcProchaineZone : X.arcProchainesZones;
     return j(nb, role, e.zonePrete ? T.boutique.zoneBientot : null);
   }
+  // (lot « Correctifs du 5 novembre » : la réserve de diamant est montrée même à 0) à 0, comment en gagner une, ou rien de plus si
+  // toutes les légendaires sont déjà là
+  if (!e.n) return e.zone ? j(X.diamantZero, X.diamantGagner) : X.diamantTout;
   const nb = e.n === 1 ? X.diamantUne : e.n > (M.diamantDitMax ?? 15) ? X.diamantBeaucoup : fill(X.diamantN, { n: e.n });
   const role = !e.zone ? X.diamantTout : e.maintenant ? X.diamantMaintenant : fill(e.n === 1 ? X.diamantQuandUne : X.diamantQuand, { zone: e.zone.duLu ?? e.zone.nom });
   return j(nb, role);
@@ -58,35 +63,40 @@ export async function volVersReserve(app, sprite, [x0, y0], [x1, y1], { k = 0.7,
   el.remove();
 }
 
-// LES DEUX CASES, posées par le compteur (screens.js, StarHud) ; leur visibilité suit celle du compteur
+// LES DEUX CASES, posées par la rangée des compteurs (screens.js, StarHud) ; leur visibilité suit celle du compteur
 export class Reserves {
   constructor(app, hud, rewards = app.rewards) {
-    this.app = app; this.hud = hud;
+    this.app = app; this.hud = hud; this.place = {};
     this.n = { arc: rewards?.arcDispo ?? 0, diamant: rewards?.doreesDispo ?? 0 };
     this.els = Object.fromEntries(SORTES.map((s) => {
-      const e = spriteBox(app, { x: CASE.x, y: CASE.y, w: CASE.w, h: CASE.h, cls: `bubble reserve ${s}`, label: s === "arc" ? "étoiles arc-en-ciel" : "étoiles de diamant", paint: (ctx, px) => this.peindre(s, ctx, px) });
+      const e = spriteBox(app, { x: 1136, y: 22, w: 70, h: 100, cls: `bubble reserve ${s}`, label: s === "arc" ? "étoiles arc-en-ciel" : "étoiles de diamant", paint: (ctx, px) => this.peindre(s, ctx, px) });
       onBrief(app, e, () => this.toucher(s), null);
       return [s, e];
     }));
-    this.placer();
   }
-  // la case d'une réserve : l'étoile de l'atelier en haut, son nombre dessous ; sur un fond sombre (l'orage de l'étal), une plaque
+  montrees(n = this.n) { return reservesMontrees(n); }
+  // la case d'une réserve : l'étoile de l'atelier à gauche, son nombre à droite, à la taille de la rangée ; sur un fond sombre (l'orage
+  // de l'étal), une plaque
   peindre(s, ctx, px) {
-    const q = this.app.sprites.frame(s === "arc" ? "etoile.arc" : "etoile.diamant", 0), k = s === "arc" ? 0.6 : 0.56, cx = CASE.w / 2, cy = 34;
-    if (this.hud.sombre) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawPanel(ctx, 2, 4, CASE.w - 4, CASE.h - 8); ctx.setTransform(1, 0, 0, 1, 0, 0); }
-    if (q) ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, cx * px + q.dx * k, cy * px + q.dy * k, q.w * k, q.h * k);
+    const b = this.place[s]; if (!b) return;
+    const { etoile, d, chiffre: [nx, haut, h] } = b.dansBoite;
+    if (this.hud.sombre) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawPanel(ctx, 2, 18, b.w - 4, 64); }
+    dessinerEtoileRangee(this.app, ctx, px, s === "arc" ? "etoile.arc" : "etoile.diamant", etoile, d);
     ctx.setTransform(px, 0, 0, px, 0, 0);
-    const t = String(this.n[s]), h = t.length > 1 ? 28 : 32; R.drawNumber(ctx, t, cx, 62 + (32 - h) / 2, h, { w: 4.8, seed: s === "arc" ? 921 : 922 });
+    R.drawNumber(ctx, String(this.n[s]), nx, haut, h, { w: 4.8, seed: s === "arc" ? 921 : 922 });
   }
-  // les cases visibles, de gauche à droite (la case de l'arc-en-ciel d'abord)
-  placer() {
-    let k = 0;
-    for (const s of SORTES) { const e = this.els[s], on = this.n[s] > 0; e.style.display = on ? "" : "none"; if (on) { e.style.left = `${CASE.x + k * CASE.pas}px`; e.k = k++; } }
+  // (appelé par la rangée) chaque case à sa place ; une case pas montrée est retirée de l'affichage
+  // (une case masquée est tout de même dessinée, à la place qu'elle prendra : rien de ce qui existe dans la page n'est laissé vide)
+  poser(boites) {
+    for (const s of SORTES) {
+      const e = this.els[s], b = boites[s] ?? this.hud.rangee({ ...this.n, [s]: Math.max(1, this.n[s]) }).boites[s]; e.style.display = boites[s] ? "" : "none";
+      if (b) { this.place[s] = b; poserBoite(this.app, e, b.x, b.w); }
+    }
   }
   // le centre de l'étoile d'une réserve (celle qui n'est pas encore montrée : la place qu'elle prendra)
-  centre(s) { return centreCase(s === "arc" ? 0 : this.n.arc > 0 ? 1 : 0); }
+  centre(s) { return this.hud.rangee({ ...this.n, [s]: Math.max(1, this.n[s]) }).boites[s]?.etoile ?? [1170, 72]; }
   // le nombre montré ; `+1` à l'arrivée d'une étoile (elle sautille), `-1` au départ
-  set(s, v) { if (v === this.n[s]) return; this.n[s] = Math.max(0, v); this.els[s].repaint(); this.placer(); }
+  set(s, v) { v = Math.max(0, v); if (v === this.n[s]) return; this.n[s] = v; this.hud.disposer(); }
   plus(s) { this.set(s, this.n[s] + 1); pop(this.els[s]); }
   moins(s) { this.set(s, this.n[s] - 1); }
   // à chaque image (StarHud.tick) : la visibilité du compteur, le toucher permis ou non ; hors séance, le nombre de la sauvegarde

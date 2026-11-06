@@ -316,6 +316,9 @@ export class Boutique {
     void e;
     this.verrou = true;
     await got.ecrit;
+    // (lot « Correctifs du 5 novembre ») pendant une séance en pause, la réserve montrée ne suit pas la sauvegarde (reserves.js,
+    // suivre) : elle descend ici, quand l'étoile arc-en-ciel part
+    if (got.arc && app.modeEcran?.() === "seance") hud?.reserves?.moins("arc");
     this.vit = rewards.vitrine(this.t);
     this.conf.forEach((k) => { k.style.visibility = "hidden"; }); this.deselection(); voice.stop(); bulle.cacher(true);
     const [x0, y0, x1, y1] = rectStyle(b), centre = [(x0 + x1) / 2, (y0 + y1) / 2];
@@ -372,7 +375,7 @@ export class Boutique {
   // LES ÉTOILES DU PRIX volent du compteur jusqu'à la créature (6 à 16 étoiles, comme la maquette), au-dessus de la vitrine ;
   // le compteur descend avec elles, d'un pas à chaque étoile partie, jamais d'un coup
   async volEtoiles(prix, [cx, cy], cible) {
-    const { stage, sprites, hud, rewards } = this.app, px = stage.px, n = Math.max(6, Math.min(16, Math.round(prix / 8))), dur = 820, ecart = 70, [sx, sy] = [1004, 76];
+    const { stage, sprites, hud, rewards } = this.app, px = stage.px, n = Math.max(6, Math.min(16, Math.round(prix / 8))), dur = 820, ecart = 70, [sx, sy] = hud?.centre?.() ?? [1004, 76];
     const de = rewards.total + prix, vols = [];
     for (let i = 0; i < n; i++) {
       const el = document.createElement("canvas"), S = 46; el.width = el.height = Math.round(S * px); el.className = "boutique-vol etoile";

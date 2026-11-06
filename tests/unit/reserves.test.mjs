@@ -165,3 +165,24 @@ test("la rangée de coches se pose à côté du départ de la bulle (le milieu d
 test("B, le niveau par défaut, garde ses prix (la règle de réserve ne change rien aux prix)", () => {
   assert.deepEqual([B.briller.commune, B.briller.rare], [150, 300]);
 });
+
+// (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026) LA RANGÉE DES COMPTEURS : une seule ligne, chaque étoile à
+// gauche de son nombre, même taille et même hauteur ; la réserve de diamant montrée même à 0 ; entre la frise et le bord droit
+test("la rangée des compteurs : une ligne, l'étoile à gauche de son nombre, même taille, diamant montré à 0, cibles de 64 px", async () => {
+  const { rangeeCompteurs, RANGEE } = await import("../../app/js/session/screens.js");
+  const { reservesMontrees } = await import("../../app/js/session/reserves.js");
+  assert.deepEqual(reservesMontrees({ arc: 0, diamant: 0 }), ["diamant"]);
+  assert.deepEqual(reservesMontrees({ arc: 3, diamant: 0 }), ["arc", "diamant"]);
+  for (const [mer, arc, diamant] of [["0", "1", "0"], ["123", "2", "0"], ["999", "44", "3"], ["1234", "50", "15"], ["12345", "50", "15"]]) {
+    const { k, boites } = rangeeCompteurs([{ id: "mer", texte: mer }, { id: "arc", texte: arc }, { id: "diamant", texte: diamant }]);
+    const B = ["mer", "arc", "diamant"].map((id) => boites[id]);
+    assert.ok(B[0].x >= RANGEE.gauche - 1 && B[2].x + B[2].w <= RANGEE.droite + 1, `${mer} : dans sa place (${B[0].x} à ${B[2].x + B[2].w})`);
+    for (let i = 1; i < 3; i++) assert.ok(B[i].x >= B[i - 1].x + B[i - 1].w, "sans se chevaucher, de gauche à droite");
+    assert.ok(B.every((b) => b.w >= 64), "cibles d'au moins 64 px");
+    assert.equal(new Set(B.map((b) => b.etoile[1])).size, 1, "les trois étoiles à la même hauteur");
+    assert.equal(new Set(B.map((b) => b.dansBoite.d)).size, 1, "à la même taille");
+    assert.equal(new Set(B.map((b) => b.dansBoite.chiffre[2])).size, 1, "les nombres à la même taille");
+    for (const b of B) assert.ok(b.dansBoite.etoile[0] + b.dansBoite.d / 2 <= b.dansBoite.chiffre[0], "l'étoile à gauche de son nombre");
+    if (mer.length <= 3 && arc.length === 1 && diamant.length === 1) assert.equal(k, 1, "pas réduite quand elle tient (le cas courant)");
+  }
+});

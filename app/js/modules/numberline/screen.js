@@ -190,7 +190,8 @@ export class NumberLineScreen {
   }
   async demo(q, dead = () => false) {
     const { voice, text } = this.app, T = this.turtle, val = (i) => q.min + i * q.step;
-    await voice.say(text.pick(q.format === "estimer" ? "guideEstimer" : q.format === "sauter" ? "guideSauter" : "guide"));
+    // (lot « Correctifs du 5 novembre » : la phrase d'entrée de l'exemple guidé est sa consigne : la mascotte touchée la redit)
+    await voice.say(text.pick(q.format === "estimer" ? "guideEstimer" : q.format === "sauter" ? "guideSauter" : "guide"), { instruction: true });
     if (dead()) return;
     if (q.format === "estimer") {
       const mid = (q.min + q.max) / 2, x = this.xOf(mid);

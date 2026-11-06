@@ -10,7 +10,10 @@
     "fonduBaisse": 0.25,
     "baissePause": 14,
     "fonduEntree": 3,
-    "fonduSortie": 2
+    "fonduSortie": 2,
+    "fonduEnchaine": 2.5,
+    "horsSeance": "profondeurs",
+    "_horsSeance": "Lot « Correctifs du 5 novembre » (décision du parent du 5 novembre 2026) : la musique d'ambiance hors séance (l'accueil, choisir, les leçons, la boutique, le récif, l'album), l'une des trois ; la séance garde la sienne, tirée au hasard. fonduEnchaine : la durée du fondu entre deux musiques, en secondes."
   },
   "frequenceEchantillonnage": 48000
 }

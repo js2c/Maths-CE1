@@ -133,7 +133,7 @@ export class ProblemesScreen {
     for (const [k, n] of Object.entries(this.dans ?? {})) { const p = L.pieces.find((x) => x.k === Number(k)); if (!p || p.manque) continue; p.copies.forEach((c, j) => this.unitesDans(g, o, c, Array.isArray(n) ? n[j] : n, k * 13 + j)); }
     if (this.tas) this.dessinerTas(g, o, this.tas);
     // (sans image des contenants) les groupes de l'atelier, au-dessus du sol de la scène
-    if (this.groupesCode) { const G = q.e.groupes; this.groupesDans({ x: 470, y: 126, w: 640, h: 220 }, q.e.contenant ?? "anneau", o, G.nombre, G.taille, { plein: this.groupesCode.plein })(g); }
+    if (this.groupesCode) { const G = q.e.groupes; this.groupesDans({ x: 470, y: 214, w: 420, h: 190 }, q.e.contenant ?? "anneau", o, G.nombre, G.taille, { plein: this.groupesCode.plein })(g); }
     if (this.collections) for (const col of this.collections) this.dessinerTas(g, col.objet, col);
   }
   repaintScene() { if (this.q && this.L) this.calque("scene", ZONE_CADRE, (g, ctx) => this.paintScene(g, ctx), "probleme-scene"); }

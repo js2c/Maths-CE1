@@ -47,3 +47,10 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 ## Reprise
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
+
+### Reprise du lot « Mise en scène des problèmes » (fiche 23)
+
+- **Branche** `claude/sweet-davinci-vwkk2u`, **PR #76** (la maquette validée le 6 novembre, puis le lot dans la même demande de fusion) ; mise à jour avec `main` après la fusion de la PR #75.
+- **Fait** : la maquette (`art/problemes/mise-en-scene/`, `docs/maquettes/problemes-scene/`) ; les deux premiers lieux générés (chambre, cuisine) vérifiés.
+- **Étapes** : 0, la fiche et ces notes ; 1, l'outil d'export (lieux recadrés, objets détourés) et `contextes.json` ; 2, la scène de chaque énoncé et sa composition ; 3, l'écran ; 4, la recette sur le banc Android et les documents.
+- **En cours** : étape 0.

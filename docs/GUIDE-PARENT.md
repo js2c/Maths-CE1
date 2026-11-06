@@ -660,6 +660,27 @@ Votre enfant résout maintenant des **problèmes** : de petites histoires de la 
 
 **À essayer sur la tablette** : le démarrage (la musique commence au toucher), l'accueil, « jouer » (le fondu vers la musique de la séance), la fin de séance (le retour de l'ambiance) ; un problème du niveau 3, en touchant le capitaine pendant le partage ; la maison pendant une séance, le récif, la boutique, un achat, puis « continuer » ; les compteurs à l'accueil et dans le récif.
 
+## d septvicies) Lot « Mise en scène des problèmes » : une scène pleine, des objets en nombre exact
+
+**Ce qui change à l'écran** : l'image du lieu est plus grande (elle va de la mascotte jusqu'à droite, au-dessus du pavé). L'application y pose les objets de l'histoire : Papa, le chien, la gamelle, 3 sachets fermés marqués « 6 »… Les objets d'une phrase apparaissent quand elle est dite. Ce qu'on compte (les gourmandises) reste caché tant que l'enfant doit le trouver par le calcul ; à la correction, il apparaît (jusqu'à 20), par exemple les 18 gourmandises dans la gamelle. Les étiquettes des nombres sont posées sur les objets qu'elles décrivent, la plaque « ? » sur l'objet de la réponse. Pendant l'aide, les étiquettes prennent la couleur de leur barre dans le schéma. Au partage du niveau 3, l'enfant range les objets dans les pots ou les assiettes de l'histoire.
+
+**Tant qu'un objet n'a pas son image**, il n'est pas dessiné : son étiquette seule reste, posée sur le sol du lieu (sans aucune image d'objet, l'écran ressemble à celui d'avant, avec le lieu plus grand). Un lieu sans image garde le fond de papier.
+
+**Ajouter des images** (vous pouvez le faire peu à peu, dans l'ordre de `docs/maquettes/problemes-scene/PROMPTS.md`) :
+
+1. Générer l'image avec le prompt indiqué (fond vert, ou magenta quand c'est écrit).
+2. La déposer, telle quelle, sous le nom indiqué :
+   - un lieu dans `art/problemes/sources/`, nommé comme le lieu (`cuisine.jpg`, `chambre.jpg`…) ;
+   - un objet dans `art/problemes/mise-en-scene/sources/`, nommé comme l'objet (`papa.png`, `sachet-ferme.png`…).
+3. Demander à une session Claude Code de lancer la commande, ou la lancer vous-même depuis le dossier du dépôt :
+   ```
+   node art/tools/export-problemes.mjs
+   node tools/precache.mjs
+   ```
+   La première recadre les lieux (le haut retiré, jamais le sol) et détoure les objets ; elle dit ce qu'elle a fait, et signale un fichier dont le nom n'est pas reconnu. La seconde met à jour la liste des fichiers hors ligne.
+
+**Phrases à fabriquer** : 3 phrases nouvelles du partage (« Mets-en autant dans chaque pot. », « Mets-en autant sur chaque étagère. », « Donne-en autant à chaque enfant. »).
+
 ## e) Ce qui reste approximatif ou à ajuster
 
 **À vérifier sur la vraie tablette.** Écouter la voix (aucune phrase n'a été écoutée par une personne, la vérification a été automatique) et regarder les illustrations des cartes en grand. Toutes les mesures ont été faites sur un ordinateur, en ralentissant le processeur 4 fois pour imiter une tablette : démarrage en moins de 1,5 s, animation à 50 à 60 images par seconde la plupart du temps, avec des baisses vers 30 pendant certaines animations (l'application allège alors d'elle-même le décor). Il faut confirmer que tout reste fluide sur la tablette.

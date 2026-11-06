@@ -66,6 +66,8 @@ export function releve(e) {
 
 const ROLE = { groupe: (t) => `${t.n === "?" ? "?" : `×${t.n}`}`, objet: () => "", unite: () => "" };
 const nomCourt = (id) => PAR_ID.get(id)?.nom.split(" (")[0] ?? id;
+export const PRINCIPAL = process.argv[1] && import.meta.url === new URL(`file://${process.argv[1]}`).href;
+export { LIB, LIEUX, PAR_ID, RE };
 const RELEVES = BANQUE.map((e) => ({ e, objets: releve(e) }));
 
 // les comptes par objet
@@ -81,16 +83,16 @@ const vides = RELEVES.filter(({ objets }) => !objets.some((t) => t.role !== "uni
 const aFaire = (o) => !o.existe && !/^Dessiné par le code|^Les icônes d'unité/.test(o.sujet);
 
 const CAT = ["personnage", "animal", "contenant", "depot", "unite"], NOM_CAT = { personnage: "Personnages", animal: "Animaux", contenant: "Contenants", depot: "Lieux de dépôt", unite: "Unités comptées (icônes)" };
-console.log(`${BANQUE.length} énoncés ; ${LIB.objets.length} objets dans la bibliothèque (${LIB.objets.filter((o) => o.categorie !== "unite").length} hors unités).`);
-for (const c of CAT) {
+if (PRINCIPAL) console.log(`${BANQUE.length} énoncés ; ${LIB.objets.length} objets dans la bibliothèque (${LIB.objets.filter((o) => o.categorie !== "unite").length} hors unités).`);
+if (PRINCIPAL) for (const c of CAT) {
   const l = rang.filter((s) => s.o.categorie === c && s.enonces.size);
   console.log(`\n${NOM_CAT[c]} : ${l.map((s) => `${s.o.id} ${s.enonces.size}${s.max > 1 ? ` (×${s.max})` : ""}`).join(", ")}`);
 }
 const inutiles = rang.filter((s) => !s.enonces.size).map((s) => s.o.id);
-if (inutiles.length) console.log(`\nObjets sans énoncé : ${inutiles.join(", ")}`);
-console.log(`\nÉnoncés sans objet dessiné (seulement le lieu et les étiquettes) : ${vides.length}${vides.length ? ` : ${vides.map(({ e }) => e.id).join(", ")}` : ""}`);
+if (PRINCIPAL && inutiles.length) console.log(`\nObjets sans énoncé : ${inutiles.join(", ")}`);
+if (PRINCIPAL) console.log(`\nÉnoncés sans objet dessiné (seulement le lieu et les étiquettes) : ${vides.length}${vides.length ? ` : ${vides.map(({ e }) => e.id).join(", ")}` : ""}`);
 
-if (process.argv.includes("--md")) {
+if (PRINCIPAL && process.argv.includes("--md")) {
   mkdirSync(DOCS, { recursive: true });
   const cellObjets = (objets) => objets.filter((t) => t.role !== "unite").map((t) => `${nomCourt(t.id)}${t.variante ? ` (${t.variante})` : ""}${ROLE[t.role](t) ? ` ${ROLE[t.role](t)}` : ""}${t.defaut ? "*" : ""}`).join(", ") || "—";
   const cellUnites = (objets) => objets.filter((t) => t.role === "unite").map((t) => [...(t.mots ?? [nomCourt(t.id)])].join(", ")).join(", ") || "—";

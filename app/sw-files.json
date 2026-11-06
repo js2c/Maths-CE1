@@ -1,8 +1,8 @@
 {
- "version": "8a991c480eae",
+ "version": "bf8cdaff8217",
  "octets": {
-  "1": 129668354,
-  "2": 144890126
+  "1": 129945282,
+  "2": 145167054
  },
  "files": [
   "./",
@@ -179,6 +179,10 @@
   "assets/mascotte/talk-b.webm",
   "assets/mascotte/wrong.webm",
   "assets/polices/shantell-sans-600.woff2",
+  "assets/problemes/chambre@1x.webp",
+  "assets/problemes/chambre@2x.webp",
+  "assets/problemes/cuisine@1x.webp",
+  "assets/problemes/cuisine@2x.webp",
   "assets/problemes/etal@1x.webp",
   "assets/problemes/etal@2x.webp",
   "assets/problemes/index.json",

@@ -132,14 +132,14 @@ export async function exportProblemes() {
     const out = await page.evaluate(DETOURER, [`data:${MIME(chemin)};base64,${readFileSync(chemin).toString("base64")}`, o.fond ?? "vert", o.h, QUALITE_OBJET, 400]);
     if (out.vide) { inconnus.push(`${f} (rien après le détourage : le fond est-il bien ${o.fond ?? "vert"} ?)`); continue; }
     for (const k of [1, 2]) writeFileSync(join(OUT_OBJ, `${base}@${k}x.webp`), Buffer.from(out.res[k].b64, "base64"));
-    objets[base] = { w: out.res[1].w, h: out.res[1].h };
+    objets[base] = { w: out.res[1].w, h: out.res[1].h, c: o.categorie };
     console.log(`  objet ${base} : ${out.source.join(" × ")}, cadré ${out.cadre[2]} × ${out.cadre[3]}, @1x ${out.res[1].w} × ${out.res[1].h}`);
   }
   await browser.close();
   // les images d'un lieu ou d'un objet qui n'a plus de source disparaissent
   for (const f of readdirSync(OUT)) if (f.endsWith(".webp") && !lieux.includes(f.replace(/@\dx\.webp$/, ""))) unlinkSync(join(OUT, f));
   for (const f of readdirSync(OUT_OBJ)) if (f.endsWith(".webp") && !objets[f.replace(/@\dx\.webp$/, "")]) unlinkSync(join(OUT_OBJ, f));
-  writeFileSync(join(OUT, "index.json"), `${JSON.stringify({ _doc: "Généré par art/tools/export-problemes.mjs : les lieux des problèmes qui ont leur illustration (app/assets/problemes/<lieu>@1x.webp et @2x.webp, 860 × 350 à @1x) et les objets de l'histoire qui ont leur image (objets/<objet>[-<variante>]@1x|2x.webp, leur taille à @1x). Un lieu sans image a le papier du cadre ; un objet sans image, son étiquette seule.", lieux, manquent, objets }, null, 1)}\n`);
+  writeFileSync(join(OUT, "index.json"), `${JSON.stringify({ _doc: "Généré par art/tools/export-problemes.mjs : les lieux des problèmes qui ont leur illustration (app/assets/problemes/<lieu>@1x.webp et @2x.webp, 860 × 350 à @1x) et les objets de l'histoire qui ont leur image (objets/<objet>[-<variante>]@1x|2x.webp, leur taille à @1x, leur catégorie). Un lieu sans image a le papier du cadre ; un objet sans image, son étiquette seule.", lieux, manquent, objets }, null, 1)}\n`);
   console.log(`problèmes : ${lieux.length} lieux (${lieux.join(", ")}) ; sans image : ${manquent.length} ; ${Object.keys(objets).length} images d'objets${inconnus.length ? ` ; NON RECONNUS : ${inconnus.join(", ")} (nom attendu : <objet>.png ou <objet>-<variante>.png, objets.json)` : ""}`);
   return { lieux, manquent, objets, inconnus, recadres };
 }

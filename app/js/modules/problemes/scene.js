@@ -42,52 +42,65 @@ export const ouvert = (x) => (x.v && OUVERT[x.v] ? { ...x, v: OUVERT[x.v] } : x)
  * Rend { pieces: [{ k, copies: [{ x, y, w, h, cle, retourne }], boite, manque }], etiquettes: [{ i, x, y, w, h, k, echo }], plaque }
  */
 export function composer(e, donnees, largeurs, hauteurEtiquette, images, o = {}) {
-  const S = e.scene ?? { objets: [] }, pied = o.pied ?? 462, rangeeMax = o.rangeeMax ?? 440, ECART = o.ecart ?? 28, H = hauteurEtiquette;
+  const S = e.scene ?? { objets: [] }, pied = o.pied ?? 462, piedActeurs = o.piedActeurs ?? pied, solX = IMAGE.x + IMAGE.w * (o.solX ?? 0), rangeeMax = o.rangeeMax ?? 440, ECART = o.ecart ?? 28, H = hauteurEtiquette;
   // 1. les pièces : leur taille naturelle (une rangée pour un groupe)
   const pieces = S.objets.map((x0, k) => {
     const x = o.ouverts ? ouvert(x0) : x0, c = x.n == null ? 1 : x.n === "?" ? 1 : Math.max(1, donnees[x.n] ?? 1);
     const ims = Array.from({ length: c }, (_, r) => imageDe(x, images, r)).map((im) => (im ? { ...im, ...images[im.cle] } : null));
     const manque = ims.some((im) => !im);
-    if (manque) { const w = (x0.d ?? []).reduce((s, i) => s + largeurs[i] + 8, 0); return { k, x: x0, manque: true, n: c, w, h: H, ims: [] }; }
+    if (manque) { const w = (x0.d ?? []).reduce((s, i) => s + largeurs[i] + 8, 0); return { k, x: x0, manque: true, n: c, w, h: H, ims: [], acteur: false }; }
+    const acteur = ims.some((im) => im.c === "personnage" || im.c === "animal");
     const gap = 10, w = ims.reduce((s, im) => s + im.w, 0) + gap * (c - 1), sr = Math.min(1, rangeeMax / w);
-    return { k, x: x0, manque: false, n: c, ims, sr, w: w * sr, h: Math.max(...ims.map((im) => im.h)) * sr, gap: gap * sr };
+    return { k, x: x0, manque: false, n: c, ims, sr, w: w * sr, h: Math.max(...ims.map((im) => im.h)) * sr, gap: gap * sr, acteur };
   }).filter((p) => !(p.manque && p.w === 0) || p.x.rep);
   // 2. le facteur commun, la répartition de gauche à droite (les marges égales)
-  const dispo = IMAGE.w - 40, larg = pieces.reduce((s, p) => s + (p.manque && p.w === 0 ? PLAQUE.w : p.w), 0), total = larg + ECART * Math.max(0, pieces.length - 1);
+  const dispo = IMAGE.x + IMAGE.w - 20 - Math.max(IMAGE.x + 20, solX), larg = pieces.reduce((s, p) => s + (p.manque && p.w === 0 ? PLAQUE.w : p.w), 0), total = larg + ECART * Math.max(0, pieces.length - 1);
   const s = Math.max(o.echelleMin ?? 0.55, Math.min(1, dispo / Math.max(1, total)));
   const libre = Math.max(0, dispo - total * s), pas = libre / (pieces.length + 1);
-  let cx = IMAGE.x + 20 + pas;
+  let cx = Math.max(IMAGE.x + 20, solX) + pas;
   for (const p of pieces) {
     const w = (p.manque && p.w === 0 ? PLAQUE.w : p.w) * (p.manque ? 1 : s);
-    p.boite = { x: cx, y: pied - p.h * (p.manque ? 1 : s), w, h: p.h * (p.manque ? 1 : s) };
-    if (!p.manque) { let xx = cx; p.copies = p.ims.map((im) => { const k2 = p.sr * s, c = { x: xx, y: pied - im.h * k2, w: im.w * k2, h: im.h * k2, cle: im.cle, retourne: im.retourne }; xx += c.w + p.gap * s; return c; }); }
+    const pp = p.acteur ? piedActeurs : pied; p.pied = pp;
+    p.boite = { x: cx, y: pp - p.h * (p.manque ? 1 : s), w, h: p.h * (p.manque ? 1 : s) };
+    if (!p.manque) { let xx = cx; p.copies = p.ims.map((im) => { const k2 = p.sr * s, c = { x: xx, y: pp - im.h * k2, w: im.w * k2, h: im.h * k2, cle: im.cle, retourne: im.retourne }; xx += c.w + p.gap * s; return c; }); }
     else p.copies = [];
     cx += w + ECART * s + pas;
   }
   // 3. les étiquettes et la plaque : chacune à la première de ses places libres
   const posees = [], objetsBoites = pieces.filter((p) => !p.manque).flatMap((p) => p.copies);
-  const libreIci = (r, eviterObjets) => dansImage(r) && !dansBande(r) && !posees.some((q) => recouvre(r, q, 4)) && (!eviterObjets || !objetsBoites.some((b) => recouvre(r, b, -6)));
-  const choisir = (cands, w, h) => {
-    for (const eviter of [true, false]) for (const [x, y] of cands) { const r = { x: Math.round(x), y: Math.round(y), w, h }; if (libreIci(r, eviter)) return r; }
+  const libreIci = (r, eviterObjets, propres) => dansImage(r) && !dansBande(r) && !posees.some((q) => recouvre(r, q, 4)) && (!eviterObjets || !objetsBoites.some((b) => !propres.includes(b) && recouvre(r, b, -6)));
+  const choisir = (cands0, w, h, propres = []) => {
+    // (chaque place, et la même un peu décalée à gauche ou à droite ; descendue sous la bande de la bulle si elle y entre)
+    const decale = cands0.flatMap(([x, y]) => [0, -24, 24, -48, 48, -80, 80].map((dx) => [x + dx, y]));
+    const cands = decale.flatMap(([x, y]) => (dansBande({ x, y, w, h }) && y < BANDE_BULLE.y1 + 2 ? [[x, y], [x, BANDE_BULLE.y1 + 2]] : [[x, y]]));
+    for (const eviter of [true, false]) for (const [x, y] of cands) { const r = { x: Math.round(x), y: Math.round(y), w, h }; if (libreIci(r, eviter, propres)) return r; }
     // (en dernier recours : la place libre la plus proche de la première, n'importe où dans l'image)
     const [x0, y0] = cands[0], grille = [];
     for (let y = IMAGE.y + 4; y + h <= IMAGE.y + IMAGE.h - 2; y += 8) for (let x = IMAGE.x + 4; x + w <= IMAGE.x + IMAGE.w - 4; x += 8) grille.push([x, y, (x - x0) ** 2 + (y - y0) ** 2]);
     grille.sort((a, b) => a[2] - b[2]);
-    for (const eviter of [true, false]) for (const [x, y] of grille) { const r = { x, y, w, h }; if (libreIci(r, eviter)) return r; }
+    for (const eviter of [true, false]) for (const [x, y] of grille) { const r = { x, y, w, h }; if (libreIci(r, eviter, propres)) return r; }
     const [x, y] = cands[0]; return { x: Math.round(Math.min(Math.max(x, IMAGE.x + 4), IMAGE.x + IMAGE.w - w - 4)), y: Math.round(Math.min(Math.max(y, IMAGE.y + 4), IMAGE.y + IMAGE.h - h - 2)), w, h };
   };
   // les places au sol, de gauche à droite (pour ce qui n'a pas d'objet)
-  const sol = (w, h, depuis = IMAGE.x + 16) => { const L = []; for (let x = depuis; x + w <= IMAGE.x + IMAGE.w - 8; x += 16) L.push([x, pied - h - 4]); for (let x = depuis - 16; x >= IMAGE.x + 8; x -= 16) L.push([x, pied - h - 4]); return L; };
+  const sol = (w, h, depuis = Math.max(IMAGE.x + 16, solX)) => { const L = [], x0 = Math.max(depuis, solX); for (let x = x0; x + w <= IMAGE.x + IMAGE.w - 8; x += 16) L.push([x, pied - h - 4]); for (let x = x0 - 16; x >= Math.max(IMAGE.x + 8, solX); x -= 16) L.push([x, pied - h - 4]); return L; };
   // sur un objet (sur son ventre), au-dessus, à droite, à gauche ; `rang` : la deuxième étiquette d'un même objet, sous la première
   const autour = (b, w, h, rang = 0) => {
     const cxo = b.x + b.w / 2, sous = rang * (h + 6);
     return [[cxo - w / 2, b.y + b.h * 0.5 - h / 2 + sous], [cxo - w / 2, b.y + b.h - h - 6 - sous], [cxo - w / 2, b.y - h - 10 - sous], [b.x + b.w + 8, b.y + b.h * 0.45 - h / 2 + sous], [b.x - w - 8, b.y + b.h * 0.45 - h / 2 + sous]];
   };
   const etiquettes = [], entre = S.entre ?? [], pieceDe = (k) => pieces.find((p) => p.k === k);
+  // SANS AUCUNE IMAGE D'OBJET (tant que le parent n'en a pas déposé) : les étiquettes sur le sol, dans l'ordre de l'histoire, la
+  // plaque après elles, comme avant le lot
+  if (!pieces.some((p) => !p.manque)) {
+    let x = IMAGE.x + 28;
+    donnees.forEach((_, i) => { const w = largeurs[i], r = choisir(sol(w, H, x), w, H); posees.push(r); etiquettes.push({ i, ...r, k: null, sol: true }); x = r.x + w + 14; });
+    const plaque = choisir(sol(PLAQUE.w, PLAQUE.h, Math.max(x + 20, IMAGE.x + IMAGE.w - 28 - PLAQUE.w)).concat(sol(PLAQUE.w, PLAQUE.h, x)), PLAQUE.w, PLAQUE.h);
+    return { pieces: pieces.map(({ k, x: xx, manque, boite, copies, n }) => ({ k, o: xx.o, manque, boite, copies, n, p: xx.p ?? 0, groupe: xx.n != null })), etiquettes, plaque, echelle: s, pied };
+  }
   // a. le nombre de chaque groupe, au-dessus de sa rangée (ou à côté)
   for (const p of pieces) if (Number.isInteger(p.x.n)) {
     const i = p.x.n, w = largeurs[i], b = p.boite;
-    const r = p.manque ? choisir(sol(w, H, b.x), w, H) : choisir([[b.x + b.w / 2 - w / 2, b.y - H - 14], [b.x + b.w + 8, b.y + b.h / 2 - H / 2], [b.x - w - 8, b.y + b.h / 2 - H / 2], [b.x + b.w / 2 - w / 2, b.y + 6]], w, H);
+    const r = p.manque ? choisir(sol(w, H, b.x), w, H) : choisir([[b.x + b.w / 2 - w / 2, b.y - H - 14], [b.x + b.w + 8, b.y + b.h / 2 - H / 2], [b.x - w - 8, b.y + b.h / 2 - H / 2], [b.x + b.w / 2 - w / 2, b.y + 6]], w, H, p.copies);
     posees.push(r); etiquettes.push({ i, ...r, k: p.k, accolade: !p.manque && p.n > 1 ? { x0: b.x, x1: b.x + b.w, y: b.y - 8 } : null });
   }
   // b. les étiquettes posées sur les objets (sur chaque objet d'un groupe : la première se touche, les autres en sont l'écho)
@@ -95,7 +108,7 @@ export function composer(e, donnees, largeurs, hauteurEtiquette, images, o = {})
     const w = largeurs[i];
     if (p.manque) { const r = choisir(sol(w, H, p.boite.x), w, H); posees.push(r); etiquettes.push({ i, ...r, k: p.k }); return; }
     p.copies.forEach((c, j) => {
-      const r = j === 0 ? choisir(autour(c, w, H, rang), w, H) : (() => { const t = etiquettes.find((q) => q.i === i && q.k === p.k && !q.echo); const dx = c.x - p.copies[0].x; const r2 = { x: t.x + dx, y: t.y, w, h: H }; return r2; })();
+      const r = j === 0 ? choisir(autour(c, w, H, rang), w, H, [c]) : (() => { const t = etiquettes.find((q) => q.i === i && q.k === p.k && !q.echo); const dx = c.x - p.copies[0].x; const r2 = { x: t.x + dx, y: t.y, w, h: H }; return r2; })();
       if (j === 0 || dansImage(r)) { posees.push(r); etiquettes.push({ i, ...r, k: p.k, echo: j > 0 }); }
     });
   });
@@ -109,22 +122,24 @@ export function composer(e, donnees, largeurs, hauteurEtiquette, images, o = {})
   for (const i of entre) if (i !== "rep") { const w = largeurs[i], r = choisir(entreCands(w, H), w, H); posees.push(r); etiquettes.push({ i, ...r, k: null, entre: true }); }
   // d. les données sans objet : sur le sol, de gauche à droite (ce qui est à l'enfant, « tu », est devant)
   const placees = new Set(etiquettes.map((t) => t.i));
-  donnees.forEach((_, i) => { if (placees.has(i)) return; const w = largeurs[i], r = choisir(sol(w, H), w, H); posees.push(r); etiquettes.push({ i, ...r, k: null, sol: true }); });
+  // (après les étiquettes des données dites avant elle : l'ordre de l'histoire, de gauche à droite)
+  donnees.forEach((_, i) => { if (placees.has(i)) return; const avant = etiquettes.filter((t) => t.i < i && !t.echo), depuis = avant.length ? Math.max(...avant.map((t) => t.x + t.w)) + 14 : IMAGE.x + 16, w = largeurs[i], r = choisir(sol(w, H, depuis), w, H); posees.push(r); etiquettes.push({ i, ...r, k: null, sol: true }); });
   // e. la plaque de la réponse : sur le dépôt de la réponse (au-dessus, à côté, dessus), entre les deux objets, ou sur le sol
   const kr = S.objets.findIndex((x) => x.rep), pr = kr >= 0 ? pieceDe(kr) : null, { w: pw, h: ph } = PLAQUE;
   let plaque;
-  if (pr && !pr.manque) { const b = pr.boite; plaque = choisir([[b.x + b.w / 2 - pw / 2, b.y - ph - 12], [b.x + b.w + 10, b.y + b.h / 2 - ph / 2], [b.x - pw - 10, b.y + b.h / 2 - ph / 2], [b.x + b.w / 2 - pw / 2, b.y + b.h / 2 - ph / 2], [b.x + b.w + 10, pied - ph - 4], [b.x - pw - 10, pied - ph - 4]], pw, ph); plaque.k = kr; }
+  if (pr && !pr.manque) { const b = pr.boite, au = [b.x + b.w / 2 - pw / 2, b.y - ph - 12], cotes = [[b.x + b.w + 10, b.y + b.h / 2 - ph / 2], [b.x - pw - 10, b.y + b.h / 2 - ph / 2], [b.x + b.w + 10, pr.pied - ph - 4], [b.x - pw - 10, pr.pied - ph - 4]];
+    plaque = choisir(pr.n > 1 ? [...cotes, au] : [au, ...cotes, [b.x + b.w / 2 - pw / 2, b.y + b.h / 2 - ph / 2]], pw, ph, pr.n > 1 ? [] : pr.copies); plaque.k = kr; }
   else if (entre.includes("rep")) plaque = choisir(entreCands(pw, ph), pw, ph);
   else plaque = choisir(sol(pw, ph, pr ? pr.boite.x : IMAGE.x + IMAGE.w / 2 - pw / 2), pw, ph);
   posees.push(plaque);
-  return { pieces: pieces.map(({ k, x, manque, boite, copies, n }) => ({ k, o: x.o, manque, boite, copies, n, p: x.p ?? 0, groupe: x.n != null })), etiquettes, plaque, echelle: s, pied };
+  return { pieces: pieces.map(({ k, x, manque, boite, copies, n, pied: pp }) => ({ k, o: x.o, manque, boite, copies, n, p: x.p ?? 0, groupe: x.n != null, pied: pp ?? pied })), etiquettes, plaque, echelle: s, pied };
 }
 
 // la place des unités montrées (la correction, jusqu'à `max` ; le cran « plus facile » : une collection par étiquette) : une zone au
 // sol libre, au plus près de `pres` (une boîte), où tient une collection de `n` objets au pas `p`
-export function zoneSol(L, n, p, pres, eviter = []) {
-  const cols = n <= 4 ? 2 : n <= 9 ? 3 : 5, w = Math.min(n, cols) * p + 8, h = Math.ceil(n / cols) * p * 0.86 + 8;
-  const occupe = [...L.etiquettes, L.plaque, ...L.pieces.flatMap((q) => q.copies), ...eviter];
+export function zoneSol(L, n, p, pres, eviter = [], taille = null) {
+  const cols = n <= 4 ? 2 : n <= 9 ? 3 : 5, w = taille?.w ?? Math.min(n, cols) * p + 8, h = taille?.h ?? Math.ceil(n / cols) * p * 0.86 + 8;
+  const occupe = [...L.etiquettes, { ...L.plaque, w: PLAQUE.w, h: PLAQUE.h }, ...L.pieces.flatMap((q) => q.copies), ...eviter];
   const cands = [];
   for (let dx = 0; dx < IMAGE.w; dx += 12) for (const s of [1, -1]) cands.push([pres.x + pres.w / 2 - w / 2 + s * dx, L.pied - h - 2]);
   for (const [x, y] of cands) { const r = { x, y, w, h }; if (dansImage(r) && !dansBande(r) && !occupe.some((q) => recouvre(r, q, 2))) return { ...r, cols }; }

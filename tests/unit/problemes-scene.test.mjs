@@ -13,7 +13,7 @@ const BANQUE = lire("../../app/content/problemes.json").enonces, LIB = lire("../
 const RAPPORT = { "1:1": 1, "3:4": 0.62, "4:3": 1.35, "16:9": 2.2 };
 // toutes les images, à leur hauteur dans la scène (une largeur plausible selon leur format)
 const TOUTES = {};
-for (const o of LIB) for (const v of [null, ...(o.variantes ?? [])]) TOUTES[v ? `${o.id}-${v}` : o.id] = { w: Math.round(o.h * (RAPPORT[o.format] ?? 1)), h: o.h };
+for (const o of LIB) for (const v of [null, ...(o.variantes ?? [])]) TOUTES[v ? `${o.id}-${v}` : o.id] = { w: Math.round(o.h * (RAPPORT[o.format] ?? 1)), h: o.h, c: o.categorie };
 const larg = (n) => 22 * String(n).length + 96; // (l'ordre de grandeur de largeurEtiquette, nombre et icône)
 const recouvre = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 const dans = (r) => r.x >= IMAGE.x && r.y >= IMAGE.y && r.x + r.w <= IMAGE.x + IMAGE.w && r.y + r.h <= IMAGE.y + IMAGE.h;

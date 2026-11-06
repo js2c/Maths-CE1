@@ -213,9 +213,11 @@ const textW = (t: string, em: number) => wordWidth(t) * em;
 // une étiquette de donnée : une plaque de nacre, le nombre et l'objet. Renvoie sa largeur.
 export const ETIQ_H = 66;
 export const largeurEtiquette = (t: string, em = 38, objet: Objet | null = "jeton") => textW(t, em) + (objet ? em * 1.2 + 50 : 44);
-export const drawEtiquette = (g: Gfx, x: number, y: number, t: string, objet: Objet | null, o: { lit?: boolean; seed?: number; em?: number; rouge?: boolean } = {}) => {
-  const em = o.em ?? 38, w = largeurEtiquette(t, em, objet), seed = o.seed ?? 1;
-  g.group("plain", () => { const s = rrect(x, y, w, ETIQ_H, 18); fillShape(g, shift(s, 4, 6), SH, 0.3); cel(g, s, o.lit ? "#fff3b8" : NACRE, NACRE_S, 4); if (o.lit) ink(g, rrect(x - 5, y - 5, w + 10, ETIQ_H + 10, 22), LIT, { w: 5, closed: true, shadow: 0, seed: 13800 + seed }, 0.9); contour(g, s, 3, 13810 + seed);
+// `teinte` (lot « Mise en scène des problèmes », décision du parent du 6 novembre 2026, 10) : pendant l'aide et la correction,
+// l'étiquette prend la couleur de sa barre dans le schéma (« a » l'orange, « b » le bleu)
+export const drawEtiquette = (g: Gfx, x: number, y: number, t: string, objet: Objet | null, o: { lit?: boolean; seed?: number; em?: number; rouge?: boolean; teinte?: "a" | "b" | null } = {}) => {
+  const em = o.em ?? 38, w = largeurEtiquette(t, em, objet), seed = o.seed ?? 1, [fond, ombre] = o.lit ? ["#fff3b8", NACRE_S] : o.teinte === "a" ? [ORANGE, ORANGE_S] : o.teinte === "b" ? [BLUE, BLUE_S] : [NACRE, NACRE_S];
+  g.group("plain", () => { const s = rrect(x, y, w, ETIQ_H, 18); fillShape(g, shift(s, 4, 6), SH, 0.3); cel(g, s, fond, ombre, 4); if (o.lit) ink(g, rrect(x - 5, y - 5, w + 10, ETIQ_H + 10, 22), LIT, { w: 5, closed: true, shadow: 0, seed: 13800 + seed }, 0.9); contour(g, s, 3, 13810 + seed);
     num(g, t, x + 20 + textW(t, em) / 2, y + ETIQ_H / 2 - em / 2, em, o.rouge ? RED : INK, 13820 + seed * 7); });
   if (objet) drawObjet(g, objet, x + w - em, y + ETIQ_H / 2, (0.9 * em) / 38, 400 + seed);
   return w;

@@ -68,17 +68,19 @@ export function composer(e, donnees, largeurs, hauteurEtiquette, images, o = {})
   }
   // 3. les étiquettes et la plaque : chacune à la première de ses places libres
   const posees = [], objetsBoites = pieces.filter((p) => !p.manque).flatMap((p) => p.copies);
-  const libreIci = (r, eviterObjets, propres) => dansImage(r) && !dansBande(r) && !posees.some((q) => recouvre(r, q, 4)) && (!eviterObjets || !objetsBoites.some((b) => !propres.includes(b) && recouvre(r, b, -6)));
+  // `seuil` : la part de la place qui peut couvrir un objet (sauf le sien) : 0, à peine (15 %), ou n'importe (null)
+  const inter = (a, b) => Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+  const libreIci = (r, seuil, propres) => dansImage(r) && !dansBande(r) && !posees.some((q) => recouvre(r, q, 4)) && (seuil == null || objetsBoites.every((b) => propres.includes(b) || (seuil === 0 ? !recouvre(r, b, -6) : inter(r, b) <= seuil * r.w * r.h)));
   const choisir = (cands0, w, h, propres = []) => {
     // (chaque place, et la même un peu décalée à gauche ou à droite ; descendue sous la bande de la bulle si elle y entre)
     const decale = cands0.flatMap(([x, y]) => [0, -24, 24, -48, 48, -80, 80].map((dx) => [x + dx, y]));
     const cands = decale.flatMap(([x, y]) => (dansBande({ x, y, w, h }) && y < BANDE_BULLE.y1 + 2 ? [[x, y], [x, BANDE_BULLE.y1 + 2]] : [[x, y]]));
-    for (const eviter of [true, false]) for (const [x, y] of cands) { const r = { x: Math.round(x), y: Math.round(y), w, h }; if (libreIci(r, eviter, propres)) return r; }
-    // (en dernier recours : la place libre la plus proche de la première, n'importe où dans l'image)
+    // (les places de l'objet, puis la place libre la plus proche n'importe où dans l'image ; couvrir un objet voisin seulement à peine,
+    // puis, en tout dernier recours, n'importe comment)
     const [x0, y0] = cands[0], grille = [];
     for (let y = IMAGE.y + 4; y + h <= IMAGE.y + IMAGE.h - 2; y += 8) for (let x = IMAGE.x + 4; x + w <= IMAGE.x + IMAGE.w - 4; x += 8) grille.push([x, y, (x - x0) ** 2 + (y - y0) ** 2]);
     grille.sort((a, b) => a[2] - b[2]);
-    for (const eviter of [true, false]) for (const [x, y] of grille) { const r = { x, y, w, h }; if (libreIci(r, eviter, propres)) return r; }
+    for (const [L, seuil] of [[cands, 0], [cands, 0.15], [grille, 0], [grille, 0.15], [cands, null], [grille, null]]) for (const [x, y] of L) { const r = { x: Math.round(x), y: Math.round(y), w, h }; if (libreIci(r, seuil, propres)) return r; }
     const [x, y] = cands[0]; return { x: Math.round(Math.min(Math.max(x, IMAGE.x + 4), IMAGE.x + IMAGE.w - w - 4)), y: Math.round(Math.min(Math.max(y, IMAGE.y + 4), IMAGE.y + IMAGE.h - h - 2)), w, h };
   };
   // les places au sol, de gauche à droite (pour ce qui n'a pas d'objet)

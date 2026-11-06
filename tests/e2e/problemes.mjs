@@ -12,7 +12,12 @@
 //     (sans coquillage) ; le coquillage au cran conseillé ;
 //  7. la pause et la reprise (la maison pendant un problème, puis « continuer » : le problème reposé) ;
 //  8. la leçon L19 depuis le menu des leçons (sa rangée, jusqu'au bout), « À toi ! » ;
-//  9. l'espace parent : le bloc du module 7, les réglages (niveau de départ, problème du jour).
+//  9. l'espace parent : le bloc du module 7, les réglages (niveau de départ, problème du jour) ;
+// 10. (lot « Mise en scène des problèmes ») la scène avec ses objets, servis par les images d'essai (tests/e2e/fixtures/problemes-objets,
+//     les dessins provisoires de la maquette : l'application n'a pas encore d'images d'objets) : les gourmandises (3 sachets fermés, la
+//     plaque sur la gamelle, l'aide comptée sur les sachets, la correction : les sachets ouverts, les gourmandises dans la gamelle), le
+//     partage dans les pots de la scène, la comparaison et ses étiquettes aux couleurs du schéma, l'étal ; aussi en 640 × 360 (le petit
+//     smartphone) ; jamais rien dans la bande de la bulle.
 // Contrôles : aucune erreur de page, la bulle ne couvre jamais ce qu'on touche ni les étiquettes, l'aide ou la plaque de la réponse.
 //   node tests/e2e/problemes.mjs [--out dossier] [--seul 1280|1920]
 // BANC ANDROID, raccourcis : voix rapide, sans service worker, son coupé
@@ -27,6 +32,7 @@ import { serve } from "../serve.mjs";
 
 const args = process.argv.slice(2), opt = (k, d) => (args.includes(k) ? args[args.indexOf(k) + 1] : d);
 const OUT = resolve(opt("--out", "tests/e2e/out/problemes")); mkdirSync(OUT, { recursive: true });
+const FIXTURES_DIR = resolve("tests/e2e/fixtures/problemes-objets"), FIXTURES = JSON.parse(readFileSync(join(FIXTURES_DIR, "objets.json"), "utf8"));
 const SEUL = opt("--seul", null), textes = JSON.parse(readFileSync(new URL("../../app/content/textes.json", import.meta.url), "utf8"));
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: [] });
@@ -35,8 +41,13 @@ const journal = [];
 
 for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEUL || String(w) === SEUL)) {
   const T = `${W}`, big = W === 1280;
-  const open = async (q = "") => {
-    const context = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: dpr, hasTouch: true }), page = await context.newPage(), errors = [];
+  const open = async (q = "", { objets = false, taille = null } = {}) => {
+    const context = await browser.newContext({ viewport: { width: taille?.[0] ?? W, height: taille?.[1] ?? H }, deviceScaleFactor: taille?.[2] ?? dpr, hasTouch: true }), page = await context.newPage(), errors = [];
+    // (partie 10 : les images d'essai à la place des objets de l'application, et dans la liste d'index.json)
+    if (objets) {
+      await page.route("**/assets/problemes/index.json", async (r) => { const res = await r.fetch(), j = await res.json(); j.objets = FIXTURES.objets; r.fulfill({ json: j }); });
+      await page.route("**/assets/problemes/objets/*", (r) => r.fulfill({ path: join(FIXTURES_DIR, "objets", r.request().url().split("/").pop()), contentType: "image/webp" }));
+    }
     page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
     await page.goto(url + "?nosw&voix=rapide&son=non" + q); await page.waitForFunction(() => window.__ready !== undefined);
     await page.evaluate(() => { const v = window.__app.voice, say = v.say.bind(v); window.__said = []; v.say = (t, o) => { window.__said.push(t); return say(t, o); }; const p = window.__app.prob, al = p.allumer.bind(p); window.__lit = []; p.allumer = (i) => { window.__lit.push([i, window.__said.at(-1) ?? ""]); return al(i); }; });
@@ -191,7 +202,7 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
   for (const cran of ["facile", "conseille", "dur", "tresdur"]) {
     const o = await open(`&choix=7:2&cran=${cran}&sans=echauffement&sansLecon&questions=2${cran === "tresdur" ? "" : "&enonce=reu-t-08"}`), { page } = o;
     await tap(page, ".play"); await q7(page); await finPhrases(page); await page.waitForTimeout(cran === "facile" ? 2500 : 400);
-    const st = await page.evaluate(() => ({ coquillage: getComputedStyle(window.__app.facts.help).visibility, objets: !!window.__app.prob.objets, aide: !!window.__app.prob.aideVisible, d: window.__app.facts.q.e.difficulte, n: window.__app.facts.q.e.niveau }));
+    const st = await page.evaluate(() => ({ coquillage: getComputedStyle(window.__app.facts.help).visibility, objets: !!(window.__app.prob.collections?.length), aide: !!window.__app.prob.aideVisible, d: window.__app.facts.q.e.difficulte, n: window.__app.facts.q.e.niveau }));
     if (cran === "facile") { check(st.objets && !st.aide, `${T} · « plus facile » : les données en objets, pas de schéma d'emblée`); await page.waitForFunction(() => window.__said.filter((t) => /\?$/.test(t)).length >= 2, null, { timeout: 30000 }).catch(() => {}); check((await page.evaluate(() => window.__said.filter((t) => /\?$/.test(t)).length)) >= 2, `${T} · « plus facile » : l'histoire redite`); await shot(page, "19-cran-facile"); }
     if (cran === "conseille") {
       check(st.coquillage === "visible" && !st.aide, `${T} · conseillé : le coquillage, pas de schéma d'emblée`);
@@ -234,6 +245,68 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     await fermer(o, "la leçon L19");
   }
 
+
+  // 10. la scène avec ses objets (les images d'essai), en 1280 × 800 et sur le petit smartphone
+  for (const [nom, taille] of [["", null], ...(big ? [["petit-", [640, 360, 2]]] : [])]) {
+    const sc = (page) => page.evaluate(() => { const P = window.__app.prob, L = P.L; return { pieces: L.pieces.map((p) => ({ o: p.o, n: p.copies.length, manque: p.manque })), etiq: L.etiquettes.map((t) => ({ i: t.i, x: t.x, y: t.y, w: t.w, h: t.h, echo: !!t.echo })), plaque: L.plaque, rep: (P.q.e.scene.objets.findIndex((x) => x.rep)) }; });
+    const horsBande = (r) => !(r.x < 760 && r.y < 300 && r.x + r.w > 244 && r.y + r.h > 106);
+    // a. les gourmandises : la question, l'aide au coquillage, la correction
+    {
+      const o = await open("&choix=7:7&cran=conseille&sans=echauffement&sansLecon&questions=2&enonce=grp-07", { objets: true, taille }), { page } = o;
+      await tap(page, ".play"); await q7(page); await finPhrases(page); await page.waitForTimeout(500);
+      const S = await sc(page);
+      check(S.pieces.map((p) => `${p.o}×${p.n}`).join(",") === "chien×1,gamelle×1,sachet×3,papa×1", `${T} · ${nom}gourmandises : le chien, la gamelle, 3 sachets, Papa (${S.pieces.map((p) => `${p.o}×${p.n}`).join(",")})`);
+      check(S.rep === 1 && S.plaque.k === 1, `${T} · ${nom}la plaque sur la gamelle`);
+      check([...S.etiq, S.plaque].every(horsBande), `${T} · ${nom}rien dans la bande de la bulle`);
+      await shot(page, `${nom}30-scene-gourmandises`); await zonesOk(page, `${nom}la scène des gourmandises`);
+      await tap(page, ".help", 2600);
+      check(await page.evaluate(() => window.__app.prob.litCopies?.size >= 1), `${T} · ${nom}l'aide compte les sachets de la scène`);
+      await shot(page, `${nom}31-scene-bonds`);
+      await page.waitForFunction(() => !window.__app.prob.aideVisible, null, { timeout: 30000 }).catch(() => {});
+      await typeIn(page, 9); await page.waitForFunction(() => window.__app.prob.montre, null, { timeout: 30000 }).catch(() => {}); await page.waitForTimeout(400);
+      const C = await page.evaluate(() => ({ ouverts: window.__app.prob.ouverts, tas: window.__app.prob.tas?.n ?? 0 }));
+      check(C.ouverts && C.tas === 18, `${T} · ${nom}la correction : les sachets ouverts, les 18 gourmandises dans la gamelle (${JSON.stringify(C)})`);
+      await shot(page, `${nom}32-scene-correction`);
+      await fermer(o, `${nom}la scène des gourmandises`);
+    }
+    // b. le partage dans les pots de la scène (niveau 3)
+    {
+      const o = await open("&choix=7:3&cran=conseille&sans=echauffement&sansLecon&questions=2&enonce=par-v-03", { objets: true, taille }), { page } = o;
+      await tap(page, ".play");
+      await page.waitForFunction(() => window.__app.prob.cibles, null, { timeout: 60000 }); await page.waitForTimeout(500);
+      const cibles = await page.evaluate(() => window.__app.prob.cibles.length);
+      check(cibles === 3, `${T} · ${nom}le partage : les 3 pots de la scène reçoivent les crayons (${cibles})`);
+      const glisser = async (i) => { const b = (await page.$$(".probleme-objet"))[0], c = await page.evaluate((i) => window.__app.prob.cibles[i], i), box = await b.boundingBox(), k = await page.evaluate(() => window.__app.stage.k), r = await page.evaluate(() => { const x = window.__app.stage.ui.getBoundingClientRect(); return [x.left, x.top]; });
+        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.down(); await page.mouse.move(r[0] + ((c[0] + c[2]) / 2) * k, r[1] + ((c[1] + c[3]) / 2) * k, { steps: 6 }); await page.mouse.up(); await page.waitForTimeout(250); };
+      for (const i of [0, 0, 1]) await glisser(i);
+      await shot(page, `${nom}33-scene-partage`);
+      for (const i of [1, 2, 2, 0, 1, 2, 0, 1, 2]) await glisser(i);
+      await q7(page); await page.waitForTimeout(400);
+      const dans = await page.evaluate(() => Object.values(window.__app.prob.dans ?? {})[0]);
+      check(JSON.stringify(dans) === "[4,4,4]", `${T} · ${nom}tout rangé : 4 crayons dans chaque pot, le pavé revient (${JSON.stringify(dans)})`);
+      await shot(page, `${nom}34-scene-partage-range`); await zonesOk(page, `${nom}le partage rangé`);
+      await fermer(o, `${nom}le partage dans la scène`);
+    }
+    // c. la comparaison : les étiquettes aux couleurs du schéma pendant l'aide
+    if (!nom) {
+      const o = await open("&choix=7:5&cran=conseille&sans=echauffement&sansLecon&questions=2&enonce=cmp-g-04", { objets: true, taille }), { page } = o;
+      await tap(page, ".play"); await q7(page); await finPhrases(page); await page.waitForTimeout(400);
+      await shot(page, "35-scene-comparaison");
+      await typeIn(page, 3); await page.waitForFunction(() => window.__app.prob.teintes, null, { timeout: 30000 }).catch(() => {}); await page.waitForTimeout(500);
+      check(await page.evaluate(() => window.__app.prob.teintes), `${T} · la comparaison : les étiquettes de la scène aux couleurs du schéma`);
+      await shot(page, "36-scene-comparaison-aide");
+      await fermer(o, "la comparaison dans la scène");
+    }
+    // d. l'étal : le pêcheur devant son étal, « 23 » sur la glace
+    {
+      const o = await open("&choix=7:6&cran=conseille&sans=echauffement&sansLecon&questions=2&enonce=tra-pf-13", { objets: true, taille }), { page } = o;
+      await tap(page, ".play"); await q7(page); await finPhrases(page); await page.waitForTimeout(400);
+      const S = await sc(page), t23 = S.etiq.find((t) => t.i === 0);
+      check(t23 && t23.x >= 256 + 860 * 0.2 - 2, `${T} · ${nom}l'étal : « 23 » sur la glace, pas sur la cabane (x ${t23?.x})`);
+      await shot(page, `${nom}37-scene-etal`);
+      await fermer(o, `${nom}la scène de l'étal`);
+    }
+  }
   // 9. l'espace parent : le bloc du module 7, les réglages
   {
     const o = await open(), { page } = o;

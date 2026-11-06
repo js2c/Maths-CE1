@@ -758,7 +758,10 @@
     "boite": "Mets-en autant dans chaque boîte.",
     "panier": "Mets-en autant dans chaque panier.",
     "vase": "Mets-en autant dans chaque vase.",
-    "anneau": "Mets-en autant dans chaque cercle."
+    "anneau": "Mets-en autant dans chaque cercle.",
+    "pot": "Mets-en autant dans chaque pot.",
+    "etagere": "Mets-en autant sur chaque étagère.",
+    "enfants": "Donne-en autant à chaque enfant."
   },
   "erreurProbleme": {
     "P1comparaison": "Attention : « de plus » ne veut pas dire qu'il faut ajouter.",

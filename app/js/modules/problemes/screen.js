@@ -420,7 +420,8 @@ export class ProblemesScreen {
     else if (e.reponse <= max) {
       const c = dep?.copies[0], n = e.reponse;
       // dans le dépôt (sur son ouverture), s'il y a la place ; sinon au sol, au plus près
-      if (c) { const cols = n <= 4 ? 2 : n <= 9 ? 3 : n <= 12 ? 4 : 6, p = 22, w = cols * p + 8, h = Math.ceil(n / cols) * p * 0.86 + 8, z = { x: c.x + c.w / 2 - w / 2, y: c.y + c.h * 0.45 - h, w, h, n, p, cols };
+      // (dans le dépôt : sur sa hauteur, comme posées dedans, la taille réduite à sa largeur)
+      if (c) { const cols = n <= 4 ? 2 : n <= 9 ? 3 : n <= 12 ? 4 : 6, rows = Math.ceil(n / cols), p = Math.max(12, Math.min(22, (c.w - 8) / cols, (Math.max(c.h, 50) - 6) / (rows * 0.86))), w = cols * p + 8, h = rows * p * 0.86 + 8, z = { x: c.x + c.w / 2 - w / 2, y: c.y + Math.max(0, (c.h - h) / 2), w, h, n, p, cols };
         const libre = ![...this.L.etiquettes, { ...this.L.plaque, w: PLAQUE.w, h: PLAQUE.h }].some((t) => z.x < t.x + t.w && t.x < z.x + z.w && z.y < t.y + t.h && t.y < z.y + z.h);
         this.tas = libre ? z : this.zoneTas(n, c); }
       else this.tas = this.zoneTas(n, { ...this.L.plaque, w: PLAQUE.w, h: PLAQUE.h });

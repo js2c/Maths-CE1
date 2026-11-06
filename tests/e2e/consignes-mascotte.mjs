@@ -126,14 +126,14 @@ async function sonder(page, scenario) {
 
 // SUIVRE LA SÉANCE jusqu'à `fin` : à chaque écran nouveau, resté 0,7 s, la mascotte est touchée ; une question qui attend est répondue
 // (juste) une fois la mascotte touchée ; le sélecteur validé, les coquillages ouverts, les cartes rangées
-async function suivre(page, scenario, fin, { ms = 240000, pendant = null, sansFin = false } = {}) {
+async function suivre(page, scenario, fin, { ms = 240000, pendant = null, sansFin = false, rythme = 600 } = {}) {
   const t1 = Date.now(), sondes = new Set();
   while (Date.now() - t1 < ms) {
     if (await page.evaluate(fin).catch(() => false)) return true;
     const [sig, stable, attend] = await page.evaluate(() => { const c = window.__changements.at(-1); return [c.s, performance.now() - c.t, false]; });
     if (!sondes.has(sig) && stable > 700) { sondes.add(sig); if (!(await page.evaluate(() => window.__vide()))) await sonder(page, scenario); if (pendant) await pendant(sig); continue; }
     if (sondes.has(sig)) {
-      if (await page.evaluate(ATTEND)) { await page.evaluate(REPONDRE, true); await page.waitForTimeout(600); continue; }
+      if (await page.evaluate(ATTEND)) { await page.evaluate(REPONDRE, true); await page.waitForTimeout(rythme); continue; }
       if (await visible(page, ".cran-ok")) { await tap(page, ".cran-ok").catch(() => {}); await page.waitForTimeout(500); continue; }
       if (await visible(page, ".shelltap")) { await tap(page, ".shelltap").catch(() => {}); await page.waitForTimeout(800); continue; }
       if (await visible(page, ".card") && await visible(page, ".check")) { await tap(page, ".check:not(.cran-ok)").catch(() => {}); await page.waitForTimeout(600); continue; }
@@ -209,7 +209,9 @@ if (!SEUL || SEUL === "defi") {
   const s = await ouvrir("&cran=conseille&sans=echauffement,notion,probleme", prep), { page } = s, N = "défi";
   await page.waitForTimeout(1200); await tap(page, ".galet.play");
   await page.waitForFunction(() => !!window.__app.challenge, null, { timeout: 60000 }).catch(() => check(false, `${N} : le défi n'a pas commencé`));
-  await suivre(page, N, () => window.__app.session?.progress?.etape === "recompense", { ms: 180000 });
+  // (au rythme d'un enfant rapide, une réponse toutes les 2 s environ : à la vitesse du parcours, plus de 60 perles, un score que
+  // l'inventaire de la voix ne compte pas, tools/voix/inventaire.mjs, DEFI_MAX)
+  await suivre(page, N, () => window.__app.session?.progress?.etape === "recompense", { ms: 180000, rythme: 1500 });
   await fini(N, s);
 }
 

@@ -96,13 +96,13 @@ for (const vue of VUES) {
   if (tout) {
     // à 0, toujours montrée (lot « Suites des correctifs du 5 novembre », décision du parent du 6 novembre 2026 : les trois compteurs
     // toujours visibles ; avant, masquée à 0) : sa case, avec son 0, entre le compteur et le diamant, au bout de la rangée ; touchée,
-    // à quoi elles servent, puis « Viens jouer souvent : tu en gagneras une ! » (aucune phrase nouvelle)
+    // la prochaine zone et les étoiles arc-en-ciel nommées, puis « Viens jouer souvent : tu en gagneras une ! » (aucune phrase nouvelle)
     const { context, page } = await fresh(etat(260, 0, 1), vue);
     const r = await reserves(page), mer = await page.evaluate(() => { const b = document.querySelector(".hud.stars").getBoundingClientRect(); return b.x + b.width; });
     check(r.arc.vu && r.diamant.vu && r.arc.x >= mer - 0.5 && r.diamant.x >= r.arc.x + r.arc.w - 0.5 && Math.abs(r.diamant.x + r.diamant.w - 1270) < 2, Vs(`sans étoile arc-en-ciel : sa réserve montrée, à 0, entre le compteur et le diamant (x ${Math.round(r.arc.x)}, ${Math.round(r.diamant.x)})`));
     await saidReset(page); await tap(page, ".reserve.arc"); await page.waitForTimeout(900);
     const dit0 = await said(page);
-    check(dit0.includes(T.reserves.diamantGagner) && !dit0.includes("Tu as 0"), Vs(`la réserve arc-en-ciel à 0 touchée : « ${dit0.slice(-160)} »`));
+    check(dit0.includes(T.reserves.diamantGagner) && dit0.includes("grâce à tes étoiles arc-en-ciel") && !dit0.includes("Tu as 0"), Vs(`la réserve arc-en-ciel à 0 touchée : « ${dit0.slice(-160)} »`));
     await shot(page, vue, "04-arc-en-ciel-a-zero", 0);
     await context.close();
   }

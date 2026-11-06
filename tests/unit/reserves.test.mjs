@@ -117,15 +117,16 @@ test("ce que dit la mascotte quand on touche une réserve, selon l'état", async
   assert.equal(t("arc", { n: 1, fermees: 0, zonePrete: false }), `${X.arcUne} ${X.arcBrillerUne}`);
   assert.equal(t("arc", { n: 51, fermees: 0, zonePrete: false }), `${X.arcBeaucoup} ${X.arcBriller}`);
   assert.equal(t("arc", { n: 2, fermees: 2, zonePrete: true }), `Tu as 2 étoiles arc-en-ciel. ${X.arcProchainesZones} ${T.boutique.zoneBientot}`);
-  // (lot « Suites des correctifs du 5 novembre », décisions du parent du 6 novembre 2026) à 0 : à quoi elles servent, puis la phrase
-  // du diamant à 0, sans règle exacte ; aucune phrase nouvelle
-  assert.equal(t("arc", { n: 0, fermees: 3, zonePrete: false }), `${X.arcProchainesZones} ${X.diamantGagner}`);
-  assert.equal(t("arc", { n: 0, fermees: 0, zonePrete: false }), `${X.arcBriller} ${X.diamantGagner}`);
-  assert.equal(t("arc", { n: 0, fermees: 2, zonePrete: true }), `${X.arcProchainesZones} ${X.diamantGagner} ${T.boutique.zoneBientot}`);
+  // (lot « Suites des correctifs du 5 novembre », décisions du parent du 6 novembre 2026) à 0 : la prochaine zone et les étoiles
+  // arc-en-ciel nommées (la phrase de l'album), puis la phrase du diamant à 0, sans règle exacte ; aucune phrase nouvelle
+  const corail = cartes.zones.find((z) => z.id === "corail"), large = cartes.zones.find((z) => z.id === "large");
+  assert.equal(t("arc", { n: 0, fermees: 3, zonePrete: false, prochaine: corail }), "Le récif de corail s'ouvrira un jour, grâce à tes étoiles arc-en-ciel. Viens jouer souvent : tu en gagneras une !");
+  assert.equal(t("arc", { n: 0, fermees: 0, zonePrete: false, prochaine: null }), `${X.arcBriller} ${X.diamantGagner}`);
+  assert.equal(t("arc", { n: 0, fermees: 2, zonePrete: true, prochaine: large }), `${large.fermeeLu} ${X.diamantGagner} ${T.boutique.zoneBientot}`);
   assert.equal(X.diamantGagner, "Viens jouer souvent : tu en gagneras une !");
   const inv0 = inventaire();
-  for (const f of [3, 0]) for (const z of [false, true]) for (const p of sentences(t("arc", { n: 0, fermees: f, zonePrete: z }))) assert.ok(inv0.has(p), p);
-  const large = cartes.zones.find((z) => z.id === "large"), abysses = cartes.zones.find((z) => z.id === "abysses");
+  for (const z of [...cartes.zones.filter((z) => !z.ouverte), null]) for (const p of [false, true]) for (const ph of sentences(t("arc", { n: 0, fermees: z ? 1 : 0, zonePrete: p, prochaine: z }))) assert.ok(inv0.has(ph), ph);
+  const abysses = cartes.zones.find((z) => z.id === "abysses");
   assert.equal(t("diamant", { n: 2, maintenant: false, zone: large }), "Tu as 2 étoiles de diamant. Elles t'offriront les créatures légendaires, quand tu auras toutes les créatures du grand large.");
   assert.equal(t("diamant", { n: 1, maintenant: false, zone: abysses }), `${X.diamantUne} Elle t'offrira une créature légendaire, quand tu auras toutes les créatures des abysses.`);
   assert.equal(t("diamant", { n: 3, maintenant: true, zone: large }), `Tu as 3 étoiles de diamant. ${X.diamantMaintenant}`);
@@ -134,7 +135,7 @@ test("ce que dit la mascotte quand on touche une réserve, selon l'état", async
   // l'état, d'après la sauvegarde
   const { rw } = await fresh(allReady); rw.owned = own(byZone("lagon"));
   const e = etatReserves(rw, { arc: 2, diamant: 1 });
-  assert.deepEqual(e.arc, { n: 2, fermees: 3, zonePrete: true }); assert.equal(e.diamant.zone.id, "large"); assert.equal(e.diamant.maintenant, false);
+  assert.deepEqual(e.arc, { n: 2, fermees: 3, zonePrete: true, prochaine: corail }); assert.equal(e.diamant.zone.id, "large"); assert.equal(e.diamant.maintenant, false);
 });
 
 test("chaque phrase des réserves, jusqu'aux nombres dits, est dans l'inventaire de la voix", () => {

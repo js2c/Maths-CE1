@@ -28,14 +28,14 @@ export const reservesMontrees = (n) => SORTES.filter((s) => toujoursMontree(s) |
 
 // L'ÉTAT D'UNE RÉSERVE, pour ce qu'en dit la mascotte. `n` : le nombre montré.
 //   arc : { n, fermees (zones encore fermées : autant d'étoiles gardées), zonePrete (la zone en cours est complète : une zone va
-//         s'ouvrir) } ;
+//         s'ouvrir), prochaine (la prochaine zone à ouvrir, ou null) } ;
 //   diamant : { n, maintenant (une légendaire peut sortir à la prochaine récompense), zone (la zone de la prochaine légendaire,
 //         ou null : elles sont toutes dans le récif) }
 export function etatReserves(rewards, n) {
   const C = rewards.c, ouvertes = rewards.zones?.ouvertes ?? [], fermees = rewards.fermees, last = ouvertes.at(-1);
   const leg = C.cartes.find((c) => c.rarete === "legendaire" && !rewards.owned[c.id]);
   return {
-    arc: { n: n.arc, fermees, zonePrete: fermees > 0 && !!last && zoneDone(C.cartes, rewards.owned, last) },
+    arc: { n: n.arc, fermees, zonePrete: fermees > 0 && !!last && zoneDone(C.cartes, rewards.owned, last), prochaine: fermees > 0 ? C.zones.find((z) => !ouvertes.includes(z.id)) ?? null : null },
     diamant: { n: n.diamant, maintenant: !!rewards.goldenCard?.(), zone: leg ? C.zones.find((z) => z.id === leg.zone) ?? null : null },
   };
 }
@@ -43,9 +43,11 @@ export function etatReserves(rewards, n) {
 export function texteReserve(T, cartes, sorte, e) {
   const X = T.reserves, M = cartes.reserves ?? {}, j = (...xs) => xs.filter(Boolean).join(" ");
   if (sorte === "arc") {
-    // (lot « Suites des correctifs du 5 novembre ») à 0 : à quoi elles servent, puis comment en gagner une (la phrase du diamant à 0,
-    // sans règle exacte : décision du parent du 6 novembre 2026) ; aucune phrase nouvelle
-    if (!e.n) return j(!e.fermees ? X.arcBriller : X.arcProchainesZones, X.diamantGagner, e.zonePrete ? T.boutique.zoneBientot : null);
+    // (lot « Suites des correctifs du 5 novembre ») à 0 : ce qu'elles ouvriront, en les nommant (la phrase de l'album pour la prochaine
+    // zone fermée : « Le récif de corail s'ouvrira un jour, grâce à tes étoiles arc-en-ciel. » ; relecture du lot, constat 1 : « Elles
+    // ouvriront… » ne disait pas de quelle étoile on parlait), puis comment en gagner une (la phrase du diamant à 0, sans règle exacte :
+    // décision du parent du 6 novembre 2026) ; toutes les zones ouvertes, à quoi elles servent ; aucune phrase nouvelle
+    if (!e.n) return j(e.prochaine?.fermeeLu ?? (!e.fermees ? X.arcBriller : X.arcProchainesZones), X.diamantGagner, e.zonePrete ? T.boutique.zoneBientot : null);
     const nb = e.n === 1 ? X.arcUne : e.n > (M.arcDitMax ?? 50) ? X.arcBeaucoup : fill(X.arcN, { n: e.n });
     const role = !e.fermees ? (e.n === 1 ? X.arcBrillerUne : X.arcBriller) : e.n > e.fermees ? X.arcZonesEtBriller : e.n === 1 ? X.arcProchaineZone : X.arcProchainesZones;
     return j(nb, role, e.zonePrete ? T.boutique.zoneBientot : null);

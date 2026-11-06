@@ -2,8 +2,9 @@
 // de la PR #75) : le parcours du lot. Il passe par chaque situation nouvelle et en fait les captures (1280 × 800, 1920 × 1200, la
 // tablette de référence s5e, le petit smartphone) :
 //  1. les trois compteurs toujours visibles, la réserve arc-en-ciel à 0 comme le diamant : à l'accueil, dans le récif, dans la
-//     boutique, pendant une séance (sur une ligne, sans chevauchement, cibles de 64 px) ; la réserve arc-en-ciel à 0 touchée : à quoi
-//     elles servent, puis « Viens jouer souvent : tu en gagneras une ! » (aucune phrase nouvelle) ;
+//     boutique, pendant une séance (sur une ligne, sans chevauchement, cibles de 64 px) ; la réserve arc-en-ciel à 0 touchée : la prochaine
+//     zone et les étoiles arc-en-ciel nommées (« Le récif de corail s'ouvrira un jour, grâce à tes étoiles arc-en-ciel. »), puis « Viens
+//     jouer souvent : tu en gagneras une ! » (aucune phrase nouvelle) ;
 //  2. le bouton de l'album, dans le récif : le livre de cartes ; dans l'album, la sortie : le dessin du récif, qui y ramène (les deux
 //     boutons capturés de près, à la densité de l'écran).
 // La musique d'ambiance (« Les profondeurs ») et la phrase du diamant à 0 ne changent pas : correctifs-5-novembre.mjs les vérifie.
@@ -72,7 +73,7 @@ for (const vue of VUES) {
   await shot(page, vue, "02-arc-en-ciel-a-zero-touche", 0);
   await page.waitForTimeout(500);
   const dit = await page.evaluate(() => window.__said.join(" | "));
-  check(dit === `${T.reserves.arcProchainesZones} ${T.reserves.diamantGagner}`, `${vue[0]} l'arc-en-ciel à 0, touché : « ${dit} »`);
+  check(dit === `${cartes.zones.find((z) => z.id === "corail").fermeeLu} ${T.reserves.diamantGagner}`, `${vue[0]} l'arc-en-ciel à 0, touché : « ${dit} »`);
   check(!(await page.evaluate(() => { const B = window.__app.bulle, p = B.place?.rect, e = document.querySelector(".reserve.arc"); if (!p || !B.shown) return false; const q = [parseFloat(e.style.left), parseFloat(e.style.top), parseFloat(e.style.left) + parseFloat(e.style.width), parseFloat(e.style.top) + parseFloat(e.style.height)]; return !(p[2] <= q[0] || q[2] <= p[0] || p[3] <= q[1] || q[3] <= p[1]); })), `${vue[0]} la bulle ne couvre pas la réserve touchée`);
   // ---------------------------------------------------------------- 1. le récif : les trois compteurs ; 2. le livre de cartes
   await page.evaluate(() => window.__app.voice.stop());

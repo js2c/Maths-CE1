@@ -648,17 +648,27 @@ Votre enfant résout maintenant des **problèmes** : de petites histoires de la 
 
 ## d sexvicies) Lot « Correctifs du 5 novembre » : vos constats et décisions du 5 novembre
 
-- **La musique hors séance** : une musique d'ambiance (« les profondeurs », les cloches, la plus calme des trois) démarre dès que l'enfant touche l'écran de démarrage, et joue à l'accueil, dans « choisir », les leçons, la boutique, le récif et l'album. La séance garde sa musique tirée au hasard ; le passage de l'une à l'autre se fait en fondu (environ 2 secondes et demie, sans silence ni deux musiques fortes à la fois). Rien dans l'espace parent. Vos réglages (musique oui ou non, volume) valent pour les deux. *Si vous préférez une autre des trois pour l'ambiance, ou une musique à part, dites-le : c'est un réglage.*
+- **La musique hors séance** : une musique d'ambiance (« les profondeurs », les cloches, la plus calme des trois) démarre dès que l'enfant touche l'écran de démarrage, et joue à l'accueil, dans « choisir », les leçons, la boutique, le récif et l'album. La séance garde sa musique tirée au hasard ; le passage de l'une à l'autre se fait en fondu (environ 2 secondes et demie, sans silence ni deux musiques fortes à la fois). Rien dans l'espace parent. Vos réglages (musique oui ou non, volume) valent pour les deux. *Vous avez gardé « les profondeurs » le 6 novembre.*
 - **La boutique pendant une pause** : dans le récif visité depuis l'accueil en pause, le bouton de la boutique est là aussi. Un achat ne change rien à la séance en pause ; « continuer » la reprend exactement.
 - **Le capitaine redit la bonne consigne** : dans les problèmes (au partage du niveau 3, il redisait « Choisis ton niveau… »), il redit maintenant l'histoire et la question dès le début de l'histoire. Partout ailleurs aussi, il redit la consigne de l'écran qu'on voit (l'entrée d'un exercice, un exemple guidé, la récompense, le défi). Un parcours de vérification le touche à chaque moment de la séance.
 - **La prononciation** : « Plus c'est dur, plus tu gagnes d'étoiles ! » sera redit « plu… plu… » (une écriture particulière). En dressant la liste des « plus » qui ne sont pas l'addition, un autre défaut est apparu : « Combien de plus, combien de moins ? » (leçon L19) était donné à la voix « … combien de moins combien » ; corrigé. La liste des phrases à écouter : `tests/recette-fonctionnelle/out-correctifs-5-novembre/PLUS.md`.
-- **Les compteurs en haut à droite** : les étoiles de mer, arc-en-ciel et de diamant sur une seule ligne, chaque étoile à gauche de son nombre, à la même taille. L'étoile de diamant est montrée même à 0 (touchée, le capitaine dit « Tu n'as pas encore d'étoile de diamant. Viens jouer souvent : tu en gagneras une ! »).
+- **Les compteurs en haut à droite** : les étoiles de mer, arc-en-ciel et de diamant sur une seule ligne, chaque étoile à gauche de son nombre, à la même taille. L'étoile de diamant est montrée même à 0 (touchée, le capitaine dit « Tu n'as pas encore d'étoile de diamant. Viens jouer souvent : tu en gagneras une ! »). Depuis le 6 novembre, l'étoile arc-en-ciel aussi (section suivante).
 - **Le récif** : les trois compteurs y sont aussi, sur une petite plaque claire (lisible jusque dans les abysses) ; ils ne se touchent pas là, pour qu'une créature qui nage dessous reste touchable. Le bouton « réécouter » est maintenant **une petite tête du capitaine**, en haut à gauche.
 - **L'accueil** : plus de galet de l'album (l'album s'ouvre depuis le récif, par le livre) ; quatre galets, plus espacés. De même à l'accueil en pause.
 
 **Phrases à fabriquer** : 4 (« Tu n'as pas encore d'étoile de diamant. », « Viens jouer souvent : tu en gagneras une ! », et deux à refaire : « Plus c'est dur, plus tu gagnes d'étoiles ! », « Combien de plus, combien de moins ? »). Deux ne servent plus : « L'album. » et « Toutes tes cartes sont rangées ici. » (la fabrication les retire).
 
 **À essayer sur la tablette** : le démarrage (la musique commence au toucher), l'accueil, « jouer » (le fondu vers la musique de la séance), la fin de séance (le retour de l'ambiance) ; un problème du niveau 3, en touchant le capitaine pendant le partage ; la maison pendant une séance, le récif, la boutique, un achat, puis « continuer » ; les compteurs à l'accueil et dans le récif.
+
+## d septvicies) Lot « Suites des correctifs du 5 novembre » : vos réponses du 6 novembre
+
+- **Les trois compteurs toujours visibles** : l'étoile arc-en-ciel est maintenant montrée même à 0, comme l'étoile de diamant, à l'accueil, dans le récif, dans la boutique et pendant la séance. Touchée à 0, le capitaine dit à quoi elles servent, puis la phrase du diamant : « Elles ouvriront les prochaines zones du récif. Viens jouer souvent : tu en gagneras une ! » (quand toutes les zones sont ouvertes : « Elles font briller tes créatures, à la boutique. » à la place de la première phrase).
+- **L'album** : dans le récif, son bouton est maintenant **un livre de cartes** (le livre turquoise au coquillage doré, d'où sortent trois cartes), pour qu'il ne se confonde plus avec le livre ouvert des leçons. Dans l'album, le bouton pour sortir, en bas à gauche, est **le dessin du récif** (comme pour sortir de la boutique) au lieu de la maison : il ramène au récif.
+- **Sans changement, comme vous l'avez décidé** : la musique d'ambiance reste « les profondeurs » ; la phrase du diamant à 0 reste « Viens jouer souvent : tu en gagneras une ! », sans la règle exacte (4 semaines d'au moins 2 séances), qui serait trop compliquée pour l'enfant.
+
+**Phrases à fabriquer** : aucune (la réserve arc-en-ciel à 0 reprend des phrases qui existent déjà).
+
+**À essayer sur la tablette** : les trois compteurs à l'accueil, l'étoile arc-en-ciel touchée à 0 ; dans le récif, le livre de cartes, puis, dans l'album, le dessin du récif pour revenir.
 
 ## e) Ce qui reste approximatif ou à ajuster
 

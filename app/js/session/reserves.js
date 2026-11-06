@@ -86,9 +86,10 @@ export class Reserves {
     R.drawNumber(ctx, String(this.n[s]), nx, haut, h, { w: 4.8, seed: s === "arc" ? 921 : 922 });
   }
   // (appelé par la rangée) chaque case à sa place ; une case pas montrée est retirée de l'affichage
+  // (une case masquée est tout de même dessinée, à la place qu'elle prendra : rien de ce qui existe dans la page n'est laissé vide)
   poser(boites) {
     for (const s of SORTES) {
-      const e = this.els[s], b = boites[s]; e.style.display = b ? "" : "none";
+      const e = this.els[s], b = boites[s] ?? this.hud.rangee({ ...this.n, [s]: Math.max(1, this.n[s]) }).boites[s]; e.style.display = boites[s] ? "" : "none";
       if (b) { this.place[s] = b; poserBoite(this.app, e, b.x, b.w); }
     }
   }

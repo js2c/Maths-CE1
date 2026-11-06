@@ -10,7 +10,8 @@
    "scene": "a cosy family kitchen in the early evening: a cupboard with closed doors and a fridge on the right, a window with a plant on the sill in the background.",
    "absent": "No table, no fruit bowl, no plates, no food.",
    "defaut": "table:cuisine",
-   "solY": 0.6
+   "solY": 0.71,
+   "mesure": "6 novembre 2026, sur l'image générée (1376 × 768) : le plafond uni jusqu'à 20 % ; le bas du mur (la plinthe) à 71 %, soit 60 % de l'image recadrée"
   },
   {
    "id": "chambre",
@@ -18,7 +19,8 @@
    "scene": "a child's bedroom: a bed with a patterned duvet on the far right, a window with curtains, a few soft posters without writing.",
    "absent": "No shelf, no toy chest, no toys, no cards.",
    "defaut": "",
-   "solY": 0.6
+   "solY": 0.72,
+   "mesure": "6 novembre 2026, sur l'image générée (1376 × 768) : le plafond uni jusqu'à 20 % ; le bas du mur (la plinthe) à 72 %, soit 60 % de l'image recadrée"
   },
   {
    "id": "jardin",

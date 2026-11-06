@@ -48,6 +48,9 @@ const sprites = new Sprites(await loadAtlas(), px);
 await Promise.all(["petits", "lagon", "aides"].map((s) => sprites.load(s)));
 const img = (src) => new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ko(new Error(src)); i.src = src; });
 const [mascotte, maison, etoiles, etal] = await Promise.all(["../art/problemes/mascotte.png", "../art/problemes/maison.png", "../art/problemes/etoiles.png", "../art/etal/sources/etal-beau-temps.jpg"].map(img));
+// les lieux déjà générés par le parent (art/problemes/sources/<lieu>.jpg, en 16:9) : recadrés comme le fera l'atelier, à la forme
+// de l'image de la scène (860 × 350), la largeur entière, COLLÉS EN BAS (le haut retiré, jamais le sol)
+const VRAIS = Object.fromEntries(await Promise.all(["chambre", "cuisine"].map(async (id) => [id, await img(`../art/problemes/sources/${id}.jpg`).catch(() => null)])));
 await document.fonts.load('600 30px "Shantell Sans"');
 const bctx = bg.getContext("2d"); sprites.draw(bctx, "lagon.fond", 0, 0, 0);
 const ctx = scene.getContext("2d");
@@ -80,12 +83,13 @@ const lieu = (g, id, objets) => {
   enCtx((c) => {
     c.save(); const inn = D.cadreInterieur(CADRE.x, CADRE.y, CADRE.w, CADRE.h); c.beginPath(); inn.forEach(([a, b], i) => (i ? c.lineTo(a, b) : c.moveTo(a, b))); c.closePath(); c.clip();
     if (id === "etal") { const s = IW / etal.width; c.drawImage(etal, IX, IY - etal.height * s * LIEU_ETAL_Y, IW, etal.height * s); }
+    else if (VRAIS[id]) { const im = VRAIS[id], garde = Math.round((im.width * IH) / IW); c.drawImage(im, 0, im.height - garde, im.width, garde, IX, IY, IW, IH); }
     else V.LIEUX[id](c, IX, IY, IW, IH);
     objets?.(c);
     c.restore();
   });
   D.drawCadre(g, CADRE.x, CADRE.y, CADRE.w, CADRE.h, "devant");
-  document.getElementById("provisoire").textContent = id === "etal" ? "objets provisoires" : "lieu et objets provisoires";
+  document.getElementById("provisoire").textContent = id === "etal" || VRAIS[id] ? "objets provisoires" : "lieu et objets provisoires";
 };
 // une étiquette de donnée, à l'échelle s ; `icone` : une icône que l'atelier n'a pas encore (dessinée par-dessus la place du jeton)
 const etiq = (g, x, y, t, objet, { lit = false, s = 1, em = 38, icone = null, seed = 1, touche = true } = {}) => {
@@ -185,6 +189,19 @@ const scenePartage = (g, { dans = [0, 0, 0], ouvert = false, lit = -1 } = {}) =>
   enCtx((c) => { c.save(); c.lineCap = "round"; c.lineJoin = "round"; c.lineWidth = 5; c.strokeStyle = "#fffaf0"; c.beginPath(); c.moveTo(654, 284); c.quadraticCurveTo(654, 274, 668, 274); c.lineTo(916, 274); c.quadraticCurveTo(930, 274, 930, 268); c.quadraticCurveTo(930, 274, 944, 274); c.lineTo(992, 274); c.quadraticCurveTo(1006, 274, 1006, 284); c.stroke(); c.restore(); });
 };
 
+// LES PREMIERS LIEUX GÉNÉRÉS (6 novembre 2026), pour vérifier le recadrage : la cuisine (tra-pf-01) et la chambre (cmp-e-01)
+const cui = E("tra-pf-01"), cha = E("cmp-e-01");
+const sceneCuisine = (g, { lit = -1 } = {}) => {
+  lieu(g, "cuisine", (c) => { V.tableCuisine(c, 420, 900, 392, 468); V.assiette(c, 640, 380, 190); });
+  etiq(g, 520, 300, "8", "biscuit", { s: 1.02, seed: 1, lit: lit === 0 });
+  etiq(g, 700, 404, "2", "biscuit", { s: 1.02, seed: 2, lit: lit === 1 });
+};
+const sceneChambre = (g) => {
+  lieu(g, "chambre", (c) => { V.personnage(c, 900, 462, 196, V.PERSONNAGES.copain); });
+  etiq(g, 420, 398, "7", "bille", { s: 1.02, seed: 1 });
+  etiq(g, 846, 398, "4", "bille", { s: 1.02, seed: 2 });
+};
+
 // ---------------------------------------------------------------- LES ÉCRANS
 const ECRANS = {
   // l'histoire et la question (le pavé répond)
@@ -217,6 +234,8 @@ const ECRANS = {
   },
   // tout est rangé : les pots remplis restent sur la scène, la question, le pavé revient
   "partage-question": () => { const g = nouveau(); scenePartage(g, { dans: [4, 4, 4], ouvert: true }); plaque(g, 612, 402, "?", "crayon"); pave(); boutons(); dit(par.question); },
+  "lieu-cuisine": () => { const g = nouveau(); sceneCuisine(g, { lit: 1 }); plaque(g, 760, 302, "?", "biscuit"); ficelle(760, 344, 720, 370); pave(); boutons(); dit(cui.enonce[1]); },
+  "lieu-chambre": () => { const g = nouveau(); sceneChambre(g); plaque(g, 560, 314, "?", "bille"); pave(); boutons(); dit(cha.question); },
 };
 const nav = document.getElementById("nav"), go = (id) => { dit(""); ECRANS[id](); [...nav.children].forEach((b) => b.classList.toggle("on", b.dataset.id === id)); window.__ecran = id; window.__zones = zones.map((z) => ({ ...z })); };
 for (const id of Object.keys(ECRANS)) { const b = document.createElement("button"); b.textContent = id; b.dataset.id = id; b.onclick = () => go(id); nav.append(b); }

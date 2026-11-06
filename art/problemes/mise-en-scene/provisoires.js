@@ -226,3 +226,22 @@ export function sachetVide(ctx, cx, pied, h) {
   forme(ctx, lisse([[-w * 0.42, -h * 0.6], [-w * 0.1, -h * 0.66], [w * 0.4, -h * 0.6], [w * 0.1, -h * 0.52]]), "#6e4a24", "#6e4a24", { trait: 2.5 });
   ctx.restore();
 }
+
+// la table de la cuisine (la nappe à carreaux), vue de face, un peu de dessus
+export function tableCuisine(ctx, x0, x1, dessus, pied) {
+  const B = ["#b98552", "#8c5e33"];
+  for (const x of [x0 + 30, x1 - 46]) forme(ctx, rr(x, dessus + 20, 16, pied - dessus - 20, 4), B[0], B[1], { trait: 3.5 });
+  const nappe = poly([[x0 + 10, dessus - 16], [x1 - 10, dessus - 16], [x1 + 4, dessus + 14], [x1 - 6, dessus + 62], [x0 + 6, dessus + 62], [x0 - 4, dessus + 14]]);
+  forme(ctx, nappe, "#f6f1ea", "#ddd2c2", { trait: 4, ox: 4, oy: 8 });
+  ctx.save(); ctx.clip(nappe); ctx.fillStyle = "rgba(214, 64, 56, 0.55)";
+  for (let x = x0 - 20; x < x1 + 20; x += 36) ctx.fillRect(x, dessus - 20, 16, 90);
+  for (let y = dessus - 16; y < dessus + 66; y += 26) ctx.fillRect(x0 - 20, y, x1 - x0 + 40, 11);
+  ctx.restore(); forme(ctx, nappe, "rgba(0,0,0,0)", null, { trait: 4 });
+}
+// l'assiette, vue un peu de dessus
+export function assiette(ctx, cx, cy, w) {
+  forme(ctx, ell(cx, cy, w / 2, w * 0.17), "#ffffff", "#d9dee4", { trait: 3.5, ox: 4, oy: 4 });
+  forme(ctx, ell(cx, cy - 2, w * 0.36, w * 0.11), "#f2f5f8", "#f2f5f8", { trait: 2 });
+  ctx.save(); ctx.strokeStyle = "#5b8fd0"; ctx.lineWidth = 2.5; ctx.stroke(ell(cx, cy, w / 2 - 6, w * 0.17 - 4)); ctx.restore();
+}
+PERSONNAGES.copain = { enfant: true, haut: ["#ff9a3b", "#d0661a"], bas: ["#3f78c4", "#2a5592"], jambes: ["#f6c9a0", "#d89a6c"], cheveux: COIFFURES.court(["#e8c45a", "#b8902e"]), chaussures: ["#e8473e", "#a83234"] };

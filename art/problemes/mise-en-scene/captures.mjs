@@ -62,8 +62,8 @@ if (!process.argv.includes("--sans-avant")) {
   }
   await b2.close(); s2.close();
 }
-// les captures allégées (une palette de 256 couleurs : les aplats du style A n'y perdent rien ; 14 Mo → 4 Mo), si Python et PIL sont là
-try { execFileSync("python3", ["-c", "import glob,sys\nfrom PIL import Image\nfor f in glob.glob(sys.argv[1]+'/*.png'):\n  Image.open(f).convert('RGB').quantize(colors=256,method=Image.Quantize.MEDIANCUT,dither=Image.Dither.NONE).save(f,optimize=True)", OUT]); } catch { console.log("(captures non allégées : python3 et PIL absents)"); }
+// les captures allégées (une palette de 256 couleurs, tramée : 14 Mo → 5 Mo environ), si Python et PIL sont là
+try { execFileSync("python3", ["-c", "import glob,sys\nfrom PIL import Image\nfor f in glob.glob(sys.argv[1]+'/*.png'):\n  Image.open(f).convert('RGB').quantize(colors=256,method=Image.Quantize.FASTOCTREE,dither=Image.Dither.FLOYDSTEINBERG).save(f,optimize=True)", OUT]); } catch { console.log("(captures non allégées : python3 et PIL absents)"); }
 for (const d of defauts) console.log(`DÉFAUT ${d}`);
 if (errors.length) console.error(errors.join("\n"));
 process.exit(errors.length || defauts.length ? 1 : 0);

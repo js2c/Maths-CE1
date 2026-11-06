@@ -98,6 +98,17 @@ Background: one flat uniform pure bright green (#00FF00) colour from edge to edg
 Strictly no text, no letters, no numbers, no digits […]
 ```
 
+### Les premiers lieux générés : la vérification (6 novembre 2026)
+
+La chambre et la cuisine, générées par le parent en 16:9 (1376 × 768), renommées `art/problemes/sources/chambre.jpg` et `cuisine.jpg` (l'outil lit chaque lieu à son nom). Le découpage est vérifié dans `recadrage/` : la source, la part retirée assombrie, la coupe en jaune, la place de la bulle en rouge, le sol des objets en vert (`chambre-source.png`, `cuisine-source.png`) ; l'image recadrée à 860 × 350 (`chambre@1x.png`, `cuisine@1x.png`) ; et les deux lieux dans la scène, avec des objets provisoires (`16-lieu-cuisine`, `17-lieu-chambre`).
+
+- **Conformes au prompt** : le cinquième du haut est un plafond uni ; la moitié gauche est un mur nu (la bulle s'y écrit sans rien cacher) ; le bas est un sol libre (parquet, tomettes) ; aucun objet de l'histoire, aucun texte, aucun chiffre ; le style est proche de l'étal.
+- **Le découpage** retire **208 px en haut (27 %)** : tout le plafond et une fine bande du mur. Il est collé en bas, et le sol est entier. Le bas du mur tombe à 60 % de l'image recadrée : les objets ont le pied sur le sol, comme prévu (`solY` mesuré, `lieux.json`).
+- **À surveiller pour les lieux suivants** :
+  - Dans la chambre, la coupe passe par la tringle du rideau et le haut des affiches. La phrase ajoutée au prompt (« Nothing important in the top third ») l'évite.
+  - La définition : 1376 px de large suffisent pour l'écran ordinaire (860 px), mais la tablette en demande 1720. L'image y est donc agrandie de 25 %, un peu moins nette. Si Nano Banana propose une plus grande taille (2K), la préférer ; sinon c'est acceptable.
+  - Le lit et le réfrigérateur, à droite, avancent un peu sur le sol. Ce n'est pas gênant : les objets se posent devant eux.
+
 ## 4. Les écrans clés (images provisoires)
 
 **Les images de la maquette sont provisoires** : les personnages, les objets et les lieux (sauf l'étal) sont dessinés vite par le code (`provisoires.js`), à la place des images que le parent générera, aux mêmes tailles et aux mêmes places. Ils servent à juger la mise en page, pas le dessin. Les étiquettes, la plaque, le pavé et les schémas sont ceux de l'application. La bulle écrit ce que dit la voix. Chaque écran est contrôlé : la bulle n'y couvre rien de ce qu'on touche (`captures.mjs`).
@@ -119,6 +130,8 @@ Strictly no text, no letters, no numbers, no digits […]
 | `13-partage-histoire` | **Partage** (`par-v-03`, niveau 3, la classe, **manipulé**) : « La maîtresse a 12 crayons. Elle les met dans 3 pots. » | La maîtresse, le paquet fermé marqué « 12 », 3 pots vides sur le pupitre, « 3 » (et un petit pot) au-dessus des pots. |
 | `14-partage-manipule` | | **Le partage manipulé** : le paquet ouvert, les crayons en tas sur le sable (à la place du pavé), **les pots de la scène les reçoivent** ; le pot suivant est allumé ; un crayon glisse. |
 | `15-partage-question` | | Tout est rangé : les pots restent pleins sur la scène, la plaque « ? » dessous, le pavé revient. |
+| `16-lieu-cuisine` | « Il y a 8 biscuits dans l'assiette. Tu en manges 2. » (`tra-pf-01`) | **Le vrai lieu** (la cuisine générée), recadré : la table et l'assiette posées sur le sol, « 8 » sur l'assiette, « 2 » allumé, la plaque « ? ». |
+| `17-lieu-chambre` | « Tu as 7 billes. Ton copain a 4 billes. » (`cmp-e-01`) | **Le vrai lieu** (la chambre générée) : le copain devant le lit, « 7 » et « 4 » sur le sol (question 9), la plaque entre les deux. |
 | `petit-01` à `petit-03` | | Les mêmes sur le petit smartphone (640 × 360). |
 | `avant-gourmandises`, `avant-petit-gourmandises` | | L'écran d'aujourd'hui, pris dans l'application, pour comparer. |
 

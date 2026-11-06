@@ -2048,22 +2048,23 @@ Strictly no text, no letters, no numbers, no digits, no labels, no logo, no pric
 
 ## Les lieux, revus pour la mise en scène
 
-`art/problemes/mise-en-scene/lieux.json` (à valider : ils remplaceraient les prompts de `art/problemes/contextes.json`, qui n'ont pas encore servi, sauf l'étal). Format : 21:9 (Nano Banana : « 21:9 », la plus grande taille proposée ; à défaut 16:9 en 1920 × 1080, que l'atelier recadre). Affiché à 860 × 350 dans la scène de 1280 × 800 (cadre de 884 × 374), en @1x et @2x. Déposer l'image dans `art/problemes/sources/<lieu>.png`, comme prévu aujourd'hui.
+`art/problemes/mise-en-scene/lieux.json` (validés par le parent le 6 novembre 2026 ; le lot les reporte dans `art/problemes/contextes.json`, dont les prompts n'ont pas encore servi, sauf l'étal). Format : 16:9 (Nano Banana ne propose pas le 21:9 : précision du parent du 6 novembre 2026), la plus grande taille proposée (1920 × 1080 ou plus). L'atelier la recadre à la forme de la scène (860 × 350, un peu plus large que le 21:9) en retirant le haut, JAMAIS le bas : 27,6 % de la hauteur, c'est-à-dire le cinquième du haut (le bandeau de ciel, de mur ou de plafond, sans détail, que le prompt demande) et encore 7,6 % juste en dessous ; le sol, en bas, reste entier. Affichée à 860 × 350 dans la scène de 1280 × 800 (cadre de 884 × 374), en @1x et @2x. L'étal fait exception : c'est l'image de l'étal du pêcheur (2576 × 1438), recadrée autour de sa glace, qui est son sol. Déposer l'image dans `art/problemes/sources/<lieu>.png`, comme prévu aujourd'hui.
 
 ### cuisine
 
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: a cosy family kitchen in the early evening: a cupboard with closed doors and a fridge on the right, a window with a plant on the sill in the background.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat kitchen floor of large warm terracotta tiles, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No table, no fruit bowl, no plates, no food. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2075,15 +2076,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: a child's bedroom: a bed with a patterned duvet on the far right, a window with curtains, a few soft posters without writing.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat wooden bedroom floor with a round rug, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No shelf, no toy chest, no toys, no cards. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2095,15 +2097,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: a small family garden: a wooden fence, a shed on the right, a tree, a watering can far away.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat lawn of short grass with a strip of freshly dug brown soil, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No flowers, no lettuces, no tomatoes, no strawberries, no vases. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2115,15 +2118,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: a public park: trees, a small pond with reeds far away on the right, bushes.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat gravel path and lawn, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No slide, no swings, no sandbox, no bench, no boat, no ducks, no pigeons, no balls. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2135,15 +2139,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: a French primary classroom: a green chalkboard (blank, wiped clean) high on the back wall on the right, shelves far away, a big window with daylight on the right, plants.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat classroom floor of light wooden boards, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No desks, no chairs, no pencils, no pots, no notebooks, no chalk. The chalkboard is completely blank. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2155,15 +2160,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: a school playground: the school building with its big windows in the background, a plane tree on the right, a covered area far away.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat school playground tarmac, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No balls, no hoops, no chest, no bench; no hopscotch grid (it would show numbers). No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2175,15 +2181,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: a bright children's library: tall shelves along the back wall seen from a distance (book spines as soft colour stripes, not countable), cushions far away.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat library floor with a soft blue carpet, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No table, no trolley, no single book lying around. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2195,15 +2202,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: a school canteen: a serving counter along the back wall, colourful walls, big windows on the right.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat canteen floor of large pale tiles, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No tables, no benches, no trays, no plates, no yoghurts. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2215,15 +2223,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: a French bakery seen from inside: empty wooden shelves on the back wall, a big oven on the right.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat bakery floor of black and white tiles, with the top of a long empty glass counter running along the bottom edge, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. The shelves and counter are empty: no croissants, no baguettes, no loaves, no trays, no bags. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2235,15 +2244,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: an open-air market in a village square: a striped awning, plane trees, old houses behind.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat cobbled village square, with the front edge of a long empty market stall table along the bottom, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No crates, no baskets, no fruit, no scale. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2255,15 +2265,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: a neighbourhood grocery shop: shelves far away along the back wall (only soft colour blocks, nothing countable), a fridge with a frosted door on the right.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat shop floor of light grey tiles, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No basket, no bottles, no boxes, no packs, nothing countable on the shelves. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2275,15 +2286,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: a farmyard: a red barn on the right, a meadow with a wooden fence, hills behind.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat farmyard of packed earth and grass, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No henhouse, no hutch, no nest, no hens, no eggs, no cows, no sheep, no rabbits, no ducks, no tractor in the foreground. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2295,15 +2307,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: a corner of a living room: a door to the garden on the right, a low cupboard, a framed picture of a landscape on the wall.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat warm wooden floor of a living room, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No pet bowls, no dog basket, no cat cushion, no kibble, no treats. No dog and no cat. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2315,15 +2328,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: a town street with houses and trees in the background, a bus shelter far away on the right.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat pavement of a town street, seen from slightly above, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No bus, no car, no coach in the picture (the bus is placed afterwards); nobody waits. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2335,15 +2349,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: a sunny beach: the sea and its small waves in the background, dunes with grass far away on the right, a beach umbrella far away.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat flat golden sand, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No bucket, no spade, no shells on the sand, no sandcastles, no people. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2355,15 +2370,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: an autumn forest: tall trees with orange and yellow leaves, ferns, soft light.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat forest path covered with a few orange leaves, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No basket, no pine cones, no chestnuts, no mushrooms; no people. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2375,15 +2391,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: a school gym: a basketball hoop on the right, wall bars along the back wall.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat wooden gym floor with a few coloured lines, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No ball bag, no net, no ball, no hoops on the floor, no scoreboard, no benches. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2395,15 +2412,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: a school fête: a garland of little plain flags, a games stall with a striped awning far away on the right.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat school playground tarmac with a few confetti, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No cakes, no crêpes, no prizes, no prize box, no tables; no people; no price signs. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2415,15 +2433,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: a living room decorated for a birthday party: a paper garland, streamers on the wall, a window on the right.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat living-room floor of warm wooden boards, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No table, no cake, no candles, no sweets, no presents, no balloons; no guests. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2435,15 +2454,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: a craft corner at home: a window on the right, a jar of brushes and a thread spool far away.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat bright craft mat covering a big table top, seen from slightly above, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No beads, no necklaces, no bracelets, no stickers, no craft box. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 
@@ -2455,15 +2475,16 @@ Strictly no text, no letters, no numbers, no digits, no labels, no price tags, n
 ```text
 Same illustration style, line work, colour palette, lighting and level of detail as the attached image.
 
-Children's picture-book illustration, very wide panoramic format 21:9, full-bleed (painted edge to edge, no border, no frame).
+Children's picture-book illustration, landscape format 16:9, full-bleed (painted edge to edge, no border, no frame).
 Scene: a cosy living room: a sofa on the right, a lamp, a bookshelf far away.
 
 Style: bold hand-drawn comic style with thick dark ink outlines that get heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.
 
 Composition, very important: this picture is a stage set. Things will be placed on it afterwards.
+- The top fifth of the picture is plain sky, wall or ceiling with no detail at all: it will be cropped away. Nothing important in the top third of the picture either: its upper part will be cut too.
 - The lower 40% of the picture is an open, empty, flat living-room floor with a big round rug, seen from slightly above, running across the whole width, with nothing standing on it: this is where people, animals and objects will be placed.
-- The upper left quarter is calm and plain (wall or sky, no detail): a speech bubble will cover it.
-- The interesting details of the place are in the background, along the upper part and on the right, small and soft, never in the foreground.
+- Just below that plain band, the left half of the picture, down to the middle of its height, is calm and plain (wall or sky, no detail): a speech bubble will cover it.
+- The interesting details of the place are in the background, in the middle of the height and on the right, small and soft, never in the foreground and never in the top third.
 
 Very important, quantities: the picture shows the place, never the objects that are counted and never the furniture or containers of the story. No coffee table, no board game, no cards, no counters, no dice, no blocks. No people, no animals. No bowls, baskets, buckets, boxes, bags, plates, shelves, tables, benches, toys or vehicles in the foreground. No groups, rows, piles or sets of identical small objects that a child could count.
 

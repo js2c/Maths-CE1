@@ -168,7 +168,7 @@ ${ordre.map(fiche).join("\n\n")}
 
 ## Les lieux, revus pour la mise en scène
 
-\`art/problemes/mise-en-scene/lieux.json\` (à valider : ils remplaceraient les prompts de \`art/problemes/contextes.json\`, qui n'ont pas encore servi, sauf l'étal). Format : ${LIEUX.format} Déposer l'image dans \`art/problemes/sources/<lieu>.png\`, comme prévu aujourd'hui.
+\`art/problemes/mise-en-scene/lieux.json\` (validés par le parent le 6 novembre 2026 ; le lot les reporte dans \`art/problemes/contextes.json\`, dont les prompts n'ont pas encore servi, sauf l'étal). Format : ${LIEUX.format} Déposer l'image dans \`art/problemes/sources/<lieu>.png\`, comme prévu aujourd'hui.
 
 ${LIEUX.lieux.filter((l) => l.scene).map((l) => `### ${l.id}\n\n\`\`\`text\n${LIEUX.ouverture}\n\n${LIEUX.promptBase.replace("[SCENE]", l.scene).replace("[SOL]", l.sol).replace("[ABSENT]", l.absent)}\n\`\`\``).join("\n\n")}
 `;

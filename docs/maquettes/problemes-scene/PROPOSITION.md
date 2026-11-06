@@ -2,6 +2,8 @@
 
 Maquette préparée après le constat du parent du 5 novembre 2026, **pour validation avant tout code** (règle du 30 septembre, `docs/IDEES.md`, section 1). Rien n'est modifié dans `app/`, ni dans `docs/SPEC.md`, `docs/LOTS.md`, `docs/IDEES.md`, ni dans `art/problemes/contextes.json` : tout ce qui est nouveau est dans `art/problemes/mise-en-scene/` et dans ce dossier.
 
+> **Validée par le parent le 6 novembre 2026**, avec les douze recommandations de la section 6, et une précision : Nano Banana ne propose que 4:3 et 16:9 ; les lieux sont générés en 16:9 avec le cinquième du haut sans détail, que l'atelier retire au recadrage (section 3). Le lot se fait dans la même demande de fusion, après la fusion de la PR #75.
+
 > **Le constat** : l'écran des problèmes est vide à 80 % (le grand cadre de l'illustration, encore un fond de papier) ; seul le bas sert, presque sans image. « 3 sachets de 6 gourmandises, papa vide tout dans la gamelle du chien » ne montre qu'un petit biscuit.
 
 | Aujourd'hui | Proposé |
@@ -17,7 +19,7 @@ Maquette préparée après le constat du parent du 5 novembre 2026, **pour valid
 3. **Les prompts Nano Banana**, la taille et l'endroit où déposer chaque objet (section 3) : **`PROMPTS.md`** ; et les 21 lieux revus pour ce nouveau cadrage (`lieux.json`).
 4. **Ce que cela change** à l'aide, à la correction et au partage manipulé (section 5) et **les questions à trancher**, chacune avec une recommandation (section 6).
 
-**Le point le plus important** : les lieux ne sont pas encore générés (sauf l'étal). **Il vaut mieux attendre la validation de cette maquette avant de les générer**, car elle change leur format (21:9 au lieu de 16:9) et leur composition (un sol libre pour y poser les objets, et plus aucun bol, seau ou banc dans l'image : c'est la bibliothèque qui les apporte, en nombre exact). Question 2.
+**Le point le plus important** : les lieux ne sont pas encore générés (sauf l'étal). **Il vaut mieux attendre la validation de cette maquette avant de les générer**, car elle change leur format (une image plus large, recadrée dans un 16:9) et leur composition (un sol libre pour y poser les objets, et plus aucun bol, seau ou banc dans l'image : c'est la bibliothèque qui les apporte, en nombre exact). Question 2.
 
 ## 1. La mise en page
 
@@ -26,7 +28,7 @@ Tout est mesuré dans la scène de 1280 × 800 de l'application (le petit smartp
 | Zone | Place | Ce qui change |
 | --- | --- | --- |
 | La mascotte, la maison, les étoiles, la frise | inchangées | — |
-| **La scène** (le cadre de nacre et l'image du lieu) | x 244 à 1128, y 106 à 480 : **884 × 374** ; l'image dedans **860 × 350**, au format 21:9 | aujourd'hui 620 × 350 (x 496 à 1116). Elle part juste à droite de la mascotte et s'arrête au-dessus du pavé (dont les touches commencent à y 490) et à gauche des réserves d'étoiles (x 1136). Sa surface passe de 21 % à 32 % de l'écran, et surtout elle est **pleine** |
+| **La scène** (le cadre de nacre et l'image du lieu) | x 244 à 1128, y 106 à 480 : **884 × 374** ; l'image dedans **860 × 350** (un peu plus large que le 21:9 ; générée en 16:9 et recadrée par le haut) | aujourd'hui 620 × 350 (x 496 à 1116). Elle part juste à droite de la mascotte et s'arrête au-dessus du pavé (dont les touches commencent à y 490) et à gauche des réserves d'étoiles (x 1136). Sa surface passe de 21 % à 32 % de l'écran, et surtout elle est **pleine** |
 | **La bande de la bulle** | dans la scène, en haut à gauche (x < 760, y < 300) | n'y vont que le décor (mur, ciel) et ce qu'on ne touche pas : c'est là que s'écrit la bulle de la mascotte (sa place « droite » d'aujourd'hui). Le prompt des lieux y demande un coin calme |
 | **Le sol de la scène** | de y 380 à 466 environ | les objets de l'histoire y ont le pied, à l'échelle commune (un adulte : 250 px, un enfant : 190, le chien : 160, un sachet : 125, une gamelle : 70) |
 | **Les étiquettes des données** | **sur l'objet qu'elles décrivent** : « 6 » sur chaque sachet, « 8 » et « 5 » sur le seau, « 23 » sur la glace de l'étal ; le nombre de groupes au-dessus de la rangée, avec l'icône du contenant (« 3 » et un petit sachet) et une accolade | aujourd'hui alignées au bas de l'image. Même dessin, même taille (le nombre en 38 à 39 px), toujours touchables (elles redisent leur phrase), jamais dans la bande de la bulle |
@@ -81,7 +83,7 @@ Tout est dans **`PROMPTS.md`**, objet par objet, dans l'ordre où ils servent le
 - **Le dépôt** : `art/problemes/mise-en-scene/sources/<objet>.png` (une variante : `<objet>-<variante>.png`, par exemple `sachet-ferme.png` et `sachet-ouvert.png`) ; le détourage, le cadrage et la réduction seront faits par l'atelier au lot (un outil comme celui de l'étal), dans `app/assets/problemes/objets/`.
 - **Le poids** : environ 137 images d'objets (30 à 40 Ko chacune, @1x et @2x) et 21 lieux (environ 200 Ko chacun) : **environ 9 Mo** de plus dans le cache hors ligne.
 
-**Les lieux revus** (`lieux.json`, prompts complets à la fin de `PROMPTS.md`) : format **21:9** ; **le bas de l'image est un sol libre** (carrelage, parquet, sable, herbe) où l'application pose les objets ; **le coin en haut à gauche est calme** (la bulle s'y écrit) ; les détails du lieu au fond et à droite ; et **plus aucun objet que l'histoire nomme** (ni bol, ni seau, ni banc, ni toboggan, ni table). Par exemple, la plage : « *The lower 40% of the picture is an open, empty, flat golden sand… No bucket, no spade, no shells…* ». L'étal reste l'image de l'étal, recadrée (sa glace devient le sol).
+**Les lieux revus** (`lieux.json`, prompts complets à la fin de `PROMPTS.md`) : **générés en 16:9** (Nano Banana ne propose pas le 21:9 : précision du parent du 6 novembre), avec **le cinquième du haut sans aucun détail** (ciel, mur ou plafond) ; l'atelier les recadre à la forme de la scène en retirant **27,6 % de la hauteur, tout en haut** (ce bandeau et encore 7,6 % juste dessous), **jamais le sol du bas** ; **le bas de l'image est un sol libre** (carrelage, parquet, sable, herbe) où l'application pose les objets ; **le coin en haut à gauche est calme** (la bulle s'y écrit) ; les détails du lieu au fond et à droite ; et **plus aucun objet que l'histoire nomme** (ni bol, ni seau, ni banc, ni toboggan, ni table). Par exemple, la plage : « *The lower 40% of the picture is an open, empty, flat golden sand… No bucket, no spade, no shells…* ». L'étal reste l'image de l'étal, recadrée (sa glace devient le sol).
 
 **Exemple, le sachet fermé** (extrait de `PROMPTS.md`) :
 
@@ -145,7 +147,7 @@ Pour les ouvrir : `npm run serve` à la racine du dépôt ne sert que `app/` ; l
 
 **Recommandation : (a).** Le pavé reste où l'enfant a l'habitude de le trouver, avec des touches de 112 px ; le lagon reste le fond de toute l'application (décision du 4 octobre). La scène gagne surtout en contenu, pas seulement en taille.
 
-**2. Les lieux : les générer avec les prompts revus (21:9, un sol libre, sans les objets de l'histoire) ?**
+**2. Les lieux : les générer avec les prompts revus (un sol libre, sans les objets de l'histoire ; en 16:9 recadré par le haut, précision du 6 novembre) ?**
 - (a) **Oui, avec `lieux.json`**, et attendre cette validation avant d'en générer un.
 - (b) Garder les prompts d'aujourd'hui (`contextes.json`, 16:9, avec bols, seaux et bancs dans l'image) : l'application ne saurait pas où ils sont, et l'image en montrerait parfois deux (le sien et celui de la bibliothèque).
 

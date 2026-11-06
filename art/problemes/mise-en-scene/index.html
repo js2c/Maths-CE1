@@ -55,7 +55,7 @@ const BANQUE = (await (await fetch("content/problemes.json")).json()).enonces, E
 
 // ---------------------------------------------------------------- LA MISE EN PAGE (section 1 de la proposition)
 // La scène : de x 244 à 1128 (juste à droite de la mascotte, à gauche des réserves d'étoiles, x 1136) et de y 106 (sous le
-// compteur d'étoiles) à 480 (au-dessus du pavé, dont les touches commencent à y 490) : 884 × 374, l'image dedans 860 × 350 (21:9).
+// compteur d'étoiles) à 480 (au-dessus du pavé, dont les touches commencent à y 490) : 884 × 374, l'image dedans 860 × 350 (un peu plus large que le 21:9 : un lieu généré en 16:9 y perd le haut, jamais le bas).
 // LA BANDE DE LA BULLE : en haut à gauche de la scène (x < 760, y < 300) ne se posent que le décor et ce qu'on ne touche pas ; la
 // bulle de la mascotte s'y écrit (sa place « droite », engine/bulle.js). Le SOL : les objets ont le pied entre y 380 et 466.
 const CADRE = { x: 244, y: 106, w: 884, h: 374 }, IX = CADRE.x + D.CADRE_BORD, IY = CADRE.y + D.CADRE_BORD, IW = CADRE.w - 2 * D.CADRE_BORD, IH = CADRE.h - 2 * D.CADRE_BORD;
@@ -73,7 +73,7 @@ const pave = () => {
 };
 const boutons = () => { ctx.setTransform(1, 0, 0, 1, 0, 0); sprites.draw(ctx, "aide", 0, 222, 580); sprites.draw(ctx, "nsp", 0, 1165, 604); };
 
-// le cadre et le lieu (l'étal : la vraie image, recadrée en 21:9 ; les autres : provisoires)
+// le cadre et le lieu (l'étal : la vraie image, recadrée autour de sa glace ; les autres : provisoires)
 const LIEU_ETAL_Y = 0.07; // (le haut du recadrage de l'image de l'étal, en fraction de sa hauteur : la glace devient le sol)
 const lieu = (g, id, objets) => {
   D.drawCadre(g, CADRE.x, CADRE.y, CADRE.w, CADRE.h, "fond");

@@ -46,12 +46,14 @@ function variante(o, e, mot) {
   return V[0];
 }
 // la première phrase (énoncé) qui nomme l'objet, et le mot qui le nomme
+// (des expressions sans état : celles du relevé sont globales, et leur position de recherche passerait d'un énoncé à l'autre)
+const SANS = new Map([...RE].map(([k, r]) => [k, r ? new RegExp(r.source, "iu") : null]));
 function mention(e, o) {
-  const r = RE.get(o); if (!r) return { p: 0, mot: "" };
-  for (const [j, s] of e.enonce.entries()) { r.lastIndex = 0; const m = r.exec(s); if (m) return { p: j, mot: m[0], i: m.index }; }
+  const r = SANS.get(o); if (!r) return { p: 0, mot: "" };
+  for (const [j, s] of e.enonce.entries()) { const m = r.exec(s); if (m) return { p: j, mot: m[0], i: m.index }; }
   return { p: 0, mot: "" };
 }
-const nommeDans = (texte, o) => { const r = RE.get(o); if (!r) return -1; r.lastIndex = 0; const m = r.exec(texte); return m ? m.index : -1; };
+const nommeDans = (texte, o) => { const r = SANS.get(o); if (!r) return -1; const m = r.exec(texte); return m ? m.index : -1; };
 
 export function sceneDe(e) {
   const R0 = releve(e).filter((t) => t.role !== "unite"), R = R0.some((t) => t.role === "groupe") ? R0.filter((t) => !t.defaut) : R0, E = etiquettes(e), D = donneesDe(e), G = e.groupes;

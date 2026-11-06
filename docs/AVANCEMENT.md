@@ -47,9 +47,3 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 ## Reprise
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
-
-### Reprise du lot « Correctifs du 5 novembre »
-
-- Branche `claude/practical-einstein-us3eme`, demande de fusion #75. Fiche 22 de `docs/LOTS.md`.
-- Fait : les sept points (musique hors séance, boutique en pause, consigne de la mascotte, prononciation, compteurs, récif, accueil), leurs tests unitaires, les parcours `consignes-mascotte.mjs` et `correctifs-5-novembre.mjs`, la spécification, le guide, le journal, l'architecture.
-- Reste : la recette sur le banc (voir la demande de fusion) ; les 4 phrases à fabriquer par le parent.

@@ -955,3 +955,10 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 - **Réponses du parent du 4 novembre appliquées** (journal de conception) : prix « 3 séances » et « 4 séances » baissés (64/160, 88/220 ; `out-problemes/BOUTIQUE.md`) ; le problème du jour s'ajoute aux séances de l'étal et des voiliers (`out-problemes/ETAL-VOILIERS.md`) ; l'échec isolé du parcours `mascotte` expliqué et corrigé (la grande joie perdue à la fin de la parole).
 - **Reste** : les 972 phrases à fabriquer par le parent (`out-problemes/PHRASES.md`), les images des 21 lieux, sa relecture des rôles (`docs/maquettes/problemes/ENONCES.md`). À la fusion, cette rubrique va dans l'archive.
 - **Fusionné** (PR #73) ; rubrique archivée le 5 novembre 2026 (lot « Correctifs du 5 novembre »).
+
+## Reprise du lot « Correctifs du 5 novembre »
+
+- Branche `claude/practical-einstein-us3eme`, demande de fusion #75. Fiche 22 de `docs/LOTS.md`.
+- Fait : les sept points (musique hors séance, boutique en pause, consigne de la mascotte, prononciation, compteurs, récif, accueil), leurs tests unitaires, les parcours `consignes-mascotte.mjs` et `correctifs-5-novembre.mjs`, la spécification, le guide, le journal, l'architecture.
+- Recette faite le 6 novembre 2026 (`tests/recette-fonctionnelle/out-correctifs-5-novembre/RECETTE.md`), relecture indépendante (`RELECTURE.md`).
+- Reste : les 4 phrases à fabriquer par le parent. Rubrique archivée à la fin du lot.

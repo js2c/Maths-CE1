@@ -1,7 +1,8 @@
 // LES RÉSERVES D'ÉTOILES (lot « Réserves d'étoiles et étoiles arc-en-ciel », décisions du parent du 2 novembre 2026 ; docs/SPEC.md,
 // section 10 ; maquette validée : art/reserves/, docs/maquettes/reserves/README.md). À droite du compteur d'étoiles de mer, là où
 // il est affiché (l'accueil, les exercices, la récompense, la boutique ; ni le récif vivant ni les leçons, où il est caché) : une
-// petite étoile arc-en-ciel et une petite étoile de diamant, chacune avec son nombre en réserve, masquée tant qu'elle vaut 0.
+// petite étoile arc-en-ciel et une petite étoile de diamant, chacune avec son nombre en réserve, montrée même à 0 (lot « Suites des
+// correctifs du 5 novembre », décision du parent du 6 novembre 2026 ; avant, masquée à 0).
 //  - LA TOUCHER fait dire combien il y en a et ce qu'elles débloquent (texteReserve). Elles ne réagissent au toucher qu'à
 //    l'accueil, dans la boutique, à la récompense et dans l'accueil en pause (app.reservesTouchables, main.js) : pendant une
 //    question, le seul toucher hors réponse reste la mascotte (décision du parent du 2 novembre 2026, à la validation) ;
@@ -17,10 +18,11 @@ import { zoneDone } from "./rewards.js";
 import { dessinerEtoileRangee, poserBoite } from "./screens.js";
 
 // (lot « Correctifs du 5 novembre ») les deux réserves sont posées par la rangée des compteurs (screens.js, rangeeCompteurs), à droite
-// du compteur d'étoiles de mer, chaque étoile à gauche de son nombre ; la réserve arc-en-ciel n'est pas montrée à 0, celle de
-// diamant l'est toujours (décision du parent du 5 novembre 2026 ; avant, masquée à 0 elle aussi)
+// du compteur d'étoiles de mer, chaque étoile à gauche de son nombre ; les deux sont toujours montrées, même à 0 : les trois compteurs
+// sont toujours visibles (décision du parent du 6 novembre 2026, lot « Suites des correctifs du 5 novembre » ; le 5 novembre, le
+// diamant seul ; avant, masquées à 0 toutes les deux)
 export const SORTES = ["arc", "diamant"];
-export const toujoursMontree = (s) => s === "diamant";
+export const toujoursMontree = () => true;
 // les réserves montrées, de gauche à droite, pour les nombres `n`
 export const reservesMontrees = (n) => SORTES.filter((s) => toujoursMontree(s) || n[s] > 0);
 
@@ -41,6 +43,9 @@ export function etatReserves(rewards, n) {
 export function texteReserve(T, cartes, sorte, e) {
   const X = T.reserves, M = cartes.reserves ?? {}, j = (...xs) => xs.filter(Boolean).join(" ");
   if (sorte === "arc") {
+    // (lot « Suites des correctifs du 5 novembre ») à 0 : à quoi elles servent, puis comment en gagner une (la phrase du diamant à 0,
+    // sans règle exacte : décision du parent du 6 novembre 2026) ; aucune phrase nouvelle
+    if (!e.n) return j(!e.fermees ? X.arcBriller : X.arcProchainesZones, X.diamantGagner, e.zonePrete ? T.boutique.zoneBientot : null);
     const nb = e.n === 1 ? X.arcUne : e.n > (M.arcDitMax ?? 50) ? X.arcBeaucoup : fill(X.arcN, { n: e.n });
     const role = !e.fermees ? (e.n === 1 ? X.arcBrillerUne : X.arcBriller) : e.n > e.fermees ? X.arcZonesEtBriller : e.n === 1 ? X.arcProchaineZone : X.arcProchainesZones;
     return j(nb, role, e.zonePrete ? T.boutique.zoneBientot : null);

@@ -1,7 +1,7 @@
 // LES RÉSERVES D'ÉTOILES ET LES ÉTOILES ARC-EN-CIEL (lot « Réserves d'étoiles et étoiles arc-en-ciel », docs/LOTS.md, fiche 17 ;
 // décisions du parent du 2 novembre 2026 ; maquette validée : docs/maquettes/reserves/) dans Chromium, tactile. Il passe par chaque
 // situation nouvelle et en fait les captures (1280 × 800, 1920 × 1200, la tablette de référence s5e, le petit smartphone) :
-//  1. l'accueil : les deux réserves à droite du compteur, leur nombre ; masquée à 0 ; chacune touchée, ce que dit la mascotte ; la
+//  1. l'accueil : les deux réserves à droite du compteur, leur nombre ; montrées à 0 (lot « Suites des correctifs du 5 novembre ») ; chacune touchée, ce que dit la mascotte ; la
 //     bulle ne couvre pas la réserve touchée ; les cibles d'au moins 64 px ;
 //  2. pendant une question (la notion du jour) : les réserves visibles mais inertes ; dans l'accueil en pause, elles répondent ;
 //  3. la boutique, une créature du récif touchée : les deux coches (étoiles de mer, étoile arc-en-ciel), la seule coche arc-en-ciel,
@@ -94,12 +94,16 @@ for (const vue of VUES) {
     await context.close();
   }
   if (tout) {
-    // masquée à 0 : il n'y a que les étoiles de diamant, leur case prend la première place (lot « Correctifs du 5 novembre » : la rangée
-    // des compteurs, alignée sur le bord droit ; le diamant au bout, à droite du compteur d'étoiles de mer)
+    // à 0, toujours montrée (lot « Suites des correctifs du 5 novembre », décision du parent du 6 novembre 2026 : les trois compteurs
+    // toujours visibles ; avant, masquée à 0) : sa case, avec son 0, entre le compteur et le diamant, au bout de la rangée ; touchée,
+    // à quoi elles servent, puis « Viens jouer souvent : tu en gagneras une ! » (aucune phrase nouvelle)
     const { context, page } = await fresh(etat(260, 0, 1), vue);
     const r = await reserves(page), mer = await page.evaluate(() => { const b = document.querySelector(".hud.stars").getBoundingClientRect(); return b.x + b.width; });
-    check(!r.arc.vu && r.diamant.vu && r.diamant.x >= mer - 0.5 && Math.abs(r.diamant.x + r.diamant.w - 1270) < 2, Vs(`sans étoile arc-en-ciel : sa réserve masquée, le diamant juste après le compteur, au bout de la rangée (x ${Math.round(r.diamant.x)})`));
-    await shot(page, vue, "04-une-seule-reserve");
+    check(r.arc.vu && r.diamant.vu && r.arc.x >= mer - 0.5 && r.diamant.x >= r.arc.x + r.arc.w - 0.5 && Math.abs(r.diamant.x + r.diamant.w - 1270) < 2, Vs(`sans étoile arc-en-ciel : sa réserve montrée, à 0, entre le compteur et le diamant (x ${Math.round(r.arc.x)}, ${Math.round(r.diamant.x)})`));
+    await saidReset(page); await tap(page, ".reserve.arc"); await page.waitForTimeout(900);
+    const dit0 = await said(page);
+    check(dit0.includes(T.reserves.diamantGagner) && !dit0.includes("Tu as 0"), Vs(`la réserve arc-en-ciel à 0 touchée : « ${dit0.slice(-160)} »`));
+    await shot(page, vue, "04-arc-en-ciel-a-zero", 0);
     await context.close();
   }
   // ---------------------------------------------------------------- 2. pendant une question, puis dans l'accueil en pause

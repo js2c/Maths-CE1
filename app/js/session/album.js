@@ -1,5 +1,5 @@
-// L'ALBUM DES CARTES (docs/SPEC.md, « La carte et l'album »). Ouvert par le livre-coquillage, depuis
-// l'accueil et depuis le récif ; la visite est libre et ne rapporte rien.
+// L'ALBUM DES CARTES (docs/SPEC.md, « La carte et l'album »). Ouvert par le livre de cartes, depuis le récif
+// seulement (lot « Correctifs du 5 novembre ») ; sa sortie, le dessin du récif, y ramène ; la visite est libre et ne rapporte rien.
 //  - une page par zone (quatre onglets à droite : les dos de chaque zone, assombris et fermés d'un
 //    coquillage tant que la zone n'est pas ouverte) ; chaque zone a ses 15 emplacements (5 × 3) ;
 //  - une carte obtenue est visible (son illustration dans son cadre) ; une carte pas encore découverte
@@ -16,7 +16,7 @@ const GRID = { x: 300, y: 118, gx: 18, gy: 20 }, TAB = { x: 1160, y: 200, pitch:
 
 export class Album {
   constructor(app) { this.app = app; this.open = false; this.view = new CardView(app); }
-  // la visite ; la promesse se résout quand l'enfant touche la maison
+  // la visite ; la promesse se résout quand l'enfant touche le récif (la sortie)
   async visit({ zone = null } = {}) {
     const { app } = this, { sprites, voice, text, cartes } = app;
     this.open = true; this.els = [];
@@ -30,12 +30,14 @@ export class Album {
       onBrief(app, t, () => { pop(t); this.showZone(z.id, { say: true }); }, () => z.nom);
       this.els.push(t); return t;
     });
-    const home = spriteBox(app, { x: 90 - 70, y: 712 - 70, w: 140, h: 140, cls: "bubble homekey", label: "revenir", paint: (ctx) => sprites.draw(ctx, "maison", 0, 70, 70) });
+    // la sortie : l'album s'ouvre depuis le récif et y ramène ; son bouton est le dessin du récif (lot « Suites des correctifs du
+    // 5 novembre », décision du parent du 6 novembre 2026 ; avant, la maison), à la taille de la maison du récif
+    const home = spriteBox(app, { x: 90 - 70, y: 712 - 70, w: 140, h: 140, cls: "bubble homekey album-retour", label: "le récif", paint: (ctx, px) => { const q = sprites.frame("recif", 0), k = (140 / 180) * 1.1; if (q) ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 70 * px + q.dx * k, 70 * px + q.dy * k, q.w * k, q.h * k); } });
     this.els.push(home);
     const first = zone ?? cartes.zones.find((z) => app.rewards.zoneOpen(z.id))?.id ?? cartes.zones[0].id;
     await this.showZone(first);
     voice.stop(); voice.say(text.data.album, { instruction: true });
-    await new Promise((r) => onBrief(app, home, () => { pop(home); r(); }, "maison"));
+    await new Promise((r) => onBrief(app, home, () => { pop(home); r(); }, "recif"));
     await this.view.close();
     voice.stop(); this.leave();
   }

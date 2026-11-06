@@ -20,7 +20,9 @@ import { serve } from "../serve.mjs";
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 // (8 questions : l'erreur faite à la 2e revient au plus tôt à la 7e, après 4 autres questions ; module2.json, repetition.ecartMin, lot
 // « Décisions sur les constats de l'agent », décision 5)
-const N = Number(opt("--questions", 8)), FAM = Number(opt("--famille", 0)), OUT = resolve(`tests/e2e/out/notion2${FAM ? `-f${FAM}` : ""}`);
+// (lot « Correctifs du 5 novembre » : 12 questions, pas 8 : le fait retourné compte pour l'écart, `retourneNotion`, et peut repousser le
+// retour d'un fait faux au-delà de la 8e question, selon le tirage)
+const N = Number(opt("--questions", 12)), FAM = Number(opt("--famille", 0)), OUT = resolve(`tests/e2e/out/notion2${FAM ? `-f${FAM}` : ""}`);
 mkdirSync(OUT, { recursive: true });
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium" });
@@ -36,8 +38,12 @@ await page.evaluate(async (fam) => {
 await page.tap(".play", { force: true });
 const typeIn = async (n) => { for (const d of String(n)) { await page.tap(`.key[data-key="${d}"]`, { force: true }); await page.waitForTimeout(170); } await page.tap('.key[data-key="valider"]', { force: true }); };
 let k = 0, sawGuide = false, sawFix = false, notionQ = 0, sawLesson = false, sawHermit = false;
+// (lot « Correctifs du 5 novembre », un échec isolé du passage complet expliqué : un fait ne revient après une erreur que s'il a été posé
+// moins de `repetition.parBlocMax` fois, 2, dans le bloc ; se tromper sur le 2e passage d'un fait, selon le tirage, ne le faisait pas
+// revenir, comme le veut la règle. L'erreur est donc faite sur un fait encore jamais posé dans la notion du jour, exemples compris)
+const poses = new Set();
 for (const until = Date.now() + 240000; Date.now() < until;) {
-  const st = await page.evaluate(() => { const s = window.__app.facts, h = window.__app.hermit; return { done: !!document.querySelector(".tally"), notion: !!s?.notion, hermit: !!h?.visible, lesson: !!window.__app.lessons.p2?.keys, q: s?.q && !s.locked && s.resolve ? { a: s.q.a, b: s.q.b, forme: s.q.forme ?? "directe", guide: !!s.q.guide, base: !!s.q.base } : null }; });
+  const st = await page.evaluate(() => { const s = window.__app.facts, h = window.__app.hermit; return { done: !!document.querySelector(".tally"), notion: !!s?.notion, hermit: !!h?.visible, lesson: !!window.__app.lessons.p2?.keys, q: s?.q && !s.locked && s.resolve ? { a: s.q.a, b: s.q.b, forme: s.q.forme ?? "directe", guide: !!s.q.guide, base: !!s.q.base, fait: s.q.fait } : null }; });
   if (st.done) break;
   if (st.hermit) sawHermit = true;
   if (st.lesson && !sawLesson) { sawLesson = true; await page.waitForTimeout(1200); await shot("2-lecon"); }
@@ -45,7 +51,8 @@ for (const until = Date.now() + 240000; Date.now() < until;) {
   const exp = st.q.forme === "trouDroite" ? st.q.b : st.q.forme === "trouGauche" ? st.q.a : st.q.a + st.q.b;
   if (st.notion && st.q.guide && !sawGuide) { sawGuide = true; await shot("3-exemple-guide"); }
   if (st.notion && !st.q.guide) { notionQ++; if (notionQ === 1) await shot("4-question"); }
-  const wrong = st.notion && !st.q.guide && notionQ === 2;
+  const wrong = st.notion && !st.q.guide && notionQ >= 2 && !sawFix && !poses.has(st.q.fait);
+  if (st.notion) poses.add(st.q.fait);
   await typeIn(wrong ? (exp === 9 ? 8 : exp + 1) : exp);
   if (wrong) { await page.waitForTimeout(900); await shot("5-correction"); sawFix = true; }
   await page.waitForFunction(() => !window.__app.facts.resolve || window.__app.facts.locked, null, { timeout: 30000 }).catch(() => {});
@@ -60,7 +67,8 @@ check(sawHermit, "le bernard-l'ermite était là pendant la notion du jour");
 const guides = se.lecons?.length ? 1 : 2; // après une leçon : un seul exercice guidé (session/notion.js)
 check(sawGuide && notion.filter((r) => r.guide).length === guides, `${guides} exemple(s) guidé(s) (${notion.filter((r) => r.guide).length})${se.lecons?.length ? `, après la leçon ${se.lecons[0].id}` : ""}`);
 check(notion.filter((r) => !r.guide).length >= N, `${notion.filter((r) => !r.guide).length} questions d'additions en notion du jour (au moins ${N})`);
-check(sawFix && notion.some((r) => !r.juste && !r.guide) && notion.some((r) => r.revient), "une erreur, corrigée avec l'appui, et le fait revenu");
+const fautes = notion.some((r) => !r.juste && !r.guide), revenu = notion.some((r) => r.revient);
+check(sawFix && fautes && revenu, `une erreur, corrigée avec l'appui, et le fait revenu${sawFix && fautes && revenu ? "" : ` (tapée : ${sawFix}, notée fausse : ${fautes}, revenue : ${revenu} ; ${notion.map((r) => `${r.question}${r.guide ? " (guidé)" : ""}${r.juste ? "" : " FAUX"}${r.revient ? " (retour)" : ""}`).join(", ")})`}`);
 const counts = {}; notion.forEach((r) => { counts[r.question] = (counts[r.question] ?? 0) + 1; });
 check(Object.values(counts).every((n) => n <= 4), `un même fait au plus 3 fois (plus son retour) : ${JSON.stringify(counts)}`);
 check(se.terminee, "séance terminée");

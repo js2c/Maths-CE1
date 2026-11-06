@@ -71,8 +71,10 @@ export class StarHud {
     app.ocean.front.push((t) => this.tick(t));
   }
   // la rangée : le compteur des étoiles de mer, puis les réserves montrées (session/reserves.js, `montrees`)
+  // (relecture du lot : sur leur plaque claire, l'étoile et le nombre touchaient le bord ; la plaque prend une marge de plus, la rangée
+  // est réduite d'autant si elle ne tient plus)
   rangee(n = this.reserves?.n) {
-    return rangeeCompteurs([{ id: "mer", texte: String(this.shown) }, ...(this.reserves ? this.reserves.montrees(n).map((s) => ({ id: s, texte: String(n[s]) })) : [])]);
+    return rangeeCompteurs([{ id: "mer", texte: String(this.shown) }, ...(this.reserves ? this.reserves.montrees(n).map((s) => ({ id: s, texte: String(n[s]) })) : [])], this.sombre ? { ...RANGEE, marge: 14, entre: 2 } : RANGEE);
   }
   disposer() {
     const r = this.rangee(); this.place = r.boites;
@@ -105,7 +107,7 @@ export class StarHud {
   }
   tick(t) {
     // (décision 8) le fond derrière le compteur est-il sombre ? relu deux fois par seconde
-    if (!(t - (this.vuSombre ?? -1) < 0.5)) { this.vuSombre = t; const s = !!this.app.hudSombre?.(); if (s !== !!this.sombre) { this.sombre = s; this.box.repaint(); } }
+    if (!(t - (this.vuSombre ?? -1) < 0.5)) { this.vuSombre = t; const s = !!this.app.hudSombre?.(); if (s !== !!this.sombre) { this.sombre = s; this.disposer(); } }
     this.reserves?.suivre();
     this.flights = this.flights.filter((f) => {
       const u = (t - f.t0) / f.dur;
@@ -405,6 +407,8 @@ export function goodNight(app, { first = true } = {}) {
   // (relecture du lot « Décisions sur les constats de l'agent », R7 : la bulle « à demain » cachait la lune) la bulle l'évite, comme ce
   // dont parle la voix (engine/bulle.js ; retirée de l'écran, la lune n'est plus une zone)
   app.bulle?.eviter("lune", moon);
-  if (first) { ocean.mascotte.play("saluer"); voice.say(text.pick("aDemain"), { instruction: true }); }
+  // (lot « Correctifs du 5 novembre », relecture : « à demain » n'est pas la consigne ; touchée, la mascotte redit celle de l'accueil,
+  // « La séance du jour est finie. Touche une bulle… », posée par showHome)
+  if (first) { ocean.mascotte.play("saluer"); voice.say(text.pick("aDemain")); }
   return moon;
 }

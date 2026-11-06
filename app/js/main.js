@@ -666,7 +666,7 @@ async function showHome({ done, first = false, bienvenue = false }) {
   // (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026 : plus de galet de l'album ; l'album s'ouvre depuis le
   // récif ; les quatre galets se répartissent sur la place des cinq)
   const tuiles = done
-    ? [galet("encore", GALET_X[1], "encore", "play again"), galet("lecons", GALET_X[2], "les leçons", "leconskey"), galet("recif", GALET_X[3], "le récif", "reefkey")]
+    ? [galet("encore", GALET_X3[0], "encore", "play again"), galet("lecons", GALET_X3[1], "les leçons", "leconskey"), galet("recif", GALET_X3[2], "le récif", "reefkey")]
     : [galet("jouer", GALET_X[0], "jouer", "play"), galet("choisir", GALET_X[1], "choisir", "choisir"), galet("lecons", GALET_X[2], "les leçons", "leconskey"), galet("recif", GALET_X[3], "le récif", "reefkey")];
   homeEls.push(...tuiles, parentLogo(app, { onOpen: openParent, holdMs: parentContent.appuiLongMs }));
   if (done) homeEls.push(goodNight(app, { first }));
@@ -702,6 +702,8 @@ async function showHome({ done, first = false, bienvenue = false }) {
 // (point 10) les galets de l'accueil : plus grands, entre le bouton de l'espace parent et le bord droit
 // (lot « Correctifs du 5 novembre » : quatre galets au lieu de cinq, environ 303 px de l'un à l'autre, sur la même étendue)
 const GALET_X = [250, 553, 857, 1160], GALET_Y = 652;
+// (même lot, relecture : après la séance du jour, les trois galets se répartissent aussi sur toute l'étendue, la lune au-dessus)
+const GALET_X3 = [250, 705, 1160];
 // LES LEÇONS (lot « Les leçons », session/lessons.js) : le menu ; une leçon, puis l'écran « À toi ! » (l'exercice associé :
 // séance du jour s'il n'y en a pas encore eu, entraînement libre sinon) ; la table d'addition ; la maison ramène à l'accueil
 async function openLessons() {

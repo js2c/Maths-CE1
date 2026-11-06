@@ -116,8 +116,7 @@ for (const vue of MUSIQUE ? [] : VUES) {
 const ETAT = () => window.__app && (() => { const a = window.__app, s = a.screen, q = s?.q;
   return { q: q ? JSON.stringify([q.format, q.target, q.answer, q.niveau, q.start, q.jumps]) : null, consigne: a.voice.instruction, questions: a.session.rec.questions, etoilesSeance: a.session.rec.etoiles, etape: a.session.progress.etape, id: a.session.id, enPause: !!a.enPause };
 })();
-if (!MUSIQUE) {
-  const vue = VUES[0];
+for (const vue of MUSIQUE ? [] : VUES.filter(([n]) => n === "1280" || n === "petit-smartphone")) {
   const { context, page } = await ouvrir(vue, [owned(lagon.slice(0, 4)), etoiles(300, 1, 0), { id: "quota", date: ilYaSemaines(3), cartes: 4 }], Q + "&choix=1:5&cran=conseille&sans=echauffement&sansLecon&guides=0&questions=4");
   await page.waitForTimeout(800); await tap(page, ".galet.play");
   const attend = () => page.waitForFunction(() => window.__app.screen?.q && window.__app.screen.resolve && !window.__app.screen.locked, null, { timeout: 60000 });
@@ -126,30 +125,34 @@ if (!MUSIQUE) {
   const avant = await page.evaluate(ETAT), total0 = await page.evaluate(() => window.__app.rewards.total);
   await tap(page, ".keep.reefkey"); await page.waitForTimeout(300); if (!(await page.evaluate(() => window.__app.reef?.open))) await tap(page, ".keep.reefkey");
   await recifOuvert(page);
-  check(await page.locator(".boutique-cle").isVisible(), "pause : dans le récif, le bouton de la boutique (avant ce lot : absent)");
+  check(await page.locator(".boutique-cle").isVisible(), `${vue[0]} pause : dans le récif, le bouton de la boutique (avant ce lot : absent)`);
+  // (relecture du lot) la petite tête touchée pendant la pause : la consigne du récif, pas celle de la pause
+  await page.evaluate(() => { const v = window.__app.voice, say = v.say.bind(v); window.__said = []; v.say = (t, o) => { window.__said.push(t); return say(t, o); }; });
+  await tap(page, ".speaker"); await page.waitForTimeout(500);
+  check((await page.evaluate(() => window.__said[0])) === T.recifBienvenue, `${vue[0]} pause : dans le récif, la tête touchée redit « ${T.recifBienvenue} »`);
   await rangee(page, vue, "récif en pause");
   await shot(page, vue, "07-recif-en-pause");
   await tap(page, ".boutique-cle"); await page.waitForSelector(".boutique-tuile", { timeout: 20000 }); await page.waitForTimeout(1500);
   await rangee(page, vue, "boutique en pause");
   const aVendre = await page.evaluate(() => [...window.__app.boutique.vit].find(([, e]) => e === "vendre")?.[0]);
-  check(!!aVendre, `pause : la boutique a une créature à vendre (${aVendre})`);
+  check(!!aVendre, `${vue[0]} pause : la boutique a une créature à vendre (${aVendre})`);
   await tap(page, `.boutique-tuile[data-id="${aVendre}"]`); await page.waitForTimeout(700);
   await shot(page, vue, "08-boutique-en-pause", 200);
   await tap(page, ".boutique-conf.coche"); await page.waitForTimeout(4500);
   const apres = await page.evaluate(() => ({ total: window.__app.rewards.total, achats: window.__app.rewards.achats.liste.map((x) => x.id ?? x) }));
-  check(apres.total < total0 && JSON.stringify(apres.achats).includes(aVendre), `pause : l'achat est fait (${total0} → ${apres.total} étoiles)`);
+  check(apres.total < total0 && JSON.stringify(apres.achats).includes(aVendre), `${vue[0]} pause : l'achat est fait (${total0} → ${apres.total} étoiles)`);
   await tap(page, ".boutique-retour").catch(() => {}); await recifOuvert(page); await page.waitForTimeout(3000);
   await shot(page, vue, "09-arrivee-en-pause", 200);
   await tap(page, ".homekey:not(.session-home)"); await page.waitForSelector(".keep.play", { timeout: 15000 }); await page.waitForTimeout(600);
   const retour = await page.evaluate(ETAT);
   const diff = Object.keys(avant).filter((k) => avant[k] !== retour[k]);
-  check(!diff.length, `pause : après la boutique, la séance en pause est intacte (${diff.map((k) => `${k} : ${avant[k]} → ${retour[k]}`).join(" ; ") || "question, consigne, réponses, étoiles de la séance, étape"})`);
+  check(!diff.length, `${vue[0]} pause : après la boutique, la séance en pause est intacte (${diff.map((k) => `${k} : ${avant[k]} → ${retour[k]}`).join(" ; ") || "question, consigne, réponses, étoiles de la séance, étape"})`);
   await tap(page, ".keep.play"); await page.waitForTimeout(400); if (await page.evaluate(() => window.__app.enPause)) await tap(page, ".keep.play");
   await page.waitForTimeout(700);
   const repris = await page.evaluate(ETAT);
-  check(!repris.enPause && repris.q === avant.q && repris.consigne === avant.consigne, "pause : « continuer » reprend exactement (même question, même consigne)");
+  check(!repris.enPause && repris.q === avant.q && repris.consigne === avant.consigne, `${vue[0]} pause : « continuer » reprend exactement (même question, même consigne)`);
   const n0 = repris.questions; await attend(); await page.evaluate(REPONDRE, true);
-  check(await page.waitForFunction((n0) => window.__app.session.rec.questions > n0, n0, { timeout: 30000 }).then(() => true, () => false), "pause : la séance continue après la reprise");
+  check(await page.waitForFunction((n0) => window.__app.session.rec.questions > n0, n0, { timeout: 30000 }).then(() => true, () => false), `${vue[0]} pause : la séance continue après la reprise`);
   await context.close();
 }
 
@@ -188,6 +191,11 @@ if (!MUSIQUE) {
   for (let i = 0; i < 40 && !(await page.evaluate(() => !!document.querySelector(".moon"))); i++) { await page.evaluate(REPONDRE, true).catch(() => {}); if (await page.locator(".cran-ok").isVisible().catch(() => false)) await tap(page, ".cran-ok").catch(() => {}); if (await page.locator(".shelltap").isVisible().catch(() => false)) await tap(page, ".shelltap").catch(() => {}); if (await page.locator(".card").isVisible().catch(() => false)) await tap(page, ".check").catch(() => {}); await page.waitForTimeout(1500); }
   check(await page.waitForFunction((k) => window.__app.sound.musiqueJouee === k, SON.musique.horsSeance, { timeout: 15000 }).then(() => true, () => false), "musique : la séance finie, l'ambiance revient (« à demain »)");
   await shot(page, vue, "10-a-demain-avec-musique");
+  // (relecture du lot) « à demain » : les trois galets répartis sur toute l'étendue ; la mascotte redit la consigne de l'accueil
+  const g3 = await boites(page, ".galet");
+  check(g3.length === 3 && g3[0].x < 200 && g3[2].x + g3[2].w > 1200, `« à demain » : les trois galets répartis (${g3.map((b) => Math.round(b.x + b.w / 2)).join(", ")})`);
+  await page.waitForTimeout(1500);
+  check((await page.evaluate(() => window.__app.voice.instruction)) === T.accueilConsigneFaite, "« à demain » : la consigne redite est celle de l'accueil (« La séance du jour est finie. Touche une bulle… »)");
   // l'espace parent : tout se tait ; la musique coupée puis rallumée par le parent
   // (l'appui long sur le bouton de l'espace parent, comme le parent)
   { const b = await page.locator(".logo").boundingBox(); await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2); await page.mouse.down(); await page.waitForTimeout(2400); await page.mouse.up(); }

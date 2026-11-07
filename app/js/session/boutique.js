@@ -157,7 +157,7 @@ export class Boutique {
     this.onglets?.forEach((o) => o.remove());
     this.onglets = cartes.zones.map((z, i) => {
       const ouverte = rewards.zoneOpen(z.id), b = document.createElement("button"), d = ONGLET.d, m = 16;
-      b.className = `bubble rond boutique-onglet${ouverte ? "" : " fermee"}${z.id === this.zone ? " actif" : ""}`; b.setAttribute("aria-label", z.nom); b.dataset.zone = z.id;
+      b.className = `bubble boutique-onglet rond${ouverte ? "" : " fermee"}${z.id === this.zone ? " actif" : ""}`; b.setAttribute("aria-label", z.nom); b.dataset.zone = z.id;
       Object.assign(b.style, { left: `${ONGLET.x + i * ONGLET.pitch}px`, top: `${ONGLET.y}px`, width: `${d}px`, height: `${d}px` });
       const c = document.createElement("canvas"), W = d + 2 * m, H = d + 2 * m + 14, px = stage.px; c.width = Math.round(W * px); c.height = Math.round(H * px);
       Object.assign(c.style, { position: "absolute", left: `${-m}px`, top: `${-m}px`, width: `${W}px`, height: `${H}px` });

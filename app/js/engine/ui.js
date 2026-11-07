@@ -21,7 +21,7 @@ export function spriteBox(app, { x, y, w, h, cls = "bubble", label = "", still =
 // `paint(ctx, px, o)` : en px d'écran, le centre du bouton en (o, o) logiques dans le canvas.
 export function boutonRond(app, { cx, cy, d, cls = "", label = "", marge = 18, paint }) {
   const { stage } = app, b = document.createElement("button"), c = document.createElement("canvas"), W = d + 2 * marge, o = W / 2;
-  b.className = `bubble rond ${cls}`; Object.assign(b.style, { left: `${cx - d / 2}px`, top: `${cy - d / 2}px`, width: `${d}px`, height: `${d}px` });
+  b.className = `bubble ${cls} rond`; Object.assign(b.style, { left: `${cx - d / 2}px`, top: `${cy - d / 2}px`, width: `${d}px`, height: `${d}px` });
   if (label) b.setAttribute("aria-label", label);
   c.width = c.height = Math.round(W * stage.px); Object.assign(c.style, { position: "absolute", left: `${-marge}px`, top: `${-marge}px`, width: `${W}px`, height: `${W}px` });
   b.append(c); stage.ui.append(b);

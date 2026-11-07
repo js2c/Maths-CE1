@@ -68,3 +68,14 @@ test("chaque usage est dessiné par un écran, et chaque bouton du parent est ro
     assert.ok(src.lastIndexOf("boutonRond(", i) > src.lastIndexOf("\n", src.lastIndexOf("\n", i) - 1) - 400, `${f} : ${cls} est un boutonRond`);
   }
 });
+
+test("le relevé des boutons qui gardent leur dessin : un prompt par image, à jour (relancer : node art/boutons/prompts.mjs)", async () => {
+  const { relever, prompt } = await import("../../art/boutons/prompts.mjs");
+  const R = relever(), md = read("docs/maquettes/boutons/PROMPTS.md"), atlas = JSON.parse(read("app/assets/art/atlas.json"));
+  const n = R.commandes.length + R.vagues.length + R.niveaux.reduce((s, x) => s + x.liste.length, 0) + R.lecons.length;
+  assert.equal((md.match(/```text/g) ?? []).length, n);
+  assert.equal(R.niveaux.reduce((s, x) => s + x.liste.length, 0), 13 + 13 + 9 + 9 + 9 + 10 + 9, "tous les niveaux de l'écran « choisir »");
+  for (const c of R.commandes) { if (!c.sprite.startsWith("(")) assert.ok(atlas.sprites[c.sprite], c.sprite); assert.ok(md.includes(`art/boutons/sources/${c.f}.png`), c.f); assert.ok(md.includes(prompt(c)), `${c.f} : le prompt complet`); }
+  // aucun des boutons relevés n'a déjà son image du parent
+  for (const c of R.commandes) assert.ok(!R.remplaces.includes(c.sprite), c.sprite);
+});

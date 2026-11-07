@@ -58,3 +58,24 @@ test("un objet sans image : son étiquette seule, au sol ; un groupe d'enfants :
   assert.deepEqual([0, 1, 2, 3, 4].map((r) => imageDe(enf, I, r).cle), ["enfants-a", "enfants-b", "enfants-c", "enfants-d", "enfants-a"]);
   assert.equal(imageDe(enf, I, 4).retourne, true);
 });
+
+// (relecture indépendante du 7 novembre 2026) le dépôt de la réponse qui porte aussi les données : « 8 5 ? » dans l'ordre de
+// l'histoire, la plaque à droite, le seau pas couvert par la plaque
+test("le seau des coquillages : les étiquettes dans l'ordre de l'histoire, la plaque après elles, le seau visible", () => {
+  const e = BANQUE.find((x) => x.id === "reu-t-07"), D = etiquettes(e).map((t) => t.n), L = composer(e, D, D.map(larg), 66, VRAIES);
+  const t = (i) => L.etiquettes.find((x) => x.i === i && !x.echo), seau = L.pieces.find((p) => p.o === "seau").copies[0];
+  assert.ok(t(0).x < t(1).x && t(1).x < L.plaque.x, `ordre ${t(0).x} ${t(1).x} ${L.plaque.x}`);
+  const couvre = (a, b) => Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+  assert.ok(couvre({ ...L.plaque, w: 196, h: 84 }, seau) <= 0.1 * seau.w * seau.h, "la plaque couvre le seau");
+});
+// plusieurs sortes comptées : chaque étiquette a l'image de la sienne (scenes.mjs, unitesDe), écrite dans la banque et connue
+test("plusieurs sortes comptées : une unité par étiquette, chacune avec son image", () => {
+  const avec = BANQUE.filter((e) => e.scene?.unites);
+  assert.ok(avec.length >= 20, `${avec.length} énoncés`);
+  const e = BANQUE.find((x) => x.id === "reu-t-07");
+  assert.deepEqual(e.scene.unites, ["u-coquillage-blanc", "u-coquillage-rose"]);
+  assert.equal(e.scene.unite, undefined, "« combien de coquillages » réunit les deux : pas d'unité de la réponse");
+  assert.deepEqual(BANQUE.find((x) => x.id === "reu-t-08").scene.unites, ["vache", "u-animal-mouton"]);
+  // (toutes ont leur image, sauf les personnes : leur étiquette n'a alors pas d'image, screen.js, preparer)
+  for (const x of avec) for (const u of x.scene.unites) if (u && u !== "u-personne") assert.ok(VRAIES[u], `${x.id} : ${u} sans image`);
+});

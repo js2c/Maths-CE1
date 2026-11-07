@@ -146,9 +146,12 @@ export function controler(banque, contextes) {
       if (new Set(poses).size !== poses.length) defaut(e, "scène : une donnée posée deux fois");
       if (sc.objets.filter((x) => x.rep).length + (sc.entre ?? []).filter((i) => i === "rep").length > 1) defaut(e, "scène : plus d'une plaque");
       // l'unité (l'image de ce qu'on compte) : une unité de la bibliothèque et sa variante, ou un animal de l'histoire (la poule)
-      if (sc.unite != null) {
-        const ok = BIBLIOTHEQUE.some((o) => (o.categorie === "unite" ? (o.variantes ? o.variantes.some((v) => `${o.id}-${v}` === sc.unite) : o.id === sc.unite) : o.categorie === "animal" && !o.variantes && o.id === sc.unite));
-        if (!ok) defaut(e, `scène : unité inconnue ${sc.unite}`);
+      const uniteConnue = (u) => BIBLIOTHEQUE.some((o) => (o.categorie === "unite" ? (o.variantes ? o.variantes.some((v) => `${o.id}-${v}` === u) : o.id === u) : o.categorie === "animal" && !o.variantes && o.id === u));
+      if (sc.unite != null && !uniteConnue(sc.unite)) defaut(e, `scène : unité inconnue ${sc.unite}`);
+      // l'unité de chaque étiquette (plusieurs sortes comptées) : une par donnée, connue ou null, au moins deux différentes
+      if (sc.unites != null) {
+        if (!Array.isArray(sc.unites) || sc.unites.length !== donnees.length) defaut(e, "scène : unites, une par donnée");
+        else { for (const u of sc.unites) if (u != null && !uniteConnue(u)) defaut(e, `scène : unité inconnue ${u}`); if (new Set(sc.unites.filter(Boolean)).size < 2) defaut(e, "scène : unites sans deux sortes différentes"); }
       }
     }
   }

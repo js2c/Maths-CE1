@@ -122,8 +122,12 @@ export function composer(e, donnees, largeurs, hauteurEtiquette, images, o = {})
     if (p.manque) { const r = choisir(sol(w, H, p.boite.x), w, H); posees.push(r); etiquettes.push({ i, ...r, k: p.k }); return; }
     // (un groupe de contenants ouverts, leur contenu montré : une seule étiquette, à côté de la rangée, jamais sur ce qu'ils contiennent ;
     // comme la maquette validée, où les « 6 » des sachets s'effacent quand on les ouvre)
+    // (le dépôt de la réponse qui porte aussi des données, « le seau » de « 8 coquillages blancs et 5 roses » : la première à sa
+    // gauche, les autres sur lui, la plaque à sa droite : « 8 5 ? » se lit dans l'ordre de l'histoire et le seau reste visible)
+    const avecRep = nd > 1 && S.objets[p.k]?.rep && p.x.n == null;
+    const placesDe = (c) => (!avecRep ? autour(c, w, H, rang, nd) : rang === 0 ? [places(c, w, H).gauche, ...autour(c, w, H, 0, 1)] : autour(c, w, H, rang - 1, nd - 1));
     p.copies.forEach((c, j) => {
-      const r = j === 0 ? choisir(autour(c, w, H, rang, nd), w, H, [c]) : (() => { const t = etiquettes.find((q) => q.i === i && q.k === p.k && !q.echo); const dx = c.x - p.copies[0].x; const r2 = { x: t.x + dx, y: t.y, w, h: H }; return r2; })();
+      const r = j === 0 ? choisir(placesDe(c), w, H, [c]) : (() => { const t = etiquettes.find((q) => q.i === i && q.k === p.k && !q.echo); const dx = c.x - p.copies[0].x; const r2 = { x: t.x + dx, y: t.y, w, h: H }; return r2; })();
       if (j === 0 || dansImage(r)) { posees.push(r); etiquettes.push({ i, ...r, k: p.k, echo: j > 0 }); }
     });
   });
@@ -163,11 +167,14 @@ export function composer(e, donnees, largeurs, hauteurEtiquette, images, o = {})
 
 // la place des unités montrées (la correction, jusqu'à `max` ; le cran « plus facile » : une collection par étiquette) : une zone au
 // sol libre, au plus près de `pres` (une boîte), où tient une collection de `n` objets au pas `p`
-export function zoneSol(L, n, p, pres, eviter = [], taille = null) {
+// `ou` : « pres », juste sous la boîte ou juste au-dessus (relecture du 7 novembre 2026 : la collection d'une étiquette, ou les unités
+// de la réponse, posées près d'une autre étiquette trompaient sur ce qu'elles comptent) ; « sol », sur le sol, au plus près
+export function zoneSol(L, n, p, pres, eviter = [], taille = null, ou = "sol") {
   const cols = n <= 4 ? 2 : n <= 9 ? 3 : 5, w = taille?.w ?? Math.min(n, cols) * p + 8, h = taille?.h ?? Math.ceil(n / cols) * p * 0.86 + 8;
   const occupe = [...L.etiquettes, { ...L.plaque, w: PLAQUE.w, h: PLAQUE.h }, ...L.pieces.flatMap((q) => q.copies), ...eviter];
-  const cands = [];
-  for (let dx = 0; dx < IMAGE.w; dx += 12) for (const s of [1, -1]) cands.push([pres.x + pres.w / 2 - w / 2 + s * dx, L.pied - h - 2]);
+  const cands = [], x0 = pres.x + pres.w / 2 - w / 2;
+  if (ou === "pres") { for (const y of [pres.y + pres.h + 6, pres.y - h - 6]) for (const dx of [0, -24, 24, -48, 48, -72, 72]) cands.push([x0 + dx, y]); }
+  else for (let dx = 0; dx < IMAGE.w; dx += 12) for (const s of [1, -1]) cands.push([x0 + s * dx, L.pied - h - 2]);
   for (const [x, y] of cands) { const r = { x, y, w, h }; if (dansImage(r) && !dansBande(r) && !occupe.some((q) => recouvre(r, q, 2))) return { ...r, cols }; }
   return null;
 }

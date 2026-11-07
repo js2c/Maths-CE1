@@ -115,7 +115,7 @@ export class ProblemesScreen {
     for (const t of L.etiquettes) if (t.accolade && this.vues.has(t.i)) { const a = t.accolade, m = (a.x0 + a.x1) / 2; ctx.save(); ctx.setTransform(this.px, 0, 0, this.px, -ZONE_CADRE.x * this.px, -ZONE_CADRE.y * this.px); ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.lineWidth = 5; ctx.strokeStyle = "#fffaf0"; ctx.beginPath(); ctx.moveTo(a.x0, a.y + 10); ctx.quadraticCurveTo(a.x0, a.y, a.x0 + 14, a.y); ctx.lineTo(m - 12, a.y); ctx.quadraticCurveTo(m, a.y, m, t.y + t.h); ctx.quadraticCurveTo(m, a.y, m + 12, a.y); ctx.lineTo(a.x1 - 14, a.y); ctx.quadraticCurveTo(a.x1, a.y, a.x1, a.y + 10); ctx.stroke(); ctx.restore(); }
     for (const t of L.etiquettes) if (this.vues.has(t.i)) { const it = q.etiquettes[t.i]; D.drawEtiquette(g, t.x, t.y, String(it.n), it.objet, { lit: this.lit === t.i, seed: t.i + 1, em: 38, teinte: this.teinteDe(q, t.i) }); }
     const t = (q.lecon ? "" : this.fs.typed) || (this.montre ? String(q.e.reponse) : "?");
-    D.drawReponse(g, L.plaque.x, L.plaque.y, PLAQUE.w, t, q.e.objet, { juste: !!this.juste });
+    D.drawReponse(g, L.plaque.x, L.plaque.y, PLAQUE.w, t, q.e.scene?.unites && !this.unite ? null : q.e.objet, { juste: !!this.juste });
   }
   repaint() { if (this.q && this.L) this.calque("donnees", ZONE_CADRE, (g, ctx) => this.paintDonnees(g, ctx), "probleme-donnees"); }
   // ---------------------------------------------------------------- les objets de la scène
@@ -140,7 +140,7 @@ export class ProblemesScreen {
     // les unités dans les contenants, en tas, en collections (dessinées par l'atelier)
     const o = q.e.objet;
     for (const [k, n] of Object.entries(this.dans ?? {})) { const p = L.pieces.find((x) => x.k === Number(k)); if (!p || p.manque) continue; p.copies.forEach((c, j) => this.unitesDans(g, o, c, Array.isArray(n) ? n[j] : n, k * 13 + j)); }
-    if (this.tas) this.dessinerTas(g, o, this.tas);
+    if (this.tas) this.dessinerTas(g, this.tasObjet ?? o, this.tas);
     // (sans image des contenants) les groupes de l'atelier, au-dessus du sol de la scène
     if (this.groupesCode) { const G = q.e.groupes; this.groupesDans({ x: 470, y: 214, w: 420, h: 190 }, q.e.contenant ?? "anneau", o, G.nombre, G.taille, { plein: this.groupesCode.plein })(g); }
     if (this.collections) for (const col of this.collections) this.dessinerTas(g, col.objet, col);
@@ -156,13 +156,17 @@ export class ProblemesScreen {
   dessinerTas(g, objet, z) {
     const { dizaines, unites } = enObjets(z.n, this.app.module7?.objetsDizainesAuDela ?? 20);
     if (dizaines) { for (let i = 0; i < dizaines; i++) D.drawGroupe(g, "anneau", objet, z.x + 34 + i * 64, z.y + z.h / 2 - 8, 10, 0.42, { seed: 60 + i }); if (unites) D.placesGroupe(z.x + 34 + dizaines * 64 + 12, z.y + z.h / 2, unites, 22, 5).forEach(([x, y], i) => D.drawObjet(g, objet, x, y, 0.42, 700 + i, i)); return; }
-    D.placesGroupe(z.x + z.w / 2, z.y + z.h / 2, z.n, z.p, z.cols).forEach(([x, y], i) => D.drawObjet(g, objet, x, y, z.p / 50, 700 + (z.seed ?? 0) + i, i));
+    // (`objet` : un objet, ou, pour un tas de plusieurs sortes, celui de chaque unité)
+    D.placesGroupe(z.x + z.w / 2, z.y + z.h / 2, z.n, z.p, z.cols).forEach(([x, y], i) => D.drawObjet(g, typeof objet === "function" ? objet(i) : objet, x, y, z.p / 50, 700 + (z.seed ?? 0) + i, i));
   }
   // la place d'un tas de `n` unités au sol, près d'une boîte (au-delà de 20, la largeur des paquets de dix)
   zoneTas(n, pres, eviter = []) {
     const { dizaines, unites } = enObjets(n, this.app.module7?.objetsDizainesAuDela ?? 20);
-    if (dizaines) { const z = zoneSol(this.L, 1, 1, pres, eviter, { w: dizaines * 64 + (unites ? 76 : 8), h: 90 }); return z && { ...z, n }; }
-    for (const p of [32, 26, 21, 17]) { const z = zoneSol(this.L, n, p, pres, eviter); if (z) return { ...z, n, p }; }
+    // (juste sous la boîte ou au-dessus d'elle, puis sur le sol au plus près)
+    for (const ou of ["pres", "sol"]) {
+      if (dizaines) { const z = zoneSol(this.Le, 1, 1, pres, eviter, { w: dizaines * 64 + (unites ? 76 : 8), h: 90 }, ou); if (z) return { ...z, n }; continue; }
+      for (const p of [32, 26, 21, 17]) { const z = zoneSol(this.Le, n, p, pres, eviter, null, ou); if (z) return { ...z, n, p }; }
+    }
     return null;
   }
   // des groupes dessinés par l'atelier (sans image des contenants : comme avant le lot) : `n` contenants de `t` objets (les `plein`
@@ -185,13 +189,24 @@ export class ProblemesScreen {
   // la scène d'une question : la composition (fermée, puis ouverte), le lieu et les images des objets, chargés avant d'être montrés
   async preparer(q, tok) {
     const I = await this.index();
+    // (plusieurs sortes comptées, « 8 coquillages blancs et 5 roses », « 7 vaches et 9 moutons » : chaque étiquette a l'image de la
+    // sienne, `scene.unites` ; une sorte sans image, « 50 personnes », pas d'image du tout plutôt que celle d'une autre ; avant la
+    // composition, qui mesure les étiquettes)
+    const U = q.e.scene?.unites ?? [];
+    q.etiquettes.forEach((t, i) => { if (t.objet && U[i]) t.objet = I.objets[U[i]] ? U[i] : null; });
     const L = this.composer(q, I.objets), Lo = this.composer(q, I.objets, true);
     // (l'unité, ce qu'on compte : son image remplace le dessin de l'objet de l'atelier, sur les étiquettes, à la correction, au partage ;
     // en @2x, petite et vue de près sur les étiquettes)
     const u = q.e.scene?.unite, uImg = u && I.objets[u] ? this.charger(`assets/problemes/objets/${u}@2x.webp`) : null;
-    const [img, imgs, imU] = await Promise.all([this.lieu(q.e.contexte), this.objetsDe(L, Lo), uImg]);
+    const cles = [...new Set(U.filter((k) => k && I.objets[k]))];
+    const [img, imgs, imU, ...imK] = await Promise.all([this.lieu(q.e.contexte), this.objetsDe(L, Lo), uImg, ...cles.map((k) => this.charger(`assets/problemes/objets/${k}@2x.webp`))]);
     if (tok !== this.tok) return false;
-    D.imagesObjets(imU && q.e.objet ? { [q.e.objet]: { im: imU, w: imU.naturalWidth, h: imU.naturalHeight } } : null); this.unite = imU ? u : null;
+    const M = {}, vu = (im) => ({ im, w: im.naturalWidth, h: im.naturalHeight });
+    if (imU && q.e.objet) M[q.e.objet] = vu(imU);
+    cles.forEach((k, j) => { if (imK[j]) M[k] = vu(imK[j]); });
+    // (une image annoncée mais illisible : le dessin de l'atelier, à la même largeur)
+    q.etiquettes.forEach((t) => { if (cles.includes(t.objet) && !M[t.objet]) t.objet = q.e.objet; });
+    D.imagesObjets(Object.keys(M).length ? M : null); this.unite = imU ? u : null;
     // (une image annoncée mais illisible : l'objet est traité comme sans image, son étiquette seule)
     const vues = Object.fromEntries(Object.entries(I.objets).filter(([c]) => imgs[c] || ![...L.pieces, ...Lo.pieces].some((p) => p.copies.some((x) => x.cle === c))));
     this.L = Object.keys(vues).length === Object.keys(I.objets).length ? L : this.composer(q, vues); this.Lo = Object.keys(vues).length === Object.keys(I.objets).length ? Lo : this.composer(q, vues, true);
@@ -429,15 +444,17 @@ export class ProblemesScreen {
     const e = q.e, max = this.reglages.unitesMax ?? 20, R = this.rangee(q), G = e.groupes, L = this.Lo ?? this.L;
     const S = e.scene?.objets ?? [], kr = S.findIndex((x) => x.rep), dep = kr >= 0 && S[kr].n == null ? L.pieces.find((p) => p.k === kr && !p.manque) : null;
     this.ouverts = true; this.placerBoutons();
+    // (la réunion de plusieurs sortes, « 8 coquillages blancs et 5 roses » : le tas de la réponse fait de chacune, dans l'ordre)
+    if (e.scene?.unites && e.structure === "reunion" && e.inconnue === "tout") { const K = q.etiquettes.flatMap((t) => Array(t.n).fill(t.objet ?? e.objet)); this.tasObjet = (i) => K[i] ?? e.objet; }
     if (G && R && !(e.structure === "groupes-egaux" && dep)) { if (G.taille <= 10) this.dans = { ...this.dans, [R.k]: G.taille }; }
     else if (e.reponse <= max) {
       const c = dep?.copies[0], n = e.reponse;
-      // dans le dépôt (sur son ouverture), s'il y a la place ; sinon au sol, au plus près
+      // dans le dépôt (sur son ouverture), s'il y a la place ; sinon près de la plaque (dessous, au-dessus, puis le sol au plus près)
       // (dans le dépôt : sur sa hauteur, comme posées dedans, la taille réduite à sa largeur)
       if (c) { const cols = n <= 4 ? 2 : n <= 9 ? 3 : n <= 12 ? 4 : 6, rows = Math.ceil(n / cols), p = Math.max(12, Math.min(22, (c.w - 8) / cols, (Math.max(c.h, 50) - 6) / (rows * 0.86))), w = cols * p + 8, h = rows * p * 0.86 + 8, z = { x: c.x + c.w / 2 - w / 2, y: c.y + Math.max(0, (c.h - h) / 2), w, h, n, p, cols };
-        const libre = ![...this.L.etiquettes, { ...this.L.plaque, w: PLAQUE.w, h: PLAQUE.h }].some((t) => z.x < t.x + t.w && t.x < z.x + z.w && z.y < t.y + t.h && t.y < z.y + z.h);
-        this.tas = libre ? z : this.zoneTas(n, c); }
-      else this.tas = this.zoneTas(n, { ...this.L.plaque, w: PLAQUE.w, h: PLAQUE.h });
+        const libre = ![...this.Le.etiquettes, { ...this.Le.plaque, w: PLAQUE.w, h: PLAQUE.h }].some((t) => z.x < t.x + t.w && t.x < z.x + z.w && z.y < t.y + t.h && t.y < z.y + z.h);
+        this.tas = libre ? z : this.zoneTas(n, { ...this.Le.plaque, w: PLAQUE.w, h: PLAQUE.h }); }
+      else this.tas = this.zoneTas(n, { ...this.Le.plaque, w: PLAQUE.w, h: PLAQUE.h });
     }
     this.repaintScene();
   }
@@ -502,7 +519,7 @@ export class ProblemesScreen {
   // ---------------------------------------------------------------- la sortie
   leaveQuestion() {
     for (const el of this.els) el.remove(); this.els = []; this.calques?.clear(); this.aideVisible = false; this.boutons = []; this.boutonPlaque = null; this.occupe = false; this.bonds = 0;
-    this.L = this.Lo = this.imgs = null; D.imagesObjets(null); this.unite = null; this.phrase = -1; this.ouverts = false; this.dans = null; this.tas = null; this.collections = null; this.groupesCode = null; this.litCopies = null; this.teintes = false; this.cibles = null; this.avantUnites = null;
+    this.L = this.Lo = this.imgs = null; D.imagesObjets(null); this.unite = null; this.tasObjet = null; this.phrase = -1; this.ouverts = false; this.dans = null; this.tas = null; this.collections = null; this.groupesCode = null; this.litCopies = null; this.teintes = false; this.cibles = null; this.avantUnites = null;
     this.app.bulle?.eviter("probleme", null); this.app.bulle?.eviter("probleme-partage", null);
   }
   leave() { for (const q of [...this.gardes]) q(); this.gardes.clear(); this.tok = (this.tok ?? 0) + 1; this.leaveQuestion(); this.q = null; this.app.facts?.leave(); }

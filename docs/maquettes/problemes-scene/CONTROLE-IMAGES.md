@@ -34,7 +34,7 @@ Corrigé dans l'application pendant ce contrôle (les vraies tailles l'ont montr
 
 ## Les icônes des unités
 
-Branchées (décision 6 du 6 novembre : les icônes générées, de la même main que les objets) : l'image de ce qu'on compte remplace le dessin de l'atelier sur les étiquettes, sur la plaque, à la correction, au partage et au cran « plus facile ». 172 énoncés sur 200 l'ont (le champ `unite` de leur scène, écrit par `scenes.mjs --unites`) ; les 28 autres comptent deux sortes de choses à la fois (« 27 pommes de pin et 16 châtaignes », « 8 coquillages blancs et 5 roses » : une seule icône serait fausse pour l'une des deux) ou des choses sans image (billes, jetons, images, autocollants, personnes, points, pattes, euros, poissons) : ils gardent le dessin de l'atelier.
+Branchées (décision 6 du 6 novembre : les icônes générées, de la même main que les objets) : l'image de ce qu'on compte remplace le dessin de l'atelier sur les étiquettes, sur la plaque, à la correction, au partage et au cran « plus facile ». 175 énoncés sur 200 ont l'image de ce qu'on compte (le champ `unite` de leur scène, écrit par `scenes.mjs --unites`). Quand l'histoire compte plusieurs sortes de choses (« 27 pommes de pin et 16 châtaignes », « 8 coquillages blancs et 5 roses », « 7 vaches et 9 moutons »), chaque étiquette a l'image de la sienne (le champ `unites`, 22 énoncés ; d'abord le jeton, changé après la relecture indépendante, qui y voyait des pièces d'or). Les choses sans image (billes, jetons, images, autocollants, points, pattes, euros, poissons) gardent le dessin de l'atelier.
 
 ## Images à refaire
 

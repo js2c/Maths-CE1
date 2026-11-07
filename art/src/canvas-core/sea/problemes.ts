@@ -233,11 +233,12 @@ export const drawEtiquette = (g: Gfx, x: number, y: number, t: string, objet: Ob
   return w;
 };
 // la plaque de la réponse : plus grande, bordée d'or comme l'ardoise ; « ? » rouge tant que rien n'est tapé
-export const drawReponse = (g: Gfx, x: number, y: number, w: number, t: string, objet: Objet, o: { juste?: boolean } = {}) => {
+export const drawReponse = (g: Gfx, x: number, y: number, w: number, t: string, objet: Objet | null, o: { juste?: boolean } = {}) => {
   const h = 84, em = 50;
   g.group("plain", () => { const s = rrect(x, y, w, h, 22); fillShape(g, shift(s, 5, 7), SH, 0.32); cel(g, s, o.juste ? "#eaffd8" : NACRE, NACRE_S, 5); ink(g, rrect(x + 9, y + 9, w - 18, h - 18, 14), "#e0b43a", { w: 2.4, closed: true, shadow: 0, seed: 13850 }, 0.85); contour(g, s, 4, 13851);
     num(g, t, x + 26 + Math.max(textW(t, em), 30) / 2 + 6, y + h / 2 - em / 2, em, t === "?" ? RED : INK, 13860); });
-  drawObjet(g, objet, x + w - 48, y + h / 2, 1.05, 450);
+  // (sans objet : plusieurs sortes réunies, « Combien de fruits ? », la plaque sans image)
+  if (objet) drawObjet(g, objet, x + w - 48, y + h / 2, 1.05, 450);
 };
 // la plaque du calcul (la correction l'écrit : « 23 − 9 = 14 »), comme l'ardoise ; centrée sur cx
 export const drawCalcul = (g: Gfx, cx: number, y: number, t: string, em = 44) => g.group("plain", () => {

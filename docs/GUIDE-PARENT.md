@@ -689,7 +689,13 @@ Votre enfant résout maintenant des **problèmes** : de petites histoires de la 
    ```
    La première recadre les lieux (le haut retiré, jamais le sol) et détoure les objets ; elle dit ce qu'elle a fait, et signale un fichier dont le nom n'est pas reconnu. La seconde met à jour la liste des fichiers hors ligne.
 
+**Vos images (déposées le 7 novembre)** : les 21 lieux et les 137 objets et unités sont dans l'application ; le contrôle est dans `docs/maquettes/problemes-scene/CONTROLE-IMAGES.md`, les 15 écrans de la maquette repris avec elles dans `docs/maquettes/problemes-scene/comparaison/` (à gauche la maquette, à droite l'application). Les icônes de ce qu'on compte (les gourmandises, les crayons, les moutons…) remplacent maintenant les dessins sur les étiquettes et à la correction ; quand une histoire compte deux sortes de choses à la fois (des tulipes et des roses), le petit jeton reste.
+
+**Une image à refaire : la perle** (`u-perle`) : son prompt était faux (c'est notre erreur) ; il est corrigé dans `PROMPTS.md`. Déposez la nouvelle image sous le même nom, puis lancez les deux commandes ci-dessus. D'ici là, la perle garde son dessin.
+
 **Phrases à fabriquer** : 3 phrases nouvelles du partage (« Mets-en autant dans chaque pot. », « Mets-en autant sur chaque étagère. », « Donne-en autant à chaque enfant. »).
+
+**À essayer sur la tablette** : un problème de chaque sorte (les niveaux 2 à 9) ; au niveau 3, ranger les objets dans les pots ou les assiettes ; une erreur, pour voir la correction (les contenants ouverts, ce qu'on compte qui apparaît) ; le coquillage, pour voir les groupes comptés sur la scène.
 
 
 ## e) Ce qui reste approximatif ou à ajuster

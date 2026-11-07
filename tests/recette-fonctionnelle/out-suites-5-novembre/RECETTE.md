@@ -25,7 +25,7 @@ Le lot ne change aucune règle pédagogique (ni niveaux, ni questions, ni séque
 | `node tests/sim-seances.mjs` | passe ; mêmes résultats que la recette du lot précédent (récif de corail ouvert le 10/12/2026, 29 cartes sur 60, 5 étoiles arc-en-ciel et 3 de diamant en réserve à la fin) |
 | `node tests/recette-fonctionnelle/b-sequences.mjs --test` | passe |
 | Séance jouée à vitesse réelle (`recette.mjs --delai 4.5`) | passe : 17,4 min avec le problème du jour, aucune erreur, aucune phrase sans fichier ; les deux réserves à 0 visibles et inertes pendant toute la séance |
-| Attentes (`recette-durees.mjs`, avec et sans `--passer`) | passent ; mêmes attentes qu'avant le lot (la séance n'est pas changée) |
+| Attentes (`recette-durees.mjs`, avec et sans `--passer`) | passent ; aucune attente sans commande au-delà de 9 s (le lot ne change ni les aides ni les voiliers) |
 
 ## Phrases
 

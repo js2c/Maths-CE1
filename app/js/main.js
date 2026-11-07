@@ -46,7 +46,7 @@ import { ChallengeView } from "./modules/facts/challengeView.js";
 import { Rewards } from "./session/rewards.js";
 import { goodNight, reward, spriteBox, StarHud } from "./session/screens.js";
 import { challengeReady, doneToday, repriseDuJour, sameDay, Session } from "./session/session.js";
-import { Reef } from "./session/reef.js";
+import { RECIF_MASCOTTE, Reef } from "./session/reef.js";
 import { drawSurprise, playSurprise, previousSession } from "./session/surprise.js";
 import { Album } from "./session/album.js";
 import { Boutique } from "./session/boutique.js";
@@ -192,8 +192,8 @@ bulle.eviter("aides", () => (stage.root.classList.contains("paused") || !app.aid
 // (relecture du lot : pendant une question de dictée, la bulle n'écrit rien : elle écrirait en chiffres le nombre à écrire)
 const dicteeEnCours = () => !!(app.facts?.q?.dictee && !app.facts.locked);
 // (lot « Les voiliers » : `app.bulleTexte` récrit ce que la bulle écrit : le nombre du bateau, en chiffres et en lettres)
-voice.onTalk = (t, ms, o) => { ocean.mascotte.parole(t, ms, { consigne: o.instruction }); if (ocean.mascotteVisible && !dicteeEnCours()) bulle.dire(app.bulleTexte ? app.bulleTexte(t) : t, ms); else bulle.cacher(); };
-voice.onSilence = () => { ocean.mascotte.silence(); bulle.silence(); };
+voice.onTalk = (t, ms, o) => { if (app.reef?.open) ocean.mascotteVisible = true; ocean.mascotte.parole(t, ms, { consigne: o.instruction }); if (ocean.mascotteVisible && !app.reef?.open && !dicteeEnCours()) bulle.dire(app.bulleTexte ? app.bulleTexte(t) : t, ms); else bulle.cacher(); };
+voice.onSilence = () => { ocean.mascotte.silence(); bulle.silence(); if (app.reef?.open) ocean.mascotteVisible = false; };
 // les bruitages et la musique (lot 2) ; ?son=non : silence (mesures)
 const sound = new Sound({ content: sonContent, index: sonIndex, off: P.get("son") === "non" });
 sound.setPrefs(await store.setting("son"));
@@ -283,22 +283,36 @@ sprites.load("aides"); // lot 2 : les aides visuelles du module 2 (petite planch
 // refaite). La zone à toucher couvre toute la tête (MASCOTTE, 210 × 280 px). Là où la mascotte n'est pas affichée (le récif
 // vivant), le bouton « réécouter » revient, comme avant.
 // (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026) dans le récif, le bouton « réécouter » est une petite
-// tête de la mascotte (une image tirée de ses clips : art/mascotte/tete.py), en haut à gauche, là où se tient la mascotte ailleurs,
-// au-dessus des boutons du récif ; le coin en haut à droite est aux compteurs d'étoiles
-const TETE = { x: 26, y: 24, w: 118, h: 150 };
-const teteImg = new Image(); teteImg.src = "assets/tete/tete-mascotte.webp";
-const speaker = spriteBox(app, { ...TETE, cls: "hud speaker tete keep", label: "réécouter", paint: (ctx, px) => {
-  if (!teteImg.complete || !teteImg.naturalWidth) return;
-  const k = Math.min(TETE.w / teteImg.naturalWidth, TETE.h / teteImg.naturalHeight), w = teteImg.naturalWidth * k, h = teteImg.naturalHeight * k;
-  ctx.imageSmoothingQuality = "high"; ctx.drawImage(teteImg, ((TETE.w - w) / 2) * px, (TETE.h - h) * px, w * px, h * px);
-} });
-teteImg.decode().then(() => speaker.repaint(), () => {});
+// (lot « Nouveaux boutons, mascotte du récif et étoiles », demande du parent du 7 novembre 2026 : la petite tête fixe d'avant avait
+// l'air cassée) LA MASCOTTE DU RÉCIF, quand elle ne parle pas : une courte boucle d'images tirée de ses clips d'attente (un clignement,
+// la respiration : art/mascotte/boucle.py), à la place exacte de la mascotte réduite (session/reef.js, RECIF_MASCOTTE), jouée par le
+// navigateur (une animation de transformation, sans aucun calcul de la page). La vraie vidéo, plus coûteuse pour le récif (mesure du
+// lot : docs/JOURNAL-CONCEPTION.md), ne s'y montre que le temps d'une phrase (voice.onTalk). Toucher la boucle fait réécouter.
+const speaker = document.createElement("button");
+speaker.className = "hud speaker tete mascotte-boucle keep"; speaker.setAttribute("aria-label", "réécouter");
+Object.assign(speaker.style, { left: `${RECIF_MASCOTTE.x}px`, top: `${RECIF_MASCOTTE.y}px`, width: `${RECIF_MASCOTTE.w}px`, height: `${RECIF_MASCOTTE.h}px`, visibility: "hidden" });
+stage.ui.append(speaker);
+let boucle = null;
+fetch("assets/tete/mascotte-boucle.json").then((r) => r.json()).then((B) => {
+  const img = document.createElement("img"), w = RECIF_MASCOTTE.w, h = RECIF_MASCOTTE.h, rows = Math.ceil(B.images / B.cols);
+  img.src = "assets/tete/mascotte-boucle.webp"; img.alt = ""; img.draggable = false;
+  Object.assign(img.style, { width: `${B.cols * w}px`, height: `${rows * h}px` });
+  speaker.append(img);
+  // (chaque image tenue sa durée : des étapes franches, aucune interpolation)
+  let t = 0; const kf = B.suite.map(([k, ms]) => { const f = { offset: t / B.dureeMs, transform: `translate(${-(k % B.cols) * w}px, ${-Math.floor(k / B.cols) * h}px)`, easing: "steps(1, end)" }; t += ms; return f; });
+  kf.push({ ...kf[0], offset: 1 });
+  boucle = img.animate(kf, { duration: B.dureeMs, iterations: Infinity });
+  if (speaker.style.visibility !== "visible") boucle.pause();
+}).catch(() => {});
 const headTap = document.createElement("button");
 headTap.className = "mascotte-tap keep"; headTap.setAttribute("aria-label", "réécouter");
 Object.assign(headTap.style, { left: `${MASCOTTE.x}px`, top: `${MASCOTTE.y}px`, width: `${MASCOTTE.w}px`, height: `${MASCOTTE.h}px` });
 stage.ui.append(headTap);
+// (lot « Nouveaux boutons, mascotte du récif et étoiles ») la mascotte posée ailleurs (le récif : réduite, en haut à gauche) ; la zone à
+// toucher la suit ; null : sa place habituelle
+app.posteMascotte = (m) => { ocean.poste(m); const p = m ?? MASCOTTE; Object.assign(headTap.style, { left: `${p.x}px`, top: `${p.y}px`, width: `${p.w}px`, height: `${p.h}px` }); };
 let headShown = null;
-stage.ticks.add(() => { const v = ocean.mascotteVisible; if (v === headShown) return; headShown = v; headTap.style.visibility = v ? "visible" : "hidden"; speaker.style.visibility = v ? "hidden" : "visible"; });
+stage.ticks.add(() => { const v = ocean.mascotteVisible; if (v === headShown) return; headShown = v; headTap.style.visibility = v ? "visible" : "hidden"; speaker.style.visibility = v ? "hidden" : "visible"; if (v) boucle?.pause(); else boucle?.play(); });
 // (lot « Décisions sur les constats de l'agent », décision 3) LA VOIX DE L'ACCUEIL EN PAUSE : la consigne de la pause et ce que
 // sont les galets touchés sont dits dans une file à part (`voice.suspend`) ; la voix de la séance, en pause, est rendue intacte
 // dès que la mascotte se tait, ou aussitôt qu'on quitte l'accueil en pause (`finirParolePause` : continuer, une visite, la fin)

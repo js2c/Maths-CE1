@@ -1,0 +1,426 @@
+{
+ "date": "2026-11-07T16:20:04.897Z",
+ "profil": "s5e : Galaxy Tab S5e (référence), 1138 × 711 px CSS, densité 2.25, processeur ralenti × 4",
+ "version": "avec les niveaux d'allègement",
+ "niveaux": [
+  {
+   "nom": "complet",
+   "densite": 2,
+   "cadence": 0,
+   "bandes": 1
+  },
+  {
+   "nom": "ondulation des créatures ralentie",
+   "densite": 2,
+   "cadence": 15,
+   "bandes": 0.5
+  },
+  {
+   "nom": "définition un peu réduite",
+   "densite": 1.5,
+   "cadence": 15,
+   "bandes": 0.5
+  },
+  {
+   "nom": "définition réduite de moitié",
+   "densite": 1,
+   "cadence": 15,
+   "bandes": 0.5
+  }
+ ],
+ "zones": {
+  "0 · complet": {
+   "niveau": 0,
+   "densite": 2,
+   "canvas": "2276×1422",
+   "reduites": 4,
+   "lagon": {
+    "n": 28,
+    "moyenne": 180.4,
+    "p50": 183.3,
+    "p95": 233.4,
+    "plusDe33ms": 27,
+    "travail": 22.9,
+    "appels": 1005,
+    "mpxRelus": 11.32
+   },
+   "corail": {
+    "n": 30,
+    "moyenne": 168.3,
+    "p50": 166.7,
+    "p95": 183.4,
+    "plusDe33ms": 29,
+    "travail": 33.1,
+    "appels": 1335,
+    "mpxRelus": 11.82
+   },
+   "large": {
+    "n": 22,
+    "moyenne": 222.7,
+    "p50": 216.7,
+    "p95": 266.7,
+    "plusDe33ms": 22,
+    "travail": 11.6,
+    "appels": 579,
+    "mpxRelus": 9.58
+   },
+   "abysses": {
+    "n": 19,
+    "moyenne": 251.7,
+    "p50": 250,
+    "p95": 283.3,
+    "plusDe33ms": 19,
+    "travail": 11.1,
+    "appels": 646,
+    "mpxRelus": 5.75
+   }
+  },
+  "1 · ondulation des créatures ralentie": {
+   "niveau": 1,
+   "densite": 2,
+   "canvas": "2276×1422",
+   "reduites": 12,
+   "lagon": {
+    "n": 29,
+    "moyenne": 174.7,
+    "p50": 183.3,
+    "p95": 216.7,
+    "plusDe33ms": 29,
+    "travail": 19.8,
+    "appels": 797,
+    "mpxRelus": 13.03
+   },
+   "corail": {
+    "n": 27,
+    "moyenne": 186.4,
+    "p50": 183.3,
+    "p95": 233.3,
+    "plusDe33ms": 27,
+    "travail": 35.6,
+    "appels": 1153,
+    "mpxRelus": 14.1
+   },
+   "large": {
+    "n": 24,
+    "moyenne": 211.1,
+    "p50": 216.7,
+    "p95": 233.3,
+    "plusDe33ms": 24,
+    "travail": 11.3,
+    "appels": 330,
+    "mpxRelus": 13.04
+   },
+   "abysses": {
+    "n": 23,
+    "moyenne": 220.3,
+    "p50": 216.7,
+    "p95": 250,
+    "plusDe33ms": 23,
+    "travail": 10.9,
+    "appels": 292,
+    "mpxRelus": 9.68
+   }
+  },
+  "2 · définition un peu réduite": {
+   "niveau": 2,
+   "densite": 1.5,
+   "canvas": "1707×1067",
+   "reduites": 14,
+   "lagon": {
+    "n": 40,
+    "moyenne": 124.6,
+    "p50": 116.8,
+    "p95": 150.1,
+    "plusDe33ms": 40,
+    "travail": 17.1,
+    "appels": 739,
+    "mpxRelus": 11.87
+   },
+   "corail": {
+    "n": 39,
+    "moyenne": 126.9,
+    "p50": 133.3,
+    "p95": 149.9,
+    "plusDe33ms": 39,
+    "travail": 22.3,
+    "appels": 959,
+    "mpxRelus": 14.16
+   },
+   "large": {
+    "n": 33,
+    "moyenne": 150,
+    "p50": 150,
+    "p95": 166.7,
+    "plusDe33ms": 33,
+    "travail": 11.2,
+    "appels": 345,
+    "mpxRelus": 13.23
+   },
+   "abysses": {
+    "n": 25,
+    "moyenne": 198.7,
+    "p50": 200,
+    "p95": 250,
+    "plusDe33ms": 25,
+    "travail": 12,
+    "appels": 309,
+    "mpxRelus": 8.33
+   }
+  },
+  "3 · définition réduite de moitié": {
+   "niveau": 3,
+   "densite": 1,
+   "canvas": "1138×711",
+   "reduites": 21,
+   "lagon": {
+    "n": 52,
+    "moyenne": 97.4,
+    "p50": 100,
+    "p95": 116.7,
+    "plusDe33ms": 52,
+    "travail": 12.8,
+    "appels": 689,
+    "mpxRelus": 11.04
+   },
+   "corail": {
+    "n": 61,
+    "moyenne": 82.2,
+    "p50": 83.3,
+    "p95": 100,
+    "plusDe33ms": 61,
+    "travail": 12.3,
+    "appels": 627,
+    "mpxRelus": 10.69
+   },
+   "large": {
+    "n": 51,
+    "moyenne": 98,
+    "p50": 100,
+    "p95": 116.7,
+    "plusDe33ms": 51,
+    "travail": 10.1,
+    "appels": 334,
+    "mpxRelus": 11.27
+   },
+   "abysses": {
+    "n": 35,
+    "moyenne": 140,
+    "p50": 133.4,
+    "p95": 166.7,
+    "plusDe33ms": 35,
+    "travail": 8,
+    "appels": 275,
+    "mpxRelus": 5.48
+   }
+  }
+ },
+ "libre": {
+  "seconde_par_seconde": [
+   {
+    "s": 1,
+    "moyenne": 241.7,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 2,
+    "moyenne": 170,
+    "niveau": 0,
+    "densite": 2
+   },
+   {
+    "s": 3,
+    "moyenne": 147.6,
+    "niveau": 1,
+    "densite": 2
+   },
+   {
+    "s": 4,
+    "moyenne": 176.7,
+    "niveau": 2,
+    "densite": 1.5
+   },
+   {
+    "s": 5,
+    "moyenne": 120.8,
+    "niveau": 2,
+    "densite": 1.5
+   },
+   {
+    "s": 6,
+    "moyenne": 163.9,
+    "niveau": 3,
+    "densite": 1
+   },
+   {
+    "s": 7,
+    "moyenne": 71.4,
+    "niveau": 3,
+    "densite": 1
+   },
+   {
+    "s": 8,
+    "moyenne": 65.6,
+    "niveau": 3,
+    "densite": 1
+   },
+   {
+    "s": 9,
+    "moyenne": 125,
+    "niveau": 3,
+    "densite": 1
+   },
+   {
+    "s": 10,
+    "moyenne": 75.6,
+    "niveau": 3,
+    "densite": 1
+   },
+   {
+    "s": 11,
+    "moyenne": 72.6,
+    "niveau": 3,
+    "densite": 1
+   },
+   {
+    "s": 12,
+    "moyenne": 75.6,
+    "niveau": 3,
+    "densite": 1
+   },
+   {
+    "s": 13,
+    "moyenne": 74.4,
+    "niveau": 3,
+    "densite": 1
+   },
+   {
+    "s": 14,
+    "moyenne": 210,
+    "niveau": 3,
+    "densite": 1
+   },
+   {
+    "s": 15,
+    "moyenne": 93.3,
+    "niveau": 3,
+    "densite": 1
+   },
+   {
+    "s": 16,
+    "moyenne": 95,
+    "niveau": 3,
+    "densite": 1
+   },
+   {
+    "s": 17,
+    "moyenne": 98.3,
+    "niveau": 3,
+    "densite": 1
+   },
+   {
+    "s": 18,
+    "moyenne": 98.3,
+    "niveau": 3,
+    "densite": 1
+   },
+   {
+    "s": 19,
+    "moyenne": 169.4,
+    "niveau": 3,
+    "densite": 1
+   },
+   {
+    "s": 20,
+    "moyenne": 155.6,
+    "niveau": 3,
+    "densite": 1
+   },
+   {
+    "s": 21,
+    "moyenne": 155.5,
+    "niveau": 3,
+    "densite": 1
+   },
+   {
+    "s": 22,
+    "moyenne": 158.3,
+    "niveau": 3,
+    "densite": 1
+   },
+   {
+    "s": 23,
+    "moyenne": 152.8,
+    "niveau": 3,
+    "densite": 1
+   },
+   {
+    "s": 24,
+    "moyenne": 158.3,
+    "niveau": 3,
+    "densite": 1
+   }
+  ],
+  "journal": [
+   {
+    "message": "allégé : ondulation des créatures ralentie",
+    "densite": 2,
+    "intervalleMs": 241,
+    "niveau": 1,
+    "zone": "Le lagon"
+   },
+   {
+    "message": "allégé : définition un peu réduite",
+    "densite": 1.5,
+    "intervalleMs": 159,
+    "niveau": 2,
+    "zone": "Le lagon"
+   },
+   {
+    "message": "allégé : définition réduite de moitié",
+    "densite": 1,
+    "intervalleMs": 153.6,
+    "niveau": 3,
+    "zone": "Le lagon"
+   }
+  ]
+ },
+ "erreurs": [],
+ "memoire": {
+  "auDepart": {
+   "allegement": 0,
+   "medias": 3,
+   "mediasVideo": 2,
+   "canvas": 41,
+   "canvasMpx": 18.18,
+   "webgl": 2,
+   "images": 31,
+   "imagesMpx": 18.49,
+   "memoireMo": 8,
+   "minuteries": 24,
+   "intervalles": 6,
+   "ecouteurs": 56,
+   "elements": 98,
+   "lecteursVoix": 1,
+   "lectureRefusees": 0
+  },
+  "aLaFin": {
+   "allegement": 2,
+   "medias": 2,
+   "mediasVideo": 2,
+   "canvas": 32,
+   "canvasMpx": 17.97,
+   "webgl": 2,
+   "images": 31,
+   "imagesMpx": 18.49,
+   "memoireMo": 10,
+   "minuteries": 6,
+   "intervalles": 6,
+   "ecouteurs": 56,
+   "elements": 80,
+   "lecteursVoix": 0,
+   "lectureRefusees": 0
+  }
+ },
+ "echecs": []
+}

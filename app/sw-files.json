@@ -1,8 +1,8 @@
 {
- "version": "a2370ea1a7d9",
+ "version": "0da24c0f41e2",
  "octets": {
-  "1": 136494384,
-  "2": 151732164
+  "1": 136985307,
+  "2": 152223087
  },
  "files": [
   "./",
@@ -707,7 +707,8 @@
   "assets/son/musique-harpe-bbd3f03d.ogg",
   "assets/son/musique-marimba-027f8675.ogg",
   "assets/son/musique-profondeurs-dc1159ed.ogg",
-  "assets/tete/tete-mascotte.webp",
+  "assets/tete/mascotte-boucle.json",
+  "assets/tete/mascotte-boucle.webp",
   "assets/voiliers/boats-cata-map.webp",
   "assets/voiliers/boats-cata-tex-broken.webp",
   "assets/voiliers/boats-cata-tex-full.webp",

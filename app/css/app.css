@@ -168,7 +168,11 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
    voisin ; son dessin (et l'entourage de sélection) déborde, sans prendre le doigt */
 .rond { border-radius: 50%; overflow: visible; }
 .rond > canvas { pointer-events: none; }
-.galet, .choix-tuile, .lecons-tuile { overflow: visible; } /* (et l'entourage de sélection, posé autour de la tuile : engine/ui.js, entourage) */
+.galet, .choix-tuile, .lecons-tuile { overflow: visible; }
+/* (lot « Nouveaux boutons… ») la mascotte du récif au repos : une boucle d'images (main.js, `speaker`) ; la planche glisse sous une
+   fenêtre de la taille d'une image, déplacée par le compositeur (rien n'est redessiné) */
+.mascotte-boucle { overflow: hidden; }
+.mascotte-boucle > img { position: absolute; left: 0; top: 0; max-width: none; will-change: transform; pointer-events: none; user-select: none; -webkit-user-drag: none; } /* (et l'entourage de sélection, posé autour de la tuile : engine/ui.js, entourage) */
 /* (lot « Correctifs de la tablette ») la bulle d'une tuile, sur les écrans de choix pleins de tuiles : un peu plus petite */
 .bulle.tuile .bulle-texte, .bulle.large .bulle-texte { font-size: 26px; }
 .bulle.pop { animation: bulle-pop 0.38s ease-out; }

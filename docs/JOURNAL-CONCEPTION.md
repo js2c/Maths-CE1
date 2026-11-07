@@ -80,7 +80,7 @@ Mémoire de la conversation de conception (claude.ai, 26 au 30 septembre 2026, m
 - *Les collections du cran « plus facile » et les unités de la correction* : juste au-dessus ou au-dessous de leur étiquette (ou de la plaque), avant le sol au plus près. **Pourquoi** : posées au sol à l'écart, elles se trouvaient près d'une autre étiquette (les 14 sardines à côté du « 23 »).
 - *Les étiquettes des contenants ouverts* : à la correction et au niveau 3, une seule étiquette à côté de la rangée, posée après la plaque. **Pourquoi** : avec les vraies tailles, l'étiquette (66 px) couvrait la boîte (95 px) et cachait les billes ; c'est ce que faisait la maquette validée (les « 6 » des sachets s'effacent quand on les ouvre).
 - *Un objet plus petit que l'étiquette la reçoit au-dessus de lui* (la trousse) ; deux étiquettes ne couvrent pas plus des deux tiers d'un objet (le seau).
-- *La perle* : son prompt était une note de travail ; l'image a été retirée et le prompt corrigé ; la perle garde son dessin d'ici là.
+- *La perle* : son prompt était une note de travail ; l'image a été retirée et le prompt corrigé (une perle de bois rouge, jamais verte : elle est générée sur fond vert) ; la nouvelle image, donnée par le parent le 7 novembre, est déposée et contrôlée.
 ## Lot « Suites des correctifs du 5 novembre » (6 novembre 2026) : les réponses du parent aux questions ouvertes de la PR #75
 
 **Décisions du parent, le 6 novembre 2026.**

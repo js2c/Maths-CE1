@@ -1,8 +1,8 @@
 {
- "version": "0f44ff962dc9",
+ "version": "c81be35a5789",
  "octets": {
-  "1": 135397248,
-  "2": 150635058
+  "1": 135400936,
+  "2": 150638746
  },
  "files": [
   "./",
@@ -462,6 +462,8 @@
   "assets/problemes/objets/u-oeuf@2x.webp",
   "assets/problemes/objets/u-paquet@1x.webp",
   "assets/problemes/objets/u-paquet@2x.webp",
+  "assets/problemes/objets/u-perle@1x.webp",
+  "assets/problemes/objets/u-perle@2x.webp",
   "assets/problemes/objets/u-place@1x.webp",
   "assets/problemes/objets/u-place@2x.webp",
   "assets/problemes/objets/u-poire@1x.webp",

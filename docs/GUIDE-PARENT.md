@@ -691,7 +691,7 @@ Votre enfant résout maintenant des **problèmes** : de petites histoires de la 
 
 **Vos images (déposées le 7 novembre)** : les 21 lieux et les 137 objets et unités sont dans l'application ; le contrôle est dans `docs/maquettes/problemes-scene/CONTROLE-IMAGES.md`, les 15 écrans de la maquette repris avec elles dans `docs/maquettes/problemes-scene/comparaison/` (à gauche la maquette, à droite l'application). Les icônes de ce qu'on compte (les gourmandises, les crayons, les moutons…) remplacent maintenant les dessins sur les étiquettes et à la correction ; quand une histoire compte deux sortes de choses à la fois (des tulipes et des roses, des vaches et des moutons), chaque nombre a l'image de la sienne.
 
-**Une image à refaire : la perle** (`u-perle`) : son prompt était faux (c'est notre erreur) ; il est corrigé dans `PROMPTS.md`. Déposez la nouvelle image sous le même nom, puis lancez les deux commandes ci-dessus. D'ici là, la perle garde son dessin.
+**La perle** (`u-perle`) : la nouvelle image (rouge, générée avec le prompt corrigé) est dans l'application depuis le 7 novembre ; il n'y a plus d'image à refaire.
 
 **Vos décisions du 7 novembre** : la plaque de la réponse montre l'image de ce qu'on cherche (« Combien d'assiettes ? » : l'assiette ; rien quand aucune image ne le montre) ; l'écart d'une comparaison (« 5 de plus ») est en pointillés, sans image, dès l'histoire, comme dans le schéma.
 

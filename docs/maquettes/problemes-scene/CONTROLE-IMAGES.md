@@ -2,7 +2,7 @@
 
 Ce qui a été déposé dans `main` : **21 lieux** (`art/problemes/sources/`, JPEG de 2048 px de large, générés en 16:9, le cinquième du haut sans détail) et **137 objets et unités** (`art/problemes/mise-en-scene/sources/`, JPEG de 1280 px au plus). L'étal reprend l'image de l'étal du pêcheur.
 
-`node art/tools/export-problemes.mjs` : **aucun fichier non reconnu, aucune image manquante** (les 137 noms de `PROMPTS.md` sont tous là ; chaque lieu a son image). Produit : 22 lieux et 136 objets (la perle retirée, ci-dessous) dans `app/assets/problemes/`.
+`node art/tools/export-problemes.mjs` : **aucun fichier non reconnu, aucune image manquante** (les 137 noms de `PROMPTS.md` sont tous là ; chaque lieu a son image). Produit : 22 lieux et 136 objets (la perle retirée, ci-dessous), puis 137 avec la nouvelle perle, dans `app/assets/problemes/`.
 
 ## Les objets : le détourage
 
@@ -38,8 +38,8 @@ Branchées (décision 6 du 6 novembre : les icônes générées, de la même mai
 
 ## Images à refaire
 
-| Image | Raison |
-| --- | --- |
-| `u-perle` | **Le prompt était faux** (une note de travail, « Dessinée par le code (perle). », à la place du sujet) : l'image montre une boule couverte de pseudo-écriture. Le prompt est corrigé dans `PROMPTS.md` (une perle de bois peinte, le trou visible) ; l'image a été retirée (elle reste dans l'historique de git). En attendant, la perle garde le dessin de l'atelier. |
+Aucune.
 
-Aucune autre. Facultatif, si le parent le souhaite : le supermarché avec des rayons plus discrets dans la moitié gauche (la bulle les couvre déjà).
+- `u-perle` : **le prompt était faux** (une note de travail, « Dessinée par le code (perle). », à la place du sujet) ; l'image montrait une boule couverte de pseudo-écriture. Le prompt a été corrigé dans `PROMPTS.md` (une perle de bois rouge, jamais verte, le trou visible). **La nouvelle image, donnée par le parent le 7 novembre, est déposée** (`sources/u-perle.jpg`) : détourage propre (aucun pixel vert, ni liseré ni trou, regardée sur fond sombre, clair et damier), lisible sur les étiquettes et la plaque (`tra-gf-09`, `grp-12`). 137 objets dans l'application.
+
+Facultatif, si le parent le souhaite : le supermarché avec des rayons plus discrets dans la moitié gauche (la bulle les couvre déjà).

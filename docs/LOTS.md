@@ -70,7 +70,7 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (réponses du parent du 6 novembre 2026 aux questions ouvertes de la PR #75) : le lot court « Suites des correctifs du 5 novembre »** (fiche 23) : la réserve arc-en-ciel montrée à 0, le livre de cartes de l'album et sa sortie par le récif ; la musique d'ambiance et la phrase du diamant à 0 restent. **État : fait** (PR #77 ; aucune phrase nouvelle).
 
-**Puis (constat du parent du 5 novembre 2026, maquette validée le 6 novembre) : le lot « Mise en scène des problèmes »** (fiche 24) : la scène des problèmes agrandie et remplie par les objets de l'histoire, posés en nombre exact, les unités cachées jusqu'à la correction ; l'outil qui recadre les lieux et détoure les objets générés par le parent. **État : fait** (PR #76 ; 3 phrases à fabriquer ; la perle à refaire, son prompt corrigé).
+**Puis (constat du parent du 5 novembre 2026, maquette validée le 6 novembre) : le lot « Mise en scène des problèmes »** (fiche 24) : la scène des problèmes agrandie et remplie par les objets de l'histoire, posés en nombre exact, les unités cachées jusqu'à la correction ; l'outil qui recadre les lieux et détoure les objets générés par le parent. **État : fait** (PR #76 ; 3 phrases à fabriquer).
 
 
 **Pourquoi cet ordre.**

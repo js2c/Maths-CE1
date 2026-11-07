@@ -33,7 +33,7 @@ Faite sur la branche `claude/sweet-davinci-vwkk2u` (demande de fusion #76), mise
 
 ## Le contrôle des images du parent
 
-`docs/maquettes/problemes-scene/CONTROLE-IMAGES.md` : aucun fichier non reconnu, aucune image manquante ; détourage propre (ni vert, ni magenta, ni liseré, ni trou, rien d'effacé), le sol entier de chaque lieu, l'échelle cohérente. **Une image à refaire : `u-perle`** (son prompt était faux, une note de travail ; corrigé dans `PROMPTS.md`). Les 15 écrans de la maquette repris dans l'application avec les vraies images : `docs/maquettes/problemes-scene/vraies/`, et à côté des captures provisoires : `comparaison/`.
+`docs/maquettes/problemes-scene/CONTROLE-IMAGES.md` : aucun fichier non reconnu, aucune image manquante ; détourage propre (ni vert, ni magenta, ni liseré, ni trou, rien d'effacé), le sol entier de chaque lieu, l'échelle cohérente. **`u-perle`**, dont le prompt était faux, a été refaite par le parent avec le prompt corrigé, puis déposée et contrôlée : plus aucune image à refaire. Les 15 écrans de la maquette repris dans l'application avec les vraies images : `docs/maquettes/problemes-scene/vraies/`, et à côté des captures provisoires : `comparaison/`.
 
 ## Relecture indépendante
 
@@ -41,5 +41,5 @@ Faite sur la branche `claude/sweet-davinci-vwkk2u` (demande de fusion #76), mise
 
 ## Ce qui reste au parent
 
-- Fabriquer les 3 phrases (`PHRASES.md`) et refaire l'image de la perle.
+- Fabriquer les 3 phrases (`PHRASES.md`). (La perle refaite par le parent est déposée et contrôlée : plus aucune image à refaire.)
 - Essayer sur la tablette : un problème de chaque sorte (niveaux 2 à 9), le partage au niveau 3, une erreur (la correction), le coquillage (les groupes comptés sur la scène), une histoire qui compte deux sortes de choses (« 8 coquillages blancs et 5 roses », niveau 2).

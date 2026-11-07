@@ -11,7 +11,8 @@
 //  6. les crans : « plus facile » (les objets dessinés, l'histoire redite, jamais de schéma d'emblée), « plus dur » et « très dur »
 //     (sans coquillage) ; le coquillage au cran conseillé ;
 //  7. la pause et la reprise (la maison pendant un problème, puis « continuer » : le problème reposé) ;
-//  8. la leçon L19 depuis le menu des leçons (sa rangée, jusqu'au bout), « À toi ! » ;
+//  8. la leçon L19 depuis le menu des leçons (sa rangée, jusqu'au bout), « À toi ! » ; quittée par la maison pendant que sa scène
+//     charge ses images : rien ne reste sur l'accueil ;
 //  9. l'espace parent : le bloc du module 7, les réglages (niveau de départ, problème du jour) ;
 // 10. (lot « Mise en scène des problèmes ») la scène avec ses objets, servis par les images d'essai (tests/e2e/fixtures/problemes-objets,
 //     les dessins provisoires de la maquette : l'application n'a pas encore d'images d'objets) : les gourmandises (3 sachets fermés, la
@@ -247,6 +248,19 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     await tap(page, ".lecons-atoi"); await page.waitForSelector(".cran", { timeout: 20000 }).catch(() => {}); await tap(page, ".cran-ok").catch(() => {});
     await q7(page, 60000).catch(() => {}); check(await page.evaluate(() => window.__app.facts?.q?.module === 7 && window.__app.facts.q.niveau === 2), `${T} · « À toi ! » : les problèmes, niveau 2`);
     await fermer(o, "la leçon L19");
+  }
+  // 8 bis. (non-régression : l'enfant imprévisible des tests de GitHub, 7 novembre 2026) la leçon L19 quittée par la maison pendant
+  // que sa scène charge ses images (retardées ici de 3 s) : rien des problèmes ne reste sur l'accueil
+  if (big) {
+    const o = await open(), { page } = o;
+    await page.route(/assets\/problemes\/.*\.webp/, async (r) => { await new Promise((ok) => setTimeout(ok, 3000)); r.continue().catch(() => {}); });
+    await tap(page, ".leconskey"); await page.waitForSelector(".lecons-tuile"); await page.waitForTimeout(700);
+    await tap(page, '.lecons-tuile[data-key="L19"]', 450); await tap(page, '.lecons-tuile[data-key="L19"]');
+    await page.waitForFunction(() => window.__app.prob?.q, null, { timeout: 30000 }).catch(() => {}); await page.waitForTimeout(400);
+    await tap(page, ".homekey"); await page.waitForTimeout(4500);
+    const R = await page.evaluate(() => ({ cadre: document.querySelectorAll(".probleme-cadre, .probleme-scene, .probleme-donnees").length, accueil: !!document.querySelector(".leconskey") }));
+    check(R.accueil && R.cadre === 0, `${T} · la leçon L19 quittée pendant le chargement de sa scène : l'accueil, sans rien des problèmes (${JSON.stringify(R)})`);
+    await fermer(o, "la leçon L19 quittée pendant le chargement");
   }
 
 

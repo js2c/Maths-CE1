@@ -66,7 +66,9 @@ export class LessonProblemesPlayer {
     if (name === "trouver") { s.montre = true; s.juste = true; s.repaint(); s.paintAide(this.q, { montre: true }); this.app.sound?.play("bonne"); return wait(400); }
     if (name === "attendre") return wait(v);
   }
-  clear() { this.s?.effacerAide(); this.s?.leaveQuestion(); if (this.s) { this.s.q = null; this.s.montre = false; this.s.juste = false; } }
+  // (la scène qui charge encore ses images ne se pose plus après : le jeton de l'écran change ; sans cela, la leçon quittée par la
+  // maison pendant le chargement laissait le cadre des problèmes sur l'accueil : l'enfant imprévisible des tests de GitHub, 7 novembre 2026)
+  clear() { this.s?.effacerAide(); if (this.s) this.s.tok = (this.s.tok ?? 0) + 1; this.s?.leaveQuestion(); if (this.s) { this.s.q = null; this.s.montre = false; this.s.juste = false; } }
   abandon() {
     this.quitte = true;
     if (!this.keys) return;

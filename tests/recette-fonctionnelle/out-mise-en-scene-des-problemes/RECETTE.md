@@ -22,6 +22,8 @@ Faite sur la branche `claude/sweet-davinci-vwkk2u` (demande de fusion #76), mise
 - `multiplication` : une question 1 × 2 tirée au hasard ; l'aide de la coquille n'y dit pas de total, et le parcours l'attendait. Il ne l'attend plus que pour plus d'un groupe ; la relance a tiré 1 × 2 et passé.
 - `voiliers` (et `choix`, `etal`, `lecons-menu`, `lecons-monnaie`, `maison-correction`) : lancé à 0 h 05, la séance préparée par le parent de test datait de la veille (10 minutes avant) ; l'application, à juste titre, ne la reprenait pas. La séance préparée commence désormais le jour même.
 
+**Un défaut de l'application trouvé par l'enfant imprévisible des tests de GitHub** (7 novembre, graine 1 ; non reproduit d'abord ici en trois essais, ni avec les images ralenties) : « à l'accueil : hud probleme-cadre ». **Cause** : la leçon L19 pose sa scène, qui charge ses images ; quittée par la maison pendant ce chargement, la leçon nettoyait l'écran sans changer son jeton : le chargement fini posait le cadre des problèmes sur l'accueil. Reproduit 3 fois sur 3 par un essai ciblé (les images retardées de 3 s, la maison touchée 0,2, 0,6 et 1,2 s après le début) ; **corrigé** (`lessons/problemes.js`, `clear` : le jeton de l'écran change), puis 0 sur 3 ; gardé par le parcours `problemes.mjs`, partie « 8 bis ».
+
 ## Fonctionnelle
 
 | Contrôle | Résultat |

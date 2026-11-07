@@ -6,7 +6,7 @@
 //  - un toucher bref sur une créature ouvre sa carte en grand (cards.js, CardView : la voix dit son nom et son anecdote
 //    une fois) ; doigt posé : son halo ; doigt posé puis glissé : on la déplace (oublié à la visite suivante) ; ailleurs,
 //    glisser fait défiler la mer (tout cela est le code de la maquette) ;
-//  - on entre toujours par le lagon ; la maison ramène à l'accueil ; le livre ouvre l'album ; pas de mascotte par-dessus la mer
+//  - on entre toujours par le lagon ; la maison ramène à l'accueil ; le livre de cartes ouvre l'album ; pas de mascotte par-dessus la mer
 //    (comme dans la maquette) : « réécouter » est sa petite tête ; les trois compteurs d'étoiles en haut à droite (lot « Correctifs
 //    du 5 novembre ») ;
 //  - pendant la visite, le lagon de l'application (le fond, lagon.js) se met en pause sous le récif ; les images du récif
@@ -164,8 +164,9 @@ export class Reef {
       },
     });
     const home = spriteBox(app, { x: 90 - 70, y: 712 - 70, w: 140, h: 140, cls: "bubble homekey", label: "revenir", paint: (ctx) => sprites.draw(ctx, "maison", 0, 70, 70) });
-    // l'album, par-dessus le récif (docs/SPEC.md : « depuis l'accueil et depuis le récif »)
-    const book = spriteBox(app, { x: 90 - 70, y: 560 - 70, w: 140, h: 140, cls: "bubble albumkey", label: "l'album", paint: (ctx) => { const q = sprites.frame("album", 0), k = 140 / 180, px = sprites.px; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 70 * px + q.dx * k, 70 * px + q.dy * k, q.w * k, q.h * k); } });
+    // l'album, par-dessus le récif (seulement depuis le récif : lot « Correctifs du 5 novembre ») ; son bouton, un livre de cartes,
+    // à la taille de la maison (lot « Suites des correctifs du 5 novembre », décision du parent du 6 novembre 2026)
+    const book = spriteBox(app, { x: 90 - 70, y: 560 - 70, w: 140, h: 140, cls: "bubble albumkey", label: "l'album", paint: (ctx) => { const q = sprites.frame("album", 0), k = (140 / 180) * 1.1, px = sprites.px; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 70 * px + q.dx * k, 70 * px + q.dy * k, q.w * k, q.h * k); } });
     onBrief(app, book, async () => { pop(book); await this.view.close(); if (app.album && !app.album.open) { await app.album.visit(); voice.say(text.data.recifBienvenue, { instruction: true }); } }, "album");
     this.els.push(home, book);
     // (lot « La boutique du récif ») la boutique ; (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026) aussi

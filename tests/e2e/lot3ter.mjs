@@ -308,8 +308,9 @@ if (part("appui")) {
     await page.waitForTimeout(600);
     await probe(page, "carte en grand", ".card", "retourner la carte", { shot: true, brief: async (p) => (await p.locator(".card.flipped").count()) > 0 });
     await probe(page, "carte en grand", ".bubble.check", "c'est bon", { brief: async (p) => { await p.waitForTimeout(500); return !(await p.locator(".card").count()); } });
-    await probe(page, "album", ".homekey:not(.session-home)", "maison", { brief: async (p) => { await p.waitForTimeout(800); return !(await p.evaluate(() => window.__app.album.open)); } });
-    // (lot « Correctifs du 5 novembre » : l'album ouvert depuis le récif ; sa maison y ramène)
+    await probe(page, "album", ".album-retour", "le récif", { brief: async (p) => { await p.waitForTimeout(800); return !(await p.evaluate(() => window.__app.album.open)); } });
+    // (lot « Correctifs du 5 novembre » : l'album ouvert depuis le récif ; sa sortie y ramène, un dessin du récif depuis le lot « Suites
+    // des correctifs du 5 novembre »)
     await page.waitForFunction(() => window.__app.reef?.open, null, { timeout: 15000 }); await page.waitForTimeout(1500);
     await probe(page, "récif", ".albumkey", "l'album", { shot: true });
     if (await page.locator(".reef-pearl").count()) await probe(page, "récif", ".reef-pearl", "perle d'une zone");

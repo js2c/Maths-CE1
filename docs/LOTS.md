@@ -68,6 +68,8 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (constats et décisions du parent du 5 novembre 2026) : le lot court « Correctifs du 5 novembre »** (fiche 22) : la musique hors séance, la boutique pendant une pause, la mascotte qui redit la consigne de l'écran visible, la prononciation de « plus », les trois compteurs sur une ligne, les compteurs et la petite tête de la mascotte dans le récif, l'accueil sans galet de l'album. **État : fait** (PR #75 ; 4 phrases à fabriquer, 2 qui ne servent plus).
 
+**Puis (réponses du parent du 6 novembre 2026 aux questions ouvertes de la PR #75) : le lot court « Suites des correctifs du 5 novembre »** (fiche 23) : la réserve arc-en-ciel montrée à 0, le livre de cartes de l'album et sa sortie par le récif ; la musique d'ambiance et la phrase du diamant à 0 restent. **État : fait** (PR #77 ; aucune phrase nouvelle).
+
 **Pourquoi cet ordre.**
 
 - Les correctifs de la confrontation avant les leçons et les sommes : ces lots s'appuient sur les règles du module 2 telles qu'elles seront écrites.
@@ -1374,3 +1376,18 @@ La même erreur deux fois dans une séance relance la leçon (une fois), comme p
 **Documents** : `docs/SPEC.md`, le guide du parent, le journal de conception ; les phrases à fabriquer dans la demande de fusion.
 
 **Recette du lot** : la méthode commune, sur le banc Android ; un parcours `tests/e2e/correctifs-5-novembre.mjs` (la musique et ses enchaînements, la boutique en pause et la reprise, les compteurs, le récif, l'accueil ; 1280 × 800, 1920 × 1200, `s5e`, `petit-smartphone`) et un parcours `tests/e2e/consignes-mascotte.mjs` (la mascotte touchée à chaque phase).
+
+### 23. Lot « Suites des correctifs du 5 novembre » (lot court)
+
+**Origine** : les réponses du parent, le 6 novembre 2026, aux questions ouvertes de la PR #75 (lot « Correctifs du 5 novembre »).
+
+**D'un seul tenant**, avec la recette sur le banc Android (profil `s5e`, et `petit-smartphone` pour les écrans touchés).
+
+1. **La réserve arc-en-ciel est montrée à 0, comme le diamant** : les trois compteurs sont toujours visibles (accueil, récif, boutique, séance). Touchée à 0, la mascotte dit quelque chose de juste, sans « Tu as 0 étoiles ».
+2. **L'album** : son bouton, dans le récif, devient un dessin de livre de cartes (dessiné dans l'atelier, dans le style des autres boutons) ; la sortie de l'album, qui ramène au récif, devient un dessin du récif au lieu de la maison.
+3. **La musique d'ambiance reste « Les profondeurs »** (rien à changer ; la spécification le dit comme une décision du parent).
+4. **La phrase du diamant à 0 reste « Viens jouer souvent : tu en gagneras une ! »** : pas de règle exacte pour l'enfant (rien à changer).
+
+**Documents** : `docs/SPEC.md`, le guide du parent, le journal de conception ; les phrases à fabriquer dans la demande de fusion (normalement aucune).
+
+**Recette du lot** : la méthode commune, sur le banc Android ; un parcours `tests/e2e/suites-5-novembre.mjs` (les trois compteurs à 0 à l'accueil, dans le récif, la boutique et la séance ; la réserve arc-en-ciel à 0 touchée ; le livre de cartes ; la sortie de l'album par le récif ; 1280 × 800, 1920 × 1200, `s5e`, `petit-smartphone`).

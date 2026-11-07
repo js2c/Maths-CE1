@@ -16,7 +16,8 @@
 // 10. (lot « Mise en scène des problèmes ») la scène avec ses objets, servis par les images d'essai (tests/e2e/fixtures/problemes-objets,
 //     les dessins provisoires de la maquette : l'application n'a pas encore d'images d'objets) : les gourmandises (3 sachets fermés, la
 //     plaque sur la gamelle, l'aide comptée sur les sachets, la correction : les sachets ouverts, les gourmandises dans la gamelle), le
-//     partage dans les pots de la scène, la comparaison et ses étiquettes aux couleurs du schéma, l'étal ; aussi en 640 × 360 (le petit
+//     partage dans les pots de la scène, la comparaison et ses étiquettes aux couleurs du schéma (l'écart en pointillés, sans image), la
+//     plaque qui montre ce qu'on cherche (l'assiette ; l'écart cherché, en pointillés), l'étal ; aussi en 640 × 360 (le petit
 //     smartphone) ; jamais rien dans la bande de la bulle.
 // Contrôles : aucune erreur de page, la bulle ne couvre jamais ce qu'on touche ni les étiquettes, l'aide ou la plaque de la réponse.
 //   node tests/e2e/problemes.mjs [--out dossier] [--seul 1280|1920]
@@ -295,10 +296,25 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
       const o = await open("&choix=7:5&cran=conseille&sans=echauffement&sansLecon&questions=2&enonce=cmp-g-04", { objets: true, taille }), { page } = o;
       await tap(page, ".play"); await q7(page); await finPhrases(page); await page.waitForTimeout(400);
       await shot(page, "35-scene-comparaison");
+      // (décision du parent du 7 novembre 2026) l'écart, « 5 de plus » : sans image, en pointillés ; la plaque, l'image de ce qu'on cherche
+      const E = await page.evaluate(() => ({ ecart: window.__app.facts.q.etiquettes[1].objet, plaque: window.__app.prob.plaqueObjet, pointilles: window.__app.prob.plaqueEcart }));
+      check(E.ecart === null && E.plaque && !E.pointilles, `${T} · la comparaison : l'écart sans image, la plaque avec celle des crayons (${JSON.stringify(E)})`);
       await typeIn(page, 3); await page.waitForFunction(() => window.__app.prob.teintes, null, { timeout: 30000 }).catch(() => {}); await page.waitForTimeout(500);
       check(await page.evaluate(() => window.__app.prob.teintes), `${T} · la comparaison : les étiquettes de la scène aux couleurs du schéma`);
       await shot(page, "36-scene-comparaison-aide");
       await fermer(o, "la comparaison dans la scène");
+    }
+    // c bis. (décision du parent du 7 novembre 2026) la plaque montre l'image de ce qu'on cherche : « Combien d'assiettes ? »,
+    // l'assiette ; l'écart cherché d'une comparaison : la plaque en pointillés, sans image
+    if (!nom) {
+      for (const [id, niv, attendu] of [["par-n-01", 3, { plaque: "@contenant", pointilles: false }], ["cmp-e-02", 5, { plaque: null, pointilles: true }]]) {
+        const o = await open(`&choix=7:${niv}&cran=conseille&sans=echauffement&sansLecon&questions=2&enonce=${id}`, { objets: true, taille }), { page } = o;
+        await tap(page, ".play"); await q7(page); await page.waitForTimeout(400);
+        const P = await page.evaluate(() => ({ plaque: window.__app.prob.plaqueObjet, pointilles: !!window.__app.prob.plaqueEcart }));
+        check(JSON.stringify(P) === JSON.stringify(attendu), `${T} · ${id} : la plaque ${attendu.pointilles ? "de l'écart en pointillés, sans image" : "avec l'image de l'assiette"} (${JSON.stringify(P)})`);
+        await shot(page, `38-plaque-${id}`);
+        await fermer(o, `la plaque de ${id}`);
+      }
     }
     // d. l'étal : le pêcheur devant son étal, « 23 » sur la glace
     {

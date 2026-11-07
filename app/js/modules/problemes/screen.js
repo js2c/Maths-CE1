@@ -113,12 +113,10 @@ export class ProblemesScreen {
     const q = this.q, L = this.Le; if (!q || !L) return;
     // les accolades des groupes, sous le nombre de groupes
     for (const t of L.etiquettes) if (t.accolade && this.vues.has(t.i)) { const a = t.accolade, m = (a.x0 + a.x1) / 2; ctx.save(); ctx.setTransform(this.px, 0, 0, this.px, -ZONE_CADRE.x * this.px, -ZONE_CADRE.y * this.px); ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.lineWidth = 5; ctx.strokeStyle = "#fffaf0"; ctx.beginPath(); ctx.moveTo(a.x0, a.y + 10); ctx.quadraticCurveTo(a.x0, a.y, a.x0 + 14, a.y); ctx.lineTo(m - 12, a.y); ctx.quadraticCurveTo(m, a.y, m, t.y + t.h); ctx.quadraticCurveTo(m, a.y, m + 12, a.y); ctx.lineTo(a.x1 - 14, a.y); ctx.quadraticCurveTo(a.x1, a.y, a.x1, a.y + 10); ctx.stroke(); ctx.restore(); }
-    for (const t of L.etiquettes) if (this.vues.has(t.i)) { const it = q.etiquettes[t.i]; D.drawEtiquette(g, t.x, t.y, String(it.n), it.objet, { lit: this.lit === t.i, seed: t.i + 1, em: 38, teinte: this.teinteDe(q, t.i) }); }
+    for (const t of L.etiquettes) if (this.vues.has(t.i)) { const it = q.etiquettes[t.i]; D.drawEtiquette(g, t.x, t.y, String(it.n), it.objet, { lit: this.lit === t.i, seed: t.i + 1, em: 38, teinte: this.teinteDe(q, t.i), ecart: (q.e.scene?.entre ?? []).includes(t.i) }); }
     const t = (q.lecon ? "" : this.fs.typed) || (this.montre ? String(q.e.reponse) : "?");
-    // (sans image : plusieurs sortes réunies, « Combien d'animaux ? » ; le partage en nombre de parts, « Combien d'assiettes ? », où
-    // l'image de ce qu'on partage dirait le contraire de la question ; relecture indépendante du 7 novembre 2026, constat 3)
-    const sansImage = (q.e.scene?.unites && !this.unite) || (q.e.structure === "partage" && q.e.inconnue === "parts");
-    D.drawReponse(g, L.plaque.x, L.plaque.y, PLAQUE.w, t, sansImage ? null : q.e.objet, { juste: !!this.juste });
+    // (l'image de ce qu'on cherche, ou aucune : `plaqueObjet`, preparer)
+    D.drawReponse(g, L.plaque.x, L.plaque.y, PLAQUE.w, t, this.plaqueObjet === undefined ? q.e.objet : this.plaqueObjet, { juste: !!this.juste, ecart: !!this.plaqueEcart });
   }
   repaint() { if (this.q && this.L) this.calque("donnees", ZONE_CADRE, (g, ctx) => this.paintDonnees(g, ctx), "probleme-donnees"); }
   // ---------------------------------------------------------------- les objets de la scène
@@ -197,6 +195,9 @@ export class ProblemesScreen {
     // composition, qui mesure les étiquettes)
     const U = q.e.scene?.unites ?? [];
     q.etiquettes.forEach((t, i) => { if (t.objet && U[i]) t.objet = I.objets[U[i]] ? U[i] : null; });
+    // (l'écart d'une comparaison, « 5 de plus » : sans image, bord en pointillés, comme dans le schéma ; décision du parent du
+    // 7 novembre 2026)
+    for (const i of q.e.scene?.entre ?? []) if (Number.isInteger(i) && q.etiquettes[i]) q.etiquettes[i].objet = null;
     const L = this.composer(q, I.objets), Lo = this.composer(q, I.objets, true);
     // (l'unité, ce qu'on compte : son image remplace le dessin de l'objet de l'atelier, sur les étiquettes, à la correction, au partage ;
     // en @2x, petite et vue de près sur les étiquettes)
@@ -209,6 +210,19 @@ export class ProblemesScreen {
     cles.forEach((k, j) => { if (imK[j]) M[k] = vu(imK[j]); });
     // (une image annoncée mais illisible : le dessin de l'atelier, à la même largeur)
     q.etiquettes.forEach((t) => { if (cles.includes(t.objet) && !M[t.objet]) t.objet = q.e.objet; });
+    // LA PLAQUE MONTRE L'IMAGE DE CE QU'ON CHERCHE, QUAND ELLE EXISTE (décision du parent du 7 novembre 2026) : au partage en nombre
+    // de parts, le contenant de la scène (« Combien d'assiettes ? » : l'assiette) ; sinon l'unité de la réponse, ou le dessin de
+    // l'atelier quand c'est bien lui (les billes, les jetons) ; rien quand aucune image ne le montre (« Combien d'animaux ? »,
+    // « Combien d'autocollants ? », que le jeton remplaçait) ; l'écart d'une comparaison : sans image, en pointillés
+    const S = q.e.scene ?? {}, kr = (S.objets ?? []).findIndex((x) => x.rep);
+    this.plaqueEcart = q.e.structure === "comparaison" && (S.entre ?? []).includes("rep");
+    let po = q.e.objet;
+    if (this.plaqueEcart) po = null;
+    else if (q.e.structure === "partage" && q.e.inconnue === "parts") {
+      const c = L.pieces.find((p) => p.k === kr && !p.manque)?.copies[0]?.cle, im = c && imgs[c];
+      if (im) { M["@contenant"] = vu(im); po = "@contenant"; } else po = null;
+    } else if (!imU && (S.unites || (q.e.objet === "jeton" && !/jeton/i.test(q.e.unite ?? "")))) po = null;
+    this.plaqueObjet = po;
     D.imagesObjets(Object.keys(M).length ? M : null); this.unite = imU ? u : null;
     // (une image annoncée mais illisible : l'objet est traité comme sans image, son étiquette seule)
     const vues = Object.fromEntries(Object.entries(I.objets).filter(([c]) => imgs[c] || ![...L.pieces, ...Lo.pieces].some((p) => p.copies.some((x) => x.cle === c))));
@@ -525,7 +539,7 @@ export class ProblemesScreen {
   // ---------------------------------------------------------------- la sortie
   leaveQuestion() {
     for (const el of this.els) el.remove(); this.els = []; this.calques?.clear(); this.aideVisible = false; this.boutons = []; this.boutonPlaque = null; this.occupe = false; this.bonds = 0;
-    this.L = this.Lo = this.imgs = null; D.imagesObjets(null); this.unite = null; this.tasObjet = null; this.phrase = -1; this.ouverts = false; this.dans = null; this.tas = null; this.collections = null; this.groupesCode = null; this.litCopies = null; this.teintes = false; this.cibles = null; this.avantUnites = null;
+    this.L = this.Lo = this.imgs = null; D.imagesObjets(null); this.unite = null; this.tasObjet = null; this.plaqueObjet = undefined; this.plaqueEcart = false; this.phrase = -1; this.ouverts = false; this.dans = null; this.tas = null; this.collections = null; this.groupesCode = null; this.litCopies = null; this.teintes = false; this.cibles = null; this.avantUnites = null;
     this.app.bulle?.eviter("probleme", null); this.app.bulle?.eviter("probleme-partage", null);
   }
   leave() { for (const q of [...this.gardes]) q(); this.gardes.clear(); this.tok = (this.tok ?? 0) + 1; this.leaveQuestion(); this.q = null; this.app.facts?.leave(); }

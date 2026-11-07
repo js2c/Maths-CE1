@@ -10,9 +10,9 @@ Faite sur la branche `claude/sweet-davinci-vwkk2u` (demande de fusion #76), mise
 | `node tools/precache.mjs --check` | à jour (13 211 fichiers) |
 | `node art/problemes/verifier.mjs` | banque conforme (200 énoncés ; les scènes, `unite` et `unites` contrôlées) |
 | Tous les parcours (`tests/e2e/tous.mjs`) | **avant la mise à jour avec `main`** : tous passent, sauf `multiplication` et `voiliers`, deux défauts des parcours, corrigés (ci-dessous) ; **après** : relancés ceux que le lot et la fusion touchent : `choix`, `consignes-mascotte`, `correctifs-5-novembre`, `crans`, `lecons`, `lecons-menu`, `problemes`, `seance`, `suites-5-novembre` : tous passent |
-| Le parcours du lot (`tests/e2e/problemes.mjs`) | passe en 1280 × 800 et 1920 × 1200, et à 640 × 360 (le petit smartphone, partie 10) ; relancé après les corrections de la relecture, puis après la dernière (la plaque du partage en nombre de parts) : passe |
+| Le parcours du lot (`tests/e2e/problemes.mjs`) | passe en 1280 × 800 et 1920 × 1200, et à 640 × 360 (le petit smartphone, partie 10) ; relancé après les corrections de la relecture, puis après les décisions du parent du 7 novembre (la plaque, l'écart ; contrôles ajoutés) : passe |
 | Journée d'usage courte, tablette de référence (`journee.mjs --court`) | **aucun défaut en 55,1 min** (l'installation, les séances avec le problème du jour, les leçons, la boutique, le récif, l'album, les inactivités, l'arrière-plan ; aucune erreur de page, aucun lecteur refusé, budgets tenus) |
-| Enfant imprévisible sur le banc (`enfant.mjs --android`) | 5 graines, 400 actions, aucun défaut ; après les corrections de la relecture, 3 graines, 240 actions, aucun défaut |
+| Enfant imprévisible sur le banc (`enfant.mjs --android`) | 5 graines, 400 actions, aucun défaut ; après les corrections de la relecture, 3 graines, 240 actions, aucun défaut ; après les décisions du parent du 7 novembre, 2 graines, 160 actions, aucun défaut |
 | Taille des cibles (`cibles.mjs --profils s5e,petit-smartphone`) | s5e : problèmes 11,7 mm, partage 11,3 mm (au moins 9 mm), les autres écrans 15,2 à 17,7 mm ; petit-smartphone : la scène entière, aucune erreur de page |
 | Temps d'image (`perf.mjs --niveau 2`, processeur ÷4) | avant (`main`) : intervalle moyen 19,6 ms, travail par image 0,3 ms ; après : 23,3 ms, 0,4 ms ; démarrage à chaud 4,2 s et 4,6 s ; même mémoire des planches (63,9 Mo) : pas d'écart au-delà du bruit de la mesure. (Le démarrage « à froid » de `main`, 10,6 s, était le premier lancement de la série, disque froid ; 4,9 s sur la branche.) |
 | Tests de GitHub | `tests`, `enfant` et `android` réussis sur le code d'avant la relecture ; relancés à la poussée |
@@ -37,7 +37,7 @@ Faite sur la branche `claude/sweet-davinci-vwkk2u` (demande de fusion #76), mise
 
 ## Relecture indépendante
 
-`RELECTURE.md` (ce dossier) : **rien de bloquant** ; 7 constats gênants, 3 cosmétiques. Corrigés : 1, 2, 3 (au plus simple), 4, 5 ; 6 en partie ; restent, en questions au parent : 3 (l'image du contenant sur la plaque ?) et 7 (l'écart d'une comparaison en pointillés, sans image, dès l'histoire ?).
+`RELECTURE.md` (ce dossier) : **rien de bloquant** ; 7 constats gênants, 3 cosmétiques. Corrigés : 1, 2, 4, 5 ; 6 en partie ; 3 et 7 après les décisions du parent du 7 novembre (la plaque montre l'image de ce qu'on cherche ; l'écart en pointillés, sans image, dès l'histoire).
 
 ## Ce qui reste au parent
 

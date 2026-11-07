@@ -225,19 +225,34 @@ export const ETIQ_H = 66;
 export const largeurEtiquette = (t: string, em = 38, objet: Objet | null = "jeton") => textW(t, em) + (objet ? em * 1.2 + 50 : 44);
 // `teinte` (lot « Mise en scène des problèmes », décision du parent du 6 novembre 2026, 10) : pendant l'aide et la correction,
 // l'étiquette prend la couleur de sa barre dans le schéma (« a » l'orange, « b » le bleu)
-export const drawEtiquette = (g: Gfx, x: number, y: number, t: string, objet: Objet | null, o: { lit?: boolean; seed?: number; em?: number; rouge?: boolean; teinte?: "a" | "b" | null } = {}) => {
+// le bord en pointillés de l'écart d'une comparaison, comme dans le schéma (des tirets réguliers : un trait d'encre plein dirait
+// « une quantité connue » ; décision du parent du 7 novembre 2026)
+const pointille = (g: Gfx, s: P[], x: number, y: number, w: number, h: number, couleur = INK) => {
+  const cv = g.cur as CanvasRenderingContext2D; g.touch(x - 4, y - 4, x + w + 4, y + h + 4); cv.save(); cv.setLineDash([14, 10]); cv.lineWidth = 4; cv.lineJoin = "round"; cv.strokeStyle = couleur;
+  cv.beginPath(); s.forEach(([a, b], i) => (i ? cv.lineTo(a, b) : cv.moveTo(a, b))); cv.closePath(); cv.stroke(); cv.restore();
+};
+// `ecart` : l'écart d'une comparaison (« 5 de plus »), dès l'histoire avec l'aspect qu'il a dans le schéma : le bord en pointillés,
+// sans image (décision du parent du 7 novembre 2026, après la relecture indépendante : avec le nombre et l'image, il se lisait
+// comme une quantité de plus)
+export const drawEtiquette = (g: Gfx, x: number, y: number, t: string, objet: Objet | null, o: { lit?: boolean; seed?: number; em?: number; rouge?: boolean; teinte?: "a" | "b" | null; ecart?: boolean } = {}) => {
   const em = o.em ?? 38, w = largeurEtiquette(t, em, objet), seed = o.seed ?? 1, [fond, ombre] = o.lit ? ["#fff3b8", NACRE_S] : o.teinte === "a" ? [ORANGE, ORANGE_S] : o.teinte === "b" ? [BLUE, BLUE_S] : [NACRE, NACRE_S];
-  g.group("plain", () => { const s = rrect(x, y, w, ETIQ_H, 18); fillShape(g, shift(s, 4, 6), SH, 0.3); cel(g, s, fond, ombre, 4); if (o.lit) ink(g, rrect(x - 5, y - 5, w + 10, ETIQ_H + 10, 22), LIT, { w: 5, closed: true, shadow: 0, seed: 13800 + seed }, 0.9); contour(g, s, 3, 13810 + seed);
+  g.group("plain", () => { const s = rrect(x, y, w, ETIQ_H, 18); fillShape(g, shift(s, 4, 6), SH, 0.3);
+    if (o.ecart) { fillShape(g, s, o.lit ? "#fff3b8" : "#fffaf0"); pointille(g, s, x, y, w, ETIQ_H); } else cel(g, s, fond, ombre, 4);
+    if (o.lit) ink(g, rrect(x - 5, y - 5, w + 10, ETIQ_H + 10, 22), LIT, { w: 5, closed: true, shadow: 0, seed: 13800 + seed }, 0.9); if (!o.ecart) contour(g, s, 3, 13810 + seed);
     num(g, t, x + 20 + textW(t, em) / 2, y + ETIQ_H / 2 - em / 2, em, o.rouge ? RED : INK, 13820 + seed * 7); });
   if (objet) drawObjet(g, objet, x + w - em, y + ETIQ_H / 2, (0.9 * em) / 38, 400 + seed);
   return w;
 };
 // la plaque de la réponse : plus grande, bordée d'or comme l'ardoise ; « ? » rouge tant que rien n'est tapé
-export const drawReponse = (g: Gfx, x: number, y: number, w: number, t: string, objet: Objet | null, o: { juste?: boolean } = {}) => {
+// `ecart` : la réponse est l'écart d'une comparaison : le bord en pointillés, comme l'écart du schéma (le liseré d'or reste : c'est
+// la plaque de la réponse)
+export const drawReponse = (g: Gfx, x: number, y: number, w: number, t: string, objet: Objet | null, o: { juste?: boolean; ecart?: boolean } = {}) => {
   const h = 84, em = 50;
-  g.group("plain", () => { const s = rrect(x, y, w, h, 22); fillShape(g, shift(s, 5, 7), SH, 0.32); cel(g, s, o.juste ? "#eaffd8" : NACRE, NACRE_S, 5); ink(g, rrect(x + 9, y + 9, w - 18, h - 18, 14), "#e0b43a", { w: 2.4, closed: true, shadow: 0, seed: 13850 }, 0.85); contour(g, s, 4, 13851);
+  g.group("plain", () => { const s = rrect(x, y, w, h, 22); fillShape(g, shift(s, 5, 7), SH, 0.32);
+    if (o.ecart) fillShape(g, s, o.juste ? "#eaffd8" : "#fffaf0"); else cel(g, s, o.juste ? "#eaffd8" : NACRE, NACRE_S, 5);
+    ink(g, rrect(x + 9, y + 9, w - 18, h - 18, 14), "#e0b43a", { w: 2.4, closed: true, shadow: 0, seed: 13850 }, 0.85); if (o.ecart) pointille(g, s, x, y, w, h); else contour(g, s, 4, 13851);
     num(g, t, x + 26 + Math.max(textW(t, em), 30) / 2 + 6, y + h / 2 - em / 2, em, t === "?" ? RED : INK, 13860); });
-  // (sans objet : plusieurs sortes réunies, « Combien de fruits ? », la plaque sans image)
+  // (l'image de ce qu'on cherche, quand elle existe ; sans objet, la plaque sans image : screen.js, `plaqueObjet`)
   if (objet) drawObjet(g, objet, x + w - 48, y + h / 2, 1.05, 450);
 };
 // la plaque du calcul (la correction l'écrit : « 23 − 9 = 14 »), comme l'ardoise ; centrée sur cx

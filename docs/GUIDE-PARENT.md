@@ -693,6 +693,8 @@ Votre enfant résout maintenant des **problèmes** : de petites histoires de la 
 
 **Une image à refaire : la perle** (`u-perle`) : son prompt était faux (c'est notre erreur) ; il est corrigé dans `PROMPTS.md`. Déposez la nouvelle image sous le même nom, puis lancez les deux commandes ci-dessus. D'ici là, la perle garde son dessin.
 
+**Vos décisions du 7 novembre** : la plaque de la réponse montre l'image de ce qu'on cherche (« Combien d'assiettes ? » : l'assiette ; rien quand aucune image ne le montre) ; l'écart d'une comparaison (« 5 de plus ») est en pointillés, sans image, dès l'histoire, comme dans le schéma.
+
 **Phrases à fabriquer** : 3 phrases nouvelles du partage (« Mets-en autant dans chaque pot. », « Mets-en autant sur chaque étagère. », « Donne-en autant à chaque enfant. »).
 
 **À essayer sur la tablette** : un problème de chaque sorte (les niveaux 2 à 9) ; au niveau 3, ranger les objets dans les pots ou les assiettes ; une erreur, pour voir la correction (les contenants ouverts, ce qu'on compte qui apparaît) ; le coquillage, pour voir les groupes comptés sur la scène.

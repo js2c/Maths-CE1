@@ -115,7 +115,10 @@ export class ProblemesScreen {
     for (const t of L.etiquettes) if (t.accolade && this.vues.has(t.i)) { const a = t.accolade, m = (a.x0 + a.x1) / 2; ctx.save(); ctx.setTransform(this.px, 0, 0, this.px, -ZONE_CADRE.x * this.px, -ZONE_CADRE.y * this.px); ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.lineWidth = 5; ctx.strokeStyle = "#fffaf0"; ctx.beginPath(); ctx.moveTo(a.x0, a.y + 10); ctx.quadraticCurveTo(a.x0, a.y, a.x0 + 14, a.y); ctx.lineTo(m - 12, a.y); ctx.quadraticCurveTo(m, a.y, m, t.y + t.h); ctx.quadraticCurveTo(m, a.y, m + 12, a.y); ctx.lineTo(a.x1 - 14, a.y); ctx.quadraticCurveTo(a.x1, a.y, a.x1, a.y + 10); ctx.stroke(); ctx.restore(); }
     for (const t of L.etiquettes) if (this.vues.has(t.i)) { const it = q.etiquettes[t.i]; D.drawEtiquette(g, t.x, t.y, String(it.n), it.objet, { lit: this.lit === t.i, seed: t.i + 1, em: 38, teinte: this.teinteDe(q, t.i) }); }
     const t = (q.lecon ? "" : this.fs.typed) || (this.montre ? String(q.e.reponse) : "?");
-    D.drawReponse(g, L.plaque.x, L.plaque.y, PLAQUE.w, t, q.e.scene?.unites && !this.unite ? null : q.e.objet, { juste: !!this.juste });
+    // (sans image : plusieurs sortes réunies, « Combien d'animaux ? » ; le partage en nombre de parts, « Combien d'assiettes ? », où
+    // l'image de ce qu'on partage dirait le contraire de la question ; relecture indépendante du 7 novembre 2026, constat 3)
+    const sansImage = (q.e.scene?.unites && !this.unite) || (q.e.structure === "partage" && q.e.inconnue === "parts");
+    D.drawReponse(g, L.plaque.x, L.plaque.y, PLAQUE.w, t, sansImage ? null : q.e.objet, { juste: !!this.juste });
   }
   repaint() { if (this.q && this.L) this.calque("donnees", ZONE_CADRE, (g, ctx) => this.paintDonnees(g, ctx), "probleme-donnees"); }
   // ---------------------------------------------------------------- les objets de la scène

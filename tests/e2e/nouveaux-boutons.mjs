@@ -59,7 +59,9 @@ const tap = async (page, sel) => { const b = await page.locator(sel).first().bou
 const shot = async (page, vue, nom, ms = 500) => { await page.waitForTimeout(ms); await page.screenshot({ path: join(OUT, `${nom}-${vue[0]}.png`) }); };
 // les boîtes visibles d'un sélecteur, en px logiques de la scène (1280 × 800)
 const boites = (page, sel) => page.evaluate((s) => { const ui = document.querySelector("#ui").getBoundingClientRect(), k = ui.width / 1280; return [...document.querySelectorAll(s)].filter((e) => e.checkVisibility({ visibilityProperty: true }) && !e.closest(".stash")).map((e) => { const r = e.getBoundingClientRect(); return { x: (r.x - ui.x) / k, y: (r.y - ui.y) / k, w: r.width / k, h: r.height / k }; }); }, sel);
-const gros = async (page, vue, sel, nom) => { if (!GROS_PLANS.has(vue[0])) return; const l = page.locator(sel).first(); if (await l.count()) await l.screenshot({ path: join(OUT, `gros-${nom}-${vue[0]}.png`) }); };
+// (le gros plan d'un bouton, à la densité de l'appareil : une découpe de l'écran, 20 px de marge pour l'entourage ; un bouton qui se
+// balance ne serait jamais « stable » pour une capture d'élément)
+const gros = async (page, vue, sel, nom) => { if (!GROS_PLANS.has(vue[0])) return; const b = await page.locator(sel).first().boundingBox(); if (!b) return; const v = page.viewportSize(), x = Math.max(0, b.x - 20), y = Math.max(0, b.y - 20); await page.screenshot({ path: join(OUT, `gros-${nom}-${vue[0]}.png`), clip: { x, y, width: Math.min(v.width - x, b.width + 40), height: Math.min(v.height - y, b.height + 40) } }); };
 
 // LES BOUTONS RONDS DE L'ÉCRAN : chacun un cercle (border-radius 50 %, carré), le doigt pris au centre et à 0,9 rayon, jamais dans le
 // coin du carré (à 0,95 rayon en diagonale : hors du cercle) ; deux boutons ronds visibles ne se chevauchent pas, leurs entourages
@@ -123,7 +125,7 @@ for (const vue of VUES) {
   await recifOuvert(page); await page.waitForTimeout(800);
   await ronds(page, vue, "récif", [".homekey", ".albumkey", ".boutique-cle"]);
   await shot(page, vue, "06-recif");
-  for (const k of ["homekey", "albumkey", "boutique-cle"]) await gros(page, vue, `.${k}`, `recif-${k}`);
+  for (const k of ["homekey:not(.session-home)", "albumkey", "boutique-cle"]) await gros(page, vue, `.${k}`, `recif-${k.split(":")[0]}`);
   // ---------------------------------------------------------------- 2. la mascotte du récif
   await page.waitForFunction(() => !window.__app.voice.speaking, null, { timeout: 30000 }).catch(() => {}); await page.waitForTimeout(400);
   const m0 = await page.evaluate(() => { const e = document.querySelector(".mascotte-boucle"), ui = document.querySelector("#ui").getBoundingClientRect(), k = ui.width / 1280, r = e.getBoundingClientRect(); return { vue: getComputedStyle(e).visibility, video: window.__app.ocean.mascotteVisible, anim: e.querySelector("img")?.getAnimations()[0]?.playState, b: [(r.x - ui.x) / k, (r.y - ui.y) / k, r.width / k, r.height / k], videos: document.querySelectorAll("video").length }; });
@@ -139,7 +141,7 @@ for (const vue of VUES) {
     return n; }, m0.b);
   check(Object.values(sous).every((v) => v <= 5), `${vue[0]} récif : aucune créature ne se tient sous la mascotte (${JSON.stringify(sous)})`);
   await page.evaluate(() => { window.__app.reef.api.camX = 0; }); await page.waitForTimeout(500);
-  if (GROS_PLANS.has(vue[0])) await page.locator(".mascotte-boucle").screenshot({ path: join(OUT, `gros-recif-mascotte-boucle-${vue[0]}.png`) });
+  await gros(page, vue, ".mascotte-boucle", "recif-mascotte-boucle");
   await page.evaluate(() => { window.__said = []; });
   await tap(page, ".mascotte-boucle"); await page.waitForTimeout(150);
   const m1 = await page.evaluate(() => ({ video: window.__app.ocean.mascotteVisible, boucle: getComputedStyle(document.querySelector(".mascotte-boucle")).visibility, parle: window.__app.voice.speaking, dit: window.__said.join(" | "), bulle: !!window.__app.bulle?.shown, videos: document.querySelectorAll("video").length }));

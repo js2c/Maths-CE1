@@ -19,7 +19,7 @@ for (const [ex, niveau] of [["multiplication", 2], ["calcul", 4]]) for (const ap
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true }), page = await context.newPage(), errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto(url + "?nosw&son=non"); await page.waitForFunction(() => window.__ready !== undefined);
-  await page.evaluate(async () => { const n = Date.now(), s = window.__app.store; await s.setSetting("echauffement", false); await s.add("seances", { debut: n - 600000, fin: n, terminee: true, module: 1, etapes: [] }); });
+  await page.evaluate(async () => { const n = Date.now(), s = window.__app.store; await s.setSetting("echauffement", false); await s.add("seances", { debut: Math.max(n - 600000, new Date(n).setHours(0, 0, 0, 0)), fin: n, terminee: true, module: 1, etapes: [] }); });
   await page.goto(url + "?nosw&son=non"); await page.waitForFunction(() => window.__ready !== undefined);
   await page.evaluate(() => { const v = window.__app.voice, say = v.say.bind(v); window.__said = []; v.say = (t, o) => { window.__said.push(t); return say(t, o); }; });
   await page.waitForSelector(".again"); await page.tap(".again", { force: true });

@@ -670,6 +670,36 @@ Votre enfant résout maintenant des **problèmes** : de petites histoires de la 
 
 **À essayer sur la tablette** : les trois compteurs à l'accueil, l'étoile arc-en-ciel touchée à 0 ; dans le récif, le livre de cartes, puis, dans l'album, le dessin du récif pour revenir.
 
+## d octovicies) Lot « Mise en scène des problèmes » : une scène pleine, des objets en nombre exact
+
+**Ce qui change à l'écran** : l'image du lieu est plus grande (elle va de la mascotte jusqu'à droite, au-dessus du pavé). L'application y pose les objets de l'histoire : Papa, le chien, la gamelle, 3 sachets fermés marqués « 6 »… Les objets d'une phrase apparaissent quand elle est dite. Ce qu'on compte (les gourmandises) reste caché tant que l'enfant doit le trouver par le calcul ; à la correction, il apparaît (jusqu'à 20), par exemple les 18 gourmandises dans la gamelle. Les étiquettes des nombres sont posées sur les objets qu'elles décrivent, la plaque « ? » sur l'objet de la réponse. Pendant l'aide, les étiquettes prennent la couleur de leur barre dans le schéma. Au partage du niveau 3, l'enfant range les objets dans les pots ou les assiettes de l'histoire.
+
+**Tant qu'un objet n'a pas son image**, il n'est pas dessiné : son étiquette seule reste, posée sur le sol du lieu (sans aucune image d'objet, l'écran ressemble à celui d'avant, avec le lieu plus grand). Un lieu sans image garde le fond de papier.
+
+**Ajouter des images** (vous pouvez le faire peu à peu, dans l'ordre de `docs/maquettes/problemes-scene/PROMPTS.md`) :
+
+1. Générer l'image avec le prompt indiqué (fond vert, ou magenta quand c'est écrit).
+2. La déposer, telle quelle, sous le nom indiqué :
+   - un lieu dans `art/problemes/sources/`, nommé comme le lieu (`cuisine.jpg`, `chambre.jpg`…) ;
+   - un objet dans `art/problemes/mise-en-scene/sources/`, nommé comme l'objet (`papa.png`, `sachet-ferme.png`…).
+3. Demander à une session Claude Code de lancer la commande, ou la lancer vous-même depuis le dossier du dépôt :
+   ```
+   node art/tools/export-problemes.mjs
+   node tools/precache.mjs
+   ```
+   La première recadre les lieux (le haut retiré, jamais le sol) et détoure les objets ; elle dit ce qu'elle a fait, et signale un fichier dont le nom n'est pas reconnu. La seconde met à jour la liste des fichiers hors ligne.
+
+**Vos images (déposées le 7 novembre)** : les 21 lieux et les 137 objets et unités sont dans l'application ; le contrôle est dans `docs/maquettes/problemes-scene/CONTROLE-IMAGES.md`, les 15 écrans de la maquette repris avec elles dans `docs/maquettes/problemes-scene/comparaison/` (à gauche la maquette, à droite l'application). Les icônes de ce qu'on compte (les gourmandises, les crayons, les moutons…) remplacent maintenant les dessins sur les étiquettes et à la correction ; quand une histoire compte deux sortes de choses à la fois (des tulipes et des roses, des vaches et des moutons), chaque nombre a l'image de la sienne.
+
+**La perle** (`u-perle`) : la nouvelle image (rouge, générée avec le prompt corrigé) est dans l'application depuis le 7 novembre ; il n'y a plus d'image à refaire.
+
+**Vos décisions du 7 novembre** : la plaque de la réponse montre l'image de ce qu'on cherche (« Combien d'assiettes ? » : l'assiette ; rien quand aucune image ne le montre) ; l'écart d'une comparaison (« 5 de plus ») est en pointillés, sans image, dès l'histoire, comme dans le schéma.
+
+**Phrases à fabriquer** : 3 phrases nouvelles du partage (« Mets-en autant dans chaque pot. », « Mets-en autant sur chaque étagère. », « Donne-en autant à chaque enfant. »).
+
+**À essayer sur la tablette** : un problème de chaque sorte (les niveaux 2 à 9) ; au niveau 3, ranger les objets dans les pots ou les assiettes ; une erreur, pour voir la correction (les contenants ouverts, ce qu'on compte qui apparaît) ; le coquillage, pour voir les groupes comptés sur la scène.
+
+
 ## e) Ce qui reste approximatif ou à ajuster
 
 **À vérifier sur la vraie tablette.** Écouter la voix (aucune phrase n'a été écoutée par une personne, la vérification a été automatique) et regarder les illustrations des cartes en grand. Toutes les mesures ont été faites sur un ordinateur, en ralentissant le processeur 4 fois pour imiter une tablette : démarrage en moins de 1,5 s, animation à 50 à 60 images par seconde la plupart du temps, avec des baisses vers 30 pendant certaines animations (l'application allège alors d'elle-même le décor). Il faut confirmer que tout reste fluide sur la tablette.

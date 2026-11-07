@@ -12,6 +12,7 @@ Préparée avant le lot, pour la validation du parent (`docs/maquettes/problemes
 | `index.html` | La maquette des écrans clés (ouvrir avec un serveur à la racine du dépôt, par exemple `npm run serve`, puis `/art/problemes/`). |
 | `captures.mjs` | Les captures de chaque écran dans `docs/maquettes/problemes/`. |
 | `construire.mjs`, `dessins.js` | Les dessins de l'atelier (`art/src/canvas-core/sea/problemes.ts`) empaquetés pour la page ; `dessins.js` est généré. |
+| `mise-en-scene/` | La maquette « Mise en scène des problèmes » (5 novembre 2026, à valider) : la scène agrandie et remplie par une bibliothèque d'objets de l'histoire ; son `README.md`, et `docs/maquettes/problemes-scene/PROPOSITION.md`. |
 | `mascotte.png`, `maison.png`, `etoiles.png` | Capturés dans l'application (une image fixe de la mascotte) pour que les écrans soient complets. |
 
 ```bash

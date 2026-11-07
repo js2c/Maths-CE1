@@ -117,7 +117,7 @@ for (const T of TAILLES) {
   // 4. l'entraînement libre : la séance du jour faite, le menu des leçons (« À toi ! » mène ensuite à l'entraînement libre ; il ne
   // relance pas les leçons de lui-même)
   for (const id of LECONS) {
-    const { page, context, errors } = await ouvrir(T, "", { f: async () => { const n = Date.now(); await window.__app.store.add("seances", { debut: n - 600000, fin: n, terminee: true, module: 1, etapes: [] }); } });
+    const { page, context, errors } = await ouvrir(T, "", { f: async () => { const n = Date.now(); await window.__app.store.add("seances", { debut: Math.max(n - 600000, new Date(n).setHours(0, 0, 0, 0)), fin: n, terminee: true, module: 1, etapes: [] }); } });
     await page.tap(".leconskey", { force: true }); await page.waitForSelector(`.lecons-tuile[data-key="${id}"]`, { timeout: 30000 }); await page.waitForTimeout(400);
     await deuxTouchers(page, `.lecons-tuile[data-key="${id}"]`);
     const r = await surveiller(page, `${W}-libre-${id}`, leconEnCours);

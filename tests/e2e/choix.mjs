@@ -113,7 +113,7 @@ const pick = async (page, sel) => { await page.waitForSelector(sel, { timeout: 1
 }
 // 6. « Encore ! » (séance du jour faite) ouvre le même écran, sans étoiles
 {
-  const { page, context, errors } = await open("", async () => { const n = Date.now(); await window.__app.store.add("seances", { debut: n - 600000, fin: n, terminee: true, module: 1, etapes: [] }); });
+  const { page, context, errors } = await open("", async () => { const n = Date.now(); await window.__app.store.add("seances", { debut: Math.max(n - 600000, new Date(n).setHours(0, 0, 0, 0)), fin: n, terminee: true, module: 1, etapes: [] }); });
   await page.waitForSelector(".again"); await tap(page, ".again");
   await page.waitForSelector(".choix-ex", { timeout: 15000 }); await page.waitForTimeout(400);
   check((await page.locator(".choix-ex").count()) === 7, "« Encore ! » : le même écran de choix");

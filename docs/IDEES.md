@@ -270,3 +270,5 @@ Le parent n'est pas encore convaincu par les remèdes proposés : la question es
 - **Vérifier le programme** : la synthèse du programme 2024 transmise par le parent est une reformulation (incohérence sur 1/10) ; vérifier les indicateurs de fluence dans l'annexe 4 officielle avant d'en faire des objectifs chiffrés.
 
 - **L'étal : deux étiquettes de prix se chevauchent** (relecture du lot « Banc Android », constat 4) : à certains tirages, l'étiquette des huîtres (15 €) recouvre en partie celle de la sole (10 €) ; c'est la mise en page de la maquette de l'étal (`art/etal/`), identique sur toutes les tailles d'écran. Décaler les étiquettes dans la maquette ?
+
+- **Problèmes : la plaque avant les données** (lot « Mise en scène des problèmes », vu le 7 novembre) : quand le dépôt de la réponse porte une seule donnée et que la suivante est sur le sol à sa droite, la plaque va à gauche du dépôt (« ? 24 5 » pour « 24 perles, tu en ajoutes 5 », `tra-gf-09`) ; le seau des coquillages (deux données sur lui) a déjà sa règle (« 8 5 ? »). À étendre : la plaque à droite des données quand elle ne peut pas aller au-dessus du dépôt.

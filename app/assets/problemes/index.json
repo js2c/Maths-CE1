@@ -1,9 +1,6 @@
 {
- "_doc": "Généré par art/tools/export-problemes.mjs : les lieux des problèmes qui ont leur illustration (app/assets/problemes/<lieu>@1x.webp et @2x.webp). Les autres lieux ont l'image de remplacement neutre.",
+ "_doc": "Généré par art/tools/export-problemes.mjs : les lieux des problèmes qui ont leur illustration (app/assets/problemes/<lieu>@1x.webp et @2x.webp, 860 × 350 à @1x) et les objets de l'histoire qui ont leur image (objets/<objet>[-<variante>]@1x|2x.webp, leur taille à @1x, leur catégorie). Un lieu sans image a le papier du cadre ; un objet sans image, son étiquette seule.",
  "lieux": [
-  "etal"
- ],
- "manquent": [
   "cuisine",
   "chambre",
   "jardin",
@@ -24,6 +21,695 @@
   "kermesse",
   "anniversaire",
   "atelier",
+  "etal",
   "salon"
- ]
+ ],
+ "manquent": [],
+ "objets": {
+  "assiette": {
+   "w": 118,
+   "h": 55,
+   "c": "contenant"
+  },
+  "banc": {
+   "w": 192,
+   "h": 110,
+   "c": "depot"
+  },
+  "barque": {
+   "w": 194,
+   "h": 85,
+   "c": "contenant"
+  },
+  "boite-fermee": {
+   "w": 134,
+   "h": 95,
+   "c": "contenant"
+  },
+  "boite-oeufs-fermee": {
+   "w": 116,
+   "h": 75,
+   "c": "contenant"
+  },
+  "boite-oeufs-ouverte": {
+   "w": 94,
+   "h": 75,
+   "c": "contenant"
+  },
+  "boite-ouverte": {
+   "w": 145,
+   "h": 95,
+   "c": "contenant"
+  },
+  "bol": {
+   "w": 94,
+   "h": 65,
+   "c": "depot"
+  },
+  "boulanger-femme": {
+   "w": 88,
+   "h": 245,
+   "c": "personnage"
+  },
+  "boulanger-homme": {
+   "w": 107,
+   "h": 245,
+   "c": "personnage"
+  },
+  "bus": {
+   "w": 392,
+   "h": 220,
+   "c": "depot"
+  },
+  "cagette-couverte": {
+   "w": 149,
+   "h": 95,
+   "c": "contenant"
+  },
+  "cagette-vide": {
+   "w": 145,
+   "h": 95,
+   "c": "contenant"
+  },
+  "caisse": {
+   "w": 162,
+   "h": 110,
+   "c": "depot"
+  },
+  "carnet-carnet": {
+   "w": 78,
+   "h": 95,
+   "c": "contenant"
+  },
+  "carnet-livre": {
+   "w": 113,
+   "h": 95,
+   "c": "contenant"
+  },
+  "cerceau": {
+   "w": 139,
+   "h": 50,
+   "c": "contenant"
+  },
+  "chariot": {
+   "w": 163,
+   "h": 140,
+   "c": "depot"
+  },
+  "chat-gris": {
+   "w": 88,
+   "h": 115,
+   "c": "animal"
+  },
+  "chat-roux": {
+   "w": 90,
+   "h": 115,
+   "c": "animal"
+  },
+  "chien": {
+   "w": 112,
+   "h": 160,
+   "c": "animal"
+  },
+  "coffre": {
+   "w": 180,
+   "h": 120,
+   "c": "depot"
+  },
+  "collier": {
+   "w": 173,
+   "h": 120,
+   "c": "contenant"
+  },
+  "copain": {
+   "w": 61,
+   "h": 190,
+   "c": "personnage"
+  },
+  "corbeille": {
+   "w": 147,
+   "h": 90,
+   "c": "depot"
+  },
+  "cuisinier": {
+   "w": 108,
+   "h": 250,
+   "c": "personnage"
+  },
+  "enfants-a": {
+   "w": 60,
+   "h": 170,
+   "c": "personnage"
+  },
+  "enfants-b": {
+   "w": 71,
+   "h": 170,
+   "c": "personnage"
+  },
+  "enfants-c": {
+   "w": 60,
+   "h": 170,
+   "c": "personnage"
+  },
+  "enfants-d": {
+   "w": 55,
+   "h": 170,
+   "c": "personnage"
+  },
+  "etagere": {
+   "w": 205,
+   "h": 70,
+   "c": "depot"
+  },
+  "fermiere": {
+   "w": 75,
+   "h": 245,
+   "c": "personnage"
+  },
+  "filet": {
+   "w": 57,
+   "h": 140,
+   "c": "contenant"
+  },
+  "gamelle": {
+   "w": 101,
+   "h": 70,
+   "c": "depot"
+  },
+  "gateau": {
+   "w": 132,
+   "h": 90,
+   "c": "depot"
+  },
+  "maitresse": {
+   "w": 76,
+   "h": 250,
+   "c": "personnage"
+  },
+  "maman": {
+   "w": 87,
+   "h": 245,
+   "c": "personnage"
+  },
+  "mamie": {
+   "w": 92,
+   "h": 235,
+   "c": "personnage"
+  },
+  "marchand-femme": {
+   "w": 81,
+   "h": 245,
+   "c": "personnage"
+  },
+  "marchand-homme": {
+   "w": 88,
+   "h": 245,
+   "c": "personnage"
+  },
+  "minibus-car": {
+   "w": 297,
+   "h": 150,
+   "c": "contenant"
+  },
+  "minibus-minibus": {
+   "w": 264,
+   "h": 150,
+   "c": "contenant"
+  },
+  "nid-poule-clapier": {
+   "w": 211,
+   "h": 160,
+   "c": "depot"
+  },
+  "nid-poule-poulailler": {
+   "w": 169,
+   "h": 160,
+   "c": "depot"
+  },
+  "nid": {
+   "w": 84,
+   "h": 60,
+   "c": "contenant"
+  },
+  "pack": {
+   "w": 117,
+   "h": 90,
+   "c": "contenant"
+  },
+  "panier-couvert": {
+   "w": 136,
+   "h": 130,
+   "c": "contenant"
+  },
+  "panier-vide": {
+   "w": 120,
+   "h": 130,
+   "c": "contenant"
+  },
+  "papa": {
+   "w": 89,
+   "h": 250,
+   "c": "personnage"
+  },
+  "papy": {
+   "w": 106,
+   "h": 240,
+   "c": "personnage"
+  },
+  "paquet": {
+   "w": 81,
+   "h": 105,
+   "c": "contenant"
+  },
+  "pecheur": {
+   "w": 115,
+   "h": 250,
+   "c": "personnage"
+  },
+  "plateau": {
+   "w": 134,
+   "h": 50,
+   "c": "contenant"
+  },
+  "pot": {
+   "w": 73,
+   "h": 110,
+   "c": "contenant"
+  },
+  "poule": {
+   "w": 79,
+   "h": 95,
+   "c": "animal"
+  },
+  "pupitre": {
+   "w": 210,
+   "h": 140,
+   "c": "depot"
+  },
+  "rangee-sieges": {
+   "w": 98,
+   "h": 45,
+   "c": "contenant"
+  },
+  "rangee-sillon": {
+   "w": 146,
+   "h": 45,
+   "c": "contenant"
+  },
+  "rosier": {
+   "w": 143,
+   "h": 150,
+   "c": "depot"
+  },
+  "sac-filet": {
+   "w": 141,
+   "h": 140,
+   "c": "contenant"
+  },
+  "sac-toile": {
+   "w": 183,
+   "h": 140,
+   "c": "contenant"
+  },
+  "sachet-ferme": {
+   "w": 94,
+   "h": 125,
+   "c": "contenant"
+  },
+  "sachet-ouvert": {
+   "w": 97,
+   "h": 125,
+   "c": "contenant"
+  },
+  "seau-pecheur": {
+   "w": 133,
+   "h": 150,
+   "c": "depot"
+  },
+  "seau-plage": {
+   "w": 113,
+   "h": 150,
+   "c": "depot"
+  },
+  "soir": {
+   "w": 77,
+   "h": 80,
+   "c": "contenant"
+  },
+  "table-cantine": {
+   "w": 398,
+   "h": 150,
+   "c": "depot"
+  },
+  "table-cuisine": {
+   "w": 273,
+   "h": 150,
+   "c": "depot"
+  },
+  "table-salon": {
+   "w": 331,
+   "h": 150,
+   "c": "depot"
+  },
+  "toboggan-bac": {
+   "w": 349,
+   "h": 200,
+   "c": "depot"
+  },
+  "toboggan-balancoires": {
+   "w": 286,
+   "h": 200,
+   "c": "depot"
+  },
+  "toboggan-toboggan": {
+   "w": 256,
+   "h": 200,
+   "c": "depot"
+  },
+  "tour": {
+   "w": 88,
+   "h": 40,
+   "c": "depot"
+  },
+  "trousse-bleue": {
+   "w": 136,
+   "h": 70,
+   "c": "contenant"
+  },
+  "trousse-jaune": {
+   "w": 119,
+   "h": 70,
+   "c": "contenant"
+  },
+  "u-animal-canard": {
+   "w": 48,
+   "h": 46,
+   "c": "unite"
+  },
+  "u-animal-cheval": {
+   "w": 48,
+   "h": 46,
+   "c": "unite"
+  },
+  "u-animal-chevre": {
+   "w": 46,
+   "h": 46,
+   "c": "unite"
+  },
+  "u-animal-lapin": {
+   "w": 43,
+   "h": 46,
+   "c": "unite"
+  },
+  "u-animal-mouton": {
+   "w": 52,
+   "h": 46,
+   "c": "unite"
+  },
+  "u-animal-papillon": {
+   "w": 50,
+   "h": 46,
+   "c": "unite"
+  },
+  "u-animal-pigeon": {
+   "w": 50,
+   "h": 46,
+   "c": "unite"
+  },
+  "u-biscuit-biscuit": {
+   "w": 41,
+   "h": 40,
+   "c": "unite"
+  },
+  "u-biscuit-croquette": {
+   "w": 43,
+   "h": 40,
+   "c": "unite"
+  },
+  "u-biscuit-gateau": {
+   "w": 32,
+   "h": 40,
+   "c": "unite"
+  },
+  "u-biscuit-gourmandise": {
+   "w": 61,
+   "h": 40,
+   "c": "unite"
+  },
+  "u-bonbon-bonbon": {
+   "w": 57,
+   "h": 36,
+   "c": "unite"
+  },
+  "u-bonbon-sucette": {
+   "w": 21,
+   "h": 36,
+   "c": "unite"
+  },
+  "u-bougie-bougie": {
+   "w": 10,
+   "h": 44,
+   "c": "unite"
+  },
+  "u-bougie-part": {
+   "w": 45,
+   "h": 44,
+   "c": "unite"
+  },
+  "u-bouteille-eau": {
+   "w": 16,
+   "h": 50,
+   "c": "unite"
+  },
+  "u-bouteille-jus": {
+   "w": 18,
+   "h": 50,
+   "c": "unite"
+  },
+  "u-chateau": {
+   "w": 43,
+   "h": 50,
+   "c": "unite"
+  },
+  "u-coquillage-blanc": {
+   "w": 41,
+   "h": 38,
+   "c": "unite"
+  },
+  "u-coquillage-rose": {
+   "w": 40,
+   "h": 38,
+   "c": "unite"
+  },
+  "u-couvert-cuillere": {
+   "w": 72,
+   "h": 46,
+   "c": "unite"
+  },
+  "u-couvert-fourchette": {
+   "w": 127,
+   "h": 46,
+   "c": "unite"
+  },
+  "u-crepe": {
+   "w": 45,
+   "h": 40,
+   "c": "unite"
+  },
+  "u-ecole-cahier": {
+   "w": 40,
+   "h": 42,
+   "c": "unite"
+  },
+  "u-ecole-craie": {
+   "w": 128,
+   "h": 42,
+   "c": "unite"
+  },
+  "u-ecole-crayon": {
+   "w": 130,
+   "h": 42,
+   "c": "unite"
+  },
+  "u-ecole-feuille": {
+   "w": 35,
+   "h": 42,
+   "c": "unite"
+  },
+  "u-ecole-feutre": {
+   "w": 120,
+   "h": 42,
+   "c": "unite"
+  },
+  "u-fleur-rose": {
+   "w": 24,
+   "h": 50,
+   "c": "unite"
+  },
+  "u-fleur-tulipe": {
+   "w": 21,
+   "h": 50,
+   "c": "unite"
+  },
+  "u-foret-champignon": {
+   "w": 34,
+   "h": 40,
+   "c": "unite"
+  },
+  "u-foret-chataigne": {
+   "w": 43,
+   "h": 40,
+   "c": "unite"
+  },
+  "u-foret-pomme-de-pin": {
+   "w": 34,
+   "h": 40,
+   "c": "unite"
+  },
+  "u-fraise": {
+   "w": 31,
+   "h": 40,
+   "c": "unite"
+  },
+  "u-fruit-citron": {
+   "w": 47,
+   "h": 46,
+   "c": "unite"
+  },
+  "u-fruit-melon": {
+   "w": 44,
+   "h": 46,
+   "c": "unite"
+  },
+  "u-fruit-orange": {
+   "w": 41,
+   "h": 46,
+   "c": "unite"
+  },
+  "u-fruit-pasteque": {
+   "w": 40,
+   "h": 46,
+   "c": "unite"
+  },
+  "u-jouet-ballon-basket": {
+   "w": 44,
+   "h": 44,
+   "c": "unite"
+  },
+  "u-jouet-carte": {
+   "w": 32,
+   "h": 44,
+   "c": "unite"
+  },
+  "u-jouet-cerceau": {
+   "w": 46,
+   "h": 44,
+   "c": "unite"
+  },
+  "u-jouet-cube": {
+   "w": 44,
+   "h": 44,
+   "c": "unite"
+  },
+  "u-jouet-peluche": {
+   "w": 37,
+   "h": 44,
+   "c": "unite"
+  },
+  "u-jouet-voiture": {
+   "w": 69,
+   "h": 44,
+   "c": "unite"
+  },
+  "u-livre": {
+   "w": 34,
+   "h": 44,
+   "c": "unite"
+  },
+  "u-lot": {
+   "w": 44,
+   "h": 42,
+   "c": "unite"
+  },
+  "u-oeuf": {
+   "w": 29,
+   "h": 38,
+   "c": "unite"
+  },
+  "u-paquet": {
+   "w": 30,
+   "h": 44,
+   "c": "unite"
+  },
+  "u-perle": {
+   "w": 30,
+   "h": 30,
+   "c": "unite"
+  },
+  "u-place": {
+   "w": 31,
+   "h": 44,
+   "c": "unite"
+  },
+  "u-poire": {
+   "w": 30,
+   "h": 46,
+   "c": "unite"
+  },
+  "u-pomme": {
+   "w": 37,
+   "h": 44,
+   "c": "unite"
+  },
+  "u-salade": {
+   "w": 45,
+   "h": 42,
+   "c": "unite"
+  },
+  "u-tomate": {
+   "w": 40,
+   "h": 42,
+   "c": "unite"
+  },
+  "u-viennoiserie-baguette": {
+   "w": 92,
+   "h": 44,
+   "c": "unite"
+  },
+  "u-viennoiserie-croissant": {
+   "w": 60,
+   "h": 44,
+   "c": "unite"
+  },
+  "u-viennoiserie-pain-chocolat": {
+   "w": 57,
+   "h": 44,
+   "c": "unite"
+  },
+  "u-viennoiserie-pain": {
+   "w": 58,
+   "h": 44,
+   "c": "unite"
+  },
+  "u-yaourt": {
+   "w": 37,
+   "h": 40,
+   "c": "unite"
+  },
+  "vache": {
+   "w": 186,
+   "h": 140,
+   "c": "animal"
+  },
+  "vase": {
+   "w": 88,
+   "h": 130,
+   "c": "contenant"
+  },
+  "voisine": {
+   "w": 81,
+   "h": 185,
+   "c": "personnage"
+  }
+ }
 }

@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- MAQUETTE « MISE EN SCÈNE DES PROBLÈMES » (docs/maquettes/problemes-scene/PROPOSITION.md ; proposition du 5 novembre 2026).
+     La scène agrandie (884 × 374 au lieu de 620 × 350), remplie par les objets de l'histoire posés par l'application, en nombre
+     exact, les unités comptées cachées tant qu'il faut les trouver. Faite avec les pièces de l'application (le lagon, le pavé,
+     le coquillage, « je ne sais pas », lus dans app/ sans le modifier ; la mascotte, la maison et les étoiles capturées dans
+     l'application), les dessins de l'atelier (étiquettes, plaque de la réponse, schémas : ../dessins.js) et des IMAGES
+     PROVISOIRES (provisoires.js) à la place des objets et des lieux que le parent générera (objets.json, lieux.json) ; seule
+     l'illustration de l'étal est la vraie. La bulle écrit ce que dit la voix. Captures : node art/problemes/mise-en-scene/captures.mjs -->
+<base href="../../../app/">
+<title>Maquette — la mise en scène des problèmes</title>
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/app.css">
+<style>
+  #nav { position: fixed; left: 8px; bottom: 8px; z-index: 50; display: flex; flex-wrap: wrap; gap: 4px; max-width: 96vw; font: 13px/1.2 system-ui, sans-serif; }
+  #nav button { padding: 5px 9px; border: 1px solid #0a3f49; border-radius: 6px; background: #fffaf0e8; cursor: pointer; }
+  #nav button.on { background: #ffd23a; }
+  #monde { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; transform-origin: 0 0; }
+  .couche { position: absolute; left: 0; top: 0; }
+  #dit { position: absolute; z-index: 30; left: 252px; max-width: 470px; padding: 14px 24px 16px; border-radius: 44px; background: #fffef8; border: 4px solid #111; box-shadow: 7px 9px 0 rgba(10, 20, 30, 0.24); font: 600 30px/1.16 "Shantell Sans", "Comic Sans MS", cursive; color: #111; text-align: center; }
+  #dit::before { content: ""; position: absolute; left: -30px; bottom: 26px; border: 16px solid transparent; border-right: 30px solid #111; border-left: 0; }
+  #dit::after { content: ""; position: absolute; left: -22px; bottom: 30px; border: 12px solid transparent; border-right: 24px solid #fffef8; border-left: 0; }
+  #dit:empty { display: none; }
+  #dit .n { color: #c0302a; font-weight: 700; }
+  #provisoire { position: absolute; z-index: 6; right: 160px; top: 124px; padding: 3px 9px; border-radius: 8px; background: rgba(255, 250, 240, 0.85); font: 600 13px/1.2 system-ui, sans-serif; color: #6b5a3a; }
+  #provisoire:empty { display: none; }
+</style>
+</head>
+<body>
+<div id="stage"><div id="monde"><canvas id="bg" class="couche"></canvas><canvas id="scene" class="couche"></canvas><div id="provisoire"></div><div id="dit"></div></div></div>
+<div id="nav"></div>
+<script type="module">
+import { Sprites, loadAtlas } from "./js/engine/sprites.js";
+import * as R from "./js/art/runtime.js";
+import * as D from "../art/problemes/dessins.js";
+import * as V from "../art/problemes/mise-en-scene/provisoires.js";
+
+const Q = new URLSearchParams(location.search), CAPTURE = Q.has("capture");
+const W = 1280, H = 800, root = document.getElementById("stage"), monde = document.getElementById("monde"), bg = document.getElementById("bg"), scene = document.getElementById("scene");
+const k = Math.min(innerWidth / W, innerHeight / H), px = k * (devicePixelRatio || 1);
+Object.assign(root.style, { position: "absolute", left: `${(innerWidth - W * k) / 2}px`, top: `${(innerHeight - H * k) / 2}px`, width: `${W * k}px`, height: `${H * k}px` });
+monde.style.transform = `scale(${k})`;
+for (const c of [bg, scene]) { c.width = W * px; c.height = H * px; Object.assign(c.style, { width: `${W}px`, height: `${H}px` }); }
+const sprites = new Sprites(await loadAtlas(), px);
+await Promise.all(["petits", "lagon", "aides"].map((s) => sprites.load(s)));
+const img = (src) => new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ko(new Error(src)); i.src = src; });
+const [mascotte, maison, etoiles, etal] = await Promise.all(["../art/problemes/mascotte.png", "../art/problemes/maison.png", "../art/problemes/etoiles.png", "../art/etal/sources/etal-beau-temps.jpg"].map(img));
+// les lieux déjà générés par le parent (art/problemes/sources/<lieu>.jpg, en 16:9) : recadrés comme le fera l'atelier, à la forme
+// de l'image de la scène (860 × 350), la largeur entière, COLLÉS EN BAS (le haut retiré, jamais le sol)
+const VRAIS = Object.fromEntries(await Promise.all(["chambre", "cuisine"].map(async (id) => [id, await img(`../art/problemes/sources/${id}.jpg`).catch(() => null)])));
+await document.fonts.load('600 30px "Shantell Sans"');
+const bctx = bg.getContext("2d"); sprites.draw(bctx, "lagon.fond", 0, 0, 0);
+const ctx = scene.getContext("2d");
+const BANQUE = (await (await fetch("content/problemes.json")).json()).enonces, E = (id) => BANQUE.find((e) => e.id === id);
+
+// ---------------------------------------------------------------- LA MISE EN PAGE (section 1 de la proposition)
+// La scène : de x 244 à 1128 (juste à droite de la mascotte, à gauche des réserves d'étoiles, x 1136) et de y 106 (sous le
+// compteur d'étoiles) à 480 (au-dessus du pavé, dont les touches commencent à y 490) : 884 × 374, l'image dedans 860 × 350 (un peu plus large que le 21:9 : un lieu généré en 16:9 y perd le haut, jamais le bas).
+// LA BANDE DE LA BULLE : en haut à gauche de la scène (x < 760, y < 300) ne se posent que le décor et ce qu'on ne touche pas ; la
+// bulle de la mascotte s'y écrit (sa place « droite », engine/bulle.js). Le SOL : les objets ont le pied entre y 380 et 466.
+const CADRE = { x: 244, y: 106, w: 884, h: 374 }, IX = CADRE.x + D.CADRE_BORD, IY = CADRE.y + D.CADRE_BORD, IW = CADRE.w - 2 * D.CADRE_BORD, IH = CADRE.h - 2 * D.CADRE_BORD;
+const BANDE_BULLE = [CADRE.x, CADRE.y, 760, 300];
+const zones = []; // ce qu'on touche (étiquettes, plaque, objets du partage) : la bulle ne doit jamais le couvrir (contrôlé par captures.mjs)
+const zone = (x, y, w, h, quoi) => zones.push({ x, y, w, h, quoi });
+
+const enCtx = (f) => { ctx.save(); ctx.setTransform(px, 0, 0, px, 0, 0); f(ctx); ctx.restore(); };
+const chrome = () => enCtx((c) => { c.drawImage(maison, 10, 6, 130, 130); c.drawImage(etoiles, 960, 40, 140, 70); c.drawImage(mascotte, 22, 136, 210, 280); });
+const small = (name, x, y, s) => { const q = sprites.frame(name, 0); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, x * px + q.dx * s, y * px + q.dy * s, q.w * s, q.h * s); };
+const KEY = 112, ROWS = [540, 668], COLS = [390, 508, 626, 744, 862], SIDE = 1010;
+const pave = () => {
+  for (let d = 0; d <= 9; d++) { const x = COLS[d % 5], y = ROWS[Math.floor(d / 5)]; small("reponse", x, y, 0.9); ctx.setTransform(px, 0, 0, px, 0, 0); R.drawNumber(ctx, String(d), x, y - 25, 50, { w: 7, seed: 900 + d }); }
+  small("effacer", SIDE, ROWS[0], 0.8); small("valider", SIDE, ROWS[1], 0.7);
+};
+const boutons = () => { ctx.setTransform(1, 0, 0, 1, 0, 0); sprites.draw(ctx, "aide", 0, 222, 580); sprites.draw(ctx, "nsp", 0, 1165, 604); };
+
+// le cadre et le lieu (l'étal : la vraie image, recadrée autour de sa glace ; les autres : provisoires)
+const LIEU_ETAL_Y = 0.07; // (le haut du recadrage de l'image de l'étal, en fraction de sa hauteur : la glace devient le sol)
+const lieu = (g, id, objets) => {
+  D.drawCadre(g, CADRE.x, CADRE.y, CADRE.w, CADRE.h, "fond");
+  enCtx((c) => {
+    c.save(); const inn = D.cadreInterieur(CADRE.x, CADRE.y, CADRE.w, CADRE.h); c.beginPath(); inn.forEach(([a, b], i) => (i ? c.lineTo(a, b) : c.moveTo(a, b))); c.closePath(); c.clip();
+    if (id === "etal") { const s = IW / etal.width; c.drawImage(etal, IX, IY - etal.height * s * LIEU_ETAL_Y, IW, etal.height * s); }
+    else if (VRAIS[id]) { const im = VRAIS[id], garde = Math.round((im.width * IH) / IW); c.drawImage(im, 0, im.height - garde, im.width, garde, IX, IY, IW, IH); }
+    else V.LIEUX[id](c, IX, IY, IW, IH);
+    objets?.(c);
+    c.restore();
+  });
+  D.drawCadre(g, CADRE.x, CADRE.y, CADRE.w, CADRE.h, "devant");
+  document.getElementById("provisoire").textContent = id === "etal" || VRAIS[id] ? "objets provisoires" : "lieu et objets provisoires";
+};
+// une étiquette de donnée, à l'échelle s ; `icone` : une icône que l'atelier n'a pas encore (dessinée par-dessus la place du jeton)
+const etiq = (g, x, y, t, objet, { lit = false, s = 1, em = 38, icone = null, seed = 1, touche = true } = {}) => {
+  g.push(x, y, s); const w = D.drawEtiquette(g, 0, 0, t, icone ? "jeton" : objet, { lit, seed, em }); g.pop();
+  if (icone) enCtx((c) => { const cx = x + (w - em) * s, cy = y + (D.ETIQ_H / 2) * s; c.fillStyle = lit ? "#fff3b8" : "#fffaf0"; c.fill(V.ell(cx, cy, em * 0.62 * s, em * 0.62 * s)); icone(c, cx, cy, em * 0.5 * s); });
+  if (touche) zone(x, y, w * s, D.ETIQ_H * s, `étiquette ${t}`);
+  return w * s;
+};
+// la plaque de la réponse, posée sur le dépôt de la réponse
+const plaque = (g, x, y, t, objet, { juste = false, icone = null, w = 196 } = {}) => {
+  D.drawReponse(g, x, y, w, t, icone ? "jeton" : objet, { juste });
+  if (icone) enCtx((c) => { const cx = x + w - 48, cy = y + 42; c.fillStyle = juste ? "#eaffd8" : "#fffaf0"; c.fill(V.ell(cx, cy, 26, 26)); icone(c, cx, cy, 20); });
+  zone(x, y, w, 84, "plaque de la réponse");
+};
+// une ficelle de la plaque à son objet (le « ? » est CE que contient cet objet)
+const ficelle = (x0, y0, x1, y1) => enCtx((c) => { c.save(); c.setLineDash([2, 7]); c.lineCap = "round"; c.lineWidth = 4; c.strokeStyle = "#fffaf0"; c.beginPath(); c.moveTo(x0, y0); c.quadraticCurveTo((x0 + x1) / 2, Math.max(y0, y1) + 18, x1, y1); c.stroke(); c.restore(); });
+const icoCoq = (couleur) => (c, cx, cy, r) => V.coquillage(c, cx, cy + r * 0.1, r * 0.95, couleur);
+const COQ_B = ["#fbf3ea", "#e2cdb8"], COQ_R = ["#f7a9bf", "#d97b97"];
+const icoSachet = (c, cx, cy, r) => V.sachet(c, cx, cy + r * 1.05, r * 2.1);
+const icoPot = (c, cx, cy, r) => V.pot(c, cx, cy + r * 1.0, r * 2.0);
+const dit = (t) => { const d = document.getElementById("dit"); d.innerHTML = t.replace(/\d+/g, (n) => `<span class="n">${n}</span>`); d.style.top = `${292 - d.offsetHeight}px`; };
+const nouveau = () => { zones.length = 0; ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, scene.width, scene.height); chrome(); return D.gfx(ctx, W, H, px); };
+const bonds = (g, xs, y, n) => xs.slice(0, n).forEach((x, i) => D.drawCalcul(g, x, y, String((i + 1) * 6), 34));
+
+// ---------------------------------------------------------------- LES CINQ ÉNONCÉS
+// 1. RÉUNION, reu-t-07 (niveau 2, la plage) : « Dans ton seau, il y a 8 coquillages blancs et 5 coquillages roses. »
+const reu = E("reu-t-07");
+const SEAU = [700, 456, 196];
+const sceneReunion = (g, { facile = false, montre = false } = {}) => {
+  lieu(g, "plage", (c) => {
+    V.pelle(c, 860, 460, 130); V.seau(c, ...SEAU);
+    // au cran « plus facile » : les coquillages, une collection par étiquette, séparées, sur le sable devant le seau
+    if (facile) { V.ombreSol(c, 360, 450, 110); V.ombreSol(c, 530, 450, 76); D.placesGroupe(360, 414, 8, 50, 4).forEach(([x, y]) => V.coquillage(c, x, y, 21, COQ_B)); D.placesGroupe(530, 414, 5, 50, 3).forEach(([x, y]) => V.coquillage(c, x, y, 21, COQ_R)); }
+    // à la correction (13, pas plus de 20) : les coquillages montrés dans le seau
+    if (montre) { const pts = D.placesGroupe(SEAU[0], SEAU[1] - SEAU[2] - 12, 13, 30, 7); pts.forEach(([x, y], i) => V.coquillage(c, x, y, 15, i < 8 ? COQ_B : COQ_R)); }
+  });
+  // les deux étiquettes sur le seau (ce qu'il y a dedans), la plaque au-dessus : « combien dans le seau ? »
+  etiq(g, 640, 316, "8", null, { icone: icoCoq(COQ_B), s: 1.02, seed: 1, lit: false });
+  etiq(g, 640, 386, "5", null, { icone: icoCoq(COQ_R), s: 1.02, seed: 2 });
+};
+// 2. TRANSFORMATION, tra-pf-13 (niveau 6, l'étal, la vraie image) : « Ce matin, le pêcheur a 23 sardines sur son étal. Il en vend 9. »
+const tra = E("tra-pf-13");
+const sceneTransfo = (g, { lit = -1, montre = false } = {}) => {
+  lieu(g, "etal", (c) => {
+    // le pêcheur, derrière l'étal (l'étal redessiné devant lui, sous le bord de la caisse)
+    V.personnage(c, 1040, 418, 262, V.PERSONNAGES.pecheur);
+    const s = IW / etal.width, y0 = IY - etal.height * s * LIEU_ETAL_Y, bord = y0 + etal.height * s * 0.375;
+    c.save(); c.beginPath(); c.rect(IX + IW * 0.18, bord, IW, IH); c.clip(); c.drawImage(etal, IX, y0, IW, etal.height * s); c.restore();
+    // ce qu'il a vendu : un cornet, parti vers la gauche (les traits du mouvement)
+    V.sachet(c, 560, 400, 120); [[470, 330], [454, 352], [470, 374]].forEach(([x, y]) => V.trait(c, [[x, y], [x + 34, y]], 5, "#fffaf0"));
+    if (montre) D.placesGroupe(870, 330, 14, 38, 7).forEach(([x, y], i) => D.drawObjet(D.gfx(c, W, H, px), "poisson", x, y, 0.78, 50 + i));
+  });
+  if (!montre) etiq(g, 806, 318, "23", "poisson", { s: 1.08, seed: 1, lit: lit === 0 });
+  etiq(g, 504, 360, "9", "poisson", { s: 1.0, seed: 2, lit: lit === 1 });
+};
+// 3. COMPARAISON, cmp-g-04 (niveau 5, la classe) : « Ta trousse contient 8 crayons. La trousse de ta voisine en contient 5 de plus. »
+const cmp = E("cmp-g-04");
+const sceneComparaison = (g) => {
+  lieu(g, "classe", (c) => {
+    V.personnage(c, 1000, 404, 206, V.PERSONNAGES.voisine);
+    V.pupitre(c, 300, 1110, 396, 470);
+    V.trousse(c, 470, 398, 200); V.trousse(c, 900, 398, 200, ["#ffcf3a", "#d9a11a"]);
+    // le pont entre les deux trousses : l'écart (sans signe : l'histoire dit « de plus », le schéma montrera lequel est le plus grand)
+    c.save(); c.setLineDash([3, 10]); c.lineCap = "round"; c.lineWidth = 6; c.strokeStyle = "#fffaf0"; c.beginPath(); c.moveTo(566, 340); c.quadraticCurveTo(685, 270, 802, 340); c.stroke(); c.restore();
+  });
+  etiq(g, 408, 400, "8", "crayon", { s: 1.02, seed: 1 });
+  etiq(g, 624, 302, "5", "crayon", { s: 1.02, seed: 2 });
+};
+// 4. GROUPES ÉGAUX, grp-07 (niveau 7, le coin du chien) : « Papa vide 3 sachets de gourmandises dans la gamelle du chien. Chaque sachet contient 6 gourmandises. »
+const grp = E("grp-07"), SACHETS = [800, 920, 1040];
+const sceneGroupes = (g, { litN = -1, ouverts = false, pleine = false, lit3 = false, lit6 = false } = {}) => {
+  lieu(g, "animaux", (c) => {
+    V.personnage(c, 1058, 440, 258, V.PERSONNAGES.papa);
+    SACHETS.forEach((x, i) => (ouverts ? V.sachetVide(c, x, 462, 130) : V.sachet(c, x, 462, 150, { lit: i <= litN })));
+    V.retourne(c, 326, () => V.chien(c, 326, 462, 168));
+    // l'accolade des 3 sachets, sous leur étiquette
+    c.save(); c.lineCap = "round"; c.lineJoin = "round"; c.lineWidth = 5; c.strokeStyle = "#fffaf0"; c.beginPath(); c.moveTo(744, 304); c.quadraticCurveTo(744, 292, 760, 292); c.lineTo(906, 292); c.quadraticCurveTo(920, 292, 920, 282); c.quadraticCurveTo(920, 292, 934, 292); c.lineTo(1080, 292); c.quadraticCurveTo(1096, 292, 1096, 304); c.stroke(); c.restore();
+    V.gamelle(c, 478, 462, 190, pleine ? (cx, cy, w) => D.placesGroupe(cx, cy - 6, 18, 27, 6).forEach(([x, y], i) => D.drawObjet(D.gfx(c, W, H, px), "biscuit", x, y, 0.56, 80 + i)) : null);
+  });
+  // « 3 » (avec l'icône du sachet) au-dessus des sachets ; « 6 » sur chaque sachet (les sachets fermés, marqués de ce qu'ils contiennent)
+  etiq(g, 862, 206, "3", null, { icone: icoSachet, s: 1.02, seed: 1, lit: lit3 });
+  if (!ouverts) SACHETS.forEach((x, i) => etiq(g, x - 54, 372, "6", "biscuit", { s: 0.94, seed: 2 + i, lit: lit6, touche: true }));
+};
+// 5. PARTAGE, par-v-03 (niveau 3, la classe, manipulé) : « La maîtresse a 12 crayons. Elle les met dans 3 pots. Chaque pot a le même nombre de crayons. »
+const par = E("par-v-03"), POTS = [690, 830, 970];
+const CR = [["#e8473e", "#b32c26"], ["#ffcf3a", "#d9a11a"], ["#4f92d6", "#2f6aa6"], ["#9a6ad0", "#7048a6"], ["#3fae6b", "#2b8050"], ["#ff8a3b", "#d0601a"]];
+const crayonsDans = (c, cx, n) => { for (let i = 0; i < n; i++) { const t = n > 1 ? i / (n - 1) - 0.5 : 0; V.crayonDebout(c, cx + t * 30, 372, 136, CR[(i + Math.round(cx)) % CR.length], t * 0.5); } };
+const scenePartage = (g, { dans = [0, 0, 0], ouvert = false, lit = -1 } = {}) => {
+  lieu(g, "classe", (c) => {
+    V.personnage(c, 1070, 470, 250, V.PERSONNAGES.maitresse);
+    V.pupitre(c, 330, 1010, 386, 470);
+    V.paquet(c, 470, 398, 96, { ouvert });
+    POTS.forEach((x, i) => { V.pot(c, x, 398, 100, [["#e8473e", "#b32c26"], ["#4f92d6", "#2f6aa6"], ["#3fae6b", "#2b8050"]][i], { lit: i === lit }); if (dans[i]) { crayonsDans(c, x, dans[i]); V.bordPot(c, x, 398, 100, [["#e8473e", "#b32c26"], ["#4f92d6", "#2f6aa6"], ["#3fae6b", "#2b8050"]][i]); } });
+  });
+  etiq(g, 410, 402, "12", "crayon", { s: 1.0, seed: 1 });
+  etiq(g, 880, 200, "3", null, { icone: icoPot, s: 1.0, seed: 2 });
+  enCtx((c) => { c.save(); c.lineCap = "round"; c.lineJoin = "round"; c.lineWidth = 5; c.strokeStyle = "#fffaf0"; c.beginPath(); c.moveTo(654, 284); c.quadraticCurveTo(654, 274, 668, 274); c.lineTo(916, 274); c.quadraticCurveTo(930, 274, 930, 268); c.quadraticCurveTo(930, 274, 944, 274); c.lineTo(992, 274); c.quadraticCurveTo(1006, 274, 1006, 284); c.stroke(); c.restore(); });
+};
+
+// LES PREMIERS LIEUX GÉNÉRÉS (6 novembre 2026), pour vérifier le recadrage : la cuisine (tra-pf-01) et la chambre (cmp-e-01)
+const cui = E("tra-pf-01"), cha = E("cmp-e-01");
+const sceneCuisine = (g, { lit = -1 } = {}) => {
+  lieu(g, "cuisine", (c) => { V.tableCuisine(c, 420, 900, 392, 468); V.assiette(c, 640, 380, 190); });
+  etiq(g, 520, 300, "8", "biscuit", { s: 1.02, seed: 1, lit: lit === 0 });
+  etiq(g, 700, 404, "2", "biscuit", { s: 1.02, seed: 2, lit: lit === 1 });
+};
+const sceneChambre = (g) => {
+  lieu(g, "chambre", (c) => { V.personnage(c, 900, 462, 196, V.PERSONNAGES.copain); });
+  etiq(g, 420, 398, "7", "bille", { s: 1.02, seed: 1 });
+  etiq(g, 846, 398, "4", "bille", { s: 1.02, seed: 2 });
+};
+
+// ---------------------------------------------------------------- LES ÉCRANS
+const ECRANS = {
+  // l'histoire et la question (le pavé répond)
+  "reunion-question": () => { const g = nouveau(); sceneReunion(g); plaque(g, 880, 330, "?", null, { icone: icoCoq(COQ_B) }); ficelle(880, 372, 800, 360); pave(); boutons(); dit(reu.question); },
+  // au cran « plus facile » : les données en objets, une collection par étiquette
+  "reunion-facile": () => { const g = nouveau(); sceneReunion(g, { facile: true }); plaque(g, 880, 330, "?", null, { icone: icoCoq(COQ_B) }); ficelle(880, 372, 800, 360); pave(); boutons(); dit(reu.enonce[0]); },
+  // la correction : le schéma en barres à la place du pavé (comme aujourd'hui), les coquillages montrés dans le seau
+  "reunion-correction": () => { const g = nouveau(); sceneReunion(g, { montre: true }); plaque(g, 880, 330, "13", null, { icone: icoCoq(COQ_B) }); ficelle(880, 372, 800, 360); D.drawBarres(g, 360, 500, 640, reu.barres, "jeton", { montre: true }); D.drawCalcul(g, 680, 680, reu.calcul); boutons(); dit(reu.correction); },
+  "transformation-histoire": () => { const g = nouveau(); sceneTransfo(g, { lit: 1 }); pave(); boutons(); dit(tra.enonce[1]); },
+  "transformation-question": () => { const g = nouveau(); sceneTransfo(g); plaque(g, 806, 392, "?", "poisson"); pave(); boutons(); dit(tra.question); },
+  "transformation-correction": () => { const g = nouveau(); sceneTransfo(g, { montre: true }); plaque(g, 806, 392, "14", "poisson"); D.drawBarres(g, 360, 500, 640, tra.barres, "poisson", { montre: true }); D.drawCalcul(g, 680, 680, tra.calcul); boutons(); dit(tra.correction); },
+  "comparaison-question": () => { const g = nouveau(); sceneComparaison(g); plaque(g, 802, 392, "?", "crayon"); pave(); boutons(); dit(cmp.question); },
+  "comparaison-aide": () => { const g = nouveau(); sceneComparaison(g); plaque(g, 802, 392, "?", "crayon"); D.drawComparaison(g, 360, 520, 640, cmp.comparaison, "crayon"); boutons(); dit("Regarde le schéma. La barre du haut, c'est le plus grand."); },
+  "groupes-histoire": () => { const g = nouveau(); sceneGroupes(g, { lit6: true }); pave(); boutons(); dit(grp.enonce[1]); },
+  "groupes-question": () => { const g = nouveau(); sceneGroupes(g); plaque(g, 560, 314, "?", "biscuit", { w: 180 }); ficelle(560, 360, 540, 404); pave(); boutons(); dit(grp.question); },
+  // l'aide après une erreur : les sachets comptés par bonds, sur la scène même ; les totaux dessous, à la place du pavé
+  "groupes-bonds": () => { const g = nouveau(); sceneGroupes(g, { litN: 2 }); plaque(g, 560, 314, "?", "biscuit", { w: 180 }); ficelle(560, 360, 540, 404); bonds(g, SACHETS, 492, 3); boutons(); dit("6, 12, 18."); },
+  // la correction : les sachets vidés dans la gamelle, les 18 gourmandises montrées, le calcul écrit
+  "groupes-correction": () => { const g = nouveau(); sceneGroupes(g, { ouverts: true, pleine: true }); plaque(g, 560, 314, "18", "biscuit", { w: 180 }); ficelle(560, 360, 540, 404); bonds(g, SACHETS, 492, 3); D.drawCalcul(g, 680, 640, "6 + 6 + 6 = 18"); boutons(); dit(grp.correction); },
+  "partage-histoire": () => { const g = nouveau(); scenePartage(g); boutons(); dit(par.enonce[1]); },
+  // le partage manipulé (niveau 3) : le paquet ouvert, les crayons en tas à la place du pavé ; les pots de la scène les reçoivent
+  "partage-manipule": () => {
+    const g = nouveau(); scenePartage(g, { dans: [2, 2, 1], ouvert: true, lit: 2 });
+    const tas = [[452, 560], [520, 590], [586, 556], [470, 640], [560, 650], [640, 612]];
+    tas.forEach(([x, y], i) => { D.drawObjet(g, "crayon", x, y, 1.5, 70 + i, i); zone(x - 40, y - 40, 80, 80, "crayon à glisser"); });
+    enCtx((c) => { c.save(); c.setLineDash([3, 11]); c.lineCap = "round"; c.lineWidth = 5; c.strokeStyle = "#fffaf0"; c.beginPath(); c.moveTo(690, 590); c.quadraticCurveTo(900, 560, 950, 420); c.stroke(); c.restore(); });
+    D.drawObjet(g, "crayon", 930, 460, 1.6, 90, 3);
+    POTS.forEach((x) => zone(x - 40, 300, 80, 100, "pot (où l'on dépose)"));
+    boutons(); dit("Mets-en autant dans chaque pot.");
+  },
+  // tout est rangé : les pots remplis restent sur la scène, la question, le pavé revient
+  "partage-question": () => { const g = nouveau(); scenePartage(g, { dans: [4, 4, 4], ouvert: true }); plaque(g, 612, 402, "?", "crayon"); pave(); boutons(); dit(par.question); },
+  "lieu-cuisine": () => { const g = nouveau(); sceneCuisine(g, { lit: 1 }); plaque(g, 760, 302, "?", "biscuit"); ficelle(760, 344, 720, 370); pave(); boutons(); dit(cui.enonce[1]); },
+  "lieu-chambre": () => { const g = nouveau(); sceneChambre(g); plaque(g, 560, 314, "?", "bille"); pave(); boutons(); dit(cha.question); },
+};
+const nav = document.getElementById("nav"), go = (id) => { dit(""); ECRANS[id](); [...nav.children].forEach((b) => b.classList.toggle("on", b.dataset.id === id)); window.__ecran = id; window.__zones = zones.map((z) => ({ ...z })); };
+for (const id of Object.keys(ECRANS)) { const b = document.createElement("button"); b.textContent = id; b.dataset.id = id; b.onclick = () => go(id); nav.append(b); }
+if (CAPTURE) nav.style.display = "none";
+window.__ecrans = Object.keys(ECRANS);
+go(Q.get("ecran") ?? "groupes-question");
+window.__go = go; window.__ready = true;
+</script>
+</body>
+</html>

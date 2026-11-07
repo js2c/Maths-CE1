@@ -1,0 +1,18 @@
+{
+  "_doc": "Les boutons générés par le parent avec Nano Banana (décisions du 7 novembre 2026 ; lot « Nouveaux boutons, mascotte du récif et étoiles »). Chaque source (art/boutons/sources/<source>.jpg|png, jamais modifiée) donne une image, ou plusieurs pour une planche : les boutons d'une planche sont lus par rangées, de haut en bas, puis de gauche à droite. Le fond est un vert uni (mesuré image par image ; « magenta » pour un bouton qui a beaucoup de vert). Les tailles à fabriquer sont celles des usages de l'application (app/js/engine/boutons.js). Commande : node art/tools/export-boutons.mjs, puis node tools/precache.mjs.",
+  "sources": {
+    "01": ["ligne", "additions", "calcul", "voiliers", "multiplication", "etal", "problemes"],
+    "02": ["recif"],
+    "03": ["boutique"],
+    "04": ["album"],
+    "05": ["maison"],
+    "06": ["choisir"],
+    "07": ["lecons"],
+    "08": ["jouer"],
+    "09": ["zone-lagon"],
+    "10": ["zone-corail"],
+    "11": ["zone-large"],
+    "12": ["zone-abysses"],
+    "13": ["encore"]
+  }
+}

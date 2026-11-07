@@ -1,0 +1,368 @@
+{
+ "_doc": "Généré par art/tools/export-boutons.mjs : les images des boutons du parent qui existent (<image>-<diamètre>@1x|2x.webp, le diamètre en px de scène), et la mesure de chacune (la source, le vert du fond, le cercle ajusté en px de la source, l'écart moyen du bord au cercle). Un usage dont l'image manque garde l'ancien dessin de l'atelier (app/js/engine/boutons.js).",
+ "images": {
+  "ligne": [
+   150,
+   100
+  ],
+  "additions": [
+   150,
+   100
+  ],
+  "calcul": [
+   150,
+   100
+  ],
+  "voiliers": [
+   150,
+   100
+  ],
+  "multiplication": [
+   150,
+   100
+  ],
+  "etal": [
+   150,
+   100
+  ],
+  "problemes": [
+   150,
+   100
+  ],
+  "recif": [
+   200,
+   120,
+   115,
+   101,
+   38
+  ],
+  "boutique": [
+   138,
+   128
+  ],
+  "album": [
+   138,
+   120
+  ],
+  "maison": [
+   156,
+   120,
+   103
+  ],
+  "choisir": [
+   200
+  ],
+  "lecons": [
+   200
+  ],
+  "jouer": [
+   200
+  ],
+  "zone-lagon": [
+   108,
+   96
+  ],
+  "zone-corail": [
+   108,
+   96
+  ],
+  "zone-large": [
+   108,
+   96
+  ],
+  "zone-abysses": [
+   108,
+   96
+  ],
+  "encore": [
+   200
+  ]
+ },
+ "mesures": {
+  "ligne": {
+   "source": "01",
+   "fond": [
+    44,
+    242,
+    3
+   ],
+   "cercle": [
+    338.3,
+    385,
+    304.6
+   ],
+   "ecart": 1.37,
+   "rondeur": 1
+  },
+  "additions": {
+   "source": "01",
+   "fond": [
+    44,
+    242,
+    3
+   ],
+   "cercle": [
+    979.2,
+    384.8,
+    304.4
+   ],
+   "ecart": 1.32,
+   "rondeur": 0.998
+  },
+  "calcul": {
+   "source": "01",
+   "fond": [
+    44,
+    242,
+    3
+   ],
+   "cercle": [
+    1614.7,
+    384.6,
+    304.3
+   ],
+   "ecart": 1.36,
+   "rondeur": 1
+  },
+  "voiliers": {
+   "source": "01",
+   "fond": [
+    44,
+    242,
+    3
+   ],
+   "cercle": [
+    2246.5,
+    384.8,
+    304.8
+   ],
+   "ecart": 1.3,
+   "rondeur": 1
+  },
+  "multiplication": {
+   "source": "01",
+   "fond": [
+    44,
+    242,
+    3
+   ],
+   "cercle": [
+    649.6,
+    1076.3,
+    299.9
+   ],
+   "ecart": 1.14,
+   "rondeur": 1.001
+  },
+  "etal": {
+   "source": "01",
+   "fond": [
+    44,
+    242,
+    3
+   ],
+   "cercle": [
+    1303.1,
+    1076.1,
+    300.6
+   ],
+   "ecart": 0.94,
+   "rondeur": 1
+  },
+  "problemes": {
+   "source": "01",
+   "fond": [
+    44,
+    242,
+    3
+   ],
+   "cercle": [
+    1958.4,
+    1076,
+    301
+   ],
+   "ecart": 0.89,
+   "rondeur": 1
+  },
+  "recif": {
+   "source": "02",
+   "fond": [
+    11,
+    243,
+    7
+   ],
+   "cercle": [
+    514,
+    505.6,
+    431.5
+   ],
+   "ecart": 1.14,
+   "rondeur": 1
+  },
+  "boutique": {
+   "source": "03",
+   "fond": [
+    24,
+    243,
+    11
+   ],
+   "cercle": [
+    516,
+    499.8,
+    437.7
+   ],
+   "ecart": 1.22,
+   "rondeur": 1.001
+  },
+  "album": {
+   "source": "04",
+   "fond": [
+    14,
+    240,
+    11
+   ],
+   "cercle": [
+    513.1,
+    518.9,
+    473.3
+   ],
+   "ecart": 1.37,
+   "rondeur": 1
+  },
+  "maison": {
+   "source": "05",
+   "fond": [
+    22,
+    233,
+    8
+   ],
+   "cercle": [
+    514,
+    506,
+    431.4
+   ],
+   "ecart": 1.13,
+   "rondeur": 1
+  },
+  "choisir": {
+   "source": "06",
+   "fond": [
+    125,
+    254,
+    1
+   ],
+   "cercle": [
+    717.8,
+    750.6,
+    653.6
+   ],
+   "ecart": 1.36,
+   "rondeur": 1
+  },
+  "lecons": {
+   "source": "07",
+   "fond": [
+    115,
+    249,
+    4
+   ],
+   "cercle": [
+    558,
+    500.7,
+    436
+   ],
+   "ecart": 1.42,
+   "rondeur": 1
+  },
+  "jouer": {
+   "source": "08",
+   "fond": [
+    116,
+    247,
+    4
+   ],
+   "cercle": [
+    478.5,
+    500.5,
+    435.7
+   ],
+   "ecart": 1.45,
+   "rondeur": 1
+  },
+  "zone-lagon": {
+   "source": "09",
+   "fond": [
+    80,
+    249,
+    4
+   ],
+   "cercle": [
+    514.1,
+    505.8,
+    431.1
+   ],
+   "ecart": 1.14,
+   "rondeur": 1
+  },
+  "zone-corail": {
+   "source": "10",
+   "fond": [
+    28,
+    242,
+    6
+   ],
+   "cercle": [
+    514.1,
+    505.7,
+    431.3
+   ],
+   "ecart": 1.16,
+   "rondeur": 1
+  },
+  "zone-large": {
+   "source": "11",
+   "fond": [
+    27,
+    238,
+    15
+   ],
+   "cercle": [
+    514.1,
+    505.7,
+    431
+   ],
+   "ecart": 1.14,
+   "rondeur": 1
+  },
+  "zone-abysses": {
+   "source": "12",
+   "fond": [
+    27,
+    229,
+    12
+   ],
+   "cercle": [
+    514,
+    505.8,
+    431.2
+   ],
+   "ecart": 1.14,
+   "rondeur": 1
+  },
+  "encore": {
+   "source": "13",
+   "fond": [
+    24,
+    240,
+    8
+   ],
+   "cercle": [
+    514.1,
+    505.8,
+    431.4
+   ],
+   "ecart": 1.16,
+   "rondeur": 1
+  }
+ }
+}

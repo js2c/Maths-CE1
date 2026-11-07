@@ -256,7 +256,7 @@ export const drawCadre = (g: Gfx, x: number, y: number, w: number, h: number, pa
 });
 
 // ---------------------------------------------------------------- le schéma en barres
-type Barre = { x: number; y: number; w: number; t: string; teinte: "tout" | "a" | "b" | "inconnue" | "trouvee"; objet?: Objet };
+type Barre = { x: number; y: number; w: number; t: string; teinte: "tout" | "a" | "b" | "inconnue" | "trouvee"; objet?: Objet | null };
 export const BARRE_H = 70;
 const COUL = { tout: [NACRE, NACRE_S], a: [ORANGE, ORANGE_S], b: [BLUE, BLUE_S], inconnue: ["#fff6e0", "#ead8b0"], trouvee: ["#fff3b8", "#e8cf6a"] } as const;
 const drawBarre = (g: Gfx, B: Barre, seed: number) => {
@@ -275,22 +275,26 @@ const drawBarre = (g: Gfx, B: Barre, seed: number) => {
 // largeur des barres : proportionnelle, avec un minimum pour que le nombre et l'objet tiennent
 const largeurs = (vals: number[], W: number, min = 120) => { const tot = vals.reduce((a, b) => a + b, 0), raw = vals.map((v) => (v / tot) * W), short = raw.map((r) => Math.max(min, r)), over = short.reduce((a, b) => a + b, 0) - W; const big = short.map((r, i) => (raw[i] > min ? r : 0)), bt = big.reduce((a, b) => a + b, 0); return short.map((r, i) => (big[i] ? r - (over * big[i]) / bt : r)); };
 // le tout (en haut) et ses deux parties (en dessous) ; `inconnue` : « tout » ou l'indice de la partie ; `montre` : la réponse écrite
-export const drawBarres = (g: Gfx, x: number, y: number, W: number, b: { tout: number; parties: [number, number]; inconnue: "tout" | 0 | 1 }, objet: Objet, o: { montre?: boolean; seed?: number } = {}) => {
+// `objet` : celui de toutes les barres, ou celui de chacune ([le tout, la première partie, la seconde] ; plusieurs sortes comptées)
+export const drawBarres = (g: Gfx, x: number, y: number, W: number, b: { tout: number; parties: [number, number]; inconnue: "tout" | 0 | 1 }, objet: Objet | null | (Objet | null)[], o: { montre?: boolean; seed?: number } = {}) => {
+  const ob = (k: number) => (Array.isArray(objet) ? objet[k] ?? null : objet);
   const seed = 13900 + (o.seed ?? 0) * 40, [wa, wb] = largeurs(b.parties, W), gap = 22, lbl = (v: number, unk: boolean) => (unk && !o.montre ? "?" : String(v));
   const tUnk = b.inconnue === "tout", teinte = (unk: boolean, base: Barre["teinte"]): Barre["teinte"] => (unk ? (o.montre ? "trouvee" : "inconnue") : base);
-  drawBarre(g, { x, y, w: W, t: lbl(b.tout, tUnk), teinte: teinte(tUnk, "tout"), objet }, seed);
+  drawBarre(g, { x, y, w: W, t: lbl(b.tout, tUnk), teinte: teinte(tUnk, "tout"), objet: ob(0) }, seed);
   // le crochet qui dit « le tout, c'est les deux parties ensemble » : deux traits d'encre qui descendent aux bords
   g.group("plain", () => [x + 10, x + W - 10].forEach((xx, i) => ink(g, [[xx, y + BARRE_H + 4], [xx, y + BARRE_H + gap - 4]], INK, { w: 2.4, shadow: 0, seed: seed + 20 + i }, 0.7)));
-  drawBarre(g, { x, y: y + BARRE_H + gap, w: wa, t: lbl(b.parties[0], b.inconnue === 0), teinte: teinte(b.inconnue === 0, "a"), objet }, seed + 1);
-  drawBarre(g, { x: x + wa, y: y + BARRE_H + gap, w: wb, t: lbl(b.parties[1], b.inconnue === 1), teinte: teinte(b.inconnue === 1, "b"), objet }, seed + 2);
+  drawBarre(g, { x, y: y + BARRE_H + gap, w: wa, t: lbl(b.parties[0], b.inconnue === 0), teinte: teinte(b.inconnue === 0, "a"), objet: ob(1) }, seed + 1);
+  drawBarre(g, { x: x + wa, y: y + BARRE_H + gap, w: wb, t: lbl(b.parties[1], b.inconnue === 1), teinte: teinte(b.inconnue === 1, "b"), objet: ob(2) }, seed + 2);
   return { h: 2 * BARRE_H + gap };
 };
 // la comparaison : le plus grand en haut, le plus petit en dessous, aligné à gauche ; l'écart prolonge le plus petit, en pointillés
-export const drawComparaison = (g: Gfx, x: number, y: number, W: number, c: { grand: number; petit: number; ecart: number; inconnue: "grand" | "petit" | "ecart" }, objet: Objet, o: { montre?: boolean; seed?: number } = {}) => {
+// `objet` : celui des deux barres, ou celui de chacune ([le plus grand, le plus petit])
+export const drawComparaison = (g: Gfx, x: number, y: number, W: number, c: { grand: number; petit: number; ecart: number; inconnue: "grand" | "petit" | "ecart" }, objet: Objet | null | (Objet | null)[], o: { montre?: boolean; seed?: number } = {}) => {
+  const ob = (k: number) => (Array.isArray(objet) ? objet[k] ?? null : objet);
   const seed = 14300 + (o.seed ?? 0) * 40, [wp, we] = largeurs([c.petit, c.ecart], W, 110), gap = 26, lbl = (v: number, unk: boolean) => (unk && !o.montre ? "?" : String(v)), U = (k: string) => c.inconnue === k;
   const teinte = (unk: boolean, base: Barre["teinte"]): Barre["teinte"] => (unk ? (o.montre ? "trouvee" : "inconnue") : base);
-  drawBarre(g, { x, y, w: W, t: lbl(c.grand, U("grand")), teinte: teinte(U("grand"), "a"), objet }, seed);
-  drawBarre(g, { x, y: y + BARRE_H + gap, w: wp, t: lbl(c.petit, U("petit")), teinte: teinte(U("petit"), "b"), objet }, seed + 1);
+  drawBarre(g, { x, y, w: W, t: lbl(c.grand, U("grand")), teinte: teinte(U("grand"), "a"), objet: ob(0) }, seed);
+  drawBarre(g, { x, y: y + BARRE_H + gap, w: wp, t: lbl(c.petit, U("petit")), teinte: teinte(U("petit"), "b"), objet: ob(1) }, seed + 1);
   // l'écart : une case en pointillés au bout du plus petit, sous ce qui dépasse
   g.group("plain", () => {
     const ex = x + wp + 8, ey = y + BARRE_H + gap, s = rrect(ex, ey, we - 8, BARRE_H, 14), em = 40, t = lbl(c.ecart, U("ecart"));

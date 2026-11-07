@@ -385,9 +385,12 @@ export class ProblemesScreen {
     if (!this.teintes && (q.aide === "barres" || q.aide === "comparaison")) { this.teintes = true; this.repaint(); }
     this.calque("aide", Z, (g, ctx) => {
       if (voir === "tout") { ctx.save(); ctx.beginPath(); ctx.rect(0, 0, Z.w * this.px, (520 + D.BARRE_H + 10 - Z.y) * this.px); ctx.clip(); }
-      if (q.aide === "barres") D.drawBarres(g, 360, 520, 640, e.barres, e.objet, { montre });
-      else if (q.aide === "comparaison") D.drawComparaison(g, 360, 520, 640, e.comparaison, e.objet, { montre });
-      else if (q.aide === "etapes") e.etapes.forEach((s, i) => D.drawBarres(g, i ? 700 : 318, 530, 340, s.barres, e.objet, { montre: montre || i === 0, seed: i + 1 }));
+      // (plusieurs sortes comptées : chaque barre avec l'image de la sienne, celle de l'étiquette du même nombre ; le tout qui les
+      // réunit, sans image)
+      const ob = (n) => (!e.scene?.unites ? e.objet : q.etiquettes.find((t) => t.n === n)?.objet ?? (this.unite ? e.objet : null));
+      if (q.aide === "barres") D.drawBarres(g, 360, 520, 640, e.barres, [ob(e.barres.tout), ob(e.barres.parties[0]), ob(e.barres.parties[1])], { montre });
+      else if (q.aide === "comparaison") D.drawComparaison(g, 360, 520, 640, e.comparaison, [ob(e.comparaison.grand), ob(e.comparaison.petit)], { montre });
+      else if (q.aide === "etapes") e.etapes.forEach((s, i) => D.drawBarres(g, i ? 700 : 318, 530, 340, s.barres, [ob(s.barres.tout), ob(s.barres.parties[0]), ob(s.barres.parties[1])], { montre: montre || i === 0, seed: i + 1 }));
       else if (R) {
         // les groupes de la scène comptés par bonds : le total écrit sous chaque objet compté (sur deux lignes s'ils sont serrés)
         const G = e.groupes, nb = montre ? G.nombre : this.bonds ?? 0, serre = R.copies.length > 1 && R.copies[1].x - R.copies[0].x < 118;

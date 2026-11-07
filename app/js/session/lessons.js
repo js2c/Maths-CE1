@@ -15,7 +15,7 @@
 //    et la voix dit « 7 plus 5, 12. ». Pas d'étoiles. Se termine par la maison (`app.tableCancel`).
 // Fonctions pures testées (tests/unit/lecons-menu.test.mjs) : `menuLayout`, `tableAid`, `tableHit`, `exerciseOf`.
 import * as R from "../art/runtime.js";
-import { entourage, onBrief, onTap, pop, spriteBox } from "../engine/ui.js";
+import { boutonRond, entourage, onBrief, onTap, pop, spriteBox } from "../engine/ui.js";
 import { MENTON } from "../engine/bulle.js";
 import { closeLegend, legendKey } from "./legend.js";
 import { deuxTouchers } from "./selection.js";
@@ -104,7 +104,8 @@ export async function lessonEnd(app, { id }) {
   const els = [];
   const q = sprites.frame(`lecons.atoi.${id}`, 0), R2 = Math.ceil(Math.max(-q.dx, -q.dy) / sprites.px) + 12;
   const atoi = spriteBox(app, { x: END.atoi[0] - R2, y: END.atoi[1] - R2, w: 2 * R2, h: 2 * R2, cls: "bubble lecons-atoi", label: "à toi", paint: (ctx) => sprites.draw(ctx, `lecons.atoi.${id}`, 0, R2, R2) });
-  const home = spriteBox(app, { x: END.maison[0] - 90, y: END.maison[1] - 90, w: 180, h: 180, cls: "bubble lecons-maison", label: "maison", paint: (ctx) => sprites.draw(ctx, "maison.grande", 0, 90, 90) });
+  // (lot « Nouveaux boutons… » : la maison ronde du parent, 156 px, au même centre)
+  const home = boutonRond(app, { cx: END.maison[0], cy: END.maison[1], d: 156, cls: "lecons-maison", label: "maison", paint: (ctx, px, o) => sprites.draw(ctx, "bouton.lecons.maison", 0, o, o) });
   els.push(atoi, home);
   voice.stop(); voice.say(text.data.finLecon, { instruction: true });
   const r = await new Promise((res) => {

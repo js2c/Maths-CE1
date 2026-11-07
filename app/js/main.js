@@ -13,7 +13,7 @@ import { Fleche } from "./engine/fleche.js";
 import { Lagon } from "./engine/lagon.js";
 import { LineView } from "./engine/line.js";
 import { persist, Store } from "./engine/store.js";
-import { loadAtlas, Sprites } from "./engine/sprites.js";
+import { loadAtlas, loadBoutons, Sprites } from "./engine/sprites.js";
 import { Stage } from "./engine/stage.js";
 import { Voice } from "./engine/voice.js";
 import { pickMusic, Sound } from "./engine/son.js";
@@ -58,7 +58,7 @@ import { deuxTouchers } from "./session/selection.js";
 import * as R from "./art/runtime.js";
 import { additionTable, exerciseOf, lessonEnd, lessonsMenu } from "./session/lessons.js";
 import { clock } from "./engine/clock.js";
-import { onBrief, pop, skipKey } from "./engine/ui.js";
+import { boutonRond, onBrief, pop, skipKey } from "./engine/ui.js";
 import { ParentSpace, parentLogo } from "./parent/parent.js";
 import { chargerLogo, Demarrage } from "./session/demarrage.js";
 import { fermerTout, Portee } from "./engine/portee.js";
@@ -99,8 +99,8 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !loc
 // du premier écran, les vidéos de la mascotte (créée tout de suite : ses vidéos se chargent pendant le reste)
 // (lot « Correctifs : passage… », point 9 : les images du logo, de la maquette art/logo/, chargées les toutes premières, en même
 // temps que l'atlas ; l'écran ne s'affiche qu'avec un logo décodé)
-const [atlas, logo] = await Promise.all([loadAtlas(), chargerLogo(stage.px).catch(() => null)]);
-const sprites = new Sprites(atlas, stage.px);
+const [atlas, logo, boutons] = await Promise.all([loadAtlas(), chargerLogo(stage.px).catch(() => null), loadBoutons()]);
+const sprites = new Sprites(atlas, stage.px, boutons);
 await sprites.load("demarrage").catch(() => {});
 // (lot « Banc Android », point 5) en portrait (un téléphone tenu droit, dans un onglet) : « tourne ton téléphone »
 installerTourner(atlas);
@@ -626,22 +626,20 @@ const openParent = async () => { voice.stop(); sound.suspend(); const r = await 
 // hasard ; les enchaînements en fondu (engine/son.js) ; rien dans l'espace parent (le son y est suspendu)
 const ambiance = () => sound.startMusic(sonContent.musique.horsSeance ?? "profondeurs"); sound.resume(); };
 // (lot « Correctifs : passage de l'échauffement aux voiliers », point 10 ; demande du parent du 10 octobre 2026) LES GALETS DE
-// L'ACCUEIL : plus grands (au moins 200 px de large) et chacun sa forme de galet (atelier : sea/galets.ts, sprites
-// « accueil.galet.* ») ; le bouton est la boîte du galet, son dessin (ombre comprise) déborde un peu. Sélectionné, l'entourage
-// corail suit exactement sa forme (runtime.js, drawSelectGalet) ; la bulle part du galet (`__cadre`, son ovale).
+// L'ACCUEIL ; (lot « Nouveaux boutons, mascotte du récif et étoiles », décision du parent du 7 novembre 2026) ce sont désormais les
+// boutons ronds du parent (engine/boutons.js : « bouton.accueil.* », 200 px ; « continuer » a l'image de « jouer ») : le bouton est
+// le cercle (engine/ui.js, boutonRond : le toucher n'est pris que dans le cercle) ; sélectionné, l'entourage corail est un cercle
+// exact autour de lui (runtime.js, drawSelectCercle) ; la bulle part du bouton (`__cadre`, le carré intérieur au cercle).
 let homeSel = null;
+const GALET_D = 200;
 const galet = (id, cx, label, cls) => {
-  const f = R.GALETS[id], w = Math.round(2 * f.rx), h = Math.round(2 * f.ry), W = R.GALET_W, H = R.GALET_H, px = stage.px;
-  const b = spriteBox(app, { x: cx - w / 2, y: GALET_Y - h / 2, w, h, cls: `bubble galet ${cls}`, label, paint: () => {} });
-  const c = b.querySelector("canvas"); c.width = Math.round(W * px); c.height = Math.round(H * px);
-  Object.assign(c.style, { position: "absolute", left: `${(w - W) / 2}px`, top: `${(h - H) / 2}px`, width: `${W}px`, height: `${H}px` });
-  b.repaint = () => {
-    const ctx = c.getContext("2d"); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height);
-    sprites.draw(ctx, `accueil.galet.${id}`, 0, W / 2, H / 2);
-    if (homeSel === id) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawSelectGalet(ctx, W / 2, H / 2, id); }
-  };
-  b.repaint(); b.dataset.key = id;
-  b.__cadre = [cx - f.rx * 0.8, GALET_Y - f.ry * 0.8, cx + f.rx * 0.8, GALET_Y + f.ry * 0.8];
+  const r = GALET_D / 2;
+  const b = boutonRond(app, { cx, cy: GALET_Y, d: GALET_D, cls: `galet ${cls}`, label, paint: (ctx, px, o) => {
+    sprites.draw(ctx, `bouton.accueil.${id}`, 0, o, o);
+    if (homeSel === id) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawSelectCercle(ctx, o, o, r); }
+  } });
+  b.dataset.key = id;
+  b.__cadre = [cx - r * 0.8, GALET_Y - r * 0.8, cx + r * 0.8, GALET_Y + r * 0.8];
   return b;
 };
 let homeEls = [], bienvenueEnCours = false;
@@ -824,7 +822,8 @@ app.reservesTouchables = () => {
   if (app.enPause) return mode === "seance";
   return mode === null || mode === "fin" || (mode === "seance" && app.session?.progress?.etape === "recompense");
 };
-const homeKey = spriteBox(app, { x: 14, y: 10, w: 120, h: 120, cls: "bubble homekey session-home keep", label: "maison", paint: (ctx, px) => { const q = sprites.frame("maison", 0), k = 120 / 140; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 60 * px + q.dx * k, 60 * px + q.dy * k, q.w * k, q.h * k); } });
+// (lot « Nouveaux boutons… » : la maison du parent, ronde, 103 px, au même centre)
+const homeKey = boutonRond(app, { cx: 74, cy: 70, d: 103, cls: "homekey session-home keep", label: "maison", paint: (ctx, px, o) => sprites.draw(ctx, "bouton.seance.maison", 0, o, o) });
 homeKey.style.visibility = "hidden";
 const progress = (p) => {
   frieze.set(p); frieze.show(!!p.etape);

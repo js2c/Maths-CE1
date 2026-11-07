@@ -5,7 +5,7 @@
 //    l'image), puis chaque pixel est jugé sur son écart à ce vert (ou au magenta, pour une source dont le fond est magenta) ;
 //  - LES BOUTONS : les grandes taches qui ne sont pas du fond ; une planche en a plusieurs, lues par rangées (de haut en bas,
 //    puis de gauche à droite) ;
-//  - LE CERCLE EXACT de chaque bouton : ajusté (moindres carrés, puis une seconde fois sans les points qui s'en écartent) sur le
+//  - LE CERCLE EXACT de chaque bouton : ajusté (moindres carrés, puis trois fois sur les seuls points proches du cercle précédent) sur le
 //    bord extérieur de la tache (le premier et le dernier pixel de chaque ligne et de chaque colonne) : c'est le bord de l'anneau gris ;
 //  - LES IMAGES : le carré qui entoure ce cercle, réduit par moitiés successives jusqu'à la taille de chaque usage de l'application
 //    (app/js/engine/boutons.js : le diamètre en px de scène), @1x et @2x, découpé sur le cercle (bord adouci sur un pixel) ; le
@@ -32,7 +32,7 @@ export const SEUIL = 90;
 export const BANDE = 0.92;
 
 // L'AJUSTEMENT D'UN CERCLE (fonction pure, testée : tests/unit/boutons.test.mjs) : moindres carrés algébriques (Kåsa), puis une
-// seconde fois sans les points à plus de `tol` px du premier cercle. Renvoie { cx, cy, r, ecart } (ecart : la moyenne quadratique
+// fois de plus (trois) sur les seuls points à moins de `tol` px du cercle précédent. Renvoie { cx, cy, r, ecart } (ecart : la moyenne quadratique
 // des distances des points gardés au cercle).
 export function ajusterCercle(points, tol = 2.5) {
   const fit = (P) => {
@@ -44,8 +44,9 @@ export function ajusterCercle(points, tol = 2.5) {
     const D = A[0][3] / A[0][0], E = A[1][3] / A[1][1], F = A[2][3] / A[2][2], cx = -D / 2, cy = -E / 2;
     return { cx, cy, r: Math.sqrt(Math.max(0, cx * cx + cy * cy - F)) };
   };
-  const c0 = fit(points), garde = points.filter(([x, y]) => Math.abs(Math.hypot(x - c0.cx, y - c0.cy) - c0.r) <= tol);
-  const c = garde.length >= 8 ? fit(garde) : c0, P = garde.length >= 8 ? garde : points;
+  // (trois passes : chaque cercle choisit, parmi TOUS les points, ceux qui sont à moins de `tol` px de lui)
+  let c = fit(points), P = points;
+  for (let i = 0; i < 3; i++) { const g = points.filter(([x, y]) => Math.abs(Math.hypot(x - c.cx, y - c.cy) - c.r) <= tol); if (g.length < 8) break; c = fit(g); P = g; }
   const ecart = Math.sqrt(P.reduce((s, [x, y]) => s + (Math.hypot(x - c.cx, y - c.cy) - c.r) ** 2, 0) / P.length);
   return { ...c, ecart, points: points.length, gardes: P.length };
 }

@@ -18,7 +18,7 @@
 //    puis file vers le bouton du récif ; « faire briller » : les étoiles volent, une gerbe, la tuile s'irise.
 // La règle d'une place (ce que dit la mascotte) est `texteTuile`, testée (tests/unit/boutique-ecran.test.mjs).
 import * as R from "../art/runtime.js";
-import { entourage, onBrief, pop } from "../engine/ui.js";
+import { boutonRond, entourage, onBrief, pop } from "../engine/ui.js";
 import { MASCOTTE, MENTON, PLACES } from "../engine/bulle.js";
 import { manque } from "./rewards.js";
 import { bulleTuile, rectStyle } from "./selection.js";
@@ -91,7 +91,7 @@ export async function imageCreature(app, c, w, h) {
   } catch { return null; }
 }
 // un sprite de l'atelier posé avec son ancrage en (x, y) logiques, réduit de k (jamais agrandi)
-const poser = (sprites, ctx, px, name, f, x, y, k = 1) => { const q = sprites.frame(name, f); if (q) ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, x * px + q.dx * k, y * px + q.dy * k, q.w * k, q.h * k); };
+const poser = (sprites, ctx, px, name, f, x, y, k = 1) => { const q = sprites.frame(name, f); if (q) ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, x * px + q.dx * k, y * px + q.dy * k, (q.dw ?? q.w) * k, (q.dh ?? q.h) * k); };
 // la marge du canvas d'une tuile, pour son ombre et le petit récif qui déborde dans le coin
 const M = 18;
 
@@ -112,11 +112,9 @@ export class Boutique {
     this.vit = rewards.vitrine(this.t); this.aVoir = rewards.aVoir(this.t);
     this.zone = zoneParDefaut(cartes, this.vit, this.aVoir, rewards.zones.ouvertes);
     // le retour au récif (en haut à gauche, à la place de la maison)
-    const retour = document.createElement("button"); retour.className = "bubble homekey boutique-retour"; retour.setAttribute("aria-label", "le récif");
-    Object.assign(retour.style, { left: `${RETOUR.x}px`, top: `${RETOUR.y}px`, width: `${RETOUR.w}px`, height: `${RETOUR.h}px` });
-    const rc = document.createElement("canvas"); rc.width = Math.round(RETOUR.w * stage.px); rc.height = Math.round(RETOUR.h * stage.px); retour.append(rc);
-    poser(sprites, rc.getContext("2d"), stage.px, "recif", 0, RETOUR.w / 2, RETOUR.h / 2, RETOUR.w / 180 * 1.18);
-    stage.ui.append(retour); this.retour = retour; this.els.push(retour);
+    // (lot « Nouveaux boutons, mascotte du récif et étoiles » : le bouton rond du récif, 101 px, au centre de la place d'avant)
+    const retour = boutonRond(app, { cx: RETOUR.x + RETOUR.w / 2, cy: RETOUR.y + RETOUR.h / 2, d: 101, cls: "homekey boutique-retour", label: "le récif", paint: (ctx, px, o) => sprites.draw(ctx, "bouton.boutique.retour", 0, o, o) });
+    this.retour = retour; this.els.push(retour);
     // la croix et la coche ; (lot « Réserves d'étoiles et étoiles arc-en-ciel », maquette validée le 2 novembre 2026) la coche de
     // l'étoile arc-en-ciel, pour faire briller une créature du récif avec elle. Quand les deux coches sont là, chacune porte dans
     // son coin ce qu'on donne (l'étoile de mer, l'étoile arc-en-ciel)
@@ -159,21 +157,21 @@ export class Boutique {
     this.onglets?.forEach((o) => o.remove());
     this.onglets = cartes.zones.map((z, i) => {
       const ouverte = rewards.zoneOpen(z.id), b = document.createElement("button"), d = ONGLET.d, m = 16;
-      b.className = `bubble boutique-onglet${ouverte ? "" : " fermee"}${z.id === this.zone ? " actif" : ""}`; b.setAttribute("aria-label", z.nom); b.dataset.zone = z.id;
+      b.className = `bubble rond boutique-onglet${ouverte ? "" : " fermee"}${z.id === this.zone ? " actif" : ""}`; b.setAttribute("aria-label", z.nom); b.dataset.zone = z.id;
       Object.assign(b.style, { left: `${ONGLET.x + i * ONGLET.pitch}px`, top: `${ONGLET.y}px`, width: `${d}px`, height: `${d}px` });
       const c = document.createElement("canvas"), W = d + 2 * m, H = d + 2 * m + 14, px = stage.px; c.width = Math.round(W * px); c.height = Math.round(H * px);
       Object.assign(c.style, { position: "absolute", left: `${-m}px`, top: `${-m}px`, width: `${W}px`, height: `${H}px` });
       const ctx = c.getContext("2d");
       // le médaillon de la zone (celui de l'album), le cadenas d'une zone fermée, l'entourage corail de la zone montrée
       if (!ouverte) ctx.filter = "grayscale(0.7) brightness(0.92) opacity(0.8)";
-      poser(sprites, ctx, px, `album.zone.${z.id}`, 0, W / 2, m + d / 2, d / 112);
+      poser(sprites, ctx, px, `bouton.boutique.onglet.${z.id}`, 0, W / 2, m + d / 2);
       ctx.filter = "none";
       if (!ouverte) poser(sprites, ctx, px, "boutique.cadenas", 0, W / 2 + 36, m + d / 2 + 32);
       // (lot « Réserves d'étoiles et étoiles arc-en-ciel », relecture, constat 5 : rien ne reliait les étoiles gardées aux zones
       // fermées) sur l'onglet de chaque zone fermée, l'étoile arc-en-ciel gardée pour elle, s'il y en a une en réserve
       if (!ouverte && rewards.arcDispo > cartes.zones.filter((x, j) => j < i && !rewards.zoneOpen(x.id)).length) poser(sprites, ctx, px, "etoile.arc", 0, W / 2 - 34, m + d / 2 - 30, 0.5);
       ctx.setTransform(px, 0, 0, px, 0, 0);
-      if (z.id === this.zone) R.drawSelectRound(ctx, W / 2, m + d / 2, d / 2 + 6);
+      if (z.id === this.zone) R.drawSelectCercle(ctx, W / 2, m + d / 2, d / 2);
       // les 15 perles : les créatures de la zone déjà dans le récif (sans chiffre)
       const cs = parZone(cartes, z.id);
       cs.forEach((cc, k) => { const x = W / 2 + (k - 7) * 6.2, y = m + d + 11, on = !!rewards.owned[cc.id]; ctx.beginPath(); ctx.arc(x, y, 2.5, 0, Math.PI * 2); ctx.fillStyle = on ? "#fff3c4" : "rgba(255,255,255,0.35)"; ctx.fill(); ctx.lineWidth = 1; ctx.strokeStyle = on ? "#18132a" : "rgba(10,30,40,0.35)"; ctx.stroke(); });
@@ -239,7 +237,7 @@ export class Boutique {
       ctx.setTransform(px, 0, 0, px, 0, 0); R.drawNumber(ctx, s, x0 + wi + wn / 2, cy - em * 0.5, em, { w: em * 0.16, seed: 870 + cout });
       ctx.setTransform(1, 0, 0, 1, 0, 0); poser(sprites, ctx, px, "etoile", 0, x0 + wi + wn + 6 + ws / 2, cy, 0.3);
     } else if (e === "bientot") poser(sprites, ctx, px, "boutique.sablier", 0, M + 85, cy);
-    if (rewards.owned[c.id]) poser(sprites, ctx, px, "recif", 0, M + 9, M + 9, 50 / 180);
+    if (rewards.owned[c.id]) poser(sprites, ctx, px, "bouton.boutique.coin", 0, M + 9, M + 9);
     // (lot « Réserves d'étoiles et étoiles arc-en-ciel ») la tuile choisie d'une créature du récif, quand l'enfant a des étoiles
     // arc-en-ciel : l'étoile arc-en-ciel dans le coin ; pâlie, avec le cadenas, quand elles sont toutes gardées pour les zones
     if (e === "terne" && this.sel === b && rewards.arcDispo > 0) {

@@ -16,7 +16,7 @@
 //    chaque allègement est noté dans le journal technique (lot « Netteté du récif »).
 // Remplace le récif en pages (lot 3, étape 5) depuis le 5 octobre 2026 (décision du parent).
 import { CardView, forgetPictures } from "./cards.js";
-import { spriteBox } from "../engine/ui.js";
+import { boutonRond, spriteBox } from "../engine/ui.js";
 import { onBrief } from "../engine/ui.js";
 import { startRecif } from "../recif/recif-vivant.js";
 import { Reductions } from "../recif/reduction.js";
@@ -163,10 +163,12 @@ export class Reef {
         }
       },
     });
-    const home = spriteBox(app, { x: 90 - 70, y: 712 - 70, w: 140, h: 140, cls: "bubble homekey", label: "revenir", paint: (ctx) => sprites.draw(ctx, "maison", 0, 70, 70) });
+    // (lot « Nouveaux boutons, mascotte du récif et étoiles » : les boutons ronds du parent, aux mêmes centres : la maison et le livre
+    // de cartes, 120 px ; la boutique, 128 px)
+    const home = boutonRond(app, { cx: 90, cy: 712, d: 120, cls: "homekey", label: "revenir", paint: (ctx, px, o) => sprites.draw(ctx, "bouton.recif.maison", 0, o, o) });
     // l'album, par-dessus le récif (seulement depuis le récif : lot « Correctifs du 5 novembre ») ; son bouton, un livre de cartes,
     // à la taille de la maison (lot « Suites des correctifs du 5 novembre », décision du parent du 6 novembre 2026)
-    const book = spriteBox(app, { x: 90 - 70, y: 560 - 70, w: 140, h: 140, cls: "bubble albumkey", label: "l'album", paint: (ctx) => { const q = sprites.frame("album", 0), k = (140 / 180) * 1.1, px = sprites.px; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 70 * px + q.dx * k, 70 * px + q.dy * k, q.w * k, q.h * k); } });
+    const book = boutonRond(app, { cx: 90, cy: 560, d: 120, cls: "albumkey", label: "l'album", paint: (ctx, px, o) => sprites.draw(ctx, "bouton.recif.album", 0, o, o) });
     onBrief(app, book, async () => { pop(book); await this.view.close(); if (app.album && !app.album.open) { await app.album.visit(); voice.say(text.data.recifBienvenue, { instruction: true }); } }, "album");
     this.els.push(home, book);
     // (lot « La boutique du récif ») la boutique ; (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026) aussi
@@ -175,7 +177,7 @@ export class Reef {
     let vers = null;
     const fin = new Promise((r) => { vers = r; });
     if (app.boutique) {
-      const shop = spriteBox(app, { x: 90 - 70, y: 408 - 70, w: 140, h: 140, cls: `bubble boutique-cle${rewards.peutAcheter() ? " invite" : ""}`, label: "la boutique", paint: (ctx) => { const q = sprites.frame("boutique", 0), k = 140 / 150, px = sprites.px; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 70 * px + q.dx * k, 70 * px + q.dy * k, q.w * k, q.h * k); } });
+      const shop = boutonRond(app, { cx: 90, cy: 408, d: 128, cls: `boutique-cle${rewards.peutAcheter() ? " invite" : ""}`, label: "la boutique", paint: (ctx, px, o) => sprites.draw(ctx, "bouton.recif.boutique", 0, o, o) });
       onBrief(app, shop, () => { if (app.album?.open) return; pop(shop); setTimeout(() => vers("boutique"), 200); }, "boutique");
       this.els.push(shop);
     }

@@ -7,7 +7,7 @@ import { CARD, cardElement } from "./cards.js";
 import { goldenStar } from "./rewards.js";
 import { imageCreature } from "./boutique.js";
 import { wait } from "../engine/clock.js";
-import { onBrief, onTap, spriteBox } from "../engine/ui.js";
+import { boutonRond, onBrief, onTap, spriteBox } from "../engine/ui.js";
 import { Reserves, volVersReserve } from "./reserves.js";
 import { sentences } from "../engine/phrases.js";
 
@@ -222,7 +222,7 @@ export const ALBUM_AT = [1165, 650];
 export async function flyRainbowStars(app, n, { from = [640, 500], to = ALBUM_AT, gap = 110, k = app.vitesse ?? 1, album = true, arrivee = null } = {}) {
   const { sprites } = app, W = 240, H = 130, hx = 180, hy = 65, els = [];
   const shown = Math.min(n, 9);
-  const livre = album ? spriteBox(app, { x: to[0] - 90, y: to[1] - 90, w: 180, h: 180, cls: "hud special arc-album pop", still: true, paint: (ctx) => sprites.draw(ctx, "album", 0, 90, 90) }) : null;
+  const livre = album ? spriteBox(app, { x: to[0] - 90, y: to[1] - 90, w: 180, h: 180, cls: "hud special arc-album pop", still: true, paint: (ctx) => sprites.draw(ctx, "bouton.recompense.album", 0, 90, 90) }) : null;
   for (let i = 0; i < shown; i++) {
     const x = from[0] + (i - (shown - 1) / 2) * Math.min(gap, 900 / shown), y = from[1], a = Math.atan2(to[1] - y, to[0] - x);
     // d'abord l'étoile seule ; la traînée est ajoutée au départ du vol
@@ -302,7 +302,8 @@ export async function finRecompense(app) {
   const versBoutique = rewards.peutAcheter(now);
   if (versBoutique) await voice.say(text.data.boutique.invitation, { instruction: true });
   if (window.__finSansBouton) return null;
-  const S = 150, b = spriteBox(app, { x: 1175 - S / 2, y: 688 - S / 2, w: S, h: S, cls: `bubble invite fin-recompense ${versBoutique ? "vers-boutique" : "vers-recif"}`, label: versBoutique ? "la boutique" : "le récif", paint: (ctx, px) => { const q = sprites.frame(versBoutique ? "boutique" : "recif", 0), k = versBoutique ? S / 150 : S / 180; if (q) ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, (S / 2) * px + q.dx * k, (S / 2) * px + q.dy * k, q.w * k, q.h * k); } });
+  // (lot « Nouveaux boutons, mascotte du récif et étoiles » : le bouton rond du parent, la boutique 138 px, le récif 115 px, au même centre)
+  const b = boutonRond(app, { cx: 1175, cy: 688, d: versBoutique ? 138 : 115, cls: `invite fin-recompense ${versBoutique ? "vers-boutique" : "vers-recif"}`, label: versBoutique ? "la boutique" : "le récif", paint: (ctx, px, o) => sprites.draw(ctx, versBoutique ? "bouton.fin.boutique" : "bouton.fin.recif", 0, o, o) });
   voice.instruction = versBoutique ? text.data.boutique.invitation : voice.instruction;
   // (lot « Décisions sur les constats de l'agent », décision 2 : constat 2 de l'agent, environ 50 s sans moyen de revenir) la maison
   // s'ajoute au bouton de fin (main.js, `maisonFin`) : elle ramène tout de suite à « à demain » ; sans toucher, « à demain » vient
@@ -323,7 +324,7 @@ export async function zoneCeremony(app, { zone, hud }) {
   voice.stop();
   const back = await cardElement(app, { id: `dos-${zone.id}`, zone: zone.id, rarete: "commune", nom: zone.nom }, { x: 640 - CARD.W / 2, y: 150, front: "dos", back: "dos" });
   back.classList.add("zone-closed", "enter");
-  const book = spriteBox(app, { x: 1080 - 90, y: 650 - 90, w: 180, h: 180, cls: "hud zone-book pop", still: true, paint: (ctx) => sprites.draw(ctx, "album", 0, 90, 90) });
+  const book = spriteBox(app, { x: 1080 - 90, y: 650 - 90, w: 180, h: 180, cls: "hud zone-book pop", still: true, paint: (ctx) => sprites.draw(ctx, "bouton.recompense.album", 0, 90, 90) });
   await wait(900);
   // l'étoile arc-en-ciel vole du bas de l'écran jusqu'au dos de la zone
   const star = ocean.spriteActor(ocean.frontEl, "etoile.arc");

@@ -15,6 +15,22 @@ export function spriteBox(app, { x, y, w, h, cls = "bubble", label = "", still =
   repeindre(c, () => b.repaint(b.__dessin));
   return b;
 }
+// (lot « Nouveaux boutons, mascotte du récif et étoiles ») UN BOUTON ROND (les images du parent, des cercles exacts : engine/boutons.js) :
+// l'élément est le carré du cercle, arrondi en cercle (app.css, `.rond` : le toucher n'est pris que dans le cercle, centré sur le
+// bouton) ; son dessin est un canvas qui déborde de `marge` px tout autour (pour l'entourage de sélection), et que le doigt traverse.
+// `paint(ctx, px, o)` : en px d'écran, le centre du bouton en (o, o) logiques dans le canvas.
+export function boutonRond(app, { cx, cy, d, cls = "", label = "", marge = 18, paint }) {
+  const { stage } = app, b = document.createElement("button"), c = document.createElement("canvas"), W = d + 2 * marge, o = W / 2;
+  b.className = `bubble rond ${cls}`; Object.assign(b.style, { left: `${cx - d / 2}px`, top: `${cy - d / 2}px`, width: `${d}px`, height: `${d}px` });
+  if (label) b.setAttribute("aria-label", label);
+  c.width = c.height = Math.round(W * stage.px); Object.assign(c.style, { position: "absolute", left: `${-marge}px`, top: `${-marge}px`, width: `${W}px`, height: `${W}px` });
+  b.append(c); stage.ui.append(b);
+  b.repaint = (f = paint) => { b.__dessin = f; const ctx = c.getContext("2d"); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height); f(ctx, stage.px, o); };
+  b.repaint();
+  repeindre(c, () => b.repaint(b.__dessin));
+  b.rond = { cx, cy, r: d / 2 };
+  return b;
+}
 // (lot « Correctifs : passage de l'échauffement aux voiliers », point 8 et relecture : l'entourage de sélection d'une tuile est
 // posé AUTOUR d'elle, sur un calque débordant de `m` px de chaque côté, pour ne rien rogner de son dessin) `dessin(ctx, x, y)` :
 // en px logiques, la tuile occupant (x, y) à (x + largeur, y + hauteur) ; `visible` false le retire

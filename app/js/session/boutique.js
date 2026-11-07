@@ -171,7 +171,9 @@ export class Boutique {
       // fermées) sur l'onglet de chaque zone fermée, l'étoile arc-en-ciel gardée pour elle, s'il y en a une en réserve
       if (!ouverte && rewards.arcDispo > cartes.zones.filter((x, j) => j < i && !rewards.zoneOpen(x.id)).length) poser(sprites, ctx, px, "etoile.arc", 0, W / 2 - 34, m + d / 2 - 30, 0.5);
       ctx.setTransform(px, 0, 0, px, 0, 0);
-      if (z.id === this.zone) R.drawSelectCercle(ctx, W / 2, m + d / 2, d / 2);
+      // (lot « Nouveaux boutons… », relecture indépendante, constat 4 : l'anneau corail veut dire « touché une fois, touche encore » ;
+      // l'onglet ouvert, que l'enfant n'a pas forcément touché, a l'anneau doré, comme le halo de l'onglet ouvert de l'album)
+      if (z.id === this.zone) R.drawSelectCercle(ctx, W / 2, m + d / 2, d / 2, "#ffd23a");
       // les 15 perles : les créatures de la zone déjà dans le récif (sans chiffre)
       const cs = parZone(cartes, z.id);
       cs.forEach((cc, k) => { const x = W / 2 + (k - 7) * 6.2, y = m + d + 11, on = !!rewards.owned[cc.id]; ctx.beginPath(); ctx.arc(x, y, 2.5, 0, Math.PI * 2); ctx.fillStyle = on ? "#fff3c4" : "rgba(255,255,255,0.35)"; ctx.fill(); ctx.lineWidth = 1; ctx.strokeStyle = on ? "#18132a" : "rgba(10,30,40,0.35)"; ctx.stroke(); });

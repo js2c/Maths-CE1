@@ -140,6 +140,9 @@ for (const vue of VUES) {
       for (let t = 0; t < 10; t++) { for (const c of api.vivantes()) { const p = api.ou(c); if (!p) continue; const X = (cv.x + p.x - ui.x) / k, Y = (cv.y + p.y - 12 - ui.y) / k; if (X > M[0] && X < M[0] + M[2] && Y > M[1] && Y < M[1] + M[3]) n[c] = (n[c] ?? 0) + 1; } await new Promise((r) => setTimeout(r, 200)); } }
     return n; }, m0.b);
   check(Object.values(sous).every((v) => v <= 5), `${vue[0]} récif : aucune créature ne se tient sous la mascotte (${JSON.stringify(sous)})`);
+  // (relecture indépendante, constat 15) le récif aux abysses, le fond le plus sombre pour les boutons et les compteurs
+  await page.evaluate(() => { const a = window.__app.reef.api; a.camX = 9600 - a.vue.viewW / 2; }); await page.waitForTimeout(900);
+  await shot(page, vue, "06c-recif-abysses", 0);
   await page.evaluate(() => { window.__app.reef.api.camX = 0; }); await page.waitForTimeout(500);
   await gros(page, vue, ".mascotte-boucle", "recif-mascotte-boucle");
   await page.evaluate(() => { window.__said = []; });

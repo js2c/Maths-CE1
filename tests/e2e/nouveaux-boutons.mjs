@@ -57,6 +57,8 @@ async function ouvrir(vue, etat, q = Q, { reel = true } = {}) {
 }
 const tap = async (page, sel) => { const b = await page.locator(sel).first().boundingBox(); if (!b) throw new Error(`introuvable : ${sel}`); await page.touchscreen.tap(b.x + b.width / 2, b.y + b.height / 2); };
 const shot = async (page, vue, nom, ms = 500) => { await page.waitForTimeout(ms); await page.screenshot({ path: join(OUT, `${nom}-${vue[0]}.png`) }); };
+// les boîtes visibles d'un sélecteur, en px logiques de la scène (1280 × 800)
+const boites = (page, sel) => page.evaluate((s) => { const ui = document.querySelector("#ui").getBoundingClientRect(), k = ui.width / 1280; return [...document.querySelectorAll(s)].filter((e) => e.checkVisibility({ visibilityProperty: true }) && !e.closest(".stash")).map((e) => { const r = e.getBoundingClientRect(); return { x: (r.x - ui.x) / k, y: (r.y - ui.y) / k, w: r.width / k, h: r.height / k }; }); }, sel);
 const gros = async (page, vue, sel, nom) => { if (!GROS_PLANS.has(vue[0])) return; const l = page.locator(sel).first(); if (await l.count()) await l.screenshot({ path: join(OUT, `gros-${nom}-${vue[0]}.png`) }); };
 
 // LES BOUTONS RONDS DE L'ÉCRAN : chacun un cercle (border-radius 50 %, carré), le doigt pris au centre et à 0,9 rayon, jamais dans le
@@ -122,6 +124,30 @@ for (const vue of VUES) {
   await ronds(page, vue, "récif", [".homekey", ".albumkey", ".boutique-cle"]);
   await shot(page, vue, "06-recif");
   for (const k of ["homekey", "albumkey", "boutique-cle"]) await gros(page, vue, `.${k}`, `recif-${k}`);
+  // ---------------------------------------------------------------- 2. la mascotte du récif
+  await page.waitForFunction(() => !window.__app.voice.speaking, null, { timeout: 30000 }).catch(() => {}); await page.waitForTimeout(400);
+  const m0 = await page.evaluate(() => { const e = document.querySelector(".mascotte-boucle"), ui = document.querySelector("#ui").getBoundingClientRect(), k = ui.width / 1280, r = e.getBoundingClientRect(); return { vue: getComputedStyle(e).visibility, video: window.__app.ocean.mascotteVisible, anim: e.querySelector("img")?.getAnimations()[0]?.playState, b: [(r.x - ui.x) / k, (r.y - ui.y) / k, r.width / k, r.height / k], videos: document.querySelectorAll("video").length }; });
+  check(m0.vue === "visible" && !m0.video && m0.anim === "running", `${vue[0]} récif : au repos, la mascotte est la boucle d'images, qui joue (${JSON.stringify({ vue: m0.vue, video: m0.video, anim: m0.anim })})`);
+  check(m0.videos <= 2, `${vue[0]} récif : pas plus de deux lecteurs vidéo (${m0.videos})`);
+  const autres = [...(await boites(page, ".homekey, .albumkey, .boutique-cle, .hud.stars, .reserve"))];
+  check(autres.every((o) => m0.b[0] + m0.b[2] <= o.x || o.x + o.w <= m0.b[0] || m0.b[1] + m0.b[3] <= o.y || o.y + o.h <= m0.b[1]), `${vue[0]} récif : la mascotte ne couvre aucun bouton ni compteur`);
+  // les créatures touchables : dans chaque zone, sur 2 s, aucune ne se tient sous la mascotte (celles qui nagent peuvent y passer)
+  const sous = await page.evaluate(async (M) => {
+    const api = window.__app.reef.api, cv = document.querySelector("canvas.recif-dessin").getBoundingClientRect(), ui = document.querySelector("#ui").getBoundingClientRect(), k = ui.width / 1280, n = {};
+    for (const x of [1300, 4200, 7100, 9600]) { api.camX = x - api.vue.viewW / 2; await new Promise((r) => setTimeout(r, 600));
+      for (let t = 0; t < 10; t++) { for (const c of api.vivantes()) { const p = api.ou(c); if (!p) continue; const X = (cv.x + p.x - ui.x) / k, Y = (cv.y + p.y - 12 - ui.y) / k; if (X > M[0] && X < M[0] + M[2] && Y > M[1] && Y < M[1] + M[3]) n[c] = (n[c] ?? 0) + 1; } await new Promise((r) => setTimeout(r, 200)); } }
+    return n; }, m0.b);
+  check(Object.values(sous).every((v) => v <= 5), `${vue[0]} récif : aucune créature ne se tient sous la mascotte (${JSON.stringify(sous)})`);
+  await page.evaluate(() => { window.__app.reef.api.camX = 0; }); await page.waitForTimeout(500);
+  if (GROS_PLANS.has(vue[0])) await page.locator(".mascotte-boucle").screenshot({ path: join(OUT, `gros-recif-mascotte-boucle-${vue[0]}.png`) });
+  await page.evaluate(() => { window.__said = []; });
+  await tap(page, ".mascotte-boucle"); await page.waitForTimeout(150);
+  const m1 = await page.evaluate(() => ({ video: window.__app.ocean.mascotteVisible, boucle: getComputedStyle(document.querySelector(".mascotte-boucle")).visibility, parle: window.__app.voice.speaking, dit: window.__said.join(" | "), bulle: !!window.__app.bulle?.shown, videos: document.querySelectorAll("video").length }));
+  check(m1.video && m1.boucle === "hidden" && m1.dit.length > 0 && !m1.bulle, `${vue[0]} récif : touchée, la mascotte parle en vidéo, sans bulle (« ${m1.dit} »)`);
+  check(m1.videos <= 2, `${vue[0]} récif : toujours deux lecteurs vidéo au plus (${m1.videos})`);
+  await shot(page, vue, "06b-recif-mascotte-parle", 100);
+  await page.waitForFunction(() => !window.__app.voice.speaking, null, { timeout: 30000 }).catch(() => {}); await page.waitForTimeout(300);
+  check(await page.evaluate(() => !window.__app.ocean.mascotteVisible && getComputedStyle(document.querySelector(".mascotte-boucle")).visibility === "visible"), `${vue[0]} récif : la phrase finie, la boucle revient`);
   await tap(page, ".albumkey"); await page.waitForFunction(() => window.__app.album?.open, null, { timeout: 20000 }); await page.waitForTimeout(1500);
   await ronds(page, vue, "album", [".album-retour", ".album-tab"], "#ui .album-tab, #ui .album-retour");
   await shot(page, vue, "07-album");
@@ -151,6 +177,16 @@ for (const vue of VUES) {
   await ronds(page, vue, "accueil, séance faite", [".galet.again", ".galet.leconskey", ".galet.reefkey"]);
   await shot(page, vue, "10-accueil-encore");
   await gros(page, vue, ".galet.again", "accueil-encore");
+  await context.close();
+  // ---------------------------------------------------------------- 3. la réserve arc-en-ciel vide, toutes les zones ouvertes ; 4. les étoiles
+  ({ context, page } = await ouvrir(vue, [owned(toutes.slice(0, 20)), etoiles(240, { arcEnCiel: 3, arcDepensees: 3, dorees: 2, doreesDepensees: 0 }), { id: "zones", ouvertes: ["lagon", "corail", "large", "abysses"], dates: {} }, { id: "quota", date: ilYaSemaines(3), cartes: 20 }]));
+  await page.waitForTimeout(1500);
+  await page.evaluate(() => { window.__app.voice.stop(); window.__said = []; });
+  await tap(page, ".reserve.arc"); await page.waitForTimeout(700);
+  const dit = await page.evaluate(() => window.__said.join(" | "));
+  check(dit === `${T.reserves.arcZero} ${T.reserves.diamantGagner}` || dit.startsWith(T.reserves.arcZero), `${vue[0]} la réserve arc-en-ciel vide, toutes les zones ouvertes : « ${dit} »`);
+  await shot(page, vue, "11-reserve-arc-vide-touchee", 0);
+  if (GROS_PLANS.has(vue[0])) { const b = await page.locator(".hud.stars").boundingBox(), r = await page.locator(".reserve.diamant").boundingBox(); await page.screenshot({ path: join(OUT, `gros-compteurs-${vue[0]}.png`), clip: { x: b.x - 6, y: Math.min(b.y, r.y) - 6, width: r.x + r.width - b.x + 12, height: Math.max(b.height, r.height) + 12 } }); }
   await context.close();
 }
 

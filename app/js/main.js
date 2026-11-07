@@ -588,7 +588,11 @@ function warmupSkipKey(onSkip) {
       clock.resume(); voice.resume();
       if (awaiting() && voice.instruction) { if (voice.cur) voice.stop(); voice.say(voice.instruction); }
     },
-    confirm: () => { back(); voice.stop(); clock.resume(); voice.resume(); onSkip(); },
+    // (lot « Nouveaux boutons, mascotte du récif et étoiles », recette : échec intermittent de lot3ter, cause trouvée) la correction
+    // ou l'aide en cours est arrêtée AVANT que l'horloge reparte : une attente déjà finie en temps actif (la secousse de l'ardoise,
+    // dont la minuterie n'avait pas tourné, la page occupée) se terminait au `resume`, et la correction disait sa phrase avant
+    // d'être arrêtée par l'abandon (tests/e2e/passer-echauffement-correction.mjs)
+    confirm: () => { back(); voice.stop(); app.facts?.abortFix?.(); app.facts?.abortAid?.(); clock.resume(); voice.resume(); onSkip(); },
   });
   onBrief(app, key, () => ws.tap(), "passerEchauffement");
   onBrief(app, check, () => { pop(check); ws.check(); }, "ouiPasserEchauffement");

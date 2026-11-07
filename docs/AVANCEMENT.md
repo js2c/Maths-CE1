@@ -49,3 +49,9 @@ Tenu à jour par chaque session Claude Code. L'historique détaillé des lots 1 
 ## Reprise
 
 (Chaque session en cours tient ici sa rubrique « Reprise du lot … » : branche, demande de fusion, fait, reste, où elle en est exactement, décisions prises. La rubrique est déplacée dans l'archive une fois le lot fusionné.)
+
+### Reprise du lot « Nouveaux boutons, mascotte du récif et étoiles » (fiche 25)
+
+- Branche `claude/vibrant-ride-i3za2a`, partie de `main` (e37af2bd).
+- Fait : la fiche.
+- Reste : l'outil des boutons, leur branchement, les prompts des boutons restants, la mascotte du récif, la phrase de l'arc-en-ciel, les étoiles, la recette.

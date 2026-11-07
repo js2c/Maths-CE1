@@ -47,7 +47,10 @@ export function texteReserve(T, cartes, sorte, e) {
     // zone fermée : « Le récif de corail s'ouvrira un jour, grâce à tes étoiles arc-en-ciel. » ; relecture du lot, constat 1 : « Elles
     // ouvriront… » ne disait pas de quelle étoile on parlait), puis comment en gagner une (la phrase du diamant à 0, sans règle exacte :
     // décision du parent du 6 novembre 2026) ; toutes les zones ouvertes, à quoi elles servent ; aucune phrase nouvelle
-    if (!e.n) return j(e.prochaine?.fermeeLu ?? (!e.fermees ? X.arcBriller : X.arcProchainesZones), X.diamantGagner, e.zonePrete ? T.boutique.zoneBientot : null);
+    // (lot « Nouveaux boutons, mascotte du récif et étoiles », décision du parent du 7 novembre 2026) toutes les zones ouvertes, à 0 :
+    // « Tu n'as pas encore d'étoile arc-en-ciel. » (avant : « Elles font briller tes créatures, à la boutique. », sans dire de quelles
+    // étoiles on parlait), puis comment en gagner une
+    if (!e.n) return j(e.prochaine?.fermeeLu ?? (!e.fermees ? X.arcZero : X.arcProchainesZones), X.diamantGagner, e.zonePrete ? T.boutique.zoneBientot : null);
     const nb = e.n === 1 ? X.arcUne : e.n > (M.arcDitMax ?? 50) ? X.arcBeaucoup : fill(X.arcN, { n: e.n });
     const role = !e.fermees ? (e.n === 1 ? X.arcBrillerUne : X.arcBriller) : e.n > e.fermees ? X.arcZonesEtBriller : e.n === 1 ? X.arcProchaineZone : X.arcProchainesZones;
     return j(nb, role, e.zonePrete ? T.boutique.zoneBientot : null);

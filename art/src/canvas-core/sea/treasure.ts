@@ -76,12 +76,24 @@ export const drawGoldStar = (g: Gfx, cx: number, cy: number, R = 44) => g.group(
   ink(g, smooth([[cx - R * 0.5, cy - R * 0.05], [cx - R * 0.25, cy - R * 0.35], [cx + R * 0.05, cy - R * 0.45]], false, 6), "#ffffff", { w: 4, shadow: 0, taper: [0.3, 0.4], seed: 3101 }, 0.9);
   contour(g, s, 4, 3102);
 });
-const RAINBOW = ["#ff5a5a", "#ff9e3d", "#ffd84a", "#5ccf6a", "#4aa8ff"];
+// (lot « Nouveaux boutons, mascotte du récif et étoiles », décision du parent du 7 novembre 2026 : en petit, l'étoile arc-en-ciel
+// et l'étoile de diamant se confondaient, toutes deux à facettes de couleur) L'ÉTOILE ARC-EN-CIEL : la même étoile, traversée de
+// BANDES DE COULEUR VIVES, du rouge au violet, légèrement inclinées comme un arc-en-ciel (chaque bande assombrie à son bord bas : une
+// ombre nette par bande) ; un reflet blanc en haut à gauche ; le contour d'encre. Lisible jusqu'à 20 px : on voit des rayures.
+export const RAINBOW = ["#ff3b3b", "#ff8a1f", "#ffd21f", "#2fc94e", "#1f8fff", "#8a4dff"];
 export const drawRainbowStar = (g: Gfx, cx: number, cy: number, R = 44) => g.group("plain", () => {
   const s = O.starShape([cx, cy], R, R * 0.43, 0.12);
   fillShape(g, shift(s, 7, 9), SH, 0.3);
-  clipped(g, s, () => RAINBOW.forEach((c, i) => { const a0 = -Math.PI / 2 + 0.12 + ((i - 0.5) * TAU) / 5, a1 = a0 + TAU / 5, wedge: P[] = [[cx, cy], [cx + Math.cos(a0) * R * 2, cy + Math.sin(a0) * R * 2], [cx + Math.cos(a1) * R * 2, cy + Math.sin(a1) * R * 2]]; fillShape(g, wedge, mix(c, "#000000", 0.18)); fillShape(g, shift(wedge, -3, -4), c); }));
-  cel(g, blob(cx, cy, R * 0.16, R * 0.16, 3110, 0.05, 12), "#fffaf0", "#e8e0f0", 1);
+  clipped(g, s, () => {
+    const n = RAINBOW.length, h = (2 * R * 0.92) / n, inc = -0.18, c = Math.cos(inc), sn = Math.sin(inc);
+    const rot = (x: number, y: number): P => [cx + x * c - y * sn, cy + x * sn + y * c];
+    RAINBOW.forEach((col, i) => {
+      const y0 = -R * 0.98 + i * h - (i ? 0 : R), y1 = -R * 0.98 + (i + 1) * h + (i === n - 1 ? R : 0), x0 = -R * 1.6, x1 = R * 1.6;
+      fillShape(g, [rot(x0, y0), rot(x1, y0), rot(x1, y1), rot(x0, y1)], col);
+      if (i < n - 1) fillShape(g, [rot(x0, y1 - h * 0.22), rot(x1, y1 - h * 0.22), rot(x1, y1), rot(x0, y1)], mix(col, "#000000", 0.22));
+    });
+  });
+  ink(g, smooth([[cx - R * 0.48, cy - R * 0.02], [cx - R * 0.3, cy - R * 0.3], [cx - R * 0.02, cy - R * 0.5]], false, 6), "#ffffff", { w: R * 0.11, shadow: 0, taper: [0.3, 0.4], seed: 3112 }, 0.85);
   contour(g, s, 4, 3111);
 });
 

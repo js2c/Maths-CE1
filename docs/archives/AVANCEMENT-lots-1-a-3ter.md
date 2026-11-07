@@ -962,3 +962,17 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 - Fait : les sept points (musique hors séance, boutique en pause, consigne de la mascotte, prononciation, compteurs, récif, accueil), leurs tests unitaires, les parcours `consignes-mascotte.mjs` et `correctifs-5-novembre.mjs`, la spécification, le guide, le journal, l'architecture.
 - Recette faite le 6 novembre 2026 (`tests/recette-fonctionnelle/out-correctifs-5-novembre/RECETTE.md`), relecture indépendante (`RELECTURE.md`).
 - Reste : les 4 phrases à fabriquer par le parent. Rubrique archivée à la fin du lot.
+
+## Reprises des lots suivants
+
+(Les rubriques « Reprise » de `docs/AVANCEMENT.md`, déplacées ici une fois leur lot terminé.)
+
+### Reprise du lot « Mise en scène des problèmes » (fiche 24)
+
+- **Branche** `claude/sweet-davinci-vwkk2u`, **PR #76** (la maquette validée le 6 novembre, puis le lot dans la même demande de fusion) ; mise à jour avec `main` après la fusion de la PR #75.
+- **Fait** : la maquette (`art/problemes/mise-en-scene/`, `docs/maquettes/problemes-scene/`) ; les deux premiers lieux générés (chambre, cuisine) vérifiés.
+- **Étapes** : 0, la fiche et ces notes ; 1, l'outil d'export (lieux recadrés, objets détourés) et `contextes.json` ; 2, la scène de chaque énoncé et sa composition ; 3, l'écran ; 4, la recette sur le banc Android et les documents.
+- **Fait** (6 novembre) : étape 0 ; étape 1 (`art/tools/export-problemes.mjs` : lieux recadrés collés en bas, objets détourés vert/magenta, `index.json` avec taille et catégorie ; `contextes.json` revu) ; étape 2 (le champ `scene` des 200 énoncés, écrit par `art/problemes/mise-en-scene/scenes.mjs`, contrôlé par `verifier.mjs` ; le moteur `app/js/modules/problemes/scene.js`, testé sur les 200 énoncés) ; étape 3a (l'écran, `modules/problemes/screen.js` ; la leçon L19 ; 3 phrases nouvelles du partage : `problemeMettre.pot`, `etagere`, `enfants`).
+- **Images d'essai** : `tests/e2e/fixtures/problemes-objets/` (les dessins provisoires), servies par les parcours à la place des objets ; jamais dans `app/`.
+- **Reste** : vérifier l'aide par bonds, la correction (unités), le cran « plus facile », la leçon L19, le petit smartphone ; étendre `tests/e2e/problemes.mjs` (il lit encore `prob.objets`) ; puis l'étape 4 (recette sur le banc, documents).
+- **Terminé le 7 novembre** : tout le « Reste » ci-dessus est fait ; les images du parent exportées et contrôlées (`docs/maquettes/problemes-scene/CONTROLE-IMAGES.md`) ; recette dans `tests/recette-fonctionnelle/out-mise-en-scene-des-problemes/RECETTE.md`.

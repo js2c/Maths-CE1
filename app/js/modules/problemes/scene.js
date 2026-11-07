@@ -1,4 +1,4 @@
-// MODULE 7 · LA MISE EN SCÈNE D'UN PROBLÈME, FONCTIONS PURES (lot « Mise en scène des problèmes », docs/LOTS.md, fiche 23 ;
+// MODULE 7 · LA MISE EN SCÈNE D'UN PROBLÈME, FONCTIONS PURES (lot « Mise en scène des problèmes », docs/LOTS.md, fiche 24 ;
 // docs/SPEC.md, section 7 quinquies ; décisions du parent du 6 novembre 2026 ; la maquette : art/problemes/mise-en-scene/).
 // Testées par tests/unit/problemes-scene.test.mjs.
 //  - LA SCÈNE : 884 × 374 (x 244 à 1128, y 106 à 480), l'image du lieu dedans 860 × 350 ; LA BANDE DE LA BULLE, en haut à gauche

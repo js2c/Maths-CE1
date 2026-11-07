@@ -1,4 +1,4 @@
-// L'outil des images des problèmes (art/tools/export-problemes.mjs ; lot « Mise en scène des problèmes », fiche 23) : le recadrage
+// L'outil des images des problèmes (art/tools/export-problemes.mjs ; lot « Mise en scène des problèmes », fiche 24) : le recadrage
 // des lieux (collé en bas, le haut retiré, jamais le sol ; l'étal autour de sa glace) et la lecture du nom des objets déposés.
 import { test } from "node:test";
 import assert from "node:assert/strict";

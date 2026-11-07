@@ -1,4 +1,4 @@
-// La mise en scène d'un problème (app/js/modules/problemes/scene.js ; lot « Mise en scène des problèmes », fiche 23) : pour les 200
+// La mise en scène d'un problème (app/js/modules/problemes/scene.js ; lot « Mise en scène des problèmes », fiche 24) : pour les 200
 // énoncés, sans aucune image d'objet (ce qu'a l'application tant que le parent n'en a pas déposé) puis avec toutes (à leur taille
 // dans la scène, objets.json), chaque étiquette et la plaque tiennent dans l'image du lieu, hors de la bande de la bulle, sans se
 // couvrir ; les groupes ont leur nombre exact d'objets ; un objet sans image laisse ses étiquettes au sol.

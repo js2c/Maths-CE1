@@ -1,4 +1,4 @@
-// LA SCÈNE DE CHAQUE ÉNONCÉ (lot « Mise en scène des problèmes », fiche 23 ; décisions du parent du 6 novembre 2026). Écrit, dans la
+// LA SCÈNE DE CHAQUE ÉNONCÉ (lot « Mise en scène des problèmes », fiche 24 ; décisions du parent du 6 novembre 2026). Écrit, dans la
 // banque (app/content/problemes.json), le champ `scene` de chaque énoncé qui n'en a pas, d'après le relevé (relever.mjs) : la
 // PREMIÈRE VERSION. Ensuite, la banque est la seule source et se corrige à la main (art/problemes/verifier.mjs contrôle chaque
 // scène). `--refaire` réécrit toutes les scènes (à éviter une fois des scènes corrigées à la main) ; `--voir id` montre une scène.

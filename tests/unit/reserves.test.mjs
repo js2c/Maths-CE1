@@ -117,7 +117,16 @@ test("ce que dit la mascotte quand on touche une réserve, selon l'état", async
   assert.equal(t("arc", { n: 1, fermees: 0, zonePrete: false }), `${X.arcUne} ${X.arcBrillerUne}`);
   assert.equal(t("arc", { n: 51, fermees: 0, zonePrete: false }), `${X.arcBeaucoup} ${X.arcBriller}`);
   assert.equal(t("arc", { n: 2, fermees: 2, zonePrete: true }), `Tu as 2 étoiles arc-en-ciel. ${X.arcProchainesZones} ${T.boutique.zoneBientot}`);
-  const large = cartes.zones.find((z) => z.id === "large"), abysses = cartes.zones.find((z) => z.id === "abysses");
+  // (lot « Suites des correctifs du 5 novembre », décisions du parent du 6 novembre 2026) à 0 : la prochaine zone et les étoiles
+  // arc-en-ciel nommées (la phrase de l'album), puis la phrase du diamant à 0, sans règle exacte ; aucune phrase nouvelle
+  const corail = cartes.zones.find((z) => z.id === "corail"), large = cartes.zones.find((z) => z.id === "large");
+  assert.equal(t("arc", { n: 0, fermees: 3, zonePrete: false, prochaine: corail }), "Le récif de corail s'ouvrira un jour, grâce à tes étoiles arc-en-ciel. Viens jouer souvent : tu en gagneras une !");
+  assert.equal(t("arc", { n: 0, fermees: 0, zonePrete: false, prochaine: null }), `${X.arcBriller} ${X.diamantGagner}`);
+  assert.equal(t("arc", { n: 0, fermees: 2, zonePrete: true, prochaine: large }), `${large.fermeeLu} ${X.diamantGagner} ${T.boutique.zoneBientot}`);
+  assert.equal(X.diamantGagner, "Viens jouer souvent : tu en gagneras une !");
+  const inv0 = inventaire();
+  for (const z of [...cartes.zones.filter((z) => !z.ouverte), null]) for (const p of [false, true]) for (const ph of sentences(t("arc", { n: 0, fermees: z ? 1 : 0, zonePrete: p, prochaine: z }))) assert.ok(inv0.has(ph), ph);
+  const abysses = cartes.zones.find((z) => z.id === "abysses");
   assert.equal(t("diamant", { n: 2, maintenant: false, zone: large }), "Tu as 2 étoiles de diamant. Elles t'offriront les créatures légendaires, quand tu auras toutes les créatures du grand large.");
   assert.equal(t("diamant", { n: 1, maintenant: false, zone: abysses }), `${X.diamantUne} Elle t'offrira une créature légendaire, quand tu auras toutes les créatures des abysses.`);
   assert.equal(t("diamant", { n: 3, maintenant: true, zone: large }), `Tu as 3 étoiles de diamant. ${X.diamantMaintenant}`);
@@ -126,7 +135,7 @@ test("ce que dit la mascotte quand on touche une réserve, selon l'état", async
   // l'état, d'après la sauvegarde
   const { rw } = await fresh(allReady); rw.owned = own(byZone("lagon"));
   const e = etatReserves(rw, { arc: 2, diamant: 1 });
-  assert.deepEqual(e.arc, { n: 2, fermees: 3, zonePrete: true }); assert.equal(e.diamant.zone.id, "large"); assert.equal(e.diamant.maintenant, false);
+  assert.deepEqual(e.arc, { n: 2, fermees: 3, zonePrete: true, prochaine: corail }); assert.equal(e.diamant.zone.id, "large"); assert.equal(e.diamant.maintenant, false);
 });
 
 test("chaque phrase des réserves, jusqu'aux nombres dits, est dans l'inventaire de la voix", () => {
@@ -167,13 +176,15 @@ test("B, le niveau par défaut, garde ses prix (la règle de réserve ne change 
 });
 
 // (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026) LA RANGÉE DES COMPTEURS : une seule ligne, chaque étoile à
-// gauche de son nombre, même taille et même hauteur ; la réserve de diamant montrée même à 0 ; entre la frise et le bord droit
-test("la rangée des compteurs : une ligne, l'étoile à gauche de son nombre, même taille, diamant montré à 0, cibles de 64 px", async () => {
+// gauche de son nombre, même taille et même hauteur ; entre la frise et le bord droit. (Lot « Suites des correctifs du 5 novembre »,
+// décision du parent du 6 novembre 2026 : les trois compteurs toujours visibles, la réserve arc-en-ciel montrée à 0 comme le diamant)
+test("la rangée des compteurs : une ligne, l'étoile à gauche de son nombre, même taille, les trois montrés même à 0, cibles de 64 px", async () => {
   const { rangeeCompteurs, RANGEE } = await import("../../app/js/session/screens.js");
   const { reservesMontrees } = await import("../../app/js/session/reserves.js");
-  assert.deepEqual(reservesMontrees({ arc: 0, diamant: 0 }), ["diamant"]);
+  assert.deepEqual(reservesMontrees({ arc: 0, diamant: 0 }), ["arc", "diamant"]);
   assert.deepEqual(reservesMontrees({ arc: 3, diamant: 0 }), ["arc", "diamant"]);
-  for (const [mer, arc, diamant] of [["0", "1", "0"], ["123", "2", "0"], ["999", "44", "3"], ["1234", "50", "15"], ["12345", "50", "15"]]) {
+  assert.deepEqual(reservesMontrees({ arc: 0, diamant: 2 }), ["arc", "diamant"]);
+  for (const [mer, arc, diamant] of [["0", "0", "0"], ["0", "1", "0"], ["123", "2", "0"], ["999", "44", "3"], ["1234", "50", "15"], ["12345", "50", "15"]]) {
     const { k, boites } = rangeeCompteurs([{ id: "mer", texte: mer }, { id: "arc", texte: arc }, { id: "diamant", texte: diamant }]);
     const B = ["mer", "arc", "diamant"].map((id) => boites[id]);
     assert.ok(B[0].x >= RANGEE.gauche - 1 && B[2].x + B[2].w <= RANGEE.droite + 1, `${mer} : dans sa place (${B[0].x} à ${B[2].x + B[2].w})`);

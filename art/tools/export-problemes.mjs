@@ -1,4 +1,4 @@
-// LES IMAGES DES PROBLÈMES (lot « Problèmes », fiche 20 ; lot « Mise en scène des problèmes », fiche 23 ; décisions du parent du
+// LES IMAGES DES PROBLÈMES (lot « Problèmes », fiche 20 ; lot « Mise en scène des problèmes », fiche 24 ; décisions du parent du
 // 30 octobre et du 6 novembre 2026). Une seule commande pour tout ce que le parent a déposé, que l'application lit dans
 // app/assets/problemes/ (et sa liste, index.json) :
 //  - LES LIEUX : art/problemes/sources/<lieu>.png|jpg|jpeg|webp (générés en 16:9, le cinquième du haut sans détail ;

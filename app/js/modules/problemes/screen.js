@@ -1,4 +1,4 @@
-// MODULE 7 · L'ÉCRAN DES PROBLÈMES (lot « Problèmes », docs/LOTS.md, fiche 20 ; lot « Mise en scène des problèmes », fiche 23 ;
+// MODULE 7 · L'ÉCRAN DES PROBLÈMES (lot « Problèmes », docs/LOTS.md, fiche 20 ; lot « Mise en scène des problèmes », fiche 24 ;
 // docs/SPEC.md, section 7 quinquies ; les maquettes : art/problemes/index.html, art/problemes/mise-en-scene/). Le pavé, le coquillage
 // et « je ne sais pas » sont ceux de l'écran des additions (modules/facts/screen.js), à leur place ; l'ardoise n'y est pas : à sa place,
 //  - LA SCÈNE (scene.js, CADRE : 884 × 374, de x 244 à 1128 et de y 106 à 480 : juste à droite de la mascotte, à gauche des réserves

@@ -53,25 +53,54 @@ export const drawAgainIcon = (g: Gfx, cx: number, cy: number) => {
     const st2 = O.starShape([cx + 34, cy + 24], 9, 4, 0.5); cel(g, st2, "#ff9a7a", CORAL_S, 2); contour(g, st2, 2.2, 3432);
   });
 };
-// « album » : un livre fermé, couverture turquoise et tranche crème, un coquillage doré sur la couverture
+// « album » : un livre de cartes : le livre fermé de l'album (couverture turquoise, coquillage doré), trois cartes en éventail qui en
+// sortent par le haut (lot « Suites des correctifs du 5 novembre », décision du parent du 6 novembre 2026 : l'album, ouvert depuis le
+// récif, ne se confond plus avec le livre ouvert des leçons)
 export const drawAlbumKey = (g: Gfx, cx: number, cy: number) => {
   drawAnswerBubble(g, cx, cy, 20, 60);
   drawAlbumIcon(g, cx, cy);
 };
+// une petite carte, tournée de `a` autour du milieu de son bas (px, py) : le cadre crème, la fenêtre de mer, et ce qu'elle montre
+const CARTES: { a: number; h: number; eau: string; eauS: string; motif: "poisson" | "etoile" | "coquille" }[] = [
+  { a: -0.52, h: 50, eau: "#7fd3e6", eauS: "#4aa6c4", motif: "poisson" },
+  { a: 0.5, h: 50, eau: "#c9b6f2", eauS: "#9a83d6", motif: "coquille" },
+  { a: -0.04, h: 54, eau: "#8fe0d0", eauS: "#4fb3a4", motif: "etoile" },
+];
+const drawMiniCard = (g: Gfx, px: number, py: number, c: (typeof CARTES)[number], seed: number) => {
+  const W = 30, ca = Math.cos(c.a), sa = Math.sin(c.a), T = (pts: P[]): P[] => pts.map(([x, y]) => [px + x * ca - y * sa, py + x * sa + y * ca]);
+  const rr = (x: number, y: number, w: number, h: number, r: number): P[] => smooth([[x + r, y], [x + w - r, y], [x + w, y + r], [x + w, y + h - r], [x + w - r, y + h], [x + r, y + h], [x, y + h - r], [x, y + r]], true, 3);
+  const card = T(rr(-W / 2, -c.h, W, c.h, 5)), win = T(rr(-W / 2 + 4.5, -c.h + 4.5, W - 9, c.h - 13, 3));
+  fillShape(g, shift(card, 3, 4), SH, 0.25); cel(g, card, "#fffaf0", "#e0d4bc", 2.5); contour(g, card, 2.8, seed);
+  cel(g, win, c.eau, c.eauS, 2); ink(g, win, INK, { w: 1.4, closed: true, shadow: 0, seed: seed + 1 }, 0.8);
+  // le motif, dans le haut de la fenêtre (le bas est caché par le livre)
+  const my = -c.h * 0.68, m = T([[0, my]])[0];
+  if (c.motif === "poisson") {
+    const body = T(smooth([[7, my], [1, my - 5], [-5, my], [1, my + 5]], true, 4)), tail = T([[-4, my], [-10, my - 5], [-10, my + 5]]);
+    fillShape(g, tail, CORAL_S); fillShape(g, body, CORAL); ink(g, body, INK, { w: 1.3, closed: true, shadow: 0, seed: seed + 2 });
+    const oe = T([[3.5, my - 1]])[0]; fillShape(g, blob(oe[0], oe[1], 1.3, 1.3, seed + 3, 0.02, 8), INK);
+  } else if (c.motif === "etoile") {
+    const st = O.starShape(m, 10, 4.4, c.a + 0.2); cel(g, st, GOLD, GOLD_S, 1.6); contour(g, st, 2, seed + 2);
+  } else {
+    const sh = blob(m[0], m[1], 7, 6, seed + 2, 0.06, 12, c.a); cel(g, sh, "#ffd0c0", "#e2907a", 1.6); contour(g, sh, 1.8, seed + 3);
+    [-0.5, 0, 0.5].forEach((d, i) => ink(g, [[m[0] + Math.sin(c.a + d) * 1.5, m[1] + 4], [m[0] + Math.sin(c.a + d) * 6, m[1] - 4]], "#c06a55", { w: 1.1, shadow: 0, seed: seed + 4 + i }));
+  }
+};
 // (lot « Correctifs : passage… », point 10 : le pictogramme seul, repris agrandi sur le galet de l'accueil)
 export const drawAlbumIcon = (g: Gfx, cx: number, cy: number) => {
+  // les cartes, derrière le livre : elles en sortent par le haut
+  CARTES.forEach((c, i) => drawMiniCard(g, cx + (i === 0 ? -10 : i === 1 ? 10 : 0), cy + 10, c, 3460 + i * 10));
   g.group("plain", () => {
-    const x0 = cx - 30, x1 = cx + 30, y0 = cy - 34, y1 = cy + 34;
+    const x0 = cx - 32, x1 = cx + 32, y0 = cy - 4, y1 = cy + 34;
     const pages = smooth([[x0 + 6, y0 + 4], [x1 + 6, y0 + 4], [x1 + 6, y1 + 6], [x0 + 6, y1 + 6]], true, 1);
     shadowed(g, pages, "#fffaf0", "#e0d4bc", 3, 3440, 2);
     clipped(g, pages, () => { for (let i = 1; i < 4; i++) ink(g, [[x1 - 1 + i * 2, y0 + 8], [x1 - 1 + i * 2, y1 + 2]], "#c9b48f", { w: 1.2, shadow: 0, seed: 3441 + i }); });
     const cover = smooth([[x0, y0 + 6], [x0 + 6, y0], [x1 - 4, y0], [x1, y0 + 4], [x1, y1 - 4], [x1 - 4, y1], [x0 + 6, y1], [x0, y1 - 6]], true, 3);
     cel(g, cover, "#37a9b3", "#1f7d88", 4); contour(g, cover, 3.6, 3445);
     ink(g, [[x0 + 8, y0 + 3], [x0 + 8, y1 - 3]], "#1a6a74", { w: 3, shadow: 0, taper: [0.1, 0.1], seed: 3446 });
-    const frame = smooth([[x0 + 14, y0 + 8], [x1 - 7, y0 + 8], [x1 - 7, y1 - 8], [x0 + 14, y1 - 8]], true, 1);
+    const frame = smooth([[x0 + 14, y0 + 7], [x1 - 7, y0 + 7], [x1 - 7, y1 - 7], [x0 + 14, y1 - 7]], true, 1);
     ink(g, frame, GOLD, { w: 2, closed: true, shadow: 0, seed: 3447 }, 0.9);
   });
-  drawGoldShell(g, cx + 3, cy - 2, 0.62);
+  drawGoldShell(g, cx + 4, cy + 14, 0.46);
 };
 // un coquillage doré (la couverture de l'album)
 const drawGoldShell = (g: Gfx, cx: number, cy: number, k: number) => g.group("plain", () => {

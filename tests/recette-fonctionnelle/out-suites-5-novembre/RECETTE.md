@@ -1,6 +1,6 @@
 # Recette du lot « Suites des correctifs du 5 novembre »
 
-Faite les 6 et 7 novembre 2026 sur la branche `claude/pensive-hawking-8m1y5x` (demande de fusion #77), sur le banc Android (méthode commune, `docs/LOTS.md`).
+Faite les 6 et 7 novembre 2026 sur la branche `claude/pensive-hawking-8m1y5x` (demande de fusion #77, fusionnée le 7 novembre avant la fin de la recette ; le précache et ce rapport arrivent par une demande de fusion de suite), sur le banc Android (méthode commune, `docs/LOTS.md`).
 
 ## Technique
 

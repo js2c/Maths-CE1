@@ -334,7 +334,7 @@ for (const T of TAILLES) {
   check(/a donné trop alors que le compte juste était possible/.test(txt), "journal des erreurs : l'erreur de l'étal en une phrase");
   await page.evaluate(() => { const el = [...document.querySelectorAll(".pa-main *")].filter((e) => !e.children.length).find((e) => /a donné trop alors que/.test(e.textContent)); el?.scrollIntoView({ block: "center" }); }); await page.waitForTimeout(300); await shot(page, "32-parent-journal", T);
   await fin(page, context, errors, "jouer imposé et espace parent");
-  const o = await open("&meteo=beau", T, async () => { const n = Date.now(); await window.__app.store.add("seances", { debut: n - 600000, fin: n, terminee: true, module: 1, etapes: [] }); await window.__app.store.put("niveaux", { module: 6, niveau: 1, obtenus: [], redescentes: [], fenetre: [], vus: 0, taux: [], lecons: [], exemples: [4] }); });
+  const o = await open("&meteo=beau", T, async () => { const n = Date.now(); await window.__app.store.add("seances", { debut: Math.max(n - 600000, new Date(n).setHours(0, 0, 0, 0)), fin: n, terminee: true, module: 1, etapes: [] }); await window.__app.store.put("niveaux", { module: 6, niveau: 1, obtenus: [], redescentes: [], fenetre: [], vus: 0, taux: [], lecons: [], exemples: [4] }); });
   await o.page.waitForSelector(".again"); await o.page.tap(".again", { force: true });
   await o.page.waitForSelector(".choix-ex", { timeout: 15000 }); await o.page.waitForTimeout(400);
   for (const s of ['.choix-ex[data-key="etal"]', '.choix-ex[data-key="etal"]']) { await o.page.tap(s, { force: true }); await o.page.waitForTimeout(500); }

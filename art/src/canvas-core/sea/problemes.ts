@@ -35,7 +35,17 @@ const reflet = (cx: number, cy: number, k: number, x: number, y: number, rx: num
 // ---------------------------------------------------------------- les objets
 // palette de quelques objets qui changent de couleur d'un exemplaire à l'autre (crayons, perles, personnages)
 const TEINTES: [string, string][] = [["#ff5a5f", "#c23a45"], ["#5cb8f0", "#2f7fb8"], ["#7fcf6a", "#4a9a3d"], ["#ffd23a", "#e0a21a"], ["#c58cf0", "#8f5bc0"]];
+// LES IMAGES DES UNITÉS (lot « Mise en scène des problèmes », décision du parent du 6 novembre 2026) : l'application donne, pour
+// la question en cours, l'image générée de l'unité (app/assets/problemes/objets/u-…) ; elle remplace le dessin de l'objet partout
+// (les étiquettes, la plaque, les groupes, la correction, le partage), centrée au même endroit, à surface égale (celle d'un carré de 44 × 42 à l'échelle 1,
+// au plus 64 de large et 46 de haut) ; un objet sans image garde son dessin.
+type ImageObjet = { im: CanvasImageSource; w: number; h: number };
+let IMAGES: Partial<Record<string, ImageObjet>> = {};
+export const imagesObjets = (m: Partial<Record<string, ImageObjet>> | null) => { IMAGES = m ?? {}; };
 export const drawObjet = (g: Gfx, kind: Objet, cx: number, cy: number, k = 1, seed = 1, teinte = 0) => g.group("plain", () => {
+  const I = IMAGES[kind];
+  // (à surface égale : un crayon long n'est pas réduit à un trait)
+  if (I) { const s = Math.min(Math.sqrt((44 * 42 * k * k) / (I.w * I.h)), (64 * k) / I.w, (46 * k) / I.h), W = I.w * s, H = I.h * s; (g.cur as CanvasRenderingContext2D).drawImage(I.im, cx - W / 2, cy - H / 2, W, H); g.touch(cx - W / 2, cy - H / 2, cx + W / 2, cy + H / 2); return; }
   const S = 13000 + seed * 17, w = 2.4 * Math.max(0.7, k), T = TEINTES[teinte % TEINTES.length];
   switch (kind) {
     case "bille": { // une bille de verre : le bleu, la flamme jaune tournée dedans, un reflet net
@@ -213,19 +223,37 @@ const textW = (t: string, em: number) => wordWidth(t) * em;
 // une étiquette de donnée : une plaque de nacre, le nombre et l'objet. Renvoie sa largeur.
 export const ETIQ_H = 66;
 export const largeurEtiquette = (t: string, em = 38, objet: Objet | null = "jeton") => textW(t, em) + (objet ? em * 1.2 + 50 : 44);
-export const drawEtiquette = (g: Gfx, x: number, y: number, t: string, objet: Objet | null, o: { lit?: boolean; seed?: number; em?: number; rouge?: boolean } = {}) => {
-  const em = o.em ?? 38, w = largeurEtiquette(t, em, objet), seed = o.seed ?? 1;
-  g.group("plain", () => { const s = rrect(x, y, w, ETIQ_H, 18); fillShape(g, shift(s, 4, 6), SH, 0.3); cel(g, s, o.lit ? "#fff3b8" : NACRE, NACRE_S, 4); if (o.lit) ink(g, rrect(x - 5, y - 5, w + 10, ETIQ_H + 10, 22), LIT, { w: 5, closed: true, shadow: 0, seed: 13800 + seed }, 0.9); contour(g, s, 3, 13810 + seed);
+// `teinte` (lot « Mise en scène des problèmes », décision du parent du 6 novembre 2026, 10) : pendant l'aide et la correction,
+// l'étiquette prend la couleur de sa barre dans le schéma (« a » l'orange, « b » le bleu)
+// le bord en pointillés de l'écart d'une comparaison, comme dans le schéma (des tirets réguliers : un trait d'encre plein dirait
+// « une quantité connue » ; décision du parent du 7 novembre 2026)
+const pointille = (g: Gfx, s: P[], x: number, y: number, w: number, h: number, couleur = INK) => {
+  const cv = g.cur as CanvasRenderingContext2D; g.touch(x - 4, y - 4, x + w + 4, y + h + 4); cv.save(); cv.setLineDash([14, 10]); cv.lineWidth = 4; cv.lineJoin = "round"; cv.strokeStyle = couleur;
+  cv.beginPath(); s.forEach(([a, b], i) => (i ? cv.lineTo(a, b) : cv.moveTo(a, b))); cv.closePath(); cv.stroke(); cv.restore();
+};
+// `ecart` : l'écart d'une comparaison (« 5 de plus »), dès l'histoire avec l'aspect qu'il a dans le schéma : le bord en pointillés,
+// sans image (décision du parent du 7 novembre 2026, après la relecture indépendante : avec le nombre et l'image, il se lisait
+// comme une quantité de plus)
+export const drawEtiquette = (g: Gfx, x: number, y: number, t: string, objet: Objet | null, o: { lit?: boolean; seed?: number; em?: number; rouge?: boolean; teinte?: "a" | "b" | null; ecart?: boolean } = {}) => {
+  const em = o.em ?? 38, w = largeurEtiquette(t, em, objet), seed = o.seed ?? 1, [fond, ombre] = o.lit ? ["#fff3b8", NACRE_S] : o.teinte === "a" ? [ORANGE, ORANGE_S] : o.teinte === "b" ? [BLUE, BLUE_S] : [NACRE, NACRE_S];
+  g.group("plain", () => { const s = rrect(x, y, w, ETIQ_H, 18); fillShape(g, shift(s, 4, 6), SH, 0.3);
+    if (o.ecart) { fillShape(g, s, o.lit ? "#fff3b8" : "#fffaf0"); pointille(g, s, x, y, w, ETIQ_H); } else cel(g, s, fond, ombre, 4);
+    if (o.lit) ink(g, rrect(x - 5, y - 5, w + 10, ETIQ_H + 10, 22), LIT, { w: 5, closed: true, shadow: 0, seed: 13800 + seed }, 0.9); if (!o.ecart) contour(g, s, 3, 13810 + seed);
     num(g, t, x + 20 + textW(t, em) / 2, y + ETIQ_H / 2 - em / 2, em, o.rouge ? RED : INK, 13820 + seed * 7); });
   if (objet) drawObjet(g, objet, x + w - em, y + ETIQ_H / 2, (0.9 * em) / 38, 400 + seed);
   return w;
 };
 // la plaque de la réponse : plus grande, bordée d'or comme l'ardoise ; « ? » rouge tant que rien n'est tapé
-export const drawReponse = (g: Gfx, x: number, y: number, w: number, t: string, objet: Objet, o: { juste?: boolean } = {}) => {
+// `ecart` : la réponse est l'écart d'une comparaison : le bord en pointillés, comme l'écart du schéma (le liseré d'or reste : c'est
+// la plaque de la réponse)
+export const drawReponse = (g: Gfx, x: number, y: number, w: number, t: string, objet: Objet | null, o: { juste?: boolean; ecart?: boolean } = {}) => {
   const h = 84, em = 50;
-  g.group("plain", () => { const s = rrect(x, y, w, h, 22); fillShape(g, shift(s, 5, 7), SH, 0.32); cel(g, s, o.juste ? "#eaffd8" : NACRE, NACRE_S, 5); ink(g, rrect(x + 9, y + 9, w - 18, h - 18, 14), "#e0b43a", { w: 2.4, closed: true, shadow: 0, seed: 13850 }, 0.85); contour(g, s, 4, 13851);
+  g.group("plain", () => { const s = rrect(x, y, w, h, 22); fillShape(g, shift(s, 5, 7), SH, 0.32);
+    if (o.ecart) fillShape(g, s, o.juste ? "#eaffd8" : "#fffaf0"); else cel(g, s, o.juste ? "#eaffd8" : NACRE, NACRE_S, 5);
+    ink(g, rrect(x + 9, y + 9, w - 18, h - 18, 14), "#e0b43a", { w: 2.4, closed: true, shadow: 0, seed: 13850 }, 0.85); if (o.ecart) pointille(g, s, x, y, w, h); else contour(g, s, 4, 13851);
     num(g, t, x + 26 + Math.max(textW(t, em), 30) / 2 + 6, y + h / 2 - em / 2, em, t === "?" ? RED : INK, 13860); });
-  drawObjet(g, objet, x + w - 48, y + h / 2, 1.05, 450);
+  // (l'image de ce qu'on cherche, quand elle existe ; sans objet, la plaque sans image : screen.js, `plaqueObjet`)
+  if (objet) drawObjet(g, objet, x + w - 48, y + h / 2, 1.05, 450);
 };
 // la plaque du calcul (la correction l'écrit : « 23 − 9 = 14 »), comme l'ardoise ; centrée sur cx
 export const drawCalcul = (g: Gfx, cx: number, y: number, t: string, em = 44) => g.group("plain", () => {
@@ -243,7 +271,7 @@ export const drawCadre = (g: Gfx, x: number, y: number, w: number, h: number, pa
 });
 
 // ---------------------------------------------------------------- le schéma en barres
-type Barre = { x: number; y: number; w: number; t: string; teinte: "tout" | "a" | "b" | "inconnue" | "trouvee"; objet?: Objet };
+type Barre = { x: number; y: number; w: number; t: string; teinte: "tout" | "a" | "b" | "inconnue" | "trouvee"; objet?: Objet | null };
 export const BARRE_H = 70;
 const COUL = { tout: [NACRE, NACRE_S], a: [ORANGE, ORANGE_S], b: [BLUE, BLUE_S], inconnue: ["#fff6e0", "#ead8b0"], trouvee: ["#fff3b8", "#e8cf6a"] } as const;
 const drawBarre = (g: Gfx, B: Barre, seed: number) => {
@@ -262,22 +290,26 @@ const drawBarre = (g: Gfx, B: Barre, seed: number) => {
 // largeur des barres : proportionnelle, avec un minimum pour que le nombre et l'objet tiennent
 const largeurs = (vals: number[], W: number, min = 120) => { const tot = vals.reduce((a, b) => a + b, 0), raw = vals.map((v) => (v / tot) * W), short = raw.map((r) => Math.max(min, r)), over = short.reduce((a, b) => a + b, 0) - W; const big = short.map((r, i) => (raw[i] > min ? r : 0)), bt = big.reduce((a, b) => a + b, 0); return short.map((r, i) => (big[i] ? r - (over * big[i]) / bt : r)); };
 // le tout (en haut) et ses deux parties (en dessous) ; `inconnue` : « tout » ou l'indice de la partie ; `montre` : la réponse écrite
-export const drawBarres = (g: Gfx, x: number, y: number, W: number, b: { tout: number; parties: [number, number]; inconnue: "tout" | 0 | 1 }, objet: Objet, o: { montre?: boolean; seed?: number } = {}) => {
+// `objet` : celui de toutes les barres, ou celui de chacune ([le tout, la première partie, la seconde] ; plusieurs sortes comptées)
+export const drawBarres = (g: Gfx, x: number, y: number, W: number, b: { tout: number; parties: [number, number]; inconnue: "tout" | 0 | 1 }, objet: Objet | null | (Objet | null)[], o: { montre?: boolean; seed?: number } = {}) => {
+  const ob = (k: number) => (Array.isArray(objet) ? objet[k] ?? null : objet);
   const seed = 13900 + (o.seed ?? 0) * 40, [wa, wb] = largeurs(b.parties, W), gap = 22, lbl = (v: number, unk: boolean) => (unk && !o.montre ? "?" : String(v));
   const tUnk = b.inconnue === "tout", teinte = (unk: boolean, base: Barre["teinte"]): Barre["teinte"] => (unk ? (o.montre ? "trouvee" : "inconnue") : base);
-  drawBarre(g, { x, y, w: W, t: lbl(b.tout, tUnk), teinte: teinte(tUnk, "tout"), objet }, seed);
+  drawBarre(g, { x, y, w: W, t: lbl(b.tout, tUnk), teinte: teinte(tUnk, "tout"), objet: ob(0) }, seed);
   // le crochet qui dit « le tout, c'est les deux parties ensemble » : deux traits d'encre qui descendent aux bords
   g.group("plain", () => [x + 10, x + W - 10].forEach((xx, i) => ink(g, [[xx, y + BARRE_H + 4], [xx, y + BARRE_H + gap - 4]], INK, { w: 2.4, shadow: 0, seed: seed + 20 + i }, 0.7)));
-  drawBarre(g, { x, y: y + BARRE_H + gap, w: wa, t: lbl(b.parties[0], b.inconnue === 0), teinte: teinte(b.inconnue === 0, "a"), objet }, seed + 1);
-  drawBarre(g, { x: x + wa, y: y + BARRE_H + gap, w: wb, t: lbl(b.parties[1], b.inconnue === 1), teinte: teinte(b.inconnue === 1, "b"), objet }, seed + 2);
+  drawBarre(g, { x, y: y + BARRE_H + gap, w: wa, t: lbl(b.parties[0], b.inconnue === 0), teinte: teinte(b.inconnue === 0, "a"), objet: ob(1) }, seed + 1);
+  drawBarre(g, { x: x + wa, y: y + BARRE_H + gap, w: wb, t: lbl(b.parties[1], b.inconnue === 1), teinte: teinte(b.inconnue === 1, "b"), objet: ob(2) }, seed + 2);
   return { h: 2 * BARRE_H + gap };
 };
 // la comparaison : le plus grand en haut, le plus petit en dessous, aligné à gauche ; l'écart prolonge le plus petit, en pointillés
-export const drawComparaison = (g: Gfx, x: number, y: number, W: number, c: { grand: number; petit: number; ecart: number; inconnue: "grand" | "petit" | "ecart" }, objet: Objet, o: { montre?: boolean; seed?: number } = {}) => {
+// `objet` : celui des deux barres, ou celui de chacune ([le plus grand, le plus petit])
+export const drawComparaison = (g: Gfx, x: number, y: number, W: number, c: { grand: number; petit: number; ecart: number; inconnue: "grand" | "petit" | "ecart" }, objet: Objet | null | (Objet | null)[], o: { montre?: boolean; seed?: number } = {}) => {
+  const ob = (k: number) => (Array.isArray(objet) ? objet[k] ?? null : objet);
   const seed = 14300 + (o.seed ?? 0) * 40, [wp, we] = largeurs([c.petit, c.ecart], W, 110), gap = 26, lbl = (v: number, unk: boolean) => (unk && !o.montre ? "?" : String(v)), U = (k: string) => c.inconnue === k;
   const teinte = (unk: boolean, base: Barre["teinte"]): Barre["teinte"] => (unk ? (o.montre ? "trouvee" : "inconnue") : base);
-  drawBarre(g, { x, y, w: W, t: lbl(c.grand, U("grand")), teinte: teinte(U("grand"), "a"), objet }, seed);
-  drawBarre(g, { x, y: y + BARRE_H + gap, w: wp, t: lbl(c.petit, U("petit")), teinte: teinte(U("petit"), "b"), objet }, seed + 1);
+  drawBarre(g, { x, y, w: W, t: lbl(c.grand, U("grand")), teinte: teinte(U("grand"), "a"), objet: ob(0) }, seed);
+  drawBarre(g, { x, y: y + BARRE_H + gap, w: wp, t: lbl(c.petit, U("petit")), teinte: teinte(U("petit"), "b"), objet: ob(1) }, seed + 1);
   // l'écart : une case en pointillés au bout du plus petit, sous ce qui dépasse
   g.group("plain", () => {
     const ex = x + wp + 8, ey = y + BARRE_H + gap, s = rrect(ex, ey, we - 8, BARRE_H, 14), em = 40, t = lbl(c.ecart, U("ecart"));

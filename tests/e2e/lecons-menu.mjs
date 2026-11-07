@@ -29,7 +29,7 @@ const SEUL = opt("--seul", null);
 const { srv, url } = await serve(0);
 const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: [] });
 const fail = []; const check = (ok, what) => { console.log(`${ok ? "ok  " : "ÉCHEC"} ${what}`); if (!ok) fail.push(what); };
-const TODAY = async () => { const n = Date.now(); await window.__app.store.add("seances", { debut: n - 600000, fin: n - 1000, terminee: true, module: 1, etapes: [] }); };
+const TODAY = async () => { const n = Date.now(); await window.__app.store.add("seances", { debut: Math.max(n - 600000, new Date(n).setHours(0, 0, 0, 0)), fin: n - 1000, terminee: true, module: 1, etapes: [] }); };
 
 for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEUL || String(w) === SEUL)) {
   const T = `${W}`, big = W === 1280;

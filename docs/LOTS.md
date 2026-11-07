@@ -70,6 +70,9 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (réponses du parent du 6 novembre 2026 aux questions ouvertes de la PR #75) : le lot court « Suites des correctifs du 5 novembre »** (fiche 23) : la réserve arc-en-ciel montrée à 0, le livre de cartes de l'album et sa sortie par le récif ; la musique d'ambiance et la phrase du diamant à 0 restent. **État : fait** (PR #77 ; aucune phrase nouvelle).
 
+**Puis (constat du parent du 5 novembre 2026, maquette validée le 6 novembre) : le lot « Mise en scène des problèmes »** (fiche 24) : la scène des problèmes agrandie et remplie par les objets de l'histoire, posés en nombre exact, les unités cachées jusqu'à la correction ; l'outil qui recadre les lieux et détoure les objets générés par le parent. **État : fait** (PR #76 ; 3 phrases à fabriquer ; la perle à refaire, son prompt corrigé).
+
+
 **Pourquoi cet ordre.**
 
 - Les correctifs de la confrontation avant les leçons et les sommes : ces lots s'appuient sur les règles du module 2 telles qu'elles seront écrites.
@@ -1391,3 +1394,22 @@ La même erreur deux fois dans une séance relance la leçon (une fois), comme p
 **Documents** : `docs/SPEC.md`, le guide du parent, le journal de conception ; les phrases à fabriquer dans la demande de fusion (normalement aucune).
 
 **Recette du lot** : la méthode commune, sur le banc Android ; un parcours `tests/e2e/suites-5-novembre.mjs` (les trois compteurs à 0 à l'accueil, dans le récif, la boutique et la séance ; la réserve arc-en-ciel à 0 touchée ; le livre de cartes ; la sortie de l'album par le récif ; 1280 × 800, 1920 × 1200, `s5e`, `petit-smartphone`).
+
+### 24. Lot « Mise en scène des problèmes »
+
+**Origine** : le constat du parent du 5 novembre 2026 (l'écran des problèmes vide à 80 % : le grand cadre de l'illustration, encore un fond de papier ; « 3 sachets de 6 gourmandises » ne montrant qu'un petit biscuit). **Maquette validée le 6 novembre 2026**, avec les douze recommandations : `docs/maquettes/problemes-scene/PROPOSITION.md` (section 6), `art/problemes/mise-en-scene/` ; précision du même jour : les lieux sont générés en 16:9 (Nano Banana ne propose pas le 21:9), le cinquième du haut sans détail, et recadrés par le haut.
+
+**D'un seul tenant**, après la fusion de la PR #75, dans la PR #76, avec la recette sur le banc Android (profil `s5e`, et `petit-smartphone` pour l'écran des problèmes).
+
+1. **La scène** : 884 × 374 (x 244 à 1128, y 106 à 480), l'image du lieu 860 × 350 ; le pavé, le coquillage et « je ne sais pas » à leur place ; la bande de la bulle (en haut à gauche) ne reçoit que le décor.
+2. **Les objets de l'histoire** (`art/problemes/mise-en-scene/objets.json`) posés par l'application : personnages et animaux qui agissent une fois, contenants et groupes en nombre exact, fermés et marqués de ce qu'ils contiennent, dépôts nommés ; « tu » jamais dessiné ; les objets d'une phrase apparaissent avec elle. La scène de chaque énoncé est écrite dans la banque. **Un objet sans image** : son étiquette seule ; **un lieu sans image** : le papier du cadre.
+3. **Les étiquettes** sur les objets qu'elles décrivent (sur le sol du lieu quand il n'y a pas d'objet) ; **la plaque de la réponse** sur le dépôt de la réponse.
+4. **Les unités** cachées tant qu'il faut les trouver ; montrées à la correction jusqu'à 20 ; au cran « plus facile », sur le sol (une collection par étiquette) ; au partage manipulé, dans les contenants de la scène.
+5. **L'aide** : à la place du pavé, comme avant ; les groupes comptés par bonds sur les contenants de la scène ; pendant l'aide et la correction, les étiquettes de la scène aux couleurs de leur barre.
+6. **L'outil de l'atelier** (`node art/tools/export-problemes.mjs`, une seule commande) : les lieux (`art/problemes/sources/<lieu>.jpg|png`) recadrés à 860 × 350, collés en bas (le haut retiré, jamais le sol), @1x et @2x ; l'étal recadré autour de sa glace ; les objets (`art/problemes/mise-en-scene/sources/<objet>[-<variante>].png`) détourés (fond vert, ou magenta), cadrés, réduits à leur hauteur dans la scène, @1x et @2x ; la liste de ce qui a son image. Puis `node tools/precache.mjs`.
+7. **Les lieux revus** (`lieux.json`) reportés dans `art/problemes/contextes.json`.
+
+**Documents** : `docs/SPEC.md` (section 7 quinquies), `docs/ARCHITECTURE.md`, `docs/GUIDE-PARENT.md` (déposer les images, la commande), `CLAUDE.md` (l'exception des objets des problèmes), le journal.
+
+**Recette du lot** : la méthode commune, sur le banc Android ; le parcours `tests/e2e/problemes.mjs` étendu (la scène de chaque structure, l'aide, la correction, le partage dans la scène, un objet et un lieu sans image ; 1280 × 800, 1920 × 1200, `s5e`, `petit-smartphone`).
+

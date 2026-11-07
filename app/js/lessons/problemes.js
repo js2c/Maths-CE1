@@ -57,7 +57,7 @@ export class LessonProblemesPlayer {
   async act(x) {
     const [[name, v]] = Object.entries(x), s = this.s;
     if (name === "histoire") {
-      const e = { contexte: v.contexte, objet: v.objet, reponse: null, enonce: [], barres: null };
+      const e = { contexte: v.contexte, objet: v.objet, reponse: null, enonce: [], barres: null, scene: v.scene }; // (la scène : ses objets, lot « Mise en scène des problèmes »)
       this.q = { lecon: true, e, etiquettes: v.etiquettes.map((n) => ({ n, objet: v.objet, phrase: 0 })), aide: "barres" };
       s.effacerAide(); await s.scene(this.q); return wait(300);
     }

@@ -1,0 +1,90 @@
+{
+ "_doc": "Images d'essai (dessins provisoires) : tests/e2e/fixtures/fabriquer-objets.mjs. Jamais dans l'application.",
+ "objets": {
+  "papa": {
+   "w": 106,
+   "h": 250,
+   "c": "personnage"
+  },
+  "maitresse": {
+   "w": 106,
+   "h": 250,
+   "c": "personnage"
+  },
+  "pecheur": {
+   "w": 105,
+   "h": 250,
+   "c": "personnage"
+  },
+  "voisine": {
+   "w": 88,
+   "h": 185,
+   "c": "personnage"
+  },
+  "copain": {
+   "w": 90,
+   "h": 190,
+   "c": "personnage"
+  },
+  "chien": {
+   "w": 160,
+   "h": 160,
+   "c": "animal"
+  },
+  "sachet-ferme": {
+   "w": 104,
+   "h": 125,
+   "c": "contenant"
+  },
+  "sachet-ouvert": {
+   "w": 142,
+   "h": 125,
+   "c": "contenant"
+  },
+  "gamelle": {
+   "w": 136,
+   "h": 70,
+   "c": "depot"
+  },
+  "seau-plage": {
+   "w": 104,
+   "h": 150,
+   "c": "depot"
+  },
+  "trousse-bleue": {
+   "w": 165,
+   "h": 70,
+   "c": "contenant"
+  },
+  "trousse-jaune": {
+   "w": 165,
+   "h": 70,
+   "c": "contenant"
+  },
+  "pot": {
+   "w": 74,
+   "h": 110,
+   "c": "contenant"
+  },
+  "boite-fermee": {
+   "w": 87,
+   "h": 95,
+   "c": "contenant"
+  },
+  "boite-ouverte": {
+   "w": 79,
+   "h": 95,
+   "c": "contenant"
+  },
+  "assiette": {
+   "w": 158,
+   "h": 55,
+   "c": "contenant"
+  },
+  "table-cuisine": {
+   "w": 497,
+   "h": 150,
+   "c": "depot"
+  }
+ }
+}

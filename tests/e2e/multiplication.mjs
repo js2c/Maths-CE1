@@ -153,7 +153,8 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     await shot(page, `10-table-2-${x.a}x${x.b}`);
     await resetSaid(page); await tap(page, ".help", 300);
     await page.waitForFunction(() => window.__said.some((t) => /double/.test(t)), null, { timeout: 20000 }).catch(() => {});
-    await page.waitForFunction(() => /^\d+$/.test(window.__said.at(-1) ?? ""), null, { timeout: 20000 }).catch(() => {}); await page.waitForTimeout(250);
+    // (une seule rangée, 1 × 2 : l'aide ne dit aucun total, le dernier, la réponse, n'étant jamais dit ; on regarde juste après l'astuce)
+    if (x.a > 1) await page.waitForFunction(() => /^\d+$/.test(window.__said.at(-1) ?? ""), null, { timeout: 20000 }).catch(() => {}); await page.waitForTimeout(250);
     const ra = await board(page); check(rowsOk(ra), `${T} · le coquillage : les rangées en grand (${ra})`);
     check(/Fois deux, c'est le double/.test(await said(page)), `${T} · l'astuce de la table de 2 (${(await said(page)).slice(0, 120)})`);
     await shot(page, `11-coquillage-${x.a}x${x.b}`);

@@ -28,6 +28,8 @@ import { fileURLToPath } from "node:url";
 const ICI = dirname(fileURLToPath(import.meta.url)), RACINE = join(ICI, "../..");
 const banque0 = JSON.parse(readFileSync(join(RACINE, "app/content/problemes.json"), "utf8")).enonces;
 const contextes0 = JSON.parse(readFileSync(join(ICI, "contextes.json"), "utf8")).contextes;
+// (lot « Mise en scène des problèmes ») la bibliothèque des objets de l'histoire, que la scène de chaque énoncé pose
+export const BIBLIOTHEQUE = JSON.parse(readFileSync(join(ICI, "mise-en-scene/objets.json"), "utf8")).objets;
 export const OBJETS = ["bille", "biscuit", "pomme", "oeuf", "crayon", "ballon", "bonbon", "fleur", "perle", "livre", "poisson", "personne", "jeton"];
 export const CONTENANTS = ["sachet", "assiette", "boite", "panier", "vase"];
 const op = (o, x, y) => (o === "+" ? x + y : o === "−" ? x - y : x * y);
@@ -121,6 +123,37 @@ export function controler(banque, contextes) {
     if (e.structure === "comparaison" && !c) defaut(e, "pas de comparaison");
     if (["groupes-egaux", "partage"].includes(e.structure) && !g) defaut(e, "pas de groupes");
     if (e.structure === "deux-etapes" && (e.operations.length !== 2 || e.etapes?.length !== 2)) defaut(e, "deux étapes, pas plus");
+    // la scène (lot « Mise en scène des problèmes ») : des objets de la bibliothèque (pas d'unité comptée), leur variante, la phrase
+    // où ils apparaissent ; un groupe dit par une donnée ; chaque donnée posée une fois au plus ; une plaque au plus ; l'unité connue
+    const sc = e.scene;
+    if (!sc || !Array.isArray(sc.objets)) defaut(e, "pas de scène");
+    else {
+      const poses = [];
+      for (const x of sc.objets) {
+        const o = BIBLIOTHEQUE.find((y) => y.id === x.o);
+        if (!o) { defaut(e, `scène : objet inconnu ${x.o}`); continue; }
+        if (o.categorie === "unite") defaut(e, `scène : ${x.o} est une unité comptée (jamais posée d'avance)`);
+        if (x.v && !(o.variantes ?? []).includes(x.v)) defaut(e, `scène : variante inconnue ${x.o}-${x.v}`);
+        if (!Number.isInteger(x.p) || x.p < 0 || x.p >= e.enonce.length) defaut(e, `scène : phrase ${x.p} de ${x.o}`);
+        if (x.n != null) {
+          if (x.n === "?") { if (!(e.structure === "partage" && g?.inconnue === "nombre")) defaut(e, `scène : « ? » groupes de ${x.o} hors d'un partage en nombre de parts`); }
+          else if (!Number.isInteger(x.n) || donnees[x.n] == null) defaut(e, `scène : le nombre du groupe ${x.o}`);
+          else { poses.push(x.n); if (donnees[x.n] > 9) defaut(e, `scène : ${donnees[x.n]} ${x.o}, plus de 9 à la fois`); }
+        }
+        for (const i of x.d ?? []) { if (!Number.isInteger(i) || donnees[i] == null) defaut(e, `scène : donnée ${i} sur ${x.o}`); poses.push(i); }
+      }
+      for (const i of sc.entre ?? []) if (i !== "rep") { if (donnees[i] == null) defaut(e, `scène : donnée ${i} entre`); poses.push(i); }
+      if (new Set(poses).size !== poses.length) defaut(e, "scène : une donnée posée deux fois");
+      if (sc.objets.filter((x) => x.rep).length + (sc.entre ?? []).filter((i) => i === "rep").length > 1) defaut(e, "scène : plus d'une plaque");
+      // l'unité (l'image de ce qu'on compte) : une unité de la bibliothèque et sa variante, ou un animal de l'histoire (la poule)
+      const uniteConnue = (u) => BIBLIOTHEQUE.some((o) => (o.categorie === "unite" ? (o.variantes ? o.variantes.some((v) => `${o.id}-${v}` === u) : o.id === u) : o.categorie === "animal" && !o.variantes && o.id === u));
+      if (sc.unite != null && !uniteConnue(sc.unite)) defaut(e, `scène : unité inconnue ${sc.unite}`);
+      // l'unité de chaque étiquette (plusieurs sortes comptées) : une par donnée, connue ou null, au moins deux différentes
+      if (sc.unites != null) {
+        if (!Array.isArray(sc.unites) || sc.unites.length !== donnees.length) defaut(e, "scène : unites, une par donnée");
+        else { for (const u of sc.unites) if (u != null && !uniteConnue(u)) defaut(e, `scène : unité inconnue ${u}`); if (new Set(sc.unites.filter(Boolean)).size < 2) defaut(e, "scène : unites sans deux sortes différentes"); }
+      }
+    }
   }
   for (const s of STRUCT) if (!banque.some((e) => e.structure === s)) defauts.push(`aucun énoncé de structure ${s}`);
   if (banque.length < 150 || banque.length > 200) defauts.push(`${banque.length} énoncés : la banque en demande 150 à 200`);

@@ -232,7 +232,7 @@ for (const T of TAILLES) {
 // 8. l'entraînement libre (« Encore ! ») : les voiliers au niveau choisi, sans étoiles ; la maison les quitte, le lagon revient
 {
   const T = TAILLES[0];
-  const { page, context, errors } = await open("", T, async () => { const n = Date.now(); await window.__app.store.add("seances", { debut: n - 600000, fin: n, terminee: true, module: 1, etapes: [] }); });
+  const { page, context, errors } = await open("", T, async () => { const n = Date.now(); await window.__app.store.add("seances", { debut: Math.max(n - 600000, new Date(n).setHours(0, 0, 0, 0)), fin: n, terminee: true, module: 1, etapes: [] }); });
   await page.waitForSelector(".again"); await page.tap(".again", { force: true });
   await page.waitForSelector(".choix-ex", { timeout: 15000 }); await page.waitForTimeout(400);
   await page.tap('.choix-ex[data-key="voiliers"]', { force: true }); await page.waitForTimeout(450); await page.tap('.choix-ex[data-key="voiliers"]', { force: true }); await page.waitForTimeout(700);

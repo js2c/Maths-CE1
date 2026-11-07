@@ -1,0 +1,1086 @@
+{
+ "_doc": "LA BIBLIOTHÈQUE DES OBJETS DE L'HISTOIRE (maquette « Mise en scène des problèmes », docs/maquettes/problemes-scene/PROPOSITION.md ; proposition du 5 novembre 2026, à valider par le parent). Chaque objet : son identifiant, son nom, sa catégorie (personnage, animal, contenant, dépôt, unité), les mots qui le désignent dans les énoncés (`mots`, une expression régulière, sans accent ignoré, lue par relever.mjs), le sujet du prompt Nano Banana (`sujet`, en anglais, inséré dans `promptBase` à la place de [SUJET] ; [ETAT] est remplacé par l'état de sa catégorie, ou par `etat` s'il en a un ; [FOND] par la couleur du fond), le format à demander (`format`), sa taille dans la scène de 1280 × 800 (`h` : la hauteur affichée en px logiques, à l'échelle commune de la scène ; l'application l'exporte en @1x à cette taille et en @2x au double), le fond à détourer (`fond` : vert par défaut, magenta pour un objet qui a du vert), ses variantes (une image chacune). Où déposer l'image générée : `depot` ci-dessous, le nom du fichier étant l'identifiant (et `-variante`). Rien ici n'est lu par l'application.",
+ "depot": "art/problemes/mise-en-scene/sources/<id>.png (ou .jpg, tel que Nano Banana le donne) ; une variante : <id>-<variante>.png",
+ "styleReference": "Joindre l'image de l'étal par beau temps (art/etal/sources/etal-beau-temps.jpg) et, une fois le premier objet de sa catégorie validé, cet objet en deuxième image (« same character design as the second attached image ») : tous les personnages d'une même main, tous les contenants d'une même main.",
+ "ouverture": "Same illustration style, line work, colour palette and lighting as the attached image.",
+ "promptBase": "Children's picture-book illustration, a single isolated subject.\nSubject: [SUJET]\n\nComposition: the subject alone, centred, entirely visible, with a wide empty margin all around (at least a tenth of the picture on each side). Seen from the front, at a child's eye level, very slightly from above.\n\nStyle: bold hand-drawn comic style, a thick, closed, dark ink outline all around the silhouette (no gap in the outline), heavier on the shadow side, flat colour fills, one crisp cel shadow per shape, light from the top left, warm and friendly colours, slightly simplified shapes like a French children's book. It must look drawn by hand with markers, not a photograph and not a 3D render.\n\n[ETAT]\n\nBackground: one flat uniform [FOND] colour from edge to edge: no gradient, no texture, no floor, no horizon, no cast shadow on the ground, no other object.\n\nStrictly no text, no letters, no numbers, no digits, no labels, no logo, no price tag, no signature, no watermark.",
+ "fonds": {
+  "vert": "pure bright green (#00FF00)",
+  "magenta": "pure bright magenta (#FF00FF)"
+ },
+ "etats": {
+  "personnage": "Full body, standing, facing the viewer and very slightly turned to the right, arms relaxed, hands empty and open (objects will be placed next to the person). A simple, friendly face with clear eyes and a small smile. Only one person in the picture.",
+  "enfant": "Full body, standing, facing the viewer, arms relaxed, hands empty. About seven years old, child proportions (big head, short legs). A simple, friendly face with clear eyes and a small smile. Only one child in the picture.",
+  "animal": "Only one animal, whole, calm and friendly, eyes open.",
+  "contenant": "It is closed: its contents cannot be seen, nothing inside can be counted.",
+  "vide": "It is empty: nothing inside and nothing on it, nothing that could be counted.",
+  "depot": "It is empty: nothing on it and nothing in it, nothing that could be counted.",
+  "unite": "Only ONE of them, alone (never two, never a group, never a pile)."
+ },
+ "formats": {
+  "1:1": "carré (1024 × 1024)",
+  "3:4": "portrait (864 × 1184)",
+  "4:3": "paysage (1184 × 864)",
+  "16:9": "paysage large (1344 × 768)"
+ },
+ "categories": {
+  "personnage": "Les rôles de l'histoire (jamais « tu » : l'enfant regarde la scène, elle n'y est pas dessinée). Dessinés une fois chacun, en nombre exact.",
+  "animal": "Les animaux qui agissent (le chien qui attend sa gamelle, le chat qui mange) ou qui forment les groupes (7 vaches de 4 pattes). Dessinés en nombre exact.",
+  "contenant": "Ce qui contient les unités comptées : en nombre exact, FERMÉ tant que l'enfant doit trouver le compte, marqué du nombre qu'il contient (une étiquette posée dessus par l'application) ; OUVERT à la correction, au partage manipulé et au cran « plus facile ».",
+  "depot": "Les lieux de dépôt nommés par l'histoire (la gamelle, l'étagère, la table, le seau, le bus…), posés par l'application devant l'illustration du lieu, qui ne les contient pas : c'est ce qui permet de savoir où sont les objets et d'y poser la plaque de la réponse.",
+  "unite": "Ce qu'on compte (les gourmandises, les sardines, les enfants…) : jamais dessinées tant que l'enfant doit trouver le nombre par le calcul ; une icône sur les étiquettes ; des objets comptables à la correction (jusqu'à 20), au partage manipulé, au cran « plus facile »."
+ },
+ "objets": [
+  {
+   "id": "papa",
+   "nom": "Papa",
+   "categorie": "personnage",
+   "mots": "Papa",
+   "sujet": "a friendly French dad in his thirties, short brown hair, a light beard, a blue checked shirt with rolled-up sleeves, jeans, trainers.",
+   "format": "3:4",
+   "h": 250
+  },
+  {
+   "id": "maman",
+   "nom": "Maman",
+   "categorie": "personnage",
+   "mots": "Maman",
+   "sujet": "a friendly French mum in her thirties, shoulder-length dark hair, a yellow jumper, a long green skirt, ankle boots.",
+   "format": "3:4",
+   "h": 245,
+   "fond": "magenta"
+  },
+  {
+   "id": "mamie",
+   "nom": "Mamie",
+   "categorie": "personnage",
+   "mots": "Mamie",
+   "sujet": "a cheerful grandmother, short white curly hair, round glasses, a lilac cardigan over a flowered dress, comfortable shoes.",
+   "format": "3:4",
+   "h": 235
+  },
+  {
+   "id": "papy",
+   "nom": "Papy",
+   "categorie": "personnage",
+   "mots": "Papy",
+   "sujet": "a cheerful grandfather, grey hair and a white moustache, a flat cap, a brown waistcoat over a white shirt, corduroy trousers.",
+   "format": "3:4",
+   "h": 240
+  },
+  {
+   "id": "maitresse",
+   "nom": "la maîtresse",
+   "categorie": "personnage",
+   "mots": "ma[iî]tresse",
+   "sujet": "a friendly young French primary-school teacher, a brown ponytail, a red cardigan, a long navy skirt, flat shoes.",
+   "format": "3:4",
+   "h": 250
+  },
+  {
+   "id": "copain",
+   "nom": "ton copain (ton cousin)",
+   "categorie": "personnage",
+   "etat": "enfant",
+   "mots": "ton copain|ton cousin",
+   "sujet": "a seven-year-old boy, messy fair hair, an orange T-shirt, blue shorts, trainers.",
+   "format": "3:4",
+   "h": 190
+  },
+  {
+   "id": "voisine",
+   "nom": "ta voisine (ta cousine)",
+   "categorie": "personnage",
+   "etat": "enfant",
+   "mots": "ta voisine|ta cousine",
+   "sujet": "a seven-year-old girl, dark curly hair in two puffs, a purple dress over striped leggings, trainers.",
+   "format": "3:4",
+   "h": 185
+  },
+  {
+   "id": "enfants",
+   "nom": "des enfants (quand ils forment les groupes)",
+   "categorie": "personnage",
+   "etat": "enfant",
+   "mots": "enfants?",
+   "seulement": "groupe",
+   "sujet": "a seven-year-old child; make four different pictures, one child each: (a) a boy with a red cap and a green jumper, (b) a girl with blond plaits and a yellow raincoat, (c) a boy with short black hair and a blue hoodie, (d) a girl with a brown bob and a pink T-shirt.",
+   "format": "3:4",
+   "h": 170,
+   "variantes": [
+    "a",
+    "b",
+    "c",
+    "d"
+   ],
+   "note": "quatre enfants différents, répétés et retournés par l'application quand un groupe en compte plus (jusqu'à 9) ; aussi pour les élèves des équipes"
+  },
+  {
+   "id": "pecheur",
+   "nom": "le pêcheur",
+   "categorie": "personnage",
+   "mots": "p[eê]cheur",
+   "sujet": "a friendly fisherman with a grey beard, a yellow oilskin jacket, navy trousers tucked into rubber boots, a wool beanie.",
+   "format": "3:4",
+   "h": 250,
+   "note": "vu derrière l'étal : seul le haut dépasse ; à ne pas confondre avec la mascotte (elle raconte, elle n'est pas dans l'histoire)"
+  },
+  {
+   "id": "boulanger",
+   "nom": "le boulanger, la boulangère",
+   "categorie": "personnage",
+   "mots": "boulang[eè]re?",
+   "sujet": "a smiling baker wearing a white apron over a light blue shirt, a small white baker's cap; make two pictures: a man with a round face, and a woman with a red headscarf.",
+   "format": "3:4",
+   "h": 245,
+   "variantes": [
+    "homme",
+    "femme"
+   ]
+  },
+  {
+   "id": "marchand",
+   "nom": "le marchand, la marchande",
+   "categorie": "personnage",
+   "mots": "marchande?",
+   "sujet": "a market seller wearing a long green canvas apron over a striped shirt; make two pictures: a man with a straw hat, and a woman with a braid.",
+   "format": "3:4",
+   "h": 245,
+   "fond": "magenta",
+   "variantes": [
+    "homme",
+    "femme"
+   ]
+  },
+  {
+   "id": "fermiere",
+   "nom": "la fermière",
+   "categorie": "personnage",
+   "mots": "fermi[eè]re",
+   "sujet": "a farmer woman with red hair in a bun, blue dungarees over a white T-shirt, green rubber boots.",
+   "format": "3:4",
+   "h": 245,
+   "fond": "magenta"
+  },
+  {
+   "id": "cuisinier",
+   "nom": "le cuisinier",
+   "categorie": "personnage",
+   "mots": "cuisinier",
+   "sujet": "a friendly school cook with a white chef's hat, a white jacket and blue checked trousers.",
+   "format": "3:4",
+   "h": 250
+  },
+  {
+   "id": "chien",
+   "nom": "le chien",
+   "categorie": "animal",
+   "mots": "chien",
+   "sujet": "a friendly medium-sized dog, sitting, seen from the side three-quarters, light brown fur with a white chest, floppy ears, a red collar, tongue slightly out.",
+   "format": "1:1",
+   "h": 160
+  },
+  {
+   "id": "chat",
+   "nom": "le chat",
+   "categorie": "animal",
+   "mots": "chats?",
+   "sujet": "a friendly cat, sitting, seen three-quarters, ginger tabby fur, a white muzzle, tail curled around its paws; make two pictures: a ginger cat, and a grey cat with white paws.",
+   "format": "1:1",
+   "h": 115,
+   "variantes": [
+    "roux",
+    "gris"
+   ]
+  },
+  {
+   "id": "poule",
+   "nom": "la poule",
+   "categorie": "animal",
+   "mots": "poules?",
+   "sujet": "a plump brown hen standing, seen from the side, red comb.",
+   "format": "1:1",
+   "h": 95
+  },
+  {
+   "id": "vache",
+   "nom": "la vache",
+   "categorie": "animal",
+   "mots": "vaches?",
+   "sujet": "a friendly black and white dairy cow standing, seen from the side, all four legs clearly visible.",
+   "format": "4:3",
+   "h": 140,
+   "note": "aussi dans les groupes (7 vaches de 4 pattes) : à l'échelle réduite, jusqu'à 7 dans la scène"
+  },
+  {
+   "id": "sachet",
+   "nom": "le sachet",
+   "categorie": "contenant",
+   "mots": "sachets?",
+   "sujet": "a small brown kraft-paper bag.",
+   "format": "1:1",
+   "h": 125,
+   "variantes": [
+    "ferme",
+    "ouvert"
+   ],
+   "etatVariantes": {
+    "ferme": "It is folded and closed at the top with a red ribbon: its contents cannot be seen, nothing inside can be counted.",
+    "ouvert": "It is open at the top, the paper slightly crumpled, and empty: nothing inside."
+   }
+  },
+  {
+   "id": "boite",
+   "nom": "la boîte (d'œufs, de billes, de gâteaux)",
+   "categorie": "contenant",
+   "mots": "bo[iî]tes?|pioche",
+   "siUnite": {
+    "oeuf": "boite-oeufs"
+   },
+   "sujet": "a simple rectangular light blue cardboard box.",
+   "format": "4:3",
+   "h": 95,
+   "variantes": [
+    "fermee",
+    "ouverte"
+   ],
+   "etatVariantes": {
+    "fermee": "Its lid is closed: its contents cannot be seen, nothing inside can be counted.",
+    "ouverte": "It is open, the lid lifted behind, and empty: nothing inside."
+   }
+  },
+  {
+   "id": "boite-oeufs",
+   "nom": "la boîte d'œufs",
+   "categorie": "contenant",
+   "mots": "",
+   "sujet": "a grey cardboard egg box for six eggs.",
+   "format": "4:3",
+   "h": 75,
+   "variantes": [
+    "fermee",
+    "ouverte"
+   ],
+   "etatVariantes": {
+    "fermee": "It is closed: the eggs cannot be seen, nothing inside can be counted.",
+    "ouverte": "It is open and all its six cups are empty."
+   }
+  },
+  {
+   "id": "panier",
+   "nom": "le panier",
+   "categorie": "contenant",
+   "mots": "paniers?",
+   "sujet": "a round wicker basket with a handle.",
+   "format": "1:1",
+   "h": 130,
+   "variantes": [
+    "vide",
+    "couvert"
+   ],
+   "etatVariantes": {
+    "vide": "It is empty: nothing inside.",
+    "couvert": "It is covered with a red and white checked cloth: its contents cannot be seen, nothing can be counted."
+   }
+  },
+  {
+   "id": "assiette",
+   "nom": "l'assiette",
+   "categorie": "contenant",
+   "mots": "assiettes?",
+   "sujet": "a round white plate with a thin blue rim, seen slightly from above.",
+   "format": "4:3",
+   "h": 55,
+   "etat": "vide"
+  },
+  {
+   "id": "pot",
+   "nom": "le pot à crayons",
+   "categorie": "contenant",
+   "mots": "pots?",
+   "sujet": "a cylindrical pencil pot made of a painted tin can, bright red.",
+   "format": "3:4",
+   "h": 110,
+   "etat": "vide"
+  },
+  {
+   "id": "vase",
+   "nom": "le vase",
+   "categorie": "contenant",
+   "mots": "vases?|bouquets?",
+   "sujet": "a simple glass vase with a little water, round at the bottom.",
+   "format": "3:4",
+   "h": 130,
+   "etat": "vide",
+   "fond": "magenta"
+  },
+  {
+   "id": "cagette",
+   "nom": "la cagette",
+   "categorie": "contenant",
+   "mots": "cagettes?",
+   "sujet": "a light wooden fruit crate with slatted sides, seen from the front, slightly from above.",
+   "format": "4:3",
+   "h": 95,
+   "variantes": [
+    "vide",
+    "couverte"
+   ],
+   "etatVariantes": {
+    "vide": "It is empty: nothing inside.",
+    "couverte": "It is covered with brown paper: its contents cannot be seen, nothing can be counted."
+   }
+  },
+  {
+   "id": "trousse",
+   "nom": "la trousse",
+   "categorie": "contenant",
+   "mots": "trousses?",
+   "sujet": "a soft fabric pencil case with a zip, closed; make two pictures: a blue one, and a yellow one with little stars.",
+   "format": "4:3",
+   "h": 70,
+   "variantes": [
+    "bleue",
+    "jaune"
+   ]
+  },
+  {
+   "id": "sac",
+   "nom": "le sac",
+   "categorie": "contenant",
+   "mots": "sacs?(?! de sable)",
+   "sujet": "a big closed cloth tote bag, red; and a big mesh sports bag for balls, closed.",
+   "format": "1:1",
+   "h": 140,
+   "variantes": [
+    "toile",
+    "filet"
+   ]
+  },
+  {
+   "id": "filet",
+   "nom": "le filet de ballons",
+   "categorie": "contenant",
+   "mots": "filets?",
+   "sujet": "a closed mesh net bag for sports balls, hanging from its cord, seen from the front; the net is empty.",
+   "format": "3:4",
+   "h": 140,
+   "etat": "vide"
+  },
+  {
+   "id": "pack",
+   "nom": "le pack d'eau",
+   "categorie": "contenant",
+   "mots": "packs?",
+   "sujet": "a pack of water bottles wrapped in opaque blue plastic film with a carrying handle: the bottles cannot be counted through the film.",
+   "format": "4:3",
+   "h": 90
+  },
+  {
+   "id": "paquet",
+   "nom": "le paquet (de feutres, de yaourts, de pâtes)",
+   "categorie": "contenant",
+   "mots": "paquets?",
+   "sujet": "a closed cardboard packet, orange and white, plain (no drawing on it, no window).",
+   "format": "3:4",
+   "h": 105
+  },
+  {
+   "id": "plateau",
+   "nom": "le plateau",
+   "categorie": "contenant",
+   "mots": "plateaux?",
+   "sujet": "a rectangular wooden baker's tray, seen slightly from above.",
+   "format": "16:9",
+   "h": 50,
+   "etat": "vide"
+  },
+  {
+   "id": "nid",
+   "nom": "le nid",
+   "categorie": "contenant",
+   "mots": "nids?",
+   "sujet": "a round straw nest, seen slightly from above.",
+   "format": "4:3",
+   "h": 60,
+   "etat": "vide"
+  },
+  {
+   "id": "collier",
+   "nom": "le collier, le bracelet",
+   "categorie": "contenant",
+   "mots": "colliers?|bracelets?",
+   "sujet": "a plain cord for a bead necklace, lying in a round loop, with its little clasp; no bead on it.",
+   "format": "1:1",
+   "h": 120,
+   "etat": "vide"
+  },
+  {
+   "id": "carnet",
+   "nom": "le carnet, le livre (qui contient des pages)",
+   "categorie": "contenant",
+   "mots": "carnets?|ton livre|le livre (?:de contes|des dinosaures)",
+   "sujet": "a closed hardback book with a plain coloured cover; make two pictures: a small red notebook, and a thick green book.",
+   "format": "3:4",
+   "h": 95,
+   "variantes": [
+    "carnet",
+    "livre"
+   ],
+   "fond": "magenta"
+  },
+  {
+   "id": "cerceau",
+   "nom": "le cerceau (une équipe, un groupe)",
+   "categorie": "contenant",
+   "mots": "[ée]quipes?|groupes?",
+   "seulement": "groupe",
+   "sujet": "a plastic gym hoop lying flat on the floor, seen from above at an angle, bright yellow.",
+   "format": "16:9",
+   "h": 50,
+   "etat": "vide",
+   "note": "les équipes et les groupes : un cerceau au sol, autour duquel l'application pose les enfants"
+  },
+  {
+   "id": "rangee",
+   "nom": "la rangée (de salades, de sièges)",
+   "categorie": "contenant",
+   "mots": "rang[ée]es?",
+   "seulement": "groupe",
+   "sujet": "one straight row, seen from the front, slightly from above.",
+   "format": "16:9",
+   "h": 45,
+   "note": "les sièges du car : une rangée de sièges (variante)",
+   "variantes": [
+    "sillon",
+    "sieges"
+   ],
+   "etatVariantes": {
+    "sillon": "The row is a single furrow of freshly dug brown soil, empty: no plant in it.",
+    "sieges": "The row is one single row of empty blue bus seats, seen from the front (only the seat backs)."
+   }
+  },
+  {
+   "id": "soir",
+   "nom": "le soir (une soirée de lecture)",
+   "categorie": "contenant",
+   "mots": "soirs?",
+   "seulement": "groupe",
+   "sujet": "a small round window at night with a crescent moon and the corner of a bedside lamp.",
+   "format": "1:1",
+   "h": 80,
+   "etat": "vide",
+   "note": "une image par soir lu (4 soirs, 5 pages chaque soir)"
+  },
+  {
+   "id": "barque",
+   "nom": "la barque",
+   "categorie": "contenant",
+   "mots": "barques?",
+   "sujet": "a small wooden rowing boat on calm water, seen from the side, empty, oars inside.",
+   "format": "16:9",
+   "h": 85,
+   "etat": "vide"
+  },
+  {
+   "id": "minibus",
+   "nom": "le minibus, le car",
+   "categorie": "contenant",
+   "mots": "minibus|car",
+   "sujet": "a small white school minibus seen from the side, windows showing only soft reflections (no passengers, no seats visible); and a big yellow coach, the same way.",
+   "format": "16:9",
+   "h": 150,
+   "variantes": [
+    "minibus",
+    "car"
+   ]
+  },
+  {
+   "id": "gamelle",
+   "nom": "la gamelle",
+   "categorie": "depot",
+   "mots": "gamelles?",
+   "sujet": "a round stainless-steel pet bowl seen slightly from above, the inside visible.",
+   "format": "4:3",
+   "h": 70,
+   "etat": "depot"
+  },
+  {
+   "id": "corbeille",
+   "nom": "la corbeille à fruits",
+   "categorie": "depot",
+   "mots": "corbeilles?",
+   "sujet": "a low round wicker fruit bowl seen slightly from above, the inside visible.",
+   "format": "4:3",
+   "h": 90,
+   "etat": "depot"
+  },
+  {
+   "id": "bol",
+   "nom": "le bol",
+   "categorie": "depot",
+   "mots": "bols?",
+   "sujet": "a round ceramic breakfast bowl, white with red dots, seen slightly from above.",
+   "format": "4:3",
+   "h": 65,
+   "etat": "depot"
+  },
+  {
+   "id": "seau",
+   "nom": "le seau",
+   "categorie": "depot",
+   "mots": "seaux?",
+   "sujet": "a child's beach bucket in red plastic with a yellow handle, seen slightly from above, the inside visible; and a grey metal fisherman's bucket.",
+   "format": "1:1",
+   "h": 150,
+   "etat": "depot",
+   "variantes": [
+    "plage",
+    "pecheur"
+   ]
+  },
+  {
+   "id": "etagere",
+   "nom": "l'étagère",
+   "categorie": "depot",
+   "mots": "[ée]tag[eè]res?|rayons?",
+   "sujet": "a single wooden wall shelf with two brackets, seen from the front.",
+   "format": "16:9",
+   "h": 70,
+   "etat": "depot",
+   "note": "jusqu'à 3 l'une au-dessus de l'autre (9 peluches sur 3 étagères)"
+  },
+  {
+   "id": "table",
+   "nom": "la table",
+   "categorie": "depot",
+   "mots": "tables?",
+   "sujet": "a simple wooden table seen from the front, slightly from above so that its top is visible; make three pictures: a family kitchen table with a checked tablecloth, a low living-room coffee table, a long canteen table.",
+   "format": "16:9",
+   "h": 150,
+   "etat": "depot",
+   "variantes": [
+    "cuisine",
+    "salon",
+    "cantine"
+   ],
+   "note": "la table est aussi un groupe (3 tables de 8 enfants, 4 tables à la kermesse)"
+  },
+  {
+   "id": "pupitre",
+   "nom": "le pupitre (la table de classe)",
+   "categorie": "depot",
+   "mots": "",
+   "parDefaut": true,
+   "sujet": "a French primary-school pupil's desk for two, light wood with a green metal frame, seen from the front, its top visible.",
+   "format": "16:9",
+   "h": 140,
+   "etat": "depot",
+   "fond": "magenta"
+  },
+  {
+   "id": "banc",
+   "nom": "le banc",
+   "categorie": "depot",
+   "mots": "bancs?",
+   "sujet": "a green wooden park bench seen from the front.",
+   "format": "16:9",
+   "h": 110,
+   "etat": "depot",
+   "fond": "magenta"
+  },
+  {
+   "id": "coffre",
+   "nom": "le coffre",
+   "categorie": "depot",
+   "mots": "coffres?",
+   "sujet": "a painted wooden toy chest, its lid closed, blue with yellow corners.",
+   "format": "4:3",
+   "h": 120,
+   "etat": "contenant"
+  },
+  {
+   "id": "caisse",
+   "nom": "la caisse des lots",
+   "categorie": "depot",
+   "mots": "caisses?|stand",
+   "sujet": "a striped cardboard prize box with its lid closed, like at a school fête.",
+   "format": "4:3",
+   "h": 110,
+   "etat": "contenant"
+  },
+  {
+   "id": "chariot",
+   "nom": "le chariot de la bibliothèque",
+   "categorie": "depot",
+   "mots": "chariots?",
+   "sujet": "a small wooden library book trolley on wheels, seen from the front, its shelves empty.",
+   "format": "4:3",
+   "h": 140,
+   "etat": "depot"
+  },
+  {
+   "id": "gateau",
+   "nom": "le gâteau d'anniversaire",
+   "categorie": "depot",
+   "mots": "sur le g[aâ]teau|parts de g[aâ]teau",
+   "sujet": "a round chocolate birthday cake on a plate, seen slightly from above, without candles and not cut.",
+   "format": "4:3",
+   "h": 90,
+   "etat": "depot"
+  },
+  {
+   "id": "toboggan",
+   "nom": "le toboggan, les balançoires, le bac à sable",
+   "categorie": "depot",
+   "mots": "toboggan|balan[çc]oires?|bac [àa] sable",
+   "sujet": "a playground slide, seen from the side; make three pictures: the slide, a swing set with two empty swings, a square sandbox with a wooden border.",
+   "format": "4:3",
+   "h": 200,
+   "etat": "depot",
+   "variantes": [
+    "toboggan",
+    "balancoires",
+    "bac"
+   ]
+  },
+  {
+   "id": "nid-poule",
+   "nom": "le clapier, le poulailler",
+   "categorie": "depot",
+   "mots": "clapier|poulailler",
+   "sujet": "a small wooden rabbit hutch with a wire door, empty; and a small wooden henhouse with its ramp, empty.",
+   "format": "4:3",
+   "h": 160,
+   "etat": "depot",
+   "variantes": [
+    "clapier",
+    "poulailler"
+   ]
+  },
+  {
+   "id": "rosier",
+   "nom": "le rosier",
+   "categorie": "depot",
+   "mots": "rosier",
+   "sujet": "a small rose bush in the ground, green leaves and only two pink roses, no butterfly.",
+   "format": "1:1",
+   "h": 150,
+   "etat": "depot",
+   "fond": "magenta"
+  },
+  {
+   "id": "tour",
+   "nom": "la tour de cubes",
+   "categorie": "depot",
+   "mots": "ta tour",
+   "sujet": "a wooden play mat seen from the front with the base of a toy tower: just a flat square wooden base.",
+   "format": "4:3",
+   "h": 40,
+   "etat": "depot",
+   "note": "à revoir : la tour est faite des unités (les cubes) ; sans doute seulement l'icône du cube"
+  },
+  {
+   "id": "bus",
+   "nom": "le bus",
+   "categorie": "depot",
+   "mots": "bus",
+   "sujet": "a city bus seen from the side, its front door open, windows showing only soft reflections: no passengers, no seats visible.",
+   "format": "16:9",
+   "h": 220,
+   "etat": "depot",
+   "note": "l'illustration du lieu « bus » montre déjà un bus : à la mise en scène, le bus devient un objet posé (la plaque de la réponse sur sa vitre), et le lieu n'a plus que la rue"
+  },
+  {
+   "id": "u-pomme",
+   "nom": "pomme",
+   "categorie": "unite",
+   "mots": "pommes?(?! de pin)",
+   "sujet": "a red apple with a leaf.",
+   "format": "1:1",
+   "h": 44,
+   "code": "pomme"
+  },
+  {
+   "id": "u-poire",
+   "nom": "poire",
+   "categorie": "unite",
+   "mots": "poires?",
+   "sujet": "a yellow-green pear.",
+   "format": "1:1",
+   "h": 46,
+   "fond": "magenta"
+  },
+  {
+   "id": "u-fraise",
+   "nom": "fraise",
+   "categorie": "unite",
+   "mots": "fraises?",
+   "sujet": "a red strawberry with its green top.",
+   "format": "1:1",
+   "h": 40,
+   "fond": "magenta"
+  },
+  {
+   "id": "u-tomate",
+   "nom": "tomate",
+   "categorie": "unite",
+   "mots": "tomates?",
+   "sujet": "a round red tomato with its green stalk.",
+   "format": "1:1",
+   "h": 42,
+   "fond": "magenta"
+  },
+  {
+   "id": "u-fruit",
+   "nom": "melon, pastèque, citron, orange",
+   "categorie": "unite",
+   "mots": "melons?|past[eè]ques?|citrons?|oranges?",
+   "sujet": "one fruit; make four pictures: a melon, a small watermelon, a lemon, an orange.",
+   "format": "1:1",
+   "h": 46,
+   "fond": "magenta",
+   "variantes": [
+    "melon",
+    "pasteque",
+    "citron",
+    "orange"
+   ]
+  },
+  {
+   "id": "u-biscuit",
+   "nom": "biscuit, gourmandise, croquette, gâteau",
+   "categorie": "unite",
+   "mots": "biscuits?|gourmandises?|croquettes?|g[aâ]teaux",
+   "sujet": "one item; make four pictures: a round cookie with chocolate chips, a bone-shaped dog treat, a single small kibble, a small cupcake.",
+   "format": "1:1",
+   "h": 40,
+   "variantes": [
+    "biscuit",
+    "gourmandise",
+    "croquette",
+    "gateau"
+   ],
+   "code": "biscuit"
+  },
+  {
+   "id": "u-crepe",
+   "nom": "crêpe",
+   "categorie": "unite",
+   "mots": "cr[êe]pes?",
+   "sujet": "a folded golden pancake (crêpe).",
+   "format": "1:1",
+   "h": 40
+  },
+  {
+   "id": "u-viennoiserie",
+   "nom": "croissant, pain au chocolat, baguette, pain",
+   "categorie": "unite",
+   "mots": "croissants?|pains? au chocolat|baguettes?|pains? de campagne|viennoiseries",
+   "sujet": "one bakery item; make four pictures: a croissant, a pain au chocolat, a baguette, a round country loaf.",
+   "format": "1:1",
+   "h": 44,
+   "variantes": [
+    "croissant",
+    "pain-chocolat",
+    "baguette",
+    "pain"
+   ]
+  },
+  {
+   "id": "u-bonbon",
+   "nom": "bonbon, sucette",
+   "categorie": "unite",
+   "mots": "bonbons?|sucettes?|friandises",
+   "sujet": "one sweet; make two pictures: a wrapped sweet, a round lollipop.",
+   "format": "1:1",
+   "h": 36,
+   "variantes": [
+    "bonbon",
+    "sucette"
+   ],
+   "code": "bonbon"
+  },
+  {
+   "id": "u-yaourt",
+   "nom": "yaourt",
+   "categorie": "unite",
+   "mots": "yaourts?",
+   "sujet": "a small yoghurt pot with a plain white lid.",
+   "format": "1:1",
+   "h": 40
+  },
+  {
+   "id": "u-oeuf",
+   "nom": "œuf",
+   "categorie": "unite",
+   "mots": "(?:œ|oe)ufs?",
+   "sujet": "a light brown egg.",
+   "format": "1:1",
+   "h": 38,
+   "code": "oeuf"
+  },
+  {
+   "id": "u-poisson",
+   "nom": "sardine, maquereau, dorade",
+   "categorie": "unite",
+   "mots": "sardines?|maquereaux|dorades?|poissons?",
+   "sujet": "Existe déjà : les produits de l'étal (art/etal/sources/produits/), à réduire.",
+   "format": "1:1",
+   "h": 40,
+   "existe": "app/assets/etal/produit-sardines.webp, produit-maquereau.webp, produit-dorade.webp",
+   "code": "poisson"
+  },
+  {
+   "id": "u-crabe",
+   "nom": "crabe",
+   "categorie": "unite",
+   "mots": "crabes?",
+   "sujet": "Existe déjà : le tourteau de l'étal (art/etal/sources/produits/tourteau.jpg).",
+   "format": "1:1",
+   "h": 40,
+   "existe": "app/assets/etal/produit-tourteau.webp"
+  },
+  {
+   "id": "u-fleur",
+   "nom": "fleur, tulipe, rose",
+   "categorie": "unite",
+   "mots": "fleurs?|tulipes?|roses?",
+   "sujet": "one flower with its stem; make two pictures: a red tulip, a pink rose.",
+   "format": "3:4",
+   "h": 50,
+   "fond": "magenta",
+   "variantes": [
+    "tulipe",
+    "rose"
+   ],
+   "code": "fleur"
+  },
+  {
+   "id": "u-salade",
+   "nom": "salade",
+   "categorie": "unite",
+   "mots": "salades?",
+   "sujet": "a round green lettuce.",
+   "format": "1:1",
+   "h": 42,
+   "fond": "magenta"
+  },
+  {
+   "id": "u-foret",
+   "nom": "pomme de pin, châtaigne, champignon",
+   "categorie": "unite",
+   "mots": "pommes? de pin|ch[aâ]taignes?|champignons?",
+   "sujet": "one forest find; make three pictures: a pine cone, a shiny chestnut, a brown mushroom.",
+   "format": "1:1",
+   "h": 40,
+   "variantes": [
+    "pomme-de-pin",
+    "chataigne",
+    "champignon"
+   ]
+  },
+  {
+   "id": "u-coquillage",
+   "nom": "coquillage",
+   "categorie": "unite",
+   "mots": "coquillages?",
+   "sujet": "one scallop seashell; make two pictures: a white one, a pink one.",
+   "format": "1:1",
+   "h": 38,
+   "variantes": [
+    "blanc",
+    "rose"
+   ]
+  },
+  {
+   "id": "u-chateau",
+   "nom": "château de sable",
+   "categorie": "unite",
+   "mots": "ch[aâ]teaux de sable",
+   "sujet": "a small sandcastle with one tower and a tiny flag without any sign on it.",
+   "format": "1:1",
+   "h": 50
+  },
+  {
+   "id": "u-personne",
+   "nom": "enfant, élève, personne, fille, garçon, adulte",
+   "categorie": "unite",
+   "mots": "enfants?|[ée]l[eè]ves?|personnes|filles|gar[çc]ons|adultes",
+   "sujet": "Les icônes d'unité des personnes : le petit personnage de bois dessiné par le code (personne), gardé ; les enfants de la bibliothèque (« enfants ») servent quand ils sont peu nombreux.",
+   "format": "1:1",
+   "h": 46,
+   "code": "personne"
+  },
+  {
+   "id": "u-animal",
+   "nom": "mouton, chèvre, cheval, canard, lapin, pigeon, papillon, poule",
+   "categorie": "unite",
+   "mots": "moutons?|ch[eè]vres?|chevaux|canards?|lapins?|pigeons?|papillons?|poules?|vaches?",
+   "sujet": "one small animal seen from the side; make seven pictures: a sheep, a goat, a horse, a duck, a rabbit, a pigeon, a butterfly.",
+   "format": "1:1",
+   "h": 46,
+   "variantes": [
+    "mouton",
+    "chevre",
+    "cheval",
+    "canard",
+    "lapin",
+    "pigeon",
+    "papillon"
+   ]
+  },
+  {
+   "id": "u-ecole",
+   "nom": "crayon, feutre, craie, cahier, feuille, image, autocollant",
+   "categorie": "unite",
+   "mots": "crayons?|feutres?|craies?|cahiers?|feuilles?|images?|autocollants?",
+   "sujet": "one school item; make five pictures: a coloured pencil, a felt-tip pen with its cap, a white stick of chalk, a small notebook, a blank sheet of paper.",
+   "format": "1:1",
+   "h": 42,
+   "variantes": [
+    "crayon",
+    "feutre",
+    "craie",
+    "cahier",
+    "feuille"
+   ],
+   "code": "crayon"
+  },
+  {
+   "id": "u-livre",
+   "nom": "livre, bande dessinée, page",
+   "categorie": "unite",
+   "mots": "livres?|bandes dessin[ée]es|pages?",
+   "sujet": "one closed book seen from the front, plain coloured cover.",
+   "format": "3:4",
+   "h": 44,
+   "code": "livre",
+   "fond": "magenta"
+  },
+  {
+   "id": "u-jouet",
+   "nom": "bille, voiture, peluche, cube, carte, jeton, ballon, cerceau",
+   "categorie": "unite",
+   "mots": "billes?|voitures?|peluches?|cubes?|cartes?|jetons?|ballons?|cerceaux",
+   "sujet": "one toy; make six pictures: a small red toy car, a teddy bear, a wooden toy cube, a playing card seen from the back with a plain pattern, a plastic hoop, a basketball.",
+   "format": "1:1",
+   "h": 44,
+   "variantes": [
+    "voiture",
+    "peluche",
+    "cube",
+    "carte",
+    "cerceau",
+    "ballon-basket"
+   ],
+   "code": "bille, jeton, ballon"
+  },
+  {
+   "id": "u-bougie",
+   "nom": "bougie, part de gâteau",
+   "categorie": "unite",
+   "mots": "bougies?|parts?",
+   "sujet": "one item; make two pictures: a lit birthday candle, a triangular slice of chocolate cake.",
+   "format": "3:4",
+   "h": 44,
+   "variantes": [
+    "bougie",
+    "part"
+   ]
+  },
+  {
+   "id": "u-perle",
+   "nom": "perle",
+   "categorie": "unite",
+   "mots": "perles?",
+   "sujet": "one round wooden bead for a necklace, painted a single bright colour, with the hole through its middle visible.",
+   "format": "1:1",
+   "h": 30,
+   "code": "perle"
+  },
+  {
+   "id": "u-bouteille",
+   "nom": "bouteille",
+   "categorie": "unite",
+   "mots": "bouteilles?",
+   "sujet": "a plastic bottle with a blue cap; make two pictures: water (clear blue), orange juice.",
+   "format": "3:4",
+   "h": 50,
+   "variantes": [
+    "eau",
+    "jus"
+   ]
+  },
+  {
+   "id": "u-couvert",
+   "nom": "cuillère, fourchette",
+   "categorie": "unite",
+   "mots": "cuill[eè]res?|fourchettes?",
+   "sujet": "one item of cutlery; make two pictures: a spoon, a fork.",
+   "format": "3:4",
+   "h": 46,
+   "variantes": [
+    "cuillere",
+    "fourchette"
+   ]
+  },
+  {
+   "id": "u-lot",
+   "nom": "lot, jeu (de la kermesse)",
+   "categorie": "unite",
+   "mots": "lots?|jeux",
+   "sujet": "a small wrapped present with a ribbon.",
+   "format": "1:1",
+   "h": 42
+  },
+  {
+   "id": "u-place",
+   "nom": "place, siège",
+   "categorie": "unite",
+   "mots": "places?|si[eè]ges?",
+   "sujet": "one empty blue bus seat seen from the front.",
+   "format": "1:1",
+   "h": 44
+  },
+  {
+   "id": "u-paquet",
+   "nom": "paquet de pâtes",
+   "categorie": "unite",
+   "mots": "paquets? de p[aâ]tes|spaghettis|coquillettes",
+   "sujet": "a small closed packet of pasta, plain yellow and blue (no window, no drawing).",
+   "format": "3:4",
+   "h": 44
+  },
+  {
+   "id": "u-euro",
+   "nom": "euro",
+   "categorie": "unite",
+   "mots": "euros?",
+   "sujet": "Existe déjà : la monnaie de l'étal (pièces et billets, app/assets/etal/).",
+   "format": "1:1",
+   "h": 40,
+   "existe": "app/assets/etal/piece-1e.webp, billet-10.webp…"
+  },
+  {
+   "id": "u-point",
+   "nom": "point (d'un match)",
+   "categorie": "unite",
+   "mots": "points?",
+   "sujet": "Dessiné par le code : le jeton (un point de match n'a pas d'objet).",
+   "format": "1:1",
+   "h": 40,
+   "code": "jeton"
+  },
+  {
+   "id": "u-patte",
+   "nom": "patte",
+   "categorie": "unite",
+   "mots": "pattes",
+   "sujet": "Dessiné par le code : le jeton (les pattes sont vues sur les vaches).",
+   "format": "1:1",
+   "h": 40,
+   "code": "jeton"
+  }
+ ]
+}

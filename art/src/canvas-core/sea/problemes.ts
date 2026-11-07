@@ -35,7 +35,17 @@ const reflet = (cx: number, cy: number, k: number, x: number, y: number, rx: num
 // ---------------------------------------------------------------- les objets
 // palette de quelques objets qui changent de couleur d'un exemplaire à l'autre (crayons, perles, personnages)
 const TEINTES: [string, string][] = [["#ff5a5f", "#c23a45"], ["#5cb8f0", "#2f7fb8"], ["#7fcf6a", "#4a9a3d"], ["#ffd23a", "#e0a21a"], ["#c58cf0", "#8f5bc0"]];
+// LES IMAGES DES UNITÉS (lot « Mise en scène des problèmes », décision du parent du 6 novembre 2026) : l'application donne, pour
+// la question en cours, l'image générée de l'unité (app/assets/problemes/objets/u-…) ; elle remplace le dessin de l'objet partout
+// (les étiquettes, la plaque, les groupes, la correction, le partage), centrée au même endroit, à surface égale (celle d'un carré de 44 × 42 à l'échelle 1,
+// au plus 64 de large et 46 de haut) ; un objet sans image garde son dessin.
+type ImageObjet = { im: CanvasImageSource; w: number; h: number };
+let IMAGES: Partial<Record<string, ImageObjet>> = {};
+export const imagesObjets = (m: Partial<Record<string, ImageObjet>> | null) => { IMAGES = m ?? {}; };
 export const drawObjet = (g: Gfx, kind: Objet, cx: number, cy: number, k = 1, seed = 1, teinte = 0) => g.group("plain", () => {
+  const I = IMAGES[kind];
+  // (à surface égale : un crayon long n'est pas réduit à un trait)
+  if (I) { const s = Math.min(Math.sqrt((44 * 42 * k * k) / (I.w * I.h)), (64 * k) / I.w, (46 * k) / I.h), W = I.w * s, H = I.h * s; (g.cur as CanvasRenderingContext2D).drawImage(I.im, cx - W / 2, cy - H / 2, W, H); g.touch(cx - W / 2, cy - H / 2, cx + W / 2, cy + H / 2); return; }
   const S = 13000 + seed * 17, w = 2.4 * Math.max(0.7, k), T = TEINTES[teinte % TEINTES.length];
   switch (kind) {
     case "bille": { // une bille de verre : le bleu, la flamme jaune tournée dedans, un reflet net

@@ -100,8 +100,17 @@ export class ProblemesScreen {
     if (q.aide === "comparaison" && e.comparaison) return n === e.comparaison.grand ? "a" : n === e.comparaison.petit ? "b" : null;
     return null;
   }
+  // la composition des étiquettes et de la plaque : celle des contenants ouverts quand ils le sont (les étiquettes au-dessus d'eux)
+  get Le() { return this.ouverts && this.Lo ? this.Lo : this.L; }
+  // les boutons des étiquettes et de la plaque à leur place dans la composition montrée
+  placerBoutons() {
+    const L = this.Le, q = this.q; if (!L || !q || !this.boutons?.length) return;
+    this.boutons.forEach((b, i) => { const t = L.etiquettes.find((x) => x.i === i && !x.echo); if (t && b.style) Object.assign(b.style, { left: `${t.x}px`, top: `${t.y}px`, width: `${t.w}px`, height: `${t.h}px` }); });
+    if (this.boutonPlaque) Object.assign(this.boutonPlaque.style, { left: `${L.plaque.x}px`, top: `${L.plaque.y}px` });
+    this.repaint();
+  }
   paintDonnees(g, ctx) {
-    const q = this.q, L = this.L; if (!q || !L) return;
+    const q = this.q, L = this.Le; if (!q || !L) return;
     // les accolades des groupes, sous le nombre de groupes
     for (const t of L.etiquettes) if (t.accolade && this.vues.has(t.i)) { const a = t.accolade, m = (a.x0 + a.x1) / 2; ctx.save(); ctx.setTransform(this.px, 0, 0, this.px, -ZONE_CADRE.x * this.px, -ZONE_CADRE.y * this.px); ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.lineWidth = 5; ctx.strokeStyle = "#fffaf0"; ctx.beginPath(); ctx.moveTo(a.x0, a.y + 10); ctx.quadraticCurveTo(a.x0, a.y, a.x0 + 14, a.y); ctx.lineTo(m - 12, a.y); ctx.quadraticCurveTo(m, a.y, m, t.y + t.h); ctx.quadraticCurveTo(m, a.y, m + 12, a.y); ctx.lineTo(a.x1 - 14, a.y); ctx.quadraticCurveTo(a.x1, a.y, a.x1, a.y + 10); ctx.stroke(); ctx.restore(); }
     for (const t of L.etiquettes) if (this.vues.has(t.i)) { const it = q.etiquettes[t.i]; D.drawEtiquette(g, t.x, t.y, String(it.n), it.objet, { lit: this.lit === t.i, seed: t.i + 1, em: 38, teinte: this.teinteDe(q, t.i) }); }
@@ -177,8 +186,12 @@ export class ProblemesScreen {
   async preparer(q, tok) {
     const I = await this.index();
     const L = this.composer(q, I.objets), Lo = this.composer(q, I.objets, true);
-    const [img, imgs] = await Promise.all([this.lieu(q.e.contexte), this.objetsDe(L, Lo)]);
+    // (l'unité, ce qu'on compte : son image remplace le dessin de l'objet de l'atelier, sur les étiquettes, à la correction, au partage ;
+    // en @2x, petite et vue de près sur les étiquettes)
+    const u = q.e.scene?.unite, uImg = u && I.objets[u] ? this.charger(`assets/problemes/objets/${u}@2x.webp`) : null;
+    const [img, imgs, imU] = await Promise.all([this.lieu(q.e.contexte), this.objetsDe(L, Lo), uImg]);
     if (tok !== this.tok) return false;
+    D.imagesObjets(imU && q.e.objet ? { [q.e.objet]: { im: imU, w: imU.naturalWidth, h: imU.naturalHeight } } : null); this.unite = imU ? u : null;
     // (une image annoncée mais illisible : l'objet est traité comme sans image, son étiquette seule)
     const vues = Object.fromEntries(Object.entries(I.objets).filter(([c]) => imgs[c] || ![...L.pieces, ...Lo.pieces].some((p) => p.copies.some((x) => x.cle === c))));
     this.L = Object.keys(vues).length === Object.keys(I.objets).length ? L : this.composer(q, vues); this.Lo = Object.keys(vues).length === Object.keys(I.objets).length ? Lo : this.composer(q, vues, true);
@@ -206,7 +219,7 @@ export class ProblemesScreen {
       this.els.push(b); return b;
     });
     // (relecture du lot « Problèmes », R5 : toucher la plaque de la réponse redit la question seule)
-    { const b = document.createElement("button"); b.className = "bubble probleme-plaque"; b.setAttribute("aria-label", "redire la question"); Object.assign(b.style, { left: `${L.plaque.x}px`, top: `${L.plaque.y}px`, width: `${PLAQUE.w}px`, height: `${PLAQUE.h}px` }); this.app.stage.ui.append(b); this.els.push(b);
+    { const b = document.createElement("button"); this.boutonPlaque = b; b.className = "bubble probleme-plaque"; b.setAttribute("aria-label", "redire la question"); Object.assign(b.style, { left: `${L.plaque.x}px`, top: `${L.plaque.y}px`, width: `${PLAQUE.w}px`, height: `${PLAQUE.h}px` }); this.app.stage.ui.append(b); this.els.push(b);
       onBrief(this.app, b, () => { if (this.q !== q || this.occupe) return; voice.stop(); voice.say(q.e.question); }, "plaque"); }
     this.app.bulle?.eviter("probleme", () => (this.q ? [...this.boutons.filter((b) => b.style.visibility !== "hidden"), [L.plaque.x, L.plaque.y, L.plaque.x + PLAQUE.w, L.plaque.y + PLAQUE.h], ...(this.aideVisible ? [[ZONE_AIDE.x, ZONE_AIDE.y, ZONE_AIDE.x + ZONE_AIDE.w, ZONE_AIDE.y + ZONE_AIDE.h]] : [])] : null));
     fs.help.style.visibility = q.coquillage ? "visible" : "hidden";
@@ -227,7 +240,7 @@ export class ProblemesScreen {
   // groupes dessinés par l'atelier, au-dessus du sol de la scène
   former(q, t) {
     const R = this.rangee(q), G = q.e.groupes;
-    if (R) { this.ouverts = true; this.dans = { ...this.dans, [R.k]: t }; }
+    if (R) { this.ouverts = true; this.dans = { ...this.dans, [R.k]: t }; this.placerBoutons(); }
     else this.groupesCode = { plein: Array(G.nombre).fill(t) };
     this.repaintScene();
   }
@@ -303,7 +316,7 @@ export class ProblemesScreen {
     const mettre = T.problemeMettre[R?.o ?? e.scene?.objets?.find((x) => x.n != null)?.o] ?? T.problemeMettre[c] ?? T.problemeMettre.anneau;
     let cont, peindre, places;
     if (R) {
-      this.ouverts = true; this.dans = { ...this.dans, [R.k]: dans };
+      this.ouverts = true; this.dans = { ...this.dans, [R.k]: dans }; this.placerBoutons();
       const C = this.Lo.pieces.find((p) => p.k === R.k)?.copies ?? R.copies;
       cont = C.map((x) => [x.x - 24, x.y - 40, x.x + x.w + 24, x.y + x.h + 24]);
       peindre = () => { const i = dans.findIndex((v) => v < t); this.litCopies = new Set(i >= 0 ? [`${R.k}:${i}`] : []); this.repaintScene(); };
@@ -415,7 +428,7 @@ export class ProblemesScreen {
     this.avantUnites ??= { ouverts: this.ouverts, dans: this.dans, tas: this.tas };
     const e = q.e, max = this.reglages.unitesMax ?? 20, R = this.rangee(q), G = e.groupes, L = this.Lo ?? this.L;
     const S = e.scene?.objets ?? [], kr = S.findIndex((x) => x.rep), dep = kr >= 0 && S[kr].n == null ? L.pieces.find((p) => p.k === kr && !p.manque) : null;
-    this.ouverts = true;
+    this.ouverts = true; this.placerBoutons();
     if (G && R && !(e.structure === "groupes-egaux" && dep)) { if (G.taille <= 10) this.dans = { ...this.dans, [R.k]: G.taille }; }
     else if (e.reponse <= max) {
       const c = dep?.copies[0], n = e.reponse;
@@ -429,7 +442,7 @@ export class ProblemesScreen {
     this.repaintScene();
   }
   // (l'exemple guidé fini) la scène redevient celle de la question
-  annulerUnites() { if (!this.avantUnites) return; Object.assign(this, this.avantUnites); this.avantUnites = null; this.repaintScene(); }
+  annulerUnites() { if (!this.avantUnites) return; Object.assign(this, this.avantUnites); this.avantUnites = null; this.repaintScene(); this.placerBoutons(); }
   // ---------------------------------------------------------------- l'exemple guidé (après une leçon) : l'histoire, l'aide résolue, la correction
   async demo(q, tok) {
     const fs = this.fs, { voice } = this.app, T = this.T;
@@ -488,8 +501,8 @@ export class ProblemesScreen {
   }
   // ---------------------------------------------------------------- la sortie
   leaveQuestion() {
-    for (const el of this.els) el.remove(); this.els = []; this.calques?.clear(); this.aideVisible = false; this.boutons = []; this.occupe = false; this.bonds = 0;
-    this.L = this.Lo = this.imgs = null; this.phrase = -1; this.ouverts = false; this.dans = null; this.tas = null; this.collections = null; this.groupesCode = null; this.litCopies = null; this.teintes = false; this.cibles = null; this.avantUnites = null;
+    for (const el of this.els) el.remove(); this.els = []; this.calques?.clear(); this.aideVisible = false; this.boutons = []; this.boutonPlaque = null; this.occupe = false; this.bonds = 0;
+    this.L = this.Lo = this.imgs = null; D.imagesObjets(null); this.unite = null; this.phrase = -1; this.ouverts = false; this.dans = null; this.tas = null; this.collections = null; this.groupesCode = null; this.litCopies = null; this.teintes = false; this.cibles = null; this.avantUnites = null;
     this.app.bulle?.eviter("probleme", null); this.app.bulle?.eviter("probleme-partage", null);
   }
   leave() { for (const q of [...this.gardes]) q(); this.gardes.clear(); this.tok = (this.tok ?? 0) + 1; this.leaveQuestion(); this.q = null; this.app.facts?.leave(); }

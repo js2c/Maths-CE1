@@ -178,13 +178,16 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]].filter(([w]) => !SEU
     const k = await page.evaluate(() => window.__app.stage.k);
     const glisser = async (x0, y0, x1, y1) => { await page.mouse.move(x0, y0); await page.mouse.down(); await page.mouse.move((x0 + x1) / 2, (y0 + y1) / 2, { steps: 5 }); await page.mouse.move(x1, y1, { steps: 5 }); await page.mouse.up(); await page.waitForTimeout(220); };
     const objets = () => page.$$eval(".probleme-objet", (L) => L.map((e) => { const r = e.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; }));
-    const c = await page.evaluate(() => { const r = window.__app.prob.calques.get("contenants").getBoundingClientRect(); return [r.x, r.y, r.width, r.height]; }), cx = (i) => c[0] + 10 * k + ((c[2] - 20 * k) / 2) * (i + 0.5), cy = c[1] + c[3] * 0.62;
+    // (les contenants de la scène quand ils ont leur image, `cibles`, en px de la scène ; sinon ceux de l'atelier, à la place du pavé)
+    const C = await page.evaluate(() => { const P = window.__app.prob, u = window.__app.stage.ui.getBoundingClientRect(); if (P.cibles) return { u: [u.left, u.top], cibles: P.cibles }; const r = P.calques.get("contenants").getBoundingClientRect(); return { c: [r.x, r.y, r.width, r.height] }; });
+    const cx = (i) => (C.cibles ? C.u[0] + ((C.cibles[i][0] + C.cibles[i][2]) / 2) * k : C.c[0] + 10 * k + ((C.c[2] - 20 * k) / 2) * (i + 0.5));
+    const cyi = (i) => (C.cibles ? C.u[1] + ((C.cibles[i][1] + C.cibles[i][3]) / 2) * k : C.c[1] + C.c[3] * 0.62);
     // trois dans la première assiette, puis un quatrième refusé
-    for (let i = 0; i < 3; i++) { const [x, y] = (await objets())[0]; await glisser(x, y, cx(0), cy); }
+    for (let i = 0; i < 3; i++) { const [x, y] = (await objets())[0]; await glisser(x, y, cx(0), cyi(0)); }
     if (big) await shot(page, "15-partage-trois");
-    await resetSaid(page); { const [x, y] = (await objets())[0]; await glisser(x, y, cx(0), cy); }
+    await resetSaid(page); { const [x, y] = (await objets())[0]; await glisser(x, y, cx(0), cyi(0)); }
     check((await page.locator(".probleme-objet").count()) === 3 && (await said(page)).includes(textes.problemeMettre.assiette), `${T} · une assiette pleine refuse l'objet : « Mets-en autant dans chaque assiette. »`);
-    for (let i = 0; i < 3; i++) { const [x, y] = (await objets())[0]; await glisser(x, y, cx(1), cy); }
+    for (let i = 0; i < 3; i++) { const [x, y] = (await objets())[0]; await glisser(x, y, cx(1), cyi(1)); }
     await page.waitForFunction(() => !document.querySelector(".probleme-objet"), null, { timeout: 5000 }).catch(() => {}); await page.waitForTimeout(600);
     check((await visible(page, '.key[data-key="3"]')) === 1, `${T} · tout rangé : le pavé revient`);
     await shot(page, "16-partage-range"); await zonesOk(page, "le partage rangé");

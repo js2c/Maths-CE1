@@ -124,7 +124,7 @@ export function controler(banque, contextes) {
     if (["groupes-egaux", "partage"].includes(e.structure) && !g) defaut(e, "pas de groupes");
     if (e.structure === "deux-etapes" && (e.operations.length !== 2 || e.etapes?.length !== 2)) defaut(e, "deux étapes, pas plus");
     // la scène (lot « Mise en scène des problèmes ») : des objets de la bibliothèque (pas d'unité comptée), leur variante, la phrase
-    // où ils apparaissent ; un groupe dit par une donnée ; chaque donnée posée une fois au plus ; une plaque au plus
+    // où ils apparaissent ; un groupe dit par une donnée ; chaque donnée posée une fois au plus ; une plaque au plus ; l'unité connue
     const sc = e.scene;
     if (!sc || !Array.isArray(sc.objets)) defaut(e, "pas de scène");
     else {
@@ -145,6 +145,11 @@ export function controler(banque, contextes) {
       for (const i of sc.entre ?? []) if (i !== "rep") { if (donnees[i] == null) defaut(e, `scène : donnée ${i} entre`); poses.push(i); }
       if (new Set(poses).size !== poses.length) defaut(e, "scène : une donnée posée deux fois");
       if (sc.objets.filter((x) => x.rep).length + (sc.entre ?? []).filter((i) => i === "rep").length > 1) defaut(e, "scène : plus d'une plaque");
+      // l'unité (l'image de ce qu'on compte) : une unité de la bibliothèque et sa variante, ou un animal de l'histoire (la poule)
+      if (sc.unite != null) {
+        const ok = BIBLIOTHEQUE.some((o) => (o.categorie === "unite" ? (o.variantes ? o.variantes.some((v) => `${o.id}-${v}` === sc.unite) : o.id === sc.unite) : o.categorie === "animal" && !o.variantes && o.id === sc.unite));
+        if (!ok) defaut(e, `scène : unité inconnue ${sc.unite}`);
+      }
     }
   }
   for (const s of STRUCT) if (!banque.some((e) => e.structure === s)) defauts.push(`aucun énoncé de structure ${s}`);

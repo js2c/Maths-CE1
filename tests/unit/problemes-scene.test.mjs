@@ -1,6 +1,6 @@
 // La mise en scène d'un problème (app/js/modules/problemes/scene.js ; lot « Mise en scène des problèmes », fiche 24) : pour les 200
-// énoncés, sans aucune image d'objet (ce qu'a l'application tant que le parent n'en a pas déposé) puis avec toutes (à leur taille
-// dans la scène, objets.json), chaque étiquette et la plaque tiennent dans l'image du lieu, hors de la bande de la bulle, sans se
+// énoncés, sans aucune image d'objet, avec toutes (à leur taille dans la scène, objets.json), avec celles que le parent a déposées
+// (index.json), fermées puis ouvertes (une étiquette ne couvre pas un contenant ouvert), chaque étiquette et la plaque tiennent dans l'image du lieu, hors de la bande de la bulle, sans se
 // couvrir ; les groupes ont leur nombre exact d'objets ; un objet sans image laisse ses étiquettes au sol.
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -16,16 +16,23 @@ const TOUTES = {};
 for (const o of LIB) for (const v of [null, ...(o.variantes ?? [])]) TOUTES[v ? `${o.id}-${v}` : o.id] = { w: Math.round(o.h * (RAPPORT[o.format] ?? 1)), h: o.h, c: o.categorie };
 const larg = (n) => 22 * String(n).length + 96; // (l'ordre de grandeur de largeurEtiquette, nombre et icône)
 const recouvre = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+const inter = (a, b) => Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
 const dans = (r) => r.x >= IMAGE.x && r.y >= IMAGE.y && r.x + r.w <= IMAGE.x + IMAGE.w && r.y + r.h <= IMAGE.y + IMAGE.h;
 
-for (const [nom, images] of [["sans image", {}], ["toutes les images", TOUTES]]) {
+// les images déposées par le parent (app/assets/problemes/index.json : leur taille réelle et leur catégorie)
+const VRAIES = lire("../../app/assets/problemes/index.json").objets;
+for (const [nom, images, ouverts] of [["sans image", {}], ["toutes les images", TOUTES], ["les images déposées", VRAIES], ["les images déposées, contenants ouverts", VRAIES, true]]) {
   test(`les 200 scènes, ${nom} : étiquettes et plaque dans l'image, hors de la bande de la bulle, sans se couvrir`, () => {
     const defauts = [];
     for (const e of BANQUE) {
-      const E = etiquettes(e), D = E.map((t) => t.n), L = composer(e, D, D.map(larg), 66, images);
+      const E = etiquettes(e), D = E.map((t) => t.n), L = composer(e, D, D.map(larg), 66, images, { ouverts });
+      // (ouverts, leur contenu montré : l'étiquette d'un groupe n'en couvre aucun contenant, à peine un coin : 15 % au plus, la marge
+      // que la composition s'accorde faute de place)
+      if (ouverts) for (const t of L.etiquettes) { const p = L.pieces.find((x) => x.k === t.k); if (p?.groupe && !p.manque && !t.accolade && p.copies.some((c) => inter(t, c) > 0.15 * c.w * c.h)) defauts.push(`${e.id} : l'étiquette ${t.i} couvre un ${p.o} ouvert`); }
       const boites = [...L.etiquettes.filter((t) => !t.echo), L.plaque];
       for (const b of boites) { if (!dans(b)) defauts.push(`${e.id} : hors de l'image`); if (dansBande(b)) defauts.push(`${e.id} : dans la bande de la bulle`); }
       for (let i = 0; i < boites.length; i++) for (let j = i + 1; j < boites.length; j++) if (recouvre(boites[i], boites[j])) defauts.push(`${e.id} : deux étiquettes se couvrent`);
+      const uniques = L.etiquettes.filter((t) => !t.echo).map((t) => t.i); if (new Set(uniques).size !== uniques.length) defauts.push(`${e.id} : une donnée posée deux fois`);
       const vues = new Set(L.etiquettes.map((t) => t.i)); D.forEach((_, i) => { if (!vues.has(i)) defauts.push(`${e.id} : l'étiquette ${i} n'est pas posée`); });
       for (const p of L.pieces) if (!p.manque && p.groupe && Number.isInteger(e.scene.objets[p.k].n) && p.copies.length !== D[e.scene.objets[p.k].n]) defauts.push(`${e.id} : ${p.copies.length} ${p.o} au lieu de ${D[e.scene.objets[p.k].n]}`);
       for (const p of L.pieces) for (const c of p.copies) if (c.x < IMAGE.x || c.x + c.w > IMAGE.x + IMAGE.w + 1) defauts.push(`${e.id} : ${p.o} dépasse de l'image`);

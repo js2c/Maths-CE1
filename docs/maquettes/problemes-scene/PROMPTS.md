@@ -1645,7 +1645,7 @@ Strictly no text, no letters, no numbers, no digits, no labels, no logo, no pric
 Same illustration style, line work, colour palette and lighting as the attached image.
 
 Children's picture-book illustration, a single isolated subject.
-Subject: Dessinée par le code (perle).
+Subject: one round wooden bead for a necklace, painted a single bright colour, with the hole through its middle visible.
 
 Composition: the subject alone, centred, entirely visible, with a wide empty margin all around (at least a tenth of the picture on each side). Seen from the front, at a child's eye level, very slightly from above.
 

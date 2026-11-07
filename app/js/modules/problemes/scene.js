@@ -85,10 +85,18 @@ export function composer(e, donnees, largeurs, hauteurEtiquette, images, o = {})
   };
   // les places au sol, de gauche à droite (pour ce qui n'a pas d'objet)
   const sol = (w, h, depuis = Math.max(IMAGE.x + 16, solX)) => { const L = [], x0 = Math.max(depuis, solX); for (let x = x0; x + w <= IMAGE.x + IMAGE.w - 8; x += 16) L.push([x, pied - h - 4]); for (let x = x0 - 16; x >= Math.max(IMAGE.x + 8, solX); x -= 16) L.push([x, pied - h - 4]); return L; };
-  // sur un objet (sur son ventre), au-dessus, à droite, à gauche ; `rang` : la deuxième étiquette d'un même objet, sous la première
-  const autour = (b, w, h, rang = 0) => {
-    const cxo = b.x + b.w / 2, sous = rang * (h + 6);
-    return [[cxo - w / 2, b.y + b.h * 0.5 - h / 2 + sous], [cxo - w / 2, b.y + b.h - h - 6 - sous], [cxo - w / 2, b.y - h - 10 - sous], [b.x + b.w + 8, b.y + b.h * 0.45 - h / 2 + sous], [b.x - w - 8, b.y + b.h * 0.45 - h / 2 + sous]];
+  // les places d'une étiquette autour d'un objet : sur son ventre (plusieurs étiquettes empilées quand l'objet est assez haut : `nd`,
+  // combien il en porte, quand elles en couvrent au plus les deux tiers ; `rang`, la place de celle-ci), dessous, au-dessus, à droite, à gauche ; un objet plus petit que l'étiquette
+  // la reçoit au-dessus de lui ou à côté (sur lui, elle le cacherait : la trousse sous son « 8 »)
+  const places = (b, w, h, rang = 0, nd = 1) => {
+    const cxo = b.x + b.w / 2, pile = nd * (h + 6) <= 0.65 * b.h, sous = rang * (h + 6);
+    return { pile, ventre: [cxo - w / 2, pile ? b.y + (b.h - nd * (h + 6)) / 2 + 3 + sous : b.y + b.h * 0.5 - h / 2 + sous], bas: [cxo - w / 2, b.y + b.h - h - 6 - sous], dessus: [cxo - w / 2, b.y - h - 10 - sous], droite: [b.x + b.w + 8, b.y + b.h * 0.45 - h / 2], gauche: [b.x - w - 8, b.y + b.h * 0.45 - h / 2] };
+  };
+  // (les étiquettes ne couvrent pas plus des deux tiers de l'objet : au-delà, la deuxième va à côté de lui)
+  const autour = (b, w, h, rang = 0, nd = 1) => {
+    const P = places(b, w, h, rang, nd);
+    if (b.h < 1.6 * h) return [P.dessus, P.droite, P.gauche, P.ventre, P.bas];
+    return rang > 0 && !P.pile ? [P.droite, P.gauche, P.dessus, P.bas, P.ventre] : [P.ventre, P.bas, P.dessus, P.droite, P.gauche];
   };
   const etiquettes = [], entre = S.entre ?? [], pieceDe = (k) => pieces.find((p) => p.k === k);
   // SANS AUCUNE IMAGE D'OBJET (tant que le parent n'en a pas déposé) : les étiquettes sur le sol, dans l'ordre de l'histoire, la
@@ -106,11 +114,16 @@ export function composer(e, donnees, largeurs, hauteurEtiquette, images, o = {})
     posees.push(r); etiquettes.push({ i, ...r, k: p.k, accolade: !p.manque && p.n > 1 ? { x0: b.x, x1: b.x + b.w, y: b.y - 8 } : null });
   }
   // b. les étiquettes posées sur les objets (sur chaque objet d'un groupe : la première se touche, les autres en sont l'écho)
+  // (un groupe de contenants ouverts : son étiquette après la plaque, qui garde sa place sur le dépôt de la réponse)
+  const differes = [];
   for (const p of pieces) (p.x.d ?? []).forEach((i, rang) => {
-    const w = largeurs[i];
+    const w = largeurs[i], nd = p.x.d.length;
+    if (o.ouverts && p.x.n != null && !p.manque) { differes.push([p, i, rang]); return; }
     if (p.manque) { const r = choisir(sol(w, H, p.boite.x), w, H); posees.push(r); etiquettes.push({ i, ...r, k: p.k }); return; }
+    // (un groupe de contenants ouverts, leur contenu montré : une seule étiquette, à côté de la rangée, jamais sur ce qu'ils contiennent ;
+    // comme la maquette validée, où les « 6 » des sachets s'effacent quand on les ouvre)
     p.copies.forEach((c, j) => {
-      const r = j === 0 ? choisir(autour(c, w, H, rang), w, H, [c]) : (() => { const t = etiquettes.find((q) => q.i === i && q.k === p.k && !q.echo); const dx = c.x - p.copies[0].x; const r2 = { x: t.x + dx, y: t.y, w, h: H }; return r2; })();
+      const r = j === 0 ? choisir(autour(c, w, H, rang, nd), w, H, [c]) : (() => { const t = etiquettes.find((q) => q.i === i && q.k === p.k && !q.echo); const dx = c.x - p.copies[0].x; const r2 = { x: t.x + dx, y: t.y, w, h: H }; return r2; })();
       if (j === 0 || dansImage(r)) { posees.push(r); etiquettes.push({ i, ...r, k: p.k, echo: j > 0 }); }
     });
   });
@@ -123,7 +136,7 @@ export function composer(e, donnees, largeurs, hauteurEtiquette, images, o = {})
   };
   for (const i of entre) if (i !== "rep") { const w = largeurs[i], r = choisir(entreCands(w, H), w, H); posees.push(r); etiquettes.push({ i, ...r, k: null, entre: true }); }
   // d. les données sans objet : sur le sol, de gauche à droite (ce qui est à l'enfant, « tu », est devant)
-  const placees = new Set(etiquettes.map((t) => t.i));
+  const placees = new Set([...etiquettes.map((t) => t.i), ...differes.map(([, i]) => i)]);
   // (après les étiquettes des données dites avant elle : l'ordre de l'histoire, de gauche à droite)
   donnees.forEach((_, i) => { if (placees.has(i)) return; const avant = etiquettes.filter((t) => t.i < i && !t.echo), depuis = avant.length ? Math.max(...avant.map((t) => t.x + t.w)) + 14 : IMAGE.x + 16, w = largeurs[i], r = choisir(sol(w, H, depuis), w, H); posees.push(r); etiquettes.push({ i, ...r, k: null, sol: true }); });
   // e. la plaque de la réponse : sur le dépôt de la réponse (au-dessus, à côté, dessus), entre les deux objets, ou sur le sol
@@ -133,6 +146,17 @@ export function composer(e, donnees, largeurs, hauteurEtiquette, images, o = {})
     plaque = choisir(pr.n > 1 ? [...cotes, au] : [au, ...cotes, [b.x + b.w / 2 - pw / 2, b.y + b.h / 2 - ph / 2]], pw, ph, pr.n > 1 ? [] : pr.copies); plaque.k = kr; }
   else if (entre.includes("rep")) plaque = choisir(entreCands(pw, ph), pw, ph);
   else plaque = choisir(sol(pw, ph, pr ? pr.boite.x : IMAGE.x + IMAGE.w / 2 - pw / 2), pw, ph);
+  // les étiquettes des groupes de contenants ouverts, leur contenu montré : une seule, à côté de la rangée, jamais sur ce qu'ils
+  // contiennent (comme la maquette validée, où les « 6 » des sachets s'effacent quand on les ouvre) ; ni sur la plaque
+  if (differes.length) {
+    posees.push(plaque);
+    for (const [p, i, rang] of differes) {
+      const w = largeurs[i], b = p.boite, y = b.y + b.h * 0.45 - H / 2 + rang * (H + 6), P = places(p.copies[0], w, H, rang), pp = p.pied ?? pied;
+      const r = choisir([[b.x + b.w + 8, y], [b.x - w - 8, y], [b.x + b.w + 8, pp - H - 4 - rang * (H + 6)], [b.x - w - 8, pp - H - 4 - rang * (H + 6)], P.dessus, P.ventre], w, H);
+      posees.push(r); etiquettes.push({ i, ...r, k: p.k });
+    }
+    posees.splice(posees.indexOf(plaque), 1);
+  }
   posees.push(plaque);
   return { pieces: pieces.map(({ k, x, manque, boite, copies, n, pied: pp }) => ({ k, o: x.o, manque, boite, copies, n, p: x.p ?? 0, groupe: x.n != null, pied: pp ?? pied })), etiquettes, plaque, echelle: s, pied };
 }

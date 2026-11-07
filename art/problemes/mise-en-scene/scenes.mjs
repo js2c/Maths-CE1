@@ -14,7 +14,8 @@
 //   rep la plaque de la réponse est posée sur lui.
 // Une donnée posée sur aucun objet va sur le sol du lieu (l'enfant, « tu », n'est jamais dessiné : ce qui est à lui est devant) ;
 // `entre` : les données posées entre les deux premiers objets (l'écart d'une comparaison), et « rep » si la plaque y va aussi.
-//   node art/problemes/mise-en-scene/scenes.mjs [--refaire] [--voir grp-07]
+// `unite` : l'image de ce qu'on compte (uniteDe, ci-dessous) ; `--unites` la refait seule, sans toucher aux objets.
+//   node art/problemes/mise-en-scene/scenes.mjs [--refaire] [--unites] [--voir grp-07]
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -54,6 +55,39 @@ function mention(e, o) {
   return { p: 0, mot: "" };
 }
 const nommeDans = (texte, o) => { const r = SANS.get(o); if (!r) return -1; const m = r.exec(texte); return m ? m.index : -1; };
+
+// L'UNITÉ DE L'ÉNONCÉ (ce qu'on compte : son image remplace le dessin de l'objet, sur les étiquettes, à la correction, au partage) :
+// l'unité de la bibliothèque qui nomme la réponse (`unite`), sinon la première nommée dans l'histoire ; sa variante d'après le mot
+// (« gourmandises » : u-biscuit-gourmandise). Rien quand aucune variante ne convient (« des images » : le dessin de l'atelier).
+const UNITES = LIB.objets.filter((o) => o.categorie === "unite");
+const normal = (s) => s.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "").split(/[^\p{L}\p{N}]+/u).filter((m) => m && !["au", "de", "d", "du"].includes(m))
+  .map((m) => ({ chevaux: "cheval", gateaux: "gateau", maquereaux: "maquereau", chateaux: "chateau" })[m] ?? m.replace(/[sx]$/, "")).join("-");
+export function uniteDe(e) {
+  const texte = [...e.enonce, e.question].join(" "), nt = normal(texte);
+  // la clé d'image d'un mot d'unité : l'unité et sa variante
+  const cle = (o, mot) => {
+    const V = o.variantes ?? [], w = normal(mot);
+    if (!V.length) return o.id;
+    const v = V.find((v) => normal(v) === w) ?? V.find((v) => normal(v).startsWith(w) || w.startsWith(normal(v))) ?? V.find((v) => nt.includes(normal(v)))
+      ?? (w === normal(o.id.slice(2)) ? V[0] : undefined); // (le mot générique, « des fleurs », « des coquillages » : la première)
+    if (v) return `${o.id}-${v}`;
+    // (un animal sans variante parmi les unités, mais qui a son image dans l'histoire : « des poules », la poule)
+    return LIB.objets.find((x) => x.categorie !== "unite" && !x.variantes && normal(x.id) === w)?.id ?? null;
+  };
+  // toutes les unités nommées dans l'histoire ; plusieurs sortes (« 27 pommes de pin et 16 châtaignes ») : aucune image, toutes
+  // les étiquettes portent le même objet (le jeton de l'atelier)
+  // (les unités COMPTÉES du relevé : avec leur nombre, « combien de », « des » ; pas « jouent au ballon »)
+  const cles = new Set();
+  for (const t of releve(e)) if (t.role === "unite") for (const mot of t.mots ?? []) cles.add(cle(PAR_ID.get(t.id), mot));
+  let k0 = null; if (e.unite) for (const o of UNITES) { const m = SANS.get(o.id)?.exec(e.unite); if (m) { k0 = cle(o, m[0]); cles.add(k0); } }
+  // (ceux qui agissent ne sont pas ce qu'on compte : « les enfants en mangent », « les poules en pondent »)
+  if (k0) for (const k of [...cles]) if (k !== k0 && (k === "u-personne" || (k && !k.startsWith("u-")))) cles.delete(k);
+  if (cles.size !== 1) return undefined;
+  // (deux variantes de la même unité nommées : « 8 coquillages blancs et 5 coquillages roses » ; « pain » dans « pain au chocolat » ne compte pas)
+  const k = [...cles][0], o = k && UNITES.find((x) => k.startsWith(`${x.id}-`)), mt = `-${nt}-`;
+  const vus = (o?.variantes ?? []).filter((v) => mt.includes(`-${normal(v)}-`)).filter((v, _, L) => !L.some((w) => w !== v && normal(w).startsWith(`${normal(v)}-`)));
+  return vus.length > 1 ? undefined : k ?? undefined;
+}
 
 export function sceneDe(e) {
   const R0 = releve(e).filter((t) => t.role !== "unite"), R = R0.some((t) => t.role === "groupe") ? R0.filter((t) => !t.defaut) : R0, E = etiquettes(e), D = donneesDe(e), G = e.groupes;
@@ -109,7 +143,7 @@ export function sceneDe(e) {
     }
   }
   if (rep >= 0) S[rep].rep = true;
-  const out = { objets: S };
+  const out = { objets: S }, unite = uniteDe(e); if (unite) out.unite = unite;
   if (entre.length || repEntre) out.entre = [...entre, ...(repEntre ? ["rep"] : [])];
   return out;
 }
@@ -118,6 +152,15 @@ if (process.argv[1] && import.meta.url === new URL(`file://${process.argv[1]}`).
   const texte = readFileSync(BANQUE_F, "utf8"), B = JSON.parse(texte);
   const voir = process.argv.includes("--voir") ? process.argv[process.argv.indexOf("--voir") + 1] : null;
   if (voir) { const e = B.enonces.find((x) => x.id === voir); console.log([...e.enonce, e.question].join(" ")); console.log(JSON.stringify(e.scene ?? sceneDe(e))); process.exit(0); }
+  // `--unites` : ajoute ou refait seulement l'unité de chaque scène (`scene.unite`), sans toucher aux objets
+  if (process.argv.includes("--unites")) {
+    let n = 0; const lignes = texte.split("\n").map((l) => {
+      const m = l.match(/^(\s*)(\{"id":"([^"]+)".*\})(,?)$/); if (!m) return l;
+      const e = JSON.parse(m[2]); if (!e.scene) return l; const u = uniteDe(e); delete e.scene.unite; if (u) { e.scene.unite = u; n++; }
+      return `${m[1]}${JSON.stringify(e)}${m[4]}`;
+    });
+    writeFileSync(BANQUE_F, lignes.join("\n")); console.log(`${n} unités écrites dans app/content/problemes.json`); process.exit(0);
+  }
   const refaire = process.argv.includes("--refaire"); let n = 0;
   // (la banque garde sa forme : un énoncé par ligne ; seul le champ `scene` est ajouté, à la fin de la ligne)
   const lignes = texte.split("\n").map((l) => {

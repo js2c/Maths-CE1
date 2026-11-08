@@ -976,3 +976,8 @@ Spécification : `docs/SPEC.md`, « Ergonomie et voix (lot 1 bis) » ; prompt : 
 - **Images d'essai** : `tests/e2e/fixtures/problemes-objets/` (les dessins provisoires), servies par les parcours à la place des objets ; jamais dans `app/`.
 - **Reste** : vérifier l'aide par bonds, la correction (unités), le cran « plus facile », la leçon L19, le petit smartphone ; étendre `tests/e2e/problemes.mjs` (il lit encore `prob.objets`) ; puis l'étape 4 (recette sur le banc, documents).
 - **Terminé le 7 novembre** : tout le « Reste » ci-dessus est fait ; les images du parent exportées et contrôlées (`docs/maquettes/problemes-scene/CONTROLE-IMAGES.md`) ; recette dans `tests/recette-fonctionnelle/out-mise-en-scene-des-problemes/RECETTE.md`.
+
+### Reprise du lot « Nouveaux boutons, mascotte du récif et étoiles » (fiche 25)
+
+- Branche `claude/vibrant-ride-i3za2a`, partie de `main` (e37af2bd).
+- **Terminé le 8 novembre 2026** : tout est fait (PR #79) : l'outil des boutons et leur branchement, les prompts des boutons restants, la mascotte du récif (boucle d'images, mesure), la phrase de l'arc-en-ciel, les étoiles, la recette sur le banc et la relecture (`tests/recette-fonctionnelle/out-nouveaux-boutons/`).

@@ -17,6 +17,8 @@ import { pathToFileURL } from "node:url";
 
 const HERE = resolve(new URL(".", import.meta.url).pathname, ".."), APP = resolve(HERE, "../app");
 // [source (dans art/), destination (dans app/)]
+// (les fichiers de art/tools/export-boutons.mjs : <image>-<diamètre>@1x|2x.webp et index.json)
+export const DES_BOUTONS = /^([a-z]+(-[a-z]+)*-\d+@[12]x\.webp|index\.json)$/;
 export const COPIES = [
   ...["texte@1x.webp", "texte@2x.webp", "etoile@1x.webp", "etoile@2x.webp", "ombre.webp", "position.json"].map((f) => [`logo/images/${f}`, `assets/logo/${f}`]),
   ...["parents@1x.webp", "parents@2x.webp", "parents-forme.json"].map((f) => [`boutons/images/${f}`, `assets/boutons/${f}`]),
@@ -41,7 +43,8 @@ export function exportLogo({ log = console.log, ecrire = true } = {}) {
   // rien d'autre dans les dossiers de l'outil
   for (const dir of ["assets/logo", "assets/boutons", "icons"]) {
     if (!existsSync(join(APP, dir))) continue;
-    for (const f of readdirSync(join(APP, dir))) if (!COPIES.some(([, d]) => d === `${dir}/${f}`)) { ecarts.push(`(en trop) ${dir}/${f}`); if (ecrire) unlinkSync(join(APP, dir, f)); }
+    // (lot « Nouveaux boutons… » : les boutons du parent, dans le même dossier, sont fabriqués par export-boutons.mjs : pas les nôtres)
+    for (const f of readdirSync(join(APP, dir))) if (!COPIES.some(([, d]) => d === `${dir}/${f}`) && !(dir === "assets/boutons" && DES_BOUTONS.test(f))) { ecarts.push(`(en trop) ${dir}/${f}`); if (ecrire) unlinkSync(join(APP, dir, f)); }
   }
   if (ecrire) {
     // contrôle : chaque copie est identique à sa source

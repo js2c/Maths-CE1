@@ -16,7 +16,7 @@
 //    chaque allègement est noté dans le journal technique (lot « Netteté du récif »).
 // Remplace le récif en pages (lot 3, étape 5) depuis le 5 octobre 2026 (décision du parent).
 import { CardView, forgetPictures } from "./cards.js";
-import { spriteBox } from "../engine/ui.js";
+import { boutonRond, spriteBox } from "../engine/ui.js";
 import { onBrief } from "../engine/ui.js";
 import { startRecif } from "../recif/recif-vivant.js";
 import { Reductions } from "../recif/reduction.js";
@@ -94,6 +94,10 @@ export function arriveeNage(A, id, t, x) {
   return { dx: A.dx0 * (1 - e), dy: -140 * Math.sin(Math.PI * u), s: 1 + Math.sin(Math.PI * Math.min(1, u * 1.15)), halo: true };
 }
 
+// (lot « Nouveaux boutons, mascotte du récif et étoiles ») la place de la mascotte dans le récif : celle de la petite tête d'avant (lot
+// « Correctifs du 5 novembre » : 118 × 150, en haut à gauche, au-dessus des boutons, le coin en haut à droite étant aux compteurs),
+// aux proportions de la mascotte (210 × 280)
+export const RECIF_MASCOTTE = { x: 26, y: 16, w: 118, h: 157 };
 export class Reef {
   constructor(app) { this.app = app; this.open = false; this.view = new CardView(app); this.donnees = null; }
   // les niveaux d'allègement de cet écran (pour les parcours de test et le journal)
@@ -131,8 +135,13 @@ export class Reef {
     // comme dans la maquette : pas de mascotte (fixe, elle cachait des créatures et le sous-marin) par-dessus la mer
     // (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026 : les trois compteurs d'étoiles y sont affichés, à leur
     // place, en haut à droite, toujours sur leur plaque claire, lisible sur le noir des abysses ; avant, le compteur était caché)
+    // (lot « Nouveaux boutons, mascotte du récif et étoiles », demande du parent du 7 novembre 2026 : la petite tête fixe avait l'air
+    // cassée) LA MASCOTTE DU RÉCIF, réduite, à la place de la petite tête, en haut à gauche (RECIF_MASCOTTE) : au repos, une boucle
+    // d'images tirée de ses clips (main.js, `speaker`) ; la vraie mascotte (ses deux lecteurs vidéo) seulement le temps d'une phrase
+    // (main.js, voice.onTalk) ; on la touche pour réécouter ; sans bulle (comme avant, rien ne s'écrit par-dessus la mer). Pourquoi pas
+    // la vidéo tout le temps : la mesure du temps d'image du récif avec et sans elle, docs/JOURNAL-CONCEPTION.md
     this.cache = { mascotte: ocean.mascotteVisible, sombre: app.hudSombre };
-    ocean.mascotteVisible = false; app.hudSombre = () => true;
+    ocean.mascotteVisible = false; app.posteMascotte?.(RECIF_MASCOTTE); app.hudSombre = () => true;
     // la créature qui vient d'être achetée (pas celle qu'on vient de faire briller) arrive à la nage
     const arr = rewards.arrivee; rewards.arrivee = null;
     this.arr = arr && !arr.briller && owned.has(versMaquette(arr.id)) ? { id: versMaquette(arr.id) } : null;
@@ -163,10 +172,12 @@ export class Reef {
         }
       },
     });
-    const home = spriteBox(app, { x: 90 - 70, y: 712 - 70, w: 140, h: 140, cls: "bubble homekey", label: "revenir", paint: (ctx) => sprites.draw(ctx, "maison", 0, 70, 70) });
+    // (lot « Nouveaux boutons, mascotte du récif et étoiles » : les boutons ronds du parent, aux mêmes centres : la maison et le livre
+    // de cartes, 120 px ; la boutique, 128 px)
+    const home = boutonRond(app, { cx: 90, cy: 712, d: 120, cls: "homekey", label: "revenir", paint: (ctx, px, o) => sprites.draw(ctx, "bouton.recif.maison", 0, o, o) });
     // l'album, par-dessus le récif (seulement depuis le récif : lot « Correctifs du 5 novembre ») ; son bouton, un livre de cartes,
     // à la taille de la maison (lot « Suites des correctifs du 5 novembre », décision du parent du 6 novembre 2026)
-    const book = spriteBox(app, { x: 90 - 70, y: 560 - 70, w: 140, h: 140, cls: "bubble albumkey", label: "l'album", paint: (ctx) => { const q = sprites.frame("album", 0), k = (140 / 180) * 1.1, px = sprites.px; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 70 * px + q.dx * k, 70 * px + q.dy * k, q.w * k, q.h * k); } });
+    const book = boutonRond(app, { cx: 90, cy: 560, d: 120, cls: "albumkey", label: "l'album", paint: (ctx, px, o) => sprites.draw(ctx, "bouton.recif.album", 0, o, o) });
     onBrief(app, book, async () => { pop(book); await this.view.close(); if (app.album && !app.album.open) { await app.album.visit(); voice.say(text.data.recifBienvenue, { instruction: true }); } }, "album");
     this.els.push(home, book);
     // (lot « La boutique du récif ») la boutique ; (lot « Correctifs du 5 novembre », décision du parent du 5 novembre 2026) aussi
@@ -175,7 +186,7 @@ export class Reef {
     let vers = null;
     const fin = new Promise((r) => { vers = r; });
     if (app.boutique) {
-      const shop = spriteBox(app, { x: 90 - 70, y: 408 - 70, w: 140, h: 140, cls: `bubble boutique-cle${rewards.peutAcheter() ? " invite" : ""}`, label: "la boutique", paint: (ctx) => { const q = sprites.frame("boutique", 0), k = 140 / 150, px = sprites.px; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 70 * px + q.dx * k, 70 * px + q.dy * k, q.w * k, q.h * k); } });
+      const shop = boutonRond(app, { cx: 90, cy: 408, d: 128, cls: `boutique-cle${rewards.peutAcheter() ? " invite" : ""}`, label: "la boutique", paint: (ctx, px, o) => sprites.draw(ctx, "bouton.recif.boutique", 0, o, o) });
       onBrief(app, shop, () => { if (app.album?.open) return; pop(shop); setTimeout(() => vers("boutique"), 200); }, "boutique");
       this.els.push(shop);
     }
@@ -205,7 +216,7 @@ export class Reef {
     this.ecoute = [];
     this.canvases?.forEach((c) => { c.width = c.height = 0; c.remove(); }); this.canvases = null;
     app.stage.ui.classList.remove("ui-recif"); app.lagon?.pause(false);
-    if (this.cache) { app.ocean.mascotteVisible = this.cache.mascotte; app.hudSombre = this.cache.sombre; this.cache = null; }
+    if (this.cache) { app.posteMascotte?.(null); app.ocean.mascotteVisible = this.cache.mascotte; app.hudSombre = this.cache.sombre; this.cache = null; }
     this.els.forEach((e) => e.remove()); this.els = []; this.open = false;
     app.sprites.unload("cartes"); forgetPictures();
   }

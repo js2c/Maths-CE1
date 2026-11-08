@@ -195,6 +195,16 @@ export const drawSelectRound = (ctx: CanvasRenderingContext2D, cx: number, cy: n
   ink(g, pts, INK, { w: 12, closed: true, shadow: 0, seed: 81 }, 0.9);
   ink(g, pts, SELECT, { w: 9, closed: true, shadow: 0.2, light: [-0.55, -0.83], seed: 82 });
 };
+// (lot « Nouveaux boutons, mascotte du récif et étoiles ») L'ENTOURAGE D'UN BOUTON ROND (les images du parent : des cercles
+// exacts) : un cercle exact, concentrique au bouton de rayon `r` ; le trait d'encre (12 px) commence au bord du bouton, le corail
+// (9 px) est centré à r + 6 : rien ne le décale ni ne le fait déborder plus loin que r + 12. `couleur` : le corail de la sélection,
+// ou l'or de la lueur
+export const cerclePts = (cx: number, cy: number, r: number, n = 96): P[] => Array.from({ length: n }, (_, i) => { const a = (i / n) * Math.PI * 2; return [cx + Math.cos(a) * r, cy + Math.sin(a) * r] as P; });
+export const drawSelectCercle = (ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number, couleur = SELECT) => {
+  const g = shim(ctx), pts = cerclePts(cx, cy, r + 6);
+  ink(g, pts, INK, { w: 12, closed: true, shadow: 0, swell: 0, rough: 0, seed: 85 }, 0.9);
+  ink(g, pts, couleur, { w: 9, closed: true, shadow: 0.2, light: [-0.55, -0.83], swell: 0, rough: 0, seed: 86 });
+};
 // (lot « Correctifs : passage… », point 10) LE GALET SÉLECTIONNÉ de l'accueil : l'entourage corail cerné d'encre, son trait à
 // ENTOURAGE px du bord du galet, le long de la normale (sea/galets.ts, `decale`) : il suit exactement sa forme. `id` : le galet
 // (GALETS, exportés aussi pour l'application).

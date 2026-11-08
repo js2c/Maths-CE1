@@ -700,6 +700,30 @@ Votre enfant résout maintenant des **problèmes** : de petites histoires de la 
 **À essayer sur la tablette** : un problème de chaque sorte (les niveaux 2 à 9) ; au niveau 3, ranger les objets dans les pots ou les assiettes ; une erreur, pour voir la correction (les contenants ouverts, ce qu'on compte qui apparaît) ; le coquillage, pour voir les groupes comptés sur la scène.
 
 
+## d novovicies) Lot « Nouveaux boutons, mascotte du récif et étoiles » : vos décisions du 7 novembre
+
+**Ce qui change à l'écran** :
+
+- **Vos boutons** : à l'accueil (jouer, continuer, choisir, les leçons, le récif, encore), sur l'écran « choisir » (les sept exercices), dans le récif (la maison, le livre de l'album, la boutique), dans l'album (la sortie par le récif, sans flèche ; les quatre zones), dans la boutique (le retour au récif, les onglets des zones, le petit récif dans le coin des créatures déjà achetées), à la fin de la récompense, et la maison pendant la séance et à la fin d'une leçon. Chacun a la taille du bouton qu'il remplace ; les galets de l'accueil deviennent des ronds de même taille. Ils sont ronds pour de bon : le doigt n'est pris que dans le rond, et l'entourage orange du premier toucher fait le tour du rond.
+- **La mascotte dans le récif** : à la place de la petite tête fixe, la mascotte elle-même, en petit, en haut à gauche ; elle cligne des yeux et respire ; quand elle parle (à l'entrée, ou quand on la touche), c'est la vraie mascotte qui parle. (La vraie mascotte tout le temps ralentissait le récif sur le banc d'essai ; ce que l'enfant voit au repos est une courte boucle tirée de ses vidéos.)
+- **L'étoile arc-en-ciel** est maintenant rayée de couleurs vives, **l'étoile de diamant** bleu pâle avec un éclat blanc : on ne les confond plus en petit.
+- **La réserve arc-en-ciel vide**, quand toutes les zones sont ouvertes : « Tu n'as pas encore d'étoile arc-en-ciel. Viens jouer souvent : tu en gagneras une ! ».
+
+**Ajouter ou refaire un bouton** (les autres boutons gardent leur dessin pour l'instant) :
+
+1. Ouvrir `docs/maquettes/boutons/PROMPTS.md` : un prompt par image (111), prêt à coller, avec le nom du fichier à rendre. Joindre à Nano Banana les deux images de référence indiquées.
+2. Déposer l'image, telle quelle, dans `art/boutons/sources/`, sous le nom indiqué.
+3. Demander à une session Claude Code de l'intégrer (elle l'ajoute à `art/boutons/boutons.json` et à la liste des boutons de l'application, puis lance les deux commandes ci-dessous). Pour refaire un bouton qui existe déjà (par exemple `02.jpg`, le récif), il suffit de remplacer l'image et de lancer, depuis le dossier du dépôt :
+   ```
+   node art/tools/export-boutons.mjs
+   node tools/precache.mjs
+   ```
+   La première mesure le vert du fond, trouve le rond exact de chaque bouton et fabrique ses images ; elle dit ce qu'elle a fait (le rayon trouvé, l'écart du bord au rond). La seconde met à jour la liste des fichiers hors ligne.
+
+**Phrases à fabriquer** : 1 phrase nouvelle, « Tu n'as pas encore d'étoile arc-en-ciel. ».
+
+**À essayer sur la tablette** : l'accueil, puis un premier toucher sur un bouton (l'entourage) ; l'écran « choisir » ; le récif (la mascotte qui cligne des yeux ; la toucher : elle parle) ; l'album et ses zones ; la boutique ; les étoiles des compteurs en haut à droite. Dites-nous si un bouton est difficile à reconnaître en petit, ou si la mascotte du récif a l'air figée.
+
 ## e) Ce qui reste approximatif ou à ajuster
 
 **À vérifier sur la vraie tablette.** Écouter la voix (aucune phrase n'a été écoutée par une personne, la vérification a été automatique) et regarder les illustrations des cartes en grand. Toutes les mesures ont été faites sur un ordinateur, en ralentissant le processeur 4 fois pour imiter une tablette : démarrage en moins de 1,5 s, animation à 50 à 60 images par seconde la plupart du temps, avec des baisses vers 30 pendant certaines animations (l'application allège alors d'elle-même le décor). Il faut confirmer que tout reste fluide sur la tablette.

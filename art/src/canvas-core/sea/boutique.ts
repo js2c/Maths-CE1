@@ -7,8 +7,10 @@
 //  - la coche verte (acheter) et la croix rouge (annuler), dans une bulle de 88 px ;
 //  - l'étincelle « briller » devant un prix, le sablier (pas encore arrivée), le cadenas (zone fermée), l'étincelle des brillantes ;
 //  - L'ÉTOILE DE DIAMANT (les légendaires ; nom interne : dorée), le dessin le plus précieux de l'application : une étoile
-//    taillée comme une pierre, dix facettes irisées (rose, lilas, bleu, vert d'eau, or pâle) éclairées d'en haut à gauche, une
-//    table nacrée au centre, deux éclats blancs, un halo. Le reflet qui la traverse et les étincelles qui scintillent sont
+//    taillée comme une pierre, dix facettes d'un BLEU PÂLE de glace (lot « Nouveaux boutons, mascotte du récif et étoiles »,
+//    décision du parent du 7 novembre 2026 ; avant : irisées, rose, lilas, bleu, vert d'eau, or pâle, qu'on confondait en petit
+//    avec l'arc-en-ciel) éclairées d'en haut à gauche, une table blanche au centre, un grand éclat blanc à quatre branches sur la
+//    pointe éclairée, un halo bleu glacier. Le reflet qui la traverse et les étincelles qui scintillent sont
 //    dessinés en direct par l'application (runtime.ts, drawDiamantVif : troisième niveau de CLAUDE.md), sur la même géométrie
 //    (`diamantPts`).
 // Le coquillage de diamant est le grand coquillage de treasure.ts, en nacre irisée (SHELL_DIAMOND).
@@ -26,12 +28,12 @@ const SH = "#0a3f49", TAU = Math.PI * 2;
 export const DIAMANT_K = 0.444; // le creux : 20 / 45 dans la maquette
 export const diamantPts = (cx: number, cy: number, R: number): P[] => Array.from({ length: 10 }, (_, i) => { const a = -Math.PI / 2 + (i * Math.PI) / 5, r = i % 2 ? R * DIAMANT_K : R; return [cx + Math.cos(a) * r, cy + Math.sin(a) * r] as P; });
 // les teintes des facettes, une par branche (deux facettes par branche, l'une éclairée, l'autre dans l'ombre)
-export const DIAMANT_TEINTES = ["#ff9ccf", "#b39bff", "#86d3ff", "#93edc2", "#ffdc7d"];
+export const DIAMANT_TEINTES = ["#bfeaff", "#a6dcfa", "#c8efff", "#9fd6f5", "#b4e4fc"];
 export const drawDiamondStar = (g: Gfx, cx: number, cy: number, R = 44) => g.group("plain", () => {
   const pts = diamantPts(cx, cy, R), L: P = [-Math.SQRT1_2, -Math.SQRT1_2];
   // le halo : trois anneaux de lumière laiteuse, du lilas au bleu glacier
   // (douze anneaux à peine opaques, du bleu glacier au blanc : une lueur douce, sans bord)
-  for (let i = 0; i < 12; i++) { const k = 1.22 - i * 0.035; fillShape(g, blob(cx, cy + R * 0.04, R * k, R * k, 5101 + i, 0.015, 28), i < 4 ? "#bfeeff" : i < 8 ? "#e6dcff" : "#ffffff", 0.07); }
+  for (let i = 0; i < 12; i++) { const k = 1.22 - i * 0.035; fillShape(g, blob(cx, cy + R * 0.04, R * k, R * k, 5101 + i, 0.015, 28), i < 6 ? "#bfeeff" : "#ffffff", 0.07); }
   // l'ombre nette portée
   fillShape(g, shift(pts, R * 0.09, R * 0.11), SH, 0.3);
   // les facettes : un triangle du centre à chaque arête ; la teinte de la branche, éclaircie côté lumière, assombrie (lilas
@@ -40,22 +42,26 @@ export const drawDiamondStar = (g: Gfx, cx: number, cy: number, R = 44) => g.gro
     pts.forEach((a, i) => {
       const b = pts[(i + 1) % 10], m: P = [(a[0] + b[0]) / 2 - cx, (a[1] + b[1]) / 2 - cy], n = Math.hypot(m[0], m[1]) || 1;
       const lum = 0.5 + 0.5 * ((m[0] / n) * L[0] + (m[1] / n) * L[1]), t = DIAMANT_TEINTES[Math.floor(i / 2) % 5];
-      const c = lum > 0.5 ? mix(t, "#ffffff", 0.12 + 0.62 * (lum - 0.5) * 2) : mix(t, "#4b3f8f", 0.05 + 0.3 * (0.5 - lum) * 2);
+      const c = lum > 0.5 ? mix(t, "#ffffff", 0.1 + 0.6 * (lum - 0.5) * 2) : mix(t, "#2d6f9e", 0.08 + 0.42 * (0.5 - lum) * 2);
       fillShape(g, [[cx, cy], a, b], c);
     });
     // les arêtes internes, fines (de l'encre très diluée) ; plus marquées dans l'ombre
     pts.forEach((p, i) => ink(g, [[cx, cy], p], INK, { w: i % 2 ? 0.9 : 1.2, shadow: 0, taper: [0.5, 0.1], seed: 5120 + i }, 0.22));
     // la table : un petit décagone nacré au centre, cerné de lilas
     const table = pts.map(([x, y]) => [cx + (x - cx) * 0.36, cy + (y - cy) * 0.36] as P);
-    fillShape(g, table, "#fbf8ff");
-    fillShape(g, smooth([[cx - R * 0.12, cy - R * 0.1], [cx - R * 0.02, cy - R * 0.14], [cx - R * 0.08, cy - R * 0.02]], true, 3), "#e6dcff", 0.8);
-    ink(g, [...table, table[0]], "#8f7ff0", { w: 1.3, shadow: 0, seed: 5131 }, 0.7);
+    fillShape(g, table, "#ffffff");
+    fillShape(g, smooth([[cx - R * 0.12, cy - R * 0.1], [cx - R * 0.02, cy - R * 0.14], [cx - R * 0.08, cy - R * 0.02]], true, 3), "#dff4ff", 0.8);
+    ink(g, [...table, table[0]], "#5aa9d6", { w: 1.3, shadow: 0, seed: 5131 }, 0.7);
   });
   // le contour d'encre, épaissi du côté de l'ombre
   contour(g, pts, R * 0.095, 5140);
   // deux éclats blancs, côté lumière (la pointe du haut, la branche de gauche)
   ink(g, [[cx - R * 0.08, cy - R * 0.67], [cx - R * 0.03, cy - R * 0.83]], "#ffffff", { w: R * 0.075, shadow: 0, taper: [0.3, 0.4], seed: 5150 });
   ink(g, [[cx - R * 0.5, cy - R * 0.2], [cx - R * 0.37, cy - R * 0.19]], "#ffffff", { w: R * 0.06, shadow: 0, taper: [0.3, 0.4], seed: 5151 });
+  // le grand éclat blanc, à quatre branches, sur la branche éclairée (en haut à gauche), cerné d'encre : il se voit même en petit
+  const ex = cx - R * 0.42, ey = cy - R * 0.42, er = R * 0.42, eclat: P[] = Array.from({ length: 8 }, (_, i) => { const a = -Math.PI / 2 + (i * Math.PI) / 4, r = i % 2 ? er * 0.2 : er; return [ex + Math.cos(a) * r, ey + Math.sin(a) * r] as P; });
+  ink(g, [...eclat, eclat[0]], INK, { w: R * 0.07, closed: true, shadow: 0, swell: 0, rough: 0, seed: 5152 }, 0.9);
+  fillShape(g, eclat, "#ffffff");
 });
 
 // ---------------------------------------------------------------- les étincelles

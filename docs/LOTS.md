@@ -72,6 +72,8 @@ Les lots portent un nom, pas un numéro : les numéros 1 à 3 ter désignent dé
 
 **Puis (constat du parent du 5 novembre 2026, maquette validée le 6 novembre) : le lot « Mise en scène des problèmes »** (fiche 24) : la scène des problèmes agrandie et remplie par les objets de l'histoire, posés en nombre exact, les unités cachées jusqu'à la correction ; l'outil qui recadre les lieux et détoure les objets générés par le parent. **État : fait** (PR #76 ; 3 phrases à fabriquer).
 
+**Puis (décisions du parent du 7 novembre 2026) : le lot « Nouveaux boutons, mascotte du récif et étoiles »** (fiche 25) : les 13 images de boutons générées par le parent (Nano Banana) remplacent les tuiles des exercices, les galets de l'accueil, les boutons du récif, de l'album, de la boutique et la maison ; la mascotte vivante à la place de sa petite tête dans le récif ; la phrase de la réserve arc-en-ciel vide quand toutes les zones sont ouvertes ; les étoiles arc-en-ciel et de diamant qui se distinguent en petit. **État : fait** (PR #79 ; 1 phrase à fabriquer ; la boucle de la mascotte gardée au lieu de la vidéo, mesure à l'appui ; un défaut ancien trouvé par la recette et corrigé : la correction qui parlait encore après « passer l'échauffement »).
+
 
 **Pourquoi cet ordre.**
 
@@ -1413,3 +1415,24 @@ La même erreur deux fois dans une séance relance la leçon (une fois), comme p
 
 **Recette du lot** : la méthode commune, sur le banc Android ; le parcours `tests/e2e/problemes.mjs` étendu (la scène de chaque structure, l'aide, la correction, le partage dans la scène, un objet et un lieu sans image ; 1280 × 800, 1920 × 1200, `s5e`, `petit-smartphone`).
 
+### 25. Lot « Nouveaux boutons, mascotte du récif et étoiles »
+
+**Origine** : décisions du parent du 7 novembre 2026. Le parent a généré 13 images de boutons avec Nano Banana (verre bombé, anneau gris épais, fond vert uni), déposées dans `art/boutons/sources/` (01 à 13, jamais modifiées).
+
+**D'un seul tenant**, une seule demande de fusion, avec la recette sur le banc Android (profil `s5e`, et `petit-smartphone` pour les écrans touchés). Les décisions qui peuvent attendre sont prises au plus simple, notées dans la demande de fusion.
+
+1. **Les nouveaux boutons** (nouvelle exception à la règle « tout est dessiné dans l'atelier », écrite dans `CLAUDE.md`) :
+   - 01, une planche de 7 boutons : en haut, de gauche à droite, la ligne graduée (tortue), les faits d'addition (ardoise), le calcul rapide (mur orange et poisson), les voiliers ; en bas, la multiplication, l'étal, les problèmes : les tuiles des exercices de l'écran « choisir » ;
+   - 02 le récif (galet de l'accueil, et partout où le dessin du récif sert, dont la sortie de l'album) ; 03 la boutique ; 04 l'album (le livre de cartes, dans le récif) ; 05 revenir à l'accueil (partout où la maison sert) ; 06 choisir ; 07 les leçons ; 08 jouer (et « continuer ») ; 09 à 12 les zones de l'album (lagon, récif de corail, grand large, abysses) ; 13 encore ;
+   - un outil de l'atelier (`node art/tools/export-boutons.mjs`, sur le modèle de `export-problemes.mjs`) détoure chaque image (le vert du fond mesuré image par image), découpe la planche, recadre chaque bouton sur son cercle exact et produit les images @1x et @2x de l'application, à la taille de chaque bouton ;
+   - les boutons sans image nouvelle gardent leur dessin ; ils sont tous relevés, avec pour chacun un prompt Nano Banana prêt à coller (`docs/maquettes/boutons/PROMPTS.md`, un prompt = une image, avec le nom du fichier à rendre) ;
+   - les boutons étant ronds : la zone tactile, l'entourage de sélection, le halo, la lueur « invite » et la lueur de l'exercice conseillé suivent un cercle exact, centré sur le bouton, sans déborder sur un voisin ;
+   - la lisibilité de chaque bouton vérifiée à sa taille réelle (1280 × 800 et `petit-smartphone`) : planche de captures regardée, avec les écrans entiers (accueil, accueil en pause, choisir, récif, album, boutique).
+2. **La mascotte vivante dans le récif** : à la place de la petite tête fixe (`app/assets/tete/tete-mascotte.webp`), d'abord la vraie mascotte (`engine/mascotte.js`, ses deux lecteurs vidéo, sans en créer d'autres), réduite, avec ses gestes d'attente et sa parole quand on la touche. Le temps d'image du récif mesuré dans chaque zone sur le profil `s5e`, avec et sans elle : gardée si le récif reste sous 33 ms et ne s'allège pas plus qu'avant ; sinon, une courte boucle d'images tirée de ses clips, et la vidéo seulement le temps de sa phrase. Elle ne cache ni créature touchable ni bouton.
+3. **La phrase « Tu n'as pas encore d'étoile arc-en-ciel. »** pour la réserve arc-en-ciel à 0 quand toutes les zones sont ouvertes.
+4. **Les étoiles arc-en-ciel et de diamant se distinguent en petit**, en gardant la forme d'étoile : l'arc-en-ciel à bandes de couleur vives, le diamant bleu pâle à facettes avec un éclat blanc ; partout où elles apparaissent (compteurs, récompense, boutique, récif) ; captures en petit et en grand.
+5. **Décisions du parent** : pas de flèche sur la sortie de l'album ; pas d'agrandissement des boutons pour le téléphone.
+
+**Documents** : `docs/SPEC.md`, `docs/ARCHITECTURE.md`, le guide du parent (déposer une image de bouton, la commande), le journal de conception, `CLAUDE.md` (l'exception des boutons) ; mesures, captures, décisions et phrases à fabriquer dans la demande de fusion.
+
+**Recette du lot** : la méthode commune, sur le banc Android ; un parcours `tests/e2e/nouveaux-boutons.mjs` (chaque écran touché, la zone tactile ronde, l'entourage, les lueurs, la mascotte du récif, les étoiles ; 1280 × 800, 1920 × 1200, `s5e`, `petit-smartphone`).

@@ -121,7 +121,9 @@ test("ce que dit la mascotte quand on touche une réserve, selon l'état", async
   // arc-en-ciel nommées (la phrase de l'album), puis la phrase du diamant à 0, sans règle exacte ; aucune phrase nouvelle
   const corail = cartes.zones.find((z) => z.id === "corail"), large = cartes.zones.find((z) => z.id === "large");
   assert.equal(t("arc", { n: 0, fermees: 3, zonePrete: false, prochaine: corail }), "Le récif de corail s'ouvrira un jour, grâce à tes étoiles arc-en-ciel. Viens jouer souvent : tu en gagneras une !");
-  assert.equal(t("arc", { n: 0, fermees: 0, zonePrete: false, prochaine: null }), `${X.arcBriller} ${X.diamantGagner}`);
+  // (lot « Nouveaux boutons… », décision du parent du 7 novembre 2026) toutes les zones ouvertes, à 0
+  assert.equal(t("arc", { n: 0, fermees: 0, zonePrete: false, prochaine: null }), `${X.arcZero} ${X.diamantGagner}`);
+  assert.equal(X.arcZero, "Tu n'as pas encore d'étoile arc-en-ciel.");
   assert.equal(t("arc", { n: 0, fermees: 2, zonePrete: true, prochaine: large }), `${large.fermeeLu} ${X.diamantGagner} ${T.boutique.zoneBientot}`);
   assert.equal(X.diamantGagner, "Viens jouer souvent : tu en gagneras une !");
   const inv0 = inventaire();
@@ -140,7 +142,7 @@ test("ce que dit la mascotte quand on touche une réserve, selon l'état", async
 
 test("chaque phrase des réserves, jusqu'aux nombres dits, est dans l'inventaire de la voix", () => {
   const inv = inventaire(), X = T.reserves, M = cartes.reserves;
-  const toutes = [X.arcUne, X.arcBeaucoup, X.diamantUne, X.diamantBeaucoup, X.arcZonesEtBriller, X.arcProchaineZone, X.arcProchainesZones, X.arcBrillerUne, X.arcBriller, X.diamantMaintenant, X.diamantTout,
+  const toutes = [X.arcUne, X.arcBeaucoup, X.diamantUne, X.diamantBeaucoup, X.arcZonesEtBriller, X.arcProchaineZone, X.arcProchainesZones, X.arcBrillerUne, X.arcBriller, X.arcZero, X.diamantMaintenant, X.diamantTout,
     ...Array.from({ length: M.arcDitMax - 1 }, (_, i) => `Tu as ${i + 2} étoiles arc-en-ciel.`), ...Array.from({ length: M.diamantDitMax - 1 }, (_, i) => `Tu as ${i + 2} étoiles de diamant.`),
     ...["du grand large", "des abysses"].flatMap((z) => [X.diamantQuandUne, X.diamantQuand].map((g) => g.replace("{zone}", z))), T.boutique.prixChanges];
   for (const p of toutes) assert.ok(inv.has(p), p);

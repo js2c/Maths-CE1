@@ -8,7 +8,7 @@
 //  - toucher une carte obtenue la montre en grand (cards.js, CardView) ; toucher un dos fait dire où elle
 //    attend (cartes.json, zones[].dosLu, legendaireLu) ; une zone fermée, quand elle s'ouvrira (fermeeLu).
 // Les vignettes sont dessinées une fois ; les images sont décodées à leur taille (cards.js, picture).
-import { onBrief, pop, spriteBox } from "../engine/ui.js";
+import { boutonRond, onBrief, pop, spriteBox } from "../engine/ui.js";
 import { CARD, CardView, forgetPictures, paintFace, shine } from "./cards.js";
 
 const K = 0.36, TW = CARD.W * K, TH = CARD.H * K; // une vignette : 119 × 158
@@ -26,13 +26,16 @@ export class Album {
     // les onglets des zones (lot 3 bis, R23 : des médaillons ronds, « album.zone.<zone> », qui ne ressemblent plus à des cartes ;
     // une zone fermée, assombrie)
     this.tabs = cartes.zones.map((z, i) => {
-      const t = spriteBox(app, { x: TAB.x - 56, y: TAB.y + i * TAB.pitch - 56, w: 112, h: 112, cls: `bubble album-tab${app.rewards.zoneOpen(z.id) ? "" : " closed"}`, label: z.nom, paint: (ctx) => sprites.draw(ctx, `album.zone.${z.id}`, 0, 56, 56) });
+      // (lot « Nouveaux boutons… » : les médaillons ronds du parent, 108 px ; le halo de l'onglet montré suit l'image, donc le cercle)
+      const t = boutonRond(app, { cx: TAB.x, cy: TAB.y + i * TAB.pitch, d: 108, marge: 0, cls: `album-tab${app.rewards.zoneOpen(z.id) ? "" : " closed"}`, label: z.nom, paint: (ctx, px, o) => sprites.draw(ctx, `bouton.album.${z.id}`, 0, o, o) });
       onBrief(app, t, () => { pop(t); this.showZone(z.id, { say: true }); }, () => z.nom);
       this.els.push(t); return t;
     });
     // la sortie : l'album s'ouvre depuis le récif et y ramène ; son bouton est le dessin du récif (lot « Suites des correctifs du
     // 5 novembre », décision du parent du 6 novembre 2026 ; avant, la maison), à la taille de la maison du récif
-    const home = spriteBox(app, { x: 90 - 70, y: 712 - 70, w: 140, h: 140, cls: "bubble homekey album-retour", label: "le récif", paint: (ctx, px) => { const q = sprites.frame("recif", 0), k = (140 / 180) * 1.1; if (q) ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 70 * px + q.dx * k, 70 * px + q.dy * k, q.w * k, q.h * k); } });
+    // (lot « Nouveaux boutons, mascotte du récif et étoiles » : le bouton rond du récif, 120 px, sans flèche : décision du parent du
+    // 7 novembre 2026)
+    const home = boutonRond(app, { cx: 90, cy: 712, d: 120, cls: "homekey album-retour", label: "le récif", paint: (ctx, px, o) => sprites.draw(ctx, "bouton.album.retour", 0, o, o) });
     this.els.push(home);
     const first = zone ?? cartes.zones.find((z) => app.rewards.zoneOpen(z.id))?.id ?? cartes.zones[0].id;
     await this.showZone(first);

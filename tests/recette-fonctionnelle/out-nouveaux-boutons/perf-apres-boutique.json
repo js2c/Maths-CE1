@@ -1,0 +1,36 @@
+{
+ "processeur": "ralenti ×4",
+ "accueil_reference": {
+  "n": 75,
+  "moyenne": 65.8,
+  "p50": 66.7,
+  "p95": 83.4,
+  "max": 99.9,
+  "plusDe33ms": 70
+ },
+ "recif_hors_seance": {
+  "n": 45,
+  "moyenne": 169.6,
+  "p50": 166.6,
+  "p95": 333.3,
+  "max": 566.7,
+  "plusDe33ms": 42
+ },
+ "boutique_lagon": {
+  "n": 226,
+  "moyenne": 22,
+  "p50": 16.7,
+  "p95": 33.4,
+  "max": 33.4,
+  "plusDe33ms": 15
+ },
+ "boutique_grand_large": {
+  "n": 237,
+  "moyenne": 21,
+  "p50": 16.7,
+  "p95": 33.4,
+  "max": 33.4,
+  "plusDe33ms": 21
+ },
+ "memoire_planches_mo": 68.9
+}

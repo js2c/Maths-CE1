@@ -6,7 +6,7 @@
 //   - la flèche sur la ligne graduée (lire, sauter, placer : jamais sur la réponse), dans les leçons, la dictée ;
 //   - la bulle sur chaque type d'écran : elle ne couvre jamais ce que l'enfant touche (contrôle à chaque capture) ;
 //   - la pause (la mascotte se tait, la bulle s'efface, la relance s'arrête), « réécouter » en pause, la reprise ;
-//   - la récompense, le récif (sans mascotte ni bulle), l'album, « à demain » ;
+//   - la récompense, le récif (sans bulle ; au repos, la boucle de la mascotte, pas la vidéo : lot « Nouveaux boutons… »), l'album, « à demain » ;
 //   - le journal des raccords de la mascotte : combien de fondus forcés ;
 //   - aucune erreur dans la page.
 //   node tests/e2e/mascotte.mjs [--out dossier] [--seul 1280|1920]
@@ -185,7 +185,12 @@ for (const [W, H, dpr] of [[1280, 800, 2], [1920, 1200, 1]]) {
   await go(""); await page.evaluate(async () => { const a = window.__app, ids = a.cartes.cartes.filter((c) => c.zone === "lagon").map((c) => c.id).slice(0, 5); await a.store.put("recompenses", { id: "cartes", cartes: Object.fromEntries(ids.map((id) => [id, { n: 1, premiere: Date.now() }])) }); await a.rewards.load(); });
   await go(""); await page.tap(".reefkey", { force: true }); await recifOuvert(page); await page.waitForTimeout(1500);
   e = await shot("52-recif");
-  check(!(await page.evaluate(() => window.__app.ocean.mascotteVisible)) && !e.m.visible && !e.b.visible, `${W} récif : ni la mascotte ni sa bulle`);
+  // (lot « Nouveaux boutons, mascotte du récif et étoiles », demande du parent du 7 novembre 2026) dans le récif, jamais de bulle ; la
+  // mascotte en vidéo seulement le temps d'une phrase, sinon sa boucle d'images (main.js, `speaker`)
+  check(!e.b.visible, `${W} récif : pas de bulle`);
+  await until(() => !window.__app.voice.speaking, null, 30000); await page.waitForTimeout(600);
+  e = await shot("52b-recif-repos");
+  check(!(await page.evaluate(() => window.__app.ocean.mascotteVisible)) && !e.m.visible && !e.b.visible && await page.evaluate(() => getComputedStyle(document.querySelector(".mascotte-boucle")).visibility === "visible"), `${W} récif, au repos : la boucle de la mascotte, ni la vidéo ni la bulle`);
   await page.tap(".session-home, .homekey", { force: true }).catch(() => {});
   await go(""); await albumParLeRecif(page); await bulle(/./); await page.waitForTimeout(1200); await shot("53-album");
 

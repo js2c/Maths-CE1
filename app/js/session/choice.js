@@ -11,7 +11,7 @@
 // tests/unit/choix.test.mjs.
 import { Portee } from "../engine/portee.js";
 import * as R from "../art/runtime.js";
-import { entourage, onBrief, pop, spriteBox } from "../engine/ui.js";
+import { boutonRond, entourage, onBrief, pop, spriteBox } from "../engine/ui.js";
 import { closeLegend, legendKey } from "./legend.js";
 import { deuxTouchers } from "./selection.js";
 import { currentFamily, initialFamilies, ruleShare } from "../modules/facts/families.js";
@@ -37,6 +37,8 @@ export const EXERCISES = [
 ];
 // la bulle d'un exercice (rayon 70 dans l'atelier, son trait compris : 75) ; l'entourage passe à 6 px de son bord
 export const EX_BULLE_R = 70, EX_ENTOURAGE_R = 81;
+// (lot « Nouveaux boutons, mascotte du récif et étoiles ») le bouton rond du parent : 150 px, l'entourage de 0 à 12 px au-dehors
+export const EX_D = 150;
 // (lot « Les voiliers » : les exercices sur une rangée, entre la tête de la mascotte et le bord droit ; lot « Multiplication » :
 // cinq exercices, l'écart resserré de 190 à 172 px)
 // (lot « L'étal du pêcheur » : six exercices, de x 350 à 1180 : entre la tête de la mascotte et le bord droit)
@@ -121,7 +123,8 @@ export async function choose(app, o) {
   for (;;) {
     // 1. l'exercice
     const xs = EXERCISES, exBtn = xs.map((e, i) => {
-      const [ex0, ey0] = exPos(i, xs.length), b = spriteBox(app, { x: ex0 - 90, y: ey0 - 90, w: 180, h: 180, cls: "bubble choix-ex", label: e.id, paint: (ctx, px) => { sprites.draw(ctx, e.sprite, 0, 90, 90); if (sel.key === e.id) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawSelectRound(ctx, 90, 90, EX_ENTOURAGE_R, e.graine); } } });
+      // (lot « Nouveaux boutons, mascotte du récif et étoiles » : le bouton rond du parent, 150 px, et son entourage, un cercle exact)
+      const [ex0, ey0] = exPos(i, xs.length), b = boutonRond(app, { cx: ex0, cy: ey0, d: EX_D, cls: "choix-ex", label: e.id, paint: (ctx, px, o) => { sprites.draw(ctx, `bouton.choix.${e.id}`, 0, o, o); if (sel.key === e.id) { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawSelectCercle(ctx, o, o, EX_D / 2); } } });
       b.dataset.key = e.id; els.push(b); return b;
     });
     // (lot « Recette de l'enfant et nettoyage des couches », second passage de l'agent, constat 5) `intro` : la phrase d'entrée
@@ -133,7 +136,7 @@ export async function choose(app, o) {
     clear();
     // 2. le niveau, la famille ou la leçon
     const exo = xs.find((e) => e.id === ex), items = levelItems(ex, { st1, st2, st3, st4, st5, st6, st7, module1: o.content.module1, module2: o.content.module2, module3: o.content.module3, module4: o.content.module4, module5: o.content.module5, module6: o.content.module6, module7: o.content.module7, familyShare });
-    const back = spriteBox(app, { x: BACK[0] - 60, y: BACK[1] - 60, w: 120, h: 120, cls: "bubble choix-retour", label: "retour", paint: (ctx, px) => { const q = sprites.frame(exo.sprite, 0), k = 120 / 180; ctx.drawImage(q.img, q.sx, q.sy, q.w, q.h, 60 * px + q.dx * k, 60 * px + q.dy * k, q.w * k, q.h * k); } });
+    const back = boutonRond(app, { cx: BACK[0], cy: BACK[1], d: 100, cls: "choix-retour", label: "retour", paint: (ctx, px, o) => sprites.draw(ctx, `bouton.choix.${exo.id}.retour`, 0, o, o) });
     els.push(back);
     // (lot 3 bis, B1) le chemin de cailloux du calcul rapide, dessiné en direct une fois par ouverture, sous les plaques
     if (ex === "calcul") { const P = R.CALC_PATH_BOX, w = P.x1 - P.x0, h = P.y1 - P.y0; els.push(spriteBox(app, { x: CALC_AT[0] + P.x0, y: CALC_AT[1] + P.y0, w, h, cls: "hud choix-chemin", still: true, paint: (ctx, px) => { ctx.setTransform(px, 0, 0, px, 0, 0); R.drawStonePath(ctx, -P.x0, -P.y0); } })); }
